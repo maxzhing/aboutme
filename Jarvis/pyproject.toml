@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jarvis-os"
+version = "2.0.0"
+description = "A modular, model-agnostic autonomous personal-assistant framework."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "JARVIS contributors" }]
+keywords = ["ai", "agents", "assistant", "orchestration", "llm", "rag"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# The core has NO required dependencies. Provider SDKs are optional extras.
+dependencies = []
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.39"]
+openai = ["openai>=1.0"]
+yaml = ["PyYAML>=6.0"]
+all = ["anthropic>=0.39", "openai>=1.0", "PyYAML>=6.0"]
+
+[project.scripts]
+jarvis-serve = "jarvis.api.server:main"
+
+[project.urls]
+Documentation = "https://github.com/maxzhing/aboutme/tree/main/Jarvis/docs"
+
+[tool.setuptools.packages.find]
+include = ["jarvis*"]
+
+[tool.setuptools.package-data]
+jarvis = ["config/*.yaml", "prompts/library/*.md"]
