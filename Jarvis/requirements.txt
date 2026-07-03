@@ -1,0 +1,13 @@
+# The JARVIS core requires NOTHING beyond the Python standard library.
+# Everything below is OPTIONAL and only needed for specific providers/features.
+#
+# Install what you use, e.g.:  pip install -r requirements.txt
+# or install nothing and run the offline Echo provider + all tests.
+
+# --- LLM provider SDKs (pick the ones you configure) ---
+# anthropic>=0.39        # JARVIS_LLM__PROVIDER=anthropic
+# openai>=1.0            # provider=openai | openrouter | deepseek | mistral
+# (ollama needs no Python package, just a running local server)
+
+# --- Configuration ---
+# PyYAML>=6.0            # richer YAML config; a stdlib fallback parser is built in

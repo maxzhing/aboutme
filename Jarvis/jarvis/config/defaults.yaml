@@ -1,0 +1,38 @@
+# JARVIS default configuration.
+#
+# Every value here can be overridden by a user-supplied YAML file or by an
+# environment variable of the form JARVIS_<SECTION>__<KEY>, e.g.
+#   JARVIS_LLM__PROVIDER=anthropic
+#   JARVIS_LLM__MODEL=claude-fable-5
+#   JARVIS_TOOLS__ALLOW_SHELL=true
+#
+# The default provider is "echo", a deterministic, offline model so the whole
+# system runs and is testable with no API keys or network access.
+
+log_level: INFO
+
+llm:
+  provider: echo
+  model: echo-1
+  temperature: 0.7
+  max_tokens: 1024
+  timeout_s: 60.0
+  api_key_env: ""
+
+memory:
+  short_term_max_messages: 40
+  vector_dim: 256
+  decay_half_life_s: 604800.0
+  persist_dir: ""
+
+orchestrator:
+  max_retries: 2
+  clarify_below_confidence: 0.4
+  max_subtasks: 12
+  parallelism: 4
+
+tools:
+  default_timeout_s: 30.0
+  default_retries: 1
+  workspace_dir: ""
+  allow_shell: false
