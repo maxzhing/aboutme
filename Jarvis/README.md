@@ -28,9 +28,68 @@ python -m unittest discover -s tests
 | **Agents** | `jarvis.agents` | Planner, Executor, Researcher, Reflection, Memory — each with role, tools, memory, confidence, and health. |
 | **Orchestrator** | `jarvis.orchestrator` | Task-tree decomposition and the `understand → plan → clarify → execute → verify → reflect → deliver` loop, with retries and cost accounting. |
 | **API / SDK** | `jarvis.api` | The `Jarvis` facade and a dependency-free REST server. |
+| **Web UI** | `jarvis.ui` | A self-contained, responsive, theme-aware chat page served at `/`. Works on phone and desktop. |
 
 See [`docs/architecture.md`](docs/architecture.md) for the full design and
 [`docs/developer_guide.md`](docs/developer_guide.md) to extend it.
+
+## Use it on your computer and phone
+
+JARVIS ships a web chat UI. Start the server (no dependencies, offline by
+default):
+
+```bash
+pip install -e .            # once, from the Jarvis/ directory
+jarvis-serve --host 0.0.0.0 # 0.0.0.0 lets your phone connect too
+```
+
+You'll see:
+
+```
+  JARVIS is running.
+
+    On this computer:  http://localhost:8080
+    On your phone:     http://192.168.1.42:8080   (same Wi-Fi)
+```
+
+**On your computer** — open <http://localhost:8080> in any browser.
+
+**On your phone** — make sure the phone is on the **same Wi-Fi** as the
+computer, then open the `http://<your-computer-ip>:8080` address shown in the
+banner (the server auto-detects your LAN IP). The page is responsive and
+theme-aware, so it looks right on a phone screen.
+
+> No `jarvis-serve` command? You didn't `pip install`. Either install, or run
+> `python -m jarvis.api.server --host 0.0.0.0` from the `Jarvis/` directory.
+
+The interface: type a goal and get a planned, executed answer; expand the
+**Reasoning trace** to see each phase; tap **Status** for agent health and
+memory; tap **Remember** to teach it a fact. It talks to the same server's
+REST endpoints, so anything the UI does you can also script:
+
+```bash
+curl -s localhost:8080/ask -d '{"goal":"plan my week"}' -H 'Content-Type: application/json'
+```
+
+### Point it at a real model (optional)
+
+Everything above runs on the offline Echo model. To use Claude/GPT/etc., set
+the provider before starting the server:
+
+```bash
+export JARVIS_LLM__PROVIDER=anthropic
+export JARVIS_LLM__MODEL=claude-fable-5
+export ANTHROPIC_API_KEY=sk-...
+pip install anthropic
+jarvis-serve --host 0.0.0.0
+```
+
+### Run it in Docker
+
+```bash
+docker build -f docker/Dockerfile -t jarvis .
+docker run -p 8080:8080 jarvis      # then open http://localhost:8080
+```
 
 ## Quick usage
 

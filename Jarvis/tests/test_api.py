@@ -49,6 +49,20 @@ class ServerTest(unittest.TestCase):
         with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/health", timeout=5) as resp:
             self.assertEqual(resp.status, 200)
 
+    def test_serves_ui(self):
+        with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/", timeout=5) as resp:
+            self.assertEqual(resp.status, 200)
+            self.assertTrue(resp.headers.get("Content-Type", "").startswith("text/html"))
+            body = resp.read().decode("utf-8")
+        self.assertIn("<title>JARVIS v2</title>", body)
+        # The page must be self-contained: no external scripts/styles/fonts.
+        for external in ("https://", "http://fonts", "cdn."):
+            self.assertNotIn(external, body)
+
+    def test_favicon_no_content(self):
+        with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/favicon.ico", timeout=5) as resp:
+            self.assertEqual(resp.status, 204)
+
     def test_ask_endpoint(self):
         status, body = self._post("/ask", {"goal": "please plan a trip"})
         self.assertEqual(status, 200)

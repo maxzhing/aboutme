@@ -37,4 +37,4 @@ Documentation = "https://github.com/maxzhing/aboutme/tree/main/Jarvis/docs"
 include = ["jarvis*"]
 
 [tool.setuptools.package-data]
-jarvis = ["config/*.yaml", "prompts/library/*.md"]
+jarvis = ["config/*.yaml", "prompts/library/*.md", "ui/*.html"]

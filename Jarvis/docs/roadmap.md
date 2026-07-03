@@ -12,7 +12,9 @@ Config · LLM abstraction (Echo/Anthropic/OpenAI-family/Ollama) · prompt
 templates · tool framework + filesystem/calculator/http/shell · working &
 long-term memory with RAG · Planner/Executor/Researcher/Reflection/Memory
 agents · orchestrator reasoning loop with retries and reflection · SDK facade ·
-REST API. **52 passing tests, zero external dependencies.**
+REST API · **web chat UI** (responsive, theme-aware, self-contained; chat +
+reasoning trace + agent/memory status + remember). **54 passing tests, zero
+external dependencies.**
 
 ## Designed extension points (not yet built)
 
@@ -22,7 +24,7 @@ REST API. **52 passing tests, zero external dependencies.**
 | **Vision** (OCR, screenshots, screen understanding) | New tools | `ScreenshotTool`, `OcrTool` subclassing `Tool` with a `vision.*` permission; return text the Executor consumes. |
 | **Computer control** (mouse/keyboard/windows) | New tools | `ClickTool`, `TypeTool`, etc., gated behind a `desktop.control` permission; disabled by default like the shell tool. |
 | **Browser automation** | A tool wrapping Playwright | `BrowserTool.run` drives a page; Chromium is already available in supported environments. |
-| **Desktop UI** (chat, agent monitor, task graph, token usage) | The SDK/REST surface | A web or Electron frontend calling `/ask`, `/status`; `RunResult.trace` and `TaskTree.summary()` already expose everything the monitor needs. |
+| **Desktop UI** (chat, agent monitor, task graph, token usage) | The SDK/REST surface | ✅ A responsive web chat UI now ships in `jarvis.ui` (chat, reasoning trace, agent health, memory stats). A richer task-graph/token-usage dashboard or native Electron shell is the natural next iteration on the same endpoints. |
 | **Autonomous watchers** (folders, email, calendar, repos) | A scheduler loop | A `SchedulingAgent` polling a source and calling `Jarvis.ask` on triggers; each source is a tool. |
 | **Knowledge graph** | Alongside the vector store | Add a `GraphMemory` next to the vector stores in `LongTermMemory`; `retrieve_all` merges results. |
 | **Real embeddings / vector DB** | Behind existing interfaces | Implement `Embedder`; swap `VectorStore` for FAISS/Chroma/pgvector with the same `add`/`search`. |
