@@ -35,28 +35,39 @@ class ShellTool(Tool):
     permission = "shell.exec"
     timeout_s = 30.0
 
-    def __init__(self, enabled: bool = False, workdir: str | None = None) -> None:
+    def __init__(
+        self,
+        enabled: bool = False,
+        workdir: str | None = None,
+        *,
+        use_shell: bool = False,
+    ) -> None:
         self.enabled = enabled
         self.workdir = workdir
+        # ``use_shell`` runs the command through the system shell, enabling
+        # pipes, &&, redirects and globbing — full computer control. It is only
+        # turned on in explicit full-access mode; the default keeps the safer
+        # argv form that is immune to shell-injection.
+        self.use_shell = use_shell
 
     def run(self, context: ToolContext, *, command: str, cwd: str | None = None) -> dict:
         if not self.enabled:
             raise ToolError("Shell tool is disabled by configuration")
-        argv = shlex.split(command)
-        if not argv:
+        if not command.strip():
             raise ToolError("Empty command")
+        popen_arg = command if self.use_shell else shlex.split(command)
         try:
             proc = subprocess.run(
-                argv,
+                popen_arg,
                 cwd=cwd or self.workdir,
                 capture_output=True,
                 text=True,
                 timeout=self.timeout_s,
-                shell=False,
+                shell=self.use_shell,
                 check=False,
             )
         except FileNotFoundError as exc:
-            raise ToolError(f"Command not found: {argv[0]}") from exc
+            raise ToolError(f"Command not found: {command.split()[0]}") from exc
         except subprocess.TimeoutExpired as exc:
             raise ToolError(f"Command timed out after {self.timeout_s}s") from exc
         return {

@@ -28,7 +28,8 @@ class ExecutorAgent(Agent):
             role="Execute individual plan steps and invoke tools",
             prompt_name="executor",
             permissions=frozenset(
-                {"fs.read", "fs.write", "net.http", "shell.exec"}
+                {"fs.read", "fs.write", "net.http", "shell.exec",
+                 "system.read", "desktop.control"}
             ),
         )
         super().__init__(config, provider, tools=tools, **kwargs)

@@ -5,6 +5,7 @@ from jarvis.tools.builtins.calculator import CalculatorTool
 from jarvis.tools.builtins.filesystem import ListDirTool, ReadFileTool, WriteFileTool
 from jarvis.tools.builtins.http import HttpGetTool
 from jarvis.tools.builtins.shell import ShellTool
+from jarvis.tools.builtins.system import OpenAppTool, SystemInfoTool
 from jarvis.tools.registry import ToolRegistry
 
 __all__ = [
@@ -14,18 +15,27 @@ __all__ = [
     "WriteFileTool",
     "HttpGetTool",
     "ShellTool",
+    "SystemInfoTool",
+    "OpenAppTool",
     "default_registry",
 ]
 
 
-def default_registry(config: ToolsConfig | None = None) -> ToolRegistry:
-    """Build a registry of the safe built-in tools from configuration.
+def default_registry(
+    config: ToolsConfig | None = None, *, full_access: bool = False
+) -> ToolRegistry:
+    """Build a registry of the built-in tools from configuration.
 
-    The shell tool is included but only *enabled* when ``config.allow_shell`` is
-    set, keeping the dangerous capability opt-in.
+    In the default (safe) mode the shell and desktop-control tools are present
+    but disabled, so an agent literally cannot run commands or launch apps.
+
+    ``full_access=True`` — or ``config.allow_shell`` — flips the dangerous
+    capabilities on: the shell executes, and ``open_app`` can launch programs.
+    This is the "give JARVIS my whole computer" switch and is always opt-in.
     """
     config = config or ToolsConfig()
     workspace = config.workspace_dir or None
+    shell_on = full_access or config.allow_shell
     registry = ToolRegistry(
         [
             ReadFileTool(workspace),
@@ -33,7 +43,9 @@ def default_registry(config: ToolsConfig | None = None) -> ToolRegistry:
             ListDirTool(workspace),
             CalculatorTool(),
             HttpGetTool(),
-            ShellTool(enabled=config.allow_shell, workdir=workspace),
+            SystemInfoTool(),
+            ShellTool(enabled=shell_on, workdir=workspace, use_shell=full_access),
+            OpenAppTool(enabled=full_access),
         ]
     )
     return registry

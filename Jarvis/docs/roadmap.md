@@ -9,20 +9,21 @@ honest boundary between "runs today" and "designed, not yet built".
 ## Runs today (implemented & tested)
 
 Config · LLM abstraction (Echo/Anthropic/OpenAI-family/Ollama) · prompt
-templates · tool framework + filesystem/calculator/http/shell · working &
-long-term memory with RAG · Planner/Executor/Researcher/Reflection/Memory
-agents · orchestrator reasoning loop with retries and reflection · SDK facade ·
-REST API · **web chat UI** (responsive, theme-aware, self-contained; chat +
-reasoning trace + agent/memory status + remember). **54 passing tests, zero
-external dependencies.**
+templates · tool framework + filesystem/calculator/http/shell/system-info/
+app-launch · working & long-term memory with RAG · Planner/Executor/Researcher/
+Reflection/Memory agents · orchestrator reasoning loop with retries and
+reflection · SDK facade · REST API · **JARVIS HUD web UI** (voice-reactive orb,
+chat, reasoning trace, agent/memory status) · **voice I/O** (browser Web Speech
+API) · **full-access computer control** (real shell + app-launch, token-gated
+when remote). **63 passing tests, zero external dependencies.**
 
 ## Designed extension points (not yet built)
 
 | Capability | Seam it plugs into | Interface to implement |
 |-----------|--------------------|------------------------|
-| **Voice** (wake word, STT, TTS, streaming) | A `VoiceAgent` + frontend | Feed transcribed text to `Jarvis.ask`; stream `provider.stream()` output to a TTS backend. No core change. |
+| **Voice** (STT, TTS) | The web UI | ✅ Shipped via the browser Web Speech API (speak to send, read replies aloud). Server-side STT/TTS or a wake word (e.g. Porcupine, Whisper) is the next iteration — feed transcribed text to `Jarvis.ask`, stream `provider.stream()` to a TTS backend. |
 | **Vision** (OCR, screenshots, screen understanding) | New tools | `ScreenshotTool`, `OcrTool` subclassing `Tool` with a `vision.*` permission; return text the Executor consumes. |
-| **Computer control** (mouse/keyboard/windows) | New tools | `ClickTool`, `TypeTool`, etc., gated behind a `desktop.control` permission; disabled by default like the shell tool. |
+| **Computer control** (shell, app-launch) | New tools | ✅ Shipped: real `shell` (pipes/`&&`/redirects), `system_info`, and `open_app`, gated by `full_access`. Mouse/keyboard/window automation (e.g. via `pyautogui`) plugs in as more `desktop.control` tools. |
 | **Browser automation** | A tool wrapping Playwright | `BrowserTool.run` drives a page; Chromium is already available in supported environments. |
 | **Desktop UI** (chat, agent monitor, task graph, token usage) | The SDK/REST surface | ✅ A responsive web chat UI now ships in `jarvis.ui` (chat, reasoning trace, agent health, memory stats). A richer task-graph/token-usage dashboard or native Electron shell is the natural next iteration on the same endpoints. |
 | **Autonomous watchers** (folders, email, calendar, repos) | A scheduler loop | A `SchedulingAgent` polling a source and calling `Jarvis.ask` on triggers; each source is a tool. |

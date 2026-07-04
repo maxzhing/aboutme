@@ -36,9 +36,12 @@ class Jarvis:
         self,
         settings: Optional[Settings] = None,
         provider: Optional[LLMProvider] = None,
+        *,
+        full_access: bool = False,
     ) -> None:
         self.settings = settings or load_settings()
         configure(level=self.settings.log_level)
+        self.full_access = full_access
 
         self.provider = provider or build_provider(self.settings.llm)
         self.prompts = PromptLibrary()
@@ -49,7 +52,11 @@ class Jarvis:
             persist_dir=self.settings.memory.persist_dir or None,
             half_life_s=self.settings.memory.decay_half_life_s,
         )
-        self.tools = default_registry(self.settings.tools)
+        # full_access enables shell + desktop control; otherwise those tools
+        # are present but inert.
+        self.tools = default_registry(self.settings.tools, full_access=full_access)
+        if full_access:
+            _log.warning("FULL-ACCESS mode: shell and app-launch tools are ENABLED")
 
         # Agents share the provider, prompts and memory.
         common = {"prompts": self.prompts}
@@ -72,8 +79,55 @@ class Jarvis:
     # ------------------------------------------------------------------ #
 
     def ask(self, goal: str, context: str = "") -> RunResult:
-        """Run the full reasoning loop for ``goal`` and return the result."""
+        """Run the full reasoning loop for ``goal``.
+
+        As a convenience, a goal beginning with ``!`` is treated as a direct
+        shell command and executed immediately (full-access only). This makes
+        computer control tangible even with the offline model — ``!ls -la`` runs
+        right now — while natural-language goals still go through the full
+        plan→execute loop (which, with a real model, will choose tools itself).
+        """
+        if goal.startswith("!"):
+            return self._run_command(goal[1:].strip())
         return self.orchestrator.run(goal, context=context)
+
+    def _run_command(self, command: str) -> RunResult:
+        """Execute a shell command directly and wrap it as a RunResult."""
+        from jarvis.orchestrator.orchestrator import RunResult, TraceEntry
+        from jarvis.orchestrator.task import Task, TaskStatus, TaskTree
+
+        tree = TaskTree(Task(description=f"$ {command}"))
+        if not self.full_access:
+            tree.root.status = TaskStatus.FAILED
+            return RunResult(
+                goal=command,
+                answer="Direct commands require full-access mode "
+                       "(start with `jarvis-serve --full-access`).",
+                status="failed",
+                tree=tree,
+                trace=[TraceEntry("execute", "blocked: not in full-access mode", 0.0)],
+            )
+        result = self.executor.use_tool("shell", command=command)
+        if result.ok:
+            out = result.output
+            body = out.get("stdout") or out.get("stderr") or "(no output)"
+            answer = f"$ {command}\n{body}".rstrip()
+            if out.get("exit_code"):
+                answer += f"\n[exit {out['exit_code']}]"
+            tree.root.status = TaskStatus.DONE
+            tree.root.result = answer
+            status = "delivered"
+        else:
+            answer = f"$ {command}\nCommand failed: {result.error}"
+            tree.root.status = TaskStatus.FAILED
+            status = "failed"
+        return RunResult(
+            goal=command,
+            answer=answer,
+            status=status,
+            tree=tree,
+            trace=[TraceEntry("execute", f"ran shell: {command}", result.ok and 0.9 or 0.2)],
+        )
 
     def remember(self, fact: str, **metadata) -> str:
         """Store a semantic fact in long-term memory (de-duplicated)."""
@@ -93,6 +147,7 @@ class Jarvis:
         return {
             "provider": self.provider.name,
             "model": self.provider.model,
+            "full_access": self.full_access,
             "memory": self.memory.stats(),
             "tools": self.tools.names(),
             "agents": [

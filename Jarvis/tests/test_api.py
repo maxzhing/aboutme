@@ -22,6 +22,73 @@ class SdkTest(unittest.TestCase):
         doc_id = app.remember("The user's favorite color is teal")
         self.assertTrue(doc_id)
 
+    def test_direct_command_blocked_without_full_access(self):
+        app = Jarvis()  # safe mode
+        result = app.ask("!echo hi")
+        self.assertEqual(result.status, "failed")
+        self.assertIn("full-access", result.answer)
+
+    def test_direct_command_runs_with_full_access(self):
+        app = Jarvis(full_access=True)
+        result = app.ask("!echo jarvis-live")
+        self.assertEqual(result.status, "delivered")
+        self.assertIn("jarvis-live", result.answer)
+        self.assertTrue(app.status()["full_access"])
+
+    def test_shell_supports_pipes_in_full_access(self):
+        app = Jarvis(full_access=True)
+        result = app.ask("!echo abc | tr a-z A-Z")
+        self.assertIn("ABC", result.answer)
+
+    def test_system_info_tool(self):
+        app = Jarvis(full_access=True)
+        res = app.executor.use_tool("system_info")
+        self.assertTrue(res.ok)
+        self.assertIn("os", res.output)
+
+
+class FullAccessAuthTest(unittest.TestCase):
+    """Remote full-access must be token-gated; localhost must not."""
+
+    def test_localhost_full_access_needs_no_token(self):
+        server = serve("127.0.0.1", 0, Jarvis(full_access=True))
+        self.assertFalse(server.require_auth)
+        self.assertEqual(server.access_token, "")
+        server.server_close()
+
+    def test_remote_full_access_requires_token(self):
+        # Bind to 0.0.0.0 (remote) with full access -> token required.
+        server = serve("0.0.0.0", 0, Jarvis(full_access=True))
+        try:
+            self.assertTrue(server.require_auth)
+            self.assertTrue(server.access_token)
+            port = server.server_address[1]
+            threading.Thread(target=server.serve_forever, daemon=True).start()
+
+            # UI page loads without a token (so it can then supply one).
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=5) as r:
+                self.assertEqual(r.status, 200)
+
+            # /ask without a token is rejected.
+            req = urllib.request.Request(
+                f"http://127.0.0.1:{port}/ask",
+                data=json.dumps({"goal": "!echo x"}).encode(),
+                headers={"Content-Type": "application/json"}, method="POST")
+            with self.assertRaises(urllib.error.HTTPError) as ctx:
+                urllib.request.urlopen(req, timeout=5)
+            self.assertEqual(ctx.exception.code, 401)
+
+            # /ask with the right token works.
+            req = urllib.request.Request(
+                f"http://127.0.0.1:{port}/ask",
+                data=json.dumps({"goal": "!echo ok"}).encode(),
+                headers={"Content-Type": "application/json",
+                         "X-Jarvis-Token": server.access_token}, method="POST")
+            with urllib.request.urlopen(req, timeout=5) as r:
+                self.assertEqual(json.loads(r.read())["status"], "delivered")
+        finally:
+            server.shutdown()
+
 
 class ServerTest(unittest.TestCase):
     @classmethod

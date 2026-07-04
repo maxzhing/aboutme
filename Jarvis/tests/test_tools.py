@@ -79,6 +79,27 @@ class ToolTest(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.attempts, 2)
 
+    def test_shell_disabled_by_default(self):
+        reg = default_registry(ToolsConfig(workspace_dir=self.tmp))  # safe mode
+        ctx = ToolContext(granted_permissions=frozenset({"shell.exec"}))
+        result = reg.invoke("shell", ctx, command="echo hi")
+        self.assertFalse(result.ok)
+        self.assertIn("disabled", result.error)
+
+    def test_full_access_enables_shell_with_pipes(self):
+        reg = default_registry(ToolsConfig(workspace_dir=self.tmp), full_access=True)
+        ctx = ToolContext(granted_permissions=frozenset({"shell.exec"}))
+        result = reg.invoke("shell", ctx, command="echo abc | tr a-z A-Z")
+        self.assertTrue(result.ok)
+        self.assertIn("ABC", result.output["stdout"])
+
+    def test_system_info_present_and_readonly(self):
+        reg = default_registry(ToolsConfig(workspace_dir=self.tmp))
+        ctx = ToolContext(granted_permissions=frozenset({"system.read"}))
+        result = reg.invoke("system_info", ctx)
+        self.assertTrue(result.ok)
+        self.assertIn("cpu_count", result.output)
+
 
 if __name__ == "__main__":
     unittest.main()

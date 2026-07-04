@@ -28,10 +28,13 @@ python -m unittest discover -s tests
 | **Agents** | `jarvis.agents` | Planner, Executor, Researcher, Reflection, Memory — each with role, tools, memory, confidence, and health. |
 | **Orchestrator** | `jarvis.orchestrator` | Task-tree decomposition and the `understand → plan → clarify → execute → verify → reflect → deliver` loop, with retries and cost accounting. |
 | **API / SDK** | `jarvis.api` | The `Jarvis` facade and a dependency-free REST server. |
-| **Web UI** | `jarvis.ui` | A self-contained, responsive, theme-aware chat page served at `/`. Works on phone and desktop. |
+| **Web UI** | `jarvis.ui` | A self-contained, responsive, theme-aware **JARVIS HUD** with a voice-reactive reactor orb, served at `/`. Works on phone and desktop. |
+| **Voice** | `jarvis.ui` (browser) | Talk to it and hear it back via the browser's Web Speech API — no server deps, no keys, works on mobile and desktop. |
+| **Computer control** | `jarvis.tools` | `system_info`, a real shell (pipes/`&&`/redirects), and app-launch — off by default, enabled with `--full-access`. |
 
-See [`docs/architecture.md`](docs/architecture.md) for the full design and
-[`docs/developer_guide.md`](docs/developer_guide.md) to extend it.
+See [`docs/architecture.md`](docs/architecture.md) for the full design,
+[`docs/developer_guide.md`](docs/developer_guide.md) to extend it, and
+[`docs/full_access.md`](docs/full_access.md) for the computer-control security model.
 
 ## Use it on your computer and phone
 
@@ -70,6 +73,54 @@ REST endpoints, so anything the UI does you can also script:
 ```bash
 curl -s localhost:8080/ask -d '{"goal":"plan my week"}' -H 'Content-Type: application/json'
 ```
+
+### Talk to it (voice)
+
+The UI has voice built in — no setup, no API keys:
+
+- **Tap the reactor orb** (or the 🎙 button) and speak. Your words are
+  transcribed and sent as a goal. The orb turns green and pulses while it
+  listens.
+- Tap **🔊 Voice** in the header to have JARVIS **read its replies aloud**. The
+  orb pulses while it speaks.
+
+This uses your browser's built-in Web Speech API, which works in Chrome, Edge,
+and Safari on both **desktop and mobile**. (On a phone you'll be asked for mic
+permission the first time. Some browsers only enable speech recognition on
+`https` or `localhost` — see the note in [`jarvis/ui/README.md`](jarvis/ui/README.md).)
+
+### Let it control your computer (full-access)
+
+By default JARVIS cannot touch your machine — the shell and app-launch tools
+are present but inert. To give it real control, start with **`--full-access`**:
+
+```bash
+jarvis-serve --host 0.0.0.0 --full-access
+```
+
+Now you can:
+
+- **Run commands directly** — prefix a message with `!`:
+  `!ls ~/Downloads`, `!git status`, `!echo hi | tr a-z A-Z` (real shell, so
+  pipes / `&&` / redirects all work).
+- **Ask in natural language** — "what's my system info?", "open my browser",
+  "find the biggest files in this folder" — and (with a **real model** like
+  Claude or a local Ollama model) the Executor agent picks the right tool
+  itself. The offline Echo model can't reason about tools, so use `!` for
+  direct control until you point it at a real model.
+
+**Security — read this.** Full-access means whoever can reach the server can
+run code on your computer. So:
+
+- On **localhost only** (default host) no token is needed — nothing else can
+  reach it.
+- The moment you expose it to your phone (`--host 0.0.0.0`) **with**
+  `--full-access`, JARVIS auto-generates a **secret token** and prints it in
+  the URL. Only that link works; open exactly it on your phone and don't share
+  it. The static page loads without the token, but every *action* requires it.
+- This is LAN-only. Do **not** put a full-access instance on the public
+  internet without your own auth/TLS in front of it. Details and the threat
+  model are in [`docs/full_access.md`](docs/full_access.md).
 
 ### Point it at a real model (optional)
 
