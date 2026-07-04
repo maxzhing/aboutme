@@ -38,3 +38,4 @@ include = ["jarvis*"]
 
 [tool.setuptools.package-data]
 jarvis = ["config/*.yaml", "prompts/library/*.md", "ui/*.html"]
+"jarvis.ui" = ["*.html"]

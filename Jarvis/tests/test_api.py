@@ -140,6 +140,38 @@ class ServerTest(unittest.TestCase):
             self._post("/ask", {})
         self.assertEqual(ctx.exception.code, 400)
 
+    def test_serves_dashboard(self):
+        with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/dashboard", timeout=5) as resp:
+            self.assertEqual(resp.status, 200)
+            body = resp.read().decode("utf-8")
+        self.assertIn("MISSION CONTROL", body)
+        for external in ("https://", "http://fonts", "cdn."):
+            self.assertNotIn(external, body)
+
+    def test_metrics_endpoint(self):
+        self._post("/ask", {"goal": "please plan something"})  # generate metrics
+        with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/metrics", timeout=5) as resp:
+            body = json.loads(resp.read())
+        self.assertIn("counters", body)
+        self.assertIn("timers", body)
+
+    def test_logs_endpoint(self):
+        with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/logs?limit=10", timeout=5) as resp:
+            body = json.loads(resp.read())
+        self.assertIn("events", body)
+
+    def test_converse_chat(self):
+        status, body = self._post("/converse", {"text": "hello there"})
+        self.assertEqual(status, 200)
+        self.assertEqual(body["kind"], "chat")
+        self.assertIn("spoken", body)
+
+    def test_converse_task_includes_result(self):
+        status, body = self._post("/converse", {"text": "please plan my week"})
+        self.assertEqual(body["kind"], "task")
+        self.assertIn("answer", body)
+        self.assertIn("tree", body)
+
 
 if __name__ == "__main__":
     unittest.main()

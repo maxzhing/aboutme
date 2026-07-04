@@ -157,6 +157,7 @@
     <span class="chip" id="accessChip" hidden>full access</span>
     <button class="iconbtn" id="voiceToggle" title="Read replies aloud">🔊 Voice</button>
     <button class="iconbtn" id="rememberBtn" title="Teach a fact">＋</button>
+    <a class="iconbtn" id="dashLink" href="/dashboard" title="Mission Control dashboard">Dashboard</a>
     <button class="iconbtn" id="statusBtn">Status</button>
   </header>
 
@@ -241,19 +242,29 @@
     bubble("user", esc(goal));
     const typing=bubble("bot","thinking…",""); typing.classList.add("typing");
     send.disabled=true; setOrb("thinking"); orbHint.textContent="thinking…";
+    const isCmd=goal.trim().startsWith("!");
     try{
-      const res=await fetch("/ask",{method:"POST",headers:authHeaders(),body:JSON.stringify({goal})});
+      // Everything goes through Hermes (/converse): it decides chat vs. task,
+      // delegates work, and returns a spoken-style line + the structured result.
+      const res=await fetch("/converse",{method:"POST",headers:authHeaders(),body:JSON.stringify({text:goal})});
       const data=await res.json();
       typing.remove();
-      const cls=data.status==="failed"?"err":data.status==="needs_clarification"?"clarify":"";
-      const isCmd=goal.trim().startsWith("!");
-      const answer=data.clarification||data.answer||"(no answer)";
-      const label={delivered:"✓ delivered",failed:"✗ failed",needs_clarification:"? needs clarification"}[data.status]||data.status;
-      const tasks=data.tasks?` · tasks ${data.tasks.total}`:"";
-      const body=isCmd?`<div class="bubble term">${esc(answer)}</div>`:esc(answer);
-      const inner=isCmd?body:`${esc(answer)}<div class="status-line">${label}${tasks}</div>${traceHtml(data.trace)}`;
-      bubble("bot", inner, cls);
-      if(!isCmd) speak(answer); else setOrb("");
+      const status=data.status||"";
+      const cls=status==="failed"?"err":data.kind==="clarify"?"clarify":"";
+      if(isCmd && data.answer){
+        // Shell command: show raw terminal output.
+        bubble("bot", `<div class="bubble term">${esc(data.answer)}</div>`, cls);
+      } else if(data.answer && data.kind!=="chat"){
+        // A task ran: lead with Hermes's spoken summary, then the detail + trace.
+        const label={delivered:"✓ delivered",failed:"✗ failed"}[status]||status;
+        const tasks=data.tree?` · tasks ${data.tree.length}`:"";
+        const detail=`<details class="trace"><summary>Full result</summary>${esc(data.answer)}</details>`;
+        bubble("bot", `${esc(data.spoken)}<div class="status-line">${label}${tasks}</div>${detail}${traceHtml(data.trace)}`, cls);
+      } else {
+        // Plain conversation.
+        bubble("bot", esc(data.spoken||"(no reply)"), cls);
+      }
+      speak(data.spoken || data.answer || "");
     }catch(err){
       typing.remove(); bubble("bot","Could not reach JARVIS: "+esc(err.message),"err");
     }finally{
@@ -320,6 +331,9 @@
       $("toolCard").innerHTML=(s.tools||[]).map(t=>`<span class="pill">${esc(t)}</span>`).join("");
     }catch(err){$("sysCard").innerHTML=`<div class="kv"><span class="k">Could not load</span></div>`;}
   }
+
+  // Preserve the auth token when navigating to the dashboard.
+  if(TOKEN) $("dashLink").href = "/dashboard?token=" + encodeURIComponent(TOKEN);
 
   // ---- Connection banner ----
   (async()=>{

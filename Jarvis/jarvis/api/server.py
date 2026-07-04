@@ -22,7 +22,7 @@ from typing import Optional
 
 from jarvis.api.sdk import Jarvis
 from jarvis.core.logging import get_logger
-from jarvis.ui import index_html
+from jarvis.ui import dashboard_html, index_html
 
 _log = get_logger("api.server")
 
@@ -81,12 +81,27 @@ def _make_handler(app: Jarvis, token: str = "", require_auth: bool = False):
             path = self.path.split("?", 1)[0]
             if path in ("/", "/ui", "/index.html"):
                 self._send_html(index_html())
+            elif path == "/dashboard":
+                self._send_html(dashboard_html())
             elif path == "/health":
                 self._send(200, {"status": "ok"})
             elif path == "/status":
                 if not self._authorized():
                     return self._send(401, {"error": "missing or invalid token"})
                 self._send(200, app.status())
+            elif path == "/metrics":
+                if not self._authorized():
+                    return self._send(401, {"error": "missing or invalid token"})
+                self._send(200, app.metrics())
+            elif path == "/logs":
+                if not self._authorized():
+                    return self._send(401, {"error": "missing or invalid token"})
+                from urllib.parse import parse_qs, urlparse
+
+                q = parse_qs(urlparse(self.path).query)
+                limit = int(q.get("limit", ["100"])[0])
+                level = q.get("level", [None])[0]
+                self._send(200, {"events": app.logs(limit=limit, level=level)})
             elif path == "/favicon.ico":
                 self.send_response(204)  # no favicon; avoid noisy 404s
                 self.end_headers()
@@ -97,7 +112,8 @@ def _make_handler(app: Jarvis, token: str = "", require_auth: bool = False):
             if not self._authorized():
                 return self._send(401, {"error": "missing or invalid token"})
             data = self._read_json()
-            if self.path.split("?", 1)[0] == "/ask":
+            route = self.path.split("?", 1)[0]
+            if route == "/ask":
                 goal = data.get("goal")
                 if not goal:
                     return self._send(400, {"error": "missing 'goal'"})
@@ -110,9 +126,27 @@ def _make_handler(app: Jarvis, token: str = "", require_auth: bool = False):
                         "clarification": result.clarification,
                         "trace": [e.__dict__ for e in result.trace],
                         "tasks": result.tree.summary(),
+                        "tree": [t.to_dict() for t in result.tree.all()],
                     },
                 )
-            elif self.path.split("?", 1)[0] == "/remember":
+            elif route == "/converse":
+                text = data.get("text") or data.get("goal")
+                if not text:
+                    return self._send(400, {"error": "missing 'text'"})
+                reply = app.converse(text)
+                payload = {
+                    "spoken": reply.spoken,
+                    "kind": reply.kind,
+                    "confidence": reply.confidence,
+                }
+                if reply.run_result is not None:
+                    rr = reply.run_result
+                    payload["answer"] = rr.answer
+                    payload["status"] = rr.status
+                    payload["trace"] = [e.__dict__ for e in rr.trace]
+                    payload["tree"] = [t.to_dict() for t in rr.tree.all()]
+                self._send(200, payload)
+            elif route == "/remember":
                 fact = data.get("fact")
                 if not fact:
                     return self._send(400, {"error": "missing 'fact'"})

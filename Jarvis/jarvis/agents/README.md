@@ -6,8 +6,12 @@ Agents communicate only through `AgentMessage` envelopes routed by the
 orchestrator.
 
 - **`base.py`** — `Agent`, `AgentConfig`, `Health`; helpers `ask_llm`,
-  `use_tool`, `recall`, `render_prompt`.
+  `use_tool`, `recall`, `render_prompt`. `ask_llm`/`use_tool` also record
+  token, cost, latency and call-count metrics for the dashboard.
 - **`messages.py`** — `AgentMessage` (`request`/`result`/`clarify`/`error`).
+- **`hermes.py`** — **Hermes**, the conversational front (the "talking" agent).
+  Holds the dialogue, decides chit-chat vs. real work, delegates tasks to the
+  orchestrator, and narrates results in short spoken-style language for voice.
 - **`planner.py`** — goal → ordered steps (flags ambiguity as `CLARIFY:`).
 - **`executor.py`** — runs one step; invokes tools deterministically.
 - **`researcher.py`** — grounded answers from retrieved knowledge.

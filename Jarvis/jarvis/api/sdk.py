@@ -12,6 +12,7 @@ from __future__ import annotations
 from typing import Optional
 
 from jarvis.agents.executor import ExecutorAgent
+from jarvis.agents.hermes import HermesAgent, HermesReply
 from jarvis.agents.memory_agent import MemoryAgent
 from jarvis.agents.planner import PlannerAgent
 from jarvis.agents.reflection import ReflectionAgent
@@ -74,6 +75,11 @@ class Jarvis:
             long_term=self.memory,
             config=self.settings.orchestrator,
         )
+        # Hermes is the conversational front: it talks, and delegates real work
+        # to the orchestrator above.
+        self.hermes = HermesAgent(
+            self.provider, orchestrator=self.orchestrator, long_term=self.memory, **common
+        )
         _log.info("jarvis ready", extra={"provider": self.provider.name})
 
     # ------------------------------------------------------------------ #
@@ -90,6 +96,24 @@ class Jarvis:
         if goal.startswith("!"):
             return self._run_command(goal[1:].strip())
         return self.orchestrator.run(goal, context=context)
+
+    def converse(self, text: str) -> HermesReply:
+        """Talk to JARVIS through Hermes, its conversational front.
+
+        Hermes decides whether ``text`` is small talk (answered directly) or a
+        task (delegated to the orchestrator), then returns a short, spoken-style
+        reply suitable for text-to-speech, with the underlying
+        :class:`RunResult` attached when work was done.
+        """
+        if text.startswith("!"):
+            # Direct commands bypass conversation but still get a spoken wrapper.
+            result = self._run_command(text[1:].strip())
+            first = result.answer.splitlines()[0] if result.answer else "Done."
+            spoken = "Done." if result.status == "delivered" else "That command failed."
+            return HermesReply(spoken=spoken, kind="task",
+                               confidence=0.9 if result.status == "delivered" else 0.3,
+                               run_result=result)
+        return self.hermes.converse(text)
 
     def _run_command(self, command: str) -> RunResult:
         """Execute a shell command directly and wrap it as a RunResult."""
@@ -152,6 +176,19 @@ class Jarvis:
             "tools": self.tools.names(),
             "agents": [
                 a.status()
-                for a in (self.planner, self.executor, self.researcher, self.reflection)
+                for a in (self.hermes, self.planner, self.executor,
+                          self.researcher, self.reflection, self.memory_agent)
             ],
         }
+
+    def metrics(self) -> dict:
+        """Observability snapshot (counters, gauges, timers) for the dashboard."""
+        from jarvis.core.metrics import METRICS
+
+        return METRICS.snapshot()
+
+    def logs(self, limit: int = 100, level: str | None = None) -> list:
+        """Recent structured log events for the dashboard's live log view."""
+        from jarvis.core.metrics import METRICS
+
+        return METRICS.recent_events(limit=limit, level=level)

@@ -100,13 +100,20 @@ class Agent(abc.ABC):
         temperature: float = 0.7,
         max_tokens: int = 1024,
     ) -> str:
-        """Single-shot LLM call with a system + user message. Tracks health."""
+        """Single-shot LLM call with a system + user message. Tracks health and
+        records token/cost/latency metrics for the observability dashboard."""
+        from jarvis.core.metrics import METRICS
+
         messages = [Message(Role.SYSTEM, system), Message(Role.USER, user)]
         try:
-            response = self.provider.chat(
-                messages, temperature=temperature, max_tokens=max_tokens
-            )
+            with METRICS.timer("llm.latency_ms", agent=self.name):
+                response = self.provider.chat(
+                    messages, temperature=temperature, max_tokens=max_tokens
+                )
             self.health = Health.OK
+            METRICS.incr("llm.calls", agent=self.name)
+            METRICS.incr("llm.tokens", response.usage.total_tokens, agent=self.name)
+            METRICS.incr("llm.cost_usd", response.usage.cost_usd, agent=self.name)
             self._log.debug(
                 "llm call",
                 extra={"tokens": response.usage.total_tokens, "cost": response.usage.cost_usd},
@@ -114,13 +121,18 @@ class Agent(abc.ABC):
             return response.text
         except Exception as exc:  # noqa: BLE001
             self.health = Health.FAILED
+            METRICS.incr("llm.errors", agent=self.name)
             self._log.error("llm call failed", extra={"error": str(exc)})
             raise
 
     def use_tool(self, name: str, **kwargs) -> ToolResult:
         """Invoke a tool with this agent's granted permissions."""
+        from jarvis.core.metrics import METRICS
+
         context = ToolContext(granted_permissions=self.config.permissions)
         result = self.tools.invoke(name, context, **kwargs)
+        METRICS.incr("tool.calls", tool=name, ok=str(result.ok).lower())
+        METRICS.observe("tool.latency_ms", result.latency_ms, tool=name)
         if not result.ok:
             self.health = Health.DEGRADED
         return result

@@ -2,8 +2,10 @@
 
 A modular, model-agnostic framework for building an autonomous personal
 assistant — a small **AI operating system** rather than a chatbot. It plans,
-remembers, uses tools, coordinates multiple specialized agents, reflects on its
-own work, and keeps improving.
+remembers, uses tools, coordinates multiple specialized agents through a
+**Hermes** conversational front, reflects on its own work, controls your
+computer, talks with you by voice, and reports on itself through a live
+**Mission Control** dashboard.
 
 The design follows a few hard rules: small modules, explicit interfaces, no
 prompts buried in Python, every subsystem independently usable and tested, and
@@ -13,8 +15,49 @@ and is fully testable out of the box using a deterministic offline model.
 ```
 pip install -e .          # or just run from the repo root
 python examples/quickstart.py
-python -m unittest discover -s tests
+python -m unittest discover -s tests      # 80 tests, no external deps
+jarvis-serve                              # web UI at http://localhost:8080
 ```
+
+## Run it with a real model (Claude, GPT, Ollama, …)
+
+Nothing hardcodes a model — you pick one with two environment variables plus a
+key, then start the server. The rest of the system is identical.
+
+```bash
+# Claude (recommended)
+export JARVIS_LLM__PROVIDER=anthropic
+export JARVIS_LLM__MODEL=claude-fable-5
+export ANTHROPIC_API_KEY=sk-ant-...
+pip install anthropic
+jarvis-serve --host 0.0.0.0
+
+# OpenAI / OpenRouter / DeepSeek / Mistral (same OpenAI wire format)
+export JARVIS_LLM__PROVIDER=openai        # or openrouter | deepseek | mistral
+export JARVIS_LLM__MODEL=gpt-4o
+export OPENAI_API_KEY=sk-...
+pip install openai
+
+# Local, no key, fully offline (needs a running Ollama daemon)
+export JARVIS_LLM__PROVIDER=ollama
+export JARVIS_LLM__MODEL=llama3
+```
+
+Why the model matters: the offline **Echo** default lets everything *run*, but
+it can't reason — so it won't hold a real conversation or pick tools on its
+own. Point JARVIS at Claude or a local model and **Hermes** starts talking
+naturally and the **Executor** starts choosing tools by itself. Until then,
+use the `!command` prefix for direct computer control.
+
+| Provider key | Model env | Key env | Install |
+|---|---|---|---|
+| `anthropic` | `claude-fable-5` | `ANTHROPIC_API_KEY` | `pip install anthropic` |
+| `openai` | `gpt-4o` | `OPENAI_API_KEY` | `pip install openai` |
+| `openrouter` | any OpenRouter id | `OPENROUTER_API_KEY` | `pip install openai` |
+| `deepseek` | `deepseek-chat` | `DEEPSEEK_API_KEY` | `pip install openai` |
+| `mistral` | `mistral-large-latest` | `MISTRAL_API_KEY` | `pip install openai` |
+| `ollama` | `llama3`, `qwen2.5`, … | (none) | run `ollama serve` |
+| `echo` | `echo-1` | (none) | built in, offline default |
 
 ## What's inside
 
@@ -25,7 +68,9 @@ python -m unittest discover -s tests
 | **Prompts** | `jarvis.prompts` | File-based `.md` templates with `${var}` injection and versioning. No prompts in code. |
 | **Tools** | `jarvis.tools` | `Tool` base with input schema, permissions, timeout, retry, logging; sandboxed filesystem, safe calculator, HTTP, guarded shell. |
 | **Memory** | `jarvis.memory` | Bounded working memory + a decaying long-term store (semantic / episodic / procedural) over a dependency-free vector index (RAG). |
-| **Agents** | `jarvis.agents` | Planner, Executor, Researcher, Reflection, Memory — each with role, tools, memory, confidence, and health. |
+| **Agents** | `jarvis.agents` | **Hermes** (conversational front), Planner, Executor, Researcher, Reflection, Memory — each with role, tools, memory, confidence, and health. |
+| **Observability** | `jarvis.core.metrics` | Token/cost/latency/call-count metrics + a live log buffer, exposed at `/metrics` and `/logs`. |
+| **Dashboard** | `jarvis.ui` (`/dashboard`) | A **Mission Control** console: KPI summary, agent monitor, token-usage & tool charts, the Hermes agent-swarm graph, and a live log stream. |
 | **Orchestrator** | `jarvis.orchestrator` | Task-tree decomposition and the `understand → plan → clarify → execute → verify → reflect → deliver` loop, with retries and cost accounting. |
 | **API / SDK** | `jarvis.api` | The `Jarvis` facade and a dependency-free REST server. |
 | **Web UI** | `jarvis.ui` | A self-contained, responsive, theme-aware **JARVIS HUD** with a voice-reactive reactor orb, served at `/`. Works on phone and desktop. |
@@ -72,6 +117,39 @@ REST endpoints, so anything the UI does you can also script:
 
 ```bash
 curl -s localhost:8080/ask -d '{"goal":"plan my week"}' -H 'Content-Type: application/json'
+```
+
+### Mission Control dashboard
+
+Open **<http://localhost:8080/dashboard>** (or tap **Dashboard** in the chat
+header). It refreshes every two seconds and shows, live for your instance:
+
+- **KPI row** — uptime, LLM calls, tokens, estimated cost, tool calls, model.
+- **Agent monitor** — every agent's health and confidence, including Hermes.
+- **Token usage by agent** and a **tool dashboard** (calls + average latency).
+- **Agent swarm** — the Hermes → Orchestrator → specialists topology, colored
+  by live health.
+- **Live logs** — the structured reasoning/tool/error stream.
+
+It's the same self-contained, theme-aware approach as the chat UI (no external
+deps), and it reads only from this instance's `/status`, `/metrics`, `/logs`.
+
+### Meet Hermes (the talking part)
+
+**Hermes** is JARVIS's conversational front — the messenger between you and the
+agent swarm. It holds the dialogue, decides whether what you said is small talk
+or real work, delegates tasks to the orchestrator, and then *says the result in
+plain spoken language* (ideal for voice). Everything the voice reads aloud is
+Hermes's phrasing; the structured plan and reasoning trace are tucked into
+expandable detail. Programmatically:
+
+```python
+from jarvis.api import Jarvis
+j = Jarvis()
+print(j.converse("hey, what can you do?").spoken)   # chit-chat, answered directly
+r = j.converse("plan my launch week")               # delegated to the orchestrator
+print(r.spoken)                                      # short spoken summary
+print(r.run_result.answer)                           # full structured result
 ```
 
 ### Talk to it (voice)

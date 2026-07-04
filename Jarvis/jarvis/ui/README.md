@@ -1,9 +1,15 @@
-# `jarvis.ui` — JARVIS HUD web interface
+# `jarvis.ui` — JARVIS web interfaces
 
-A single self-contained `index.html` served by the REST server at `/`. Dark,
-futuristic HUD with a **voice-reactive reactor orb**; no external dependencies
-(no CDN fonts/scripts/styles), so it works offline and over a LAN. Responsive
-and theme-aware (light/dark follow the device).
+Two self-contained pages served by the REST server, both dependency-free
+(no CDN fonts/scripts/styles), responsive, and theme-aware:
+
+- **`index.html`** at `/` — the **JARVIS HUD**: a dark, futuristic chat with a
+  voice-reactive reactor orb.
+- **`dashboard.html`** at `/dashboard` — **Mission Control**: a live
+  observability console (KPIs, agent monitor, token/tool charts, the Hermes
+  agent-swarm graph, and a streaming log). Refreshes every 2s from `/status`,
+  `/metrics`, and `/logs`; includes a light/dark toggle that stamps
+  `data-theme`.
 
 ## Features
 

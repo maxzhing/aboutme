@@ -25,7 +25,9 @@ when remote). **63 passing tests, zero external dependencies.**
 | **Vision** (OCR, screenshots, screen understanding) | New tools | `ScreenshotTool`, `OcrTool` subclassing `Tool` with a `vision.*` permission; return text the Executor consumes. |
 | **Computer control** (shell, app-launch) | New tools | ✅ Shipped: real `shell` (pipes/`&&`/redirects), `system_info`, and `open_app`, gated by `full_access`. Mouse/keyboard/window automation (e.g. via `pyautogui`) plugs in as more `desktop.control` tools. |
 | **Browser automation** | A tool wrapping Playwright | `BrowserTool.run` drives a page; Chromium is already available in supported environments. |
-| **Desktop UI** (chat, agent monitor, task graph, token usage) | The SDK/REST surface | ✅ A responsive web chat UI now ships in `jarvis.ui` (chat, reasoning trace, agent health, memory stats). A richer task-graph/token-usage dashboard or native Electron shell is the natural next iteration on the same endpoints. |
+| **Desktop UI** (chat, agent monitor, task graph, token usage) | The SDK/REST surface | ✅ Shipped: the JARVIS HUD chat *and* a Mission Control dashboard (`/dashboard`) with agent monitor, token-usage & tool charts, the agent-swarm graph, and live logs. A native Electron shell is the natural next iteration on the same endpoints. |
+| **Conversational front / voice persona** | An agent | ✅ Shipped: **Hermes** holds the dialogue, routes chit-chat vs. work, and speaks results. |
+| **Observability** (metrics, tracing) | `jarvis.core.metrics` | ✅ Shipped: counters/gauges/timers with labels + a log buffer, exposed at `/metrics` and `/logs`. OpenTelemetry export is a drop-in behind the registry. |
 | **Autonomous watchers** (folders, email, calendar, repos) | A scheduler loop | A `SchedulingAgent` polling a source and calling `Jarvis.ask` on triggers; each source is a tool. |
 | **Knowledge graph** | Alongside the vector store | Add a `GraphMemory` next to the vector stores in `LongTermMemory`; `retrieve_all` merges results. |
 | **Real embeddings / vector DB** | Behind existing interfaces | Implement `Embedder`; swap `VectorStore` for FAISS/Chroma/pgvector with the same `add`/`search`. |

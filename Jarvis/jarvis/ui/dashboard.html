@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#03060d">
+<title>JARVIS · Mission Control</title>
+<style>
+  /* Self-contained ops console for JARVIS. Information-design first: summary
+     KPIs up top, state encoded as color+shape (pills, bars), monospace tabular
+     numbers, a live agent-swarm graph and log stream. Theme-aware via tokens;
+     the toggle stamps data-theme and overrides the media query in both ways. */
+  :root{
+    --cyan:#33e1ff; --cyan-dim:#1b9fc4;
+    --bg:#03060d; --bg2:#071320; --panel:#0b1a29; --panel2:#0f2233;
+    --line:rgba(51,225,255,.16); --line2:rgba(51,225,255,.28);
+    --text:#dbf3ff; --muted:#6f97ad; --faint:#3f5a6b;
+    --ok:#49e6a0; --warn:#ffcf6b; --crit:#ff6b8a;
+    --grid:rgba(51,225,255,.08);
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#eef4f8; --bg2:#e3edf3; --panel:#ffffff; --panel2:#f2f7fa;
+      --line:rgba(20,110,140,.18); --line2:rgba(20,110,140,.30);
+      --text:#0a2a3a; --muted:#4f7488; --faint:#9fb6c2;
+      --cyan:#0f9ec4; --cyan-dim:#0b7ea0; --grid:rgba(20,110,140,.10);
+      --ok:#12a97a; --warn:#c98a12; --crit:#d1436a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#03060d; --bg2:#071320; --panel:#0b1a29; --panel2:#0f2233;
+    --line:rgba(51,225,255,.16); --line2:rgba(51,225,255,.28);
+    --text:#dbf3ff; --muted:#6f97ad; --faint:#3f5a6b; --cyan:#33e1ff;
+    --cyan-dim:#1b9fc4; --grid:rgba(51,225,255,.08);
+    --ok:#49e6a0; --warn:#ffcf6b; --crit:#ff6b8a;
+  }
+  :root[data-theme="light"]{
+    --bg:#eef4f8; --bg2:#e3edf3; --panel:#ffffff; --panel2:#f2f7fa;
+    --line:rgba(20,110,140,.18); --line2:rgba(20,110,140,.30);
+    --text:#0a2a3a; --muted:#4f7488; --faint:#9fb6c2; --cyan:#0f9ec4;
+    --cyan-dim:#0b7ea0; --grid:rgba(20,110,140,.10);
+    --ok:#12a97a; --warn:#c98a12; --crit:#d1436a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1100px 500px at 100% -5%, rgba(51,225,255,.07), transparent 60%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
+    color:var(--text); font-family:var(--sans); font-size:14px; line-height:1.5;
+    min-height:100dvh;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  a{color:var(--cyan);text-decoration:none}
+  .bar{
+    display:flex;align-items:center;gap:12px;padding:14px 20px;
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;
+    background:linear-gradient(180deg,rgba(51,225,255,.05),transparent),var(--bg);
+    backdrop-filter:blur(8px);
+  }
+  .mark{letter-spacing:3px;font-weight:700;white-space:nowrap}
+  .mark small{letter-spacing:1px;color:var(--muted);font-weight:400;display:block;font-size:10px}
+  .bar .spacer{flex:1}
+  .live{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .beat{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:beat 1.6s ease-in-out infinite}
+  @keyframes beat{0%,100%{opacity:.35}50%{opacity:1}}
+  .tbtn{background:transparent;border:1px solid var(--line2);color:var(--text);border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer}
+  .tbtn:hover{border-color:var(--cyan)}
+
+  .wrap{max-width:1160px;margin:0 auto;padding:18px 16px 40px}
+
+  /* KPI summary row — scan-first */
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cyan);opacity:.7}
+  .kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .kpi .value{font-family:var(--mono);font-size:26px;font-variant-numeric:tabular-nums;margin-top:4px}
+  .kpi .unit{font-size:12px;color:var(--muted);font-family:var(--sans)}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media (max-width:860px){ .grid{grid-template-columns:1fr} }
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .card.wide{grid-column:1 / -1}
+  .card h2{margin:0 0 12px;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--cyan);font-weight:600;display:flex;align-items:center;gap:8px}
+  .card h2 .count{color:var(--faint);font-family:var(--mono)}
+
+  /* Agent monitor */
+  .agent-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+  .agent-row:first-of-type{border-top:none}
+  .health{width:9px;height:9px;border-radius:50%;flex:none}
+  .health.ok{background:var(--ok);box-shadow:0 0 7px var(--ok)}
+  .health.degraded{background:var(--warn);box-shadow:0 0 7px var(--warn)}
+  .health.failed{background:var(--crit);box-shadow:0 0 7px var(--crit)}
+  .agent-name{font-weight:600;min-width:78px}
+  .agent-role{color:var(--muted);font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .conf{width:96px;flex:none}
+  .conf .track{height:6px;border-radius:4px;background:var(--panel2);overflow:hidden}
+  .conf .fill{height:100%;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan))}
+  .conf .num{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right;margin-top:2px;font-variant-numeric:tabular-nums}
+
+  /* Horizontal bar charts (tokens, tools) */
+  .hbars{display:flex;flex-direction:column;gap:9px}
+  .hbar{display:grid;grid-template-columns:80px 1fr auto;align-items:center;gap:10px}
+  .hbar .k{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hbar .track{height:16px;background:var(--panel2);border-radius:5px;overflow:hidden}
+  .hbar .fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--cyan-dim),var(--cyan));min-width:2px;transition:width .4s}
+  .hbar .fill.warnc{background:linear-gradient(90deg,#b9822a,var(--warn))}
+  .hbar .v{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;color:var(--text);min-width:56px;text-align:right}
+  .empty{color:var(--faint);font-size:13px;padding:8px 0}
+
+  /* Agent-swarm workflow graph */
+  .swarm{width:100%;height:auto;display:block}
+  .swarm text{font-family:var(--sans);fill:var(--text)}
+  .swarm .role{fill:var(--muted);font-size:10px}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+  /* Log stream */
+  .logs{font-family:var(--mono);font-size:12px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+  .log{display:grid;grid-template-columns:64px 60px 1fr;gap:8px;padding:3px 4px;border-radius:4px}
+  .log:hover{background:var(--panel2)}
+  .log .t{color:var(--faint);font-variant-numeric:tabular-nums}
+  .log .lv{font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+  .log .lv.INFO{color:var(--cyan)} .log .lv.DEBUG{color:var(--muted)}
+  .log .lv.WARNING{color:var(--warn)} .log .lv.ERROR{color:var(--crit)}
+  .log .m{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .log .src{color:var(--cyan-dim)}
+  .note{margin-top:14px;font-size:12px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+  <div class="bar">
+    <div class="mark">J A R V I S<small>MISSION CONTROL</small></div>
+    <div class="spacer"></div>
+    <div class="live"><span class="beat" id="beat"></span><span id="liveLabel">live · 2s</span></div>
+    <a class="tbtn" href="/" id="chatLink">Chat →</a>
+    <button class="tbtn" id="themeBtn" title="Toggle theme">◐</button>
+  </div>
+
+  <div class="wrap">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Agent Monitor <span class="count" id="agentCount"></span></h2>
+        <div id="agents"></div>
+      </div>
+
+      <div class="card">
+        <h2>Token Usage <span class="count">by agent</span></h2>
+        <div class="hbars" id="tokens"><div class="empty">No LLM calls yet.</div></div>
+      </div>
+
+      <div class="card">
+        <h2>Tool Dashboard <span class="count">calls · avg latency</span></h2>
+        <div class="hbars" id="tools"><div class="empty">No tool calls yet.</div></div>
+      </div>
+
+      <div class="card">
+        <h2>Agent Swarm <span class="count">Hermes topology</span></h2>
+        <svg class="swarm" id="swarm" viewBox="0 0 460 250" role="img" aria-label="Agent swarm graph"></svg>
+        <div class="legend">
+          <span><i style="background:var(--ok)"></i>healthy</span>
+          <span><i style="background:var(--warn)"></i>degraded</span>
+          <span><i style="background:var(--crit)"></i>failed</span>
+          <span><i style="background:var(--cyan)"></i>active this session</span>
+        </div>
+      </div>
+
+      <div class="card wide">
+        <h2>Live Logs <span class="count" id="logCount"></span></h2>
+        <div class="logs" id="logs"></div>
+      </div>
+    </div>
+    <div class="note" id="note">Reading provider, agents, tokens, tools and logs from this JARVIS instance.</div>
+  </div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const TOKEN = new URLSearchParams(location.search).get("token") || "";
+  const headers = TOKEN ? {"X-Jarvis-Token": TOKEN} : {};
+  const esc = (s) => String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  if (TOKEN) $("chatLink").href = "/?token=" + encodeURIComponent(TOKEN);
+
+  // ---- theme toggle (stamps data-theme; overrides media query both ways) ----
+  const root = document.documentElement;
+  $("themeBtn").addEventListener("click", () => {
+    const cur = root.getAttribute("data-theme")
+      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    root.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+  });
+
+  const fmt = (n) => {
+    n = Number(n) || 0;
+    if (n >= 1e6) return (n/1e6).toFixed(1)+"M";
+    if (n >= 1e3) return (n/1e3).toFixed(1)+"k";
+    return (Math.round(n*100)/100).toString();
+  };
+  // Fold "name{label=value}" metric keys into {label -> total} groups.
+  function groupByLabel(counters, prefix, label){
+    const out = {};
+    for (const [key, val] of Object.entries(counters||{})){
+      if (!key.startsWith(prefix)) continue;
+      const m = key.match(new RegExp(label+"=([^,}]+)"));
+      const name = m ? m[1] : "—";
+      out[name] = (out[name]||0) + val;
+    }
+    return out;
+  }
+
+  function renderKpis(metrics, status){
+    const c = metrics.counters || {};
+    const sum = (p) => Object.entries(c).filter(([k])=>k.startsWith(p)).reduce((a,[,v])=>a+v,0);
+    const tiles = [
+      ["Uptime", fmt(metrics.uptime_s), "s"],
+      ["LLM calls", fmt(sum("llm.calls")), ""],
+      ["Tokens", fmt(sum("llm.tokens")), ""],
+      ["Est. cost", "$"+ (sum("llm.cost_usd")).toFixed(4), ""],
+      ["Tool calls", fmt(sum("tool.calls")), ""],
+      ["Model", (status.provider||"—"), status.full_access ? "· full access" : ""],
+    ];
+    $("kpis").innerHTML = tiles.map(([l,v,u]) =>
+      `<div class="kpi"><div class="label">${l}</div><div class="value">${esc(v)} <span class="unit">${esc(u)}</span></div></div>`).join("");
+  }
+
+  function renderAgents(status){
+    const agents = status.agents || [];
+    $("agentCount").textContent = agents.length;
+    $("agents").innerHTML = agents.map(a => {
+      const pct = Math.round((a.confidence||0)*100);
+      return `<div class="agent-row">
+        <span class="health ${a.health||'ok'}"></span>
+        <span class="agent-name">${esc(a.name)}</span>
+        <span class="agent-role">${esc(a.role||"")}</span>
+        <span class="conf"><div class="track"><div class="fill" style="width:${pct}%"></div></div>
+        <div class="num">${pct}%</div></span>
+      </div>`;
+    }).join("");
+  }
+
+  function renderBars(el, data, {unit="", warn=false}={}){
+    const entries = Object.entries(data).sort((a,b)=>b[1]-a[1]);
+    if (!entries.length){ return; }
+    const max = Math.max(...entries.map(e=>e[1]), 1);
+    el.innerHTML = entries.map(([k,v]) =>
+      `<div class="hbar"><span class="k">${esc(k)}</span>
+        <div class="track"><div class="fill ${warn?'warnc':''}" style="width:${Math.max(2,v/max*100)}%"></div></div>
+        <span class="v">${fmt(v)}${unit}</span></div>`).join("");
+  }
+
+  function renderTools(metrics){
+    const calls = groupByLabel(metrics.counters, "tool.calls", "tool");
+    if (!Object.keys(calls).length) return;
+    const timers = metrics.timers || {};
+    const rows = Object.entries(calls).sort((a,b)=>b[1]-a[1]);
+    const max = Math.max(...rows.map(r=>r[1]),1);
+    $("tools").innerHTML = rows.map(([tool,n]) => {
+      let lat = "";
+      for (const [key,t] of Object.entries(timers)){
+        if (key.startsWith("tool.latency_ms") && key.includes("tool="+tool)) lat = t.avg_ms+"ms";
+      }
+      return `<div class="hbar"><span class="k">${esc(tool)}</span>
+        <div class="track"><div class="fill" style="width:${Math.max(2,n/max*100)}%"></div></div>
+        <span class="v">${fmt(n)}${lat?" · "+lat:""}</span></div>`;
+    }).join("");
+  }
+
+  // Agent swarm: Hermes -> Orchestrator -> specialists. Colored by live health.
+  function renderSwarm(status){
+    const byName = Object.fromEntries((status.agents||[]).map(a=>[a.name,a]));
+    const color = (n) => {
+      const a = byName[n]; if(!a) return "var(--faint)";
+      return a.health==="failed"?"var(--crit)":a.health==="degraded"?"var(--warn)":"var(--ok)";
+    };
+    const active = (n) => byName[n] ? "var(--cyan)" : "var(--faint)";
+    const node = (x,y,label,key) =>
+      `<g><circle cx="${x}" cy="${y}" r="20" fill="var(--panel2)" stroke="${active(key)}" stroke-width="1.5"/>
+       <circle cx="${x+14}" cy="${y-14}" r="4" fill="${color(key)}"/>
+       <text x="${x}" y="${y+3}" text-anchor="middle" font-size="10" font-weight="600">${label}</text></g>`;
+    const edge = (x1,y1,x2,y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--line2)" stroke-width="1"/>`;
+    const specialists = [["planner","plan"],["executor","exec"],["researcher","rsrch"],["reflection","reflct"],["memory","mem"]];
+    let edges="", nodes="";
+    edges += edge(70,125,180,125);                  // hermes -> orchestrator
+    specialists.forEach((s,i) => {
+      const y = 40 + i*43;
+      edges += edge(200,125,360,y);
+    });
+    nodes += node(50,125,"Hermes","hermes");
+    nodes += `<g><rect x="160" y="107" width="80" height="36" rx="8" fill="var(--panel2)" stroke="var(--cyan)" stroke-width="1.5"/>
+      <text x="200" y="129" text-anchor="middle" font-size="10" font-weight="600">Orchestr.</text></g>`;
+    specialists.forEach((s,i) => { nodes += node(380, 40+i*43, s[1], s[0]); });
+    $("swarm").innerHTML = edges + nodes;
+  }
+
+  function renderLogs(events){
+    $("logCount").textContent = events.length;
+    const el = $("logs");
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 20;
+    el.innerHTML = events.slice(-120).map(e => {
+      const t = new Date(e.ts*1000).toLocaleTimeString([], {hour12:false});
+      return `<div class="log"><span class="t">${t}</span>
+        <span class="lv ${e.level}">${e.level}</span>
+        <span class="m"><span class="src">${esc(e.source)}</span> ${esc(e.message)}</span></div>`;
+    }).join("");
+    if (atBottom) el.scrollTop = el.scrollHeight;
+  }
+
+  async function get(path){
+    const r = await fetch(path, {headers});
+    if (!r.ok) throw new Error(path+" "+r.status);
+    return r.json();
+  }
+
+  let failed = false;
+  async function tick(){
+    try{
+      const [status, metrics, logs] = await Promise.all([
+        get("/status"), get("/metrics"), get("/logs?limit=120")
+      ]);
+      renderKpis(metrics, status);
+      renderAgents(status);
+      renderBars($("tokens"), groupByLabel(metrics.counters, "llm.tokens", "agent"), {unit:" tok"});
+      renderTools(metrics);
+      renderSwarm(status);
+      renderLogs(logs.events||[]);
+      $("beat").style.background = "var(--ok)";
+      failed = false;
+    }catch(err){
+      $("beat").style.background = "var(--crit)";
+      $("liveLabel").textContent = "disconnected";
+      if(!failed){ $("note").textContent = "Cannot reach the JARVIS server ("+err.message+"). Start it with jarvis-serve and reload."; failed=true; }
+    }
+  }
+  tick();
+  setInterval(tick, 2000);
+})();
+</script>
+</body>
+</html>

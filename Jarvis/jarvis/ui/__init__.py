@@ -11,6 +11,7 @@ from pathlib import Path
 
 _UI_DIR = Path(__file__).parent
 INDEX_PATH = _UI_DIR / "index.html"
+DASHBOARD_PATH = _UI_DIR / "dashboard.html"
 
 
 def index_html() -> str:
@@ -18,4 +19,9 @@ def index_html() -> str:
     return INDEX_PATH.read_text("utf-8")
 
 
-__all__ = ["index_html", "INDEX_PATH"]
+def dashboard_html() -> str:
+    """Return the observability dashboard's HTML."""
+    return DASHBOARD_PATH.read_text("utf-8")
+
+
+__all__ = ["index_html", "dashboard_html", "INDEX_PATH", "DASHBOARD_PATH"]

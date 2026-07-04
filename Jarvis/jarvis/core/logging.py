@@ -66,8 +66,31 @@ def configure(level: str | None = None, json_output: bool | None = None) -> None
             logging.Formatter("%(asctime)s %(levelname)-7s %(name)s | %(message)s")
         )
     root.addHandler(handler)
+    root.addHandler(_MetricsBridge())  # mirror every record into the dashboard buffer
     root.propagate = False
     _CONFIGURED = True
+
+
+class _MetricsBridge(logging.Handler):
+    """Forward log records into the metrics ring buffer for the dashboard.
+
+    Kept import-light: the metrics registry is imported lazily so ``logging``
+    has no hard dependency on ``metrics`` (avoids an import cycle).
+    """
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            from jarvis.core.metrics import METRICS
+
+            fields = {
+                k: v
+                for k, v in record.__dict__.items()
+                if k not in _JsonFormatter._RESERVED and not k.startswith("_")
+            }
+            source = record.name.replace("jarvis.", "", 1)
+            METRICS.log(record.levelname, source, record.getMessage(), **fields)
+        except Exception:  # never let logging break because of metrics
+            pass
 
 
 def get_logger(name: str) -> logging.Logger:
