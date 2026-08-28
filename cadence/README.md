@@ -7,6 +7,12 @@ Open `cadence/index.html` in a browser. There is no build step and no server —
 it is plain HTML, CSS and JavaScript. Everything is stored in `localStorage` on
 the device; nothing is sent anywhere.
 
+**`cadence.html` is the whole app in one file** (~650 KB) — every stylesheet and
+script inlined, nothing external to load. Use it to email the app to someone,
+drop it on a USB stick, or host it as a single static file. Regenerate it after
+any change with `node build-single-file.mjs`; it reads the load order out of
+`index.html`, so it can't drift from the real app.
+
 ## What it does
 
 The app is organised around seven concepts that are deliberately kept distinct:
