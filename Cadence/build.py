@@ -31,10 +31,11 @@ JS_MODULES = [
     "07-optimize.js",
     "08-toolbelt.js",
     "09-reasoner.js",
-    "10-agents.js",
-    "11-orchestrator.js",
-    "12-assistant.js",
-    "13-ui.js",
+    "10-converse.js",
+    "11-agents.js",
+    "12-orchestrator.js",
+    "13-assistant.js",
+    "14-ui.js",
 ]
 
 BANNER = """
@@ -44,8 +45,8 @@ BANNER = """
    ======================================================================== */
 """
 
-# Files 13-ui.js and jarvis.css carry their own banner already.
-SELF_BANNERED = {"13-ui.js"}
+# Files 14-ui.js and jarvis.css carry their own banner already.
+SELF_BANNERED = {"14-ui.js"}
 
 
 class PatchError(RuntimeError):

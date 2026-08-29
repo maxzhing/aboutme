@@ -36,12 +36,63 @@ js/jarvis/optimize.js      optimiser findings, morning brief, day review, insigh
 js/jarvis/toolbelt.js      the tools: calendar.* / plan.* / memory.*
 js/jarvis/reasoner.js      the local reasoner — intent table + Cadence's NLP;
                            optional remote LLM provider (off by default)
+js/jarvis/converse.js      the conversational engine — the default path when a
+                           message is not a request to do something
 js/jarvis/agents.js        planner, executor, reflection, memory
 js/jarvis/orchestrator.js  task tree + the understand→plan→clarify→execute→
                            verify→reflect→deliver loop
 js/jarvis/assistant.js     the facade: ask(), apply(), memory controls, status, state
 js/ui/jarvis.js            the console — docked rail and full route
 ```
+
+### Two modes, and conversation is the default
+
+JARVIS is not a command parser. A message is only routed to the tools when it
+is actually a request to do something; everything else is a conversation.
+
+```
+message → is this a request for an action?
+            yes → tools (propose → verify → report)
+            no  → conversation
+```
+
+There is no "not detected" branch, because that was the bug: an earlier build
+sent anything unmatched to full-text search, so "I got a 5 on both my AP exams"
+came back as *Nothing matches "I got a 5 on both my AP exams"*. The unmatched
+path is now a conversation, and the least confident branch inside it is a
+curious follow-up question — which is what a person would do.
+
+`converse.js` handles greetings, good news, complaints, completions, reactions,
+advice, plans-out-loud and the rest. Two things stop it reading as templated:
+
+- **Register matching.** Energy is measured from the message (capitals,
+  exclamation marks, slang) and the reply is drawn from a tier that matches, so
+  shouted good news gets a matching reaction and a quiet remark gets a quiet one.
+- **Continuity.** A question JARVIS asked stays open for exactly one turn, so a
+  bare "Computer Science Principles" after "which exam was it?" is understood —
+  but "I'm exhausted" two turns later is not mistaken for a late answer.
+
+Replies can carry **chips**: one-tap follow-ups that run a real command, so a
+conversation turns into calendar work without a mode switch.
+
+Where the calendar genuinely helps, conversation uses it. "Do you think I should
+study tonight?" checks your actual free time and your actual task ranking before
+answering.
+
+### What it will not pretend to know
+
+Offline there is no model and no network, so open-domain questions get an honest
+answer rather than an invented one:
+
+> That one's outside what I can answer — I run entirely inside this page, with no
+> internet and no general knowledge model behind me, so I'd only be guessing.
+
+Connect a model in the JARVIS view's **Language model** panel (Anthropic, OpenAI
+or Ollama shapes) and it answers those properly, with your calendar as context.
+Even then, calendar writes stay on the deterministic tool pipeline — the model
+is told it cannot claim to have changed anything — so it can never hallucinate
+an event into existence. If a configured model is unreachable, the local engine
+answers and says the model could not be reached.
 
 ### Why there is no Echo provider
 

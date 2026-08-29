@@ -100,6 +100,24 @@
     return s.replace(/\s+/g, ' ').replace(/^[\s,:;-]+|[\s,.!?;:-]+$/g, '').trim();
   }
 
+  /* People ask politely. "Can you put biology study on my calendar tomorrow?"
+     is the same request as "add biology study tomorrow", and an anchored
+     imperative alone would miss every courteous phrasing of it. */
+  var POLITE_CREATE = /^\s*(?:(?:can|could|would|will)\s+(?:you|u)\s+|please\s+|hey\s+|pls\s+)*(add|create|make|new|book|set\s+up|put|schedule|stick|pop|throw|remind me to|i need to|i have to|i must)\b/i;
+
+  /* Unmistakably social openings. Kept narrow on purpose: it only has to catch
+     the shapes that would otherwise be mis-read as commands. */
+  var SOCIAL = new RegExp([
+    '^(hi|hey+|hello|yo+|sup|howdy|morning|hiya|heya)\\b',
+    '^(bye|goodbye|see ya|later|goodnight|gn|cya)\\b',
+    '^(thanks|thank you|ty|tysm|cheers)\\b',
+    '^(guess what|you\'?ll never guess|wanna know something)\\b',
+    '^(lol|lmao|haha|wow|damn|oof|yikes|nice|same|ikr|true|fair)\\b',
+    '\\b(i|we)\\s+(got|scored|aced|passed|won)\\b.{0,30}\\b(\\d+|a|an|first|gold|offer|in)\\b',
+    '\\bi\'?m\\s+(so\\s+)?(exhausted|tired|stressed|bored|excited|nervous|happy|sad|proud|dead)\\b',
+    '\\bi (just )?(finally )?(finished|aced|passed|nailed|crushed)\\b'
+  ].join('|'), 'i');
+
   var PLANNABLE = /\b(project|essay|paper|report|exam|test|quiz|midterm|final|presentation|assignment|thesis|dissertation|deck|talk|lab|application|portfolio)\b/i;
   var PLAN_VERB = /\b(plan|prepare|prep|study|revise|get (it|this) done|make sure|help me|work on|finish|break (it|this) down|schedule)\b/i;
   var DATEISH = /\b(due|deadline|by|before|on)\b|\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|next week)\b|\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b|\b\d{4}-\d{2}-\d{2}\b/i;
@@ -339,15 +357,18 @@
       }
     },
     {
+      /* "find time for X" and the looser "find some time tomorrow for X". */
       id: 'schedule_task',
-      test: /\b(find time for|make time for|block (out )?time for|set aside time for)\b/i,
+      test: /\b(find|make|block(?:\s+out)?|set aside|get)\s+(?:some\s+|me\s+)?time\b[^.?]*\bfor\b/i,
       steps: function (text) {
         var minutes = parseDuration(text);
-        var deadline = parseDeadlinePhrase(text);
+        var deadline = parseDeadlinePhrase(text) || parseWhen(text);
         var work = subject(text, [
-          /\b(can you |please )?(find|make|block(?: out)?|set aside)\s+(some\s+)?time\s+(for|to)\b/i,
+          /^.*?\bfor\s+/i,                       // everything up to "for" is the request
           /\b\d+(\.\d+)?\s*(hours?|hrs?|h|minutes?|mins?)\b/i,
-          /\b(before|by|due|until)\s+.*$/i, /\bmy\b/i
+          /\b(before|by|due|until)\s+.*$/i,
+          /\b(tomorrow|today|tonight|this week|next week)\b/i,
+          /\bmy\b/i
         ]);
         var args = { work: work };
         if (minutes) args.totalMinutes = minutes;
@@ -465,14 +486,6 @@
       }
     },
     {
-      id: 'agenda',
-      test: /\b(agenda|schedule|calendar|what('?s| is| are)? (on|happening|scheduled)|what do i have|my day|what am i doing|plans? for)\b/i,
-      steps: function (text) {
-        var when = parseWhen(text) || 'today';
-        return [{ text: 'Read the agenda for ' + when, tool: 'calendar.get_day', args: { date: when } }];
-      }
-    },
-    {
       id: 'plan_week',
       test: /\b(plan|schedule|sort out|map out|organi[sz]e)\s+(out\s+)?(my\s+|the\s+)?week\b/i,
       steps: function () {
@@ -485,6 +498,16 @@
       steps: function (text) {
         var when = parseWhen(text) || 'today';
         return [{ text: 'Plan ' + when, tool: 'plan.day', args: { date: when } }];
+      }
+    },
+    {
+      /* "my schedule" is a noun; a sentence-initial "Schedule…" is a verb and
+         belongs to creating something, not to reading the day back. */
+      id: 'agenda',
+      test: /\b(agenda|(?:my|the|your)\s+schedule|calendar|what('?s| is| are)? (on|happening|scheduled)|what do i have|my day|what am i doing|plans? for)\b/i,
+      steps: function (text) {
+        var when = parseWhen(text) || 'today';
+        return [{ text: 'Read the agenda for ' + when, tool: 'calendar.get_day', args: { date: when } }];
       }
     },
     {
@@ -517,15 +540,19 @@
     },
     {
       id: 'create',
-      test: /^\s*(add|create|new|book|set up|put|remind me to|i need to|i have to|i must)\b/i,
+      test: POLITE_CREATE,
       steps: function (text) {
         var body = subject(text, [
-          /^\s*(add|create|new|book|set up|put|remind me to|i need to|i have to|i must)\b/i,
-          /\bto (my|the) (calendar|list|schedule)\b/i
+          POLITE_CREATE,
+          /\b(on|to|in)\s+(my|the)\s+(calendar|list|schedule)\b/i,
+          /^\s*(a|an|the)\s+/i          // "stick a dentist appointment" → "dentist appointment"
         ]);
         if (!body) return [{ text: 'Nothing to add' }];
         var type = 'task';
         try { type = NLP.parse(body, { settings: S.settings() }).type || 'task'; } catch (err) { /* default */ }
+        // "put it on my calendar" asks for a calendar entry, whatever the
+        // parser would otherwise have guessed from the wording.
+        if (/\b(on|in|to)\s+(my|the)\s+calendar\b/i.test(text) && type === 'task') type = 'event';
         var tool = type === 'event' ? 'calendar.create_event'
           : type === 'deadline' ? 'calendar.create_deadline'
             : type === 'note' ? 'calendar.create_note' : 'calendar.create_task';
@@ -589,14 +616,27 @@
       .trim();
     if (!text) return { steps: [], confidence: 0.1, clarify: 'What would you like me to look at?' };
 
+    // Some shapes are unmistakably social — a greeting, good news, a thank-you.
+    // They are checked before the intent table because the table is loose
+    // enough to catch them by accident, and treating "hey" as a search is
+    // exactly the failure this routing exists to prevent.
+    if (SOCIAL.test(text) && !POLITE_CREATE.test(text)) {
+      return { mode: 'conversation', confidence: 0.9, matched: ['social'] };
+    }
+
     var steps = [];
     var matched = [];
+    var unmatched = [];
 
     segments(text).forEach(function (segment) {
       // A whole-utterance project ask must not be split apart by a stray
       // "and" — check it against the full text before per-segment matching.
-      var intents = /^\s*(add|create|new|book|set up|put)\b/i.test(segment)
-        ? [byId('recurring'), byId('create')].concat(INTENTS)
+      // A polite imperative settles that this is a request, but not *which*
+      // request: "schedule two hours of studying" is session-spreading, not a
+      // task called "two hours of studying". Let the specific planners look
+      // first, then fall through to plain creation.
+      var intents = POLITE_CREATE.test(segment)
+        ? [byId('recurring'), byId('sessions'), byId('plan_week'), byId('plan_day'), byId('create')].concat(INTENTS)
         : INTENTS;
 
       for (var i = 0; i < intents.length; i++) {
@@ -606,15 +646,14 @@
           return;
         }
       }
-
-      // Nothing matched. Dropping the segment would answer half a compound
-      // question silently, so fall back to a search over the user's own data.
-      steps.push({
-        text: 'Search everything for “' + segment + '”',
-        tool: 'calendar.search', args: { query: segment, limit: 6 }
-      });
-      matched.push('fallback');
+      unmatched.push(segment);
     });
+
+    // Nothing here is a request to do something, so this is a conversation.
+    // There is no "command not recognised" branch — that was the bug.
+    if (!steps.length) {
+      return { mode: 'conversation', confidence: 0.8, matched: ['conversation'] };
+    }
 
     // A whole-text project match beats a set of fragments every time.
     var projectIntent = byId('project');
@@ -634,8 +673,10 @@
 
     return {
       steps: steps,
-      confidence: matched.indexOf('fallback') >= 0 ? 0.45 : 0.86,
-      matched: matched
+      confidence: 0.86,
+      matched: matched,
+      // Part of a compound message was chat, part was a request. Say both.
+      aside: unmatched.length ? unmatched.join(' ') : null
     };
   };
 

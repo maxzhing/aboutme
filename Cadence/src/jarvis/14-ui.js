@@ -93,6 +93,19 @@
     return row.childNodes.length ? row : null;
   }
 
+  function chipRow(chips) {
+    if (!chips || !chips.length) return null;
+    var row = D.h('div.jv-chips');
+    chips.slice(0, 3).forEach(function (c) {
+      if (!c || !c.label) return;
+      row.appendChild(D.h('button.jv-chip', {
+        type: 'button',
+        onclick: function () { submit(c.ask); }
+      }, [D.icon('arrowRight', 11), D.h('span', { text: c.label })]));
+    });
+    return row.childNodes.length ? row : null;
+  }
+
   function refIcon(kind) {
     return {
       event: 'calendar', task: 'checkSquare', deadline: 'flag', note: 'note',
@@ -342,8 +355,17 @@
           block.appendChild(proposalCard(entry, turn, index));
         });
 
-        var trace = traceBlock(run.trace, 'turn' + i);
-        if (trace) block.appendChild(trace);
+        // One-tap follow-ups that run a real command — how a conversation
+        // turns into calendar work without a mode switch.
+        var chips = chipRow(run.chips);
+        if (chips) block.appendChild(chips);
+
+        // A plain chat turn does not need a reasoning trace; showing "5 steps"
+        // for "hey" is noise. Keep it for work that actually did something.
+        if (run.mode !== 'conversation') {
+          var trace = traceBlock(run.trace, 'turn' + i);
+          if (trace) block.appendChild(trace);
+        }
       }
 
       container.appendChild(block);
@@ -616,6 +638,64 @@
     return panel;
   }
 
+  /* Connecting a model is what turns JARVIS from "good at your calendar and
+     honest about the rest" into a general assistant. It is off until you fill
+     this in, and the panel says plainly what turning it on means. */
+  function modelPanel() {
+    var a = assistant();
+    var cfg = {};
+    try { cfg = Object.assign({}, S.settings().jarvisRemote || {}); } catch (err) { cfg = {}; }
+
+    var panel = D.h('div.jv-panel');
+    panel.appendChild(D.h('h3.jv-panel__title', { text: 'Language model' }));
+
+    var live = a.remote && a.remote.available();
+    panel.appendChild(D.h('p.jv-panel__note', {
+      text: live
+        ? 'Connected. JARVIS can answer general questions and chat freely. Calendar changes still go through its own tools, so it cannot invent an event.'
+        : 'Not connected. JARVIS handles your calendar and everyday conversation on its own, and says so plainly when a question needs knowledge it does not have. Nothing leaves this browser until you connect a model here.'
+    }));
+
+    function save(patch) {
+      Object.assign(cfg, patch);
+      S.setSetting('jarvisRemote', cfg);
+      a.refreshRemote();
+      renderAll();
+    }
+
+    var enable = D.h('input', { type: 'checkbox', checked: !!cfg.enabled });
+    enable.addEventListener('change', function () { save({ enabled: enable.checked }); });
+    panel.appendChild(D.h('label.jv-switch', [
+      enable, D.h('span', { text: 'Use a language model for conversation' })
+    ]));
+
+    var form = D.h('div.jv-form');
+    [
+      { key: 'flavour', label: 'Provider', placeholder: 'anthropic / openai / ollama' },
+      { key: 'endpoint', label: 'Endpoint', placeholder: 'https://api.anthropic.com/v1/messages' },
+      { key: 'model', label: 'Model', placeholder: 'claude-sonnet-4-5' },
+      { key: 'apiKey', label: 'API key', placeholder: 'stored in this browser only', password: true }
+    ].forEach(function (f) {
+      var input = D.h('input.jv-form__input', {
+        type: f.password ? 'password' : 'text',
+        value: cfg[f.key] || '',
+        placeholder: f.placeholder,
+        'aria-label': f.label
+      });
+      input.addEventListener('change', function () {
+        var patch = {};
+        patch[f.key] = input.value.trim();
+        save(patch);
+      });
+      form.appendChild(D.h('label.jv-form__row', [
+        D.h('span.jv-form__label', { text: f.label }), input
+      ]));
+    });
+    panel.appendChild(form);
+
+    return panel;
+  }
+
   function controlsPanel() {
     var a = assistant();
     var panel = D.h('div.jv-panel');
@@ -743,7 +823,7 @@
 
   function fillPanels(host) {
     D.clear(host);
-    D.append(host, [insightsPanel(), statusPanel(), memoryPanel(), toolsPanel(), controlsPanel()]);
+    D.append(host, [insightsPanel(), statusPanel(), memoryPanel(), modelPanel(), toolsPanel(), controlsPanel()]);
   }
 
   /* ---------------------------------------------------------------- dock */

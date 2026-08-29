@@ -1153,6 +1153,22 @@
   /* Create an event / task / deadline from natural language. */
   function createFromText(ctx, text, forceType) {
     var parsed = NLP.parse(text, { settings: S.settings() });
+
+    // The parser only materialises start/end for text it read as an event.
+    // When the *caller* forces 'event' ("put it on my calendar"), those fields
+    // can be missing, and toPayload would reach T.iso(undefined) and die as
+    // "Invalid time value" — so repair the parse before converting it.
+    if (forceType === 'event' && !parsed.startWall) {
+      if (parsed.dueWall) {
+        parsed.startWall = T.startOfDay(parsed.dueWall);
+        parsed.endWall = T.endOfDay(parsed.dueWall);
+        parsed.allDay = true;
+      } else {
+        // No date anywhere, so a task is the honest shape for it.
+        forceType = null;
+      }
+    }
+
     if (forceType) parsed.type = forceType;
     var type = parsed.type || 'task';
     var payload = NLP.toPayload(parsed);
@@ -1165,7 +1181,8 @@
     var detail;
     if (type === 'event') {
       var s = payload.start ? T.w(payload.start) : null;
-      detail = s ? DX.fmtDay(s) + ' at ' + (payload.allDay ? 'all day' : DX.fmtSpan(s, T.w(payload.end)))
+      detail = s
+        ? (payload.allDay ? DX.fmtDay(s) + ' · all day' : DX.fmtDay(s) + ' at ' + DX.fmtSpan(s, T.w(payload.end)))
         : 'No time detected';
     } else {
       detail = payload.due ? 'Due ' + DX.fmtDay(T.w(payload.due)) : 'No due date';

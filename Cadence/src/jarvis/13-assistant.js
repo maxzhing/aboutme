@@ -188,6 +188,83 @@
     }
   };
 
+  /* ---------------------------------------------------- the model path */
+
+  /* JARVIS's standing instructions. The first line is the whole point: work
+     out what the person means and answer it. Nothing here asks the model to
+     match a command, and nothing lets it claim it changed the calendar —
+     writes only ever happen through the verified tool pipeline. */
+  Assistant.prototype.systemPrompt = function () {
+    return [
+      'You are JARVIS, the assistant built into Cadence, a personal calendar and planner.',
+      '',
+      'Your primary objective is to understand what the user means and respond appropriately.',
+      'Do not require the user\'s message to correspond to a predefined command. If the message',
+      'is conversational, respond conversationally. If they ask for an action, say what you will',
+      'do. Never reply with "not detected", "unknown command", or anything of that shape.',
+      '',
+      'You are talking to someone about their life and their schedule. Be warm, brief and real.',
+      'Match their energy: if they are excited, be excited with them; if they are tired, do not',
+      'be relentlessly upbeat. Two or three sentences is usually right. Ask a follow-up when a',
+      'person naturally would.',
+      '',
+      'You have live access to their calendar, summarised below. Use it when it genuinely helps',
+      'and ignore it when it does not — not every message is about scheduling.',
+      '',
+      'Important: the app performs calendar changes itself, through its own verified tools.',
+      'Never claim to have created, moved or deleted anything. If they want something scheduled,',
+      'say so plainly and the app will offer them the action.'
+    ].join('\n');
+  };
+
+  /* A compact, current picture of the calendar plus the recent conversation. */
+  Assistant.prototype.chatContext = function (message) {
+    var lines = [];
+    try {
+      var now = T.nowWall();
+      var counts = Q.counts();
+      var today = Q.eventsOnDay(now, { ignoreLayers: true })
+        .filter(function (e) { return !e.allDay; })
+        .sort(function (a, b) { return a.startWall - b.startWall; });
+
+      lines.push('Today is ' + T.fmtDateLong(now) + ', the time is ' + T.fmtTime(now, S.settings().use24Hour) + '.');
+      lines.push(today.length
+        ? 'Today: ' + today.map(function (e) {
+            return e.title + ' at ' + T.fmtTime(e.startWall, S.settings().use24Hour);
+          }).join('; ')
+        : 'Nothing scheduled today.');
+      if (counts.overdue) lines.push(counts.overdue + ' task(s) overdue.');
+
+      var deadlines = Q.upcomingDeadlines(3, now);
+      if (deadlines.length) {
+        lines.push('Next deadlines: ' + deadlines.map(function (d) {
+          return d.title + ' (' + T.relativeDay(T.w(d.due)) + ')';
+        }).join('; '));
+      }
+
+      var facts = this.memoryEnabled ? this.memory.semantic.retrieve(message, 3, false) : [];
+      if (facts.length) {
+        lines.push('Things you have been told about them: ' +
+          facts.map(function (h) { return h.doc.text; }).join(' | '));
+      }
+    } catch (err) {
+      lines.push('(calendar context unavailable)');
+    }
+
+    var recent = this.conversation.slice(-6).map(function (m) {
+      return (m.role === 'user' ? 'User: ' : 'You: ') + m.text;
+    });
+
+    return [
+      'CALENDAR CONTEXT',
+      lines.join('\n'),
+      '',
+      recent.length ? 'RECENT CONVERSATION\n' + recent.join('\n') : '',
+      '',
+      'Their latest message: ' + message
+    ].filter(Boolean).join('\n');
+  };
+
   /* ------------------------------------------------------------- memory */
 
   Assistant.prototype.remember = function (text, meta) {

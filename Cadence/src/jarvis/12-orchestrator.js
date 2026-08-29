@@ -130,6 +130,13 @@
     var planRequest = JV.message('orchestrator', this.planner.name, K.REQUEST, goal, { context: context });
 
     return this.planner.handle(planRequest).then(function (planMsg) {
+      // Conversation, not a command. Answer it and stop — building a task tree
+      // for "I'm exhausted" would be theatre.
+      if (planMsg.payload.conversation) {
+        push('understand', 'Read as conversation, not a command', planMsg.confidence);
+        return self._converse(goal, trace, push, options);
+      }
+
       var steps = planMsg.payload.steps || [];
       push('plan', steps.length + ' step' + (steps.length === 1 ? '' : 's') + ': ' +
         steps.map(function (s) { return s.text; }).join(' → '), planMsg.confidence);
@@ -174,6 +181,17 @@
 
         var hasFailures = tree.all().some(function (t) { return t.status === TaskStatus.FAILED; });
         var answer = self._compose(goal, tree);
+
+        // "I'm shattered but can you add gym tomorrow" is both a remark and a
+        // request. Answer the remark too rather than only transacting.
+        var chips = [];
+        if (planMsg.payload.aside) {
+          var side = JV.CONVERSE.respond(planMsg.payload.aside);
+          if (side.text) {
+            answer = side.text + ' ' + answer;
+            chips = side.chips || [];
+          }
+        }
         tree.root.status = hasFailures ? TaskStatus.FAILED : TaskStatus.DONE;
         tree.root.result = answer;
 
@@ -204,12 +222,69 @@
             proposals: proposals,
             results: results,
             reflection: report,
+            chips: chips,
             confidence: planMsg.confidence
           };
         });
       });
     });
   };
+
+  /* Answer conversationally. The local engine always has something to say; a
+     configured model takes over for open-domain talk it can genuinely handle. */
+  Orchestrator.prototype._converse = function (goal, trace, push, options) {
+    var self = this;
+    var reply = JV.CONVERSE.respond(goal);
+    var remote = JV.assistant && JV.assistant.remote;
+    var useModel = reply.deferToModel || (remote && remote.available() && shouldAskModel(reply));
+
+    function finish(text, chips, source) {
+      push('reply', source, 0.9);
+      if (self.longTerm) self.longTerm.recordEvent('Said: ' + goal, { kind: 'chat' });
+      return {
+        goal: goal, answer: text, status: 'delivered', mode: 'conversation',
+        tree: new TaskTree(new Task(goal, { status: TaskStatus.DONE })),
+        trace: trace, proposals: [], results: [],
+        chips: chips || [], confidence: 0.9
+      };
+    }
+
+    if (useModel && remote && remote.available()) {
+      push('model', 'Asking the configured model', 0.8);
+      return remote.complete(JV.assistant.systemPrompt(), JV.assistant.chatContext(goal))
+        .then(function (text) {
+          var out = String(text || '').trim();
+          return out
+            ? finish(out, reply.chips, 'Answered by the configured model')
+            : finish(reply.text || fallbackLine(), reply.chips, 'Answered locally');
+        })
+        .catch(function (err) {
+          // A model that is configured but unreachable must not become silence.
+          // Re-ask the local engine, this time without deferring, so the
+          // honest offline answer comes back rather than a generic shrug.
+          var local = JV.CONVERSE.respond(goal, { noDefer: true });
+          return finish(
+            (local.text || reply.text || fallbackLine()) +
+            '\n\n(I could not reach the configured model just now: ' +
+            (err && err.message ? err.message : 'connection failed') + '.)',
+            local.chips || reply.chips, 'Model unavailable, answered locally'
+          );
+        });
+    }
+
+    return Promise.resolve(finish(reply.text || fallbackLine(), reply.chips,
+      'Answered from the conversation engine · ' + reply.category));
+  };
+
+  /* The local engine handles social and calendar-adjacent talk well. Anything
+     that wants world knowledge is better served by a model when there is one. */
+  function shouldAskModel(reply) {
+    return reply.category === 'factual' || reply.category === 'smalltalk';
+  }
+
+  function fallbackLine() {
+    return 'I’m not sure I caught that — what would you like me to help with?';
+  }
 
   Orchestrator.prototype._executeTree = function (tree, context, push) {
     var self = this;

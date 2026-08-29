@@ -190,6 +190,30 @@
 .jv-ref:hover { border-color: var(--accent); color: var(--text); }
 .jv-ref span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* --------------------------------------------------------- reply chips */
+
+/* Offered follow-ups. Warm, because they are JARVIS's suggestion rather than
+   your data — and they run a real command when tapped. */
+.jv-chips { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+
+.jv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: inherit;
+  font-size: var(--fs-xs);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--jv-accent-line);
+  background: var(--jv-accent-soft);
+  color: var(--jv-accent);
+  cursor: pointer;
+  transition: background var(--speed) var(--ease), color var(--speed) var(--ease);
+}
+
+.jv-chip:hover { background: var(--jv-accent); color: var(--jv-on-accent); }
+.jv-chip svg { flex: 0 0 auto; }
+
 /* --------------------------------------------------------------- thread */
 
 .jv__thread {
@@ -836,6 +860,35 @@
 
 /* Touch has no hover, so the controls must not be hover-gated there. */
 @media (hover: none) { .jv-mem__actions { opacity: 1; } }
+
+/* -------------------------------------------------------- model config */
+
+.jv-form { display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-3); }
+
+.jv-form__row { display: flex; flex-direction: column; gap: 3px; }
+
+.jv-form__label {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.jv-form__input {
+  font: inherit;
+  font-size: var(--fs-sm);
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  min-width: 0;
+}
+
+.jv-form__input:focus {
+  outline: none;
+  border-color: var(--jv-accent);
+  box-shadow: 0 0 0 3px var(--jv-accent-soft);
+}
 
 /* ------------------------------------------------------------ insights */
 

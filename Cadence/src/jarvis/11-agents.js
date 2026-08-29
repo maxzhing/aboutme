@@ -81,6 +81,15 @@
     var plan = this.reasoner.plan(message.content, message.payload.context);
     this.confidence = JV.confidence(plan.confidence);
 
+    // Not every message is a request to do something. When it is not, the
+    // planner says so and the orchestrator answers instead of planning.
+    if (plan.mode === 'conversation') {
+      this.health = Health.OK;
+      return Promise.resolve(message.reply('conversation', K.RESULT, {
+        conversation: true, steps: [], matched: plan.matched, confidence: this.confidence
+      }));
+    }
+
     if (plan.clarify) {
       this.health = Health.OK;
       return Promise.resolve(message.reply(plan.clarify, K.CLARIFY, {
@@ -96,7 +105,7 @@
     return Promise.resolve(message.reply(
       plan.steps.map(function (s, i) { return (i + 1) + '. ' + s.text; }).join('\n'),
       K.RESULT,
-      { steps: plan.steps, matched: plan.matched, confidence: this.confidence }
+      { steps: plan.steps, matched: plan.matched, aside: plan.aside, confidence: this.confidence }
     ));
   };
 
