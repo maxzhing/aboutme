@@ -1380,6 +1380,240 @@
       }
     });
 
+    /* ============================================================= ideas */
+
+    def({
+      name: 'ideas.suggest',
+      description: 'Think of good things to do right now, from goals, free time and what is due.',
+      permission: 'calendar.read',
+      inputSchema: { minutes: { type: 'number' }, mood: { type: 'string' }, count: { type: 'number' } },
+      run: function (ctx, args) {
+        var result = JV.IDEAS.suggest({
+          minutes: args.minutes, mood: args.mood || null, count: args.count || 3
+        });
+
+        // §21: never invent what someone is into. Ask.
+        if (result.needsProfile) {
+          return {
+            kind: 'needs-profile',
+            headline: 'I can come up with much better ideas if I know what you are working on.',
+            lines: [
+              'Tell me a goal — “my goal is to get better at Java” — or a few things you are into.',
+              'I will remember them and use them from then on.'
+            ],
+            chips: [
+              { label: 'Just give me anything', ask: 'surprise me with anything' }
+            ]
+          };
+        }
+
+        if (!result.ideas.length) {
+          return {
+            kind: 'ideas', ideas: [],
+            headline: result.ctx.minutes < 10
+              ? 'You have only ' + DX.hours(result.ctx.minutes) + ' before your next thing — probably not worth starting something.'
+              : 'Nothing is coming to mind that fits. Tell me what you feel like and I will try again.',
+            lines: []
+          };
+        }
+
+        JV.IDEAS.lastOffered = result.ideas;
+        return {
+          kind: 'ideas', ideas: result.ideas, context: result.ctx,
+          headline: openingLine(result.ctx, result.ideas),
+          lines: result.ideas.map(function (i) {
+            return i.title + ' · ' + DX.hours(i.minutes) + ' · ' + i.difficulty;
+          })
+        };
+      }
+    });
+
+    def({
+      name: 'ideas.surprise',
+      description: 'Pick one interesting thing to do, deliberately away from the obvious.',
+      permission: 'calendar.read',
+      inputSchema: { minutes: { type: 'number' } },
+      run: function (ctx, args) {
+        var result = JV.IDEAS.surprise({ minutes: args.minutes });
+        if (result.needsProfile || !result.ideas.length) {
+          return {
+            kind: 'ideas', ideas: [],
+            headline: 'Give me a goal or a couple of interests and I can surprise you properly.',
+            lines: []
+          };
+        }
+        var idea = result.ideas[0];
+        JV.IDEAS.lastOffered = result.ideas;
+        return {
+          kind: 'ideas', ideas: result.ideas, context: result.ctx,
+          headline: 'You have about ' + DX.hours(result.ctx.minutes) + ' free. Here is something different: ' + idea.title,
+          lines: []
+        };
+      }
+    });
+
+    def({
+      name: 'ideas.schedule',
+      description: 'Put a suggested activity on the calendar.',
+      permission: 'calendar.write', mutates: true, lowRisk: true,
+      inputSchema: { which: { type: 'number' }, startNow: { type: 'boolean' }, minutes: { type: 'number' } },
+      run: function (ctx, args) {
+        var offered = JV.IDEAS.lastOffered || [];
+        if (!offered.length) throw new JV.ToolError('I have not suggested anything yet — ask me for an idea first.');
+        var idea = offered[Math.max(0, (args.which || 1) - 1)] || offered[0];
+        var minutes = args.minutes || idea.minutes;
+
+        var start;
+        if (args.startNow !== false) {
+          start = T.snap(T.addMinutes(DX.nowWall(), 2), 5);
+        } else {
+          var slots = SCHED.findTime(minutes, { days: 3, limit: 1 });
+          if (!slots.length) throw new JV.ToolError('No free slot of ' + DX.hours(minutes) + ' in the next few days.');
+          start = slots[0].start;
+        }
+
+        var payload = {
+          title: shortTitle(idea),
+          start: T.iso(start),
+          end: T.iso(T.addMinutes(start, minutes)),
+          calendarId: 'cal_personal',
+          type: 'block',
+          goalId: idea.goalId || null,
+          description: idea.title
+        };
+
+        var ev = A.createEvent(payload);
+        var v = DX.verifyEvents([ev.id]);
+        if (v.ok) {
+          JV.GOALS.record({
+            action: 'accepted', category: idea.category, domain: idea.domain,
+            goalId: idea.goalId || null, minutes: minutes, title: idea.title
+          });
+          learnPreference(idea.category, 1);
+          DX.setFocus('event', ev, payload.title);
+        }
+        return {
+          kind: 'written',
+          headline: v.ok
+            ? (args.startNow !== false
+              ? 'Right — ' + DX.hours(minutes) + ' on this, starting now. ' + idea.title
+              : 'Booked for ' + DX.fmtDay(start) + ' at ' + DX.fmtClock(start) + '. ' + idea.title)
+            : v.detail,
+          verified: v.ok,
+          refs: v.ok ? [DX.ref('event', ev, payload.title)] : [],
+          lines: []
+        };
+      }
+    });
+
+    def({
+      name: 'ideas.feedback',
+      description: 'Learn from what the user says about suggestions.',
+      permission: 'memory.write', mutates: true, lowRisk: true,
+      inputSchema: { signal: { type: 'string', required: true }, about: { type: 'string' } },
+      run: function (ctx, args) {
+        var offered = JV.IDEAS.lastOffered || [];
+        var last = offered[0];
+        var target = args.about || (last && (last.domain || last.category));
+        var profile = JV.GOALS.profile();
+
+        if (args.signal === 'never') {
+          if (!target) throw new JV.ToolError('Which kind of suggestion should I stop making?');
+          var blocked = (profile.blocked || []).concat([target]);
+          JV.GOALS.saveProfile({ blocked: blocked });
+          return { kind: 'written', verified: true, lines: [],
+            headline: 'Understood — I will not suggest ' + target + ' again. You can undo that in the JARVIS settings.' };
+        }
+        if (args.signal === 'more') {
+          learnPreference(target, 2);
+          return { kind: 'written', verified: true, lines: [],
+            headline: 'Noted — more like that.' };
+        }
+        if (args.signal === 'less') {
+          learnPreference(target, -2);
+          return { kind: 'written', verified: true, lines: [],
+            headline: 'Fair enough — fewer of those.' };
+        }
+        return { kind: 'written', verified: true, lines: [], headline: 'Noted.' };
+      }
+    });
+
+    def({
+      name: 'goals.add',
+      description: 'Remember a goal the user wants to work towards.',
+      permission: 'tasks.write', mutates: true, lowRisk: true,
+      inputSchema: {
+        name: { type: 'string', required: true },
+        frequency: { type: 'string' }, priority: { type: 'string' }, due: { type: 'string' }
+      },
+      run: function (ctx, args) {
+        var existing = JV.GOALS.find(args.name);
+        if (existing) {
+          return { kind: 'goals', goals: [existing], verified: true, lines: [],
+            headline: 'You already have that one — “' + existing.name + '”. I will keep it in mind.' };
+        }
+        var due = args.due ? DX.parseDay(args.due) : null;
+        var g = JV.GOALS.add(args.name, {
+          frequency: args.frequency || 'weekly',
+          priority: args.priority || 'medium',
+          due: due ? T.iso(due) : null
+        });
+        var saved = S.get('goals', g.id);
+        return {
+          kind: 'written', verified: !!saved,
+          refs: saved ? [DX.ref('goal', saved, g.name)] : [],
+          headline: saved
+            ? 'Got it — ' + g.name.toLowerCase() + ' is a goal now (' + g.domainLabel + '). I will factor it in when I suggest things.'
+            : 'That did not save.',
+          lines: []
+        };
+      }
+    });
+
+    def({
+      name: 'goals.list',
+      description: 'Show the goals and how much they have actually been worked on.',
+      permission: 'tasks.read',
+      inputSchema: {},
+      run: function () {
+        var goals = JV.GOALS.list();
+        if (!goals.length) {
+          return {
+            kind: 'goals', goals: [],
+            headline: 'You have not told me any goals yet.',
+            lines: ['Try “my goal is to get better at Java” — I will use it when suggesting things to do.']
+          };
+        }
+        return {
+          kind: 'goals', goals: goals,
+          refs: goals.slice(0, 6).map(function (g) { return DX.ref('goal', g.goal, g.name); }),
+          headline: goals.length + ' goal' + (goals.length === 1 ? '' : 's') + ' — activity over the last fortnight:',
+          lines: goals.map(function (g) {
+            var bar = JV.GOALS.activityBar(g);
+            return g.name + '  ' + bar.bar + '  ' + bar.label;
+          })
+        };
+      }
+    });
+
+    def({
+      name: 'goals.interests',
+      description: 'Remember what the user is into, so suggestions are not generic.',
+      permission: 'memory.write', mutates: true, lowRisk: true,
+      inputSchema: { interests: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        var list = String(args.interests).split(/,|\band\b|\+|;/).map(function (s) {
+          return s.trim().replace(/^(i (like|love|enjoy|am into)|really)\s+/i, '');
+        }).filter(function (s) { return s.length > 1 && s.length < 40; });
+        if (!list.length) throw new JV.ToolError('Tell me a few things — “music, chess and running”.');
+        var p = JV.GOALS.addInterests(list);
+        return {
+          kind: 'written', verified: true, lines: [],
+          headline: 'Noted: ' + list.join(', ') + '. I will use that when I am thinking of things for you to do.'
+        };
+      }
+    });
+
     /* ============================================================ memory */
 
     def({
@@ -1437,6 +1671,39 @@
   }
 
   /* ------------------------------------------------------------ helpers */
+
+  /* The opening line of a set of suggestions. It states the real situation
+     first — how long you have, what is coming — because that is what makes the
+     ideas feel considered rather than random. */
+  function openingLine(ctx, ideas) {
+    var bits = [];
+    if (ctx.minutes >= 10) {
+      bits.push('You have about ' + DX.hours(ctx.minutes) + ' free' +
+        (ctx.next ? ' before ' + ctx.next.title : ' right now') + '.');
+    }
+    if (ctx.workedTodayMinutes > 4 * 60) {
+      bits.push('You have already put in ' + DX.hours(ctx.workedTodayMinutes) + ' today, so no pressure.');
+    }
+    var top = ideas[0];
+    if (top && top.why) bits.push('Since ' + top.why.replace(/\.$/, '') + ':');
+    else bits.push('A few things that would fit:');
+    return bits.join(' ');
+  }
+
+  /* A calendar entry wants a short label, not the whole instruction. */
+  function shortTitle(idea) {
+    if (idea.goalName) return idea.goalName;
+    var first = String(idea.title).split(/[:.,—]/)[0].trim();
+    return first.length > 40 ? first.slice(0, 40).trim() + '…' : first;
+  }
+
+  function learnPreference(key, weight) {
+    if (!key) return;
+    var p = JV.GOALS.profile();
+    var liked = Object.assign({}, p.likedCategories || {});
+    liked[key] = Math.max(-5, Math.min(5, (liked[key] || 0) + weight));
+    JV.GOALS.saveProfile({ likedCategories: liked });
+  }
 
   function dayReport(day) {
     var events = Q.eventsOnDay(day, { ignoreLayers: true });

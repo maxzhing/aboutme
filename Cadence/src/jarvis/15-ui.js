@@ -218,6 +218,93 @@
     }[kind] || 'link';
   }
 
+  /* ------------------------------------------------------- idea cards */
+
+  var DIFFICULTY = {
+    easy: { dot: '🟢', label: 'Easy' },
+    moderate: { dot: '🟡', label: 'Moderate' },
+    challenge: { dot: '🔴', label: 'Challenge' }
+  };
+
+  var CATEGORY_ICON = {
+    project: 'folder', learning: 'book', creative: 'sparkle', fun: 'star',
+    physical: 'zap', social: 'users', rest: 'coffee'
+  };
+
+  /* One suggestion, with the reasoning shown and the actions attached. The
+     "why" line is the difference between a recommendation and a random pick. */
+  function ideaCard(idea, index, output) {
+    var diff = DIFFICULTY[idea.difficulty] || DIFFICULTY.moderate;
+    var card = D.h('div.jv-idea');
+
+    card.appendChild(D.h('div.jv-idea__head', [
+      D.h('span.jv-idea__icon', { 'aria-hidden': 'true' },
+        D.icon(CATEGORY_ICON[idea.category] || 'sparkle', 13)),
+      D.h('p.jv-idea__title', { text: idea.title })
+    ]));
+
+    var meta = D.h('div.jv-idea__meta', [
+      D.h('span.jv-idea__chip', { text: JV.DX.hours(idea.minutes) }),
+      D.h('span.jv-idea__chip', { text: diff.dot + ' ' + diff.label })
+    ]);
+    if (idea.goalName) {
+      meta.appendChild(D.h('span.jv-idea__chip.is-goal', { text: '🎯 ' + idea.goalName }));
+    }
+    if (idea.generic) meta.appendChild(D.h('span.jv-idea__chip', { text: 'not work' }));
+    card.appendChild(meta);
+
+    if (idea.why) card.appendChild(D.h('p.jv-idea__why', { text: 'Why this? ' + idea.why }));
+
+    card.appendChild(D.h('div.jv-idea__actions', [
+      D.h('button.btn.btn--primary.btn--sm', {
+        type: 'button',
+        onclick: function () { submit('start idea ' + (index + 1)); }
+      }, [D.icon('play', 13), D.h('span', { text: 'Start now' })]),
+      D.h('button.btn.btn--ghost.btn--sm', {
+        type: 'button',
+        onclick: function () { submit('schedule idea ' + (index + 1) + ' for later'); }
+      }, 'Schedule'),
+      D.h('button.btn.btn--ghost.btn--sm.jv-idea__skip', {
+        type: 'button',
+        onclick: function () { submit('give me a different idea'); }
+      }, 'Something else')
+    ]));
+
+    return card;
+  }
+
+  function ideasBlock(output) {
+    if (!output || output.kind !== 'ideas' || !output.ideas || !output.ideas.length) return null;
+    var wrap = D.h('div.jv-ideas');
+    output.ideas.forEach(function (idea, i) { wrap.appendChild(ideaCard(idea, i, output)); });
+    return wrap;
+  }
+
+  /* Goals with an honest activity indicator — how often, not how good. */
+  function goalsBlock(output) {
+    if (!output || output.kind !== 'goals' || !output.goals || !output.goals.length) return null;
+    var wrap = D.h('div.jv-goals');
+    output.goals.forEach(function (g) {
+      var bar = JV.GOALS.activityBar(g);
+      var row = D.h('div.jv-goal');
+      row.appendChild(D.h('div.jv-goal__top', [
+        D.h('span.jv-goal__name', { text: g.name }),
+        D.h('span.jv-goal__domain', { text: g.domainLabel })
+      ]));
+      var track = D.h('div.jv-goal__track');
+      track.appendChild(D.h('div.jv-goal__fill', {
+        style: { width: Math.round(bar.filled / bar.total * 100) + '%' }
+      }));
+      row.appendChild(track);
+      row.appendChild(D.h('span.jv-goal__note', { text: bar.label }));
+      wrap.appendChild(row);
+    });
+    wrap.appendChild(D.h('p.jv-goal__caveat', {
+      text: 'These bars show how often you have worked on something, not how good you are at it.'
+    }));
+    return wrap;
+  }
+
   /* --------------------------------------------------------- result card */
 
   function resultCard(output) {
@@ -448,7 +535,14 @@
         // Result cards for every step that produced structured output.
         (run.tree ? run.tree.children(run.tree.rootId) : []).forEach(function (task) {
           if (task.proposal) return;    // proposals render separately below
-          var card = resultCard(task.output);
+
+          // Ideas and goals get their own richer presentation.
+          var ideas = ideasBlock(task.output);
+          if (ideas) { block.appendChild(ideas); }
+          var goals = goalsBlock(task.output);
+          if (goals) { block.appendChild(goals); }
+
+          var card = (ideas || goals) ? null : resultCard(task.output);
           if (card) block.appendChild(card);
           // Anything the answer named is clickable straight through to the
           // real record, so JARVIS's replies navigate the calendar.
@@ -922,6 +1016,81 @@
     return panel;
   }
 
+  /* What JARVIS is allowed to suggest, and how often. §27: the user stays in
+     control of a feature whose whole job is to interrupt them with ideas. */
+  function suggestionsPanel() {
+    var p = JV.GOALS.profile();
+    var panel = D.h('div.jv-panel');
+    panel.appendChild(D.h('h3.jv-panel__title', { text: 'Suggestions' }));
+
+    function toggle(key, label, hint) {
+      var box = D.h('input', { type: 'checkbox', checked: p[key] !== false });
+      box.addEventListener('change', function () {
+        var patch = {}; patch[key] = box.checked;
+        JV.GOALS.saveProfile(patch);
+        renderAll();
+      });
+      return D.h('label.jv-switch', [box, D.h('span', { text: label + (hint ? ' — ' + hint : '') })]);
+    }
+
+    panel.appendChild(toggle('proactive', 'Offer ideas when I ask'));
+    panel.appendChild(toggle('goalSuggestions', 'Use my goals'));
+    panel.appendChild(toggle('useCalendar', 'Use my calendar', 'free time, deadlines'));
+
+    var freq = D.h('select.jv-form__input', { 'aria-label': 'How many ideas' });
+    [['low', 'One at a time'], ['medium', 'A few options'], ['high', 'Give me plenty']]
+      .forEach(function (o) {
+        var opt = D.h('option', { value: o[0], text: o[1] });
+        if ((p.frequency || 'medium') === o[0]) opt.selected = true;
+        freq.appendChild(opt);
+      });
+    freq.addEventListener('change', function () {
+      JV.GOALS.saveProfile({ frequency: freq.value });
+    });
+    panel.appendChild(D.h('div.jv-form', [
+      D.h('label.jv-form__row', [D.h('span.jv-form__label', { text: 'How many' }), freq])
+    ]));
+
+    panel.appendChild(D.h('p.jv-panel__note', { text: 'Kinds of thing to suggest:' }));
+    var types = D.h('div.jv-types');
+    [['project', 'Projects'], ['learning', 'Learning'], ['creative', 'Creative'],
+     ['physical', 'Active'], ['social', 'Social'], ['fun', 'Fun'], ['rest', 'Rest']]
+      .forEach(function (t) {
+        var on = !p.types || p.types.indexOf(t[0]) >= 0;
+        types.appendChild(D.h('button.jv-type' + (on ? '.is-on' : ''), {
+          type: 'button',
+          onclick: function () {
+            var all = ['project', 'learning', 'creative', 'physical', 'social', 'fun', 'rest'];
+            var current = p.types ? p.types.slice() : all.slice();
+            var i = current.indexOf(t[0]);
+            if (i >= 0) current.splice(i, 1); else current.push(t[0]);
+            // An empty allow-list would silence everything; read that as "all".
+            JV.GOALS.saveProfile({ types: current.length ? current : null });
+            renderAll();
+          }
+        }, t[1]));
+      });
+    panel.appendChild(types);
+
+    var blocked = p.blocked || [];
+    if (blocked.length) {
+      panel.appendChild(D.h('p.jv-panel__note', { text: 'Never suggesting: ' + blocked.join(', ') }));
+      panel.appendChild(D.h('button.btn.btn--ghost.btn--sm', {
+        type: 'button',
+        onclick: function () { JV.GOALS.saveProfile({ blocked: [] }); renderAll(); }
+      }, 'Clear that list'));
+    }
+
+    var interests = p.interests || [];
+    panel.appendChild(D.h('p.jv-panel__note', {
+      text: interests.length
+        ? 'Things you told me you are into: ' + interests.join(', ') + '.'
+        : 'I do not know what you are into yet — tell me and the ideas get much better.'
+    }));
+
+    return panel;
+  }
+
   function controlsPanel() {
     var a = assistant();
     var panel = D.h('div.jv-panel');
@@ -1065,8 +1234,8 @@
 
   function fillPanels(host) {
     D.clear(host);
-    D.append(host, [insightsPanel(), statusPanel(), voicePanel(), memoryPanel(),
-      modelPanel(), toolsPanel(), controlsPanel()]);
+    D.append(host, [insightsPanel(), statusPanel(), suggestionsPanel(), voicePanel(),
+      memoryPanel(), modelPanel(), toolsPanel(), controlsPanel()]);
   }
 
   /* ---------------------------------------------------------------- dock */

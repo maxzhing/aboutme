@@ -3331,6 +3331,100 @@ body::before {
 
 .jv-done__undo:hover { border-color: var(--text-3); }
 
+/* -------------------------------------------------------- idea cards */
+
+/* A suggestion is JARVIS's own proposal, so it sits in the warm register —
+   but stays a card rather than a full-bleed fill, because it is an offer and
+   not a change to your data. */
+.jv-ideas { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+.jv-idea {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--jv-accent-line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.jv-idea__head { display: flex; align-items: flex-start; gap: var(--sp-2); }
+
+.jv-idea__icon {
+  flex: 0 0 auto;
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  display: grid; place-items: center;
+  background: var(--jv-accent-soft);
+  color: var(--jv-accent);
+  margin-top: 1px;
+}
+
+.jv-idea__title {
+  margin: 0;
+  font-size: var(--fs-base);
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.jv-idea__meta { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.jv-idea__chip {
+  font-size: var(--fs-xs);
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-3);
+}
+
+.jv-idea__chip.is-goal { border-color: var(--jv-accent-line); color: var(--jv-accent); }
+
+.jv-idea__why {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  line-height: 1.45;
+}
+
+.jv-idea__actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.jv-idea__skip { color: var(--text-3); }
+
+/* ------------------------------------------------------------- goals */
+
+.jv-goals { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+.jv-goal { display: flex; flex-direction: column; gap: 4px; }
+
+.jv-goal__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-2); }
+.jv-goal__name { font-size: var(--fs-sm); font-weight: 600; color: var(--text); }
+.jv-goal__domain { font-size: var(--fs-xs); color: var(--text-3); }
+
+.jv-goal__track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.jv-goal__fill {
+  height: 100%;
+  background: var(--jv-accent);
+  border-radius: 999px;
+  transition: width var(--speed) var(--ease);
+}
+
+.jv-goal__note { font-size: var(--fs-xs); color: var(--text-3); }
+
+.jv-goal__caveat {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  line-height: 1.5;
+  font-style: italic;
+}
+
 /* --------------------------------------------------------- reply chips */
 
 /* Offered follow-ups. Warm, because they are JARVIS's suggestion rather than
@@ -4183,6 +4277,28 @@ body::before {
   .has-jv-dock .fab { display: none; }
 
   .jv__composer { padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* ------------------------------------------------------- type toggles */
+
+.jv-types { display: flex; flex-wrap: wrap; gap: 4px; margin-top: var(--sp-2); }
+
+.jv-type {
+  font: inherit;
+  font-size: var(--fs-xs);
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: border-color var(--speed) var(--ease), color var(--speed) var(--ease);
+}
+
+.jv-type.is-on {
+  border-color: var(--jv-accent-line);
+  background: var(--jv-accent-soft);
+  color: var(--jv-accent);
 }
 
   </style>
@@ -19594,6 +19710,733 @@ body::before {
 
 
 /* ========================================================================
+   js/jarvis/goals.js
+   ======================================================================== */
+/* Cadence · JARVIS — goals, interests and what has actually been happening.
+
+   Cadence already has goals: a name, a description, milestones, a due date and
+   a progress calculation. This file does not replace them. It layers on the
+   things JARVIS needs in order to *suggest* rather than merely display — what
+   kind of thing a goal is, how often you want to touch it, and when you last
+   actually did.
+
+   A note on progress. Cadence's own goalProgress counts completed milestones
+   and tasks, which is a real measure of a real thing. What this file adds is
+   an *activity* indicator — how recently and how often you have worked on
+   something. It is deliberately never presented as a skill level, because
+   nothing here can measure whether you got better at the piano. */
+(function (global) {
+  'use strict';
+
+  var JV = global.JV = global.JV || {};
+  var DX = JV.DX;
+
+  /* ------------------------------------------------------------ domains */
+
+  /* Domains exist so a suggestion can be concrete. "Practise piano" is a
+     placeholder; "polish the hardest passage, then record one attempt" is an
+     activity — and the difference is knowing that piano is music. */
+  var DOMAINS = [
+    { id: 'programming', test: /\b(java|python|javascript|typescript|c\+\+|c#|rust|go|swift|kotlin|cod(e|ing)|program|software|app|web ?dev|leetcode|algorithm)/i, label: 'programming' },
+    { id: 'robotics', test: /\b(robot|arduino|raspberry pi|electronics|circuit|cad|3d print|mechatronic)/i, label: 'robotics' },
+    { id: 'music', test: /\b(piano|guitar|violin|drums|bass|sing|vocal|music|compos|instrument|band|orchestra|cello|flute|sax)/i, label: 'music' },
+    { id: 'math', test: /\b(math|maths|algebra|calculus|geometry|trig|statistic|probability|number theory)/i, label: 'maths' },
+    { id: 'science', test: /\b(physic|chemis|biolog|science|lab|experiment|astronom|geolog)/i, label: 'science' },
+    { id: 'writing', test: /\b(writ|essay|journal|blog|story|novel|poet|screenplay|script)/i, label: 'writing' },
+    { id: 'art', test: /\b(draw|paint|sketch|art|design|illustrat|animat|photograph|film)/i, label: 'art' },
+    { id: 'language', test: /\b(spanish|french|german|japanese|mandarin|chinese|korean|italian|latin|language|vocab)/i, label: 'languages' },
+    { id: 'fitness', test: /\b(run|gym|fit|workout|exercise|swim|cycl|lift|strength|yoga|sport|football|basketball|tennis)/i, label: 'fitness' },
+    { id: 'reading', test: /\b(read|book|literature|novel)/i, label: 'reading' },
+    { id: 'college', test: /\b(college|university|sat|act|admission|application|scholarship|ucas|personal statement)/i, label: 'college prep' },
+    { id: 'exam', test: /\b(exam|test|revis|study for|midterm|final|gcse|a.?level|ap )/i, label: 'exam prep' }
+  ];
+
+  function domainFor(text) {
+    var s = String(text || '');
+    for (var i = 0; i < DOMAINS.length; i++) {
+      if (DOMAINS[i].test.test(s)) return DOMAINS[i].id;
+    }
+    return 'general';
+  }
+
+  function domainLabel(id) {
+    for (var i = 0; i < DOMAINS.length; i++) if (DOMAINS[i].id === id) return DOMAINS[i].label;
+    return 'general';
+  }
+
+  /* ------------------------------------------------------------ profile */
+
+  /* Interests and preferences live in Cadence's settings so they persist with
+     everything else and can be exported with a backup. */
+  function profile() {
+    var p = {};
+    try { p = S.settings().jarvisProfile || {}; } catch (err) { p = {}; }
+    return Object.assign({
+      interests: [],          // free text the user gave us — never invented
+      likedCategories: {},    // category -> score, learned from what they take
+      blocked: [],            // "never suggest this again"
+      proactive: true,
+      goalSuggestions: true,
+      useCalendar: true,
+      frequency: 'medium',    // low | medium | high
+      types: null,            // null = all; otherwise an allow-list
+      log: []                 // [{at, category, domain, goalId, action}]
+    }, p);
+  }
+
+  function saveProfile(patch) {
+    var next = Object.assign(profile(), patch);
+    // Keep the log from growing without bound.
+    if (next.log.length > 200) next.log = next.log.slice(-150);
+    S.setSetting('jarvisProfile', next);
+    return next;
+  }
+
+  function addInterests(list) {
+    var p = profile();
+    var seen = {};
+    var merged = p.interests.concat(list).map(function (s) {
+      return String(s).trim();
+    }).filter(function (s) {
+      var k = s.toLowerCase();
+      if (!s || seen[k]) return false;
+      seen[k] = true;
+      return true;
+    });
+    return saveProfile({ interests: merged });
+  }
+
+  /* Record what actually happened so balancing and variety have something to
+     work from. */
+  function record(entry) {
+    var p = profile();
+    p.log.push(Object.assign({ at: JV.nowTs() }, entry));
+    return saveProfile({ log: p.log });
+  }
+
+  function recentLog(days) {
+    var cutoff = JV.nowTs() - (days || 14) * 86400;
+    return profile().log.filter(function (e) { return e.at >= cutoff; });
+  }
+
+  /* ------------------------------------------------------------- goals */
+
+  /* A goal, plus the JARVIS metadata and the activity picture. */
+  function decorate(goal) {
+    var meta = goal.jarvis || {};
+    var domain = meta.domain || domainFor(goal.name + ' ' + (goal.description || ''));
+    var sessions = sessionsFor(goal, 14);
+    var last = sessions.length ? sessions[0].when : null;
+
+    return {
+      goal: goal,
+      id: goal.id,
+      name: goal.name,
+      description: goal.description || '',
+      domain: domain,
+      domainLabel: domainLabel(domain),
+      priority: meta.priority || 'medium',
+      frequency: meta.frequency || 'weekly',   // daily | weekly | occasional
+      notes: meta.notes || '',
+      due: goal.due ? T.w(goal.due) : null,
+      progress: safeProgress(goal.id),
+      sessions14: sessions.length,
+      sessions7: sessions.filter(function (s) {
+        return s.when >= T.addDays(DX.nowWall(), -7);
+      }).length,
+      lastWorked: last,
+      daysSince: last ? Math.max(0, T.diffDays(last, DX.nowWall())) : null
+    };
+  }
+
+  function safeProgress(id) {
+    try { return Q.goalProgress(id); } catch (err) { return { pct: 0, done: 0, total: 0 }; }
+  }
+
+  /* Everything on the calendar that looks like work on this goal: events
+     linked to it, events on its projects, and events whose title matches. */
+  function sessionsFor(goal, days) {
+    var out = [];
+    try {
+      var now = DX.nowWall();
+      var projectIds = S.all('projects')
+        .filter(function (p) { return p.goalId === goal.id; })
+        .map(function (p) { return p.id; });
+
+      Q.eventsInRange(T.addDays(now, -(days || 14)), now, { ignoreLayers: true })
+        .forEach(function (e) {
+          if (e.allDay) return;
+          var linked = e.goalId === goal.id || projectIds.indexOf(e.projectId) >= 0;
+          var named = DX.matchScore(e.title, goal.name) >= 0;
+          if (linked || named) out.push({ when: e.startWall, minutes: T.diffMinutes(e.startWall, e.endWall) });
+        });
+
+      // Ideas the user accepted count too, even if they were never blocked out.
+      recentLog(days || 14).forEach(function (entry) {
+        if (entry.goalId === goal.id && entry.action === 'accepted') {
+          out.push({ when: new Date(entry.at * 1000), minutes: entry.minutes || 0 });
+        }
+      });
+    } catch (err) { /* an empty picture is better than a broken one */ }
+
+    out.sort(function (a, b) { return b.when - a.when; });
+    return out;
+  }
+
+  function list() {
+    var goals = [];
+    try {
+      goals = S.all('goals').filter(function (g) { return !g.archived && g.status !== 'done'; });
+    } catch (err) { return []; }
+    return goals.map(decorate);
+  }
+
+  function find(name) {
+    var all = list();
+    var scored = all.map(function (g) { return { g: g, s: DX.matchScore(g.name, name) }; })
+      .filter(function (r) { return r.s >= 0; })
+      .sort(function (a, b) { return b.s - a.s; });
+    return scored.length ? scored[0].g : null;
+  }
+
+  /* Create a goal through Cadence's own action so it appears in the Goals view
+     like any other, then attach the JARVIS metadata. */
+  function add(name, opts) {
+    opts = opts || {};
+    var goal = A.createGoal({
+      name: name,
+      description: opts.description || '',
+      due: opts.due || null
+    });
+    var meta = {
+      domain: opts.domain || domainFor(name + ' ' + (opts.description || '')),
+      priority: opts.priority || 'medium',
+      frequency: opts.frequency || 'weekly',
+      notes: opts.notes || ''
+    };
+    S.update('goals', goal.id, { jarvis: meta }, 'Goal details');
+    return decorate(S.get('goals', goal.id));
+  }
+
+  function update(id, meta) {
+    var goal = S.get('goals', id);
+    if (!goal) return null;
+    S.update('goals', id, { jarvis: Object.assign({}, goal.jarvis || {}, meta) }, 'Goal details');
+    return decorate(S.get('goals', id));
+  }
+
+  /* How overdue a goal is for attention, given how often you said you wanted
+     to touch it. Drives balancing: three days of Java makes piano rise. */
+  function neglect(g) {
+    var target = g.frequency === 'daily' ? 1 : g.frequency === 'weekly' ? 3 : 7;
+    if (g.daysSince === null) return 1;              // never worked on
+    return Math.min(1.5, g.daysSince / target);
+  }
+
+  /* An honest activity indicator: sessions in the last fortnight against what
+     the stated frequency implies. Not a skill level, and never labelled one. */
+  function activityBar(g) {
+    var expected = g.frequency === 'daily' ? 12 : g.frequency === 'weekly' ? 4 : 2;
+    var ratio = Math.min(1, g.sessions14 / expected);
+    var filled = Math.round(ratio * 10);
+    return {
+      filled: filled,
+      total: 10,
+      bar: new Array(filled + 1).join('█') + new Array(10 - filled + 1).join('░'),
+      sessions: g.sessions14,
+      label: g.sessions14
+        ? g.sessions14 + ' session' + (g.sessions14 === 1 ? '' : 's') + ' in the last fortnight'
+        : 'nothing logged in the last fortnight'
+    };
+  }
+
+  JV.GOALS = {
+    list: list, find: find, add: add, update: update, decorate: decorate,
+    domainFor: domainFor, domainLabel: domainLabel, DOMAINS: DOMAINS,
+    profile: profile, saveProfile: saveProfile, addInterests: addInterests,
+    record: record, recentLog: recentLog,
+    neglect: neglect, activityBar: activityBar, sessionsFor: sessionsFor
+  };
+})(window);
+
+
+
+/* ========================================================================
+   js/jarvis/ideas.js
+   ======================================================================== */
+/* Cadence · JARVIS — the idea engine.
+
+   Answers "what would actually be a good thing to do right now?" rather than
+   "what command did you type?". It reads the goals, the free time, the time of
+   day, what is due, and what has already been done lately, then proposes a
+   handful of concrete things.
+
+   Three rules shape everything here.
+
+   · Concrete beats generic. "Practise piano" is a category, not an activity.
+     "Polish the hardest passage, then record one attempt and listen back" is
+     something a person can start. Every template is written to be startable.
+
+   · It does not only suggest work. A day with nothing on it is not a problem
+     to be solved. Fun, rest, outdoors and social ideas are first-class, and
+     when someone is plainly tired the ranking prefers them.
+
+   · It never invents what you like. With no goals and no stated interests it
+     asks instead of guessing, and the generic ideas it offers are not dressed
+     up as personal knowledge. */
+(function (global) {
+  'use strict';
+
+  var JV = global.JV = global.JV || {};
+  var DX = JV.DX;
+
+  var EASY = 'easy', MODERATE = 'moderate', CHALLENGE = 'challenge';
+
+  /* ---------------------------------------------------------- templates */
+
+  /* Each entry: minutes it wants, difficulty, and a phrase builder that takes
+     the goal so the idea names the actual subject. */
+  function T_(minutes, difficulty, build) {
+    return { minutes: minutes, difficulty: difficulty, build: build };
+  }
+
+  var TEMPLATES = {
+    programming: [
+      T_(10, EASY, function (g) { return 'Ten minutes: read someone else\u2019s ' + lang(g) + ' code and work out one thing they did that you would not have.'; }),
+
+      T_(15, EASY, function (g) { return 'Re-read your last ' + lang(g) + ' file and rename three things so they read better in six months.'; }),
+      T_(20, EASY, function (g) { return 'Do one small ' + lang(g) + ' kata: reverse a string, count word frequencies, or FizzBuzz without an if-statement.'; }),
+      T_(30, MODERATE, function (g) { return 'Write a tiny ' + lang(g) + ' program where the player guesses a random number, with hints for too high and too low.'; }),
+      T_(45, MODERATE, function (g) { return 'Build a small ' + lang(g) + ' command-line tool that does one useful thing — a unit converter, or a to-do list that saves to a file.'; }),
+      T_(45, MODERATE, function (g) { return 'Take something you wrote recently in ' + lang(g) + ' and add tests for the parts you are least sure about.'; }),
+      T_(90, CHALLENGE, function (g) { return 'Build a scheduling algorithm in ' + lang(g) + ': give it a list of tasks with durations and deadlines, and have it work out a sensible order.'; }),
+      T_(90, CHALLENGE, function (g) { return 'Write a tiny ' + lang(g) + ' interpreter for arithmetic — parse "3 + 4 * 2" and get 11.'; })
+    ],
+    robotics: [
+      T_(20, EASY, function () { return 'Sketch the movement your robot needs to make, and label which joint or wheel does each part.'; }),
+      T_(30, MODERATE, function () { return 'Write pseudocode for one behaviour — line following, obstacle avoidance — down to the individual sensor reads.'; }),
+      T_(60, MODERATE, function () { return 'Simulate your robot\'s movement on paper or in code: given wheel speeds, where does it end up after ten seconds?'; }),
+      T_(90, CHALLENGE, function () { return 'Prototype one subsystem end to end and write down every assumption it depends on.'; })
+    ],
+    music: [
+      T_(10, EASY, function () { return 'Ten minutes of scales or warm-ups \u2014 the boring bit that actually moves the needle.'; }),
+
+      T_(15, EASY, function (g) { return 'Slow practice: take the hardest four bars in your current piece and play them at half speed, five times clean.'; }),
+      T_(25, MODERATE, function (g) { return 'Polish the hardest passage you have, then record one attempt and listen back — you will hear things you cannot hear while playing.'; }),
+      T_(30, MODERATE, function (g) { return 'Learn something entirely by ear: pick a short phrase from a song you like and work it out without notation.'; }),
+      T_(45, MODERATE, function (g) { return 'Sight-read three pieces you have never seen, badly and without stopping. Sight-reading only improves by doing it.'; }),
+      T_(60, CHALLENGE, function (g) { return 'Compose an eight-bar melody with a constraint you have not used before — no repeated notes, or only three pitches.'; })
+    ],
+    math: [
+      T_(10, EASY, function () { return 'Two problems, properly, with working written out rather than in your head.'; }),
+
+      T_(15, EASY, function (g) { return 'Five quick problems on whatever you got wrong most recently — the topic you avoid is the one worth ten minutes.'; }),
+      T_(30, MODERATE, function (g) { return 'Take one theorem you use often and prove it from scratch without looking.'; }),
+      T_(30, MODERATE, function (g) { return 'Try five genuinely difficult problems on the topic you have been struggling with. Getting stuck is the point.'; }),
+      T_(60, CHALLENGE, function (g) { return 'Pick a problem you could not solve last time and work it properly, writing down where your reasoning breaks.'; })
+    ],
+    science: [
+      T_(20, EASY, function (g) { return 'Explain the concept you are studying out loud, as if to someone two years younger. The gaps show up immediately.'; }),
+      T_(40, MODERATE, function (g) { return 'Draw the full diagram from memory, then check it and mark what you missed.'; }),
+      T_(60, CHALLENGE, function (g) { return 'Design an experiment that would actually test the idea you are learning — including what result would prove you wrong.'; })
+    ],
+    writing: [
+      T_(15, EASY, function () { return 'Write 200 words about the most interesting thing that happened this week. No editing.'; }),
+      T_(30, MODERATE, function () { return 'Take a paragraph you wrote recently and cut it by a third without losing meaning.'; }),
+      T_(45, MODERATE, function () { return 'Write the opening of something with a constraint: no adjectives, or every sentence under eight words.'; }),
+      T_(90, CHALLENGE, function () { return 'Draft a full short piece start to finish, badly, without going back to fix anything.'; })
+    ],
+    art: [
+      T_(15, EASY, function () { return 'Twenty one-minute gesture sketches of whatever is in the room.'; }),
+      T_(30, MODERATE, function () { return 'Draw the same object three times: once from observation, once from memory, once from imagination.'; }),
+      T_(60, MODERATE, function () { return 'Work in a medium or palette you normally avoid — restriction does more for style than practice does.'; })
+    ],
+    language: [
+      T_(15, EASY, function (g) { return 'Ten minutes of vocabulary, then use five of the words in sentences about your actual day.'; }),
+      T_(30, MODERATE, function (g) { return 'Watch something short in the language with subtitles in the language, not in English.'; }),
+      T_(45, CHALLENGE, function (g) { return 'Write a diary entry about today entirely in the language, then look up only the words you genuinely could not get around.'; })
+    ],
+    fitness: [
+      T_(20, EASY, function () { return 'Twenty minutes of movement you actually enjoy. It does not have to be a workout to count.'; }),
+      T_(40, MODERATE, function () { return 'A proper session with a warm-up and something you have been avoiding.'; }),
+      T_(60, CHALLENGE, function () { return 'Go longer or harder than usual, and write down afterwards what your limit actually was.'; })
+    ],
+    reading: [
+      T_(20, EASY, function () { return 'Twenty pages of whatever you are part-way through. No phone in the room.'; }),
+      T_(45, MODERATE, function () { return 'Read a chapter and write three sentences on what you would argue with.'; })
+    ],
+    college: [
+      T_(20, EASY, function () { return 'Write down three things you have actually done that you would want an admissions officer to know.'; }),
+      T_(45, MODERATE, function () { return 'Draft one paragraph of a personal statement about a specific moment rather than a general quality.'; }),
+      T_(60, CHALLENGE, function () { return 'Take a full timed section of a practice test under real conditions, then mark it honestly.'; })
+    ],
+    exam: [
+      T_(15, EASY, function (g) { return 'Ten flashcards on the topic you keep forgetting.'; }),
+      T_(30, MODERATE, function (g) { return 'Do a past-paper question under time, then mark it against the scheme yourself.'; }),
+      T_(60, CHALLENGE, function (g) { return 'Full past paper section under exam conditions — timed, no notes.'; })
+    ],
+    general: [
+      T_(10, EASY, function (g) { return 'Ten minutes on ' + g.name.toLowerCase() + '. Short is fine \u2014 starting is the hard part.'; }),
+
+      T_(20, EASY, function (g) { return 'Twenty focused minutes on ' + g.name.toLowerCase() + ', with the phone in another room.'; }),
+      T_(45, MODERATE, function (g) { return 'A proper session on ' + g.name.toLowerCase() + ' — pick the part you have been putting off.'; }),
+      T_(90, CHALLENGE, function (g) { return 'A long block on ' + g.name.toLowerCase() + '. Decide the one outcome before you start.'; })
+    ]
+  };
+
+  /* Pull a language name out of a programming goal so the idea says "Java"
+     rather than "programming". */
+  function lang(g) {
+    var m = String(g.name + ' ' + (g.description || ''))
+      .match(/\b(java|python|javascript|typescript|c\+\+|c#|rust|go|swift|kotlin|ruby|php|sql|html|css)\b/i);
+    if (!m) return 'code';
+    var word = m[1];
+    return word.length <= 3 ? word.toUpperCase() : word.charAt(0).toUpperCase() + word.slice(1);
+  }
+
+  /* Ideas that have nothing to do with goals. These are not personalised and
+     are not pretending to be — they exist so JARVIS is not a productivity
+     robot, which is a real failure mode for something living in a calendar. */
+  var NON_GOAL = [
+    { category: 'rest', minutes: 10, difficulty: EASY, text: 'Ten minutes away from a screen. Stand up, look out of a window, drink something.' },
+    { category: 'fun', minutes: 10, difficulty: EASY, text: 'One quick puzzle \u2014 a crossword clue, a chess puzzle, a riddle.' },
+    { category: 'physical', minutes: 10, difficulty: EASY, text: 'Ten minutes of moving about. Stairs, a lap of the block, anything.' },
+    { category: 'fun', minutes: 15, difficulty: EASY, text: 'Take a logic puzzle that gets harder as you go — start with an easy one and keep going until you are stuck.' },
+    { category: 'fun', minutes: 30, difficulty: EASY, text: 'Play something you have not played in ages. Not a productive choice, and that is the point.' },
+    { category: 'fun', minutes: 20, difficulty: EASY, text: 'Find the strangest Wikipedia article you can get to in six clicks from a topic you like.' },
+    { category: 'physical', minutes: 25, difficulty: EASY, text: 'Go for a walk and listen to something you have been meaning to get to.' },
+    { category: 'physical', minutes: 15, difficulty: EASY, text: 'Get outside for fifteen minutes without your phone out. It resets more than it sounds like it should.' },
+    { category: 'social', minutes: 30, difficulty: EASY, text: 'Message or ring someone you have not spoken to in a while. No agenda.' },
+    { category: 'social', minutes: 45, difficulty: EASY, text: 'Play something with someone else — a game, a call, anything with a second person in it.' },
+    { category: 'creative', minutes: 30, difficulty: MODERATE, text: 'Make something small with no purpose: a drawing, a playlist with a rule, a very short story.' },
+    { category: 'creative', minutes: 20, difficulty: EASY, text: 'Reorganise something you look at every day so it annoys you less.' },
+    { category: 'rest', minutes: 30, difficulty: EASY, text: 'Genuinely rest. Put something on you enjoy and do not multitask through it.' },
+    { category: 'rest', minutes: 20, difficulty: EASY, text: 'Do nothing in particular for twenty minutes. Free time is not a gap to be filled.' },
+    { category: 'learning', minutes: 20, difficulty: EASY, text: 'Watch one good explainer on something you know nothing about and could not have searched for.' }
+  ];
+
+  /* ------------------------------------------------------------ context */
+
+  function context(opts) {
+    opts = opts || {};
+    var now = DX.nowWall();
+    var profile = JV.GOALS.profile();
+    var goals = JV.GOALS.list();
+
+    var available = opts.minutes;
+    var next = null;
+    if (available === undefined || available === null) {
+      try {
+        var whatNow = SCHED.whatNow(now);
+        available = whatNow.usable || 0;
+        next = whatNow.next || null;
+      } catch (err) { available = 60; }
+    }
+
+    var hour = now.getHours();
+    var deadlines = [];
+    try {
+      deadlines = Q.upcomingDeadlines(5, now).filter(function (d) {
+        return T.diffDays(now, T.w(d.due)) <= 5;
+      });
+    } catch (err) { /* none */ }
+
+    var doneToday = [];
+    try {
+      doneToday = Q.eventsOnDay(now, { ignoreLayers: true })
+        .filter(function (e) { return !e.allDay && e.endWall <= now; });
+    } catch (err) { /* none */ }
+
+    return {
+      now: now,
+      minutes: Math.max(0, available),
+      next: next,
+      hour: hour,
+      partOfDay: hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : hour < 22 ? 'evening' : 'night',
+      weekend: now.getDay() === 0 || now.getDay() === 6,
+      goals: goals,
+      profile: profile,
+      deadlines: deadlines,
+      doneToday: doneToday,
+      workedTodayMinutes: doneToday.reduce(function (a, e) {
+        return a + T.diffMinutes(e.startWall, e.endWall);
+      }, 0),
+      recent: JV.GOALS.recentLog(14),
+      mood: opts.mood || null            // 'fun' | 'productive' | 'gentle'
+    };
+  }
+
+  /* ---------------------------------------------------------- generate */
+
+  function generate(ctx) {
+    var out = [];
+
+    ctx.goals.forEach(function (g) {
+      var pool = TEMPLATES[g.domain] || TEMPLATES.general;
+      pool.forEach(function (t) {
+        out.push({
+          id: JV.uid('idea'),
+          title: t.build(g),
+          minutes: t.minutes,
+          difficulty: t.difficulty,
+          category: categoryForDomain(g.domain),
+          goalId: g.id,
+          goalName: g.name,
+          domain: g.domain,
+          neglect: JV.GOALS.neglect(g),
+          priority: g.priority
+        });
+      });
+    });
+
+    // Work that is genuinely due soon deserves a place in the list.
+    ctx.deadlines.forEach(function (d) {
+      var days = T.diffDays(ctx.now, T.w(d.due));
+      out.push({
+        id: JV.uid('idea'),
+        title: 'Put ' + (ctx.minutes >= 45 ? '45 minutes' : 'a short session') + ' into “' + d.title + '”.',
+        minutes: Math.min(45, Math.max(20, ctx.minutes)),
+        difficulty: MODERATE,
+        category: 'project',
+        deadlineId: d.id,
+        urgency: Math.max(0, 5 - days),
+        domain: JV.GOALS.domainFor(d.title)
+      });
+    });
+
+    NON_GOAL.forEach(function (n) {
+      out.push({
+        id: JV.uid('idea'),
+        title: n.text,
+        minutes: n.minutes,
+        difficulty: n.difficulty,
+        category: n.category,
+        generic: true
+      });
+    });
+
+    return out;
+  }
+
+  function categoryForDomain(domain) {
+    if (domain === 'music' || domain === 'art' || domain === 'writing') return 'creative';
+    if (domain === 'fitness') return 'physical';
+    if (domain === 'programming' || domain === 'robotics') return 'project';
+    if (domain === 'reading') return 'learning';
+    return 'learning';
+  }
+
+  /* ------------------------------------------------------------ filter */
+
+  function filter(ideas, ctx) {
+    var blocked = ctx.profile.blocked || [];
+    var allowed = ctx.profile.types;
+
+    return ideas.filter(function (idea) {
+      // Never suggest something that cannot fit in the time actually available.
+      if (ctx.minutes > 0 && idea.minutes > ctx.minutes) return false;
+
+      // Things the user told us never to suggest again.
+      if (blocked.indexOf(idea.category) >= 0) return false;
+      if (idea.domain && blocked.indexOf(idea.domain) >= 0) return false;
+
+      // A preferred-types allow-list, when one has been set.
+      if (allowed && allowed.length && allowed.indexOf(idea.category) < 0) return false;
+
+      // Don't offer the same thing twice in a row.
+      var seen = (ctx.recent || []).filter(function (e) {
+        return e.title === idea.title && e.at > JV.nowTs() - 2 * 86400;
+      });
+      if (seen.length) return false;
+
+      // Late at night, a 90-minute challenge is not a kind suggestion.
+      if (ctx.hour >= 22 && idea.minutes > 45) return false;
+
+      return true;
+    });
+  }
+
+  /* -------------------------------------------------------------- rank */
+
+  function rank(ideas, ctx) {
+    var liked = ctx.profile.likedCategories || {};
+    var tiredish = ctx.workedTodayMinutes > 5 * 60 || ctx.hour >= 21;
+
+    ideas.forEach(function (idea) {
+      var score = 50;
+      var why = [];
+
+      // Time fit: something that uses the window well beats something that
+      // barely touches it.
+      if (ctx.minutes > 0) {
+        var fit = idea.minutes / ctx.minutes;
+        if (fit >= 0.5 && fit <= 1) score += 16;
+        else if (fit >= 0.3) score += 6;
+        // Offering a ten-minute idea into a two-hour gap wastes the gap. The
+        // penalty has to scale, or short ideas win every long window.
+        else score -= (0.3 - fit) * 90;
+      }
+
+      // Goals that have been left alone rise; goals hammered all week fall.
+      if (idea.neglect !== undefined) {
+        score += idea.neglect * 22;
+        if (idea.neglect >= 1) why.push('you have not touched ' + idea.goalName.toLowerCase() + ' in a while');
+        else if (idea.neglect < 0.4) score -= 12;
+      }
+
+      if (idea.priority === 'high' || idea.priority === 'critical') score += 8;
+
+      // A real deadline matters, but not so much that it drowns everything.
+      if (idea.urgency) {
+        score += idea.urgency * 7;
+        why.push('the deadline is close');
+      }
+
+      // What the user actually picks, over time.
+      score += (liked[idea.category] || 0) * 6;
+
+      // Somebody who has already worked five hours does not need a project.
+      if (tiredish) {
+        if (idea.category === 'rest' || idea.category === 'physical' || idea.category === 'fun') {
+          score += 18;
+          why.push('you have already put in a long day');
+        } else if (idea.category === 'project' || idea.category === 'learning') {
+          score -= 14;
+        }
+      }
+
+      // An explicit mood beats every inference above. "Something fun" means
+      // not-work: a music goal is creative, but it is still a goal, and
+      // offering it back is exactly the productivity-robot failure.
+      if (ctx.mood === 'fun') {
+        if (idea.generic && ['fun', 'social', 'rest', 'physical', 'creative'].indexOf(idea.category) >= 0) score += 60;
+        else if (idea.goalId || idea.deadlineId) score -= 60;
+        else score -= 20;
+      } else if (ctx.mood === 'productive') {
+        score += (['project', 'learning', 'creative'].indexOf(idea.category) >= 0) ? 35 : -25;
+      } else if (ctx.mood === 'gentle') {
+        score += (['rest', 'physical', 'social', 'fun'].indexOf(idea.category) >= 0) ? 40 : -30;
+      }
+
+      // Evenings and weekends bias away from grind, gently.
+      if (ctx.weekend && idea.category === 'project') score -= 6;
+      if (ctx.partOfDay === 'morning' && idea.difficulty === CHALLENGE) score += 6;
+
+      // A little noise so the same list is not returned every single time.
+      score += Math.random() * 6;
+
+      idea.score = score;
+      idea.why = why;
+    });
+
+    ideas.sort(function (a, b) { return b.score - a.score; });
+    return ideas;
+  }
+
+  /* Take the best few, but not five variations of the same thing. */
+  function diversify(ideas, count) {
+    var out = [];
+    var seenGoals = {};
+    var seenCategories = {};
+    var seenText = {};
+
+    ideas.forEach(function (idea) {
+      if (out.length >= count) return;
+      // Two goals in the same domain can produce word-for-word the same idea.
+      if (seenText[idea.title]) return;
+      var goalKey = idea.goalId || idea.deadlineId || ('generic:' + idea.category);
+      if (seenGoals[goalKey]) return;
+      seenText[idea.title] = true;
+      if ((seenCategories[idea.category] || 0) >= 2) return;
+      seenGoals[goalKey] = true;
+      seenCategories[idea.category] = (seenCategories[idea.category] || 0) + 1;
+      out.push(idea);
+    });
+
+    // Make sure at least one option is not work, unless the user asked for
+    // productivity specifically.
+    var hasBreak = out.some(function (i) {
+      return ['fun', 'rest', 'physical', 'social'].indexOf(i.category) >= 0;
+    });
+    if (!hasBreak) {
+      var relief = ideas.filter(function (i) {
+        return ['fun', 'rest', 'physical', 'social'].indexOf(i.category) >= 0;
+      })[0];
+      if (relief) out[out.length - 1] = relief;
+    }
+
+    return out;
+  }
+
+  /* -------------------------------------------------------------- entry */
+
+  function suggest(opts) {
+    opts = opts || {};
+    var ctx = context(opts);
+
+    // With nothing to go on, ask rather than invent a personality.
+    if (!ctx.goals.length && !(ctx.profile.interests || []).length && !opts.allowGeneric) {
+      return { needsProfile: true, ctx: ctx };
+    }
+
+    var ideas = diversify(rank(filter(generate(ctx), ctx), ctx), opts.count || 3);
+    ideas.forEach(function (idea) { idea.why = reason(idea, ctx); });
+    return { ideas: ideas, ctx: ctx };
+  }
+
+  /* One honest sentence about why this, now. */
+  function reason(idea, ctx) {
+    var bits = [];
+    if (idea.goalName && idea.neglect >= 1) {
+      var d = ctx.goals.filter(function (g) { return g.id === idea.goalId; })[0];
+      if (d && d.daysSince !== null) {
+        bits.push('you last worked on ' + idea.goalName.toLowerCase() + ' ' +
+          (d.daysSince === 0 ? 'today' : d.daysSince + ' day' + (d.daysSince === 1 ? '' : 's') + ' ago'));
+      } else {
+        bits.push('you have not logged any time on ' + idea.goalName.toLowerCase() + ' yet');
+      }
+    } else if (idea.urgency) {
+      bits.push('it is due soon');
+    } else if (idea.generic) {
+      bits.push('not everything has to be productive');
+    }
+    return bits.length ? bits.join(', and ') + '.' : '';
+  }
+
+  /* "Surprise me" — deliberately not the obvious top pick. */
+  function surprise(opts) {
+    opts = opts || {};
+    var result = suggest(Object.assign({}, opts, { count: 8, allowGeneric: true }));
+    if (result.needsProfile) return result;
+    var pool = result.ideas;
+    if (!pool.length) return { ideas: [], ctx: result.ctx };
+
+    // Prefer something away from whatever has dominated lately.
+    var recentDomains = {};
+    (result.ctx.recent || []).forEach(function (e) {
+      if (e.domain) recentDomains[e.domain] = (recentDomains[e.domain] || 0) + 1;
+    });
+    var fresh = pool.filter(function (i) { return !recentDomains[i.domain]; });
+    var chosen = (fresh.length ? fresh : pool.slice(1))[0] || pool[0];
+    chosen.surprise = true;
+    return { ideas: [chosen], ctx: result.ctx };
+  }
+
+  JV.IDEAS = {
+    suggest: suggest,
+    surprise: surprise,
+    context: context,
+    generate: generate,
+    filter: filter,
+    rank: rank,
+    TEMPLATES: TEMPLATES,
+    NON_GOAL: NON_GOAL
+  };
+})(window);
+
+
+
+/* ========================================================================
    js/jarvis/toolbelt.js
    ======================================================================== */
 /* Cadence · JARVIS — the tool belt.
@@ -20978,6 +21821,240 @@ body::before {
       }
     });
 
+    /* ============================================================= ideas */
+
+    def({
+      name: 'ideas.suggest',
+      description: 'Think of good things to do right now, from goals, free time and what is due.',
+      permission: 'calendar.read',
+      inputSchema: { minutes: { type: 'number' }, mood: { type: 'string' }, count: { type: 'number' } },
+      run: function (ctx, args) {
+        var result = JV.IDEAS.suggest({
+          minutes: args.minutes, mood: args.mood || null, count: args.count || 3
+        });
+
+        // §21: never invent what someone is into. Ask.
+        if (result.needsProfile) {
+          return {
+            kind: 'needs-profile',
+            headline: 'I can come up with much better ideas if I know what you are working on.',
+            lines: [
+              'Tell me a goal — “my goal is to get better at Java” — or a few things you are into.',
+              'I will remember them and use them from then on.'
+            ],
+            chips: [
+              { label: 'Just give me anything', ask: 'surprise me with anything' }
+            ]
+          };
+        }
+
+        if (!result.ideas.length) {
+          return {
+            kind: 'ideas', ideas: [],
+            headline: result.ctx.minutes < 10
+              ? 'You have only ' + DX.hours(result.ctx.minutes) + ' before your next thing — probably not worth starting something.'
+              : 'Nothing is coming to mind that fits. Tell me what you feel like and I will try again.',
+            lines: []
+          };
+        }
+
+        JV.IDEAS.lastOffered = result.ideas;
+        return {
+          kind: 'ideas', ideas: result.ideas, context: result.ctx,
+          headline: openingLine(result.ctx, result.ideas),
+          lines: result.ideas.map(function (i) {
+            return i.title + ' · ' + DX.hours(i.minutes) + ' · ' + i.difficulty;
+          })
+        };
+      }
+    });
+
+    def({
+      name: 'ideas.surprise',
+      description: 'Pick one interesting thing to do, deliberately away from the obvious.',
+      permission: 'calendar.read',
+      inputSchema: { minutes: { type: 'number' } },
+      run: function (ctx, args) {
+        var result = JV.IDEAS.surprise({ minutes: args.minutes });
+        if (result.needsProfile || !result.ideas.length) {
+          return {
+            kind: 'ideas', ideas: [],
+            headline: 'Give me a goal or a couple of interests and I can surprise you properly.',
+            lines: []
+          };
+        }
+        var idea = result.ideas[0];
+        JV.IDEAS.lastOffered = result.ideas;
+        return {
+          kind: 'ideas', ideas: result.ideas, context: result.ctx,
+          headline: 'You have about ' + DX.hours(result.ctx.minutes) + ' free. Here is something different: ' + idea.title,
+          lines: []
+        };
+      }
+    });
+
+    def({
+      name: 'ideas.schedule',
+      description: 'Put a suggested activity on the calendar.',
+      permission: 'calendar.write', mutates: true, lowRisk: true,
+      inputSchema: { which: { type: 'number' }, startNow: { type: 'boolean' }, minutes: { type: 'number' } },
+      run: function (ctx, args) {
+        var offered = JV.IDEAS.lastOffered || [];
+        if (!offered.length) throw new JV.ToolError('I have not suggested anything yet — ask me for an idea first.');
+        var idea = offered[Math.max(0, (args.which || 1) - 1)] || offered[0];
+        var minutes = args.minutes || idea.minutes;
+
+        var start;
+        if (args.startNow !== false) {
+          start = T.snap(T.addMinutes(DX.nowWall(), 2), 5);
+        } else {
+          var slots = SCHED.findTime(minutes, { days: 3, limit: 1 });
+          if (!slots.length) throw new JV.ToolError('No free slot of ' + DX.hours(minutes) + ' in the next few days.');
+          start = slots[0].start;
+        }
+
+        var payload = {
+          title: shortTitle(idea),
+          start: T.iso(start),
+          end: T.iso(T.addMinutes(start, minutes)),
+          calendarId: 'cal_personal',
+          type: 'block',
+          goalId: idea.goalId || null,
+          description: idea.title
+        };
+
+        var ev = A.createEvent(payload);
+        var v = DX.verifyEvents([ev.id]);
+        if (v.ok) {
+          JV.GOALS.record({
+            action: 'accepted', category: idea.category, domain: idea.domain,
+            goalId: idea.goalId || null, minutes: minutes, title: idea.title
+          });
+          learnPreference(idea.category, 1);
+          DX.setFocus('event', ev, payload.title);
+        }
+        return {
+          kind: 'written',
+          headline: v.ok
+            ? (args.startNow !== false
+              ? 'Right — ' + DX.hours(minutes) + ' on this, starting now. ' + idea.title
+              : 'Booked for ' + DX.fmtDay(start) + ' at ' + DX.fmtClock(start) + '. ' + idea.title)
+            : v.detail,
+          verified: v.ok,
+          refs: v.ok ? [DX.ref('event', ev, payload.title)] : [],
+          lines: []
+        };
+      }
+    });
+
+    def({
+      name: 'ideas.feedback',
+      description: 'Learn from what the user says about suggestions.',
+      permission: 'memory.write', mutates: true, lowRisk: true,
+      inputSchema: { signal: { type: 'string', required: true }, about: { type: 'string' } },
+      run: function (ctx, args) {
+        var offered = JV.IDEAS.lastOffered || [];
+        var last = offered[0];
+        var target = args.about || (last && (last.domain || last.category));
+        var profile = JV.GOALS.profile();
+
+        if (args.signal === 'never') {
+          if (!target) throw new JV.ToolError('Which kind of suggestion should I stop making?');
+          var blocked = (profile.blocked || []).concat([target]);
+          JV.GOALS.saveProfile({ blocked: blocked });
+          return { kind: 'written', verified: true, lines: [],
+            headline: 'Understood — I will not suggest ' + target + ' again. You can undo that in the JARVIS settings.' };
+        }
+        if (args.signal === 'more') {
+          learnPreference(target, 2);
+          return { kind: 'written', verified: true, lines: [],
+            headline: 'Noted — more like that.' };
+        }
+        if (args.signal === 'less') {
+          learnPreference(target, -2);
+          return { kind: 'written', verified: true, lines: [],
+            headline: 'Fair enough — fewer of those.' };
+        }
+        return { kind: 'written', verified: true, lines: [], headline: 'Noted.' };
+      }
+    });
+
+    def({
+      name: 'goals.add',
+      description: 'Remember a goal the user wants to work towards.',
+      permission: 'tasks.write', mutates: true, lowRisk: true,
+      inputSchema: {
+        name: { type: 'string', required: true },
+        frequency: { type: 'string' }, priority: { type: 'string' }, due: { type: 'string' }
+      },
+      run: function (ctx, args) {
+        var existing = JV.GOALS.find(args.name);
+        if (existing) {
+          return { kind: 'goals', goals: [existing], verified: true, lines: [],
+            headline: 'You already have that one — “' + existing.name + '”. I will keep it in mind.' };
+        }
+        var due = args.due ? DX.parseDay(args.due) : null;
+        var g = JV.GOALS.add(args.name, {
+          frequency: args.frequency || 'weekly',
+          priority: args.priority || 'medium',
+          due: due ? T.iso(due) : null
+        });
+        var saved = S.get('goals', g.id);
+        return {
+          kind: 'written', verified: !!saved,
+          refs: saved ? [DX.ref('goal', saved, g.name)] : [],
+          headline: saved
+            ? 'Got it — ' + g.name.toLowerCase() + ' is a goal now (' + g.domainLabel + '). I will factor it in when I suggest things.'
+            : 'That did not save.',
+          lines: []
+        };
+      }
+    });
+
+    def({
+      name: 'goals.list',
+      description: 'Show the goals and how much they have actually been worked on.',
+      permission: 'tasks.read',
+      inputSchema: {},
+      run: function () {
+        var goals = JV.GOALS.list();
+        if (!goals.length) {
+          return {
+            kind: 'goals', goals: [],
+            headline: 'You have not told me any goals yet.',
+            lines: ['Try “my goal is to get better at Java” — I will use it when suggesting things to do.']
+          };
+        }
+        return {
+          kind: 'goals', goals: goals,
+          refs: goals.slice(0, 6).map(function (g) { return DX.ref('goal', g.goal, g.name); }),
+          headline: goals.length + ' goal' + (goals.length === 1 ? '' : 's') + ' — activity over the last fortnight:',
+          lines: goals.map(function (g) {
+            var bar = JV.GOALS.activityBar(g);
+            return g.name + '  ' + bar.bar + '  ' + bar.label;
+          })
+        };
+      }
+    });
+
+    def({
+      name: 'goals.interests',
+      description: 'Remember what the user is into, so suggestions are not generic.',
+      permission: 'memory.write', mutates: true, lowRisk: true,
+      inputSchema: { interests: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        var list = String(args.interests).split(/,|\band\b|\+|;/).map(function (s) {
+          return s.trim().replace(/^(i (like|love|enjoy|am into)|really)\s+/i, '');
+        }).filter(function (s) { return s.length > 1 && s.length < 40; });
+        if (!list.length) throw new JV.ToolError('Tell me a few things — “music, chess and running”.');
+        var p = JV.GOALS.addInterests(list);
+        return {
+          kind: 'written', verified: true, lines: [],
+          headline: 'Noted: ' + list.join(', ') + '. I will use that when I am thinking of things for you to do.'
+        };
+      }
+    });
+
     /* ============================================================ memory */
 
     def({
@@ -21035,6 +22112,39 @@ body::before {
   }
 
   /* ------------------------------------------------------------ helpers */
+
+  /* The opening line of a set of suggestions. It states the real situation
+     first — how long you have, what is coming — because that is what makes the
+     ideas feel considered rather than random. */
+  function openingLine(ctx, ideas) {
+    var bits = [];
+    if (ctx.minutes >= 10) {
+      bits.push('You have about ' + DX.hours(ctx.minutes) + ' free' +
+        (ctx.next ? ' before ' + ctx.next.title : ' right now') + '.');
+    }
+    if (ctx.workedTodayMinutes > 4 * 60) {
+      bits.push('You have already put in ' + DX.hours(ctx.workedTodayMinutes) + ' today, so no pressure.');
+    }
+    var top = ideas[0];
+    if (top && top.why) bits.push('Since ' + top.why.replace(/\.$/, '') + ':');
+    else bits.push('A few things that would fit:');
+    return bits.join(' ');
+  }
+
+  /* A calendar entry wants a short label, not the whole instruction. */
+  function shortTitle(idea) {
+    if (idea.goalName) return idea.goalName;
+    var first = String(idea.title).split(/[:.,—]/)[0].trim();
+    return first.length > 40 ? first.slice(0, 40).trim() + '…' : first;
+  }
+
+  function learnPreference(key, weight) {
+    if (!key) return;
+    var p = JV.GOALS.profile();
+    var liked = Object.assign({}, p.likedCategories || {});
+    liked[key] = Math.max(-5, Math.min(5, (liked[key] || 0) + weight));
+    JV.GOALS.saveProfile({ likedCategories: liked });
+  }
 
   function dayReport(day) {
     var events = Q.eventsOnDay(day, { ignoreLayers: true });
@@ -21599,7 +22709,7 @@ body::before {
     '^(guess what|you\'?ll never guess|wanna know something)\\b',
     '^(lol|lmao|haha|wow|damn|oof|yikes|nice|same|ikr|true|fair)\\b',
     '\\b(i|we)\\s+(got|scored|aced|passed|won)\\b.{0,30}\\b(\\d+|a|an|first|gold|offer|in)\\b',
-    '\\bi\'?m\\s+(so\\s+)?(exhausted|tired|stressed|bored|excited|nervous|happy|sad|proud|dead)\\b',
+    '\\bi\'?m\\s+(so\\s+)?(exhausted|tired|stressed|excited|nervous|happy|sad|proud|dead)\\b',
     '\\bi (just )?(finally )?(finished|aced|passed|nailed|crushed)\\b'
   ].join('|'), 'i');
 
@@ -21615,7 +22725,9 @@ body::before {
      few intents are allowed to fire from one, because they are unambiguous
      even in statement form. */
   var STATEMENT_START = /^\s*(i|i'?m|i'?ve|my|we|it|this|that|there|school|work|today|tomorrow|everything|everyone|nothing|no one)\b/i;
-  var STATEMENT_OK = ['project', 'reschedule', 'remember', 'recurring', 'research'];
+  var STATEMENT_OK = ['project', 'reschedule', 'remember', 'recurring', 'research',
+    'goal_add', 'goal_list', 'interests', 'ideas', 'idea_feedback', 'accept_idea',
+    'idea_remood', 'surprise'];
 
   /* "I finished the history essay" is a statement, but if it names something
      actually on the list then it is also a completion — so look before
@@ -21648,6 +22760,139 @@ body::before {
   /* ------------------------------------------------------------- intents */
 
   var INTENTS = [
+    {
+      /* Setting a goal. "My goal is to get better at Java." */
+      id: 'goal_add',
+      test: /\b(my goal is|i want to (get better at|improve|learn|be better at|become)|i'?m trying to (get better at|learn|improve)|goal:|new goal)\b/i,
+      steps: function (text) {
+        var name = subject(text, [
+          /\b(my goal is|goal:|new goal)\b/i,
+          /\bi want to (get better at|improve|learn|be better at|become)\b/i,
+          /\bi'?m trying to (get better at|learn|improve)\b/i,
+          /^\s*(to|at)\s+/i,
+          // "get better at Java" is a wish; "Java" is the goal.
+          /^\s*(get|be|become|getting|being)\s+(better|good|great)\s+at\s+/i,
+          /^\s*(improve|improving|learn|learning|master|mastering|practi[cs]e|practising)\s+/i,
+          /^\s*(my|the)\s+/i
+        ]);
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        var freq = /\bevery day|daily\b/i.test(text) ? 'daily'
+          : /\bonce a week|weekly\b/i.test(text) ? 'weekly' : null;
+        var args = { name: name };
+        if (freq) args.frequency = freq;
+        var by = parseDeadlinePhrase(text);
+        if (by) args.due = by;
+        return [{ text: 'Remember the goal \u201c' + name + '\u201d', tool: 'goals.add', args: args }];
+      }
+    },
+    {
+      id: 'goal_list',
+      test: /\b(my goals|what (are|were) my goals|goal progress|how am i doing on my goals|show me my goals)\b/i,
+      steps: function () {
+        return [{ text: 'Read the goals and their activity', tool: 'goals.list', args: {} }];
+      }
+    },
+    {
+      id: 'interests',
+      test: /\b(i'?m into|i like|i enjoy|my interests are|things i like|i'?m interested in)\b/i,
+      steps: function (text) {
+        var list = subject(text, [
+          /\b(i'?m into|i like|i enjoy|my interests are|things i like|i'?m interested in)\b/i
+        ]);
+        return [{ text: 'Remember those interests', tool: 'goals.interests', args: { interests: list } }];
+      }
+    },
+    {
+      /* Feedback on suggestions \u2014 the loop that stops it repeating itself. */
+      id: 'idea_feedback',
+      test: /\b(never suggest|stop suggesting|don'?t suggest|more like (that|this)|less of (that|this))\b/i,
+      steps: function (text) {
+        var signal = /\bnever suggest|stop suggesting|don'?t suggest\b/i.test(text) ? 'never'
+          : /\bmore like\b/i.test(text) ? 'more' : 'less';
+        var about = subject(text, [
+          /\b(never suggest|stop suggesting|don'?t suggest|more like|less of)\b/i,
+          /\b(that|this|those|these|again|right now|anymore|any more)\b/i
+        ]);
+        var args = { signal: signal };
+        if (about) args.about = about.toLowerCase();
+        return [{ text: 'Take that on board', tool: 'ideas.feedback', args: args }];
+      }
+    },
+    {
+      /* "nah, something fun" right after a set of ideas is a re-roll with a
+         different mood, not a new topic. */
+      id: 'idea_remood',
+      test: function (text) {
+        if (!(JV.IDEAS && JV.IDEAS.lastOffered && JV.IDEAS.lastOffered.length)) return false;
+        return /^\s*(nah|no|nope|meh|not really|something else|anything else|different)\b/i.test(text) ||
+          /\b(something\s+(?:\w+\s+)?(fun|different|else|productive|easy|chill)|nothing productive|not productive|give me (something|another)|different idea|other ideas|anything else)\b/i.test(text);
+      },
+      steps: function (text) {
+        var mood = /\b(fun|different|else|chill|relax|nothing productive|not productive)\b/i.test(text) ? 'fun'
+          : /\b(productive|useful)\b/i.test(text) ? 'productive'
+            : /\b(easy|gentle|light|tired)\b/i.test(text) ? 'gentle' : 'fun';
+        return [{ text: 'Try again, ' + mood + ' this time', tool: 'ideas.suggest', args: { mood: mood } }];
+      }
+    },
+    {
+      /* The buttons on an idea card speak the same language as the person. */
+      id: 'idea_action',
+      test: /^\s*(start|schedule)\s+idea\s+\d+|^\s*give me a different idea\b/i,
+      steps: function (text) {
+        if (/different idea/i.test(text)) {
+          return [{ text: 'Think of something else', tool: 'ideas.suggest', args: {} }];
+        }
+        var which = parseInt((text.match(/idea\s+(\d+)/i) || [])[1] || '1', 10);
+        var later = /\bfor later\b|\bschedule\b/i.test(text);
+        return [{
+          text: (later ? 'Schedule' : 'Start') + ' idea ' + which,
+          tool: 'ideas.schedule', args: { which: which, startNow: !later }
+        }];
+      }
+    },
+    {
+      id: 'surprise',
+      test: /\b(surprise me|something random|random idea|anything at all)\b/i,
+      steps: function () {
+        return [{ text: 'Pick something off the beaten track', tool: 'ideas.surprise', args: {} }];
+      }
+    },
+    {
+      /* "I'm bored" is a real request, not small talk. */
+      id: 'ideas',
+      test: /\b(i'?m bored|im bored|bored|give me something to do|what (can|should) i (do|work on)|something to do|entertain me|nothing to do|any ideas|got any ideas|suggest something)\b/i,
+      steps: function (text) {
+        var mood = /\b(fun|something else|something different|not productive|non.?school|chill|relax)\b/i.test(text) ? 'fun'
+          : /\b(productive|useful|worthwhile)\b/i.test(text) ? 'productive'
+            : /\b(easy|gentle|light|low effort|tired)\b/i.test(text) ? 'gentle' : null;
+        var minutes = parseDuration(text);
+        var args = {};
+        if (mood) args.mood = mood;
+        if (minutes) args.minutes = minutes;
+        return [{ text: 'Work out what would actually be worth doing', tool: 'ideas.suggest', args: args }];
+      }
+    },
+    {
+      /* Accepting whatever was just offered. */
+      id: 'accept_idea',
+      test: function (text) {
+        if (!/^\s*(yes|yeah|yep|yh|sure|ok|okay|go on|do it|let'?s do it|sounds good|why not|alright|deal|schedule it|book it|start now|start it)\b/i.test(text)) return false;
+        return !!(JV.IDEAS && JV.IDEAS.lastOffered && JV.IDEAS.lastOffered.length);
+      },
+      steps: function (text) {
+        var which = 1;
+        var m = text.match(/\b(first|second|third|1st|2nd|3rd|one|two|three|1|2|3)\b/i);
+        if (m) {
+          which = { first: 1, '1st': 1, one: 1, '1': 1, second: 2, '2nd': 2, two: 2, '2': 2,
+            third: 3, '3rd': 3, three: 3, '3': 3 }[m[1].toLowerCase()] || 1;
+        }
+        var later = /\b(later|schedule it|book it|not now|find time)\b/i.test(text);
+        return [{
+          text: 'Put that on the calendar', tool: 'ideas.schedule',
+          args: { which: which, startNow: !later }
+        }];
+      }
+    },
     {
       /* "good morning" on its own is a greeting, not a request for a briefing. */
       id: 'morning_brief',
@@ -24808,6 +26053,7 @@ body::before {
       var counts = Q.counts();
       if (counts.overdue) out.push({ label: 'What is overdue?', text: 'what is overdue' });
       if (counts.captures) out.push({ label: 'Sort my inbox', text: 'organize my inbox' });
+      out.push({ label: 'I’m bored', text: 'i am bored' });
       out.push({ label: 'Morning briefing', text: 'give me my morning briefing' });
       out.push({ label: 'Optimize my schedule', text: 'optimize my schedule this week' });
       out.push({ label: 'What should I do now?', text: 'what should I do now' });
@@ -25047,6 +26293,93 @@ body::before {
     }[kind] || 'link';
   }
 
+  /* ------------------------------------------------------- idea cards */
+
+  var DIFFICULTY = {
+    easy: { dot: '🟢', label: 'Easy' },
+    moderate: { dot: '🟡', label: 'Moderate' },
+    challenge: { dot: '🔴', label: 'Challenge' }
+  };
+
+  var CATEGORY_ICON = {
+    project: 'folder', learning: 'book', creative: 'sparkle', fun: 'star',
+    physical: 'zap', social: 'users', rest: 'coffee'
+  };
+
+  /* One suggestion, with the reasoning shown and the actions attached. The
+     "why" line is the difference between a recommendation and a random pick. */
+  function ideaCard(idea, index, output) {
+    var diff = DIFFICULTY[idea.difficulty] || DIFFICULTY.moderate;
+    var card = D.h('div.jv-idea');
+
+    card.appendChild(D.h('div.jv-idea__head', [
+      D.h('span.jv-idea__icon', { 'aria-hidden': 'true' },
+        D.icon(CATEGORY_ICON[idea.category] || 'sparkle', 13)),
+      D.h('p.jv-idea__title', { text: idea.title })
+    ]));
+
+    var meta = D.h('div.jv-idea__meta', [
+      D.h('span.jv-idea__chip', { text: JV.DX.hours(idea.minutes) }),
+      D.h('span.jv-idea__chip', { text: diff.dot + ' ' + diff.label })
+    ]);
+    if (idea.goalName) {
+      meta.appendChild(D.h('span.jv-idea__chip.is-goal', { text: '🎯 ' + idea.goalName }));
+    }
+    if (idea.generic) meta.appendChild(D.h('span.jv-idea__chip', { text: 'not work' }));
+    card.appendChild(meta);
+
+    if (idea.why) card.appendChild(D.h('p.jv-idea__why', { text: 'Why this? ' + idea.why }));
+
+    card.appendChild(D.h('div.jv-idea__actions', [
+      D.h('button.btn.btn--primary.btn--sm', {
+        type: 'button',
+        onclick: function () { submit('start idea ' + (index + 1)); }
+      }, [D.icon('play', 13), D.h('span', { text: 'Start now' })]),
+      D.h('button.btn.btn--ghost.btn--sm', {
+        type: 'button',
+        onclick: function () { submit('schedule idea ' + (index + 1) + ' for later'); }
+      }, 'Schedule'),
+      D.h('button.btn.btn--ghost.btn--sm.jv-idea__skip', {
+        type: 'button',
+        onclick: function () { submit('give me a different idea'); }
+      }, 'Something else')
+    ]));
+
+    return card;
+  }
+
+  function ideasBlock(output) {
+    if (!output || output.kind !== 'ideas' || !output.ideas || !output.ideas.length) return null;
+    var wrap = D.h('div.jv-ideas');
+    output.ideas.forEach(function (idea, i) { wrap.appendChild(ideaCard(idea, i, output)); });
+    return wrap;
+  }
+
+  /* Goals with an honest activity indicator — how often, not how good. */
+  function goalsBlock(output) {
+    if (!output || output.kind !== 'goals' || !output.goals || !output.goals.length) return null;
+    var wrap = D.h('div.jv-goals');
+    output.goals.forEach(function (g) {
+      var bar = JV.GOALS.activityBar(g);
+      var row = D.h('div.jv-goal');
+      row.appendChild(D.h('div.jv-goal__top', [
+        D.h('span.jv-goal__name', { text: g.name }),
+        D.h('span.jv-goal__domain', { text: g.domainLabel })
+      ]));
+      var track = D.h('div.jv-goal__track');
+      track.appendChild(D.h('div.jv-goal__fill', {
+        style: { width: Math.round(bar.filled / bar.total * 100) + '%' }
+      }));
+      row.appendChild(track);
+      row.appendChild(D.h('span.jv-goal__note', { text: bar.label }));
+      wrap.appendChild(row);
+    });
+    wrap.appendChild(D.h('p.jv-goal__caveat', {
+      text: 'These bars show how often you have worked on something, not how good you are at it.'
+    }));
+    return wrap;
+  }
+
   /* --------------------------------------------------------- result card */
 
   function resultCard(output) {
@@ -25277,7 +26610,14 @@ body::before {
         // Result cards for every step that produced structured output.
         (run.tree ? run.tree.children(run.tree.rootId) : []).forEach(function (task) {
           if (task.proposal) return;    // proposals render separately below
-          var card = resultCard(task.output);
+
+          // Ideas and goals get their own richer presentation.
+          var ideas = ideasBlock(task.output);
+          if (ideas) { block.appendChild(ideas); }
+          var goals = goalsBlock(task.output);
+          if (goals) { block.appendChild(goals); }
+
+          var card = (ideas || goals) ? null : resultCard(task.output);
           if (card) block.appendChild(card);
           // Anything the answer named is clickable straight through to the
           // real record, so JARVIS's replies navigate the calendar.
@@ -25751,6 +27091,81 @@ body::before {
     return panel;
   }
 
+  /* What JARVIS is allowed to suggest, and how often. §27: the user stays in
+     control of a feature whose whole job is to interrupt them with ideas. */
+  function suggestionsPanel() {
+    var p = JV.GOALS.profile();
+    var panel = D.h('div.jv-panel');
+    panel.appendChild(D.h('h3.jv-panel__title', { text: 'Suggestions' }));
+
+    function toggle(key, label, hint) {
+      var box = D.h('input', { type: 'checkbox', checked: p[key] !== false });
+      box.addEventListener('change', function () {
+        var patch = {}; patch[key] = box.checked;
+        JV.GOALS.saveProfile(patch);
+        renderAll();
+      });
+      return D.h('label.jv-switch', [box, D.h('span', { text: label + (hint ? ' — ' + hint : '') })]);
+    }
+
+    panel.appendChild(toggle('proactive', 'Offer ideas when I ask'));
+    panel.appendChild(toggle('goalSuggestions', 'Use my goals'));
+    panel.appendChild(toggle('useCalendar', 'Use my calendar', 'free time, deadlines'));
+
+    var freq = D.h('select.jv-form__input', { 'aria-label': 'How many ideas' });
+    [['low', 'One at a time'], ['medium', 'A few options'], ['high', 'Give me plenty']]
+      .forEach(function (o) {
+        var opt = D.h('option', { value: o[0], text: o[1] });
+        if ((p.frequency || 'medium') === o[0]) opt.selected = true;
+        freq.appendChild(opt);
+      });
+    freq.addEventListener('change', function () {
+      JV.GOALS.saveProfile({ frequency: freq.value });
+    });
+    panel.appendChild(D.h('div.jv-form', [
+      D.h('label.jv-form__row', [D.h('span.jv-form__label', { text: 'How many' }), freq])
+    ]));
+
+    panel.appendChild(D.h('p.jv-panel__note', { text: 'Kinds of thing to suggest:' }));
+    var types = D.h('div.jv-types');
+    [['project', 'Projects'], ['learning', 'Learning'], ['creative', 'Creative'],
+     ['physical', 'Active'], ['social', 'Social'], ['fun', 'Fun'], ['rest', 'Rest']]
+      .forEach(function (t) {
+        var on = !p.types || p.types.indexOf(t[0]) >= 0;
+        types.appendChild(D.h('button.jv-type' + (on ? '.is-on' : ''), {
+          type: 'button',
+          onclick: function () {
+            var all = ['project', 'learning', 'creative', 'physical', 'social', 'fun', 'rest'];
+            var current = p.types ? p.types.slice() : all.slice();
+            var i = current.indexOf(t[0]);
+            if (i >= 0) current.splice(i, 1); else current.push(t[0]);
+            // An empty allow-list would silence everything; read that as "all".
+            JV.GOALS.saveProfile({ types: current.length ? current : null });
+            renderAll();
+          }
+        }, t[1]));
+      });
+    panel.appendChild(types);
+
+    var blocked = p.blocked || [];
+    if (blocked.length) {
+      panel.appendChild(D.h('p.jv-panel__note', { text: 'Never suggesting: ' + blocked.join(', ') }));
+      panel.appendChild(D.h('button.btn.btn--ghost.btn--sm', {
+        type: 'button',
+        onclick: function () { JV.GOALS.saveProfile({ blocked: [] }); renderAll(); }
+      }, 'Clear that list'));
+    }
+
+    var interests = p.interests || [];
+    panel.appendChild(D.h('p.jv-panel__note', {
+      text: interests.length
+        ? 'Things you told me you are into: ' + interests.join(', ') + '.'
+        : 'I do not know what you are into yet — tell me and the ideas get much better.'
+    }));
+
+    return panel;
+  }
+
   function controlsPanel() {
     var a = assistant();
     var panel = D.h('div.jv-panel');
@@ -25894,8 +27309,8 @@ body::before {
 
   function fillPanels(host) {
     D.clear(host);
-    D.append(host, [insightsPanel(), statusPanel(), voicePanel(), memoryPanel(),
-      modelPanel(), toolsPanel(), controlsPanel()]);
+    D.append(host, [insightsPanel(), statusPanel(), suggestionsPanel(), voicePanel(),
+      memoryPanel(), modelPanel(), toolsPanel(), controlsPanel()]);
   }
 
   /* ---------------------------------------------------------------- dock */

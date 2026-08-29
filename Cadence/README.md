@@ -33,6 +33,9 @@ js/jarvis/scheduler.js     session distribution — how work is *shaped* before 
                            placed: sizing, spacing, per-day caps, preferred times
 js/jarvis/projects.js      deadline → plan: phase templates, effort split, commit
 js/jarvis/optimize.js      optimiser findings, morning brief, day review, insights
+js/jarvis/goals.js         goals with a domain and a frequency, an interests
+                           profile, and what has actually been worked on
+js/jarvis/ideas.js         the idea engine — generate, filter, rank, diversify
 js/jarvis/toolbelt.js      the tools: calendar.* / plan.* / memory.*
 js/jarvis/reasoner.js      the local reasoner — intent table + Cadence's NLP;
                            optional remote LLM provider (off by default)
@@ -148,6 +151,51 @@ with an **Undo** button sitting next to the confirmation.
 Generative and bulk changes still propose first and change nothing until
 approved: planning a day or a week, optimising the schedule, breaking a
 deadline into sessions, moving a whole day's events, organising a brain dump.
+
+### "I'm bored"
+
+A real request, not small talk. JARVIS reads the goals, the free time, the time
+of day, what is due and what has already been done, then offers a few concrete
+things:
+
+```
+USER    I'm bored.
+JARVIS  You have about 52 min free right now. Since you have not logged any
+        time on piano playing yet:
+        · Learn something entirely by ear — 30 min, moderate 🎯 Piano playing
+        · Sight-read three pieces you have never seen — 45 min, moderate
+        · Genuinely rest, and do not multitask through it — 30 min, easy
+USER    Something completely different.
+JARVIS  Since not everything has to be productive:
+        · Play something you have not played in ages
+        · Go for a walk and listen to something
+```
+
+Four things the engine is built around:
+
+- **Concrete beats generic.** "Practise piano" is a category. "Polish the
+  hardest passage, then record one attempt and listen back" is something you
+  can start. Templates are written per domain so the idea names the actual
+  subject — a Java goal produces Java ideas, not "study programming".
+- **It fits the gap.** A ten-minute idea is never offered for a two-hour
+  window, and a 90-minute project is never offered for ten minutes.
+- **It is not a productivity robot.** Fun, rest, outdoors and social ideas are
+  first-class; at least one non-work option is always in the list; and after a
+  long day the ranking prefers them. "Something fun" demotes every goal-linked
+  idea, because that is what the words mean.
+- **Balance, not obsession.** Three days of Java pushes piano up. Goals carry a
+  frequency, and a goal left past it rises.
+
+`goals.js` extends Cadence's own goals rather than inventing a parallel store,
+so a goal JARVIS learns appears in the Goals view like any other.
+
+Goal bars show **how often you have worked on something, not how good you are
+at it**, and the UI says so — nothing here can measure whether you got better
+at the piano.
+
+With no goals and no stated interests it **asks instead of guessing**. Feedback
+sticks: "never suggest coding again" is honoured and reversible from the
+Suggestions panel, where the kinds of thing it may offer are also togglable.
 
 ### Editing
 

@@ -29,6 +29,8 @@ JS_MODULES = [
     "05-scheduler.js",
     "06-projects.js",
     "07-optimize.js",
+    "07b-goals.js",
+    "07c-ideas.js",
     "08-toolbelt.js",
     "09-reasoner.js",
     "09b-edits.js",

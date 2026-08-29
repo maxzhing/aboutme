@@ -114,7 +114,7 @@
     '^(guess what|you\'?ll never guess|wanna know something)\\b',
     '^(lol|lmao|haha|wow|damn|oof|yikes|nice|same|ikr|true|fair)\\b',
     '\\b(i|we)\\s+(got|scored|aced|passed|won)\\b.{0,30}\\b(\\d+|a|an|first|gold|offer|in)\\b',
-    '\\bi\'?m\\s+(so\\s+)?(exhausted|tired|stressed|bored|excited|nervous|happy|sad|proud|dead)\\b',
+    '\\bi\'?m\\s+(so\\s+)?(exhausted|tired|stressed|excited|nervous|happy|sad|proud|dead)\\b',
     '\\bi (just )?(finally )?(finished|aced|passed|nailed|crushed)\\b'
   ].join('|'), 'i');
 
@@ -130,7 +130,9 @@
      few intents are allowed to fire from one, because they are unambiguous
      even in statement form. */
   var STATEMENT_START = /^\s*(i|i'?m|i'?ve|my|we|it|this|that|there|school|work|today|tomorrow|everything|everyone|nothing|no one)\b/i;
-  var STATEMENT_OK = ['project', 'reschedule', 'remember', 'recurring', 'research'];
+  var STATEMENT_OK = ['project', 'reschedule', 'remember', 'recurring', 'research',
+    'goal_add', 'goal_list', 'interests', 'ideas', 'idea_feedback', 'accept_idea',
+    'idea_remood', 'surprise'];
 
   /* "I finished the history essay" is a statement, but if it names something
      actually on the list then it is also a completion — so look before
@@ -163,6 +165,139 @@
   /* ------------------------------------------------------------- intents */
 
   var INTENTS = [
+    {
+      /* Setting a goal. "My goal is to get better at Java." */
+      id: 'goal_add',
+      test: /\b(my goal is|i want to (get better at|improve|learn|be better at|become)|i'?m trying to (get better at|learn|improve)|goal:|new goal)\b/i,
+      steps: function (text) {
+        var name = subject(text, [
+          /\b(my goal is|goal:|new goal)\b/i,
+          /\bi want to (get better at|improve|learn|be better at|become)\b/i,
+          /\bi'?m trying to (get better at|learn|improve)\b/i,
+          /^\s*(to|at)\s+/i,
+          // "get better at Java" is a wish; "Java" is the goal.
+          /^\s*(get|be|become|getting|being)\s+(better|good|great)\s+at\s+/i,
+          /^\s*(improve|improving|learn|learning|master|mastering|practi[cs]e|practising)\s+/i,
+          /^\s*(my|the)\s+/i
+        ]);
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        var freq = /\bevery day|daily\b/i.test(text) ? 'daily'
+          : /\bonce a week|weekly\b/i.test(text) ? 'weekly' : null;
+        var args = { name: name };
+        if (freq) args.frequency = freq;
+        var by = parseDeadlinePhrase(text);
+        if (by) args.due = by;
+        return [{ text: 'Remember the goal \u201c' + name + '\u201d', tool: 'goals.add', args: args }];
+      }
+    },
+    {
+      id: 'goal_list',
+      test: /\b(my goals|what (are|were) my goals|goal progress|how am i doing on my goals|show me my goals)\b/i,
+      steps: function () {
+        return [{ text: 'Read the goals and their activity', tool: 'goals.list', args: {} }];
+      }
+    },
+    {
+      id: 'interests',
+      test: /\b(i'?m into|i like|i enjoy|my interests are|things i like|i'?m interested in)\b/i,
+      steps: function (text) {
+        var list = subject(text, [
+          /\b(i'?m into|i like|i enjoy|my interests are|things i like|i'?m interested in)\b/i
+        ]);
+        return [{ text: 'Remember those interests', tool: 'goals.interests', args: { interests: list } }];
+      }
+    },
+    {
+      /* Feedback on suggestions \u2014 the loop that stops it repeating itself. */
+      id: 'idea_feedback',
+      test: /\b(never suggest|stop suggesting|don'?t suggest|more like (that|this)|less of (that|this))\b/i,
+      steps: function (text) {
+        var signal = /\bnever suggest|stop suggesting|don'?t suggest\b/i.test(text) ? 'never'
+          : /\bmore like\b/i.test(text) ? 'more' : 'less';
+        var about = subject(text, [
+          /\b(never suggest|stop suggesting|don'?t suggest|more like|less of)\b/i,
+          /\b(that|this|those|these|again|right now|anymore|any more)\b/i
+        ]);
+        var args = { signal: signal };
+        if (about) args.about = about.toLowerCase();
+        return [{ text: 'Take that on board', tool: 'ideas.feedback', args: args }];
+      }
+    },
+    {
+      /* "nah, something fun" right after a set of ideas is a re-roll with a
+         different mood, not a new topic. */
+      id: 'idea_remood',
+      test: function (text) {
+        if (!(JV.IDEAS && JV.IDEAS.lastOffered && JV.IDEAS.lastOffered.length)) return false;
+        return /^\s*(nah|no|nope|meh|not really|something else|anything else|different)\b/i.test(text) ||
+          /\b(something\s+(?:\w+\s+)?(fun|different|else|productive|easy|chill)|nothing productive|not productive|give me (something|another)|different idea|other ideas|anything else)\b/i.test(text);
+      },
+      steps: function (text) {
+        var mood = /\b(fun|different|else|chill|relax|nothing productive|not productive)\b/i.test(text) ? 'fun'
+          : /\b(productive|useful)\b/i.test(text) ? 'productive'
+            : /\b(easy|gentle|light|tired)\b/i.test(text) ? 'gentle' : 'fun';
+        return [{ text: 'Try again, ' + mood + ' this time', tool: 'ideas.suggest', args: { mood: mood } }];
+      }
+    },
+    {
+      /* The buttons on an idea card speak the same language as the person. */
+      id: 'idea_action',
+      test: /^\s*(start|schedule)\s+idea\s+\d+|^\s*give me a different idea\b/i,
+      steps: function (text) {
+        if (/different idea/i.test(text)) {
+          return [{ text: 'Think of something else', tool: 'ideas.suggest', args: {} }];
+        }
+        var which = parseInt((text.match(/idea\s+(\d+)/i) || [])[1] || '1', 10);
+        var later = /\bfor later\b|\bschedule\b/i.test(text);
+        return [{
+          text: (later ? 'Schedule' : 'Start') + ' idea ' + which,
+          tool: 'ideas.schedule', args: { which: which, startNow: !later }
+        }];
+      }
+    },
+    {
+      id: 'surprise',
+      test: /\b(surprise me|something random|random idea|anything at all)\b/i,
+      steps: function () {
+        return [{ text: 'Pick something off the beaten track', tool: 'ideas.surprise', args: {} }];
+      }
+    },
+    {
+      /* "I'm bored" is a real request, not small talk. */
+      id: 'ideas',
+      test: /\b(i'?m bored|im bored|bored|give me something to do|what (can|should) i (do|work on)|something to do|entertain me|nothing to do|any ideas|got any ideas|suggest something)\b/i,
+      steps: function (text) {
+        var mood = /\b(fun|something else|something different|not productive|non.?school|chill|relax)\b/i.test(text) ? 'fun'
+          : /\b(productive|useful|worthwhile)\b/i.test(text) ? 'productive'
+            : /\b(easy|gentle|light|low effort|tired)\b/i.test(text) ? 'gentle' : null;
+        var minutes = parseDuration(text);
+        var args = {};
+        if (mood) args.mood = mood;
+        if (minutes) args.minutes = minutes;
+        return [{ text: 'Work out what would actually be worth doing', tool: 'ideas.suggest', args: args }];
+      }
+    },
+    {
+      /* Accepting whatever was just offered. */
+      id: 'accept_idea',
+      test: function (text) {
+        if (!/^\s*(yes|yeah|yep|yh|sure|ok|okay|go on|do it|let'?s do it|sounds good|why not|alright|deal|schedule it|book it|start now|start it)\b/i.test(text)) return false;
+        return !!(JV.IDEAS && JV.IDEAS.lastOffered && JV.IDEAS.lastOffered.length);
+      },
+      steps: function (text) {
+        var which = 1;
+        var m = text.match(/\b(first|second|third|1st|2nd|3rd|one|two|three|1|2|3)\b/i);
+        if (m) {
+          which = { first: 1, '1st': 1, one: 1, '1': 1, second: 2, '2nd': 2, two: 2, '2': 2,
+            third: 3, '3rd': 3, three: 3, '3': 3 }[m[1].toLowerCase()] || 1;
+        }
+        var later = /\b(later|schedule it|book it|not now|find time)\b/i.test(text);
+        return [{
+          text: 'Put that on the calendar', tool: 'ideas.schedule',
+          args: { which: which, startNow: !later }
+        }];
+      }
+    },
     {
       /* "good morning" on its own is a greeting, not a request for a briefing. */
       id: 'morning_brief',

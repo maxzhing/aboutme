@@ -225,6 +225,100 @@
 
 .jv-done__undo:hover { border-color: var(--text-3); }
 
+/* -------------------------------------------------------- idea cards */
+
+/* A suggestion is JARVIS's own proposal, so it sits in the warm register —
+   but stays a card rather than a full-bleed fill, because it is an offer and
+   not a change to your data. */
+.jv-ideas { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+.jv-idea {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--jv-accent-line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.jv-idea__head { display: flex; align-items: flex-start; gap: var(--sp-2); }
+
+.jv-idea__icon {
+  flex: 0 0 auto;
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  display: grid; place-items: center;
+  background: var(--jv-accent-soft);
+  color: var(--jv-accent);
+  margin-top: 1px;
+}
+
+.jv-idea__title {
+  margin: 0;
+  font-size: var(--fs-base);
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.jv-idea__meta { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.jv-idea__chip {
+  font-size: var(--fs-xs);
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-3);
+}
+
+.jv-idea__chip.is-goal { border-color: var(--jv-accent-line); color: var(--jv-accent); }
+
+.jv-idea__why {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  line-height: 1.45;
+}
+
+.jv-idea__actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.jv-idea__skip { color: var(--text-3); }
+
+/* ------------------------------------------------------------- goals */
+
+.jv-goals { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+.jv-goal { display: flex; flex-direction: column; gap: 4px; }
+
+.jv-goal__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-2); }
+.jv-goal__name { font-size: var(--fs-sm); font-weight: 600; color: var(--text); }
+.jv-goal__domain { font-size: var(--fs-xs); color: var(--text-3); }
+
+.jv-goal__track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.jv-goal__fill {
+  height: 100%;
+  background: var(--jv-accent);
+  border-radius: 999px;
+  transition: width var(--speed) var(--ease);
+}
+
+.jv-goal__note { font-size: var(--fs-xs); color: var(--text-3); }
+
+.jv-goal__caveat {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  line-height: 1.5;
+  font-style: italic;
+}
+
 /* --------------------------------------------------------- reply chips */
 
 /* Offered follow-ups. Warm, because they are JARVIS's suggestion rather than
@@ -1077,4 +1171,26 @@
   .has-jv-dock .fab { display: none; }
 
   .jv__composer { padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* ------------------------------------------------------- type toggles */
+
+.jv-types { display: flex; flex-wrap: wrap; gap: 4px; margin-top: var(--sp-2); }
+
+.jv-type {
+  font: inherit;
+  font-size: var(--fs-xs);
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: border-color var(--speed) var(--ease), color var(--speed) var(--ease);
+}
+
+.jv-type.is-on {
+  border-color: var(--jv-accent-line);
+  background: var(--jv-accent-soft);
+  color: var(--jv-accent);
 }

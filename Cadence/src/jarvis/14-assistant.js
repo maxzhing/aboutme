@@ -375,6 +375,7 @@
       var counts = Q.counts();
       if (counts.overdue) out.push({ label: 'What is overdue?', text: 'what is overdue' });
       if (counts.captures) out.push({ label: 'Sort my inbox', text: 'organize my inbox' });
+      out.push({ label: 'I’m bored', text: 'i am bored' });
       out.push({ label: 'Morning briefing', text: 'give me my morning briefing' });
       out.push({ label: 'Optimize my schedule', text: 'optimize my schedule this week' });
       out.push({ label: 'What should I do now?', text: 'what should I do now' });
