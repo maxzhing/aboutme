@@ -225,6 +225,26 @@
     return scored.length ? scored[0].p : null;
   }
 
+  /* ------------------------------------------------------------- focus */
+
+  /* What "it" refers to. A person says "move my dentist appointment to 4" and
+     then "actually make it an hour" — the second sentence names nothing, and
+     an assistant that lost the thread there would be useless. Whatever was
+     last acted on stays in focus so a pronoun can find it. */
+  var focus = null;
+
+  function setFocus(kind, item, label) {
+    if (!item) return;
+    focus = { kind: kind, item: item, label: label || item.title || item.name, at: JV.nowTs() };
+  }
+
+  function getFocus() { return focus; }
+  function clearFocus() { focus = null; }
+
+  var PRONOUN = /^\s*(it|that|this|them|those|they|the (?:event|meeting|appointment|task|deadline|thing|one)|my (?:event|meeting|appointment))\s*$/i;
+
+  function isPronoun(query) { return PRONOUN.test(String(query || '')); }
+
   /* Resolve a name across everything the calendar holds.
 
      "Remove the library books thing" should work whether that is an event, a
@@ -234,6 +254,16 @@
   function findAnything(query, opts) {
     opts = opts || {};
     var kinds = opts.kinds || ['event', 'task', 'deadline', 'habit', 'note', 'project'];
+
+    // "it" is not a name to search for — it points at whatever we were just
+    // talking about. Re-read the record so it is current, not a stale copy.
+    if ((isPronoun(query) || !String(query || '').trim()) && focus) {
+      var fresh = refreshFocus();
+      if (fresh && kinds.indexOf(fresh.kind) >= 0) {
+        return [{ kind: fresh.kind, item: fresh.item, label: fresh.label, when: null, score: 100 }];
+      }
+      return [];
+    }
     var now = nowWall();
     var out = [];
 
@@ -281,6 +311,26 @@
   function findOne(query, opts) {
     var hits = findAnything(query, opts);
     return hits.length ? hits[0] : null;
+  }
+
+  /* An event in focus may have been moved since; look it up again by id so
+     "make it an hour" works off the current times, not the remembered ones. */
+  function refreshFocus() {
+    if (!focus) return null;
+    var id = focus.item.seriesId || focus.item.id;
+    if (focus.kind === 'event') {
+      var base = S.get('events', id);
+      if (!base) { focus = null; return null; }
+      var now = nowWall();
+      var live = Q.eventsInRange(T.addDays(now, -60), T.addDays(now, 365), { ignoreLayers: true })
+        .filter(function (e) { return (e.seriesId || e.id) === id; })[0];
+      return live ? { kind: 'event', item: live, label: live.title } : null;
+    }
+    var collection = { task: 'tasks', deadline: 'deadlines', habit: 'habits',
+      note: 'notes', project: 'projects' }[focus.kind];
+    var row = collection ? S.get(collection, id) : null;
+    if (!row) { focus = null; return null; }
+    return { kind: focus.kind, item: row, label: row.title || row.name };
   }
 
   /* When two different things match nearly as well, saying which is meant is
@@ -367,6 +417,7 @@
     findEvent: findEvent, findEvents: findEvents,
     findTask: findTask, findTasks: findTasks, findProject: findProject,
     findAnything: findAnything, findOne: findOne, isAmbiguous: isAmbiguous,
+    setFocus: setFocus, getFocus: getFocus, clearFocus: clearFocus, isPronoun: isPronoun,
     KIND_NOUN: KIND_NOUN,
     verifyEvents: verifyEvents, verifyCollection: verifyCollection,
     verifyGone: verifyGone, verifyMoved: verifyMoved,

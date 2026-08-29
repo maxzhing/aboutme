@@ -288,21 +288,83 @@
       }
     },
     {
-      id: 'move_event',
-      test: /\b(move|reschedule|shift|push|bump)\b/i,
+      /* A question about one specific thing — the commonest thing anyone asks
+         an assistant, and previously answered with "tell me more about that?" */
+      id: 'describe',
+      test: function (text) {
+        // "when is my next free two hours" asks about availability, not about
+        // a particular thing — that belongs to the free-time search.
+        if (/\b(free|available|open|spare|gap)\b/i.test(text)) return false;
+        return /\b(what time|when|how long|where|what'?s the (time|date|length)|how much time)\b[^.?]*\b(is|are|was|does|do)\b/i.test(text);
+      },
       steps: function (text) {
-        var when = parseWhen(text);
-        var clock = parseClock(text);
-        var event = subject(text, [
-          /\b(can you |please )?(move|reschedule|shift|push|bump)\b/i,
-          /\bto\s+(next\s+|this\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|today|\d{4}-\d{2}-\d{2}).*$/i,
-          /\b(to|at|from)\s+\d{1,2}(:\d{2})?\s*(am|pm)?\b.*$/i,
-          /\b(back|forward|later|earlier)\b/i, /\bmy\b/i
+        var aspect = /\bhow long|how much time|what'?s the length\b/i.test(text) ? 'duration'
+          : /\bwhere\b/i.test(text) ? 'where' : 'when';
+        var item = subject(text, [
+          /\b(what time|when|how long|where|what'?s the (time|date|length)|how much time)\b/i,
+          /\b(is|are|was|does|do)\b/i, /\bmy\b/i, /\bthe\b/i, /\bnext\b/i, /\bscheduled\b/i,
+          /\b(for|at|on)\b\s*$/i
         ]);
-        var args = { event: event };
-        if (when) args.when = when;
-        if (clock) args.time = clock;
-        return [{ text: 'Move “' + event + '”', tool: 'calendar.move_event', args: args }];
+        return [{
+          text: 'Look up “' + item + '”',
+          tool: 'calendar.describe_item',
+          args: { item: item, aspect: aspect }
+        }];
+      }
+    },
+    {
+      /* "Clear my afternoon" — a window, not a named event. */
+      id: 'clear_period',
+      test: /\b(clear|free up|empty|wipe|open up)\b[^.]*\b(morning|afternoon|evening|day|schedule|calendar)\b/i,
+      steps: function (text) {
+        var part = /\bmorning\b/i.test(text) ? 'morning'
+          : /\bafternoon\b/i.test(text) ? 'afternoon'
+            : /\bevening\b|\btonight\b/i.test(text) ? 'evening' : 'day';
+        var when = parseWhen(text) || 'today';
+        return [{
+          text: 'Clear the ' + part, tool: 'calendar.clear_period',
+          args: { date: when, part: part }
+        }];
+      }
+    },
+    {
+      /* Every kind of edit — time, day, length, name — read from one sentence. */
+      id: 'edit_event',
+      test: function (text) {
+        if (!JV.EDITS.looksLikeEdit(text)) return false;
+        // "make", "set" and "put" create as often as they modify. When the
+        // sentence could be either, let the data decide: it is an edit only if
+        // the thing named is already there.
+        if (POLITE_CREATE.test(text)) {
+          var spec = JV.EDITS.parse(text);
+          if (!spec.item) return false;
+          try {
+            return JV.DX.findAnything(spec.item, { kinds: ['event', 'task', 'deadline'] }).length > 0;
+          } catch (err) { return false; }
+        }
+        return true;
+      },
+      steps: function (text) {
+        var spec = JV.EDITS.parse(text);
+        var args = { item: spec.item };
+        if (spec.when !== undefined) args.when = spec.when;
+        if (spec.date !== undefined) args.date = spec.date;
+        if (spec.shift !== null && spec.shift !== undefined) args.shift = spec.shift;
+        if (spec.duration !== null && spec.duration !== undefined) args.duration = spec.duration;
+        if (spec.stretch !== null && spec.stretch !== undefined) args.stretch = spec.stretch;
+        if (spec.title) args.title = spec.title;
+        if (spec.travel !== undefined) args.travel = spec.travel;
+
+        // "Change the time of my dentist appointment" names no new time, so
+        // ask for one rather than guessing at a slot.
+        if (!spec.hasEdit) {
+          return [{
+            text: 'Ask what to change about “' + spec.item + '”',
+            tool: 'calendar.get_day', args: {}, clarify:
+              'What would you like to change about “' + spec.item + '” — the time, the day, how long it runs, or its name?'
+          }];
+        }
+        return [{ text: 'Update “' + spec.item + '”', tool: 'calendar.edit_event', args: args }];
       }
     },
     {
@@ -325,23 +387,6 @@
         var args = { item: item };
         if (kind) args.kind = kind;
         return [{ text: 'Delete “' + item + '”', tool: 'calendar.delete_item', args: args }];
-      }
-    },
-    {
-      id: 'update_event',
-      test: /\b(rename|call it|change the (name|title|length)|make (it|my)\b[^.]*\b(minutes?|hours?)|shorten|lengthen|extend)\b/i,
-      steps: function (text) {
-        var minutes = parseDuration(text);
-        var renameTo = (text.match(/\b(?:rename\s+.*?\s+to|call it)\s+(.+)$/i) || [])[1];
-        var event = subject(text, [
-          /\b(rename|call it)\b.*$/i, /\bchange the (name|title|length) of\b/i,
-          /\b(make|shorten|lengthen|extend)\b/i, /\bto\s+\d+.*$/i,
-          /\b\d+\s*(minutes?|mins?|hours?|hrs?)\b/i, /\bmy\b/i
-        ]);
-        var args = { event: event };
-        if (minutes) args.minutes = minutes;
-        if (renameTo) args.title = renameTo.trim();
-        return [{ text: 'Update “' + event + '”', tool: 'calendar.update_event', args: args }];
       }
     },
     {
@@ -586,7 +631,7 @@
     },
     {
       id: 'recurring',
-      test: /\bevery\s+(day|week|month|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d+\s+(days|weeks))\b/i,
+      test: /\bevery\s+(day|week|month|weekday|weekend|other day|morning|evening|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d+\s+(days|weeks))\b/i,
       steps: function (text) {
         var body = subject(text, [/^\s*(add|create|new|book|set up|put|schedule)\b/i]);
         return [{ text: 'Create a repeating event', tool: 'calendar.create_recurring_event', args: { text: body || text } }];
@@ -693,7 +738,7 @@
       // task called "two hours of studying". Let the specific planners look
       // first, then fall through to plain creation.
       var intents = POLITE_CREATE.test(segment)
-        ? [byId('recurring'), byId('sessions'), byId('plan_week'), byId('plan_day'), byId('create')].concat(INTENTS)
+        ? [byId('recurring'), byId('edit_event'), byId('sessions'), byId('plan_week'), byId('plan_day'), byId('create')].concat(INTENTS)
         : INTENTS;
 
       // A statement only reaches the few intents that are unambiguous in
@@ -732,6 +777,14 @@
     });
     if (vague) {
       return { steps: steps, confidence: 0.3, matched: matched, clarify: 'Which one did you mean?' };
+    }
+
+    // A step may carry a question instead of an action — "change the time of
+    // my dentist appointment" names no new time, and guessing one is worse
+    // than asking.
+    var asking = steps.filter(function (st) { return st.clarify; })[0];
+    if (asking) {
+      return { steps: [], confidence: 0.34, matched: matched, clarify: asking.clarify };
     }
 
     return {

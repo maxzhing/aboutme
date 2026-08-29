@@ -149,6 +149,36 @@ Generative and bulk changes still propose first and change nothing until
 approved: planning a day or a week, optimising the schedule, breaking a
 deadline into sessions, moving a whole day's events, organising a brain dump.
 
+### Editing
+
+Every way of changing an event is one request, because that is how people say
+it. `js/jarvis/edits.js` reads all of these out of a single sentence:
+
+| | |
+|---|---|
+| absolute time | "change it to 5pm", "at 3:15", "half past four", "at noon" |
+| absolute day | "to Tuesday", "next Friday" |
+| relative move | "push it back an hour", "30 minutes earlier", "delay by two hours" |
+| absolute length | "make it 30 minutes", "an hour long", "run for 90 mins" |
+| relative length | "extend by 20", "shorten by a quarter of an hour" |
+| rename | "rename it to X", "call it X" |
+| travel time | "give me 20 minutes before it to get there" |
+
+They combine: *"make my dentist appointment start at 4 and run for 90 minutes"*
+is one edit with two dimensions. Tasks and deadlines take the same sentences
+and read them against a due date instead of a span.
+
+This replaced three overlapping intents and a clock parser that only understood
+"at 4" — which is why *"move it to 4:30"* used to move the event to the wrong
+day entirely.
+
+### "It"
+
+A person says "move my dentist appointment to 4" and then "actually make it an
+hour" — the second sentence names nothing. Whatever was last acted on stays in
+focus, so a pronoun resolves to it, and the record is re-read at use time so
+the edit works off current times rather than a stale copy.
+
 ### Finding what you meant
 
 "Remove the library books thing" should work whether that is an event, a task,

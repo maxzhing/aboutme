@@ -361,6 +361,277 @@
       }
     });
 
+    /* "What time is my dentist appointment?" — a specific question about a
+       specific thing, which is most of what anyone asks an assistant. */
+    def({
+      name: 'calendar.describe_item',
+      description: 'Answer a question about one thing: when it is, how long, where, what state.',
+      permission: 'calendar.read',
+      inputSchema: { item: { type: 'string', required: true }, aspect: { type: 'string' } },
+      run: function (ctx, args) {
+        var hits = DX.findAnything(args.item);
+        if (!hits.length) {
+          return {
+            kind: 'empty',
+            headline: 'I could not find anything called “' + args.item + '”.',
+            lines: []
+          };
+        }
+        var hit = hits[0];
+        DX.setFocus(hit.kind, hit.item, hit.label);
+        var it = hit.item;
+        var aspect = args.aspect || 'when';
+        var lines = [];
+        var headline;
+
+        if (hit.kind === 'event') {
+          var mins = T.diffMinutes(it.startWall, it.endWall);
+          var away = T.diffDays(DX.nowWall(), it.startWall);
+          if (aspect === 'duration') {
+            headline = '“' + it.title + '” runs for ' + DX.hours(mins) + ' — ' +
+              DX.fmtDay(it.startWall) + ' ' + DX.fmtSpan(it.startWall, it.endWall) + '.';
+          } else if (aspect === 'where') {
+            headline = it.location
+              ? '“' + it.title + '” is at ' + it.location + '.'
+              : 'No location is set on “' + it.title + '”.';
+          } else {
+            headline = '“' + it.title + '” is ' + DX.fmtDay(it.startWall) + ' at ' +
+              DX.fmtClock(it.startWall) +
+              (away === 0 ? ' — today' : away === 1 ? ' — tomorrow' : '') + '.';
+          }
+          lines.push(DX.fmtDay(it.startWall) + ' ' + DX.fmtSpan(it.startWall, it.endWall) +
+            ' · ' + DX.hours(mins));
+          if (it.location) lines.push('Location: ' + it.location);
+          if (it.description) lines.push(it.description.slice(0, 140));
+        } else if (hit.kind === 'task') {
+          headline = it.due
+            ? '“' + it.title + '” is due ' + DX.fmtDay(T.w(it.due)) + '.'
+            : '“' + it.title + '” has no due date.';
+          lines.push('Priority: ' + (it.priority || 'medium'));
+          lines.push('Estimated ' + DX.hours(Q.taskEstimate(it)));
+          if (it.scheduledEventId) {
+            var ev = S.get('events', it.scheduledEventId);
+            if (ev) lines.push('Blocked out ' + DX.fmtDay(T.w(ev.start)) + ' at ' + DX.fmtClock(T.w(ev.start)));
+          } else {
+            lines.push('Not on the calendar yet');
+          }
+        } else if (hit.kind === 'deadline') {
+          var days = T.diffDays(DX.nowWall(), T.w(it.due));
+          headline = '“' + it.title + '” is due ' + DX.fmtDay(T.w(it.due)) +
+            (days >= 0 ? ' — ' + days + ' day' + (days === 1 ? '' : 's') + ' away' : ' — overdue') + '.';
+        } else {
+          headline = '“' + hit.label + '” is a ' + DX.KIND_NOUN[hit.kind] + '.';
+        }
+
+        return {
+          kind: 'detail', item: it, itemKind: hit.kind,
+          refs: [DX.ref(hit.kind, it, hit.label)],
+          headline: headline, lines: lines
+        };
+      }
+    });
+
+    /* "Clear my afternoon" — empty a window rather than a named event. */
+    def({
+      name: 'calendar.clear_period',
+      description: 'Clear a day or part of a day, moving what can move and reporting what cannot.',
+      permission: 'calendar.write', mutates: true, timeoutMs: 15000,
+      inputSchema: { date: { type: 'string' }, part: { type: 'string' } },
+      run: function (ctx, args) {
+        var day = DX.dayOrToday(args.date);
+        var window = partOfDay(args.part);
+        var inWindow = Q.eventsOnDay(day, { ignoreLayers: true }).filter(function (e) {
+          if (e.allDay) return false;
+          var m = T.minutesOfDay(e.startWall);
+          return m >= window.from && m < window.to;
+        }).sort(function (a, b) { return a.startWall - b.startWall; });
+
+        if (!inWindow.length) {
+          return {
+            kind: 'empty',
+            headline: 'Your ' + window.label + ' on ' + DX.fmtDay(day).toLowerCase() + ' is already clear.',
+            lines: []
+          };
+        }
+
+        // Only blocks JARVIS or the planner created are safely movable; a real
+        // commitment with other people in it is not ours to shuffle silently.
+        var movable = inWindow.filter(function (e) { return e.type === 'block'; });
+        var fixed = inWindow.filter(function (e) { return e.type !== 'block'; });
+
+        var placements = [];
+        var claimed = [];
+        movable.forEach(function (e) {
+          var mins = T.diffMinutes(e.startWall, e.endWall);
+          var slot = firstFreeOutside(day, window, mins, claimed);
+          if (!slot) return;
+          claimed.push({ start: slot, end: T.addMinutes(slot, mins) });
+          placements.push({ inst: e, start: slot, minutes: mins });
+        });
+
+        var lines = placements.map(function (p) {
+          return '“' + p.inst.title + '” → ' + DX.fmtDay(p.start) + ' ' + DX.fmtClock(p.start);
+        });
+        if (fixed.length) {
+          lines.push('Staying put: ' + fixed.map(function (e) { return '“' + e.title + '”'; }).join(', ') +
+            ' — ' + (fixed.length === 1 ? 'that is a real commitment' : 'those are real commitments') + ', not a work block.');
+        }
+
+        if (!placements.length) {
+          return {
+            kind: 'empty',
+            headline: 'Nothing in your ' + window.label + ' is mine to move — ' +
+              inWindow.map(function (e) { return '“' + e.title + '”'; }).join(', ') +
+              (fixed.length ? ' ' + (fixed.length === 1 ? 'is a real commitment.' : 'are real commitments.') : '.'),
+            lines: []
+          };
+        }
+
+        if (!ctx.dryRun) return applyMoves(placements, []);
+        return JV.proposal({
+          title: 'Clear your ' + window.label + ' on ' + DX.fmtDay(day).toLowerCase(),
+          detail: 'Moving ' + placements.length + ' block' + (placements.length === 1 ? '' : 's') +
+            (fixed.length ? ', leaving ' + fixed.length + ' commitment' + (fixed.length === 1 ? '' : 's') + ' alone' : ''),
+          items: lines,
+          refs: inWindow.slice(0, 5).map(function (e) { return DX.ref('event', e); }),
+          commit: function () { return applyMoves(placements, []); },
+          verify: function (out) {
+            var bad = out.moved.filter(function (m) { return !DX.verifyMoved(m.id, m.start).ok; });
+            return bad.length
+              ? { ok: false, detail: bad.length + ' of ' + out.moved.length + ' moves did not take effect' }
+              : { ok: true, detail: 'Moved ' + out.moved.length + ' block' + (out.moved.length === 1 ? '' : 's') + ' out of your ' + window.label + '.' };
+          }
+        });
+      }
+    });
+
+    /* One tool for every kind of edit, because a person makes them in one
+       sentence: "start at 4 and run for 90 minutes" is a single request. */
+    def({
+      name: 'calendar.edit_event',
+      description: 'Change an event: its time, day, length, or name — in any combination.',
+      permission: 'calendar.write', mutates: true, lowRisk: true,
+      inputSchema: {
+        item: { type: 'string', required: true },
+        when: { type: 'number' },          // minutes into the day
+        date: { type: 'string' },
+        shift: { type: 'number' },         // minutes, signed
+        duration: { type: 'number' },      // absolute minutes
+        stretch: { type: 'number' },       // signed minutes
+        title: { type: 'string' },
+        travel: { type: 'number' }         // getting-there time before it starts
+      },
+      run: function (ctx, args) {
+        var hits = DX.findAnything(args.item, { kinds: ['event', 'task', 'deadline'] });
+        if (!hits.length) {
+          throw new JV.ToolError('I could not find anything called “' + args.item + '”.');
+        }
+        if (DX.isAmbiguous(hits)) {
+          throw new JV.ToolError('More than one thing matches “' + args.item + '”: ' +
+            hits.slice(0, 3).map(function (h) { return '“' + h.label + '”'; }).join(', ') +
+            '. Which did you mean?');
+        }
+        var hit = hits[0];
+        DX.setFocus(hit.kind, hit.item, hit.label);
+        if (hit.kind !== 'event') return editNonEvent(ctx, hit, args);
+
+        var inst = hit.item;
+        var id = inst.seriesId || inst.id;
+        var oldStart = inst.startWall;
+        var oldMinutes = T.diffMinutes(inst.startWall, inst.endWall);
+
+        // Work out the new start.
+        var start = new Date(oldStart);
+        var changes = [];
+
+        if (args.date) {
+          var day = DX.parseDay(args.date);
+          if (day) {
+            start = T.atMinutes(day, T.minutesOfDay(start));
+            changes.push('moved to ' + DX.fmtDay(start));
+          }
+        }
+        if (args.when !== undefined && args.when !== null) {
+          start = T.atMinutes(start, args.when);
+          changes.push('starts at ' + DX.fmtClock(start));
+        }
+        if (args.shift) {
+          start = T.addMinutes(start, args.shift);
+          changes.push(args.shift > 0
+            ? DX.hours(args.shift) + ' later'
+            : DX.hours(-args.shift) + ' earlier');
+        }
+
+        // …and the new length.
+        var minutes = oldMinutes;
+        if (args.duration) {
+          minutes = args.duration;
+          changes.push('now ' + DX.hours(minutes) + ' long');
+        } else if (args.stretch) {
+          minutes = Math.max(5, oldMinutes + args.stretch);
+          changes.push(args.stretch > 0
+            ? DX.hours(args.stretch) + ' longer'
+            : DX.hours(-args.stretch) + ' shorter');
+        }
+
+        var patch = {};
+        var moved = start.getTime() !== oldStart.getTime();
+        if (moved || minutes !== oldMinutes) {
+          patch.start = T.iso(start);
+          patch.end = T.iso(T.addMinutes(start, minutes));
+        }
+        if (args.title) { patch.title = args.title; changes.push('renamed to “' + args.title + '”'); }
+        if (args.travel) {
+          // Cadence already models this, and reminders respect it.
+          patch.travelMinutes = args.travel;
+          changes.push(DX.hours(args.travel) + ' of travel time before it');
+          if (!S.settings().travelTimeEnabled) {
+            S.setSetting('travelTimeEnabled', true);
+          }
+        }
+
+        if (!changes.length) {
+          throw new JV.ToolError('Tell me what to change about “' + inst.title +
+            '” — a new time, a new day, a different length, or a new name.');
+        }
+
+        var summary = 'Now ' + DX.fmtDay(start) + ' ' +
+          DX.fmtSpan(start, T.addMinutes(start, minutes)) + ' · ' + changes.join(', ');
+
+        function commit() {
+          A.updateEvent(inst, patch, inst.seriesId ? 'this' : 'all');
+          return { id: id, start: start, minutes: minutes, title: patch.title || inst.title };
+        }
+        function verify(out) {
+          var ev = S.get('events', out.id);
+          if (!ev) return { ok: false, detail: 'The event is no longer there.' };
+          var actualStart = T.w(ev.start);
+          var actualMinutes = T.diffMinutes(actualStart, T.w(ev.end));
+          var timeOk = Math.abs(T.diffMinutes(actualStart, out.start)) <= 1;
+          var lenOk = Math.abs(actualMinutes - out.minutes) <= 1;
+          var nameOk = !patch.title || ev.title === patch.title;
+          return (timeOk && lenOk && nameOk)
+            ? { ok: true, detail: '“' + ev.title + '” is now ' + DX.fmtDay(actualStart) + ' ' +
+                DX.fmtSpan(actualStart, T.w(ev.end)) + '.' }
+            : { ok: false, detail: 'The change did not take: it is still ' +
+                DX.fmtDay(actualStart) + ' ' + DX.fmtSpan(actualStart, T.w(ev.end)) + '.' };
+        }
+
+        if (!ctx.dryRun) {
+          var out = commit();
+          var v = verify(out);
+          return { kind: 'written', headline: v.detail, verified: v.ok,
+            refs: [DX.ref('event', S.get('events', id), out.title)], lines: [] };
+        }
+        return JV.proposal({
+          title: 'Update “' + inst.title + '”',
+          detail: summary,
+          refs: [DX.ref('event', inst)],
+          commit: commit, verify: verify
+        });
+      }
+    });
+
     def({
       name: 'calendar.move_event',
       description: 'Move an event to another day or time.',
@@ -448,6 +719,7 @@
         }
 
         var hit = hits[0];
+        DX.setFocus(hit.kind, hit.item, hit.label);
         var noun = DX.KIND_NOUN[hit.kind];
         var detail = describeHit(hit);
 
@@ -485,6 +757,7 @@
         }
 
         var hit = hits[0];
+        DX.setFocus(hit.kind, hit.item, hit.label);
         var noun = DX.KIND_NOUN[hit.kind];
 
         if (!ctx.dryRun) {
@@ -1312,6 +1585,69 @@
     return first;
   }
 
+  /* Tasks and deadlines have a due date and a name rather than a span, so the
+     same sentence means something slightly different for them. */
+  function editNonEvent(ctx, hit, args) {
+    var noun = DX.KIND_NOUN[hit.kind];
+    var patch = {};
+    var changes = [];
+
+    if (args.date || args.when !== undefined) {
+      var day = args.date ? DX.parseDay(args.date) : (hit.item.due ? T.w(hit.item.due) : DX.nowWall());
+      if (day) {
+        var when = args.when !== undefined && args.when !== null
+          ? T.atMinutes(day, args.when) : day;
+        patch.due = T.iso(when);
+        if (args.when !== undefined && args.when !== null) patch.hasDueTime = true;
+        changes.push('due ' + DX.fmtDay(when) +
+          (args.when !== undefined && args.when !== null ? ' at ' + DX.fmtClock(when) : ''));
+      }
+    }
+    if (args.shift && hit.item.due) {
+      var shifted = T.addMinutes(T.w(hit.item.due), args.shift);
+      patch.due = T.iso(shifted);
+      changes.push(args.shift > 0 ? 'pushed back to ' + DX.fmtDay(shifted) : 'brought forward to ' + DX.fmtDay(shifted));
+    }
+    if (args.duration && hit.kind === 'task') {
+      patch.estimate = args.duration;
+      changes.push('estimated at ' + DX.hours(args.duration));
+    }
+    if (args.title) { patch.title = args.title; changes.push('renamed to “' + args.title + '”'); }
+
+    if (!changes.length) {
+      throw new JV.ToolError('“' + hit.label + '” is a ' + noun +
+        ' — I can change its due date, its name, or how long you think it will take.');
+    }
+
+    var collection = hit.kind === 'task' ? 'tasks' : 'deadlines';
+    function commit() {
+      if (hit.kind === 'task') A.updateTask(hit.item.id, patch);
+      else A.updateDeadline(hit.item.id, patch);
+      return { id: hit.item.id };
+    }
+    function verify(out) {
+      var row = S.get(collection, out.id);
+      if (!row) return { ok: false, detail: 'The ' + noun + ' is no longer there.' };
+      var ok = (!patch.title || row.title === patch.title) &&
+        (!patch.due || Math.abs(T.diffMinutes(T.w(row.due), T.w(patch.due))) <= 1);
+      return ok
+        ? { ok: true, detail: 'Updated “' + row.title + '” — ' + changes.join(', ') + '.' }
+        : { ok: false, detail: 'The change did not take.' };
+    }
+
+    if (!ctx.dryRun) {
+      var out = commit();
+      var v = verify(out);
+      return { kind: 'written', headline: v.detail, verified: v.ok, lines: [] };
+    }
+    return JV.proposal({
+      title: 'Update the ' + noun + ' “' + hit.label + '”',
+      detail: changes.join(', '),
+      refs: [DX.ref(hit.kind, hit.item, hit.label)],
+      commit: commit, verify: verify
+    });
+  }
+
   /* ------------------------------------------- acting on a resolved item */
 
   function describeHit(hit) {
@@ -1447,6 +1783,40 @@
 
   function safePreview(finding) {
     try { return finding.preview(); } catch (err) { return ''; }
+  }
+
+  var DAY_PARTS = {
+    morning: { from: 5 * 60, to: 12 * 60, label: 'morning' },
+    afternoon: { from: 12 * 60, to: 17 * 60, label: 'afternoon' },
+    evening: { from: 17 * 60, to: 23 * 60, label: 'evening' },
+    day: { from: 0, to: 24 * 60, label: 'day' }
+  };
+
+  function partOfDay(part) {
+    return DAY_PARTS[String(part || 'day').toLowerCase()] || DAY_PARTS.day;
+  }
+
+  /* A free slot on this day but outside the window being cleared; failing
+     that, the next few days. */
+  function firstFreeOutside(day, window, minutes, claimed) {
+    for (var d = 0; d < 7; d++) {
+      var target = T.addDays(day, d);
+      var slots = SCHED.freeSlots(target, { minMinutes: minutes });
+      for (var i = 0; i < slots.length; i++) {
+        var cursor = T.snap(slots[i].start, 15);
+        if (cursor < slots[i].start) cursor = T.addMinutes(cursor, 15);
+        var guard = 0;
+        while (T.addMinutes(cursor, minutes) <= slots[i].end && guard++ < 32) {
+          var end = T.addMinutes(cursor, minutes);
+          var insideCleared = d === 0 &&
+            T.minutesOfDay(cursor) < window.to && T.minutesOfDay(end) > window.from;
+          var clash = claimed.some(function (c) { return T.overlaps(cursor, end, c.start, c.end); });
+          if (!insideCleared && !clash) return new Date(cursor);
+          cursor = T.addMinutes(cursor, 15);
+        }
+      }
+    }
+    return null;
   }
 
   function firstFreeOn(day, minutes, claimed) {

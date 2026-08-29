@@ -31,6 +31,7 @@ JS_MODULES = [
     "07-optimize.js",
     "08-toolbelt.js",
     "09-reasoner.js",
+    "09b-edits.js",
     "10-converse.js",
     "11-voice.js",
     "12-agents.js",

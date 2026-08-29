@@ -18384,6 +18384,26 @@ body::before {
     return scored.length ? scored[0].p : null;
   }
 
+  /* ------------------------------------------------------------- focus */
+
+  /* What "it" refers to. A person says "move my dentist appointment to 4" and
+     then "actually make it an hour" — the second sentence names nothing, and
+     an assistant that lost the thread there would be useless. Whatever was
+     last acted on stays in focus so a pronoun can find it. */
+  var focus = null;
+
+  function setFocus(kind, item, label) {
+    if (!item) return;
+    focus = { kind: kind, item: item, label: label || item.title || item.name, at: JV.nowTs() };
+  }
+
+  function getFocus() { return focus; }
+  function clearFocus() { focus = null; }
+
+  var PRONOUN = /^\s*(it|that|this|them|those|they|the (?:event|meeting|appointment|task|deadline|thing|one)|my (?:event|meeting|appointment))\s*$/i;
+
+  function isPronoun(query) { return PRONOUN.test(String(query || '')); }
+
   /* Resolve a name across everything the calendar holds.
 
      "Remove the library books thing" should work whether that is an event, a
@@ -18393,6 +18413,16 @@ body::before {
   function findAnything(query, opts) {
     opts = opts || {};
     var kinds = opts.kinds || ['event', 'task', 'deadline', 'habit', 'note', 'project'];
+
+    // "it" is not a name to search for — it points at whatever we were just
+    // talking about. Re-read the record so it is current, not a stale copy.
+    if ((isPronoun(query) || !String(query || '').trim()) && focus) {
+      var fresh = refreshFocus();
+      if (fresh && kinds.indexOf(fresh.kind) >= 0) {
+        return [{ kind: fresh.kind, item: fresh.item, label: fresh.label, when: null, score: 100 }];
+      }
+      return [];
+    }
     var now = nowWall();
     var out = [];
 
@@ -18440,6 +18470,26 @@ body::before {
   function findOne(query, opts) {
     var hits = findAnything(query, opts);
     return hits.length ? hits[0] : null;
+  }
+
+  /* An event in focus may have been moved since; look it up again by id so
+     "make it an hour" works off the current times, not the remembered ones. */
+  function refreshFocus() {
+    if (!focus) return null;
+    var id = focus.item.seriesId || focus.item.id;
+    if (focus.kind === 'event') {
+      var base = S.get('events', id);
+      if (!base) { focus = null; return null; }
+      var now = nowWall();
+      var live = Q.eventsInRange(T.addDays(now, -60), T.addDays(now, 365), { ignoreLayers: true })
+        .filter(function (e) { return (e.seriesId || e.id) === id; })[0];
+      return live ? { kind: 'event', item: live, label: live.title } : null;
+    }
+    var collection = { task: 'tasks', deadline: 'deadlines', habit: 'habits',
+      note: 'notes', project: 'projects' }[focus.kind];
+    var row = collection ? S.get(collection, id) : null;
+    if (!row) { focus = null; return null; }
+    return { kind: focus.kind, item: row, label: row.title || row.name };
   }
 
   /* When two different things match nearly as well, saying which is meant is
@@ -18526,6 +18576,7 @@ body::before {
     findEvent: findEvent, findEvents: findEvents,
     findTask: findTask, findTasks: findTasks, findProject: findProject,
     findAnything: findAnything, findOne: findOne, isAmbiguous: isAmbiguous,
+    setFocus: setFocus, getFocus: getFocus, clearFocus: clearFocus, isPronoun: isPronoun,
     KIND_NOUN: KIND_NOUN,
     verifyEvents: verifyEvents, verifyCollection: verifyCollection,
     verifyGone: verifyGone, verifyMoved: verifyMoved,
@@ -19908,6 +19959,277 @@ body::before {
       }
     });
 
+    /* "What time is my dentist appointment?" — a specific question about a
+       specific thing, which is most of what anyone asks an assistant. */
+    def({
+      name: 'calendar.describe_item',
+      description: 'Answer a question about one thing: when it is, how long, where, what state.',
+      permission: 'calendar.read',
+      inputSchema: { item: { type: 'string', required: true }, aspect: { type: 'string' } },
+      run: function (ctx, args) {
+        var hits = DX.findAnything(args.item);
+        if (!hits.length) {
+          return {
+            kind: 'empty',
+            headline: 'I could not find anything called “' + args.item + '”.',
+            lines: []
+          };
+        }
+        var hit = hits[0];
+        DX.setFocus(hit.kind, hit.item, hit.label);
+        var it = hit.item;
+        var aspect = args.aspect || 'when';
+        var lines = [];
+        var headline;
+
+        if (hit.kind === 'event') {
+          var mins = T.diffMinutes(it.startWall, it.endWall);
+          var away = T.diffDays(DX.nowWall(), it.startWall);
+          if (aspect === 'duration') {
+            headline = '“' + it.title + '” runs for ' + DX.hours(mins) + ' — ' +
+              DX.fmtDay(it.startWall) + ' ' + DX.fmtSpan(it.startWall, it.endWall) + '.';
+          } else if (aspect === 'where') {
+            headline = it.location
+              ? '“' + it.title + '” is at ' + it.location + '.'
+              : 'No location is set on “' + it.title + '”.';
+          } else {
+            headline = '“' + it.title + '” is ' + DX.fmtDay(it.startWall) + ' at ' +
+              DX.fmtClock(it.startWall) +
+              (away === 0 ? ' — today' : away === 1 ? ' — tomorrow' : '') + '.';
+          }
+          lines.push(DX.fmtDay(it.startWall) + ' ' + DX.fmtSpan(it.startWall, it.endWall) +
+            ' · ' + DX.hours(mins));
+          if (it.location) lines.push('Location: ' + it.location);
+          if (it.description) lines.push(it.description.slice(0, 140));
+        } else if (hit.kind === 'task') {
+          headline = it.due
+            ? '“' + it.title + '” is due ' + DX.fmtDay(T.w(it.due)) + '.'
+            : '“' + it.title + '” has no due date.';
+          lines.push('Priority: ' + (it.priority || 'medium'));
+          lines.push('Estimated ' + DX.hours(Q.taskEstimate(it)));
+          if (it.scheduledEventId) {
+            var ev = S.get('events', it.scheduledEventId);
+            if (ev) lines.push('Blocked out ' + DX.fmtDay(T.w(ev.start)) + ' at ' + DX.fmtClock(T.w(ev.start)));
+          } else {
+            lines.push('Not on the calendar yet');
+          }
+        } else if (hit.kind === 'deadline') {
+          var days = T.diffDays(DX.nowWall(), T.w(it.due));
+          headline = '“' + it.title + '” is due ' + DX.fmtDay(T.w(it.due)) +
+            (days >= 0 ? ' — ' + days + ' day' + (days === 1 ? '' : 's') + ' away' : ' — overdue') + '.';
+        } else {
+          headline = '“' + hit.label + '” is a ' + DX.KIND_NOUN[hit.kind] + '.';
+        }
+
+        return {
+          kind: 'detail', item: it, itemKind: hit.kind,
+          refs: [DX.ref(hit.kind, it, hit.label)],
+          headline: headline, lines: lines
+        };
+      }
+    });
+
+    /* "Clear my afternoon" — empty a window rather than a named event. */
+    def({
+      name: 'calendar.clear_period',
+      description: 'Clear a day or part of a day, moving what can move and reporting what cannot.',
+      permission: 'calendar.write', mutates: true, timeoutMs: 15000,
+      inputSchema: { date: { type: 'string' }, part: { type: 'string' } },
+      run: function (ctx, args) {
+        var day = DX.dayOrToday(args.date);
+        var window = partOfDay(args.part);
+        var inWindow = Q.eventsOnDay(day, { ignoreLayers: true }).filter(function (e) {
+          if (e.allDay) return false;
+          var m = T.minutesOfDay(e.startWall);
+          return m >= window.from && m < window.to;
+        }).sort(function (a, b) { return a.startWall - b.startWall; });
+
+        if (!inWindow.length) {
+          return {
+            kind: 'empty',
+            headline: 'Your ' + window.label + ' on ' + DX.fmtDay(day).toLowerCase() + ' is already clear.',
+            lines: []
+          };
+        }
+
+        // Only blocks JARVIS or the planner created are safely movable; a real
+        // commitment with other people in it is not ours to shuffle silently.
+        var movable = inWindow.filter(function (e) { return e.type === 'block'; });
+        var fixed = inWindow.filter(function (e) { return e.type !== 'block'; });
+
+        var placements = [];
+        var claimed = [];
+        movable.forEach(function (e) {
+          var mins = T.diffMinutes(e.startWall, e.endWall);
+          var slot = firstFreeOutside(day, window, mins, claimed);
+          if (!slot) return;
+          claimed.push({ start: slot, end: T.addMinutes(slot, mins) });
+          placements.push({ inst: e, start: slot, minutes: mins });
+        });
+
+        var lines = placements.map(function (p) {
+          return '“' + p.inst.title + '” → ' + DX.fmtDay(p.start) + ' ' + DX.fmtClock(p.start);
+        });
+        if (fixed.length) {
+          lines.push('Staying put: ' + fixed.map(function (e) { return '“' + e.title + '”'; }).join(', ') +
+            ' — ' + (fixed.length === 1 ? 'that is a real commitment' : 'those are real commitments') + ', not a work block.');
+        }
+
+        if (!placements.length) {
+          return {
+            kind: 'empty',
+            headline: 'Nothing in your ' + window.label + ' is mine to move — ' +
+              inWindow.map(function (e) { return '“' + e.title + '”'; }).join(', ') +
+              (fixed.length ? ' ' + (fixed.length === 1 ? 'is a real commitment.' : 'are real commitments.') : '.'),
+            lines: []
+          };
+        }
+
+        if (!ctx.dryRun) return applyMoves(placements, []);
+        return JV.proposal({
+          title: 'Clear your ' + window.label + ' on ' + DX.fmtDay(day).toLowerCase(),
+          detail: 'Moving ' + placements.length + ' block' + (placements.length === 1 ? '' : 's') +
+            (fixed.length ? ', leaving ' + fixed.length + ' commitment' + (fixed.length === 1 ? '' : 's') + ' alone' : ''),
+          items: lines,
+          refs: inWindow.slice(0, 5).map(function (e) { return DX.ref('event', e); }),
+          commit: function () { return applyMoves(placements, []); },
+          verify: function (out) {
+            var bad = out.moved.filter(function (m) { return !DX.verifyMoved(m.id, m.start).ok; });
+            return bad.length
+              ? { ok: false, detail: bad.length + ' of ' + out.moved.length + ' moves did not take effect' }
+              : { ok: true, detail: 'Moved ' + out.moved.length + ' block' + (out.moved.length === 1 ? '' : 's') + ' out of your ' + window.label + '.' };
+          }
+        });
+      }
+    });
+
+    /* One tool for every kind of edit, because a person makes them in one
+       sentence: "start at 4 and run for 90 minutes" is a single request. */
+    def({
+      name: 'calendar.edit_event',
+      description: 'Change an event: its time, day, length, or name — in any combination.',
+      permission: 'calendar.write', mutates: true, lowRisk: true,
+      inputSchema: {
+        item: { type: 'string', required: true },
+        when: { type: 'number' },          // minutes into the day
+        date: { type: 'string' },
+        shift: { type: 'number' },         // minutes, signed
+        duration: { type: 'number' },      // absolute minutes
+        stretch: { type: 'number' },       // signed minutes
+        title: { type: 'string' },
+        travel: { type: 'number' }         // getting-there time before it starts
+      },
+      run: function (ctx, args) {
+        var hits = DX.findAnything(args.item, { kinds: ['event', 'task', 'deadline'] });
+        if (!hits.length) {
+          throw new JV.ToolError('I could not find anything called “' + args.item + '”.');
+        }
+        if (DX.isAmbiguous(hits)) {
+          throw new JV.ToolError('More than one thing matches “' + args.item + '”: ' +
+            hits.slice(0, 3).map(function (h) { return '“' + h.label + '”'; }).join(', ') +
+            '. Which did you mean?');
+        }
+        var hit = hits[0];
+        DX.setFocus(hit.kind, hit.item, hit.label);
+        if (hit.kind !== 'event') return editNonEvent(ctx, hit, args);
+
+        var inst = hit.item;
+        var id = inst.seriesId || inst.id;
+        var oldStart = inst.startWall;
+        var oldMinutes = T.diffMinutes(inst.startWall, inst.endWall);
+
+        // Work out the new start.
+        var start = new Date(oldStart);
+        var changes = [];
+
+        if (args.date) {
+          var day = DX.parseDay(args.date);
+          if (day) {
+            start = T.atMinutes(day, T.minutesOfDay(start));
+            changes.push('moved to ' + DX.fmtDay(start));
+          }
+        }
+        if (args.when !== undefined && args.when !== null) {
+          start = T.atMinutes(start, args.when);
+          changes.push('starts at ' + DX.fmtClock(start));
+        }
+        if (args.shift) {
+          start = T.addMinutes(start, args.shift);
+          changes.push(args.shift > 0
+            ? DX.hours(args.shift) + ' later'
+            : DX.hours(-args.shift) + ' earlier');
+        }
+
+        // …and the new length.
+        var minutes = oldMinutes;
+        if (args.duration) {
+          minutes = args.duration;
+          changes.push('now ' + DX.hours(minutes) + ' long');
+        } else if (args.stretch) {
+          minutes = Math.max(5, oldMinutes + args.stretch);
+          changes.push(args.stretch > 0
+            ? DX.hours(args.stretch) + ' longer'
+            : DX.hours(-args.stretch) + ' shorter');
+        }
+
+        var patch = {};
+        var moved = start.getTime() !== oldStart.getTime();
+        if (moved || minutes !== oldMinutes) {
+          patch.start = T.iso(start);
+          patch.end = T.iso(T.addMinutes(start, minutes));
+        }
+        if (args.title) { patch.title = args.title; changes.push('renamed to “' + args.title + '”'); }
+        if (args.travel) {
+          // Cadence already models this, and reminders respect it.
+          patch.travelMinutes = args.travel;
+          changes.push(DX.hours(args.travel) + ' of travel time before it');
+          if (!S.settings().travelTimeEnabled) {
+            S.setSetting('travelTimeEnabled', true);
+          }
+        }
+
+        if (!changes.length) {
+          throw new JV.ToolError('Tell me what to change about “' + inst.title +
+            '” — a new time, a new day, a different length, or a new name.');
+        }
+
+        var summary = 'Now ' + DX.fmtDay(start) + ' ' +
+          DX.fmtSpan(start, T.addMinutes(start, minutes)) + ' · ' + changes.join(', ');
+
+        function commit() {
+          A.updateEvent(inst, patch, inst.seriesId ? 'this' : 'all');
+          return { id: id, start: start, minutes: minutes, title: patch.title || inst.title };
+        }
+        function verify(out) {
+          var ev = S.get('events', out.id);
+          if (!ev) return { ok: false, detail: 'The event is no longer there.' };
+          var actualStart = T.w(ev.start);
+          var actualMinutes = T.diffMinutes(actualStart, T.w(ev.end));
+          var timeOk = Math.abs(T.diffMinutes(actualStart, out.start)) <= 1;
+          var lenOk = Math.abs(actualMinutes - out.minutes) <= 1;
+          var nameOk = !patch.title || ev.title === patch.title;
+          return (timeOk && lenOk && nameOk)
+            ? { ok: true, detail: '“' + ev.title + '” is now ' + DX.fmtDay(actualStart) + ' ' +
+                DX.fmtSpan(actualStart, T.w(ev.end)) + '.' }
+            : { ok: false, detail: 'The change did not take: it is still ' +
+                DX.fmtDay(actualStart) + ' ' + DX.fmtSpan(actualStart, T.w(ev.end)) + '.' };
+        }
+
+        if (!ctx.dryRun) {
+          var out = commit();
+          var v = verify(out);
+          return { kind: 'written', headline: v.detail, verified: v.ok,
+            refs: [DX.ref('event', S.get('events', id), out.title)], lines: [] };
+        }
+        return JV.proposal({
+          title: 'Update “' + inst.title + '”',
+          detail: summary,
+          refs: [DX.ref('event', inst)],
+          commit: commit, verify: verify
+        });
+      }
+    });
+
     def({
       name: 'calendar.move_event',
       description: 'Move an event to another day or time.',
@@ -19995,6 +20317,7 @@ body::before {
         }
 
         var hit = hits[0];
+        DX.setFocus(hit.kind, hit.item, hit.label);
         var noun = DX.KIND_NOUN[hit.kind];
         var detail = describeHit(hit);
 
@@ -20032,6 +20355,7 @@ body::before {
         }
 
         var hit = hits[0];
+        DX.setFocus(hit.kind, hit.item, hit.label);
         var noun = DX.KIND_NOUN[hit.kind];
 
         if (!ctx.dryRun) {
@@ -20859,6 +21183,69 @@ body::before {
     return first;
   }
 
+  /* Tasks and deadlines have a due date and a name rather than a span, so the
+     same sentence means something slightly different for them. */
+  function editNonEvent(ctx, hit, args) {
+    var noun = DX.KIND_NOUN[hit.kind];
+    var patch = {};
+    var changes = [];
+
+    if (args.date || args.when !== undefined) {
+      var day = args.date ? DX.parseDay(args.date) : (hit.item.due ? T.w(hit.item.due) : DX.nowWall());
+      if (day) {
+        var when = args.when !== undefined && args.when !== null
+          ? T.atMinutes(day, args.when) : day;
+        patch.due = T.iso(when);
+        if (args.when !== undefined && args.when !== null) patch.hasDueTime = true;
+        changes.push('due ' + DX.fmtDay(when) +
+          (args.when !== undefined && args.when !== null ? ' at ' + DX.fmtClock(when) : ''));
+      }
+    }
+    if (args.shift && hit.item.due) {
+      var shifted = T.addMinutes(T.w(hit.item.due), args.shift);
+      patch.due = T.iso(shifted);
+      changes.push(args.shift > 0 ? 'pushed back to ' + DX.fmtDay(shifted) : 'brought forward to ' + DX.fmtDay(shifted));
+    }
+    if (args.duration && hit.kind === 'task') {
+      patch.estimate = args.duration;
+      changes.push('estimated at ' + DX.hours(args.duration));
+    }
+    if (args.title) { patch.title = args.title; changes.push('renamed to “' + args.title + '”'); }
+
+    if (!changes.length) {
+      throw new JV.ToolError('“' + hit.label + '” is a ' + noun +
+        ' — I can change its due date, its name, or how long you think it will take.');
+    }
+
+    var collection = hit.kind === 'task' ? 'tasks' : 'deadlines';
+    function commit() {
+      if (hit.kind === 'task') A.updateTask(hit.item.id, patch);
+      else A.updateDeadline(hit.item.id, patch);
+      return { id: hit.item.id };
+    }
+    function verify(out) {
+      var row = S.get(collection, out.id);
+      if (!row) return { ok: false, detail: 'The ' + noun + ' is no longer there.' };
+      var ok = (!patch.title || row.title === patch.title) &&
+        (!patch.due || Math.abs(T.diffMinutes(T.w(row.due), T.w(patch.due))) <= 1);
+      return ok
+        ? { ok: true, detail: 'Updated “' + row.title + '” — ' + changes.join(', ') + '.' }
+        : { ok: false, detail: 'The change did not take.' };
+    }
+
+    if (!ctx.dryRun) {
+      var out = commit();
+      var v = verify(out);
+      return { kind: 'written', headline: v.detail, verified: v.ok, lines: [] };
+    }
+    return JV.proposal({
+      title: 'Update the ' + noun + ' “' + hit.label + '”',
+      detail: changes.join(', '),
+      refs: [DX.ref(hit.kind, hit.item, hit.label)],
+      commit: commit, verify: verify
+    });
+  }
+
   /* ------------------------------------------- acting on a resolved item */
 
   function describeHit(hit) {
@@ -20994,6 +21381,40 @@ body::before {
 
   function safePreview(finding) {
     try { return finding.preview(); } catch (err) { return ''; }
+  }
+
+  var DAY_PARTS = {
+    morning: { from: 5 * 60, to: 12 * 60, label: 'morning' },
+    afternoon: { from: 12 * 60, to: 17 * 60, label: 'afternoon' },
+    evening: { from: 17 * 60, to: 23 * 60, label: 'evening' },
+    day: { from: 0, to: 24 * 60, label: 'day' }
+  };
+
+  function partOfDay(part) {
+    return DAY_PARTS[String(part || 'day').toLowerCase()] || DAY_PARTS.day;
+  }
+
+  /* A free slot on this day but outside the window being cleared; failing
+     that, the next few days. */
+  function firstFreeOutside(day, window, minutes, claimed) {
+    for (var d = 0; d < 7; d++) {
+      var target = T.addDays(day, d);
+      var slots = SCHED.freeSlots(target, { minMinutes: minutes });
+      for (var i = 0; i < slots.length; i++) {
+        var cursor = T.snap(slots[i].start, 15);
+        if (cursor < slots[i].start) cursor = T.addMinutes(cursor, 15);
+        var guard = 0;
+        while (T.addMinutes(cursor, minutes) <= slots[i].end && guard++ < 32) {
+          var end = T.addMinutes(cursor, minutes);
+          var insideCleared = d === 0 &&
+            T.minutesOfDay(cursor) < window.to && T.minutesOfDay(end) > window.from;
+          var clash = claimed.some(function (c) { return T.overlaps(cursor, end, c.start, c.end); });
+          if (!insideCleared && !clash) return new Date(cursor);
+          cursor = T.addMinutes(cursor, 15);
+        }
+      }
+    }
+    return null;
   }
 
   function firstFreeOn(day, minutes, claimed) {
@@ -21352,21 +21773,83 @@ body::before {
       }
     },
     {
-      id: 'move_event',
-      test: /\b(move|reschedule|shift|push|bump)\b/i,
+      /* A question about one specific thing — the commonest thing anyone asks
+         an assistant, and previously answered with "tell me more about that?" */
+      id: 'describe',
+      test: function (text) {
+        // "when is my next free two hours" asks about availability, not about
+        // a particular thing — that belongs to the free-time search.
+        if (/\b(free|available|open|spare|gap)\b/i.test(text)) return false;
+        return /\b(what time|when|how long|where|what'?s the (time|date|length)|how much time)\b[^.?]*\b(is|are|was|does|do)\b/i.test(text);
+      },
       steps: function (text) {
-        var when = parseWhen(text);
-        var clock = parseClock(text);
-        var event = subject(text, [
-          /\b(can you |please )?(move|reschedule|shift|push|bump)\b/i,
-          /\bto\s+(next\s+|this\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|today|\d{4}-\d{2}-\d{2}).*$/i,
-          /\b(to|at|from)\s+\d{1,2}(:\d{2})?\s*(am|pm)?\b.*$/i,
-          /\b(back|forward|later|earlier)\b/i, /\bmy\b/i
+        var aspect = /\bhow long|how much time|what'?s the length\b/i.test(text) ? 'duration'
+          : /\bwhere\b/i.test(text) ? 'where' : 'when';
+        var item = subject(text, [
+          /\b(what time|when|how long|where|what'?s the (time|date|length)|how much time)\b/i,
+          /\b(is|are|was|does|do)\b/i, /\bmy\b/i, /\bthe\b/i, /\bnext\b/i, /\bscheduled\b/i,
+          /\b(for|at|on)\b\s*$/i
         ]);
-        var args = { event: event };
-        if (when) args.when = when;
-        if (clock) args.time = clock;
-        return [{ text: 'Move “' + event + '”', tool: 'calendar.move_event', args: args }];
+        return [{
+          text: 'Look up “' + item + '”',
+          tool: 'calendar.describe_item',
+          args: { item: item, aspect: aspect }
+        }];
+      }
+    },
+    {
+      /* "Clear my afternoon" — a window, not a named event. */
+      id: 'clear_period',
+      test: /\b(clear|free up|empty|wipe|open up)\b[^.]*\b(morning|afternoon|evening|day|schedule|calendar)\b/i,
+      steps: function (text) {
+        var part = /\bmorning\b/i.test(text) ? 'morning'
+          : /\bafternoon\b/i.test(text) ? 'afternoon'
+            : /\bevening\b|\btonight\b/i.test(text) ? 'evening' : 'day';
+        var when = parseWhen(text) || 'today';
+        return [{
+          text: 'Clear the ' + part, tool: 'calendar.clear_period',
+          args: { date: when, part: part }
+        }];
+      }
+    },
+    {
+      /* Every kind of edit — time, day, length, name — read from one sentence. */
+      id: 'edit_event',
+      test: function (text) {
+        if (!JV.EDITS.looksLikeEdit(text)) return false;
+        // "make", "set" and "put" create as often as they modify. When the
+        // sentence could be either, let the data decide: it is an edit only if
+        // the thing named is already there.
+        if (POLITE_CREATE.test(text)) {
+          var spec = JV.EDITS.parse(text);
+          if (!spec.item) return false;
+          try {
+            return JV.DX.findAnything(spec.item, { kinds: ['event', 'task', 'deadline'] }).length > 0;
+          } catch (err) { return false; }
+        }
+        return true;
+      },
+      steps: function (text) {
+        var spec = JV.EDITS.parse(text);
+        var args = { item: spec.item };
+        if (spec.when !== undefined) args.when = spec.when;
+        if (spec.date !== undefined) args.date = spec.date;
+        if (spec.shift !== null && spec.shift !== undefined) args.shift = spec.shift;
+        if (spec.duration !== null && spec.duration !== undefined) args.duration = spec.duration;
+        if (spec.stretch !== null && spec.stretch !== undefined) args.stretch = spec.stretch;
+        if (spec.title) args.title = spec.title;
+        if (spec.travel !== undefined) args.travel = spec.travel;
+
+        // "Change the time of my dentist appointment" names no new time, so
+        // ask for one rather than guessing at a slot.
+        if (!spec.hasEdit) {
+          return [{
+            text: 'Ask what to change about “' + spec.item + '”',
+            tool: 'calendar.get_day', args: {}, clarify:
+              'What would you like to change about “' + spec.item + '” — the time, the day, how long it runs, or its name?'
+          }];
+        }
+        return [{ text: 'Update “' + spec.item + '”', tool: 'calendar.edit_event', args: args }];
       }
     },
     {
@@ -21389,23 +21872,6 @@ body::before {
         var args = { item: item };
         if (kind) args.kind = kind;
         return [{ text: 'Delete “' + item + '”', tool: 'calendar.delete_item', args: args }];
-      }
-    },
-    {
-      id: 'update_event',
-      test: /\b(rename|call it|change the (name|title|length)|make (it|my)\b[^.]*\b(minutes?|hours?)|shorten|lengthen|extend)\b/i,
-      steps: function (text) {
-        var minutes = parseDuration(text);
-        var renameTo = (text.match(/\b(?:rename\s+.*?\s+to|call it)\s+(.+)$/i) || [])[1];
-        var event = subject(text, [
-          /\b(rename|call it)\b.*$/i, /\bchange the (name|title|length) of\b/i,
-          /\b(make|shorten|lengthen|extend)\b/i, /\bto\s+\d+.*$/i,
-          /\b\d+\s*(minutes?|mins?|hours?|hrs?)\b/i, /\bmy\b/i
-        ]);
-        var args = { event: event };
-        if (minutes) args.minutes = minutes;
-        if (renameTo) args.title = renameTo.trim();
-        return [{ text: 'Update “' + event + '”', tool: 'calendar.update_event', args: args }];
       }
     },
     {
@@ -21650,7 +22116,7 @@ body::before {
     },
     {
       id: 'recurring',
-      test: /\bevery\s+(day|week|month|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d+\s+(days|weeks))\b/i,
+      test: /\bevery\s+(day|week|month|weekday|weekend|other day|morning|evening|monday|tuesday|wednesday|thursday|friday|saturday|sunday|\d+\s+(days|weeks))\b/i,
       steps: function (text) {
         var body = subject(text, [/^\s*(add|create|new|book|set up|put|schedule)\b/i]);
         return [{ text: 'Create a repeating event', tool: 'calendar.create_recurring_event', args: { text: body || text } }];
@@ -21757,7 +22223,7 @@ body::before {
       // task called "two hours of studying". Let the specific planners look
       // first, then fall through to plain creation.
       var intents = POLITE_CREATE.test(segment)
-        ? [byId('recurring'), byId('sessions'), byId('plan_week'), byId('plan_day'), byId('create')].concat(INTENTS)
+        ? [byId('recurring'), byId('edit_event'), byId('sessions'), byId('plan_week'), byId('plan_day'), byId('create')].concat(INTENTS)
         : INTENTS;
 
       // A statement only reaches the few intents that are unambiguous in
@@ -21796,6 +22262,14 @@ body::before {
     });
     if (vague) {
       return { steps: steps, confidence: 0.3, matched: matched, clarify: 'Which one did you mean?' };
+    }
+
+    // A step may carry a question instead of an action — "change the time of
+    // my dentist appointment" names no new time, and guessing one is worse
+    // than asking.
+    var asking = steps.filter(function (st) { return st.clarify; })[0];
+    if (asking) {
+      return { steps: [], confidence: 0.34, matched: matched, clarify: asking.clarify };
     }
 
     return {
@@ -21853,6 +22327,287 @@ body::before {
   JV.RemoteProvider = RemoteProvider;
   JV.parseDuration = parseDuration;
   JV.INTENTS = INTENTS;
+})(window);
+
+
+
+/* ========================================================================
+   js/jarvis/edits.js
+   ======================================================================== */
+/* Cadence · JARVIS — reading an edit out of a sentence.
+
+   "Change my dentist appointment to 5pm", "make it half an hour", "push it
+   back an hour", "start at 4 and run for 90 minutes" — these are all one kind
+   of request, and a person hearing them has no trouble. The earlier build had
+   them scattered across three intents with a clock parser that only understood
+   "at 4", which is why "move it to 4:30" moved the event to the wrong day.
+
+   This file reads every edit dimension out of one sentence at once:
+
+     when        an absolute time      "to 5pm", "at 3:15", "half past four"
+     date        an absolute day       "to Tuesday", "on the 14th"
+     shift       a relative move       "push back an hour", "30 min earlier"
+     duration    an absolute length    "make it 30 minutes", "an hour long"
+     stretch     a relative length     "extend by 20", "shorten by a quarter"
+     title       a rename              "rename it to X", "call it X"
+
+   Anything it cannot find is left undefined so the caller keeps what the event
+   already had. */
+(function (global) {
+  'use strict';
+
+  var JV = global.JV = global.JV || {};
+
+  var WORD_NUM = {
+    a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7,
+    eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, quarter: 0.25, half: 0.5
+  };
+
+  function num(word) {
+    if (word === undefined || word === null) return null;
+    var w = String(word).toLowerCase();
+    if (WORD_NUM[w] !== undefined) return WORD_NUM[w];
+    var n = parseFloat(w);
+    return isFinite(n) ? n : null;
+  }
+
+  /* ------------------------------------------------------------ duration */
+
+  /* Minutes from "90 minutes", "an hour and a half", "1.5 hrs", "half an hour",
+     "a quarter of an hour". */
+  function minutesFrom(text) {
+    var s = String(text || '').toLowerCase();
+
+    if (/\bhalf an hour\b|\bhalf hour\b/.test(s)) return 30;
+    if (/\bquarter of an hour\b|\bquarter hour\b/.test(s)) return 15;
+
+    var both = s.match(/\b(\d+|an?|one|two|three|four|five|six)\s*(?:hours?|hrs?|h)\s*(?:and\s*)?(?:a\s*)?(half|quarter|\d+)\s*(?:minutes?|mins?)?\b/);
+    if (both) {
+      var h = num(both[1]);
+      var extra = both[2] === 'half' ? 30 : both[2] === 'quarter' ? 15 : num(both[2]);
+      if (h !== null && extra !== null) return Math.round(h * 60 + extra);
+    }
+
+    var hours = s.match(/\b(\d+(?:\.\d+)?|an?|one|two|three|four|five|six|seven|eight|half|quarter)\s*(?:-|\s)?\s*(?:hours?|hrs?|h)\b/);
+    if (hours) {
+      var n = num(hours[1]);
+      if (n !== null) return Math.round(n * 60);
+    }
+
+    var mins = s.match(/\b(\d+)\s*(?:-|\s)?\s*(?:minutes?|mins?|m)\b/);
+    if (mins) return parseInt(mins[1], 10);
+
+    return null;
+  }
+
+  /* --------------------------------------------------------------- clock */
+
+  var NAMED_TIME = {
+    noon: 12 * 60, midday: 12 * 60, midnight: 0,
+    breakfast: 8 * 60, lunch: 12 * 60 + 30, dinner: 18 * 60 + 30, teatime: 16 * 60
+  };
+
+  /* Minutes-of-day from a clock phrase, or null. Understands "5pm", "4:30",
+     "3:15 pm", "16:00", "half past four", "quarter to five", "noon". */
+  function clockFrom(text, opts) {
+    opts = opts || {};
+    var s = String(text || '').toLowerCase();
+
+    var named = s.match(/\b(noon|midday|midnight|lunch|dinner|breakfast|teatime)\b/);
+    if (named) return NAMED_TIME[named[1]];
+
+    var past = s.match(/\b(half|quarter|\d{1,2})\s+(past|to|after|before)\s+(\d{1,2}|noon|midday)\b/);
+    if (past) {
+      var base = past[3] === 'noon' || past[3] === 'midday' ? 12 : parseInt(past[3], 10);
+      var off = past[1] === 'half' ? 30 : past[1] === 'quarter' ? 15 : parseInt(past[1], 10);
+      var mins = base * 60 + (/(to|before)/.test(past[2]) ? -off : off);
+      return normaliseHour(mins, s, opts);
+    }
+
+    // An explicit clock, optionally introduced by to/at/from/until/for.
+    var m = s.match(/\b(?:to|at|from|until|till|by|around|about)?\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm|a\.m\.|p\.m\.)?\b/);
+    if (!m) return null;
+
+    // A bare number with no meridiem and no colon is only a time when the
+    // sentence framed it as one — "to 4" yes, "by 30 minutes" no.
+    var framed = /\b(?:to|at|from|until|till|starting|start(?:s|ing)? at|by)\s*$/.test(
+      s.slice(0, m.index + (m[0].length - m[0].trimStart().length))
+    ) || /\b(?:to|at|from|until|till|around|about)\b/.test(m[0]);
+    if (!m[2] && !m[3] && !framed) return null;
+
+    var hour = parseInt(m[1], 10);
+    var minute = m[2] ? parseInt(m[2], 10) : 0;
+    if (hour > 23 || minute > 59) return null;
+
+    var mer = (m[3] || '').replace(/\./g, '');
+    if (mer === 'pm' && hour < 12) hour += 12;
+    if (mer === 'am' && hour === 12) hour = 0;
+    if (!mer) return normaliseHour(hour * 60 + minute, s, opts);
+    return hour * 60 + minute;
+  }
+
+  /* A bare "4" almost always means the afternoon in a diary; "9" means the
+     morning. Anchor to the event's own time where we have one. */
+  function normaliseHour(mins, source, opts) {
+    if (mins < 0) mins += 24 * 60;
+    var hour = Math.floor(mins / 60);
+    if (hour > 12) return mins;
+    if (/\b(am|morning)\b/.test(source)) return mins;
+    if (/\b(pm|afternoon|evening|tonight)\b/.test(source)) {
+      return hour < 12 ? mins + 12 * 60 : mins;
+    }
+    // 1–7 reads as afternoon, 8–12 as morning — the usual diary convention.
+    if (hour >= 1 && hour <= 7) return mins + 12 * 60;
+    return mins;
+  }
+
+  /* ---------------------------------------------------------- direction */
+
+  var LATER = /\b(back|later|delay|postpone|push (?:it |them )?back|put back)\b/i;
+  var EARLIER = /\b(earlier|sooner|forward|up|bring forward|move up|ahead)\b/i;
+
+  /* Minutes to shift the event by: positive later, negative earlier. */
+  function shiftFrom(text) {
+    var s = String(text || '');
+    // Only read a shift when the sentence is talking about moving in time.
+    if (!/\b(push|move|shift|bump|delay|postpone|bring|put|make it|nudge)\b/i.test(s)) return null;
+    if (!LATER.test(s) && !EARLIER.test(s)) return null;
+
+    var amount = minutesFrom(s);
+    if (amount === null) return null;
+
+    // "push back" wins over a stray "forward" elsewhere in the sentence.
+    var later = /\bpush (?:it |them )?back\b|\b(back|later|delay|postpone|put back)\b/i.test(s);
+    return later ? amount : -amount;
+  }
+
+  /* Relative length change: "extend by 20", "shorten by a quarter of an hour",
+     "add 15 minutes", "cut it by half an hour". */
+  function stretchFrom(text) {
+    var s = String(text || '');
+    var grow = /\b(extend|lengthen|add|increase|stretch|give it)\b/i.test(s);
+    var shrink = /\b(shorten|cut|trim|reduce|shave|take)\b/i.test(s);
+    if (!grow && !shrink) return null;
+    var amount = minutesFrom(s);
+    if (amount === null) return null;
+    return shrink ? -amount : amount;
+  }
+
+  /* Absolute length: "make it 30 minutes", "an hour long", "run for 90 mins". */
+  function durationFrom(text) {
+    var s = String(text || '');
+    if (stretchFrom(s) !== null) return null;          // relative, not absolute
+    var m = s.match(/\b(?:make|set|book|run|last|go)\b[^.]*?\b(?:for|to|it|them)?\s*((?:\d+(?:\.\d+)?|an?|one|two|three|four|five|six|half|quarter)[^.]{0,18}?(?:hours?|hrs?|h|minutes?|mins?))\b/i);
+    if (m) return minutesFrom(m[1]);
+    m = s.match(/\b((?:\d+(?:\.\d+)?|an?|one|two|three|four|five|six|half|quarter)[^.]{0,18}?(?:hours?|hrs?|minutes?|mins?))\s+long\b/i);
+    if (m) return minutesFrom(m[1]);
+    m = s.match(/\bfor\s+((?:\d+(?:\.\d+)?|an?|one|two|three|four|five|six|half|quarter)[^.]{0,18}?(?:hours?|hrs?|h|minutes?|mins?))\b/i);
+    if (m) return minutesFrom(m[1]);
+    return null;
+  }
+
+  /* ---------------------------------------------------------- the whole */
+
+  var EDIT_VERB = /\b(change|move|reschedule|shift|push|bump|delay|postpone|bring|set|make|rename|call|shorten|lengthen|extend|cut|trim|reduce|adjust|update|edit|nudge|put)\b/i;
+
+  var PRONOUN_SUBJECT = /\b(it|them|that|this|those)\b/i;
+
+  /* Strip everything that describes the edit, leaving the thing being edited.
+     When nothing survives but the sentence pointed at something ("move it to
+     5pm"), hand back the pronoun so the resolver can use what is in focus. */
+  function subjectOf(text) {
+    var stripped = stripSubject(text);
+    if (!stripped && PRONOUN_SUBJECT.test(text)) return 'it';
+    return stripped;
+  }
+
+  function stripSubject(text) {
+    return String(text || '')
+      .replace(/\b(actually|instead|please|just|now|then|maybe|also)\b/gi, ' ')
+      // "give me 20 minutes before X to get there" — everything but X.
+      .replace(/^\s*(?:give me|leave|allow|add)\s+(?:\d+|an?|one|two|three|half|quarter)[^.]{0,14}?(?:hours?|hrs?|minutes?|mins?)\s+(?:before|ahead of)\s*/i, ' ')
+      .replace(/\bto get (?:there|to)\b.*$/i, ' ')
+      .replace(/^\s*(?:(?:can|could|would|will)\s+(?:you|u)\s+|please\s+|hey\s+|pls\s+)*/i, '')
+      // The new name has to go before the verb is stripped, or the pattern
+      // that recognises it loses its anchor.
+      .replace(/\bto\s+[^.]*$/i, function (tail, offset, whole) {
+        return /\b(rename|call)\b/i.test(whole.slice(0, offset)) ? ' ' : tail;
+      })
+      .replace(EDIT_VERB, ' ')
+      .replace(/\bto\s+(?:\d{1,2}(?::\d{2})?\s*(?:am|pm)?|noon|midday|midnight).*$/i, ' ')
+      .replace(/\b(?:at|from|until|till|by|around)\s+\d{1,2}(?::\d{2})?\s*(?:am|pm)?.*$/i, ' ')
+      .replace(/\b(?:half|quarter)\s+(?:past|to)\s+\w+.*$/i, ' ')
+      .replace(/\b(?:next|this|on)?\s*(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|today|tonight)\b.*$/i, ' ')
+      .replace(/\b(?:by|for)\s+(?:\d+(?:\.\d+)?|an?|one|two|three|four|five|six|half|quarter)[^.]{0,18}?(?:hours?|hrs?|h|minutes?|mins?)\b.*$/i, ' ')
+      .replace(/\b(?:\d+(?:\.\d+)?|an?|one|two|three|four|five|six|half|quarter)\s*(?:hours?|hrs?|h|minutes?|mins?)\b.*$/i, ' ')
+      .replace(/\b(back|earlier|later|forward|up|sooner|ahead|long|longer|shorter)\b/gi, ' ')
+      .replace(/\b(the|my|it|them|that|this|start|starts|starting|run|runs|running|and|to|of|time)\b/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .replace(/^[\s,.:;-]+|[\s,.!?:;-]+$/g, '')
+      .trim();
+  }
+
+  function renameTo(text) {
+    var m = String(text || '').match(/\b(?:rename\s+.*?\s+to|call\s+(?:it|them)?\s*)\s*["“']?([^"”'.!?]{1,60})["”']?\s*$/i);
+    return m ? m[1].trim() : null;
+  }
+
+  /* Read every dimension of an edit out of one sentence. */
+  function parse(text) {
+    var s = String(text || '');
+    var spec = { raw: s };
+
+    spec.item = subjectOf(s);
+    spec.title = renameTo(s);
+    spec.shift = shiftFrom(s);
+    spec.stretch = stretchFrom(s);
+    spec.duration = spec.stretch === null ? durationFrom(s) : null;
+
+    // A clock only counts when it is not just the duration read twice.
+    if (spec.shift === null) {
+      var timePart = s.match(/\b(?:to|at|from|starting at|starts at|start at|until|till|by|around)\s+[^.]{1,24}/i);
+      var clock = clockFrom(timePart ? timePart[0] : s);
+      if (clock !== null && !/\bby\s+(?:\d+(?:\.\d+)?|an?|one|two|three|half|quarter)[^.]{0,12}(?:hours?|hrs?|minutes?|mins?)\b/i.test(s)) {
+        spec.when = clock;
+      }
+    }
+
+    var day = s.match(/\b(?:to|on|for)\s+((?:next\s+|this\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|today))\b/i);
+    if (day) spec.date = day[1];
+    else if (/\b(tomorrow|today|tonight)\b/i.test(s)) {
+      spec.date = /\btomorrow\b/i.test(s) ? 'tomorrow' : 'today';
+    }
+
+    // "give me 20 minutes before the dentist appointment to get there" — travel
+    // time is a real field on a Cadence event, not a separate reminder.
+    var travel = s.match(/\b(?:give me|leave|allow|add)\s+((?:\d+|an?|one|two|three|half|quarter)[^.]{0,14}?(?:hours?|hrs?|minutes?|mins?))\s+(?:before|ahead of|to get to|to get there)/i);
+    if (travel) spec.travel = minutesFrom(travel[1]);
+
+    spec.hasEdit = spec.title !== null || spec.shift !== null || spec.stretch !== null ||
+      spec.duration !== null || spec.when !== undefined || spec.date !== undefined ||
+      spec.travel !== undefined;
+
+    return spec;
+  }
+
+  /* Does this sentence read as editing something that already exists? */
+  function looksLikeEdit(text) {
+    if (/\b(?:give me|leave|allow)\s+[^.]{1,20}(?:before|ahead of|to get to|to get there)/i.test(text)) return true;
+    if (!EDIT_VERB.test(text)) return false;
+    var spec = parse(text);
+    return spec.hasEdit || /\b(change|reschedule|move|rename)\b/i.test(text);
+  }
+
+  JV.EDITS = {
+    parse: parse,
+    looksLikeEdit: looksLikeEdit,
+    minutesFrom: minutesFrom,
+    clockFrom: clockFrom,
+    shiftFrom: shiftFrom,
+    stretchFrom: stretchFrom,
+    durationFrom: durationFrom,
+    subjectOf: subjectOf
+  };
 })(window);
 
 
