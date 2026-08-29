@@ -1,0 +1,18 @@
+{
+  "name": "grant-match-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI grant research analyst: live primary-source discovery, evidence-grounded verification, and a deterministic eligibility engine.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node server/index.mjs",
+    "dev": "node --watch server/index.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "test:watch": "node --test --watch \"test/*.test.mjs\"",
+    "fixtures": "node test/fixtures/server.mjs"
+  },
+  "dependencies": {}
+}

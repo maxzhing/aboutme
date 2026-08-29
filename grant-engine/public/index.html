@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grant Match Engine</title>
+<meta name="description" content="An AI grant research analyst: live primary-source search, evidence-grounded verification, and a deterministic eligibility engine.">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230d9488'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='system-ui' font-weight='700' fill='%23e8ecf4'>G</text></svg>">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">G</div><span>Grant Match Engine</span></div>
+    <div class="topbar-spacer"></div>
+    <nav class="topnav" role="tablist">
+      <button role="tab" data-view="intake" aria-selected="true">Search</button>
+      <button role="tab" data-view="results" aria-selected="false">Results</button>
+      <button role="tab" data-view="saved" aria-selected="false">Saved<span class="badge-count" id="savedCount" hidden>0</span></button>
+      <button role="tab" data-view="tracker" aria-selected="false">Tracker</button>
+      <button role="tab" data-view="alerts" aria-selected="false">Alerts<span class="badge-count" id="alertCount" hidden>0</span></button>
+    </nav>
+    <button class="icon-btn" id="themeToggle" title="Toggle light / dark" aria-label="Toggle theme">
+      <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M8 1.8a6.2 6.2 0 0 0 0 12.4z" fill="currentColor"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- ============================================================ INTAKE -->
+  <main class="view active" id="view-intake">
+    <div class="hero">
+      <h1>Find the grants you can actually win</h1>
+      <p class="lede">Describe your situation in your own words. This searches live funding sources, reads the funders' own pages, and tells you where you're eligible — and where you're not, with the reason.</p>
+      <div class="principle">
+        <span>Precision over quantity</span>
+        <span>Eligibility over keyword similarity</span>
+        <span>Primary sources over listing sites</span>
+        <span>Verified facts over assumptions</span>
+      </div>
+    </div>
+
+    <div class="intake">
+      <div class="card card-pad">
+        <label class="intake-label" for="description">Tell us about your project</label>
+        <p class="intake-hint">Write naturally — who you are, what you want to do, where, and roughly how much you need. Everything below is optional; anything you add sharpens the eligibility check.</p>
+        <textarea id="description" placeholder="e.g. I'm a high school student interested in robotics. I want funding to start a STEM outreach program for younger students in Maryland and need about $5,000."></textarea>
+        <div class="example-chips" id="exampleChips"></div>
+
+        <details class="more" id="detailsPanel">
+          <summary>Add specifics (improves eligibility accuracy)</summary>
+          <div>
+            <div class="field-grid">
+              <div class="field"><label for="applicantType">Applicant type</label><select id="applicantType"></select></div>
+              <div class="field"><label for="state">State / region</label><select id="state"></select></div>
+              <div class="field"><label for="age">Age</label><input type="number" id="age" min="1" max="110" placeholder="Only if relevant"></div>
+              <div class="field"><label for="citizenship">Citizenship / residency</label><input type="text" id="citizenship" placeholder="e.g. US citizen"></div>
+              <div class="field"><label for="organizationStatus">Organization status</label><select id="organizationStatus"></select></div>
+              <div class="field"><label for="educationLevel">Education level</label><select id="educationLevel"></select></div>
+              <div class="field"><label for="fundingNeeded">Funding needed (USD)</label><input type="text" id="fundingNeeded" placeholder="e.g. 5000"></div>
+              <div class="field"><label for="deadlinePreference">Deadline preference</label><select id="deadlinePreference"></select></div>
+              <div class="field"><label for="locationServed">Location served</label><input type="text" id="locationServed" placeholder="e.g. Baltimore County"></div>
+              <div class="field"><label for="previousAwards">Previous awards</label><input type="text" id="previousAwards" placeholder="Comma separated"></div>
+              <div class="field"><label for="specialQualifications">Special qualifications</label><input type="text" id="specialQualifications" placeholder="e.g. veteran-owned, rural"></div>
+              <div class="field"><label for="fundingPurpose">What the money is for</label><select id="fundingPurpose" multiple size="4"></select></div>
+            </div>
+            <p class="intake-hint" style="margin-top:14px">Demographic details are never collected up front. If a specific funder legally uses one as an eligibility factor, you'll be asked about it then — and told which grant is asking and why.</p>
+          </div>
+        </details>
+
+        <div class="btn-row">
+          <button class="btn" id="searchBtn">Research funding opportunities</button>
+          <button class="btn btn-secondary btn-sm" id="saveProfileBtn">Save profile &amp; enable alerts</button>
+        </div>
+      </div>
+
+      <div class="card card-pad capabilities" id="capabilities"></div>
+    </div>
+  </main>
+
+  <!-- =========================================================== RESEARCH -->
+  <main class="view" id="view-research">
+    <div class="research">
+      <h2 style="font-size:19px;margin-bottom:4px">Researching funding sources</h2>
+      <p class="dim small">Searching live sources, reading funders' own pages, and checking every requirement against your profile.</p>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="stage-list" id="stageList"></div>
+      <div class="btn-row"><button class="btn btn-secondary btn-sm" id="cancelBtn">Cancel</button></div>
+    </div>
+  </main>
+
+  <!-- ============================================================ RESULTS -->
+  <main class="view" id="view-results">
+    <div id="resultsContent"></div>
+  </main>
+
+  <!-- ============================================================== SAVED -->
+  <main class="view" id="view-saved"><div id="savedContent"></div></main>
+  <main class="view" id="view-tracker"><div id="trackerContent"></div></main>
+  <main class="view" id="view-alerts"><div id="alertsContent"></div></main>
+
+</div>
+<div id="modalRoot"></div>
+<script src="/app.js" type="module"></script>
+</body>
+</html>
