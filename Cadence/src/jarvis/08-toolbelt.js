@@ -325,6 +325,98 @@
       }
     });
 
+    /* The keyword reader hands over structured slots, so this tool never has
+       to re-read the sentence. That matters: the old path round-tripped the
+       whole phrase back through the one-off parser, which is what produced
+       "Invalid time value" on "a run every morning this week". */
+    def({
+      name: 'calendar.create_series',
+      description: 'Create a run of entries across a window ("gym for the whole week", "yoga every evening for two weeks").',
+      permission: 'calendar.write', mutates: true, lowRisk: true,
+      inputSchema: { text: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        var slots = JV.SLOTS.parse(args.text);
+        if (!slots.title) {
+          throw new JV.ToolError('I can see the schedule but not what to put in it — what should I call it?');
+        }
+        if (!slots.repeat) {
+          throw new JV.ToolError('I could not find a repeat or a window in that.');
+        }
+
+        var startDay = slots.from;
+        var startWall = slots.allDay ? T.startOfDay(startDay) : T.atMinutes(startDay, slots.timeOfDay);
+        var endWall = slots.allDay
+          ? T.endOfDay(startDay)
+          : T.addMinutes(startWall, slots.duration || 60);
+
+        var recurrence = R.normalize({
+          freq: slots.repeat.freq,
+          interval: slots.repeat.interval,
+          byDay: slots.repeat.byDay && slots.repeat.byDay.length ? slots.repeat.byDay : null,
+          until: T.iso(slots.until)
+        });
+
+        var payload = {
+          title: slots.title,
+          start: T.iso(startWall), end: T.iso(endWall),
+          allDay: slots.allDay,
+          recurrence: recurrence,
+          calendarId: 'cal_personal'
+        };
+
+        // Count the real occurrences rather than guessing — the number in the
+        // reply is the number the calendar will actually show.
+        function occurrences(ev) {
+          return R.expandEvent(ev, T.startOfDay(startDay), T.endOfDay(slots.until));
+        }
+        var preview = occurrences(Object.assign({ id: '__preview', exdates: [] }, payload));
+
+        var when = slots.allDay ? 'all day' : DX.fmtClock(startWall) +
+          (slots.duration ? ' for ' + DX.hours(slots.duration) : '');
+        var window_ = DX.fmtDay(startDay) + ' to ' + DX.fmtDay(slots.until);
+        var detail = R.describe(recurrence) + ', ' + when + ' · ' + window_ +
+          ' · ' + preview.length + (preview.length === 1 ? ' time' : ' times');
+
+        function commit() { return A.createEvent(payload); }
+        function verify(ev) {
+          var row = S.get('events', ev.id);
+          if (!row) return { ok: false, detail: 'The series is not in the calendar.' };
+          var real = occurrences(row);
+          if (!real.length) {
+            return { ok: false, detail: 'The series saved but produces no dates — nothing was added.' };
+          }
+          var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          var extras = [];
+          if (slots.rolled) {
+            extras.push('this ' + slots.rolled + ' is already over, so I used the next one');
+          }
+          if (slots.perWeek) {
+            extras.push('I spread them over ' + recurrence.byDay.map(function (d) { return DAYS[d]; }).join(' and ') +
+              ' — say “make it Tuesdays and Fridays” to change that');
+          }
+          if (slots.allDay) extras.push('no time was given, so these are all-day — say “at 7am” to pin them');
+          if (slots.openEnded) extras.push('no end was given, so it runs to ' + DX.fmtDay(slots.until));
+          return {
+            ok: true,
+            detail: 'Added “' + row.title + '” ' + real.length +
+              (real.length === 1 ? ' time' : ' times') + ', ' + window_ + '.' +
+              (extras.length ? ' (' + extras.join('; ') + ')' : '')
+          };
+        }
+
+        if (!ctx.dryRun) {
+          var ev = commit();
+          var v = verify(ev);
+          return { kind: 'written', headline: v.detail, verified: v.ok, lines: [payload.title + ' · ' + detail] };
+        }
+        return JV.proposal({
+          title: 'Add “' + slots.title + '” ' + preview.length + ' times',
+          detail: detail,
+          commit: commit, verify: verify
+        });
+      }
+    });
+
     def({
       name: 'calendar.update_event',
       description: 'Change an event’s title or length.',

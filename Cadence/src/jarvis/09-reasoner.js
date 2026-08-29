@@ -130,7 +130,7 @@
      few intents are allowed to fire from one, because they are unambiguous
      even in statement form. */
   var STATEMENT_START = /^\s*(i|i'?m|i'?ve|my|we|it|this|that|there|school|work|today|tomorrow|everything|everyone|nothing|no one)\b/i;
-  var STATEMENT_OK = ['project', 'reschedule', 'remember', 'recurring', 'research',
+  var STATEMENT_OK = ['project', 'reschedule', 'remember', 'recurring', 'series', 'research',
     'goal_add', 'goal_list', 'interests', 'ideas', 'idea_feedback', 'accept_idea',
     'idea_remood', 'surprise'];
 
@@ -551,6 +551,23 @@
       }
     },
     {
+      // Keyword-read series: any phrasing that carries a rhythm or a window,
+      // in any order. "for the whole week", "twice a week for a month",
+      // "every morning until Friday" all land here.
+      id: 'series',
+      test: function (text) {
+        return !!(JV.SLOTS && JV.SLOTS.looksLikeSeries(text));
+      },
+      steps: function (text) {
+        var slots = JV.SLOTS.parse(text);
+        return [{
+          text: 'Add “' + slots.title + '” across ' +
+            (slots.spanWord ? 'the ' + slots.spanWord : 'the window you gave'),
+          tool: 'calendar.create_series', args: { text: text }
+        }];
+      }
+    },
+    {
       /* Explicit multi-session work: "four study sessions before Friday",
          "two hours of studying tomorrow", "three hours this week for X". */
       id: 'sessions',
@@ -873,7 +890,7 @@
       // task called "two hours of studying". Let the specific planners look
       // first, then fall through to plain creation.
       var intents = POLITE_CREATE.test(segment)
-        ? [byId('recurring'), byId('edit_event'), byId('sessions'), byId('plan_week'), byId('plan_day'), byId('create')].concat(INTENTS)
+        ? [byId('series'), byId('recurring'), byId('edit_event'), byId('sessions'), byId('plan_week'), byId('plan_day'), byId('create')].concat(INTENTS)
         : INTENTS;
 
       // A statement only reaches the few intents that are unambiguous in
