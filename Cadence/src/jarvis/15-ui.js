@@ -187,6 +187,30 @@
     return row.childNodes.length ? row : null;
   }
 
+  /* A "done, and here is the undo" strip for changes made directly. */
+  function doneRow(output, turn, turnIndex) {
+    var undone = turn.undone && turn.undone[turnIndex];
+    var row = D.h('div.jv-done' + (output.verified === false ? '.is-bad' : ''));
+    row.appendChild(D.icon(output.verified === false ? 'alert' : 'check', 13));
+    row.appendChild(D.h('span.jv-done__text', {
+      text: undone ? 'Undone.' : output.headline
+    }));
+
+    if (!undone && output.verified !== false) {
+      row.appendChild(D.h('button.jv-done__undo', {
+        type: 'button',
+        onclick: function () {
+          A.undo();
+          turn.undone = turn.undone || {};
+          turn.undone[turnIndex] = true;
+          UI.toast('Undone');
+          afterChange();
+        }
+      }, 'Undo'));
+    }
+    return row;
+  }
+
   function refIcon(kind) {
     return {
       event: 'calendar', task: 'checkSquare', deadline: 'flag', note: 'note',
@@ -430,6 +454,12 @@
           // real record, so JARVIS's replies navigate the calendar.
           var refs = refsRow(task.output && task.output.refs);
           if (refs) block.appendChild(refs);
+
+          // Something was changed without being asked about first, so the way
+          // back has to be right there next to it.
+          if (task.output && task.output.kind === 'written') {
+            block.appendChild(doneRow(task.output, turn, i));
+          }
         });
 
         (run.proposals || []).forEach(function (entry, index) {

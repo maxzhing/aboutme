@@ -55,6 +55,12 @@
     this.timeoutMs = spec.timeoutMs || 8000;
     this.retries = spec.retries || 0;
     this.mutates = !!spec.mutates;
+    /* A low-risk write is one the person named explicitly, affecting a single
+       item, and undoable in one keystroke — "delete the dentist appointment",
+       "mark the essay done". Asking permission for those is friction, not
+       safety: they already said what they wanted. Bulk and generative changes
+       (planning a week, optimising, organising a dump) still propose. */
+    this.lowRisk = !!spec.lowRisk;
     this.summary = spec.summary || null;   // (args) -> human sentence, for proposals
     this._run = spec.run;
   }
@@ -165,7 +171,8 @@
       description: this.description,
       inputSchema: this.inputSchema,
       permission: this.permission || null,
-      mutates: this.mutates
+      mutates: this.mutates,
+      lowRisk: this.lowRisk
     };
   };
 

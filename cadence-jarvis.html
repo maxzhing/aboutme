@@ -3296,6 +3296,41 @@ body::before {
 .jv-ref:hover { border-color: var(--accent); color: var(--text); }
 .jv-ref span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* ----------------------------------------------------------- done strip */
+
+/* Shown when JARVIS changed something directly rather than asking first. The
+   undo sits next to the confirmation, not in a menu somewhere. */
+.jv-done {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--ok);
+  background: var(--ok-soft);
+  border-radius: var(--radius);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.jv-done.is-bad { border-color: var(--danger); background: var(--danger-soft); }
+.jv-done__text { flex: 1 1 auto; min-width: 0; }
+
+.jv-done__undo {
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.jv-done__undo:hover { border-color: var(--text-3); }
+
 /* --------------------------------------------------------- reply chips */
 
 /* Offered follow-ups. Warm, because they are JARVIS's suggestion rather than
@@ -17921,6 +17956,12 @@ body::before {
     this.timeoutMs = spec.timeoutMs || 8000;
     this.retries = spec.retries || 0;
     this.mutates = !!spec.mutates;
+    /* A low-risk write is one the person named explicitly, affecting a single
+       item, and undoable in one keystroke — "delete the dentist appointment",
+       "mark the essay done". Asking permission for those is friction, not
+       safety: they already said what they wanted. Bulk and generative changes
+       (planning a week, optimising, organising a dump) still propose. */
+    this.lowRisk = !!spec.lowRisk;
     this.summary = spec.summary || null;   // (args) -> human sentence, for proposals
     this._run = spec.run;
   }
@@ -18031,7 +18072,8 @@ body::before {
       description: this.description,
       inputSchema: this.inputSchema,
       permission: this.permission || null,
-      mutates: this.mutates
+      mutates: this.mutates,
+      lowRisk: this.lowRisk
     };
   };
 
@@ -18342,6 +18384,76 @@ body::before {
     return scored.length ? scored[0].p : null;
   }
 
+  /* Resolve a name across everything the calendar holds.
+
+     "Remove the library books thing" should work whether that is an event, a
+     task, a deadline or a habit — the person naming it does not think in
+     collections, and an assistant that only ever searched events would answer
+     "I could not find an event matching that" while the task sat right there. */
+  function findAnything(query, opts) {
+    opts = opts || {};
+    var kinds = opts.kinds || ['event', 'task', 'deadline', 'habit', 'note', 'project'];
+    var now = nowWall();
+    var out = [];
+
+    function consider(kind, item, title, when, penalty) {
+      var score = matchScore(title, query);
+      if (score < 0) return;
+      // Prefer things happening soon; a match from months ago is rarely meant.
+      var recency = when ? Math.min(20, Math.abs(T.diffDays(now, when)) * 0.4) : 4;
+      out.push({
+        kind: kind, item: item, label: title,
+        when: when || null,
+        score: score - recency - (penalty || 0)
+      });
+    }
+
+    if (kinds.indexOf('event') >= 0) {
+      findEvents(query, opts).forEach(function (inst) {
+        consider('event', inst, inst.title, inst.startWall, 0);
+      });
+    }
+    if (kinds.indexOf('task') >= 0) {
+      Q.activeTasks().forEach(function (t) {
+        consider('task', t, t.title, t.due ? T.w(t.due) : null, 0);
+      });
+    }
+    if (kinds.indexOf('deadline') >= 0) {
+      S.all('deadlines').filter(function (d) { return !d.done; }).forEach(function (d) {
+        consider('deadline', d, d.title, T.w(d.due), 0);
+      });
+    }
+    if (kinds.indexOf('habit') >= 0) {
+      S.all('habits').forEach(function (h) { consider('habit', h, h.title || h.name, null, 2); });
+    }
+    if (kinds.indexOf('note') >= 0) {
+      S.all('notes').forEach(function (n) { consider('note', n, n.title, null, 4); });
+    }
+    if (kinds.indexOf('project') >= 0) {
+      S.all('projects').forEach(function (p) { consider('project', p, p.name, p.due ? T.w(p.due) : null, 4); });
+    }
+
+    out.sort(function (a, b) { return b.score - a.score; });
+    return out;
+  }
+
+  function findOne(query, opts) {
+    var hits = findAnything(query, opts);
+    return hits.length ? hits[0] : null;
+  }
+
+  /* When two different things match nearly as well, saying which is meant is
+     better than picking one and deleting it. */
+  function isAmbiguous(hits) {
+    if (hits.length < 2) return false;
+    return (hits[0].score - hits[1].score) < 6 && hits[0].label !== hits[1].label;
+  }
+
+  var KIND_NOUN = {
+    event: 'event', task: 'task', deadline: 'deadline',
+    habit: 'habit', note: 'note', project: 'project'
+  };
+
   /* ------------------------------------------------------- verification */
 
   /* Re-read the store and confirm an expectation. Every mutating tool pairs
@@ -18413,6 +18525,8 @@ body::before {
     matchScore: matchScore, normalizeQuery: normalizeQuery, terms: terms,
     findEvent: findEvent, findEvents: findEvents,
     findTask: findTask, findTasks: findTasks, findProject: findProject,
+    findAnything: findAnything, findOne: findOne, isAmbiguous: isAmbiguous,
+    KIND_NOUN: KIND_NOUN,
     verifyEvents: verifyEvents, verifyCollection: verifyCollection,
     verifyGone: verifyGone, verifyMoved: verifyMoved,
     ref: ref, eventLine: eventLine, taskLine: taskLine
@@ -19729,7 +19843,7 @@ body::before {
     def({
       name: 'calendar.create_event',
       description: 'Create an event from a plain-language phrase.',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) { return createFromText(ctx, args.text, 'event'); }
     });
@@ -19737,7 +19851,7 @@ body::before {
     def({
       name: 'calendar.create_recurring_event',
       description: 'Create a repeating event ("every Tuesday at 5pm for six weeks").',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) {
         var payload = parseRecurring(args.text);
@@ -19761,7 +19875,7 @@ body::before {
     def({
       name: 'calendar.update_event',
       description: 'Change an event’s title or length.',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: {
         event: { type: 'string', required: true },
         title: { type: 'string' }, minutes: { type: 'number' }
@@ -19797,7 +19911,7 @@ body::before {
     def({
       name: 'calendar.move_event',
       description: 'Move an event to another day or time.',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: {
         event: { type: 'string', required: true },
         when: { type: 'string' }, time: { type: 'string' }
@@ -19832,7 +19946,7 @@ body::before {
     def({
       name: 'calendar.delete_event',
       description: 'Delete an event.',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: { event: { type: 'string', required: true } },
       run: function (ctx, args) {
         var inst = DX.findEvent(args.event);
@@ -19858,6 +19972,79 @@ body::before {
             }
             return DX.verifyGone('events', out.id, 'event');
           }
+        });
+      }
+    });
+
+    /* Delete whatever the person named, whichever collection it lives in. */
+    def({
+      name: 'calendar.delete_item',
+      description: 'Delete an event, task, deadline, habit, note or project by name.',
+      permission: 'calendar.write', mutates: true, lowRisk: true,
+      inputSchema: { item: { type: 'string', required: true }, kind: { type: 'string' } },
+      run: function (ctx, args) {
+        var hits = DX.findAnything(args.item, args.kind ? { kinds: [args.kind] } : {});
+        if (!hits.length) {
+          throw new JV.ToolError('I could not find anything called “' + args.item + '”.');
+        }
+        if (DX.isAmbiguous(hits)) {
+          throw new JV.ToolError('I found more than one match for “' + args.item + '”: ' +
+            hits.slice(0, 3).map(function (h) {
+              return '“' + h.label + '” (' + DX.KIND_NOUN[h.kind] + ')';
+            }).join(', ') + '. Which did you mean?');
+        }
+
+        var hit = hits[0];
+        var noun = DX.KIND_NOUN[hit.kind];
+        var detail = describeHit(hit);
+
+        if (!ctx.dryRun) {
+          var res = removeHit(hit);
+          var v = verifyRemoved(hit, res);
+          return { kind: 'written', headline: v.detail, verified: v.ok, lines: [] };
+        }
+        return JV.proposal({
+          title: 'Delete the ' + noun + ' “' + hit.label + '”',
+          detail: detail,
+          refs: [DX.ref(hit.kind, hit.item, hit.label)],
+          commit: function () { return removeHit(hit); },
+          verify: function (res) { return verifyRemoved(hit, res); }
+        });
+      }
+    });
+
+    /* Complete whatever the person named — a task, a deadline, or today's
+       instance of a habit. */
+    def({
+      name: 'calendar.complete_item',
+      description: 'Mark a task, deadline or habit done by name.',
+      permission: 'tasks.write', mutates: true, lowRisk: true,
+      inputSchema: { item: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        var hits = DX.findAnything(args.item, { kinds: ['task', 'deadline', 'habit'] });
+        if (!hits.length) {
+          throw new JV.ToolError('I could not find an open task, deadline or habit called “' + args.item + '”.');
+        }
+        if (DX.isAmbiguous(hits)) {
+          throw new JV.ToolError('More than one thing matches “' + args.item + '”: ' +
+            hits.slice(0, 3).map(function (h) { return '“' + h.label + '”'; }).join(', ') +
+            '. Which did you mean?');
+        }
+
+        var hit = hits[0];
+        var noun = DX.KIND_NOUN[hit.kind];
+
+        if (!ctx.dryRun) {
+          var res = completeHit(hit);
+          var v = verifyCompleted(hit);
+          return { kind: 'written', headline: v.detail, verified: v.ok, lines: [] };
+        }
+        return JV.proposal({
+          title: 'Complete “' + hit.label + '”',
+          detail: 'Marks the ' + noun + ' done.' + (hit.when ? ' Due ' + DX.fmtDay(hit.when) + '.' : ''),
+          refs: [DX.ref(hit.kind, hit.item, hit.label)],
+          commit: function () { return completeHit(hit); },
+          verify: function () { return verifyCompleted(hit); }
         });
       }
     });
@@ -19948,7 +20135,7 @@ body::before {
     def({
       name: 'calendar.create_task',
       description: 'Create a task from a plain-language phrase.',
-      permission: 'tasks.write', mutates: true,
+      permission: 'tasks.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) { return createFromText(ctx, args.text, 'task'); }
     });
@@ -19956,7 +20143,7 @@ body::before {
     def({
       name: 'calendar.create_deadline',
       description: 'Create a deadline from a plain-language phrase.',
-      permission: 'tasks.write', mutates: true,
+      permission: 'tasks.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) { return createFromText(ctx, args.text, 'deadline'); }
     });
@@ -19964,7 +20151,7 @@ body::before {
     def({
       name: 'calendar.create_note',
       description: 'Write a note.',
-      permission: 'notes.write', mutates: true,
+      permission: 'notes.write', mutates: true, lowRisk: true,
       inputSchema: { title: { type: 'string', required: true }, body: { type: 'string' } },
       run: function (ctx, args) {
         var payload = { title: args.title, body: args.body || '' };
@@ -19985,7 +20172,7 @@ body::before {
     def({
       name: 'calendar.complete_task',
       description: 'Mark a task done.',
-      permission: 'tasks.write', mutates: true,
+      permission: 'tasks.write', mutates: true, lowRisk: true,
       inputSchema: { task: { type: 'string', required: true } },
       run: function (ctx, args) {
         var task = DX.findTask(args.task);
@@ -20012,7 +20199,7 @@ body::before {
     def({
       name: 'calendar.capture',
       description: 'Drop a raw thought into the inbox to sort out later.',
-      permission: 'tasks.write', mutates: true,
+      permission: 'tasks.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) {
         if (!ctx.dryRun) { A.addCapture(args.text); return { kind: 'written', headline: 'Saved to your inbox.', verified: true, lines: [] }; }
@@ -20627,7 +20814,14 @@ body::before {
     if (!ctx.dryRun) {
       var made = create(payload);
       var v = DX.verifyCollection(collection, [made.id], type);
-      return { kind: 'written', headline: v.detail, verified: v.ok, lines: [payload.title + ' · ' + detail] };
+      return {
+        kind: 'written',
+        // Say what landed and when, not just that a write succeeded.
+        headline: v.ok ? 'Added “' + payload.title + '” — ' + detail + '.' : v.detail,
+        verified: v.ok,
+        refs: v.ok ? [DX.ref(type, made, payload.title)] : [],
+        lines: []
+      };
     }
     return JV.proposal({
       title: 'Create ' + type + ' “' + payload.title + '”',
@@ -20663,6 +20857,87 @@ body::before {
       }
     }
     return first;
+  }
+
+  /* ------------------------------------------- acting on a resolved item */
+
+  function describeHit(hit) {
+    switch (hit.kind) {
+      case 'event':
+        return hit.item.allDay
+          ? DX.fmtDay(hit.item.startWall) + ' · all day'
+          : DX.fmtDay(hit.item.startWall) + ' ' + DX.fmtSpan(hit.item.startWall, hit.item.endWall);
+      case 'task':
+        return hit.item.due ? 'Task, due ' + DX.fmtDay(T.w(hit.item.due)) : 'Task with no due date';
+      case 'deadline':
+        return 'Deadline on ' + DX.fmtDay(T.w(hit.item.due));
+      case 'project':
+        return 'Project — its tasks and notes are kept';
+      default:
+        return DX.KIND_NOUN[hit.kind].charAt(0).toUpperCase() + DX.KIND_NOUN[hit.kind].slice(1);
+    }
+  }
+
+  function removeHit(hit) {
+    var id = hit.item.seriesId || hit.item.id;
+    switch (hit.kind) {
+      case 'event':
+        // A single occurrence of a repeating event is removed from the series
+        // rather than deleting the whole series.
+        var repeats = !!hit.item.seriesId;
+        A.deleteEvent(hit.item, repeats ? 'this' : 'all');
+        return { id: id, repeats: repeats };
+      case 'task': A.deleteTask(id); return { id: id };
+      case 'deadline': A.deleteDeadline(id); return { id: id };
+      case 'habit': A.deleteHabit(id); return { id: id };
+      case 'note': A.deleteNote(id); return { id: id };
+      case 'project': A.deleteProject(id); return { id: id };
+      default: throw new JV.ToolError('I do not know how to delete that.');
+    }
+  }
+
+  var COLLECTION = {
+    event: 'events', task: 'tasks', deadline: 'deadlines',
+    habit: 'habits', note: 'notes', project: 'projects'
+  };
+
+  function verifyRemoved(hit, res) {
+    if (hit.kind === 'event' && res.repeats) {
+      return { ok: true, detail: 'That occurrence was removed from the series.' };
+    }
+    var gone = !S.get(COLLECTION[hit.kind], res.id);
+    return gone
+      ? { ok: true, detail: 'Deleted the ' + DX.KIND_NOUN[hit.kind] + ' “' + hit.label + '”.' }
+      : { ok: false, detail: 'The ' + DX.KIND_NOUN[hit.kind] + ' is still there — nothing was removed.' };
+  }
+
+  function completeHit(hit) {
+    switch (hit.kind) {
+      case 'task': A.completeTask(hit.item.id, true); return { id: hit.item.id };
+      case 'deadline': A.toggleDeadline(hit.item.id); return { id: hit.item.id };
+      case 'habit': A.toggleHabit(hit.item.id, T.key(DX.nowWall())); return { id: hit.item.id };
+      default: throw new JV.ToolError('That is not something that can be completed.');
+    }
+  }
+
+  function verifyCompleted(hit) {
+    if (hit.kind === 'task') {
+      var t = S.get('tasks', hit.item.id);
+      return t && t.status === 'completed'
+        ? { ok: true, detail: 'Marked “' + hit.label + '” done.' }
+        : { ok: false, detail: 'The task is still open.' };
+    }
+    if (hit.kind === 'deadline') {
+      var d = S.get('deadlines', hit.item.id);
+      return d && d.done
+        ? { ok: true, detail: 'Marked the deadline “' + hit.label + '” done.' }
+        : { ok: false, detail: 'The deadline is still open.' };
+    }
+    var h = S.get('habits', hit.item.id);
+    var key = T.key(DX.nowWall());
+    return h && h.log && h.log[key]
+      ? { ok: true, detail: 'Logged “' + hit.label + '” for today.' }
+      : { ok: false, detail: 'The habit was not logged.' };
   }
 
   function commitEvent(payload, detail) {
@@ -20921,6 +21196,22 @@ body::before {
   var STATEMENT_START = /^\s*(i|i'?m|i'?ve|my|we|it|this|that|there|school|work|today|tomorrow|everything|everyone|nothing|no one)\b/i;
   var STATEMENT_OK = ['project', 'reschedule', 'remember', 'recurring', 'research'];
 
+  /* "I finished the history essay" is a statement, but if it names something
+     actually on the list then it is also a completion — so look before
+     deciding. Checking the real data beats guessing from the wording. */
+  function statementExtras(text) {
+    var m = text.match(/\bi\s+(?:just\s+|finally\s+)?(?:finished|completed|did|am done with|'?ve finished|'?ve done)\s+(.+)$/i);
+    if (!m) return [];
+    var subject = m[1].replace(/[.!?]+$/, '').trim();
+    if (!subject) return [];
+    try {
+      var hits = JV.DX.findAnything(subject, { kinds: ['task', 'deadline', 'habit'] });
+      return hits.length ? ['complete'] : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
   function isStatement(text) {
     var s = String(text || '').trim();
     if (/\?\s*$/.test(s)) return false;                 // a question is not a statement
@@ -21079,13 +21370,25 @@ body::before {
       }
     },
     {
+      /* Deletion is type-agnostic: whatever they named, find it and remove it. */
       id: 'delete_event',
-      test: /\b(delete|cancel|remove|drop|call off|get rid of)\b/i,
+      test: /\b(delete|cancel|remove|drop|call off|get rid of|bin|scrap|take .{1,20} off)\b/i,
       steps: function (text) {
-        var event = subject(text, [
-          /\b(can you |please )?(delete|cancel|remove|drop|call off|get rid of)\b/i, /\bmy\b/i, /\bfrom (my )?calendar\b/i
+        var kind = /\btasks?\b/i.test(text) ? 'task'
+          : /\bevents?\b|\bappointments?\b|\bmeetings?\b/i.test(text) ? 'event'
+            : /\bdeadlines?\b/i.test(text) ? 'deadline'
+              : /\bnotes?\b/i.test(text) ? 'note'
+                : /\bhabits?\b/i.test(text) ? 'habit' : null;
+        var item = subject(text, [
+          /\b(can you |please )?(delete|cancel|remove|drop|call off|get rid of|bin|scrap|take)\b/i,
+          /\bthe (task|event|appointment|meeting|deadline|note|habit|project)\b/i,
+          /\b(about|called|named)\b/i,
+          /\boff (my|the) (list|calendar)\b/i,
+          /\bfrom (my )?(calendar|list)\b/i, /\bmy\b/i
         ]);
-        return [{ text: 'Delete “' + event + '”', tool: 'calendar.delete_event', args: { event: event } }];
+        var args = { item: item };
+        if (kind) args.kind = kind;
+        return [{ text: 'Delete “' + item + '”', tool: 'calendar.delete_item', args: args }];
       }
     },
     {
@@ -21107,14 +21410,17 @@ body::before {
     },
     {
       id: 'complete',
-      test: /\b(mark|tick|check)\b.*\b(done|off|complete)|^\s*(complete|finish|finished|completed|done with)\b|\bi (finished|completed|did)\b/i,
+      test: /\b(mark|tick|check|cross|scratch)\b[^.]*\b(done|off|complete)|^\s*(complete|finish|finished|completed|done with)\b|\bi (finished|completed|did)\b/i,
       steps: function (text) {
         var task = subject(text, [
           /^\s*(complete|finish|finished|completed|done with)\b/i,
-          /\b(mark|tick|check)\b/i, /\b(as )?(done|complete[d]?|off)\b/i,
-          /\bi (finished|completed|did)\b/i, /\bmy\b/i
+          /\b(mark|tick|check|cross|scratch)\b/i,
+          /\b(as |it )?(done|complete[d]?|off)\b/i,
+          /\bi (finished|completed|did)\b/i,
+          /\b(the|my)\s+(task|item)\b/i, /\bmy\b/i,
+          /\boff (my|the) list\b/i
         ]);
-        return [{ text: 'Mark “' + task + '” done', tool: 'calendar.complete_task', args: { task: task } }];
+        return [{ text: 'Mark “' + task + '” done', tool: 'calendar.complete_item', args: { item: task } }];
       }
     },
     {
@@ -21432,7 +21738,10 @@ body::before {
     // They are checked before the intent table because the table is loose
     // enough to catch them by accident, and treating "hey" as a search is
     // exactly the failure this routing exists to prevent.
-    if (SOCIAL.test(text) && !POLITE_CREATE.test(text)) {
+    // …unless the remark names something actually on the list. "I finished the
+    // history essay" is both social and a completion, and the useful half is
+    // the one that ticks it off.
+    if (SOCIAL.test(text) && !POLITE_CREATE.test(text) && !statementExtras(text).length) {
       return { mode: 'conversation', confidence: 0.9, matched: ['social'] };
     }
 
@@ -21454,9 +21763,10 @@ body::before {
       // A statement only reaches the few intents that are unambiguous in
       // statement form. Everything else about it is conversation.
       var statement = isStatement(segment);
+      var allowed = statement ? STATEMENT_OK.concat(statementExtras(segment)) : null;
 
       for (var i = 0; i < intents.length; i++) {
-        if (statement && STATEMENT_OK.indexOf(intents[i] && intents[i].id) < 0) continue;
+        if (statement && allowed.indexOf(intents[i] && intents[i].id) < 0) continue;
         if (intents[i] && matches(intents[i], segment)) {
           (intents[i].steps(segment) || []).forEach(function (s) { steps.push(s); });
           matched.push(intents[i].id);
@@ -22751,10 +23061,13 @@ body::before {
     };
   };
 
-  Agent.prototype.context = function () {
+  Agent.prototype.context = function (tool) {
+    // A low-risk write runs for real even when the agent is proposing: the
+    // person named the thing and the change is one undo away.
+    var dry = this.dryRun && !(tool && tool.lowRisk);
     return new JV.ToolContext({
       granted: this.config.permissions || [],
-      dryRun: this.dryRun
+      dryRun: dry
     });
   };
 
@@ -22765,7 +23078,8 @@ body::before {
         tool: name, ok: false, error: 'tool "' + name + '" is not available to ' + this.name
       });
     }
-    return this.tools.invoke(name, this.context(), args || {}).then(function (result) {
+    var tool = this.tools.get(name);
+    return this.tools.invoke(name, this.context(tool), args || {}).then(function (result) {
       if (!result.ok) self.health = Health.DEGRADED;
       return result;
     });
@@ -23947,6 +24261,30 @@ body::before {
     return row.childNodes.length ? row : null;
   }
 
+  /* A "done, and here is the undo" strip for changes made directly. */
+  function doneRow(output, turn, turnIndex) {
+    var undone = turn.undone && turn.undone[turnIndex];
+    var row = D.h('div.jv-done' + (output.verified === false ? '.is-bad' : ''));
+    row.appendChild(D.icon(output.verified === false ? 'alert' : 'check', 13));
+    row.appendChild(D.h('span.jv-done__text', {
+      text: undone ? 'Undone.' : output.headline
+    }));
+
+    if (!undone && output.verified !== false) {
+      row.appendChild(D.h('button.jv-done__undo', {
+        type: 'button',
+        onclick: function () {
+          A.undo();
+          turn.undone = turn.undone || {};
+          turn.undone[turnIndex] = true;
+          UI.toast('Undone');
+          afterChange();
+        }
+      }, 'Undo'));
+    }
+    return row;
+  }
+
   function refIcon(kind) {
     return {
       event: 'calendar', task: 'checkSquare', deadline: 'flag', note: 'note',
@@ -24190,6 +24528,12 @@ body::before {
           // real record, so JARVIS's replies navigate the calendar.
           var refs = refsRow(task.output && task.output.refs);
           if (refs) block.appendChild(refs);
+
+          // Something was changed without being asked about first, so the way
+          // back has to be right there next to it.
+          if (task.output && task.output.kind === 'written') {
+            block.appendChild(doneRow(task.output, turn, i));
+          }
         });
 
         (run.proposals || []).forEach(function (entry, index) {

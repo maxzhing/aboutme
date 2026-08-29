@@ -40,10 +40,13 @@
     };
   };
 
-  Agent.prototype.context = function () {
+  Agent.prototype.context = function (tool) {
+    // A low-risk write runs for real even when the agent is proposing: the
+    // person named the thing and the change is one undo away.
+    var dry = this.dryRun && !(tool && tool.lowRisk);
     return new JV.ToolContext({
       granted: this.config.permissions || [],
-      dryRun: this.dryRun
+      dryRun: dry
     });
   };
 
@@ -54,7 +57,8 @@
         tool: name, ok: false, error: 'tool "' + name + '" is not available to ' + this.name
       });
     }
-    return this.tools.invoke(name, this.context(), args || {}).then(function (result) {
+    var tool = this.tools.get(name);
+    return this.tools.invoke(name, this.context(tool), args || {}).then(function (result) {
       if (!result.ok) self.health = Health.DEGRADED;
       return result;
     });

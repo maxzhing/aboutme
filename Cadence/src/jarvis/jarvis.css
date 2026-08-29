@@ -190,6 +190,41 @@
 .jv-ref:hover { border-color: var(--accent); color: var(--text); }
 .jv-ref span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* ----------------------------------------------------------- done strip */
+
+/* Shown when JARVIS changed something directly rather than asking first. The
+   undo sits next to the confirmation, not in a menu somewhere. */
+.jv-done {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--ok);
+  background: var(--ok-soft);
+  border-radius: var(--radius);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.jv-done.is-bad { border-color: var(--danger); background: var(--danger-soft); }
+.jv-done__text { flex: 1 1 auto; min-width: 0; }
+
+.jv-done__undo {
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.jv-done__undo:hover { border-color: var(--text-3); }
+
 /* --------------------------------------------------------- reply chips */
 
 /* Offered follow-ups. Warm, because they are JARVIS's suggestion rather than

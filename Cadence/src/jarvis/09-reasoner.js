@@ -132,6 +132,22 @@
   var STATEMENT_START = /^\s*(i|i'?m|i'?ve|my|we|it|this|that|there|school|work|today|tomorrow|everything|everyone|nothing|no one)\b/i;
   var STATEMENT_OK = ['project', 'reschedule', 'remember', 'recurring', 'research'];
 
+  /* "I finished the history essay" is a statement, but if it names something
+     actually on the list then it is also a completion — so look before
+     deciding. Checking the real data beats guessing from the wording. */
+  function statementExtras(text) {
+    var m = text.match(/\bi\s+(?:just\s+|finally\s+)?(?:finished|completed|did|am done with|'?ve finished|'?ve done)\s+(.+)$/i);
+    if (!m) return [];
+    var subject = m[1].replace(/[.!?]+$/, '').trim();
+    if (!subject) return [];
+    try {
+      var hits = JV.DX.findAnything(subject, { kinds: ['task', 'deadline', 'habit'] });
+      return hits.length ? ['complete'] : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
   function isStatement(text) {
     var s = String(text || '').trim();
     if (/\?\s*$/.test(s)) return false;                 // a question is not a statement
@@ -290,13 +306,25 @@
       }
     },
     {
+      /* Deletion is type-agnostic: whatever they named, find it and remove it. */
       id: 'delete_event',
-      test: /\b(delete|cancel|remove|drop|call off|get rid of)\b/i,
+      test: /\b(delete|cancel|remove|drop|call off|get rid of|bin|scrap|take .{1,20} off)\b/i,
       steps: function (text) {
-        var event = subject(text, [
-          /\b(can you |please )?(delete|cancel|remove|drop|call off|get rid of)\b/i, /\bmy\b/i, /\bfrom (my )?calendar\b/i
+        var kind = /\btasks?\b/i.test(text) ? 'task'
+          : /\bevents?\b|\bappointments?\b|\bmeetings?\b/i.test(text) ? 'event'
+            : /\bdeadlines?\b/i.test(text) ? 'deadline'
+              : /\bnotes?\b/i.test(text) ? 'note'
+                : /\bhabits?\b/i.test(text) ? 'habit' : null;
+        var item = subject(text, [
+          /\b(can you |please )?(delete|cancel|remove|drop|call off|get rid of|bin|scrap|take)\b/i,
+          /\bthe (task|event|appointment|meeting|deadline|note|habit|project)\b/i,
+          /\b(about|called|named)\b/i,
+          /\boff (my|the) (list|calendar)\b/i,
+          /\bfrom (my )?(calendar|list)\b/i, /\bmy\b/i
         ]);
-        return [{ text: 'Delete “' + event + '”', tool: 'calendar.delete_event', args: { event: event } }];
+        var args = { item: item };
+        if (kind) args.kind = kind;
+        return [{ text: 'Delete “' + item + '”', tool: 'calendar.delete_item', args: args }];
       }
     },
     {
@@ -318,14 +346,17 @@
     },
     {
       id: 'complete',
-      test: /\b(mark|tick|check)\b.*\b(done|off|complete)|^\s*(complete|finish|finished|completed|done with)\b|\bi (finished|completed|did)\b/i,
+      test: /\b(mark|tick|check|cross|scratch)\b[^.]*\b(done|off|complete)|^\s*(complete|finish|finished|completed|done with)\b|\bi (finished|completed|did)\b/i,
       steps: function (text) {
         var task = subject(text, [
           /^\s*(complete|finish|finished|completed|done with)\b/i,
-          /\b(mark|tick|check)\b/i, /\b(as )?(done|complete[d]?|off)\b/i,
-          /\bi (finished|completed|did)\b/i, /\bmy\b/i
+          /\b(mark|tick|check|cross|scratch)\b/i,
+          /\b(as |it )?(done|complete[d]?|off)\b/i,
+          /\bi (finished|completed|did)\b/i,
+          /\b(the|my)\s+(task|item)\b/i, /\bmy\b/i,
+          /\boff (my|the) list\b/i
         ]);
-        return [{ text: 'Mark “' + task + '” done', tool: 'calendar.complete_task', args: { task: task } }];
+        return [{ text: 'Mark “' + task + '” done', tool: 'calendar.complete_item', args: { item: task } }];
       }
     },
     {
@@ -643,7 +674,10 @@
     // They are checked before the intent table because the table is loose
     // enough to catch them by accident, and treating "hey" as a search is
     // exactly the failure this routing exists to prevent.
-    if (SOCIAL.test(text) && !POLITE_CREATE.test(text)) {
+    // …unless the remark names something actually on the list. "I finished the
+    // history essay" is both social and a completion, and the useful half is
+    // the one that ticks it off.
+    if (SOCIAL.test(text) && !POLITE_CREATE.test(text) && !statementExtras(text).length) {
       return { mode: 'conversation', confidence: 0.9, matched: ['social'] };
     }
 
@@ -665,9 +699,10 @@
       // A statement only reaches the few intents that are unambiguous in
       // statement form. Everything else about it is conversation.
       var statement = isStatement(segment);
+      var allowed = statement ? STATEMENT_OK.concat(statementExtras(segment)) : null;
 
       for (var i = 0; i < intents.length; i++) {
-        if (statement && STATEMENT_OK.indexOf(intents[i] && intents[i].id) < 0) continue;
+        if (statement && allowed.indexOf(intents[i] && intents[i].id) < 0) continue;
         if (intents[i] && matches(intents[i], segment)) {
           (intents[i].steps(segment) || []).forEach(function (s) { steps.push(s); });
           matched.push(intents[i].id);

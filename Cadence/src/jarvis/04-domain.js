@@ -225,6 +225,76 @@
     return scored.length ? scored[0].p : null;
   }
 
+  /* Resolve a name across everything the calendar holds.
+
+     "Remove the library books thing" should work whether that is an event, a
+     task, a deadline or a habit — the person naming it does not think in
+     collections, and an assistant that only ever searched events would answer
+     "I could not find an event matching that" while the task sat right there. */
+  function findAnything(query, opts) {
+    opts = opts || {};
+    var kinds = opts.kinds || ['event', 'task', 'deadline', 'habit', 'note', 'project'];
+    var now = nowWall();
+    var out = [];
+
+    function consider(kind, item, title, when, penalty) {
+      var score = matchScore(title, query);
+      if (score < 0) return;
+      // Prefer things happening soon; a match from months ago is rarely meant.
+      var recency = when ? Math.min(20, Math.abs(T.diffDays(now, when)) * 0.4) : 4;
+      out.push({
+        kind: kind, item: item, label: title,
+        when: when || null,
+        score: score - recency - (penalty || 0)
+      });
+    }
+
+    if (kinds.indexOf('event') >= 0) {
+      findEvents(query, opts).forEach(function (inst) {
+        consider('event', inst, inst.title, inst.startWall, 0);
+      });
+    }
+    if (kinds.indexOf('task') >= 0) {
+      Q.activeTasks().forEach(function (t) {
+        consider('task', t, t.title, t.due ? T.w(t.due) : null, 0);
+      });
+    }
+    if (kinds.indexOf('deadline') >= 0) {
+      S.all('deadlines').filter(function (d) { return !d.done; }).forEach(function (d) {
+        consider('deadline', d, d.title, T.w(d.due), 0);
+      });
+    }
+    if (kinds.indexOf('habit') >= 0) {
+      S.all('habits').forEach(function (h) { consider('habit', h, h.title || h.name, null, 2); });
+    }
+    if (kinds.indexOf('note') >= 0) {
+      S.all('notes').forEach(function (n) { consider('note', n, n.title, null, 4); });
+    }
+    if (kinds.indexOf('project') >= 0) {
+      S.all('projects').forEach(function (p) { consider('project', p, p.name, p.due ? T.w(p.due) : null, 4); });
+    }
+
+    out.sort(function (a, b) { return b.score - a.score; });
+    return out;
+  }
+
+  function findOne(query, opts) {
+    var hits = findAnything(query, opts);
+    return hits.length ? hits[0] : null;
+  }
+
+  /* When two different things match nearly as well, saying which is meant is
+     better than picking one and deleting it. */
+  function isAmbiguous(hits) {
+    if (hits.length < 2) return false;
+    return (hits[0].score - hits[1].score) < 6 && hits[0].label !== hits[1].label;
+  }
+
+  var KIND_NOUN = {
+    event: 'event', task: 'task', deadline: 'deadline',
+    habit: 'habit', note: 'note', project: 'project'
+  };
+
   /* ------------------------------------------------------- verification */
 
   /* Re-read the store and confirm an expectation. Every mutating tool pairs
@@ -296,6 +366,8 @@
     matchScore: matchScore, normalizeQuery: normalizeQuery, terms: terms,
     findEvent: findEvent, findEvents: findEvents,
     findTask: findTask, findTasks: findTasks, findProject: findProject,
+    findAnything: findAnything, findOne: findOne, isAmbiguous: isAmbiguous,
+    KIND_NOUN: KIND_NOUN,
     verifyEvents: verifyEvents, verifyCollection: verifyCollection,
     verifyGone: verifyGone, verifyMoved: verifyMoved,
     ref: ref, eventLine: eventLine, taskLine: taskLine

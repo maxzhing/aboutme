@@ -137,6 +137,32 @@ of changing anything. The console renders it and calls `commit` only on
 approval. Auto-apply exists, is off by default, and the composer says which
 mode is active. Everything remains undoable either way.
 
+### What it does directly, and what it asks about
+
+Not every change deserves a confirmation step. A tool declares `lowRisk` when
+the person named the thing, it affects one item, and it is one keystroke from
+being undone — "delete the dentist appointment", "mark the essay done", "add
+gym tomorrow at 7". Those run immediately and report what actually changed,
+with an **Undo** button sitting next to the confirmation.
+
+Generative and bulk changes still propose first and change nothing until
+approved: planning a day or a week, optimising the schedule, breaking a
+deadline into sessions, moving a whole day's events, organising a brain dump.
+
+### Finding what you meant
+
+"Remove the library books thing" should work whether that is an event, a task,
+a deadline or a habit — the person naming it does not think in collections.
+`findAnything` resolves a name across every collection at once, ranks by match
+quality and how soon the thing is, and refuses when two candidates are too
+close to call: *"I found more than one match … which did you mean?"* is better
+than deleting the wrong one.
+
+It also checks before deciding. "I finished the history essay" is a remark, but
+if it names something actually on the list it is also a completion — so JARVIS
+looks first, and ticks it off when it recognises it while staying purely
+conversational when it does not.
+
 ### Verify, then report
 
 A commit that throws no exception has confirmed nothing. Every proposal pairs

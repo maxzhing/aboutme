@@ -296,7 +296,7 @@
     def({
       name: 'calendar.create_event',
       description: 'Create an event from a plain-language phrase.',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) { return createFromText(ctx, args.text, 'event'); }
     });
@@ -304,7 +304,7 @@
     def({
       name: 'calendar.create_recurring_event',
       description: 'Create a repeating event ("every Tuesday at 5pm for six weeks").',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) {
         var payload = parseRecurring(args.text);
@@ -328,7 +328,7 @@
     def({
       name: 'calendar.update_event',
       description: 'Change an event’s title or length.',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: {
         event: { type: 'string', required: true },
         title: { type: 'string' }, minutes: { type: 'number' }
@@ -364,7 +364,7 @@
     def({
       name: 'calendar.move_event',
       description: 'Move an event to another day or time.',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: {
         event: { type: 'string', required: true },
         when: { type: 'string' }, time: { type: 'string' }
@@ -399,7 +399,7 @@
     def({
       name: 'calendar.delete_event',
       description: 'Delete an event.',
-      permission: 'calendar.write', mutates: true,
+      permission: 'calendar.write', mutates: true, lowRisk: true,
       inputSchema: { event: { type: 'string', required: true } },
       run: function (ctx, args) {
         var inst = DX.findEvent(args.event);
@@ -425,6 +425,79 @@
             }
             return DX.verifyGone('events', out.id, 'event');
           }
+        });
+      }
+    });
+
+    /* Delete whatever the person named, whichever collection it lives in. */
+    def({
+      name: 'calendar.delete_item',
+      description: 'Delete an event, task, deadline, habit, note or project by name.',
+      permission: 'calendar.write', mutates: true, lowRisk: true,
+      inputSchema: { item: { type: 'string', required: true }, kind: { type: 'string' } },
+      run: function (ctx, args) {
+        var hits = DX.findAnything(args.item, args.kind ? { kinds: [args.kind] } : {});
+        if (!hits.length) {
+          throw new JV.ToolError('I could not find anything called “' + args.item + '”.');
+        }
+        if (DX.isAmbiguous(hits)) {
+          throw new JV.ToolError('I found more than one match for “' + args.item + '”: ' +
+            hits.slice(0, 3).map(function (h) {
+              return '“' + h.label + '” (' + DX.KIND_NOUN[h.kind] + ')';
+            }).join(', ') + '. Which did you mean?');
+        }
+
+        var hit = hits[0];
+        var noun = DX.KIND_NOUN[hit.kind];
+        var detail = describeHit(hit);
+
+        if (!ctx.dryRun) {
+          var res = removeHit(hit);
+          var v = verifyRemoved(hit, res);
+          return { kind: 'written', headline: v.detail, verified: v.ok, lines: [] };
+        }
+        return JV.proposal({
+          title: 'Delete the ' + noun + ' “' + hit.label + '”',
+          detail: detail,
+          refs: [DX.ref(hit.kind, hit.item, hit.label)],
+          commit: function () { return removeHit(hit); },
+          verify: function (res) { return verifyRemoved(hit, res); }
+        });
+      }
+    });
+
+    /* Complete whatever the person named — a task, a deadline, or today's
+       instance of a habit. */
+    def({
+      name: 'calendar.complete_item',
+      description: 'Mark a task, deadline or habit done by name.',
+      permission: 'tasks.write', mutates: true, lowRisk: true,
+      inputSchema: { item: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        var hits = DX.findAnything(args.item, { kinds: ['task', 'deadline', 'habit'] });
+        if (!hits.length) {
+          throw new JV.ToolError('I could not find an open task, deadline or habit called “' + args.item + '”.');
+        }
+        if (DX.isAmbiguous(hits)) {
+          throw new JV.ToolError('More than one thing matches “' + args.item + '”: ' +
+            hits.slice(0, 3).map(function (h) { return '“' + h.label + '”'; }).join(', ') +
+            '. Which did you mean?');
+        }
+
+        var hit = hits[0];
+        var noun = DX.KIND_NOUN[hit.kind];
+
+        if (!ctx.dryRun) {
+          var res = completeHit(hit);
+          var v = verifyCompleted(hit);
+          return { kind: 'written', headline: v.detail, verified: v.ok, lines: [] };
+        }
+        return JV.proposal({
+          title: 'Complete “' + hit.label + '”',
+          detail: 'Marks the ' + noun + ' done.' + (hit.when ? ' Due ' + DX.fmtDay(hit.when) + '.' : ''),
+          refs: [DX.ref(hit.kind, hit.item, hit.label)],
+          commit: function () { return completeHit(hit); },
+          verify: function () { return verifyCompleted(hit); }
         });
       }
     });
@@ -515,7 +588,7 @@
     def({
       name: 'calendar.create_task',
       description: 'Create a task from a plain-language phrase.',
-      permission: 'tasks.write', mutates: true,
+      permission: 'tasks.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) { return createFromText(ctx, args.text, 'task'); }
     });
@@ -523,7 +596,7 @@
     def({
       name: 'calendar.create_deadline',
       description: 'Create a deadline from a plain-language phrase.',
-      permission: 'tasks.write', mutates: true,
+      permission: 'tasks.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) { return createFromText(ctx, args.text, 'deadline'); }
     });
@@ -531,7 +604,7 @@
     def({
       name: 'calendar.create_note',
       description: 'Write a note.',
-      permission: 'notes.write', mutates: true,
+      permission: 'notes.write', mutates: true, lowRisk: true,
       inputSchema: { title: { type: 'string', required: true }, body: { type: 'string' } },
       run: function (ctx, args) {
         var payload = { title: args.title, body: args.body || '' };
@@ -552,7 +625,7 @@
     def({
       name: 'calendar.complete_task',
       description: 'Mark a task done.',
-      permission: 'tasks.write', mutates: true,
+      permission: 'tasks.write', mutates: true, lowRisk: true,
       inputSchema: { task: { type: 'string', required: true } },
       run: function (ctx, args) {
         var task = DX.findTask(args.task);
@@ -579,7 +652,7 @@
     def({
       name: 'calendar.capture',
       description: 'Drop a raw thought into the inbox to sort out later.',
-      permission: 'tasks.write', mutates: true,
+      permission: 'tasks.write', mutates: true, lowRisk: true,
       inputSchema: { text: { type: 'string', required: true } },
       run: function (ctx, args) {
         if (!ctx.dryRun) { A.addCapture(args.text); return { kind: 'written', headline: 'Saved to your inbox.', verified: true, lines: [] }; }
@@ -1194,7 +1267,14 @@
     if (!ctx.dryRun) {
       var made = create(payload);
       var v = DX.verifyCollection(collection, [made.id], type);
-      return { kind: 'written', headline: v.detail, verified: v.ok, lines: [payload.title + ' · ' + detail] };
+      return {
+        kind: 'written',
+        // Say what landed and when, not just that a write succeeded.
+        headline: v.ok ? 'Added “' + payload.title + '” — ' + detail + '.' : v.detail,
+        verified: v.ok,
+        refs: v.ok ? [DX.ref(type, made, payload.title)] : [],
+        lines: []
+      };
     }
     return JV.proposal({
       title: 'Create ' + type + ' “' + payload.title + '”',
@@ -1230,6 +1310,87 @@
       }
     }
     return first;
+  }
+
+  /* ------------------------------------------- acting on a resolved item */
+
+  function describeHit(hit) {
+    switch (hit.kind) {
+      case 'event':
+        return hit.item.allDay
+          ? DX.fmtDay(hit.item.startWall) + ' · all day'
+          : DX.fmtDay(hit.item.startWall) + ' ' + DX.fmtSpan(hit.item.startWall, hit.item.endWall);
+      case 'task':
+        return hit.item.due ? 'Task, due ' + DX.fmtDay(T.w(hit.item.due)) : 'Task with no due date';
+      case 'deadline':
+        return 'Deadline on ' + DX.fmtDay(T.w(hit.item.due));
+      case 'project':
+        return 'Project — its tasks and notes are kept';
+      default:
+        return DX.KIND_NOUN[hit.kind].charAt(0).toUpperCase() + DX.KIND_NOUN[hit.kind].slice(1);
+    }
+  }
+
+  function removeHit(hit) {
+    var id = hit.item.seriesId || hit.item.id;
+    switch (hit.kind) {
+      case 'event':
+        // A single occurrence of a repeating event is removed from the series
+        // rather than deleting the whole series.
+        var repeats = !!hit.item.seriesId;
+        A.deleteEvent(hit.item, repeats ? 'this' : 'all');
+        return { id: id, repeats: repeats };
+      case 'task': A.deleteTask(id); return { id: id };
+      case 'deadline': A.deleteDeadline(id); return { id: id };
+      case 'habit': A.deleteHabit(id); return { id: id };
+      case 'note': A.deleteNote(id); return { id: id };
+      case 'project': A.deleteProject(id); return { id: id };
+      default: throw new JV.ToolError('I do not know how to delete that.');
+    }
+  }
+
+  var COLLECTION = {
+    event: 'events', task: 'tasks', deadline: 'deadlines',
+    habit: 'habits', note: 'notes', project: 'projects'
+  };
+
+  function verifyRemoved(hit, res) {
+    if (hit.kind === 'event' && res.repeats) {
+      return { ok: true, detail: 'That occurrence was removed from the series.' };
+    }
+    var gone = !S.get(COLLECTION[hit.kind], res.id);
+    return gone
+      ? { ok: true, detail: 'Deleted the ' + DX.KIND_NOUN[hit.kind] + ' “' + hit.label + '”.' }
+      : { ok: false, detail: 'The ' + DX.KIND_NOUN[hit.kind] + ' is still there — nothing was removed.' };
+  }
+
+  function completeHit(hit) {
+    switch (hit.kind) {
+      case 'task': A.completeTask(hit.item.id, true); return { id: hit.item.id };
+      case 'deadline': A.toggleDeadline(hit.item.id); return { id: hit.item.id };
+      case 'habit': A.toggleHabit(hit.item.id, T.key(DX.nowWall())); return { id: hit.item.id };
+      default: throw new JV.ToolError('That is not something that can be completed.');
+    }
+  }
+
+  function verifyCompleted(hit) {
+    if (hit.kind === 'task') {
+      var t = S.get('tasks', hit.item.id);
+      return t && t.status === 'completed'
+        ? { ok: true, detail: 'Marked “' + hit.label + '” done.' }
+        : { ok: false, detail: 'The task is still open.' };
+    }
+    if (hit.kind === 'deadline') {
+      var d = S.get('deadlines', hit.item.id);
+      return d && d.done
+        ? { ok: true, detail: 'Marked the deadline “' + hit.label + '” done.' }
+        : { ok: false, detail: 'The deadline is still open.' };
+    }
+    var h = S.get('habits', hit.item.id);
+    var key = T.key(DX.nowWall());
+    return h && h.log && h.log[key]
+      ? { ok: true, detail: 'Logged “' + hit.label + '” for today.' }
+      : { ok: false, detail: 'The habit was not logged.' };
   }
 
   function commitEvent(payload, detail) {
