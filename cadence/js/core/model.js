@@ -97,7 +97,7 @@
       name: '',
       theme: 'system',              // light | dark | system
       density: 'comfortable',       // comfortable | compact
-      accent: 'indigo',
+      accent: 'teal',
       use24Hour: false,
       firstDayOfWeek: 0,
       showWeekNumbers: false,

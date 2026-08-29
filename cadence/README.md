@@ -72,6 +72,7 @@ css/
   components.css    buttons, forms, dialogs, toasts, charts
   calendar.css      time grid, month, year, agenda, timeline
   views.css         per-page styling, focus mode, assistant flows
+  design.css        the visual layer: palette, type, elevation, motion
 js/core/
   time.js           wall-clock/UTC conversion, formatting, timezone support
   model.js          entity definitions and defaults
@@ -88,6 +89,35 @@ js/ui/              DOM helpers, dialogs, form controls, drag, editors,
 js/views/           one file per page
 js/app.js           routing, navigation, keyboard, theming, reminders
 ```
+
+## The look
+
+The visual layer lives entirely in `css/design.css`, on top of the functional
+stylesheets. It changes how the app looks and never what it does, so it can be
+removed or replaced without touching behaviour.
+
+It is built from the [UI/UX Pro Max](https://www.npmjs.com/package/uipro-cli)
+design library:
+
+| Choice | From the library | Why |
+|---|---|---|
+| Style | Soft UI Evolution × Dimensional Layering × Micro-interactions | Depth and feedback without the contrast cost of true neumorphism |
+| Palette | Productivity Tool — teal focus, amber for attention | One brand hue; amber reserved for deadlines and over-scheduling |
+| Type | Friendly SaaS — Plus Jakarta Sans, plus JetBrains Mono | Geometric and legible at 11px; a mono for keys and counts |
+
+Four things it holds to:
+
+- **The palette was measured, not assumed.** The library's teal fails WCAG AA
+  as a button fill, so it is darkened until white on it reaches 5.9:1 and the
+  accent as text on its own wash reaches 4.6:1. Every text/background pair the
+  app renders across eight pages and both themes passes AA.
+- **Motion is decoration on a state the app already reaches**, so
+  `prefers-reduced-motion` removes it and loses nothing.
+- **The ambient wash stays behind the shell.** A gradient crossing seven day
+  columns would make identical columns look unequal, so the calendar sits on a
+  flat surface.
+- **The web fonts are a `<link>`, not an `@import`.** Both stacks fall back to
+  system fonts, so the app is unchanged offline and in the single file.
 
 ## Principles held throughout
 

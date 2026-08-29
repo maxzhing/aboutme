@@ -1,0 +1,513 @@
+/* Cadence — design layer.
+   Loaded last, on top of the functional stylesheets. It changes how the app
+   looks, never what it does: everything here is colour, type, elevation and
+   motion. Built from the UI/UX Pro Max design library:
+
+     Style      Soft UI Evolution (#19) x Dimensional Layering (#46)
+                x Micro-interactions (#16)
+     Palette    Productivity Tool (#17) — teal focus, amber action
+     Type       Friendly SaaS (#13) Plus Jakarta Sans, with JetBrains Mono
+                for clock faces and counts
+
+   Two rules hold throughout. Colour never carries meaning alone, so nothing
+   here removes a label, icon or shape. And every animation is a refinement of
+   a state the app already reaches, so reduced motion simply removes it. */
+
+/* ------------------------------------------------------------------ type */
+
+/* The two faces are requested by a <link> in the page head rather than an
+   @import here: the single-file build concatenates the stylesheets, and an
+   @import is only valid at the top of one. Both stacks fall back to system
+   fonts, so the app is unchanged offline. */
+
+:root {
+  --font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+    Consolas, monospace;
+}
+
+/* Times, dates and counts line up in columns when the digits are the same
+   width — a calendar reads as a grid, not a paragraph. */
+.ev__time, .agenda__time, .agenda__num, .month__cell-head, .mini__day,
+.gutter__label, .hour__label, .statcard__value, .statblock__value,
+.glance__value, .focus__remaining, .habit-today__streak, .free__time,
+.free__len, .chip__count, .when__label, kbd, .toast__msg time {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.page__title { font-weight: 800; letter-spacing: -0.03em; }
+.dialog__title { font-weight: 700; letter-spacing: -0.015em; }
+.card__title, .section-title, .sidebar__title, .dock__title {
+  letter-spacing: 0.02em;
+}
+.cal__title { font-weight: 700; letter-spacing: -0.015em; }
+
+/* --------------------------------------------------------------- palette */
+
+/* Neutrals carry a trace of the accent's hue rather than being pure grey.
+   It is the difference between a surface that looks chosen and one that
+   looks defaulted, and it costs nothing in contrast. */
+:root {
+  --bg: #f4f7f7;
+  --surface: #ffffff;
+  --surface-2: #eef3f3;
+  --surface-3: #e2eaea;
+  --border: #dee7e7;
+  --border-strong: #bfcdcd;
+  --text: #10201e;
+  --text-2: #475856;
+  --text-3: #5c6d6b;
+
+  /* The library's teal, darkened until it actually passes: white on the
+     button reaches 5.9:1, and the accent used as text on its own wash
+     reaches 4.6:1 on every surface the app puts it against. */
+  --accent: #0e7168;
+  --accent-strong: #0a5c55;
+  --accent-soft: rgba(14, 113, 104, 0.09);
+  --accent-text: #ffffff;
+
+  /* Amber is the library's action colour for this palette. It is used for
+     attention — deadlines, over-scheduling — never as a second brand. */
+  --warn: #8a5009;
+  --warn-soft: rgba(176, 108, 16, 0.11);
+  --danger: #b03430;
+  --danger-soft: rgba(176, 52, 48, 0.09);
+  --ok: #136b53;
+  --ok-soft: rgba(19, 107, 83, 0.10);
+
+  /* Four elevation levels, each a two-part shadow: a tight contact shadow
+     that grounds the element and a wide ambient one that lifts it. */
+  --elev-1: 0 1px 2px rgba(9, 32, 30, 0.05), 0 1px 1px rgba(9, 32, 30, 0.03);
+  --elev-2: 0 2px 4px rgba(9, 32, 30, 0.05), 0 6px 16px rgba(9, 32, 30, 0.07);
+  --elev-3: 0 4px 10px rgba(9, 32, 30, 0.07), 0 16px 36px rgba(9, 32, 30, 0.11);
+  --elev-4: 0 10px 24px rgba(9, 32, 30, 0.1), 0 32px 72px rgba(9, 32, 30, 0.19);
+
+  --shadow-1: var(--elev-1);
+  --shadow-2: var(--elev-2);
+  --shadow-3: var(--elev-4);
+
+  /* A hairline of light along the top edge of a raised surface. Reads as a
+     lit edge rather than a border, which is what gives soft UI its depth. */
+  --sheen: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  --radius-sm: 7px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Micro-interactions run at 50-100ms so they feel like feedback; state
+     changes run at 200-300ms so they read as movement. */
+  --speed: 180ms;
+  --speed-micro: 80ms;
+  --speed-slow: 280ms;
+  --ease: cubic-bezier(0.22, 0.61, 0.24, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  --bg: #0b1211;
+  --surface: #121b1a;
+  --surface-2: #182322;
+  --surface-3: #212e2c;
+  --border: #223130;
+  --border-strong: #384a48;
+  --text: #e6eeec;
+  --text-2: #a3b4b1;
+  --text-3: #8a9b99;
+
+  --accent-soft: rgba(45, 212, 191, 0.15);
+  --warn: #e0a93f;
+  --warn-soft: rgba(224, 169, 63, 0.15);
+  --danger: #e8706a;
+  --danger-soft: rgba(232, 112, 106, 0.15);
+  --ok: #45c69b;
+  --ok-soft: rgba(69, 198, 155, 0.15);
+
+  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --elev-2: 0 2px 6px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.4);
+  --elev-3: 0 6px 14px rgba(0, 0, 0, 0.5), 0 18px 40px rgba(0, 0, 0, 0.45);
+  --elev-4: 0 12px 28px rgba(0, 0, 0, 0.55), 0 36px 80px rgba(0, 0, 0, 0.6);
+  --sheen: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+/* The accent swatches keep working; teal is simply the one that ships. */
+[data-accent="teal"]   { --accent: #0e7168; --accent-strong: #0a5c55; }
+[data-accent="indigo"] { --accent: #4f56d4; --accent-strong: #4045bb; }
+[data-accent="blue"]   { --accent: #1d76cf; --accent-strong: #1761ab; }
+[data-accent="green"]  { --accent: #197f52; --accent-strong: #146742; }
+[data-accent="amber"]  { --accent: #9c6407; --accent-strong: #825306; }
+[data-accent="rose"]   { --accent: #ba3f77; --accent-strong: #9d3363; }
+[data-accent="slate"]  { --accent: #4b5a6e; --accent-strong: #3b4859; }
+
+[data-theme="dark"][data-accent="teal"]   { --accent: #2dd4bf; --accent-strong: #5eead4; --accent-text: #05201d; }
+[data-theme="dark"][data-accent="indigo"] { --accent: #8b93f8; --accent-strong: #a5abfa; --accent-text: #0d1024; }
+[data-theme="dark"][data-accent="blue"]   { --accent: #5eb0f5; --accent-strong: #85c4f8; --accent-text: #061523; }
+[data-theme="dark"][data-accent="green"]  { --accent: #4ecf94; --accent-strong: #74dcac; --accent-text: #04190f; }
+[data-theme="dark"][data-accent="amber"]  { --accent: #e8b555; --accent-strong: #f0c87c; --accent-text: #1c1304; }
+[data-theme="dark"][data-accent="rose"]   { --accent: #ef8ac0; --accent-strong: #f4a6ce; --accent-text: #220b17; }
+[data-theme="dark"][data-accent="slate"]  { --accent: #a2b0c4; --accent-strong: #b8c3d3; --accent-text: #0f151d; }
+
+/* --------------------------------------------------- ambient background */
+
+/* Two very wide, very faint accent washes behind the whole shell. At this
+   opacity they are not a pattern you notice; they stop the page reading as
+   a flat sheet of grey. Fixed and non-interactive, so nothing repaints. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(58vw 44vh at 12% -6%, var(--accent-soft), transparent 68%),
+    radial-gradient(50vw 40vh at 92% 4%, var(--warn-soft), transparent 66%);
+  opacity: 0.75;
+}
+[data-theme="dark"] body::before { opacity: 0.5; }
+.app, .topbar, .sidebar, .dock { position: relative; z-index: 1; }
+
+/* ------------------------------------------------------------- surfaces */
+
+.sidebar, .dock {
+  background: color-mix(in srgb, var(--surface) 76%, transparent);
+  backdrop-filter: blur(14px) saturate(1.25);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+}
+.topbar {
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+}
+
+.card {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-1), var(--sheen);
+  transition: box-shadow var(--speed) var(--ease),
+    transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
+}
+.card:hover { box-shadow: var(--elev-2), var(--sheen); }
+
+.dialog {
+  border-radius: var(--radius-xl);
+  box-shadow: var(--elev-4), var(--sheen);
+  animation: dialog-rise var(--speed-slow) var(--ease-out);
+}
+@keyframes dialog-rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.975); }
+  to   { opacity: 1; transform: none; }
+}
+
+.backdrop {
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fade-in var(--speed) var(--ease);
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.menu, .toast {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-3), var(--sheen);
+}
+.menu { animation: menu-in 140ms var(--ease-out); transform-origin: top; }
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-5px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --------------------------------------------------- micro-interactions */
+
+/* A control that moves under the pointer confirms it is a control. The lift
+   is one pixel and the press returns it — small enough to feel physical
+   rather than animated. */
+.btn {
+  transition: background var(--speed-micro) var(--ease),
+    border-color var(--speed-micro) var(--ease),
+    color var(--speed-micro) var(--ease),
+    box-shadow var(--speed-micro) var(--ease),
+    transform var(--speed-micro) var(--ease);
+}
+.btn--primary {
+  box-shadow: var(--elev-1);
+  background-image: linear-gradient(to bottom,
+    rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0));
+}
+.btn--primary:hover:not(:disabled) { box-shadow: var(--elev-2); transform: translateY(-1px); }
+.btn--ghost:hover:not(:disabled) { box-shadow: var(--elev-1); }
+.btn:active:not(:disabled) { transform: translateY(0) scale(0.975); }
+.icon-btn { transition: background var(--speed-micro) var(--ease), color var(--speed-micro) var(--ease), transform var(--speed-micro) var(--ease); }
+.icon-btn:active:not(:disabled) { transform: scale(0.9); }
+.chip:active { transform: scale(0.96); }
+
+/* Completing something should feel like completing something. The box
+   springs once as it fills; the tick is drawn rather than switched on. */
+.check[aria-checked="true"] { animation: check-pop 240ms var(--ease-out); }
+@keyframes check-pop {
+  0%   { transform: scale(0.8); }
+  55%  { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+.check[aria-checked="true"] svg path,
+.check[aria-checked="true"] svg polyline {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 0;
+  animation: check-draw 220ms var(--ease-out);
+}
+@keyframes check-draw { from { stroke-dashoffset: 22; } to { stroke-dashoffset: 0; } }
+.check:hover { transform: scale(1.06); }
+
+.toggle { transition: background var(--speed) var(--ease); }
+.toggle__knob { transition: transform var(--speed) var(--ease-out), box-shadow var(--speed) var(--ease); box-shadow: var(--elev-1); }
+
+.input:focus, .input--area:focus {
+  box-shadow: 0 0 0 3px var(--accent-soft), var(--elev-1);
+}
+
+/* Focus stays a ring, and gains a soft halo so it is unmissable on any
+   surface without changing what it means. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--accent-soft);
+}
+
+/* ------------------------------------------------------------ navigation */
+
+.nav__item, .sidebar__action {
+  border-radius: var(--radius);
+  transition: background var(--speed-micro) var(--ease),
+    color var(--speed-micro) var(--ease), transform var(--speed-micro) var(--ease);
+}
+.nav__item:active, .sidebar__action:active { transform: scale(0.985); }
+
+/* The current section is marked by a bar as well as a fill, so the state
+   survives being read in greyscale. */
+.nav__item.is-active {
+  position: relative;
+  box-shadow: var(--elev-1), var(--sheen);
+}
+.nav__item.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 17px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+}
+
+.topbar__search {
+  border-radius: 999px;
+  transition: border-color var(--speed-micro) var(--ease),
+    box-shadow var(--speed-micro) var(--ease), background var(--speed-micro) var(--ease);
+}
+.topbar__search:hover { box-shadow: var(--elev-1); }
+
+/* --------------------------------------------------------------- events */
+
+.ev {
+  border-radius: var(--radius-sm);
+  box-shadow: var(--elev-1);
+  transition: box-shadow var(--speed-micro) var(--ease),
+    transform var(--speed-micro) var(--ease), filter var(--speed-micro) var(--ease);
+}
+/* Lifting rather than scaling: an event block sits in a time grid, and
+   scaling it would misrepresent its duration. */
+.ev:hover { box-shadow: var(--elev-2); filter: brightness(1.04); z-index: 6; }
+.ev.is-dragging-src { box-shadow: var(--elev-3); }
+
+.month__chip, .allday-chip {
+  border-radius: 5px;
+  transition: transform var(--speed-micro) var(--ease), box-shadow var(--speed-micro) var(--ease);
+}
+.month__chip:hover, .allday-chip:hover { transform: translateX(1px); box-shadow: var(--elev-1); }
+
+.month__cell { transition: background var(--speed-micro) var(--ease); }
+
+/* The now line is the one thing on the page that should read as live. */
+.now__dot { animation: now-pulse 2.6s var(--ease) infinite; }
+@keyframes now-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); }
+  50%      { box-shadow: 0 0 0 7px transparent; }
+}
+
+.agenda__row {
+  border-radius: var(--radius);
+  transition: background var(--speed-micro) var(--ease), transform var(--speed-micro) var(--ease);
+}
+.agenda__row:hover { transform: translateX(2px); }
+
+/* ---------------------------------------------------------- view change */
+
+/* A view arrives by rising a few pixels. It is the same content either way;
+   the movement just tells you the page changed under you. */
+.view > * { animation: view-in var(--speed-slow) var(--ease-out); }
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: none; }
+}
+/* The calendar grid is exempt: it scrolls itself to the current hour on
+   arrival, and animating a scrolling container fights that. */
+.view--calendar > *, .cal__body * { animation: none; }
+
+.toast { animation: toast-in 220ms var(--ease-out); }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ------------------------------------------------------------ progress */
+
+.focus__ring-bar { transition: stroke-dashoffset var(--speed-slow) var(--ease); }
+.barchart__bar, .progress__bar {
+  transition: width var(--speed-slow) var(--ease-out);
+  background-image: linear-gradient(to right,
+    color-mix(in srgb, var(--accent) 78%, transparent), var(--accent));
+}
+.habit__cell { transition: background var(--speed-micro) var(--ease), transform var(--speed-micro) var(--ease); }
+.habit__cell:hover { transform: scale(1.18); }
+
+/* --------------------------------------------------------------- detail */
+
+.empty__icon { opacity: 0.55; }
+.statcard, .statblock, .glance__stat {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-1), var(--sheen);
+}
+.statcard__value, .glance__value { letter-spacing: -0.02em; font-weight: 700; }
+
+kbd {
+  border-radius: 5px;
+  box-shadow: 0 1px 0 var(--border-strong);
+  border-bottom-width: 1px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border-strong) 80%, transparent);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+/* ------------------------------------------------------------- restraint */
+
+/* Everything above is decoration on a state the app already reaches, so
+   removing it removes nothing but the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .view > *, .dialog, .menu, .toast, .now__dot, .check[aria-checked="true"],
+  .check[aria-checked="true"] svg path, .check[aria-checked="true"] svg polyline,
+  .backdrop { animation: none !important; }
+  .btn:hover, .btn:active, .icon-btn:active, .chip:active, .ev:hover,
+  .agenda__row:hover, .habit__cell:hover, .check:hover { transform: none !important; }
+}
+.is-reduced-motion .view > *,
+.is-reduced-motion .dialog,
+.is-reduced-motion .menu,
+.is-reduced-motion .toast,
+.is-reduced-motion .now__dot,
+.is-reduced-motion .backdrop { animation: none !important; }
+
+/* Transparency and blur are a preference, not a requirement. */
+@media (prefers-reduced-transparency: reduce) {
+  .sidebar, .dock, .topbar {
+    background: var(--surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  body::before { display: none; }
+}
+
+/* ------------------------------------------------------ second pass */
+
+/* The ambient wash belongs behind the shell, not behind a time grid: a
+   gradient crossing seven day columns makes identical columns look unequal.
+   The calendar sits on a flat surface instead. */
+.view--calendar { background: var(--surface); }
+.month__grid, .agenda { background: var(--surface); }
+
+/* Weaker, lower, and in one hue. A second colour in the wash reads as a
+   stain behind white content rather than as light. */
+body::before {
+  background:
+    radial-gradient(56vw 40vh at 6% -10%, var(--accent-soft), transparent 72%),
+    radial-gradient(44vw 40vh at 98% 88%, var(--accent-soft), transparent 74%);
+  opacity: 0.55;
+}
+[data-theme="dark"] body::before { opacity: 0.4; }
+
+/* The current section gets a wash that fades along the row rather than a
+   flat block of colour — it reads as illuminated rather than selected. */
+.nav__item.is-active {
+  background-image: linear-gradient(to right, var(--accent-soft), transparent 88%);
+}
+
+/* An empty state is a normal outcome, not a failure, so the marker is a
+   soft accent disc rather than a grey one. */
+.empty__icon {
+  width: 42px; height: 42px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: var(--sheen);
+}
+
+/* Rows tint towards the accent on hover, which keeps hover and selection
+   visibly the same family without making them the same weight. */
+.trow, .orow, .priority-row, .search__row, .palette__row, .recovery__row,
+.plan__row, .slot, .capture-row, .deadline-row, .habit-today__row {
+  border-radius: var(--radius);
+  transition: background var(--speed-micro) var(--ease),
+    box-shadow var(--speed-micro) var(--ease),
+    transform var(--speed-micro) var(--ease);
+}
+.trow:hover, .orow:hover, .priority-row:hover, .search__row:hover,
+.recovery__row:hover, .plan__row:hover, .slot:hover, .capture-row:hover,
+.deadline-row:hover {
+  background: color-mix(in srgb, var(--accent) 4.5%, transparent);
+}
+.palette__row[aria-selected="true"] {
+  background: var(--accent-soft);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.dock__task, .note, .project, .goal, .habit, .qa__card, .suggestion {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-1), var(--sheen);
+  transition: box-shadow var(--speed) var(--ease), transform var(--speed) var(--ease);
+}
+.note:hover, .project:hover, .goal:hover, .habit:hover {
+  box-shadow: var(--elev-2), var(--sheen);
+  transform: translateY(-2px);
+}
+
+/* Today's greeting is the first thing on the page each morning; it earns
+   the extra weight the rest of the interface does not need. */
+.today__greeting { font-weight: 800; letter-spacing: -0.035em; }
+.today__date { color: var(--text-3); letter-spacing: 0.005em; }
+
+/* The current day's number is already circled; the circle now sits on the
+   accent gradient so it reads as the anchor of the whole grid. */
+.tg__head-col.is-today .tg__head-num,
+.month__cell.is-today .month__num,
+.mini__day.is-selected {
+  background-image: linear-gradient(140deg, var(--accent-strong), var(--accent));
+  box-shadow: var(--elev-1);
+}
+
+.segmented { border-radius: 999px; }
+.segmented__btn {
+  border-radius: 999px;
+  transition: background var(--speed-micro) var(--ease),
+    color var(--speed-micro) var(--ease), box-shadow var(--speed-micro) var(--ease);
+}
+.segmented__btn[aria-checked="true"], .segmented__btn[aria-pressed="true"] {
+  box-shadow: var(--elev-1), var(--sheen);
+}
+
+.topbar { border-bottom-color: color-mix(in srgb, var(--border) 70%, transparent); }
+.sidebar { border-right-color: color-mix(in srgb, var(--border) 70%, transparent); }
+.dock { border-left-color: color-mix(in srgb, var(--border) 70%, transparent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .note:hover, .project:hover, .goal:hover, .habit:hover { transform: none !important; }
+}

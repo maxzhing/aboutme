@@ -9,7 +9,10 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(fileURLToPath(import.meta.url));
 const html = readFileSync(join(root, 'index.html'), 'utf8');
 
-const cssFiles = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)">/g)].map(m => m[1]);
+// Only local stylesheets are inlined; a remote one (the web fonts) stays a
+// <link>, so the single file still picks the faces up when it has a network.
+const cssFiles = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)">/g)]
+  .map(m => m[1]).filter(h => !/^https?:/.test(h));
 const jsFiles = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]);
 if (!cssFiles.length || !jsFiles.length) throw new Error('Could not read the load order from index.html');
 
@@ -24,7 +27,7 @@ for (const [label, body] of [['CSS', css], ['JS', js]]) {
 }
 
 const out = html
-  .replace(/\n?\s*<link rel="stylesheet" href="[^"]+">/g, '')
+  .replace(/\n?\s*<link rel="stylesheet" href="(?!https?:)[^"]+">/g, '')
   .replace('</head>', `  <style>\n${css}\n  </style>\n</head>`)
   .replace(/\n?\s*<!-- [^>]*-->\n?\s*<script src="[^"]+"><\/script>/g, '')
   .replace(/\n?\s*<script src="[^"]+"><\/script>/g, '')

@@ -36,7 +36,7 @@
       theme = global.matchMedia && global.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
     el.setAttribute('data-theme', theme);
-    el.setAttribute('data-accent', s.accent || 'indigo');
+    el.setAttribute('data-accent', s.accent || 'teal');
     el.setAttribute('data-density', s.density || 'comfortable');
     el.classList.toggle('is-contrast', !!s.highContrast);
     el.classList.toggle('is-large-text', !!s.largeText);
