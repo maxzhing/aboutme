@@ -38,6 +38,8 @@ js/jarvis/reasoner.js      the local reasoner — intent table + Cadence's NLP;
                            optional remote LLM provider (off by default)
 js/jarvis/converse.js      the conversational engine — the default path when a
                            message is not a request to do something
+js/jarvis/voice.js         microphone input and spoken replies, both on the
+                           browser's own Web Speech API
 js/jarvis/agents.js        planner, executor, reflection, memory
 js/jarvis/orchestrator.js  task tree + the understand→plan→clarify→execute→
                            verify→reflect→deliver loop
@@ -78,6 +80,25 @@ conversation turns into calendar work without a mode switch.
 Where the calendar genuinely helps, conversation uses it. "Do you think I should
 study tonight?" checks your actual free time and your actual task ranking before
 answering.
+
+### Talking to it
+
+Press the mic in the composer and speak; the words appear as they are
+recognised and the request sends when you stop. Turn on **Read replies aloud**
+in the JARVIS view (or the speaker button in the console header) and it talks
+back. Both halves use the Web Speech API that is already in the browser — no
+install, no key, no third-party service added by Cadence.
+
+The two halves have very different privacy properties, and the app says so
+rather than glossing it:
+
+- **Speaking** is local. It uses voices your operating system already has and
+  sends nothing anywhere.
+- **Listening** is not. Chrome and Edge stream the audio to Google's speech
+  service and send text back. That is a real departure for an app whose own
+  copy says nothing leaves the page, so the mic is opt-in per use and the Voice
+  panel states it plainly. Firefox has no support at all and is told so
+  instead of being given a dead button.
 
 ### What it will not pretend to know
 

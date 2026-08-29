@@ -103,7 +103,7 @@
   /* People ask politely. "Can you put biology study on my calendar tomorrow?"
      is the same request as "add biology study tomorrow", and an anchored
      imperative alone would miss every courteous phrasing of it. */
-  var POLITE_CREATE = /^\s*(?:(?:can|could|would|will)\s+(?:you|u)\s+|please\s+|hey\s+|pls\s+)*(add|create|make|new|book|set\s+up|put|schedule|stick|pop|throw|remind me to|i need to|i have to|i must)\b/i;
+  var POLITE_CREATE = /^\s*(?:(?:can|could|would|will)\s+(?:you|u)\s+|please\s+|hey\s+|pls\s+)*(add|create|make|new|book|set\s+up|put|schedule|stick|pop|throw|remind me to)\b/i;
 
   /* Unmistakably social openings. Kept narrow on purpose: it only has to catch
      the shapes that would otherwise be mis-read as commands. */
@@ -118,6 +118,28 @@
     '\\bi (just )?(finally )?(finished|aced|passed|nailed|crushed)\\b'
   ].join('|'), 'i');
 
+  /* Verbs that open a request. A message that begins with one of these is
+     asking for something to happen. */
+  var ACTION_VERB = /^\s*(?:(?:can|could|would|will)\s+(?:you|u)\s+|please\s+|hey\s+|pls\s+|just\s+)*(add|create|make|new|book|set\s+up|put|stick|pop|throw|schedule|plan|move|reschedule|shift|push|bump|delete|cancel|remove|drop|find|search|look|show|tell|give|list|check|optimi[sz]e|organi[sz]e|sort|break|split|complete|finish|mark|remind|block|clear|rename|update|change|open|go)\b/i;
+
+  /* Question forms that are genuinely about the calendar. */
+  var CALENDAR_QUESTION = /\b(what('?s| is| are|'?ve)?\s+(on|happening|scheduled|next|due|left)|when (am|is|do|does|was)|what do i have|do i have (anything|any|time|space|room)|am i (free|busy|available)|how (busy|much time|many hours|full|packed)|what'?s my (schedule|day|week)|anything (on|due|left)|whats on)\b/i;
+
+  /* A first-person statement is news, not an instruction — "my schedule is
+     packed" is a remark about a week, not a request to read it back. Only a
+     few intents are allowed to fire from one, because they are unambiguous
+     even in statement form. */
+  var STATEMENT_START = /^\s*(i|i'?m|i'?ve|my|we|it|this|that|there|school|work|today|tomorrow|everything|everyone|nothing|no one)\b/i;
+  var STATEMENT_OK = ['project', 'reschedule', 'remember', 'recurring', 'research'];
+
+  function isStatement(text) {
+    var s = String(text || '').trim();
+    if (/\?\s*$/.test(s)) return false;                 // a question is not a statement
+    if (ACTION_VERB.test(s)) return false;              // an imperative is not a statement
+    if (CALENDAR_QUESTION.test(s)) return false;        // question-shaped without the mark
+    return STATEMENT_START.test(s);
+  }
+
   var PLANNABLE = /\b(project|essay|paper|report|exam|test|quiz|midterm|final|presentation|assignment|thesis|dissertation|deck|talk|lab|application|portfolio)\b/i;
   var PLAN_VERB = /\b(plan|prepare|prep|study|revise|get (it|this) done|make sure|help me|work on|finish|break (it|this) down|schedule)\b/i;
   var DATEISH = /\b(due|deadline|by|before|on)\b|\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|next week)\b|\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b|\b\d{4}-\d{2}-\d{2}\b/i;
@@ -126,8 +148,9 @@
 
   var INTENTS = [
     {
+      /* "good morning" on its own is a greeting, not a request for a briefing. */
       id: 'morning_brief',
-      test: /\b(morning brief(ing)?|brief me|daily brief|good morning|start my day|what does today look like)\b/i,
+      test: /\b(morning brief(ing)?|brief me|daily brief|start my day|what does today look like)\b/i,
       steps: function () {
         return [{ text: 'Pull together the day ahead', tool: 'plan.morning_brief', args: {} }];
       }
@@ -639,7 +662,12 @@
         ? [byId('recurring'), byId('sessions'), byId('plan_week'), byId('plan_day'), byId('create')].concat(INTENTS)
         : INTENTS;
 
+      // A statement only reaches the few intents that are unambiguous in
+      // statement form. Everything else about it is conversation.
+      var statement = isStatement(segment);
+
       for (var i = 0; i < intents.length; i++) {
+        if (statement && STATEMENT_OK.indexOf(intents[i] && intents[i].id) < 0) continue;
         if (intents[i] && matches(intents[i], segment)) {
           (intents[i].steps(segment) || []).forEach(function (s) { steps.push(s); });
           matched.push(intents[i].id);

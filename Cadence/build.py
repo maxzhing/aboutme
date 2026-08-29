@@ -32,10 +32,11 @@ JS_MODULES = [
     "08-toolbelt.js",
     "09-reasoner.js",
     "10-converse.js",
-    "11-agents.js",
-    "12-orchestrator.js",
-    "13-assistant.js",
-    "14-ui.js",
+    "11-voice.js",
+    "12-agents.js",
+    "13-orchestrator.js",
+    "14-assistant.js",
+    "15-ui.js",
 ]
 
 BANNER = """
@@ -45,8 +46,8 @@ BANNER = """
    ======================================================================== */
 """
 
-# Files 14-ui.js and jarvis.css carry their own banner already.
-SELF_BANNERED = {"14-ui.js"}
+# Files 15-ui.js and jarvis.css carry their own banner already.
+SELF_BANNERED = {"15-ui.js"}
 
 
 class PatchError(RuntimeError):
@@ -109,6 +110,20 @@ def build() -> str:
         title: 'Ask JARVIS (J)'
       }, [D.icon('sparkle', 15), D.h('span.topbar__label', { text: 'JARVIS' })]),""",
         "topbar button",
+    )
+
+    # --------------------------------------------------------------- icons
+    # Cadence's set has no microphone or speaker, and a lightning bolt on the
+    # mic button reads as "fast", not "talk".
+    html = replace_once(
+        html,
+        "    more: '<circle cx=\"5\" cy=\"12\" r=\"1.6\"/>",
+        "    mic: '<rect x=\"9\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\"/>"
+        "<path d=\"M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6\"/>',\n"
+        "    speaker: '<path d=\"M4 9v6h4l5 4V5L8 9H4z\"/><path d=\"M16.5 8.5a5 5 0 0 1 0 7\"/>',\n"
+        "    speakerOff: '<path d=\"M4 9v6h4l5 4V5L8 9H4z\"/><path d=\"M17 10l4 4M21 10l-4 4\"/>',\n"
+        "    more: '<circle cx=\"5\" cy=\"12\" r=\"1.6\"/>",
+        "icons",
     )
 
     # ------------------------------------------------------------ keyboard

@@ -20,8 +20,89 @@
     busy: false,
     liveTrace: null,      // trace entries for the run in flight
     draft: '',
-    traceOpen: {}         // turn index -> bool
+    traceOpen: {},        // turn index -> bool
+    listening: false,
+    heard: '',            // live transcript while the mic is open
+    voiceError: null
   };
+
+  /* --------------------------------------------------------------- voice */
+
+  var listener = null;
+
+  function voicePrefs() {
+    var p = {};
+    try { p = S.settings().jarvisVoice || {}; } catch (err) { p = {}; }
+    return p;
+  }
+
+  function setVoicePref(patch) {
+    var p = Object.assign({}, voicePrefs(), patch);
+    S.setSetting('jarvisVoice', p);
+    return p;
+  }
+
+  function speakingOn() { return !!voicePrefs().speak; }
+
+  // Restore the chosen voice once the browser has finished loading its list.
+  function restoreVoice() {
+    var name = voicePrefs().voice;
+    if (name) JV.VOICE.setVoice(name);
+  }
+
+  function ensureListener() {
+    if (listener) return listener;
+    listener = new JV.VOICE.Listener({
+      onPartial: function (text) {
+        state.heard = text;
+        // Show the words landing in the composer as they are recognised.
+        surfaces.forEach(function (s) {
+          if (s.input) { s.input.value = text; }
+        });
+      },
+      onFinal: function (text) {
+        state.heard = '';
+        state.draft = text;
+        // Speaking a request implies wanting it answered, so send it.
+        submit(text);
+      },
+      onState: function (st) {
+        state.listening = (st === 'listening');
+        if (!state.listening) state.heard = '';
+        renderAll();
+      },
+      onError: function (message) {
+        state.voiceError = message;
+        state.listening = false;
+        UI.toast(message, { tone: 'warn', duration: 7000 });
+        renderAll();
+      }
+    });
+    return listener;
+  }
+
+  function toggleListening() {
+    if (!JV.VOICE.canListen()) {
+      UI.toast(JV.VOICE.listenUnavailableReason(), { tone: 'warn', duration: 7000 });
+      return;
+    }
+    var l = ensureListener();
+    if (state.listening) { l.stop(); return; }
+    // Talking over JARVIS is the usual reason to press the mic mid-sentence.
+    JV.VOICE.cancel();
+    state.voiceError = null;
+    l.start();
+  }
+
+  /* Read a reply aloud, if speaking is on. Only the prose — the cards below
+     already say the same thing on screen, and hearing them twice is worse. */
+  function speakReply(text) {
+    if (!speakingOn() || !JV.VOICE.canSpeak()) return;
+    JV.VOICE.speak(text, {
+      onStart: function () { state.speaking = true; },
+      onEnd: function () { state.speaking = false; }
+    });
+  }
 
   var surfaces = [];      // mounted {root, thread, composer} to keep in sync
 
@@ -416,10 +497,20 @@
 
     var input = D.h('textarea.jv__input', {
       rows: 1,
-      placeholder: 'Ask JARVIS about your schedule…',
+      placeholder: state.listening ? 'Listening…' : 'Ask JARVIS, or press the mic and talk…',
       'aria-label': 'Ask JARVIS'
     });
-    input.value = state.draft;
+    input.value = state.listening ? state.heard : state.draft;
+
+    var mic = JV.VOICE.canListen()
+      ? D.h('button.jv__mic' + (state.listening ? '.is-live' : ''), {
+        type: 'button',
+        'aria-label': state.listening ? 'Stop listening' : 'Speak to JARVIS',
+        'aria-pressed': state.listening ? 'true' : 'false',
+        title: state.listening ? 'Listening — click to stop' : 'Speak to JARVIS',
+        onclick: toggleListening
+      }, D.icon(state.listening ? 'pause' : 'mic', 15))
+      : null;
 
     var send = D.h('button.jv__send', {
       type: 'button', 'aria-label': 'Send', disabled: !state.draft.trim() || state.busy
@@ -446,15 +537,23 @@
     send.addEventListener('click', function () { submit(input.value); });
 
     wrap.appendChild(openers);
-    wrap.appendChild(D.h('div.jv__input-row', [input, send]));
-    wrap.appendChild(D.h('div.jv__composer-meta', [
-      D.h('kbd', { text: 'Enter' }),
-      D.h('span', { text: 'send' }),
-      D.h('kbd', { text: 'Shift ↵' }),
-      D.h('span', { text: 'new line' }),
-      D.h('span', { text: '·' }),
-      D.h('span', { text: a.autoApply ? 'Auto-apply is on' : 'Asks before changing anything' })
-    ]));
+    wrap.appendChild(D.h('div.jv__input-row' + (state.listening ? '.is-listening' : ''),
+      [input, mic, send].filter(Boolean)));
+    wrap.appendChild(D.h('div.jv__composer-meta', state.listening
+      ? [
+        D.h('span.jv__listening', [
+          D.h('span.jv__listening-dot', { 'aria-hidden': 'true' }),
+          D.h('span', { text: 'Listening — pause when you are done' })
+        ])
+      ]
+      : [
+        D.h('kbd', { text: 'Enter' }),
+        D.h('span', { text: 'send' }),
+        D.h('kbd', { text: 'Shift ↵' }),
+        D.h('span', { text: 'new line' }),
+        D.h('span', { text: '·' }),
+        D.h('span', { text: a.autoApply ? 'Auto-apply is on' : 'Asks before changing anything' })
+      ]));
 
     setTimeout(autosize, 0);
     return { node: wrap, input: input };
@@ -484,6 +583,7 @@
       if (result && result.status === 'needs_clarification') {
         state.traceOpen['turn' + (assistant().conversation.length - 1)] = true;
       }
+      if (result && result.answer) speakReply(result.answer);
       renderAll();
       focusInput();
     }).catch(function () {
@@ -669,6 +769,45 @@
       enable, D.h('span', { text: 'Use a language model for conversation' })
     ]));
 
+    /* One-click setup for the options that cost nothing. Ollama is the only
+       one that needs no account at all — it runs on your own machine. The rest
+       have free tiers and want a key you paste in below. */
+    var PRESETS = [
+      {
+        id: 'ollama', label: 'Ollama', hint: 'Runs on your machine · no key, no account',
+        cfg: { flavour: 'openai', endpoint: 'http://localhost:11434/v1/chat/completions', model: 'llama3.2', apiKey: '' }
+      },
+      {
+        id: 'groq', label: 'Groq', hint: 'Free tier · needs a key',
+        cfg: { flavour: 'openai', endpoint: 'https://api.groq.com/openai/v1/chat/completions', model: 'llama-3.3-70b-versatile' }
+      },
+      {
+        id: 'gemini', label: 'Google AI Studio', hint: 'Free tier · needs a key',
+        cfg: { flavour: 'openai', endpoint: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', model: 'gemini-2.0-flash' }
+      },
+      {
+        id: 'openrouter', label: 'OpenRouter', hint: 'Has free models · needs a key',
+        cfg: { flavour: 'openai', endpoint: 'https://openrouter.ai/api/v1/chat/completions', model: 'meta-llama/llama-3.3-70b-instruct:free' }
+      },
+      {
+        id: 'anthropic', label: 'Anthropic', hint: 'Paid · needs a key',
+        cfg: { flavour: 'anthropic', endpoint: 'https://api.anthropic.com/v1/messages', model: 'claude-sonnet-4-5' }
+      }
+    ];
+
+    panel.appendChild(D.h('p.jv-panel__note', { text: 'Start from a preset, then paste your key:' }));
+    var presetRow = D.h('div.jv-presets');
+    PRESETS.forEach(function (preset) {
+      presetRow.appendChild(D.h('button.jv-preset' + (cfg.endpoint === preset.cfg.endpoint ? '.is-on' : ''), {
+        type: 'button', title: preset.hint,
+        onclick: function () { save(Object.assign({ enabled: true }, preset.cfg)); }
+      }, [
+        D.h('span.jv-preset__name', { text: preset.label }),
+        D.h('span.jv-preset__hint', { text: preset.hint })
+      ]));
+    });
+    panel.appendChild(presetRow);
+
     var form = D.h('div.jv-form');
     [
       { key: 'flavour', label: 'Provider', placeholder: 'anthropic / openai / ollama' },
@@ -692,6 +831,63 @@
       ]));
     });
     panel.appendChild(form);
+
+    return panel;
+  }
+
+  /* Voice settings. Both halves use what the browser already provides, so
+     there is nothing to install and no key — but recognition and synthesis
+     have very different privacy properties and the panel says which is which. */
+  function voicePanel() {
+    var prefs = voicePrefs();
+    var panel = D.h('div.jv-panel');
+    panel.appendChild(D.h('h3.jv-panel__title', { text: 'Voice' }));
+
+    if (JV.VOICE.canSpeak()) {
+      var speakBox = D.h('input', { type: 'checkbox', checked: !!prefs.speak });
+      speakBox.addEventListener('change', function () {
+        setVoicePref({ speak: speakBox.checked });
+        if (!speakBox.checked) JV.VOICE.cancel();
+        renderAll();
+      });
+      panel.appendChild(D.h('label.jv-switch', [
+        speakBox, D.h('span', { text: 'Read replies aloud' })
+      ]));
+
+      var list = JV.VOICE.voices();
+      if (list.length) {
+        var select = D.h('select.jv-form__input', { 'aria-label': 'Voice' });
+        select.appendChild(D.h('option', { value: '', text: 'Automatic' }));
+        list.forEach(function (v) {
+          var opt = D.h('option', { value: v.name, text: v.name + ' · ' + v.lang });
+          if (JV.VOICE.getVoice() === v.name) opt.selected = true;
+          select.appendChild(opt);
+        });
+        select.addEventListener('change', function () {
+          JV.VOICE.setVoice(select.value);
+          setVoicePref({ voice: select.value });
+          if (select.value) JV.VOICE.speak('This is how I sound.');
+        });
+        panel.appendChild(D.h('div.jv-form', [
+          D.h('label.jv-form__row', [D.h('span.jv-form__label', { text: 'Voice' }), select])
+        ]));
+      }
+      panel.appendChild(D.h('p.jv-panel__note', {
+        text: 'Speaking runs on your device using the voices your system already has. Nothing is sent anywhere.'
+      }));
+    } else {
+      panel.appendChild(D.h('p.jv-panel__note', { text: 'This browser cannot synthesise speech.' }));
+    }
+
+    if (JV.VOICE.canListen()) {
+      panel.appendChild(D.h('p.jv-panel__note', {
+        text: 'The microphone button is in the composer. Note that speech recognition is not local: ' +
+          'your browser streams the audio to its speech service (Google\'s, in Chrome and Edge) and sends text back. ' +
+          'Everything else in Cadence stays in this browser.'
+      }));
+    } else {
+      panel.appendChild(D.h('p.jv-panel__note', { text: JV.VOICE.listenUnavailableReason() }));
+    }
 
     return panel;
   }
@@ -767,6 +963,22 @@
     ]);
 
     var actions = D.h('div.jv__head-actions');
+
+    if (JV.VOICE.canSpeak()) {
+      actions.appendChild(D.iconButton(
+        speakingOn() ? 'speaker' : 'speakerOff',
+        speakingOn() ? 'Stop reading replies aloud' : 'Read replies aloud',
+        function () {
+          var on = !speakingOn();
+          setVoicePref({ speak: on });
+          if (!on) JV.VOICE.cancel();
+          else JV.VOICE.speak('Voice on.');
+          renderAll();
+        },
+        { class: speakingOn() ? 'is-on' : '' }
+      ));
+    }
+
     if (opts.expandable) {
       actions.appendChild(D.iconButton('arrowUpRight', 'Open the full console', function () {
         UI.toggleJarvisDock(false);
@@ -823,7 +1035,8 @@
 
   function fillPanels(host) {
     D.clear(host);
-    D.append(host, [insightsPanel(), statusPanel(), memoryPanel(), modelPanel(), toolsPanel(), controlsPanel()]);
+    D.append(host, [insightsPanel(), statusPanel(), voicePanel(), memoryPanel(),
+      modelPanel(), toolsPanel(), controlsPanel()]);
   }
 
   /* ---------------------------------------------------------------- dock */
@@ -888,6 +1101,11 @@
     render: function (root) { renderView(root); },
     rerender: function (root) { D.clear(root); renderView(root); }
   };
+
+  // Voice lists populate asynchronously, so restore the preference on the next
+  // tick as well as immediately.
+  restoreVoice();
+  setTimeout(restoreVoice, 600);
 
   Object.assign(UI, {
     jarvis: function (text) {

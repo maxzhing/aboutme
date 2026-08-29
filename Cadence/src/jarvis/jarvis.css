@@ -668,6 +668,54 @@
 .jv__send:hover:not(:disabled) { background: var(--jv-accent-strong); }
 .jv__send:disabled { opacity: 0.4; cursor: default; }
 
+/* ------------------------------------------------------------ microphone */
+
+.jv__mic {
+  flex: 0 0 auto;
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: background var(--speed) var(--ease), color var(--speed) var(--ease),
+    border-color var(--speed) var(--ease);
+}
+
+.jv__mic:hover { color: var(--text); border-color: var(--border-strong); }
+
+.jv__mic.is-live {
+  background: var(--jv-accent);
+  border-color: var(--jv-accent);
+  color: var(--jv-on-accent);
+  animation: jv-mic 1.6s var(--ease) infinite;
+}
+
+@keyframes jv-mic {
+  0%, 100% { box-shadow: 0 0 0 0 var(--jv-accent-soft); }
+  50% { box-shadow: 0 0 0 5px var(--jv-accent-soft); }
+}
+
+.is-reduced-motion .jv__mic.is-live { animation: none; }
+
+.jv__input-row.is-listening {
+  border-color: var(--jv-accent);
+  box-shadow: 0 0 0 3px var(--jv-accent-soft);
+}
+
+.jv__listening { display: inline-flex; align-items: center; gap: 6px; color: var(--jv-accent); }
+
+.jv__listening-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--jv-accent);
+  animation: jv-breathe 1.2s var(--ease) infinite;
+}
+
+.is-reduced-motion .jv__listening-dot { animation: none; }
+
+.jv__head-actions .is-on { color: var(--jv-accent); }
+
 .jv__composer-meta {
   display: flex;
   align-items: center;
@@ -889,6 +937,27 @@
   border-color: var(--jv-accent);
   box-shadow: 0 0 0 3px var(--jv-accent-soft);
 }
+
+.jv-presets { display: flex; flex-direction: column; gap: 4px; margin-top: var(--sp-2); }
+
+.jv-preset {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+  font: inherit;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: border-color var(--speed) var(--ease);
+}
+
+.jv-preset:hover { border-color: var(--jv-accent-line); }
+.jv-preset.is-on { border-color: var(--jv-accent); background: var(--jv-accent-soft); }
+.jv-preset__name { font-size: var(--fs-sm); font-weight: 600; color: var(--text); }
+.jv-preset__hint { font-size: var(--fs-xs); color: var(--text-3); }
 
 /* ------------------------------------------------------------ insights */
 
