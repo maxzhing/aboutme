@@ -25,12 +25,16 @@ JS_MODULES = [
     "01-core.js",
     "02-memory.js",
     "03-tools.js",
-    "04-toolbelt.js",
-    "05-reasoner.js",
-    "06-agents.js",
-    "07-orchestrator.js",
-    "08-assistant.js",
-    "09-ui.js",
+    "04-domain.js",
+    "05-scheduler.js",
+    "06-projects.js",
+    "07-optimize.js",
+    "08-toolbelt.js",
+    "09-reasoner.js",
+    "10-agents.js",
+    "11-orchestrator.js",
+    "12-assistant.js",
+    "13-ui.js",
 ]
 
 BANNER = """
@@ -40,8 +44,8 @@ BANNER = """
    ======================================================================== */
 """
 
-# Files 09-ui.js and jarvis.css carry their own banner already.
-SELF_BANNERED = {"09-ui.js"}
+# Files 13-ui.js and jarvis.css carry their own banner already.
+SELF_BANNERED = {"13-ui.js"}
 
 
 class PatchError(RuntimeError):
@@ -131,6 +135,14 @@ def build() -> str:
         "run: function () { UI.whatNowDialog(); } },\n"
         "      { id: 'jarvis', label: 'Ask JARVIS', hint: 'Plan, schedule and review in plain language', "
         "icon: 'sparkle', shortcut: 'J', run: function () { UI.jarvis(); } },\n"
+        "      { id: 'jarvis-optimize', label: 'Optimize my schedule', hint: 'Find conflicts, overloads and gaps', "
+        "icon: 'zap', run: function () { UI.jarvis('optimize my schedule this week'); } },\n"
+        "      { id: 'jarvis-brief', label: 'Morning briefing', hint: 'Today, what matters, and free time', "
+        "icon: 'sun', run: function () { UI.jarvis('give me my morning briefing'); } },\n"
+        "      { id: 'jarvis-project', label: 'Plan a project', hint: 'Turn a deadline into scheduled sessions', "
+        "icon: 'target', run: function () { UI.jarvis(); } },\n"
+        "      { id: 'jarvis-review', label: 'How did I do today?', icon: 'chart', "
+        "run: function () { UI.jarvis('how did I do today'); } },\n"
         "      { id: 'jarvis-plan', label: 'JARVIS: plan my day', icon: 'sparkle', "
         "run: function () { UI.jarvis('plan my day'); } },\n"
         "      { id: 'jarvis-overdue', label: 'JARVIS: what is overdue?', icon: 'alert', "

@@ -31,10 +31,25 @@
       longTerm: this.memory
     });
 
-    this.conversation = [];   // {role, text, run?, at}
-    this.autoApply = false;   // when true, write tools commit without asking
+    this.conversation = [];      // {role, text, run?, at}
+    this.autoApply = false;      // when true, write tools commit without asking
+    this.memoryEnabled = true;   // §23: memory is a feature the user can switch off
+    this.state = 'ready';        // ready | thinking | scheduling | waiting | error
+    this.listeners = [];
     this.load();
   }
+
+  /* The console mirrors this; it is what makes JARVIS look connected to what
+     it is actually doing rather than showing a generic spinner. */
+  Assistant.prototype.setState = function (state, note) {
+    this.state = state;
+    this.note = note || '';
+    this.listeners.forEach(function (fn) {
+      try { fn(state, note); } catch (err) { /* a UI error must not stop a run */ }
+    });
+  };
+
+  Assistant.prototype.onState = function (fn) { this.listeners.push(fn); };
 
   /* ---------------------------------------------------------- settings */
 
@@ -58,6 +73,7 @@
       var data = JSON.parse(raw);
       this.memory.load(data.memory);
       if (typeof data.autoApply === 'boolean') this.autoApply = data.autoApply;
+      if (typeof data.memoryEnabled === 'boolean') this.memoryEnabled = data.memoryEnabled;
       if (Array.isArray(data.conversation)) {
         // Replay text only — a stored run's closures cannot survive a reload.
         this.conversation = data.conversation.slice(-40).map(function (m) {
@@ -80,6 +96,7 @@
           v: 1,
           memory: self.memory.toJSON(),
           autoApply: self.autoApply,
+          memoryEnabled: self.memoryEnabled,
           conversation: self.conversation.slice(-40).map(function (m) {
             return { role: m.role, text: m.text, at: m.at };
           })
@@ -103,30 +120,72 @@
 
     // Auto-apply mode runs write tools for real; otherwise they propose first.
     this.executor.dryRun = !this.autoApply;
+    this.setState('thinking');
 
-    return this.orchestrator.run(goal, { onTrace: options.onTrace })
+    return this.orchestrator.run(goal, {
+      onTrace: function (entry, trace) {
+        // Reflect the phase so the console can show what is happening now.
+        if (entry.phase === 'plan') self.setState('thinking', 'Working out the steps');
+        else if (entry.phase === 'execute') self.setState('scheduling', entry.detail.split(' →')[0]);
+        else if (entry.phase === 'clarify') self.setState('waiting', entry.detail);
+        if (options.onTrace) options.onTrace(entry, trace);
+      }
+    })
       .then(function (result) {
         self.working.addAssistant(result.answer);
         self.conversation.push({
           role: 'assistant', text: result.answer, run: result, at: JV.nowTs()
         });
+        self.setState(
+          result.status === 'needs_clarification' ? 'waiting'
+            : (result.proposals && result.proposals.length) ? 'waiting'
+              : result.status === 'failed' ? 'error' : 'ready'
+        );
         self.persist();
         return result;
       })
       .catch(function (err) {
         var message = 'Something went wrong: ' + (err && err.message ? err.message : String(err));
         self.conversation.push({ role: 'assistant', text: message, error: true, at: JV.nowTs() });
+        self.setState('error', message);
         self.persist();
         throw err;
       });
   };
 
-  /* Apply one pending proposal and report what happened. */
+  /* Apply one pending proposal, then read the data back before calling it a
+     success. A caught exception only proves nothing threw; verification is
+     what makes "done" mean the calendar actually changed. */
   Assistant.prototype.apply = function (proposal) {
-    var out = proposal.commit();
-    this.memory.recordEvent('Approved: ' + proposal.title, { kind: 'approval' });
-    this.persist();
-    return out;
+    var out, verdict;
+    try {
+      out = proposal.commit();
+    } catch (err) {
+      return {
+        ok: false,
+        detail: (err && err.message ? err.message : String(err)) +
+          ' — nothing was changed.',
+        threw: true
+      };
+    }
+
+    verdict = proposal.verify ? proposal.verify(out) : { ok: true, detail: 'Applied.' };
+    if (verdict.ok) {
+      this.memory.recordEvent('Approved: ' + proposal.title, { kind: 'approval' });
+      this.persist();
+    }
+    return { ok: verdict.ok, detail: verdict.detail, output: out };
+  };
+
+  /* Apply one change out of a bulk proposal, verified the same way. */
+  Assistant.prototype.applyChange = function (change) {
+    try {
+      var out = change.apply();
+      var verdict = change.verify ? change.verify(out) : { ok: true, detail: 'Applied.' };
+      return { ok: verdict.ok, detail: verdict.detail, output: out };
+    } catch (err) {
+      return { ok: false, detail: (err && err.message ? err.message : String(err)), threw: true };
+    }
   };
 
   /* ------------------------------------------------------------- memory */
@@ -142,6 +201,56 @@
 
   Assistant.prototype.recall = function (query, k) {
     return this.memory.retrieveAll(query, k || 4);
+  };
+
+  /* Everything JARVIS holds, newest first, so the user can read it all rather
+     than trust a count. §23: memory you cannot inspect is not a feature. */
+  Assistant.prototype.memoryList = function () {
+    var out = [];
+    [['fact', this.memory.semantic], ['episode', this.memory.episodic], ['skill', this.memory.procedural]]
+      .forEach(function (pair) {
+        pair[1].all().forEach(function (doc) {
+          out.push({
+            id: doc.id, kind: pair[0], store: pair[1],
+            text: doc.text, at: doc.createdAt,
+            source: (doc.metadata && doc.metadata.source) || null
+          });
+        });
+      });
+    // Facts and skills are what a person actually wants to review and correct;
+    // episodes are a long tail of "asked X". Rank by usefulness, then recency.
+    var weight = { fact: 0, skill: 1, episode: 2 };
+    return out.sort(function (a, b) {
+      if (weight[a.kind] !== weight[b.kind]) return weight[a.kind] - weight[b.kind];
+      return b.at - a.at;
+    });
+  };
+
+  Assistant.prototype.forget = function (entry) {
+    var ok = entry.store.forget(entry.id);
+    if (ok) this.persist();
+    return ok;
+  };
+
+  Assistant.prototype.editMemory = function (entry, text) {
+    var doc = entry.store.store.get(entry.id);
+    if (!doc) return false;
+    doc.text = text;
+    doc.vector = entry.store.store.embedder.embed(text);
+    this.persist();
+    return true;
+  };
+
+  Assistant.prototype.setMemoryEnabled = function (on) {
+    this.memoryEnabled = !!on;
+    // Detach long-term memory from the agents entirely when it is off, so
+    // "disabled" means nothing is read or written — not merely hidden.
+    var mem = this.memoryEnabled ? this.memory : null;
+    [this.planner, this.executor, this.reflection, this.memoryAgent].forEach(function (a) {
+      a.longTerm = mem;
+    });
+    this.orchestrator.longTerm = mem;
+    this.persist();
   };
 
   Assistant.prototype.forgetAll = function () {
@@ -170,8 +279,15 @@
       memory: this.memory.stats(),
       metrics: JV.METRICS.snapshot(),
       autoApply: this.autoApply,
+      memoryEnabled: this.memoryEnabled,
+      state: this.state,
       remote: this.remote.available()
     };
+  };
+
+  /* Non-mutating observations about the schedule, for the console to surface. */
+  Assistant.prototype.insights = function () {
+    try { return JV.OPTIMIZE.insights(); } catch (err) { return []; }
   };
 
   /* Opening suggestions, drawn from the user's real state so the assistant
@@ -182,9 +298,10 @@
       var counts = Q.counts();
       if (counts.overdue) out.push({ label: 'What is overdue?', text: 'what is overdue' });
       if (counts.captures) out.push({ label: 'Sort my inbox', text: 'organize my inbox' });
+      out.push({ label: 'Morning briefing', text: 'give me my morning briefing' });
+      out.push({ label: 'Optimize my schedule', text: 'optimize my schedule this week' });
       out.push({ label: 'What should I do now?', text: 'what should I do now' });
       out.push({ label: 'Plan my day', text: 'plan my day' });
-      out.push({ label: 'Find me an hour', text: 'find me an hour this week' });
       out.push({ label: 'How busy am I?', text: 'how busy is my week' });
     } catch (err) {
       out.push({ label: 'What should I do now?', text: 'what should I do now' });

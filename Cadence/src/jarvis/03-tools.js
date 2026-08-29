@@ -213,14 +213,23 @@
   ToolRegistry.prototype.size = function () { return this.names().length; };
 
   /* A proposal is what a mutating tool returns under dry-run. `commit` is the
-     real effect, deferred until the person says yes. */
+     real effect, deferred until the person says yes.
+
+     `verify` is what makes a reported success trustworthy: after commit runs,
+     it re-reads application state and returns {ok, detail}. A tool that says
+     "done" without one is only reporting that no exception was thrown, which
+     is not the same thing. `changes` lists individual edits for a bulk
+     proposal so the person can review them one by one before applying. */
   function proposal(spec) {
     return {
       __proposal: true,
       title: spec.title,
       detail: spec.detail || '',
       items: spec.items || [],
+      changes: spec.changes || null,
+      refs: spec.refs || [],
       commit: spec.commit,
+      verify: spec.verify || null,
       undoable: spec.undoable !== false
     };
   }

@@ -36,8 +36,68 @@
     ]);
   }
 
-  function confidenceLabel(v) {
-    return JV.confidence.label(v) + ' confidence';
+  /* -------------------------------------------------------------- state */
+
+  var STATES = {
+    ready: { label: 'Ready', tone: 'ok' },
+    thinking: { label: 'Thinking', tone: 'think' },
+    scheduling: { label: 'Scheduling', tone: 'work' },
+    waiting: { label: 'Waiting for you', tone: 'wait' },
+    error: { label: 'Something failed', tone: 'bad' }
+  };
+
+  function stateChip() {
+    var a = assistant();
+    var s = STATES[a.state] || STATES.ready;
+    return D.h('span.jv-state.is-' + s.tone, {
+      title: a.note || s.label, 'aria-live': 'polite'
+    }, [
+      D.h('span.jv-state__dot', { 'aria-hidden': 'true' }),
+      D.h('span.jv-state__label', { text: a.note && a.state !== 'ready' ? a.note : s.label })
+    ]);
+  }
+
+  /* --------------------------------------------------------------- refs */
+
+  /* A reference chip opens the real editor for the real record. This is what
+     makes an answer navigable rather than a wall of text about your calendar. */
+  function openRef(r) {
+    if (!r || !r.item) return;
+    switch (r.kind) {
+      case 'event': UI.editEvent(r.item); break;
+      case 'task': UI.editTask(r.item); break;
+      case 'deadline': UI.editDeadline(r.item); break;
+      case 'note': UI.editNote(r.item); break;
+      case 'project': UI.editProject(r.item); break;
+      case 'goal': UI.editGoal(r.item); break;
+      case 'habit': UI.editHabit(r.item); break;
+      default:
+        if (r.item.id) UI.go('search');
+    }
+  }
+
+  function refsRow(refs) {
+    if (!refs || !refs.length) return null;
+    var row = D.h('div.jv-refs');
+    refs.slice(0, 8).forEach(function (r) {
+      if (!r || !r.label) return;
+      row.appendChild(D.h('button.jv-ref', {
+        type: 'button',
+        title: 'Open ' + r.label,
+        onclick: function () { openRef(r); }
+      }, [
+        D.icon(refIcon(r.kind), 11),
+        D.h('span', { text: r.label })
+      ]));
+    });
+    return row.childNodes.length ? row : null;
+  }
+
+  function refIcon(kind) {
+    return {
+      event: 'calendar', task: 'checkSquare', deadline: 'flag', note: 'note',
+      project: 'folder', goal: 'target', habit: 'repeat', person: 'users'
+    }[kind] || 'link';
   }
 
   /* --------------------------------------------------------- result card */
@@ -88,40 +148,78 @@
   function proposalCard(entry, turn, index) {
     var proposal = entry.proposal;
     var node = D.h('div.jv-propose');
-    var applied = turn.applied && turn.applied[index];
+    var state = (turn.applied && turn.applied[index]) || null;   // {status, detail}
+    var bulk = proposal.changes && proposal.changes.length > 1;
 
-    function head() {
-      return D.h('div.jv-propose__head', [
-        D.h('span.jv-propose__icon', { 'aria-hidden': 'true' },
-          D.icon(applied === 'applied' ? 'check' : 'sparkle', 12)),
-        D.h('div', [
-          D.h('p.jv-propose__title', { text: proposal.title }),
-          proposal.detail ? D.h('p.jv-propose__detail', { text: proposal.detail }) : null
-        ])
-      ]);
-    }
+    node.appendChild(D.h('div.jv-propose__head', [
+      D.h('span.jv-propose__icon', { 'aria-hidden': 'true' },
+        D.icon(state && state.status === 'applied' ? 'check' : bulk ? 'layers' : 'sparkle', 12)),
+      D.h('div', [
+        D.h('p.jv-propose__title', { text: proposal.title }),
+        proposal.detail ? D.h('p.jv-propose__detail', { text: proposal.detail }) : null
+      ])
+    ]));
 
-    node.appendChild(head());
+    // A bulk proposal lists each change with its own Apply, so three of five
+    // can be taken and the rest simply never happen.
+    if (bulk) {
+      turn.changeState = turn.changeState || {};
+      var cstate = turn.changeState[index] = turn.changeState[index] || {};
+      var list = D.h('ul.jv-propose__changes');
 
-    if (proposal.items && proposal.items.length) {
-      var list = D.h('ul.jv-propose__items');
-      proposal.items.slice(0, 10).forEach(function (item) {
-        list.appendChild(D.h('li.jv-propose__item', { text: item }));
+      proposal.changes.forEach(function (change, ci) {
+        var done = cstate[ci];
+        var row = D.h('li.jv-change' + (done ? '.is-' + done.status : ''));
+        row.appendChild(D.h('div.jv-change__body', [
+          D.h('p.jv-change__title', { text: change.title }),
+          change.detail ? D.h('p.jv-change__detail', { text: change.detail }) : null,
+          change.preview ? D.h('p.jv-change__preview', { text: change.preview }) : null,
+          done ? D.h('p.jv-change__result' + (done.status === 'applied' ? '' : '.is-bad'), {
+            text: done.detail
+          }) : null,
+          refsRow(change.refs)
+        ]));
+
+        if (!done && !state) {
+          row.appendChild(D.h('div.jv-change__actions', [
+            D.h('button.btn.btn--ghost.btn--sm', {
+              type: 'button',
+              onclick: function () {
+                var res = assistant().applyChange(change);
+                cstate[ci] = { status: res.ok ? 'applied' : 'failed', detail: res.detail };
+                UI.toast(res.ok ? change.title : 'Could not apply: ' + res.detail,
+                  { tone: res.ok ? 'ok' : 'warn' });
+                afterChange();
+              }
+            }, 'Apply'),
+            D.h('button.btn.btn--ghost.btn--sm.jv-change__skip', {
+              type: 'button',
+              onclick: function () {
+                cstate[ci] = { status: 'skipped', detail: 'Skipped — nothing changed.' };
+                renderAll();
+              }
+            }, 'Skip')
+          ]));
+        }
+        list.appendChild(row);
       });
       node.appendChild(list);
+    } else if (proposal.items && proposal.items.length) {
+      var items = D.h('ul.jv-propose__items');
+      proposal.items.slice(0, 12).forEach(function (item) {
+        items.appendChild(D.h('li.jv-propose__item', { text: item }));
+      });
+      node.appendChild(items);
     }
 
-    if (applied === 'applied') {
-      node.classList.add('is-applied');
-      node.appendChild(D.h('div.jv-propose__done', [
-        D.icon('check', 13), D.h('span', { text: 'Applied. Undo from the top bar or Ctrl+Z.' })
-      ]));
-      return node;
-    }
-    if (applied === 'discarded') {
-      node.classList.add('is-discarded');
-      node.appendChild(D.h('div.jv-propose__done', [
-        D.icon('x', 13), D.h('span', { text: 'Discarded — nothing was changed.' })
+    var refs = refsRow(proposal.refs);
+    if (refs && !bulk) node.appendChild(D.h('div.jv-propose__refs', refs));
+
+    if (state) {
+      node.classList.add(state.status === 'applied' ? 'is-applied' : 'is-discarded');
+      node.appendChild(D.h('div.jv-propose__done' + (state.status === 'failed' ? '.is-bad' : ''), [
+        D.icon(state.status === 'applied' ? 'check' : state.status === 'failed' ? 'alert' : 'x', 13),
+        D.h('span', { text: state.detail })
       ]));
       return node;
     }
@@ -130,23 +228,26 @@
       D.h('button.btn.btn--primary.btn--sm', {
         type: 'button',
         onclick: function () {
-          try {
-            assistant().apply(proposal);
-            turn.applied = turn.applied || {};
-            turn.applied[index] = 'applied';
-            UI.toast(proposal.title, { tone: 'ok' });
-            renderAll();
-            UI.refresh();
-          } catch (err) {
-            UI.toast('That could not be applied: ' + (err && err.message ? err.message : err), { tone: 'warn' });
-          }
+          // The assistant commits, then reads the data back. What is reported
+          // here is the verification result, not the absence of an exception.
+          var res = assistant().apply(proposal);
+          turn.applied = turn.applied || {};
+          turn.applied[index] = {
+            status: res.ok ? 'applied' : 'failed',
+            detail: res.ok
+              ? res.detail + ' Undo from the top bar or Ctrl+Z.'
+              : res.detail
+          };
+          UI.toast(res.ok ? proposal.title : 'Not applied: ' + res.detail,
+            { tone: res.ok ? 'ok' : 'warn' });
+          afterChange();
         }
-      }, [D.icon('check', 14), D.h('span', { text: 'Apply' })]),
+      }, [D.icon('check', 14), D.h('span', { text: bulk ? 'Apply all' : 'Apply' })]),
       D.h('button.btn.btn--ghost.btn--sm', {
         type: 'button',
         onclick: function () {
           turn.applied = turn.applied || {};
-          turn.applied[index] = 'discarded';
+          turn.applied[index] = { status: 'discarded', detail: 'Discarded — nothing was changed.' };
           renderAll();
         }
       }, 'Discard'),
@@ -154,6 +255,17 @@
     ]));
 
     return node;
+  }
+
+  /* Re-render the console and the calendar together, so a change JARVIS made
+     appears in the calendar in the same frame it is confirmed in the thread. */
+  function afterChange() {
+    renderAll();
+    UI.refresh();
+    document.documentElement.classList.add('jv-just-changed');
+    setTimeout(function () {
+      document.documentElement.classList.remove('jv-just-changed');
+    }, 700);
   }
 
   /* --------------------------------------------------------------- trace */
@@ -220,6 +332,10 @@
           if (task.proposal) return;    // proposals render separately below
           var card = resultCard(task.output);
           if (card) block.appendChild(card);
+          // Anything the answer named is clickable straight through to the
+          // real record, so JARVIS's replies navigate the calendar.
+          var refs = refsRow(task.output && task.output.refs);
+          if (refs) block.appendChild(refs);
         });
 
         (run.proposals || []).forEach(function (entry, index) {
@@ -414,6 +530,92 @@
     return panel;
   }
 
+  /* Everything JARVIS holds, readable and editable one row at a time.
+     A memory you cannot inspect is not something you can consent to. */
+  function memoryPanel() {
+    var a = assistant();
+    var panel = D.h('div.jv-panel');
+    var entries = a.memoryList();
+
+    panel.appendChild(D.h('h3.jv-panel__title', {
+      text: 'What JARVIS remembers · ' + entries.length
+    }));
+
+    var toggle = D.h('input', { type: 'checkbox', checked: a.memoryEnabled });
+    toggle.addEventListener('change', function () {
+      a.setMemoryEnabled(toggle.checked);
+      UI.toast(toggle.checked ? 'Memory on' : 'Memory off — nothing will be read or written');
+      renderAll();
+    });
+    panel.appendChild(D.h('label.jv-switch', [
+      toggle, D.h('span', { text: 'Remember how I work' })
+    ]));
+
+    if (!a.memoryEnabled) {
+      panel.appendChild(D.h('p.jv-panel__note', {
+        text: 'Memory is off. Nothing is read or written; what is already stored is kept but unused.'
+      }));
+    }
+
+    if (!entries.length) {
+      panel.appendChild(D.h('p.jv-panel__note', {
+        text: 'Nothing stored yet. Tell JARVIS something like “I focus best in the mornings”.'
+      }));
+    } else {
+      var list = D.h('ul.jv-mem');
+      entries.slice(0, 12).forEach(function (entry) {
+        var row = D.h('li.jv-mem__row');
+        var text = D.h('span.jv-mem__text', { text: entry.text });
+        row.appendChild(D.h('span.jv-mem__kind', { text: entry.kind }));
+        row.appendChild(text);
+        row.appendChild(D.h('span.jv-mem__actions', [
+          D.iconButton('edit', 'Edit this memory', function () {
+            var next = global.prompt('Edit this memory', entry.text);
+            if (next === null) return;
+            var trimmed = next.trim();
+            if (!trimmed) return;
+            a.editMemory(entry, trimmed);
+            renderAll();
+          }, { class: 'jv-mem__btn' }),
+          D.iconButton('trash', 'Forget this', function () {
+            a.forget(entry);
+            UI.toast('Forgotten');
+            renderAll();
+          }, { class: 'jv-mem__btn' })
+        ]));
+        list.appendChild(row);
+      });
+      panel.appendChild(list);
+      if (entries.length > 12) {
+        panel.appendChild(D.h('p.jv-panel__note', {
+          text: 'Showing the 12 most recent of ' + entries.length + '.'
+        }));
+      }
+    }
+
+    return panel;
+  }
+
+  /* Observations, never actions. Each one hands the question back to you. */
+  function insightsPanel() {
+    var a = assistant();
+    var items = a.insights();
+    if (!items.length) return null;
+
+    var panel = D.h('div.jv-panel');
+    panel.appendChild(D.h('h3.jv-panel__title', { text: 'Worth knowing' }));
+    items.forEach(function (i) {
+      panel.appendChild(D.h('button.jv-insight.is-' + (i.tone || 'info'), {
+        type: 'button',
+        onclick: function () { UI.jarvis(i.ask); }
+      }, [
+        D.icon(i.icon || 'sparkle', 13),
+        D.h('span', { text: i.text })
+      ]));
+    });
+    return panel;
+  }
+
   function controlsPanel() {
     var a = assistant();
     var panel = D.h('div.jv-panel');
@@ -464,7 +666,7 @@
             renderAll();
           });
         }
-      }, 'Forget memory')
+      }, 'Forget everything')
     ]));
 
     return panel;
@@ -478,9 +680,9 @@
 
     var head = D.h('div.jv__head', [
       D.h('span.jv__mark', { 'aria-hidden': 'true' }, D.icon('sparkle', 14)),
-      D.h('div', [
+      D.h('div.jv__headings', [
         D.h('h2.jv__title', { text: 'JARVIS' }),
-        D.h('p.jv__subtitle', { text: 'Plans before it acts' })
+        stateChip()
       ])
     ]);
 
@@ -505,7 +707,7 @@
     root.appendChild(thread);
     root.appendChild(composer.node);
 
-    var surface = { root: root, thread: thread, input: composer.input };
+    var surface = { root: root, thread: thread, input: composer.input, head: head };
     surfaces.push(surface);
     renderThread(thread);
     return surface;
@@ -516,6 +718,11 @@
     surfaces = surfaces.filter(function (s) { return document.body.contains(s.root); });
     surfaces.forEach(function (s) {
       renderThread(s.thread);
+
+      // The status chip is live state, so it is replaced on every render.
+      var oldChip = s.head && s.head.querySelector('.jv-state');
+      if (oldChip) oldChip.parentNode.replaceChild(stateChip(), oldChip);
+
       // The composer's live bits (send enabled, auto-apply note) are cheap to
       // rebuild and keeping them in sync avoids two sources of truth.
       var oldComposer = s.root.querySelector('.jv__composer');
@@ -536,7 +743,7 @@
 
   function fillPanels(host) {
     D.clear(host);
-    D.append(host, [statusPanel(), toolsPanel(), controlsPanel()]);
+    D.append(host, [insightsPanel(), statusPanel(), memoryPanel(), toolsPanel(), controlsPanel()]);
   }
 
   /* ---------------------------------------------------------------- dock */

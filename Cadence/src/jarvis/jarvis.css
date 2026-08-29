@@ -127,6 +127,69 @@
 
 .jv__head-actions { margin-left: auto; display: flex; gap: 2px; align-items: center; }
 
+.jv__headings { min-width: 0; }
+
+/* ---------------------------------------------------------- state chip */
+
+/* JARVIS reacting to what it is actually doing. Every state pairs a colour
+   with a word, so the state is never carried by colour alone. */
+.jv-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  margin-top: 1px;
+  max-width: 22ch;
+}
+
+.jv-state__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jv-state__dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ok);
+  flex: 0 0 auto;
+}
+
+.jv-state.is-think .jv-state__dot { background: var(--accent); animation: jv-breathe 1.5s var(--ease) infinite; }
+.jv-state.is-work .jv-state__dot { background: var(--jv-accent); animation: jv-breathe 1.5s var(--ease) infinite; }
+.jv-state.is-wait .jv-state__dot { background: var(--warn); }
+.jv-state.is-bad .jv-state__dot { background: var(--danger); }
+
+@keyframes jv-breathe {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+.is-reduced-motion .jv-state__dot { animation: none !important; opacity: 1; }
+
+/* ------------------------------------------------------------ref chips */
+
+.jv-refs { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+
+.jv-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: inherit;
+  font-size: var(--fs-xs);
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  cursor: pointer;
+  max-width: 100%;
+  transition: border-color var(--speed) var(--ease), color var(--speed) var(--ease);
+}
+
+.jv-ref:hover { border-color: var(--accent); color: var(--text); }
+.jv-ref span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* --------------------------------------------------------------- thread */
 
 .jv__thread {
@@ -331,8 +394,65 @@
   font-size: var(--fs-sm);
   color: var(--text-3);
   padding: var(--sp-2) var(--sp-3) var(--sp-3);
-  display: flex; align-items: center; gap: var(--sp-2);
+  display: flex; align-items: flex-start; gap: var(--sp-2);
+  line-height: 1.45;
 }
+
+.jv-propose__done.is-bad { color: var(--danger); }
+
+.jv-propose__refs { padding: 0 var(--sp-3) var(--sp-2); }
+
+/* ------------------------------------------------------- bulk changes */
+
+/* A multi-change proposal is reviewed line by line. Taking three of five and
+   leaving the rest has to be as easy as taking all of them. */
+.jv-propose__changes {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--sp-3) var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.jv-change {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.jv-change__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+
+.jv-change__title {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.jv-change__detail { margin: 0; font-size: var(--fs-xs); color: var(--text-2); line-height: 1.45; }
+
+.jv-change__preview {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--jv-accent);
+  line-height: 1.45;
+}
+
+.jv-change__result { margin: 0; font-size: var(--fs-xs); color: var(--ok); }
+.jv-change__result.is-bad { color: var(--danger); }
+
+.jv-change__actions { flex: 0 0 auto; display: flex; gap: 4px; }
+.jv-change__skip { color: var(--text-3); }
+
+.jv-change.is-applied { border-color: var(--ok); background: var(--ok-soft); }
+.jv-change.is-failed { border-color: var(--danger); background: var(--danger-soft); }
+.jv-change.is-skipped { opacity: 0.5; }
 
 /* ---------------------------------------------------------------- trace */
 
@@ -665,6 +785,89 @@
 }
 
 .jv-switch input { margin-top: 2px; flex: 0 0 auto; accent-color: var(--jv-accent); }
+
+.jv-panel__note {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------- memory list */
+
+.jv-mem {
+  list-style: none;
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.jv-mem__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-2) 0;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-sm);
+}
+
+.jv-mem__row:first-child { border-top: 0; }
+
+.jv-mem__kind {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+  margin-top: 2px;
+}
+
+.jv-mem__text { flex: 1 1 auto; min-width: 0; color: var(--text-2); line-height: 1.45; word-break: break-word; }
+
+.jv-mem__actions { flex: 0 0 auto; display: flex; gap: 0; opacity: 0; transition: opacity var(--speed) var(--ease); }
+.jv-mem__row:hover .jv-mem__actions,
+.jv-mem__row:focus-within .jv-mem__actions { opacity: 1; }
+
+/* Touch has no hover, so the controls must not be hover-gated there. */
+@media (hover: none) { .jv-mem__actions { opacity: 1; } }
+
+/* ------------------------------------------------------------ insights */
+
+.jv-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  padding: var(--sp-2);
+  margin-bottom: var(--sp-1);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: border-color var(--speed) var(--ease), color var(--speed) var(--ease);
+}
+
+.jv-insight:last-child { margin-bottom: 0; }
+.jv-insight:hover { border-color: var(--jv-accent-line); color: var(--text); }
+.jv-insight.is-warn { border-left: 2px solid var(--warn); }
+.jv-insight.is-info { border-left: 2px solid var(--accent); }
+
+/* A change JARVIS just made gets one brief highlight in the calendar, tied to
+   the actual write rather than a decorative loading state. */
+.jv-just-changed .ev {
+  transition: box-shadow 320ms var(--ease), background-color 320ms var(--ease);
+}
 
 /* ------------------------------------------------------------ responsive */
 

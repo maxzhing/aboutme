@@ -26,14 +26,20 @@ js/jarvis/core.js          value types — ids, Confidence, AgentMessage envelop
 js/jarvis/memory.js        hashing embedder, vector store, semantic/episodic/procedural
                            memory with recency decay + reinforcement, working memory
 js/jarvis/tools.js         Tool base: schema validation, permissions, timeout, retry;
-                           ToolRegistry; the dry-run proposal contract
-js/jarvis/toolbelt.js      23 tools over the user's calendar, tasks, notes and plans
+                           ToolRegistry; the dry-run proposal + verification contract
+js/jarvis/domain.js        resolvers (name → real event/task/project), date phrases,
+                           and the post-write verification helpers
+js/jarvis/scheduler.js     session distribution — how work is *shaped* before it is
+                           placed: sizing, spacing, per-day caps, preferred times
+js/jarvis/projects.js      deadline → plan: phase templates, effort split, commit
+js/jarvis/optimize.js      optimiser findings, morning brief, day review, insights
+js/jarvis/toolbelt.js      the tools: calendar.* / plan.* / memory.*
 js/jarvis/reasoner.js      the local reasoner — intent table + Cadence's NLP;
                            optional remote LLM provider (off by default)
 js/jarvis/agents.js        planner, executor, reflection, memory
 js/jarvis/orchestrator.js  task tree + the understand→plan→clarify→execute→
                            verify→reflect→deliver loop
-js/jarvis/assistant.js     the facade: ask(), remember(), recall(), status()
+js/jarvis/assistant.js     the facade: ask(), apply(), memory controls, status, state
 js/ui/jarvis.js            the console — docked rail and full route
 ```
 
@@ -59,14 +65,66 @@ of changing anything. The console renders it and calls `commit` only on
 approval. Auto-apply exists, is off by default, and the composer says which
 mode is active. Everything remains undoable either way.
 
+### Verify, then report
+
+A commit that throws no exception has confirmed nothing. Every proposal pairs
+`commit` with a `verify` that re-reads the store — is the event actually there,
+is it at the time we asked for, did the task's status really change — and the
+console reports *that* result. A write that silently fails is reported as a
+failure, in those words, with the calendar left alone. There is a test for this:
+a proposal whose commit returns a fabricated id is reported as not applied.
+
+### Memory you can read
+
+`§23` is taken literally: the side panel lists every fact, skill and episode
+JARVIS holds, each editable and individually deletable, with a switch that
+detaches long-term memory from the agents entirely rather than merely hiding it.
+
 ## Tools
 
-Reads run freely: `agenda`, `find_time`, `what_now`, `list_tasks`, `priorities`,
-`conflicts`, `workload`, `deadlines`, `week_review`, `search`, `recall`.
+Reads run freely:
 
-Writes propose first: `create_event`, `create_task`, `create_note`,
-`create_deadline`, `capture`, `organize`, `schedule_task`, `complete_task`,
-`break_down_task`, `plan_day`, `plan_week`, `remember`.
+`calendar.get_day` · `get_events` · `get_week` · `get_month` · `find_free_time` ·
+`find_conflicts` · `search` · `list_tasks` · `deadlines` · `workload` ·
+`time_spent` — `plan.what_now` · `priorities` · `morning_brief` · `day_review` ·
+`week_review` · `research` — `memory.recall`
+
+Writes propose first, then verify:
+
+`calendar.create_event` · `create_recurring_event` · `update_event` ·
+`move_event` · `delete_event` · `move_range` · `create_task` ·
+`create_deadline` · `create_note` · `complete_task` · `capture` · `organize` —
+`plan.day` · `week` · `sessions` · `project` · `optimize` · `reschedule` ·
+`break_down` — `memory.remember`
+
+### Scheduling, not slot-filling
+
+Asked for two hours of study, the naive answer is one two-hour block and the
+useful answer is an hour on Tuesday and an hour on Thursday.
+`js/jarvis/scheduler.js` decides the shape before `SCHED.freeSlots` decides the
+place: it sizes sessions from the total, caps how many land on one day, spaces
+them out, front-loads when a deadline is tight, prefers the time of day you
+actually work (learned from your own history, and only when the evidence is a
+real majority), and avoids days that are already heavy. Every choice appends a
+human reason, which is what lets the console explain itself.
+
+### Deadline → plan
+
+`plan.project` turns "my physics project is due in two weeks" into a real
+project, a real deadline, and work sessions arranged around what is already on
+the calendar, split into phases (Research → Plan → Build → Review → Final).
+
+Those phase structures are **built-in templates in `projects.js`**. They are not
+researched, and the console says so on every proposal. JARVIS cannot browse the
+web from here — the app runs entirely in your browser and sends nothing out —
+and `plan.research` says exactly that rather than inventing a "researched" plan.
+
+### Optimize
+
+`plan.optimize` scans a window for conflicts, overloaded days, over-long
+unbroken blocks, deadlines with no preparation booked, and urgent work with no
+calendar time. Each finding carries its own apply and its own verification, so
+the review card lets you take three of six and leave the rest.
 
 ## Reaching it
 
