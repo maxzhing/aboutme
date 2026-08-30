@@ -38,6 +38,30 @@ an edit away from price is rejected at the input.
 - Fundamental score under 5/10 → no accumulation, size prints 0%
 - Anything you did not supply is reported **unknown** and scored zero. It is never invented.
 
+## Backtest — the part that tells you whether any of this works
+
+The **Backtest** tab replays the whole strategy bar by bar. At simulated bar *i* the engine sees
+only `bars[0..i]`, enforced by re-running the analysis on a truncated copy of the series rather
+than by remembering to avoid future indices — it costs O(n²) and makes a lookahead bug
+impossible rather than merely unlikely. An order can never fill on the bar that generated it.
+
+Two features matter more than the headline return:
+
+**A random-entry control.** Fifteen runs that keep the position sizing, the stops, the targets
+and the time stop, and throw away the signals entirely — entering on random days in random
+directions. The verdict banner reports how many of those coin-flip runs beat the strategy. If
+the signals carry information, they should beat this. If they don't, the edge was never in the
+indicators.
+
+**An out-of-sample split on the parameter sweep.** Thresholds are chosen on the first 70% of the
+series and scored once on the last 30%, and the table reports the Spearman rank correlation
+between the two. On a random walk that correlation sits near zero — which is the whole lesson:
+the best row of an in-sample table is usually fitted noise, and the tool says so rather than
+handing you a tuned number to trust.
+
+Every threshold the spec fixes lives in one `TUNE` object, so the sweep varies real parameters
+rather than a copy. The live desk always runs the spec defaults.
+
 ## Data
 
 Three sources, chosen in the **Data** tab:
@@ -65,6 +89,14 @@ naive RSI would return 100 and read as a short signal), the rubric mapping, posi
 and the reward-to-risk guard. Run it after any change.
 
 ## Caveats
+
+**On beating the market.** This will not. RSI, MACD, stochastics and ADX are decades old and
+universally computed; there is no arrangement of them that constitutes an edge over people with
+faster execution, better data and cheaper capital. What the tool honestly offers is discipline —
+consistent sizing, enforced stops, refusal to trade weak setups — and, through the backtest, a
+way to find out whether a rule you believe in survives contact with history. Measure first. An
+untested rule is a guess with arithmetic attached.
+
 
 This is analysis tooling, not advice. Every figure is derived from the data and estimates you
 load into it; vendor data still carries gaps, splits and revisions the engine cannot see.

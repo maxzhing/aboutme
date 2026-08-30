@@ -272,6 +272,7 @@ pre.spec{font-family:var(--mono);font-size:.7rem;line-height:1.62;white-space:pr
   <div class="wrap"><div id="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true" data-pane="desk">Desk</button>
     <button class="tab" role="tab" aria-selected="false" data-pane="inputs">Inputs</button>
+    <button class="tab" role="tab" aria-selected="false" data-pane="backtest">Backtest</button>
     <button class="tab" role="tab" aria-selected="false" data-pane="risk">Risk<span class="badge" id="riskBadge">0</span></button>
     <button class="tab" role="tab" aria-selected="false" data-pane="journal">Journal<span class="badge" id="jrnBadge">0</span></button>
     <button class="tab" role="tab" aria-selected="false" data-pane="data">Data</button>
@@ -413,6 +414,49 @@ pre.spec{font-family:var(--mono);font-size:.7rem;line-height:1.62;white-space:pr
       <div class="f"><label for="usd">Dollar trend</label><select id="usd" class="inp"><option value="0" selected>Flat</option><option value="-1">Strengthening</option><option value="1">Weakening</option></select></div>
       <div class="f"><label for="geoRisk">Geopolitical / supply-chain risk</label><input id="geoRisk" class="inp" placeholder="Taiwan concentration, export controls…"></div>
     </div></div></div>
+  </div>
+</section>
+
+<!-- ══════════════ BACKTEST ══════════════ -->
+<section class="pane stack" id="pane-backtest" role="tabpanel" hidden>
+  <div class="banner"><span class="bt">Read this</span><div>The engine sees only bars up to the one it is deciding on, and an order can never fill on the bar that generated it. <b>The result is only as meaningful as the data underneath it</b> — on the simulated tape every strategy loses, because a random walk has nothing to find. Load real history on the Data tab before drawing any conclusion.</div></div>
+
+  <div class="panel"><div class="panel-h"><h3>Run</h3><span class="sub" id="btSub"></span></div><div class="panel-b stack">
+    <div class="grid-f">
+      <div class="f"><label for="btWarm">Warm-up bars <span class="hint">before the first signal</span></label><input id="btWarm" class="inp num" type="number" value="60" min="40" step="10"></div>
+      <div class="f"><label for="btComm">Commission <span class="hint">$/share each way</span></label><input id="btComm" class="inp num" type="number" value="0.005" step="0.001"></div>
+      <div class="f"><label for="btSlip">Slippage <span class="hint">ATR fraction each way</span></label><input id="btSlip" class="inp num" type="number" value="0.05" step="0.01"></div>
+      <div class="f"><label for="btExit">Exit policy</label><select id="btExit" class="inp">
+        <option value="scale">Half at T1, stop to breakeven</option><option value="t1">Full exit at T1</option><option value="t2">Ignore T1, run to T2</option></select></div>
+      <div class="f"><label for="btHold">Max hold <span class="hint">bars</span></label><input id="btHold" class="inp num" type="number" value="10" min="2" step="1"></div>
+    </div>
+    <div class="field" style="gap:9px"><button class="btn pri" id="btRun">Run backtest</button><span id="btMsg" style="font-size:.78rem;color:var(--dim)"></span></div>
+  </div></div>
+
+  <div id="btVerdict"></div>
+  <div class="panel"><div class="panel-b flush"><div class="stats" id="btStats"></div></div></div>
+
+  <div class="panel charts">
+    <div class="panel-h"><h3>Equity Curve</h3><div class="chart-legend" id="legEq" style="position:static;margin-left:auto"></div></div>
+    <div class="panel-b flush">
+      <div class="chart-row"><span class="chart-tag">Both indexed to the same starting capital</span><canvas id="cEq" height="240"></canvas></div>
+      <div class="chart-row"><span class="chart-tag">Strategy only · own scale · shaded from peak</span><canvas id="cEqOwn" height="130"></canvas></div>
+    </div>
+  </div>
+
+  <div class="panel"><div class="panel-h"><h3>Trades</h3><span class="sub" id="btTradeSub"></span></div>
+    <div class="panel-b flush tw"><table class="data" id="btTrades"><thead><tr>
+      <th>Entry</th><th>Exit</th><th>Dir</th><th>Bars</th><th>In</th><th>Out</th><th>R</th><th>P&amp;L</th><th>Conf</th><th>Closed by</th><th>Triggered on</th>
+    </tr></thead><tbody id="btTradeBody"><tr><td colspan="11"><p class="empty">Not run</p></td></tr></tbody></table></div>
+  </div>
+
+  <div class="panel"><div class="panel-h"><h3>Parameter Sweep</h3>
+      <button class="btn sm" id="btSweep">Run sweep</button>
+      <span class="sub" id="swMsg">Thresholds chosen on the first 70%, scored once on the last 30%</span></div>
+    <div class="panel-b stack">
+      <div id="swVerdict"></div>
+      <div class="tw"><table class="data" id="swTbl"><tbody><tr><td><p class="empty">Not run</p></td></tr></tbody></table></div>
+    </div>
   </div>
 </section>
 
@@ -880,6 +924,20 @@ const ord = n => { const v = Math.round(n), t = v % 100; return v + (t > 3 && t 
 const money = v => v == null ? "—" : "$" + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const pct = (v, d = 1) => v == null ? "—" : (v >= 0 ? "+" : "") + v.toFixed(d) + "%";
 
+/* Every threshold the spec fixes, in one place. The backtester varies these;
+   the live desk always runs the spec defaults. */
+const TUNE = {
+  minAligned: 3,      // behaviour rule: fewer aligned signals than this -> NO TRADE
+  minRR: 2.0,         // reward:risk floor at T1
+  adxGate: 25,        // above this, directional entries are permitted
+  chasePct: 5,        // single-session move that counts as a chase
+  netThreshold: 0.35, // |weighted vote sum| below this reads as no direction
+  targetMinR: 1.2,    // T1 must sit at least this many R ahead to be worth the risk
+  riskPct: 1.0,       // risk budget per trade, % of equity (hard ceiling 1.5)
+  maxHold: 10         // bars before a position is closed on time
+};
+const tuneOf = ctx => Object.assign({}, TUNE, (ctx && ctx.tune) || {});
+
 function computeIndicators(bars) {
   const o = bars.map(b => b.o), h = bars.map(b => b.h), l = bars.map(b => b.l),
         c = bars.map(b => b.c), v = bars.map(b => b.v);
@@ -909,6 +967,7 @@ function computeIndicators(bars) {
 }
 
 function analyzeShort(bars, ctx) {
+  const T = tuneOf(ctx);
   const X = computeIndicators(bars);
   const { i, c, h, l, o, v } = X;
   const px = c[i], A = last(X.atr) || px * 0.02;
@@ -917,10 +976,11 @@ function analyzeShort(bars, ctx) {
 
   /* ── Regime: the ADX gate decides which families are even allowed ── */
   const adxV = last(X.adx.adx), pdi = last(X.adx.pdi), mdi = last(X.adx.mdi);
-  const trending = adxV != null && adxV > 25;
+  const trending = adxV != null && adxV > T.adxGate;
   const trendDir = (pdi != null && mdi != null) ? (pdi > mdi ? 1 : -1) : 0;
   const regime = {
     adx: adxV, pdi, mdi, trending, trendDir,
+    gate: T.adxGate,
     label: adxV == null ? "insufficient history"
       : trending ? `directional (${trendDir > 0 ? "up" : "down"})` : "non-directional / chop"
   };
@@ -1090,7 +1150,7 @@ function analyzeShort(bars, ctx) {
   }
   /* Volume spike amplifies the leading side */
   let raw = S.filter(s => s.active).reduce((a, s) => a + s.dir * s.weight, 0);
-  const netDir = Math.abs(raw) < 0.35 ? 0 : Math.sign(raw);
+  const netDir = Math.abs(raw) < T.netThreshold ? 0 : Math.sign(raw);
   if (spike && netDir !== 0) {
     for (const s of S) if (s.active && s.dir === netDir) { s.weight = Math.min(1, s.weight * 1.25); s.amped = true; }
     raw = S.filter(s => s.active).reduce((a, s) => a + s.dir * s.weight, 0);
@@ -1100,13 +1160,13 @@ function analyzeShort(bars, ctx) {
 
   /* ── Trade plan ── */
   const dir = netDir;
-  const plan = buildPlan({ dir, px, A, sup, res, above, below, X, ctx, trending, trendDir });
+  const plan = buildPlan({ dir, px, A, sup, res, above, below, X, ctx, trending, trendDir, T });
 
   /* ── Chase check ── */
   const sessionMove = i > 0 ? (c[i] - c[i - 1]) / c[i - 1] * 100 : 0;
   const fadedOffHigh = dir > 0 ? (h[i] - c[i]) > A * 0.35 : (c[i] - l[i]) > A * 0.35;
   const nearLevelForDir = dir > 0 ? (dSup != null && dSup < 0.75) : (dRes != null && dRes < 0.75);
-  const chasing = dir !== 0 && Math.abs(sessionMove) > 5 && Math.sign(sessionMove) === dir && !fadedOffHigh && !nearLevelForDir;
+  const chasing = dir !== 0 && Math.abs(sessionMove) > T.chasePct && Math.sign(sessionMove) === dir && !fadedOffHigh && !nearLevelForDir;
 
   /* ── Catalysts ── */
   const cat = [];
@@ -1125,7 +1185,8 @@ function analyzeShort(bars, ctx) {
 
 /* Entry, stop and targets derived from structure — never reverse-engineered
    from a desired reward-to-risk ratio. */
-function buildPlan({ dir, px, A, sup, res, above, below, X, ctx, trending, trendDir }) {
+function buildPlan({ dir, px, A, sup, res, above, below, X, ctx, trending, trendDir, T }) {
+  T = T || tuneOf(ctx);
   if (dir === 0) return null;
   const { i, h, l, c } = X;
   const swingHi = Math.max(...h.slice(-5)), swingLo = Math.min(...l.slice(-5));
@@ -1168,10 +1229,10 @@ function buildPlan({ dir, px, A, sup, res, above, below, X, ctx, trending, trend
      reported as overhead supply and cost a confidence point. The target is
      never nudged to reach a ratio. */
   const fwd = dir > 0 ? above.filter(L => L.price > entry) : below.filter(L => L.price < entry);
-  const beyond = fwd.filter(L => Math.abs(L.price - entry) >= R * 1.2);
-  const overhead = fwd.filter(L => Math.abs(L.price - entry) < R * 1.2);
+  const beyond = fwd.filter(L => Math.abs(L.price - entry) >= R * T.targetMinR);
+  const overhead = fwd.filter(L => Math.abs(L.price - entry) < R * T.targetMinR);
   let t1, t1Basis, t2, t2Basis;
-  if (beyond.length) { t1 = beyond[0].price; t1Basis = `first significant level beyond 1.2R, ${beyond[0].touches} touch${beyond[0].touches > 1 ? "es" : ""}`; }
+  if (beyond.length) { t1 = beyond[0].price; t1Basis = `first significant level beyond ${T.targetMinR}R, ${beyond[0].touches} touch${beyond[0].touches > 1 ? "es" : ""}`; }
   /* The fallback is a volatility projection, never a multiple of R — deriving the
      target from the risk would guarantee the ratio the gate is supposed to test. */
   else { t1 = entry + dir * A * 2.0; t1Basis = "measured move of 2.0 ATR — no level ahead of the entry at all"; }
@@ -1182,7 +1243,7 @@ function buildPlan({ dir, px, A, sup, res, above, below, X, ctx, trending, trend
 
   /* Sizing — 1% risk budget, hard-capped at 1.5%, then the 5% notional cap. */
   const eq = ctx.equity || 0;
-  const riskPctUsed = Math.min(ctx.riskPct ?? 1, 1.5);
+  const riskPctUsed = Math.min(ctx.riskPct ?? T.riskPct, 1.5);
   let budget = eq * riskPctUsed / 100;
   const halved = ctx.earnDays != null && ctx.earnDays <= 5;
   if (halved) budget /= 2;
@@ -1211,6 +1272,7 @@ function buildPlan({ dir, px, A, sup, res, above, below, X, ctx, trending, trend
    ══════════════════════════════════════════════════════════════════ */
 
 function evaluateGates(sa, ctx, port) {
+  const T = tuneOf(ctx);
   const G = [];
   const p = sa.plan;
   const dirWord = sa.netDir > 0 ? "LONG" : sa.netDir < 0 ? "SHORT" : "NO TRADE";
@@ -1218,21 +1280,21 @@ function evaluateGates(sa, ctx, port) {
 
   /* Behaviour rule: fewer than three aligned signals is not a trade. */
   const n = sa.aligned.length;
-  push("Signal alignment", sa.netDir !== 0 && n >= 3 ? "pass" : "fail",
+  push("Signal alignment", sa.netDir !== 0 && n >= T.minAligned ? "pass" : "fail",
     sa.netDir === 0
       ? "No net direction — the weighted votes cancel out. The spec's floor of three aligned signals cannot be met by an undirected book."
-      : `${n} signal${n === 1 ? "" : "s"} aligned ${dirWord.toLowerCase()}${sa.against.length ? `, ${sa.against.length} against` : ""}. The spec requires at least 3.`);
+      : `${n} signal${n === 1 ? "" : "s"} aligned ${dirWord.toLowerCase()}${sa.against.length ? `, ${sa.against.length} against` : ""}. The spec requires at least ${T.minAligned}.`);
 
   /* ADX regime gate. */
   const trendEntry = p && p.setup === "trend continuation";
   push("ADX regime", sa.regime.trending ? "pass" : (trendEntry ? "fail" : "warn"),
     sa.regime.adx == null ? "Not enough history to compute ADX(14)."
       : sa.regime.trending
-        ? `ADX ${sa.regime.adx.toFixed(1)} is above 25 — directional entries are permitted.`
-        : `ADX ${sa.regime.adx.toFixed(1)} is below 25. Trend-following votes were struck out; only a mean-reversion setup can proceed, and its confidence is capped at 6.`);
+        ? `ADX ${sa.regime.adx.toFixed(1)} is above ${T.adxGate} — directional entries are permitted.`
+        : `ADX ${sa.regime.adx.toFixed(1)} is below ${T.adxGate}. Trend-following votes were struck out; only a mean-reversion setup can proceed, and its confidence is capped at 6.`);
 
   /* Reward-to-risk, computed from structural targets. */
-  push("Reward : risk ≥ 2:1", p && p.rr1 >= 2 ? "pass" : "fail",
+  push(`Reward : risk ≥ ${T.minRR}:1`, p && p.rr1 >= T.minRR ? "pass" : "fail",
     !p ? "No plan — no direction to price."
       : `${p.rr1.toFixed(2)}:1 to T1 (${p.t1Basis}), ${p.rr2.toFixed(2)}:1 to T2. The target is taken from structure, never moved to manufacture the ratio.`);
 
@@ -1240,7 +1302,7 @@ function evaluateGates(sa, ctx, port) {
   push("No-chase rule", sa.chasing ? "fail" : "pass",
     sa.chasing
       ? `Price already moved ${pct(sa.sessionMove, 2)} this session in the trade's direction with no pullback and no level to lean on. The spec forbids the chase.`
-      : `Session move ${pct(sa.sessionMove, 2)}${Math.abs(sa.sessionMove) > 5 ? " — over 5%, but there is a pullback or a level to enter against" : " — inside the 5% chase threshold"}.`);
+      : `Session move ${pct(sa.sessionMove, 2)}${Math.abs(sa.sessionMove) > T.chasePct ? ` — over ${T.chasePct}%, but there is a pullback or a level to enter against` : ` — inside the ${T.chasePct}% chase threshold`}.`);
 
   /* Portfolio drawdown circuit breaker. */
   const dd = port.drawdown;
@@ -1531,6 +1593,319 @@ function analyzeLong(F, px, ctx) {
     : fund.score10 >= 7 ? "HOLD / BUILD ON WEAKNESS" : "WATCH";
 
   return { fund, val, fv, sc, moat, tilt, tiltScore, macro, size, sizeTerms, sizeNote, horizon, watch, stance };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Section 4b: BACKTEST — walk-forward, no lookahead
+
+   The rule that governs everything here: at simulated bar i the engine may
+   only ever see bars[0..i]. That is enforced structurally by re-running the
+   analysis on a truncated copy of the series rather than by remembering to
+   avoid future indices. It costs O(n²) — irrelevant at these sizes, and it
+   makes a lookahead bug impossible rather than merely unlikely.
+
+   Signals are read on bar i and the order can only fill on bar i+1 or later.
+   Nothing is ever filled on the bar that generated it.
+   ══════════════════════════════════════════════════════════════════ */
+
+const BT_DEFAULTS = {
+  warmup: 60,            // bars consumed before the first signal is trusted
+  commission: 0.005,     // $ per share, each way
+  slipATR: 0.05,         // slippage as a fraction of ATR, each way
+  equity: 100000,
+  exitMode: "scale",     // "scale" half at T1 then run to T2 | "t1" full exit at T1 | "t2" ignore T1
+  maxHold: 10
+};
+
+/* One position's life, resolved bar by bar. Pessimistic on ambiguity: when a
+   bar's range spans both the stop and a target, the stop is assumed first. */
+function simulateBar(pos, bar, prevClose, cfg) {
+  const long = pos.dir > 0;
+  const events = [];
+  const gapThroughStop = long ? bar.o <= pos.stop : bar.o >= pos.stop;
+  if (gapThroughStop) {
+    events.push({ kind: "stop", price: bar.o, note: "gapped through the stop — filled at the open" });
+    return events;
+  }
+  const hitStop = long ? bar.l <= pos.stop : bar.h >= pos.stop;
+  const hitT1 = !pos.t1Done && (long ? bar.h >= pos.t1 : bar.l <= pos.t1);
+  const hitT2 = long ? bar.h >= pos.t2 : bar.l <= pos.t2;
+
+  if (hitStop) { events.push({ kind: "stop", price: pos.stop, note: pos.stopMoved ? "breakeven stop" : "initial stop" }); return events; }
+  const mode = cfg.exitMode || "scale";
+  if (mode === "t1") {
+    if (hitT1) events.push({ kind: "t1full", price: pos.t1, note: "full exit at T1" });
+    return events;
+  }
+  if (mode === "scale" && hitT1) events.push({ kind: "t1", price: pos.t1, note: "half off at T1, stop to breakeven" });
+  if (hitT2) events.push({ kind: "t2", price: pos.t2, note: "remainder off at T2" });
+  return events;
+}
+
+function backtest(bars, ctx, cfg) {
+  cfg = Object.assign({}, BT_DEFAULTS, cfg || {});
+  const T = tuneOf(ctx);
+  const n = bars.length;
+  let equity = cfg.equity, peak = equity;
+  const curve = [], trades = [];
+  let pos = null, pending = null;
+
+  const cost = (shares, price) => shares * cfg.commission;
+  const slip = atrVal => atrVal * cfg.slipATR;
+
+  for (let i = cfg.warmup; i < n; i++) {
+    const bar = bars[i], prev = bars[i - 1];
+
+    /* 1. Manage an open position on this bar, before looking for anything new. */
+    if (pos) {
+      const evs = simulateBar(pos, bar, prev.c, cfg);
+      for (const ev of evs) {
+        const px = ev.kind === "stop" ? ev.price - pos.dir * slip(pos.atr) : ev.price - pos.dir * slip(pos.atr);
+        if (ev.kind === "t1") {
+          const half = Math.floor(pos.shares / 2);
+          if (half > 0) {
+            const pnl = (px - pos.entry) * pos.dir * half - cost(half, px);
+            equity += pnl; pos.realised += pnl; pos.shares -= half;
+            pos.legs.push({ kind: "T1", bar: i, price: px, shares: half, pnl });
+          }
+          pos.t1Done = true; pos.stop = pos.entry; pos.stopMoved = true;
+        } else {
+          const pnl = (px - pos.entry) * pos.dir * pos.shares - cost(pos.shares, px);
+          equity += pnl; pos.realised += pnl;
+          pos.legs.push({ kind: ev.kind.toUpperCase(), bar: i, price: px, shares: pos.shares, pnl });
+          trades.push(closeTrade(pos, i, px, ev.note, bars));
+          pos = null;
+          break;
+        }
+      }
+      /* time stop */
+      if (pos && i - pos.entryBar >= (T.maxHold ?? cfg.maxHold)) {
+        const px = bar.c - pos.dir * slip(pos.atr);
+        const pnl = (px - pos.entry) * pos.dir * pos.shares - cost(pos.shares, px);
+        equity += pnl; pos.realised += pnl;
+        pos.legs.push({ kind: "TIME", bar: i, price: px, shares: pos.shares, pnl });
+        trades.push(closeTrade(pos, i, px, `held ${T.maxHold ?? cfg.maxHold} bars without resolving`, bars));
+        pos = null;
+      }
+    }
+
+    /* 2. A pending trigger from an earlier bar can fill on this one. */
+    if (!pos && pending) {
+      const long = pending.dir > 0;
+      const triggered = long ? bar.h >= pending.entry : bar.l <= pending.entry;
+      if (triggered) {
+        /* fill at the trigger, or at the open if the bar gapped straight past it */
+        const gapped = long ? bar.o > pending.entry : bar.o < pending.entry;
+        const fill = (gapped ? bar.o : pending.entry) + pending.dir * slip(pending.atr);
+        const risk = Math.abs(fill - pending.stop);
+        let shares = risk > 0 ? Math.floor(equity * Math.min(T.riskPct, 1.5) / 100 / risk) : 0;
+        const cap = Math.floor(equity * 0.05 / fill);
+        if (shares > cap) shares = cap;
+        if (shares > 0) {
+          equity -= cost(shares, fill);
+          pos = { dir: pending.dir, entry: fill, stop: pending.stop, t1: pending.t1, t2: pending.t2,
+                  shares, atr: pending.atr, entryBar: i, realised: -cost(shares, fill), legs: [],
+                  t1Done: false, stopMoved: false, signals: pending.signals, conf: pending.conf,
+                  rr: pending.rr, setup: pending.setup, plannedRisk: risk * shares };
+        }
+        pending = null;
+      } else if (i - pending.bar >= 3) {
+        pending = null;   /* an untriggered setup goes stale after three bars */
+      }
+    }
+
+    /* 3. Look for a new setup — strictly on data up to and including this bar. */
+    if (!pos && !pending && i < n - 1) {
+      const dd = peak > 0 ? (peak - equity) / peak * 100 : 0;
+      if (dd < 10) {                                    /* hard rule 3 applies in the sim too */
+        const window = bars.slice(0, i + 1);
+        const sa = analyzeShort(window, ctx);
+        const book = { equity, peak, drawdown: dd, positions: [], correlations: [],
+                       sectorPct: () => 0, notional: () => 0 };
+        const gate = evaluateGates(sa, ctx, book);
+        if (gate.decision !== "NO TRADE" && sa.plan) {
+          pending = { dir: sa.plan.dir, entry: sa.plan.entry, stop: sa.plan.stop,
+                      t1: sa.plan.t1, t2: sa.plan.t2, atr: last(sa.X.atr) || bar.c * 0.02,
+                      bar: i, signals: sa.aligned.map(x => x.name), conf: gate.confidence,
+                      rr: sa.plan.rr1, setup: sa.plan.setup };
+        }
+      }
+    }
+
+    /* 4. Mark to market. */
+    const open = pos ? (bar.c - pos.entry) * pos.dir * pos.shares : 0;
+    const mark = equity + open;
+    peak = Math.max(peak, mark);
+    curve.push({ i, d: bar.d, equity: mark, cash: equity, inPos: !!pos });
+  }
+  return summarise(trades, curve, bars, cfg, ctx);
+}
+
+function closeTrade(pos, exitBar, exitPx, note, bars) {
+  const grossR = pos.plannedRisk > 0 ? pos.realised / pos.plannedRisk : 0;
+  return {
+    dir: pos.dir > 0 ? "LONG" : "SHORT",
+    entryBar: pos.entryBar, entryDate: bars[pos.entryBar].d, entry: pos.entry,
+    exitBar, exitDate: bars[exitBar].d, exit: exitPx,
+    bars: exitBar - pos.entryBar, pnl: pos.realised, R: grossR,
+    conf: pos.conf, rr: pos.rr, setup: pos.setup, signals: pos.signals, note, legs: pos.legs
+  };
+}
+
+function summarise(trades, curve, bars, cfg, ctx) {
+  const wins = trades.filter(t => t.pnl > 0), losses = trades.filter(t => t.pnl <= 0);
+  const grossWin = wins.reduce((a, t) => a + t.pnl, 0);
+  const grossLoss = Math.abs(losses.reduce((a, t) => a + t.pnl, 0));
+  const final = curve.length ? curve[curve.length - 1].equity : cfg.equity;
+  const years = curve.length / 252;
+
+  let mx = -Infinity, maxDD = 0;
+  for (const c of curve) { mx = Math.max(mx, c.equity); maxDD = Math.max(maxDD, (mx - c.equity) / mx * 100); }
+
+  const rets = [];
+  for (let i = 1; i < curve.length; i++) if (curve[i - 1].equity > 0) rets.push(curve[i].equity / curve[i - 1].equity - 1);
+  const mean = rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : 0;
+  const sd = rets.length > 1 ? Math.sqrt(rets.reduce((a, r) => a + (r - mean) ** 2, 0) / (rets.length - 1)) : 0;
+  const sharpe = sd > 0 ? mean / sd * Math.sqrt(252) : 0;
+
+  const bhStart = bars[cfg.warmup].c, bhEnd = bars[bars.length - 1].c;
+  const exposure = curve.length ? curve.filter(c => c.inPos).length / curve.length * 100 : 0;
+
+  return {
+    trades, curve, cfg,
+    n: trades.length,
+    winRate: trades.length ? wins.length / trades.length * 100 : 0,
+    avgWinR: wins.length ? wins.reduce((a, t) => a + t.R, 0) / wins.length : 0,
+    avgLossR: losses.length ? losses.reduce((a, t) => a + t.R, 0) / losses.length : 0,
+    expectancyR: trades.length ? trades.reduce((a, t) => a + t.R, 0) / trades.length : 0,
+    profitFactor: grossLoss > 0 ? grossWin / grossLoss : (grossWin > 0 ? Infinity : 0),
+    totalReturn: (final / cfg.equity - 1) * 100,
+    cagr: years > 0.15 ? (Math.pow(final / cfg.equity, 1 / years) - 1) * 100 : null,
+    maxDD, sharpe, exposure,
+    buyHold: (bhEnd / bhStart - 1) * 100,
+    avgBars: trades.length ? trades.reduce((a, t) => a + t.bars, 0) / trades.length : 0,
+    final
+  };
+}
+
+/* A control that keeps the risk management and throws away the signals.
+   If the strategy cannot beat this, the edge was never in the indicators. */
+function randomControl(bars, ctx, cfg, tradeCount, seed) {
+  cfg = Object.assign({}, BT_DEFAULTS, cfg || {});
+  const T = tuneOf(ctx);
+  const rnd = mulberry32(seed >>> 0);
+  const A = atr(bars.map(b => b.h), bars.map(b => b.l), bars.map(b => b.c), 14);
+  let equity = cfg.equity, peak = equity;
+  const curve = [], trades = [];
+  let pos = null;
+  const days = [];
+  for (let i = cfg.warmup; i < bars.length - 2; i++) days.push(i);
+  const picked = new Set();
+  while (picked.size < Math.min(tradeCount, days.length)) picked.add(days[Math.floor(rnd() * days.length)]);
+
+  for (let i = cfg.warmup; i < bars.length; i++) {
+    const bar = bars[i], prev = bars[i - 1];
+    if (pos) {
+      const evs = simulateBar(pos, bar, prev.c, cfg);
+      for (const ev of evs) {
+        const px = ev.price - pos.dir * A[i] * cfg.slipATR;
+        if (ev.kind === "t1") {
+          const half = Math.floor(pos.shares / 2);
+          if (half > 0) { const pnl = (px - pos.entry) * pos.dir * half - half * cfg.commission;
+            equity += pnl; pos.realised += pnl; pos.shares -= half; }
+          pos.t1Done = true; pos.stop = pos.entry; pos.stopMoved = true;
+        } else {
+          const pnl = (px - pos.entry) * pos.dir * pos.shares - pos.shares * cfg.commission;
+          equity += pnl; pos.realised += pnl;
+          trades.push(closeTrade(pos, i, px, ev.note, bars)); pos = null; break;
+        }
+      }
+      if (pos && i - pos.entryBar >= (T.maxHold ?? cfg.maxHold)) {
+        const px = bar.c - pos.dir * A[i] * cfg.slipATR;
+        const pnl = (px - pos.entry) * pos.dir * pos.shares - pos.shares * cfg.commission;
+        equity += pnl; pos.realised += pnl;
+        trades.push(closeTrade(pos, i, px, "time", bars)); pos = null;
+      }
+    }
+    if (!pos && picked.has(i) && A[i]) {
+      const dir = rnd() > 0.5 ? 1 : -1;
+      const entry = bar.c + dir * A[i] * cfg.slipATR;
+      const stop = entry - dir * A[i] * 1.5;
+      const risk = Math.abs(entry - stop);
+      let shares = Math.floor(equity * Math.min(T.riskPct, 1.5) / 100 / risk);
+      const cap = Math.floor(equity * 0.05 / entry);
+      if (shares > cap) shares = cap;
+      if (shares > 0) {
+        equity -= shares * cfg.commission;
+        pos = { dir, entry, stop, t1: entry + dir * A[i] * 2, t2: entry + dir * A[i] * 4,
+                shares, atr: A[i], entryBar: i, realised: -shares * cfg.commission, legs: [],
+                t1Done: false, stopMoved: false, signals: ["random"], conf: 0, rr: 2, setup: "random control" };
+      }
+    }
+    const open = pos ? (bar.c - pos.entry) * pos.dir * pos.shares : 0;
+    const mark = equity + open;
+    peak = Math.max(peak, mark);
+    curve.push({ i, d: bar.d, equity: mark, cash: equity, inPos: !!pos });
+  }
+  return summarise(trades, curve, bars, cfg, ctx);
+}
+
+/* Median of several random seeds, so the control is not itself a lucky draw. */
+function randomControlBand(bars, ctx, cfg, tradeCount, runs = 15) {
+  const out = [];
+  for (let k = 0; k < runs; k++) out.push(randomControl(bars, ctx, cfg, tradeCount, 1000 + k * 7919));
+  const pick = key => out.map(r => r[key]).sort((a, b) => a - b);
+  const med = arr => arr.length ? arr[Math.floor(arr.length / 2)] : 0;
+  return {
+    runs, n: med(pick("n")),
+    totalReturn: med(pick("totalReturn")), best: pick("totalReturn")[out.length - 1], worst: pick("totalReturn")[0],
+    expectancyR: med(pick("expectancyR")), winRate: med(pick("winRate")),
+    maxDD: med(pick("maxDD")), sharpe: med(pick("sharpe")),
+    /* how many random runs beat the strategy — the honest significance read */
+    beatBy: strat => out.filter(r => r.totalReturn >= strat).length
+  };
+}
+
+/* A parameter sweep that reports what it is worth, not just what it found.
+   Thresholds are chosen on the first `splitPct` of the series and then scored
+   once on data they never saw. The in-sample ranking is shown beside the
+   out-of-sample result precisely so you can watch how little the first
+   predicts the second — that gap is the cost of tuning on your own history. */
+async function sweep(bars, ctx, cfg, grid, splitPct = 0.7, onProgress) {
+  const cut = Math.floor(bars.length * splitPct);
+  const inS = bars.slice(0, cut), outS = bars.slice(cut);
+  const combos = [];
+  for (const a of grid.minAligned) for (const r of grid.minRR) for (const g of grid.adxGate)
+    combos.push({ minAligned: a, minRR: r, adxGate: g });
+
+  const rows = [];
+  for (let k = 0; k < combos.length; k++) {
+    const t = combos[k];
+    const c = Object.assign({}, ctx, { tune: Object.assign({}, ctx.tune, t) });
+    const is = backtest(inS, c, cfg);
+    const os = outS.length > (cfg.warmup || BT_DEFAULTS.warmup) + 20 ? backtest(outS, c, cfg) : null;
+    rows.push({ tune: t, is, os });
+    if (onProgress) onProgress(k + 1, combos.length);
+    await new Promise(r => setTimeout(r, 0));   /* let the page repaint between combos */
+  }
+  const ranked = rows.slice().sort((a, b) => b.is.expectancyR - a.is.expectancyR);
+  const best = ranked[0];
+  const isDefault = t => t.minAligned === TUNE.minAligned && t.minRR === TUNE.minRR && t.adxGate === TUNE.adxGate;
+  const baseline = rows.find(r => isDefault(r.tune)) || null;
+
+  /* Does picking the in-sample winner actually help out of sample? */
+  const withOS = rows.filter(r => r.os && r.os.n >= 3);
+  const osMean = withOS.length ? withOS.reduce((a, r) => a + r.os.expectancyR, 0) / withOS.length : null;
+  let spearman = null;
+  if (withOS.length >= 4) {
+    const byIS = withOS.slice().sort((a, b) => b.is.expectancyR - a.is.expectancyR);
+    const byOS = withOS.slice().sort((a, b) => b.os.expectancyR - a.os.expectancyR);
+    let d2 = 0;
+    byIS.forEach((r, i) => { d2 += (i - byOS.indexOf(r)) ** 2; });
+    const n = withOS.length;
+    spearman = 1 - (6 * d2) / (n * (n * n - 1));
+  }
+  return { rows, ranked, best, baseline, cut, inBars: inS.length, outBars: outS.length, osMean, spearman };
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -2605,6 +2980,196 @@ BEHAVIOUR RULES
 - Never override a risk rule for news, hype or social sentiment
 - Report unknowns as unknown. An absent input is not a neutral input.`;
 
+/* ─────────── Backtest rendering ─────────── */
+let BT = null, BTCTRL = null;
+
+function btConfig() {
+  return {
+    warmup: intv("btWarm") ?? 60,
+    commission: numv("btComm") ?? 0.005,
+    slipATR: numv("btSlip") ?? 0.05,
+    exitMode: $("btExit").value,
+    maxHold: intv("btHold") ?? 10,
+    equity: numv("eqIn") || 100000
+  };
+}
+
+function runBacktest() {
+  if (State.bars.length < 120) { $("btMsg").textContent = "Need at least 120 bars. Load a longer series on the Data tab."; return; }
+  const cfg = btConfig();
+  const { ctx } = readInputs();
+  ctx.tune = { maxHold: cfg.maxHold };
+  $("btMsg").textContent = "Running…";
+  setTimeout(() => {
+    const t0 = performance.now();
+    BT = backtest(State.bars, ctx, cfg);
+    BTCTRL = randomControlBand(State.bars, ctx, cfg, Math.max(BT.n, 1), 15);
+    $("btMsg").textContent = `${BT.n} trades over ${BT.curve.length} bars in ${((performance.now() - t0) / 1000).toFixed(1)}s`;
+    $("btSub").textContent = `${State.ticker} · ${State.sourceLabel}`;
+    renderBacktest();
+  }, 20);
+}
+
+function renderBacktest() {
+  if (!BT) return;
+  const beat = BTCTRL.beatBy(BT.totalReturn);
+
+  /* Verdict — stated against the control, not in isolation */
+  let tone, head, body;
+  if (BT.n < 10) { tone = "warn"; head = "Too few trades";
+    body = `${BT.n} trade${BT.n === 1 ? "" : "s"} is not a sample. Any number below is noise — lengthen the series or loosen the gates before reading anything into it.`; }
+  else if (beat <= 2) { tone = ""; head = "Beat the control";
+    body = `The strategy returned ${pct(BT.totalReturn)} against a median of ${pct(BTCTRL.totalReturn)} for random entries using the same stops, targets and sizing. Only ${beat} of ${BTCTRL.runs} random runs did better. On real history that is worth investigating further; it is not yet proof.`; }
+  else if (beat >= BTCTRL.runs - 2) { tone = "halt"; head = "Worse than random";
+    body = `Random entry with identical risk management beat this in ${beat} of ${BTCTRL.runs} runs (median ${pct(BTCTRL.totalReturn)} versus ${pct(BT.totalReturn)}). The signals are not adding information here — they are costing money relative to coin flips.`; }
+  else { tone = "warn"; head = "Indistinguishable from random";
+    body = `${beat} of ${BTCTRL.runs} random runs matched or beat it. On this data the entry signals carry no measurable edge over random entry with the same risk management.`; }
+  $("btVerdict").innerHTML = `<div class="banner ${tone}"><span class="bt">${esc(head)}</span><div>${esc(body)}${State.simulated ? " <b>This is the simulated tape — a random walk has no edge to find, so a losing result here says nothing about real markets.</b>" : ""}</div></div>`;
+
+  const cls = v => v > 0 ? "long" : v < 0 ? "short" : "";
+  $("btStats").innerHTML = [
+    ["Total return", pct(BT.totalReturn), `buy & hold ${pct(BT.buyHold)}`, cls(BT.totalReturn)],
+    ["Expectancy", BT.expectancyR.toFixed(3) + "R", "per trade", cls(BT.expectancyR)],
+    ["Trades", String(BT.n), `${BT.avgBars.toFixed(1)} bars avg`],
+    ["Win rate", BT.winRate.toFixed(0) + "%", `${BT.avgWinR.toFixed(2)}R / ${BT.avgLossR.toFixed(2)}R`],
+    ["Profit factor", isFinite(BT.profitFactor) ? BT.profitFactor.toFixed(2) : "∞", "gross win ÷ loss", cls(BT.profitFactor - 1)],
+    ["Max drawdown", BT.maxDD.toFixed(1) + "%", "peak to trough", BT.maxDD > 10 ? "short" : ""],
+    ["Sharpe", BT.sharpe.toFixed(2), "annualised", cls(BT.sharpe)],
+    ["Exposure", BT.exposure.toFixed(0) + "%", "time in market"],
+    ["Random control", pct(BTCTRL.totalReturn), `median of ${BTCTRL.runs} runs`],
+    ["Beaten by", `${BTCTRL.beatBy(BT.totalReturn)}/${BTCTRL.runs}`, "random runs", BTCTRL.beatBy(BT.totalReturn) > BTCTRL.runs / 2 ? "short" : "long"]
+  ].map(([k, v, m, c]) => `<div class="stat"><span class="k">${esc(k)}</span><span class="v ${c || ""}">${v}</span><span class="m">${esc(m || "")}</span></div>`).join("");
+
+  const t = BT.trades;
+  $("btTradeSub").textContent = t.length ? `${t.filter(x => x.pnl > 0).length} up, ${t.filter(x => x.pnl <= 0).length} down` : "";
+  $("btTradeBody").innerHTML = t.length ? t.slice().reverse().slice(0, 120).map(x => `<tr>
+    <td>${esc(x.entryDate)}</td><td>${esc(x.exitDate)}</td>
+    <td class="${x.dir === "LONG" ? "long" : "short"}">${x.dir}</td>
+    <td>${x.bars}</td><td>${f2(x.entry)}</td><td>${f2(x.exit)}</td>
+    <td class="${cls(x.R)}">${x.R >= 0 ? "+" : ""}${x.R.toFixed(2)}</td>
+    <td class="${cls(x.pnl)}">${x.pnl >= 0 ? "+" : "−"}$${Math.abs(x.pnl).toFixed(0)}</td>
+    <td>${x.conf}</td><td class="wrap">${esc(x.note)}</td><td class="wrap">${esc((x.signals || []).join(", "))}</td></tr>`).join("")
+    : `<tr><td colspan="11"><p class="empty">No trades taken — every bar failed a gate</p></td></tr>`;
+
+  drawEquity();
+}
+
+function drawEquity() {
+  if (!BT || !BT.curve.length) return;
+  const { g, w, h } = fitCanvas($("cEq"), 260);
+  const c = BT.curve, base = BT.cfg.equity;
+  const bars = State.bars, warm = BT.cfg.warmup;
+  const p0 = bars[warm].c;
+  const bh = c.map(pt => base * (bars[pt.i].c / p0));
+  const rc = BTCTRL && BTCTRL.curve ? null : null;
+  let min = Infinity, max = -Infinity;
+  for (let i = 0; i < c.length; i++) { min = Math.min(min, c[i].equity, bh[i]); max = Math.max(max, c[i].equity, bh[i]); }
+  const pad = (max - min) * 0.08 || 1; min -= pad; max += pad;
+  const y = yScale(min, max, h, 14, 18);
+  const X = i => 6 + i * ((w - 62 - 6) / Math.max(1, c.length - 1));
+
+  gridY(g, w, h, y, niceTicks(min, max, 4), v => "$" + (v / 1000).toFixed(0) + "k");
+  /* the starting capital line — the only threshold that matters */
+  g.save(); g.strokeStyle = cssVar("--rule-3"); g.setLineDash([4, 3]); g.lineWidth = 1;
+  g.beginPath(); g.moveTo(6, Math.round(y(base)) + .5); g.lineTo(w - 62, Math.round(y(base)) + .5); g.stroke(); g.restore();
+
+  const line = (vals, col, width, dash) => {
+    g.save(); g.strokeStyle = col; g.lineWidth = width; g.setLineDash(dash || []); g.lineJoin = "round";
+    g.beginPath(); vals.forEach((v, i) => i ? g.lineTo(X(i), y(v)) : g.moveTo(X(i), y(v)));
+    g.stroke(); g.restore();
+  };
+  line(bh, cssVar("--dim"), 1.2, [3, 3]);
+  line(c.map(p => p.equity), cssVar("--accent"), 2);
+
+  /* direct labels, nudged apart so they never sit on the axis numbers */
+  /* right-aligned inside the plot, clear of the axis gutter, on a panel-coloured
+     chip so a label never sits illegibly on top of a line */
+  g.save(); g.font = "10px 'DM Mono', monospace"; g.textBaseline = "middle"; g.textAlign = "right";
+  let ys = y(c[c.length - 1].equity), yb = y(bh[bh.length - 1]);
+  if (Math.abs(ys - yb) < 12) { ys -= 7; yb += 7; }
+  const tag = (txt, yy, col) => {
+    const tw = g.measureText(txt).width;
+    g.fillStyle = cssVar("--panel"); g.fillRect(w - 66 - tw - 4, yy - 6, tw + 8, 12);
+    g.fillStyle = col; g.fillText(txt, w - 68, yy);
+  };
+  tag("strategy", ys, cssVar("--accent"));
+  tag("buy & hold", yb, cssVar("--dim"));
+  g.restore();
+  legend("legEq", [["--accent", "strategy"], ["--dim", "buy & hold"], ["--rule-3", "starting capital"]]);
+  drawEquityOwn();
+}
+
+/* The comparison above is honest but squashes the strategy flat whenever buy &
+   hold ran away. A second panel on its own scale is the small-multiple fix —
+   the alternative, a second y-axis, would let any two lines be drawn to look
+   however you want. */
+function drawEquityOwn() {
+  if (!BT || !BT.curve.length) return;
+  const { g, w, h } = fitCanvas($("cEqOwn"), 130);
+  const c = BT.curve, base = BT.cfg.equity;
+  let min = Infinity, max = -Infinity;
+  for (const pt of c) { min = Math.min(min, pt.equity); max = Math.max(max, pt.equity); }
+  min = Math.min(min, base); max = Math.max(max, base);
+  const pad = (max - min) * 0.12 || 1;
+  const y = yScale(min - pad, max + pad, h, 14, 16);
+  const X = i => 6 + i * ((w - 62 - 6) / Math.max(1, c.length - 1));
+  gridY(g, w, h, y, niceTicks(min - pad, max + pad, 3), v => "$" + (v / 1000).toFixed(1) + "k");
+
+  /* shade the distance below the running peak — the drawdown you would have sat through */
+  let pk = -Infinity; const peaks = c.map(pt => (pk = Math.max(pk, pt.equity)));
+  g.save(); g.beginPath();
+  c.forEach((pt, i) => i ? g.lineTo(X(i), y(peaks[i])) : g.moveTo(X(i), y(peaks[i])));
+  for (let i = c.length - 1; i >= 0; i--) g.lineTo(X(i), y(c[i].equity));
+  g.closePath(); g.fillStyle = cssVar("--short-wash"); g.fill(); g.restore();
+
+  g.save(); g.strokeStyle = cssVar("--rule-3"); g.setLineDash([4, 3]); g.lineWidth = 1;
+  g.beginPath(); g.moveTo(6, Math.round(y(base)) + .5); g.lineTo(w - 62, Math.round(y(base)) + .5); g.stroke(); g.restore();
+
+  g.save(); g.strokeStyle = cssVar("--accent"); g.lineWidth = 2; g.lineJoin = "round";
+  g.beginPath(); c.forEach((pt, i) => i ? g.lineTo(X(i), y(pt.equity)) : g.moveTo(X(i), y(pt.equity)));
+  g.stroke(); g.restore();
+
+  g.save(); g.font = "10px 'DM Mono', monospace"; g.textBaseline = "middle"; g.textAlign = "right";
+  const txt = `max DD ${BT.maxDD.toFixed(1)}%`, tw = g.measureText(txt).width;
+  const yy = clamp(y(c[c.length - 1].equity), 10, h - 10);
+  g.fillStyle = cssVar("--panel"); g.fillRect(w - 66 - tw - 4, yy - 6, tw + 8, 12);
+  g.fillStyle = cssVar("--dim"); g.fillText(txt, w - 68, yy);
+  g.restore();
+}
+
+async function runSweep() {
+  if (State.bars.length < 260) { $("swMsg").textContent = "Need at least 260 bars to split into train and test."; return; }
+  const cfg = btConfig();
+  const { ctx } = readInputs();
+  ctx.tune = { maxHold: cfg.maxHold };
+  const grid = { minAligned: [2, 3, 4], minRR: [1.5, 2, 2.5], adxGate: [20, 25, 30] };
+  const btn = $("btSweep"); btn.disabled = true;
+  const t0 = performance.now();
+  const res = await sweep(State.bars, ctx, cfg, grid, 0.7, (k, n) => { $("swMsg").textContent = `Testing combination ${k} of ${n}…`; });
+  btn.disabled = false;
+  $("swMsg").textContent = `${res.rows.length} combinations · ${res.inBars} train bars, ${res.outBars} test bars · ${((performance.now() - t0) / 1000).toFixed(1)}s`;
+
+  const sp = res.spearman;
+  const verdict = sp == null ? { tone: "warn", h: "Not enough resolved combinations", b: "Too few combinations produced tradeable results to judge whether tuning transfers." }
+    : sp < 0.3 ? { tone: "halt", h: `Tuning does not transfer — rank correlation ${sp.toFixed(2)}`,
+        b: `The ranking of these settings in the training period barely predicts their ranking in the test period. Picking the best row of this table would be fitting noise: the in-sample winner scored ${res.best.is.expectancyR.toFixed(3)}R in training and ${res.best.os ? res.best.os.expectancyR.toFixed(3) + "R" : "n/a"} on data it had never seen. Keep the spec defaults unless a setting wins on evidence you did not use to choose it.` }
+    : { tone: "warn", h: `Rank correlation ${sp.toFixed(2)}`,
+        b: `Training rank carries some signal into the test period, which is unusual and worth double-checking on a different instrument and a different date range before trusting it.` };
+  $("swVerdict").innerHTML = `<div class="banner ${verdict.tone}"><span class="bt">${sp == null ? "Inconclusive" : "Overfitting check"}</span><div><b>${esc(verdict.h)}.</b> ${esc(verdict.b)}</div></div>`;
+
+  const isDef = t => t.minAligned === TUNE.minAligned && t.minRR === TUNE.minRR && t.adxGate === TUNE.adxGate;
+  $("swTbl").innerHTML = `<thead><tr><th>Aligned</th><th>Min R:R</th><th>ADX gate</th>
+      <th>Train trades</th><th>Train expR</th><th>Test trades</th><th>Test expR</th><th>Carried over</th></tr></thead><tbody>` +
+    res.ranked.map(r => {
+      const os = r.os, kept = os && r.is.expectancyR > 0 === os.expectancyR > 0;
+      return `<tr${isDef(r.tune) ? ' style="outline:1px solid var(--rule-3)"' : ""}>
+        <td class="ink">${r.tune.minAligned}${isDef(r.tune) ? " ·spec" : ""}</td><td>${r.tune.minRR}</td><td>${r.tune.adxGate}</td>
+        <td>${r.is.n}</td><td class="${r.is.expectancyR > 0 ? "long" : "short"}">${r.is.expectancyR.toFixed(3)}</td>
+        <td>${os ? os.n : "—"}</td><td class="${os ? (os.expectancyR > 0 ? "long" : "short") : ""}">${os ? os.expectancyR.toFixed(3) : "—"}</td>
+        <td class="${kept ? "long" : "short"}">${os ? (kept ? "same sign" : "flipped") : "—"}</td></tr>`;
+    }).join("") + `</tbody>`;
+}
+
 /* ─────────── Wiring ─────────── */
 function setSource(src) {
   State.source = src; LS.set("source", src);
@@ -2640,6 +3205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".pane").forEach(p => p.hidden = p.id !== "pane-" + t.dataset.pane);
     if (t.dataset.pane === "desk" && CH.data) requestAnimationFrame(drawAll);
     if (t.dataset.pane === "risk") renderRisk();
+    if (t.dataset.pane === "backtest" && BT) requestAnimationFrame(drawEquity);
     if (t.dataset.pane === "journal") renderJournal();
   }));
   document.querySelectorAll(".pane").forEach(p => p.hidden = p.id !== "pane-desk");
@@ -2833,8 +3399,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* misc */
   $("runTests").addEventListener("click", selfTest);
+  $("btRun").addEventListener("click", runBacktest);
+  $("btSweep").addEventListener("click", runSweep);
   document.querySelectorAll(".inp").forEach(el => el.addEventListener("change", saveInputs));
-  let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (CH.data) drawAll(); }, 120); });
+  let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (CH.data) drawAll(); if (BT) drawEquity(); }, 120); });
   wireHover();
 
   /* boot */
