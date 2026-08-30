@@ -503,20 +503,21 @@
       };
     },
 
-    /* Offline, JARVIS has no way to look things up. Saying so is better than
-       inventing an answer that sounds right. */
+    /* A question of fact. With the web switched on or a model connected, hand
+       it to whichever can actually answer. With neither, say so — inventing an
+       answer that sounds right is the one thing never worth doing. */
     factual: function (t, ctx, e, opts) {
       var remote = JV.assistant && JV.assistant.remote && JV.assistant.remote.available();
-      // `noDefer` is set when the model was tried and could not be reached, so
-      // the honest offline answer is the right thing to fall back to.
-      if (remote && !(opts && opts.noDefer)) {
+      var online = JV.WEB && JV.WEB.enabled();
+      // `noDefer` is set when the lookup was tried and failed, so the honest
+      // "I could not" answer is the right thing to fall back to.
+      if ((remote || online) && !(opts && opts.noDefer)) {
         return { text: null, deferToModel: true };
       }
       return {
-        text: 'That one’s outside what I can answer — I run entirely inside this page, ' +
-          'with no internet and no general knowledge model behind me, so I’d only be guessing. ' +
-          'Connect a model in Settings → JARVIS and I can answer things like that properly. ' +
-          'Anything about your schedule, though, I can help with right now.'
+        text: 'I can’t answer that one yet — I’m not online and there’s no knowledge model ' +
+          'behind me, so I’d only be guessing. Turn on “Go online” in the JARVIS panel and ' +
+          'I’ll look it up properly. Anything about your schedule I can help with right now.'
       };
     },
 

@@ -249,9 +249,45 @@
       };
     }
 
+    /* A question the local engine cannot answer, with no model configured, is
+       exactly what going online is for. Look it up and answer from what came
+       back — with the source named, so the answer can be checked. */
+    if (!useModel && JV.WEB && JV.WEB.enabled() && reply.deferToModel) {
+      push('web', 'Looking that up online', 0.8);
+      return JV.WEB.search(goal).then(function (r) {
+        var best = r.passages[0];
+        if (!best) throw new JV.WEB.WebError('search', 'found nothing usable');
+        return finish(
+          JV.WEB.clip(best.text, 600) + '\n\n— ' + best.source + ': ' + best.url,
+          reply.chips, 'Answered from ' + r.sources.join(', ')
+        );
+      }, function (err) {
+        var local = JV.CONVERSE.respond(goal, { noDefer: true });
+        return finish(
+          (local.text || reply.text || fallbackLine()) +
+          '\n\n(I tried to look that up and could not: ' +
+          ((err && err.message) || 'the search failed') + '.)',
+          local.chips || reply.chips, 'Lookup failed, answered locally'
+        );
+      });
+    }
+
     if (useModel && remote && remote.available()) {
       push('model', 'Asking the configured model', 0.8);
-      return remote.complete(JV.assistant.systemPrompt(), JV.assistant.chatContext(goal))
+      // Give the model what the web just said, so its answer rests on
+      // retrieved text rather than on whatever it half-remembers.
+      var ask = JV.WEB && JV.WEB.enabled() && reply.deferToModel
+        ? JV.WEB.search(goal).then(function (r) {
+          var ctx = r.passages.map(function (p) {
+            return p.source + ' — ' + p.title + ': ' + JV.WEB.clip(p.text, 700) + ' (' + p.url + ')';
+          }).join('\n\n');
+          return JV.assistant.chatContext(goal) +
+            '\n\nLooked up just now, use it and cite the source:\n' + ctx;
+        }, function () { return JV.assistant.chatContext(goal); })
+        : Promise.resolve(JV.assistant.chatContext(goal));
+
+      return ask
+        .then(function (userMsg) { return remote.complete(JV.assistant.systemPrompt(), userMsg); })
         .then(function (text) {
           var out = String(text || '').trim();
           return out

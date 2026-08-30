@@ -365,19 +365,94 @@
         return [{ text: 'Plan “' + title + '” for ' + deadline, tool: 'plan.project', args: args }];
       }
     },
+    /* ---------------------------------------------------------- online */
+
     {
-      /* Asking JARVIS to look something up. It cannot, and says so rather than
-         inventing a "researched" plan — but it still offers what it does have. */
-      id: 'research',
-      test: /\b(research|look up|search (the )?(web|internet|online)|find (me )?(a|the|some) (good|best|recommended)|google)\b/i,
+      /* "Is the internet working" — asked before trusting anything else here. */
+      id: 'web_status',
+      test: /\b(are you|can you get|do you have)\s+online\b|\b(test|check)\s+(your\s+)?(internet|connection|online|web access)\b|\bwhat sources\b/i,
+      steps: function () {
+        return [{ text: 'Test each source', tool: 'web.status', args: {} }];
+      }
+    },
+    {
+      /* A bare URL, or an explicit ask to read one. */
+      id: 'web_read',
+      test: function (text) {
+        return /https?:\/\/\S+|\bwww\.\S+\.\w/i.test(text) &&
+          !/\b(add|create|book|schedule)\b/i.test(text);
+      },
+      steps: function (text) {
+        var m = text.match(/(https?:\/\/\S+|www\.\S+\.\w[^\s,]*)/i);
+        return [{ text: 'Read that page', tool: 'web.read', args: { url: m[1] } }];
+      }
+    },
+    {
+      id: 'weather',
+      test: /\b(weather|forecast|temperature|is it going to rain|will it rain|raining|how (hot|cold|warm))\b/i,
+      steps: function (text) {
+        var place = (text.match(/\b(?:in|at|for)\s+([A-Z][\w'-]*(?:[ -][A-Z][\w'-]*)*)/) || [])[1] ||
+          (text.match(/\bweather (?:in|at|for)\s+([a-z][\w'-]*(?:[ -][a-z][\w'-]*)*)/i) || [])[1] || '';
+        var day = parseWhen(text);
+        var args = {};
+        if (place) args.place = place.trim();
+        if (day) args.day = day;
+        return [{ text: 'Check the forecast', tool: 'web.weather', args: args }];
+      }
+    },
+    {
+      id: 'define',
+      test: /\b(define|definition of|what does\s+["“]?[\w-]+["”]?\s+mean|meaning of the word|spell)\b/i,
+      steps: function (text) {
+        var w = (text.match(/\bdefine\s+(?:the word\s+)?["“]?([\w-]+)/i) ||
+          text.match(/\bdefinition of\s+["“]?([\w-]+)/i) ||
+          text.match(/\bwhat does\s+["“]?([\w-]+)["”]?\s+mean/i) ||
+          text.match(/\bmeaning of the word\s+["“]?([\w-]+)/i) || [])[1];
+        if (!w) return [{ text: 'Which word?', clarify: 'Which word should I define?' }];
+        return [{ text: 'Define “' + w + '”', tool: 'web.define', args: { word: w } }];
+      }
+    },
+    {
+      id: 'web_news',
+      test: /\b(news|headlines|what'?s happening in the world|latest on)\b/i,
       steps: function (text) {
         var topic = subject(text, [
-          /\b(can you |please )?(research|look up|search (the )?(web|internet|online)|google)\b/i,
+          /\b(what'?s|whats|show me|give me|any|the)\b/i,
+          /\b(news|headlines|latest on|about)\b/i, /\btoday\b/i, /\bin the world\b/i
+        ]);
+        return [{ text: 'Fetch stories', tool: 'web.news', args: topic ? { topic: topic } : {} }];
+      }
+    },
+    {
+      id: 'web_books',
+      test: function (text) {
+        // "book a haircut" and "add book club on tuesday" are not book searches,
+        // so a search verb has to be present and creation has to be absent.
+        if (POLITE_CREATE.test(text)) return false;
+        return /\b(find|recommend|suggest|search for|looking for|any good)\b/i.test(text) &&
+          /\b(books?|novels?)\b/i.test(text);
+      },
+      steps: function (text) {
+        var q = subject(text, [
+          /\b(can you |please )?(find|search for|recommend|look up|show me)\b/i,
+          /\b(me )?(a|an|some|any)\b/i, /\bbooks?\b/i, /\babout\b/i, /\bon\b/i
+        ]);
+        return q ? [{ text: 'Search books', tool: 'web.books', args: { query: q } }]
+          : [{ text: 'Which books?', clarify: 'Books about what?' }];
+      }
+    },
+    {
+      /* Research is a real lookup now, and it offers to schedule what it finds. */
+      id: 'research',
+      test: /\b(research|look ?up|search (the )?(web|internet|online)|find (me )?(a|the|some) (good|best|recommended)|google|search for)\b/i,
+      steps: function (text) {
+        var topic = subject(text, [
+          /\b(can you |please )?(research|look ?up|search (the )?(web|internet|online)|google|search for)\b/i,
           /\bfind (me )?(a|the|some) (good|best|recommended)\b/i,
           /\band schedule it.*$/i, /\binto my calendar\b/i, /\bfor me\b/i,
-          /\b(plan|schedule)\b/i, /\bmy\b/i
+          /\bonline\b/i, /\bon the (web|internet)\b/i
         ]);
-        return [{ text: 'Explain what I can look up', tool: 'plan.research', args: topic ? { topic: topic } : {} }];
+        return [{ text: 'Look that up', tool: 'plan.research', args: topic ? { topic: topic } : {} }];
       }
     },
     {
@@ -824,7 +899,26 @@
         ]);
         return [{ text: 'Search for “' + q + '”', tool: 'calendar.search', args: { query: q || text, limit: 8 } }];
       }
-    }
+    },
+    {
+      /* A general knowledge question. Deliberately last of the web intents and
+         gated on the switch being on, so it never steals a calendar question
+         and never fires when there is no connection to use. */
+      id: 'web_lookup',
+      test: function (text) {
+        if (!JV.WEB || !JV.WEB.enabled()) return false;
+        if (CALENDAR_QUESTION.test(text)) return false;
+        // Anything naming the user's own data is a calendar question.
+        if (/\b(my|i|me)\b/i.test(text) && !/\bwhat is\b|\bwho is\b|\bhow (do|does|did)\b/i.test(text)) return false;
+        return /^(who|what|when|where|why|how)\b/i.test(text) ||
+          /\btell me about\b/i.test(text) ||
+          /\bhow (do|does|did) [a-z]+/i.test(text);
+      },
+      steps: function (text) {
+        var q = subject(text, [/^\s*(can you |could you |please )?(tell me about|explain)\b/i, /\?+$/]);
+        return [{ text: 'Look it up online', tool: 'web.search', args: { query: q || text } }];
+      }
+    },
   ];
 
   function nextWeekStart() {

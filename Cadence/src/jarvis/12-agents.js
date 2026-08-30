@@ -121,7 +121,7 @@
       role: 'Carry out one plan step, invoking a tool when the step names one',
       permissions: [
         'calendar.read', 'calendar.write', 'tasks.read', 'tasks.write',
-        'notes.write', 'memory.read', 'memory.write'
+        'notes.write', 'memory.read', 'memory.write', 'web.read'
       ]
     }, deps);
     this.dryRun = true;

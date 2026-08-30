@@ -1409,30 +1409,262 @@
       }
     });
 
+    /* ================================================== the web */
+
+    /* Every one of these reports the source it used and fails out loud. A
+       lookup that could not happen says so; it never becomes a guess dressed
+       up as an answer. */
+
+    /* The source name only helps when the message is a fragment about it
+       ("could not be reached"). A message that already stands as a sentence
+       is left alone rather than having a noun bolted onto the front. */
+    function offline(err) {
+      var msg = (err && err.message) || 'the lookup failed';
+      var src = (err && err.source) ? err.source : '';
+      var standalone = /^[A-Z]/.test(msg) || /^none of my sources/i.test(msg) || !src || src === 'search';
+      throw new JV.ToolError(standalone ? msg : src + ' ' + msg + '.');
+    }
+
     def({
-      name: 'plan.research',
-      description: 'Explain what JARVIS can and cannot look up, and offer the built-in structure instead.',
-      permission: 'calendar.read',
+      name: 'web.search',
+      description: 'Look something up online across Wikipedia, DuckDuckGo and news.',
+      permission: 'web.read', timeoutMs: 25000,
+      inputSchema: { query: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        return JV.WEB.search(args.query).then(function (r) {
+          var lines = [];
+          r.passages.forEach(function (p) {
+            lines.push(p.title + ' — ' + JV.WEB.clip(p.text, 320));
+            lines.push('   ' + p.source + ' · ' + p.url);
+          });
+          r.links.slice(0, 5).forEach(function (l) {
+            lines.push(l.title + ' · ' + l.url);
+          });
+          // Naming the sources that failed is part of the answer, not noise:
+          // it is how you know what the answer does and does not rest on.
+          if (r.failed.length) {
+            lines.push('(no answer from ' + r.failed.map(function (f) { return f.name; }).join(', ') + ')');
+          }
+          return {
+            kind: 'web',
+            headline: 'Looked up “' + r.query + '” · ' + r.sources.join(', '),
+            lines: lines,
+            web: r
+          };
+        }, offline);
+      }
+    });
+
+    def({
+      name: 'web.wikipedia',
+      description: 'Read a Wikipedia article summary.',
+      permission: 'web.read', timeoutMs: 20000,
+      inputSchema: { topic: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        return JV.WEB.wikiLookup(args.topic).then(function (a) {
+          var lines = [JV.WEB.clip(a.extract, 700), 'Wikipedia · ' + a.url];
+          (a.alternatives || []).forEach(function (alt) {
+            lines.push('Also: ' + alt.title + ' · ' + alt.url);
+          });
+          return {
+            kind: 'web',
+            headline: a.title + (a.description ? ' — ' + a.description : ''),
+            lines: lines, web: { passages: [{ source: 'Wikipedia', title: a.title, text: a.extract, url: a.url }] }
+          };
+        }, offline);
+      }
+    });
+
+    def({
+      name: 'web.define',
+      description: 'Define a word.',
+      permission: 'web.read', timeoutMs: 15000,
+      inputSchema: { word: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        return JV.WEB.define(args.word).then(function (d) {
+          var lines = d.senses.map(function (s) {
+            return (s.part ? '(' + s.part + ') ' : '') + s.text + (s.example ? ' — “' + s.example + '”' : '');
+          });
+          lines.push(d.source + ' · ' + d.url);
+          return {
+            kind: 'web',
+            headline: d.word + (d.phonetic ? ' ' + d.phonetic : ''),
+            lines: lines
+          };
+        }, offline);
+      }
+    });
+
+    /* Weather earns its place in a calendar: it is the one outside fact that
+       routinely changes whether a plan survives contact with the day. */
+    def({
+      name: 'web.weather',
+      description: 'Get the forecast for a place, and flag outdoor events that may get rained on.',
+      permission: 'web.read', timeoutMs: 20000,
+      inputSchema: { place: { type: 'string' }, day: { type: 'string' } },
+      run: function (ctx, args) {
+        return JV.WEB.weather(args.place, 7).then(function (f) {
+          var lines = [];
+          if (f.now) {
+            lines.push('Right now: ' + Math.round(f.now.temp) + f.unit + ', ' + f.now.text +
+              (f.now.feels != null ? ' (feels ' + Math.round(f.now.feels) + f.unit + ')' : ''));
+          }
+          var want = args.day ? DX.parseDay(args.day) : null;
+          var wantKey = want ? T.key(want) : null;
+
+          f.days.forEach(function (d) {
+            if (wantKey && d.date !== wantKey) return;
+            lines.push(DX.fmtDay(T.w(d.date + 'T12:00:00')) + ': ' + d.text + ', ' +
+              Math.round(d.min) + '–' + Math.round(d.max) + f.unit +
+              (d.rain != null ? ', ' + d.rain + '% chance of rain' : ''));
+          });
+
+          // Cross the forecast with what is actually booked. This is the part a
+          // weather site cannot do, because it does not know the calendar.
+          var warnings = [];
+          f.days.forEach(function (d) {
+            if (!d.wet) return;
+            var dayWall = T.w(d.date + 'T12:00:00');
+            var evs = Q.eventsOnDay(dayWall, { ignoreLayers: true }) || [];
+            evs.forEach(function (e) {
+              if (/\b(run|running|walk|cycle|cycling|bike|football|tennis|golf|hike|hiking|park|garden|outdoor|picnic|beach|swim)\b/i.test(e.title || '')) {
+                warnings.push(DX.fmtDay(dayWall) + ': “' + e.title + '” — ' + d.text +
+                  (d.rain != null ? ' (' + d.rain + '% rain)' : ''));
+              }
+            });
+          });
+          if (warnings.length) {
+            lines.push('Might be worth moving:');
+            warnings.slice(0, 5).forEach(function (w) { lines.push('  ' + w); });
+          }
+          lines.push('Open-Meteo · ' + f.url);
+
+          return { kind: 'web', headline: 'Weather for ' + f.place, lines: lines };
+        }, offline);
+      }
+    });
+
+    def({
+      name: 'web.news',
+      description: 'Recent stories, optionally about a topic.',
+      permission: 'web.read', timeoutMs: 20000,
       inputSchema: { topic: { type: 'string' } },
       run: function (ctx, args) {
-        var topic = args.topic || 'that';
-        var tpl = JV.PROJECTS.templateFor(topic);
-        var remote = JV.assistant && JV.assistant.remote && JV.assistant.remote.available();
+        return JV.WEB.news(args.topic || '', 6).then(function (list) {
+          if (!list.length) throw new JV.ToolError('Nothing came back for that.');
+          return {
+            kind: 'web',
+            headline: args.topic ? 'Stories about “' + args.topic + '”' : 'On the front page',
+            lines: list.map(function (n) {
+              return n.title + ' — ' + (n.points || 0) + ' points · ' + n.url;
+            })
+          };
+        }, offline);
+      }
+    });
 
-        // §31: nothing is faked. This build runs entirely in the browser with
-        // no network, so it cannot browse the web, and says so.
-        return {
-          kind: 'capability',
-          headline: 'I cannot search the web from here — Cadence runs entirely in your browser and sends nothing out.',
-          lines: [
-            'What I can do is build a plan from my own built-in ' + tpl.label + ' structure: ' +
-              tpl.phases.map(function (p) { return p.name; }).join(' → ') + '.',
-            'Give me a deadline — “' + topic + ' by June 3” — and I will schedule it around what you already have.',
-            remote
-              ? 'A language model is configured in Settings, but it is a model, not a web search, so it cannot look things up either.'
-              : 'If you want researched material, paste it in and I will turn it into a schedule.'
-          ]
-        };
+    def({
+      name: 'web.books',
+      description: 'Search for books.',
+      permission: 'web.read', timeoutMs: 20000,
+      inputSchema: { query: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        return JV.WEB.books(args.query, 5).then(function (list) {
+          return {
+            kind: 'web',
+            headline: 'Books matching “' + args.query + '”',
+            lines: list.map(function (b) {
+              return b.title + (b.author ? ' — ' + b.author : '') + (b.year ? ' (' + b.year + ')' : '') +
+                ' · ' + b.url;
+            })
+          };
+        }, offline);
+      }
+    });
+
+    def({
+      name: 'web.read',
+      description: 'Read a web page and summarise what is on it.',
+      permission: 'web.read', timeoutMs: 30000,
+      inputSchema: { url: { type: 'string', required: true } },
+      run: function (ctx, args) {
+        return JV.WEB.read(args.url).then(function (p) {
+          return {
+            kind: 'web',
+            headline: p.title,
+            lines: [JV.WEB.clip(p.text, 1200), 'Read from ' + p.url],
+            web: { passages: [{ source: p.title, title: p.title, text: p.text, url: p.url }] }
+          };
+        }, offline);
+      }
+    });
+
+    def({
+      name: 'web.status',
+      description: 'Test which online sources actually work from this browser.',
+      permission: 'web.read', timeoutMs: 45000,
+      inputSchema: {},
+      run: function () {
+        return JV.WEB.testAll().then(function (rows) {
+          var ok = rows.filter(function (r) { return r.ok; });
+          return {
+            kind: 'web',
+            headline: ok.length + ' of ' + rows.length + ' sources reachable from this browser',
+            lines: rows.map(function (r) {
+              return (r.ok ? '✓ ' : '✗ ') + r.label + ' — ' + (r.ok ? r.ms + 'ms' : r.error);
+            })
+          };
+        });
+      }
+    });
+
+    /* Research now means research. It looks things up, then offers to turn what
+       it found into a schedule — which is the point of it living in a calendar
+       rather than in a search box. */
+    def({
+      name: 'plan.research',
+      description: 'Look a topic up online and offer to turn it into a plan.',
+      permission: 'web.read', timeoutMs: 30000,
+      inputSchema: { topic: { type: 'string' } },
+      run: function (ctx, args) {
+        var topic = args.topic || '';
+        var tpl = JV.PROJECTS.templateFor(topic || 'that');
+        var structure = 'I can also build a plan from my built-in ' + tpl.label + ' structure: ' +
+          tpl.phases.map(function (p) { return p.name; }).join(' → ') +
+          ' — give me a deadline and I will schedule it around what you already have.';
+
+        if (!topic) throw new JV.ToolError('What should I look up?');
+
+        if (!JV.WEB.enabled()) {
+          return {
+            kind: 'capability',
+            headline: 'Going online is switched off, so I cannot look “' + topic + '” up yet.',
+            lines: ['Turn on “Go online” in the JARVIS panel and ask me again.', structure]
+          };
+        }
+
+        return JV.WEB.search(topic).then(function (r) {
+          var lines = [];
+          r.passages.forEach(function (p) {
+            lines.push(p.title + ' — ' + JV.WEB.clip(p.text, 400));
+            lines.push('   ' + p.source + ' · ' + p.url);
+          });
+          r.links.slice(0, 4).forEach(function (l) { lines.push(l.title + ' · ' + l.url); });
+          lines.push(structure);
+          return {
+            kind: 'web',
+            headline: 'Here is what I found on “' + topic + '” · ' + r.sources.join(', '),
+            lines: lines, web: r
+          };
+        }, function (err) {
+          // A failed search is reported as a failed search, and the offline
+          // fallback is offered as a fallback — not passed off as the answer.
+          return {
+            kind: 'capability',
+            headline: 'I could not look that up — ' + ((err && err.message) || 'the search failed') + '.',
+            lines: [structure]
+          };
+        });
       }
     });
 

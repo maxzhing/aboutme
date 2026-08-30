@@ -335,7 +335,8 @@
     return {
       agenda: 'calendar', slots: 'clock', whatnow: 'compass', tasks: 'checkSquare',
       ranked: 'flag', conflicts: 'alert', workload: 'chart', deadlines: 'flag',
-      review: 'chart', search: 'search', memory: 'book', plan: 'sparkle'
+      review: 'chart', search: 'search', memory: 'book', plan: 'sparkle',
+      web: 'link', capability: 'compass'
     }[kind] || 'list';
   }
 
@@ -344,7 +345,8 @@
       agenda: 'Agenda', slots: 'Open time', whatnow: 'Right now', tasks: 'Tasks',
       ranked: 'Priorities', conflicts: 'Conflicts', workload: 'Workload',
       deadlines: 'Deadlines', review: 'Week review', search: 'Results',
-      memory: 'Recalled', plan: 'Plan'
+      memory: 'Recalled', plan: 'Plan',
+      web: 'From the web', capability: 'What I can do'
     }[kind] || 'Result';
   }
 
@@ -862,6 +864,72 @@
     return panel;
   }
 
+  /* Going online. Off until switched on, because the rest of Cadence keeps
+     everything on this machine and a change that big should be a decision
+     rather than a default. The connection test is the important part: these
+     are other people's servers, and "it should work" is not the same as
+     "it works from your browser", so you can check rather than take my word. */
+  function webPanel() {
+    var cfg = JV.WEB.config();
+    var panel = D.h('div.jv-panel');
+    panel.appendChild(D.h('h3.jv-panel__title', { text: 'Going online' }));
+
+    panel.appendChild(D.h('p.jv-panel__note', {
+      text: cfg.enabled
+        ? 'On. JARVIS can look things up on Wikipedia, check the weather, read a page you paste, and find news and books. Only your question is sent — never your calendar.'
+        : 'Off. JARVIS works from your calendar and what it knows, and tells you when a question needs something it cannot reach. Turn this on to let it look things up.'
+    }));
+
+    function save(patch) { JV.WEB.setConfig(patch); renderAll(); }
+
+    var on = D.h('input', { type: 'checkbox', checked: !!cfg.enabled });
+    on.addEventListener('change', function () { save({ enabled: on.checked }); });
+    panel.appendChild(D.h('label.jv-switch', [on, D.h('span', { text: 'Go online' })]));
+
+    var rd = D.h('input', { type: 'checkbox', checked: !!cfg.reader });
+    rd.addEventListener('change', function () { save({ reader: rd.checked }); });
+    panel.appendChild(D.h('label.jv-switch', [
+      rd, D.h('span', { text: 'Read full pages from links (sends the URL to r.jina.ai)' })
+    ]));
+
+    if (cfg.enabled) {
+      var results = D.h('ul.jv-list');
+      var test = D.h('button.btn.btn--ghost.btn--sm', { type: 'button', text: 'Test each source' });
+      test.addEventListener('click', function () {
+        test.disabled = true;
+        test.textContent = 'Testing…';
+        results.textContent = '';
+        JV.WEB.testAll(function (row) {
+          results.appendChild(D.h('li.jv-list__item', [
+            D.h('span.jv-list__dot', { 'aria-hidden': 'true' }),
+            D.h('span', {
+              text: (row.ok ? '✓ ' : '✗ ') + row.label + ' — ' +
+                (row.ok ? row.ms + 'ms' : row.error)
+            })
+          ]));
+        }).then(function (rows) {
+          var ok = rows.filter(function (r) { return r.ok; }).length;
+          test.disabled = false;
+          test.textContent = 'Test again';
+          results.appendChild(D.h('li.jv-list__item', [
+            D.h('span.jv-list__dot', { 'aria-hidden': 'true' }),
+            D.h('span', { text: ok + ' of ' + rows.length + ' reachable.' })
+          ]));
+        });
+      });
+      panel.appendChild(test);
+      panel.appendChild(results);
+
+      if (cfg.place) {
+        panel.appendChild(D.h('p.jv-panel__note', {
+          text: 'Weather location: ' + cfg.place + ' — say “weather in <somewhere else>” to change it.'
+        }));
+      }
+    }
+
+    return panel;
+  }
+
   /* Connecting a model is what turns JARVIS from "good at your calendar and
      honest about the rest" into a general assistant. It is off until you fill
      this in, and the panel says plainly what turning it on means. */
@@ -1235,7 +1303,7 @@
   function fillPanels(host) {
     D.clear(host);
     D.append(host, [insightsPanel(), statusPanel(), suggestionsPanel(), voicePanel(),
-      memoryPanel(), modelPanel(), toolsPanel(), controlsPanel()]);
+      memoryPanel(), webPanel(), modelPanel(), toolsPanel(), controlsPanel()]);
   }
 
   /* ---------------------------------------------------------------- dock */
