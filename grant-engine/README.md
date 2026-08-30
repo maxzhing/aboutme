@@ -10,9 +10,25 @@ supporting it are literally present on a page we downloaded.** Everything else
 follows from that.
 
 ```bash
-npm start          # http://localhost:8787
-npm test           # 143 tests, no network or API keys required
+npm start          # http://localhost:8787 — the real thing, searches live sources
+npm test           # 162 tests, no network or API keys required
+npm run build      # dist/grant-match-engine.html — one file, opens from disk
 ```
+
+## Two builds
+
+**The engine server** (`npm start`) is the product: it searches live sources,
+reads funder pages, and verifies what it finds.
+
+**The single file** (`npm run build`) is a demonstration you can open by
+double-clicking. It runs the *same* analysis engine in your browser — quote
+grounding, requirement inference, the eligibility gate, the eight-factor score,
+the quality filter, source confidence — but it cannot search the internet: a page
+opened from a file has no API keys and cannot fetch funder sites across origins.
+Its opportunities come from a bundled set of **fictional** funders on
+`.demo.invalid` domains, which can never resolve. The file says so in a banner
+that is part of the document, and the alerts feature reports itself unavailable
+rather than pretending to work. The analysis is genuine; the opportunities are not.
 
 ---
 
@@ -112,11 +128,20 @@ server/
     followups.mjs       the fewest questions that unlock the most grants
     assistant.mjs       the application packet
     alerts.mjs          saved-profile sweeps and change detection
+    evaluate.mjs        ground → requirements → quality → eligibility → score,
+                        shared verbatim by the server and the browser build
     pipeline.mjs        orchestration + progress stages
   index.mjs             HTTP server: JSON API, SSE, static dashboard
-public/                 the dashboard (vanilla ES modules, no build step)
-test/                   143 tests including a full offline pipeline run
+public/                 the dashboard; transport-server.js talks to the API
+browser/                the single-file build: in-page engine, demo corpus,
+                        and a transport that runs the engine locally
+tools/                  the single-file bundler
+test/                   162 tests including a full offline pipeline run
 ```
+
+Discovery differs between the two builds; evaluation does not. `evaluate.mjs` is
+the one implementation of the verdict path, so a grant cannot be judged
+differently depending on where the code ran.
 
 No runtime dependencies. Node 20+.
 
@@ -232,7 +257,7 @@ result, so a degraded run is never mistaken for a complete one.
 npm test
 ```
 
-143 tests, no network and no API keys. `test/fixtures/server.mjs` stands in for
+162 tests, no network and no API keys. `test/fixtures/server.mjs` stands in for
 the internet with a Grants.gov-shaped API, a search endpoint, and funder pages
 covering a clean match, a 501(c)(3)-only grant, an expired grant, a loan, an
 advance-fee scam, and an aggregator. `test/pipeline.test.mjs` runs the real

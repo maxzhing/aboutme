@@ -126,6 +126,28 @@ test('a closed applicant list excludes an unlisted type outright', () => {
   assert.equal(result.status, STATUS.INELIGIBLE);
 });
 
+test('an entity-type requirement excludes an applicant of the wrong kind', () => {
+  const requirements = requirementsFrom('Applicants must be a public school, charter school or school district.');
+  const student = assessEligibility(requirements, normalizeProfile({ applicantType: 'student' }), { deadline: '2027-01-01' });
+  assert.equal(student.status, STATUS.INELIGIBLE);
+  assert.match(student.hardFailures[0].reason, /limited to school/);
+
+  const school = assessEligibility(requirements, normalizeProfile({ applicantType: 'school' }), { deadline: '2027-01-01' });
+  assert.notEqual(school.status, STATUS.INELIGIBLE);
+});
+
+test('a university-affiliation requirement excludes a business', () => {
+  const requirements = requirementsFrom('Applicants must be affiliated with an accredited institution of higher education.');
+  assert.deepEqual(requirements.allowedApplicantTypes.value.sort(), ['researcher', 'school']);
+  const business = assessEligibility(requirements, normalizeProfile({ applicantType: 'small_business' }), { deadline: '2027-01-01' });
+  assert.equal(business.status, STATUS.INELIGIBLE);
+});
+
+test('an age or size requirement is not mistaken for an entity-type requirement', () => {
+  assert.equal(requirementsFrom('Applicants must be at least 18 years of age.').allowedApplicantTypes.value, null);
+  assert.equal(requirementsFrom('Applicants must be a registered business with fewer than 25 employees.').allowedApplicantTypes.value, null);
+});
+
 test('every requirement is traceable to the sentence that states it', () => {
   const text = 'Applicants must be a registered 501(c)(3) organization.';
   const requirements = requirementsFrom(text);

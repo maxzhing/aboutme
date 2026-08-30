@@ -12,7 +12,11 @@
     "dev": "node --watch server/index.mjs",
     "test": "node --test \"test/*.test.mjs\"",
     "test:watch": "node --test --watch \"test/*.test.mjs\"",
-    "fixtures": "node test/fixtures/server.mjs"
+    "fixtures": "node test/fixtures/server.mjs",
+    "build": "node tools/build-single-file.mjs"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  }
 }

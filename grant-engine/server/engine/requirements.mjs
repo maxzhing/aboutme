@@ -35,6 +35,12 @@ function findSentence(sentences, pattern) {
  */
 const NEGATION = /\b(?:not|no longer|does not|do not|doesn't|don't|never|without|is not|are not|neither)\b/i;
 
+/** Sentences that restrict *what kind of entity* an applicant must be. */
+const REQUIRED_ENTITY = /\b(?:applicants?\s+must\s+be(?:\s+(?:an?|a))?\s+(?:affiliated with|employed by|based at|a\s+)?|only\s+(?:open\s+to|available\s+to)|open\s+only\s+to|limited\s+to|restricted\s+to|eligible\s+applicants?\s+(?:are|include))\b/i;
+
+/** Has a requirement already been established from a stronger source? */
+const isSet = (field) => field && field.value !== null && field.value !== undefined;
+
 function assertRule(sentences, { pattern, veto, value, sourceUrl, fetchedAt }) {
   const sentence = findSentence(sentences, pattern);
   if (!sentence) return null;
@@ -222,6 +228,24 @@ export function inferRequirements(documents = [], { applicantTypeDescriptions = 
       veto: NEGATION,
       value: true,
     }));
+
+    // "Applicants must be a public school, charter school or school district" and
+    // "must be affiliated with an accredited institution of higher education" are
+    // hard applicant-type limits. Without this rule nothing catches them, and an
+    // applicant of the wrong kind sails through every other check.
+    if (!isSet(requirements.allowedApplicantTypes)) {
+      const entitySentence = findSentence(sentences, REQUIRED_ENTITY);
+      if (entitySentence) {
+        const interpreted = interpretApplicantTypes([entitySentence]);
+        if (interpreted.allowed.size > 0) {
+          requirements.allowedApplicantTypes = quoteField([...interpreted.allowed], { ...context, quote: entitySentence });
+          requirements.applicantTypesExhaustive = quoteField(true, { ...context, quote: entitySentence });
+          if (interpreted.requires501c3) {
+            set('requires501c3', quoteField(true, { ...context, quote: entitySentence }));
+          }
+        }
+      }
+    }
 
     set('requiresOrganization', assertRule(sentences, {
       ...context,

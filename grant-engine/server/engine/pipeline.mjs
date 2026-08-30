@@ -13,22 +13,18 @@
 
 import { config, hasLlm, hasWebSearch, capabilityReport, degradedReasons } from '../lib/config.mjs';
 import { mapLimit } from '../lib/http.mjs';
-import { groundFields, citationsOf, valueOf } from '../lib/evidence.mjs';
+import { valueOf } from '../lib/evidence.mjs';
 import { normalizeProfile, missingProfileFields } from './profile.mjs';
 import { interpretDescription } from '../ai/interpret.mjs';
 import { buildSearchStrategies, buildFederalKeywords } from './queries.mjs';
-import { searchGrantsGov, fetchOpportunity, toGrantRecord, applicantTypeDescriptions } from '../sources/grantsgov.mjs';
+import { searchGrantsGov, fetchOpportunity, toGrantRecord } from '../sources/grantsgov.mjs';
 import { webSearchMany } from '../sources/websearch.mjs';
 import { fetchPage, findApplicationPageLink, PageFetchError } from '../sources/page.mjs';
 import { classifySource, TIER } from '../sources/registry.mjs';
 import { extractGrant } from '../ai/extract.mjs';
-import { inferRequirements } from './requirements.mjs';
-import { assessEligibility, STATUS } from './eligibility.mjs';
-import { scoreMatch } from './score.mjs';
-import { assessQuality } from './quality.mjs';
-import { assessConfidence } from './confidence.mjs';
-import { assessDifficulty, assessCompetition } from './assessment.mjs';
-import { deadlineInfo, sortResults } from './deadline.mjs';
+import { evaluateAll } from './evaluate.mjs';
+import { STATUS } from './eligibility.mjs';
+import { sortResults } from './deadline.mjs';
 import { dedupeLeads, dedupeRecords } from './dedupe.mjs';
 import { buildStrategy } from './strategy.mjs';
 import { collectFollowUpQuestions } from './followups.mjs';
@@ -187,7 +183,7 @@ export async function runSearch(input, { store, onStage = () => {}, now = new Da
 
       extracted.id = `web:${lead.url}`;
       extracted.foundByQueries = lead.foundByQueries;
-      extracted.pageText = sourcePage.text;
+      extracted.pageText = sourcePage.groundingText || sourcePage.text;
       extracted.sourceUrls = [...new Set([...(extracted.sourceUrls || []), sourcePage.finalUrl || sourcePage.url])];
       extracted.funderType = extracted.funderType || null;
       webRecords.push(extracted);
@@ -204,120 +200,11 @@ export async function runSearch(input, { store, onStage = () => {}, now = new Da
 
   // ------------------------------------------- verification and elimination
   stage('eligibility', 'Reading each funder\'s stated requirements');
-  const evaluated = [];
-  const excluded = [];
-
-  for (const record of allRecords) {
-    if (aborted()) break;
-
-    const sourceTexts = new Map();
-    if (record.pageText) sourceTexts.set(record.sourceUrls?.[0], record.pageText);
-
-    // Grounding: every quoted claim is re-checked against the text we hold.
-    const grounding = groundFields(stripInternal(record), sourceTexts);
-    const grounded = grounding.record;
-    grounded.id = record.id;
-    grounded.foundByQueries = record.foundByQueries || [];
-    grounded.sourceUrls = record.sourceUrls || [];
-    grounded.lastVerified = record.lastVerified;
-    grounded.rawSource = record.rawSource;
-    grounded.extractionMethod = record.extractionMethod;
-
-    const documents = [];
-    if (record.pageText) {
-      documents.push({ text: record.pageText, sourceUrl: record.sourceUrls?.[0], fetchedAt: record.lastVerified });
-    }
-    const eligibilityProse = valueOf(grounded.eligibilityText);
-    const descriptionProse = valueOf(grounded.description);
-    if (eligibilityProse || descriptionProse) {
-      documents.push({
-        text: [eligibilityProse, descriptionProse].filter(Boolean).join('\n'),
-        sourceUrl: grounded.eligibilityText?.sourceUrl || grounded.description?.sourceUrl,
-        fetchedAt: grounded.lastVerified,
-      });
-    }
-
-    const requirements = inferRequirements(documents, {
-      applicantTypeDescriptions: Array.isArray(valueOf(grounded.applicantTypes)) ? valueOf(grounded.applicantTypes) : [],
-      structured: { sourceUrl: grounded.sourceUrls?.[0], fetchedAt: grounded.lastVerified },
-    });
-    // Several documents can share a source URL (the page itself, plus prose we
-    // already extracted from it). Concatenate rather than overwrite: a quote
-    // must be checkable against everything we hold for that URL, or valid
-    // evidence gets thrown away as unsupported.
-    const requirementTexts = new Map();
-    for (const document of documents) {
-      if (!document.sourceUrl || !document.text) continue;
-      const existing = requirementTexts.get(document.sourceUrl);
-      requirementTexts.set(document.sourceUrl, existing ? `${existing}\n${document.text}` : document.text);
-    }
-    const groundedRequirements = groundFields(requirements, requirementTexts).record;
-
-    const quality = assessQuality(grounded, { sourceTexts: requirementTexts, grounding, now });
-    const deadline = deadlineInfo(grounded, { now });
-
-    if (!quality.accepted) {
-      excluded.push({
-        id: grounded.id,
-        grantName: valueOf(grounded.grantName) || grounded.rawSource,
-        funder: valueOf(grounded.funder),
-        url: valueOf(grounded.applicationUrl) || grounded.sourceUrls?.[0] || null,
-        reasons: quality.rejections,
-        stage: 'quality',
-      });
-      continue;
-    }
-
-    const eligibility = assessEligibility(groundedRequirements, profile, {
-      deadline: valueOf(grounded.deadline),
-      status: valueOf(grounded.status),
-    });
-
-    const score = scoreMatch(grounded, profile, eligibility, { now });
-    const confidence = assessConfidence(grounded, { grounding, staleAfterHours: config.pipeline.staleAfterHours, now });
-    const difficulty = assessDifficulty(grounded, eligibility);
-    const competition = assessCompetition(grounded);
-
-    const result = {
-      id: grounded.id,
-      record: grounded,
-      requirements: groundedRequirements,
-      eligibility,
-      score,
-      confidence,
-      difficulty,
-      competition,
-      deadlineInfo: deadline,
-      quality,
-      citations: citationsOf(grounded),
-      groundingReport: {
-        checked: grounding.checked,
-        rejected: grounding.rejected.length,
-        fabricationRate: grounding.fabricationRate,
-        discarded: grounding.rejected.map((r) => ({ field: r.path, reason: r.reason, claimed: r.claimedValue })),
-      },
-    };
-
-    if (eligibility.status === STATUS.INELIGIBLE) {
-      excluded.push({
-        id: result.id,
-        grantName: valueOf(grounded.grantName),
-        funder: valueOf(grounded.funder),
-        url: valueOf(grounded.applicationUrl),
-        reasons: eligibility.hardFailures.map((failure) => ({
-          code: failure.id,
-          label: failure.label,
-          reason: failure.reason,
-          evidence: failure.evidence,
-        })),
-        missionAlignment: score.components.missionAlignment.percent,
-        stage: 'eligibility',
-      });
-      continue;
-    }
-
-    evaluated.push(result);
-  }
+  const { evaluated, excluded } = evaluateAll(allRecords, profile, {
+    now,
+    staleAfterHours: config.pipeline.staleAfterHours,
+    signal,
+  });
 
   stage('deadlines', `${evaluated.filter((r) => r.deadlineInfo.deadline).length} of ${evaluated.length} remaining opportunities have a verified deadline`);
   stage('expired', `${excluded.length} opportunit${excluded.length === 1 ? 'y' : 'ies'} eliminated, each with a stated reason`);
@@ -378,21 +265,6 @@ export async function runSearch(input, { store, onStage = () => {}, now = new Da
 
   if (store) store.runs.put({ id: run.id, ...run });
   return run;
-}
-
-/** Remove non-field scratch data before grounding walks the record. */
-function stripInternal(record) {
-  const copy = { ...record };
-  delete copy.pageText;
-  delete copy.foundByQueries;
-  delete copy.sourceUrls;
-  delete copy.extractionMethod;
-  delete copy.rawSource;
-  delete copy.modelError;
-  delete copy.isGrantOpportunity;
-  delete copy.detailAvailable;
-  delete copy.detailError;
-  return copy;
 }
 
 function summarizeBest(result) {

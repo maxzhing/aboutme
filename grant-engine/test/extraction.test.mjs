@@ -5,7 +5,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { htmlToText, extractTitle, extractLinks, decodeEntities, findApplicationPageLink } from '../server/sources/page.mjs';
+import { htmlToText, extractTitle, extractHeading, extractLinks, decodeEntities, findApplicationPageLink, groundingTextOf } from '../server/sources/page.mjs';
 import { patternExtract, parseHumanDate, parseAmount } from '../server/ai/extract.mjs';
 import { groundFields } from '../server/lib/evidence.mjs';
 import { deadlineInfo, buildTimeline, sortResults, URGENCY, applyDeadlineFilter } from '../server/engine/deadline.mjs';
@@ -73,6 +73,36 @@ test('the deterministic extractor produces facts that all ground against the pag
   assert.equal(record.awardMinimum.value, 2500);
   assert.equal(record.awardMaximum.value, 15000);
   assert.deepEqual(record.requiredDocuments.value, ['a project narrative', 'a line-item budget', 'your IRS determination letter']);
+});
+
+test('the page heading names the opportunity, and grounds against the page', () => {
+  const html = '<html><head><title>Youth Innovation Prize — Summit Council</title></head><body>'
+    + '<h1>Youth Innovation Prize</h1><p>The Summit Education Council runs an annual competition.</p></body></html>';
+  const heading = extractHeading(html);
+  assert.equal(heading, 'Youth Innovation Prize');
+
+  const text = htmlToText(html);
+  const title = extractTitle(html);
+  const page = { url: 'https://s.example/p', finalUrl: 'https://s.example/p', fetchedAt: NOW.toISOString(), title, heading, text };
+  const grounding = groundFields(patternExtract(page, { now: NOW }), new Map([[page.url, groundingTextOf({ title, heading, text })]]));
+
+  assert.equal(grounding.record.grantName.value, 'Youth Innovation Prize');
+  assert.equal(grounding.rejected.length, 0, 'the title and heading are part of the page and must be verifiable');
+});
+
+test('the grounding corpus includes the title and heading, which the body text excludes', () => {
+  const combined = groundingTextOf({ title: 'A Title', heading: 'A Heading', text: 'Body prose.' });
+  assert.match(combined, /A Title/);
+  assert.match(combined, /A Heading/);
+  assert.match(combined, /Body prose/);
+});
+
+test('the application URL is provenanced to the fetch, not to a quote', () => {
+  const record = patternExtract(PAGE, { now: NOW });
+  assert.equal(record.applicationUrl.provenance, 'api');
+  assert.equal(record.applicationUrl.verified, true);
+  assert.equal(record.applicationUrl.quote, null, 'a heading does not state a URL');
+  assert.match(record.applicationUrl.apiPath, /fetched from/);
 });
 
 test('a grant is not attributed to itself as its own funder', () => {

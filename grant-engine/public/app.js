@@ -27,16 +27,13 @@ const money = (amount) =>
 
 const titleCase = (text) => String(text || '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-async function api(path, options = {}) {
-  const response = await fetch(path, {
-    headers: { 'content-type': 'application/json' },
-    ...options,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error || `Request failed (${response.status})`);
-  return payload;
-}
+/**
+ * Everything that leaves the interface goes through a transport. Two exist: one
+ * talks to the engine server over HTTP, the other runs the engine in this page
+ * over a bundled corpus. The rendering code below cannot tell them apart, which
+ * is what lets one interface serve both builds.
+ */
+let transport = null;
 
 /* ------------------------------------------------------------------ theme */
 
@@ -79,7 +76,7 @@ const EXAMPLES = [
 ];
 
 async function bootstrap() {
-  state.capabilities = await api('/api/capabilities');
+  state.capabilities = await transport.capabilities();
   renderCapabilities();
   populateVocabulary();
 
@@ -92,6 +89,13 @@ async function bootstrap() {
       $('#description').focus();
     });
   });
+
+  if (!transport.features?.alerts) {
+    const button = $('#saveProfileBtn');
+    button.textContent = 'Alerts need the engine server';
+    button.title = transport.features.alertsNote;
+    button.style.opacity = '0.65';
+  }
 
   refreshCounts();
 }
@@ -172,56 +176,15 @@ async function runSearch(profileOverride) {
   state.streaming = controller;
 
   try {
-    const response = await fetch('/api/search/stream', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ profile, sort: state.filters.sort }),
-      signal: controller.signal,
-    });
-    if (!response.body) throw new Error('Streaming is not supported by this browser.');
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const frames = buffer.split('\n\n');
-      buffer = frames.pop() ?? '';
-      for (const frame of frames) handleFrame(frame);
-    }
+    state.run = await transport.search(profile, state.filters.sort, updateStage, controller.signal);
+    renderResults();
+    showView('results');
   } catch (error) {
     if (error.name === 'AbortError') return;
     $('#stageList').insertAdjacentHTML('beforeend',
       `<div class="notice danger"><div><strong>The search could not complete.</strong>${esc(error.message)}</div></div>`);
   } finally {
     state.streaming = null;
-  }
-}
-
-function handleFrame(frame) {
-  const eventLine = frame.split('\n').find((line) => line.startsWith('event: '));
-  const dataLine = frame.split('\n').find((line) => line.startsWith('data: '));
-  if (!eventLine || !dataLine) return;
-  const event = eventLine.slice(7).trim();
-  let payload;
-  try {
-    payload = JSON.parse(dataLine.slice(6));
-  } catch {
-    return;
-  }
-
-  if (event === 'stage') updateStage(payload);
-  if (event === 'result') {
-    state.run = payload;
-    renderResults();
-    showView('results');
-  }
-  if (event === 'error') {
-    $('#stageList').insertAdjacentHTML('beforeend',
-      `<div class="notice danger"><div><strong>Search failed.</strong>${esc(payload.message)}</div></div>`);
   }
 }
 
@@ -689,7 +652,7 @@ function bindResultActions() {
     button.addEventListener('click', async () => {
       const result = state.run.results.find((r) => r.id === button.dataset.id);
       if (!result) return;
-      await api('/api/saved', { method: 'POST', body: savedPayload(result) });
+      await transport.saved.add(savedPayload(result));
       button.textContent = 'Saved ✓';
       button.disabled = true;
       refreshCounts();
@@ -751,7 +714,7 @@ async function submitAnswers() {
   renderStages();
   updateStage({ key: 'profile', detail: 'Applying your answers' });
   try {
-    state.run = await api('/api/search/answer', { method: 'POST', body: { runId: state.run.id, answers } });
+    state.run = await transport.answer(state.run.id, answers, state.filters.sort);
     renderResults();
     showView('results');
   } catch (error) {
@@ -832,14 +795,14 @@ function applyFilters() {
 
 async function resort() {
   if (!state.run) return;
-  state.run = await api('/api/search', { method: 'POST', body: { profile: state.run.profile, sort: state.filters.sort } });
+  state.run = await transport.search(state.run.profile, state.filters.sort);
   renderResults();
 }
 
 /* -------------------------------------------------------------- assistant */
 
 async function openAssistant(grantId) {
-  const packet = await api('/api/assistant', { method: 'POST', body: { runId: state.run.id, grantId } });
+  const packet = await transport.assistant(state.run.id, grantId);
   const list = (items) => items.map((item) => `<li>${esc(item)}</li>`).join('');
 
   const documents = packet.requiredDocuments.verified
@@ -924,17 +887,14 @@ async function openAssistant(grantId) {
   $('#modalClose').addEventListener('click', close);
   $('#modalBack').addEventListener('click', (event) => { if (event.target.id === 'modalBack') close(); });
   $('#trackBtn').addEventListener('click', async () => {
-    await api('/api/tracker', {
-      method: 'POST',
-      body: {
-        grantId: packet.grantId,
-        grantName: packet.grantName,
-        funder: packet.funder,
-        deadline: packet.deadline,
-        applicationUrl: packet.applicationUrl,
-        stage: 'considering',
-        checklist: packet.eligibilityChecklist.map((item) => ({ item: item.requirement, done: item.satisfied })),
-      },
+    await transport.tracker.put({
+      grantId: packet.grantId,
+      grantName: packet.grantName,
+      funder: packet.funder,
+      deadline: packet.deadline,
+      applicationUrl: packet.applicationUrl,
+      stage: 'considering',
+      checklist: packet.eligibilityChecklist.map((item) => ({ item: item.requirement, done: item.satisfied })),
     });
     $('#trackBtn').textContent = 'Added ✓';
     $('#trackBtn').disabled = true;
@@ -944,7 +904,10 @@ async function openAssistant(grantId) {
 /* -------------------------------------------------- saved / tracker / alerts */
 
 async function refreshCounts() {
-  const [saved, alerts] = await Promise.all([api('/api/saved'), api('/api/alerts')]);
+  const [saved, alerts] = await Promise.all([
+    transport.saved.list(),
+    transport.features?.alerts ? transport.alerts.list() : Promise.resolve({ alerts: [], unread: 0 }),
+  ]);
   state.saved = saved.saved;
   state.alerts = alerts.alerts;
   const savedBadge = $('#savedCount');
@@ -956,7 +919,7 @@ async function refreshCounts() {
 }
 
 async function loadSaved() {
-  const { saved } = await api('/api/saved');
+  const { saved } = await transport.saved.list();
   state.saved = saved;
   $('#savedContent').innerHTML = saved.length
     ? `<div class="section-title">Saved grants <span class="count">${saved.length}</span></div>
@@ -970,14 +933,14 @@ async function loadSaved() {
     : emptyState('No saved grants yet', 'Save an opportunity from your results and it will wait for you here.');
 
   $$('.del-saved').forEach((button) => button.addEventListener('click', async () => {
-    await api(`/api/saved/${encodeURIComponent(button.dataset.id)}`, { method: 'DELETE' });
+    await transport.saved.remove(button.dataset.id);
     loadSaved();
     refreshCounts();
   }));
 }
 
 async function loadTracker() {
-  const { entries, stages } = await api('/api/tracker');
+  const { entries, stages } = await transport.tracker.list();
   $('#trackerContent').innerHTML = entries.length
     ? `<div class="section-title">Application tracker <span class="count">${entries.length}</span></div>
        ${entries.map((entry) => {
@@ -996,16 +959,22 @@ async function loadTracker() {
 
   $$('.track-stage').forEach((select) => select.addEventListener('change', async () => {
     const entry = entries.find((candidate) => candidate.id === select.dataset.id);
-    await api('/api/tracker', { method: 'POST', body: { ...entry, stage: select.value } });
+    await transport.tracker.put({ ...entry, stage: select.value });
   }));
   $$('.del-track').forEach((button) => button.addEventListener('click', async () => {
-    await api(`/api/tracker/${encodeURIComponent(button.dataset.id)}`, { method: 'DELETE' });
+    await transport.tracker.remove(button.dataset.id);
     loadTracker();
   }));
 }
 
 async function loadAlerts() {
-  const [{ alerts }, { profiles }] = await Promise.all([api('/api/alerts'), api('/api/profiles')]);
+  if (!transport.features?.alerts) {
+    $('#alertsContent').innerHTML = `
+      <div class="section-title">Grant alerts</div>
+      <div class="notice"><div><strong>Not available in this build.</strong>${esc(transport.features.alertsNote)}</div></div>`;
+    return;
+  }
+  const [{ alerts }, { profiles }] = await Promise.all([transport.alerts.list(), transport.profiles.list()]);
 
   const profileRows = profiles.length
     ? profiles.map((profile) => `<div class="list-row">
@@ -1032,7 +1001,7 @@ async function loadAlerts() {
     button.textContent = 'Checking…';
     button.disabled = true;
     try {
-      const result = await api(`/api/profiles/${encodeURIComponent(button.dataset.id)}/sweep`, { method: 'POST' });
+      const result = await transport.profiles.sweep(button.dataset.id);
       alert(`${result.alerts.length} new alert${result.alerts.length === 1 ? '' : 's'} from ${result.counts.returned} opportunities.`);
       loadAlerts();
       refreshCounts();
@@ -1046,7 +1015,7 @@ async function loadAlerts() {
 
   const unread = alerts.filter((alert) => !alert.read).map((alert) => alert.id);
   if (unread.length) {
-    await api('/api/alerts/read', { method: 'POST', body: { ids: unread } });
+    await transport.alerts.markRead(unread);
     refreshCounts();
   }
 }
@@ -1056,6 +1025,10 @@ function emptyState(title, body) {
 }
 
 $('#saveProfileBtn').addEventListener('click', async () => {
+  if (!transport.features?.alerts) {
+    alert(transport.features.alertsNote);
+    return;
+  }
   const profile = collectProfile();
   if (!profile.rawDescription) {
     alert('Describe your project first so the saved profile has something to search for.');
@@ -1063,11 +1036,18 @@ $('#saveProfileBtn').addEventListener('click', async () => {
   }
   const name = prompt('Name this profile', profile.rawDescription.slice(0, 40));
   if (!name) return;
-  await api('/api/profiles', { method: 'POST', body: { name, profile, alertsEnabled: true } });
+  await transport.profiles.save({ name, profile, alertsEnabled: true });
   alert('Profile saved. It will be re-checked automatically and new strong matches will appear under Alerts.');
 });
 
-bootstrap().catch((error) => {
-  document.body.insertAdjacentHTML('afterbegin',
-    `<div class="notice danger" style="margin:20px">Could not start: ${esc(error.message)}</div>`);
-});
+/**
+ * Entry point. The build supplies the transport: HTTP for the served app,
+ * an in-page engine for the single-file build.
+ */
+export function startApp(implementation) {
+  transport = implementation;
+  bootstrap().catch((error) => {
+    document.body.insertAdjacentHTML('afterbegin',
+      `<div class="notice danger" style="margin:20px">Could not start: ${esc(error.message)}</div>`);
+  });
+}
