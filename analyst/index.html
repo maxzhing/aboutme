@@ -443,7 +443,8 @@ pre.spec{font-family:var(--mono);font-size:.7rem;line-height:1.62;white-space:pr
   <div class="panel">
     <div class="panel-h"><h3>Trade Journal</h3>
       <button class="btn sm" id="logTrade">Log current setup</button>
-      <button class="btn sm" id="expJrn">Export CSV</button>
+      <button class="btn sm" id="copyJrn">Copy CSV</button>
+      <button class="btn sm" id="dlJrn">Download</button>
       <span class="sub" id="jrnStats"></span></div>
     <div class="panel-b flush tw"><table class="data" id="jrnTbl"><thead><tr>
       <th>Date / time</th><th>Ticker</th><th>Dir</th><th>Entry</th><th>Stop</th><th>T1</th><th>Size</th><th>Trigger signals</th><th>Outcome</th><th>Lesson</th><th></th>
@@ -2707,8 +2708,8 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally { $("fetchBtn").disabled = false; }
   });
 
-  /* copy buttons */
-  const copy = (text, btn) => {
+  /* copy — used by the spec, report and journal exports */
+  function copy(text, btn) {
     const done = ok => { const o = btn.textContent; btn.textContent = ok ? "Copied" : "Press ⌘C"; setTimeout(() => btn.textContent = o, 1400); };
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => done(true), () => done(false));
     else {
@@ -2718,7 +2719,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let ok = false; try { ok = document.execCommand("copy"); } catch (e) { }
       document.body.removeChild(ta); done(ok);
     }
-  };
+  }
   $("copySpec").addEventListener("click", e => copy(SPEC, e.currentTarget));
   $("copyRep").addEventListener("click", e => copy(reportText(), e.currentTarget));
   $("copyJson").addEventListener("click", e => {
@@ -2806,15 +2807,28 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!confirm("Delete this journal entry? The record is the point of the journal.")) return;
     State.journal.splice(+k, 1); LS.set("journal", State.journal); renderJournal();
   });
-  $("expJrn").addEventListener("click", () => {
+  const journalCSV = () => {
     const head = ["timestamp", "ticker", "direction", "entry", "stop", "original_stop", "t1", "shares", "trigger_signals", "outcome_R", "lesson", "simulated"];
     const q = s => `"${String(s == null ? "" : s).replace(/"/g, '""')}"`;
-    const csv = [head.join(",")].concat(State.journal.map(j =>
+    return [head.join(",")].concat(State.journal.map(j =>
       [j.ts, j.ticker, j.dir, j.entry, j.stop, j.origStop, j.t1, j.shares, j.reason, j.outcome, j.lesson, j.simulated].map(q).join(","))).join("\n");
-    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-    const a = document.createElement("a");
-    a.href = url; a.download = "trade-journal.csv"; document.body.appendChild(a); a.click();
-    document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  $("copyJrn").addEventListener("click", e => copy(journalCSV(), e.currentTarget));
+  /* A sandboxed viewer never grants the page download permission, so the copy
+     button above is the path that always works. */
+  $("dlJrn").addEventListener("click", e => {
+    const btn = e.currentTarget;
+    try {
+      const url = URL.createObjectURL(new Blob([journalCSV()], { type: "text/csv" }));
+      const a = document.createElement("a");
+      a.href = url; a.download = "trade-journal.csv"; document.body.appendChild(a); a.click();
+      document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 1000);
+      const o = btn.textContent; btn.textContent = "Saved";
+      setTimeout(() => btn.textContent = o, 1400);
+    } catch (err) {
+      const o = btn.textContent; btn.textContent = "Blocked — use Copy";
+      setTimeout(() => btn.textContent = o, 2200);
+    }
   });
 
   /* misc */
