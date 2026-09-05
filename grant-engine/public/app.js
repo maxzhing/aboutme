@@ -2,6 +2,8 @@
    Vanilla ES modules, no build step. The client renders what the server proves;
    it never computes or softens an eligibility verdict of its own. */
 
+import { createServerTransport } from './transport-server.js';
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
@@ -117,7 +119,59 @@ function renderCapabilities() {
     </h3>
     ${rows}
     ${degraded.length ? `<div class="notice" style="margin-top:14px"><div><strong>Coverage is limited right now.</strong>
-      Results will be honest about the gap rather than filling it with guesses. ${degraded.length} source${degraded.length === 1 ? ' is' : 's are'} unavailable.</div></div>` : ''}`;
+      Results will be honest about the gap rather than filling it with guesses. ${degraded.length} source${degraded.length === 1 ? ' is' : 's are'} unavailable.</div></div>` : ''}
+    ${transport.mode === 'local' ? connectPanel() : ''}`;
+
+  const connectButton = $('#connectBtn');
+  if (connectButton) connectButton.addEventListener('click', connectToEngine);
+}
+
+/** Offered only when the current transport cannot search live. */
+function connectPanel() {
+  return `
+    <div class="notice info" style="margin-top:14px;display:block">
+      <strong>Search live instead</strong>
+      <p style="margin:4px 0 10px">Start the engine on your machine (<code class="mono">npm start</code>) and connect to it here.
+      Federal opportunities need no API key at all; add a search key for foundations, state, local and corporate funders.</p>
+      <div class="answer-row">
+        <input type="text" id="engineUrl" value="http://localhost:8787" style="max-width:260px" aria-label="Engine URL">
+        <button class="btn btn-sm" id="connectBtn">Connect</button>
+        <span class="faint small" id="connectState"></span>
+      </div>
+    </div>`;
+}
+
+/**
+ * Swap the local engine for a live one. The connection is proven by a real
+ * request before anything is swapped, so a failed connect leaves the working
+ * offline build untouched rather than half-broken.
+ */
+async function connectToEngine() {
+  const url = $('#engineUrl').value.trim().replace(/\/+$/, '');
+  const status = $('#connectState');
+  if (!url) return;
+
+  status.textContent = 'Connecting…';
+  const candidate = createServerTransport(url);
+  try {
+    const capabilities = await candidate.capabilities();
+    transport = candidate;
+    state.capabilities = capabilities;
+    state.run = null;
+    renderCapabilities();
+    populateVocabulary();
+    refreshCounts();
+    document.querySelector('.demo-banner')?.remove();
+    $('#capabilities').insertAdjacentHTML('afterbegin',
+      `<div class="notice info"><div><strong>Connected to the engine at ${esc(url)}.</strong>
+        Searches now go to live sources. Results are real opportunities, verified against the funders' own pages.</div></div>`);
+  } catch (error) {
+    status.textContent = '';
+    $('#capabilities').insertAdjacentHTML('beforeend',
+      `<div class="notice danger"><div><strong>Could not reach an engine at ${esc(url)}.</strong>
+        ${esc(error.message)} Start it with <code class="mono">npm start</code>, then try again.
+        Nothing changed — this page is still running the offline engine.</div></div>`);
+  }
 }
 
 function populateVocabulary() {

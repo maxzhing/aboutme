@@ -52,12 +52,13 @@ output = inject(output, '<script src="/main.js" type="module"></script>', `<scri
 // live search of real funding opportunities.
 const banner = `
   <div class="demo-banner" role="note">
-    <strong>Demonstration build — the funders below are fictional.</strong>
-    This single file runs the real eligibility, verification and scoring engine in your browser, but it
-    cannot search the internet: a page opened from a file has no API keys and cannot fetch funder sites
-    across origins. Opportunities come from a bundled set of invented funders on <code>.demo.invalid</code>
-    domains, which can never resolve. The analysis is genuine; the opportunities are not.
-    To search live sources, run the full engine with <code>npm start</code>.
+    <strong>These funders are fictional — connect a live engine to find real grants.</strong>
+    This file runs the real eligibility, verification and scoring engine in your browser, but a page opened
+    from a file cannot search the internet: it has no API keys and cannot fetch funder sites across origins.
+    Until you connect it, opportunities come from a bundled set of invented funders on
+    <code>.demo.invalid</code> domains, which can never resolve.
+    <strong style="display:inline">To search for real:</strong> run <code>npm start</code>, then use
+    <em>Search live instead</em> below and press Connect. Federal opportunities need no API key.
   </div>`;
 
 output = inject(output, '<div class="app">', `<div class="app">\n${banner}`);

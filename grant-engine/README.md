@@ -10,25 +10,56 @@ supporting it are literally present on a page we downloaded.** Everything else
 follows from that.
 
 ```bash
-npm start          # http://localhost:8787 — the real thing, searches live sources
+npm install        # esbuild only, and only for the single-file build
+npm run doctor     # calls every source for real and tells you what works
+npm start          # http://localhost:8787 — searches live sources
 npm test           # 162 tests, no network or API keys required
 npm run build      # dist/grant-match-engine.html — one file, opens from disk
 ```
+
+## Searching live
+
+**Federal opportunities need no API key and no signup.** `npm start` searches
+the official Grants.gov API out of the box, reads each opportunity's full
+record, and verifies eligibility against it.
+
+**Foundations, state, local and corporate funders need a search key.** There is
+no key-free way to search the open web, so this part genuinely cannot work
+without one. A free Brave Search key (about 2,000 queries a month) takes two
+minutes:
+
+1. Get a key at <https://brave.com/search/api>
+2. `echo 'BRAVE_SEARCH_API_KEY=your-key' >> .env`
+3. `npm run doctor` — it will confirm the key works before you rely on it
+
+`SERPER_API_KEY`, `TAVILY_API_KEY`, `GOOGLE_CSE_KEY` + `GOOGLE_CSE_CX`, or
+`SEARXNG_URL` for a self-hosted instance all work the same way.
+
+If something is not working, **run `npm run doctor` first.** It makes a real
+call to every source and prints the exact host that failed and what to do about
+it, rather than leaving you to guess.
 
 ## Two builds
 
 **The engine server** (`npm start`) is the product: it searches live sources,
 reads funder pages, and verifies what it finds.
 
-**The single file** (`npm run build`) is a demonstration you can open by
+**The single file** (`npm run build`) is one HTML file you can open by
 double-clicking. It runs the *same* analysis engine in your browser — quote
 grounding, requirement inference, the eligibility gate, the eight-factor score,
-the quality filter, source confidence — but it cannot search the internet: a page
-opened from a file has no API keys and cannot fetch funder sites across origins.
-Its opportunities come from a bundled set of **fictional** funders on
-`.demo.invalid` domains, which can never resolve. The file says so in a banner
-that is part of the document, and the alerts feature reports itself unavailable
-rather than pretending to work. The analysis is genuine; the opportunities are not.
+the quality filter, source confidence.
+
+On its own it cannot search the internet: a page opened from a file has no API
+keys and cannot fetch funder sites across origins. So it starts on a bundled set
+of **fictional** funders on `.demo.invalid` domains, which can never resolve —
+useful for seeing how the analysis behaves, useless for finding money. It says
+so in a banner that is part of the document.
+
+**To make it real, connect it to a running engine.** Start the engine
+(`npm start`), then use the *Search live instead* panel on the search page and
+press Connect. The demo banner disappears and every search from then on hits
+live sources. The connection is proven with a real request before anything
+switches, so a failed connect leaves the working offline build untouched.
 
 ---
 
@@ -135,7 +166,7 @@ server/
 public/                 the dashboard; transport-server.js talks to the API
 browser/                the single-file build: in-page engine, demo corpus,
                         and a transport that runs the engine locally
-tools/                  the single-file bundler
+tools/                  the single-file bundler and `npm run doctor`
 test/                   162 tests including a full offline pipeline run
 ```
 

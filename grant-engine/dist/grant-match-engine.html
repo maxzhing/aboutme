@@ -465,12 +465,13 @@ input[type='range'] { width: 120px; accent-color: var(--accent); }
 <div class="app">
 
   <div class="demo-banner" role="note">
-    <strong>Demonstration build — the funders below are fictional.</strong>
-    This single file runs the real eligibility, verification and scoring engine in your browser, but it
-    cannot search the internet: a page opened from a file has no API keys and cannot fetch funder sites
-    across origins. Opportunities come from a bundled set of invented funders on <code>.demo.invalid</code>
-    domains, which can never resolve. The analysis is genuine; the opportunities are not.
-    To search live sources, run the full engine with <code>npm start</code>.
+    <strong>These funders are fictional — connect a live engine to find real grants.</strong>
+    This file runs the real eligibility, verification and scoring engine in your browser, but a page opened
+    from a file cannot search the internet: it has no API keys and cannot fetch funder sites across origins.
+    Until you connect it, opportunities come from a bundled set of invented funders on
+    <code>.demo.invalid</code> domains, which can never resolve.
+    <strong style="display:inline">To search for real:</strong> run <code>npm start</code>, then use
+    <em>Search live instead</em> below and press Connect. Federal opportunities need no API key.
   </div>
 
   <header class="topbar">
@@ -567,6 +568,92 @@ input[type='range'] { width: 120px; accent-color: var(--accent); }
 <div id="modalRoot"></div>
 <script>
 (() => {
+  // public/transport-server.js
+  async function api(base, path, options = {}) {
+    const response = await fetch(`${base}${path}`, {
+      headers: { "content-type": "application/json" },
+      ...options,
+      body: options.body ? JSON.stringify(options.body) : void 0
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || `Request failed (${response.status})`);
+    return payload;
+  }
+  function parseFrame(frame) {
+    const eventLine = frame.split("\n").find((line) => line.startsWith("event: "));
+    const dataLine = frame.split("\n").find((line) => line.startsWith("data: "));
+    if (!eventLine || !dataLine) return null;
+    try {
+      return { event: eventLine.slice(7).trim(), data: JSON.parse(dataLine.slice(6)) };
+    } catch {
+      return null;
+    }
+  }
+  function createServerTransport(base = "") {
+    const origin = base.replace(/\/+$/, "");
+    return {
+      mode: "server",
+      origin,
+      /** What this transport can actually do, so the interface never offers more. */
+      features: { alerts: true, alertsNote: null },
+      capabilities: () => api(origin, "/api/capabilities"),
+      async search(profile, sort, onStage = () => {
+      }, signal) {
+        const response = await fetch(`${origin}/api/search/stream`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ profile, sort }),
+          signal
+        });
+        if (!response.body) throw new Error("Streaming is not supported by this browser.");
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let run = null;
+        let failure = null;
+        for (; ; ) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const frames = buffer.split("\n\n");
+          buffer = frames.pop() ?? "";
+          for (const frame of frames) {
+            const parsed = parseFrame(frame);
+            if (!parsed) continue;
+            if (parsed.event === "stage") onStage(parsed.data);
+            if (parsed.event === "result") run = parsed.data;
+            if (parsed.event === "error") failure = parsed.data.message;
+          }
+        }
+        if (failure) throw new Error(failure);
+        if (!run) throw new Error("The server closed the stream without returning results.");
+        return run;
+      },
+      answer: (runId, answers, sort) => api(origin, "/api/search/answer", { method: "POST", body: { runId, answers, sort } }),
+      assistant: (runId, grantId) => api(origin, "/api/assistant", { method: "POST", body: { runId, grantId } }),
+      saved: {
+        list: () => api(origin, "/api/saved"),
+        add: (payload) => api(origin, "/api/saved", { method: "POST", body: payload }),
+        remove: (id) => api(origin, `/api/saved/${encodeURIComponent(id)}`, { method: "DELETE" })
+      },
+      tracker: {
+        list: () => api(origin, "/api/tracker"),
+        put: (entry) => api(origin, "/api/tracker", { method: "POST", body: entry }),
+        remove: (id) => api(origin, `/api/tracker/${encodeURIComponent(id)}`, { method: "DELETE" })
+      },
+      alerts: {
+        list: () => api(origin, "/api/alerts"),
+        markRead: (ids) => api(origin, "/api/alerts/read", { method: "POST", body: { ids } })
+      },
+      profiles: {
+        list: () => api(origin, "/api/profiles"),
+        save: (payload) => api(origin, "/api/profiles", { method: "POST", body: payload }),
+        sweep: (id) => api(origin, `/api/profiles/${encodeURIComponent(id)}/sweep`, { method: "POST" })
+      }
+    };
+  }
+  var serverTransport = createServerTransport("");
+
   // public/app.js
   var $ = (selector, root = document) => root.querySelector(selector);
   var $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -649,7 +736,53 @@ input[type='range'] { width: 120px; accent-color: var(--accent); }
     </h3>
     ${rows}
     ${degraded.length ? `<div class="notice" style="margin-top:14px"><div><strong>Coverage is limited right now.</strong>
-      Results will be honest about the gap rather than filling it with guesses. ${degraded.length} source${degraded.length === 1 ? " is" : "s are"} unavailable.</div></div>` : ""}`;
+      Results will be honest about the gap rather than filling it with guesses. ${degraded.length} source${degraded.length === 1 ? " is" : "s are"} unavailable.</div></div>` : ""}
+    ${transport.mode === "local" ? connectPanel() : ""}`;
+    const connectButton = $("#connectBtn");
+    if (connectButton) connectButton.addEventListener("click", connectToEngine);
+  }
+  function connectPanel() {
+    return `
+    <div class="notice info" style="margin-top:14px;display:block">
+      <strong>Search live instead</strong>
+      <p style="margin:4px 0 10px">Start the engine on your machine (<code class="mono">npm start</code>) and connect to it here.
+      Federal opportunities need no API key at all; add a search key for foundations, state, local and corporate funders.</p>
+      <div class="answer-row">
+        <input type="text" id="engineUrl" value="http://localhost:8787" style="max-width:260px" aria-label="Engine URL">
+        <button class="btn btn-sm" id="connectBtn">Connect</button>
+        <span class="faint small" id="connectState"></span>
+      </div>
+    </div>`;
+  }
+  async function connectToEngine() {
+    const url = $("#engineUrl").value.trim().replace(/\/+$/, "");
+    const status = $("#connectState");
+    if (!url) return;
+    status.textContent = "Connecting\u2026";
+    const candidate = createServerTransport(url);
+    try {
+      const capabilities = await candidate.capabilities();
+      transport = candidate;
+      state.capabilities = capabilities;
+      state.run = null;
+      renderCapabilities();
+      populateVocabulary();
+      refreshCounts();
+      document.querySelector(".demo-banner")?.remove();
+      $("#capabilities").insertAdjacentHTML(
+        "afterbegin",
+        `<div class="notice info"><div><strong>Connected to the engine at ${esc(url)}.</strong>
+        Searches now go to live sources. Results are real opportunities, verified against the funders' own pages.</div></div>`
+      );
+    } catch (error) {
+      status.textContent = "";
+      $("#capabilities").insertAdjacentHTML(
+        "beforeend",
+        `<div class="notice danger"><div><strong>Could not reach an engine at ${esc(url)}.</strong>
+        ${esc(error.message)} Start it with <code class="mono">npm start</code>, then try again.
+        Nothing changed \u2014 this page is still running the offline engine.</div></div>`
+      );
+    }
   }
   function populateVocabulary() {
     const { vocabulary } = state.capabilities;

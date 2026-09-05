@@ -305,8 +305,21 @@ const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host || 'localhost'}`);
   const pathname = decodeURIComponent(url.pathname);
 
+  // A page opened from a file has origin "null", so a single-file build can only
+  // reach a local engine if the API answers cross-origin requests. This is a
+  // personal tool bound to localhost by default; if you expose it on a network,
+  // set CORS_ORIGIN to the one origin you want to allow.
+  const allowOrigin = process.env.CORS_ORIGIN || '*';
+  response.setHeader('access-control-allow-origin', allowOrigin);
+  response.setHeader('vary', 'origin');
+
   if (request.method === 'OPTIONS') {
-    response.writeHead(204, { allow: 'GET,POST,DELETE,OPTIONS' });
+    response.writeHead(204, {
+      allow: 'GET,POST,DELETE,OPTIONS',
+      'access-control-allow-methods': 'GET,POST,DELETE,OPTIONS',
+      'access-control-allow-headers': 'content-type',
+      'access-control-max-age': '86400',
+    });
     return response.end();
   }
 

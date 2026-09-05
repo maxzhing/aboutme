@@ -13,7 +13,8 @@
     "test": "node --test \"test/*.test.mjs\"",
     "test:watch": "node --test --watch \"test/*.test.mjs\"",
     "fixtures": "node test/fixtures/server.mjs",
-    "build": "node tools/build-single-file.mjs"
+    "build": "node tools/build-single-file.mjs",
+    "doctor": "node tools/doctor.mjs"
   },
   "dependencies": {},
   "devDependencies": {

@@ -5,8 +5,8 @@
  * real research stages as they happen, then resolves with the finished run.
  */
 
-async function api(path, options = {}) {
-  const response = await fetch(path, {
+async function api(base, path, options = {}) {
+  const response = await fetch(`${base}${path}`, {
     headers: { 'content-type': 'application/json' },
     ...options,
     body: options.body ? JSON.stringify(options.body) : undefined,
@@ -28,16 +28,26 @@ function parseFrame(frame) {
   }
 }
 
-export const serverTransport = {
+/**
+ * Build a transport for an engine at `base`.
+ *
+ * `base` is '' for the app the engine itself serves, or an absolute origin such
+ * as http://localhost:8787 when a page opened from a file connects to a running
+ * engine.
+ */
+export function createServerTransport(base = '') {
+  const origin = base.replace(/\/+$/, '');
+  return {
   mode: 'server',
+  origin,
 
   /** What this transport can actually do, so the interface never offers more. */
   features: { alerts: true, alertsNote: null },
 
-  capabilities: () => api('/api/capabilities'),
+  capabilities: () => api(origin, '/api/capabilities'),
 
   async search(profile, sort, onStage = () => {}, signal) {
-    const response = await fetch('/api/search/stream', {
+    const response = await fetch(`${origin}/api/search/stream`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ profile, sort }),
@@ -71,29 +81,33 @@ export const serverTransport = {
     return run;
   },
 
-  answer: (runId, answers, sort) => api('/api/search/answer', { method: 'POST', body: { runId, answers, sort } }),
-  assistant: (runId, grantId) => api('/api/assistant', { method: 'POST', body: { runId, grantId } }),
+  answer: (runId, answers, sort) => api(origin, '/api/search/answer', { method: 'POST', body: { runId, answers, sort } }),
+  assistant: (runId, grantId) => api(origin, '/api/assistant', { method: 'POST', body: { runId, grantId } }),
 
   saved: {
-    list: () => api('/api/saved'),
-    add: (payload) => api('/api/saved', { method: 'POST', body: payload }),
-    remove: (id) => api(`/api/saved/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+    list: () => api(origin, '/api/saved'),
+    add: (payload) => api(origin, '/api/saved', { method: 'POST', body: payload }),
+    remove: (id) => api(origin, `/api/saved/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   },
 
   tracker: {
-    list: () => api('/api/tracker'),
-    put: (entry) => api('/api/tracker', { method: 'POST', body: entry }),
-    remove: (id) => api(`/api/tracker/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+    list: () => api(origin, '/api/tracker'),
+    put: (entry) => api(origin, '/api/tracker', { method: 'POST', body: entry }),
+    remove: (id) => api(origin, `/api/tracker/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   },
 
   alerts: {
-    list: () => api('/api/alerts'),
-    markRead: (ids) => api('/api/alerts/read', { method: 'POST', body: { ids } }),
+    list: () => api(origin, '/api/alerts'),
+    markRead: (ids) => api(origin, '/api/alerts/read', { method: 'POST', body: { ids } }),
   },
 
   profiles: {
-    list: () => api('/api/profiles'),
-    save: (payload) => api('/api/profiles', { method: 'POST', body: payload }),
-    sweep: (id) => api(`/api/profiles/${encodeURIComponent(id)}/sweep`, { method: 'POST' }),
-  },
-};
+    list: () => api(origin, '/api/profiles'),
+    save: (payload) => api(origin, '/api/profiles', { method: 'POST', body: payload }),
+    sweep: (id) => api(origin, `/api/profiles/${encodeURIComponent(id)}/sweep`, { method: 'POST' }),
+    },
+  };
+}
+
+/** The engine serving this page. */
+export const serverTransport = createServerTransport('');
