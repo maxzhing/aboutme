@@ -337,16 +337,23 @@ export class Economy {
       if (!b || b.demolished || b.abandoned || b.construction < 1) continue;
       if (b.landmark || b.zone === Z.CIVIC || b.zone === Z.PARK) continue;
       examined++;
-      const dem = this.profitFor(b.zone);
+      // Redevelopment follows the zoning on the ground today, not the zoning the
+      // building was born under — that is what makes upzoning a real lever.
+      const zoneNow = g.zone[idx(b.x, b.y)] || b.zone;
+      if (zoneNow === Z.CIVIC || zoneNow === Z.PARK) continue;
+      const dem = this.profitFor(zoneNow);
       if (dem < 0.16) continue;
       const land = g.land[idx(b.x, b.y)];
       if (land < 0.42) continue;
       const spec = BUILDING_SPEC[b.type];
       let type = b.type, maxF = spec.floors[1];
-      // low-density stock in a high-density zone converts outright
-      if (b.zone === Z.RES_HIGH && (b.type === BT.HOUSE || b.type === BT.ROWHOUSE)) { type = BT.APARTMENT; maxF = BUILDING_SPEC[type].floors[1]; }
-      else if (b.zone === Z.OFFICE && b.type === BT.OFFICE && land > 0.66 && b.floors > 10) { type = BT.TOWER_OFF; maxF = BUILDING_SPEC[type].floors[1]; }
-      else if (b.zone === Z.RES_HIGH && b.type === BT.APARTMENT && land > 0.66 && b.floors > 10) { type = BT.TOWER_RES; maxF = BUILDING_SPEC[type].floors[1]; }
+      // stock that no longer matches its zoning converts outright
+      if (zoneNow === Z.RES_HIGH && (b.type === BT.HOUSE || b.type === BT.ROWHOUSE)) { type = BT.APARTMENT; maxF = BUILDING_SPEC[type].floors[1]; }
+      else if (zoneNow === Z.RES_HIGH && b.type === BT.APARTMENT && land > 0.66 && b.floors > 10) { type = BT.TOWER_RES; maxF = BUILDING_SPEC[type].floors[1]; }
+      else if (zoneNow === Z.OFFICE && b.type === BT.OFFICE && land > 0.62 && b.floors > 8) { type = BT.TOWER_OFF; maxF = BUILDING_SPEC[type].floors[1]; }
+      else if (zoneNow === Z.OFFICE && (b.type === BT.HOUSE || b.type === BT.ROWHOUSE || b.type === BT.SHOP)) { type = BT.OFFICE; maxF = BUILDING_SPEC[type].floors[1]; }
+      else if (zoneNow === Z.COMM && (b.type === BT.HOUSE || b.type === BT.ROWHOUSE)) { type = BT.SHOP; maxF = BUILDING_SPEC[type].floors[1]; }
+      else if (zoneNow === Z.IND && (b.type === BT.HOUSE || b.type === BT.ROWHOUSE || b.type === BT.SHOP)) { type = BT.WAREHOUSE; maxF = BUILDING_SPEC[type].floors[1]; }
       // Zoning sets the ceiling; land value decides how close to it you build.
       const potential = Math.round(maxF * clamp(0.34 + land * 0.92, 0.22, 1));
       if (b.floors >= potential * 0.92 && type === b.type) continue;
@@ -354,7 +361,7 @@ export class Economy {
       if (!rng.bool(clamp(dem * 0.5, 0.05, 0.5))) continue;
       const newFloors = Math.max(b.floors + 1, Math.round(b.floors + (potential - b.floors) * rng.float(0.4, 0.9)));
       const ns = BUILDING_SPEC[type];
-      b.type = type; b.form = ns.form;
+      b.type = type; b.form = ns.form; b.zone = zoneNow;
       b.floors = Math.max(1, Math.min(maxF, newFloors));
       b.height = floorHeight(type) * b.floors + (ns.form === 'tower' ? 6 : 0);
       const area = b.w * b.h;

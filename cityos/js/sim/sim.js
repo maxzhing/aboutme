@@ -104,6 +104,7 @@ export class CitySim {
     this.citizens.refresh(this, 2000);
     this.stats.medianIncome = this.citizens.medianIncome() || this.stats.medianIncome;
     this.syncTrafficStats();
+    this.refreshDerivedStats();
     this.updateHappiness();
     this.calibrate();
     this.snapshotHistory();
@@ -161,6 +162,7 @@ export class CitySim {
     ];
     this.baselinePollution = this.stats.pollution || 0.05;
     this.stats.pollutionIndex = 0.5;
+    this.stats.netMigration = null;
     this.baselineJobs = this.stats.jobsTotal;
     this.happyStreak = 0;
     this.solventYears = 0;
@@ -246,6 +248,24 @@ export class CitySim {
       if (d.getUTCMonth() !== prevMonth || d.getUTCFullYear() !== prevYear) this.monthly();
       if (d.getUTCFullYear() !== prevYear) this.yearly();
     }
+  }
+
+  // Coverage, pollution and park figures normally land on the first simulated
+  // day; compute them up front so the opening briefing is not full of zeroes.
+  refreshDerivedStats() {
+    const fs = this.fields.summary(this);
+    let parkArea = 0;
+    for (const b of this.world.buildings) if (b && !b.demolished && b.zone === Z.PARK) parkArea += b.w * b.h * CELL * CELL;
+    this.stats.parkArea = parkArea;
+    this.stats.parkPerCapita = this.stats.population > 0 ? parkArea / this.stats.population : 0;
+    this.stats.pollution = fs.pollution; this.stats.green = fs.green;
+    this.stats.noise = fs.noise; this.stats.crime = fs.crime; this.stats.landValue = fs.landValue;
+    this.stats.pollutionIndex = 0.5;
+    this.stats.policeCover = this.popWeighted(this.fields.svcPolice);
+    this.stats.fireCover = this.popWeighted(this.fields.svcFire);
+    this.stats.healthCover = this.popWeighted(this.fields.svcHealth);
+    this.stats.eduCover = this.popWeighted(this.fields.svcEdu);
+    this.stats.educationLevel = clamp(0.3 + this.stats.eduCover * 0.55, 0, 1);
   }
 
   syncTrafficStats() {

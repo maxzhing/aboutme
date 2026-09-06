@@ -108,8 +108,8 @@ class App {
     const cbd = this.world.districts.find(d => d.key === 'downtown');
     this.rig.dTarget.set(wxc(cbd.cx), 0, wxc(cbd.cy));
     this.rig.target.copy(this.rig.dTarget);
-    this.rig.dDist = this.rig.dist = 1500;
-    this.rig.flyTo(new THREE.Vector3(wxc(cbd.cx), 0, wxc(cbd.cy)), 620, -2.3, 0.72 * Math.PI / 2, 4200);
+    this.rig.dDist = this.rig.dist = 1150;
+    this.rig.flyTo(new THREE.Vector3(wxc(cbd.cx), 0, wxc(cbd.cy)), 540, -2.3, 0.70 * Math.PI / 2, 3400);
 
     this.last = performance.now();
     this.frames = 0; this.fpsT = 0; this.fps = 60;

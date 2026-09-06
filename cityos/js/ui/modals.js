@@ -299,7 +299,7 @@ export class Modals {
   // ---------------------------------------------------------------- environment
   r_environment() {
     const sim = this.sim, s = sim.stats, p = sim.policies;
-    const rel = s.pollution / Math.max(0.0001, sim.fields.polMax || 1);
+    const rel = s.pollutionIndex ?? (s.pollution / Math.max(0.0001, sim.fields.polMax || 1));
     this.head('Environment', `Pollution index ${(rel * 100).toFixed(0)} · ${(s.parkPerCapita || 0).toFixed(1)} m² of park per resident`);
     this.setTabs(null);
     this.bodyEl.innerHTML = `

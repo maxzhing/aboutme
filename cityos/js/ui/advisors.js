@@ -83,9 +83,11 @@ export function advisorReports(sim) {
     out.push({
       ...ADVISORS[0], mood,
       msg: `Approval sits at <b>${fmtPct(s.happiness)}</b>. The biggest drag is <b>${names[worst[0]] || worst[0]}</b>, scoring ${fmtPct(worst[1])}. ` +
-        (s.netMigration >= 0
-          ? `We gained ${fmtNum(Math.abs(s.netMigration))} residents last month, so the mood is holding.`
-          : `We lost ${fmtNum(Math.abs(s.netMigration))} residents last month — people are voting with their feet.`),
+        (s.netMigration === null || s.netMigration === undefined
+          ? 'Migration figures land at the end of the month.'
+          : s.netMigration >= 0
+            ? `We gained ${fmtNum(Math.abs(s.netMigration))} residents last month, so the mood is holding.`
+            : `We lost ${fmtNum(Math.abs(s.netMigration))} residents last month — people are voting with their feet.`),
       recs: worst[0] === 'housing' ? ['Upzone to Residential High near transit', 'Approve more housing before rents run further']
         : worst[0] === 'services' ? [`Coverage gaps: ${serviceGaps(sim).map(g => g.what).join(', ') || 'none critical'}`]
         : worst[0] === 'parks' ? [`Only ${(s.parkPerCapita || 0).toFixed(1)} m² of park per resident — the target is 9`]
@@ -153,11 +155,11 @@ export function advisorReports(sim) {
 
   // Environment
   {
-    const polRel = s.pollution / Math.max(0.0001, sim.fields.polMax || 1);
-    const mood = polRel < 0.18 ? 'pos' : polRel > 0.4 ? 'neg' : 'neu';
+    const polRel = s.pollutionIndex ?? (s.pollution / Math.max(0.0001, sim.fields.polMax || 1));
+    const mood = polRel < 0.35 ? 'pos' : polRel > 0.7 ? 'neg' : 'neu';
     out.push({
       ...ADVISORS[4], mood,
-      msg: `Average pollution index <b>${(polRel * 100).toFixed(0)}</b>, park provision <b>${(s.parkPerCapita || 0).toFixed(1)} m²</b> per resident ` +
+      msg: `Average pollution index <b>${((s.pollutionIndex ?? polRel) * 100).toFixed(0)}</b>, park provision <b>${(s.parkPerCapita || 0).toFixed(1)} m²</b> per resident ` +
         `(target 9). Industry contributes most of the load; traffic adds the rest along the arterials.`,
       recs: [
         polRel > 0.3 ? 'Raise environmental regulation, or move heavy industry downwind of housing' : null,
