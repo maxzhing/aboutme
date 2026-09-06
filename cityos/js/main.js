@@ -13,6 +13,7 @@ import { buildHinterland } from './render/hinterland.js';
 import { Props } from './render/props.js';
 import { Agents } from './render/agents.js';
 import { Overlays } from './render/overlays.js';
+import { DistrictLabels } from './render/labels.js';
 import { CitySim } from './sim/sim.js';
 import { UI } from './ui/ui.js';
 import { BuildTools } from './ui/tools.js';
@@ -80,12 +81,13 @@ class App {
     await step(84, 'setting the sky');
     this.env = new Environment(this.scene, this.renderer, this.world);
     this.overlays = new Overlays(this.scene, this.world, this.sim);
-    this.overlays.attach(this.buildings.mat);
-    this.overlays.attach(this.surface.mat);
+    this.overlays.attach(this.buildings.mat, 'buildings');
+    this.overlays.attach(this.surface.mat, 'surface');
 
     await step(92, 'putting people on the streets');
     this.agents = new Agents(this.scene, this.world, this.net, this.sim, this.seed);
     this.selectionBox = this.makeSelectionBox();
+    this.labels = new DistrictLabels(this.scene, this.world);
 
     await step(96, 'opening the command centre');
     this.ui = new UI(this);
@@ -126,7 +128,7 @@ class App {
       ]);
       this.composer = new EffectComposer(this.renderer);
       this.composer.addPass(new RenderPass(this.scene, this.camera));
-      this.bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.42, 0.72, 0.86);
+      this.bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.30, 0.30, 0.94);
       this.composer.addPass(this.bloom);
       this.composer.addPass(new OutputPass());
       this.composer.setSize(innerWidth, innerHeight);
@@ -226,7 +228,7 @@ class App {
           this.rig.preset(order[(cur + 1) % order.length]);
           break;
         }
-        case 'Escape': if (this.modals.isOpen()) this.modals.close(); else this.select(null); break;
+        case 'Escape': if (this.modals.isOpen()) this.modals.close(); else if (this.follow) this.setFollow(null); else this.select(null); break;
       }
     });
   }
@@ -316,6 +318,10 @@ class App {
   inspectorAction(act, arg) {
     const sim = this.sim;
     if (act === 'focus') { const b = this.world.buildings[+arg]; if (b) { this.selectBuilding(b); this.focusBuilding(b); } }
+    else if (act === 'follow') {
+      const c = sim.citizens.list.find(x => x.id === +arg);
+      this.setFollow(this.follow === c ? null : c);
+    }
     else if (act === 'focus-district') this.focusDistrict(+arg);
     else if (act === 'demolish') {
       const b = this.world.buildings[+arg];
@@ -350,6 +356,31 @@ class App {
     } else if (act === 'delete-line') {
       sim.transit.removeLine(+arg); this.select(null); this.ui.dirtyMinimap();
     }
+  }
+
+  // Track a resident as their day takes them across the city.
+  updateFollow() {
+    if (!this.follow) return;
+    const c = this.follow;
+    const weekend = this.sim.dayOfWeek === 0 || this.sim.dayOfWeek === 6;
+    const act = this.sim.citizens.activity(c, this.sim.hourOfDay, weekend);
+    const b = act.where;
+    if (!b || b.demolished) { this.setFollow(null); return; }
+    const x = wxc(b.x) + (b.w - 1) * CELL / 2, z = wxc(b.y) + (b.h - 1) * CELL / 2;
+    this.rig.dTarget.set(x, 0, z);
+    if (this.rig.dDist > 190) this.rig.dDist = 150;
+    this.rig.fly = null;
+    if (this._followAct !== act.act) {
+      this._followAct = act.act;
+      this.ui.hint(`Following <b>${c.name}</b> — ${act.act} · <b>Esc</b> to stop`);
+      if (this.selection && this.selection.type === 'citizen' && this.selection.citizen === c) this.selectCitizen(c, act.act);
+    }
+  }
+  setFollow(c) {
+    this.follow = c;
+    this._followAct = null;
+    if (!c) { this.ui.hint(null); this.ui.toast('Stopped following'); }
+    else this.ui.toast(`Following ${c.name}`);
   }
 
   // ---------------------------------------------------------------- camera
@@ -496,15 +527,18 @@ class App {
     }
     this.terrain = makeTerrainFns(this.seed);
     this.surface.dispose(); this.buildings.dispose();
-    for (const o of this.scene.children.slice()) if (o.name === 'hinterland' || o.name === 'props' || o.name === 'agents') this.scene.remove(o);
+    for (const o of this.scene.children.slice()) if (o.name === 'hinterland' || o.name === 'props' || o.name === 'agents' || o.name === 'labels') this.scene.remove(o);
     this.surface = new CitySurface(this.scene, this.world, this.net);
     this.buildings = new BuildingLayer(this.scene, this.world);
     this.props = new Props(this.scene, this.world, this.net, this.seed);
     buildHinterland(this.scene, this.terrain, this.seed);
     this.overlays.world = this.world; this.overlays.sim = this.sim;
-    this.overlays.attach(this.buildings.mat);
-    this.overlays.attach(this.surface.mat);
+    this.overlays.attach(this.buildings.mat, 'buildings');
+    this.overlays.attach(this.surface.mat, 'surface');
     this.agents = new Agents(this.scene, this.world, this.net, this.sim, this.seed);
+    if (this.labels) this.labels.dispose();
+    this.labels = new DistrictLabels(this.scene, this.world);
+    this.follow = null;
     this.select(null);
     this.ui.hist = { pop: [], happy: [], eco: [], budget: [], flow: [], util: [], commute: [] };
     this.ui.dirtyMinimap();
@@ -540,10 +574,16 @@ class App {
     this.rig.update(dt);
     const camPos = this.camera.position;
     const st = this.env.update(this.sim.hourOfDay, this.sim.weather, camPos, dt, this.sim.stats.blackoutFrac);
+    // Expose the frame like a camera would: stop down at night so window light
+    // and headlights carry the image instead of a lifted grey.
+    this.renderer.toneMappingExposure = 1.18 * (0.40 + 0.60 * st.dayT) * (1 - this.sim.weather.rain * 0.12);
     this.buildings.setNight(st.night, this.sim.stats.blackoutFrac);
     this.buildings.setTime(now / 1000);
+    this.buildings.setOccupancy(this.sim.hourOfDay);
     this.surface.setWet(this.sim.weather.rain);
     this.props.update(st.night, camPos, this.sim.stats.blackoutFrac);
+    this.labels.update(this.rig.dist);
+    this.updateFollow();
     this.agents.update(dt, simMinutes, this.camera, st.night, this.quality);
 
     this.flushDirty();
@@ -570,7 +610,7 @@ class App {
     }
 
     if (this.bloomEnabled && this.composer) {
-      this.bloom.strength = 0.16 + st.night * 0.5;
+      this.bloom.strength = 0.06 + st.night * 0.20;
       this.composer.render();
     } else {
       this.renderer.render(this.scene, this.camera);

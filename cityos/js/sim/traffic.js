@@ -200,7 +200,10 @@ export class TrafficModel {
       }
       if (denom <= 0) continue;
       // daily productions -> this hour's vehicle trips
-      const daily = (o.pop * 1.62 + o.workers * 1.30 + (o.external || 0) * 2.0) * sim.carOwnership * (1 + sim.policies.tripRate);
+      // A bike network takes short car trips off the road outright.
+      const bikeShift = 1 - sim.policies.bikeNetwork * 0.16;
+      const daily = (o.pop * 1.62 + o.workers * 1.30 + (o.external || 0) * 2.0)
+        * sim.carOwnership * bikeShift * (1 + sim.policies.tripRate);
       const hourly = daily * prof;
       let commuteSum = 0, commuteW = 0, carSum = 0, trSum = 0;
       for (let di = 0; di < NZ; di++) {
@@ -217,7 +220,8 @@ export class TrafficModel {
           const line = sim.transit.bestLineBetween(o.id, d.id);
           if (line) {
             const tTime = line.time + 6 / Math.max(0.2, acc);
-            const util = (carTime - tTime) * 0.10 - 0.55 + sim.policies.transitBias;
+            // A congestion charge prices driving, tilting the split toward transit.
+            const util = (carTime - tTime) * 0.10 - 0.55 + sim.policies.transitBias + (sim.policies.congestionCharge ? 0.6 : 0);
             transitShare = clamp(1 / (1 + Math.exp(-util)), 0, 0.86) * clamp(acc * 1.4, 0, 1);
           }
         }

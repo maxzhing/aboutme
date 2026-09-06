@@ -262,7 +262,7 @@ export class Agents {
     if (this.truckMesh.instanceColor) this.truckMesh.instanceColor.needsUpdate = true;
     this.headlights.count = nightFactor > 0.25 ? nHead : 0;
     this.headlights.instanceMatrix.needsUpdate = true;
-    this.hlMat.opacity = clamp((nightFactor - 0.25) * 1.6, 0, 0.75);
+    this.hlMat.opacity = clamp((nightFactor - 0.22) * 1.7, 0, 0.95);
 
     this.updateTransit(camY);
     this.updatePeds(dt, camera, quality);

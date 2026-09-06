@@ -2,7 +2,7 @@
 // skyline reads as designed architecture rather than extruded boxes.
 import * as THREE from 'three';
 import { MeshBuilder, hexToRgb } from './geo.js';
-import { GRID, CELL, WORLD, CHUNK, CHUNKS, BT, BUILDING_SPEC } from '../core/defs.js';
+import { GRID, CELL, WORLD, CHUNK, CHUNKS, BT, Z, BUILDING_SPEC } from '../core/defs.js';
 import { RNG } from '../core/rng.js';
 
 const wx = (x) => (x + 0.5) * CELL - WORLD / 2;
@@ -313,8 +313,10 @@ export function makeBuildingMaterial() {
   const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.72, metalness: 0.06 });
   mat.userData.uniforms = {
     uNight: { value: 0 }, uBlackout: { value: 0 }, uTime: { value: 0 },
-    uSelected: { value: -1 }, uHighlight: { value: new THREE.Color(0x35d6ff) },
+    // share of windows lit, per land use, driven by the simulation clock
+    uLitRes: { value: 0.4 }, uLitOff: { value: 0.4 }, uLitCom: { value: 0.4 }, uLitCiv: { value: 0.3 },
   };
+  mat.customProgramCacheKey = () => 'cityos:buildings:v1';
   mat.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, mat.userData.uniforms);
     shader.vertexShader = shader.vertexShader
@@ -329,6 +331,7 @@ export function makeBuildingMaterial() {
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', `#include <common>
         uniform float uNight; uniform float uBlackout; uniform float uTime;
+        uniform float uLitRes; uniform float uLitOff; uniform float uLitCom; uniform float uLitCiv;
         varying vec4 vB; varying vec2 vF; varying float vUpFace;
         float h21(vec2 p){ p = fract(p*vec2(123.34,456.21)); p += dot(p,p+45.32); return fract(p.x*p.y); }`)
       .replace('#include <color_fragment>', `#include <color_fragment>
@@ -351,13 +354,30 @@ export function makeBuildingMaterial() {
         float band = (1.0-smoothstep(0.0,0.06,abs(fy-0.06))) * isWall * 0.10;
         diffuseColor.rgb *= (1.0 - band);`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+        // vB.w packs land use (0 res, 1 office, 2 commercial, 3 civic) plus 4
+        // when the building is on a protected circuit and never load-shed.
+        float zc = mod(vB.w, 4.0);
+        float crit = step(3.5, vB.w);
+        float useLit = uLitRes * step(zc, 0.5)
+                     + uLitOff * step(0.5, zc) * step(zc, 1.5)
+                     + uLitCom * step(1.5, zc) * step(zc, 2.5)
+                     + uLitCiv * step(2.5, zc);
+        float litProb = clamp(vB.y * useLit, 0.0, 1.0);
         float rnd = h21(vec2(colI + vB.x*7.0, floorI*1.7 + vB.x*3.0));
         float flick = 0.85 + 0.15*sin(uTime*0.7 + rnd*30.0);
-        float lit = step(1.0 - vB.y, rnd) * flick;
-        float warm = 0.55 + 0.45*h21(vec2(floorI, colI+vB.x));
+        float lit = step(1.0 - litProb, rnd) * flick;
         vec3 lampCol = mix(vec3(1.0,0.78,0.42), vec3(0.72,0.86,1.0), step(0.72, rnd));
-        totalEmissiveRadiance += lampCol * win * lit * uNight * 2.6 * (1.0 - uBlackout*vB.w);
-        totalEmissiveRadiance += vec3(1.0,0.86,0.55) * storefront * uNight * 0.9 * (1.0 - uBlackout*vB.w);`);
+        // Individual windows are sub-pixel from across the city, so fade the
+        // fine pattern out with screen-space derivatives and cross-fade into a
+        // smooth facade glow. Up close you see windows; from the air, a skyline.
+        float px = max(fwidth(vF.y), fwidth(vF.x));
+        float aa = clamp(1.0 - px / (fh * 0.95), 0.0, 1.0);
+        float coverage = vB.y * 0.42;
+        float smoothGlow = coverage * isWall * step(1.0, wallY);
+        float powered = 1.0 - uBlackout * (1.0 - crit);
+        totalEmissiveRadiance += lampCol * win * lit * aa * uNight * 3.00 * powered;
+        totalEmissiveRadiance += vec3(1.0,0.80,0.50) * smoothGlow * (1.0 - aa) * uNight * 1.35 * powered;
+        totalEmissiveRadiance += vec3(1.0,0.86,0.55) * storefront * uNight * (1.10 + aa * 1.10) * powered;`);
     mat.userData.shader = shader;
   };
   return mat;
@@ -389,10 +409,12 @@ export class BuildingLayer {
       const start = mb.count;
       this.emitBuilding(mb, b);
       const seed = (b.seed % 997) / 997;
-      const litProb = b.litProb === undefined ? 0.5 : b.litProb;
+      const litProb = b.litProb === undefined ? 1 : b.litProb;
       const fh = Math.max(2.6, b.height / Math.max(1, b.floors));
-      const flag = b.type === BT.HOSPITAL || b.type === BT.FIRE || b.type === BT.POLICE ? 0 : 1;
-      for (let v = start; v < mb.count; v++) info.push(seed, litProb, fh, flag);
+      const critical = b.type === BT.HOSPITAL || b.type === BT.FIRE || b.type === BT.POLICE || b.type === BT.POWER;
+      const zc = b.zone === Z.OFFICE ? 1 : (b.zone === Z.COMM || b.zone === Z.MIXED || b.zone === Z.IND) ? 2 : (b.zone === Z.CIVIC ? 3 : 0);
+      const w = zc + (critical ? 4 : 0);
+      for (let v = start; v < mb.count; v++) info.push(seed, litProb, fh, w);
     }
     if (mb.isEmpty()) return;
     const geo = mb.build();
@@ -426,6 +448,15 @@ export class BuildingLayer {
   setNight(v, blackout) {
     const u = this.mat.userData.uniforms;
     u.uNight.value = v; u.uBlackout.value = blackout;
+  }
+  // Offices empty out after work, homes fill up, shops close late.
+  setOccupancy(hour) {
+    const g = (h, c, w) => Math.exp(-Math.pow((((h - c + 36) % 24) - 12) / w, 2));
+    const u = this.mat.userData.uniforms;
+    u.uLitRes.value = 0.055 + 0.40 * g(hour, 21.0, 3.6) + 0.10 * g(hour, 7.5, 1.7);
+    u.uLitOff.value = 0.030 + 0.50 * g(hour, 13.5, 4.0) + 0.07 * g(hour, 20.0, 2.4);
+    u.uLitCom.value = 0.040 + 0.42 * g(hour, 18.5, 4.8);
+    u.uLitCiv.value = 0.030 + 0.32 * g(hour, 13.0, 4.6);
   }
   setTime(t) { this.mat.userData.uniforms.uTime.value = t; }
   dispose() {

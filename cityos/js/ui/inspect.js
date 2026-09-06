@@ -145,7 +145,8 @@ export function inspectCitizen(sim, c, activity) {
   ${bar(sat, sat > 0.65 ? 'var(--gr)' : sat < 0.4 ? 'var(--rd)' : 'var(--gd)')}
   ${hd('Daily routine')}
   ${sched.filter(s => s[0] > 0 && s[0] < 24).sort((a, x) => a[0] - x[0]).map(s => stat(fmtH(s[0]), s[1])).join('')}
-  <div style="padding:11px 13px;display:flex;gap:7px">
+  <div style="padding:11px 13px;display:flex;gap:7px;flex-wrap:wrap">
+    <button class="btn sm" data-act="follow" data-arg="${c.id}">Follow them</button>
     ${home ? `<button class="btn sm" data-act="focus" data-arg="${home.id}">Their home</button>` : ''}
     ${work ? `<button class="btn sm" data-act="focus" data-arg="${work.id}">Their work</button>` : ''}
   </div>`;

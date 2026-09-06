@@ -63,9 +63,14 @@ export class Overlays {
   }
 
   // Injects overlay sampling into any MeshStandardMaterial so buildings tint too.
-  attach(material) {
+  // `tag` must be unique per material: three keys its program cache on the
+  // source text of onBeforeCompile, and two wrappers that stringify alike would
+  // silently share one compiled shader.
+  attach(material, tag) {
     const self = this;
     const prev = material.onBeforeCompile;
+    const prevKey = material.customProgramCacheKey ? material.customProgramCacheKey.bind(material) : () => '';
+    material.customProgramCacheKey = () => 'cityos:overlay:' + tag + '|' + prevKey();
     material.onBeforeCompile = (shader) => {
       if (prev) prev(shader);
       Object.assign(shader.uniforms, self.uniforms);

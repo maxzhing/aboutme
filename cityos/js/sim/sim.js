@@ -37,7 +37,7 @@ export class CitySim {
       serviceLevel: 0, transitBias: 0, envRegulation: 0.15,
       evAdoption: 0.06, tripRate: 0, retirementDrag: 0,
       congestionCharge: false, densityBonus: false, greenBelt: false,
-      signalOptimisation: 0, parkingReform: false, bikeNetwork: 0,
+      signalOptimisation: 0, bikeNetwork: 0,
     };
     this.mods = { economy: 0, migration: 0, resDemand: 0, commDemand: 0, indDemand: 0, powerLoss: 0, happiness: 0 };
 
@@ -83,7 +83,7 @@ export class CitySim {
     for (const b of this.world.buildings) {
       if (!b || b.demolished) continue;
       b.construction = 1;
-      b.litProb = b.zone === Z.RES_LOW ? 0.42 : b.zone === Z.RES_HIGH ? 0.5 : b.zone === Z.OFFICE ? 0.35 : 0.45;
+      b.litProb = 0.78 + ((b.id * 2654435761) >>> 0) % 100 / 100 * 0.44;   // per-building variation
       pop += Math.round(b.capacity * 0.93);
     }
     this.stats.population = pop;

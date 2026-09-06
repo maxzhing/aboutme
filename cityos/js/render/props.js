@@ -9,11 +9,15 @@ const idx = (x, y) => y * GRID + x;
 const inb = (x, y) => x >= 0 && y >= 0 && x < GRID && y < GRID;
 const wx = (x) => (x + 0.5) * CELL - WORLD / 2;
 
-function radialTexture(inner = 'rgba(255,225,170,0.95)', outer = 'rgba(255,190,110,0)') {
+function radialTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const g = c.getContext('2d');
   const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grd.addColorStop(0, inner); grd.addColorStop(0.35, 'rgba(255,214,150,0.35)'); grd.addColorStop(1, outer);
+  // a soft pool of light, not a headlamp aimed at the camera
+  grd.addColorStop(0, 'rgba(255,222,168,0.55)');
+  grd.addColorStop(0.22, 'rgba(255,206,142,0.20)');
+  grd.addColorStop(0.55, 'rgba(255,190,120,0.055)');
+  grd.addColorStop(1, 'rgba(255,180,110,0)');
   g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -175,7 +179,7 @@ export class Props {
     this.lamps = mesh; this.group.add(mesh);
 
     // glowing lamp heads
-    const bulbGeo = new THREE.SphereGeometry(0.42, 6, 5);
+    const bulbGeo = new THREE.SphereGeometry(0.30, 6, 5);
     this.bulbMat = new THREE.MeshBasicMaterial({ color: 0xffd9a0, transparent: true, opacity: 0 });
     const bulbs = new THREE.InstancedMesh(bulbGeo, this.bulbMat, items.length);
     for (let i = 0; i < items.length; i++) {
@@ -196,7 +200,7 @@ export class Props {
     });
     const pools = new THREE.InstancedMesh(poolGeo, this.poolMat, items.length);
     pools.renderOrder = 5;
-    const s16 = new THREE.Vector3(17, 1, 17);
+    const s16 = new THREE.Vector3(10.5, 1, 10.5);
     for (let i = 0; i < items.length; i++) {
       const [px, py, pz, rot] = items[i];
       const dx = Math.sin(rot) * 2.2, dz = Math.cos(rot) * 2.2;
@@ -288,8 +292,8 @@ export class Props {
   update(nightFactor, camPos, blackout = 0) {
     this.night = nightFactor;
     const lit = Math.max(0, nightFactor * 1.25 - 0.18) * (1 - blackout * 0.9);
-    this.bulbMat.opacity = Math.min(1, lit * 1.4);
-    this.poolMat.opacity = Math.min(0.85, lit * 0.75);
+    this.bulbMat.opacity = Math.min(1.0, lit * 1.3);
+    this.poolMat.opacity = Math.min(0.70, lit * 0.62);
     this.bulbs.visible = lit > 0.02;
     this.pools.visible = lit > 0.02;
     // signal lenses

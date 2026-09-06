@@ -240,11 +240,14 @@ export class Environment {
     this.sun.position.set(dir.x, Math.max(0.05, dir.y), dir.z).multiplyScalar(900).add(camPos ? new THREE.Vector3(camPos.x, 0, camPos.z) : new THREE.Vector3());
     if (camPos) { this.sun.target.position.set(camPos.x, 0, camPos.z); this.sun.target.updateMatrixWorld(); }
     this.sun.visible = dir.y > -0.02;
-    this.hemi.intensity = 0.24 + 0.85 * dayT * (1 - cloud * 0.3) + cloud * 0.22;
+    // At night the sky stops filling the scene — facades go dark and the
+    // windows, streetlights and headlights become the light in the picture.
+    this.hemi.intensity = 0.030 + 1.06 * dayT * (1 - cloud * 0.3) + cloud * 0.20 * dayT;
     // keep some warmth in the sky bounce so grey surfaces do not read as water
     this.hemi.color.setRGB(h[0] * 0.75 + 0.30, h[1] * 0.80 + 0.26, h[2] * 0.90 + 0.20);
     this.hemi.groundColor.setRGB(0.16 + 0.12 * dayT, 0.14 + 0.10 * dayT, 0.11 + 0.07 * dayT);
-    this.ambient.intensity = 0.06 + 0.14 * dayT + this.nightFactor * 0.05;
+    // a little ambient at night so the city reads as lit, not silhouetted
+    this.ambient.intensity = 0.016 + 0.18 * dayT + this.nightFactor * 0.012;
 
     this.starMat.uniforms.uOpacity.value = clamp(this.nightFactor * 1.35 - 0.35, 0, 1) * (1 - cloud * 0.85);
     const mAz = az + Math.PI;
@@ -254,7 +257,8 @@ export class Environment {
     this.moon.material.opacity = clamp(this.nightFactor * 1.2, 0, 1);
 
     // fog matches the horizon so distance dissolves into sky
-    this.fog.color.setRGB(h[0] * 0.95 + 0.02, h[1] * 0.95 + 0.02, h[2] * 0.95 + 0.03);
+    const glow = this.nightFactor * (1 - blackoutFrac * 0.8) * 0.10;
+    this.fog.color.setRGB(h[0] * 0.95 + 0.02 + glow * 1.5, h[1] * 0.95 + 0.02 + glow, h[2] * 0.95 + 0.03 + glow * 0.5);
     const alt = camPos ? Math.max(0, camPos.y) : 300;
     const altFade = 1 / (1 + alt / 420);
     this.fog.density = (0.00030 + cloud * 0.00022 + weather.rain * 0.00075 + this.nightFactor * 0.00012) * (0.30 + 0.70 * altFade);

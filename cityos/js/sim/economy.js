@@ -202,6 +202,11 @@ export class Economy {
         if (inb(x + dx, y + dy) && g.kind[idx(x + dx, y + dy)] === K.ROAD) { road = true; break; }
       }
       if (!road) continue;
+      // A green belt freezes development beyond the outer ring.
+      if (sim.policies.greenBelt) {
+        const d = Math.max(Math.abs(x - GRID / 2), Math.abs(y - GRID / 2)) / (GRID / 2);
+        if (d > 0.78) continue;
+      }
       lots.push(i);
     }
     lots.sort((a, b) => g.land[b] - g.land[a]);
@@ -280,7 +285,7 @@ export class Economy {
     const b = makeBuilding(this.world.buildings.length, type, x, y, w, h, floors, rot, zone, district, rng, g);
     b.construction = 0.02;
     b.form = 'construction';
-    b.litProb = 0.1;
+    b.litProb = 0.9;
     this.world.buildings.push(b);
     for (let j = 0; j < h; j++) for (let i2 = 0; i2 < w; i2++) {
       const ii = idx(x + i2, y + j);
@@ -418,6 +423,9 @@ export class Economy {
     const cRev = (comRev + offRev) * p.taxComm * BIZ_TAX_BASE;
     const iRev = indRev * p.taxInd * BIZ_TAX_BASE;
     const fees = s.population * 6.5;
+    // Congestion charging is levied on the car trips the traffic model assigns.
+    const charge = p.congestionCharge ? (sim.traffic.carTrips || 0) * 9 * 30 * 2.4 : 0;
+    const bikeCost = p.bikeNetwork * s.population * 1.3;
 
     let roadCost = 0;
     for (let i = 0; i < GRID * GRID; i++) if (g.kind[i] === K.ROAD) roadCost += (ROAD_SPEC[g.road[i]] || ROAD_SPEC[RC.STREET]).maint;
@@ -434,15 +442,16 @@ export class Economy {
     const transitCost = sim.transit.totalOpCost();
 
     const calib = sim.taxCalib === undefined ? 1 : sim.taxCalib;
-    const revenue = (resRev + cRev + iRev + fees) * calib;
+    const revenue = (resRev + cRev + iRev + fees) * calib + charge;
     const admin = s.population * 34 * (1 + p.serviceLevel * 0.4);
-    const expense = roadCost + serviceCost + utilCost + transitCost + parksCost + admin;
+    const expense = roadCost + serviceCost + utilCost + transitCost + parksCost + admin + bikeCost;
     sim.budget.revenue = Math.round(revenue);
     sim.budget.expense = Math.round(expense);
     sim.budget.breakdown = {
       residentialTax: Math.round(resRev * calib), commercialTax: Math.round(cRev * calib), industrialTax: Math.round(iRev * calib), fees: Math.round(fees * calib),
       roads: Math.round(roadCost), services: Math.round(serviceCost), utilities: Math.round(utilCost),
-      transit: Math.round(transitCost), parks: Math.round(parksCost), administration: Math.round(admin),
+      transit: Math.round(transitCost + bikeCost), parks: Math.round(parksCost), administration: Math.round(admin),
+      congestionCharge: Math.round(charge),
     };
     if (!sim.mode.unlimited) sim.budget.treasury += revenue - expense;
     this.gdp = (comRev + indRev + offRev) * 12 + s.population * incomeBase * 0.55;

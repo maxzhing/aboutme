@@ -164,7 +164,8 @@ export class Modals {
         { label: 'Residential tax', value: bd.residentialTax || 0, text: fmtMoney(bd.residentialTax || 0), color: '#4ade80' },
         { label: 'Business tax', value: bd.commercialTax || 0, text: fmtMoney(bd.commercialTax || 0), color: '#35d6ff' },
         { label: 'Industrial tax', value: bd.industrialTax || 0, text: fmtMoney(bd.industrialTax || 0), color: '#f0b345' },
-        { label: 'Fees & charges', value: bd.fees || 0, text: fmtMoney(bd.fees || 0), color: '#a78bfa' }]);
+        { label: 'Fees & charges', value: bd.fees || 0, text: fmtMoney(bd.fees || 0), color: '#a78bfa' },
+        { label: 'Congestion charge', value: bd.congestionCharge || 0, text: fmtMoney(bd.congestionCharge || 0), color: '#fb923c' }]);
       bars(this.bodyEl.querySelector('#exp'), [
         { label: 'Services', value: bd.services || 0, text: fmtMoney(bd.services || 0), color: '#ff5f56' },
         { label: 'Administration', value: bd.administration || 0, text: fmtMoney(bd.administration || 0), color: '#fb923c' },
@@ -402,7 +403,9 @@ export class Modals {
       <div class="slider"><label>EV adoption support</label><input type="range" min="0" max="100" value="${Math.round(p.evAdoption * 100)}" data-pol="evAdoption"><span class="val">${fmtPct(p.evAdoption, 0)}</span></div>
       <div class="toggle" data-tog="densityBonus"><span>Density bonus — raises developer incentive to build housing</span><span class="tw"></span></div>
       <div class="toggle" data-tog="congestionCharge"><span>Congestion charge — cuts car trips, raises revenue, annoys drivers</span><span class="tw"></span></div>
-      <div class="toggle" data-tog="greenBelt"><span>Green belt — blocks development on the outer ring</span><span class="tw"></span></div>`;
+      <div class="toggle" data-tog="greenBelt"><span>Green belt — blocks development on the outer ring</span><span class="tw"></span></div>
+      <div class="slider"><label>Bike network</label><input type="range" min="0" max="100" value="${Math.round(p.bikeNetwork * 100)}" data-pol="bikeNetwork"><span class="val">${fmtPct(p.bikeNetwork, 0)}</span></div>
+      <p style="color:var(--dim);font-size:11.5px;margin-top:6px">A bike network removes short car trips outright and costs ${fmtMoney(p.bikeNetwork * sim.stats.population * 1.3)} a month at this coverage. A congestion charge prices driving into the mode-split model and raises ${fmtMoney((sim.budget.breakdown.congestionCharge) || 0)} a month.</p>`;
     this.wireSliders();
     for (const t of this.bodyEl.querySelectorAll('[data-tog]')) {
       const k = t.dataset.tog;

@@ -444,7 +444,7 @@ export class BuildTools {
     const b = makeBuilding(sim.world.buildings.length, type, x, y, size[0], size[1], floors, this.rot || 0, spec.zone, district, this.rng, g);
     b.playerBuilt = true;
     b.construction = 0.05; b.form = 'construction';
-    b.litProb = 0.45;
+    b.litProb = 1.0;
     sim.world.buildings.push(b);
     for (let j = 0; j < size[1]; j++) for (let i = 0; i < size[0]; i++) {
       if (!inb(x + i, y + j)) continue;

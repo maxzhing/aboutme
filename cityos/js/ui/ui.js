@@ -113,6 +113,12 @@ export class UI {
       <div class="pnl-b"></div>
       <div class="pnl-f"><button class="btn">› Detailed Reports</button></div>`;
     wrap.appendChild(p);
+    const mb = el('div', 'pnl');
+    mb.style.marginTop = '10px';
+    mb.innerHTML = `<div class="pnl-h"><span class="t">Objectives</span><button class="x">×</button></div><div class="pnl-b" style="padding:4px 0"></div>`;
+    mb.querySelector('.x').onclick = () => { mb.style.display = 'none'; };
+    wrap.appendChild(mb);
+    this.missionEl = mb;
     this.root.appendChild(wrap);
     this.rightWrap = wrap;
     p.querySelector('.x').onclick = () => { wrap.style.display = wrap.style.display === 'none' ? 'flex' : 'none'; };
@@ -278,12 +284,6 @@ export class UI {
     const h = el('div'); h.id = 'hint'; this.root.appendChild(h); this.hintEl = h;
     const tt = el('div'); tt.id = 'tooltip'; document.body.appendChild(tt); this.tipEl = tt;
 
-    const mb = el('div', 'pnl'); mb.id = 'missionbar';
-    mb.innerHTML = `<div class="pnl-h"><span class="t">Objectives</span><button class="x">×</button></div><div class="pnl-b"></div>`;
-    mb.style.display = 'none';
-    mb.querySelector('.x').onclick = () => { mb.style.display = 'none'; };
-    this.root.appendChild(mb);
-    this.missionEl = mb;
   }
 
   toast(msg, isErr) {
@@ -390,7 +390,8 @@ export class UI {
 
   updateMissions() {
     const sim = this.sim;
-    if (!sim.missions.length) return;
+    if (!this.missionEl) return;
+    if (!sim.missions.length) { this.missionEl.style.display = 'none'; return; }
     if (this._mtick && performance.now() - this._mtick < 900) return;
     this._mtick = performance.now();
     const b = this.missionEl.querySelector('.pnl-b');
