@@ -15,6 +15,10 @@ import { Agents } from './render/agents.js';
 import { Overlays } from './render/overlays.js';
 import { DistrictLabels } from './render/labels.js';
 import { Incidents } from './render/incidents.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { CitySim } from './sim/sim.js';
 import { UI } from './ui/ui.js';
 import { BuildTools } from './ui/tools.js';
@@ -120,14 +124,8 @@ class App {
   }
 
   // ---------------------------------------------------------------- post
-  async setupPost() {
+  setupPost() {
     try {
-      const [{ EffectComposer }, { RenderPass }, { UnrealBloomPass }, { OutputPass }] = await Promise.all([
-        import('three/addons/postprocessing/EffectComposer.js'),
-        import('three/addons/postprocessing/RenderPass.js'),
-        import('three/addons/postprocessing/UnrealBloomPass.js'),
-        import('three/addons/postprocessing/OutputPass.js'),
-      ]);
       this.composer = new EffectComposer(this.renderer);
       this.composer.addPass(new RenderPass(this.scene, this.camera));
       this.bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.30, 0.30, 0.94);
