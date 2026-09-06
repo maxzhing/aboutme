@@ -14,6 +14,7 @@ import { Props } from './render/props.js';
 import { Agents } from './render/agents.js';
 import { Overlays } from './render/overlays.js';
 import { DistrictLabels } from './render/labels.js';
+import { Incidents } from './render/incidents.js';
 import { CitySim } from './sim/sim.js';
 import { UI } from './ui/ui.js';
 import { BuildTools } from './ui/tools.js';
@@ -88,6 +89,7 @@ class App {
     this.agents = new Agents(this.scene, this.world, this.net, this.sim, this.seed);
     this.selectionBox = this.makeSelectionBox();
     this.labels = new DistrictLabels(this.scene, this.world);
+    this.incidents = new Incidents(this.scene, this.world, this.net, this.sim);
 
     await step(96, 'opening the command centre');
     this.ui = new UI(this);
@@ -527,7 +529,7 @@ class App {
     }
     this.terrain = makeTerrainFns(this.seed);
     this.surface.dispose(); this.buildings.dispose();
-    for (const o of this.scene.children.slice()) if (o.name === 'hinterland' || o.name === 'props' || o.name === 'agents' || o.name === 'labels') this.scene.remove(o);
+    for (const o of this.scene.children.slice()) if (o.name === 'hinterland' || o.name === 'props' || o.name === 'agents' || o.name === 'labels' || o.name === 'incidents') this.scene.remove(o);
     this.surface = new CitySurface(this.scene, this.world, this.net);
     this.buildings = new BuildingLayer(this.scene, this.world);
     this.props = new Props(this.scene, this.world, this.net, this.seed);
@@ -537,7 +539,10 @@ class App {
     this.overlays.attach(this.surface.mat, 'surface');
     this.agents = new Agents(this.scene, this.world, this.net, this.sim, this.seed);
     if (this.labels) this.labels.dispose();
+    if (this.incidents) this.incidents.dispose();
     this.labels = new DistrictLabels(this.scene, this.world);
+    this.incidents = new Incidents(this.scene, this.world, this.net, this.sim);
+    this.incidents = new Incidents(this.scene, this.world, this.net, this.sim);
     this.follow = null;
     this.select(null);
     this.ui.hist = { pop: [], happy: [], eco: [], budget: [], flow: [], util: [], commute: [] };
@@ -583,6 +588,7 @@ class App {
     this.surface.setWet(this.sim.weather.rain);
     this.props.update(st.night, camPos, this.sim.stats.blackoutFrac);
     this.labels.update(this.rig.dist);
+    this.incidents.update(dt, camPos);
     this.updateFollow();
     this.agents.update(dt, simMinutes, this.camera, st.night, this.quality);
 

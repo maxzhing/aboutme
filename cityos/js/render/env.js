@@ -83,7 +83,7 @@ void main(){
   // rain stipple
   float r = noise(vUvW*1.2 + uTime*4.0);
   col += vec3(0.05,0.06,0.08) * uRain * step(0.9, r);
-  gl_FragColor = vec4(col, 0.94);
+  gl_FragColor = vec4(col, 1.0);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }`;
@@ -161,12 +161,13 @@ export class Environment {
     };
     const wgeo = new THREE.PlaneGeometry(WORLD * 3, WORLD * 3, 1, 1);
     wgeo.rotateX(-Math.PI / 2);
+    // Opaque, not transparent: the sea belongs in the depth-sorted opaque pass,
+    // otherwise it is drawn after the streets and paints over them.
     this.water = new THREE.Mesh(wgeo, new THREE.ShaderMaterial({
       vertexShader: WATER_VS, fragmentShader: WATER_FS, uniforms: this.waterUniforms,
-      transparent: true, depthWrite: true, fog: false,
+      transparent: false, depthWrite: true, depthTest: true, fog: false,
     }));
     this.water.position.y = -1.6;
-    this.water.renderOrder = -5;
     scene.add(this.water);
 
     // rain

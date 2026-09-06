@@ -112,19 +112,23 @@ export class TrafficModel {
 
   updateCosts() {
     const g = this.g, net = this.net;
+    // Wet and windy weather costs real capacity and speed.
+    const wet = this.weather || 0;
     for (let i = 0; i < N; i++) {
       if (g.kind[i] !== K.ROAD) { this.timeCost[i] = 1e9; continue; }
       if (this.closed[i]) { this.timeCost[i] = 1e6; g.speed[i] = 3; continue; }
-      const cap = net.cap[i] || 700;
-      const v0 = net.freeSpeed[i] || 40;
+      const cap = (net.cap[i] || 700) * (1 - wet * 0.12);
+      const v0 = (net.freeSpeed[i] || 40) * (1 - wet * 0.16);
       const ratio = this.vol[i] / cap;
       const bpr = 1 + 0.16 * Math.pow(ratio, 4.2);
       // Signal and stop-line delay grows sharply as an approach saturates.
       const sat = Math.min(1.35, ratio);
       const opt = 1 - (this.signalOpt || 0) * 0.45;
-      const junction = net.deg[i] >= 3
+      // Wet roads cut saturation flow at junctions as well as running speed,
+      // which is where most urban travel time is actually spent.
+      const junction = (net.deg[i] >= 3
         ? (net.lightAt[i] >= 0 ? (0.26 + 1.5 * Math.pow(sat, 3)) * opt : 0.10 + 0.5 * Math.pow(sat, 3))
-        : 0;
+        : 0) * (1 + wet * 0.45);
       const spd = clamp(v0 / bpr, 4, v0);
       g.speed[i] = spd;
       const base = (CELL / 1000) / v0 * 60;
@@ -182,6 +186,7 @@ export class TrafficModel {
     const beta = 0.075;
     const ACCESS = 8.0;                              // walk / park / wait, minutes
     this.signalOpt = sim.policies.signalOptimisation;
+    this.weather = sim.weather.rain * 0.7 + sim.weather.wind * 0.3;
     let end = Math.min(NZ, this.cursor + originsPerStep);
     for (; this.cursor < end; this.cursor++) {
       const o = this.zones[this.cursor];
@@ -252,13 +257,16 @@ export class TrafficModel {
         if (this.g.kind[i] !== K.ROAD) { this.vol[i] = 0; continue; }
         this.vol[i] = this.vol[i] * (1 - lambda) + this.volAccum[i] * lambda;
         this.g.vol[i] = this.vol[i];
+        if (this.closed[i]) { this.vol[i] = 0; this.g.vol[i] = 0; continue; }
         const v = this.vol[i];
         if (v <= 0) continue;
         const r = v / (this.net.cap[i] || 700);
         if (r > peak) peak = r;
         volW += v; satW += v * Math.min(2.5, r);
         if (r > 0.85) overW += v;
-        ttW += v * (this.timeCost[i] / Math.max(1e-6, this.freeCost[i]));
+        // a shut road is not congestion; cap the ratio so closures cannot
+        // swamp the index the whole city is judged by
+        ttW += v * Math.min(6, this.timeCost[i] / Math.max(1e-6, this.freeCost[i]));
       }
       this.volAccum.fill(0);
       this.updateCosts();

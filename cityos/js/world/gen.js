@@ -53,7 +53,45 @@ function genTerrain(g, rng, seed) {
       if (T.isWater(x, y)) { g.kind[i] = K.WATER; g.elev[i] = 0; }
     }
   }
+  pruneWater(g);
   return T;
+}
+
+// The shoreline function leaves slivers and puddles where the noise terms cross.
+// Anything too small to be a real body of water becomes land, so the city never
+// has a pond sitting in the middle of a street.
+export function pruneWater(g, minSize = 30) {
+  const seen = new Uint8Array(GRID * GRID);
+  const stack = [];
+  for (let start = 0; start < GRID * GRID; start++) {
+    if (g.kind[start] !== K.WATER || seen[start]) continue;
+    stack.length = 0; stack.push(start); seen[start] = 1;
+    const body = [];
+    let touchesEdge = false;
+    while (stack.length) {
+      const v = stack.pop();
+      body.push(v);
+      const x = v % GRID, y = (v / GRID) | 0;
+      if (x === 0 || y === 0 || x === GRID - 1 || y === GRID - 1) touchesEdge = true;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx, ny = y + dy;
+        if (!inb(nx, ny)) continue;
+        const j = idx(nx, ny);
+        if (g.kind[j] === K.WATER && !seen[j]) { seen[j] = 1; stack.push(j); }
+      }
+    }
+    if (body.length < minSize && !touchesEdge) {
+      for (const c of body) { g.kind[c] = K.EMPTY; g.elev[c] = 3.2; }
+    }
+  }
+  // fill lone land cells surrounded by water so the coast stays clean too
+  for (let y = 1; y < GRID - 1; y++) for (let x = 1; x < GRID - 1; x++) {
+    const i = idx(x, y);
+    if (g.kind[i] === K.WATER) continue;
+    let w = 0;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (g.kind[idx(x + dx, y + dy)] === K.WATER) w++;
+    if (w === 4) { g.kind[i] = K.WATER; g.elev[i] = 0; }
+  }
 }
 
 // ---------------------------------------------------------------- districts
@@ -550,6 +588,9 @@ export function generateWorld(seed) {
   const water = genTerrain(g, rng, seed);
   const districts = genDistricts(g, rng, seed);
   const roads = genRoads(g, rng, seed, districts);
+  // Bridges cut the river into fragments; anything left too small to read as
+  // water becomes buildable land rather than a puddle between two carriageways.
+  pruneWater(g, 26);
   seedLandValue(g, districts);
   const blocks = genBlocks(g);
   zoneBlocks(g, rng, blocks, districts);

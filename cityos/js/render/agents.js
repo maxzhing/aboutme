@@ -302,7 +302,7 @@ export class Agents {
   // them outdoors near the camera.
   updatePeds(dt, camera, quality) {
     const camY = camera.position.y;
-    if (camY > 260 || quality < 0.5) { this.pedMesh.count = 0; this.pedPick = []; return; }
+    if (camY > 300 || quality < 0.25) { this.pedMesh.count = 0; this.pedPick = []; return; }
     const sim = this.sim;
     const hour = sim.hourOfDay;
     const weekend = sim.dayOfWeek === 0 || sim.dayOfWeek === 6;
@@ -311,7 +311,7 @@ export class Agents {
     const mm = this._m, qq = this._q, pp = this._p, ss = this._s, up = this._up, col = this._c;
     let n = 0;
     const list = sim.citizens.list;
-    const cap = Math.min(this.pedMesh.instanceMatrix.count, Math.round(400 * quality));
+    const cap = Math.min(this.pedMesh.instanceMatrix.count, Math.max(60, Math.round(400 * quality)));
     this.pedPick = this.pedPick || [];
     this.pedPick.length = 0;
     for (let k = 0; k < list.length && n < cap; k++) {
