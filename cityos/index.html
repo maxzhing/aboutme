@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>CITYOS — 3D Living City Simulator</title>
+<link rel="stylesheet" href="./css/ui.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three.module.min.js",
+  "three/addons/": "./vendor/addons/"
+} }
+</script>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="ui"></div>
+<div id="boot"><div class="boot-inner">
+  <div class="boot-logo">CITYOS</div>
+  <div class="boot-sub">3D LIVING CITY SIMULATOR</div>
+  <div class="boot-bar"><div id="bootbar"></div></div>
+  <div class="boot-step" id="bootstep">initialising</div>
+</div></div>
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
