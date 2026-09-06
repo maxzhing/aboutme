@@ -358,4 +358,18 @@ export class Agents {
   }
 
   clearRoutes() { this.routeCache.clear(); this.cars.length = 0; }
+
+  dispose() {
+    this.cars.length = 0;
+    this.routeCache.clear();
+    this.group.traverse(o => {
+      if (o.geometry) o.geometry.dispose();
+      if (o.material) {
+        const ms = Array.isArray(o.material) ? o.material : [o.material];
+        for (const m of ms) { if (m.map) m.map.dispose(); m.dispose(); }
+      }
+    });
+    this.group.clear();
+    this.scene.remove(this.group);
+  }
 }

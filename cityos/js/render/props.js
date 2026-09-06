@@ -289,6 +289,18 @@ export class Props {
     this.parked = mesh; this.group.add(mesh);
   }
 
+  dispose() {
+    this.group.traverse(o => {
+      if (o.geometry) o.geometry.dispose();
+      if (o.material) {
+        const ms = Array.isArray(o.material) ? o.material : [o.material];
+        for (const m of ms) { if (m.map) m.map.dispose(); m.dispose(); }
+      }
+    });
+    this.group.clear();
+    this.scene.remove(this.group);
+  }
+
   update(nightFactor, camPos, blackout = 0) {
     this.night = nightFactor;
     const lit = Math.max(0, nightFactor * 1.25 - 0.18) * (1 - blackout * 0.9);

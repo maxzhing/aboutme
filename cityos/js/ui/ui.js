@@ -3,23 +3,15 @@
 import { LAYERS, SPEEDS, ZONE_SPEC, Z, K, GRID, CELL, WORLD, MODES } from '../core/defs.js';
 import { fmtNum, fmtPct, fmtMoney, fmtCompact, el, delta } from './format.js';
 import { sparkline } from './charts.js';
+import { Briefing } from './briefing.js';
 
+// Three places to be, plus the one tool that is worth its own door. Everything
+// else lives inside Manage as a tab, or appears in context.
 const NAV = [
-  { id: 'cityview', label: 'City View', ic: '◈' },
-  { id: 'build', label: 'Build', ic: '⚒' },
-  { id: 'zoning', label: 'Zoning', ic: '▦' },
-  { id: 'transport', label: 'Transport', ic: '🚈' },
-  { id: 'economy', label: 'Economy', ic: '$' },
-  { id: 'population', label: 'Population', ic: '☺' },
-  { id: 'utilities', label: 'Utilities', ic: '⚡' },
-  { id: 'environment', label: 'Environment', ic: '❧' },
-  { id: 'emergencies', label: 'Emergencies', ic: '⚠' },
-  { id: 'districts', label: 'Districts', ic: '◉' },
-  { id: 'policies', label: 'Policies', ic: '⚖' },
-  { id: 'advisors', label: 'Advisors', ic: '💬' },
-  { id: 'whatif', label: 'What-If', ic: '🔮' },
-  { id: 'stats', label: 'Stats', ic: '📊' },
-  { id: 'dashboard', label: 'Dashboard', ic: '▤' },
+  { id: 'cityview', label: 'City', ic: '◈', sub: 'Look at it' },
+  { id: 'build', label: 'Build', ic: '⚒', sub: 'Change it' },
+  { id: 'manage', label: 'Manage', ic: '▤', sub: 'Understand it' },
+  { id: 'whatif', label: 'What-If', ic: '🔮', sub: 'Test it first' },
 ];
 
 export class UI {
@@ -27,7 +19,6 @@ export class UI {
     this.app = app;
     this.root = document.getElementById('ui');
     this.hist = { pop: [], happy: [], eco: [], budget: [], flow: [], util: [], commute: [] };
-    this.lastFeedId = 0;
     this.build();
   }
 
@@ -92,11 +83,17 @@ export class UI {
     const rail = el('div'); rail.id = 'rail';
     for (const n of NAV) {
       const b = el('button', 'nav');
-      b.innerHTML = `<span class="ic">${n.ic}</span><span>${n.label}</span>`;
+      b.innerHTML = `<span class="ic">${n.ic}</span><span class="nl">${n.label}<i>${n.sub}</i></span>`;
       b.onclick = () => this.app.nav(n.id);
       b.dataset.nav = n.id;
       rail.appendChild(b);
     }
+    const foot = el('div', 'railfoot');
+    foot.innerHTML = `<button data-a="layers"><span class="ic">▤</span><span>Layers</span></button>
+      <button data-a="follow"><span class="ic">☺</span><span>A resident</span></button>`;
+    foot.querySelector('[data-a="layers"]').onclick = () => this.toggleLayers();
+    foot.querySelector('[data-a="follow"]').onclick = () => this.app.followSomeone();
+    rail.appendChild(foot);
     this.root.appendChild(rail);
     this.railEl = rail;
   }
@@ -107,18 +104,15 @@ export class UI {
   // ------------------------------------------------------------- right overview
   buildRight() {
     const wrap = el('div'); wrap.id = 'right';
+    this.briefing = new Briefing(this.app, this);
+    wrap.appendChild(this.briefing.objEl);
     const p = el('div', 'pnl');
+    p.style.marginTop = '10px';
     p.innerHTML = `
       <div class="pnl-h"><span class="t">City Overview</span><button class="x">×</button></div>
       <div class="pnl-b"></div>
       <div class="pnl-f"><button class="btn">› Detailed Reports</button></div>`;
     wrap.appendChild(p);
-    const mb = el('div', 'pnl');
-    mb.style.marginTop = '10px';
-    mb.innerHTML = `<div class="pnl-h"><span class="t">Objectives</span><button class="x">×</button></div><div class="pnl-b" style="padding:4px 0"></div>`;
-    mb.querySelector('.x').onclick = () => { mb.style.display = 'none'; };
-    wrap.appendChild(mb);
-    this.missionEl = mb;
     this.root.appendChild(wrap);
     this.rightWrap = wrap;
     p.querySelector('.x').onclick = () => { wrap.style.display = wrap.style.display === 'none' ? 'flex' : 'none'; };
@@ -145,7 +139,7 @@ export class UI {
   buildEvents() {
     const w = el('div'); w.id = 'events';
     const p = el('div', 'pnl');
-    p.innerHTML = `<div class="pnl-h"><span class="t">Recent Events</span><button class="x">×</button></div><div class="pnl-b"></div>`;
+    p.innerHTML = `<div class="pnl-h"><span class="t">City News</span><button class="x">×</button></div><div class="pnl-b"></div>`;
     w.appendChild(p);
     this.root.appendChild(w);
     p.querySelector('.x').onclick = () => { w.style.display = 'none'; };
@@ -186,10 +180,10 @@ export class UI {
     this.subEl.innerHTML = '';
     if (!items || !items.length) { this.subEl.classList.remove('show'); return; }
     for (const it of items) {
-      const b = el('button', 'sub' + (it.id === activeId ? ' on' : ''));
+      const b = el('button', 'sub' + (it.id === activeId ? ' on' : '') + (it.lock ? ' locked' : ''));
       b.innerHTML = (it.color ? `<span class="sw" style="background:${it.color}"></span>` : (it.ic ? `<span>${it.ic}</span>` : '')) +
-        `<span>${it.label}</span>` + (it.cost ? `<span class="cost">${fmtMoney(it.cost)}</span>` : '');
-      b.onclick = () => onPick(it.id);
+        `<span>${it.label}</span>` + (it.lock ? `<span class="cost">🔒 ${it.lock}</span>` : (it.cost ? `<span class="cost">${fmtMoney(it.cost)}</span>` : ''));
+      b.onclick = () => it.lock ? this.toast(`${it.label} unlocks at ${it.lock}`) : onPick(it.id);
       this.subEl.appendChild(b);
     }
     this.subEl.classList.add('show');
@@ -274,7 +268,7 @@ export class UI {
   // ------------------------------------------------------------- misc
   buildMisc() {
     const m = el('div'); m.id = 'modal';
-    m.innerHTML = `<div class="mdl"><div class="mdl-h"><div><div class="t"></div><div class="s"></div></div><button class="x" style="font-size:20px;color:#7f93aa">×</button></div><div class="tabs"></div><div class="mdl-b"></div><div class="mdl-f"></div></div>`;
+    m.innerHTML = `<div class="mdl"><div class="mdl-h"><div><div class="t"></div><div class="s"></div></div><button class="x" style="font-size:20px;color:#7f93aa">×</button></div><div class="sections"></div><div class="tabs"></div><div class="mdl-b"></div><div class="mdl-f"></div></div>`;
     document.body.appendChild(m);
     this.modalEl = m;
     m.querySelector('.x').onclick = () => this.app.modals.close();
@@ -359,55 +353,18 @@ export class UI {
       sparkline(r.c, rv[1], { color: rv[2] });
     }
 
-    // events
-    const feed = sim.events.feed;
-    if (feed.length && feed[0].id !== this.lastFeedId) {
-      this.lastFeedId = feed[0].id;
-      this.eventsBody.innerHTML = '';
-      for (const e of feed.slice(0, 8)) {
-        const d = el('div', 'ev ' + (e.severity || 'info'));
-        d.innerHTML = `<span class="d"></span><span class="m">${e.title}</span><span class="a">${this.ago(e)}</span>`;
-        if (e.focus !== undefined || e.building !== undefined) d.onclick = () => this.app.focusEvent(e);
-        this.eventsBody.appendChild(d);
-      }
-    } else {
-      const nodes = this.eventsBody.querySelectorAll('.ev .a');
-      feed.slice(0, 8).forEach((e, i) => { if (nodes[i]) nodes[i].textContent = this.ago(e); });
-    }
+    // objective, news and the completion banner
+    this.briefing.update();
 
     // speeds
     this.speedBtns.forEach((b, i) => b.classList.toggle('on', i === this.app.speedIdx));
     this.drawMinimap();
-    this.updateMissions();
-  }
-
-  ago(e) {
-    const mins = this.sim.minutes - (e.day * 1440 + e.minute);
-    if (mins < 60) return Math.max(0, Math.round(mins)) + 'm ago';
-    if (mins < 1440) return Math.round(mins / 60) + 'h ago';
-    return Math.round(mins / 1440) + 'd ago';
-  }
-
-  updateMissions() {
-    const sim = this.sim;
-    if (!this.missionEl) return;
-    if (!sim.missions.length) { this.missionEl.style.display = 'none'; return; }
-    if (this._mtick && performance.now() - this._mtick < 900) return;
-    this._mtick = performance.now();
-    const b = this.missionEl.querySelector('.pnl-b');
-    b.innerHTML = '';
-    for (const m of sim.missions) {
-      const p = Math.round(m.progress(sim) * 100);
-      const d = el('div', 'msn' + (m.done ? ' done' : ''));
-      d.innerHTML = `<div class="bx">${m.done ? '✓' : ''}</div><div class="mtx">${m.label}<div class="mp"><i style="width:${p}%"></i></div></div>`;
-      b.appendChild(d);
-    }
   }
 
   // ------------------------------------------------------------- minimap draw
   drawMinimap() {
     const c = this.mmCtx, sim = this.sim, g = sim.world.g;
-    const S = 412, px = S / GRID;
+    const S = 412;
     if (!this._mmBase || this._mmDirty) this.renderMinimapBase();
     c.drawImage(this._mmBase, 0, 0);
     // overlay: current data layer

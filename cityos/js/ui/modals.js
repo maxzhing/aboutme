@@ -9,6 +9,21 @@ import { SCENARIOS } from './whatif.js';
 import { TRANSIT_SPEC } from '../sim/transit.js';
 
 const idx = (x, y) => y * GRID + x;
+// The reports reachable from Manage, in the order a mayor would want them.
+export const MANAGE = [
+  { id: 'dashboard', label: 'Overview' },
+  { id: 'transport', label: 'Transport' },
+  { id: 'economy', label: 'Economy' },
+  { id: 'population', label: 'People' },
+  { id: 'utilities', label: 'Utilities' },
+  { id: 'environment', label: 'Environment' },
+  { id: 'emergencies', label: 'Emergencies' },
+  { id: 'districts', label: 'Districts' },
+  { id: 'policies', label: 'Policies' },
+  { id: 'advisors', label: 'Advisors' },
+  { id: 'stats', label: 'History' },
+];
+
 const card = (h4, big, note) => `<div class="card"><h4>${h4}</h4><div class="big">${big}</div>${note ? `<div class="note">${note}</div>` : ''}</div>`;
 
 export class Modals {
@@ -17,6 +32,7 @@ export class Modals {
     this.el = app.ui.modalEl;
     this.titleEl = this.el.querySelector('.t');
     this.subEl = this.el.querySelector('.s');
+    this.sectionsEl = this.el.querySelector('.sections');
     this.tabsEl = this.el.querySelector('.tabs');
     this.bodyEl = this.el.querySelector('.mdl-b');
     this.footEl = this.el.querySelector('.mdl-f');
@@ -50,7 +66,22 @@ export class Modals {
     const scroll = this.bodyEl.scrollTop;
     this.footEl.innerHTML = '';
     fn.call(this, isRefresh);
+    this.renderSections();
     if (isRefresh) this.bodyEl.scrollTop = scroll;
+  }
+
+  // Every report is one strip inside Manage rather than its own door in the
+  // rail. The panel renderers are unchanged; only the way in is.
+  renderSections() {
+    const inManage = MANAGE.some(m => m.id === this.current);
+    this.sectionsEl.innerHTML = '';
+    this.sectionsEl.classList.toggle('show', inManage);
+    if (!inManage) return;
+    for (const m of MANAGE) {
+      const b = el('button', 'sec' + (m.id === this.current ? ' on' : ''), m.label);
+      b.onclick = () => { this.app.lastManage = m.id; this.open(m.id); };
+      this.sectionsEl.appendChild(b);
+    }
   }
 
   head(title, sub) { this.titleEl.textContent = title; this.subEl.textContent = sub || ''; }
@@ -500,16 +531,39 @@ export class Modals {
       this.bodyEl.innerHTML = `
         <div class="card" style="margin-bottom:14px"><h4>${r.scenario.label} · ${r.horizonDays} day horizon</h4>
           <div class="note">${r.log.join(' ')}</div></div>
-        <table class="dt"><thead><tr><th>Metric</th><th style="text-align:right">Today</th><th style="text-align:right">Do nothing</th><th style="text-align:right">With change</th><th style="text-align:right">Difference</th></tr></thead>
+        <table class="dt"><thead><tr><th>Metric</th><th style="text-align:right">Current</th><th style="text-align:right">Projected · do nothing</th><th style="text-align:right">Projected · with change</th><th style="text-align:right">Effect</th></tr></thead>
         <tbody>${rows}</tbody></table>
         <div class="card" style="margin-top:14px"><h4>What it means</h4>
         ${r.narrative.length ? `<ul style="margin:6px 0 0 16px;font-size:12px;line-height:1.65">${r.narrative.map(n => `<li style="color:${n.better ? '#8ff0b4' : '#ff8a82'}">${n.txt}</li>`).join('')}</ul>`
           : '<div class="note">No metric moved by more than half a percent against the control. On this horizon, the change is close to neutral.</div>'}
         </div>`;
       this.footEl.innerHTML = '';
-      const again = el('button', 'btn', 'Run another scenario');
-      again.onclick = () => { wi.result = null; this.render(); };
-      this.footEl.appendChild(again);
+      const cancel = el('button', 'btn', 'Cancel — try something else');
+      cancel.onclick = () => { wi.result = null; this.render(); };
+      this.footEl.appendChild(cancel);
+      if (r.scenario.build) {
+        const price = r.scenario.cost ? ` · ${fmtMoney(r.scenario.cost)}` : '';
+        const go = el('button', 'btn pri', `${r.scenario.build}${price}`);
+        go.onclick = () => {
+          const res = wi.enact(r.scenario);
+          if (!res.ok) { this.app.ui.toast(res.msg, true); return; }
+          this.app.sim.log('city', `${r.scenario.label} — enacted`, {
+            severity: 'good',
+            why: res.msg,
+            who: 'The whole city. The projection you just ran is what the simulation will now play out for real.',
+            action: 'Watch the metrics on the objective card move over the next few days.',
+          });
+          wi.result = null;
+          this.close();
+          this.app.ui.toast(`${r.scenario.label} — done`);
+        };
+        this.footEl.appendChild(go);
+      } else {
+        const note = el('div', 'note');
+        note.style.cssText = 'flex:1;align-self:center;text-align:left';
+        note.textContent = 'This one is a stress test — there is nothing here to build.';
+        this.footEl.insertBefore(note, cancel);
+      }
       return;
     }
     const sel = this.app.selection;
@@ -534,6 +588,18 @@ export class Modals {
       wi.start(b.dataset.sc, +hz.value);
       this.render();
     };
+    // an objective option can hand us a scenario to run straight away
+    if (wi.pendingScenario) {
+      const want = wi.pendingScenario;
+      wi.pendingScenario = null;
+      const sc = SCENARIOS.find(x => x.id === want);
+      if (sc && wi.scenarioAvailable(sc)) { wi.start(want, wi.horizonDays); this.render(); }
+      else if (sc) {
+        const card = this.bodyEl.querySelector(`[data-sc="${want}"]`);
+        if (card) card.closest('.card').scrollIntoView({ block: 'center' });
+        this.app.ui.toast('Select a road in the city first, then run this scenario', true);
+      }
+    }
   }
 
   // ---------------------------------------------------------------- stats

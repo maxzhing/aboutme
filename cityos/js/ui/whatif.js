@@ -10,19 +10,22 @@ import { ZS, ZN } from '../sim/traffic.js';
 const idx = (x, y) => y * GRID + x;
 const inb = (x, y) => x >= 0 && y >= 0 && x < GRID && y < GRID;
 
+// `build` marks a scenario as a decision the player can actually take: after
+// the projection runs, the same mutation can be applied to the real city.
+// `cost` is what committing to it takes out of the treasury.
 export const SCENARIOS = [
-  { id: 'stadium', label: 'Build a stadium here', needs: 'cell', desc: 'Site a 42M stadium on the selected block.' },
-  { id: 'subway', label: 'Build a subway line', needs: 'none', desc: 'Drive a metro line through the two most under-served dense zones.' },
-  { id: 'removeHighway', label: 'Remove this road', needs: 'road', desc: 'Delete the selected road corridor and let traffic re-route.' },
-  { id: 'widenRoad', label: 'Upgrade this road', needs: 'road', desc: 'Raise the selected corridor one road class.' },
-  { id: 'popDouble', label: 'Population doubles', needs: 'none', desc: 'A regional boom doubles inbound migration pressure.' },
-  { id: 'taxUp', label: 'Raise residential tax 2 points', needs: 'none', desc: 'More revenue now, weaker demand later.' },
-  { id: 'taxDown', label: 'Cut residential tax 2 points', needs: 'none', desc: 'Less revenue, stronger household demand.' },
-  { id: 'bizTaxDown', label: 'Cut business tax 2 points', needs: 'none', desc: 'Cheaper to operate; more firms, less revenue per firm.' },
-  { id: 'upzone', label: 'Upzone low-density housing', needs: 'none', desc: 'Convert high-value Residential Low to Residential High.' },
-  { id: 'parks', label: 'Double park provision', needs: 'none', desc: 'Convert vacant zoned lots into parks.' },
-  { id: 'powerPlant', label: 'Build a power plant', needs: 'none', desc: 'Add 3120 MW of generation on open industrial land.' },
-  { id: 'greenPolicy', label: 'Tighten environmental rules', needs: 'none', desc: 'Cut emissions, at a cost to industrial demand.' },
+  { id: 'stadium', label: 'Build a stadium here', needs: 'cell', build: 'Build the stadium', cost: 42_000_000, desc: 'Site a 42M stadium on the selected block.' },
+  { id: 'subway', label: 'Build a subway line', needs: 'none', build: 'Build the line', cost: 0, desc: 'Drive a metro line through the two most under-served dense zones.' },
+  { id: 'removeHighway', label: 'Remove this road', needs: 'road', build: 'Remove it', cost: 0, desc: 'Delete the selected road corridor and let traffic re-route.' },
+  { id: 'widenRoad', label: 'Upgrade this road', needs: 'road', build: 'Upgrade it', cost: 0, desc: 'Raise the selected corridor one road class.' },
+  { id: 'popDouble', label: 'Population doubles', needs: 'none', desc: 'A regional boom doubles inbound migration pressure. A stress test, not a decision.' },
+  { id: 'taxUp', label: 'Raise residential tax 2 points', needs: 'none', build: 'Raise the tax', cost: 0, desc: 'More revenue now, weaker demand later.' },
+  { id: 'taxDown', label: 'Cut residential tax 2 points', needs: 'none', build: 'Cut the tax', cost: 0, desc: 'Less revenue, stronger household demand.' },
+  { id: 'bizTaxDown', label: 'Cut business tax 2 points', needs: 'none', build: 'Cut the tax', cost: 0, desc: 'Cheaper to operate; more firms, less revenue per firm.' },
+  { id: 'upzone', label: 'Upzone low-density housing', needs: 'none', build: 'Upzone it', cost: 0, desc: 'Convert high-value Residential Low to Residential High.' },
+  { id: 'parks', label: 'Double park provision', needs: 'none', build: 'Build the parks', cost: 0, desc: 'Convert vacant zoned lots into parks.' },
+  { id: 'powerPlant', label: 'Build a power plant', needs: 'none', build: 'Build the plant', cost: 62_000_000, desc: 'Add 3120 MW of generation on open industrial land.' },
+  { id: 'greenPolicy', label: 'Tighten environmental rules', needs: 'none', build: 'Adopt the rules', cost: 0, desc: 'Cut emissions, at a cost to industrial demand.' },
 ];
 
 const METRICS = [
@@ -67,6 +70,10 @@ export class WhatIf {
     this.scenario = sc;
     this.horizonDays = horizonDays || 365;
     this.log = [];
+    // Pin what the scenario is about at the moment it is run. The player is
+    // free to click elsewhere while it simulates; building it afterwards must
+    // still act on the thing they were shown, not on the new selection.
+    this.subject = this.app.selection;
     const base = this.app.sim;
     const a = base.fork(), b = base.fork();
     a.sim.assignHours = 48; b.sim.assignHours = 48;
@@ -95,7 +102,7 @@ export class WhatIf {
   // ------------------------------------------------------------- mutations
   applyChange(sc, fork) {
     const sim = fork.sim, world = fork.world, g = world.g;
-    const sel = this.app.selection;
+    const sel = this.subject || this.app.selection;
     switch (sc.id) {
       case 'stadium': {
         const cell = sel && sel.cell !== undefined ? sel.cell : this.centerCell();
@@ -205,6 +212,7 @@ export class WhatIf {
     const net = this.app.buildNetworkFn(fork.world.g);
     fork.sim.net = net; fork.sim.traffic.net = net;
     fork.sim.traffic.updateCosts();
+    if (fork.sim === this.app.sim) this.app.net = net;
     return net;
   }
   corridorCells(fork, cell) {
@@ -248,8 +256,12 @@ export class WhatIf {
     const spec = BUILDING_SPEC[type];
     const d = fork.world.districts[g.dist[idx(x, y)]];
     const b = makeBuilding(fork.world.buildings.length, type, x, y, w, h, spec.floors[0], 0, spec.zone, d, new RNG(99), g);
-    b.construction = 1;
+    b.playerBuilt = true;
+    b.construction = 0.05;
+    b.form = 'construction';
+    b.litProb = 1;
     fork.world.buildings.push(b);
+    fork.sim.economy.buildQueue.push({ b: b.id, days: clamp(Math.round(3 + spec.floors[0] * 0.6 + w * h), 3, 30) });
     for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
       const c = idx(x + i, y + j);
       g.kind[c] = K.BUILDING; g.bld[c] = b.id; g.zone[c] = spec.zone;
@@ -307,4 +319,35 @@ export class WhatIf {
   }
 
   cancel() { this.running = false; this.control = null; this.treat = null; }
+
+  // Commit the change the player just projected. The same mutation that ran on
+  // the fork is applied to the live city, so what they were shown is what they
+  // get — there is no second, separate implementation to drift out of step.
+  enact(sc) {
+    const app = this.app;
+    if (!sc || !sc.build) return { ok: false, msg: 'That scenario is a stress test, not a decision.' };
+    if (sc.needs === 'road' && !(this.subject && this.subject.type === 'road')) {
+      return { ok: false, msg: 'The road this was run against is no longer selected.' };
+    }
+    if (!app.sim.mode.unlimited && sc.cost && app.sim.budget.treasury < sc.cost) {
+      return { ok: false, msg: `Not enough in the treasury — ${fmtMoney(sc.cost)} needed.` };
+    }
+    // snapshot the grid so we can tell the renderer exactly what moved
+    const g = app.world.g;
+    const before = { kind: Uint8Array.from(g.kind), road: Uint8Array.from(g.road), zone: Uint8Array.from(g.zone), bld: Int32Array.from(g.bld) };
+    const nBuildings = app.world.buildings.length;
+    this.log = [];
+    this.applyChange(sc, { sim: app.sim, world: app.world, net: app.net });
+
+    const touched = [];
+    for (let i = 0; i < GRID * GRID; i++) {
+      if (g.kind[i] !== before.kind[i] || g.road[i] !== before.road[i] ||
+          g.zone[i] !== before.zone[i] || g.bld[i] !== before.bld[i]) touched.push(i);
+    }
+    for (let i = nBuildings; i < app.world.buildings.length; i++) app.sim.dirtyBuildings.add(app.world.buildings[i].id);
+    app.applyWorldEdit(touched);
+    app.rebuildHeightField();
+    app.ui.dirtyMinimap();
+    return { ok: true, msg: this.log.join(' ') || 'Change applied to the city.', touched: touched.length };
+  }
 }

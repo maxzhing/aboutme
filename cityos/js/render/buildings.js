@@ -294,17 +294,52 @@ const FORMS = {
     mb.cyl(cx, 0.1, cz, Math.min(sx, sz) * 0.14, 0.7, hexToRgb('#a8a49a'), 12);
     mb.cyl(cx, 0.8, cz, Math.min(sx, sz) * 0.05, 1.6, hexToRgb('#b6b2a8'), 8, 0.5);
   },
+  // A site reads its own progress: hoarding and a dug pad, then a steel frame
+  // climbing with the crane, then cladding chasing the frame up. The stage comes
+  // straight from b.construction, which the economy advances a day at a time.
   construction(mb, b, rng, cx, cz, sx, sz, hgt) {
     const frame = hexToRgb('#7d7368');
-    const done = Math.min(1, b.construction || 0.3);
-    const fh = Math.max(3, hgt * done);
-    mb.box(cx, 0.4, cz, sx, 0.8, sz, hexToRgb('#6b6258'), b.rot);
-    for (let l = 0; l < Math.ceil(fh / 3.5); l++) mb.box(cx, 0.8 + l * 3.5, cz, sx * 0.9, 0.24, sz * 0.9, frame, b.rot);
-    for (const [ox, oz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) mb.box(cx + ox * sx * 0.44, fh / 2, cz + oz * sz * 0.44, 0.45, fh, 0.45, frame, b.rot);
-    // tower crane
-    const ch = Math.max(14, hgt * 1.15);
-    mb.box(cx + sx * 0.3, ch / 2, cz + sz * 0.3, 0.9, ch, 0.9, hexToRgb('#d8a53c'));
-    mb.box(cx + sx * 0.3 - 6, ch, cz + sz * 0.3, 22, 0.7, 0.7, hexToRgb('#d8a53c'), b.rot);
+    const dirt = hexToRgb('#4e463c');
+    const clad = hexToRgb('#8e97a3');
+    const yellow = hexToRgb('#d8a53c');
+    const done = Math.min(1, Math.max(0.02, b.construction || 0.05));
+
+    // stage 1 — hoarding and excavation, always present
+    mb.rect(cx - sx / 2, cz - sz / 2, cx + sx / 2, cz + sz / 2, 0.12, dirt);
+    const hb = sx / 2, hz = sz / 2;
+    mb.box(cx, 1.1, cz - hz, sx, 2.2, 0.4, yellow, b.rot);
+    mb.box(cx, 1.1, cz + hz, sx, 2.2, 0.4, yellow, b.rot);
+    mb.box(cx - hb, 1.1, cz, 0.4, 2.2, sz, yellow, b.rot);
+    mb.box(cx + hb, 1.1, cz, 0.4, 2.2, sz, yellow, b.rot);
+    if (done < 0.18) {
+      // rebar mat, before anything stands up
+      for (let i = 0; i < 5; i++) mb.box(cx, 0.5, cz - hz + (i + 0.5) * sz / 5, sx * 0.86, 0.16, 0.16, frame, b.rot);
+      mb.box(cx + sx * 0.3, 5, cz + sz * 0.3, 3.2, 10, 3.2, yellow);   // digger
+      return;
+    }
+
+    // stage 2 — frame rising
+    const fh = Math.max(3.4, hgt * done);
+    mb.box(cx, 0.5, cz, sx * 0.98, 1, sz * 0.98, hexToRgb('#6b6258'), b.rot);
+    for (let l = 0; l < Math.ceil(fh / 3.5); l++) mb.box(cx, 1 + l * 3.5, cz, sx * 0.9, 0.26, sz * 0.9, frame, b.rot);
+    for (const [ox, oz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]])
+      mb.box(cx + ox * sx * 0.44, fh / 2, cz + oz * sz * 0.44, 0.5, fh, 0.5, frame, b.rot);
+
+    // stage 3 — cladding chases the frame up from the bottom
+    if (done > 0.45) {
+      const ch2 = fh * ((done - 0.45) / 0.55);
+      if (ch2 > 1) mb.box(cx, ch2 / 2, cz, sx * 0.94, ch2, sz * 0.94, clad, b.rot);
+      // scaffold netting on the working level
+      mb.box(cx, ch2 + 1.4, cz, sx * 0.99, 2.8, sz * 0.99, hexToRgb('#6f7a68'), b.rot);
+    }
+
+    // the crane stays until the frame is topped out
+    if (done < 0.92) {
+      const ch = Math.max(14, hgt * 1.15);
+      mb.box(cx + sx * 0.34, ch / 2, cz + sz * 0.34, 1.0, ch, 1.0, yellow);
+      mb.box(cx + sx * 0.34 - 7, ch, cz + sz * 0.34, 24, 0.8, 0.8, yellow, b.rot);
+      mb.box(cx + sx * 0.34 - 15, ch - 3.5, cz + sz * 0.34, 0.3, 7, 0.3, frame);
+    }
   },
 };
 
@@ -409,7 +444,9 @@ export class BuildingLayer {
       const start = mb.count;
       this.emitBuilding(mb, b);
       const seed = (b.seed % 997) / 997;
-      const litProb = b.litProb === undefined ? 1 : b.litProb;
+      // an abandoned building is dark and stays dark — the derelict lot is the
+      // consequence the player should be able to see from the air
+      const litProb = b.abandoned ? 0 : (b.litProb === undefined ? 1 : b.litProb);
       const fh = Math.max(2.6, b.height / Math.max(1, b.floors));
       const critical = b.type === BT.HOSPITAL || b.type === BT.FIRE || b.type === BT.POLICE || b.type === BT.POWER;
       const zc = b.zone === Z.OFFICE ? 1 : (b.zone === Z.COMM || b.zone === Z.MIXED || b.zone === Z.IND) ? 2 : (b.zone === Z.CIVIC ? 3 : 0);
@@ -439,7 +476,6 @@ export class BuildingLayer {
     const cx = wx(b.x) + (b.w - 1) * CELL / 2;
     const cz = wx(b.y) + (b.h - 1) * CELL / 2;
     let hgt = Math.max(2, b.height);
-    if (b.abandoned) hgt *= 1.0;
     const form = b.construction !== undefined && b.construction < 1 && b.construction > 0 ? 'construction' : b.form;
     const fn = FORMS[form] || FORMS.block;
     fn(mb, b, rng, cx, cz, sx, sz, hgt);

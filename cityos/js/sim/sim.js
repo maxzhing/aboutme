@@ -110,13 +110,18 @@ export class CitySim {
     this.snapshotHistory();
     this.setupMissions();
     this.applyModeSetup();
-    this.log('city', `You take office. ${Math.round(this.stats.population).toLocaleString()} residents are counting on you.`, { severity: 'good' });
-    this.log('city', `${this.world.districts.length} districts, ${this.world.buildings.filter(b => b && !b.demolished).length.toLocaleString()} buildings, ${Math.round(this.stats.jobsTotal).toLocaleString()} jobs on the books.`, { severity: 'info' });
+    this.log('city', `You take office. ${Math.round(this.stats.population).toLocaleString()} residents are counting on you.`, { severity: 'good',
+      why: `${this.world.districts.length} districts, ${this.world.buildings.filter(b => b && !b.demolished).length.toLocaleString()} buildings and ${Math.round(this.stats.jobsTotal).toLocaleString()} jobs, inherited as they stand.`,
+      who: `Approval starts at ${Math.round(this.stats.happiness * 100)}%. It moves with rent, commute, services, pollution and whether the lights stay on.`,
+      action: 'Work the current objective on the right. It is picked from what is actually worst about the city right now.' });
     const gaps0 = [];
     if (this.stats.policeCover < 0.6) gaps0.push('police');
     if (this.stats.fireCover < 0.6) gaps0.push('fire');
     if (this.stats.healthCover < 0.6) gaps0.push('healthcare');
-    if (gaps0.length) this.log('city', `Service review flags gaps in ${gaps0.join(', ')} coverage.`, { severity: 'warn' });
+    if (gaps0.length) this.log('city', `Service review flags gaps in ${gaps0.join(', ')} coverage.`, { severity: 'warn',
+      why: 'Coverage is measured from where people actually live. Each station reaches a fixed radius, so a district with none is simply uncovered.',
+      who: `Police ${Math.round(this.stats.policeCover * 100)}%, fire ${Math.round(this.stats.fireCover * 100)}%, health ${Math.round(this.stats.healthCover * 100)}% of residents inside a catchment.`,
+      action: 'Open the services layer to see exactly where the holes are before you site anything.' });
   }
 
   // The generated city starts near equilibrium: record its ratios as the
@@ -338,13 +343,19 @@ export class CitySim {
     this.economy.distribute(this);
     this.snapshotHistory();
     if (this.budget.treasury < 0 && !this.mode.unlimited) {
-      this.log('finance', `Treasury is in deficit — $${Math.abs(Math.round(this.budget.treasury)).toLocaleString()} overdrawn`, { severity: 'bad' });
+      this.log('finance', `Treasury is in deficit — $${Math.abs(Math.round(this.budget.treasury)).toLocaleString()} overdrawn`, { severity: 'bad',
+        why: `Monthly spending of $${Math.round(this.budget.expense).toLocaleString()} exceeds revenue of $${Math.round(this.budget.revenue).toLocaleString()}, and the reserves are gone.`,
+        who: 'Services are what a deficit eats first, and service coverage is the largest civic term in approval.',
+        action: 'Raise taxes, or cut a service line. Test either in the What-If simulator before committing.' });
     }
   }
 
   yearly() {
     if (this.budget.revenue >= this.budget.expense) this.solventYears++; else this.solventYears = 0;
-    this.log('city', `${this.year} begins — population ${Math.round(this.stats.population).toLocaleString()}`, { severity: 'info' });
+    this.log('city', `${this.year} begins — population ${Math.round(this.stats.population).toLocaleString()}`, { severity: 'info',
+      why: `A year of ${this.solventYears > 0 ? 'surplus' : 'deficit'} budgets, ${Math.round(this.stats.happiness * 100)}% approval and a ${this.stats.commute.toFixed(0)}-minute average commute.`,
+      who: 'Everyone. The annual figures are what the city is judged on.',
+      action: 'Manage → History has the full record if you want to see where the year turned.' });
   }
 
   popWeighted(field) {
@@ -447,7 +458,9 @@ export class CitySim {
       if (m.done) continue;
       if (m.test(this)) {
         m.done = true;
-        this.log('mission', `Objective complete — ${m.label}`, { severity: 'good' });
+        this.log('mission', `Milestone reached — ${m.label}`, { severity: 'good',
+          why: 'A long-term milestone measured against live simulation state, not a checklist.',
+          who: 'The whole city.', action: '' });
       }
     }
   }

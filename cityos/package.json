@@ -1,0 +1,14 @@
+{
+  "name": "cityos",
+  "private": true,
+  "type": "module",
+  "description": "A 3D living-city simulator that builds to one self-contained HTML file.",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node build.mjs && node test/suite.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "playwright": "^1.63.0"
+  }
+}

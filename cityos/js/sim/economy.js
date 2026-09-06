@@ -255,7 +255,14 @@ export class Economy {
         b.built = sim.day;
         sim.dirtyBuildings.add(b.id);
         this.buildQueue.splice(k, 1);
-        sim.log('construction', `${b.name} completed in ${sim.districtName(b.district)}`, { building: b.id });
+        const homes = Math.round(b.capacity || 0), jobs = Math.round(b.jobs || 0);
+        sim.log('construction', `${b.name} completed in ${sim.districtName(b.district)}`, {
+          building: b.id, focus: b.y * GRID + b.x, severity: b.playerBuilt ? 'good' : 'info',
+          why: `${b.floors} floors finished after ${s.days} days of construction. It starts empty and fills as people and firms find it.`,
+          who: homes || jobs
+            ? `Room for ${homes ? homes.toLocaleString() + ' residents' : ''}${homes && jobs ? ' and ' : ''}${jobs ? jobs.toLocaleString() + ' jobs' : ''}.`
+            : 'It contributes to the district rather than housing anyone directly.',
+          action: b.playerBuilt ? 'Watch the objective metric it was meant to move.' : '' });
       } else sim.dirtyBuildings.add(b.id);
     }
   }

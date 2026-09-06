@@ -30,7 +30,14 @@ export class BuildTools {
     app.scene.add(this.group);
     this.ghostMat = new THREE.MeshBasicMaterial({ color: 0x35d6ff, transparent: true, opacity: 0.35, depthWrite: false });
     this.badMat = new THREE.MeshBasicMaterial({ color: 0xff5f56, transparent: true, opacity: 0.35, depthWrite: false });
+    this.ghostSolid = new THREE.MeshBasicMaterial({ color: 0x35d6ff, transparent: true, opacity: 0.16, depthWrite: false });
+    this.badSolid = new THREE.MeshBasicMaterial({ color: 0xff5f56, transparent: true, opacity: 0.16, depthWrite: false });
     this.lineMat = new THREE.LineBasicMaterial({ color: 0x35d6ff });
+    this.badLineMat = new THREE.LineBasicMaterial({ color: 0xff5f56 });
+    // the affected-area ring changes colour, not identity — one material each,
+    // recoloured per use, so moving the pointer does not leak materials
+    this.areaRingMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide });
+    this.areaDiscMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.07, depthWrite: false });
     this.hoverCell = -1;
   }
 
@@ -44,7 +51,11 @@ export class BuildTools {
     this.transitStops = [];
     this.app.ui.setTool(id);
     const S = this.subtoolsFor(id);
-    if (S && S.length) { this.sub = S[0].id; this.app.ui.setSubtools(S, this.sub, (sid) => this.pickSub(sid)); }
+    if (S && S.length) {
+      const first = S.find(x => !x.lock && x.id !== 'finish' && x.id !== 'cancel') || S[0];
+      this.sub = first.id;
+      this.app.ui.setSubtools(S, this.sub, (sid) => this.pickSub(sid));
+    }
     else this.app.ui.setSubtools(null);
     this.app.canvas.classList.add('tool-active');
     this.hint();
@@ -54,6 +65,8 @@ export class BuildTools {
     // switching to them must not discard the stops already placed.
     if (sid === 'finish') { this.finishLine(); return; }
     if (sid === 'cancel') { this.transitStops = []; this.clearPreview(); this.hint(); return; }
+    const gate = BuildTools.GATE[sid];
+    if (gate && this.app.director && !this.app.director.isUnlocked(gate)) return;
     this.sub = sid;
     this.transitStops = [];
     this.app.ui.setSubtools(this.subtoolsFor(this.tool), sid, (x) => this.pickSub(x));
@@ -68,7 +81,26 @@ export class BuildTools {
     this.clearPreview();
   }
 
+  // What each subtool needs the city to have reached. Locked entries stay
+  // visible so the player can see what growth is worth.
+  static GATE = {
+    metro: 'metro', rail: 'rail',
+    [BT.UNIVERSITY]: 'university', [BT.STADIUM]: 'stadium',
+    [BT.MUSEUM]: 'museum', [BT.THEATER]: 'theatre', [BT.MARINA]: 'marina',
+  };
+
   subtoolsFor(id) {
+    const list = this.rawSubtools(id);
+    if (!list) return list;
+    const d = this.app.director;
+    for (const it of list) {
+      const need = BuildTools.GATE[it.id];
+      it.lock = (need && d && !d.isUnlocked(need)) ? d.stageThatUnlocks(need) : null;
+    }
+    return list;
+  }
+
+  rawSubtools(id) {
     switch (id) {
       case 'roads': return [
         { id: 'street', label: 'Street', cost: ROAD_COST[RC.STREET], color: '#5a6270' },
@@ -107,8 +139,8 @@ export class BuildTools {
         { id: 'metro', label: 'Subway Line', color: TRANSIT_SPEC.metro.color },
         { id: 'rail', label: 'Commuter Rail', color: TRANSIT_SPEC.rail.color },
         { id: 'station', label: 'Station Building', cost: 4_200_000 },
-        { id: 'finish', label: '✓ Finish Line', ic: '✓' },
-        { id: 'cancel', label: '✕ Cancel', ic: '✕' },
+        { id: 'finish', label: 'Finish Line', ic: '✓' },
+        { id: 'cancel', label: 'Cancel Line', ic: '✕' },
       ];
       case 'utilities': return [
         { id: BT.POWER, label: 'Power Plant', cost: 62_000_000 },
@@ -197,7 +229,11 @@ export class BuildTools {
     if (!this.tool) return false;
     if (e.code === 'BracketLeft') { this.brush = Math.max(1, this.brush - 1); return true; }
     if (e.code === 'BracketRight') { this.brush = Math.min(8, this.brush + 1); return true; }
-    if (e.code === 'KeyR') { this.rot = ((this.rot || 0) + Math.PI / 2) % (Math.PI * 2); return true; }
+    if (e.code === 'KeyR') {
+      this.rot = ((this.rot || 0) + Math.PI / 2) % (Math.PI * 2);
+      if (this.hoverCell >= 0) this.showPreview(this.brushCells(this.hoverCell));
+      return true;
+    }
     return false;
   }
 
@@ -239,7 +275,28 @@ export class BuildTools {
     return [...new Set(out)];
   }
 
+  quarterTurns() { return ((Math.round((this.rot || 0) / (Math.PI / 2)) % 4) + 4) % 4; }
+
+  // The footprint as it will actually be placed — R turns it a quarter turn.
   footprintFor(type) {
+    const s = this.baseFootprint(type);
+    const q = this.quarterTurns();
+    return (q === 1 || q === 3) ? [s[1], s[0]] : s;
+  }
+
+  // How far to turn the mesh itself. For a rectangle, swapping the footprint is
+  // already the quarter turn, so the mesh must not be turned again or it would
+  // no longer sit on the cells it occupies. A square footprint has no swap to
+  // express the turn with, so there the mesh carries all of it.
+  placementRotation(type) {
+    const s = this.baseFootprint(type);
+    const q = this.quarterTurns();
+    if (s[0] === s[1]) return q * Math.PI / 2;
+    return q >= 2 ? Math.PI : 0;
+  }
+
+  // What each archetype covers, before rotation.
+  baseFootprint(type) {
     switch (type) {
       case BT.STADIUM: return [4, 4];
       case BT.UNIVERSITY: return [3, 3];
@@ -252,6 +309,23 @@ export class BuildTools {
     }
   }
 
+  // The reach each building actually has in the simulation, straight from the
+  // radii the coverage fields use. Shown as a ring so siting is a decision.
+  affectedRadius(type) {
+    switch (type) {
+      case BT.POLICE: return { r: 22, color: 0x4aa3ff, label: 'police coverage' };
+      case BT.FIRE: return { r: 20, color: 0xff8a4a, label: 'fire coverage' };
+      case BT.HOSPITAL: return { r: 30, color: 0xff6f9a, label: 'healthcare access' };
+      case BT.SCHOOL: return { r: 16, color: 0x8beeff, label: 'school catchment' };
+      case BT.UNIVERSITY: return { r: 34, color: 0x8beeff, label: 'university catchment' };
+      case BT.STATION: return { r: 14, color: 0x4ade80, label: 'transit access' };
+      case BT.PARK_S: case BT.PLAZA: return { r: 10, color: 0x84cc16, label: 'green cover' };
+      case BT.POWER: return { r: 12, color: 0xf0b345, label: 'pollution plume' };
+      case BT.FACTORY: return { r: 9, color: 0xf0b345, label: 'pollution plume' };
+      default: return null;
+    }
+  }
+
   // ------------------------------------------------------------- preview
   clearPreview() {
     for (const c of this.group.children.slice()) { this.group.remove(c); c.geometry?.dispose?.(); }
@@ -260,8 +334,10 @@ export class BuildTools {
     this.clearPreview();
     if (!cells.length) return;
     const ok = this.validate(cells);
+    const mat = ok.valid ? this.ghostMat : this.badMat;
+    // footprint pad, one flat tile per cell
     const geo = new THREE.BoxGeometry(CELL * 0.92, 0.6, CELL * 0.92);
-    const mesh = new THREE.InstancedMesh(geo, ok.valid ? this.ghostMat : this.badMat, cells.length);
+    const mesh = new THREE.InstancedMesh(geo, mat, cells.length);
     const m = new THREE.Matrix4();
     cells.forEach((c, i) => {
       m.makeTranslation(wxc(c % GRID), 0.7 + (this.app.net.roadY[c] || 0), wxc((c / GRID) | 0));
@@ -270,8 +346,67 @@ export class BuildTools {
     mesh.instanceMatrix.needsUpdate = true;
     mesh.renderOrder = 20;
     this.group.add(mesh);
+
+    const placing = this.isPlacement();
+    if (placing) {
+      const size = this.footprintFor(this.sub);
+      const x = cells[0] % GRID, y = (cells[0] / GRID) | 0;
+      const cx = wxc(x) + (size[0] - 1) * CELL / 2, cz = wxc(y) + (size[1] - 1) * CELL / 2;
+      // the silhouette at the height it will actually reach, so a tower reads
+      // as a tower before it is committed to
+      const h = this.previewHeight(this.sub, cells[0]);
+      if (h > 1.5) {
+        const box = new THREE.Mesh(
+          new THREE.BoxGeometry(size[0] * CELL - 3, h, size[1] * CELL - 3),
+          ok.valid ? this.ghostSolid : this.badSolid);
+        box.position.set(cx, h / 2, cz);
+        box.renderOrder = 19;
+        this.group.add(box);
+        const edges = new THREE.LineSegments(
+          new THREE.EdgesGeometry(box.geometry),
+          ok.valid ? this.lineMat : this.badLineMat);
+        edges.position.copy(box.position);
+        edges.renderOrder = 22;
+        this.group.add(edges);
+      }
+      // and the area it changes, at the radius the simulation really uses
+      const ar = this.affectedRadius(this.sub);
+      if (ar) {
+        this.areaRingMat.color.setHex(ar.color);
+        this.areaDiscMat.color.setHex(ar.color);
+        const ring = new THREE.Mesh(new THREE.RingGeometry(ar.r * CELL - 2.5, ar.r * CELL, 72), this.areaRingMat);
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.set(cx, 1.4, cz);
+        ring.renderOrder = 21;
+        this.group.add(ring);
+        const disc = new THREE.Mesh(new THREE.CircleGeometry(ar.r * CELL, 72), this.areaDiscMat);
+        disc.rotation.x = -Math.PI / 2;
+        disc.position.set(cx, 1.2, cz);
+        disc.renderOrder = 20;
+        this.group.add(disc);
+        ok.area = ar.label;
+      }
+    }
+
     this.previewCost = ok.cost;
-    this.app.ui.hint(`${ok.label} — <b>${fmtMoney(ok.cost)}</b>${ok.valid ? '' : ' · <span style="color:#ff8a82">' + ok.reason + '</span>'}`);
+    const parts = [`${ok.label} — <b>${fmtMoney(ok.cost)}</b>`];
+    if (ok.area) parts.push(`${ok.area} shown in the ring`);
+    if (placing) parts.push('<b>R</b> to rotate');
+    if (!ok.valid) parts.push(`<span style="color:#ff8a82">${ok.reason}</span>`);
+    this.app.ui.hint(parts.join(' · '));
+  }
+
+  isPlacement() {
+    return this.tool === 'buildings' || this.tool === 'parks' || this.tool === 'services' ||
+      this.tool === 'utilities' || (this.tool === 'transit' && this.sub === 'station');
+  }
+
+  previewHeight(type, cell) {
+    const spec = BUILDING_SPEC[type];
+    if (!spec) return 0;
+    const g = this.sim.world.g;
+    const floors = spec.floors[0] + (spec.floors[1] - spec.floors[0]) * clamp(g.land[cell] || 0, 0, 1);
+    return Math.max(2, floors * 3.4);
   }
   showTransitPreview() {
     this.clearPreview();
@@ -441,7 +576,8 @@ export class BuildTools {
     for (const c of cells) this.removeBuildingAt(c, touched);
     const district = sim.world.districts[g.dist[cells[0]]];
     const floors = Math.max(1, Math.round(spec.floors[0] + (spec.floors[1] - spec.floors[0]) * clamp(g.land[cells[0]], 0, 1)));
-    const b = makeBuilding(sim.world.buildings.length, type, x, y, size[0], size[1], floors, this.rot || 0, spec.zone, district, this.rng, g);
+    const b = makeBuilding(sim.world.buildings.length, type, x, y, size[0], size[1], floors,
+      this.placementRotation(type), spec.zone, district, this.rng, g);
     b.playerBuilt = true;
     b.construction = 0.05; b.form = 'construction';
     b.litProb = 1.0;

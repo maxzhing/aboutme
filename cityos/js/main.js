@@ -15,11 +15,13 @@ import { Agents } from './render/agents.js';
 import { Overlays } from './render/overlays.js';
 import { DistrictLabels } from './render/labels.js';
 import { Incidents } from './render/incidents.js';
+import { Beacon } from './render/beacon.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { CitySim } from './sim/sim.js';
+import { Director } from './sim/director.js';
 import { UI } from './ui/ui.js';
 import { BuildTools } from './ui/tools.js';
 import { Modals } from './ui/modals.js';
@@ -65,6 +67,7 @@ class App {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(52, innerWidth / innerHeight, 1, 9000);
     this.rig = new CameraRig(this.camera, this.canvas);
+    this.rig.heightAt = (x, z) => this.heightAt(x, z);
 
     await step(16, 'generating the metropolis');
     this.seed = DEFAULT_SEED;
@@ -81,7 +84,7 @@ class App {
     this.buildings = new BuildingLayer(this.scene, this.world);
     await step(74, 'planting the city');
     this.props = new Props(this.scene, this.world, this.net, this.seed);
-    buildHinterland(this.scene, this.terrain, this.seed);
+    this.hinterland = buildHinterland(this.scene, this.terrain, this.seed);
 
     await step(84, 'setting the sky');
     this.env = new Environment(this.scene, this.renderer, this.world);
@@ -92,8 +95,10 @@ class App {
     await step(92, 'putting people on the streets');
     this.agents = new Agents(this.scene, this.world, this.net, this.sim, this.seed);
     this.selectionBox = this.makeSelectionBox();
+    this.rebuildHeightField();
     this.labels = new DistrictLabels(this.scene, this.world);
     this.incidents = new Incidents(this.scene, this.world, this.net, this.sim);
+    this.beacon = new Beacon(this.scene);
 
     await step(96, 'opening the command centre');
     this.ui = new UI(this);
@@ -101,6 +106,7 @@ class App {
     this.modals = new Modals(this);
     this.whatif = new WhatIf(this);
     this.save = new SaveSystem(this);
+    this.director = new Director(this);
     this.setupPost();
     this.bindInput();
     this.ui.update();
@@ -181,6 +187,43 @@ class App {
     this.camera.aspect = innerWidth / innerHeight;
     this.camera.updateProjectionMatrix();
     if (this.composer) this.composer.setSize(innerWidth, innerHeight);
+  }
+
+  // A coarse obstruction height per cell. The camera reads it to stay out of
+  // the skyline; it is cheap to rebuild and only changes when the city does.
+  rebuildHeightField() {
+    if (!this.heightField) this.heightField = new Float32Array(GRID * GRID);
+    const h = this.heightField;
+    h.fill(0);
+    for (const b of this.world.buildings) {
+      if (!b || b.demolished) continue;
+      const top = b.construction < 1 ? b.height * 0.4 : b.height;
+      for (let j = 0; j < b.h; j++) for (let i = 0; i < b.w; i++) {
+        const x = b.x + i, y = b.y + j;
+        if (x < 0 || y < 0 || x >= GRID || y >= GRID) continue;
+        const k = y * GRID + x;
+        if (top > h[k]) h[k] = top;
+      }
+    }
+    this.heightDirty = false;
+  }
+
+  heightAt(wx2, wz) {
+    const h = this.heightField;
+    if (!h) return 0;
+    const x = Math.floor((wx2 + WORLD / 2) / CELL);
+    const y = Math.floor((wz + WORLD / 2) / CELL);
+    if (x < 0 || y < 0 || x >= GRID || y >= GRID) return 0;
+    // take the tallest of the immediate neighbourhood so the camera clears a
+    // tower before it is directly over it
+    let m = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= GRID || ny >= GRID) continue;
+      const v = h[ny * GRID + nx];
+      if (v > m) m = v;
+    }
+    return m;
   }
 
   makeSelectionBox() {
@@ -358,29 +401,65 @@ class App {
     }
   }
 
-  // Track a resident as their day takes them across the city.
+  // Point the beacon at whatever the current objective is about. Re-read at a
+  // human cadence: the answer only changes when the objective does.
+  updateBeacon() {
+    if (!this.director || !this.beacon) return;
+    const now = performance.now();
+    if (now - (this._beaconT || 0) < 900) return;
+    this._beaconT = now;
+    const o = this.director.objective;
+    if (!o || !o.focus || this.tools.tool) { this.beacon.set(null); return; }
+    let cell = null;
+    try { cell = o.focus(); } catch (_) { cell = null; }
+    if (cell === null || cell === undefined || cell < 0) return this.beacon.set(null);
+    this.beacon.set(cell, this.world.g.elev[cell] || 0, this.heightField ? this.heightField[cell] : 0);
+  }
+
+  // Track a resident as their day takes them across the city. The rig owns the
+  // motion; this only keeps the readout in step and knows when to let go.
   updateFollow() {
-    if (!this.follow) return;
     const c = this.follow;
+    if (!c) return;
     const weekend = this.sim.dayOfWeek === 0 || this.sim.dayOfWeek === 6;
     const act = this.sim.citizens.activity(c, this.sim.hourOfDay, weekend);
-    const b = act.where;
-    if (!b || b.demolished) { this.setFollow(null); return; }
-    const x = wxc(b.x) + (b.w - 1) * CELL / 2, z = wxc(b.y) + (b.h - 1) * CELL / 2;
-    this.rig.dTarget.set(x, 0, z);
-    if (this.rig.dDist > 190) this.rig.dDist = 150;
-    this.rig.fly = null;
+    if (!act.where || act.where.demolished) { this.setFollow(null); return; }
     if (this._followAct !== act.act) {
       this._followAct = act.act;
       this.ui.hint(`Following <b>${c.name}</b> — ${act.act} · <b>Esc</b> to stop`);
-      if (this.selection && this.selection.type === 'citizen' && this.selection.citizen === c) this.selectCitizen(c, act.act);
+      if (this.selection && this.selection.type === 'citizen' && this.selection.citizen === c) {
+        this.selectCitizen(c, act.act);
+      }
     }
   }
+
   setFollow(c) {
+    if (!c) {
+      if (this.follow) { this.follow = null; this._followAct = null; this.rig.stopFollow(true); this.ui.hint(null); this.ui.toast('Stopped following'); }
+      return;
+    }
     this.follow = c;
     this._followAct = null;
-    if (!c) { this.ui.hint(null); this.ui.toast('Stopped following'); }
-    else this.ui.toast(`Following ${c.name}`);
+    const weekend = this.sim.dayOfWeek === 0 || this.sim.dayOfWeek === 6;
+    this.rig.startFollow(c, () => {
+      const a = this.sim.citizens.activity(c, this.sim.hourOfDay, this.sim.dayOfWeek === 0 || this.sim.dayOfWeek === 6);
+      const b = a.where;
+      if (!b || b.demolished) return null;
+      return { x: wxc(b.x) + (b.w - 1) * CELL / 2, z: wxc(b.y) + (b.h - 1) * CELL / 2 };
+    });
+    this.ui.toast(`Following ${c.name}`);
+  }
+
+  // Pick a resident worth watching — the one the current objective is measured
+  // against if there is one, otherwise anyone with a life outside their home.
+  followSomeone() {
+    const list = this.sim.citizens.list;
+    if (!list.length) return this.ui.toast('Nobody to follow yet', true);
+    const o = this.director && this.director.objective;
+    let c = o && o.subject ? list.find(x => x.id === o.subject.id) : null;
+    if (!c) c = list.find(x => x.work >= 0) || list[0];
+    this.selectCitizen(c);
+    this.setFollow(c);
   }
 
   // ---------------------------------------------------------------- camera
@@ -389,7 +468,11 @@ class App {
   }
   focusBuilding(b) {
     const x = wxc(b.x) + (b.w - 1) * CELL / 2, z = wxc(b.y) + (b.h - 1) * CELL / 2;
-    this.rig.flyTo(new THREE.Vector3(x, 0, z), clamp(b.height * 2.2 + 60, 70, 320), this.rig.dAzim, 58 * Math.PI / 180, 1400);
+    // frame the building with the block around it: pressed right up against a
+    // low building you cannot tell where in the city you have landed
+    const span = Math.max(b.w, b.h) * CELL;
+    const dist = clamp(Math.max(b.height * 2.4, span * 3.2) + 120, 150, 460);
+    this.rig.flyTo(new THREE.Vector3(x, 0, z), dist, this.rig.dAzim, 56 * Math.PI / 180, 1400);
   }
   focusDistrict(id) {
     const d = this.world.districts[id];
@@ -405,15 +488,53 @@ class App {
     if (e.focus !== undefined) this.selectCell(e.focus, true);
   }
 
+  // Fly to a cell and select whatever is there. Used by "Show me" on the
+  // current objective and by every clickable line in the news feed.
+  focusCell(cell, dist) {
+    if (cell === null || cell === undefined || cell < 0) return false;
+    const x = wxc(cell % GRID), z = wxc((cell / GRID) | 0);
+    const bi = this.world.g.bld[cell];
+    const b = bi >= 0 ? this.world.buildings[bi] : null;
+    if (b && !b.demolished) { this.selectBuilding(b); this.focusBuilding(b); return true; }
+    this.selectCell(cell);
+    this.rig.flyTo(new THREE.Vector3(x, 0, z), dist || 340, this.rig.dAzim, 52 * Math.PI / 180, 1500);
+    return true;
+  }
+
+  // The single place an objective option, a news item, or a what-if result can
+  // hand the player straight into the thing it is talking about.
+  applyAction(act) {
+    if (!act) return;
+    if (act.layer) { this.setLayer(act.layer); this.ui.toggleLayers(true); }
+    if (act.panel) {
+      if (act.panel === 'build') { this.modals.close(); this.tools.select(act.tool || 'roads'); }
+      else this.modals.open(act.tab || act.panel);
+    }
+    if (act.whatif) {
+      this.modals.open('whatif');
+      this.whatif.pendingScenario = act.whatif;
+      this.modals.render();
+      return;
+    }
+    if (act.tool) {
+      this.modals.close();
+      if (this.tools.tool !== act.tool) this.tools.select(act.tool);
+      if (act.sub !== undefined && act.sub !== null) this.tools.pickSub(act.sub);
+      const t = this.ui.toolDefs.find(d => d.id === act.tool);
+      this.ui.toast(`${t ? t.nm : act.tool} selected — drag on the map to place`);
+    }
+  }
+
   // ---------------------------------------------------------------- nav / UI
   nav(id) {
     this.ui.setNav(id);
     if (id === 'cityview') { this.modals.close(); this.tools.clear(); this.rig.preset('city'); this.ui.setNav('cityview'); return; }
-    if (id === 'build') { this.modals.close(); this.tools.select('roads'); return; }
-    if (id === 'zoning') { this.modals.close(); this.tools.select('zone'); this.setLayer('zoning'); return; }
+    if (id === 'build') { this.modals.close(); if (!this.tools.tool) this.tools.select('roads'); return; }
+    if (id === 'manage') { this.tools.clear(); this.modals.open(this.lastManage || 'dashboard'); this.ui.setNav('manage'); return; }
     this.modals.open(id);
   }
   openMetric(id) {
+    this.ui.setNav('manage');
     const map = {
       budget: 'economy', population: 'population', happiness: 'dashboard', economy: 'economy',
       utilities: 'utilities', commute: 'transport', flow: 'transport', employment: 'economy',
@@ -464,6 +585,7 @@ class App {
     }
     for (const ci of chunks) this.surface.rebuildChunk(ci % CHUNKS, Math.floor(ci / CHUNKS));
     for (const ci of bChunks) this.buildings.rebuildChunk(ci);
+    this.heightDirty = true;
     sim.buildRoadNames();
     sim.fields.updateSources(sim);
     sim.fields.updateFields(sim);
@@ -495,6 +617,7 @@ class App {
       for (const ci of chunks) this.buildings.rebuildChunk(ci);
       sim.dirtyBuildings.clear();
       this.ui.dirtyMinimap();
+      this.heightDirty = true;
     }
     if (sim.dirtySurface.size) {
       const chunks = new Set();
@@ -526,24 +649,40 @@ class App {
       this.sim = new CitySim(this.world, this.net, { seed, mode: mode || 'mayor' });
     }
     this.terrain = makeTerrainFns(this.seed);
-    this.surface.dispose(); this.buildings.dispose();
-    for (const o of this.scene.children.slice()) if (o.name === 'hinterland' || o.name === 'props' || o.name === 'agents' || o.name === 'labels' || o.name === 'incidents') this.scene.remove(o);
+
+    // tear the old world down completely before building the new one
+    if (this.whatif) this.whatif.cancel();
+    this.rig.stopFollow(false);
+    this.tools.clear();
+    this.surface.dispose();
+    this.buildings.dispose();
+    this.props.dispose();
+    this.agents.dispose();
+    if (this.labels) this.labels.dispose();
+    if (this.incidents) this.incidents.dispose();
+    if (this.beacon) this.beacon.dispose();
+    if (this.hinterland) {
+      this.scene.remove(this.hinterland);
+      this.hinterland.geometry.dispose(); this.hinterland.material.dispose();
+    }
+
     this.surface = new CitySurface(this.scene, this.world, this.net);
     this.buildings = new BuildingLayer(this.scene, this.world);
     this.props = new Props(this.scene, this.world, this.net, this.seed);
-    buildHinterland(this.scene, this.terrain, this.seed);
+    this.hinterland = buildHinterland(this.scene, this.terrain, this.seed);
     this.overlays.world = this.world; this.overlays.sim = this.sim;
     this.overlays.attach(this.buildings.mat, 'buildings');
     this.overlays.attach(this.surface.mat, 'surface');
     this.agents = new Agents(this.scene, this.world, this.net, this.sim, this.seed);
-    if (this.labels) this.labels.dispose();
-    if (this.incidents) this.incidents.dispose();
     this.labels = new DistrictLabels(this.scene, this.world);
     this.incidents = new Incidents(this.scene, this.world, this.net, this.sim);
-    this.incidents = new Incidents(this.scene, this.world, this.net, this.sim);
-    this.follow = null;
+    this.beacon = new Beacon(this.scene);
+    this.director = new Director(this);
+    this.rebuildHeightField();
+    this.rig.reclamp();
     this.select(null);
     this.ui.hist = { pop: [], happy: [], eco: [], budget: [], flow: [], util: [], commute: [] };
+    this.ui.briefing.reset();
     this.ui.dirtyMinimap();
     this.overlays.repaint();
     this.ui.update();
@@ -557,24 +696,33 @@ class App {
   // ---------------------------------------------------------------- loop
   loop(now) {
     requestAnimationFrame(this.loop);
-    const real = (now - this.last) / 1000;
-    const dt = Math.min(0.06, real);
+    const elapsed = (now - this.last) / 1000;
+    // The simulation and the animations get a tightly clamped step so a long
+    // frame cannot make them jump. The camera gets the real one, bounded only
+    // against a tab switch: a flight told to take 1.4 seconds has to take
+    // 1.4 seconds even at four frames a second.
+    const real = Math.min(0.4, elapsed);
+    const dt = Math.min(0.06, elapsed);
     this.last = now;
-    this.frames++; this.fpsT += real;
+    this.frames++; this.fpsT += elapsed;
     if (this.fpsT > 1.0) {
       this.fps = this.frames / this.fpsT; this.frames = 0; this.fpsT = 0;
       this.adaptQuality();
     }
 
+    // Game speed is a promise about real time: 25x has to mean 25 simulated
+    // minutes per real second whether the renderer is managing 120 frames a
+    // second or four. The step is bounded by `real` so one long frame lurches
+    // at most 0.4s of it, and sim.step subdivides internally from there.
     const speed = SPEEDS[this.speedIdx];
-    const simMinutes = speed * dt;
+    const simMinutes = speed * real;
     if (simMinutes > 0) this.sim.step(simMinutes);
 
     // traffic signals run on wall-clock seconds scaled by game speed, capped so
     // they stay legible when time is accelerated
-    updateSignals(this.net, dt * clamp(speed, 1, 12));
+    updateSignals(this.net, real * clamp(speed, 1, 12));
 
-    this.rig.update(dt);
+    this.rig.update(real);
     const camPos = this.camera.position;
     const st = this.env.update(this.sim.hourOfDay, this.sim.weather, camPos, dt, this.sim.stats.blackoutFrac);
     // Expose the frame like a camera would: stop down at night so window light
@@ -587,14 +735,23 @@ class App {
     this.props.update(st.night, camPos, this.sim.stats.blackoutFrac);
     this.labels.update(this.rig.dist);
     this.incidents.update(dt, camPos);
+    this.updateBeacon();
+    this.beacon.update(dt, camPos, this.rig.dist);
     this.updateFollow();
     this.agents.update(dt, simMinutes, this.camera, st.night, this.quality);
 
     this.flushDirty();
+    // the camera's obstruction field follows the skyline, but a full rebuild is
+    // too much to do per frame — coalesce it to at most once a second
+    if (this.heightDirty && now - (this._hfT || 0) > 1000) {
+      this._hfT = now;
+      this.rebuildHeightField();
+    }
+    if (this.director) this.director.update(dt);
     if (this.whatif.running) this.whatif.tick(20);
 
     // periodic UI + overlay refresh
-    this._uiT = (this._uiT || 0) + dt;
+    this._uiT = (this._uiT || 0) + real;
     if (this._uiT > 0.28) {
       this._uiT = 0;
       try {
