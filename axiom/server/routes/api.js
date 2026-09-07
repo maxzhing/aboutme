@@ -7,6 +7,7 @@ import { generateResource, RESOURCE_KINDS } from '../engine/generate.js';
 import { evaluateAnswer, evaluateSubmission } from '../engine/evaluate.js';
 import { generateInsights, localSignals, clearInsightCache } from '../engine/insights.js';
 import { createCourse, courseSnapshot, listCoursesFor, generateExam, recordExam } from '../engine/course.js';
+import { catalogue } from '../../curriculum/index.js';
 import { buildProfile } from '../engine/profile.js';
 import { MASTERY_LABELS, masteryGap } from '../engine/mastery.js';
 import { describeDue } from '../engine/review.js';
@@ -54,11 +55,16 @@ api.get('/health', (req, res) => {
   res.json({
     ok: true,
     provider: config.provider,
+    runtime: config.runtime,
     model: llm().model,
     llmReady: hasLLM(),
     qualityControl: config.qualityControl,
   });
 });
+
+// The courses whose syllabus and exam weightings are transcribed rather than
+// generated, so the interface can offer them by name.
+api.get('/curriculum', (req, res) => res.json({ courses: catalogue() }));
 
 api.get('/profile', (req, res) => {
   const profile = buildProfile(req.learnerId);

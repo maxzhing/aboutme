@@ -11,9 +11,11 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
+    "build": "node build.mjs",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
     "test:live": "AXIOM_LIVE_TEST=1 node --test --test-concurrency=1 \"test/live/*.test.js\"",
-    "test:ui": "node test/browser/run.mjs"
+    "test:ui": "node test/browser/run.mjs",
+    "test:standalone": "node build.mjs && node test/browser/standalone.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",

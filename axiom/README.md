@@ -10,12 +10,41 @@ grades — is generated live by Claude against that learner's current mastery
 state. There are no canned lessons and no hardcoded question banks anywhere in
 this repository.
 
+## Two ways to run it
+
+**As a single HTML file.** `axiom.html` is the whole product in one file. Open
+it from your desktop — no server, no install, no build. It asks for an Anthropic
+API key once, keeps it in that browser's local storage, and talks straight to
+the API. Everything else — the learning engine, your mastery record, your
+courses — runs and persists in the browser.
+
+```bash
+npm run build            # regenerates axiom.html
+open axiom.html          # or just double-click it
+```
+
+**As a server**, which is the right way to run it for anyone but yourself,
+because the key stays in the environment and never reaches a browser:
+
 ```bash
 cd axiom
 npm install
 cp .env.example .env      # add your ANTHROPIC_API_KEY
 npm start                 # http://localhost:8787
 ```
+
+### About the key
+
+There is no key bundled with this, and there cannot be: an Anthropic API key
+bills whoever owns it, so a shared one is someone else's credit card. Create
+your own at [console.anthropic.com](https://console.anthropic.com/settings/keys)
+— new accounts start with free credit.
+
+The single-file build is a real trade against the hosted one. The key lives in
+`localStorage`, which means anything running in that browser profile can read
+it, and a copy of `axiom.html` saved after you enter a key is a copy of your
+key. That is the price of having no server, and the app says so before it asks.
+If you want the key kept away from the browser entirely, run the server build.
 
 ---
 
@@ -26,6 +55,42 @@ Axiom builds the real syllabus: units in teaching order, every concept inside
 them, and crucially **each unit weighted by what the exam actually rewards**.
 Every concept in the course becomes trackable immediately, not just the ones you
 happen to ask about.
+
+### The curriculum library
+
+Unit weightings are the whole basis of the score prediction, so for the courses
+people actually take they are transcribed rather than guessed. `curriculum/`
+holds twelve syllabuses taken from their published course frameworks — real unit
+titles, the exam board's own weightings, the real structure of the paper, and
+728 concepts between them, each with a difficulty and a criticality:
+
+| Course | Units | Concepts | Course | Units | Concepts |
+|---|--:|--:|---|--:|--:|
+| AP Biology | 8 | 81 | AP Macroeconomics | 6 | 44 |
+| AP Chemistry | 9 | 78 | AP Physics 1 | 8 | 62 |
+| AP Calculus AB | 8 | 60 | AP Psychology | 5 | 55 |
+| AP Computer Science A | 4 | 46 | AP Statistics | 5 | 54 |
+| AP English Language | 5 | 35 | AP United States History | 9 | 75 |
+| AP Environmental Science | 9 | 75 | AP World History: Modern | 9 | 63 |
+
+These are current frameworks, including the recent redesigns: Physics 1 with
+Fluids as Unit 8, Computer Science A collapsed from ten units into four, and
+Statistics restructured into five units for 2026-27.
+
+Matching is deliberately conservative. "Teach me AP Biology" gets the
+transcribed syllabus; "teach me about cells" does not, because that is a topic,
+not a course. "AP Physics C" and "AP Calculus BC" are not in the library and are
+not allowed to fall into their neighbours — they fall through to model
+generation, and the course header says **Generated syllabus** rather than
+**Verified syllabus** so you know which of the two you are planning around.
+
+Two honest details. Published weights are ranges, and the midpoints of a set of
+ranges do not add to 100 — AP Chemistry's add to 89 — so the working weight is
+the midpoint scaled to partition the paper, with the published range kept
+alongside it and shown on hover. And AP English Language has no published
+per-unit weighting at all, because its units are a skill progression; that
+blueprint is built from the exam's own scored parts instead, which *are*
+published, and says so.
 
 From there it answers the only question that matters before an exam:
 
@@ -128,6 +193,11 @@ You can attach your own material (PDF, images, notes) and Axiom will teach from
 ## Architecture
 
 ```
+curriculum/           Transcribed syllabuses: real units, real exam weightings
+browser/              The handful of modules the single-file build swaps in —
+                      localStorage instead of SQLite, fetch instead of the SDK,
+                      an Express-shaped router shim, an in-page transport
+build.mjs             Emits axiom.html
 server/
   index.js            Express app: static site + JSON/SSE API
   config.js           Env-driven config; the API key lives here and nowhere else
@@ -196,9 +266,10 @@ generated. There is no personal profiling.
 ## Testing
 
 ```bash
-npm test          # 103 unit + end-to-end tests (no API key needed)
-npm run test:ui   # drives the real UI in Chromium, 41 checks
-npm run test:live # the product brief's scenarios against the real model
+npm test              # 128 unit + end-to-end tests (no API key needed)
+npm run test:ui       # drives the real UI in Chromium against a server, 41 checks
+npm run test:standalone  # builds axiom.html and drives it from file://, 30 checks
+npm run test:live     # the product brief's scenarios against the real model
 ```
 
 `npm test` covers the learning engine directly (mastery gates, ability updates,
@@ -213,6 +284,22 @@ as concepts are demonstrated, and — in
 the Messages API streaming protocol, so request shape, cache breakpoints,
 streaming, retry/backoff, rate limiting, refusals and truncation repair are all
 verified without a key.
+
+It also checks the curriculum library as data: that every blueprint survives the
+schema the model is held to, that weights partition the paper and stay close to
+what was published, that score bands descend and bottom out at zero, that no
+concept is duplicated and every prerequisite resolves to a concept in the same
+course, that a blank learner projects the bottom band on all twelve and a
+learner who has proved everything projects the top one, and that a request for
+one course is never matched to its neighbour.
+
+`npm run test:standalone` builds the single-file edition and drives it in
+Chromium as a `file://` URL, with `api.anthropic.com` intercepted and answered
+in the Messages API's own streaming protocol. It covers the parts that only
+exist in that build: that the file opens with no server, that it refuses to
+start on a rejected key, that the key and the learning record survive a reload,
+that the transcribed syllabus is what actually gets built, and that the settings
+page tells the truth about where everything lives.
 
 `npm run test:live` needs `ANTHROPIC_API_KEY` and costs real tokens. It runs the
 six scenarios from the brief and asserts on behaviour: that a worksheet's answer
@@ -233,6 +320,8 @@ code without network access. The server refuses to start with it unless
 
 ## Configuration
 
-See `.env.example`. The only required value is `ANTHROPIC_API_KEY`, which is
-read server-side and never reaches the browser — the frontend talks only to this
-app's own API.
+See `.env.example`. The only required value is `ANTHROPIC_API_KEY`, which in the
+server build is read server-side and never reaches the browser — the frontend
+talks only to this app's own API. In the single-file build there is no server to
+hold it, so it is the learner's own key, held in their own browser; see *About
+the key* above.

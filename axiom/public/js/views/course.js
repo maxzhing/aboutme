@@ -104,11 +104,69 @@ export function newCourse() {
     const notes = h('textarea.textarea', { rows: 2, placeholder: 'Anything specific — a teacher’s scheme of work, units you can skip…' });
     autosize(notes, 160);
 
+    const verdict = h('p.tiny', { style: { margin: '2px 0 0', minHeight: '16px', color: 'var(--ink-3)' } });
+    const shelf = h('div.row.wrap', { style: { gap: '6px', marginTop: '2px' } });
+
     panel.appendChild(h('h3', {}, 'What are you preparing for?'));
     panel.appendChild(
       h('p.tiny.muted', {}, 'Axiom will map the real syllabus, weight each unit by what the exam actually rewards, and start tracking every concept in it.'),
     );
-    panel.appendChild(h('div.field', {}, h('label', {}, 'Course or exam'), request));
+    panel.appendChild(h('div.field', {}, h('label', {}, 'Course or exam'), request, verdict));
+    panel.appendChild(
+      h(
+        'div.field',
+        {},
+        h('label', {}, 'Courses with a transcribed syllabus'),
+        h('p.tiny.dim', { style: { margin: 0 } }, 'These use the published framework — real units, real exam weightings. Anything else is mapped by the model.'),
+        shelf,
+      ),
+    );
+
+    // Recognise a library course as it is typed, so nobody has to guess whether
+    // the weightings they are about to plan around are published or invented.
+    let catalogue = [];
+    const matches = (text) => {
+      const needle = ` ${String(text).toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim()} `;
+      return catalogue.find((course) =>
+        (course.aliases || []).some((alias) => needle.includes(` ${alias.toLowerCase()} `)),
+      );
+    };
+    const reflect = () => {
+      const found = matches(request.value);
+      verdict.textContent = found
+        ? `Verified syllabus — ${found.units} units, ${found.concepts} tracked concepts, published exam weightings.`
+        : request.value.trim()
+          ? 'No published framework on file — Axiom will map this one itself.'
+          : '';
+      verdict.style.color = found ? 'var(--good)' : 'var(--ink-3)';
+    };
+    request.addEventListener('input', reflect);
+
+    api
+      .curriculum()
+      .then(({ courses }) => {
+        catalogue = courses;
+        for (const course of courses) {
+          shelf.appendChild(
+            h(
+              'button.chip',
+              {
+                type: 'button',
+                title: `${course.units} units · ${course.concepts} concepts · about ${course.hours} hours`,
+                style: { cursor: 'pointer' },
+                onClick: () => {
+                  request.value = course.title;
+                  reflect();
+                  request.focus();
+                },
+              },
+              course.title,
+            ),
+          );
+        }
+        reflect();
+      })
+      .catch(() => shelf.remove());
     panel.appendChild(h('div.field', {}, h('label', {}, 'Your starting level'), level));
     panel.appendChild(h('div.field', {}, h('label', {}, 'Exam date'), date));
     panel.appendChild(h('div.field', {}, h('label', {}, 'Notes'), notes));
@@ -229,6 +287,18 @@ export function courseView({ params }) {
           'div.row.wrap',
           { style: { marginTop: '10px' } },
           course.exam ? h('span.chip.accent', {}, course.exam) : null,
+          course.verified
+            ? h(
+                'span.chip.good',
+                { title: course.source || 'Transcribed from the published course framework' },
+                icon('checkCircle', { size: 11 }),
+                'Verified syllabus',
+              )
+            : h(
+                'span.chip',
+                { title: 'No published framework was on file for this exam, so the syllabus and its weightings were generated. Treat the unit percentages as an estimate.' },
+                'Generated syllabus',
+              ),
           h('span.chip', {}, `Target: score ${targetScore}`),
           pace.daysLeft != null ? h('span.chip', {}, icon('clock', { size: 11 }), `${pace.daysLeft} days left`) : null,
           status.kind
@@ -419,7 +489,15 @@ export function courseView({ params }) {
               {},
               h('span.unit-idx', {}, String(unit.idx)),
               h('span.unit-title', {}, unit.title),
-              h('span.chip', {}, `${unit.exam_weight}%`),
+              h(
+                'span.chip',
+                {
+                  title: unit.published_weight
+                    ? `Published weighting: ${unit.published_weight} of the exam`
+                    : 'Share of the exam',
+                },
+                `${unit.exam_weight}%`,
+              ),
               h(
                 'span',
                 { class: `chip ${unit.expected >= 0.8 ? 'good' : unit.expected >= 0.55 ? 'warning' : 'critical'}` },

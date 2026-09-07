@@ -129,6 +129,7 @@ export const api = {
   resource: (id) => get(`/resources/${id}`),
   reviewQueue: () => get('/review/queue'),
   sources: () => get('/sources'),
+  curriculum: () => get('/curriculum'),
   courses: () => get('/courses'),
   course: (id) => get(`/courses/${id}`),
   updateCourse: (id, data) => patch(`/courses/${id}`, data),

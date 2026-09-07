@@ -13,6 +13,7 @@ import { progressView } from './js/views/progress.js';
 import { sourcesView } from './js/views/sources.js';
 import { reviewView } from './js/views/review.js';
 import { coursesView, courseView } from './js/views/course.js';
+import { settingsView } from './js/views/settings.js';
 
 const NAV = [
   { path: '/dashboard', label: 'Dashboard', icon: 'home' },
@@ -37,6 +38,7 @@ route('/sources', sourcesView);
 route('/review', reviewView);
 route('/courses', coursesView);
 route('/course/:id', courseView);
+route('/settings', settingsView);
 setNotFound(() =>
   h('div.page', {}, emptyState('That page does not exist', null, h('button.btn.primary', { type: 'button', onClick: () => navigate('/') }, 'Go home'))),
 );
@@ -106,10 +108,20 @@ function buildShell(content) {
         document.documentElement.dataset.theme === 'dark' ? 'Light mode' : 'Dark mode',
       ),
       h(
-        'div.tiny.dim',
-        { style: { padding: '8px 11px' } },
+        'button.nav-item',
+        { type: 'button', class: `nav-item${path.startsWith('/settings') ? ' is-active' : ''}`, onClick: () => { navigate('/settings'); rail.classList.remove('open'); } },
+        h('span.nav-icon', {}, icon('settings', { size: 16 })),
+        'Settings',
+      ),
+      h(
+        'button.tiny.dim',
+        {
+          type: 'button',
+          style: { padding: '8px 11px', background: 'none', border: 0, textAlign: 'left', width: '100%', cursor: 'pointer' },
+          onClick: () => navigate('/settings'),
+        },
         state.health?.llmReady === false
-          ? h('span', { style: { color: 'var(--warning)' } }, 'No API key configured')
+          ? h('span', { style: { color: 'var(--warning)' } }, 'No API key — add one')
           : `${state.health?.model || 'model'} · quality control ${state.health?.qualityControl ? 'on' : 'off'}`,
       ),
     ),
@@ -204,6 +216,7 @@ const TITLES = {
   '/sources': ['My material', 'Learn from your own documents'],
   '/review': ['Review', 'Spaced retrieval queue'],
   '/courses': ['Courses', 'Whole syllabuses, weighted by their exam'],
+  '/settings': ['Settings', 'How Axiom runs, and where your work lives'],
 };
 
 /* ------------------------------------------------------------------ render */
@@ -254,7 +267,13 @@ async function boot() {
   startRouter(render);
 
   if (state.health?.llmReady === false) {
-    toast('No ANTHROPIC_API_KEY is configured — add one to axiom/.env and restart the server.', 'error', 12000);
+    toast(
+      state.health?.runtime === 'browser'
+        ? 'No API key yet — open Settings to add one.'
+        : 'No ANTHROPIC_API_KEY is configured — add one to axiom/.env and restart the server.',
+      'error',
+      12000,
+    );
   }
 }
 

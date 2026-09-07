@@ -48,6 +48,10 @@ export const config = {
   maxUploadBytes: int(process.env.AXIOM_MAX_UPLOAD_BYTES, 24 * 1024 * 1024),
 
   // --- behaviour ---------------------------------------------------------
+  // Which build this is. The single-file browser build swaps this module for
+  // one that keeps the key in the learner's own browser; the interface needs to
+  // know which of the two it is talking to before it tells anyone what to fix.
+  runtime: 'server',
   qualityControl: process.env.AXIOM_QC !== 'off',
   logLevel: process.env.AXIOM_LOG_LEVEL || 'info',
 };

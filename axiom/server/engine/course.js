@@ -5,6 +5,7 @@ import { coerce, normaliseQuestionIds, inspectQuestions } from './validate.js';
 import { buildProfile, profileContext } from './profile.js';
 import { sourceBlocks, sourceContext } from './sources.js';
 import { courseReadiness, pathToScore, pacing, nextBestAction } from './readiness.js';
+import { findCurriculum, cloneBlueprint } from '../../curriculum/index.js';
 import {
   saveCourse,
   getCourse,
@@ -28,6 +29,24 @@ const log = logger('course');
  */
 export async function createCourse({ learnerId, request, subject, level, examDate, instructions, sourceIds = [], onPartial }) {
   const profile = buildProfile(learnerId);
+
+  // A real syllabus beats a plausible one. If the learner named a course whose
+  // published framework we hold, teach that framework — the unit weightings the
+  // readiness model runs on are then the exam board's own numbers rather than a
+  // model's guess at them.
+  const match = findCurriculum(request, subject, level);
+  if (match) {
+    log.info(`matched "${request}" to verified curriculum ${match.blueprint.key}`);
+    onPartial?.(cloneBlueprint(match.blueprint));
+    return registerCourse({
+      learnerId,
+      blueprint: normaliseBlueprint(cloneBlueprint(match.blueprint)),
+      examDate,
+      sourceIds,
+      instructions,
+      origin: { kind: 'library', key: match.blueprint.key, matched_on: match.matchedOn },
+    });
+  }
 
   const { object } = await llm().run({
     label: 'course-blueprint',
@@ -59,7 +78,18 @@ export async function createCourse({ learnerId, request, subject, level, examDat
   });
 
   const blueprint = normaliseBlueprint(coerce(object, courseSchema));
+  return registerCourse({
+    learnerId,
+    blueprint,
+    examDate,
+    sourceIds,
+    instructions,
+    origin: { kind: 'generated' },
+  });
+}
 
+/** Persist a blueprint and start tracking every concept in it. */
+function registerCourse({ learnerId, blueprint, examDate, sourceIds, instructions, origin }) {
   const course = saveCourse(learnerId, {
     title: blueprint.title,
     exam: blueprint.exam,
@@ -67,7 +97,13 @@ export async function createCourse({ learnerId, request, subject, level, examDat
     level: blueprint.level,
     exam_date: examDate || null,
     blueprint,
-    state: { targetScore: topScore(blueprint), minutesPerDay: 60, sourceIds },
+    state: {
+      targetScore: topScore(blueprint),
+      minutesPerDay: 60,
+      sourceIds,
+      instructions: instructions || null,
+      origin,
+    },
   });
 
   // Every concept in the syllabus becomes a tracked concept immediately.
@@ -77,13 +113,15 @@ export async function createCourse({ learnerId, request, subject, level, examDat
     }
   }
 
+  const conceptCount = blueprint.units.reduce((n, u) => n + u.concepts.length, 0);
   logEvent(learnerId, 'course_created', {
     courseId: course.id,
     title: blueprint.title,
     units: blueprint.units.length,
-    concepts: blueprint.units.reduce((n, u) => n + u.concepts.length, 0),
+    concepts: conceptCount,
+    origin: origin.kind,
   });
-  log.info(`course "${blueprint.title}" — ${blueprint.units.length} units, ${blueprint.units.reduce((n, u) => n + u.concepts.length, 0)} concepts`);
+  log.info(`course "${blueprint.title}" — ${blueprint.units.length} units, ${conceptCount} concepts (${origin.kind})`);
 
   return course;
 }
@@ -167,6 +205,11 @@ export function courseSnapshot(learnerId, courseId, { now = new Date() } = {}) {
       overview: course.blueprint.overview,
       exam_format: course.blueprint.exam_format,
       total_hours: course.blueprint.total_hours,
+      // Whether this syllabus was transcribed from a published framework or
+      // written by the model. A learner planning around unit weightings should
+      // be able to see which of the two they are trusting.
+      verified: Boolean(course.blueprint.verified),
+      source: course.blueprint.source || null,
       state: course.state,
       created_at: course.created_at,
     },
@@ -184,6 +227,7 @@ export function courseSnapshot(learnerId, courseId, { now = new Date() } = {}) {
         title: unit.title,
         summary: unit.summary,
         exam_weight: unit.exam_weight_percent,
+        published_weight: unit.published_weight || null,
         hours: unit.hours,
         expected: measured?.expected ?? 0,
         confidence: measured?.confidence ?? 0,

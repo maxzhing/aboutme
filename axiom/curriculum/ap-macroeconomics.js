@@ -1,0 +1,111 @@
+import { c, u, apBands, course } from './kit.js';
+
+export default course({
+  key: 'ap-macroeconomics',
+  title: 'AP Macroeconomics',
+  exam: 'AP Macroeconomics',
+  subject: 'Economics',
+  level: 'AP / first-semester college macroeconomics',
+  aliases: ['ap macroeconomics', 'ap macro'],
+  overview:
+    'Six units on how a whole economy behaves: measurement, short-run fluctuations, money and banking, long-run policy consequences, and the open economy. Units 3 to 5 are most of the exam. The free-response section is almost entirely graph-and-explain: draw the correct model, shift the right curve in the right direction, and say what happens to output, price level and interest rates, in that order.',
+  total_hours: 110,
+  exam_format: {
+    total_minutes: 130,
+    description:
+      'Section I is 60 multiple-choice questions in 70 minutes, worth two thirds. Section II is 3 free-response questions in 60 minutes including a 10-minute reading period, worth one third: one long question and two short. A calculator is permitted.',
+    sections: [
+      { name: 'Section I: Multiple Choice', question_type: 'mcq', count: 60, minutes: 70, weight_percent: 66.7, notes: 'Fast pace: just over a minute each. Many are chains of cause and effect through a model.' },
+      { name: 'Section II: Free Response', question_type: 'frq', count: 3, minutes: 60, weight_percent: 33.3, notes: 'Graphs must be labelled correctly to earn the point, including axis labels and the direction of every shift.' },
+    ],
+  },
+  score_bands: apBands([74, 61, 48, 35]),
+  units: [
+    u(1, 'Basic Economic Concepts', [5, 10], 12,
+      'Scarcity, opportunity cost, the production possibilities curve and comparative advantage.',
+      [
+        c('Scarcity and opportunity cost', 2, 'core'),
+        c('Resource allocation and economic systems', 2, 'core'),
+        c('Production possibilities curve', 3, 'core', ['Scarcity and opportunity cost']),
+        c('Comparative advantage and specialisation', 4, 'core', ['Production possibilities curve']),
+        c('Terms of trade', 4, 'core', ['Comparative advantage and specialisation']),
+        c('Supply, demand and market equilibrium', 3, 'core'),
+      ],
+      [
+        ['Confusing absolute and comparative advantage.', 'Comparative advantage is about lowest opportunity cost, and it is what drives gains from trade.'],
+      ]),
+    u(2, 'Economic Indicators and the Business Cycle', [12, 17], 18,
+      'Measuring the economy: GDP, unemployment, inflation and the business cycle.',
+      [
+        c('Circular flow and GDP', 3, 'core'),
+        c('Limitations of GDP', 3, 'core', ['Circular flow and GDP']),
+        c('Unemployment and its types', 3, 'core'),
+        c('Natural rate of unemployment', 4, 'core', ['Unemployment and its types']),
+        c('Price indices and inflation', 4, 'core'),
+        c('Real versus nominal values', 4, 'core', ['Price indices and inflation']),
+        c('Costs of inflation and deflation', 3, 'core', ['Price indices and inflation']),
+        c('Real interest rates and the Fisher equation', 4, 'core', ['Real versus nominal values']),
+        c('Business cycle and output gaps', 4, 'core'),
+      ],
+      [
+        ['Reporting a nominal change as real growth.', 'Deflate first. Nearly every calculation item in this unit turns on the real-versus-nominal distinction.'],
+      ]),
+    u(3, 'National Income and Price Determination', [17, 27], 26,
+      'Aggregate demand and supply, the multiplier, and short-run equilibrium.',
+      [
+        c('Aggregate demand', 4, 'core', ['Business cycle and output gaps']),
+        c('Determinants of aggregate demand', 4, 'core', ['Aggregate demand']),
+        c('Multiplier and spending effects', 4, 'core', ['Determinants of aggregate demand']),
+        c('Short-run aggregate supply', 4, 'core'),
+        c('Long-run aggregate supply', 4, 'core', ['Short-run aggregate supply']),
+        c('Equilibrium in the AD-AS model', 5, 'core', ['Aggregate demand', 'Short-run aggregate supply']),
+        c('Recessionary and inflationary gaps', 5, 'core', ['Equilibrium in the AD-AS model']),
+        c('Fiscal policy', 4, 'core', ['Recessionary and inflationary gaps']),
+        c('Automatic stabilisers', 3, 'core', ['Fiscal policy']),
+      ],
+      [
+        ['Shifting aggregate supply when a demand determinant changed.', 'Sort every shock into a demand or supply determinant before touching the graph.'],
+      ]),
+    u(4, 'Financial Sector', [18, 23], 24,
+      'Money, banking, the money market and monetary policy.',
+      [
+        c('Financial assets and their tradeoffs', 3, 'core'),
+        c('Nominal interest rates and the bond market', 4, 'core'),
+        c('Definitions and functions of money', 3, 'core'),
+        c('Banking and the money supply', 4, 'core', ['Definitions and functions of money']),
+        c('Money multiplier and required reserves', 4, 'core', ['Banking and the money supply']),
+        c('The money market', 5, 'core', ['Banking and the money supply']),
+        c('Monetary policy tools', 4, 'core', ['The money market']),
+        c('The loanable funds market', 5, 'core', ['Nominal interest rates and the bond market']),
+      ],
+      [
+        ['Mixing up the money market and the loanable funds market.', 'The money market has the nominal interest rate on the axis and a vertical money supply; loanable funds has the real rate and slopes.'],
+      ]),
+    u(5, 'Long-Run Consequences of Stabilization Policies', [20, 30], 26,
+      'Where the short run goes: the Phillips curve, crowding out, growth and public debt.',
+      [
+        c('Fiscal and monetary policy actions in the short run', 4, 'core', ['Fiscal policy', 'Monetary policy tools']),
+        c('Long-run self-adjustment', 5, 'core', ['Equilibrium in the AD-AS model']),
+        c('Short-run and long-run Phillips curves', 5, 'core', ['Long-run self-adjustment']),
+        c('Money growth and inflation in the long run', 4, 'core', ['Money multiplier and required reserves']),
+        c('Crowding out', 5, 'core', ['The loanable funds market', 'Fiscal policy']),
+        c('Economic growth and its determinants', 4, 'core', ['Long-run aggregate supply']),
+        c('Public policy, deficits and debt', 4, 'core', ['Crowding out']),
+      ],
+      [
+        ['Treating the long-run Phillips curve as downward sloping.', 'It is vertical at the natural rate. Only the short-run curve trades inflation against unemployment.'],
+      ]),
+    u(6, 'Open Economy: International Trade and Finance', [10, 13], 16,
+      'The balance of payments, foreign exchange markets and how they connect to domestic policy.',
+      [
+        c('Balance of payments accounts', 4, 'core'),
+        c('Foreign exchange market', 5, 'core', ['Balance of payments accounts']),
+        c('Determinants of exchange rates', 5, 'core', ['Foreign exchange market']),
+        c('Effects of exchange rates on net exports', 4, 'core', ['Determinants of exchange rates']),
+        c('Real interest rates and international capital flows', 5, 'core', ['The loanable funds market', 'Foreign exchange market']),
+      ],
+      [
+        ['Labelling the forex graph axes the wrong way round.', 'Choose which currency the market is for, put its price in the other currency on the vertical axis, and keep that consistent.'],
+      ]),
+  ],
+});

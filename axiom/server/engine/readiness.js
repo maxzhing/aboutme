@@ -42,18 +42,26 @@ export function conceptExpectation(concept, examDifficulty = DEFAULT_EXAM_DIFFIC
   // Confidence saturates: three attempts is a signal, twelve is a measurement.
   const confidence = 1 - Math.exp(-attempts / 4);
 
-  if (attempts === 0) {
-    // Introduced-but-untested sits a little above a blind guess, not much.
-    const prior = UNTAUGHT_FLOOR + 0.06 * clamp(concept.mastery_level ?? 0, 0, 5);
-    return { p: clamp(prior, 0, 1), confidence: 0, attempts: 0 };
-  }
+  // Introduced-but-untested sits a little above a blind guess, not much.
+  const prior = clamp(UNTAUGHT_FLOOR + 0.06 * clamp(concept.mastery_level ?? 0, 0, 5), 0, 1);
+  if (attempts === 0) return { p: prior, confidence: 0, attempts: 0 };
 
   const modelled = expectedScore(concept.ability ?? 2, examDifficulty);
   const observed = clamp((concept.correct ?? 0) / attempts, 0, 1);
   // Blend the ability model with raw accuracy, trusting accuracy more as
   // attempts accumulate.
   const blend = clamp(attempts / (attempts + 5), 0, 0.8);
-  const p = clamp(modelled * (1 - blend) + observed * blend, UNTAUGHT_FLOOR, 0.99);
+  let p = clamp(modelled * (1 - blend) + observed * blend, UNTAUGHT_FLOOR, 0.99);
+
+  // Demonstrated failure must never project better than never having tried.
+  // Two things lag a run of wrong answers: the ability estimate, which moves in
+  // steps, and the mastery level, which counts an attempt as exposure. Without
+  // this guard a learner who has just got four questions wrong out-projects the
+  // same learner who has never seen the concept — evidence of not knowing
+  // something reading as progress. Accuracy below the guess rate caps the
+  // projection at the guess rate, whatever the model would otherwise say.
+  if (observed < UNTAUGHT_FLOOR) p = Math.min(p, UNTAUGHT_FLOOR);
+
   return { p, confidence, attempts };
 }
 

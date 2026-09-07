@@ -297,3 +297,21 @@ describe('next best action', () => {
     assert.equal(action.kind, 'maintain');
   });
 });
+
+describe('failure never reads as progress', () => {
+  test('a concept answered wrong repeatedly projects no better than an untouched one', () => {
+    const untouched = { attempts: 0, correct: 0, mastery_level: 0, ability: 2 };
+    // Same learner, same concept, four wrong answers on the record.
+    const failed = { attempts: 4, correct: 0, mastery_level: 0, ability: 1.6 };
+    const a = conceptExpectation(untouched, 4);
+    const b = conceptExpectation(failed, 4);
+    assert.ok(b.p <= a.p + 1e-9, `wrong answers must not raise the projection: ${a.p} -> ${b.p}`);
+    assert.ok(b.confidence > a.confidence, 'but they do buy confidence in the estimate');
+  });
+
+  test('a concept answered right raises it', () => {
+    const before = conceptExpectation({ attempts: 0, correct: 0, mastery_level: 0, ability: 2 }, 4);
+    const after = conceptExpectation({ attempts: 4, correct: 4, mastery_level: 3, ability: 3.4 }, 4);
+    assert.ok(after.p > before.p, 'demonstrated success must raise the projection');
+  });
+});
