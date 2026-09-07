@@ -1,0 +1,23 @@
+{
+  "name": "axiom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Axiom \u2014 an AI learning platform that diagnoses, teaches, tests, and adapts.",
+  "type": "module",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "test:live": "AXIOM_LIVE_TEST=1 node --test --test-concurrency=1 \"test/live/*.test.js\"",
+    "test:ui": "node test/browser/run.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.124.0",
+    "busboy": "^1.6.0",
+    "express": "^5.1.0"
+  }
+}
