@@ -50,11 +50,19 @@ function makeString(key, ctx) {
       return ctx.questionType === 'multiple_choice' || ctx.questionType === 'true_false' ? 'B' : '42';
     case 'concept':
       return ctx.concepts[ctx.index % ctx.concepts.length] || topic;
+    case 'criticality':
+      return 'core';
+    case 'name':
+      if (ctx.arrayKey === 'concepts') return `${topic} u${(ctx.unitIndex ?? 0) + 1}c${ctx.index + 1}`;
+      if (ctx.arrayKey === 'sections') return `Section ${ctx.index + 1}`;
+      return `${topic} ${key} ${ctx.index + 1}`;
     case 'topic':
       return topic;
     case 'subject':
       return ctx.subject;
     case 'title':
+      if (ctx.arrayKey === 'units') return `${topic} unit ${ctx.index + 1}`;
+      if (ctx.arrayKey === 'score_bands') return `Band ${5 - ctx.index}`;
       return `${topic} — ${['core ideas', 'practice', 'checkpoint'][ctx.index % 3]}`;
     case 'prompt':
       return `Working with ${topic}: determine the ${WORDS[n]} for item ${ctx.index + 1}.`;
@@ -90,8 +98,6 @@ function makeNumber(key, ctx) {
     case 'points':
     case 'max_score':
       return 1;
-    case 'score':
-      return ctx.correct ? 1 : 0;
     case 'earned':
       return ctx.correct ? 1 : 0;
     case 'estimated_seconds':
@@ -109,6 +115,23 @@ function makeNumber(key, ctx) {
       return ctx.index + 1;
     case 'value':
       return (ctx.index + 1) * 10;
+    case 'exam_weight_percent':
+      return 25;
+    case 'weight_percent':
+      return 50;
+    case 'score':
+      // Score bands descend 5..1 so band lookup has a real ladder to walk.
+      return ctx.arrayKey === 'score_bands' ? 5 - ctx.index : ctx.correct ? 1 : 0;
+    case 'min_percent':
+      return [72, 58, 44, 30, 0][ctx.index] ?? 0;
+    case 'hours':
+      return 8;
+    case 'total_hours':
+      return 40;
+    case 'total_minutes':
+      return 90;
+    case 'idx':
+      return ctx.index + 1;
     case 'tolerance':
       return 0.01;
     default:
@@ -128,6 +151,12 @@ function makeBoolean(key, ctx) {
 }
 
 function arrayLength(key, schema, ctx) {
+  if (key === 'units') return 4;
+  if (key === 'score_bands') return 5;
+  // Only the exam-format sections (which name a question type); a practice
+  // set's sections reference question ids the synthesiser cannot invent.
+  if (key === 'sections') return schema?.items?.properties?.question_type ? 2 : 0;
+  if (key === 'exam_traps' || key === 'prerequisites') return 0;
   if (key === 'questions' || key === 'cards' || key === 'self_test') return ctx.count;
   if (key === 'days') return ctx.days;
   if (key === 'choices') return ctx.questionType === 'true_false' ? 2 : 4;
@@ -135,7 +164,7 @@ function arrayLength(key, schema, ctx) {
   if (key === 'sections' || key === 'rubric' || key === 'accepted' || key === 'rows' || key === 'columns') return 0;
   if (key === 'nodes' || key === 'edges' || key === 'items' || key === 'series' || key === 'points') return 0;
   if (key === 'blocks' || key === 'checks' || key === 'steps') return 2;
-  if (key === 'concepts') return Math.min(3, ctx.concepts.length);
+  if (key === 'concepts') return ctx.arrayKey === 'units' || schema?.items?.type === 'object' ? 3 : Math.min(3, ctx.concepts.length);
   return 2;
 }
 
@@ -166,7 +195,16 @@ function synth(schema, key, ctx) {
     const len = arrayLength(key, schema, ctx);
     const out = [];
     for (let i = 0; i < len; i++) {
-      out.push(synth(schema.items, schema.items?.type === 'string' ? key : key, { ...ctx, index: i, arrayKey: key }));
+      out.push(
+        synth(schema.items, key, {
+          ...ctx,
+          index: i,
+          arrayKey: key,
+          // Concepts are nested inside units, so the unit index has to survive
+          // the descent or every unit ends up with identically-named concepts.
+          unitIndex: key === 'units' ? i : ctx.unitIndex,
+        }),
+      );
     }
     return out;
   }

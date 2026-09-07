@@ -555,3 +555,269 @@ export function barRow(label, value, total, colour = 'var(--s1)') {
 }
 
 export { hideTip };
+
+/* ------------------------------------------------------ exam readiness */
+
+/**
+ * Predicted exam score.
+ *
+ * Deliberately not a gauge. A gauge shows one number against an arbitrary arc;
+ * what a learner actually needs to see is where they sit *relative to the
+ * grade boundaries* — how far into a band, how far from the next one, and how
+ * wide the uncertainty is. So the scale is the exam's own band ladder, drawn to
+ * the percentages that define it, with the interval shown rather than hidden.
+ */
+export function scoreScale({ percent, margin, score, bands, target, calibrated }) {
+  const width = 560;
+  const height = 112;
+  const trackY = 46;
+  const trackH = 26;
+  const padX = 8;
+  const plot = width - padX * 2;
+  const x = (p) => padX + clamp01(p) * plot;
+
+  const svg = svgRoot(width, height, { label: `Projected score ${score}` });
+  const ordered = [...bands].sort((a, b) => a.min_percent - b.min_percent);
+
+  // Labels are collected and drawn last: the interval overlay sits on top of
+  // the bands, and a band label hidden underneath it is a label that does not
+  // exist.
+  const bandLabels = [];
+
+  ordered.forEach((band, i) => {
+    const from = band.min_percent / 100;
+    const to = i < ordered.length - 1 ? ordered[i + 1].min_percent / 100 : 1;
+    const w = Math.max(0, x(to) - x(from) - GAP);
+    if (w <= 0) return;
+    // Ordinal ramp: a higher band sits further along the scale and further
+    // from the surface, so the ladder reads as ordered rather than categorical.
+    const step = Math.round((i / Math.max(1, ordered.length - 1)) * 4) + 1;
+    const current = band.score === score;
+    const seg = el('rect', {
+      x: x(from), y: trackY, width: w, height: trackH, rx: 5,
+      fill: masteryColour(step),
+      opacity: current ? 0.92 : 0.42,
+      stroke: current ? 'var(--ink)' : 'none',
+      'stroke-width': current ? 1.5 : 0,
+    });
+    svg.appendChild(
+      hoverable(seg, `<b>Score ${band.score}</b><span>${band.min_percent}% and above${band.meaning ? ` · ${band.meaning}` : ''}</span>`),
+    );
+    if (w > 18) {
+      // Band numbers sit above the track: inside it they collide with the
+      // marker and the interval, and a number you cannot read is not a label.
+      bandLabels.push(
+        el(
+          'text',
+          {
+            x: x(from) + w / 2, y: trackY - 9, 'text-anchor': 'middle',
+            'font-size': 11.5, 'font-weight': 680,
+            fill: current ? 'var(--ink)' : 'var(--ink-4)',
+          },
+          String(band.score),
+        ),
+      );
+    }
+  });
+
+  // The interval, drawn as a real span rather than implied by a ± in text.
+  const lo = clamp01(percent - margin);
+  const hi = clamp01(percent + margin);
+  svg.appendChild(
+    hoverable(
+      el('rect', {
+        x: x(lo), y: trackY - 7, width: Math.max(2, x(hi) - x(lo)), height: trackH + 14, rx: 7,
+        fill: 'none', stroke: 'var(--ink)', 'stroke-width': 1.5, 'stroke-dasharray': 'none', opacity: 0.55,
+      }),
+      `<b>Likely range</b><span>${Math.round(lo * 100)}% – ${Math.round(hi * 100)}% of the paper</span>`,
+    ),
+  );
+  for (const label of bandLabels) svg.appendChild(label);
+
+  if (target != null) {
+    svg.appendChild(
+      el('line', { x1: x(target), y1: trackY - 4, x2: x(target), y2: trackY + trackH + 10, stroke: 'var(--brand)', 'stroke-width': 2, 'stroke-linecap': 'round' }),
+    );
+    svg.appendChild(
+      el('text', { x: clampLabel(x(target), width), y: 14, 'text-anchor': 'middle', 'font-size': 10.5, 'font-weight': 680, fill: 'var(--brand-2)' }, 'target'),
+    );
+  }
+
+  // Marker: >=8px, 2px surface ring so it reads on top of any band.
+  const marker = el('circle', { cx: x(percent), cy: trackY + trackH / 2, r: 7, fill: 'var(--ink)', stroke: 'var(--surface)', 'stroke-width': 2 });
+  svg.appendChild(
+    hoverable(marker, `<b>Projected ${Math.round(percent * 100)}%</b><span>Score ${score}${calibrated ? ' · calibrated on your last paper' : ''}</span>`),
+  );
+
+  for (const tick of [0, 25, 50, 75, 100]) {
+    svg.appendChild(el('text', { x: x(tick / 100), y: height - 6, 'text-anchor': 'middle', class: 'viz-axis-label', 'font-size': 10 }, `${tick}%`));
+  }
+
+  return vizShell({
+    body: h('div', {}, svg),
+    table: {
+      columns: ['Score', 'Needs', 'Meaning'],
+      rows: [...bands].sort((a, b) => b.score - a.score).map((b) => [b.score, `${b.min_percent}%`, b.meaning || '—']),
+      label: 'Show the grade boundaries',
+    },
+  });
+}
+
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+/** Keep a centred label from overflowing the plot on either edge. */
+const clampLabel = (x, width, half = 20) => Math.max(half, Math.min(width - half, x));
+
+/**
+ * Units ranked by the marks still on the table. This is the chart that answers
+ * "where does the next hour go" — a shaky unit worth 4% of the paper is not
+ * the priority however shaky it is.
+ */
+export function leverageChart(units, { onSelect } = {}) {
+  const rows = units
+    .filter((u) => u.points_available > 0.05)
+    .slice(0, 8)
+    .map((unit) => ({
+      label: unit.title,
+      value: Number(unit.points_available.toFixed(1)),
+      colour: 'var(--s2)',
+      unit,
+    }));
+  if (!rows.length) return null;
+
+  const chart = barChart(rows, {
+    title: 'Marks still on the table',
+    note: 'of the whole paper',
+    width: 540,
+    labelWidth: 170,
+    format: (v) => `${v.toFixed(1)}`,
+    tip: (row) =>
+      `<b>${row.label}</b><span>${row.unit.exam_weight}% of the exam · projecting ` +
+      `${Math.round(row.unit.expected * 100)}% · about ${row.value.toFixed(1)} marks available</span>`,
+    table: true,
+  });
+
+  if (onSelect) {
+    chart.querySelectorAll('.viz-mark').forEach((mark, i) => {
+      mark.style.cursor = 'pointer';
+      mark.addEventListener('click', () => onSelect(rows[i].unit));
+    });
+  }
+  return chart;
+}
+
+/**
+ * The whole syllabus as one picture: a row per unit, a cell per concept,
+ * coloured by the ordinal mastery ramp. Six classes, which is inside the limit
+ * where adjacent classes still read apart.
+ */
+export function syllabusMatrix(units, { onSelect } = {}) {
+  if (!units.length) return null;
+  const cell = 20;
+  const gap = 3;
+  const labelW = 168;
+  const maxCols = Math.max(...units.map((u) => u.concepts.length), 1);
+  const width = labelW + maxCols * (cell + gap) + 40;
+  const height = units.length * (cell + gap) + 34;
+  const svg = svgRoot(width, height, { label: 'Syllabus mastery matrix' });
+
+  units.forEach((unit, row) => {
+    const y = row * (cell + gap) + 6;
+    svg.appendChild(
+      el(
+        'text',
+        { x: labelW - 12, y: y + cell / 2 + 4, 'text-anchor': 'end', class: 'viz-axis-label', 'font-size': 11.5, fill: 'var(--ink-3)' },
+        unit.title.length > 24 ? `${unit.title.slice(0, 23)}…` : unit.title,
+      ),
+    );
+    unit.concepts.forEach((concept, col) => {
+      const level = Math.max(0, Math.min(5, concept.mastery_level || 0));
+      const node = el('rect', {
+        x: labelW + col * (cell + gap),
+        y,
+        width: cell,
+        height: cell,
+        rx: 5,
+        fill: masteryColour(level),
+        stroke: level === 0 ? 'var(--axis)' : 'none',
+        'stroke-width': level === 0 ? 1 : 0,
+        style: onSelect ? 'cursor:pointer' : '',
+      });
+      hoverable(
+        node,
+        `<b>${concept.name}</b><span>${MASTERY_LABELS[level]} · ${concept.attempts} attempt${concept.attempts === 1 ? '' : 's'} · ` +
+          `${concept.criticality}${concept.expected != null ? ` · projecting ${Math.round(concept.expected * 100)}%` : ''}</span>`,
+      );
+      if (onSelect) node.addEventListener('click', () => onSelect(concept, unit));
+      svg.appendChild(node);
+    });
+    svg.appendChild(
+      el('text', { x: labelW + unit.concepts.length * (cell + gap) + 8, y: y + cell / 2 + 4, class: 'viz-value', 'font-size': 10.5 }, `${unit.exam_weight}%`),
+    );
+  });
+
+  return vizShell({
+    title: 'The whole syllabus',
+    note: 'one cell per concept · % is exam weight',
+    body: h('div', { style: { overflowX: 'auto' } }, svg),
+    legendItems: [0, 2, 5].map((level) => ({ colour: masteryColour(level), label: MASTERY_LABELS[level] })),
+    table: {
+      columns: ['Unit', 'Concept', 'Mastery', 'Attempts'],
+      rows: units.flatMap((u) =>
+        u.concepts.map((c) => [u.title, c.name, MASTERY_LABELS[Math.max(0, Math.min(5, c.mastery_level || 0))], c.attempts]),
+      ),
+      label: 'Show the syllabus as a table',
+    },
+  });
+}
+
+/** Practice-paper results over time against the score you are aiming at. */
+export function scoreHistory(history, { targetPercent, bands = [] } = {}) {
+  if (history.length < 1) return null;
+  const width = 520;
+  const height = 190;
+  const padL = 40;
+  const padB = 30;
+  const padT = 16;
+  const points = [...history].reverse();
+  const svg = svgRoot(width, height, { label: 'Practice paper results over time' });
+
+  const x = (i) => padL + (points.length === 1 ? (width - padL - 16) / 2 : (i / (points.length - 1)) * (width - padL - 16));
+  const y = (p) => height - padB - clamp01(p) * (height - padB - padT);
+
+  for (const tick of [0, 0.25, 0.5, 0.75, 1]) {
+    svg.appendChild(el('line', { x1: padL, y1: y(tick), x2: width - 10, y2: y(tick), stroke: 'var(--grid)', 'stroke-width': 1 }));
+    svg.appendChild(el('text', { x: padL - 8, y: y(tick) + 4, 'text-anchor': 'end', class: 'viz-value', 'font-size': 10 }, `${tick * 100}%`));
+  }
+
+  if (targetPercent != null) {
+    svg.appendChild(el('line', { x1: padL, y1: y(targetPercent), x2: width - 10, y2: y(targetPercent), stroke: 'var(--brand)', 'stroke-width': 2 }));
+    svg.appendChild(el('text', { x: width - 10, y: y(targetPercent) - 7, 'text-anchor': 'end', 'font-size': 10.5, 'font-weight': 650, fill: 'var(--brand-2)' }, 'target'));
+  }
+
+  if (points.length > 1) {
+    const path = points.map((p, i) => `${i ? 'L' : 'M'} ${x(i).toFixed(1)} ${y(p.percent).toFixed(1)}`).join(' ');
+    svg.appendChild(el('path', { d: path, fill: 'none', stroke: 'var(--s1)', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+  }
+
+  points.forEach((point, i) => {
+    const dot = el('circle', { cx: x(i), cy: y(point.percent), r: 5, fill: 'var(--s1)', stroke: 'var(--surface)', 'stroke-width': 2 });
+    hoverable(dot, `<b>${Math.round(point.percent * 100)}%${point.score != null ? ` · score ${point.score}` : ''}</b><span>${new Date(point.at).toLocaleDateString()}</span>`);
+    svg.appendChild(dot);
+  });
+
+  // Direct-label the latest point only; the axis and tooltip carry the rest.
+  const last = points.at(-1);
+  svg.appendChild(
+    el('text', { x: x(points.length - 1), y: y(last.percent) - 13, 'text-anchor': 'middle', class: 'viz-value', 'font-size': 11.5, 'font-weight': 650 }, `${Math.round(last.percent * 100)}%`),
+  );
+
+  return vizShell({
+    title: 'Practice papers',
+    note: `${points.length} sat`,
+    body: h('div', {}, svg),
+    table: {
+      columns: ['Date', 'Percent', 'Score'],
+      rows: [...history].map((p) => [new Date(p.at).toLocaleDateString(), `${Math.round(p.percent * 100)}%`, p.score ?? '—']),
+    },
+  });
+}

@@ -157,6 +157,16 @@ export function homeView() {
           fileInput,
         ),
         h(
+          'div.row',
+          { style: { justifyContent: 'center', marginTop: '18px' } },
+          h(
+            'button.btn',
+            { type: 'button', onClick: () => navigate('/courses') },
+            icon('route', { size: 14 }),
+            'Or prepare for a whole exam',
+          ),
+        ),
+        h(
           'div.examples',
           {},
           ...EXAMPLES.map((example) =>

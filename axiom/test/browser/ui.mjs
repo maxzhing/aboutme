@@ -99,6 +99,16 @@ try {
   await page.waitForSelector('.question', { timeout: 60000 });
   const qCount = await page.locator('.question').count();
   check('the studio generates a worksheet with questions', qCount >= 3, `${qCount} questions`);
+  // Sections must never swallow questions: what was generated is what renders.
+  const declared = await page.evaluate(() => {
+    const el = [...document.querySelectorAll('.tiny.dim')].find((n) => /questions ·/.test(n.textContent));
+    return el ? Number(el.textContent.match(/(\d+) questions/)?.[1]) : null;
+  });
+  check(
+    'every generated question is rendered',
+    declared == null || declared === qCount,
+    `declared ${declared}, rendered ${qCount}`,
+  );
   check('generated questions show difficulty metadata', (await page.locator('.q-meta .chip').count()) > 0);
   await shot('04-worksheet');
 
@@ -172,6 +182,41 @@ try {
   await page.waitForSelector('.card', { timeout: 20000 });
   check('the review queue renders', await page.locator('.card').first().isVisible());
   await shot('08-review');
+
+  /* -------------------------------------------------------------- courses */
+  await page.goto(`${base}/#/courses`, { waitUntil: 'networkidle' });
+  await page.waitForSelector('.empty, .list-item', { timeout: 20000 });
+  await page.locator('.btn', { hasText: /Build a course|New course/ }).first().click();
+  await page.waitForSelector('.modal', { timeout: 10000 });
+  await page.locator('.modal input.input').first().fill('AP Physics 1');
+  await page.locator('.modal input[type=date]').fill('2027-05-10');
+  await page.locator('.modal .btn.primary').click();
+
+  await page.waitForSelector('.projection-score', { timeout: 90000 });
+  check('a whole course builds with a projected exam score', await page.locator('.projection-score').isVisible());
+  const units = await page.locator('.unit').count();
+  check('the syllabus renders unit by unit', units >= 2, `${units} units`);
+  check('the score scale shows the real grade boundaries', await page.locator('.viz svg').first().isVisible());
+  check('the next action is stated in marks', /% of the paper/.test(await page.locator('.next-action').innerText()));
+  const weights = await page.locator('.unit .chip').allInnerTexts();
+  check('units carry their exam weight', weights.some((t) => /%$/.test(t.trim())));
+  await shot('11-course');
+
+  // The syllabus matrix is the whole-course picture; it must be interactive.
+  const cell = page.locator('.card:has-text("The syllabus") .viz-mark').first();
+  if (await cell.count()) {
+    await cell.hover();
+    await page.waitForTimeout(160);
+    check('syllabus cells explain themselves on hover', await page.locator('.viz-tip').isVisible());
+  } else {
+    check('syllabus cells explain themselves on hover', false, 'no cells rendered');
+  }
+
+  // Opening a unit exposes its concepts and the examiner traps.
+  await page.locator('.unit > summary').first().click();
+  await page.waitForTimeout(300);
+  check('a unit opens to its concepts', (await page.locator('.unit[open] .concept-row').count()) >= 1);
+  await shot('12-syllabus');
 
   /* ----------------------------------------------------------- light mode */
   await page.goto(`${base}/#/dashboard`, { waitUntil: 'networkidle' });

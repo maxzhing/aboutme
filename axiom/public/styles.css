@@ -1025,3 +1025,39 @@ button { cursor: pointer; background: none; border: none; }
   .meter-fill, .pip, .viz-mark { forced-color-adjust: none; }
   .card, .stat, .question, .block { border: 1px solid CanvasText; }
 }
+
+/* ------------------------------------------------------------ course view */
+
+.projection-head { display: flex; flex-wrap: wrap; gap: 26px; align-items: center; }
+.projection-head > div:first-child { display: grid; gap: 2px; min-width: 190px; }
+.projection-score {
+  font-size: 76px; font-weight: 660; letter-spacing: -0.045em; line-height: 0.95;
+  color: var(--ink); /* the hero figure stays in the UI sans, never the display face */
+}
+.next-action { border-color: var(--brand-line); background: linear-gradient(150deg, var(--brand-wash), transparent 55%), var(--surface); }
+
+.unit { border: 1px solid var(--line); border-radius: var(--r); background: var(--surface-2); overflow: hidden; }
+.unit > summary {
+  display: flex; align-items: center; gap: 11px; padding: 12px 15px; cursor: pointer;
+  list-style: none; transition: background 0.15s var(--ease);
+}
+.unit > summary::-webkit-details-marker { display: none; }
+.unit > summary:hover { background: var(--surface-3); }
+.unit > summary::after {
+  content: '▸'; margin-left: auto; color: var(--ink-4); transition: transform 0.16s var(--ease); order: 9;
+}
+.unit[open] > summary::after { transform: rotate(90deg); }
+.unit[open] > summary { border-bottom: 1px solid var(--line); }
+.unit-idx {
+  width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; flex: none;
+  background: var(--brand-wash); color: var(--brand-2); font-size: 11.5px; font-weight: 680;
+  font-variant-numeric: tabular-nums;
+}
+.unit-title { font-size: 13.5px; font-weight: 600; flex: 1; min-width: 0; }
+.unit-body { padding: 14px 15px; display: grid; gap: 12px; }
+
+@media (max-width: 800px) {
+  .projection-score { font-size: 56px; }
+  .projection-head { gap: 16px; }
+  .unit > summary { flex-wrap: wrap; }
+}

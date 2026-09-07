@@ -93,7 +93,12 @@ export async function evaluateAnswer({
   grade.score = Math.max(0, Math.min(points, Number(grade.score) || 0));
 
   const ratio = points ? grade.score / points : 0;
-  const conceptName = grade.concept || question.concept || 'General';
+  // The question's concept is authoritative. The model may paraphrase it in
+  // `grade.concept`, and trusting that would file the attempt against a
+  // freshly-invented concept — silently detaching it from the syllabus the
+  // course is tracking.
+  const conceptName = question.concept || grade.concept || 'General';
+  grade.concept = conceptName;
   const concept = upsertConcept(learnerId, { name: conceptName, subject });
 
   const evidence = evidenceKindFor(question);

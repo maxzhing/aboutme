@@ -173,19 +173,35 @@ function renderPractice(payload, resource, context) {
     cards.clear();
     modeToggle.lastChild.textContent = deferred ? 'Grade as I go' : 'Grade at the end';
 
-    const sections = payload.sections?.length
-      ? payload.sections
-      : [{ title: '', instructions: '', question_ids: questions.map((q) => q.id) }];
+    // Resolve sections to real questions first. A section whose ids match
+    // nothing must not swallow the paper, and any question no section claims
+    // still has to be shown — a worksheet that renders zero questions because
+    // of a bad id is worse than one with an untidy heading.
+    const claimed = new Set();
+    const groups = [];
+    for (const section of payload.sections || []) {
+      const list = (section.question_ids || [])
+        .map((id) => questions.find((q) => q.id === id))
+        .filter((q) => q && !claimed.has(q.id));
+      for (const q of list) claimed.add(q.id);
+      if (list.length) groups.push({ title: section.title, instructions: section.instructions, list });
+    }
+    const unclaimed = questions.filter((q) => !claimed.has(q.id));
+    if (unclaimed.length) {
+      groups.push({
+        title: groups.length ? 'Further questions' : '',
+        instructions: '',
+        list: unclaimed,
+      });
+    }
 
     let counter = 0;
-    for (const section of sections) {
+    for (const section of groups) {
       if (section.title) {
         questionHost.appendChild(sectionHead(section.title));
         if (section.instructions) questionHost.appendChild(prose(section.instructions));
       }
-      const ids = section.question_ids?.length ? section.question_ids : [];
-      const list = ids.length ? ids.map((id) => questions.find((q) => q.id === id)).filter(Boolean) : questions;
-      for (const question of list) {
+      for (const question of section.list) {
         counter++;
         const card = questionCard(question, {
           index: counter,

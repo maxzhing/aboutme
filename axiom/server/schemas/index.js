@@ -577,6 +577,84 @@ export const sourceSchema = obj(
   'Analysis of an uploaded learning source.',
 );
 
+/* --------------------------------------------------------------- courses */
+
+export const courseSchema = obj(
+  {
+    title: str('Course title as a learner would name it.'),
+    exam: str('The exam it prepares for, e.g. "AP Physics 1". "" if there is no external exam.'),
+    subject: str('Subject.'),
+    level: str('Level, e.g. "AP / first-year college".'),
+    overview: str('3-4 sentences: what the course covers and what the exam actually rewards.'),
+    total_hours: int('Realistic total study hours from a standing start.'),
+    exam_format: obj(
+      {
+        total_minutes: int('Total exam length in minutes.'),
+        description: str('How the paper is structured and marked, in 2-3 sentences.'),
+        sections: arr(
+          obj(
+            {
+              name: str('Section name, e.g. "Section I: Multiple Choice".'),
+              question_type: enumOf(QUESTION_TYPES, 'Dominant question type in this section.'),
+              count: int('Number of questions.'),
+              minutes: int('Minutes allowed.'),
+              weight_percent: num('Percent of the total score this section carries.'),
+              notes: str('What this section actually tests, beyond content recall. "" if nothing to add.'),
+            },
+            'One exam section.',
+          ),
+          'The sections of the real paper, in order.',
+        ),
+      },
+      'The shape of the real exam.',
+    ),
+    score_bands: arr(
+      obj(
+        {
+          score: int('The reported score, e.g. 5.'),
+          min_percent: num('Minimum percent of the total that typically earns this score.'),
+          meaning: str('What this score means, in a few words.'),
+        },
+        'One score band.',
+      ),
+      'Score bands from highest to lowest. Use the exam’s real reporting scale (1-5 for AP, 1-7 for IB, a grade letter mapped to a number otherwise).',
+    ),
+    units: arr(
+      obj(
+        {
+          idx: int('1-based unit number, in teaching order.'),
+          title: str('Unit title.'),
+          summary: str('What this unit is about, in one or two sentences.'),
+          exam_weight_percent: num('Percent of the exam this unit is worth. Across all units these must sum to about 100.'),
+          hours: int('Study hours this unit realistically needs.'),
+          concepts: arr(
+            obj(
+              {
+                name: str('A single teachable concept, 1-5 words.'),
+                difficulty: num('1-5, the difficulty the exam asks this at.', { minimum: 1, maximum: 5 }),
+                criticality: enumOf(
+                  ['core', 'important', 'peripheral'],
+                  'core = the exam cannot be passed without it; peripheral = occasionally worth a mark.',
+                ),
+                prerequisites: arr(str('Concept name that must come first.'), 'Prerequisite concepts. Empty if none.'),
+              },
+              'A concept in this unit.',
+            ),
+            'Concepts, in teaching order.',
+          ),
+          exam_traps: arr(
+            obj({ trap: str('What examiners exploit here.'), fix: str('How to not fall for it.') }, 'An exam trap.'),
+            '1-3 traps specific to this unit. Empty if none are worth naming.',
+          ),
+        },
+        'One unit of the course.',
+      ),
+      'The whole course, in the order it should be taught.',
+    ),
+  },
+  'A complete course blueprint with its exam weighting.',
+);
+
 export const RESOURCE_SCHEMAS = {
   lesson: lessonSchema,
   practice: practiceSchema,

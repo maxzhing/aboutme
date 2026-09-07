@@ -12,9 +12,11 @@ import { libraryView, resourceView } from './js/views/library.js';
 import { progressView } from './js/views/progress.js';
 import { sourcesView } from './js/views/sources.js';
 import { reviewView } from './js/views/review.js';
+import { coursesView, courseView } from './js/views/course.js';
 
 const NAV = [
   { path: '/dashboard', label: 'Dashboard', icon: 'home' },
+  { path: '/course', label: 'Courses', icon: 'route', href: '/courses' },
   { path: '/studio', label: 'Studio', icon: 'wand' },
   { path: '/review', label: 'Review', icon: 'repeat', badge: () => state.dashboard?.dueNow || 0 },
   { path: '/progress', label: 'Mastery', icon: 'chart' },
@@ -33,6 +35,8 @@ route('/resource/:id', resourceView);
 route('/progress', progressView);
 route('/sources', sourcesView);
 route('/review', reviewView);
+route('/courses', coursesView);
+route('/course/:id', courseView);
 setNotFound(() =>
   h('div.page', {}, emptyState('That page does not exist', null, h('button.btn.primary', { type: 'button', onClick: () => navigate('/') }, 'Go home'))),
 );
@@ -75,7 +79,7 @@ function buildShell(content) {
           type: 'button',
           class: `nav-item${path.startsWith(item.path) ? ' is-active' : ''}`,
           onClick: () => {
-            navigate(item.path);
+            navigate(item.href || item.path);
             rail.classList.remove('open');
           },
         },
@@ -199,6 +203,7 @@ const TITLES = {
   '/progress': ['Mastery', 'Concept by concept'],
   '/sources': ['My material', 'Learn from your own documents'],
   '/review': ['Review', 'Spaced retrieval queue'],
+  '/courses': ['Courses', 'Whole syllabuses, weighted by their exam'],
 };
 
 /* ------------------------------------------------------------------ render */

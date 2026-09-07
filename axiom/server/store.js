@@ -36,13 +36,34 @@ export function updateLearner(learnerId, patch) {
 
 const hydrateConcept = (row) => (row ? { ...row, evidence: readJson(row.evidence) } : row);
 
+/**
+ * Concepts are identified by name, not by subject.
+ *
+ * A course registers "projectile motion" under Physics; a later session might
+ * route the same request as "AP Physics 1". If subject were part of the key,
+ * mastery would silently fork into two rows and neither would ever reach the
+ * evidence bar. Subject is an attribute of a concept, not its identity.
+ */
 export function upsertConcept(learnerId, { name, subject = 'General', parentId = null }) {
-  const slug = toSlug(`${subject}-${name}`);
-  const existing = get('SELECT * FROM concepts WHERE learner_id = :l AND slug = :s', {
-    l: learnerId,
-    s: slug,
-  });
-  if (existing) return hydrateConcept(existing);
+  const slug = toSlug(name);
+  const existing = get(
+    `SELECT * FROM concepts WHERE learner_id = :l AND (slug = :s OR lower(name) = lower(:n))
+     ORDER BY attempts DESC LIMIT 1`,
+    { l: learnerId, s: slug, n: name },
+  );
+  if (existing) {
+    // Keep the most specific subject we have seen rather than overwriting a
+    // real one with a generic fallback.
+    if (subject !== 'General' && existing.subject === 'General') {
+      run('UPDATE concepts SET subject = :subject, updated_at = :ts WHERE id = :id', {
+        id: existing.id,
+        subject,
+        ts: now(),
+      });
+      return getConcept(existing.id);
+    }
+    return hydrateConcept(existing);
+  }
   const ts = now();
   const conceptId = id('cpt');
   run(
@@ -440,3 +461,79 @@ export const listEvents = (learnerId, limit = 40) =>
     l: learnerId,
     limit,
   }).map((row) => ({ ...row, detail: readJson(row.detail) }));
+
+/* ------------------------------------------------------------------ courses */
+
+const hydrateCourse = (row) =>
+  row ? { ...row, blueprint: readJson(row.blueprint), state: readJson(row.state) } : row;
+
+export function saveCourse(learnerId, course) {
+  const ts = now();
+  const courseId = course.id || id('crs');
+  const existing = course.id ? get('SELECT id FROM courses WHERE id = :id', { id: course.id }) : null;
+  const fields = {
+    id: courseId,
+    l: learnerId,
+    title: course.title,
+    exam: course.exam ?? null,
+    subject: course.subject ?? null,
+    level: course.level ?? null,
+    exam_date: course.exam_date ?? null,
+    blueprint: writeJson(course.blueprint ?? {}),
+    state: writeJson(course.state ?? {}),
+    status: course.status || 'active',
+    ts,
+  };
+  if (existing) {
+    run(
+      `UPDATE courses SET title = :title, exam = :exam, subject = :subject, level = :level,
+         exam_date = :exam_date, blueprint = :blueprint, state = :state, status = :status, updated_at = :ts
+       WHERE id = :id AND learner_id = :l`,
+      fields,
+    );
+  } else {
+    run(
+      `INSERT INTO courses (id, learner_id, title, exam, subject, level, exam_date, blueprint, state, status, created_at, updated_at)
+       VALUES (:id, :l, :title, :exam, :subject, :level, :exam_date, :blueprint, :state, :status, :ts, :ts)`,
+      fields,
+    );
+  }
+  return getCourse(courseId);
+}
+
+export const getCourse = (courseId) =>
+  hydrateCourse(get('SELECT * FROM courses WHERE id = :id', { id: courseId }));
+
+export const listCourses = (learnerId) =>
+  all('SELECT * FROM courses WHERE learner_id = :l ORDER BY updated_at DESC', { l: learnerId }).map(
+    hydrateCourse,
+  );
+
+export function deleteCourse(learnerId, courseId) {
+  run('DELETE FROM courses WHERE id = :id AND learner_id = :l', { id: courseId, l: learnerId });
+}
+
+export function recordExamResult(learnerId, result) {
+  const resultId = id('exm');
+  run(
+    `INSERT INTO exam_results (id, learner_id, course_id, resource_id, percent, score, by_unit, created_at)
+     VALUES (:id, :l, :c, :r, :percent, :score, :by_unit, :ts)`,
+    {
+      id: resultId,
+      l: learnerId,
+      c: result.course_id,
+      r: result.resource_id ?? null,
+      percent: result.percent,
+      score: result.score ?? null,
+      by_unit: writeJson(result.by_unit ?? {}),
+      ts: now(),
+    },
+  );
+  return resultId;
+}
+
+export const listExamResults = (courseId, limit = 10) =>
+  all(
+    'SELECT * FROM exam_results WHERE course_id = :c ORDER BY created_at DESC LIMIT :limit',
+    { c: courseId, limit },
+  ).map((row) => ({ ...row, by_unit: readJson(row.by_unit) }));

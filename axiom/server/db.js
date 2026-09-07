@@ -151,6 +151,38 @@ CREATE TABLE IF NOT EXISTS sources (
   created_at  TEXT NOT NULL
 );
 
+-- A whole course the learner is working through, with the exam blueprint that
+-- decides how much each unit is actually worth.
+CREATE TABLE IF NOT EXISTS courses (
+  id         TEXT PRIMARY KEY,
+  learner_id TEXT NOT NULL REFERENCES learners(id) ON DELETE CASCADE,
+  title      TEXT NOT NULL,
+  exam       TEXT,
+  subject    TEXT,
+  level      TEXT,
+  exam_date  TEXT,
+  blueprint  TEXT NOT NULL DEFAULT '{}',
+  state      TEXT NOT NULL DEFAULT '{}',
+  status     TEXT NOT NULL DEFAULT 'active',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_courses_learner ON courses(learner_id, updated_at DESC);
+
+-- Full practice exams, kept so the readiness estimate can be calibrated
+-- against what the learner actually scored rather than only what we modelled.
+CREATE TABLE IF NOT EXISTS exam_results (
+  id          TEXT PRIMARY KEY,
+  learner_id  TEXT NOT NULL REFERENCES learners(id) ON DELETE CASCADE,
+  course_id   TEXT NOT NULL,
+  resource_id TEXT,
+  percent     REAL NOT NULL,
+  score       INTEGER,
+  by_unit     TEXT NOT NULL DEFAULT '{}',
+  created_at  TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_exam_results ON exam_results(course_id, created_at DESC);
+
 CREATE TABLE IF NOT EXISTS events (
   id         TEXT PRIMARY KEY,
   learner_id TEXT NOT NULL REFERENCES learners(id) ON DELETE CASCADE,

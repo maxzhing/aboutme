@@ -6,6 +6,7 @@ import { runTutorTurn } from '../engine/tutor.js';
 import { generateResource, RESOURCE_KINDS } from '../engine/generate.js';
 import { evaluateAnswer, evaluateSubmission } from '../engine/evaluate.js';
 import { generateInsights, localSignals, clearInsightCache } from '../engine/insights.js';
+import { createCourse, courseSnapshot, listCoursesFor, generateExam, recordExam } from '../engine/course.js';
 import { buildProfile } from '../engine/profile.js';
 import { MASTERY_LABELS, masteryGap } from '../engine/mastery.js';
 import { describeDue } from '../engine/review.js';
@@ -32,6 +33,9 @@ import {
   listSources,
   recentAttempts,
   logEvent,
+  getCourse,
+  saveCourse,
+  deleteCourse,
 } from '../store.js';
 
 export const api = express.Router();
@@ -283,6 +287,18 @@ api.post('/resources/:id/submit', (req, res) => {
       score: graded.score,
       max_score: graded.maxScore,
     });
+    // A paper generated from a course blueprint calibrates that course's
+    // prediction against what the learner actually scored.
+    let examOutcome = null;
+    if (payload.course_id) {
+      examOutcome = recordExam({
+        learnerId: req.learnerId,
+        courseId: payload.course_id,
+        resource,
+        results: graded.results,
+      });
+    }
+
     clearInsightCache(req.learnerId);
     logEvent(req.learnerId, 'resource_graded', {
       resourceId: resource.id,
@@ -291,7 +307,16 @@ api.post('/resources/:id/submit', (req, res) => {
       max: graded.maxScore,
     });
 
-    stream.send('graded', { score: graded.score, maxScore: graded.maxScore, results, analysis, remediation });
+    stream.send('graded', {
+      score: graded.score,
+      maxScore: graded.maxScore,
+      results,
+      analysis,
+      remediation,
+      exam: examOutcome
+        ? { ...examOutcome, courseId: payload.course_id, snapshot: courseSnapshot(req.learnerId, payload.course_id) }
+        : null,
+    });
     stream.send('done', {});
   });
 });
@@ -556,3 +581,111 @@ api.get('/review/queue', (req, res) => {
 });
 
 api.get('/sources', (req, res) => res.json({ sources: listSources(req.learnerId) }));
+
+/* -------------------------------------------------------------------- courses */
+
+api.get('/courses', (req, res) => res.json({ courses: listCoursesFor(req.learnerId) }));
+
+// Build a whole course: the real syllabus, with the exam's own weighting.
+api.post('/courses', (req, res) => {
+  const { request, subject, level, examDate, instructions, sourceIds = [] } = req.body || {};
+  if (!request || !String(request).trim()) {
+    return res.status(400).json({ error: 'Name the course or exam you are preparing for.' });
+  }
+  return streamHandler(res, async (stream) => {
+    stream.send('status', { stage: 'blueprint', message: 'Mapping the syllabus and its exam weighting…' });
+    const push = throttle((partial) => stream.send('partial', partial), 140);
+    const course = await createCourse({
+      learnerId: req.learnerId,
+      request: String(request).slice(0, 400),
+      subject,
+      level,
+      examDate,
+      instructions: String(instructions || '').slice(0, 1500),
+      sourceIds,
+      onPartial: push,
+    });
+    clearInsightCache(req.learnerId);
+    stream.send('course', { snapshot: courseSnapshot(req.learnerId, course.id) });
+    stream.send('done', { courseId: course.id });
+  });
+});
+
+api.get('/courses/:id', (req, res) => {
+  const snapshot = courseSnapshot(req.learnerId, req.params.id);
+  if (!snapshot) return res.status(404).json({ error: 'Course not found' });
+  res.json(snapshot);
+});
+
+api.patch('/courses/:id', (req, res) => {
+  const course = getCourse(req.params.id);
+  if (!course || course.learner_id !== req.learnerId) return res.status(404).json({ error: 'Course not found' });
+  saveCourse(req.learnerId, {
+    ...course,
+    exam_date: req.body?.examDate !== undefined ? req.body.examDate : course.exam_date,
+    state: {
+      ...course.state,
+      ...(req.body?.targetScore != null ? { targetScore: Number(req.body.targetScore) } : {}),
+      ...(req.body?.minutesPerDay != null ? { minutesPerDay: Number(req.body.minutesPerDay) } : {}),
+    },
+  });
+  res.json(courseSnapshot(req.learnerId, req.params.id));
+});
+
+api.delete('/courses/:id', (req, res) => {
+  deleteCourse(req.learnerId, req.params.id);
+  res.json({ ok: true });
+});
+
+// Build the next activity the readiness model says is worth the most marks.
+api.post('/courses/:id/next', (req, res) => {
+  const snapshot = courseSnapshot(req.learnerId, req.params.id);
+  if (!snapshot) return res.status(404).json({ error: 'Course not found' });
+
+  return streamHandler(res, async (stream) => {
+    const action = snapshot.action;
+    stream.send('action', { action });
+
+    if (action.resource === 'exam') {
+      stream.send('status', { stage: 'generating', message: 'Building a full practice paper to the exam blueprint…' });
+      const push = throttle((partial) => stream.send('partial', partial), 140);
+      const resource = await generateExam({ learnerId: req.learnerId, courseId: req.params.id, onPartial: push });
+      stream.send('resource', { resource });
+      stream.send('done', { resourceId: resource.id });
+      return;
+    }
+
+    const unit = snapshot.readiness.leverage[0];
+    stream.send('status', { stage: 'generating', message: action.title });
+    const push = throttle((partial) => stream.send('partial', partial), 140);
+    const resource = await generateResource({
+      learnerId: req.learnerId,
+      kind: action.resource === 'review' ? 'review' : action.resource,
+      topic: action.unit || unit?.title || snapshot.course.title,
+      subject: snapshot.course.subject,
+      concepts: action.concepts?.length ? action.concepts : unit?.weakest || [],
+      difficulty: action.kind === 'master' ? 4.5 : undefined,
+      instructions:
+        `This sits inside "${snapshot.course.title}". ${action.why} ` +
+        'Pitch it at the level the real exam asks at, not at revision level.',
+      onPartial: push,
+    });
+    clearInsightCache(req.learnerId);
+    stream.send('resource', { resource });
+    stream.send('done', { resourceId: resource.id });
+  });
+});
+
+// A full mock paper built to the course blueprint.
+api.post('/courses/:id/exam', (req, res) => {
+  const snapshot = courseSnapshot(req.learnerId, req.params.id);
+  if (!snapshot) return res.status(404).json({ error: 'Course not found' });
+
+  return streamHandler(res, async (stream) => {
+    stream.send('status', { stage: 'generating', message: 'Writing a paper to the real blueprint…' });
+    const push = throttle((partial) => stream.send('partial', partial), 140);
+    const resource = await generateExam({ learnerId: req.learnerId, courseId: req.params.id, onPartial: push });
+    stream.send('resource', { resource });
+    stream.send('done', { resourceId: resource.id });
+  });
+});
