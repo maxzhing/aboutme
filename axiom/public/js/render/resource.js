@@ -3,7 +3,8 @@ import { icon } from '../icons.js';
 import { prose } from '../markdown.js';
 import { renderBlocks, renderMistakes } from './blocks.js';
 import { questionCard } from './question.js';
-import { toast, scoreRing, barRow, statusLine, masteryPips } from '../ui.js';
+import { toast, statusLine } from '../ui.js';
+import { scoreRing, barChart, itemStrip, masteryPips } from './charts.js';
 import { api } from '../api.js';
 
 const DEFERRED_KINDS = new Set([
@@ -272,8 +273,10 @@ function renderPractice(payload, resource, context) {
           score: resource.score ?? 0,
           maxScore: resource.max_score ?? 0,
           results: submission.results || [],
-          analysis: submission.analysis,
-          remediation: { available: (submission.results || []).some((r) => (r.grade?.score || 0) < (r.grade?.max_score || 1) * 0.8) },
+          analysis: submission.analysis || {},
+          remediation: submission.remediation || {
+            available: (submission.results || []).some((r) => (r.grade?.score || 0) < (r.grade?.max_score || 1) * 0.8),
+          },
         },
         resource,
         context,
@@ -285,7 +288,7 @@ function renderPractice(payload, resource, context) {
 
 function renderScoreboard(result, resource, context) {
   const analysis = result.analysis || {};
-  const wrap = h('div.stack', { style: { gap: '14px' } });
+  const wrap = h('div.stack', { style: { gap: '16px' } });
 
   wrap.appendChild(
     h(
@@ -294,23 +297,51 @@ function renderScoreboard(result, resource, context) {
       scoreRing(result.score, result.maxScore),
       h(
         'div.stack',
-        { style: { gap: '10px' } },
-        h('div', {}, h('b', { style: { fontSize: '15px' } }, analysis.headline || 'Graded.')),
+        { style: { gap: '8px' } },
+        h('b', { style: { fontSize: '15.5px', letterSpacing: '-0.014em' } }, analysis.headline || 'Graded.'),
         analysis.dominantError
-          ? h('p.tiny.muted', {}, `Most common error type: ${titleCase(analysis.dominantError.type)} (${analysis.dominantError.count}×). That is what to fix first.`)
-          : null,
-        analysis.byConcept?.length
           ? h(
-              'div.bars',
+              'p.tiny.muted',
               {},
-              ...analysis.byConcept.map((c) =>
-                barRow(c.concept, c.correct, c.total, c.correct === c.total ? 'var(--mint)' : c.correct === 0 ? 'var(--rose)' : 'var(--amber)'),
-              ),
+              `Most of what went wrong was ${titleCase(analysis.dominantError.type).toLowerCase()} (${analysis.dominantError.count}×) — that is what to fix first, not the topic as a whole.`,
             )
           : null,
       ),
     ),
   );
+
+  if (analysis.byConcept?.length) {
+    wrap.appendChild(
+      h(
+        'div.card',
+        {},
+        barChart(
+          analysis.byConcept.map((c) => ({
+            label: c.concept,
+            value: c.correct,
+            max: c.total,
+            colour: c.correct === c.total ? 'var(--good)' : c.correct === 0 ? 'var(--critical)' : 'var(--warning)',
+          })),
+          {
+            title: 'Correct by concept',
+            width: 560,
+            labelWidth: 150,
+            format: (v) => String(v),
+            tip: (row) => `<b>${row.label}</b><span>${row.value} of ${row.max} correct</span>`,
+            legendItems: [
+              { colour: 'var(--good)', label: 'All correct' },
+              { colour: 'var(--warning)', label: 'Partly' },
+              { colour: 'var(--critical)', label: 'None correct' },
+            ],
+          },
+        ),
+      ),
+    );
+  }
+
+  if (analysis.difficultyProfile?.length) {
+    wrap.appendChild(h('div.card', {}, itemStrip(analysis.difficultyProfile)));
+  }
 
   if (result.remediation?.available) {
     const host = h('div');
@@ -459,6 +490,7 @@ function renderFlashcards(payload, resource, context) {
   root.appendChild(head(payload, resource));
   const deck = h('div.deck');
   root.appendChild(deck);
+  const progress = h('div.deck-progress', {}, h('div', { style: { width: '0%' } }));
 
   function draw() {
     clear(deck);
@@ -507,6 +539,8 @@ function renderFlashcards(payload, resource, context) {
     }
 
     const card = cards[index];
+    progress.firstChild.style.width = `${(index / cards.length) * 100}%`;
+    deck.appendChild(progress);
     const node = h(
       'div',
       { class: `flashcard${flipped ? ' flipped' : ''}`, onClick: () => { flipped = !flipped; draw(); } },

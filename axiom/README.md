@@ -135,6 +135,20 @@ timeline, bar, function graph, comparison) and rendered by hand-written SVG
 renderers — the model chooses what to show, the client decides how it looks, and
 no model-authored markup is ever injected into the page.
 
+**Charts are built to a spec, not to taste** (`public/js/render/charts.js`).
+Colour is assigned by the job it does: mastery 0–5 is ordered magnitude, so it
+uses a single-hue ordinal ramp with level 0 as a neutral "no data" step;
+concept identity uses a fixed categorical order; and good / warning / serious /
+critical come from a reserved status palette that always ships with an icon or
+a label, so state never rides on colour alone. Every palette was run through a
+validator for CVD separation, normal-vision separation, lightness banding and
+contrast against this app's own surfaces, in both themes. Marks follow one
+spec everywhere — bars capped at 24px with a 4px rounded data-end and a square
+baseline, a 2px surface gap between touching marks, markers with a 2px surface
+ring, hairline gridlines, selective direct labels — and every chart carries a
+hover tooltip, a legend where identity matters, and a "show the numbers" table
+view for the non-visual read.
+
 **What is stored** is learning state and nothing else: concepts, mastery,
 ability, attempts, misconceptions, schedules, goals, and the resources you
 generated. There is no personal profiling.

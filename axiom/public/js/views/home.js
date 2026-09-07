@@ -80,7 +80,7 @@ export function homeView() {
   const submitButton = h(
     'button.btn.primary.lg',
     { type: 'button', onClick: () => submit() },
-    icon('spark', { size: 15 }),
+    icon('sparkles', { size: 15 }),
     'Start learning',
   );
 
@@ -106,11 +106,16 @@ export function homeView() {
       {},
       h(
         'div.brand',
-        { style: { padding: '0' } },
-        h('div.brand-mark', {}, icon('spark', { size: 17 })),
-        h('span.brand-name', {}, h('b', {}, 'Axiom')),
+        { style: { padding: '0', width: 'auto' } },
+        h('div.brand-mark', {}, icon('sparkles', { size: 17 })),
+        h('span.brand-name', {}, 'Axiom'),
       ),
-      h('button.btn.sm.ghost', { type: 'button', onClick: () => navigate('/dashboard') }, icon('chart', { size: 14 }), 'Dashboard'),
+      h(
+        'div.row',
+        {},
+        h('button.btn.sm.ghost', { type: 'button', onClick: () => navigate('/library') }, icon('library', { size: 14 }), 'Library'),
+        h('button.btn.sm', { type: 'button', onClick: () => navigate('/dashboard') }, icon('chart', { size: 14 }), 'Dashboard'),
+      ),
     ),
     h(
       'div.home-body',
@@ -122,7 +127,9 @@ export function homeView() {
           'span.hero-eyebrow',
           {},
           h('span', { class: `hero-dot${ready ? '' : ' off'}` }),
-          ready ? `Live model · ${state.health?.model || 'connected'}` : 'No API key configured — add one to axiom/.env',
+          ready
+            ? `Generating live with ${state.health?.model || 'Claude'}`
+            : 'No API key configured — add one to axiom/.env',
         ),
         h('h1', {}, 'Tell me what you want to learn.', h('br'), h('em', {}, "I'll work out how you should learn it.")),
         h(
@@ -168,12 +175,16 @@ export function homeView() {
           ),
         ),
         h(
-          'div.home-strip',
+          'div.home-strip.stagger',
           {},
-          h('span', {}, icon('target', { size: 14 }), 'Diagnoses before it teaches'),
-          h('span', {}, icon('brain', { size: 14 }), 'Remembers what you get wrong'),
-          h('span', {}, icon('repeat', { size: 14 }), 'Brings it back before you forget'),
-          h('span', {}, icon('trophy', { size: 14 }), 'Mastery is earned, not clicked'),
+          ...[
+            ['target', 'Diagnoses first', 'Finds what you already have, then teaches only the gap.'],
+            ['brain', 'Remembers your mistakes', 'Names the specific misconception and fixes that, not the topic.'],
+            ['repeat', 'Returns before you forget', 'Every concept comes back on its own schedule.'],
+            ['trophy', 'Mastery is earned', 'Level 5 needs transfer and retention — reading never counts.'],
+          ].map(([name, title, detail]) =>
+            h('div.home-feature', {}, icon(name, { size: 16 }), h('b', {}, title), h('span', {}, detail)),
+          ),
         ),
       ),
     ),

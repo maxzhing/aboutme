@@ -157,7 +157,16 @@ describe('resource generation', () => {
 
     const stored = await json(server, `/api/resources/${worksheetId}`);
     assert.equal(stored.data.resource.status, 'graded');
-    assert.ok(stored.data.resource.payload.submission, 'the submission is kept so it can be reopened');
+    const submission = stored.data.resource.payload.submission;
+    assert.ok(submission, 'the submission is kept so it can be reopened');
+    // Reopening a graded paper must show the same breakdown, not a bare score.
+    assert.ok(submission.analysis?.byConcept?.length, 'the analysis is persisted with the submission');
+    assert.ok(submission.analysis.headline, 'the headline survives a reload');
+    assert.ok(submission.remediation, 'remediation availability is persisted');
+    assert.ok(
+      submission.results.every((r) => r.skipped || r.concept?.mastery_label),
+      'each graded result carries a readable mastery label',
+    );
   });
 
   test('remediation targets exactly what was missed', async () => {

@@ -223,7 +223,9 @@ export function questionCard(question, options = {}) {
             'div.feedback-tags',
             {},
             errorLabel ? h('span.chip.amber', {}, errorLabel) : null,
-            mastery ? h('span.chip', {}, `${mastery.name}: ${mastery.mastery_label}`) : null,
+            mastery?.name
+              ? h('span.chip', {}, mastery.mastery_label ? `${mastery.name} · ${mastery.mastery_label}` : mastery.name)
+              : null,
           ),
         ),
         grade.what_went_right ? prose(`**What worked.** ${grade.what_went_right}`) : null,

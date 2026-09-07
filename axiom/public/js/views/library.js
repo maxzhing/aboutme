@@ -17,8 +17,8 @@ export function libraryView() {
       h(
         'div',
         {},
-        h('h1.serif', { style: { fontSize: '30px', letterSpacing: '-0.02em' } }, 'Library'),
-        h('p.tiny.muted', {}, 'Everything Axiom has made for you.'),
+        h('h1.page-title', {}, 'Library'),
+        h('p.page-sub', {}, 'Everything Axiom has generated for you, with what you scored on it.'),
       ),
       h('button.btn.primary', { type: 'button', onClick: () => navigate('/studio') }, icon('wand', { size: 14 }), 'Make something'),
     ),

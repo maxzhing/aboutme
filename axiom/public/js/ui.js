@@ -53,14 +53,32 @@ export function skeleton(count = 3, height = 74) {
   );
 }
 
-export function emptyState(title, detail, action) {
+export function emptyState(title, detail, action, art = 'compass') {
   return h(
     'div.empty',
     {},
+    h('div.empty-art', {}, emptyArt(art)),
     h('h3', {}, title),
-    detail ? h('p.tiny', {}, detail) : null,
+    detail ? h('p', {}, detail) : null,
     action ? h('div', { style: { marginTop: '14px' } }, action) : null,
   );
+}
+
+/** A quiet piece of geometry rather than a shrugging illustration. */
+function emptyArt(kind) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 68 68');
+  svg.setAttribute('width', '68');
+  svg.setAttribute('height', '68');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('aria-hidden', 'true');
+  const rings = kind === 'grid'
+    ? '<rect x="10" y="10" width="20" height="20" rx="5"/><rect x="38" y="10" width="20" height="20" rx="5"/>' +
+      '<rect x="10" y="38" width="20" height="20" rx="5"/><rect x="38" y="38" width="20" height="20" rx="5" opacity=".35"/>'
+    : '<circle cx="34" cy="34" r="24"/><circle cx="34" cy="34" r="14" opacity=".5"/><circle cx="34" cy="34" r="4" opacity=".9"/>';
+  svg.innerHTML = `<g stroke="var(--line-3)" stroke-width="1.5">${rings}</g>`;
+  return svg;
 }
 
 /* -------------------------------------------------------------------- theme */
@@ -83,76 +101,7 @@ export function toggleTheme() {
 
 /* ---------------------------------------------------------------- fragments */
 
-export function masteryPips(level) {
-  return h(
-    'span.pips',
-    { title: `Mastery ${level}/5` },
-    ...Array.from({ length: 5 }, (_, i) =>
-      h('span', {
-        class: `pip${i < level ? ' on' : ''}${level >= 5 ? ' full' : level <= 2 ? ' low' : ''}`,
-      }),
-    ),
-  );
-}
-
-export function masteryBar(level, label) {
-  const pct = Math.round((level / 5) * 100);
-  return h(
-    'div.mastery-row',
-    {},
-    h('div.spread', {}, h('span', {}, label), h('span.tiny.dim', {}, `${level}/5`)),
-    h(
-      'div.mastery-bar',
-      {},
-      h('div', { class: `mastery-fill${level <= 2 ? ' low' : level <= 3 ? ' mid' : ''}`, style: { width: `${pct}%` } }),
-    ),
-  );
-}
-
-export function scoreRing(score, max) {
-  const pct = max ? Math.max(0, Math.min(1, score / max)) : 0;
-  const radius = 38;
-  const circumference = 2 * Math.PI * radius;
-  const colour = pct >= 0.8 ? 'var(--mint)' : pct >= 0.5 ? 'var(--amber)' : 'var(--rose)';
-  const ns = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('width', '92');
-  svg.setAttribute('height', '92');
-  svg.setAttribute('viewBox', '0 0 92 92');
-  const track = document.createElementNS(ns, 'circle');
-  const fill = document.createElementNS(ns, 'circle');
-  for (const [node, stroke, offset] of [
-    [track, 'var(--ink-700)', 0],
-    [fill, colour, circumference * (1 - pct)],
-  ]) {
-    node.setAttribute('cx', '46');
-    node.setAttribute('cy', '46');
-    node.setAttribute('r', String(radius));
-    node.setAttribute('fill', 'none');
-    node.setAttribute('stroke', stroke);
-    node.setAttribute('stroke-width', '7');
-    node.setAttribute('stroke-linecap', 'round');
-    node.setAttribute('stroke-dasharray', String(circumference));
-    node.setAttribute('stroke-dashoffset', String(offset));
-    svg.appendChild(node);
-  }
-  return h(
-    'div.score-ring',
-    {},
-    svg,
-    h('div.value', {}, h('b', {}, `${Math.round(pct * 100)}%`), h('span', {}, `${score}/${max}`)),
-  );
-}
-
-export function barRow(label, value, total, colour = 'var(--accent)') {
-  const pct = total ? Math.round((value / total) * 100) : 0;
-  return h(
-    'div.bar-row',
-    {},
-    h('span', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }, title: label }, label),
-    h('div.bar-track', {}, h('div.bar-fill', { style: { width: `${pct}%`, background: colour } })),
-    h('span.tiny.dim', {}, `${value}/${total}`),
-  );
-}
+// Chart pieces live in render/charts.js; re-exported so views have one import.
+export { masteryPips, masteryMeter, scoreRing, barRow, statTile, sparkline } from './render/charts.js';
 
 export { clear };

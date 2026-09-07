@@ -1,10 +1,13 @@
 import { h, clear, fmtDate, titleCase } from '../dom.js';
 import { icon } from '../icons.js';
 import { api } from '../api.js';
-import { masteryPips, skeleton, emptyState, barRow } from '../ui.js';
+import { skeleton, emptyState } from '../ui.js';
+import {
+  masteryPips, masteryMeter, masteryDistribution, conceptField, barChart, MASTERY_LABELS as LEVELS,
+} from '../render/charts.js';
 import { startGeneration } from './studio.js';
 
-const LEVEL_LABEL = ['Not introduced', 'Introduced', 'Developing', 'Competent', 'Strong', 'Mastered'];
+const LEVEL_LABEL = LEVELS;
 
 export function progressView() {
   const body = h('div.stack', { style: { gap: '18px' } });
@@ -14,11 +17,11 @@ export function progressView() {
     h(
       'div',
       {},
-      h('h1.serif', { style: { fontSize: '30px', letterSpacing: '-0.02em' } }, 'Mastery map'),
+      h('h1.page-title', {}, 'Mastery map'),
       h(
-        'p.tiny.muted',
+        'p.page-sub',
         {},
-        'Level 5 requires solving, explaining, applying and transferring a concept — and still having it a day later.',
+        'Level 5 requires solving, explaining, applying and transferring a concept — and still having it a day later. Nothing here moves because you read something.',
       ),
     ),
     body,
@@ -39,21 +42,20 @@ export function progressView() {
 
       body.appendChild(
         h(
-          'section.card',
+          'div.grid.two',
           {},
-          h('div.card-head', {}, icon('chart', { size: 15 }), h('h2', {}, 'Where your concepts sit')),
           h(
-            'div.bars',
+            'section.card',
             {},
-            ...distribution.map((count, level) =>
-              barRow(
-                `${level} · ${LEVEL_LABEL[level]}`,
-                count,
-                concepts.length,
-                level >= 5 ? 'var(--mint)' : level >= 3 ? 'var(--accent)' : level >= 1 ? 'var(--amber)' : 'var(--ink-500)',
-              ),
-            ),
+            h('div.card-head', {}, icon('chart', { size: 15 }), h('h2', {}, 'Distribution')),
+            masteryDistribution(distribution, { total: concepts.length }),
           ),
+          (() => {
+            const field = conceptField(concepts);
+            return field
+              ? h('section.card', {}, h('div.card-head', {}, icon('target', { size: 15 }), h('h2', {}, 'Concept field')), field)
+              : null;
+          })(),
         ),
       );
 
@@ -68,7 +70,13 @@ export function progressView() {
           h(
             'section.card',
             {},
-            h('div.card-head', {}, icon('layers', { size: 15 }), h('h2', {}, subject), h('span.tiny.dim', {}, `${list.length} concepts`)),
+            h(
+              'div.card-head',
+              {},
+              icon('layers', { size: 15 }),
+              h('h2', {}, subject),
+              h('span.tiny.dim.spacer', { style: { marginLeft: 'auto' } }, `${list.length} concepts`),
+            ),
             h(
               'div.stack',
               { style: { gap: '2px' } },
@@ -93,7 +101,7 @@ export function progressView() {
                     ),
                     h(
                       'div.row',
-                      { style: { gap: '10px' } },
+                      { style: { gap: '12px' } },
                       masteryPips(concept.mastery_level),
                       h(
                         'button.btn.sm.ghost',
@@ -122,6 +130,30 @@ export function progressView() {
             'section.card',
             {},
             h('div.card-head', {}, icon('clock', { size: 15 }), h('h2', {}, 'Attempt history')),
+            (() => {
+              const byType = {};
+              for (const a of attempts) {
+                if (a.error_type && a.error_type !== 'none') byType[a.error_type] = (byType[a.error_type] || 0) + 1;
+              }
+              const rows = Object.entries(byType)
+                .sort((x, y) => y[1] - x[1])
+                .slice(0, 6)
+                .map(([type, count]) => ({ label: titleCase(type), value: count, colour: 'var(--serious)' }));
+              return rows.length
+                ? h(
+                    'div',
+                    { style: { marginBottom: '14px' } },
+                    barChart(rows, {
+                      title: 'Why answers went wrong',
+                      note: 'the response depends on this',
+                      width: 470,
+                      labelWidth: 150,
+                      format: (v) => `${v}×`,
+                      tip: (row) => `<b>${row.label}</b><span>${row.value} recent attempt${row.value === 1 ? '' : 's'}</span>`,
+                    }),
+                  )
+                : null;
+            })(),
             h(
               'div.stack',
               { style: { gap: '2px' } },

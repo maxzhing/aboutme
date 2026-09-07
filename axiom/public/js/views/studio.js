@@ -81,8 +81,8 @@ export function studioView() {
       h(
         'div',
         {},
-        h('h1.serif', { style: { fontSize: '30px', letterSpacing: '-0.02em' } }, 'Resource studio'),
-        h('p.tiny.muted', {}, 'Every resource is generated for you specifically — your level, your weak concepts, your mistakes.'),
+        h('h1.page-title', {}, 'Resource studio'),
+        h('p.page-sub', {}, 'Every resource is written for you specifically — your level, your weak concepts, the mistakes you keep making.'),
       ),
     ),
     h('div.studio-grid', {}, controls, output),

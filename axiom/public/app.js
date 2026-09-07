@@ -105,7 +105,7 @@ function buildShell(content) {
         'div.tiny.dim',
         { style: { padding: '8px 11px' } },
         state.health?.llmReady === false
-          ? h('span', { style: { color: 'var(--amber)' } }, 'No API key configured')
+          ? h('span', { style: { color: 'var(--warning)' } }, 'No API key configured')
           : `${state.health?.model || 'model'} · quality control ${state.health?.qualityControl ? 'on' : 'off'}`,
       ),
     ),
@@ -133,7 +133,7 @@ function buildShell(content) {
       'div.topbar-actions',
       {},
       h('button.btn.sm', { type: 'button', onClick: () => navigate('/studio') }, icon('wand', { size: 13 }), 'Make a worksheet'),
-      h('button.btn.sm.primary', { type: 'button', onClick: () => navigate('/') }, icon('spark', { size: 13 }), 'Learn'),
+      h('button.btn.sm.primary', { type: 'button', onClick: () => navigate('/') }, icon('sparkles', { size: 13 }), 'Learn'),
     ),
   );
 

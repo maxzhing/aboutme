@@ -12,9 +12,9 @@ export function reviewView() {
     h(
       'div',
       {},
-      h('h1.serif', { style: { fontSize: '30px', letterSpacing: '-0.02em' } }, 'Review queue'),
+      h('h1.page-title', {}, 'Review queue'),
       h(
-        'p.tiny.muted',
+        'p.page-sub',
         {},
         'Each concept comes back just before you would forget it. Getting it right pushes the next review further out; getting it wrong pulls it closer.',
       ),

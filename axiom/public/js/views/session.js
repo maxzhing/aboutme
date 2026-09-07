@@ -4,7 +4,7 @@ import { prose } from '../markdown.js';
 import { api } from '../api.js';
 import { navigate } from '../router.js';
 import { state } from '../state.js';
-import { toast, masteryBar, statusLine, modal } from '../ui.js';
+import { toast, masteryMeter, statusLine, modal } from '../ui.js';
 import { renderBlocks } from '../render/blocks.js';
 import { questionCard } from '../render/question.js';
 import { renderResource, resourceLabel } from '../render/resource.js';
@@ -199,11 +199,11 @@ export function sessionView({ params }) {
         'div.side-block',
         {},
         h('div.side-title', {}, 'This session'),
-        h('div.spread.tiny', {}, h('span.muted', {}, 'Mode'), h('span.chip.accent', {}, titleCase(session.mode))),
-        h('div.spread.tiny', {}, h('span.muted', {}, 'Phase'), h('span', {}, titleCase(sessionState.phase || 'teach'))),
-        h('div.spread.tiny', {}, h('span.muted', {}, 'Focus'), h('span', {}, sessionState.focusConcept || session.topic || '—')),
-        h('div.spread.tiny', {}, h('span.muted', {}, 'Difficulty'), h('span', {}, String(sessionState.difficulty ?? plan.difficulty ?? '—'))),
-        plan.time_minutes ? h('div.spread.tiny', {}, h('span.muted', {}, 'Planned'), h('span', {}, `${plan.time_minutes} min`)) : null,
+        h('div.side-kv', {}, h('span', {}, 'Mode'), h('span.chip.accent', {}, titleCase(session.mode))),
+        h('div.side-kv', {}, h('span', {}, 'Phase'), h('span', {}, titleCase(sessionState.phase || 'teach'))),
+        h('div.side-kv', {}, h('span', {}, 'Focus'), h('span', {}, sessionState.focusConcept || session.topic || '—')),
+        h('div.side-kv', {}, h('span', {}, 'Next item'), h('span', {}, `Difficulty ${sessionState.difficulty ?? plan.difficulty ?? '—'}`)),
+        plan.time_minutes ? h('div.side-kv', {}, h('span', {}, 'Planned'), h('span', {}, `${plan.time_minutes} min`)) : null,
         plan.assumption ? h('p.tiny.dim', {}, `Assumed: ${plan.assumption}`) : null,
       ),
     );
@@ -218,7 +218,7 @@ export function sessionView({ params }) {
             const concept = (state.dashboard?.subjects || [])
               .flatMap((s) => s.concepts)
               .find((c) => c.name.toLowerCase() === name.toLowerCase());
-            return masteryBar(concept?.mastery_level ?? 0, name);
+            return masteryMeter(concept?.mastery_level ?? 0, name);
           }),
         ),
       );

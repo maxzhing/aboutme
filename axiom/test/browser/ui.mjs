@@ -125,6 +125,17 @@ try {
   await page.goto(`${base}/#/dashboard`, { waitUntil: 'networkidle' });
   await page.waitForSelector('.stat-grid', { timeout: 20000 });
   check('the dashboard shows learner stats', (await page.locator('.stat').count()) >= 4);
+  await page.waitForSelector('.viz svg', { timeout: 20000 });
+  check('the dashboard charts mastery distribution', (await page.locator('.viz').count()) >= 1);
+  // Hover layer: a chart without a tooltip is a picture, not a chart.
+  const mark = page.locator('.viz-mark').first();
+  if (await mark.count()) {
+    await mark.hover();
+    await page.waitForTimeout(160);
+    check('chart marks have a hover tooltip', await page.locator('.viz-tip').isVisible());
+  } else {
+    check('chart marks have a hover tooltip', false, 'no marks rendered');
+  }
   await page.waitForSelector('.card', { timeout: 15000 });
   check('the dashboard shows continue-learning and progress cards', (await page.locator('.card').count()) >= 4);
   await shot('06-dashboard');
@@ -135,13 +146,18 @@ try {
   await page.locator('.modal input.input').first().fill('Master single-variable calculus');
   await page.locator('.modal input.input').nth(1).fill('Maths');
   await page.locator('.modal .btn.primary').click();
-  await page.waitForSelector('.card:has-text("Learning goals") .mastery-bar', { timeout: 20000 });
-  check('a learning goal is created and tracked', await page.locator('.card', { hasText: 'Learning goals' }).locator('.mastery-bar').first().isVisible());
+  await page.waitForSelector('.card:has-text("Learning goals") .meter-track', { timeout: 20000 });
+  check('a learning goal is created and tracked', await page.locator('.card', { hasText: 'Learning goals' }).locator('.meter-track').first().isVisible());
 
   /* -------------------------------------------------------------- mastery */
   await page.goto(`${base}/#/progress`, { waitUntil: 'networkidle' });
-  await page.waitForSelector('.bar-row', { timeout: 20000 });
+  await page.waitForSelector('.viz svg', { timeout: 20000 });
   check('the mastery map renders concept levels', (await page.locator('.concept-row').count()) >= 1);
+  check('mastery is charted, not just listed', (await page.locator('.viz').count()) >= 1);
+  // Every chart must ship an equivalent table — the non-visual read of the data.
+  const tableToggle = page.locator('.viz .btn', { hasText: 'Show the numbers' }).first();
+  await tableToggle.click();
+  check('charts expose a table view', await page.locator('.viz-table').first().isVisible());
   await shot('07-mastery');
 
   /* --------------------------------------------------------------- library */

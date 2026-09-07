@@ -255,13 +255,30 @@ api.post('/resources/:id/submit', (req, res) => {
       skipped: Boolean(r.skipped),
       grade: r.grade,
       concept: r.concept
-        ? { name: r.concept.name, mastery_level: r.concept.mastery_level, ability: r.concept.ability }
+        ? {
+            name: r.concept.name,
+            mastery_level: r.concept.mastery_level,
+            mastery_label: MASTERY_LABELS[r.concept.mastery_level],
+            ability: r.concept.ability,
+          }
         : null,
     }));
 
+    const analysis = analyseSubmission(graded, questions);
+    const missed = graded.results.filter((r) => (r.grade?.score || 0) < (r.grade?.max_score || 1) * 0.8);
+    const remediation = missed.length
+      ? {
+          available: true,
+          concepts: [...new Set(missed.map((r) => r.grade?.concept).filter(Boolean))],
+          questionIds: missed.map((r) => r.questionId),
+        }
+      : { available: false };
+
     saveResource(req.learnerId, {
       ...resource,
-      payload: { ...payload, submission: { answers, results, at: new Date().toISOString() } },
+      // The analysis is persisted with the submission so reopening a graded
+      // paper shows the same breakdown rather than a bare score.
+      payload: { ...payload, submission: { answers, results, analysis, remediation, at: new Date().toISOString() } },
       status: 'graded',
       score: graded.score,
       max_score: graded.maxScore,
@@ -274,20 +291,7 @@ api.post('/resources/:id/submit', (req, res) => {
       max: graded.maxScore,
     });
 
-    const missed = graded.results.filter((r) => (r.grade?.score || 0) < (r.grade?.max_score || 1) * 0.8);
-    stream.send('graded', {
-      score: graded.score,
-      maxScore: graded.maxScore,
-      results,
-      analysis: analyseSubmission(graded, questions),
-      remediation: missed.length
-        ? {
-            available: true,
-            concepts: [...new Set(missed.map((r) => r.grade?.concept).filter(Boolean))],
-            questionIds: missed.map((r) => r.questionId),
-          }
-        : { available: false },
-    });
+    stream.send('graded', { score: graded.score, maxScore: graded.maxScore, results, analysis, remediation });
     stream.send('done', {});
   });
 });

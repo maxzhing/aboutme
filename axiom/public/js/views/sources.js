@@ -46,8 +46,8 @@ export function sourcesView() {
     h(
       'div',
       {},
-      h('h1.serif', { style: { fontSize: '30px', letterSpacing: '-0.02em' } }, 'Your material'),
-      h('p.tiny.muted', {}, 'Upload what you are actually being taught from, and everything gets built out of it.'),
+      h('h1.page-title', {}, 'Your material'),
+      h('p.page-sub', {}, 'Upload what you are actually being taught from, and everything gets built out of that rather than around it.'),
     ),
     dropzone,
     fileInput,
