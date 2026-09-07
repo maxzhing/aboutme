@@ -30,6 +30,7 @@ const SUBSTITUTIONS = {
   'server/util/ids.js': 'browser/ids.js',
   'server/engine/sources.js': 'browser/sources.js',
   'server/llm/anthropic.js': 'browser/anthropic.js',
+  'server/llm/index.js': 'browser/llm.js',
   'server/routes/files.js': 'browser/files.js',
   express: 'browser/express.js',
 };

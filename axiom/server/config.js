@@ -35,6 +35,18 @@ export const config = {
   apiKey: process.env.ANTHROPIC_API_KEY || '',
   baseURL: process.env.AXIOM_ANTHROPIC_BASE_URL || undefined,
   model: process.env.AXIOM_MODEL || 'claude-opus-5',
+
+  // OpenAI, or anything that speaks its chat-completions API. Pointing
+  // OPENAI_BASE_URL elsewhere is how you reach Azure, a gateway, or a local
+  // server without changing any code.
+  openaiKey: process.env.OPENAI_API_KEY || '',
+  openaiBaseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+  openaiModel: process.env.AXIOM_OPENAI_MODEL || 'gpt-5.6-terra',
+  openaiOrg: process.env.OPENAI_ORG_ID || '',
+  // Reasoning models take `reasoning_effort`; older and compatible endpoints
+  // reject it outright, so it is opt-out rather than assumed.
+  openaiEffort: process.env.AXIOM_OPENAI_EFFORT !== 'off',
+
   // `mock` is a deterministic offline stand-in used ONLY by the automated test
   // suite so the full learning loop can be exercised without network access.
   // It refuses to serve normal traffic unless explicitly switched on.
@@ -56,4 +68,8 @@ export const config = {
   logLevel: process.env.AXIOM_LOG_LEVEL || 'info',
 };
 
-export const hasLLM = () => config.provider === 'mock' || Boolean(config.apiKey);
+export const hasLLM = () => {
+  if (config.provider === 'mock') return true;
+  if (config.provider === 'openai') return Boolean(config.openaiKey);
+  return Boolean(config.apiKey);
+};

@@ -48,6 +48,32 @@ export function createApp() {
   return app;
 }
 
+/**
+ * OpenAI's strict structured outputs cannot carry every schema Axiom uses, so
+ * say which ones lose the guarantee at boot rather than leaving it to be
+ * inferred from the occasional malformed worksheet.
+ */
+async function reportSchemaSupport() {
+  const [{ describeSchemaSupport }, allSchemas] = await Promise.all([
+    import('./llm/openai-schema.js'),
+    import('./schemas/index.js'),
+  ]);
+  const objects = Object.fromEntries(
+    Object.entries(allSchemas).filter(([, v]) => v && typeof v === 'object' && v.type === 'object'),
+  );
+  const rows = describeSchemaSupport(objects);
+  const soft = rows.filter((r) => !r.strict);
+  if (!soft.length) {
+    log.info('structured outputs: strict mode on every schema');
+    return;
+  }
+  log.warn(
+    `structured outputs: ${rows.length - soft.length} of ${rows.length} schemas fit strict mode; ` +
+      `${soft.map((r) => r.name.replace(/Schema$/, '')).join(', ')} use JSON mode instead ` +
+      '(validated and repaired downstream rather than guaranteed).',
+  );
+}
+
 export function start() {
   if (config.provider === 'mock' && process.env.AXIOM_ALLOW_MOCK !== '1') {
     log.error(
@@ -61,9 +87,14 @@ export function start() {
   const server = app.listen(config.port, config.host, () => {
     log.info(`Axiom listening on http://localhost:${config.port}`);
     log.info(`model: ${llm().model} (provider: ${config.provider})`);
+    if (config.provider === 'openai') reportSchemaSupport();
     if (!hasLLM()) {
-      log.warn('No ANTHROPIC_API_KEY found — the UI will load but nothing can be generated.');
-      log.warn('Add one to axiom/.env (ANTHROPIC_API_KEY=sk-ant-...) and restart.');
+      const [name, example] =
+        config.provider === 'openai'
+          ? ['OPENAI_API_KEY', 'OPENAI_API_KEY=sk-...']
+          : ['ANTHROPIC_API_KEY', 'ANTHROPIC_API_KEY=sk-ant-...'];
+      log.warn(`No ${name} found — the UI will load but nothing can be generated.`);
+      log.warn(`Add one to axiom/.env (${example}) and restart.`);
     }
   });
   return server;

@@ -33,6 +33,46 @@ cp .env.example .env      # add your ANTHROPIC_API_KEY
 npm start                 # http://localhost:8787
 ```
 
+### Providers
+
+The server build runs on Claude or on OpenAI:
+
+```bash
+AXIOM_LLM_PROVIDER=openai OPENAI_API_KEY=sk-... npm start
+```
+
+Everything above the provider is unchanged — same engine, same routes, same
+interface. `OPENAI_BASE_URL` points the same code at anything else that speaks
+the chat-completions API (Azure, a gateway, a local server).
+
+Two things are genuinely different on OpenAI, and both are visible rather than
+silent:
+
+**Structured outputs are only guaranteed for the smaller schemas.** OpenAI's
+strict mode caps a schema at roughly 100 properties and five levels of nesting.
+Axiom's short schemas — routing, grading, quality control, flashcards, insights,
+source analysis — fit, and get the hard guarantee. Its teaching schemas do not:
+a lesson is blocks containing diagrams containing nodes, and a tutor turn is an
+activity containing a question containing steps, which run six or seven deep.
+Flattening them to satisfy one provider would make the product worse on both, so
+those requests fall back to JSON mode with the schema stated in the prompt. That
+is a weaker promise, not a broken one — the tolerant prefix parser, the coercion
+pass and the question-level quality gate all still run — and the server says
+which schemas landed where at boot:
+
+```
+WARN [server] structured outputs: 8 of 14 schemas fit strict mode; course,
+lesson, plan, practice, studyGuide, tutorTurn use JSON mode instead
+(validated and repaired downstream rather than guaranteed).
+```
+
+**The single-file build is Claude-only.** Anthropic publishes a header —
+`anthropic-dangerous-direct-browser-access` — that lets a page call the API
+directly, which is the whole reason `axiom.html` can exist. OpenAI has no
+equivalent and does not permit browser-origin requests, so the browser build
+ships only the provider it can actually deliver rather than one that would fail
+on CORS for anyone who chose it.
+
 ### About the key
 
 There is no key bundled with this, and there cannot be: an Anthropic API key
@@ -203,8 +243,10 @@ server/
   config.js           Env-driven config; the API key lives here and nowhere else
   db.js  store.js     SQLite (node:sqlite) schema and repository
   llm/
-    anthropic.js      Real provider: streaming, structured output, retries,
+    anthropic.js      Claude provider: streaming, structured output, retries,
                       rate-limit backoff, typed errors, refusal handling
+    openai.js         OpenAI (and OpenAI-compatible) provider, same contract
+    openai-schema.js  Decides per schema whether strict mode can carry it
     partial-json.js   Tolerant JSON-prefix parser — what makes live rendering
                       of a still-being-written lesson possible
     mock.js           Deterministic stand-in, used ONLY by the test suite
@@ -266,7 +308,7 @@ generated. There is no personal profiling.
 ## Testing
 
 ```bash
-npm test              # 128 unit + end-to-end tests (no API key needed)
+npm test              # 164 unit + end-to-end tests (no API key needed)
 npm run test:ui       # drives the real UI in Chromium against a server, 41 checks
 npm run test:standalone  # builds axiom.html and drives it from file://, 30 checks
 npm run test:live     # the product brief's scenarios against the real model
@@ -292,6 +334,18 @@ concept is duplicated and every prerequisite resolves to a concept in the same
 course, that a blank learner projects the bottom band on all twelve and a
 learner who has proved everything projects the top one, and that a request for
 one course is never matched to its neighbour.
+
+Both providers are tested the same way, against stubs speaking their real wire
+protocols: `test/provider.test.js` for the Anthropic SDK path and
+`test/provider-openai.test.js` for chat-completions. That matters more for
+OpenAI, because `api.openai.com` was unreachable from the environment this was
+written in, so a faithful stub is the only verification available — it covers
+the request shape, the schema adapter, streaming, usage mapping, truncation
+repair, refusals, retries, and the difference between a rate limit (retry) and
+an exhausted quota (do not). `test/openai-integration.test.js` then boots the
+real app on that provider and drives a session, a graded worksheet, a mastery
+update and a course through it, asserting that both the strict and the
+JSON-mode request shapes were genuinely exercised.
 
 `npm run test:standalone` builds the single-file edition and drives it in
 Chromium as a `file://` URL, with `api.anthropic.com` intercepted and answered
@@ -320,8 +374,9 @@ code without network access. The server refuses to start with it unless
 
 ## Configuration
 
-See `.env.example`. The only required value is `ANTHROPIC_API_KEY`, which in the
-server build is read server-side and never reaches the browser — the frontend
-talks only to this app's own API. In the single-file build there is no server to
-hold it, so it is the learner's own key, held in their own browser; see *About
-the key* above.
+See `.env.example`. The only required value is an API key for whichever provider
+is configured — `ANTHROPIC_API_KEY`, or `OPENAI_API_KEY` with
+`AXIOM_LLM_PROVIDER=openai`. In the server build it is read server-side and
+never reaches the browser; the frontend talks only to this app's own API. In the
+single-file build there is no server to hold it, so it is the learner's own key,
+held in their own browser; see *About the key* above.
