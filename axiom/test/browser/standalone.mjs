@@ -280,6 +280,15 @@ try {
   check('settings offers key management in this build', settingsText.includes('Anthropic API key'));
   check('settings explains where the data lives', settingsText.includes('this browser'));
   check('settings reports the runtime honestly', settingsText.includes('Runs in this browser'));
+  check('settings prices the model choice', settingsText.includes('per million tokens'));
+  const switched = await page.evaluate(() => {
+    window.axiomLocal.setModel('claude-haiku-4-5');
+    return window.axiomLocal.getModel();
+  });
+  check('the model can be changed to a cheaper one', switched === 'claude-haiku-4-5', switched);
+  const refused = await page.evaluate(() => window.axiomLocal.setModel('gpt-nonsense'));
+  check('and cannot be set to something that is not offered', refused === false);
+  await page.evaluate(() => window.axiomLocal.setModel('claude-opus-5'));
   await shot('06-settings');
 
   /* ------------------------------------------------------------- durability */

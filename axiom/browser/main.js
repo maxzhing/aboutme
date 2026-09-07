@@ -1,7 +1,7 @@
 import { h, clear } from '../public/js/dom.js';
 import { icon } from '../public/js/icons.js';
 import { installTransport } from './net.js';
-import { config, setApiKey, hasLLM } from './config.js';
+import { config, setApiKey, setPrefs, hasLLM } from './config.js';
 import { snapshotDb, replaceDb, resetDb, storageBlocked } from './store.js';
 import { initTheme } from '../public/js/ui.js';
 
@@ -22,7 +22,29 @@ const bytesOf = (value) => new Blob([value]).size;
 const pretty = (bytes) =>
   bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 
+/**
+ * The models worth offering, cheapest last.
+ *
+ * This is a per-token bill the learner pays directly, so the choice belongs to
+ * them and the prices belong on the page. Opus is the default because teaching
+ * well is the whole product; the cheaper two are here because a long revision
+ * session on Opus is a real amount of money and nobody should have to discover
+ * that from an invoice.
+ */
+const MODELS = [
+  { id: 'claude-opus-5', name: 'Claude Opus 5', cost: '$5 / $25 per million tokens', note: 'Default. The strongest teaching, the strongest grading, the most expensive.' },
+  { id: 'claude-sonnet-5', name: 'Claude Sonnet 5', cost: '$2 / $10 per million tokens', note: 'About a third of the price. Noticeably cheaper for long drilling sessions.' },
+  { id: 'claude-haiku-4-5', name: 'Claude Haiku 4.5', cost: '$1 / $5 per million tokens', note: 'Cheapest. Fine for flashcards and recall drills; weaker at marking free response.' },
+];
+
 window.axiomLocal = {
+  models: MODELS,
+  getModel: () => config.model,
+  setModel: (id) => {
+    if (!MODELS.some((m) => m.id === id)) return false;
+    setPrefs({ model: id });
+    return true;
+  },
   getKey: () => config.apiKey,
   setKey: (key) => setApiKey(key),
 

@@ -79,11 +79,53 @@ function runtimeCard() {
           : 'Generation runs on the server. Your browser never sees the API key.',
       ),
     );
+    if (local()?.models) body.appendChild(modelPicker());
   };
 
   draw(state.health);
   api.health().then((health) => { update({ health }); draw(health); }).catch(() => {});
   return card;
+}
+
+/**
+ * Model choice, with what each one costs.
+ *
+ * Only shown in the build where the learner is paying Anthropic directly. On
+ * the server build the model is an operator's decision, not a reader's.
+ */
+function modelPicker() {
+  const api_ = local();
+  const note = h('p.tiny.dim', { style: { margin: '6px 0 0' } });
+  const select = h(
+    'select.select',
+    {
+      onChange: (event) => {
+        api_.setModel(event.target.value);
+        describe(event.target.value);
+        toast('Model changed. It applies to the next thing you generate.', 'success');
+        api.health().then((health) => update({ health })).catch(() => {});
+      },
+    },
+    ...api_.models.map((model) =>
+      h('option', { value: model.id, selected: model.id === api_.getModel() }, `${model.name} — ${model.cost}`),
+    ),
+  );
+
+  function describe(id) {
+    note.textContent = api_.models.find((m) => m.id === id)?.note || '';
+  }
+  describe(api_.getModel());
+
+  return h(
+    'div',
+    { style: { marginTop: '14px' } },
+    field(
+      'Model',
+      'You pay Anthropic per token, so this is the main lever on what Axiom costs to run. A typical lesson turn is a few cents on Opus.',
+      select,
+    ),
+    note,
+  );
 }
 
 /* ---------------------------------------------------------------- API key */
