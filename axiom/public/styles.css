@@ -1122,3 +1122,33 @@ button { cursor: pointer; background: none; border: none; }
 }
 .gate-notes p { font-size: 12.5px; color: var(--ink-3); line-height: 1.6; margin: 0; }
 .gate-notes b { color: var(--ink-2); font-weight: 600; }
+
+.provider-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  margin-bottom: 4px;
+}
+.provider-tabs button {
+  flex: 1;
+  padding: 7px 12px;
+  border-radius: var(--r-xs);
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--ink-3);
+  transition: background 0.16s var(--ease), color 0.16s var(--ease);
+}
+.provider-tabs button:hover { color: var(--ink-2); }
+/* Selection has to survive a light theme where --surface and --surface-2 are
+   three per cent apart. The brand wash is the same signal .nav-item.is-active
+   uses, so "this one is chosen" reads identically everywhere in the app. */
+.provider-tabs button.on {
+  background: var(--brand-wash);
+  border: 1px solid var(--brand-line);
+  color: var(--ink);
+  font-weight: 620;
+}
+.provider-tabs button:not(.on) { border: 1px solid transparent; }

@@ -208,6 +208,10 @@ function setTitle(title, sub) {
 
 document.addEventListener('axiom:title', (event) => setTitle(event.detail.title, event.detail.sub));
 
+// A view can ask for the page to be rebuilt when a change it made invalidates
+// more than itself — switching provider changes what half of Settings says.
+document.addEventListener('axiom:rerender', () => render());
+
 const TITLES = {
   '/dashboard': ['Dashboard', 'Your learning at a glance'],
   '/studio': ['Studio', 'Generate anything you need'],

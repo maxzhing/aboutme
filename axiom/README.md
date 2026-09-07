@@ -13,10 +13,11 @@ this repository.
 ## Two ways to run it
 
 **As a single HTML file.** `axiom.html` is the whole product in one file. Open
-it from your desktop — no server, no install, no build. It asks for an Anthropic
-API key once, keeps it in that browser's local storage, and talks straight to
-the API. Everything else — the learning engine, your mastery record, your
-courses — runs and persists in the browser.
+it from your desktop — no server, no install, no build. It asks once for a key
+from whichever provider you pick, keeps it in that browser's local storage, and
+talks straight to the API. Everything else — the learning engine, your mastery
+record, your courses — runs and persists in the browser. Keys are held per
+provider, so switching between Claude and OpenAI never means pasting again.
 
 ```bash
 npm run build            # regenerates axiom.html
@@ -66,19 +67,39 @@ lesson, plan, practice, studyGuide, tutorTurn use JSON mode instead
 (validated and repaired downstream rather than guaranteed).
 ```
 
-**The single-file build is Claude-only.** Anthropic publishes a header —
-`anthropic-dangerous-direct-browser-access` — that lets a page call the API
-directly, which is the whole reason `axiom.html` can exist. OpenAI has no
-equivalent and does not permit browser-origin requests, so the browser build
-ships only the provider it can actually deliver rather than one that would fail
-on CORS for anyone who chose it.
+**The single-file build offers both too** — with one honest caveat. `axiom.html`
+exists because Anthropic publishes a header,
+`anthropic-dangerous-direct-browser-access`, that lets a page call the API
+directly; that preflight was verified before any of this was built. OpenAI has
+no equivalent header, and whether a browser is allowed to call
+`api.openai.com` from a page could not be tested here: this environment's
+network policy blocks that host outright.
+
+So the browser build ships the OpenAI provider and finds out honestly. Pasting a
+key runs a free `GET /models` against the configured endpoint before the app
+loads, which answers all three questions at once — is the key real, does the
+endpoint answer, and will the browser allow the call. If it is blocked, the
+message says so and points at the server build rather than leaving a
+`TypeError: Failed to fetch` to be interpreted:
+
+> Could not reach api.openai.com. Either this machine is offline, or the browser
+> blocked the request because that API does not allow calls from a page. If you
+> are online, this provider cannot be used from the single-file build — run the
+> server build instead, where the request comes from the server rather than your
+> browser.
+
+`OPENAI_BASE_URL` is editable from Settings for the same reason: a gateway you
+control can supply the CORS headers that a vendor may not.
 
 ### About the key
 
-There is no key bundled with this, and there cannot be: an Anthropic API key
-bills whoever owns it, so a shared one is someone else's credit card. Create
-your own at [console.anthropic.com](https://console.anthropic.com/settings/keys)
-— new accounts start with free credit.
+There is no key bundled with this, and there cannot be: an API key bills whoever
+owns it, so a shared one is someone else's credit card. Create your own at
+[console.anthropic.com](https://console.anthropic.com/settings/keys) — new
+accounts start with a small free credit — or at
+[platform.openai.com](https://platform.openai.com/api-keys), which is prepaid
+from the start. Note that a Claude Pro or ChatGPT Plus subscription is **not**
+API access; both are billed separately from the API.
 
 The single-file build is a real trade against the hosted one. The key lives in
 `localStorage`, which means anything running in that browser profile can read
@@ -310,7 +331,7 @@ generated. There is no personal profiling.
 ```bash
 npm test              # 164 unit + end-to-end tests (no API key needed)
 npm run test:ui       # drives the real UI in Chromium against a server, 41 checks
-npm run test:standalone  # builds axiom.html and drives it from file://, 30 checks
+npm run test:standalone  # builds axiom.html and drives it from file://, 58 checks
 npm run test:live     # the product brief's scenarios against the real model
 ```
 
@@ -348,12 +369,17 @@ update and a course through it, asserting that both the strict and the
 JSON-mode request shapes were genuinely exercised.
 
 `npm run test:standalone` builds the single-file edition and drives it in
-Chromium as a `file://` URL, with `api.anthropic.com` intercepted and answered
-in the Messages API's own streaming protocol. It covers the parts that only
-exist in that build: that the file opens with no server, that it refuses to
-start on a rejected key, that the key and the learning record survive a reload,
-that the transcribed syllabus is what actually gets built, and that the settings
-page tells the truth about where everything lives.
+Chromium as a `file://` URL, with both `api.anthropic.com` and `api.openai.com`
+intercepted and answered in their own streaming protocols. It covers the parts
+that only exist in that build: that the file opens with no server, that it
+refuses to start on a rejected key, that the key and the learning record survive
+a reload, that the transcribed syllabus is what actually gets built, and that
+the settings page tells the truth about where everything lives — including that
+the engine card says "Connected" and names the right host the moment a key is
+verified, rather than a navigation later. It then switches provider mid-session
+and drives a whole lesson through OpenAI, asserting that both the strict and the
+JSON-mode request shapes were used and that the other provider's key survived
+the switch.
 
 `npm run test:live` needs `ANTHROPIC_API_KEY` and costs real tokens. It runs the
 six scenarios from the brief and asserts on behaviour: that a worksheet's answer

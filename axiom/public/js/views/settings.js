@@ -50,21 +50,26 @@ export function settingsView() {
 
 function runtimeCard() {
   const body = h('div.stack', { style: { gap: '10px' } });
-  const card = h(
-    'section.card',
-    {},
-    h('div.card-head', {}, h('h2', {}, 'Engine'), h('span.tiny.dim', {}, state.health?.model || '')),
-    body,
-  );
+  const heading = h('span.tiny.dim', {});
+  const card = h('section.card', {}, h('div.card-head', {}, h('h2', {}, 'Engine'), heading), body);
 
+  /**
+   * Everything on this card describes one provider, and all of it moves when
+   * the provider or the key does. Redrawing the whole card from one freshly
+   * fetched health payload is what stops it reading "No API key" a moment after
+   * a key was verified, or naming Anthropic while pointed at OpenAI.
+   */
   const draw = (health) => {
     clear(body);
+    heading.textContent = health?.model || '';
     const ready = health?.llmReady;
+    const kit = local()?.providers?.find((p) => p.id === health?.provider);
+
     body.appendChild(
       h(
         'div.row',
         { style: { gap: '8px', flexWrap: 'wrap' } },
-        h(`span.chip${ready ? '.good' : '.warn'}`, {}, ready ? 'Connected' : 'No API key'),
+        h(`span.chip${ready ? '.good' : '.warning'}`, {}, ready ? 'Connected' : 'No API key'),
         h('span.chip', {}, health?.model || 'model'),
         h('span.chip', {}, health?.runtime === 'browser' ? 'Runs in this browser' : 'Runs on a server'),
         h('span.chip', {}, `Quality control ${health?.qualityControl ? 'on' : 'off'}`),
@@ -75,16 +80,60 @@ function runtimeCard() {
         'p.tiny.dim',
         { style: { margin: 0 } },
         health?.runtime === 'browser'
-          ? 'Everything — the learner model, your work, the courses — is computed and stored in this browser. Requests go straight to Anthropic; nothing passes through anyone else.'
+          ? `Everything — the learner model, your work, the courses — is computed and stored in this browser. Requests go straight to ${kit?.host || 'the provider'}; nothing passes through anyone else.`
           : 'Generation runs on the server. Your browser never sees the API key.',
       ),
     );
+    if (local()?.providers) body.appendChild(providerPicker());
     if (local()?.models) body.appendChild(modelPicker());
   };
 
+  /** Re-read health, then redraw everything that depends on it. */
+  const refresh = () =>
+    api
+      .health()
+      .then((health) => {
+        update({ health });
+        draw(health);
+      })
+      .catch(() => {});
+
   draw(state.health);
-  api.health().then((health) => { update({ health }); draw(health); }).catch(() => {});
+  refresh();
+
+  // The key and model controls are rebuilt by this card, so they signal a
+  // change rather than trying to patch it from underneath.
+  document.addEventListener('axiom:engine-changed', refresh);
   return card;
+}
+
+/**
+ * Which company's model does the teaching.
+ *
+ * Keys are held per provider, so switching back does not mean pasting again.
+ * Changing this re-renders the whole page, because the key card, the model list
+ * and the endpoint field all belong to the provider that is selected.
+ */
+function providerPicker() {
+  const api_ = local();
+  const tabs = h('div.provider-tabs', { style: { maxWidth: '320px' } });
+  for (const provider of api_.providers) {
+    tabs.appendChild(
+      h(
+        'button',
+        {
+          type: 'button',
+          class: provider.id === api_.getProvider() ? 'on' : '',
+          onClick: () => {
+            api_.setProvider(provider.id);
+            document.dispatchEvent(new CustomEvent('axiom:rerender'));
+          },
+        },
+        provider.label,
+      ),
+    );
+  }
+  return h('div', { style: { marginTop: '14px' } }, field('Provider', 'Each provider bills you separately, and each needs its own key.', tabs));
 }
 
 /**
@@ -95,46 +144,85 @@ function runtimeCard() {
  */
 function modelPicker() {
   const api_ = local();
+  const provider = api_.getProvider();
+  const models = api_.modelsFor(provider);
+  const current = api_.getModel();
   const note = h('p.tiny.dim', { style: { margin: '6px 0 0' } });
+
+  const apply = (id) => {
+    if (!api_.setModel(id)) return;
+    note.textContent = models.find((m) => m.id === id)?.note || `Using ${id}.`;
+    toast('Model changed. It applies to the next thing you generate.', 'success');
+    document.dispatchEvent(new CustomEvent('axiom:engine-changed'));
+  };
+
+  const CUSTOM = '__custom__';
+  const custom = h('input.input', {
+    placeholder: 'exact model id',
+    value: models.some((m) => m.id === current) ? '' : current,
+    style: { marginTop: '6px', display: models.some((m) => m.id === current) ? 'none' : 'block' },
+    onChange: (event) => apply(event.target.value.trim()),
+  });
+
   const select = h(
     'select.select',
     {
       onChange: (event) => {
-        api_.setModel(event.target.value);
-        describe(event.target.value);
-        toast('Model changed. It applies to the next thing you generate.', 'success');
-        api.health().then((health) => update({ health })).catch(() => {});
+        if (event.target.value === CUSTOM) {
+          custom.style.display = 'block';
+          custom.focus();
+          return;
+        }
+        custom.style.display = 'none';
+        apply(event.target.value);
       },
     },
-    ...api_.models.map((model) =>
-      h('option', { value: model.id, selected: model.id === api_.getModel() }, `${model.name} — ${model.cost}`),
+    ...models.map((model) =>
+      h('option', { value: model.id, selected: model.id === current }, `${model.name} — ${model.cost}`),
     ),
+    // Provider line-ups move faster than a file baked in 2026 can follow.
+    h('option', { value: CUSTOM, selected: !models.some((m) => m.id === current) }, 'Something else…'),
   );
 
-  function describe(id) {
-    note.textContent = api_.models.find((m) => m.id === id)?.note || '';
-  }
-  describe(api_.getModel());
+  note.textContent = models.find((m) => m.id === current)?.note || `Using ${current}.`;
 
-  return h(
-    'div',
-    { style: { marginTop: '14px' } },
+  const rows = [
     field(
       'Model',
-      'You pay Anthropic per token, so this is the main lever on what Axiom costs to run. A typical lesson turn is a few cents on Opus.',
-      select,
+      'You pay per token, so this is the main lever on what Axiom costs to run. A typical lesson turn is a few cents at the top tier.',
+      h('div', {}, select, custom),
     ),
     note,
-  );
+  ];
+
+  if (provider === 'openai') {
+    rows.push(
+      field(
+        'Endpoint',
+        'Anything that speaks the chat-completions API works here — Azure, a gateway, a local server.',
+        h('input.input', {
+          value: api_.getBaseUrl(),
+          spellcheck: false,
+          onChange: (event) => {
+            api_.setBaseUrl(event.target.value);
+            toast('Endpoint saved.', 'success');
+          },
+        }),
+      ),
+    );
+  }
+
+  return h('div', { style: { marginTop: '14px' } }, ...rows);
 }
 
 /* ---------------------------------------------------------------- API key */
 
 function keyCard() {
   const api_ = local();
+  const kit = api_.providers.find((p) => p.id === api_.getProvider());
   const input = h('input.input', {
     type: 'password',
-    placeholder: 'sk-ant-...',
+    placeholder: `${kit.keyPrefix}...`,
     autocomplete: 'off',
     spellcheck: false,
     value: api_.getKey() || '',
@@ -146,7 +234,7 @@ function keyCard() {
     if (!key) {
       api_.setKey('');
       status.textContent = 'Key removed.';
-      api.health().then((health) => update({ health })).catch(() => {});
+      document.dispatchEvent(new CustomEvent('axiom:engine-changed'));
       return;
     }
     api_.setKey(key);
@@ -156,24 +244,24 @@ function keyCard() {
     status.textContent = result.ok ? 'Key works.' : result.error;
     if (result.ok) toast('API key saved and verified.', 'success');
     else toast(result.error, 'error', 9000);
-    api.health().then((health) => update({ health })).catch(() => {});
+    document.dispatchEvent(new CustomEvent('axiom:engine-changed'));
   };
 
   return h(
     'section.card',
     {},
-    h('div.card-head', {}, h('h2', {}, 'Anthropic API key')),
+    h('div.card-head', {}, h('h2', {}, kit.keyName)),
     h(
       'div.stack',
       { style: { gap: '12px' } },
       h(
         'p.tiny.dim',
         { style: { margin: 0 } },
-        'Stored in this browser only, and sent only to api.anthropic.com. Anyone with access to this browser profile can read it, and you should never publish a copy of this file with a key saved in it.',
+        `Stored in this browser only, and sent only to ${kit.host}. Anyone with access to this browser profile can read it, and you should never publish a copy of this file with a key saved in it. Each provider keeps its own key, so switching back does not mean pasting again.`,
       ),
       field(
         'Key',
-        'Create one at console.anthropic.com → Settings → API keys.',
+        `Create one at ${new URL(kit.console).host}.`,
         h('div.row', { style: { gap: '8px' } }, input, h('button.btn.primary', { type: 'button', onClick: () => save(true) }, 'Save and test')),
       ),
       status,

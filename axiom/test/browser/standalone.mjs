@@ -23,6 +23,7 @@ const outDir = process.argv[2] || '/tmp/axiom-standalone';
 fs.mkdirSync(outDir, { recursive: true });
 
 const mock = createMockProvider();
+const openaiCalls = [];
 const results = [];
 const errors = [];
 let failed = 0;
@@ -34,6 +35,51 @@ function check(name, condition, detail = '') {
 }
 
 const sse = (event, data) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+
+/** Re-encode a mock completion as the chat-completions streaming protocol. */
+async function fakeOpenAI(route) {
+  const request = route.request();
+
+  // The key check is a free GET; answer it the way the real endpoint would.
+  if (request.method() === 'GET') {
+    if (!/^Bearer sk-/.test(request.headers().authorization || '')) {
+      return route.fulfill({ status: 401, body: JSON.stringify({ error: { message: 'invalid key' } }) });
+    }
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ object: 'list', data: [{ id: 'gpt-5.6-terra', object: 'model' }] }),
+    });
+  }
+
+  const body = request.postDataJSON() || {};
+  if (!/^Bearer sk-/.test(request.headers().authorization || '')) {
+    return route.fulfill({ status: 401, body: JSON.stringify({ error: { message: 'invalid key' } }) });
+  }
+  openaiCalls.push(body);
+
+  let schema = body.response_format?.json_schema?.schema;
+  if (!schema && body.response_format?.type === 'json_object') {
+    const match = /<schema>\n([\s\S]*?)\n<\/schema>/.exec(body.messages[0].content);
+    if (match) schema = JSON.parse(match[1]);
+  }
+  const { text } = await mock.run({
+    system: [{ text: body.messages[0].content }],
+    messages: body.messages.slice(1),
+    schema,
+    label: 'browser-openai',
+  });
+
+  const chunk = (data) => `data: ${JSON.stringify(data)}\n\n`;
+  let stream = chunk({ id: 'c', model: body.model, choices: [{ index: 0, delta: { role: 'assistant' }, finish_reason: null }] });
+  for (let i = 0; i < text.length; i += 220) {
+    stream += chunk({ id: 'c', model: body.model, choices: [{ index: 0, delta: { content: text.slice(i, i + 220) }, finish_reason: null }] });
+  }
+  stream += chunk({ id: 'c', model: body.model, choices: [{ index: 0, delta: {}, finish_reason: 'stop' }] });
+  stream += chunk({ id: 'c', model: body.model, choices: [], usage: { prompt_tokens: 90, completion_tokens: 700 } });
+  stream += 'data: [DONE]\n\n';
+  return route.fulfill({ status: 200, contentType: 'text/event-stream; charset=utf-8', body: stream });
+}
 
 /** Re-encode a mock completion as the Messages API's streaming protocol. */
 async function fakeUpstream(route) {
@@ -106,11 +152,15 @@ let expectRejection = false;
 page.on('console', (msg) => {
   if (msg.type() !== 'error') return;
   if (/favicon|fonts\.g|cdn\.jsdelivr|net::ERR/.test(msg.text())) return;
+  // Warnings are routed to console.error by the logger. The strict-mode
+  // fallback notice is the app working as designed, and is asserted elsewhere.
+  if (/\bWARN\b/.test(msg.text())) return;
   // The bad-key check deliberately provokes a 401; that is the assertion, not a fault.
   if (expectRejection && /401/.test(msg.text())) return;
   errors.push(`console: ${msg.text()}`);
 });
 await page.route('https://api.anthropic.com/**', fakeUpstream);
+await page.route('https://api.openai.com/**', fakeOpenAI);
 
 const shot = (name) => page.screenshot({ path: `${outDir}/${name}.png`, fullPage: false });
 
@@ -128,7 +178,22 @@ try {
     'it points at the console rather than promising a key',
     (await page.locator('.gate-notes a').first().getAttribute('href')).includes('console.anthropic.com'),
   );
+  check('both providers are offered before anything is typed', (await page.locator('.provider-tabs button').count()) === 2);
   await shot('01-gate');
+
+  // Switching provider on the gate must change what is being asked for.
+  await page.click('.provider-tabs button:nth-child(2)');
+  check('picking OpenAI asks for an OpenAI key', (await page.locator('.gate-form label').last().innerText()).includes('OpenAI'));
+  check(
+    'and points at the OpenAI console',
+    (await page.locator('.gate-notes a').first().getAttribute('href')).includes('platform.openai.com'),
+  );
+  check(
+    'and names the host the key will actually be sent to',
+    (await page.locator('.gate-notes').innerText()).includes('api.openai.com'),
+  );
+  await shot('01b-gate-openai');
+  await page.click('.provider-tabs button:nth-child(1)');
 
   /* --------------------------------------------------------- key rejection */
   expectRejection = true;
@@ -286,8 +351,15 @@ try {
     return window.axiomLocal.getModel();
   });
   check('the model can be changed to a cheaper one', switched === 'claude-haiku-4-5', switched);
-  const refused = await page.evaluate(() => window.axiomLocal.setModel('gpt-nonsense'));
-  check('and cannot be set to something that is not offered', refused === false);
+  // Provider line-ups move faster than a file can, so a typed id is accepted —
+  // but an empty one is not, because that would silently unset the model.
+  const typed = await page.evaluate(() => {
+    window.axiomLocal.setModel('claude-opus-4-8');
+    return window.axiomLocal.getModel();
+  });
+  check('an unlisted but real model id can be typed in', typed === 'claude-opus-4-8', typed);
+  const refused = await page.evaluate(() => window.axiomLocal.setModel('   '));
+  check('but an empty one is refused', refused === false);
   await page.evaluate(() => window.axiomLocal.setModel('claude-opus-5'));
   await shot('06-settings');
 
@@ -301,6 +373,80 @@ try {
   });
   check('work survives a reload', persisted >= 1, `${persisted} courses after reload`);
   check('and the key survives too, so it does not ask again', (await page.locator('.gate-panel').count()) === 0);
+
+  /* --------------------------------------------------------- running on OpenAI */
+  await page.goto(`${file}#/settings`);
+  await page.waitForSelector('.provider-tabs', { timeout: 20000 });
+  await page.click('.card .provider-tabs button:nth-child(2)');
+  await page.waitForFunction(() => /OpenAI API key/.test(document.body.innerText), null, { timeout: 10000 });
+  check('settings can switch provider after setup', true);
+  check(
+    'and the model list becomes the other provider’s',
+    (await page.locator('.card select.select').first().innerText()).includes('GPT'),
+  );
+  check(
+    'the endpoint is editable, so a compatible API can be used',
+    (await page.locator('.card input.input').count()) >= 2,
+  );
+
+  await page.fill('.card input[type="password"]', 'sk-openai-test-key');
+  await page.click('.card .btn.primary');
+  await page.waitForFunction(
+    () => /Key works|rejected|Could not reach/.test(document.body.innerText),
+    null,
+    { timeout: 15000 },
+  );
+  const verdict = await page.locator('body').innerText();
+  check('an OpenAI key is verified against the real endpoint', verdict.includes('Key works'), verdict.match(/Key works|rejected|Could not reach[^.]*/)?.[0]);
+  await shot('08-openai-settings');
+
+  // The card must tell the truth immediately after a key is verified, not on
+  // the next navigation: stale "No API key" is how someone concludes it broke.
+  const engine = await page.locator('.card').first().innerText();
+  check('the engine card reports connected as soon as the key lands', engine.includes('Connected'), engine.split('\n')[2]);
+  check('and names the host it will actually call', engine.includes('api.openai.com'));
+  check('and shows the OpenAI model, not the one from before the switch', /gpt/i.test(engine) && !engine.includes('claude-opus-5'));
+
+  const health = await page.evaluate(async () => {
+    const res = await fetch('/api/health', { headers: { 'x-learner-id': 'me' } });
+    return res.json();
+  });
+  check('the app reports it is running on OpenAI', health.provider === 'openai', health.provider);
+  check('with an OpenAI model', /gpt/i.test(health.model), health.model);
+  check('and counts itself ready', health.llmReady === true);
+
+  await page.goto(`${file}#/`);
+  await page.waitForSelector('.ask textarea', { timeout: 20000 });
+  await page.fill('.ask textarea', 'Teach me the quadratic formula');
+  await page.click('.ask-bar .btn.primary');
+  await page.waitForSelector('.turn.tutor .prose', { timeout: 40000 });
+  check('a lesson streams from OpenAI, in the browser, with no server', await page.locator('.turn.tutor').first().isVisible());
+  await page.waitForSelector('.question', { timeout: 40000 });
+  check('and still ends the turn with something to do', await page.locator('.question').first().isVisible());
+  await shot('09-openai-session');
+
+  const shapes = await page.evaluate(() => window.__openaiSeen ?? null);
+  check(
+    'the OpenAI requests were real chat-completions calls',
+    openaiCalls.length > 0 && openaiCalls.every((b) => b.stream === true && b.max_completion_tokens > 0),
+    `${openaiCalls.length} calls`,
+  );
+  check(
+    'a deep teaching schema took the JSON-mode fallback rather than failing',
+    openaiCalls.some((b) => b.response_format?.type === 'json_object'),
+  );
+  check(
+    'and a small schema kept strict mode',
+    openaiCalls.some((b) => b.response_format?.type === 'json_schema' && b.response_format.json_schema.strict === true),
+  );
+
+  // Back to Claude, and the key that was saved earlier must still be there.
+  await page.goto(`${file}#/settings`);
+  await page.waitForSelector('.provider-tabs', { timeout: 20000 });
+  await page.click('.card .provider-tabs button:nth-child(1)');
+  await page.waitForFunction(() => /Anthropic API key/.test(document.body.innerText), null, { timeout: 10000 });
+  const keptKey = await page.evaluate(() => window.axiomLocal.getKey('anthropic'));
+  check('switching back does not lose the other key', keptKey === 'sk-ant-test-key', keptKey ? 'kept' : 'lost');
 
   /* ------------------------------------------------------------------ export */
   const backup = await page.evaluate(() => window.axiomLocal.storageSummary());

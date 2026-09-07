@@ -1,7 +1,7 @@
 import { h, clear } from '../public/js/dom.js';
 import { icon } from '../public/js/icons.js';
 import { installTransport } from './net.js';
-import { config, setApiKey, setPrefs, hasLLM } from './config.js';
+import { config, setApiKey, setPrefs, setProvider, hasLLM, currentKey, PROVIDERS } from './config.js';
 import { snapshotDb, replaceDb, resetDb, storageBlocked } from './store.js';
 import { initTheme } from '../public/js/ui.js';
 
@@ -23,60 +23,86 @@ const pretty = (bytes) =>
   bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 
 /**
- * The models worth offering, cheapest last.
+ * What each provider is, and what it costs.
  *
  * This is a per-token bill the learner pays directly, so the choice belongs to
- * them and the prices belong on the page. Opus is the default because teaching
- * well is the whole product; the cheaper two are here because a long revision
- * session on Opus is a real amount of money and nobody should have to discover
- * that from an invoice.
+ * them and the prices belong on the page. A long revision session is a real
+ * amount of money and nobody should have to discover that from an invoice.
+ *
+ * OpenAI's model list moves faster than any list baked into a file can, so the
+ * picker also accepts a typed model id: better a stale suggestion you can
+ * override than a hard-coded name that stops working.
  */
-const MODELS = [
-  { id: 'claude-opus-5', name: 'Claude Opus 5', cost: '$5 / $25 per million tokens', note: 'Default. The strongest teaching, the strongest grading, the most expensive.' },
-  { id: 'claude-sonnet-5', name: 'Claude Sonnet 5', cost: '$2 / $10 per million tokens', note: 'About a third of the price. Noticeably cheaper for long drilling sessions.' },
-  { id: 'claude-haiku-4-5', name: 'Claude Haiku 4.5', cost: '$1 / $5 per million tokens', note: 'Cheapest. Fine for flashcards and recall drills; weaker at marking free response.' },
-];
+const CATALOGUE = {
+  anthropic: {
+    label: 'Claude',
+    keyName: 'Anthropic API key',
+    keyPrefix: 'sk-ant-',
+    console: 'https://console.anthropic.com/settings/keys',
+    host: 'api.anthropic.com',
+    models: [
+      { id: 'claude-opus-5', name: 'Claude Opus 5', cost: '$5 / $25 per million tokens', note: 'Default. The strongest teaching, the strongest grading, the most expensive.' },
+      { id: 'claude-sonnet-5', name: 'Claude Sonnet 5', cost: '$2 / $10 per million tokens', note: 'About a third of the price. Noticeably cheaper for long drilling sessions.' },
+      { id: 'claude-haiku-4-5', name: 'Claude Haiku 4.5', cost: '$1 / $5 per million tokens', note: 'Cheapest. Fine for flashcards and recall drills; weaker at marking free response.' },
+    ],
+  },
+  openai: {
+    label: 'OpenAI',
+    keyName: 'OpenAI API key',
+    keyPrefix: 'sk-',
+    console: 'https://platform.openai.com/api-keys',
+    host: 'api.openai.com',
+    models: [
+      { id: 'gpt-5.6-sol', name: 'GPT-5.6 Sol', cost: 'about $5 / $30 per million tokens', note: 'Flagship tier. Strongest reasoning, priciest.' },
+      { id: 'gpt-5.6-terra', name: 'GPT-5.6 Terra', cost: 'about $2 / $12 per million tokens', note: 'Default. The balanced middle, and the closest match to how Axiom is tuned.' },
+      { id: 'gpt-5.6-luna', name: 'GPT-5.6 Luna', cost: 'about $0.20 / $1.20 per million tokens', note: 'Budget tier. Cheap enough to drill on; weaker at marking free response.' },
+    ],
+  },
+};
+
+const activeCatalogue = () => CATALOGUE[config.provider] || CATALOGUE.anthropic;
+
+/**
+ * Turn a failed fetch into something actionable.
+ *
+ * A blocked cross-origin request and an unplugged network cable are the same
+ * TypeError to a browser — the useful detail is stripped before JavaScript sees
+ * it. So name both possibilities and say what to do about the one this app
+ * cannot fix.
+ */
+const unreachable = (host) => ({
+  ok: false,
+  error:
+    `Could not reach ${host}. Either this machine is offline, or the browser blocked the ` +
+    'request because that API does not allow calls from a page. If you are online, this ' +
+    'provider cannot be used from the single-file build — run the server build instead, ' +
+    'where the request comes from the server rather than your browser.',
+});
 
 window.axiomLocal = {
-  models: MODELS,
-  getModel: () => config.model,
+  providers: PROVIDERS.map((id) => ({ id, ...CATALOGUE[id] })),
+  getProvider: () => config.provider,
+  setProvider: (id) => setProvider(id),
+
+  models: CATALOGUE.anthropic.models,
+  modelsFor: (provider = config.provider) => (CATALOGUE[provider] || CATALOGUE.anthropic).models,
+  getModel: () => (config.provider === 'openai' ? config.openaiModel : config.model),
   setModel: (id) => {
-    if (!MODELS.some((m) => m.id === id)) return false;
-    setPrefs({ model: id });
+    const value = String(id || '').trim();
+    if (!value) return false;
+    setPrefs(config.provider === 'openai' ? { openaiModel: value } : { model: value });
     return true;
   },
-  getKey: () => config.apiKey,
-  setKey: (key) => setApiKey(key),
+
+  getBaseUrl: () => config.openaiBaseURL,
+  setBaseUrl: (url) => setPrefs({ openaiBaseURL: String(url || '').trim() }),
+
+  getKey: (provider = config.provider) => (provider === 'openai' ? config.openaiKey : config.apiKey),
+  setKey: (key, provider = config.provider) => setApiKey(key, provider),
 
   /** Prove a key works before letting someone walk into a wall of 401s. */
-  async verifyKey(key) {
-    try {
-      const res = await fetch(`${config.baseURL}/v1/messages`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': key,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({
-          model: config.model,
-          max_tokens: 1,
-          messages: [{ role: 'user', content: 'hi' }],
-        }),
-      });
-      if (res.ok) return { ok: true };
-      if (res.status === 401) return { ok: false, error: 'That key was rejected. Check you copied all of it.' };
-      if (res.status === 403) return { ok: false, error: 'That key is not allowed to use this model.' };
-      if (res.status === 400) {
-        const body = await res.json().catch(() => ({}));
-        return { ok: false, error: body?.error?.message || 'The API rejected the request.' };
-      }
-      if (res.status === 429) return { ok: true, warning: 'The key works but is rate limited right now.' };
-      return { ok: false, error: `The API answered ${res.status}.` };
-    } catch {
-      return { ok: false, error: 'Could not reach api.anthropic.com. Check your connection.' };
-    }
+  async verifyKey(key, provider = config.provider) {
+    return provider === 'openai' ? verifyOpenAI(key) : verifyAnthropic(key);
   },
 
   exportData() {
@@ -114,6 +140,63 @@ window.axiomLocal = {
   },
 };
 
+/**
+ * Anthropic: one token, which costs a fraction of a cent and proves the key,
+ * the model permission and the browser-access header all at once.
+ */
+async function verifyAnthropic(key) {
+  try {
+    const res = await fetch(`${config.baseURL}/v1/messages`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({ model: config.model, max_tokens: 1, messages: [{ role: 'user', content: 'hi' }] }),
+    });
+    return interpret(res, 'api.anthropic.com');
+  } catch {
+    return unreachable('api.anthropic.com');
+  }
+}
+
+/**
+ * OpenAI: listing models costs nothing at all, and answers the same three
+ * questions — is the key real, does the endpoint answer, and will the browser
+ * be allowed to talk to it.
+ */
+async function verifyOpenAI(key) {
+  const host = new URL(config.openaiBaseURL).host;
+  try {
+    const res = await fetch(`${config.openaiBaseURL.replace(/\/+$/, '')}/models`, {
+      headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
+    });
+    return interpret(res, host);
+  } catch {
+    return unreachable(host);
+  }
+}
+
+async function interpret(res, host) {
+  if (res.ok) return { ok: true };
+  if (res.status === 401) return { ok: false, error: 'That key was rejected. Check you copied all of it.' };
+  if (res.status === 403) return { ok: false, error: 'That key is not allowed to use this model.' };
+  if (res.status === 429) {
+    const body = await res.json().catch(() => ({}));
+    const message = body?.error?.message || '';
+    return /quota|billing|credit/i.test(message)
+      ? { ok: false, error: 'The key is valid but the account has no credit left. Top it up and try again.' }
+      : { ok: true, warning: 'The key works but is rate limited right now.' };
+  }
+  if (res.status === 400) {
+    const body = await res.json().catch(() => ({}));
+    return { ok: false, error: body?.error?.message || 'The API rejected the request.' };
+  }
+  return { ok: false, error: `${host} answered ${res.status}.` };
+}
+
 /* ---------------------------------------------------------------- the gate */
 
 const link = (href, text) =>
@@ -122,13 +205,66 @@ const link = (href, text) =>
 function gate(root, onReady) {
   const input = h('input.input', {
     type: 'password',
-    placeholder: 'sk-ant-...',
     autocomplete: 'off',
     spellcheck: false,
     style: { fontFamily: 'var(--mono, monospace)' },
   });
+  const label = h('label', { for: 'axiom-key' });
   const status = h('p.tiny', { style: { margin: '10px 0 0', minHeight: '18px', color: 'var(--ink-3)' } });
   const button = h('button.btn.primary.lg', { type: 'button' }, 'Start learning');
+  const where = h('p', {});
+  const goes = h('p', {});
+  const tabs = h('div.provider-tabs');
+
+  /** Redraw everything that names a provider. */
+  function reflect() {
+    const kit = activeCatalogue();
+    input.placeholder = `${kit.keyPrefix}...`;
+    input.value = window.axiomLocal.getKey() || '';
+    label.textContent = `Your ${kit.keyName}`;
+    status.textContent = '';
+    for (const tab of tabs.children) {
+      tab.classList.toggle('on', tab.dataset.provider === config.provider);
+    }
+    clear(where).appendChild(
+      h(
+        'span',
+        {},
+        h('b', {}, 'Where to get one. '),
+        'Create a key at ',
+        link(kit.console, new URL(kit.console).host),
+        '. Axiom cannot supply one — an API key is billed to whoever owns it.',
+        config.provider === 'anthropic' ? ' New Anthropic accounts start with a small free credit.' : '',
+      ),
+    );
+    clear(goes).appendChild(
+      h(
+        'span',
+        {},
+        h('b', {}, 'Where it goes. '),
+        `Into this browser’s local storage, and out to ${kit.host} when you ask Axiom to do something. `,
+        'There is no Axiom server: nothing else ever sees it. Anyone who can use this browser profile can read the key, and you should not send anyone a copy of this file after saving one in it.',
+      ),
+    );
+  }
+
+  for (const provider of window.axiomLocal.providers) {
+    tabs.appendChild(
+      h(
+        'button',
+        {
+          type: 'button',
+          dataset: { provider: provider.id },
+          onClick: () => {
+            setProvider(provider.id);
+            reflect();
+            input.focus();
+          },
+        },
+        provider.label,
+      ),
+    );
+  }
 
   const submit = async () => {
     const key = input.value.trim();
@@ -137,12 +273,13 @@ function gate(root, onReady) {
       return;
     }
     button.disabled = true;
+    status.style.color = 'var(--ink-3)';
     status.textContent = 'Checking the key…';
     const result = await window.axiomLocal.verifyKey(key);
     if (!result.ok) {
       button.disabled = false;
-      status.textContent = result.error;
       status.style.color = 'var(--critical)';
+      status.textContent = result.error;
       return;
     }
     const stored = setApiKey(key);
@@ -172,31 +309,12 @@ function gate(root, onReady) {
           {},
           'An AI that works out what you already know, teaches the gap, and keeps testing until you have actually learned it. It runs entirely in this browser.',
         ),
-        h(
-          'div.gate-form',
-          {},
-          h('label', { for: 'axiom-key' }, 'Your Anthropic API key'),
-          input,
-          button,
-          status,
-        ),
+        h('div.gate-form', {}, h('label', {}, 'Whose model should teach you'), tabs, label, input, button, status),
         h(
           'div.gate-notes',
           {},
-          h(
-            'p',
-            {},
-            h('b', {}, 'Where to get one. '),
-            'Sign in at ',
-            link('https://console.anthropic.com/settings/keys', 'console.anthropic.com'),
-            ' and create a key. New accounts start with free credit; after that you pay Anthropic per use. Axiom cannot supply a key — a key is billed to whoever owns it.',
-          ),
-          h(
-            'p',
-            {},
-            h('b', {}, 'Where it goes. '),
-            'Into this browser’s local storage, and out to api.anthropic.com when you ask Axiom to do something. There is no Axiom server: nothing else ever sees it. Anyone who can use this browser profile can read the key, and you should not send anyone a copy of this file after saving one in it.',
-          ),
+          where,
+          goes,
           h(
             'p',
             {},
@@ -207,6 +325,8 @@ function gate(root, onReady) {
       ),
     ),
   );
+
+  reflect();
   input.focus();
 }
 

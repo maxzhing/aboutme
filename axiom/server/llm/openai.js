@@ -13,10 +13,12 @@ const log = logger('llm:openai');
  * backoff, typed errors — so every engine module above it is unchanged.
  *
  * Written directly against `POST /chat/completions` with fetch rather than the
- * `openai` package, for three reasons: the surface needed here is one endpoint;
+ * `openai` package, for four reasons: the surface needed here is one endpoint;
  * this project deliberately carries almost no dependencies and no build step;
- * and the same code then works against any OpenAI-compatible endpoint by
- * pointing `OPENAI_BASE_URL` somewhere else — Azure, a gateway, a local server.
+ * the same code works against any OpenAI-compatible endpoint by pointing
+ * `OPENAI_BASE_URL` somewhere else — Azure, a gateway, a local server; and
+ * because it touches no Node built-in, this exact file also runs in the
+ * single-file browser build. One implementation, both builds.
  */
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -43,7 +45,7 @@ class Semaphore {
   }
 }
 
-const gate = new Semaphore(Number(process.env.AXIOM_CONCURRENCY) || 6);
+const gate = new Semaphore(config.concurrency || 6);
 
 export class LLMError extends Error {
   constructor(message, { status, retryable, cause, headers } = {}) {

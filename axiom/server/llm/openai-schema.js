@@ -35,10 +35,14 @@ const UNSUPPORTED = new Set([
 /**
  * Published limits, overridable because they are OpenAI's to change and a
  * wrong constant here should cost one environment variable, not a release.
+ * Read defensively: this module also runs in the browser build, where there is
+ * no `process`.
  */
+const env = (name) => (typeof process !== 'undefined' ? process.env?.[name] : undefined);
+
 export const LIMITS = {
-  depth: Number(process.env.AXIOM_OPENAI_SCHEMA_DEPTH) || 5,
-  properties: Number(process.env.AXIOM_OPENAI_SCHEMA_PROPERTIES) || 100,
+  depth: Number(env('AXIOM_OPENAI_SCHEMA_DEPTH')) || 5,
+  properties: Number(env('AXIOM_OPENAI_SCHEMA_PROPERTIES')) || 100,
   enums: 500,
 };
 

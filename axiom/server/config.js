@@ -53,6 +53,7 @@ export const config = {
   provider: process.env.AXIOM_LLM_PROVIDER || 'anthropic',
   maxRetries: int(process.env.AXIOM_MAX_RETRIES, 4),
   requestTimeoutMs: int(process.env.AXIOM_TIMEOUT_MS, 10 * 60 * 1000),
+  concurrency: int(process.env.AXIOM_CONCURRENCY, 6),
 
   // --- storage -----------------------------------------------------------
   dbPath: process.env.AXIOM_DB || path.join(ROOT, 'data', 'axiom.db'),
