@@ -1,0 +1,11268 @@
+{
+ "generated": "composed from real place, institution and activity vocabularies",
+ "counts": {
+  "total": 1000,
+  "verified": 41,
+  "leads": 959
+ },
+ "metros": [
+  [
+   "Boston",
+   "MA",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Worcester",
+   "MA",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Providence",
+   "RI",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Hartford",
+   "CT",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "New Haven",
+   "CT",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Manchester",
+   "NH",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Portland",
+   "ME",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Burlington",
+   "VT",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "New York City",
+   "NY",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Long Island",
+   "NY",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Albany",
+   "NY",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Rochester",
+   "NY",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Buffalo",
+   "NY",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Syracuse",
+   "NY",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Newark",
+   "NJ",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Trenton",
+   "NJ",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Philadelphia",
+   "PA",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Pittsburgh",
+   "PA",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Harrisburg",
+   "PA",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Wilmington",
+   "DE",
+   "USA",
+   "Northeast"
+  ],
+  [
+   "Baltimore",
+   "MD",
+   "USA",
+   "Mid-Atlantic"
+  ],
+  [
+   "Washington",
+   "DC",
+   "USA",
+   "Mid-Atlantic"
+  ],
+  [
+   "Richmond",
+   "VA",
+   "USA",
+   "Mid-Atlantic"
+  ],
+  [
+   "Virginia Beach",
+   "VA",
+   "USA",
+   "Mid-Atlantic"
+  ],
+  [
+   "Charleston",
+   "WV",
+   "USA",
+   "Mid-Atlantic"
+  ],
+  [
+   "Charlotte",
+   "NC",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Raleigh-Durham",
+   "NC",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Greensboro",
+   "NC",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Columbia",
+   "SC",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Greenville",
+   "SC",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Atlanta",
+   "GA",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Savannah",
+   "GA",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Jacksonville",
+   "FL",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Orlando",
+   "FL",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Tampa Bay",
+   "FL",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Miami",
+   "FL",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Birmingham",
+   "AL",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Huntsville",
+   "AL",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Nashville",
+   "TN",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Memphis",
+   "TN",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Knoxville",
+   "TN",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Louisville",
+   "KY",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Jackson",
+   "MS",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "New Orleans",
+   "LA",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Baton Rouge",
+   "LA",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Little Rock",
+   "AR",
+   "USA",
+   "Southeast"
+  ],
+  [
+   "Detroit",
+   "MI",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Grand Rapids",
+   "MI",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Lansing",
+   "MI",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Cleveland",
+   "OH",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Columbus",
+   "OH",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Cincinnati",
+   "OH",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Toledo",
+   "OH",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Indianapolis",
+   "IN",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Fort Wayne",
+   "IN",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Chicago",
+   "IL",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Peoria",
+   "IL",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Milwaukee",
+   "WI",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Madison",
+   "WI",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Minneapolis-St. Paul",
+   "MN",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "Duluth",
+   "MN",
+   "USA",
+   "Great Lakes"
+  ],
+  [
+   "St. Louis",
+   "MO",
+   "USA",
+   "Midwest"
+  ],
+  [
+   "Kansas City",
+   "MO",
+   "USA",
+   "Midwest"
+  ],
+  [
+   "Springfield",
+   "MO",
+   "USA",
+   "Midwest"
+  ],
+  [
+   "Des Moines",
+   "IA",
+   "USA",
+   "Midwest"
+  ],
+  [
+   "Cedar Rapids",
+   "IA",
+   "USA",
+   "Midwest"
+  ],
+  [
+   "Omaha",
+   "NE",
+   "USA",
+   "Midwest"
+  ],
+  [
+   "Wichita",
+   "KS",
+   "USA",
+   "Midwest"
+  ],
+  [
+   "Sioux Falls",
+   "SD",
+   "USA",
+   "Midwest"
+  ],
+  [
+   "Fargo",
+   "ND",
+   "USA",
+   "Midwest"
+  ],
+  [
+   "Dallas-Fort Worth",
+   "TX",
+   "USA",
+   "South Central"
+  ],
+  [
+   "Houston",
+   "TX",
+   "USA",
+   "South Central"
+  ],
+  [
+   "Austin",
+   "TX",
+   "USA",
+   "South Central"
+  ],
+  [
+   "San Antonio",
+   "TX",
+   "USA",
+   "South Central"
+  ],
+  [
+   "El Paso",
+   "TX",
+   "USA",
+   "South Central"
+  ],
+  [
+   "Lubbock",
+   "TX",
+   "USA",
+   "South Central"
+  ],
+  [
+   "Rio Grande Valley",
+   "TX",
+   "USA",
+   "South Central"
+  ],
+  [
+   "Oklahoma City",
+   "OK",
+   "USA",
+   "South Central"
+  ],
+  [
+   "Tulsa",
+   "OK",
+   "USA",
+   "South Central"
+  ],
+  [
+   "Denver",
+   "CO",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Colorado Springs",
+   "CO",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Salt Lake City",
+   "UT",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Boise",
+   "ID",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Billings",
+   "MT",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Cheyenne",
+   "WY",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Albuquerque",
+   "NM",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Las Cruces",
+   "NM",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Phoenix",
+   "AZ",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Tucson",
+   "AZ",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Las Vegas",
+   "NV",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Reno",
+   "NV",
+   "USA",
+   "Mountain"
+  ],
+  [
+   "Los Angeles",
+   "CA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Orange County",
+   "CA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "San Diego",
+   "CA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Inland Empire",
+   "CA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Bay Area",
+   "CA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Sacramento",
+   "CA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Fresno",
+   "CA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Bakersfield",
+   "CA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Portland",
+   "OR",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Eugene",
+   "OR",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Seattle",
+   "WA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Spokane",
+   "WA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Tacoma",
+   "WA",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Anchorage",
+   "AK",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Honolulu",
+   "HI",
+   "USA",
+   "Pacific"
+  ],
+  [
+   "Toronto",
+   "ON",
+   "Canada",
+   "Canada"
+  ],
+  [
+   "Ottawa",
+   "ON",
+   "Canada",
+   "Canada"
+  ],
+  [
+   "Montreal",
+   "QC",
+   "Canada",
+   "Canada"
+  ],
+  [
+   "Vancouver",
+   "BC",
+   "Canada",
+   "Canada"
+  ],
+  [
+   "Calgary",
+   "AB",
+   "Canada",
+   "Canada"
+  ],
+  [
+   "Edmonton",
+   "AB",
+   "Canada",
+   "Canada"
+  ],
+  [
+   "Winnipeg",
+   "MB",
+   "Canada",
+   "Canada"
+  ],
+  [
+   "Halifax",
+   "NS",
+   "Canada",
+   "Canada"
+  ],
+  [
+   "Mexico City",
+   "CDMX",
+   "Mexico",
+   "International"
+  ],
+  [
+   "Monterrey",
+   "NL",
+   "Mexico",
+   "International"
+  ],
+  [
+   "Sao Paulo",
+   "SP",
+   "Brazil",
+   "International"
+  ],
+  [
+   "Tel Aviv",
+   "IL",
+   "Israel",
+   "International"
+  ],
+  [
+   "Istanbul",
+   "TR",
+   "Turkiye",
+   "International"
+  ],
+  [
+   "London",
+   "ENG",
+   "United Kingdom",
+   "International"
+  ],
+  [
+   "Amsterdam",
+   "NH",
+   "Netherlands",
+   "International"
+  ],
+  [
+   "Warsaw",
+   "MZ",
+   "Poland",
+   "International"
+  ],
+  [
+   "Sydney",
+   "NSW",
+   "Australia",
+   "International"
+  ],
+  [
+   "Taipei",
+   "TPE",
+   "Chinese Taipei",
+   "International"
+  ],
+  [
+   "Tokyo",
+   "TK",
+   "Japan",
+   "International"
+  ],
+  [
+   "Bengaluru",
+   "KA",
+   "India",
+   "International"
+  ]
+ ],
+ "targets": [
+  [
+   "Public library branch",
+   "Youth Services / Programming Librarian",
+   "Email",
+   "4-6 weeks",
+   "\"public library\" youth services programming"
+  ],
+  [
+   "Elementary school",
+   "Principal or STEM/Science lead",
+   "Email",
+   "4-8 weeks",
+   "\"elementary school\" district STEM coordinator"
+  ],
+  [
+   "Middle school",
+   "Science department chair",
+   "Email",
+   "4-8 weeks",
+   "\"middle school\" science department"
+  ],
+  [
+   "High school without a team",
+   "Counselor or CTE coordinator",
+   "Email",
+   "6-10 weeks",
+   "\"high school\" CTE coordinator"
+  ],
+  [
+   "Science center or children's museum",
+   "Education / Public Programs Manager",
+   "Web form",
+   "8-12 weeks",
+   "science center OR \"children's museum\" education programs"
+  ],
+  [
+   "Boys & Girls Club",
+   "Program Director",
+   "Email",
+   "3-5 weeks",
+   "\"Boys and Girls Club\" program director"
+  ],
+  [
+   "YMCA branch",
+   "Youth Development Director",
+   "Email",
+   "3-5 weeks",
+   "YMCA youth development director"
+  ],
+  [
+   "Girl Scouts council or troop",
+   "Council Program Manager",
+   "Web form",
+   "6-8 weeks",
+   "\"Girl Scouts\" council program department"
+  ],
+  [
+   "Scouting America troop or pack",
+   "Scoutmaster or Cubmaster",
+   "Email",
+   "3-4 weeks",
+   "Scouting America council OR \"scout troop\""
+  ],
+  [
+   "4-H club or county extension",
+   "County 4-H Youth Development Agent",
+   "Email",
+   "4-6 weeks",
+   "4-H county extension youth development agent"
+  ],
+  [
+   "Children's hospital",
+   "Child Life Services",
+   "Web form",
+   "10-14 weeks",
+   "\"children's hospital\" child life services"
+  ],
+  [
+   "Senior center or retirement community",
+   "Activities Director",
+   "Phone",
+   "2-4 weeks",
+   "\"senior center\" activities director"
+  ],
+  [
+   "Parks & recreation department",
+   "Recreation Program Coordinator",
+   "Web form",
+   "6-8 weeks",
+   "\"parks and recreation\" recreation programs"
+  ],
+  [
+   "Community college",
+   "STEM outreach or dual-enrollment office",
+   "Email",
+   "6-8 weeks",
+   "\"community college\" STEM outreach"
+  ],
+  [
+   "University engineering outreach office",
+   "K-12 Outreach Coordinator",
+   "Web form",
+   "8-12 weeks",
+   "university \"K-12 outreach\" engineering"
+  ],
+  [
+   "Makerspace or hackerspace",
+   "Shop lead or board member",
+   "Email",
+   "2-3 weeks",
+   "makerspace OR hackerspace"
+  ],
+  [
+   "County or state fair",
+   "Exhibits / Vendor Coordinator",
+   "Web form",
+   "16-24 weeks",
+   "\"county fair\" OR \"state fair\" exhibitor information"
+  ],
+  [
+   "Farmers market",
+   "Market Manager",
+   "Email",
+   "3-4 weeks",
+   "\"farmers market\" manager"
+  ],
+  [
+   "City council or mayor's office",
+   "Constituent Services or Chief of Staff",
+   "Email",
+   "6-10 weeks",
+   "city council OR mayor office community"
+  ],
+  [
+   "Chamber of commerce",
+   "Membership or Events Director",
+   "Email",
+   "4-6 weeks",
+   "\"chamber of commerce\" events"
+  ],
+  [
+   "Rotary, Kiwanis or Lions club",
+   "Program Chair",
+   "Email",
+   "3-6 weeks",
+   "Rotary OR Kiwanis OR Lions club program chair"
+  ],
+  [
+   "Local manufacturer or machine shop",
+   "Plant Manager or HR / Community Relations",
+   "Email",
+   "6-10 weeks",
+   "manufacturer OR \"machine shop\" community relations"
+  ],
+  [
+   "Local tech employer",
+   "University Relations or CSR lead",
+   "Email",
+   "8-12 weeks",
+   "technology company community outreach STEM"
+  ],
+  [
+   "Faith community youth group",
+   "Youth Minister or Director",
+   "Email",
+   "3-5 weeks",
+   "church OR synagogue OR mosque youth group"
+  ],
+  [
+   "Refugee resettlement or ESL program",
+   "Youth Program Coordinator",
+   "Email",
+   "4-8 weeks",
+   "refugee resettlement OR ESL youth program"
+  ],
+  [
+   "Special education program",
+   "Director of Special Services",
+   "Email",
+   "8-12 weeks",
+   "\"special education\" director of special services"
+  ],
+  [
+   "School for the deaf or blind",
+   "Outreach / Transition Coordinator",
+   "Email",
+   "10-14 weeks",
+   "\"school for the deaf\" OR \"school for the blind\" outreach"
+  ],
+  [
+   "Title I school district",
+   "Federal Programs Coordinator",
+   "Email",
+   "8-12 weeks",
+   "\"Title I\" school district federal programs"
+  ],
+  [
+   "Homeschool co-op",
+   "Co-op Enrichment Coordinator",
+   "Email",
+   "3-5 weeks",
+   "homeschool co-op enrichment"
+  ],
+  [
+   "After-school program (21st CCLC)",
+   "Site Coordinator",
+   "Email",
+   "4-6 weeks",
+   "\"21st Century Community Learning Centers\" site"
+  ],
+  [
+   "Local news or public radio station",
+   "Assignment Desk or Community Editor",
+   "Email",
+   "2-4 weeks",
+   "local news station OR public radio community"
+  ],
+  [
+   "Food bank or pantry",
+   "Volunteer Coordinator",
+   "Web form",
+   "1-3 weeks",
+   "food bank volunteer coordinator"
+  ],
+  [
+   "Animal shelter",
+   "Volunteer Manager",
+   "Web form",
+   "1-3 weeks",
+   "animal shelter volunteer"
+  ],
+  [
+   "Habitat for Humanity affiliate",
+   "Volunteer Services",
+   "Web form",
+   "2-4 weeks",
+   "\"Habitat for Humanity\" volunteer"
+  ],
+  [
+   "Tribal youth or Native education program",
+   "Education Director",
+   "Phone",
+   "8-12 weeks",
+   "tribal youth program OR Native American education"
+  ],
+  [
+   "Military base youth program",
+   "School Liaison Officer",
+   "Email",
+   "8-12 weeks",
+   "military base school liaison officer"
+  ],
+  [
+   "Juvenile justice education program",
+   "Education Administrator",
+   "Phone",
+   "12-16 weeks",
+   "juvenile justice education program"
+  ],
+  [
+   "Public housing community center",
+   "Resident Services Coordinator",
+   "Phone",
+   "4-6 weeks",
+   "public housing resident services"
+  ],
+  [
+   "Rural school district",
+   "Superintendent (small districts answer)",
+   "Email",
+   "6-10 weeks",
+   "rural school district superintendent"
+  ],
+  [
+   "Dual-language or bilingual school",
+   "Bilingual Programs Coordinator",
+   "Email",
+   "6-8 weeks",
+   "dual language OR bilingual school district"
+  ],
+  [
+   "Nearby FLL or FTC team",
+   "Head Coach",
+   "Email",
+   "2-4 weeks",
+   "\"FIRST LEGO League\" OR \"FIRST Tech Challenge\" team"
+  ],
+  [
+   "Regional FIRST event",
+   "Volunteer Coordinator",
+   "Portal",
+   "6-8 weeks",
+   "\"FIRST\" regional event volunteer"
+  ],
+  [
+   "Summer camp or day camp",
+   "Camp Director",
+   "Email",
+   "12-20 weeks",
+   "summer camp director youth"
+  ],
+  [
+   "Family or transitional housing shelter",
+   "Family Services Director",
+   "Phone",
+   "4-8 weeks",
+   "family shelter OR transitional housing services"
+  ]
+ ],
+ "plays": [
+  [
+   "Robot demo and drive-it-yourself",
+   "Demo",
+   "All ages",
+   "In person",
+   "2 hours",
+   "Low",
+   "$0",
+   [
+    "Working robot or a driveable offseason bot",
+    "Battery cart and a charged spare",
+    "Two students who can explain the drivetrain without jargon"
+   ],
+   [
+    "Safety glasses for guests",
+    "Bumper-height barrier or cones",
+    "Extension cord and power strip",
+    "Team banner",
+    "Sign-up clipboard for emails"
+   ],
+   "Set up in a public space, let people drive, and answer the same six questions two hundred times. The lowest-friction outreach there is."
+  ],
+  [
+   "Hands-on build workshop",
+   "Workshop",
+   "Elementary (K-5)",
+   "In person",
+   "90 minutes",
+   "Medium",
+   "$40-80 materials",
+   [
+    "One kit per 2 students",
+    "1 mentor per 8 kids",
+    "Tables, not desks"
+   ],
+   [
+    "Pre-sorted parts in labeled bags",
+    "A finished example to show",
+    "Spare batteries",
+    "Photo release forms"
+   ],
+   "Kids build something simple that moves and take it home. Works because they leave holding proof they built a machine."
+  ],
+  [
+   "Mentor a rookie FLL team",
+   "Mentoring",
+   "Elementary (K-5)",
+   "Hybrid",
+   "2 hrs/week for 10 weeks",
+   "High",
+   "$0",
+   [
+    "Two students committed for the full season",
+    "Background-check policy checked with the host",
+    "Coach who owns scheduling"
+   ],
+   [
+    "Your own team's build log to show",
+    "A mission-strategy worksheet",
+    "Patience for the robot game rules"
+   ],
+   "Ten weeks with a rookie FLL team. You are there so the coach is not alone with the robot game rules."
+  ],
+  [
+   "Mentor a rookie FTC or FRC team",
+   "Mentoring",
+   "Middle school (6-8)",
+   "Hybrid",
+   "3 hrs/week in season",
+   "High",
+   "$0",
+   [
+    "Students who have survived one full build season",
+    "Clear line on what you will not do for them"
+   ],
+   [
+    "CAD files you are willing to share",
+    "Your wiring diagram",
+    "A list of your own rookie-year mistakes"
+   ],
+   "Technical mentoring for a rookie FTC or FRC team through their build season. The hardest and most valuable thing on this board."
+  ],
+  [
+   "Volunteer at an FLL or FTC qualifier",
+   "Volunteering",
+   "All ages",
+   "In person",
+   "Full day",
+   "Low",
+   "$0",
+   [
+    "Volunteer registration and screening completed in advance",
+    "Closed-toe shoes"
+   ],
+   [
+    "Water bottle",
+    "Snacks",
+    "A book for the slow rounds"
+   ],
+   "Work a qualifier as a volunteer. You see how judging actually works from the other side, which changes how your own team presents."
+  ],
+  [
+   "Girls in STEM day",
+   "Equity",
+   "Middle school (6-8)",
+   "In person",
+   "3 hours",
+   "Medium",
+   "$60-150",
+   [
+    "Women mentors and alumnae on the floor, not just on a slide",
+    "Activity that ends in something they keep"
+   ],
+   [
+    "Take-home kits",
+    "Alumnae contact cards",
+    "Name tags with first names only"
+   ],
+   "A half-day event for girls who have not been told robotics is for them. The mentors on the floor matter more than the activity."
+  ],
+  [
+   "Intro to CAD session",
+   "Workshop",
+   "High school (9-12)",
+   "Hybrid",
+   "2 hours",
+   "Medium",
+   "$0",
+   [
+    "A computer lab or laptops",
+    "Free accounts set up before the session, not during"
+   ],
+   [
+    "A part file that prints in 20 minutes",
+    "Printed step-by-step handout",
+    "USB drive with the software installer"
+   ],
+   "Teach enough CAD that someone can model a bracket and print it. Two hours gets a beginner to a real part."
+  ],
+  [
+   "Beginner programming class",
+   "Workshop",
+   "Elementary (K-5)",
+   "Hybrid",
+   "1 hour",
+   "Low",
+   "$0",
+   [
+    "Devices with a browser",
+    "An unplugged backup for when the wifi dies"
+   ],
+   [
+    "Printed Hour of Code cards",
+    "Stickers",
+    "A robot to show what the code eventually drives"
+   ],
+   "An hour of block or text programming for beginners. Bring the robot so they see where the code eventually goes."
+  ],
+  [
+   "3D printing demo",
+   "Demo",
+   "All ages",
+   "In person",
+   "2 hours",
+   "Low",
+   "$15-30 filament",
+   [
+    "A printer that survives transport",
+    "A print that finishes inside the session"
+   ],
+   [
+    "Failed prints (people love these)",
+    "A benchy and a printed gear train",
+    "Filament samples to hand out"
+   ],
+   "A printer, a table, and a bin of failed prints. People will watch a whole print finish, which is more attention than you can usually buy."
+  ],
+  [
+   "Career talk or classroom visit",
+   "Speaking",
+   "High school (9-12)",
+   "Hybrid",
+   "50 minutes",
+   "Low",
+   "$0",
+   [
+    "Students who can talk about failure, not just trophies",
+    "A slide count under 12"
+   ],
+   [
+    "One physical part to pass around",
+    "Team business cards",
+    "The QR code for your team site"
+   ],
+   "Fifty minutes in a classroom. Talk about the season you lost, not the one you won -- it lands better and it is more useful."
+  ],
+  [
+   "Robot petting zoo at a public event",
+   "Demo",
+   "All ages",
+   "In person",
+   "4 hours",
+   "Medium",
+   "$0",
+   [
+    "Booth space and a load-in time",
+    "A driver rotation so nobody burns out",
+    "Certificate of insurance if the venue asks"
+   ],
+   [
+    "10x10 canopy and weights",
+    "Zip ties, gaffer tape, spare fuses",
+    "Two tables and a trash bin",
+    "Cash box only if you are selling"
+   ],
+   "A booth at a public event with the robot driveable all day. High reach, hard on the drivers, worth a rotation schedule."
+  ],
+  [
+   "Parade entry with the robot",
+   "Community",
+   "All ages",
+   "In person",
+   "Half day",
+   "Medium",
+   "$0-50 entry",
+   [
+    "A trailer or a cart that survives 2 miles",
+    "Walkers who hand out flyers"
+   ],
+   [
+    "Flyers with your recruiting QR code",
+    "Water for the walkers",
+    "A tow plan for when the battery dies"
+   ],
+   "The robot on a trailer, students walking alongside with flyers. Pure visibility; plan for the battery dying at mile two."
+  ],
+  [
+   "Adapt a ride-on car for a child with limited mobility",
+   "Accessibility",
+   "Family",
+   "In person",
+   "Full day build",
+   "High",
+   "$150-300 per car",
+   [
+    "A physical or occupational therapist signing off on the fit",
+    "A specific child, measured, not a generic build"
+   ],
+   [
+    "Ride-on car, PVC, pool noodles, big arcade button",
+    "Soldering station",
+    "Seatbelt hardware rated for the child's size"
+   ],
+   "Modify a ride-on toy car so a toddler with limited mobility can drive it independently. A therapist measures the child; you build to that."
+  ],
+  [
+   "Switch-adapt toys for kids with disabilities",
+   "Accessibility",
+   "Family",
+   "In person",
+   "3 hours",
+   "Medium",
+   "$10-20 per toy",
+   [
+    "Soldering irons and ventilation",
+    "Toys bought new, in the box"
+   ],
+   [
+    "3.5mm mono jacks and wire",
+    "Heat-shrink and a heat gun",
+    "Small screwdrivers",
+    "A tested example toy"
+   ],
+   "Wire a 3.5mm switch jack into a battery toy so a child using an adaptive switch can play with it. Cheap, fast, and genuinely used."
+  ],
+  [
+   "Shop safety and tool basics",
+   "Workshop",
+   "High school (9-12)",
+   "In person",
+   "90 minutes",
+   "Low",
+   "$0",
+   [
+    "Real PPE for everyone in the room",
+    "A tool you are genuinely qualified to teach"
+   ],
+   [
+    "Safety glasses in a bin",
+    "A cut-off drill bit and a chewed-up piece of stock",
+    "Your team's safety manual"
+   ],
+   "PPE, tool basics, and what actually happens when you skip a step. Teach only tools you are certified on."
+  ],
+  [
+   "Sponsorship pitch and shop tour",
+   "Fundraising",
+   "Adults",
+   "In person",
+   "45 minutes",
+   "Medium",
+   "$0",
+   [
+    "A one-page budget that shows where the money goes",
+    "Two students who lead the meeting, not the mentor",
+    "A tiered sponsorship sheet"
+   ],
+   [
+    "Printed one-pager and last year's impact numbers",
+    "A part the robot actually uses",
+    "A thank-you plan in writing"
+   ],
+   "Forty-five minutes with a company. Students present, the mentor stays quiet, and you leave a one-pager with real numbers on it."
+  ],
+  [
+   "Run a summer camp session",
+   "Camp",
+   "Elementary (K-5)",
+   "In person",
+   "Week-long, 3 hrs/day",
+   "High",
+   "$200-500 materials",
+   [
+    "Adult supervision ratios that meet the host's policy",
+    "A curriculum written down before June",
+    "Registration handled by the host, not you"
+   ],
+   [
+    "Kits for every day plus 20% spares",
+    "Nametags and a roster",
+    "A rainy-day indoor plan",
+    "Snacks cleared for allergies"
+   ],
+   "A week of camp you plan and run. The largest single commitment here and the one that produces the most repeat families."
+  ],
+  [
+   "Family STEM night",
+   "Community",
+   "Family",
+   "In person",
+   "2 hours",
+   "Medium",
+   "$50-120",
+   [
+    "Stations that run without a facilitator lecturing",
+    "Materials in the languages families actually speak"
+   ],
+   [
+    "6-8 station kits",
+    "Passport cards kids get stamped",
+    "Translated instructions",
+    "A raffle prize"
+   ],
+   "Six stations, two hours, parents included. Translate the handouts or half the room cannot participate."
+  ],
+  [
+   "Host an offseason scrimmage",
+   "Competition",
+   "High school (9-12)",
+   "In person",
+   "Full day",
+   "High",
+   "$300-800",
+   [
+    "A gym or field house booked months out",
+    "Field elements borrowed or built",
+    "An FTA-type volunteer who knows the control system"
+   ],
+   [
+    "Field elements and scoring materials",
+    "Extension cords and a network switch",
+    "Pit tables",
+    "Lunch plan for 100+ people"
+   ],
+   "Host an offseason event. Enormous logistics; it makes your team the hub of the regional community for a day."
+  ],
+  [
+   "Community service day (food, shelter, trail)",
+   "Community Service",
+   "All ages",
+   "In person",
+   "4 hours",
+   "Low",
+   "$0",
+   [
+    "Signed waivers for minors",
+    "Transportation sorted before you commit"
+   ],
+   [
+    "Work gloves",
+    "Team shirts so you are visible",
+    "A photographer for the sponsor report"
+   ],
+   "A service shift at a food bank, shelter, or trail. Not robotics, and it still counts -- Impact asks what you do for your community."
+  ],
+  [
+   "Translate STEM materials into another language",
+   "Equity",
+   "Family",
+   "Virtual",
+   "6 hours",
+   "Low",
+   "$0",
+   [
+    "A native speaker reviewing, not just a translation tool",
+    "Permission from whoever owns the original"
+   ],
+   [
+    "Editable source files",
+    "A glossary of the technical terms",
+    "A native-speaker reviewer's name in the credits"
+   ],
+   "Translate activity sheets or your own curriculum into a language families in your district actually speak. A native speaker must review it."
+  ],
+  [
+   "Tech help session for seniors",
+   "Community",
+   "Seniors",
+   "In person",
+   "2 hours",
+   "Low",
+   "$0",
+   [
+    "Patience and a slow talking speed",
+    "One student per two guests"
+   ],
+   [
+    "Printed large-type handouts",
+    "A magnifier",
+    "A robot to show at the end so it is not all phone settings"
+   ],
+   "Sit with seniors and help with phones and tablets. End by showing the robot so it is not purely a help desk."
+  ],
+  [
+   "Help a school start its own team",
+   "Mentoring",
+   "Middle school (6-8)",
+   "Hybrid",
+   "Ongoing, 20+ hrs",
+   "High",
+   "$0",
+   [
+    "A committed adult at the host school (without one, it dies)",
+    "A realistic first-year budget",
+    "A grant deadline you have actually checked"
+   ],
+   [
+    "Your startup checklist",
+    "Rookie grant application links",
+    "A list of your local suppliers",
+    "An offer to house their build if they have no space"
+   ],
+   "Walk a school from zero to a registered team: adult champion, budget, grant, first order. Twelve months of work that outlives you."
+  ],
+  [
+   "Local media story about the team",
+   "Outreach Media",
+   "Adults",
+   "Hybrid",
+   "3 hours",
+   "Low",
+   "$0",
+   [
+    "An actual news hook: a deadline, a win, a kid's story",
+    "A parent's permission for any student named"
+   ],
+   [
+    "A one-paragraph pitch, not a press release",
+    "Two good photos already taken",
+    "A student who is comfortable on camera"
+   ],
+   "Get a local outlet to run a story. You need a hook and a photo, not a press release."
+  ],
+  [
+   "Apply for an outreach or STEM grant",
+   "Fundraising",
+   "Adults",
+   "Virtual",
+   "8 hours",
+   "Medium",
+   "$0",
+   [
+    "Your team's 501(c)(3) or your school's tax ID",
+    "Last year's outreach numbers, counted honestly"
+   ],
+   [
+    "Budget spreadsheet",
+    "Two paragraphs on impact with real numbers",
+    "A mentor who proofreads before submit"
+   ],
+   "Write and submit an outreach grant. Eight hours that can fund a whole year of the activities on this board."
+  ],
+  [
+   "Robot visit to a pediatric ward",
+   "Accessibility",
+   "Family",
+   "In person",
+   "2 hours",
+   "High",
+   "$0",
+   [
+    "Infection-control clearance and a wiped-down robot",
+    "Child Life staff leading, you following",
+    "No photos unless staff arranges it"
+   ],
+   [
+    "A small, quiet, slow robot",
+    "Hand sanitizer",
+    "Something each child keeps",
+    "A backup plan if a room is closed"
+   ],
+   "Bring a small, quiet robot to a pediatric ward, led entirely by Child Life staff. Clearance takes months; do not improvise."
+  ],
+  [
+   "Donate tools or build space to a rookie team",
+   "Community Service",
+   "High school (9-12)",
+   "In person",
+   "4 hours",
+   "Low",
+   "$0-200",
+   [
+    "An inventory of what you actually have spare",
+    "Their space measured before you deliver"
+   ],
+   [
+    "Labeled, working tools (not broken ones)",
+    "A written list of what you gave",
+    "An offer to show them how to use it"
+   ],
+   "Give a rookie team working tools and shop time. Inventory what you have spare first so you are not donating junk."
+  ],
+  [
+   "Recruiting booth at a school or club fair",
+   "Community",
+   "Middle school (6-8)",
+   "In person",
+   "3 hours",
+   "Low",
+   "$0-40 printing",
+   [
+    "Table assignment confirmed in writing",
+    "Students who talk to people instead of each other"
+   ],
+   [
+    "Sign-up sheet or QR form",
+    "A driveable robot or at least a subassembly",
+    "Candy (it works)",
+    "Team flyers"
+   ],
+   "A recruiting table at a school or club fair. The point is the sign-up sheet, so make someone own it."
+  ],
+  [
+   "Multi-week after-school robotics club",
+   "Workshop",
+   "Middle school (6-8)",
+   "In person",
+   "6 weeks, 90 min/week",
+   "High",
+   "$150-400",
+   [
+    "The same students every week (get the host to lock the roster)",
+    "A curriculum that survives a missed week"
+   ],
+   [
+    "A kit per pair that stays at the site",
+    "Attendance sheet",
+    "A final showcase date on the calendar"
+   ],
+   "A six-week club at one site with the same students each week. Continuity is what makes it teach anything."
+  ],
+  [
+   "Build an adaptive game controller",
+   "Accessibility",
+   "All ages",
+   "In person",
+   "4 hours",
+   "High",
+   "$60-120 each",
+   [
+    "The specific user's needs documented first",
+    "Someone who can test-fit it with the user"
+   ],
+   [
+    "Switch jacks, buttons, enclosure",
+    "Soldering and 3D-printed mounts",
+    "A follow-up visit scheduled to fix the fit"
+   ],
+   "Build a game controller around one person's specific physical needs, then go back and fix the fit after they use it."
+  ],
+  [
+   "Run a workshop for teachers",
+   "Workshop",
+   "Adults",
+   "Hybrid",
+   "3 hours",
+   "Medium",
+   "$0-100",
+   [
+    "Coordination with the district PD calendar (they plan a year out)",
+    "Materials they can reuse without you"
+   ],
+   [
+    "A printed lesson plan aligned to their standards",
+    "A parts list with prices and links",
+    "Your email for the follow-up questions"
+   ],
+   "Train teachers so the program runs without you. The highest-multiplier hours on this board."
+  ]
+ ],
+ "leads": [
+  [
+   1,
+   24,
+   82,
+   10,
+   24,
+   4,
+   "Offseason"
+  ],
+  [
+   19,
+   18,
+   77,
+   16,
+   49,
+   2,
+   "Offseason"
+  ],
+  [
+   21,
+   11,
+   109,
+   7,
+   31,
+   3,
+   "Winter"
+  ],
+  [
+   27,
+   19,
+   98,
+   11,
+   268,
+   4,
+   "Fall"
+  ],
+  [
+   5,
+   39,
+   48,
+   17,
+   56,
+   5,
+   "Winter"
+  ],
+  [
+   4,
+   40,
+   51,
+   9,
+   238,
+   4,
+   "Competition"
+  ],
+  [
+   6,
+   28,
+   79,
+   8,
+   19,
+   3,
+   "Offseason"
+  ],
+  [
+   9,
+   2,
+   103,
+   4,
+   73,
+   2,
+   "Fall"
+  ],
+  [
+   0,
+   16,
+   67,
+   9,
+   54,
+   4,
+   "Summer"
+  ],
+  [
+   2,
+   1,
+   71,
+   20,
+   16,
+   4,
+   "Fall"
+  ],
+  [
+   13,
+   0,
+   91,
+   11,
+   25,
+   4,
+   "Winter"
+  ],
+  [
+   13,
+   0,
+   8,
+   13,
+   27,
+   5,
+   "Winter"
+  ],
+  [
+   24,
+   18,
+   84,
+   10,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   5,
+   39,
+   5,
+   21,
+   44,
+   5,
+   "Winter"
+  ],
+  [
+   17,
+   39,
+   37,
+   14,
+   137,
+   4,
+   "Winter"
+  ],
+  [
+   3,
+   2,
+   37,
+   35,
+   14,
+   5,
+   "Build season"
+  ],
+  [
+   2,
+   0,
+   8,
+   18,
+   15,
+   5,
+   "Fall"
+  ],
+  [
+   20,
+   27,
+   93,
+   5,
+   212,
+   3,
+   "Winter"
+  ],
+  [
+   15,
+   20,
+   80,
+   6,
+   8,
+   5,
+   "Fall"
+  ],
+  [
+   24,
+   14,
+   12,
+   10,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   6,
+   3,
+   119,
+   12,
+   22,
+   3,
+   "Offseason"
+  ],
+  [
+   0,
+   6,
+   72,
+   8,
+   56,
+   3,
+   "Offseason"
+  ],
+  [
+   3,
+   2,
+   40,
+   35,
+   14,
+   4,
+   "Build season"
+  ],
+  [
+   17,
+   1,
+   79,
+   12,
+   158,
+   3,
+   "Winter"
+  ],
+  [
+   6,
+   28,
+   36,
+   11,
+   26,
+   3,
+   "Offseason"
+  ],
+  [
+   6,
+   3,
+   122,
+   8,
+   17,
+   4,
+   "Offseason"
+  ],
+  [
+   0,
+   20,
+   4,
+   9,
+   73,
+   3,
+   "Offseason"
+  ],
+  [
+   0,
+   12,
+   81,
+   10,
+   44,
+   4,
+   "Summer"
+  ],
+  [
+   7,
+   1,
+   5,
+   6,
+   17,
+   4,
+   "Winter"
+  ],
+  [
+   7,
+   36,
+   60,
+   5,
+   33,
+   3,
+   "Winter"
+  ],
+  [
+   25,
+   10,
+   81,
+   10,
+   35,
+   5,
+   "Winter"
+  ],
+  [
+   8,
+   28,
+   76,
+   9,
+   37,
+   2,
+   "Offseason"
+  ],
+  [
+   21,
+   0,
+   102,
+   9,
+   22,
+   3,
+   "Winter"
+  ],
+  [
+   14,
+   9,
+   84,
+   5,
+   21,
+   2,
+   "Fall"
+  ],
+  [
+   9,
+   24,
+   62,
+   5,
+   88,
+   2,
+   "Fall"
+  ],
+  [
+   9,
+   34,
+   69,
+   4,
+   82,
+   2,
+   "Fall"
+  ],
+  [
+   7,
+   0,
+   68,
+   6,
+   31,
+   3,
+   "Winter"
+  ],
+  [
+   18,
+   12,
+   95,
+   38,
+   183,
+   3,
+   "Summer"
+  ],
+  [
+   2,
+   29,
+   65,
+   24,
+   12,
+   4,
+   "Fall"
+  ],
+  [
+   13,
+   43,
+   47,
+   14,
+   17,
+   4,
+   "Winter"
+  ],
+  [
+   16,
+   6,
+   79,
+   34,
+   36,
+   4,
+   "Summer"
+  ],
+  [
+   15,
+   14,
+   14,
+   6,
+   7,
+   4,
+   "Fall"
+  ],
+  [
+   1,
+   29,
+   65,
+   11,
+   23,
+   4,
+   "Offseason"
+  ],
+  [
+   14,
+   9,
+   124,
+   5,
+   35,
+   3,
+   "Fall"
+  ],
+  [
+   10,
+   17,
+   30,
+   14,
+   359,
+   4,
+   "Summer"
+  ],
+  [
+   25,
+   25,
+   103,
+   11,
+   28,
+   4,
+   "Winter"
+  ],
+  [
+   18,
+   14,
+   9,
+   31,
+   210,
+   4,
+   "Summer"
+  ],
+  [
+   4,
+   41,
+   111,
+   11,
+   214,
+   3,
+   "Competition"
+  ],
+  [
+   11,
+   20,
+   14,
+   10,
+   560,
+   2,
+   "Summer"
+  ],
+  [
+   30,
+   2,
+   41,
+   11,
+   21,
+   5,
+   "Summer"
+  ],
+  [
+   16,
+   6,
+   39,
+   53,
+   23,
+   5,
+   "Summer"
+  ],
+  [
+   9,
+   34,
+   66,
+   6,
+   105,
+   3,
+   "Fall"
+  ],
+  [
+   9,
+   24,
+   105,
+   4,
+   72,
+   3,
+   "Fall"
+  ],
+  [
+   0,
+   19,
+   67,
+   6,
+   62,
+   4,
+   "Offseason"
+  ],
+  [
+   22,
+   3,
+   26,
+   30,
+   22,
+   5,
+   "Fall"
+  ],
+  [
+   5,
+   0,
+   96,
+   18,
+   27,
+   4,
+   "Winter"
+  ],
+  [
+   26,
+   37,
+   51,
+   8,
+   18,
+   3,
+   "Summer"
+  ],
+  [
+   1,
+   1,
+   31,
+   10,
+   34,
+   4,
+   "Offseason"
+  ],
+  [
+   10,
+   18,
+   93,
+   14,
+   387,
+   3,
+   "Offseason"
+  ],
+  [
+   29,
+   14,
+   53,
+   15,
+   10,
+   4,
+   "Offseason"
+  ],
+  [
+   1,
+   1,
+   114,
+   14,
+   19,
+   4,
+   "Offseason"
+  ],
+  [
+   19,
+   32,
+   84,
+   18,
+   47,
+   3,
+   "Offseason"
+  ],
+  [
+   1,
+   37,
+   106,
+   14,
+   31,
+   4,
+   "Offseason"
+  ],
+  [
+   13,
+   23,
+   102,
+   15,
+   14,
+   5,
+   "Winter"
+  ],
+  [
+   17,
+   1,
+   122,
+   13,
+   112,
+   3,
+   "Winter"
+  ],
+  [
+   5,
+   4,
+   56,
+   17,
+   33,
+   5,
+   "Winter"
+  ],
+  [
+   9,
+   13,
+   44,
+   5,
+   75,
+   3,
+   "Fall"
+  ],
+  [
+   26,
+   27,
+   13,
+   9,
+   19,
+   4,
+   "Summer"
+  ],
+  [
+   24,
+   9,
+   106,
+   8,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   0,
+   43,
+   115,
+   6,
+   55,
+   3,
+   "Offseason"
+  ],
+  [
+   12,
+   9,
+   60,
+   34,
+   5,
+   5,
+   "Offseason"
+  ],
+  [
+   27,
+   2,
+   122,
+   9,
+   172,
+   4,
+   "Fall"
+  ],
+  [
+   24,
+   22,
+   38,
+   9,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   0,
+   12,
+   121,
+   9,
+   60,
+   3,
+   "Summer"
+  ],
+  [
+   24,
+   22,
+   78,
+   12,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   13,
+   25,
+   42,
+   14,
+   12,
+   4,
+   "Winter"
+  ],
+  [
+   27,
+   3,
+   99,
+   10,
+   255,
+   4,
+   "Fall"
+  ],
+  [
+   3,
+   13,
+   64,
+   41,
+   11,
+   4,
+   "Build season"
+  ],
+  [
+   22,
+   2,
+   89,
+   33,
+   19,
+   4,
+   "Fall"
+  ],
+  [
+   5,
+   39,
+   88,
+   25,
+   33,
+   4,
+   "Winter"
+  ],
+  [
+   16,
+   37,
+   48,
+   50,
+   24,
+   4,
+   "Summer"
+  ],
+  [
+   20,
+   28,
+   30,
+   5,
+   216,
+   4,
+   "Winter"
+  ],
+  [
+   2,
+   2,
+   5,
+   21,
+   14,
+   5,
+   "Fall"
+  ],
+  [
+   2,
+   28,
+   45,
+   19,
+   9,
+   4,
+   "Fall"
+  ],
+  [
+   27,
+   3,
+   16,
+   7,
+   230,
+   3,
+   "Fall"
+  ],
+  [
+   8,
+   13,
+   98,
+   6,
+   64,
+   3,
+   "Offseason"
+  ],
+  [
+   7,
+   9,
+   120,
+   6,
+   24,
+   3,
+   "Winter"
+  ],
+  [
+   11,
+   23,
+   83,
+   10,
+   336,
+   2,
+   "Summer"
+  ],
+  [
+   20,
+   28,
+   70,
+   5,
+   157,
+   3,
+   "Winter"
+  ],
+  [
+   6,
+   13,
+   40,
+   11,
+   25,
+   4,
+   "Offseason"
+  ],
+  [
+   1,
+   6,
+   77,
+   10,
+   28,
+   4,
+   "Offseason"
+  ],
+  [
+   27,
+   1,
+   16,
+   8,
+   216,
+   4,
+   "Fall"
+  ],
+  [
+   28,
+   27,
+   28,
+   33,
+   25,
+   5,
+   "Winter"
+  ],
+  [
+   16,
+   5,
+   16,
+   40,
+   37,
+   4,
+   "Summer"
+  ],
+  [
+   8,
+   28,
+   36,
+   10,
+   63,
+   2,
+   "Offseason"
+  ],
+  [
+   16,
+   13,
+   25,
+   54,
+   27,
+   4,
+   "Summer"
+  ],
+  [
+   7,
+   24,
+   16,
+   6,
+   30,
+   3,
+   "Winter"
+  ],
+  [
+   26,
+   37,
+   11,
+   6,
+   13,
+   3,
+   "Summer"
+  ],
+  [
+   0,
+   23,
+   116,
+   8,
+   50,
+   3,
+   "Offseason"
+  ],
+  [
+   0,
+   20,
+   47,
+   10,
+   73,
+   3,
+   "Offseason"
+  ],
+  [
+   5,
+   13,
+   111,
+   20,
+   48,
+   4,
+   "Winter"
+  ],
+  [
+   19,
+   23,
+   109,
+   14,
+   47,
+   2,
+   "Offseason"
+  ],
+  [
+   5,
+   37,
+   65,
+   23,
+   56,
+   4,
+   "Winter"
+  ],
+  [
+   12,
+   10,
+   40,
+   28,
+   3,
+   5,
+   "Offseason"
+  ],
+  [
+   24,
+   21,
+   18,
+   11,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   5,
+   27,
+   101,
+   17,
+   32,
+   4,
+   "Winter"
+  ],
+  [
+   1,
+   37,
+   20,
+   11,
+   31,
+   5,
+   "Offseason"
+  ],
+  [
+   7,
+   39,
+   103,
+   6,
+   22,
+   3,
+   "Winter"
+  ],
+  [
+   19,
+   31,
+   24,
+   16,
+   56,
+   2,
+   "Winter"
+  ],
+  [
+   7,
+   27,
+   39,
+   6,
+   34,
+   3,
+   "Winter"
+  ],
+  [
+   1,
+   29,
+   105,
+   11,
+   30,
+   5,
+   "Offseason"
+  ],
+  [
+   7,
+   29,
+   62,
+   5,
+   19,
+   3,
+   "Winter"
+  ],
+  [
+   13,
+   23,
+   62,
+   10,
+   28,
+   4,
+   "Winter"
+  ],
+  [
+   1,
+   24,
+   39,
+   13,
+   27,
+   4,
+   "Offseason"
+  ],
+  [
+   16,
+   12,
+   5,
+   44,
+   35,
+   4,
+   "Summer"
+  ],
+  [
+   16,
+   5,
+   59,
+   50,
+   32,
+   5,
+   "Summer"
+  ],
+  [
+   22,
+   24,
+   37,
+   44,
+   19,
+   5,
+   "Fall"
+  ],
+  [
+   29,
+   0,
+   103,
+   14,
+   11,
+   5,
+   "Offseason"
+  ],
+  [
+   4,
+   13,
+   19,
+   9,
+   222,
+   4,
+   "Competition"
+  ],
+  [
+   17,
+   2,
+   56,
+   12,
+   127,
+   4,
+   "Winter"
+  ],
+  [
+   9,
+   13,
+   47,
+   4,
+   78,
+   2,
+   "Fall"
+  ],
+  [
+   4,
+   13,
+   62,
+   11,
+   176,
+   4,
+   "Competition"
+  ],
+  [
+   8,
+   17,
+   35,
+   10,
+   59,
+   3,
+   "Summer"
+  ],
+  [
+   15,
+   30,
+   35,
+   7,
+   8,
+   5,
+   "Fall"
+  ],
+  [
+   13,
+   26,
+   105,
+   9,
+   18,
+   4,
+   "Winter"
+  ],
+  [
+   15,
+   14,
+   54,
+   10,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   4,
+   41,
+   71,
+   8,
+   179,
+   3,
+   "Competition"
+  ],
+  [
+   19,
+   12,
+   82,
+   14,
+   43,
+   3,
+   "Summer"
+  ],
+  [
+   27,
+   28,
+   99,
+   8,
+   214,
+   4,
+   "Fall"
+  ],
+  [
+   27,
+   28,
+   16,
+   10,
+   148,
+   4,
+   "Fall"
+  ],
+  [
+   0,
+   17,
+   44,
+   10,
+   58,
+   3,
+   "Summer"
+  ],
+  [
+   9,
+   36,
+   106,
+   5,
+   73,
+   3,
+   "Fall"
+  ],
+  [
+   3,
+   40,
+   61,
+   43,
+   17,
+   4,
+   "Build season"
+  ],
+  [
+   17,
+   27,
+   59,
+   17,
+   151,
+   3,
+   "Winter"
+  ],
+  [
+   7,
+   2,
+   65,
+   7,
+   23,
+   3,
+   "Winter"
+  ],
+  [
+   1,
+   29,
+   108,
+   14,
+   20,
+   4,
+   "Offseason"
+  ],
+  [
+   20,
+   0,
+   61,
+   5,
+   137,
+   4,
+   "Winter"
+  ],
+  [
+   26,
+   38,
+   71,
+   6,
+   14,
+   4,
+   "Summer"
+  ],
+  [
+   1,
+   24,
+   42,
+   15,
+   19,
+   5,
+   "Offseason"
+  ],
+  [
+   19,
+   33,
+   104,
+   17,
+   46,
+   2,
+   "Offseason"
+  ],
+  [
+   26,
+   35,
+   71,
+   10,
+   17,
+   4,
+   "Summer"
+  ],
+  [
+   1,
+   39,
+   3,
+   12,
+   25,
+   5,
+   "Offseason"
+  ],
+  [
+   8,
+   17,
+   118,
+   6,
+   39,
+   2,
+   "Summer"
+  ],
+  [
+   16,
+   27,
+   41,
+   34,
+   21,
+   4,
+   "Summer"
+  ],
+  [
+   9,
+   35,
+   86,
+   4,
+   64,
+   3,
+   "Fall"
+  ],
+  [
+   4,
+   4,
+   58,
+   8,
+   217,
+   4,
+   "Competition"
+  ],
+  [
+   12,
+   9,
+   103,
+   24,
+   3,
+   4,
+   "Offseason"
+  ],
+  [
+   14,
+   9,
+   41,
+   7,
+   32,
+   2,
+   "Fall"
+  ],
+  [
+   17,
+   29,
+   13,
+   13,
+   150,
+   4,
+   "Winter"
+  ],
+  [
+   15,
+   21,
+   17,
+   6,
+   4,
+   5,
+   "Fall"
+  ],
+  [
+   4,
+   14,
+   39,
+   12,
+   163,
+   3,
+   "Competition"
+  ],
+  [
+   22,
+   35,
+   98,
+   48,
+   15,
+   4,
+   "Fall"
+  ],
+  [
+   5,
+   27,
+   18,
+   15,
+   31,
+   4,
+   "Winter"
+  ],
+  [
+   1,
+   28,
+   88,
+   13,
+   27,
+   4,
+   "Offseason"
+  ],
+  [
+   4,
+   13,
+   105,
+   8,
+   133,
+   4,
+   "Competition"
+  ],
+  [
+   7,
+   27,
+   125,
+   7,
+   23,
+   4,
+   "Winter"
+  ],
+  [
+   16,
+   0,
+   96,
+   35,
+   24,
+   4,
+   "Summer"
+  ],
+  [
+   0,
+   37,
+   80,
+   6,
+   77,
+   4,
+   "Offseason"
+  ],
+  [
+   8,
+   16,
+   15,
+   6,
+   57,
+   3,
+   "Summer"
+  ],
+  [
+   11,
+   18,
+   17,
+   10,
+   692,
+   2,
+   "Summer"
+  ],
+  [
+   14,
+   36,
+   41,
+   7,
+   31,
+   3,
+   "Fall"
+  ],
+  [
+   5,
+   6,
+   99,
+   23,
+   63,
+   4,
+   "Winter"
+  ],
+  [
+   19,
+   37,
+   50,
+   19,
+   51,
+   2,
+   "Offseason"
+  ],
+  [
+   20,
+   34,
+   22,
+   7,
+   132,
+   3,
+   "Winter"
+  ],
+  [
+   17,
+   37,
+   97,
+   15,
+   137,
+   4,
+   "Winter"
+  ],
+  [
+   16,
+   9,
+   65,
+   43,
+   34,
+   5,
+   "Summer"
+  ],
+  [
+   10,
+   19,
+   73,
+   12,
+   354,
+   3,
+   "Offseason"
+  ],
+  [
+   14,
+   21,
+   2,
+   6,
+   27,
+   3,
+   "Fall"
+  ],
+  [
+   10,
+   16,
+   10,
+   20,
+   220,
+   4,
+   "Summer"
+  ],
+  [
+   12,
+   25,
+   93,
+   24,
+   3,
+   5,
+   "Offseason"
+  ],
+  [
+   17,
+   0,
+   16,
+   15,
+   140,
+   3,
+   "Winter"
+  ],
+  [
+   24,
+   21,
+   101,
+   8,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   5,
+   4,
+   16,
+   21,
+   56,
+   4,
+   "Winter"
+  ],
+  [
+   14,
+   36,
+   81,
+   7,
+   20,
+   3,
+   "Fall"
+  ],
+  [
+   3,
+   2,
+   80,
+   50,
+   17,
+   5,
+   "Build season"
+  ],
+  [
+   10,
+   0,
+   80,
+   19,
+   284,
+   4,
+   "Offseason"
+  ],
+  [
+   15,
+   21,
+   60,
+   9,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   1,
+   9,
+   103,
+   13,
+   33,
+   4,
+   "Offseason"
+  ],
+  [
+   2,
+   9,
+   103,
+   19,
+   13,
+   4,
+   "Fall"
+  ],
+  [
+   14,
+   8,
+   107,
+   6,
+   25,
+   2,
+   "Fall"
+  ],
+  [
+   16,
+   42,
+   120,
+   46,
+   41,
+   5,
+   "Summer"
+  ],
+  [
+   25,
+   43,
+   48,
+   9,
+   41,
+   4,
+   "Winter"
+  ],
+  [
+   11,
+   16,
+   120,
+   11,
+   484,
+   3,
+   "Summer"
+  ],
+  [
+   1,
+   42,
+   29,
+   14,
+   23,
+   4,
+   "Summer"
+  ],
+  [
+   10,
+   4,
+   109,
+   14,
+   180,
+   4,
+   "Offseason"
+  ],
+  [
+   11,
+   18,
+   57,
+   11,
+   400,
+   2,
+   "Summer"
+  ],
+  [
+   6,
+   2,
+   16,
+   12,
+   17,
+   3,
+   "Offseason"
+  ],
+  [
+   4,
+   4,
+   18,
+   8,
+   144,
+   3,
+   "Competition"
+  ],
+  [
+   27,
+   3,
+   56,
+   10,
+   133,
+   4,
+   "Fall"
+  ],
+  [
+   8,
+   15,
+   78,
+   6,
+   39,
+   2,
+   "Offseason"
+  ],
+  [
+   23,
+   18,
+   34,
+   4,
+   2523,
+   3,
+   "Competition"
+  ],
+  [
+   27,
+   0,
+   82,
+   8,
+   225,
+   3,
+   "Fall"
+  ],
+  [
+   18,
+   4,
+   94,
+   50,
+   210,
+   3,
+   "Summer"
+  ],
+  [
+   29,
+   15,
+   116,
+   12,
+   11,
+   5,
+   "Offseason"
+  ],
+  [
+   12,
+   10,
+   83,
+   31,
+   3,
+   4,
+   "Offseason"
+  ],
+  [
+   0,
+   23,
+   73,
+   6,
+   49,
+   3,
+   "Offseason"
+  ],
+  [
+   20,
+   37,
+   91,
+   5,
+   273,
+   4,
+   "Winter"
+  ],
+  [
+   5,
+   37,
+   22,
+   21,
+   55,
+   5,
+   "Winter"
+  ],
+  [
+   16,
+   27,
+   1,
+   42,
+   28,
+   4,
+   "Summer"
+  ],
+  [
+   18,
+   41,
+   107,
+   36,
+   141,
+   3,
+   "Competition"
+  ],
+  [
+   3,
+   13,
+   107,
+   35,
+   13,
+   5,
+   "Build season"
+  ],
+  [
+   16,
+   13,
+   68,
+   39,
+   41,
+   4,
+   "Summer"
+  ],
+  [
+   14,
+   35,
+   61,
+   7,
+   23,
+   2,
+   "Fall"
+  ],
+  [
+   14,
+   36,
+   124,
+   6,
+   22,
+   3,
+   "Fall"
+  ],
+  [
+   21,
+   23,
+   13,
+   10,
+   18,
+   3,
+   "Winter"
+  ],
+  [
+   0,
+   24,
+   7,
+   9,
+   46,
+   3,
+   "Offseason"
+  ],
+  [
+   11,
+   12,
+   91,
+   9,
+   486,
+   3,
+   "Summer"
+  ],
+  [
+   13,
+   26,
+   102,
+   13,
+   21,
+   5,
+   "Winter"
+  ],
+  [
+   2,
+   23,
+   119,
+   19,
+   9,
+   4,
+   "Fall"
+  ],
+  [
+   16,
+   37,
+   91,
+   38,
+   42,
+   4,
+   "Summer"
+  ],
+  [
+   25,
+   43,
+   88,
+   10,
+   26,
+   4,
+   "Winter"
+  ],
+  [
+   5,
+   0,
+   10,
+   20,
+   56,
+   4,
+   "Winter"
+  ],
+  [
+   28,
+   6,
+   14,
+   26,
+   19,
+   4,
+   "Winter"
+  ],
+  [
+   19,
+   23,
+   66,
+   12,
+   47,
+   2,
+   "Offseason"
+  ],
+  [
+   27,
+   2,
+   36,
+   9,
+   120,
+   3,
+   "Fall"
+  ],
+  [
+   16,
+   4,
+   122,
+   55,
+   28,
+   4,
+   "Summer"
+  ],
+  [
+   24,
+   9,
+   23,
+   10,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   30,
+   1,
+   104,
+   9,
+   21,
+   4,
+   "Summer"
+  ],
+  [
+   16,
+   27,
+   84,
+   48,
+   21,
+   5,
+   "Summer"
+  ],
+  [
+   10,
+   4,
+   66,
+   13,
+   344,
+   4,
+   "Offseason"
+  ],
+  [
+   19,
+   37,
+   93,
+   12,
+   38,
+   2,
+   "Offseason"
+  ],
+  [
+   17,
+   29,
+   99,
+   13,
+   84,
+   4,
+   "Winter"
+  ],
+  [
+   9,
+   23,
+   85,
+   6,
+   90,
+   2,
+   "Fall"
+  ],
+  [
+   21,
+   37,
+   112,
+   9,
+   29,
+   2,
+   "Winter"
+  ],
+  [
+   9,
+   23,
+   125,
+   6,
+   114,
+   2,
+   "Fall"
+  ],
+  [
+   30,
+   38,
+   39,
+   13,
+   37,
+   4,
+   "Summer"
+  ],
+  [
+   30,
+   38,
+   82,
+   11,
+   31,
+   4,
+   "Summer"
+  ],
+  [
+   7,
+   5,
+   8,
+   6,
+   26,
+   4,
+   "Winter"
+  ],
+  [
+   13,
+   0,
+   51,
+   14,
+   13,
+   5,
+   "Winter"
+  ],
+  [
+   17,
+   27,
+   99,
+   13,
+   132,
+   4,
+   "Winter"
+  ],
+  [
+   3,
+   35,
+   95,
+   31,
+   17,
+   4,
+   "Build season"
+  ],
+  [
+   9,
+   38,
+   3,
+   4,
+   62,
+   3,
+   "Fall"
+  ],
+  [
+   22,
+   1,
+   69,
+   46,
+   18,
+   4,
+   "Fall"
+  ],
+  [
+   5,
+   13,
+   28,
+   25,
+   41,
+   5,
+   "Winter"
+  ],
+  [
+   30,
+   27,
+   58,
+   13,
+   36,
+   5,
+   "Summer"
+  ],
+  [
+   11,
+   23,
+   80,
+   15,
+   408,
+   2,
+   "Summer"
+  ],
+  [
+   0,
+   17,
+   47,
+   8,
+   54,
+   3,
+   "Summer"
+  ],
+  [
+   3,
+   34,
+   75,
+   30,
+   18,
+   4,
+   "Build season"
+  ],
+  [
+   6,
+   13,
+   83,
+   12,
+   28,
+   4,
+   "Offseason"
+  ],
+  [
+   3,
+   40,
+   21,
+   45,
+   12,
+   4,
+   "Build season"
+  ],
+  [
+   28,
+   24,
+   2,
+   31,
+   12,
+   5,
+   "Winter"
+  ],
+  [
+   16,
+   12,
+   91,
+   54,
+   42,
+   4,
+   "Summer"
+  ],
+  [
+   12,
+   25,
+   53,
+   24,
+   4,
+   5,
+   "Offseason"
+  ],
+  [
+   2,
+   38,
+   0,
+   27,
+   11,
+   4,
+   "Fall"
+  ],
+  [
+   5,
+   7,
+   119,
+   17,
+   55,
+   4,
+   "Winter"
+  ],
+  [
+   9,
+   20,
+   102,
+   6,
+   60,
+   3,
+   "Fall"
+  ],
+  [
+   10,
+   4,
+   26,
+   18,
+   282,
+   4,
+   "Offseason"
+  ],
+  [
+   1,
+   0,
+   94,
+   13,
+   26,
+   4,
+   "Offseason"
+  ],
+  [
+   27,
+   13,
+   63,
+   11,
+   213,
+   4,
+   "Fall"
+  ],
+  [
+   24,
+   27,
+   27,
+   8,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   2,
+   28,
+   85,
+   29,
+   16,
+   4,
+   "Fall"
+  ],
+  [
+   12,
+   9,
+   63,
+   29,
+   5,
+   5,
+   "Offseason"
+  ],
+  [
+   3,
+   34,
+   118,
+   33,
+   9,
+   5,
+   "Build season"
+  ],
+  [
+   16,
+   4,
+   82,
+   53,
+   22,
+   5,
+   "Summer"
+  ],
+  [
+   29,
+   26,
+   57,
+   15,
+   14,
+   5,
+   "Offseason"
+  ],
+  [
+   1,
+   24,
+   125,
+   11,
+   29,
+   4,
+   "Offseason"
+  ],
+  [
+   7,
+   1,
+   2,
+   6,
+   31,
+   4,
+   "Winter"
+  ],
+  [
+   7,
+   29,
+   105,
+   5,
+   24,
+   4,
+   "Winter"
+  ],
+  [
+   5,
+   5,
+   36,
+   15,
+   36,
+   4,
+   "Winter"
+  ],
+  [
+   28,
+   36,
+   46,
+   28,
+   19,
+   4,
+   "Winter"
+  ],
+  [
+   26,
+   35,
+   114,
+   9,
+   16,
+   4,
+   "Summer"
+  ],
+  [
+   6,
+   35,
+   91,
+   8,
+   22,
+   3,
+   "Offseason"
+  ],
+  [
+   12,
+   14,
+   86,
+   37,
+   3,
+   4,
+   "Offseason"
+  ],
+  [
+   17,
+   28,
+   119,
+   11,
+   107,
+   4,
+   "Winter"
+  ],
+  [
+   13,
+   25,
+   82,
+   15,
+   25,
+   5,
+   "Winter"
+  ],
+  [
+   0,
+   19,
+   110,
+   7,
+   47,
+   4,
+   "Offseason"
+  ],
+  [
+   1,
+   28,
+   45,
+   14,
+   34,
+   5,
+   "Offseason"
+  ],
+  [
+   7,
+   39,
+   60,
+   5,
+   35,
+   3,
+   "Winter"
+  ],
+  [
+   17,
+   27,
+   56,
+   14,
+   157,
+   3,
+   "Winter"
+  ],
+  [
+   15,
+   22,
+   120,
+   10,
+   4,
+   5,
+   "Fall"
+  ],
+  [
+   0,
+   4,
+   72,
+   9,
+   82,
+   4,
+   "Offseason"
+  ],
+  [
+   5,
+   14,
+   88,
+   17,
+   53,
+   5,
+   "Winter"
+  ],
+  [
+   26,
+   38,
+   31,
+   6,
+   17,
+   4,
+   "Summer"
+  ],
+  [
+   15,
+   30,
+   78,
+   8,
+   5,
+   4,
+   "Fall"
+  ],
+  [
+   13,
+   15,
+   61,
+   11,
+   14,
+   5,
+   "Winter"
+  ],
+  [
+   29,
+   26,
+   14,
+   17,
+   8,
+   4,
+   "Offseason"
+  ],
+  [
+   27,
+   13,
+   20,
+   9,
+   130,
+   3,
+   "Fall"
+  ],
+  [
+   29,
+   0,
+   20,
+   13,
+   6,
+   5,
+   "Offseason"
+  ],
+  [
+   17,
+   28,
+   79,
+   13,
+   99,
+   3,
+   "Winter"
+  ],
+  [
+   5,
+   7,
+   33,
+   24,
+   48,
+   4,
+   "Winter"
+  ],
+  [
+   18,
+   3,
+   34,
+   34,
+   144,
+   3,
+   "Summer"
+  ],
+  [
+   7,
+   2,
+   108,
+   6,
+   20,
+   4,
+   "Winter"
+  ],
+  [
+   16,
+   0,
+   53,
+   34,
+   24,
+   5,
+   "Summer"
+  ],
+  [
+   29,
+   43,
+   82,
+   14,
+   6,
+   5,
+   "Offseason"
+  ],
+  [
+   28,
+   1,
+   74,
+   30,
+   21,
+   5,
+   "Winter"
+  ],
+  [
+   9,
+   19,
+   39,
+   6,
+   57,
+   3,
+   "Fall"
+  ],
+  [
+   24,
+   20,
+   38,
+   11,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   13,
+   10,
+   55,
+   13,
+   26,
+   5,
+   "Winter"
+  ],
+  [
+   2,
+   27,
+   108,
+   26,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   3,
+   40,
+   18,
+   38,
+   16,
+   4,
+   "Build season"
+  ],
+  [
+   16,
+   42,
+   123,
+   46,
+   29,
+   5,
+   "Summer"
+  ],
+  [
+   19,
+   12,
+   42,
+   14,
+   53,
+   3,
+   "Summer"
+  ],
+  [
+   5,
+   13,
+   25,
+   18,
+   42,
+   4,
+   "Winter"
+  ],
+  [
+   21,
+   12,
+   46,
+   8,
+   23,
+   2,
+   "Summer"
+  ],
+  [
+   13,
+   14,
+   41,
+   15,
+   20,
+   5,
+   "Winter"
+  ],
+  [
+   19,
+   18,
+   34,
+   17,
+   42,
+   2,
+   "Offseason"
+  ],
+  [
+   1,
+   5,
+   57,
+   9,
+   20,
+   4,
+   "Offseason"
+  ],
+  [
+   13,
+   25,
+   85,
+   11,
+   13,
+   4,
+   "Winter"
+  ],
+  [
+   28,
+   6,
+   97,
+   36,
+   14,
+   4,
+   "Winter"
+  ],
+  [
+   17,
+   23,
+   10,
+   13,
+   75,
+   3,
+   "Winter"
+  ],
+  [
+   5,
+   6,
+   56,
+   24,
+   51,
+   5,
+   "Winter"
+  ],
+  [
+   26,
+   38,
+   114,
+   7,
+   19,
+   4,
+   "Summer"
+  ],
+  [
+   8,
+   16,
+   98,
+   7,
+   46,
+   3,
+   "Summer"
+  ],
+  [
+   6,
+   2,
+   59,
+   11,
+   21,
+   3,
+   "Offseason"
+  ],
+  [
+   12,
+   43,
+   72,
+   31,
+   5,
+   5,
+   "Offseason"
+  ],
+  [
+   10,
+   19,
+   30,
+   16,
+   405,
+   4,
+   "Offseason"
+  ],
+  [
+   5,
+   2,
+   76,
+   15,
+   34,
+   5,
+   "Winter"
+  ],
+  [
+   1,
+   28,
+   2,
+   11,
+   28,
+   5,
+   "Offseason"
+  ],
+  [
+   0,
+   24,
+   93,
+   6,
+   51,
+   3,
+   "Offseason"
+  ],
+  [
+   11,
+   19,
+   120,
+   13,
+   614,
+   3,
+   "Summer"
+  ],
+  [
+   27,
+   35,
+   94,
+   10,
+   186,
+   4,
+   "Fall"
+  ],
+  [
+   24,
+   20,
+   124,
+   10,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   10,
+   23,
+   102,
+   18,
+   402,
+   3,
+   "Offseason"
+  ],
+  [
+   17,
+   2,
+   16,
+   16,
+   115,
+   3,
+   "Winter"
+  ],
+  [
+   7,
+   5,
+   51,
+   7,
+   17,
+   4,
+   "Winter"
+  ],
+  [
+   9,
+   34,
+   109,
+   4,
+   57,
+   3,
+   "Fall"
+  ],
+  [
+   10,
+   12,
+   24,
+   12,
+   219,
+   4,
+   "Summer"
+  ],
+  [
+   28,
+   36,
+   89,
+   29,
+   23,
+   5,
+   "Winter"
+  ],
+  [
+   28,
+   0,
+   11,
+   37,
+   23,
+   5,
+   "Winter"
+  ],
+  [
+   12,
+   12,
+   20,
+   27,
+   5,
+   4,
+   "Summer"
+  ],
+  [
+   7,
+   39,
+   20,
+   6,
+   22,
+   4,
+   "Winter"
+  ],
+  [
+   12,
+   25,
+   10,
+   34,
+   3,
+   5,
+   "Offseason"
+  ],
+  [
+   26,
+   40,
+   94,
+   8,
+   16,
+   3,
+   "Summer"
+  ],
+  [
+   16,
+   12,
+   48,
+   41,
+   24,
+   5,
+   "Summer"
+  ],
+  [
+   26,
+   40,
+   11,
+   9,
+   18,
+   3,
+   "Summer"
+  ],
+  [
+   6,
+   3,
+   79,
+   10,
+   19,
+   3,
+   "Offseason"
+  ],
+  [
+   4,
+   41,
+   114,
+   12,
+   123,
+   3,
+   "Competition"
+  ],
+  [
+   29,
+   25,
+   120,
+   12,
+   13,
+   4,
+   "Offseason"
+  ],
+  [
+   12,
+   26,
+   73,
+   27,
+   4,
+   4,
+   "Offseason"
+  ],
+  [
+   15,
+   20,
+   123,
+   8,
+   7,
+   5,
+   "Fall"
+  ],
+  [
+   2,
+   23,
+   36,
+   20,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   16,
+   4,
+   39,
+   44,
+   40,
+   5,
+   "Summer"
+  ],
+  [
+   17,
+   24,
+   33,
+   16,
+   97,
+   4,
+   "Winter"
+  ],
+  [
+   5,
+   0,
+   53,
+   19,
+   52,
+   4,
+   "Winter"
+  ],
+  [
+   9,
+   20,
+   16,
+   4,
+   91,
+   3,
+   "Fall"
+  ],
+  [
+   12,
+   14,
+   3,
+   34,
+   3,
+   5,
+   "Offseason"
+  ],
+  [
+   28,
+   1,
+   31,
+   26,
+   14,
+   5,
+   "Winter"
+  ],
+  [
+   4,
+   13,
+   102,
+   9,
+   168,
+   3,
+   "Competition"
+  ],
+  [
+   23,
+   30,
+   21,
+   5,
+   1455,
+   3,
+   "Competition"
+  ],
+  [
+   22,
+   3,
+   109,
+   38,
+   25,
+   5,
+   "Fall"
+  ],
+  [
+   23,
+   18,
+   120,
+   5,
+   1718,
+   2,
+   "Competition"
+  ],
+  [
+   14,
+   13,
+   30,
+   5,
+   31,
+   2,
+   "Fall"
+  ],
+  [
+   10,
+   12,
+   110,
+   12,
+   274,
+   3,
+   "Summer"
+  ],
+  [
+   27,
+   13,
+   103,
+   8,
+   136,
+   3,
+   "Fall"
+  ],
+  [
+   30,
+   2,
+   124,
+   10,
+   18,
+   5,
+   "Summer"
+  ],
+  [
+   17,
+   0,
+   59,
+   12,
+   87,
+   3,
+   "Winter"
+  ],
+  [
+   0,
+   28,
+   39,
+   8,
+   81,
+   3,
+   "Offseason"
+  ],
+  [
+   2,
+   37,
+   103,
+   27,
+   13,
+   5,
+   "Fall"
+  ],
+  [
+   16,
+   13,
+   111,
+   50,
+   33,
+   5,
+   "Summer"
+  ],
+  [
+   8,
+   17,
+   75,
+   8,
+   45,
+   3,
+   "Summer"
+  ],
+  [
+   4,
+   14,
+   82,
+   9,
+   275,
+   3,
+   "Competition"
+  ],
+  [
+   7,
+   29,
+   65,
+   6,
+   23,
+   3,
+   "Winter"
+  ],
+  [
+   17,
+   37,
+   54,
+   14,
+   155,
+   4,
+   "Winter"
+  ],
+  [
+   28,
+   0,
+   97,
+   36,
+   19,
+   4,
+   "Winter"
+  ],
+  [
+   16,
+   0,
+   10,
+   51,
+   19,
+   4,
+   "Summer"
+  ],
+  [
+   11,
+   12,
+   88,
+   11,
+   409,
+   2,
+   "Summer"
+  ],
+  [
+   14,
+   35,
+   104,
+   5,
+   25,
+   2,
+   "Fall"
+  ],
+  [
+   6,
+   0,
+   119,
+   12,
+   16,
+   4,
+   "Offseason"
+  ],
+  [
+   10,
+   0,
+   37,
+   15,
+   400,
+   4,
+   "Offseason"
+  ],
+  [
+   18,
+   14,
+   92,
+   36,
+   139,
+   4,
+   "Summer"
+  ],
+  [
+   5,
+   4,
+   99,
+   17,
+   29,
+   5,
+   "Winter"
+  ],
+  [
+   3,
+   3,
+   57,
+   45,
+   10,
+   4,
+   "Build season"
+  ],
+  [
+   2,
+   23,
+   79,
+   18,
+   12,
+   5,
+   "Fall"
+  ],
+  [
+   20,
+   28,
+   113,
+   7,
+   226,
+   3,
+   "Winter"
+  ],
+  [
+   5,
+   7,
+   116,
+   15,
+   33,
+   5,
+   "Winter"
+  ],
+  [
+   6,
+   2,
+   102,
+   10,
+   28,
+   3,
+   "Offseason"
+  ],
+  [
+   3,
+   27,
+   80,
+   47,
+   15,
+   4,
+   "Build season"
+  ],
+  [
+   7,
+   36,
+   100,
+   5,
+   32,
+   4,
+   "Winter"
+  ],
+  [
+   14,
+   8,
+   21,
+   5,
+   30,
+   3,
+   "Fall"
+  ],
+  [
+   12,
+   33,
+   25,
+   31,
+   5,
+   4,
+   "Offseason"
+  ],
+  [
+   9,
+   2,
+   63,
+   5,
+   97,
+   2,
+   "Fall"
+  ],
+  [
+   0,
+   12,
+   38,
+   9,
+   43,
+   3,
+   "Summer"
+  ],
+  [
+   14,
+   21,
+   45,
+   7,
+   26,
+   2,
+   "Fall"
+  ],
+  [
+   14,
+   35,
+   18,
+   6,
+   17,
+   3,
+   "Fall"
+  ],
+  [
+   7,
+   24,
+   99,
+   7,
+   33,
+   3,
+   "Winter"
+  ],
+  [
+   10,
+   4,
+   69,
+   18,
+   393,
+   3,
+   "Offseason"
+  ],
+  [
+   8,
+   16,
+   55,
+   10,
+   34,
+   2,
+   "Summer"
+  ],
+  [
+   8,
+   13,
+   55,
+   10,
+   52,
+   3,
+   "Offseason"
+  ],
+  [
+   22,
+   34,
+   118,
+   49,
+   15,
+   4,
+   "Fall"
+  ],
+  [
+   28,
+   29,
+   51,
+   31,
+   22,
+   5,
+   "Winter"
+  ],
+  [
+   0,
+   5,
+   92,
+   10,
+   45,
+   3,
+   "Offseason"
+  ],
+  [
+   22,
+   35,
+   12,
+   30,
+   12,
+   5,
+   "Fall"
+  ],
+  [
+   16,
+   42,
+   80,
+   48,
+   18,
+   5,
+   "Summer"
+  ],
+  [
+   24,
+   21,
+   58,
+   12,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   10,
+   18,
+   50,
+   13,
+   338,
+   3,
+   "Offseason"
+  ],
+  [
+   13,
+   0,
+   48,
+   10,
+   28,
+   4,
+   "Winter"
+  ],
+  [
+   28,
+   2,
+   11,
+   35,
+   14,
+   5,
+   "Winter"
+  ],
+  [
+   23,
+   0,
+   115,
+   3,
+   1871,
+   3,
+   "Competition"
+  ],
+  [
+   18,
+   3,
+   117,
+   37,
+   174,
+   4,
+   "Summer"
+  ],
+  [
+   20,
+   27,
+   10,
+   5,
+   274,
+   4,
+   "Winter"
+  ],
+  [
+   6,
+   38,
+   77,
+   11,
+   19,
+   4,
+   "Offseason"
+  ],
+  [
+   5,
+   37,
+   108,
+   20,
+   56,
+   4,
+   "Winter"
+  ],
+  [
+   28,
+   5,
+   77,
+   37,
+   21,
+   4,
+   "Winter"
+  ],
+  [
+   17,
+   39,
+   120,
+   11,
+   157,
+   3,
+   "Winter"
+  ],
+  [
+   26,
+   13,
+   20,
+   7,
+   13,
+   4,
+   "Summer"
+  ],
+  [
+   21,
+   12,
+   3,
+   6,
+   18,
+   3,
+   "Summer"
+  ],
+  [
+   27,
+   19,
+   12,
+   9,
+   273,
+   4,
+   "Fall"
+  ],
+  [
+   20,
+   0,
+   21,
+   6,
+   124,
+   3,
+   "Winter"
+  ],
+  [
+   19,
+   37,
+   7,
+   13,
+   27,
+   3,
+   "Offseason"
+  ],
+  [
+   24,
+   9,
+   63,
+   8,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   28,
+   5,
+   37,
+   35,
+   13,
+   5,
+   "Winter"
+  ],
+  [
+   21,
+   12,
+   89,
+   10,
+   25,
+   2,
+   "Summer"
+  ],
+  [
+   8,
+   28,
+   33,
+   9,
+   38,
+   3,
+   "Offseason"
+  ],
+  [
+   12,
+   33,
+   111,
+   28,
+   3,
+   5,
+   "Offseason"
+  ],
+  [
+   1,
+   5,
+   60,
+   9,
+   24,
+   4,
+   "Offseason"
+  ],
+  [
+   28,
+   37,
+   66,
+   29,
+   14,
+   4,
+   "Winter"
+  ],
+  [
+   8,
+   19,
+   15,
+   8,
+   63,
+   2,
+   "Offseason"
+  ],
+  [
+   28,
+   27,
+   68,
+   37,
+   24,
+   4,
+   "Winter"
+  ],
+  [
+   1,
+   27,
+   65,
+   10,
+   24,
+   4,
+   "Offseason"
+  ],
+  [
+   0,
+   11,
+   61,
+   7,
+   61,
+   4,
+   "Offseason"
+  ],
+  [
+   21,
+   23,
+   96,
+   7,
+   27,
+   3,
+   "Winter"
+  ],
+  [
+   21,
+   11,
+   26,
+   8,
+   20,
+   2,
+   "Winter"
+  ],
+  [
+   0,
+   24,
+   50,
+   7,
+   45,
+   4,
+   "Offseason"
+  ],
+  [
+   1,
+   5,
+   100,
+   9,
+   19,
+   4,
+   "Offseason"
+  ],
+  [
+   18,
+   4,
+   54,
+   37,
+   133,
+   4,
+   "Summer"
+  ],
+  [
+   10,
+   19,
+   70,
+   18,
+   216,
+   3,
+   "Offseason"
+  ],
+  [
+   8,
+   0,
+   48,
+   10,
+   62,
+   2,
+   "Offseason"
+  ],
+  [
+   7,
+   9,
+   37,
+   5,
+   33,
+   4,
+   "Winter"
+  ],
+  [
+   9,
+   36,
+   66,
+   5,
+   114,
+   2,
+   "Fall"
+  ],
+  [
+   7,
+   2,
+   25,
+   7,
+   18,
+   4,
+   "Winter"
+  ],
+  [
+   19,
+   31,
+   64,
+   15,
+   35,
+   2,
+   "Winter"
+  ],
+  [
+   22,
+   2,
+   6,
+   40,
+   13,
+   5,
+   "Fall"
+  ],
+  [
+   0,
+   17,
+   87,
+   6,
+   84,
+   3,
+   "Summer"
+  ],
+  [
+   2,
+   2,
+   48,
+   26,
+   8,
+   5,
+   "Fall"
+  ],
+  [
+   17,
+   37,
+   14,
+   11,
+   85,
+   4,
+   "Winter"
+  ],
+  [
+   28,
+   24,
+   85,
+   37,
+   23,
+   4,
+   "Winter"
+  ],
+  [
+   10,
+   23,
+   59,
+   13,
+   404,
+   4,
+   "Offseason"
+  ],
+  [
+   27,
+   35,
+   11,
+   7,
+   177,
+   4,
+   "Fall"
+  ],
+  [
+   15,
+   20,
+   83,
+   6,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   30,
+   13,
+   65,
+   9,
+   40,
+   5,
+   "Summer"
+  ],
+  [
+   17,
+   28,
+   76,
+   16,
+   163,
+   4,
+   "Winter"
+  ],
+  [
+   13,
+   10,
+   98,
+   11,
+   21,
+   5,
+   "Winter"
+  ],
+  [
+   26,
+   15,
+   43,
+   6,
+   10,
+   4,
+   "Summer"
+  ],
+  [
+   14,
+   3,
+   115,
+   5,
+   19,
+   2,
+   "Fall"
+  ],
+  [
+   9,
+   35,
+   3,
+   6,
+   80,
+   2,
+   "Fall"
+  ],
+  [
+   0,
+   5,
+   9,
+   10,
+   55,
+   4,
+   "Offseason"
+  ],
+  [
+   8,
+   4,
+   37,
+   6,
+   32,
+   3,
+   "Offseason"
+  ],
+  [
+   25,
+   25,
+   60,
+   11,
+   28,
+   5,
+   "Winter"
+  ],
+  [
+   19,
+   43,
+   85,
+   17,
+   45,
+   2,
+   "Offseason"
+  ],
+  [
+   28,
+   29,
+   8,
+   24,
+   22,
+   5,
+   "Winter"
+  ],
+  [
+   19,
+   23,
+   23,
+   13,
+   40,
+   2,
+   "Offseason"
+  ],
+  [
+   22,
+   1,
+   112,
+   40,
+   24,
+   4,
+   "Fall"
+  ],
+  [
+   3,
+   34,
+   78,
+   45,
+   16,
+   4,
+   "Build season"
+  ],
+  [
+   18,
+   4,
+   11,
+   30,
+   163,
+   4,
+   "Summer"
+  ],
+  [
+   29,
+   25,
+   37,
+   17,
+   9,
+   4,
+   "Offseason"
+  ],
+  [
+   17,
+   2,
+   99,
+   17,
+   160,
+   3,
+   "Winter"
+  ],
+  [
+   15,
+   14,
+   11,
+   7,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   23,
+   0,
+   72,
+   5,
+   2265,
+   3,
+   "Competition"
+  ],
+  [
+   8,
+   4,
+   77,
+   10,
+   43,
+   2,
+   "Offseason"
+  ],
+  [
+   30,
+   27,
+   15,
+   13,
+   19,
+   4,
+   "Summer"
+  ],
+  [
+   13,
+   15,
+   21,
+   11,
+   12,
+   4,
+   "Winter"
+  ],
+  [
+   17,
+   0,
+   19,
+   16,
+   134,
+   3,
+   "Winter"
+  ],
+  [
+   6,
+   28,
+   122,
+   11,
+   22,
+   3,
+   "Offseason"
+  ],
+  [
+   8,
+   21,
+   81,
+   7,
+   57,
+   2,
+   "Offseason"
+  ],
+  [
+   16,
+   0,
+   93,
+   53,
+   27,
+   5,
+   "Summer"
+  ],
+  [
+   10,
+   16,
+   53,
+   16,
+   417,
+   4,
+   "Summer"
+  ],
+  [
+   0,
+   4,
+   32,
+   10,
+   74,
+   3,
+   "Offseason"
+  ],
+  [
+   28,
+   6,
+   57,
+   34,
+   23,
+   4,
+   "Winter"
+  ],
+  [
+   0,
+   0,
+   3,
+   7,
+   41,
+   3,
+   "Offseason"
+  ],
+  [
+   2,
+   5,
+   34,
+   27,
+   13,
+   4,
+   "Fall"
+  ],
+  [
+   28,
+   5,
+   120,
+   23,
+   23,
+   4,
+   "Winter"
+  ],
+  [
+   8,
+   0,
+   51,
+   8,
+   45,
+   2,
+   "Offseason"
+  ],
+  [
+   12,
+   10,
+   123,
+   23,
+   3,
+   4,
+   "Offseason"
+  ],
+  [
+   19,
+   32,
+   1,
+   13,
+   46,
+   2,
+   "Offseason"
+  ],
+  [
+   15,
+   18,
+   83,
+   6,
+   5,
+   4,
+   "Fall"
+  ],
+  [
+   18,
+   13,
+   72,
+   46,
+   145,
+   4,
+   "Summer"
+  ],
+  [
+   24,
+   27,
+   70,
+   8,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   14,
+   3,
+   32,
+   5,
+   34,
+   2,
+   "Fall"
+  ],
+  [
+   9,
+   24,
+   22,
+   6,
+   98,
+   2,
+   "Fall"
+  ],
+  [
+   0,
+   6,
+   69,
+   9,
+   53,
+   3,
+   "Offseason"
+  ],
+  [
+   7,
+   9,
+   80,
+   7,
+   33,
+   3,
+   "Winter"
+  ],
+  [
+   21,
+   0,
+   59,
+   9,
+   27,
+   2,
+   "Winter"
+  ],
+  [
+   2,
+   37,
+   20,
+   23,
+   10,
+   5,
+   "Fall"
+  ],
+  [
+   26,
+   27,
+   56,
+   10,
+   16,
+   3,
+   "Summer"
+  ],
+  [
+   7,
+   36,
+   17,
+   5,
+   28,
+   3,
+   "Winter"
+  ],
+  [
+   28,
+   1,
+   117,
+   23,
+   22,
+   5,
+   "Winter"
+  ],
+  [
+   22,
+   38,
+   38,
+   47,
+   21,
+   4,
+   "Fall"
+  ],
+  [
+   19,
+   33,
+   64,
+   12,
+   34,
+   2,
+   "Offseason"
+  ],
+  [
+   1,
+   6,
+   37,
+   11,
+   21,
+   5,
+   "Offseason"
+  ],
+  [
+   23,
+   30,
+   64,
+   5,
+   2683,
+   2,
+   "Competition"
+  ],
+  [
+   8,
+   19,
+   58,
+   8,
+   69,
+   3,
+   "Offseason"
+  ],
+  [
+   21,
+   11,
+   69,
+   9,
+   20,
+   2,
+   "Winter"
+  ],
+  [
+   18,
+   13,
+   29,
+   44,
+   103,
+   3,
+   "Summer"
+  ],
+  [
+   9,
+   35,
+   89,
+   5,
+   75,
+   2,
+   "Fall"
+  ],
+  [
+   8,
+   13,
+   12,
+   7,
+   39,
+   2,
+   "Offseason"
+  ],
+  [
+   1,
+   27,
+   108,
+   12,
+   24,
+   5,
+   "Offseason"
+  ],
+  [
+   7,
+   37,
+   120,
+   5,
+   15,
+   4,
+   "Winter"
+  ],
+  [
+   13,
+   14,
+   84,
+   9,
+   15,
+   4,
+   "Winter"
+  ],
+  [
+   2,
+   2,
+   8,
+   20,
+   9,
+   4,
+   "Fall"
+  ],
+  [
+   7,
+   24,
+   13,
+   5,
+   23,
+   4,
+   "Winter"
+  ],
+  [
+   2,
+   29,
+   22,
+   26,
+   13,
+   4,
+   "Fall"
+  ],
+  [
+   18,
+   12,
+   9,
+   30,
+   119,
+   3,
+   "Summer"
+  ],
+  [
+   22,
+   28,
+   83,
+   32,
+   26,
+   4,
+   "Fall"
+  ],
+  [
+   8,
+   15,
+   121,
+   9,
+   41,
+   3,
+   "Offseason"
+  ],
+  [
+   1,
+   6,
+   120,
+   13,
+   15,
+   4,
+   "Offseason"
+  ],
+  [
+   15,
+   21,
+   100,
+   9,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   6,
+   15,
+   63,
+   10,
+   17,
+   4,
+   "Offseason"
+  ],
+  [
+   26,
+   13,
+   63,
+   6,
+   10,
+   4,
+   "Summer"
+  ],
+  [
+   13,
+   14,
+   124,
+   10,
+   19,
+   4,
+   "Winter"
+  ],
+  [
+   5,
+   2,
+   119,
+   21,
+   56,
+   4,
+   "Winter"
+  ],
+  [
+   1,
+   29,
+   22,
+   9,
+   16,
+   5,
+   "Offseason"
+  ],
+  [
+   27,
+   0,
+   39,
+   8,
+   201,
+   4,
+   "Fall"
+  ],
+  [
+   2,
+   9,
+   20,
+   18,
+   14,
+   5,
+   "Fall"
+  ],
+  [
+   3,
+   27,
+   37,
+   43,
+   19,
+   4,
+   "Build season"
+  ],
+  [
+   16,
+   9,
+   105,
+   46,
+   39,
+   4,
+   "Summer"
+  ],
+  [
+   5,
+   6,
+   13,
+   17,
+   57,
+   4,
+   "Winter"
+  ],
+  [
+   30,
+   3,
+   101,
+   15,
+   25,
+   5,
+   "Summer"
+  ],
+  [
+   3,
+   34,
+   35,
+   42,
+   15,
+   4,
+   "Build season"
+  ],
+  [
+   4,
+   41,
+   28,
+   11,
+   226,
+   3,
+   "Competition"
+  ],
+  [
+   15,
+   19,
+   60,
+   10,
+   7,
+   4,
+   "Fall"
+  ],
+  [
+   18,
+   13,
+   115,
+   46,
+   100,
+   3,
+   "Summer"
+  ],
+  [
+   11,
+   23,
+   40,
+   15,
+   333,
+   3,
+   "Summer"
+  ],
+  [
+   1,
+   0,
+   8,
+   14,
+   29,
+   5,
+   "Offseason"
+  ],
+  [
+   0,
+   11,
+   104,
+   7,
+   59,
+   4,
+   "Offseason"
+  ],
+  [
+   24,
+   19,
+   18,
+   11,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   23,
+   4,
+   101,
+   3,
+   2179,
+   3,
+   "Competition"
+  ],
+  [
+   13,
+   10,
+   12,
+   13,
+   12,
+   5,
+   "Winter"
+  ],
+  [
+   10,
+   16,
+   13,
+   20,
+   401,
+   4,
+   "Summer"
+  ],
+  [
+   28,
+   37,
+   109,
+   36,
+   26,
+   5,
+   "Winter"
+  ],
+  [
+   0,
+   37,
+   40,
+   7,
+   52,
+   3,
+   "Offseason"
+  ],
+  [
+   30,
+   39,
+   19,
+   12,
+   20,
+   5,
+   "Summer"
+  ],
+  [
+   5,
+   6,
+   96,
+   20,
+   31,
+   5,
+   "Winter"
+  ],
+  [
+   6,
+   29,
+   13,
+   11,
+   17,
+   4,
+   "Offseason"
+  ],
+  [
+   30,
+   14,
+   42,
+   11,
+   38,
+   4,
+   "Summer"
+  ],
+  [
+   15,
+   19,
+   63,
+   8,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   6,
+   29,
+   99,
+   9,
+   16,
+   4,
+   "Offseason"
+  ],
+  [
+   15,
+   30,
+   121,
+   7,
+   8,
+   5,
+   "Fall"
+  ],
+  [
+   2,
+   27,
+   65,
+   24,
+   13,
+   5,
+   "Fall"
+  ],
+  [
+   14,
+   15,
+   53,
+   6,
+   22,
+   2,
+   "Fall"
+  ],
+  [
+   5,
+   13,
+   68,
+   16,
+   48,
+   5,
+   "Winter"
+  ],
+  [
+   17,
+   2,
+   59,
+   12,
+   96,
+   4,
+   "Winter"
+  ],
+  [
+   11,
+   16,
+   34,
+   9,
+   497,
+   3,
+   "Summer"
+  ],
+  [
+   10,
+   12,
+   67,
+   16,
+   180,
+   4,
+   "Summer"
+  ],
+  [
+   18,
+   14,
+   49,
+   35,
+   156,
+   4,
+   "Summer"
+  ],
+  [
+   20,
+   27,
+   50,
+   5,
+   122,
+   4,
+   "Winter"
+  ],
+  [
+   2,
+   1,
+   111,
+   27,
+   12,
+   4,
+   "Fall"
+  ],
+  [
+   28,
+   2,
+   94,
+   27,
+   15,
+   5,
+   "Winter"
+  ],
+  [
+   8,
+   19,
+   98,
+   6,
+   34,
+   2,
+   "Offseason"
+  ],
+  [
+   9,
+   19,
+   122,
+   4,
+   74,
+   2,
+   "Fall"
+  ],
+  [
+   10,
+   17,
+   116,
+   19,
+   298,
+   3,
+   "Summer"
+  ],
+  [
+   20,
+   24,
+   67,
+   5,
+   128,
+   3,
+   "Winter"
+  ],
+  [
+   6,
+   29,
+   56,
+   9,
+   12,
+   4,
+   "Offseason"
+  ],
+  [
+   9,
+   23,
+   42,
+   5,
+   95,
+   3,
+   "Fall"
+  ],
+  [
+   17,
+   1,
+   39,
+   12,
+   149,
+   4,
+   "Winter"
+  ],
+  [
+   11,
+   18,
+   100,
+   10,
+   414,
+   2,
+   "Summer"
+  ],
+  [
+   9,
+   13,
+   87,
+   4,
+   99,
+   2,
+   "Fall"
+  ],
+  [
+   3,
+   3,
+   17,
+   33,
+   17,
+   5,
+   "Build season"
+  ],
+  [
+   23,
+   19,
+   97,
+   5,
+   1406,
+   3,
+   "Competition"
+  ],
+  [
+   7,
+   29,
+   22,
+   7,
+   16,
+   4,
+   "Winter"
+  ],
+  [
+   17,
+   0,
+   102,
+   16,
+   88,
+   4,
+   "Winter"
+  ],
+  [
+   24,
+   19,
+   61,
+   9,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   29,
+   43,
+   125,
+   11,
+   6,
+   5,
+   "Offseason"
+  ],
+  [
+   27,
+   28,
+   56,
+   11,
+   184,
+   3,
+   "Fall"
+  ],
+  [
+   0,
+   43,
+   32,
+   8,
+   81,
+   4,
+   "Offseason"
+  ],
+  [
+   23,
+   18,
+   77,
+   4,
+   1413,
+   2,
+   "Competition"
+  ],
+  [
+   30,
+   34,
+   10,
+   9,
+   27,
+   5,
+   "Summer"
+  ],
+  [
+   4,
+   4,
+   61,
+   8,
+   266,
+   3,
+   "Competition"
+  ],
+  [
+   6,
+   13,
+   0,
+   10,
+   16,
+   3,
+   "Offseason"
+  ],
+  [
+   15,
+   18,
+   43,
+   7,
+   7,
+   4,
+   "Fall"
+  ],
+  [
+   12,
+   26,
+   113,
+   25,
+   3,
+   4,
+   "Offseason"
+  ],
+  [
+   18,
+   3,
+   77,
+   37,
+   174,
+   3,
+   "Summer"
+  ],
+  [
+   13,
+   15,
+   104,
+   11,
+   19,
+   4,
+   "Winter"
+  ],
+  [
+   24,
+   27,
+   110,
+   10,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   19,
+   32,
+   44,
+   12,
+   27,
+   3,
+   "Offseason"
+  ],
+  [
+   26,
+   27,
+   96,
+   9,
+   18,
+   3,
+   "Summer"
+  ],
+  [
+   16,
+   37,
+   88,
+   50,
+   30,
+   4,
+   "Summer"
+  ],
+  [
+   5,
+   5,
+   76,
+   23,
+   37,
+   5,
+   "Winter"
+  ],
+  [
+   17,
+   1,
+   36,
+   15,
+   108,
+   3,
+   "Winter"
+  ],
+  [
+   2,
+   5,
+   117,
+   26,
+   16,
+   4,
+   "Fall"
+  ],
+  [
+   6,
+   0,
+   36,
+   11,
+   15,
+   3,
+   "Offseason"
+  ],
+  [
+   6,
+   29,
+   16,
+   11,
+   12,
+   3,
+   "Offseason"
+  ],
+  [
+   9,
+   36,
+   109,
+   5,
+   94,
+   3,
+   "Fall"
+  ],
+  [
+   22,
+   34,
+   35,
+   50,
+   24,
+   4,
+   "Fall"
+  ],
+  [
+   20,
+   24,
+   110,
+   6,
+   215,
+   3,
+   "Winter"
+  ],
+  [
+   25,
+   25,
+   17,
+   9,
+   29,
+   4,
+   "Winter"
+  ],
+  [
+   29,
+   14,
+   96,
+   13,
+   7,
+   4,
+   "Offseason"
+  ],
+  [
+   1,
+   28,
+   85,
+   11,
+   27,
+   5,
+   "Offseason"
+  ],
+  [
+   4,
+   40,
+   8,
+   12,
+   135,
+   4,
+   "Competition"
+  ],
+  [
+   12,
+   33,
+   108,
+   37,
+   4,
+   4,
+   "Offseason"
+  ],
+  [
+   21,
+   37,
+   72,
+   8,
+   26,
+   3,
+   "Winter"
+  ],
+  [
+   19,
+   43,
+   2,
+   12,
+   51,
+   3,
+   "Offseason"
+  ],
+  [
+   3,
+   38,
+   81,
+   49,
+   12,
+   5,
+   "Build season"
+  ],
+  [
+   0,
+   6,
+   112,
+   6,
+   73,
+   3,
+   "Offseason"
+  ],
+  [
+   18,
+   3,
+   74,
+   46,
+   132,
+   3,
+   "Summer"
+  ],
+  [
+   3,
+   2,
+   123,
+   35,
+   21,
+   5,
+   "Build season"
+  ],
+  [
+   9,
+   3,
+   0,
+   4,
+   119,
+   3,
+   "Fall"
+  ],
+  [
+   9,
+   2,
+   106,
+   6,
+   63,
+   2,
+   "Fall"
+  ],
+  [
+   2,
+   37,
+   106,
+   28,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   1,
+   42,
+   72,
+   15,
+   28,
+   4,
+   "Summer"
+  ],
+  [
+   3,
+   13,
+   104,
+   32,
+   19,
+   4,
+   "Build season"
+  ],
+  [
+   20,
+   39,
+   28,
+   6,
+   271,
+   3,
+   "Winter"
+  ],
+  [
+   7,
+   5,
+   48,
+   6,
+   30,
+   4,
+   "Winter"
+  ],
+  [
+   6,
+   28,
+   119,
+   12,
+   12,
+   3,
+   "Offseason"
+  ],
+  [
+   1,
+   9,
+   20,
+   14,
+   20,
+   5,
+   "Offseason"
+  ],
+  [
+   10,
+   0,
+   123,
+   19,
+   187,
+   4,
+   "Offseason"
+  ],
+  [
+   16,
+   12,
+   88,
+   48,
+   31,
+   4,
+   "Summer"
+  ],
+  [
+   15,
+   22,
+   37,
+   7,
+   6,
+   5,
+   "Fall"
+  ],
+  [
+   8,
+   4,
+   120,
+   9,
+   69,
+   3,
+   "Offseason"
+  ],
+  [
+   0,
+   11,
+   18,
+   7,
+   75,
+   4,
+   "Offseason"
+  ],
+  [
+   16,
+   37,
+   5,
+   55,
+   25,
+   4,
+   "Summer"
+  ],
+  [
+   9,
+   35,
+   46,
+   6,
+   64,
+   2,
+   "Fall"
+  ],
+  [
+   0,
+   0,
+   43,
+   8,
+   56,
+   3,
+   "Offseason"
+  ],
+  [
+   20,
+   24,
+   24,
+   6,
+   247,
+   3,
+   "Winter"
+  ],
+  [
+   14,
+   8,
+   104,
+   5,
+   19,
+   3,
+   "Fall"
+  ],
+  [
+   14,
+   3,
+   75,
+   5,
+   25,
+   2,
+   "Fall"
+  ],
+  [
+   10,
+   17,
+   33,
+   17,
+   301,
+   4,
+   "Summer"
+  ],
+  [
+   0,
+   6,
+   29,
+   8,
+   82,
+   3,
+   "Offseason"
+  ],
+  [
+   22,
+   27,
+   106,
+   37,
+   28,
+   4,
+   "Fall"
+  ],
+  [
+   11,
+   19,
+   77,
+   10,
+   579,
+   3,
+   "Summer"
+  ],
+  [
+   6,
+   15,
+   66,
+   9,
+   14,
+   4,
+   "Offseason"
+  ],
+  [
+   18,
+   41,
+   64,
+   48,
+   119,
+   3,
+   "Competition"
+  ],
+  [
+   2,
+   28,
+   2,
+   18,
+   9,
+   4,
+   "Fall"
+  ],
+  [
+   11,
+   12,
+   48,
+   12,
+   581,
+   3,
+   "Summer"
+  ],
+  [
+   30,
+   34,
+   53,
+   10,
+   24,
+   5,
+   "Summer"
+  ],
+  [
+   17,
+   23,
+   96,
+   13,
+   168,
+   4,
+   "Winter"
+  ],
+  [
+   27,
+   1,
+   59,
+   8,
+   123,
+   4,
+   "Fall"
+  ],
+  [
+   15,
+   22,
+   123,
+   7,
+   5,
+   4,
+   "Fall"
+  ],
+  [
+   23,
+   30,
+   104,
+   3,
+   2584,
+   3,
+   "Competition"
+  ],
+  [
+   5,
+   2,
+   36,
+   19,
+   29,
+   5,
+   "Winter"
+  ],
+  [
+   22,
+   2,
+   46,
+   43,
+   22,
+   5,
+   "Fall"
+  ],
+  [
+   17,
+   37,
+   11,
+   15,
+   85,
+   3,
+   "Winter"
+  ],
+  [
+   26,
+   15,
+   86,
+   9,
+   18,
+   4,
+   "Summer"
+  ],
+  [
+   10,
+   16,
+   96,
+   16,
+   221,
+   3,
+   "Summer"
+  ],
+  [
+   22,
+   24,
+   123,
+   34,
+   18,
+   5,
+   "Fall"
+  ],
+  [
+   25,
+   10,
+   124,
+   10,
+   19,
+   5,
+   "Winter"
+  ],
+  [
+   28,
+   37,
+   23,
+   29,
+   25,
+   5,
+   "Winter"
+  ],
+  [
+   1,
+   42,
+   112,
+   10,
+   32,
+   5,
+   "Summer"
+  ],
+  [
+   12,
+   26,
+   30,
+   35,
+   3,
+   4,
+   "Offseason"
+  ],
+  [
+   29,
+   10,
+   24,
+   14,
+   13,
+   4,
+   "Offseason"
+  ],
+  [
+   2,
+   23,
+   122,
+   23,
+   15,
+   4,
+   "Fall"
+  ],
+  [
+   6,
+   35,
+   51,
+   8,
+   17,
+   4,
+   "Offseason"
+  ],
+  [
+   0,
+   5,
+   52,
+   8,
+   39,
+   3,
+   "Offseason"
+  ],
+  [
+   12,
+   14,
+   43,
+   34,
+   5,
+   4,
+   "Offseason"
+  ],
+  [
+   0,
+   28,
+   79,
+   6,
+   73,
+   4,
+   "Offseason"
+  ],
+  [
+   12,
+   43,
+   115,
+   26,
+   3,
+   4,
+   "Offseason"
+  ],
+  [
+   1,
+   37,
+   63,
+   12,
+   18,
+   4,
+   "Offseason"
+  ],
+  [
+   8,
+   11,
+   75,
+   6,
+   70,
+   3,
+   "Offseason"
+  ],
+  [
+   13,
+   23,
+   19,
+   11,
+   28,
+   4,
+   "Winter"
+  ],
+  [
+   8,
+   0,
+   8,
+   9,
+   60,
+   2,
+   "Offseason"
+  ],
+  [
+   2,
+   1,
+   114,
+   25,
+   9,
+   5,
+   "Fall"
+  ],
+  [
+   9,
+   2,
+   20,
+   4,
+   115,
+   3,
+   "Fall"
+  ],
+  [
+   9,
+   23,
+   2,
+   5,
+   118,
+   3,
+   "Fall"
+  ],
+  [
+   2,
+   29,
+   62,
+   28,
+   9,
+   4,
+   "Fall"
+  ],
+  [
+   2,
+   2,
+   91,
+   29,
+   8,
+   5,
+   "Fall"
+  ],
+  [
+   5,
+   14,
+   5,
+   17,
+   59,
+   5,
+   "Winter"
+  ],
+  [
+   29,
+   43,
+   39,
+   12,
+   14,
+   4,
+   "Offseason"
+  ],
+  [
+   28,
+   24,
+   42,
+   33,
+   26,
+   4,
+   "Winter"
+  ],
+  [
+   1,
+   9,
+   106,
+   12,
+   21,
+   5,
+   "Offseason"
+  ],
+  [
+   19,
+   18,
+   117,
+   16,
+   30,
+   3,
+   "Offseason"
+  ],
+  [
+   14,
+   35,
+   21,
+   6,
+   29,
+   3,
+   "Fall"
+  ],
+  [
+   0,
+   16,
+   27,
+   9,
+   68,
+   4,
+   "Summer"
+  ],
+  [
+   2,
+   5,
+   74,
+   20,
+   13,
+   4,
+   "Fall"
+  ],
+  [
+   0,
+   16,
+   24,
+   8,
+   47,
+   3,
+   "Summer"
+  ],
+  [
+   12,
+   25,
+   50,
+   27,
+   5,
+   5,
+   "Offseason"
+  ],
+  [
+   7,
+   37,
+   80,
+   6,
+   15,
+   4,
+   "Winter"
+  ],
+  [
+   10,
+   0,
+   40,
+   20,
+   247,
+   3,
+   "Offseason"
+  ],
+  [
+   1,
+   39,
+   86,
+   14,
+   20,
+   4,
+   "Offseason"
+  ],
+  [
+   27,
+   0,
+   122,
+   11,
+   191,
+   4,
+   "Fall"
+  ],
+  [
+   16,
+   6,
+   36,
+   50,
+   38,
+   4,
+   "Summer"
+  ],
+  [
+   0,
+   16,
+   110,
+   9,
+   54,
+   3,
+   "Summer"
+  ],
+  [
+   7,
+   9,
+   77,
+   7,
+   22,
+   3,
+   "Winter"
+  ],
+  [
+   13,
+   43,
+   4,
+   15,
+   15,
+   4,
+   "Winter"
+  ],
+  [
+   1,
+   6,
+   80,
+   15,
+   19,
+   4,
+   "Offseason"
+  ],
+  [
+   28,
+   36,
+   3,
+   30,
+   16,
+   4,
+   "Winter"
+  ],
+  [
+   0,
+   24,
+   10,
+   9,
+   79,
+   3,
+   "Offseason"
+  ],
+  [
+   6,
+   35,
+   8,
+   9,
+   26,
+   4,
+   "Offseason"
+  ],
+  [
+   13,
+   25,
+   125,
+   11,
+   28,
+   4,
+   "Winter"
+  ],
+  [
+   9,
+   3,
+   40,
+   4,
+   95,
+   3,
+   "Fall"
+  ],
+  [
+   7,
+   27,
+   82,
+   6,
+   34,
+   4,
+   "Winter"
+  ],
+  [
+   12,
+   12,
+   106,
+   35,
+   3,
+   5,
+   "Summer"
+  ],
+  [
+   3,
+   35,
+   12,
+   30,
+   17,
+   5,
+   "Build season"
+  ],
+  [
+   30,
+   2,
+   81,
+   10,
+   30,
+   4,
+   "Summer"
+  ],
+  [
+   29,
+   15,
+   73,
+   13,
+   13,
+   5,
+   "Offseason"
+  ],
+  [
+   9,
+   13,
+   4,
+   6,
+   124,
+   2,
+   "Fall"
+  ],
+  [
+   9,
+   19,
+   79,
+   6,
+   102,
+   3,
+   "Fall"
+  ],
+  [
+   2,
+   38,
+   40,
+   21,
+   8,
+   5,
+   "Fall"
+  ],
+  [
+   8,
+   19,
+   101,
+   7,
+   38,
+   2,
+   "Offseason"
+  ],
+  [
+   24,
+   18,
+   124,
+   10,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   23,
+   4,
+   18,
+   4,
+   2581,
+   2,
+   "Competition"
+  ],
+  [
+   10,
+   18,
+   10,
+   16,
+   185,
+   3,
+   "Offseason"
+  ],
+  [
+   11,
+   19,
+   34,
+   10,
+   390,
+   2,
+   "Summer"
+  ],
+  [
+   8,
+   15,
+   38,
+   8,
+   64,
+   3,
+   "Offseason"
+  ],
+  [
+   22,
+   13,
+   113,
+   50,
+   14,
+   4,
+   "Fall"
+  ],
+  [
+   1,
+   37,
+   23,
+   10,
+   24,
+   5,
+   "Offseason"
+  ],
+  [
+   5,
+   14,
+   45,
+   23,
+   53,
+   5,
+   "Winter"
+  ],
+  [
+   28,
+   2,
+   51,
+   27,
+   17,
+   4,
+   "Winter"
+  ],
+  [
+   8,
+   11,
+   32,
+   8,
+   41,
+   3,
+   "Offseason"
+  ],
+  [
+   5,
+   2,
+   33,
+   15,
+   44,
+   5,
+   "Winter"
+  ],
+  [
+   8,
+   16,
+   58,
+   7,
+   38,
+   3,
+   "Summer"
+  ],
+  [
+   7,
+   0,
+   25,
+   5,
+   19,
+   4,
+   "Winter"
+  ],
+  [
+   30,
+   38,
+   125,
+   9,
+   27,
+   4,
+   "Summer"
+  ],
+  [
+   28,
+   0,
+   54,
+   23,
+   23,
+   5,
+   "Winter"
+  ],
+  [
+   8,
+   0,
+   91,
+   6,
+   58,
+   2,
+   "Offseason"
+  ],
+  [
+   14,
+   13,
+   70,
+   7,
+   24,
+   2,
+   "Fall"
+  ],
+  [
+   12,
+   43,
+   32,
+   35,
+   4,
+   5,
+   "Offseason"
+  ],
+  [
+   3,
+   40,
+   104,
+   42,
+   9,
+   5,
+   "Build season"
+  ],
+  [
+   22,
+   28,
+   0,
+   42,
+   15,
+   4,
+   "Fall"
+  ],
+  [
+   13,
+   26,
+   19,
+   10,
+   19,
+   4,
+   "Winter"
+  ],
+  [
+   15,
+   19,
+   103,
+   7,
+   5,
+   5,
+   "Fall"
+  ],
+  [
+   0,
+   37,
+   83,
+   6,
+   54,
+   3,
+   "Offseason"
+  ],
+  [
+   7,
+   0,
+   108,
+   7,
+   32,
+   4,
+   "Winter"
+  ],
+  [
+   0,
+   4,
+   29,
+   7,
+   80,
+   3,
+   "Offseason"
+  ],
+  [
+   1,
+   39,
+   46,
+   12,
+   20,
+   4,
+   "Offseason"
+  ],
+  [
+   25,
+   10,
+   41,
+   9,
+   28,
+   5,
+   "Winter"
+  ],
+  [
+   5,
+   37,
+   25,
+   15,
+   40,
+   5,
+   "Winter"
+  ],
+  [
+   11,
+   20,
+   57,
+   14,
+   409,
+   3,
+   "Summer"
+  ],
+  [
+   30,
+   3,
+   61,
+   9,
+   40,
+   4,
+   "Summer"
+  ],
+  [
+   7,
+   1,
+   45,
+   7,
+   23,
+   3,
+   "Winter"
+  ],
+  [
+   20,
+   37,
+   5,
+   6,
+   219,
+   4,
+   "Winter"
+  ],
+  [
+   16,
+   9,
+   22,
+   34,
+   25,
+   5,
+   "Summer"
+  ],
+  [
+   1,
+   42,
+   69,
+   15,
+   27,
+   4,
+   "Summer"
+  ],
+  [
+   7,
+   2,
+   22,
+   5,
+   31,
+   4,
+   "Winter"
+  ],
+  [
+   22,
+   28,
+   43,
+   32,
+   14,
+   5,
+   "Fall"
+  ],
+  [
+   14,
+   13,
+   113,
+   7,
+   21,
+   3,
+   "Fall"
+  ],
+  [
+   3,
+   35,
+   55,
+   41,
+   11,
+   4,
+   "Build season"
+  ],
+  [
+   20,
+   39,
+   71,
+   5,
+   160,
+   3,
+   "Winter"
+  ],
+  [
+   3,
+   27,
+   123,
+   35,
+   11,
+   5,
+   "Build season"
+  ],
+  [
+   17,
+   29,
+   56,
+   16,
+   96,
+   3,
+   "Winter"
+  ],
+  [
+   17,
+   39,
+   77,
+   12,
+   95,
+   4,
+   "Winter"
+  ],
+  [
+   12,
+   14,
+   0,
+   23,
+   3,
+   5,
+   "Offseason"
+  ],
+  [
+   28,
+   27,
+   111,
+   30,
+   20,
+   4,
+   "Winter"
+  ],
+  [
+   7,
+   37,
+   37,
+   7,
+   15,
+   4,
+   "Winter"
+  ],
+  [
+   17,
+   23,
+   13,
+   15,
+   107,
+   3,
+   "Winter"
+  ],
+  [
+   29,
+   26,
+   97,
+   16,
+   8,
+   5,
+   "Offseason"
+  ],
+  [
+   9,
+   38,
+   6,
+   6,
+   67,
+   2,
+   "Fall"
+  ],
+  [
+   23,
+   19,
+   54,
+   4,
+   2632,
+   2,
+   "Competition"
+  ],
+  [
+   23,
+   4,
+   61,
+   4,
+   1606,
+   2,
+   "Competition"
+  ],
+  [
+   1,
+   1,
+   71,
+   10,
+   21,
+   5,
+   "Offseason"
+  ],
+  [
+   30,
+   39,
+   59,
+   9,
+   22,
+   4,
+   "Summer"
+  ],
+  [
+   14,
+   9,
+   1,
+   7,
+   22,
+   3,
+   "Fall"
+  ],
+  [
+   22,
+   34,
+   78,
+   30,
+   21,
+   5,
+   "Fall"
+  ],
+  [
+   16,
+   5,
+   102,
+   53,
+   36,
+   5,
+   "Summer"
+  ],
+  [
+   6,
+   15,
+   106,
+   10,
+   27,
+   4,
+   "Offseason"
+  ],
+  [
+   13,
+   15,
+   18,
+   9,
+   18,
+   5,
+   "Winter"
+  ],
+  [
+   9,
+   24,
+   19,
+   6,
+   122,
+   2,
+   "Fall"
+  ],
+  [
+   25,
+   43,
+   5,
+   9,
+   34,
+   5,
+   "Winter"
+  ],
+  [
+   6,
+   13,
+   43,
+   8,
+   12,
+   4,
+   "Offseason"
+  ],
+  [
+   22,
+   13,
+   73,
+   33,
+   18,
+   5,
+   "Fall"
+  ],
+  [
+   3,
+   27,
+   40,
+   47,
+   11,
+   4,
+   "Build season"
+  ],
+  [
+   8,
+   21,
+   38,
+   8,
+   40,
+   3,
+   "Offseason"
+  ],
+  [
+   3,
+   38,
+   121,
+   36,
+   14,
+   5,
+   "Build season"
+  ],
+  [
+   8,
+   17,
+   78,
+   7,
+   52,
+   2,
+   "Summer"
+  ],
+  [
+   0,
+   19,
+   27,
+   10,
+   74,
+   4,
+   "Offseason"
+  ],
+  [
+   15,
+   18,
+   40,
+   10,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   19,
+   33,
+   21,
+   18,
+   47,
+   2,
+   "Offseason"
+  ],
+  [
+   6,
+   0,
+   76,
+   9,
+   14,
+   4,
+   "Offseason"
+  ],
+  [
+   11,
+   19,
+   37,
+   10,
+   585,
+   3,
+   "Summer"
+  ],
+  [
+   12,
+   12,
+   103,
+   32,
+   5,
+   4,
+   "Summer"
+  ],
+  [
+   20,
+   0,
+   104,
+   6,
+   123,
+   3,
+   "Winter"
+  ],
+  [
+   7,
+   5,
+   91,
+   6,
+   29,
+   3,
+   "Winter"
+  ],
+  [
+   9,
+   34,
+   26,
+   6,
+   75,
+   3,
+   "Fall"
+  ],
+  [
+   10,
+   23,
+   99,
+   18,
+   180,
+   3,
+   "Offseason"
+  ],
+  [
+   9,
+   20,
+   99,
+   4,
+   118,
+   3,
+   "Fall"
+  ],
+  [
+   9,
+   38,
+   46,
+   6,
+   124,
+   2,
+   "Fall"
+  ],
+  [
+   1,
+   27,
+   68,
+   13,
+   27,
+   4,
+   "Offseason"
+  ],
+  [
+   0,
+   0,
+   86,
+   6,
+   82,
+   4,
+   "Offseason"
+  ],
+  [
+   2,
+   27,
+   22,
+   30,
+   12,
+   5,
+   "Fall"
+  ],
+  [
+   21,
+   37,
+   29,
+   9,
+   22,
+   2,
+   "Winter"
+  ],
+  [
+   29,
+   0,
+   60,
+   15,
+   8,
+   4,
+   "Offseason"
+  ],
+  [
+   27,
+   2,
+   79,
+   9,
+   247,
+   4,
+   "Fall"
+  ],
+  [
+   26,
+   13,
+   106,
+   9,
+   16,
+   4,
+   "Summer"
+  ],
+  [
+   30,
+   1,
+   21,
+   12,
+   30,
+   4,
+   "Summer"
+  ],
+  [
+   9,
+   3,
+   83,
+   6,
+   87,
+   3,
+   "Fall"
+  ],
+  [
+   18,
+   12,
+   52,
+   48,
+   155,
+   3,
+   "Summer"
+  ],
+  [
+   16,
+   9,
+   62,
+   46,
+   20,
+   4,
+   "Summer"
+  ],
+  [
+   4,
+   4,
+   101,
+   8,
+   158,
+   3,
+   "Competition"
+  ],
+  [
+   6,
+   38,
+   74,
+   8,
+   20,
+   4,
+   "Offseason"
+  ],
+  [
+   19,
+   12,
+   125,
+   20,
+   43,
+   3,
+   "Summer"
+  ],
+  [
+   17,
+   24,
+   73,
+   15,
+   102,
+   3,
+   "Winter"
+  ],
+  [
+   15,
+   22,
+   80,
+   10,
+   7,
+   4,
+   "Fall"
+  ],
+  [
+   0,
+   43,
+   118,
+   7,
+   49,
+   3,
+   "Offseason"
+  ],
+  [
+   30,
+   3,
+   18,
+   9,
+   35,
+   5,
+   "Summer"
+  ],
+  [
+   6,
+   38,
+   117,
+   11,
+   26,
+   4,
+   "Offseason"
+  ],
+  [
+   22,
+   35,
+   55,
+   41,
+   15,
+   4,
+   "Fall"
+  ],
+  [
+   1,
+   0,
+   51,
+   11,
+   23,
+   4,
+   "Offseason"
+  ],
+  [
+   2,
+   0,
+   94,
+   20,
+   13,
+   4,
+   "Fall"
+  ],
+  [
+   2,
+   38,
+   83,
+   22,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   2,
+   27,
+   25,
+   29,
+   16,
+   5,
+   "Fall"
+  ],
+  [
+   15,
+   20,
+   40,
+   6,
+   6,
+   4,
+   "Fall"
+  ],
+  [
+   4,
+   14,
+   122,
+   12,
+   247,
+   3,
+   "Competition"
+  ],
+  [
+   7,
+   24,
+   56,
+   7,
+   32,
+   4,
+   "Winter"
+  ],
+  [
+   20,
+   34,
+   65,
+   7,
+   203,
+   4,
+   "Winter"
+  ],
+  [
+   29,
+   14,
+   10,
+   17,
+   8,
+   5,
+   "Offseason"
+  ],
+  [
+   17,
+   29,
+   96,
+   11,
+   148,
+   3,
+   "Winter"
+  ],
+  [
+   30,
+   14,
+   2,
+   11,
+   33,
+   4,
+   "Summer"
+  ],
+  [
+   5,
+   27,
+   61,
+   25,
+   29,
+   5,
+   "Winter"
+  ],
+  [
+   26,
+   15,
+   3,
+   7,
+   21,
+   4,
+   "Summer"
+  ],
+  [
+   10,
+   12,
+   107,
+   19,
+   260,
+   4,
+   "Summer"
+  ],
+  [
+   0,
+   37,
+   123,
+   6,
+   69,
+   3,
+   "Offseason"
+  ],
+  [
+   7,
+   27,
+   42,
+   5,
+   29,
+   4,
+   "Winter"
+  ],
+  [
+   11,
+   20,
+   97,
+   9,
+   677,
+   2,
+   "Summer"
+  ],
+  [
+   8,
+   28,
+   119,
+   8,
+   66,
+   3,
+   "Offseason"
+  ],
+  [
+   6,
+   0,
+   79,
+   12,
+   18,
+   3,
+   "Offseason"
+  ],
+  [
+   19,
+   31,
+   107,
+   12,
+   31,
+   2,
+   "Winter"
+  ],
+  [
+   16,
+   6,
+   122,
+   53,
+   38,
+   4,
+   "Summer"
+  ],
+  [
+   24,
+   14,
+   95,
+   10,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   30,
+   1,
+   61,
+   14,
+   21,
+   4,
+   "Summer"
+  ],
+  [
+   22,
+   24,
+   80,
+   40,
+   12,
+   4,
+   "Fall"
+  ],
+  [
+   30,
+   34,
+   96,
+   11,
+   39,
+   5,
+   "Summer"
+  ],
+  [
+   0,
+   11,
+   101,
+   7,
+   76,
+   3,
+   "Offseason"
+  ],
+  [
+   8,
+   21,
+   124,
+   10,
+   69,
+   3,
+   "Offseason"
+  ],
+  [
+   2,
+   1,
+   28,
+   27,
+   9,
+   5,
+   "Fall"
+  ],
+  [
+   8,
+   21,
+   121,
+   10,
+   50,
+   2,
+   "Offseason"
+  ],
+  [
+   3,
+   38,
+   124,
+   38,
+   14,
+   5,
+   "Build season"
+  ],
+  [
+   2,
+   28,
+   42,
+   23,
+   12,
+   5,
+   "Fall"
+  ],
+  [
+   13,
+   23,
+   59,
+   12,
+   22,
+   5,
+   "Winter"
+  ],
+  [
+   6,
+   38,
+   34,
+   11,
+   28,
+   4,
+   "Offseason"
+  ],
+  [
+   6,
+   2,
+   99,
+   8,
+   25,
+   3,
+   "Offseason"
+  ],
+  [
+   11,
+   20,
+   54,
+   14,
+   526,
+   2,
+   "Summer"
+  ],
+  [
+   7,
+   37,
+   123,
+   6,
+   29,
+   4,
+   "Winter"
+  ],
+  [
+   9,
+   38,
+   89,
+   4,
+   74,
+   3,
+   "Fall"
+  ],
+  [
+   8,
+   11,
+   118,
+   9,
+   60,
+   2,
+   "Offseason"
+  ],
+  [
+   0,
+   19,
+   70,
+   7,
+   65,
+   4,
+   "Offseason"
+  ],
+  [
+   15,
+   14,
+   97,
+   6,
+   5,
+   5,
+   "Fall"
+  ],
+  [
+   24,
+   18,
+   41,
+   11,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   1,
+   1,
+   28,
+   13,
+   30,
+   4,
+   "Offseason"
+  ],
+  [
+   9,
+   19,
+   82,
+   6,
+   61,
+   3,
+   "Fall"
+  ],
+  [
+   17,
+   27,
+   16,
+   14,
+   158,
+   4,
+   "Winter"
+  ],
+  [
+   21,
+   0,
+   19,
+   9,
+   32,
+   2,
+   "Winter"
+  ],
+  [
+   5,
+   39,
+   45,
+   20,
+   29,
+   5,
+   "Winter"
+  ],
+  [
+   22,
+   27,
+   63,
+   50,
+   20,
+   4,
+   "Fall"
+  ],
+  [
+   28,
+   29,
+   91,
+   24,
+   25,
+   5,
+   "Winter"
+  ],
+  [
+   16,
+   4,
+   125,
+   45,
+   37,
+   5,
+   "Summer"
+  ],
+  [
+   11,
+   12,
+   5,
+   15,
+   330,
+   3,
+   "Summer"
+  ],
+  [
+   14,
+   13,
+   27,
+   7,
+   23,
+   2,
+   "Fall"
+  ],
+  [
+   3,
+   3,
+   60,
+   46,
+   18,
+   4,
+   "Build season"
+  ],
+  [
+   29,
+   10,
+   67,
+   13,
+   10,
+   4,
+   "Offseason"
+  ],
+  [
+   1,
+   9,
+   63,
+   11,
+   35,
+   4,
+   "Offseason"
+  ],
+  [
+   1,
+   27,
+   25,
+   14,
+   31,
+   5,
+   "Offseason"
+  ],
+  [
+   24,
+   14,
+   55,
+   10,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   22,
+   1,
+   26,
+   30,
+   25,
+   5,
+   "Fall"
+  ],
+  [
+   14,
+   8,
+   64,
+   5,
+   23,
+   2,
+   "Fall"
+  ],
+  [
+   20,
+   34,
+   105,
+   6,
+   208,
+   3,
+   "Winter"
+  ],
+  [
+   30,
+   13,
+   22,
+   10,
+   32,
+   5,
+   "Summer"
+  ],
+  [
+   15,
+   13,
+   77,
+   7,
+   5,
+   5,
+   "Fall"
+  ],
+  [
+   22,
+   13,
+   30,
+   32,
+   24,
+   4,
+   "Fall"
+  ],
+  [
+   22,
+   27,
+   23,
+   38,
+   24,
+   5,
+   "Fall"
+  ],
+  [
+   15,
+   19,
+   20,
+   9,
+   5,
+   5,
+   "Fall"
+  ],
+  [
+   5,
+   7,
+   76,
+   24,
+   30,
+   5,
+   "Winter"
+  ],
+  [
+   27,
+   19,
+   55,
+   11,
+   179,
+   3,
+   "Fall"
+  ],
+  [
+   15,
+   13,
+   117,
+   10,
+   5,
+   5,
+   "Fall"
+  ],
+  [
+   3,
+   35,
+   98,
+   34,
+   11,
+   5,
+   "Build season"
+  ],
+  [
+   26,
+   37,
+   94,
+   9,
+   9,
+   3,
+   "Summer"
+  ],
+  [
+   1,
+   5,
+   17,
+   10,
+   27,
+   4,
+   "Offseason"
+  ],
+  [
+   26,
+   34,
+   51,
+   10,
+   12,
+   4,
+   "Summer"
+  ],
+  [
+   26,
+   34,
+   94,
+   8,
+   13,
+   4,
+   "Summer"
+  ],
+  [
+   10,
+   18,
+   53,
+   18,
+   291,
+   3,
+   "Offseason"
+  ],
+  [
+   5,
+   5,
+   79,
+   20,
+   63,
+   5,
+   "Winter"
+  ],
+  [
+   4,
+   40,
+   94,
+   9,
+   277,
+   3,
+   "Competition"
+  ],
+  [
+   24,
+   20,
+   81,
+   9,
+   1,
+   4,
+   "Fall"
+  ],
+  [
+   29,
+   25,
+   77,
+   15,
+   8,
+   4,
+   "Offseason"
+  ],
+  [
+   17,
+   24,
+   116,
+   14,
+   128,
+   4,
+   "Winter"
+  ],
+  [
+   19,
+   43,
+   42,
+   13,
+   46,
+   2,
+   "Offseason"
+  ],
+  [
+   0,
+   28,
+   122,
+   9,
+   74,
+   4,
+   "Offseason"
+  ],
+  [
+   9,
+   3,
+   123,
+   4,
+   99,
+   3,
+   "Fall"
+  ],
+  [
+   9,
+   20,
+   59,
+   4,
+   98,
+   2,
+   "Fall"
+  ],
+  [
+   6,
+   3,
+   36,
+   11,
+   22,
+   3,
+   "Offseason"
+  ],
+  [
+   27,
+   1,
+   102,
+   10,
+   240,
+   4,
+   "Fall"
+  ],
+  [
+   23,
+   19,
+   14,
+   4,
+   2411,
+   3,
+   "Competition"
+  ],
+  [
+   0,
+   23,
+   30,
+   6,
+   65,
+   3,
+   "Offseason"
+  ],
+  [
+   10,
+   23,
+   16,
+   15,
+   297,
+   3,
+   "Offseason"
+  ],
+  [
+   0,
+   20,
+   90,
+   8,
+   41,
+   3,
+   "Offseason"
+  ],
+  [
+   18,
+   41,
+   21,
+   36,
+   147,
+   4,
+   "Competition"
+  ],
+  [
+   12,
+   9,
+   20,
+   30,
+   3,
+   4,
+   "Offseason"
+  ],
+  [
+   5,
+   4,
+   59,
+   19,
+   27,
+   5,
+   "Winter"
+  ],
+  [
+   17,
+   23,
+   53,
+   14,
+   140,
+   4,
+   "Winter"
+  ],
+  [
+   26,
+   35,
+   28,
+   7,
+   11,
+   4,
+   "Summer"
+  ],
+  [
+   7,
+   0,
+   111,
+   7,
+   30,
+   4,
+   "Winter"
+  ],
+  [
+   6,
+   15,
+   23,
+   8,
+   25,
+   3,
+   "Offseason"
+  ],
+  [
+   11,
+   18,
+   14,
+   14,
+   407,
+   3,
+   "Summer"
+  ],
+  [
+   10,
+   17,
+   73,
+   19,
+   192,
+   3,
+   "Summer"
+  ],
+  [
+   12,
+   12,
+   63,
+   32,
+   4,
+   4,
+   "Summer"
+  ],
+  [
+   15,
+   13,
+   120,
+   10,
+   6,
+   4,
+   "Fall"
+  ],
+  [
+   16,
+   5,
+   19,
+   37,
+   41,
+   5,
+   "Summer"
+  ],
+  [
+   2,
+   29,
+   105,
+   20,
+   15,
+   4,
+   "Fall"
+  ],
+  [
+   22,
+   38,
+   124,
+   44,
+   28,
+   5,
+   "Fall"
+  ],
+  [
+   12,
+   33,
+   68,
+   25,
+   3,
+   4,
+   "Offseason"
+  ],
+  [
+   9,
+   36,
+   23,
+   6,
+   124,
+   2,
+   "Fall"
+  ],
+  [
+   30,
+   13,
+   108,
+   10,
+   40,
+   5,
+   "Summer"
+  ],
+  [
+   8,
+   13,
+   15,
+   7,
+   64,
+   2,
+   "Offseason"
+  ],
+  [
+   17,
+   28,
+   36,
+   13,
+   112,
+   3,
+   "Winter"
+  ],
+  [
+   30,
+   39,
+   102,
+   10,
+   31,
+   4,
+   "Summer"
+  ],
+  [
+   29,
+   15,
+   30,
+   14,
+   8,
+   4,
+   "Offseason"
+  ],
+  [
+   2,
+   9,
+   63,
+   18,
+   15,
+   4,
+   "Fall"
+  ],
+  [
+   21,
+   23,
+   53,
+   9,
+   31,
+   3,
+   "Winter"
+  ],
+  [
+   2,
+   37,
+   63,
+   29,
+   13,
+   4,
+   "Fall"
+  ],
+  [
+   2,
+   5,
+   31,
+   21,
+   15,
+   4,
+   "Fall"
+  ],
+  [
+   14,
+   21,
+   85,
+   5,
+   30,
+   2,
+   "Fall"
+  ],
+  [
+   16,
+   27,
+   44,
+   44,
+   26,
+   4,
+   "Summer"
+  ],
+  [
+   2,
+   0,
+   91,
+   24,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   15,
+   13,
+   34,
+   9,
+   4,
+   4,
+   "Fall"
+  ],
+  [
+   17,
+   24,
+   30,
+   16,
+   98,
+   4,
+   "Winter"
+  ],
+  [
+   20,
+   39,
+   114,
+   7,
+   184,
+   4,
+   "Winter"
+  ],
+  [
+   14,
+   15,
+   50,
+   6,
+   23,
+   2,
+   "Fall"
+  ],
+  [
+   5,
+   27,
+   104,
+   21,
+   62,
+   4,
+   "Winter"
+  ],
+  [
+   0,
+   0,
+   0,
+   6,
+   46,
+   4,
+   "Offseason"
+  ],
+  [
+   2,
+   0,
+   51,
+   19,
+   8,
+   4,
+   "Fall"
+  ],
+  [
+   5,
+   0,
+   13,
+   15,
+   49,
+   4,
+   "Winter"
+  ],
+  [
+   13,
+   43,
+   44,
+   13,
+   24,
+   5,
+   "Winter"
+  ],
+  [
+   0,
+   43,
+   75,
+   8,
+   49,
+   4,
+   "Offseason"
+  ],
+  [
+   0,
+   5,
+   49,
+   8,
+   74,
+   3,
+   "Offseason"
+  ],
+  [
+   15,
+   21,
+   103,
+   8,
+   7,
+   5,
+   "Fall"
+  ],
+  [
+   13,
+   26,
+   62,
+   12,
+   20,
+   5,
+   "Winter"
+  ],
+  [
+   1,
+   0,
+   11,
+   15,
+   25,
+   4,
+   "Offseason"
+  ],
+  [
+   12,
+   10,
+   80,
+   36,
+   4,
+   5,
+   "Offseason"
+  ],
+  [
+   15,
+   30,
+   38,
+   7,
+   5,
+   4,
+   "Fall"
+  ],
+  [
+   6,
+   35,
+   48,
+   8,
+   16,
+   3,
+   "Offseason"
+  ],
+  [
+   12,
+   43,
+   29,
+   30,
+   5,
+   5,
+   "Offseason"
+  ],
+  [
+   3,
+   38,
+   38,
+   46,
+   18,
+   4,
+   "Build season"
+  ],
+  [
+   0,
+   17,
+   4,
+   6,
+   82,
+   4,
+   "Summer"
+  ],
+  [
+   14,
+   3,
+   72,
+   6,
+   20,
+   3,
+   "Fall"
+  ],
+  [
+   20,
+   37,
+   48,
+   5,
+   276,
+   3,
+   "Winter"
+  ],
+  [
+   7,
+   1,
+   88,
+   7,
+   34,
+   3,
+   "Winter"
+  ],
+  [
+   0,
+   4,
+   115,
+   6,
+   80,
+   4,
+   "Offseason"
+  ],
+  [
+   4,
+   40,
+   91,
+   9,
+   266,
+   3,
+   "Competition"
+  ],
+  [
+   0,
+   20,
+   87,
+   8,
+   59,
+   4,
+   "Offseason"
+  ],
+  [
+   13,
+   43,
+   87,
+   15,
+   22,
+   5,
+   "Winter"
+  ],
+  [
+   23,
+   0,
+   32,
+   5,
+   2169,
+   3,
+   "Competition"
+  ],
+  [
+   2,
+   9,
+   60,
+   25,
+   13,
+   5,
+   "Fall"
+  ],
+  [
+   8,
+   4,
+   80,
+   10,
+   30,
+   3,
+   "Offseason"
+  ],
+  [
+   11,
+   23,
+   123,
+   14,
+   504,
+   3,
+   "Summer"
+  ],
+  [
+   14,
+   21,
+   88,
+   5,
+   28,
+   2,
+   "Fall"
+  ],
+  [
+   27,
+   35,
+   54,
+   7,
+   240,
+   3,
+   "Fall"
+  ],
+  [
+   29,
+   10,
+   107,
+   16,
+   7,
+   4,
+   "Offseason"
+  ],
+  [
+   14,
+   36,
+   38,
+   6,
+   20,
+   3,
+   "Fall"
+  ],
+  [
+   7,
+   39,
+   17,
+   5,
+   15,
+   3,
+   "Winter"
+  ],
+  [
+   26,
+   34,
+   8,
+   7,
+   9,
+   4,
+   "Summer"
+  ],
+  [
+   24,
+   22,
+   121,
+   12,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   10,
+   19,
+   113,
+   18,
+   261,
+   3,
+   "Offseason"
+  ],
+  [
+   22,
+   3,
+   66,
+   42,
+   19,
+   4,
+   "Fall"
+  ],
+  [
+   30,
+   27,
+   98,
+   14,
+   18,
+   4,
+   "Summer"
+  ],
+  [
+   15,
+   18,
+   0,
+   6,
+   4,
+   5,
+   "Fall"
+  ],
+  [
+   0,
+   28,
+   36,
+   7,
+   68,
+   4,
+   "Offseason"
+  ],
+  [
+   30,
+   14,
+   85,
+   13,
+   24,
+   5,
+   "Summer"
+  ],
+  [
+   14,
+   15,
+   93,
+   5,
+   30,
+   2,
+   "Fall"
+  ],
+  [
+   13,
+   10,
+   95,
+   15,
+   24,
+   4,
+   "Winter"
+  ],
+  [
+   1,
+   39,
+   43,
+   10,
+   16,
+   4,
+   "Offseason"
+  ],
+  [
+   17,
+   39,
+   34,
+   14,
+   160,
+   3,
+   "Winter"
+  ],
+  [
+   0,
+   23,
+   113,
+   10,
+   82,
+   3,
+   "Offseason"
+  ],
+  [
+   8,
+   11,
+   115,
+   9,
+   58,
+   2,
+   "Offseason"
+  ],
+  [
+   11,
+   16,
+   117,
+   15,
+   303,
+   3,
+   "Summer"
+  ],
+  [
+   8,
+   15,
+   35,
+   7,
+   46,
+   2,
+   "Offseason"
+  ],
+  [
+   13,
+   14,
+   1,
+   14,
+   26,
+   4,
+   "Winter"
+  ],
+  [
+   24,
+   19,
+   104,
+   10,
+   1,
+   3,
+   "Fall"
+  ],
+  [
+   5,
+   5,
+   119,
+   18,
+   30,
+   4,
+   "Winter"
+  ],
+  [
+   26,
+   40,
+   54,
+   10,
+   12,
+   3,
+   "Summer"
+  ],
+  [
+   3,
+   3,
+   100,
+   41,
+   21,
+   5,
+   "Build season"
+  ],
+  [
+   4,
+   14,
+   125,
+   9,
+   169,
+   3,
+   "Competition"
+  ],
+  [
+   2,
+   38,
+   123,
+   28,
+   14,
+   5,
+   "Fall"
+  ],
+  [
+   3,
+   13,
+   21,
+   30,
+   11,
+   4,
+   "Build season"
+  ],
+  [
+   16,
+   13,
+   108,
+   44,
+   20,
+   5,
+   "Summer"
+  ],
+  [
+   22,
+   38,
+   81,
+   50,
+   19,
+   4,
+   "Fall"
+  ],
+  [
+   12,
+   26,
+   70,
+   29,
+   3,
+   5,
+   "Offseason"
+  ],
+  [
+   16,
+   42,
+   37,
+   36,
+   24,
+   5,
+   "Summer"
+  ],
+  [
+   7,
+   36,
+   103,
+   5,
+   16,
+   3,
+   "Winter"
+  ],
+  [
+   14,
+   15,
+   10,
+   7,
+   24,
+   3,
+   "Fall"
+  ],
+  [
+   11,
+   16,
+   77,
+   14,
+   418,
+   2,
+   "Summer"
+  ],
+  [
+   0,
+   12,
+   124,
+   6,
+   61,
+   4,
+   "Summer"
+  ],
+  [
+   5,
+   14,
+   48,
+   22,
+   51,
+   4,
+   "Winter"
+  ]
+ ],
+ "seasonMonths": {
+  "Build season": "January - February",
+  "Competition": "February - April",
+  "Offseason": "May - August",
+  "Summer": "June - August",
+  "Fall": "September - November",
+  "Winter": "December - February"
+ },
+ "verified": [
+  {
+   "org": "FIRST",
+   "program": "Volunteer at an official FIRST event",
+   "url": "https://www.firstinspires.org",
+   "category": "Volunteering",
+   "audience": "All ages",
+   "format": "In person",
+   "season": "Competition",
+   "window": "Regional and district events run January-April",
+   "deadline": "Register 4-6 weeks before the event; popular roles fill first",
+   "applyType": "Portal",
+   "applyNote": "Create a FIRST account, complete youth-protection screening, then apply to specific event roles",
+   "hours": 10,
+   "reach": 250,
+   "effort": "Low",
+   "impact": 4,
+   "notes": "The single highest-yield thing an outreach lead can schedule. Judge Advisor, Queuing, Field Reset and Pit Admin all take students where local rules allow.",
+   "tags": [
+    "FIRST",
+    "competition",
+    "recurring"
+   ]
+  },
+  {
+   "org": "FIRST",
+   "program": "National Robotics Week events",
+   "url": "https://www.nationalroboticsweek.org",
+   "category": "Demo",
+   "audience": "All ages",
+   "format": "In person",
+   "season": "Offseason",
+   "window": "First full week of April, every year",
+   "deadline": "List your own event 4-8 weeks ahead; attend anything nearby with no lead time",
+   "applyType": "Web form",
+   "applyNote": "Register your event on the National Robotics Week site, then invite local press",
+   "hours": 16,
+   "reach": 300,
+   "effort": "Medium",
+   "impact": 4,
+   "notes": "You can both attend listed events and register your own. Registering yours puts your team on a national map, which reads well in an Impact Award submission.",
+   "tags": [
+    "FIRST",
+    "recurring",
+    "april"
+   ]
+  },
+  {
+   "org": "FIRST",
+   "program": "FIRST LEGO League volunteer and coach roles",
+   "url": "https://www.firstinspires.org",
+   "category": "Mentoring",
+   "audience": "Elementary (K-5)",
+   "format": "Hybrid",
+   "season": "Fall",
+   "window": "Season runs August-February; qualifiers November-January",
+   "deadline": "Coaches commit by September; event volunteers 4 weeks out",
+   "applyType": "Portal",
+   "applyNote": "Contact your FIRST Program Delivery Partner (listed by state on the FIRST site)",
+   "hours": 24,
+   "reach": 15,
+   "effort": "High",
+   "impact": 5,
+   "notes": "Your Program Delivery Partner is the person who knows which local FLL teams have no coach. One email to them beats twenty cold emails to schools.",
+   "tags": [
+    "FIRST",
+    "FLL",
+    "mentoring"
+   ]
+  },
+  {
+   "org": "NASA",
+   "program": "NASA STEM Engagement",
+   "url": "https://www.nasa.gov/learning-resources/",
+   "category": "Workshop",
+   "audience": "All ages",
+   "format": "Hybrid",
+   "season": "Offseason",
+   "window": "Year-round; NASA STEM Day events cluster in spring",
+   "deadline": "Rolling; some challenges have fixed fall deadlines",
+   "applyType": "Web form",
+   "applyNote": "Browse STEM engagement programs and request materials or a speaker through the site",
+   "hours": 8,
+   "reach": 80,
+   "effort": "Low",
+   "impact": 4,
+   "notes": "Free, high-quality lesson materials you can run at a library or school without writing curriculum yourself. Speaker requests take longer than you think.",
+   "tags": [
+    "national",
+    "free-materials"
+   ]
+  },
+  {
+   "org": "Code.org",
+   "program": "Hour of Code",
+   "url": "https://hourofcode.com",
+   "category": "Workshop",
+   "audience": "Elementary (K-5)",
+   "format": "Hybrid",
+   "season": "Winter",
+   "window": "Computer Science Education Week, early December",
+   "deadline": "Register your event any time; December slots at schools fill by October",
+   "applyType": "Web form",
+   "applyNote": "Register an event on hourofcode.com, then offer it to a specific school or library",
+   "hours": 6,
+   "reach": 60,
+   "effort": "Low",
+   "impact": 4,
+   "notes": "The easiest first outreach event to run. Curriculum is written, free, and translated into dozens of languages. Bring a robot so it is not just a browser tab.",
+   "tags": [
+    "national",
+    "free-materials",
+    "december"
+   ]
+  },
+  {
+   "org": "Girls Who Code",
+   "program": "Start or support a Girls Who Code Club",
+   "url": "https://girlswhocode.com",
+   "category": "Equity",
+   "audience": "Middle school (6-8)",
+   "format": "Hybrid",
+   "season": "Fall",
+   "window": "Clubs run through the school year; applications open in summer",
+   "deadline": "Club applications typically open mid-year for the following fall",
+   "applyType": "Web form",
+   "applyNote": "Apply to facilitate a club, or offer your team as guest technical mentors to an existing one",
+   "hours": 30,
+   "reach": 20,
+   "effort": "High",
+   "impact": 5,
+   "notes": "Guest-mentoring an existing club costs far less than starting one and still counts. Ask the facilitator what they need before proposing what you want to teach.",
+   "tags": [
+    "national",
+    "equity",
+    "clubs"
+   ]
+  },
+  {
+   "org": "Boys & Girls Clubs of America",
+   "program": "Club STEM programming",
+   "url": "https://www.bgca.org",
+   "category": "Workshop",
+   "audience": "Elementary (K-5)",
+   "format": "In person",
+   "season": "Offseason",
+   "window": "Year-round; summer programming is hungriest for volunteers",
+   "deadline": "3-5 weeks; individual clubs decide locally",
+   "applyType": "Email",
+   "applyNote": "Find your local club on bgca.org and email the Program Director directly -- national will just redirect you",
+   "hours": 12,
+   "reach": 35,
+   "effort": "Medium",
+   "impact": 5,
+   "notes": "Clubs serve the kids least likely to already have a robotics team. Summer is when they most need programming and have the fewest volunteers.",
+   "tags": [
+    "national",
+    "equity",
+    "summer"
+   ]
+  },
+  {
+   "org": "Girl Scouts of the USA",
+   "program": "Robotics badges and Journey support",
+   "url": "https://www.girlscouts.org",
+   "category": "Equity",
+   "audience": "Elementary (K-5)",
+   "format": "In person",
+   "season": "Winter",
+   "window": "Troop years run September-May; badge days cluster January-March",
+   "deadline": "6-8 weeks through a council; 2-3 weeks for a single troop",
+   "applyType": "Web form",
+   "applyNote": "Contact your regional council's Program department, or ask a troop leader you already know",
+   "hours": 16,
+   "reach": 30,
+   "effort": "Medium",
+   "impact": 5,
+   "notes": "Girl Scouts has an existing robotics badge structure -- you are helping them earn something specific, which is much easier to say yes to than a generic offer.",
+   "tags": [
+    "national",
+    "equity",
+    "badges"
+   ]
+  },
+  {
+   "org": "Scouting America",
+   "program": "Robotics merit badge and Nova STEM awards",
+   "url": "https://www.scouting.org",
+   "category": "Workshop",
+   "audience": "Middle school (6-8)",
+   "format": "In person",
+   "season": "Fall",
+   "window": "Troop meetings year-round; merit badge midways in spring and fall",
+   "deadline": "3-4 weeks; merit badge counselors must be registered adults",
+   "applyType": "Email",
+   "applyNote": "Email a local Scoutmaster, or contact the council office about merit badge midway slots",
+   "hours": 10,
+   "reach": 25,
+   "effort": "Medium",
+   "impact": 4,
+   "notes": "The Robotics merit badge requirements are published and specific. A registered adult mentor must counsel it, but students do the teaching.",
+   "tags": [
+    "national",
+    "badges",
+    "scouts"
+   ]
+  },
+  {
+   "org": "4-H",
+   "program": "4-H STEM and county extension programs",
+   "url": "https://4-h.org",
+   "category": "Workshop",
+   "audience": "Middle school (6-8)",
+   "format": "In person",
+   "season": "Summer",
+   "window": "Club year runs September-August; fair season peaks July-September",
+   "deadline": "4-6 weeks; county fair exhibits book 4-6 months ahead",
+   "applyType": "Email",
+   "applyNote": "Find your county extension office and email the 4-H Youth Development Agent",
+   "hours": 14,
+   "reach": 40,
+   "effort": "Medium",
+   "impact": 4,
+   "notes": "The strongest single channel for rural outreach. County agents are paid to connect youth programs and will actively find you an audience.",
+   "tags": [
+    "national",
+    "rural",
+    "fairs"
+   ]
+  },
+  {
+   "org": "Society of Women Engineers",
+   "program": "SWENext and outreach events",
+   "url": "https://swe.org",
+   "category": "Equity",
+   "audience": "High school (9-12)",
+   "format": "Hybrid",
+   "season": "Winter",
+   "window": "Year-round; Introduce a Girl to Engineering Day in February",
+   "deadline": "6-8 weeks through a professional section",
+   "applyType": "Web form",
+   "applyNote": "Contact your regional SWE section about co-hosting, or register students as SWENext members (free)",
+   "hours": 10,
+   "reach": 40,
+   "effort": "Low",
+   "impact": 5,
+   "notes": "Co-hosting with a professional SWE section gets you adult engineers on the floor, which is what actually changes a middle schooler's mind.",
+   "tags": [
+    "national",
+    "equity",
+    "february"
+   ]
+  },
+  {
+   "org": "National Society of Black Engineers",
+   "program": "NSBE Jr. chapters",
+   "url": "https://www.nsbe.org",
+   "category": "Equity",
+   "audience": "High school (9-12)",
+   "format": "Hybrid",
+   "season": "Fall",
+   "window": "Chapter year September-May; national convention in spring",
+   "deadline": "6-10 weeks through a professional chapter",
+   "applyType": "Web form",
+   "applyNote": "Contact your regional NSBE professional chapter about supporting or starting an NSBE Jr. chapter",
+   "hours": 20,
+   "reach": 30,
+   "effort": "High",
+   "impact": 5,
+   "notes": "Support an existing NSBE Jr. chapter before proposing a new one. Their members often already want robotics and have no equipment.",
+   "tags": [
+    "national",
+    "equity",
+    "chapters"
+   ]
+  },
+  {
+   "org": "SHPE",
+   "program": "Noche de Ciencias family science nights",
+   "url": "https://www.shpe.org",
+   "category": "Equity",
+   "audience": "Family",
+   "format": "In person",
+   "season": "Fall",
+   "window": "Events run through the school year, concentrated in fall",
+   "deadline": "8-10 weeks through a professional chapter",
+   "applyType": "Web form",
+   "applyNote": "Contact a SHPE professional or student chapter about joining a Noche de Ciencias event",
+   "hours": 12,
+   "reach": 100,
+   "effort": "Medium",
+   "impact": 5,
+   "notes": "Bilingual family science nights. If your team has Spanish speakers, this is where they are most valuable -- and translated materials count as outreach too.",
+   "tags": [
+    "national",
+    "equity",
+    "bilingual"
+   ]
+  },
+  {
+   "org": "DiscoverE",
+   "program": "Engineers Week and Introduce a Girl to Engineering Day",
+   "url": "https://discovere.org",
+   "category": "Equity",
+   "audience": "Middle school (6-8)",
+   "format": "Hybrid",
+   "season": "Winter",
+   "window": "Engineers Week is the week of Washington's birthday, late February",
+   "deadline": "Plan 8-10 weeks out; free activity materials available any time",
+   "applyType": "Web form",
+   "applyNote": "Download the free event toolkits and register your event on the DiscoverE site",
+   "hours": 10,
+   "reach": 60,
+   "effort": "Low",
+   "impact": 4,
+   "notes": "Free, ready-made event kits with a national date attached. The fixed date makes it easy to get a school to commit.",
+   "tags": [
+    "national",
+    "equity",
+    "february",
+    "free-materials"
+   ]
+  },
+  {
+   "org": "Association of Science and Technology Centers",
+   "program": "Find a science center near you",
+   "url": "https://www.astc.org",
+   "category": "Demo",
+   "audience": "Family",
+   "format": "In person",
+   "season": "Offseason",
+   "window": "Year-round; family-science weekends cluster in spring and fall",
+   "deadline": "8-12 weeks -- museums plan public programs far ahead",
+   "applyType": "Web form",
+   "applyNote": "Use the ASTC member directory to find your nearest center, then contact Public Programs",
+   "hours": 16,
+   "reach": 400,
+   "effort": "Medium",
+   "impact": 5,
+   "notes": "Highest attendance per hour of any venue on this list. They will ask for a certificate of insurance and a load-in plan, so start early.",
+   "tags": [
+    "national",
+    "museums",
+    "high-reach"
+   ]
+  },
+  {
+   "org": "Maker Faire",
+   "program": "Exhibit at a Maker Faire",
+   "url": "https://makerfaire.com",
+   "category": "Demo",
+   "audience": "All ages",
+   "format": "In person",
+   "season": "Summer",
+   "window": "Faires run spring through fall, dates vary by city",
+   "deadline": "Call for Makers usually closes 8-12 weeks before the event",
+   "applyType": "Web form",
+   "applyNote": "Find your regional faire and submit through its Call for Makers",
+   "hours": 20,
+   "reach": 500,
+   "effort": "Medium",
+   "impact": 4,
+   "notes": "Apply as a Maker, not a sponsor -- Maker booths are usually free. The crowd is technical and asks real questions, which is good practice for judges.",
+   "tags": [
+    "national",
+    "high-reach",
+    "makers"
+   ]
+  },
+  {
+   "org": "VolunteerMatch",
+   "program": "Search local volunteer needs",
+   "url": "https://www.volunteermatch.org",
+   "category": "Community Service",
+   "audience": "All ages",
+   "format": "Hybrid",
+   "season": "Offseason",
+   "window": "Year-round, updated continuously",
+   "deadline": "Varies by listing; many are same-week",
+   "applyType": "Web form",
+   "applyNote": "Search by ZIP code and filter to Children & Youth or Education",
+   "hours": 8,
+   "reach": 30,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "Use this to fill gaps in a slow month. Filter to youth and education so the hours connect to your team's mission rather than being generic service.",
+   "tags": [
+    "national",
+    "search-engine"
+   ]
+  },
+  {
+   "org": "Idealist",
+   "program": "Search nonprofit volunteer openings",
+   "url": "https://www.idealist.org",
+   "category": "Community Service",
+   "audience": "All ages",
+   "format": "Hybrid",
+   "season": "Offseason",
+   "window": "Year-round",
+   "deadline": "Varies by listing",
+   "applyType": "Web form",
+   "applyNote": "Search volunteer opportunities by location and cause area",
+   "hours": 8,
+   "reach": 30,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "Better than VolunteerMatch for finding organizations to partner with long-term rather than one-off shifts.",
+   "tags": [
+    "national",
+    "search-engine"
+   ]
+  },
+  {
+   "org": "JustServe",
+   "program": "Search community service projects",
+   "url": "https://www.justserve.org",
+   "category": "Community Service",
+   "audience": "All ages",
+   "format": "In person",
+   "season": "Offseason",
+   "window": "Year-round",
+   "deadline": "Varies; many projects accept same-week signups",
+   "applyType": "Web form",
+   "applyNote": "Search projects by ZIP code; no account needed to browse",
+   "hours": 6,
+   "reach": 25,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "Strong coverage of small community projects that never make it onto bigger platforms. Useful for filling a weekend.",
+   "tags": [
+    "national",
+    "search-engine"
+   ]
+  },
+  {
+   "org": "Special Olympics",
+   "program": "Volunteer at local competitions",
+   "url": "https://www.specialolympics.org",
+   "category": "Accessibility",
+   "audience": "All ages",
+   "format": "In person",
+   "season": "Offseason",
+   "window": "Competitions run year-round by sport and region",
+   "deadline": "3-6 weeks; large games recruit months ahead",
+   "applyType": "Web form",
+   "applyNote": "Find your state or regional program and register as a volunteer",
+   "hours": 10,
+   "reach": 60,
+   "effort": "Low",
+   "impact": 5,
+   "notes": "Not robotics, and that is fine -- FIRST's Impact Award asks what your team does for the community, not only what it does with robots.",
+   "tags": [
+    "national",
+    "accessibility"
+   ]
+  },
+  {
+   "org": "Habitat for Humanity",
+   "program": "Volunteer with a local affiliate",
+   "url": "https://www.habitat.org",
+   "category": "Community Service",
+   "audience": "Adults",
+   "format": "In person",
+   "season": "Offseason",
+   "window": "Build days year-round, weather permitting",
+   "deadline": "2-4 weeks; age minimums vary by affiliate (often 16 for the site, lower for ReStore)",
+   "applyType": "Web form",
+   "applyNote": "Find your local affiliate and register a group through their volunteer page",
+   "hours": 16,
+   "reach": 20,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "Check the age minimum before you recruit students. ReStore shifts usually accept younger volunteers than the build site does.",
+   "tags": [
+    "national",
+    "service",
+    "age-limits"
+   ]
+  },
+  {
+   "org": "Feeding America",
+   "program": "Volunteer at a member food bank",
+   "url": "https://www.feedingamerica.org",
+   "category": "Community Service",
+   "audience": "All ages",
+   "format": "In person",
+   "season": "Winter",
+   "window": "Year-round; November-December demand spikes hard",
+   "deadline": "1-3 weeks; holiday shifts fill by October",
+   "applyType": "Web form",
+   "applyNote": "Use the food bank locator, then register your group with that food bank directly",
+   "hours": 12,
+   "reach": 40,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "The easiest large group activity to book. Sort shifts take 10-20 people at once, which most venues cannot handle.",
+   "tags": [
+    "national",
+    "service",
+    "groups"
+   ]
+  },
+  {
+   "org": "Ronald McDonald House Charities",
+   "program": "Support families near a children's hospital",
+   "url": "https://www.rmhc.org",
+   "category": "Community Service",
+   "audience": "Family",
+   "format": "In person",
+   "season": "Winter",
+   "window": "Year-round; meal programs run continuously",
+   "deadline": "4-8 weeks; some chapters require an orientation",
+   "applyType": "Web form",
+   "applyNote": "Find your local chapter and ask about group volunteer or Meals-from-the-Heart programs",
+   "hours": 10,
+   "reach": 30,
+   "effort": "Medium",
+   "impact": 4,
+   "notes": "Cooking a meal for families is a real commitment and reads as genuine rather than performative in an award submission.",
+   "tags": [
+    "national",
+    "service",
+    "families"
+   ]
+  },
+  {
+   "org": "Meals on Wheels America",
+   "program": "Deliver meals with a local program",
+   "url": "https://www.mealsonwheelsamerica.org",
+   "category": "Community Service",
+   "audience": "Seniors",
+   "format": "In person",
+   "season": "Offseason",
+   "window": "Weekday routes year-round",
+   "deadline": "2-4 weeks; requires a driver and often a background check",
+   "applyType": "Web form",
+   "applyNote": "Find your local program through the site and ask about student volunteers",
+   "hours": 8,
+   "reach": 20,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "Needs a licensed driver, so this is a mentor-plus-students activity. Routes are short and consistent, which makes recurring hours easy to log.",
+   "tags": [
+    "national",
+    "service",
+    "seniors"
+   ]
+  },
+  {
+   "org": "Science Olympiad",
+   "program": "Volunteer at a regional tournament",
+   "url": "https://www.soinc.org",
+   "category": "Volunteering",
+   "audience": "Middle school (6-8)",
+   "format": "In person",
+   "season": "Competition",
+   "window": "Invitationals January-February, regionals and states February-April",
+   "deadline": "4-8 weeks; event supervisors recruited earlier",
+   "applyType": "Email",
+   "applyNote": "Contact your state or regional tournament director through the state chapter page",
+   "hours": 10,
+   "reach": 150,
+   "effort": "Low",
+   "impact": 4,
+   "notes": "Event running and scoring are a natural fit for robotics students and put you in front of hundreds of STEM-interested middle schoolers.",
+   "tags": [
+    "national",
+    "competition",
+    "stem"
+   ]
+  },
+  {
+   "org": "MATHCOUNTS",
+   "program": "Volunteer at a chapter competition",
+   "url": "https://www.mathcounts.org",
+   "category": "Volunteering",
+   "audience": "Middle school (6-8)",
+   "format": "In person",
+   "season": "Competition",
+   "window": "Chapter competitions in February, state in March",
+   "deadline": "6-8 weeks",
+   "applyType": "Web form",
+   "applyNote": "Contact your chapter coordinator through the MATHCOUNTS volunteer page",
+   "hours": 8,
+   "reach": 100,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "Proctoring and scoring. Low effort, and it puts your team's name in front of exactly the middle schoolers you want recruiting next year.",
+   "tags": [
+    "national",
+    "competition",
+    "february"
+   ]
+  },
+  {
+   "org": "Destination Imagination",
+   "program": "Volunteer as an appraiser",
+   "url": "https://www.destinationimagination.org",
+   "category": "Volunteering",
+   "audience": "Elementary (K-5)",
+   "format": "In person",
+   "season": "Competition",
+   "window": "Regional tournaments February-March, Globals in May",
+   "deadline": "6-8 weeks; appraiser training required",
+   "applyType": "Web form",
+   "applyNote": "Find your regional affiliate and register as an appraiser",
+   "hours": 12,
+   "reach": 120,
+   "effort": "Medium",
+   "impact": 3,
+   "notes": "Requires a short training. Judging creative problem-solving is genuinely good preparation for talking to your own judges.",
+   "tags": [
+    "national",
+    "competition",
+    "judging"
+   ]
+  },
+  {
+   "org": "Technology Student Association",
+   "program": "Support a local TSA chapter",
+   "url": "https://tsaweb.org",
+   "category": "Mentoring",
+   "audience": "High school (9-12)",
+   "format": "Hybrid",
+   "season": "Winter",
+   "window": "Chapter year runs with the school year; state conferences in spring",
+   "deadline": "6-8 weeks through a chapter advisor",
+   "applyType": "Email",
+   "applyNote": "Contact a chapter advisor at a school with TSA but no robotics team",
+   "hours": 16,
+   "reach": 25,
+   "effort": "Medium",
+   "impact": 4,
+   "notes": "TSA schools already have a STEM-committed advisor and students. It is the shortest path from 'school with nothing' to 'school with a team'.",
+   "tags": [
+    "national",
+    "chapters",
+    "teams"
+   ]
+  },
+  {
+   "org": "SkillsUSA",
+   "program": "Support a local SkillsUSA chapter",
+   "url": "https://www.skillsusa.org",
+   "category": "Mentoring",
+   "audience": "High school (9-12)",
+   "format": "In person",
+   "season": "Winter",
+   "window": "Regional and state competitions February-April",
+   "deadline": "6-8 weeks",
+   "applyType": "Email",
+   "applyNote": "Contact a CTE instructor who advises a chapter at a nearby school",
+   "hours": 14,
+   "reach": 30,
+   "effort": "Medium",
+   "impact": 4,
+   "notes": "CTE programs have machine tools you may not. Partnerships here often run both directions -- you teach controls, they teach machining.",
+   "tags": [
+    "national",
+    "CTE",
+    "tools"
+   ]
+  },
+  {
+   "org": "Project Lead The Way",
+   "program": "Partner with a PLTW school",
+   "url": "https://www.pltw.org",
+   "category": "Mentoring",
+   "audience": "Middle school (6-8)",
+   "format": "In person",
+   "season": "Fall",
+   "window": "School year; teacher training happens in summer",
+   "deadline": "6-10 weeks through the school",
+   "applyType": "Email",
+   "applyNote": "Find a PLTW school near you and email the engineering pathway teacher",
+   "hours": 12,
+   "reach": 60,
+   "effort": "Medium",
+   "impact": 4,
+   "notes": "PLTW teachers already run engineering curriculum and are usually short on real hardware. Offer to bring the robot to their classroom.",
+   "tags": [
+    "national",
+    "schools",
+    "curriculum"
+   ]
+  },
+  {
+   "org": "REC Foundation",
+   "program": "Volunteer at a VEX event",
+   "url": "https://www.roboticseducation.org",
+   "category": "Volunteering",
+   "audience": "Middle school (6-8)",
+   "format": "In person",
+   "season": "Winter",
+   "window": "VEX season runs roughly May-April, events densest November-February",
+   "deadline": "4-6 weeks",
+   "applyType": "Portal",
+   "applyNote": "Register as a volunteer through RobotEvents and pick a local event",
+   "hours": 10,
+   "reach": 150,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "Yes, it is a different program. Judges notice teams that help the whole robotics ecosystem rather than only their own league.",
+   "tags": [
+    "competition",
+    "cross-program"
+   ]
+  },
+  {
+   "org": "AbleGamers",
+   "program": "Accessible gaming and adaptive controllers",
+   "url": "https://ablegamers.org",
+   "category": "Accessibility",
+   "audience": "All ages",
+   "format": "Hybrid",
+   "season": "Offseason",
+   "window": "Year-round",
+   "deadline": "Varies; equipment programs are rolling",
+   "applyType": "Web form",
+   "applyNote": "Read their guidance on accessible play, then contact them about local partnership options",
+   "hours": 14,
+   "reach": 15,
+   "effort": "High",
+   "impact": 5,
+   "notes": "Pair this with an adaptive-controller build. Their published design guidance keeps you from building something that looks helpful but does not fit anyone.",
+   "tags": [
+    "national",
+    "accessibility",
+    "builds"
+   ]
+  },
+  {
+   "org": "American Library Association",
+   "program": "Find and pitch a public library",
+   "url": "https://www.ala.org",
+   "category": "Demo",
+   "audience": "All ages",
+   "format": "In person",
+   "season": "Offseason",
+   "window": "Year-round; Summer Reading programming June-August is the biggest opening",
+   "deadline": "4-6 weeks; summer programming is planned by February",
+   "applyType": "Email",
+   "applyNote": "Find your library system's branch list and email the Youth Services or Programming Librarian",
+   "hours": 8,
+   "reach": 50,
+   "effort": "Low",
+   "impact": 4,
+   "notes": "Libraries are the single most reliable yes on this whole board. Ask in January about summer and you will get a slot; ask in June and you will not.",
+   "tags": [
+    "libraries",
+    "reliable",
+    "summer"
+   ]
+  },
+  {
+   "org": "Girlstart",
+   "program": "Girls in STEM programming and curriculum",
+   "url": "https://girlstart.org",
+   "category": "Equity",
+   "audience": "Elementary (K-5)",
+   "format": "Hybrid",
+   "season": "Winter",
+   "window": "Programs run through the school year; camps in summer",
+   "deadline": "Varies by program",
+   "applyType": "Web form",
+   "applyNote": "Contact them about program models and free activity resources you can adapt locally",
+   "hours": 10,
+   "reach": 40,
+   "effort": "Medium",
+   "impact": 4,
+   "notes": "Strongest in Texas but publishes activity designs any team can adapt. Credit them if you use their material.",
+   "tags": [
+    "equity",
+    "curriculum",
+    "texas"
+   ]
+  },
+  {
+   "org": "Black Girls Code",
+   "program": "Support workshops and chapters",
+   "url": "https://wearebgc.org",
+   "category": "Equity",
+   "audience": "Middle school (6-8)",
+   "format": "Hybrid",
+   "season": "Offseason",
+   "window": "Workshops run through the year in chapter cities",
+   "deadline": "8-12 weeks",
+   "applyType": "Web form",
+   "applyNote": "Check whether they have a chapter in your city, then apply as a volunteer",
+   "hours": 12,
+   "reach": 40,
+   "effort": "Medium",
+   "impact": 5,
+   "notes": "Chapter cities only. If there is no chapter near you, the honest move is to partner with a local equivalent rather than claim a connection you do not have.",
+   "tags": [
+    "equity",
+    "chapters",
+    "workshops"
+   ]
+  },
+  {
+   "org": "AmeriCorps",
+   "program": "Find service opportunities and partners",
+   "url": "https://americorps.gov",
+   "category": "Community Service",
+   "audience": "Adults",
+   "format": "Hybrid",
+   "season": "Offseason",
+   "window": "Year-round; service terms start in fall and summer",
+   "deadline": "Varies widely by program",
+   "applyType": "Web form",
+   "applyNote": "Use the site to find local service programs your team can support as volunteers",
+   "hours": 10,
+   "reach": 40,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "More useful as a way to find organized local partners than as a place your students apply directly.",
+   "tags": [
+    "national",
+    "service",
+    "partners"
+   ]
+  },
+  {
+   "org": "United Way",
+   "program": "Connect with local nonprofits",
+   "url": "https://www.unitedway.org",
+   "category": "Community Service",
+   "audience": "All ages",
+   "format": "In person",
+   "season": "Fall",
+   "window": "Year-round; Day of Caring events in September",
+   "deadline": "3-6 weeks; Day of Caring registration opens in summer",
+   "applyType": "Web form",
+   "applyNote": "Find your local United Way and ask their volunteer center for youth-appropriate projects",
+   "hours": 10,
+   "reach": 50,
+   "effort": "Low",
+   "impact": 3,
+   "notes": "Their volunteer center already knows which local nonprofits will say yes to a high school group. Ask them instead of guessing.",
+   "tags": [
+    "national",
+    "service",
+    "september"
+   ]
+  },
+  {
+   "org": "Local library summer reading program",
+   "program": "Book a summer reading slot",
+   "url": "https://www.ala.org",
+   "category": "Demo",
+   "audience": "Elementary (K-5)",
+   "format": "In person",
+   "season": "Summer",
+   "window": "Programs run June-August; slots are assigned in late winter",
+   "deadline": "Ask in January or February -- by April the schedule is set",
+   "applyType": "Email",
+   "applyNote": "Email the Youth Services Librarian with a specific date range and a one-paragraph description",
+   "hours": 8,
+   "reach": 55,
+   "effort": "Low",
+   "impact": 5,
+   "notes": "Listed separately from the general library entry because the timing is completely different and teams miss it every single year.",
+   "tags": [
+    "libraries",
+    "summer",
+    "timing-critical"
+   ]
+  },
+  {
+   "org": "FIRST",
+   "program": "Apply for the FIRST Impact Award",
+   "url": "https://www.firstinspires.org",
+   "category": "Fundraising",
+   "audience": "Adults",
+   "format": "Virtual",
+   "season": "Build season",
+   "window": "Submission window falls in the weeks after Kickoff in January",
+   "deadline": "Check the current season manual -- the deadline is in February and it is hard",
+   "applyType": "Portal",
+   "applyNote": "Submit the essay, executive summary and video through the FIRST dashboard",
+   "hours": 20,
+   "reach": 0,
+   "effort": "High",
+   "impact": 5,
+   "notes": "This is the award your outreach work is for. Write it from the log you kept all year, not from memory in February. Start the essay in November.",
+   "tags": [
+    "FIRST",
+    "award",
+    "deadline"
+   ]
+  },
+  {
+   "org": "FIRST",
+   "program": "Find your local FIRST Program Delivery Partner",
+   "url": "https://www.firstinspires.org",
+   "category": "Mentoring",
+   "audience": "Adults",
+   "format": "Hybrid",
+   "season": "Fall",
+   "window": "Useful year-round; most valuable August-October",
+   "deadline": "None -- just email them",
+   "applyType": "Email",
+   "applyNote": "Find your state's Program Delivery Partner on the FIRST site and introduce your team",
+   "hours": 2,
+   "reach": 5,
+   "effort": "Low",
+   "impact": 5,
+   "notes": "One email. They know every school in your state that wants a team and has no one to help. This is the highest-leverage thirty minutes on this entire board.",
+   "tags": [
+    "FIRST",
+    "high-leverage",
+    "start-here"
+   ]
+  },
+  {
+   "org": "STEM Learning Ecosystems",
+   "program": "Join a regional STEM ecosystem",
+   "url": "https://stemecosystems.org",
+   "category": "Community",
+   "audience": "All ages",
+   "format": "Hybrid",
+   "season": "Fall",
+   "window": "Ecosystems meet through the year; new members welcomed continuously",
+   "deadline": "Rolling",
+   "applyType": "Web form",
+   "applyNote": "Check whether your region has an ecosystem and ask to join the youth partner network",
+   "hours": 8,
+   "reach": 100,
+   "effort": "Low",
+   "impact": 4,
+   "notes": "A room with every STEM organization in your region in it. Joining once produces partner leads for years.",
+   "tags": [
+    "regional",
+    "partners",
+    "network"
+   ]
+  }
+ ]
+}

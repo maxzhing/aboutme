@@ -1,0 +1,930 @@
+<title>Outreach Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root{
+  --paper:#eef1f0; --surface:#ffffff; --surface-2:#f7f9f8; --sunk:#e4e9e8;
+  --ink:#0f1718; --ink-2:#41565a; --ink-3:#71888c;
+  --rule:#d6dedd; --rule-2:#c2cecd;
+  --accent:#0b6e77; --accent-ink:#08535a; --accent-wash:#dcecec; --accent-line:#9cc7c9;
+  --ochre:#9a5f16; --ochre-wash:#f5e8d6; --ochre-line:#dcbf93;
+  --ok:#2b6f4c; --ok-wash:#dcebe1;
+  --hot:#a3392f; --on-accent:#ffffff;
+  --shadow:0 1px 2px rgba(15,23,24,.06),0 6px 18px -10px rgba(15,23,24,.22);
+  --f-display:'Archivo',system-ui,sans-serif;
+  --f-body:'Source Sans 3',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,monospace;
+  --step:6px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0c1314; --surface:#141d1f; --surface-2:#182325; --sunk:#101a1b;
+    --ink:#e6eeed; --ink-2:#9db1b4; --ink-3:#71888c;
+    --rule:#253537; --rule-2:#31474a;
+    --accent:#54c2cc; --accent-ink:#7fd6de; --accent-wash:#0d3438; --accent-line:#1d5459;
+    --ochre:#e0a355; --ochre-wash:#3a2a13; --ochre-line:#5e451e;
+    --ok:#63bd8c; --ok-wash:#12301f;
+    --hot:#e0776b; --on-accent:#06191b;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0c1314; --surface:#141d1f; --surface-2:#182325; --sunk:#101a1b;
+  --ink:#e6eeed; --ink-2:#9db1b4; --ink-3:#71888c;
+  --rule:#253537; --rule-2:#31474a;
+  --accent:#54c2cc; --accent-ink:#7fd6de; --accent-wash:#0d3438; --accent-line:#1d5459;
+  --ochre:#e0a355; --ochre-wash:#3a2a13; --ochre-line:#5e451e;
+  --ok:#63bd8c; --ok-wash:#12301f;
+  --hot:#e0776b; --on-accent:#06191b;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.014em;text-wrap:balance;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.shell{max-width:1340px;margin:0 auto;padding:0 22px 90px}
+
+/* ---------- masthead ---------- */
+.mast{border-bottom:1px solid var(--rule);background:var(--surface)}
+.mast-in{max-width:1340px;margin:0 auto;padding:20px 22px 18px;display:flex;flex-wrap:wrap;gap:18px 30px;align-items:flex-end;justify-content:space-between}
+.brand{flex:1 1 520px}
+.brand h1{font-size:25px;font-weight:700;letter-spacing:-.025em;display:flex;align-items:center;gap:10px}
+.brand h1::before{content:"";width:20px;height:21px;flex:none;border-radius:1px;
+  background:linear-gradient(90deg,var(--accent) 0 8px,transparent 8px 12px,var(--ochre) 12px 20px)}
+.brand p{margin:6px 0 0;color:var(--ink-2);max-width:60ch;font-size:14px}
+.brand p b{color:var(--ink);font-weight:600}
+.mast-act{display:flex;gap:8px;align-items:center}
+
+/* ---------- meters ---------- */
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(124px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:22px 0 18px;box-shadow:var(--shadow)}
+.meter{background:var(--surface);padding:12px 14px 13px}
+.meter .n{font-family:var(--f-display);font-size:27px;font-weight:700;line-height:1.05;letter-spacing:-.03em;font-variant-numeric:tabular-nums;display:block}
+.meter .k{margin-top:3px}
+.meter.on .n{color:var(--accent)}
+.meter .bar{height:3px;background:var(--sunk);border-radius:2px;margin-top:8px;overflow:hidden}
+.meter .bar i{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+
+/* ---------- toolbar ---------- */
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.search{flex:1 1 260px;min-width:200px;position:relative}
+.search input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--rule-2);border-radius:7px;background:var(--surface)}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--ink-3);fill:none;stroke-width:2}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border:1px solid var(--rule-2);background:var(--surface);border-radius:7px;cursor:pointer;font-size:14px;white-space:nowrap;transition:border-color .15s,background .15s}
+.btn:hover{border-color:var(--accent);background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.btn.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
+.btn.sm{padding:5px 9px;font-size:12.5px;border-radius:6px}
+.btn[aria-pressed="true"]{background:var(--accent-wash);border-color:var(--accent-line);color:var(--accent-ink)}
+select.btn{padding-right:9px}
+
+/* ---------- layout ---------- */
+.board{display:grid;grid-template-columns:222px minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:900px){.board{grid-template-columns:1fr}.rail{position:static!important;max-height:none!important}}
+
+/* ---------- facet rail ---------- */
+.rail{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;padding-right:4px}
+.rail::-webkit-scrollbar{width:5px}
+.rail::-webkit-scrollbar-thumb{background:var(--rule-2);border-radius:3px}
+.facet{margin-bottom:16px}
+.facet > .eyebrow{display:flex;justify-content:space-between;align-items:center;padding-bottom:5px;border-bottom:1px solid var(--rule);margin-bottom:6px}
+.facet button.clear{border:0;background:none;color:var(--accent-ink);cursor:pointer;font:inherit;font-size:10px;letter-spacing:.06em;padding:0}
+.opt{display:flex;align-items:center;gap:7px;width:100%;border:0;background:none;padding:3px 5px;border-radius:5px;cursor:pointer;text-align:left;font-size:13.5px;color:var(--ink-2);line-height:1.35}
+.opt:hover{background:var(--surface-2);color:var(--ink)}
+.opt .tick{width:12px;height:12px;flex:none;border:1px solid var(--rule-2);border-radius:3px;background:var(--surface)}
+.opt[aria-pressed="true"]{color:var(--ink);font-weight:600}
+.opt[aria-pressed="true"] .tick{background:var(--accent);border-color:var(--accent)}
+.opt .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opt .ct{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.opt[disabled]{opacity:.35;cursor:default}
+.more{font-family:var(--f-mono);font-size:10.5px;color:var(--accent-ink);background:none;border:0;cursor:pointer;padding:3px 5px;letter-spacing:.05em}
+
+/* ---------- result list ---------- */
+.count{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.count strong{font-family:var(--f-display);font-size:15px;font-weight:600}
+.list{border:1px solid var(--rule);border-radius:9px;background:var(--surface);overflow:hidden}
+.row{border-bottom:1px solid var(--rule)}
+.row:last-child{border-bottom:0}
+.row-head{display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:0 13px;align-items:center;width:100%;border:0;background:none;padding:11px 14px 11px 0;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.row-head:hover{background:var(--surface-2)}
+.row[open] .row-head{background:var(--surface-2)}
+.stripe{align-self:stretch;border-radius:0 2px 2px 0;background:transparent}
+.row[data-st="saved"] .stripe{background:var(--accent)}
+.row[data-st="contacted"] .stripe{background:var(--ochre)}
+.row[data-st="confirmed"] .stripe{background:var(--ok)}
+.row[data-st="done"] .stripe{background:var(--ink-3)}
+.rt{font-family:var(--f-display);font-weight:600;font-size:15px;line-height:1.3;letter-spacing:-.012em;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rm{font-size:12.5px;color:var(--ink-2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rm .sep{color:var(--rule-2);margin:0 6px}
+.chips{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:440px}
+.chip{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.03em;padding:2px 6px;border-radius:4px;border:1px solid var(--rule-2);color:var(--ink-2);white-space:nowrap;background:var(--surface)}
+.chip.ver{background:var(--accent-wash);border-color:var(--accent-line);color:var(--accent-ink);font-weight:500}
+.chip.lead{background:var(--ochre-wash);border-color:var(--ochre-line);color:var(--ochre);font-weight:500}
+.chip.hi{border-color:var(--accent-line);color:var(--accent-ink)}
+@media (max-width:640px){.chips{max-width:none;justify-content:flex-start;margin-top:6px}.row-head{grid-template-columns:4px minmax(0,1fr);}.row-head .chips{grid-column:2}}
+
+/* ---------- expanded detail ---------- */
+.detail{padding:2px 16px 18px 17px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:22px;border-top:1px dashed var(--rule)}
+.detail.lean{grid-template-columns:minmax(0,1fr)}
+.detail.lean > div:last-child{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start}
+@media (max-width:760px){.detail{grid-template-columns:1fr;gap:16px}}
+.detail p.lede{margin:12px 0 0;color:var(--ink-2);max-width:64ch}
+.dl{margin:14px 0 0;display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:13.5px}
+.dl dt{font-family:var(--f-mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);padding-top:3px}
+.dl dd{margin:0;color:var(--ink-2)}
+.dl dd b{color:var(--ink);font-weight:600}
+.need{margin:14px 0 0;padding:0;list-style:none}
+.need li{position:relative;padding-left:18px;font-size:13.5px;color:var(--ink-2);margin-bottom:4px}
+.need li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border:1.5px solid var(--accent-line);border-radius:1px}
+.need.bring li::before{border-color:var(--ochre-line);border-radius:50%}
+.panel{background:var(--surface-2);border:1px solid var(--rule);border-radius:8px;padding:13px 14px;margin-top:12px}
+.panel h4{font-family:var(--f-mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;font-weight:500}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.statusbar{display:flex;gap:0;margin-top:10px;border:1px solid var(--rule-2);border-radius:7px;overflow:hidden}
+.statusbar button{flex:1;border:0;border-right:1px solid var(--rule);background:var(--surface);padding:6px 2px;cursor:pointer;font-family:var(--f-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+.statusbar button:last-child{border-right:0}
+.statusbar button:hover{background:var(--accent-wash);color:var(--accent-ink)}
+.statusbar button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);font-weight:500}
+.draft{width:100%;min-height:190px;margin-top:10px;padding:10px 11px;border:1px solid var(--rule-2);border-radius:7px;background:var(--surface);font-family:var(--f-mono);font-size:12px;line-height:1.6;resize:vertical}
+.pager{display:flex;justify-content:center;padding:16px}
+.empty{padding:44px 20px;text-align:center;color:var(--ink-2)}
+.empty h3{font-size:17px;margin-bottom:6px}
+
+/* ---------- honesty note ---------- */
+.note{display:flex;gap:11px;align-items:flex-start;background:var(--ochre-wash);border:1px solid var(--ochre-line);border-radius:8px;padding:11px 14px;margin:0 0 18px;font-size:13.5px;color:var(--ink-2);line-height:1.5}
+.note b{color:var(--ink);font-weight:600}
+.note .k{font-family:var(--f-mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ochre);flex:none;padding-top:3px;font-weight:500}
+
+/* ---------- ask claude ---------- */
+.ask{border:1px solid var(--rule);border-radius:9px;background:var(--surface);box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden}
+.ask-head{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid var(--rule);background:linear-gradient(var(--surface-2),var(--surface))}
+.ask-head h2{font-size:15.5px;display:flex;align-items:center;gap:9px}
+.ask-head h2 .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
+.ask-head h2 .dot.off{background:var(--ink-3)}
+.ask-body{padding:14px 15px 16px}
+.modes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.ask textarea{width:100%;min-height:66px;padding:10px 12px;border:1px solid var(--rule-2);border-radius:7px;background:var(--surface-2);resize:vertical;line-height:1.5}
+.ask .row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px}
+.out{margin-top:13px;border-top:1px solid var(--rule);padding-top:13px}
+.out:empty{display:none}
+.think{font-family:var(--f-mono);font-size:12px;color:var(--ink-3);letter-spacing:.03em}
+.think::after{content:"";display:inline-block;width:1ch;animation:dots 1.2s steps(4,end) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+.stream{white-space:pre-wrap;font-size:14px;color:var(--ink-2);line-height:1.65;max-width:74ch}
+.err{background:var(--ochre-wash);border:1px solid var(--ochre-line);border-radius:7px;padding:10px 12px;font-size:13.5px;color:var(--ink-2)}
+.sugg{display:grid;gap:9px}
+.card{border:1px solid var(--rule-2);border-left:3px solid var(--ochre);border-radius:7px;padding:11px 13px;background:var(--surface-2)}
+.card h4{font-family:var(--f-display);font-size:14.5px;font-weight:600;margin:0 0 3px}
+.card p{margin:0;font-size:13.5px;color:var(--ink-2)}
+.card .meta{margin-top:7px;display:flex;gap:5px;flex-wrap:wrap}
+.foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3);max-width:78ch;line-height:1.65}
+.foot b{color:var(--ink-2);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+
+<header class="mast">
+  <div class="mast-in">
+    <div class="brand">
+      <h1>Outreach Bench</h1>
+      <p>A working board for a robotics team's outreach lead. <b>1,000</b> ways to get your robot in front of people who have never seen one &mdash; filtered by where you are, what season it is, and how much of your life you can spare.</p>
+    </div>
+    <div class="mast-act">
+      <button class="btn sm" id="themeBtn" title="Switch theme">Theme</button>
+      <button class="btn sm" id="csvBtn">Export my pipeline</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <section class="meters" id="meters" aria-label="Pipeline summary"></section>
+
+  <div class="note">
+    <span class="k">Read&nbsp;this</span>
+    <span><b>Two kinds of entry, and the difference matters.</b> <b>Verified</b> rows are real organizations with real websites and real recurring calendars. <b>Lead</b> rows are prospects, not bookings: a real activity paired with a real kind of venue in a real metro. Their <em>Find the real contact</em> button runs a live search rather than sending you to an invented link, because a fabricated contact costs you a month. Nothing here holds a date for you &mdash; confirm every one before you promise it to your team.</span>
+  </div>
+
+  <section class="ask" id="ask">
+    <div class="ask-head">
+      <h2><span class="dot off" id="aiDot"></span>Ask Claude</h2>
+      <span class="eyebrow" id="aiState">checking availability</span>
+    </div>
+    <div class="ask-body">
+      <div class="modes" id="modes">
+        <button class="btn sm" data-mode="find" aria-pressed="true">Find opportunities near me</button>
+        <button class="btn sm" data-mode="draft" aria-pressed="false">Write my outreach email</button>
+        <button class="btn sm" data-mode="plan" aria-pressed="false">Plan my season</button>
+      </div>
+      <textarea id="aiIn" spellcheck="true"></textarea>
+      <div class="row2">
+        <button class="btn primary" id="aiGo">Ask</button>
+        <button class="btn sm" id="aiStop" hidden>Stop</button>
+        <span class="eyebrow" id="aiHint"></span>
+      </div>
+      <div class="out" id="aiOut"></div>
+    </div>
+  </section>
+
+  <div class="tools">
+    <label class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+      <input id="q" type="search" placeholder="Search activities, venues, cities, skills&hellip;" autocomplete="off">
+    </label>
+    <select class="btn" id="sort" aria-label="Sort">
+      <option value="fit">Sort: best first</option>
+      <option value="impact">Sort: highest impact</option>
+      <option value="effort">Sort: least effort</option>
+      <option value="reach">Sort: most people reached</option>
+      <option value="hours">Sort: fewest hours</option>
+      <option value="az">Sort: A&ndash;Z</option>
+    </select>
+    <button class="btn" id="mineBtn" aria-pressed="false">My pipeline only</button>
+    <button class="btn" id="resetBtn">Reset filters</button>
+  </div>
+
+  <div class="board">
+    <aside class="rail" id="rail" aria-label="Filters"></aside>
+    <div>
+      <div class="count">
+        <strong id="countTxt">&nbsp;</strong>
+        <span class="eyebrow" id="activeTxt"></span>
+      </div>
+      <div class="list" id="list"></div>
+      <div class="pager"><button class="btn" id="moreBtn" hidden>Show more</button></div>
+      <p class="foot" id="foot"></p>
+    </div>
+  </div>
+</div>
+
+<style>
+summary.row-head{list-style:none}
+summary.row-head::-webkit-details-marker{display:none}
+summary.row-head::marker{content:""}
+.prof{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.prof input{flex:1 1 110px;min-width:0;padding:6px 9px;border:1px solid var(--rule-2);border-radius:6px;background:var(--surface);font-size:13px}
+</style>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+/* ---------- decode the compact payload into working records ---------- */
+const EFFORT_RANK = {Low:3, Medium:2, High:1};
+const ALL = [];
+
+DATA.verified.forEach((v, i) => ALL.push({
+  id: "V-" + String(i + 1).padStart(2, "0"),
+  kind: "verified",
+  title: v.program,
+  target: v.org,
+  place: "Nationwide",
+  region: "National", state: "", country: "",
+  category: v.category, audience: v.audience, format: v.format,
+  season: v.season, window: v.window, deadline: v.deadline,
+  duration: "Varies", hours: v.hours, reach: v.reach,
+  effort: v.effort, impact: v.impact, cost: "$0",
+  role: "Program or volunteer coordinator", applyType: v.applyType, leadTime: v.deadline,
+  url: v.url, search: v.org + " " + v.program,
+  blurb: v.notes, applyNote: v.applyNote,
+  need: [], bring: [], tags: v.tags,
+}));
+
+DATA.leads.forEach((r, i) => {
+  const [pi, ti, mi, hours, reach, impact, season] = r;
+  const p = DATA.plays[pi], t = DATA.targets[ti], m = DATA.metros[mi];
+  const place = m[0] + ", " + m[1];
+  ALL.push({
+    id: "L-" + String(i + 1).padStart(4, "0"),
+    kind: "lead",
+    title: p[0],
+    target: t[0],
+    place, region: m[3], state: m[1], country: m[2],
+    category: p[1], audience: p[2], format: p[3],
+    season, window: DATA.seasonMonths[season] || season,
+    deadline: "Contact " + t[3] + " ahead",
+    duration: p[4], hours, reach, effort: p[5], impact, cost: p[6],
+    role: t[1], applyType: t[2], leadTime: t[3],
+    url: null,
+    search: t[4] + " " + m[0] + " " + m[1],
+    blurb: p[9], applyNote: null,
+    need: p[7], bring: p[8], tags: [],
+  });
+});
+
+ALL.forEach(o => {
+  o.hay = [o.title, o.target, o.place, o.region, o.category, o.audience,
+           o.format, o.season, o.blurb, (o.tags || []).join(" "),
+           (o.need || []).join(" "), (o.bring || []).join(" ")].join(" ").toLowerCase();
+  o.fit = o.impact * 2.2 + (EFFORT_RANK[o.effort] || 2)
+        + (o.kind === "verified" ? 2.4 : 0) + Math.log10(o.reach + 10);
+});
+
+/* ---------- pipeline state ---------- */
+const KEY = "outreach-bench-v1";
+let store = { status: {}, logged: {}, team: "", city: "" };
+try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} };
+const STATUSES = ["saved", "contacted", "confirmed", "done"];
+
+/* ---------- filter state ---------- */
+const FACETS = [
+  { key: "category", label: "Activity" },
+  { key: "region",   label: "Region" },
+  { key: "season",   label: "Season" },
+  { key: "audience", label: "Who it reaches" },
+  { key: "effort",   label: "Effort" },
+  { key: "format",   label: "Format" },
+  { key: "kind",     label: "Confidence" },
+];
+const sel = {}; FACETS.forEach(f => sel[f.key] = new Set());
+const expanded = new Set();
+let query = "", mineOnly = false, sortBy = "fit", shown = 30;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const KINDLBL = { verified: "Verified organization", lead: "Lead — needs confirming",
+                  suggested: "Claude suggestion — verify everything" };
+const KINDCHIP = { verified: "verified", lead: "lead", suggested: "ai lead" };
+
+function passes(o, skip) {
+  if (mineOnly && !store.status[o.id]) return false;
+  if (query && !o.hay.includes(query)) return false;
+  for (const f of FACETS) {
+    if (f.key === skip) continue;
+    const s = sel[f.key];
+    if (s.size && !s.has(o[f.key])) return false;
+  }
+  return true;
+}
+
+function results() {
+  const out = ALL.filter(o => passes(o, null));
+  const cmp = {
+    fit:    (a, b) => b.fit - a.fit,
+    impact: (a, b) => b.impact - a.impact || b.fit - a.fit,
+    effort: (a, b) => EFFORT_RANK[b.effort] - EFFORT_RANK[a.effort] || a.hours - b.hours,
+    reach:  (a, b) => b.reach - a.reach,
+    hours:  (a, b) => a.hours - b.hours,
+    az:     (a, b) => a.title.localeCompare(b.title) || a.place.localeCompare(b.place),
+  }[sortBy];
+  return out.sort(cmp);
+}
+
+/* ---------- meters ---------- */
+function renderMeters() {
+  const ids = Object.keys(store.status);
+  const by = s => ids.filter(i => store.status[i] === s).length;
+  const done = ids.filter(i => store.status[i] === "done");
+  const byId = Object.fromEntries(ALL.map(o => [o.id, o]));
+  const hours = done.reduce((n, i) => n + (store.logged[i] ?? byId[i]?.hours ?? 0), 0);
+  const reach = done.reduce((n, i) => n + (byId[i]?.reach || 0), 0);
+  const cells = [
+    ["On the board", ALL.length, null, false],
+    ["Saved", by("saved"), null, true],
+    ["Contacted", by("contacted"), null, true],
+    ["Confirmed", by("confirmed"), null, true],
+    ["Done", done.length, null, true],
+    ["Outreach hours", hours, Math.min(100, hours / 2), true],
+    ["People reached", reach.toLocaleString(), Math.min(100, reach / 20), true],
+  ];
+  $("#meters").innerHTML = cells.map(([k, n, pct, on]) => `
+    <div class="meter${on && n !== 0 && n !== "0" ? " on" : ""}">
+      <span class="n">${esc(typeof n === "number" ? n.toLocaleString() : n)}</span>
+      <div class="k eyebrow">${esc(k)}</div>
+      ${pct != null ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ""}
+    </div>`).join("");
+}
+
+/* ---------- facet rail ---------- */
+function renderRail() {
+  $("#rail").innerHTML = FACETS.map(f => {
+    const counts = new Map();
+    ALL.forEach(o => { if (passes(o, f.key)) counts.set(o[f.key], (counts.get(o[f.key]) || 0) + 1); });
+    sel[f.key].forEach(v => { if (!counts.has(v)) counts.set(v, 0); });
+    const opts = [...counts.entries()].sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])));
+    const open = f.expanded || opts.length <= 7;
+    const list = (open ? opts : opts.slice(0, 6)).map(([v, n]) => `
+      <button class="opt" data-facet="${f.key}" data-val="${esc(v)}"
+              aria-pressed="${sel[f.key].has(v)}" ${n === 0 && !sel[f.key].has(v) ? "disabled" : ""}>
+        <span class="tick"></span>
+        <span class="lbl">${esc(f.key === "kind" ? KINDLBL[v].split(" —")[0] : v)}</span>
+        <span class="ct">${n}</span>
+      </button>`).join("");
+    return `<div class="facet">
+      <div class="eyebrow">${esc(f.label)}
+        ${sel[f.key].size ? `<button class="clear" data-clear="${f.key}">clear</button>` : ""}
+      </div>
+      ${list}
+      ${opts.length > 7 ? `<button class="more" data-more="${f.key}">${open ? "− fewer" : "+ " + (opts.length - 6) + " more"}</button>` : ""}
+    </div>`;
+  }).join("");
+}
+
+/* ---------- one result row ---------- */
+function rowHTML(o) {
+  const st = store.status[o.id] || "";
+  return `<details class="row" id="r-${o.id}" data-id="${o.id}" data-st="${st}"${expanded.has(o.id) ? " open" : ""}>
+    <summary class="row-head">
+      <span class="stripe"></span>
+      <span>
+        <span class="rt">${esc(o.title)}</span>
+        <span class="rm">${esc(o.target)}<span class="sep">/</span>${esc(o.place)}${st ? `<span class="sep">/</span><b>${esc(st)}</b>` : ""}</span>
+      </span>
+      <span class="chips">
+        <span class="chip ${o.kind === "verified" ? "ver" : "lead"}">${KINDCHIP[o.kind]}</span>
+        <span class="chip">${esc(o.season)}</span>
+        <span class="chip${o.effort === "Low" ? " hi" : ""}">${esc(o.effort)} effort</span>
+        <span class="chip">${o.hours}h</span>
+        <span class="chip">~${o.reach.toLocaleString()} reached</span>
+      </span>
+    </summary>
+    <div class="detail${o.need.length || o.bring.length ? "" : " lean"}" data-detail="${o.id}"></div>
+  </details>`;
+}
+
+/* ---------- expanded detail ---------- */
+function detailHTML(o) {
+  const st = store.status[o.id] || "";
+  const li = (arr, cls) => arr.length
+    ? `<ul class="need ${cls}">${arr.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+  const action = o.url
+    ? `<a class="btn primary" href="${esc(o.url)}" target="_blank" rel="noopener">Open ${esc(o.target)} &#8599;</a>`
+    : `<a class="btn primary" href="https://www.google.com/search?q=${encodeURIComponent(o.search)}" target="_blank" rel="noopener">Find the real contact &#8599;</a>`;
+  return `
+    <div>
+      <p class="lede">${esc(o.blurb)}</p>
+      <dl class="dl">
+        <dt>Reaches</dt><dd><b>${esc(o.audience)}</b> &middot; ${esc(o.format)} &middot; ${esc(o.duration)}</dd>
+        <dt>When</dt><dd><b>${esc(o.season)}</b> &mdash; ${esc(o.window)}</dd>
+        <dt>Lead time</dt><dd>${esc(o.deadline)}</dd>
+        <dt>Costs you</dt><dd>${esc(o.cost)} &middot; about <b>${o.hours} outreach hours</b></dd>
+        <dt>Impact</dt><dd>${"●".repeat(o.impact)}${"○".repeat(5 - o.impact)} <span class="mono">${o.impact}/5</span> &middot; reaches roughly <b>${o.reach.toLocaleString()}</b> people</dd>
+        <dt>Confidence</dt><dd>${esc(KINDLBL[o.kind])}</dd>
+      </dl>
+      ${o.need.length ? `<h4 class="eyebrow" style="margin-top:15px">You need first</h4>${li(o.need, "")}` : ""}
+      ${o.bring.length ? `<h4 class="eyebrow" style="margin-top:13px">Pack list</h4>${li(o.bring, "bring")}` : ""}
+    </div>
+    <div>
+      <div class="panel">
+        <h4>How to book it</h4>
+        <dl class="dl" style="margin-top:0">
+          <dt>Ask for</dt><dd><b>${esc(o.role)}</b></dd>
+          <dt>Via</dt><dd>${esc(o.applyType)}</dd>
+          ${o.applyNote ? `<dt>Route</dt><dd>${esc(o.applyNote)}</dd>` : ""}
+        </dl>
+        <div class="acts">${action}</div>
+        <div class="statusbar" data-status="${o.id}">
+          ${STATUSES.map(s => `<button data-set="${s}" aria-pressed="${st === s}">${s}</button>`).join("")}
+        </div>
+        ${st ? `<div class="acts"><button class="btn sm" data-set-clear="${o.id}">Remove from pipeline</button></div>` : ""}
+      </div>
+      <div class="panel">
+        <h4>Outreach email</h4>
+        <div class="prof">
+          <input data-prof="team" placeholder="Team 0000 Name" value="${esc(store.team)}">
+          <input data-prof="city" placeholder="Your city" value="${esc(store.city)}">
+        </div>
+        <textarea class="draft" data-draft="${o.id}" spellcheck="true">${esc(emailFor(o))}</textarea>
+        <div class="acts">
+          <button class="btn sm" data-copy="${o.id}">Copy email</button>
+          <button class="btn sm" data-ai-draft="${o.id}">Rewrite with Claude</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ---------- the email, composed locally ---------- */
+const AUD_PHRASE = {
+  "All ages": "all ages", "Family": "families doing it together", "Adults": "adults",
+  "Seniors": "seniors", "Elementary (K-5)": "elementary students",
+  "Middle school (6-8)": "middle schoolers", "High school (9-12)": "high schoolers",
+};
+const HOST_ASK = {
+  "In person": "a room with tables and a power outlet, plus a rough idea of how many people to expect",
+  "Virtual": "a video link and a rough headcount",
+  "Hybrid": "either a room or a video link, plus a rough headcount",
+};
+// list items are written as capitalised fragments; splice them into prose cleanly
+const inline = x => /^[A-Z][^A-Z]/.test(x) ? x[0].toLowerCase() + x.slice(1) : x;
+
+function emailFor(o) {
+  const team = store.team || "[TEAM NUMBER AND NAME]";
+  const city = store.city || "[YOUR CITY]";
+  const lead = o.kind === "lead";
+  if (!lead) return enquiryFor(o, team, city);
+  const who = /program or volunteer|see below/i.test(o.role) ? "there" : o.role.split(" or ")[0];
+  const bring = o.bring.length
+    ? o.bring.slice(0, 3).map(inline).join(", ")
+    : "our robot and everything we need to run it";
+  const subject = o.category === "Fundraising"
+    ? "Partnership with a local high school robotics team"
+    : "Free from a local robotics team: " + o.title;
+  const when = lead && o.window && o.window !== "Varies"
+    ? " We're aiming for " + o.window + ", but tell us what works." : "";
+  return `Subject: ${subject}
+
+Hi ${who},
+
+I'm a student on ${team}, a high school robotics team in ${city}. We compete in FIRST, and part of what our team does is bring hands-on engineering to people who don't otherwise get to see it up close.
+
+I'd like to offer you something at no cost: ${o.title}. Here's what that looks like:
+
+  • ${o.duration === "Varies" ? "Timing is flexible" : "About " + o.duration}, run by students with an adult mentor present
+  • Built for ${AUD_PHRASE[o.audience] || o.audience.toLowerCase()}
+  • We bring ${bring}
+  • ${o.cost === "$0" ? "No cost to you" : "Materials run about " + o.cost + " — we cover that"}
+  • All we need from you is ${HOST_ASK[o.format] || HOST_ASK["In person"]}
+
+We're flexible on dates and can work around your schedule.${when}
+
+Would you be open to a short call to see whether this fits what you already have planned? I'm glad to send references from places we've worked with before.
+
+Thank you for your time,
+
+[YOUR NAME]
+Outreach Lead, ${team}
+[EMAIL] · [PHONE]`;
+}
+
+/* national programmes: you are asking to take part, not offering them a session */
+function enquiryFor(o, team, city) {
+  return `Subject: ${team} \u2014 taking part in ${o.title}
+
+Hi there,
+
+I'm the outreach lead on ${team}, a high school FIRST robotics team in ${city}. We run hands-on engineering events for young people around us, and I'm writing about ${o.title}.
+
+${o.applyNote ? o.applyNote.replace(/^./, c => c.toUpperCase()) + "." : "I'd like to find out how a team like ours takes part."}
+
+Three things I'd like to understand:
+
+  \u2022 What you need from a student team before we can take part
+  \u2022 Whether there's a deadline or a window we should be working toward${o.window ? " (I have " + o.window + " written down \u2014 please correct me)" : ""}
+  \u2022 Who locally we should be talking to, if it isn't you
+
+For context, we can field a group of students with adult mentors, and we're planning roughly ${o.hours} hours of our season around this.
+
+Thank you for your time,
+
+[YOUR NAME]
+Outreach Lead, ${team}
+[EMAIL] \u00b7 [PHONE]`;
+}
+
+/* ---------- render ---------- */
+let current = [];
+function render() {
+  current = results();
+  const slice = current.slice(0, shown);
+  $("#list").innerHTML = slice.length ? slice.map(rowHTML).join("") : `
+    <div class="empty"><h3>Nothing matches that combination.</h3>
+    <p>Loosen a filter, or ask Claude to look for something specific to your area.</p></div>`;
+  slice.forEach(o => { if (expanded.has(o.id)) fillDetail(o.id); });
+  $("#countTxt").textContent = current.length.toLocaleString() + " of " + ALL.length.toLocaleString()
+    + " opportunities" + (current.length > shown ? " — showing " + shown : "");
+  const act = FACETS.flatMap(f => [...sel[f.key]]).length + (query ? 1 : 0) + (mineOnly ? 1 : 0);
+  $("#activeTxt").textContent = act ? act + " filter" + (act > 1 ? "s" : "") + " on" : "no filters";
+  $("#moreBtn").hidden = current.length <= shown;
+  $("#moreBtn").textContent = "Show " + Math.min(30, current.length - shown) + " more";
+  renderRail(); renderMeters();
+}
+function fillDetail(id) {
+  const el = document.querySelector(`[data-detail="${id}"]`);
+  const o = ALL.find(x => x.id === id);
+  if (el && o && !el.dataset.done) { el.innerHTML = detailHTML(o); el.dataset.done = "1"; }
+}
+function refreshDetail(id) {
+  const el = document.querySelector(`[data-detail="${id}"]`);
+  const o = ALL.find(x => x.id === id);
+  if (el && o) { el.innerHTML = detailHTML(o); el.dataset.done = "1"; }
+  const row = document.getElementById("r-" + id);
+  if (row) row.dataset.st = store.status[id] || "";
+  renderMeters();
+}
+
+/* ---------- events ---------- */
+$("#list").addEventListener("toggle", e => {
+  const row = e.target.closest("details.row"); if (!row) return;
+  const id = row.dataset.id;
+  if (row.open) { expanded.add(id); fillDetail(id); } else { expanded.delete(id); }
+}, true);
+
+$("#list").addEventListener("click", e => {
+  const set = e.target.closest("[data-set]");
+  if (set) {
+    const id = set.closest("[data-status]").dataset.status;
+    const v = set.dataset.set;
+    store.status[id] = store.status[id] === v ? undefined : v;
+    if (!store.status[id]) delete store.status[id];
+    if (store.status[id] === "done" && store.logged[id] == null) {
+      store.logged[id] = ALL.find(o => o.id === id).hours;
+    }
+    save(); refreshDetail(id); renderRail(); return;
+  }
+  const clr = e.target.closest("[data-set-clear]");
+  if (clr) { const id = clr.dataset.setClear; delete store.status[id]; delete store.logged[id]; save(); refreshDetail(id); return; }
+  const cp = e.target.closest("[data-copy]");
+  if (cp) {
+    const ta = document.querySelector(`[data-draft="${cp.dataset.copy}"]`);
+    navigator.clipboard?.writeText(ta.value).then(() => {
+      cp.textContent = "Copied"; setTimeout(() => cp.textContent = "Copy email", 1600);
+    }).catch(() => { ta.select(); cp.textContent = "Select + copy"; });
+    return;
+  }
+  const ad = e.target.closest("[data-ai-draft]");
+  if (ad) { aiDraftFor(ad.dataset.aiDraft); return; }
+});
+
+$("#list").addEventListener("input", e => {
+  const p = e.target.closest("[data-prof]");
+  if (!p) return;
+  store[p.dataset.prof] = p.value; save();
+  document.querySelectorAll("[data-draft]").forEach(ta => {
+    if (!ta.dataset.touched) ta.value = emailFor(ALL.find(o => o.id === ta.dataset.draft));
+  });
+  document.querySelectorAll("[data-prof]").forEach(i => { if (i !== p) i.value = store[i.dataset.prof]; });
+});
+$("#list").addEventListener("input", e => { if (e.target.matches("[data-draft]")) e.target.dataset.touched = "1"; });
+
+$("#rail").addEventListener("click", e => {
+  const opt = e.target.closest(".opt");
+  if (opt) {
+    const s = sel[opt.dataset.facet], v = opt.dataset.val;
+    s.has(v) ? s.delete(v) : s.add(v);
+    shown = 30; render(); return;
+  }
+  const c = e.target.closest("[data-clear]");
+  if (c) { sel[c.dataset.clear].clear(); shown = 30; render(); return; }
+  const m = e.target.closest("[data-more]");
+  if (m) { const f = FACETS.find(x => x.key === m.dataset.more); f.expanded = !f.expanded; renderRail(); }
+});
+
+let qt;
+$("#q").addEventListener("input", e => {
+  clearTimeout(qt);
+  qt = setTimeout(() => { query = e.target.value.trim().toLowerCase(); shown = 30; render(); }, 130);
+});
+$("#sort").addEventListener("change", e => { sortBy = e.target.value; shown = 30; render(); });
+$("#moreBtn").addEventListener("click", () => { shown += 30; render(); });
+$("#mineBtn").addEventListener("click", e => {
+  mineOnly = !mineOnly; e.currentTarget.setAttribute("aria-pressed", mineOnly); shown = 30; render();
+});
+$("#resetBtn").addEventListener("click", () => {
+  FACETS.forEach(f => sel[f.key].clear());
+  query = ""; $("#q").value = ""; mineOnly = false;
+  $("#mineBtn").setAttribute("aria-pressed", "false"); shown = 30; render();
+});
+$("#themeBtn").addEventListener("click", () => {
+  const now = document.documentElement.getAttribute("data-theme");
+  const dark = now ? now === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+});
+
+/* ---------- export ---------- */
+$("#csvBtn").addEventListener("click", async () => {
+  const ids = Object.keys(store.status);
+  const rows = ids.length ? ALL.filter(o => store.status[o.id]) : current.slice(0, shown);
+  const head = ["Status", "Hours logged", "Activity", "Where", "Place", "Region", "Season", "Window",
+                "Lead time", "Contact", "How to reach", "Audience", "Effort", "Est. hours",
+                "Est. reached", "Impact", "Cost", "Confidence", "Link or search"];
+  const cell = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const csv = [head.map(cell).join(",")].concat(rows.map(o => [
+    store.status[o.id] || "", store.logged[o.id] ?? "", o.title, o.target, o.place, o.region,
+    o.season, o.window, o.deadline, o.role, o.applyType, o.audience, o.effort, o.hours,
+    o.reach, o.impact + "/5", o.cost, KINDLBL[o.kind],
+    o.url || "https://www.google.com/search?q=" + encodeURIComponent(o.search),
+  ].map(cell).join(","))).join("\r\n");
+  const name = ids.length ? "my-outreach-pipeline.csv" : "outreach-shortlist.csv";
+  const dl = window.claude?.use ? await window.claude.use("downloads").catch(() => null) : null;
+  if (dl) { try { await dl.save({ filename: name, data: csv }); return; } catch (e) { if (e?.code === "cancelled") return; } }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+});
+
+/* ---------- ask claude ---------- */
+const MODES = {
+  find: {
+    hint: "Claude answers from what it knows — it cannot browse the web live. Confirm every name and date.",
+    ph: "Tell Claude where you are and what you're after. e.g. \"We're Team 4321 in Tacoma, WA. Six students, no van. We need two low-effort events between now and March that reach elementary kids, and something that would impress Impact Award judges.\"",
+  },
+  draft: {
+    hint: "Open an opportunity below and use “Rewrite with Claude”, or describe the one you mean.",
+    ph: "Describe who you're writing to and anything specific you want in the email — a date you want, a past event to mention, a person who referred you.",
+  },
+  plan: {
+    hint: "Uses whatever you've saved to your pipeline, plus what you write here.",
+    ph: "Anything Claude should know: your build season dates, how many students you can actually field, transport limits, when your Impact Award submission is due.",
+  },
+};
+const ERRCOPY = {
+  not_granted: "You turned the request down. Press Ask again if you want to run it.",
+  rate_limited: "Too many requests just now. Give it a minute, then ask again.",
+  prompt_too_large: "That's more text than one request can carry. Shorten it and ask again.",
+  invalid_json: "The answer didn't come back in a shape this page could read. Ask again, more specifically.",
+  refused: "Claude declined to answer that one. Try rephrasing it.",
+  empty_completion: "Nothing came back. Ask again.",
+  upstream_error: "The connection dropped partway. Ask again.",
+  session_expired: "Your session expired. Reload the page and try again.",
+  sampling_disabled: "AI features are switched off for this view.",
+  not_declared: "AI features aren't available on this copy of the page.",
+  capability_disabled: "AI features are switched off for this view.",
+  capability_removed: "AI features were switched off. Reload the page.",
+};
+const CATS = [...new Set(ALL.map(o => o.category))];
+const AUDS = [...new Set(ALL.map(o => o.audience))];
+const SEAS = [...new Set(ALL.map(o => o.season))];
+
+let sample = null, mode = "find", ctl = null, aiTarget = null;
+const out = () => $("#aiOut");
+const setHint = () => { $("#aiHint").textContent = MODES[mode].hint; $("#aiIn").placeholder = MODES[mode].ph; };
+setHint();
+
+(async () => {
+  if (!window.claude || typeof window.claude.use !== "function") {
+    $("#aiState").textContent = "not available on this copy";
+    $("#aiHint").textContent = "This page is running outside claude.ai, so it can't reach Claude. Everything else works; the published version has AI search switched on.";
+    $("#aiGo").disabled = true; $("#aiGo").style.opacity = ".5";
+    return;
+  }
+  sample = await window.claude.use("sample").catch(() => null);
+  if (sample) { $("#aiDot").classList.remove("off"); $("#aiState").textContent = "ready"; }
+  else { $("#aiState").textContent = "not available in this view"; $("#aiGo").disabled = true; $("#aiGo").style.opacity = ".5"; }
+})();
+
+$("#modes").addEventListener("click", e => {
+  const b = e.target.closest("[data-mode]"); if (!b) return;
+  mode = b.dataset.mode;
+  [...$("#modes").children].forEach(x => x.setAttribute("aria-pressed", x === b));
+  setHint(); out().innerHTML = "";
+});
+$("#aiStop").addEventListener("click", () => ctl?.abort());
+$("#aiGo").addEventListener("click", () => run());
+
+function aiDraftFor(id) {
+  aiTarget = ALL.find(o => o.id === id);
+  mode = "draft";
+  [...$("#modes").children].forEach(x => x.setAttribute("aria-pressed", x.dataset.mode === "draft"));
+  setHint();
+  $("#aiHint").textContent = "Rewriting the email for: " + aiTarget.title + " — " + aiTarget.target;
+  $("#ask").scrollIntoView({ behavior: "smooth", block: "start" });
+  run();
+}
+
+function busy(on) {
+  $("#aiGo").disabled = on; $("#aiStop").hidden = !on;
+  $("#aiGo").textContent = on ? "Asking…" : "Ask";
+}
+
+const NO_INVENT = "Never invent a specific street address, phone number, email address, staff member's name, or URL. "
+  + "If a contact detail is needed, give a search-engine query that would find the real one instead.";
+
+async function run() {
+  if (!sample) return;
+  const extra = $("#aiIn").value.trim();
+  ctl = new AbortController();
+  busy(true);
+  out().innerHTML = `<div class="think">Thinking</div>`;
+  try {
+    if (mode === "find") await runFind(extra);
+    else if (mode === "draft") await runDraft(extra);
+    else await runPlan(extra);
+  } catch (e) {
+    if (e?.code === "cancelled") {
+      out().innerHTML = `<div class="stream">${esc(e.text || "")}</div><div class="err">Stopped.</div>`;
+    } else {
+      out().innerHTML = (e?.text ? `<div class="stream">${esc(e.text)}</div>` : "")
+        + `<div class="err">${esc(ERRCOPY[e?.code] || "Something went wrong. Ask again.")}</div>`;
+    }
+  } finally { busy(false); ctl = null; }
+}
+
+async function runFind(extra) {
+  const list = await sample.json(
+    `A high school FIRST robotics team's outreach lead needs outreach opportunities.\n\n` +
+    `What they told you:\n${extra || "(they gave no details — ask for general high-value options any team can run)"}\n\n` +
+    `Reply with ONLY a JSON array of up to 8 objects with exactly these keys:\n` +
+    `{"title": short activity name, "org": the organization or kind of organization, ` +
+    `"where": city/area they named, or "Nationwide", ` +
+    `"category": one of ${JSON.stringify(CATS)}, "audience": one of ${JSON.stringify(AUDS)}, ` +
+    `"season": one of ${JSON.stringify(SEAS)}, "effort": "Low"|"Medium"|"High", ` +
+    `"hours": integer estimate of team hours, "reach": integer estimate of people reached, ` +
+    `"why": one sentence on why it fits this team, ` +
+    `"how": one sentence naming the role to contact and how to reach them, ` +
+    `"search": a search-engine query that finds the real local contact}\n\n` +
+    `Prefer real, nameable programs you are confident exist. ${NO_INVENT}`,
+    { signal: ctl.signal, modelTier: "complex", onText: () => {} }
+  );
+  const arr = Array.isArray(list) ? list : [];
+  if (!arr.length) { out().innerHTML = `<div class="err">No suggestions came back. Try giving Claude your city and what you want.</div>`; return; }
+  out().innerHTML = `<div class="eyebrow" style="margin-bottom:9px">${arr.length} suggestions — Claude did not browse the web, so treat every one as a lead to confirm</div>
+    <div class="sugg">${arr.map((s, i) => `
+      <div class="card">
+        <h4>${esc(s.title || "Untitled")}</h4>
+        <p>${esc(s.org || "")}${s.where ? " — " + esc(s.where) : ""}</p>
+        <p style="margin-top:6px">${esc(s.why || "")}</p>
+        <p style="margin-top:6px"><b>${esc(s.how || "")}</b></p>
+        <div class="meta">
+          <span class="chip lead">ai lead</span>
+          ${s.season ? `<span class="chip">${esc(s.season)}</span>` : ""}
+          ${s.effort ? `<span class="chip">${esc(s.effort)} effort</span>` : ""}
+          ${s.hours ? `<span class="chip">${esc(s.hours)}h</span>` : ""}
+          ${s.reach ? `<span class="chip">~${esc(s.reach)} reached</span>` : ""}
+        </div>
+        <div class="acts">
+          ${s.search ? `<a class="btn sm" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(s.search)}">Find the real contact &#8599;</a>` : ""}
+          <button class="btn sm" data-add="${i}">Add to the board</button>
+        </div>
+      </div>`).join("")}</div>`;
+  out().querySelectorAll("[data-add]").forEach(b => b.addEventListener("click", () => {
+    addSuggestion(arr[+b.dataset.add]); b.textContent = "Added ✓"; b.disabled = true;
+  }));
+}
+
+function addSuggestion(s) {
+  const o = {
+    id: "A-" + String(ALL.length).padStart(4, "0"), kind: "suggested",
+    title: String(s.title || "Untitled"), target: String(s.org || "Unknown organization"),
+    place: String(s.where || "Unspecified"), region: "Claude suggestion", state: "", country: "",
+    category: CATS.includes(s.category) ? s.category : "Community",
+    audience: AUDS.includes(s.audience) ? s.audience : "All ages",
+    format: "In person",
+    season: SEAS.includes(s.season) ? s.season : "Offseason",
+    window: DATA.seasonMonths[s.season] || "Confirm with the organization",
+    deadline: "Unknown — confirm before you commit",
+    duration: "Varies", hours: +s.hours || 8, reach: +s.reach || 25,
+    effort: ["Low", "Medium", "High"].includes(s.effort) ? s.effort : "Medium",
+    impact: 3, cost: "Unknown",
+    role: String(s.how || "See the note below"), applyType: "Search first",
+    leadTime: "Unknown", url: null,
+    search: String(s.search || (s.org || "") + " " + (s.where || "")),
+    blurb: String(s.why || ""), applyNote: null, need: [], bring: [], tags: ["claude"],
+  };
+  o.hay = [o.title, o.target, o.place, o.category, o.audience, o.season, o.blurb].join(" ").toLowerCase();
+  o.fit = o.impact * 2.2 + (EFFORT_RANK[o.effort] || 2) + Math.log10(o.reach + 10);
+  ALL.unshift(o);
+  store.status[o.id] = "saved"; save();
+  shown = Math.max(shown, 30); render();
+}
+
+async function runDraft(extra) {
+  const o = aiTarget || current[0];
+  const ta = o ? document.querySelector(`[data-draft="${o.id}"]`) : null;
+  const base = ta ? ta.value : (o ? emailFor(o) : "");
+  const box = document.createElement("div"); box.className = "stream";
+  out().innerHTML = ""; out().appendChild(box);
+  const { text } = await sample(
+    `Rewrite this outreach email so a busy person says yes. Keep it under 200 words, plain and specific, ` +
+    `no corporate filler, no exclamation marks. Keep any [BRACKETED] placeholders exactly as they are. ` +
+    `Return only the email, starting with the Subject line.\n\n` +
+    (o ? `Context: a high school robotics team is offering "${o.title}" to ${o.target}${o.place && o.place !== "Nationwide" ? " in " + o.place : ""}. ` +
+         `The reader is the ${o.role}.\n` : "") +
+    (extra ? `The team adds: ${extra}\n` : "") +
+    `\nCurrent draft:\n${base}`,
+    { signal: ctl.signal, cache: false, onText: ({ text }) => { box.textContent = text; } }
+  );
+  if (ta) {
+    ta.value = text; ta.dataset.touched = "1";
+    const b = document.createElement("button");
+    b.className = "btn sm"; b.textContent = "Put it back in the email box ✓"; b.disabled = true;
+    out().appendChild(b);
+  }
+}
+
+async function runPlan(extra) {
+  const mine = ALL.filter(o => store.status[o.id]);
+  const box = document.createElement("div"); box.className = "stream";
+  out().innerHTML = ""; out().appendChild(box);
+  await sample(
+    `You are helping the outreach lead of a high school FIRST robotics team turn a shortlist into a season plan.\n\n` +
+    (mine.length
+      ? `Their pipeline (${mine.length} items):\n` + mine.map(o =>
+          `- [${store.status[o.id]}] ${o.title} — ${o.target}, ${o.place} · ${o.season} · ${o.effort} effort · ~${o.hours}h · reaches ~${o.reach}`).join("\n")
+      : `Their pipeline is empty. Build the plan from these strong starting options instead:\n` +
+        ALL.slice(0, 12).map(o => `- ${o.title} — ${o.target} · ${o.season} · ${o.effort} effort · ~${o.hours}h`).join("\n")) +
+    `\n\nWhat they told you: ${extra || "(nothing extra)"}\n\n` +
+    `Give them, in plain prose with short headed sections:\n` +
+    `1. A month-by-month order of operations, keyed to the FIRST calendar (Kickoff in January, ` +
+    `competition February to April, offseason May to August, recruiting in the fall).\n` +
+    `2. Which items to drop, and why — be blunt if they have taken on too much.\n` +
+    `3. What to do in the next seven days, as three concrete actions.\n` +
+    `4. What to write down as they go so the Impact Award submission writes itself in February.\n\n` +
+    `Be specific and short. ${NO_INVENT}`,
+    { signal: ctl.signal, modelTier: "complex", onText: ({ text }) => { box.textContent = text; } }
+  );
+}
+
+/* ---------- go ---------- */
+$("#foot").innerHTML = `<b>${ALL.length.toLocaleString()} entries.</b> `
+  + `${DATA.counts.verified} are verified organizations — real, nationally operating, with their own websites. `
+  + `${DATA.counts.leads.toLocaleString()} are leads: a real activity paired with a real category of venue in a real metro area, `
+  + `with a search that finds the actual local contact. Leads are prospects to work, not bookings that exist. `
+  + `Hours, reach and impact figures are planning estimates, not measurements — replace them with your real numbers as you go, `
+  + `because those are the numbers a judge will ask you about. Your pipeline is saved in this browser only.`;
+render();
+</script>
