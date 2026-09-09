@@ -146,6 +146,27 @@ a{color:var(--accent-ink)}
 .chip{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.02em;padding:2px 7px;border-radius:5px;border:1px solid var(--rule-2);color:var(--ink-2);white-space:nowrap;background:var(--surface-2)}
 .chip.cat{background:color-mix(in srgb,var(--cat) 12%,transparent);border-color:color-mix(in srgb,var(--cat) 30%,transparent);color:var(--cat);font-weight:500}
 .chip.ok{background:var(--accent-wash);border-color:var(--accent-line);color:var(--accent-ink)}
+.chip.when{background:var(--surface);border-color:var(--rule-2);color:var(--ink);font-weight:500}
+.chip.due{background:var(--ochre-wash);border-color:var(--ochre-line);color:var(--ochre);font-weight:500}
+.chip.now{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:500}
+.chip.gone{opacity:.65}
+.steps{margin:0;padding:0 0 0 0;list-style:none;counter-reset:st}
+.steps li{position:relative;padding-left:26px;margin-bottom:7px;font-size:13.5px;color:var(--ink-2);line-height:1.5}
+.steps li::before{counter-increment:st;content:counter(st);position:absolute;left:0;top:1px;width:18px;height:18px;
+  border-radius:50%;background:var(--cat);color:var(--surface);display:grid;place-items:center;
+  font-family:var(--f-mono);font-size:10px;font-weight:500}
+:root[data-theme="dark"] .steps li::before,:root:not([data-theme="light"]) .steps li::before{color:#08181a}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .steps li::before{color:#fff}}
+.kv{margin-top:10px;padding-top:9px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-2)}
+.kv b{color:var(--ink);font-weight:600;display:block;font-family:var(--f-mono);font-size:9.5px;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+.kv + .kv{margin-top:8px}
+.datebox{background:var(--surface-2);border:1px solid var(--rule);border-left:3px solid var(--cat);
+  border-radius:9px;padding:11px 13px}
+.datebox .big{font-family:var(--f-display);font-size:16px;font-weight:600;letter-spacing:-.015em;display:block}
+.datebox .sub{font-size:12.5px;color:var(--ink-2);margin-top:2px}
+.datebox .rule{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-3);margin-top:7px;
+  padding-top:7px;border-top:1px dashed var(--rule)}
 
 /* the real-link block: the point of the whole page */
 .link{display:flex;align-items:center;gap:10px;margin:0 14px 13px;padding:9px 11px;border:1px solid var(--rule-2);border-left:3px solid var(--cat);border-radius:8px;background:var(--surface-2);text-decoration:none;color:inherit;transition:.15s}
@@ -289,6 +310,8 @@ a{color:var(--accent-ink)}
     </label>
     <select class="btn" id="sort" aria-label="Sort">
       <option value="fit">Sort: best first</option>
+      <option value="due">Sort: deadline soonest</option>
+      <option value="when">Sort: happening soonest</option>
       <option value="area">Sort: by area (A&ndash;Z)</option>
       <option value="impact">Sort: highest impact</option>
       <option value="effort">Sort: least effort</option>
@@ -337,11 +360,96 @@ const cssCat = c => "--c-" + c.replace(/\s+/g, "");
 const STATE_REGION = {};
 DATA.metros.forEach(m => { if (!STATE_REGION[m[1]]) STATE_REGION[m[1]] = m[3]; });
 
+/* ---------- date engine: rules resolved against the real calendar ----------
+   Nothing here is a typed-in date. Each rule is evaluated for this year and the
+   next, and the first occurrence that has not already passed is the one shown. */
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const DAY = 864e5;
+const MON = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const d2 = (y,m,d) => new Date(y, m - 1, d);
+const addD = (dt,n) => new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() + n);
+
+function nthWeekday(y, m, n, wd) {
+  if (n > 0) {
+    const f = d2(y, m, 1);
+    return d2(y, m, 1 + ((wd - f.getDay() + 7) % 7) + (n - 1) * 7);
+  }
+  const last = new Date(y, m, 0);
+  return d2(y, m, last.getDate() - ((last.getDay() - wd + 7) % 7));
+}
+function sundayOfWeek(dt) { return addD(dt, -dt.getDay()); }
+function firstSunday(y, m) { const f = d2(y, m, 1); return d2(y, m, 1 + ((7 - f.getDay()) % 7)); }
+
+/* resolve a rule for one year -> [start, end] */
+function resolve(rule, y) {
+  const [k, a, b, c, e] = rule;
+  if (k === "fixed")      return [d2(y, a, b), d2(y, a, b)];
+  if (k === "nth")        { const t = nthWeekday(y, a, b, c); return [t, t]; }
+  if (k === "nthAfter")   { const t = addD(nthWeekday(y, a, b, c), e); return [t, t]; }
+  if (k === "weekOf")     { const s0 = sundayOfWeek(d2(y, a, b)); return [s0, addD(s0, 6)]; }
+  if (k === "thuOfWeekOf"){ const t = addD(sundayOfWeek(d2(y, a, b)), 4); return [t, t]; }
+  if (k === "fullWeek")   { const s0 = addD(firstSunday(y, a), (b - 1) * 7); return [s0, addD(s0, 6)]; }
+  if (k === "month")      return [d2(y, a, 1), new Date(y, a, 0)];
+  if (k === "range")      { const sameYear = c > a || (c === a && e >= b);
+                          return [d2(y, a, b), d2(sameYear ? y : y + 1, c, e)]; }
+  return [d2(y, 1, 1), d2(y, 12, 31)];
+}
+/* the next occurrence that has not finished yet */
+function nextOccurrence(rule) {
+  for (let y = TODAY.getFullYear(); y <= TODAY.getFullYear() + 2; y++) {
+    const [s0, e0] = resolve(rule, y);
+    if (e0 >= TODAY) return [s0, e0];
+  }
+  return resolve(rule, TODAY.getFullYear() + 1);
+}
+const SEASON_RULE = {
+  "Build season": ["range", 1, 1, 2, 28], "Competition": ["range", 2, 15, 4, 30],
+  "Offseason": ["range", 5, 1, 8, 31], "Summer": ["range", 6, 1, 8, 31],
+  "Fall": ["range", 9, 1, 11, 30], "Winter": ["range", 12, 1, 2, 28],
+};
+const fmt = dt => dt.getDate() + " " + MON[dt.getMonth()].slice(0, 3) + " " + dt.getFullYear();
+function spanLabel(s0, e0) {
+  if (+s0 === +e0) return fmt(s0);
+  if (s0.getFullYear() === e0.getFullYear() && s0.getMonth() === e0.getMonth())
+    return s0.getDate() + "-" + e0.getDate() + " " + MON[s0.getMonth()].slice(0, 3) + " " + s0.getFullYear();
+  return fmt(s0) + " - " + fmt(e0);
+}
+const weeksFrom = txt => { const m = String(txt).match(/(\d+)\s*(?:-\s*(\d+))?\s*week/i);
+  return m ? +(m[2] || m[1]) : 8; };
+
+const WD = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const ORD = ["", "first", "second", "third", "fourth", "fifth"];
+function ruleWords(r) {
+  const [k, a, b, c, e] = r;
+  if (k === "fixed")       return MON[a - 1] + " " + b + ", every year";
+  if (k === "nth")         return (b === -1 ? "last" : ORD[b]) + " " + WD[c] + " of " + MON[a - 1] + ", every year";
+  if (k === "nthAfter")    return e + " days after the " + ORD[b] + " " + WD[c] + " of " + MON[a - 1];
+  if (k === "weekOf")      return "the Sunday-to-Saturday week containing " + MON[a - 1] + " " + b;
+  if (k === "thuOfWeekOf") return "the Thursday of the week containing " + MON[a - 1] + " " + b;
+  if (k === "fullWeek")    return ORD[b] + " full week of " + MON[a - 1] + ", every year";
+  if (k === "month")       return "all of " + MON[a - 1] + ", every year";
+  if (k === "range")       return MON[a - 1] + " " + b + " to " + MON[c - 1] + " " + e + ", every year";
+  return "recurring";
+}
+
+/* attach real dates to one record */
+function dateOn(o, rule, leadWeeks) {
+  const [s0, e0] = nextOccurrence(rule);
+  const by = addD(s0, -leadWeeks * 7);
+  o.start = s0; o.end = e0; o.by = by;
+  o.whenLabel = spanLabel(s0, e0);
+  o.byLabel = fmt(by);
+  o.daysToStart = Math.round((s0 - TODAY) / DAY);
+  o.daysToApply = Math.round((by - TODAY) / DAY);
+  o.leadWeeks = leadWeeks;
+}
+
 /* ---------- decode ---------- */
 const ALL = [];
 const LINK_DIRECT = "direct", LINK_FINDER = "finder";
 
 DATA.verified.forEach((v, i) => ALL.push({
+  rule: DATA.vRule[i] || null, ruleText: DATA.vRule[i] ? ruleWords(DATA.vRule[i]) : "",
   id: "N-" + String(i + 1).padStart(3, "0"), tier: "programme",
   title: v.program, host: v.org,
   city: "", state: "", country: "USA", region: "Nationwide", area: "Nationwide",
@@ -376,6 +484,25 @@ DATA.uniRows.forEach((r, i) => {
   });
 });
 
+DATA.evRows.forEach((r, i) => {
+  const [ei, ti, mi, hours, reach, impact] = r;
+  const e = DATA.events[ei], t = DATA.targets[ti], m = DATA.metros[mi];
+  const [name, rule, runBy, url, what, forTeam, leadWeeks, category, audience] = e;
+  ALL.push({
+    id: "E-" + String(i + 1).padStart(4, "0"), tier: "dated",
+    title: name, host: t[0],
+    city: m[0], state: m[1], country: m[2], region: m[3], area: m[0] + ", " + m[1],
+    category, audience, format: "In person",
+    season: "", window: "", deadline: "",
+    duration: "Varies by venue", hours, reach, impact, effort: "Medium", cost: "Varies",
+    role: t[1], applyType: t[2], blurb: what + " " + forTeam, applyNote: null,
+    need: [], bring: [], tags: ["dated"], howto: DATA.howto[t[4]],
+    rule, ruleText: ruleWords(rule),
+    link: { url, label: runBy, kind: LINK_DIRECT, what, todo: forTeam },
+    leadIn: leadWeeks,
+  });
+});
+
 DATA.leads.forEach((r, i) => {
   const [pi, ti, mi, hours, reach, impact, season, fi] = r;
   const p = DATA.plays[pi], t = DATA.targets[ti], m = DATA.metros[mi];
@@ -389,19 +516,38 @@ DATA.leads.forEach((r, i) => {
     deadline: "Contact " + t[3] + " ahead",
     duration: p[4], hours, reach, impact, effort: p[5], cost: p[6],
     role: t[1], applyType: t[2], blurb: p[9], applyNote: null,
-    need: p[7], bring: p[8], tags: [],
+    need: p[7], bring: p[8], tags: [], howto: DATA.howto[t[4]], leadIn: weeksFrom(t[3]),
     link: { url: f[1], label: f[0], kind: LINK_FINDER, what: f[2], todo: f[3] },
   });
 });
 
+const UNIV_HOWTO = DATA.howto[DATA.targets.findIndex(t => /University engineering/i.test(t[0]))];
 ALL.forEach(o => {
+  if (o.tier === "university") { o.howto = UNIV_HOWTO; o.leadIn = 8; }
+  if (o.tier === "programme") {
+    o.leadIn = weeksFrom(o.deadline) || 8;
+    o.howto = [[
+      "Open " + o.link.label + "'s own site from the link on this card.",
+      o.applyNote || "Find the programme page and the contact listed on it.",
+      "Write as a student, name your team and your town, and say what you can bring.",
+      "Ask three questions: what they need from a student team, what the deadline is, and who locally you should be talking to.",
+      "Put their answer in your outreach log the same day, while it is still accurate.",
+    ], "A named adult mentor, your team number, and dates you can actually commit to.",
+       "1-3 weeks for a national office; longer near their own busy season.",
+       "Waiting for a perfect plan before writing. One short email now beats a polished one in March."];
+  }
+  // dates: rule-driven for dated events, season-driven for everything else
+  dateOn(o, o.rule || SEASON_RULE[o.season] || ["range", 1, 1, 12, 31], o.leadIn || 8);
+  if (!o.window) o.window = o.whenLabel;
+  if (!o.deadline) o.deadline = "Contact about " + (o.leadIn || 8) + " weeks ahead";
   o.domain = (o.link.url.match(/^https?:\/\/(?:www\.)?([^/]+)/) || [, o.link.url])[1];
   o.hay = [o.title, o.host, o.area, o.region, o.country, o.category, o.audience, o.format,
-           o.season, o.blurb, o.domain, (o.tags || []).join(" "),
+           o.season, o.blurb, o.domain, (o.tags || []).join(" "), o.whenLabel, o.byLabel,
            (o.need || []).join(" "), (o.bring || []).join(" ")].join(" ").toLowerCase();
   o.fit = o.impact * 2.2 + (EFFORT_RANK[o.effort] || 2)
-        + (o.tier === "programme" ? 2.4 : o.tier === "university" ? 1.1 : 0)
-        + (o.link.kind === LINK_DIRECT ? 1.0 : 0) + Math.log10(o.reach + 10);
+        + (o.tier === "programme" ? 2.4 : o.tier === "dated" ? 1.8 : o.tier === "university" ? 1.1 : 0)
+        + (o.link.kind === LINK_DIRECT ? 1.0 : 0) + Math.log10(o.reach + 10)
+        + (o.daysToApply >= 0 && o.daysToApply < 90 ? 1.2 : 0);
 });
 
 /* ---------- saved state ---------- */
@@ -439,6 +585,10 @@ const PRESETS = {
     test: o => o.season === THIS_SEASON },
   remote: { label:"Can do remotely", icon:'<circle cx="12" cy="12" r="8"></circle><path d="M4 12h16M12 4a14 14 0 010 16M12 4a14 14 0 000 16"></path>',
     test: o => o.format !== "In person" },
+  soon: { label:"Deadline within 60 days", icon:'<rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4M12 14v3"></path>',
+    test: o => o.daysToApply <= 60 },
+  dated: { label:"Has a fixed date", icon:'<rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M8 14h3v3H8z"></path>',
+    test: o => !!o.rule },
   direct: { label:"Straight to the organisation", icon:'<path d="M10 13a4 4 0 006 .5l2.5-2.5a4 4 0 00-5.7-5.7L11.5 6.5"></path><path d="M14 11a4 4 0 00-6-.5L5.5 13a4 4 0 005.7 5.7l1.3-1.3"></path>',
     test: o => o.link.kind === LINK_DIRECT },
 };
@@ -473,6 +623,8 @@ function results() {
   const cmp = {
     fit:    (a,b) => b.fit - a.fit,
     area:   (a,b) => (a.state||"ZZ").localeCompare(b.state||"ZZ") || a.area.localeCompare(b.area) || b.fit - a.fit,
+    due:    (a,b) => a.by - b.by || b.fit - a.fit,
+    when:   (a,b) => a.start - b.start || b.fit - a.fit,
     impact: (a,b) => b.impact - a.impact || b.fit - a.fit,
     effort: (a,b) => EFFORT_RANK[b.effort] - EFFORT_RANK[a.effort] || a.hours - b.hours,
     reach:  (a,b) => b.reach - a.reach,
@@ -598,14 +750,25 @@ function cardHTML(o) {
     </button>
     <div class="crow">
       <span class="chip cat">${esc(o.category)}</span>
-      <span class="chip">${esc(o.season)}</span>
+      <span class="chip when">${esc(o.whenLabel)}</span>
+      ${dueChip(o)}
       <span class="chip${o.effort === "Low" ? " ok" : ""}">${esc(o.effort)} effort</span>
       <span class="chip">${o.hours}h</span>
       <span class="chip">~${o.reach.toLocaleString()} reached</span>
     </div>
     ${linkHTML(o)}
-    <div class="det${o.need.length || o.bring.length ? "" : " lean"}" data-detail="${o.id}"${open ? "" : " hidden"}></div>
+    <div class="det" data-detail="${o.id}"${open ? "" : " hidden"}></div>
   </div>`;
+}
+function dueChip(o) {
+  const d = o.daysToApply, out = o.daysToStart;
+  if (out < 0) {
+    const left = Math.round((o.end - TODAY) / DAY);
+    return `<span class="chip now">open now &middot; ${left} days left</span>`;
+  }
+  if (d < 0) return `<span class="chip now">ask now &middot; starts in ${out}d</span>`;
+  if (d <= 60) return `<span class="chip due">ask by ${esc(o.byLabel)} &middot; ${d}d</span>`;
+  return `<span class="chip">ask by ${esc(o.byLabel)}</span>`;
 }
 function linkHTML(o) {
   return `<a class="link" href="${esc(o.link.url)}" target="_blank" rel="noopener">
@@ -620,6 +783,7 @@ function linkHTML(o) {
 function detailHTML(o) {
   const st = store.status[o.id] || "";
   const li = (a, c) => a.length ? `<ul class="need ${c}">${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+  const [steps, asks, reply, gotcha] = o.howto || [[], "", "", ""];
   return `<div>
       <p class="lede">${esc(o.blurb)}</p>
       <dl class="dl">
@@ -631,13 +795,40 @@ function detailHTML(o) {
       </dl>
       ${o.need.length ? `<h4 class="eyebrow" style="margin-top:13px">You need first</h4>${li(o.need, "")}` : ""}
       ${o.bring.length ? `<h4 class="eyebrow" style="margin-top:11px">Pack list</h4>${li(o.bring, "bring")}` : ""}
-    </div>
-    <div>
-      <div class="panel">
+      <div class="panel" style="margin-top:13px">
         <h4>Where that link goes</h4>
         <p style="margin:0 0 7px;font-size:13.5px;color:var(--ink-2)">${esc(o.link.what)}</p>
         <p style="margin:0;font-size:13.5px;color:var(--ink-2)"><b>${esc(o.link.todo || "")}</b></p>
-        <dl class="dl" style="margin-top:10px">
+      </div>
+    </div>
+    <div>
+      <div class="datebox">
+        <span class="eyebrow">When it happens</span>
+        <span class="big">${esc(o.whenLabel)}</span>
+        <span class="sub">${o.daysToStart >= 0
+          ? o.daysToStart + " days from today"
+          : "already open &mdash; " + Math.round((o.end - TODAY) / DAY) + " days left in the window"}</span>
+        <div style="margin-top:10px">
+          <span class="eyebrow">Ask them by</span>
+          <span class="big" style="color:${o.daysToApply <= 60 ? "var(--ochre)" : "inherit"}">${esc(o.byLabel)}</span>
+          <span class="sub">${o.daysToApply < 0
+            ? "That date has gone &mdash; write today anyway and say you know it is short notice"
+            : o.daysToApply + " days from today, working back " + o.leadWeeks + " weeks from the start"}</span>
+        </div>
+        <div class="rule">${o.rule ? "Recurs on a rule: " + esc(o.ruleText) : "Season window: " + esc(o.season)}</div>
+      </div>
+      <div class="panel">
+        <h4>Exactly how to apply</h4>
+        <ol class="steps">${steps.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+        <div class="kv"><b>They will ask you for</b>${esc(asks)}</div>
+        <div class="kv"><b>How long a reply takes</b>${esc(reply)}</div>
+        <div class="kv"><b>What kills these</b>${esc(gotcha)}</div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <h4>Who to contact</h4>
+        <dl class="dl" style="margin-top:0">
           <dt>Ask for</dt><dd><b>${esc(o.role)}</b></dd>
           <dt>Via</dt><dd>${esc(o.applyType)}</dd>
         </dl>
@@ -819,13 +1010,20 @@ $("#themeBtn").addEventListener("click", () => {
 $("#csvBtn").addEventListener("click", async () => {
   const ids = Object.keys(store.status);
   const rows = ids.length ? ALL.filter(o => store.status[o.id]) : current.slice(0, shown);
-  const head = ["Status","Hours logged","Activity","Where","City","State","Country","Season","Window",
-    "Lead time","Ask for","Via","Audience","Effort","Est. hours","Est. reached","Impact","Cost",
+  const head = ["Status","Hours logged","Activity","Where","City","State","Country",
+    "Happens","Starts","Ask them by","Days until deadline","Recurrence rule",
+    "Ask for","Via","How to apply","They will ask for","Reply time","What kills it",
+    "Audience","Effort","Est. hours","Est. reached","Impact","Cost",
     "Link type","Link","What that link is"];
   const cell = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const iso = d => d.toISOString().slice(0, 10);
   const csv = [head.map(cell).join(",")].concat(rows.map(o => [store.status[o.id] || "",
-    store.logged[o.id] ?? "", o.title, o.host, o.city, o.state, o.country, o.season, o.window,
-    o.deadline, o.role, o.applyType, o.audience, o.effort, o.hours, o.reach, o.impact + "/5",
+    store.logged[o.id] ?? "", o.title, o.host, o.city, o.state, o.country,
+    o.whenLabel, iso(o.start), iso(o.by), o.daysToApply, o.rule ? o.ruleText : "season window: " + o.season,
+    o.role, o.applyType,
+    (o.howto?.[0] || []).map((x, i) => (i + 1) + ". " + x).join(" "),
+    o.howto?.[1] || "", o.howto?.[2] || "", o.howto?.[3] || "",
+    o.audience, o.effort, o.hours, o.reach, o.impact + "/5",
     o.cost, o.linkKind, o.link.url, o.link.what].map(cell).join(","))).join("\r\n");
   const name = ids.length ? "my-outreach-pipeline.csv" : "outreach-shortlist.csv";
   const dl = window.claude?.use ? await window.claude.use("downloads").catch(() => null) : null;
@@ -926,8 +1124,13 @@ async function runFind(extra) {
     `"category": one of ${JSON.stringify(CATS)}, "audience": one of ${JSON.stringify(AUDS)}, ` +
     `"season": one of ${JSON.stringify(SEAS)}, "effort": "Low"|"Medium"|"High", ` +
     `"hours": integer, "reach": integer, "why": one sentence on why it fits this team, ` +
+    `"when": when in the year this happens, as a month or month range, or a recurrence rule ` +
+    `like "first full week of April" if it is a recurring dated event, else null, ` +
+    `"applyBy": how far ahead they must ask, as a number of weeks (integer), ` +
+    `"steps": an array of 3 to 5 short strings, the exact steps to apply, in order, ` +
     `"how": one sentence naming the role to contact}\n\n` +
-    `Rules: prefer organisations that really exist in their area. Never invent a URL, street address, ` +
+    `Rules: prefer organisations that really exist in their area. Give a recurrence rule or a month range for "when" ` +
+    `rather than a specific calendar date, unless the date is genuinely fixed every year. Never invent a URL, street address, ` +
     `phone number or staff member's name. If you are not certain a website URL is real, set "site" to null ` +
     `and pick a "directory" instead — that is always the better answer than a guess.`,
     { signal: ctl.signal, modelTier: "complex" });
@@ -947,8 +1150,12 @@ async function runFind(extra) {
         <h5>${esc(s.org || "Unnamed")}</h5>
         <p>${esc(s.why || "")}</p>
         <p style="margin-top:5px"><b>${esc(s.how || "")}</b></p>
+        ${Array.isArray(s.steps) && s.steps.length
+          ? `<ol class="steps" style="margin-top:8px">${s.steps.map(x => `<li>${esc(String(x))}</li>`).join("")}</ol>` : ""}
         <div class="crow" style="padding:8px 0 0">
           ${s.category ? `<span class="chip">${esc(s.category)}</span>` : ""}
+          ${s.when ? `<span class="chip when">${esc(String(s.when))}</span>` : ""}
+          ${s.applyBy ? `<span class="chip due">ask ~${esc(String(s.applyBy))} weeks ahead</span>` : ""}
           ${s.season ? `<span class="chip">${esc(s.season)}</span>` : ""}
           ${s.effort ? `<span class="chip">${esc(s.effort)} effort</span>` : ""}
           ${s.hours ? `<span class="chip">${esc(s.hours)}h</span>` : ""}
@@ -1005,13 +1212,20 @@ async function runPlan(extra) {
 
 /* ---------- go ---------- */
 const C = DATA.counts;
-$("#tagline").textContent = C.total.toLocaleString() + " ways to get your robot in front of people — every one with a real link";
-$("#linkNote").innerHTML = `<b>Every link goes somewhere real.</b> `
+$("#tagline").textContent = C.total.toLocaleString() + " ways to get your robot in front of people — each with a real link, a real date and the exact steps to apply";
+$("#linkNote").innerHTML = `<b>Every card carries a date, a link and a procedure.</b> `
+  + `<b>Dates are computed, not typed.</b> ${C.eventKinds} recurring events resolve from a stated rule against today's calendar — `
+  + `"first full week of April", "the Thursday of the week containing 22 February" — so they are right every year and you can check the rule on the card. `
+  + `Everything else shows its real season window and, working back from it, the date you have to ask by. `
+  + `<b>Every link goes somewhere real.</b> `
   + `${(C.verified + C.universities).toLocaleString()} cards link straight to the organisation's own site — `
   + `${C.verified} national programmes and ${DATA.unis.length} universities, whose addresses come from a public dataset of real institutions. `
   + `The other ${C.local.toLocaleString()} link to one of ${C.finders} official national directories — the government or trade-body page whose whole job is to hand you the local contact. `
   + `<b>There are no search-engine links anywhere on this board.</b> What no card can promise is that a slot is free: confirm every date before you promise it to your team.`;
-$("#foot").innerHTML = `<b>${C.total.toLocaleString()} opportunities across ${C.metros} metro areas in ${C.states} states and provinces.</b> `
+$("#foot").innerHTML = `<b>${C.total.toLocaleString()} opportunities across ${C.metros} metro areas in ${C.states} states and provinces: `
+  + `${C.verified} national programmes, ${C.events.toLocaleString()} dated slots across ${C.eventKinds} recurring events, `
+  + `${C.universities} university slots and ${C.local.toLocaleString()} local prospects.</b> `
+  + `Application procedures are written per venue type — ${DATA.howto.length} of them — and cover the steps, what they will ask you for, how long a reply takes and what usually kills the booking. `
   + `Hours, reach and impact are planning estimates, not measurements — replace them with your real numbers as you go, `
   + `because those are the numbers a judge will ask you about. `
   + `Links were recorded from a public dataset and from known organisations; they could not be fetched to confirm they still resolve, so if one has moved, tell us and it gets fixed at the source. `

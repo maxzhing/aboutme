@@ -18,8 +18,13 @@ sys.path.insert(0, HERE)
 from vocab import METROS, TARGETS, PLAYS, SEASON_MONTHS      # noqa: E402
 from verified import VERIFIED                                 # noqa: E402
 from finders import FINDERS, GLOBAL                           # noqa: E402
+from howto import HOWTO                                       # noqa: E402
+import importlib.util as _iu                                  # noqa: E402
+_spec = _iu.spec_from_file_location('outreach_calendar', os.path.join(HERE, 'calendar.py'))
+_cal = _iu.module_from_spec(_spec); _spec.loader.exec_module(_cal)
+EVENTS = _cal.EVENTS
 
-TOTAL = 6000
+TOTAL = 15000
 
 BLURB = {
  "demo": "Set up in a public space, let people drive, and answer the same six questions two hundred times. The lowest-friction outreach there is.",
@@ -54,6 +59,17 @@ BLURB = {
  "adaptivecontrol": "Build a game controller around one person's specific physical needs, then go back and fix the fit after they use it.",
  "teachercpd": "Train teachers so the programme runs without you. The highest-multiplier hours on this board.",
 }
+# a national programme that is one of the dated events borrows its exact date rule
+EV_MATCH = {
+ "eweek":      ["Engineers Week"],
+ "roboweek":   ["National Robotics Week"],
+ "csedweek":   ["Hour of Code"],
+ "summerread": ["summer reading"],
+ "fllseason":  ["FIRST LEGO League volunteer"],
+ "girlday":    ["Introduce a Girl"],
+ "mfgday":     ["Manufacturing Day"],
+}
+
 SEASON_OVERRIDE = {"fair": "Summer", "camp": "Summer", "market": "Summer",
                    "event": "Competition", "parks": "Summer", "foodbank": "Winter"}
 
@@ -85,9 +101,25 @@ def main():
             uni_rows.append([ui, pi, jit(p[6], k + "h", .25), jit(p[7], k + "r", .4),
                              max(1, p[9] - (h(k + "i") % 2)), p[10]])
 
+    # --- dated events: a rule-computed date and the organiser's own URL
+    ev_rows = []
+    for ei, e in enumerate(EVENTS):
+        vkeys = [k for k in e[8] if k in tkeys]
+        for n2, vk in enumerate(vkeys):
+            for rep_i in range(4):
+                mi = (ei * 13 + n2 * 29 + rep_i * 47) % len(METROS)
+                if METROS[mi][2] != "USA" and e[4].split("/")[2] not in (
+                        "www.un.org", "www.unep.org", "www.worldspaceweek.org",
+                        "findingada.com", "www.firstinspires.org"):
+                    continue
+                k = f"e{ei}:{vk}:{mi}"
+                ev_rows.append([ei, tkeys.index(vk), mi,
+                                jit(e[11], k + "h", .25), jit(e[12], k + "r", .4),
+                                max(3, 5 - (h(k + "i") % 2))])
+
     # --- local prospects: a real activity, a real venue type, a real metro
     pairs = sorted((pi, tkeys.index(tk)) for pi, p in enumerate(PLAYS) for tk in p[12] if tk in tkeys)
-    need = TOTAL - len(VERIFIED) - len(uni_rows)
+    need = TOTAL - len(VERIFIED) - len(uni_rows) - len(ev_rows)
     leads, seen, rnd = [], set(), 0
     while len(leads) < need and rnd <= 40:
         for n, (pi, ti) in enumerate(pairs):
@@ -109,18 +141,25 @@ def main():
     leads.sort(key=lambda r: h(f"{r[0]}-{r[1]}-{r[2]}"))
 
     data = {
-        "counts": {"total": len(leads) + len(VERIFIED) + len(uni_rows),
+        "counts": {"total": len(leads) + len(VERIFIED) + len(uni_rows) + len(ev_rows),
                    "verified": len(VERIFIED), "universities": len(uni_rows), "local": len(leads),
+                   "events": len(ev_rows), "eventKinds": len(EVENTS),
                    "metros": len(METROS), "states": len({m[1] for m in METROS}),
                    "finders": len({f[1] for f in finder_list})},
         "metros":  [list(m) for m in METROS],
-        "targets": [[t[1], t[2], t[3], t[4]] for t in TARGETS],
+        "targets": [[t[1], t[2], t[3], t[4], tkeys.index(t[0])] for t in TARGETS],
+        "howto":   [[HOWTO[k][0], HOWTO[k][1], HOWTO[k][2], HOWTO[k][3]] for k in tkeys],
+        "events":  [[e[1], list(e[2]), e[3], e[4], e[5], e[6], e[7], e[9], e[10]] for e in EVENTS],
+        "evRows":  ev_rows,
         "finders": finder_list,
         "plays":   [[p[1], p[2], p[3], p[4], p[5], p[8], p[11], p[13], p[14], BLURB.get(p[0], "")] for p in PLAYS],
         "leads":   leads,
         "unis":    [[u["name"], u["city"], u["state"], u["url"]] for u in unis],
         "uniRows": uni_rows,
         "seasonMonths": SEASON_MONTHS,
+        "vRule": [next((list(e[2]) for e in EVENTS
+                        if any(w in v[1] or w in v[0] for w in EV_MATCH.get(e[0], []))), None)
+                  for v in VERIFIED],
         "verified": [{"org": v[0], "program": v[1], "url": v[2], "category": v[3], "audience": v[4],
                       "format": v[5], "season": v[6], "window": v[7], "deadline": v[8],
                       "applyType": v[9], "applyNote": v[10], "hours": v[11], "reach": v[12],
@@ -144,7 +183,8 @@ def main():
 
     c = data["counts"]
     print(f"{c['total']} opportunities: {c['verified']} national programmes, "
-          f"{c['universities']} university slots, {c['local']} local prospects")
+          f"{c['universities']} university slots, {c['events']} dated-event slots "
+          f"({c['eventKinds']} recurring events), {c['local']} local prospects")
     print(f"{c['metros']} metros across {c['states']} states/provinces; "
           f"{c['finders']} distinct official directories; 0 search-engine links")
     print(f"payload {len(compact)/1024:.0f} KB")
