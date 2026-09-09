@@ -1,20 +1,26 @@
 #!/usr/bin/env python3
-"""Compose the outreach board's dataset and inline it into index.html.
+"""Compose the outreach board's dataset and inline it into the page.
 
 Run:  python3 build.py
-Out:  opportunities.json  (readable dataset)
-      index.html          (single-file app with the dataset inlined)
+Out:  opportunities.json   readable dataset
+      index.html           standalone page for a browser or GitHub Pages
+      artifact.html        same page as a fragment, for publishing on claude.ai
+
+Every opportunity carries a real destination, of one of three kinds:
+  direct   the organisation's own website (national programmes, universities)
+  finder   the official national directory that hands you the local contact
+Nothing links to a search engine, and no URL here was invented.
 """
 import hashlib, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from vocab import METROS, TARGETS, PLAYS, SEASON_MONTHS          # noqa: E402
-from verified import VERIFIED                                     # noqa: E402
+from vocab import METROS, TARGETS, PLAYS, SEASON_MONTHS      # noqa: E402
+from verified import VERIFIED                                 # noqa: E402
+from finders import FINDERS, GLOBAL                           # noqa: E402
 
-TOTAL = 1000
+TOTAL = 6000
 
-# One-line description of what each play actually involves.
 BLURB = {
  "demo": "Set up in a public space, let people drive, and answer the same six questions two hundred times. The lowest-friction outreach there is.",
  "build": "Kids build something simple that moves and take it home. Works because they leave holding proof they built a machine.",
@@ -46,102 +52,81 @@ BLURB = {
  "boothfair": "A recruiting table at a school or club fair. The point is the sign-up sheet, so make someone own it.",
  "workshopseries": "A six-week club at one site with the same students each week. Continuity is what makes it teach anything.",
  "adaptivecontrol": "Build a game controller around one person's specific physical needs, then go back and fix the fit after they use it.",
- "teachercpd": "Train teachers so the program runs without you. The highest-multiplier hours on this board.",
+ "teachercpd": "Train teachers so the programme runs without you. The highest-multiplier hours on this board.",
 }
-
-# What to type into a search engine to find the real local contact.
-SEARCH = {
- "library": '"public library" youth services programming', "elem": '"elementary school" district STEM coordinator',
- "middle": '"middle school" science department', "highschool": '"high school" CTE coordinator',
- "museum": 'science center OR "children\'s museum" education programs', "bgc": '"Boys and Girls Club" program director',
- "ymca": 'YMCA youth development director', "gs": '"Girl Scouts" council program department',
- "scouts": 'Scouting America council OR "scout troop"', "fourh": '4-H county extension youth development agent',
- "hospital": '"children\'s hospital" child life services', "senior": '"senior center" activities director',
- "parks": '"parks and recreation" recreation programs', "cc": '"community college" STEM outreach',
- "univ": 'university "K-12 outreach" engineering', "maker": 'makerspace OR hackerspace',
- "fair": '"county fair" OR "state fair" exhibitor information', "market": '"farmers market" manager',
- "city": 'city council OR mayor office community', "chamber": '"chamber of commerce" events',
- "rotary": 'Rotary OR Kiwanis OR Lions club program chair', "manuf": 'manufacturer OR "machine shop" community relations',
- "tech": 'technology company community outreach STEM', "faith": 'church OR synagogue OR mosque youth group',
- "refugee": 'refugee resettlement OR ESL youth program', "sped": '"special education" director of special services',
- "dhh": '"school for the deaf" OR "school for the blind" outreach', "title1": '"Title I" school district federal programs',
- "homeschool": 'homeschool co-op enrichment', "afterschool": '"21st Century Community Learning Centers" site',
- "media": 'local news station OR public radio community', "foodbank": 'food bank volunteer coordinator',
- "shelter": 'animal shelter volunteer', "habitat": '"Habitat for Humanity" volunteer',
- "tribal": 'tribal youth program OR Native American education', "military": 'military base school liaison officer',
- "juvenile": 'juvenile justice education program', "housing": 'public housing resident services',
- "rural": 'rural school district superintendent', "bilingual": 'dual language OR bilingual school district',
- "fll": '"FIRST LEGO League" OR "FIRST Tech Challenge" team', "event": '"FIRST" regional event volunteer',
- "camp": 'summer camp director youth', "shelterfam": 'family shelter OR transitional housing services',
-}
-
-# Target types that pull an activity into a different part of the calendar.
 SEASON_OVERRIDE = {"fair": "Summer", "camp": "Summer", "market": "Summer",
                    "event": "Competition", "parks": "Summer", "foodbank": "Winter"}
 
-def h(*parts):
-    return int(hashlib.sha256("|".join(parts).encode()).hexdigest()[:8], 16)
-
-def jitter(base, key, pct):
-    """Stable pseudo-variation so two cities do not report identical estimates."""
-    span = max(1, int(base * pct))
-    return max(1, base - span + (h(key) % (2 * span + 1)))
+def h(*p):  return int(hashlib.sha256("|".join(p).encode()).hexdigest()[:8], 16)
+def jit(base, key, pct):
+    span = max(1, int(base * pct)); return max(1, base - span + (h(key) % (2 * span + 1)))
 
 def main():
-    target_by_key = {t[0]: t for t in TARGETS}
     tkeys = [t[0] for t in TARGETS]
-    play_keys = [p[0] for p in PLAYS]
+    fkeys = sorted({t[0] for t in TARGETS})
+    # index 0..n-1 are the US directories; n.. are the worldwide ones
+    finder_list = [[FINDERS[k][0], FINDERS[k][1], FINDERS[k][2], FINDERS[k][3]] for k in fkeys]
+    finder_idx = {k: i for i, k in enumerate(fkeys)}
+    gkeys = sorted(GLOBAL)
+    global_idx = {}
+    for k in gkeys:
+        global_idx[k] = len(finder_list)
+        finder_list.append([GLOBAL[k][0], GLOBAL[k][1], GLOBAL[k][2], GLOBAL[k][3]])
 
-    # every sensible (play, target) pairing
-    pairs = [(pi, tkeys.index(tk)) for pi, p in enumerate(PLAYS) for tk in p[12] if tk in target_by_key]
-    pairs.sort()
+    unis = json.load(open(os.path.join(HERE, "sources", "universities.json")))
+    uni_plays = [i for i, p in enumerate(PLAYS) if "univ" in p[12]]
 
-    need = TOTAL - len(VERIFIED)
-    leads, seen = [], set()
-    rnd = 0
-    while len(leads) < need:
+    # --- universities: a real named institution, a real URL, a location we trust
+    uni_rows = []
+    for ui, u in enumerate(unis):
+        for n in range(5):
+            pi = uni_plays[(ui * 3 + n * 7) % len(uni_plays)]
+            p = PLAYS[pi]; k = f"u{ui}:{pi}"
+            uni_rows.append([ui, pi, jit(p[6], k + "h", .25), jit(p[7], k + "r", .4),
+                             max(1, p[9] - (h(k + "i") % 2)), p[10]])
+
+    # --- local prospects: a real activity, a real venue type, a real metro
+    pairs = sorted((pi, tkeys.index(tk)) for pi, p in enumerate(PLAYS) for tk in p[12] if tk in tkeys)
+    need = TOTAL - len(VERIFIED) - len(uni_rows)
+    leads, seen, rnd = [], set(), 0
+    while len(leads) < need and rnd <= 40:
         for n, (pi, ti) in enumerate(pairs):
-            if len(leads) >= need:
-                break
+            if len(leads) >= need: break
             mi = (n * 17 + rnd * 43 + pi * 5 + ti * 3) % len(METROS)
-            if (pi, ti, mi) in seen:
-                continue
-            seen.add((pi, ti, mi))
+            if (pi, ti, mi) in seen: continue
             p, t, m = PLAYS[pi], TARGETS[ti], METROS[mi]
-            k = f"{p[0]}:{t[0]}:{m[0]}"
-            season = SEASON_OVERRIDE.get(t[0], p[10])
-            leads.append([
-                pi, ti, mi,
-                jitter(p[6], k + "h", 0.25),                 # hours
-                jitter(p[7], k + "r", 0.40),                 # people reached
-                max(1, p[9] - (h(k + "i") % 2)),             # impact 1-5
-                season,
-            ])
+            # a US federal directory is no use in Calgary or Warsaw
+            if m[2] != "USA":
+                if t[0] not in global_idx: continue
+                fi = global_idx[t[0]]
+            else:
+                fi = finder_idx[t[0]]
+            seen.add((pi, ti, mi))
+            k = f"{p[0]}:{t[0]}:{m[0]}{m[1]}"
+            leads.append([pi, ti, mi, jit(p[6], k + "h", .25), jit(p[7], k + "r", .4),
+                          max(1, p[9] - (h(k + "i") % 2)), SEASON_OVERRIDE.get(t[0], p[10]), fi])
         rnd += 1
-        if rnd > 12:
-            break
-
-    # deterministic shuffle so the first screen is not 40 library rows
     leads.sort(key=lambda r: h(f"{r[0]}-{r[1]}-{r[2]}"))
 
     data = {
-        "generated": "composed from real place, institution and activity vocabularies",
-        "counts": {"total": len(leads) + len(VERIFIED), "verified": len(VERIFIED), "leads": len(leads)},
+        "counts": {"total": len(leads) + len(VERIFIED) + len(uni_rows),
+                   "verified": len(VERIFIED), "universities": len(uni_rows), "local": len(leads),
+                   "metros": len(METROS), "states": len({m[1] for m in METROS}),
+                   "finders": len({f[1] for f in finder_list})},
         "metros":  [list(m) for m in METROS],
-        "targets": [[t[1], t[2], t[3], t[4], SEARCH.get(t[0], t[1])] for t in TARGETS],
+        "targets": [[t[1], t[2], t[3], t[4]] for t in TARGETS],
+        "finders": finder_list,
         "plays":   [[p[1], p[2], p[3], p[4], p[5], p[8], p[11], p[13], p[14], BLURB.get(p[0], "")] for p in PLAYS],
         "leads":   leads,
+        "unis":    [[u["name"], u["city"], u["state"], u["url"]] for u in unis],
+        "uniRows": uni_rows,
         "seasonMonths": SEASON_MONTHS,
-        "verified": [{
-            "org": v[0], "program": v[1], "url": v[2], "category": v[3], "audience": v[4],
-            "format": v[5], "season": v[6], "window": v[7], "deadline": v[8],
-            "applyType": v[9], "applyNote": v[10], "hours": v[11], "reach": v[12],
-            "effort": v[13], "impact": v[14], "notes": v[15], "tags": v[16],
-        } for v in VERIFIED],
+        "verified": [{"org": v[0], "program": v[1], "url": v[2], "category": v[3], "audience": v[4],
+                      "format": v[5], "season": v[6], "window": v[7], "deadline": v[8],
+                      "applyType": v[9], "applyNote": v[10], "hours": v[11], "reach": v[12],
+                      "effort": v[13], "impact": v[14], "notes": v[15], "tags": v[16]} for v in VERIFIED],
     }
-
-    with open(os.path.join(HERE, "opportunities.json"), "w") as f:
-        json.dump(data, f, indent=1)
+    json.dump(data, open(os.path.join(HERE, "opportunities.json"), "w"), indent=1)
 
     compact = json.dumps(data, separators=(",", ":"))
     tpl = open(os.path.join(HERE, "template.html")).read()
@@ -149,20 +134,19 @@ def main():
         sys.exit("template.html is missing the /*__DATA__*/null placeholder")
     body = tpl.replace("/*__DATA__*/null", compact)
 
-    # artifact.html is the fragment claude.ai wraps in its own document skeleton.
     open(os.path.join(HERE, "artifact.html"), "w").write(body)
-
-    # index.html is a standalone document for GitHub Pages or a local browser.
-    split = body.index("<header class=\"mast\">")
+    split = body.index('<header class="mast">')
     open(os.path.join(HERE, "index.html"), "w").write(
         '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
-        '<meta name="description" content="A working board of 1,000 robotics outreach opportunities.">\n'
-        + body[:split]
-        + "</head>\n<body>\n" + body[split:] + "\n</body>\n</html>\n")
+        '<meta name="description" content="A working board of 6,000 robotics outreach opportunities, every one with a real link.">\n'
+        + body[:split] + "</head>\n<body>\n" + body[split:] + "\n</body>\n</html>\n")
 
-    print(f"{data['counts']['total']} opportunities "
-          f"({data['counts']['verified']} verified, {data['counts']['leads']} leads)")
+    c = data["counts"]
+    print(f"{c['total']} opportunities: {c['verified']} national programmes, "
+          f"{c['universities']} university slots, {c['local']} local prospects")
+    print(f"{c['metros']} metros across {c['states']} states/provinces; "
+          f"{c['finders']} distinct official directories; 0 search-engine links")
     print(f"payload {len(compact)/1024:.0f} KB")
 
 if __name__ == "__main__":

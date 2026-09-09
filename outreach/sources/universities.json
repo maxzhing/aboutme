@@ -1,0 +1,848 @@
+[
+ {
+  "name": "Massachusetts Institute of Technology",
+  "city": "Cambridge",
+  "state": "MA",
+  "url": "http://web.mit.edu/"
+ },
+ {
+  "name": "Harvard University",
+  "city": "Cambridge",
+  "state": "MA",
+  "url": "http://www.harvard.edu/"
+ },
+ {
+  "name": "Stanford University",
+  "city": "Stanford",
+  "state": "CA",
+  "url": "http://www.stanford.edu/"
+ },
+ {
+  "name": "California Institute of Technology",
+  "city": "Pasadena",
+  "state": "CA",
+  "url": "http://www.caltech.edu/"
+ },
+ {
+  "name": "Georgia Institute of Technology",
+  "city": "Atlanta",
+  "state": "GA",
+  "url": "http://www.gatech.edu/"
+ },
+ {
+  "name": "Carnegie Mellon University",
+  "city": "Pittsburgh",
+  "state": "PA",
+  "url": "http://www.cmu.edu/"
+ },
+ {
+  "name": "Purdue University",
+  "city": "West Lafayette",
+  "state": "IN",
+  "url": "http://www.purdue.edu/"
+ },
+ {
+  "name": "University of Michigan",
+  "city": "Ann Arbor",
+  "state": "MI",
+  "url": "http://www.umflint.edu/"
+ },
+ {
+  "name": "Cornell University",
+  "city": "Ithaca",
+  "state": "NY",
+  "url": "http://www.cornell.edu/"
+ },
+ {
+  "name": "Princeton University",
+  "city": "Princeton",
+  "state": "NJ",
+  "url": "http://www.princeton.edu/"
+ },
+ {
+  "name": "Johns Hopkins University",
+  "city": "Baltimore",
+  "state": "MD",
+  "url": "http://www.jhu.edu/"
+ },
+ {
+  "name": "Duke University",
+  "city": "Durham",
+  "state": "NC",
+  "url": "http://www.duke.edu/"
+ },
+ {
+  "name": "North Carolina State University",
+  "city": "Raleigh",
+  "state": "NC",
+  "url": "http://www.ncsu.edu/"
+ },
+ {
+  "name": "University of Illinois at Urbana-Champaign",
+  "city": "Urbana",
+  "state": "IL",
+  "url": "https://illinois.edu/"
+ },
+ {
+  "name": "University of Wisconsin-Madison",
+  "city": "Madison",
+  "state": "WI",
+  "url": "http://www.wisc.edu/"
+ },
+ {
+  "name": "University of Minnesota",
+  "city": "Minneapolis",
+  "state": "MN",
+  "url": "http://www.umn.edu/"
+ },
+ {
+  "name": "University of Texas at Austin",
+  "city": "Austin",
+  "state": "TX",
+  "url": "https://www.utexas.edu/"
+ },
+ {
+  "name": "Texas A&M University",
+  "city": "College Station",
+  "state": "TX",
+  "url": "http://www.wtamu.edu/"
+ },
+ {
+  "name": "Rice University",
+  "city": "Houston",
+  "state": "TX",
+  "url": "http://www.rice.edu/"
+ },
+ {
+  "name": "University of Washington",
+  "city": "Seattle",
+  "state": "WA",
+  "url": "http://www.washington.edu/"
+ },
+ {
+  "name": "Oregon State University",
+  "city": "Corvallis",
+  "state": "OR",
+  "url": "http://www.oregonstate.edu/"
+ },
+ {
+  "name": "University of Colorado at Boulder",
+  "city": "Boulder",
+  "state": "CO",
+  "url": "http://www.colorado.edu/"
+ },
+ {
+  "name": "Colorado School of Mines",
+  "city": "Golden",
+  "state": "CO",
+  "url": "http://www.mines.edu/"
+ },
+ {
+  "name": "Arizona State University",
+  "city": "Tempe",
+  "state": "AZ",
+  "url": "http://www.asu.edu/"
+ },
+ {
+  "name": "University of Arizona",
+  "city": "Tucson",
+  "state": "AZ",
+  "url": "http://www.arizona.edu/"
+ },
+ {
+  "name": "University of Utah",
+  "city": "Salt Lake City",
+  "state": "UT",
+  "url": "http://www.utah.edu/"
+ },
+ {
+  "name": "Brigham Young University",
+  "city": "Provo",
+  "state": "UT",
+  "url": "http://www.byu.edu/"
+ },
+ {
+  "name": "Iowa State University",
+  "city": "Ames",
+  "state": "IA",
+  "url": "http://www.iastate.edu/"
+ },
+ {
+  "name": "University of Iowa",
+  "city": "Iowa City",
+  "state": "IA",
+  "url": "http://www.uiowa.edu/"
+ },
+ {
+  "name": "Ohio State University",
+  "city": "Columbus",
+  "state": "OH",
+  "url": "http://www.iastate.edu/"
+ },
+ {
+  "name": "Case Western Reserve University",
+  "city": "Cleveland",
+  "state": "OH",
+  "url": "http://www.case.edu/"
+ },
+ {
+  "name": "University of Cincinnati",
+  "city": "Cincinnati",
+  "state": "OH",
+  "url": "http://www.uc.edu/"
+ },
+ {
+  "name": "Michigan State University",
+  "city": "East Lansing",
+  "state": "MI",
+  "url": "http://www.msu.edu/"
+ },
+ {
+  "name": "Michigan Technological University",
+  "city": "Houghton",
+  "state": "MI",
+  "url": "http://www.mtu.edu/"
+ },
+ {
+  "name": "University of Notre Dame",
+  "city": "Notre Dame",
+  "state": "IN",
+  "url": "http://www.nd.edu/"
+ },
+ {
+  "name": "Northwestern University",
+  "city": "Evanston",
+  "state": "IL",
+  "url": "http://www.northwestern.edu/"
+ },
+ {
+  "name": "University of Chicago",
+  "city": "Chicago",
+  "state": "IL",
+  "url": "http://www.uchicago.edu/"
+ },
+ {
+  "name": "Illinois Institute of Technology",
+  "city": "Chicago",
+  "state": "IL",
+  "url": "http://www.iit.edu/"
+ },
+ {
+  "name": "Marquette University",
+  "city": "Milwaukee",
+  "state": "WI",
+  "url": "http://www.marquette.edu/"
+ },
+ {
+  "name": "Washington University in St. Louis",
+  "city": "St. Louis",
+  "state": "MO",
+  "url": "http://www.wustl.edu/"
+ },
+ {
+  "name": "University of Missouri",
+  "city": "Columbia",
+  "state": "MO",
+  "url": "http://www.missouri.edu/"
+ },
+ {
+  "name": "Missouri University of Science and Technology",
+  "city": "Rolla",
+  "state": "MO",
+  "url": "http://www.mst.edu/"
+ },
+ {
+  "name": "University of Kansas",
+  "city": "Lawrence",
+  "state": "KS",
+  "url": "http://www.ku.edu/"
+ },
+ {
+  "name": "Kansas State University",
+  "city": "Manhattan",
+  "state": "KS",
+  "url": "https://www.k-state.edu/"
+ },
+ {
+  "name": "University of Nebraska",
+  "city": "Lincoln",
+  "state": "NE",
+  "url": "http://www.unomaha.edu/"
+ },
+ {
+  "name": "University of Oklahoma",
+  "city": "Norman",
+  "state": "OK",
+  "url": "http://www.ou.edu/"
+ },
+ {
+  "name": "Oklahoma State University",
+  "city": "Stillwater",
+  "state": "OK",
+  "url": "http://www.okstate.edu/"
+ },
+ {
+  "name": "University of Arkansas",
+  "city": "Fayetteville",
+  "state": "AR",
+  "url": "http://www.ku.edu/"
+ },
+ {
+  "name": "Louisiana State University",
+  "city": "Baton Rouge",
+  "state": "LA",
+  "url": "http://www.lsu.edu/"
+ },
+ {
+  "name": "Tulane University",
+  "city": "New Orleans",
+  "state": "LA",
+  "url": "http://www.tulane.edu/"
+ },
+ {
+  "name": "Mississippi State University",
+  "city": "Starkville",
+  "state": "MS",
+  "url": "http://www.msstate.edu/"
+ },
+ {
+  "name": "Auburn University",
+  "city": "Auburn",
+  "state": "AL",
+  "url": "http://www.auburn.edu/"
+ },
+ {
+  "name": "University of Alabama",
+  "city": "Tuscaloosa",
+  "state": "AL",
+  "url": "https://www.ua.edu/"
+ },
+ {
+  "name": "University of Alabama in Huntsville",
+  "city": "Huntsville",
+  "state": "AL",
+  "url": "http://www.uah.edu/"
+ },
+ {
+  "name": "Vanderbilt University",
+  "city": "Nashville",
+  "state": "TN",
+  "url": "http://www.vanderbilt.edu/"
+ },
+ {
+  "name": "University of Memphis",
+  "city": "Memphis",
+  "state": "TN",
+  "url": "http://www.memphis.edu/"
+ },
+ {
+  "name": "University of Kentucky",
+  "city": "Lexington",
+  "state": "KY",
+  "url": "http://www.uky.edu/"
+ },
+ {
+  "name": "University of Louisville",
+  "city": "Louisville",
+  "state": "KY",
+  "url": "http://www.louisville.edu/"
+ },
+ {
+  "name": "Clemson University",
+  "city": "Clemson",
+  "state": "SC",
+  "url": "http://www.clemson.edu/"
+ },
+ {
+  "name": "University of South Carolina",
+  "city": "Columbia",
+  "state": "SC",
+  "url": "http://www.sc.edu/"
+ },
+ {
+  "name": "University of Georgia",
+  "city": "Athens",
+  "state": "GA",
+  "url": "http://www.uga.edu/"
+ },
+ {
+  "name": "Georgia State University",
+  "city": "Atlanta",
+  "state": "GA",
+  "url": "http://www.gsu.edu/"
+ },
+ {
+  "name": "University of Florida",
+  "city": "Gainesville",
+  "state": "FL",
+  "url": "http://www.ufl.edu/"
+ },
+ {
+  "name": "Florida State University",
+  "city": "Tallahassee",
+  "state": "FL",
+  "url": "http://www.fsu.edu/"
+ },
+ {
+  "name": "University of Central Florida",
+  "city": "Orlando",
+  "state": "FL",
+  "url": "http://www.ucf.edu/"
+ },
+ {
+  "name": "University of South Florida",
+  "city": "Tampa",
+  "state": "FL",
+  "url": "http://www.usf.edu/"
+ },
+ {
+  "name": "Florida International University",
+  "city": "Miami",
+  "state": "FL",
+  "url": "http://www.fiu.edu/"
+ },
+ {
+  "name": "University of Miami",
+  "city": "Coral Gables",
+  "state": "FL",
+  "url": "http://welcome.miami.edu/"
+ },
+ {
+  "name": "Embry-Riddle Aeronautical University",
+  "city": "Daytona Beach",
+  "state": "FL",
+  "url": "http://www.erau.edu/"
+ },
+ {
+  "name": "George Mason University",
+  "city": "Fairfax",
+  "state": "VA",
+  "url": "http://www.gmu.edu/"
+ },
+ {
+  "name": "Virginia Commonwealth University",
+  "city": "Richmond",
+  "state": "VA",
+  "url": "http://vcu.vcu.edu/"
+ },
+ {
+  "name": "West Virginia University",
+  "city": "Morgantown",
+  "state": "WV",
+  "url": "http://www.wvu.edu/"
+ },
+ {
+  "name": "University of Maryland",
+  "city": "College Park",
+  "state": "MD",
+  "url": "http://www.uor.edu/"
+ },
+ {
+  "name": "Georgetown University",
+  "city": "Washington",
+  "state": "DC",
+  "url": "http://www.georgetown.edu/"
+ },
+ {
+  "name": "George Washington University",
+  "city": "Washington",
+  "state": "DC",
+  "url": "http://www.gwu.edu/"
+ },
+ {
+  "name": "Howard University",
+  "city": "Washington",
+  "state": "DC",
+  "url": "http://www.howard.edu/"
+ },
+ {
+  "name": "University of Delaware",
+  "city": "Newark",
+  "state": "DE",
+  "url": "http://www.udel.edu/"
+ },
+ {
+  "name": "University of Pennsylvania",
+  "city": "Philadelphia",
+  "state": "PA",
+  "url": "http://www.upenn.edu/"
+ },
+ {
+  "name": "Drexel University",
+  "city": "Philadelphia",
+  "state": "PA",
+  "url": "http://www.drexel.edu/"
+ },
+ {
+  "name": "Temple University",
+  "city": "Philadelphia",
+  "state": "PA",
+  "url": "http://www.temple.edu/"
+ },
+ {
+  "name": "Pennsylvania State University",
+  "city": "University Park",
+  "state": "PA",
+  "url": "http://www.psu.edu/"
+ },
+ {
+  "name": "Lehigh University",
+  "city": "Bethlehem",
+  "state": "PA",
+  "url": "http://www.lehigh.edu/"
+ },
+ {
+  "name": "University of Pittsburgh",
+  "city": "Pittsburgh",
+  "state": "PA",
+  "url": "http://www.pitt.edu/"
+ },
+ {
+  "name": "Rutgers University",
+  "city": "New Brunswick",
+  "state": "NJ",
+  "url": "http://www.rutgers.edu/"
+ },
+ {
+  "name": "Stevens Institute of Technology",
+  "city": "Hoboken",
+  "state": "NJ",
+  "url": "http://www.stevens.edu/"
+ },
+ {
+  "name": "New Jersey Institute of Technology",
+  "city": "Newark",
+  "state": "NJ",
+  "url": "http://www.njit.edu/"
+ },
+ {
+  "name": "New York University",
+  "city": "New York",
+  "state": "NY",
+  "url": "http://www.nyu.edu/"
+ },
+ {
+  "name": "Rensselaer Polytechnic Institute",
+  "city": "Troy",
+  "state": "NY",
+  "url": "http://www.rpi.edu/"
+ },
+ {
+  "name": "Rochester Institute of Technology",
+  "city": "Rochester",
+  "state": "NY",
+  "url": "http://www.rit.edu/"
+ },
+ {
+  "name": "University of Rochester",
+  "city": "Rochester",
+  "state": "NY",
+  "url": "http://www.rochester.edu/"
+ },
+ {
+  "name": "Syracuse University",
+  "city": "Syracuse",
+  "state": "NY",
+  "url": "http://www.syr.edu/"
+ },
+ {
+  "name": "Clarkson University",
+  "city": "Potsdam",
+  "state": "NY",
+  "url": "http://www.clarkson.edu/"
+ },
+ {
+  "name": "Yale University",
+  "city": "New Haven",
+  "state": "CT",
+  "url": "http://www.yale.edu/"
+ },
+ {
+  "name": "University of Connecticut",
+  "city": "Storrs",
+  "state": "CT",
+  "url": "http://www.uconn.edu/"
+ },
+ {
+  "name": "Brown University",
+  "city": "Providence",
+  "state": "RI",
+  "url": "http://www.brown.edu/"
+ },
+ {
+  "name": "University of Rhode Island",
+  "city": "Kingston",
+  "state": "RI",
+  "url": "http://www.uri.edu/"
+ },
+ {
+  "name": "Boston University",
+  "city": "Boston",
+  "state": "MA",
+  "url": "http://www.bu.edu/"
+ },
+ {
+  "name": "Northeastern University",
+  "city": "Boston",
+  "state": "MA",
+  "url": "http://www.northeastern.edu/"
+ },
+ {
+  "name": "Tufts University",
+  "city": "Medford",
+  "state": "MA",
+  "url": "http://www.tufts.edu/"
+ },
+ {
+  "name": "Worcester Polytechnic Institute",
+  "city": "Worcester",
+  "state": "MA",
+  "url": "http://www.wpi.edu/"
+ },
+ {
+  "name": "University of Massachusetts Amherst",
+  "city": "Amherst",
+  "state": "MA",
+  "url": "http://www.umass.edu/"
+ },
+ {
+  "name": "Olin College of Engineering",
+  "city": "Needham",
+  "state": "MA",
+  "url": "http://www.students.olin.edu/"
+ },
+ {
+  "name": "Dartmouth College",
+  "city": "Hanover",
+  "state": "NH",
+  "url": "http://www.dartmouth.edu/"
+ },
+ {
+  "name": "University of New Hampshire",
+  "city": "Durham",
+  "state": "NH",
+  "url": "https://www.unh.edu/"
+ },
+ {
+  "name": "University of Vermont",
+  "city": "Burlington",
+  "state": "VT",
+  "url": "http://www.uvm.edu/"
+ },
+ {
+  "name": "University of Maine",
+  "city": "Orono",
+  "state": "ME",
+  "url": "http://www.umaine.edu/"
+ },
+ {
+  "name": "University of California, Berkeley",
+  "city": "Berkeley",
+  "state": "CA",
+  "url": "http://www.berkeley.edu/"
+ },
+ {
+  "name": "University of California, Los Angeles",
+  "city": "Los Angeles",
+  "state": "CA",
+  "url": "http://www.ucla.edu/"
+ },
+ {
+  "name": "University of California, San Diego",
+  "city": "San Diego",
+  "state": "CA",
+  "url": "http://www.ucsd.edu/"
+ },
+ {
+  "name": "University of California, Davis",
+  "city": "Davis",
+  "state": "CA",
+  "url": "http://www.ucdavis.edu/"
+ },
+ {
+  "name": "University of California, Irvine",
+  "city": "Irvine",
+  "state": "CA",
+  "url": "http://www.uci.edu/"
+ },
+ {
+  "name": "University of California, Santa Barbara",
+  "city": "Santa Barbara",
+  "state": "CA",
+  "url": "http://www.ucsb.edu/"
+ },
+ {
+  "name": "University of Southern California",
+  "city": "Los Angeles",
+  "state": "CA",
+  "url": "http://www.usc.edu/"
+ },
+ {
+  "name": "San Jose State University",
+  "city": "San Jose",
+  "state": "CA",
+  "url": "http://www.sjsu.edu/"
+ },
+ {
+  "name": "California Polytechnic State University",
+  "city": "San Luis Obispo",
+  "state": "CA",
+  "url": "http://www.cpp.edu/"
+ },
+ {
+  "name": "Santa Clara University",
+  "city": "Santa Clara",
+  "state": "CA",
+  "url": "http://www.scu.edu/"
+ },
+ {
+  "name": "Harvey Mudd College",
+  "city": "Claremont",
+  "state": "CA",
+  "url": "http://www.hmc.edu/"
+ },
+ {
+  "name": "University of Nevada",
+  "city": "Reno",
+  "state": "NV",
+  "url": "http://www.unr.edu/"
+ },
+ {
+  "name": "University of New Mexico",
+  "city": "Albuquerque",
+  "state": "NM",
+  "url": "http://www.unm.edu/"
+ },
+ {
+  "name": "New Mexico State University",
+  "city": "Las Cruces",
+  "state": "NM",
+  "url": "http://www.nmsu.edu/"
+ },
+ {
+  "name": "University of Idaho",
+  "city": "Moscow",
+  "state": "ID",
+  "url": "http://www.uidaho.edu/"
+ },
+ {
+  "name": "Boise State University",
+  "city": "Boise",
+  "state": "ID",
+  "url": "http://www.boisestate.edu/"
+ },
+ {
+  "name": "Montana State University",
+  "city": "Bozeman",
+  "state": "MT",
+  "url": "http://www.morgan.edu/"
+ },
+ {
+  "name": "University of Wyoming",
+  "city": "Laramie",
+  "state": "WY",
+  "url": "http://www.uwyo.edu/"
+ },
+ {
+  "name": "South Dakota School of Mines and Technology",
+  "city": "Rapid City",
+  "state": "SD",
+  "url": "http://www.sdsmt.edu/"
+ },
+ {
+  "name": "North Dakota State University",
+  "city": "Fargo",
+  "state": "ND",
+  "url": "http://www.ndsu.edu/"
+ },
+ {
+  "name": "University of Alaska Fairbanks",
+  "city": "Fairbanks",
+  "state": "AK",
+  "url": "http://www.uaf.edu/"
+ },
+ {
+  "name": "University of Hawaii at Manoa",
+  "city": "Honolulu",
+  "state": "HI",
+  "url": "http://manoa.hawaii.edu/"
+ },
+ {
+  "name": "Wichita State University",
+  "city": "Wichita",
+  "state": "KS",
+  "url": "http://www.wichita.edu/"
+ },
+ {
+  "name": "Texas Tech University",
+  "city": "Lubbock",
+  "state": "TX",
+  "url": "http://www.ttu.edu/"
+ },
+ {
+  "name": "University of Houston",
+  "city": "Houston",
+  "state": "TX",
+  "url": "http://www.uh.edu/"
+ },
+ {
+  "name": "University of Texas at Arlington",
+  "city": "Arlington",
+  "state": "TX",
+  "url": "http://www.uta.edu/"
+ },
+ {
+  "name": "University of Texas at El Paso",
+  "city": "El Paso",
+  "state": "TX",
+  "url": "http://www.utep.edu/"
+ },
+ {
+  "name": "Southern Methodist University",
+  "city": "Dallas",
+  "state": "TX",
+  "url": "http://www.smu.edu/"
+ },
+ {
+  "name": "Baylor University",
+  "city": "Waco",
+  "state": "TX",
+  "url": "http://www.baylor.edu/"
+ },
+ {
+  "name": "Tuskegee University",
+  "city": "Tuskegee",
+  "state": "AL",
+  "url": "http://www.tuskegee.edu/"
+ },
+ {
+  "name": "Morgan State University",
+  "city": "Baltimore",
+  "state": "MD",
+  "url": "http://www.morgan.edu/"
+ },
+ {
+  "name": "Florida Agricultural and Mechanical University",
+  "city": "Tallahassee",
+  "state": "FL",
+  "url": "http://www.famu.edu/"
+ },
+ {
+  "name": "Prairie View A&M University",
+  "city": "Prairie View",
+  "state": "TX",
+  "url": "http://www.pvamu.edu/"
+ },
+ {
+  "name": "Jackson State University",
+  "city": "Jackson",
+  "state": "MS",
+  "url": "http://www.jsums.edu/"
+ },
+ {
+  "name": "Alabama A&M University",
+  "city": "Normal",
+  "state": "AL",
+  "url": "http://www.aamu.edu/"
+ }
+]

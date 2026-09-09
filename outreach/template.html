@@ -4,356 +4,464 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600&display=swap">
 <style>
 :root{
-  --paper:#eef1f0; --surface:#ffffff; --surface-2:#f7f9f8; --sunk:#e4e9e8;
-  --ink:#0f1718; --ink-2:#41565a; --ink-3:#71888c;
-  --rule:#d6dedd; --rule-2:#c2cecd;
-  --accent:#0b6e77; --accent-ink:#08535a; --accent-wash:#dcecec; --accent-line:#9cc7c9;
-  --ochre:#9a5f16; --ochre-wash:#f5e8d6; --ochre-line:#dcbf93;
-  --ok:#2b6f4c; --ok-wash:#dcebe1;
-  --hot:#a3392f; --on-accent:#ffffff;
-  --shadow:0 1px 2px rgba(15,23,24,.06),0 6px 18px -10px rgba(15,23,24,.22);
-  --f-display:'Archivo',system-ui,sans-serif;
-  --f-body:'Source Sans 3',system-ui,sans-serif;
+  --paper:#eceff0; --surface:#fff; --surface-2:#f6f8f8; --sunk:#e2e7e8; --veil:rgba(255,255,255,.72);
+  --ink:#0f1718; --ink-2:#3f5459; --ink-3:#6f868b;
+  --rule:#d5dedd; --rule-2:#bfcccb;
+  --accent:#0b6e77; --accent-ink:#08535a; --accent-wash:#dbeced; --accent-line:#96c5c8;
+  --ochre:#9a5f16; --ochre-wash:#f6e9d7; --ochre-line:#dcbf93;
+  --ok:#2b6f4c; --on-accent:#fff;
+  --sh-1:0 1px 2px rgba(15,23,24,.05);
+  --sh-2:0 1px 2px rgba(15,23,24,.05),0 8px 20px -12px rgba(15,23,24,.28);
+  --sh-3:0 2px 4px rgba(15,23,24,.06),0 18px 40px -20px rgba(15,23,24,.4);
+  --c-Demo:#0b6e77; --c-Workshop:#2c62a8; --c-Mentoring:#6a4a9c; --c-Volunteering:#1d7355;
+  --c-Equity:#a83f66; --c-Community:#9a5f16; --c-CommunityService:#4a7029; --c-Accessibility:#8241a0;
+  --c-Fundraising:#8a6a10; --c-Camp:#b8542a; --c-Speaking:#2f6875; --c-Competition:#7a5aa8;
+  --c-OutreachMedia:#55636e;
+  --f-display:'Archivo',system-ui,sans-serif; --f-body:'Source Sans 3',system-ui,sans-serif;
   --f-mono:'IBM Plex Mono',ui-monospace,monospace;
-  --step:6px;
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --paper:#0c1314; --surface:#141d1f; --surface-2:#182325; --sunk:#101a1b;
-    --ink:#e6eeed; --ink-2:#9db1b4; --ink-3:#71888c;
-    --rule:#253537; --rule-2:#31474a;
-    --accent:#54c2cc; --accent-ink:#7fd6de; --accent-wash:#0d3438; --accent-line:#1d5459;
-    --ochre:#e0a355; --ochre-wash:#3a2a13; --ochre-line:#5e451e;
-    --ok:#63bd8c; --ok-wash:#12301f;
-    --hot:#e0776b; --on-accent:#06191b;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.7);
-  }
-}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0a1112; --surface:#131c1e; --surface-2:#182123; --sunk:#0e1718; --veil:rgba(19,28,30,.75);
+  --ink:#e7efee; --ink-2:#9cb0b3; --ink-3:#70878b;
+  --rule:#243335; --rule-2:#304648;
+  --accent:#54c2cc; --accent-ink:#82d8e0; --accent-wash:#0c3236; --accent-line:#1c5257;
+  --ochre:#e0a355; --ochre-wash:#38290f; --ochre-line:#5c451e;
+  --ok:#63bd8c; --on-accent:#06191b;
+  --sh-1:0 1px 2px rgba(0,0,0,.4);
+  --sh-2:0 1px 2px rgba(0,0,0,.45),0 8px 20px -12px rgba(0,0,0,.8);
+  --sh-3:0 2px 4px rgba(0,0,0,.5),0 18px 40px -20px rgba(0,0,0,.9);
+  --c-Demo:#57c3cd; --c-Workshop:#7aaeea; --c-Mentoring:#b199e0; --c-Volunteering:#5cc297;
+  --c-Equity:#e88bab; --c-Community:#e0a355; --c-CommunityService:#96c76a; --c-Accessibility:#c592dc;
+  --c-Fundraising:#d4b155; --c-Camp:#ef9068; --c-Speaking:#6fb6c4; --c-Competition:#b9a0e6;
+  --c-OutreachMedia:#a4b4c0;
+}}
 :root[data-theme="dark"]{
-  --paper:#0c1314; --surface:#141d1f; --surface-2:#182325; --sunk:#101a1b;
-  --ink:#e6eeed; --ink-2:#9db1b4; --ink-3:#71888c;
-  --rule:#253537; --rule-2:#31474a;
-  --accent:#54c2cc; --accent-ink:#7fd6de; --accent-wash:#0d3438; --accent-line:#1d5459;
-  --ochre:#e0a355; --ochre-wash:#3a2a13; --ochre-line:#5e451e;
-  --ok:#63bd8c; --ok-wash:#12301f;
-  --hot:#e0776b; --on-accent:#06191b;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.7);
+  --paper:#0a1112; --surface:#131c1e; --surface-2:#182123; --sunk:#0e1718; --veil:rgba(19,28,30,.75);
+  --ink:#e7efee; --ink-2:#9cb0b3; --ink-3:#70878b;
+  --rule:#243335; --rule-2:#304648;
+  --accent:#54c2cc; --accent-ink:#82d8e0; --accent-wash:#0c3236; --accent-line:#1c5257;
+  --ochre:#e0a355; --ochre-wash:#38290f; --ochre-line:#5c451e;
+  --ok:#63bd8c; --on-accent:#06191b;
+  --sh-1:0 1px 2px rgba(0,0,0,.4);
+  --sh-2:0 1px 2px rgba(0,0,0,.45),0 8px 20px -12px rgba(0,0,0,.8);
+  --sh-3:0 2px 4px rgba(0,0,0,.5),0 18px 40px -20px rgba(0,0,0,.9);
+  --c-Demo:#57c3cd; --c-Workshop:#7aaeea; --c-Mentoring:#b199e0; --c-Volunteering:#5cc297;
+  --c-Equity:#e88bab; --c-Community:#e0a355; --c-CommunityService:#96c76a; --c-Accessibility:#c592dc;
+  --c-Fundraising:#d4b155; --c-Camp:#ef9068; --c-Speaking:#6fb6c4; --c-Competition:#b9a0e6;
+  --c-OutreachMedia:#a4b4c0;
 }
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:-.014em;text-wrap:balance;margin:0}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:600;letter-spacing:-.015em;text-wrap:balance;margin:0}
 button,input,select,textarea{font:inherit;color:inherit}
 a{color:var(--accent-ink)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-.eyebrow{font-family:var(--f-mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
-.shell{max-width:1340px;margin:0 auto;padding:0 22px 90px}
+.eyebrow{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.wrap{max-width:1320px;margin:0 auto;padding:0 20px}
 
-/* ---------- masthead ---------- */
-.mast{border-bottom:1px solid var(--rule);background:var(--surface)}
-.mast-in{max-width:1340px;margin:0 auto;padding:20px 22px 18px;display:flex;flex-wrap:wrap;gap:18px 30px;align-items:flex-end;justify-content:space-between}
-.brand{flex:1 1 520px}
-.brand h1{font-size:25px;font-weight:700;letter-spacing:-.025em;display:flex;align-items:center;gap:10px}
-.brand h1::before{content:"";width:20px;height:21px;flex:none;border-radius:1px;
-  background:linear-gradient(90deg,var(--accent) 0 8px,transparent 8px 12px,var(--ochre) 12px 20px)}
-.brand p{margin:6px 0 0;color:var(--ink-2);max-width:60ch;font-size:14px}
-.brand p b{color:var(--ink);font-weight:600}
-.mast-act{display:flex;gap:8px;align-items:center}
+/* masthead */
+.mast{background:var(--surface);border-bottom:1px solid var(--rule)}
+.mast-in{max-width:1320px;margin:0 auto;padding:18px 20px 16px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:34px;height:34px;flex:none;border-radius:8px;background:var(--accent);display:grid;place-items:center;box-shadow:var(--sh-1)}
+.logo svg{width:19px;height:19px;stroke:var(--on-accent);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.brand h1{font-size:21px;font-weight:700;letter-spacing:-.028em;line-height:1.1}
+.brand p{margin:1px 0 0;font-size:12.5px;color:var(--ink-3)}
+.mast-act{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
 
-/* ---------- meters ---------- */
-.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(124px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:22px 0 18px;box-shadow:var(--shadow)}
-.meter{background:var(--surface);padding:12px 14px 13px}
-.meter .n{font-family:var(--f-display);font-size:27px;font-weight:700;line-height:1.05;letter-spacing:-.03em;font-variant-numeric:tabular-nums;display:block}
-.meter .k{margin-top:3px}
-.meter.on .n{color:var(--accent)}
-.meter .bar{height:3px;background:var(--sunk);border-radius:2px;margin-top:8px;overflow:hidden}
-.meter .bar i{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+/* ribbon */
+.ribbon{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--rule);border-radius:10px;background:var(--surface);box-shadow:var(--sh-2);overflow:hidden;margin:18px 0 0}
+.rib{flex:1 1 108px;padding:10px 14px 11px;border-right:1px solid var(--rule);min-width:0}
+.rib:last-child{border-right:0}
+.rib .n{font-family:var(--f-display);font-size:22px;font-weight:700;line-height:1.1;letter-spacing:-.03em;font-variant-numeric:tabular-nums;display:block}
+.rib.on .n{color:var(--accent)}
+.rib .k{margin-top:1px}
 
-/* ---------- toolbar ---------- */
-.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
-.search{flex:1 1 260px;min-width:200px;position:relative}
-.search input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--rule-2);border-radius:7px;background:var(--surface)}
-.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--ink-3);fill:none;stroke-width:2}
-.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border:1px solid var(--rule-2);background:var(--surface);border-radius:7px;cursor:pointer;font-size:14px;white-space:nowrap;transition:border-color .15s,background .15s}
+/* step blocks */
+.step{margin-top:16px}
+.step-h{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.step-n{width:19px;height:19px;flex:none;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-family:var(--f-mono);font-size:10.5px;font-weight:500}
+.step-h h2{font-size:14.5px;font-weight:600}
+.step-h .hint{font-size:12.5px;color:var(--ink-3)}
+
+.areabar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 13px;border:1px solid var(--rule);border-radius:10px;background:var(--surface);box-shadow:var(--sh-2)}
+.areabar select{flex:1 1 178px;min-width:0;padding:9px 11px;border:1px solid var(--rule-2);border-radius:8px;background:var(--surface-2);cursor:pointer}
+.areabar select:disabled{opacity:.45;cursor:default}
+.areabar .now{font-size:13px;color:var(--ink-2);padding:0 3px}
+.areabar .now b{color:var(--accent-ink)}
+
+.chips-row{display:flex;flex-wrap:wrap;gap:7px}
+.qchip{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--rule-2);border-radius:20px;background:var(--surface);cursor:pointer;font-size:13.5px;transition:.15s}
+.qchip:hover{border-color:var(--accent);background:var(--surface-2)}
+.qchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.qchip svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+
+/* toolbar */
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px}
+.search{flex:1 1 250px;min-width:190px;position:relative}
+.search input{width:100%;padding:10px 12px 10px 34px;border:1px solid var(--rule-2);border-radius:9px;background:var(--surface);box-shadow:var(--sh-1)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--ink-3);fill:none;stroke-width:2}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border:1px solid var(--rule-2);background:var(--surface);border-radius:9px;cursor:pointer;font-size:14px;white-space:nowrap;transition:.15s;box-shadow:var(--sh-1)}
 .btn:hover{border-color:var(--accent);background:var(--surface-2)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
 .btn.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
-.btn.sm{padding:5px 9px;font-size:12.5px;border-radius:6px}
+.btn.sm{padding:6px 10px;font-size:12.5px;border-radius:7px;box-shadow:none}
 .btn[aria-pressed="true"]{background:var(--accent-wash);border-color:var(--accent-line);color:var(--accent-ink)}
-select.btn{padding-right:9px}
+.btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 
-/* ---------- layout ---------- */
-.board{display:grid;grid-template-columns:222px minmax(0,1fr);gap:22px;align-items:start}
-@media (max-width:900px){.board{grid-template-columns:1fr}.rail{position:static!important;max-height:none!important}}
-
-/* ---------- facet rail ---------- */
-.rail{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;padding-right:4px}
-.rail::-webkit-scrollbar{width:5px}
-.rail::-webkit-scrollbar-thumb{background:var(--rule-2);border-radius:3px}
-.facet{margin-bottom:16px}
-.facet > .eyebrow{display:flex;justify-content:space-between;align-items:center;padding-bottom:5px;border-bottom:1px solid var(--rule);margin-bottom:6px}
-.facet button.clear{border:0;background:none;color:var(--accent-ink);cursor:pointer;font:inherit;font-size:10px;letter-spacing:.06em;padding:0}
-.opt{display:flex;align-items:center;gap:7px;width:100%;border:0;background:none;padding:3px 5px;border-radius:5px;cursor:pointer;text-align:left;font-size:13.5px;color:var(--ink-2);line-height:1.35}
+/* advanced facets */
+.adv{margin-top:10px;border:1px solid var(--rule);border-radius:10px;background:var(--surface);padding:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:16px;box-shadow:var(--sh-1)}
+.fgroup > .eyebrow{display:flex;justify-content:space-between;padding-bottom:5px;border-bottom:1px solid var(--rule);margin-bottom:5px}
+.fgroup .clear{border:0;background:none;color:var(--accent-ink);cursor:pointer;font:inherit;font-size:10px;letter-spacing:.06em;padding:0}
+.opt{display:flex;align-items:center;gap:7px;width:100%;border:0;background:none;padding:3px 4px;border-radius:5px;cursor:pointer;text-align:left;font-size:13.5px;color:var(--ink-2)}
 .opt:hover{background:var(--surface-2);color:var(--ink)}
 .opt .tick{width:12px;height:12px;flex:none;border:1px solid var(--rule-2);border-radius:3px;background:var(--surface)}
 .opt[aria-pressed="true"]{color:var(--ink);font-weight:600}
 .opt[aria-pressed="true"] .tick{background:var(--accent);border-color:var(--accent)}
 .opt .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .opt .ct{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
-.opt[disabled]{opacity:.35;cursor:default}
-.more{font-family:var(--f-mono);font-size:10.5px;color:var(--accent-ink);background:none;border:0;cursor:pointer;padding:3px 5px;letter-spacing:.05em}
+.opt[disabled]{opacity:.34;cursor:default}
+.more{font-family:var(--f-mono);font-size:10.5px;color:var(--accent-ink);background:none;border:0;cursor:pointer;padding:3px 4px;letter-spacing:.05em}
 
-/* ---------- result list ---------- */
-.count{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
-.count strong{font-family:var(--f-display);font-size:15px;font-weight:600}
-.list{border:1px solid var(--rule);border-radius:9px;background:var(--surface);overflow:hidden}
-.row{border-bottom:1px solid var(--rule)}
-.row:last-child{border-bottom:0}
-.row-head{display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:0 13px;align-items:center;width:100%;border:0;background:none;padding:11px 14px 11px 0;cursor:pointer;text-align:left;font:inherit;color:inherit}
-.row-head:hover{background:var(--surface-2)}
-.row[open] .row-head{background:var(--surface-2)}
-.stripe{align-self:stretch;border-radius:0 2px 2px 0;background:transparent}
-.row[data-st="saved"] .stripe{background:var(--accent)}
-.row[data-st="contacted"] .stripe{background:var(--ochre)}
-.row[data-st="confirmed"] .stripe{background:var(--ok)}
-.row[data-st="done"] .stripe{background:var(--ink-3)}
-.rt{font-family:var(--f-display);font-weight:600;font-size:15px;line-height:1.3;letter-spacing:-.012em;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rm{font-size:12.5px;color:var(--ink-2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rm .sep{color:var(--rule-2);margin:0 6px}
-.chips{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:440px}
-.chip{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.03em;padding:2px 6px;border-radius:4px;border:1px solid var(--rule-2);color:var(--ink-2);white-space:nowrap;background:var(--surface)}
-.chip.ver{background:var(--accent-wash);border-color:var(--accent-line);color:var(--accent-ink);font-weight:500}
-.chip.lead{background:var(--ochre-wash);border-color:var(--ochre-line);color:var(--ochre);font-weight:500}
-.chip.hi{border-color:var(--accent-line);color:var(--accent-ink)}
-@media (max-width:640px){.chips{max-width:none;justify-content:flex-start;margin-top:6px}.row-head{grid-template-columns:4px minmax(0,1fr);}.row-head .chips{grid-column:2}}
+/* results */
+.count{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin:18px 0 9px}
+.count strong{font-family:var(--f-display);font-size:16px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(316px,1fr));gap:12px;align-items:start}
+.card{border:1px solid var(--rule);border-radius:11px;background:var(--surface);box-shadow:var(--sh-2);overflow:hidden;transition:box-shadow .18s,border-color .18s;--cat:var(--accent)}
+.card:hover{box-shadow:var(--sh-3);border-color:var(--rule-2)}
+.card.open{box-shadow:var(--sh-3);grid-column:1/-1}
+.chead{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;padding:13px 14px 11px;cursor:pointer;align-items:start;width:100%;border:0;background:none;text-align:left;font:inherit;color:inherit;border-radius:11px 11px 0 0}
+.chead:hover .ct-title{color:var(--accent-ink)}
+.badge{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--cat) 14%,transparent);border:1px solid color-mix(in srgb,var(--cat) 32%,transparent)}
+.badge svg{width:17px;height:17px;stroke:var(--cat);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ct-title{font-family:var(--f-display);font-weight:600;font-size:15px;line-height:1.28;letter-spacing:-.012em;display:block}
+.ct-sub{font-size:12.5px;color:var(--ink-2);margin-top:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.ct-sub .pin{width:11px;height:11px;stroke:var(--ink-3);fill:none;stroke-width:1.9;flex:none}
+.caret{width:15px;height:15px;stroke:var(--ink-3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;margin-top:6px}
+.card.open .caret{transform:rotate(180deg)}
+.crow{display:flex;gap:5px;flex-wrap:wrap;padding:0 14px 10px 57px}
+.chip{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.02em;padding:2px 7px;border-radius:5px;border:1px solid var(--rule-2);color:var(--ink-2);white-space:nowrap;background:var(--surface-2)}
+.chip.cat{background:color-mix(in srgb,var(--cat) 12%,transparent);border-color:color-mix(in srgb,var(--cat) 30%,transparent);color:var(--cat);font-weight:500}
+.chip.ok{background:var(--accent-wash);border-color:var(--accent-line);color:var(--accent-ink)}
 
-/* ---------- expanded detail ---------- */
-.detail{padding:2px 16px 18px 17px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:22px;border-top:1px dashed var(--rule)}
-.detail.lean{grid-template-columns:minmax(0,1fr)}
-.detail.lean > div:last-child{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start}
-@media (max-width:760px){.detail{grid-template-columns:1fr;gap:16px}}
-.detail p.lede{margin:12px 0 0;color:var(--ink-2);max-width:64ch}
-.dl{margin:14px 0 0;display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:13.5px}
-.dl dt{font-family:var(--f-mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);padding-top:3px}
+/* the real-link block: the point of the whole page */
+.link{display:flex;align-items:center;gap:10px;margin:0 14px 13px;padding:9px 11px;border:1px solid var(--rule-2);border-left:3px solid var(--cat);border-radius:8px;background:var(--surface-2);text-decoration:none;color:inherit;transition:.15s}
+.link:hover{background:var(--accent-wash);border-color:var(--accent-line);border-left-color:var(--cat)}
+.link .dom{font-family:var(--f-mono);font-size:12.5px;font-weight:500;color:var(--accent-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.link .what{font-size:11.5px;color:var(--ink-3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.link .go{margin-left:auto;width:15px;height:15px;stroke:var(--accent-ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.link .kind{font-family:var(--f-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--rule-2);border-radius:4px;padding:1px 5px;flex:none}
+
+.det{border-top:1px dashed var(--rule);padding:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(288px,1fr));gap:16px;align-items:start}
+.det.lean{grid-template-columns:minmax(0,1fr)}
+.det.lean > div:last-child{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start}
+.det.lean > div:last-child .panel + .panel{margin-top:0}
+.det p.lede{margin:0 0 12px;color:var(--ink-2);max-width:62ch}
+.dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:5px 13px;font-size:13.5px}
+.dl dt{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);padding-top:3px}
 .dl dd{margin:0;color:var(--ink-2)}
 .dl dd b{color:var(--ink);font-weight:600}
-.need{margin:14px 0 0;padding:0;list-style:none}
-.need li{position:relative;padding-left:18px;font-size:13.5px;color:var(--ink-2);margin-bottom:4px}
-.need li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border:1.5px solid var(--accent-line);border-radius:1px}
-.need.bring li::before{border-color:var(--ochre-line);border-radius:50%}
-.panel{background:var(--surface-2);border:1px solid var(--rule);border-radius:8px;padding:13px 14px;margin-top:12px}
-.panel h4{font-family:var(--f-mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;font-weight:500}
-.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.statusbar{display:flex;gap:0;margin-top:10px;border:1px solid var(--rule-2);border-radius:7px;overflow:hidden}
-.statusbar button{flex:1;border:0;border-right:1px solid var(--rule);background:var(--surface);padding:6px 2px;cursor:pointer;font-family:var(--f-mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+.need{margin:11px 0 0;padding:0;list-style:none}
+.need li{position:relative;padding-left:17px;font-size:13px;color:var(--ink-2);margin-bottom:3px}
+.need li::before{content:"";position:absolute;left:2px;top:7px;width:6px;height:6px;border:1.5px solid var(--cat);border-radius:1px;opacity:.75}
+.need.bring li::before{border-radius:50%}
+.panel{background:var(--surface-2);border:1px solid var(--rule);border-radius:9px;padding:12px 13px}
+.panel + .panel{margin-top:11px}
+.panel h4{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;font-weight:500}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.statusbar{display:flex;margin-top:9px;border:1px solid var(--rule-2);border-radius:8px;overflow:hidden}
+.statusbar button{flex:1;border:0;border-right:1px solid var(--rule);background:var(--surface);padding:6px 2px;cursor:pointer;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
 .statusbar button:last-child{border-right:0}
 .statusbar button:hover{background:var(--accent-wash);color:var(--accent-ink)}
 .statusbar button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);font-weight:500}
-.draft{width:100%;min-height:190px;margin-top:10px;padding:10px 11px;border:1px solid var(--rule-2);border-radius:7px;background:var(--surface);font-family:var(--f-mono);font-size:12px;line-height:1.6;resize:vertical}
-.pager{display:flex;justify-content:center;padding:16px}
-.empty{padding:44px 20px;text-align:center;color:var(--ink-2)}
+.prof{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.prof input{flex:1 1 108px;min-width:0;padding:6px 9px;border:1px solid var(--rule-2);border-radius:7px;background:var(--surface);font-size:13px}
+.draft{width:100%;min-height:170px;padding:10px 11px;border:1px solid var(--rule-2);border-radius:8px;background:var(--surface);font-family:var(--f-mono);font-size:11.5px;line-height:1.6;resize:vertical}
+.pager{display:flex;justify-content:center;padding:18px}
+.empty{grid-column:1/-1;padding:44px 20px;text-align:center;color:var(--ink-2);border:1px dashed var(--rule-2);border-radius:11px}
 .empty h3{font-size:17px;margin-bottom:6px}
 
-/* ---------- honesty note ---------- */
-.note{display:flex;gap:11px;align-items:flex-start;background:var(--ochre-wash);border:1px solid var(--ochre-line);border-radius:8px;padding:11px 14px;margin:0 0 18px;font-size:13.5px;color:var(--ink-2);line-height:1.5}
+/* notes + ask */
+.note{display:flex;gap:11px;align-items:flex-start;background:var(--ochre-wash);border:1px solid var(--ochre-line);border-radius:10px;padding:11px 14px;margin-top:16px;font-size:13.5px;color:var(--ink-2);line-height:1.5}
 .note b{color:var(--ink);font-weight:600}
-.note .k{font-family:var(--f-mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--ochre);flex:none;padding-top:3px;font-weight:500}
-
-/* ---------- ask claude ---------- */
-.ask{border:1px solid var(--rule);border-radius:9px;background:var(--surface);box-shadow:var(--shadow);margin-bottom:18px;overflow:hidden}
-.ask-head{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid var(--rule);background:linear-gradient(var(--surface-2),var(--surface))}
-.ask-head h2{font-size:15.5px;display:flex;align-items:center;gap:9px}
-.ask-head h2 .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
-.ask-head h2 .dot.off{background:var(--ink-3)}
-.ask-body{padding:14px 15px 16px}
-.modes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
-.ask textarea{width:100%;min-height:66px;padding:10px 12px;border:1px solid var(--rule-2);border-radius:7px;background:var(--surface-2);resize:vertical;line-height:1.5}
+.note .k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ochre);flex:none;padding-top:3px;font-weight:500}
+.ask{border:1px solid var(--rule);border-radius:11px;background:var(--surface);box-shadow:var(--sh-2);overflow:hidden}
+.ask-head{display:flex;flex-wrap:wrap;gap:9px 14px;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2)}
+.ask-head h2{font-size:14.5px;display:flex;align-items:center;gap:8px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
+.dot.off{background:var(--ink-3)}
+.ask-body{padding:13px 14px 15px}
+.modes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.ask textarea{width:100%;min-height:62px;padding:10px 12px;border:1px solid var(--rule-2);border-radius:8px;background:var(--surface-2);resize:vertical;line-height:1.5}
 .ask .row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px}
-.out{margin-top:13px;border-top:1px solid var(--rule);padding-top:13px}
+.out{margin-top:12px;border-top:1px solid var(--rule);padding-top:12px}
 .out:empty{display:none}
-.think{font-family:var(--f-mono);font-size:12px;color:var(--ink-3);letter-spacing:.03em}
+.think{font-family:var(--f-mono);font-size:12px;color:var(--ink-3)}
 .think::after{content:"";display:inline-block;width:1ch;animation:dots 1.2s steps(4,end) infinite}
 @keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 .stream{white-space:pre-wrap;font-size:14px;color:var(--ink-2);line-height:1.65;max-width:74ch}
-.err{background:var(--ochre-wash);border:1px solid var(--ochre-line);border-radius:7px;padding:10px 12px;font-size:13.5px;color:var(--ink-2)}
-.sugg{display:grid;gap:9px}
-.card{border:1px solid var(--rule-2);border-left:3px solid var(--ochre);border-radius:7px;padding:11px 13px;background:var(--surface-2)}
-.card h4{font-family:var(--f-display);font-size:14.5px;font-weight:600;margin:0 0 3px}
-.card p{margin:0;font-size:13.5px;color:var(--ink-2)}
-.card .meta{margin-top:7px;display:flex;gap:5px;flex-wrap:wrap}
-.foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3);max-width:78ch;line-height:1.65}
+.err{background:var(--ochre-wash);border:1px solid var(--ochre-line);border-radius:8px;padding:10px 12px;font-size:13.5px;color:var(--ink-2)}
+.areagrp{margin-top:12px}
+.areagrp > h4{font-family:var(--f-display);font-size:13px;font-weight:600;color:var(--ink);padding-bottom:5px;border-bottom:1px solid var(--rule);margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+.areagrp > h4 span{font-family:var(--f-mono);font-size:10px;color:var(--ink-3);letter-spacing:.08em}
+.sugg{display:grid;gap:8px}
+.scard{border:1px solid var(--rule-2);border-left:3px solid var(--ochre);border-radius:8px;padding:11px 12px;background:var(--surface-2)}
+.scard h5{font-family:var(--f-display);font-size:14px;font-weight:600;margin:0 0 2px}
+.scard p{margin:0;font-size:13px;color:var(--ink-2)}
+.foot{margin:24px 0 0;padding-top:15px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3);max-width:80ch;line-height:1.65}
 .foot b{color:var(--ink-2);font-weight:600}
+.pad{padding-bottom:80px}
+@media (max-width:640px){.crow{padding-left:14px}.ribbon .rib{flex-basis:50%;border-bottom:1px solid var(--rule)}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 
 <header class="mast">
   <div class="mast-in">
     <div class="brand">
-      <h1>Outreach Bench</h1>
-      <p>A working board for a robotics team's outreach lead. <b>1,000</b> ways to get your robot in front of people who have never seen one &mdash; filtered by where you are, what season it is, and how much of your life you can spare.</p>
+      <span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="11" rx="2"></rect><path d="M12 8V4M9 4h6M9 13h.01M15 13h.01M9 16h6"></path></svg></span>
+      <div>
+        <h1>Outreach Bench</h1>
+        <p id="tagline">&nbsp;</p>
+      </div>
     </div>
     <div class="mast-act">
-      <button class="btn sm" id="themeBtn" title="Switch theme">Theme</button>
-      <button class="btn sm" id="csvBtn">Export my pipeline</button>
+      <button class="btn sm" id="themeBtn">Theme</button>
+      <button class="btn sm" id="csvBtn">Export CSV</button>
+      <button class="btn sm" id="mineBtn" aria-pressed="false">My pipeline</button>
     </div>
   </div>
 </header>
 
-<div class="shell">
+<div class="wrap pad">
 
-  <section class="meters" id="meters" aria-label="Pipeline summary"></section>
+  <section class="ribbon" id="ribbon" aria-label="Pipeline summary"></section>
 
-  <div class="note">
-    <span class="k">Read&nbsp;this</span>
-    <span><b>Two kinds of entry, and the difference matters.</b> <b>Verified</b> rows are real organizations with real websites and real recurring calendars. <b>Lead</b> rows are prospects, not bookings: a real activity paired with a real kind of venue in a real metro. Their <em>Find the real contact</em> button runs a live search rather than sending you to an invented link, because a fabricated contact costs you a month. Nothing here holds a date for you &mdash; confirm every one before you promise it to your team.</span>
-  </div>
-
-  <section class="ask" id="ask">
-    <div class="ask-head">
-      <h2><span class="dot off" id="aiDot"></span>Ask Claude</h2>
-      <span class="eyebrow" id="aiState">checking availability</span>
+  <section class="step">
+    <div class="step-h"><span class="step-n">1</span><h2>Where are you?</h2>
+      <span class="hint">Everything below filters to your area.</span></div>
+    <div class="areabar">
+      <select id="aCountry" aria-label="Country"></select>
+      <select id="aState" aria-label="State or province"></select>
+      <select id="aMetro" aria-label="Metro area"></select>
+      <span class="now" id="areaNow"></span>
+      <button class="btn sm" id="areaClear">Show everywhere</button>
     </div>
-    <div class="ask-body">
-      <div class="modes" id="modes">
-        <button class="btn sm" data-mode="find" aria-pressed="true">Find opportunities near me</button>
-        <button class="btn sm" data-mode="draft" aria-pressed="false">Write my outreach email</button>
-        <button class="btn sm" data-mode="plan" aria-pressed="false">Plan my season</button>
+  </section>
+
+  <section class="step">
+    <div class="step-h"><span class="step-n">2</span><h2>What are you after?</h2>
+      <span class="hint">One tap sets several filters. Tap again to undo.</span></div>
+    <div class="chips-row" id="quick"></div>
+  </section>
+
+  <section class="step">
+    <div class="step-h"><span class="step-n">3</span><h2>Ask Claude to find more</h2>
+      <span class="hint">Grouped by area, with a link for each one.</span></div>
+    <div class="ask" id="ask">
+      <div class="ask-head">
+        <h2><span class="dot off" id="aiDot"></span>Ask Claude</h2>
+        <span class="eyebrow" id="aiState">checking availability</span>
       </div>
-      <textarea id="aiIn" spellcheck="true"></textarea>
-      <div class="row2">
-        <button class="btn primary" id="aiGo">Ask</button>
-        <button class="btn sm" id="aiStop" hidden>Stop</button>
-        <span class="eyebrow" id="aiHint"></span>
+      <div class="ask-body">
+        <div class="modes" id="modes">
+          <button class="btn sm" data-mode="find" aria-pressed="true">Find places near me</button>
+          <button class="btn sm" data-mode="draft" aria-pressed="false">Write my email</button>
+          <button class="btn sm" data-mode="plan" aria-pressed="false">Plan my season</button>
+        </div>
+        <textarea id="aiIn" spellcheck="true"></textarea>
+        <div class="row2">
+          <button class="btn primary" id="aiGo">Ask</button>
+          <button class="btn sm" id="aiStop" hidden>Stop</button>
+          <span class="eyebrow" id="aiHint"></span>
+        </div>
+        <div class="out" id="aiOut"></div>
       </div>
-      <div class="out" id="aiOut"></div>
     </div>
   </section>
 
   <div class="tools">
     <label class="search">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
-      <input id="q" type="search" placeholder="Search activities, venues, cities, skills&hellip;" autocomplete="off">
+      <input id="q" type="search" placeholder="Search activities, venues, organisations, cities&hellip;" autocomplete="off">
     </label>
     <select class="btn" id="sort" aria-label="Sort">
       <option value="fit">Sort: best first</option>
+      <option value="area">Sort: by area (A&ndash;Z)</option>
       <option value="impact">Sort: highest impact</option>
       <option value="effort">Sort: least effort</option>
       <option value="reach">Sort: most people reached</option>
       <option value="hours">Sort: fewest hours</option>
-      <option value="az">Sort: A&ndash;Z</option>
     </select>
-    <button class="btn" id="mineBtn" aria-pressed="false">My pipeline only</button>
-    <button class="btn" id="resetBtn">Reset filters</button>
+    <button class="btn" id="advBtn" aria-pressed="false">More filters</button>
+    <button class="btn" id="resetBtn">Reset all</button>
   </div>
+  <div class="adv" id="adv" hidden></div>
 
-  <div class="board">
-    <aside class="rail" id="rail" aria-label="Filters"></aside>
-    <div>
-      <div class="count">
-        <strong id="countTxt">&nbsp;</strong>
-        <span class="eyebrow" id="activeTxt"></span>
-      </div>
-      <div class="list" id="list"></div>
-      <div class="pager"><button class="btn" id="moreBtn" hidden>Show more</button></div>
-      <p class="foot" id="foot"></p>
-    </div>
+  <div class="count">
+    <strong id="countTxt">&nbsp;</strong>
+    <span class="eyebrow" id="activeTxt"></span>
   </div>
+  <div class="grid" id="grid"></div>
+  <div class="pager"><button class="btn" id="moreBtn" hidden>Show more</button></div>
+
+  <div class="note">
+    <span class="k">Links</span>
+    <span id="linkNote"></span>
+  </div>
+  <p class="foot" id="foot"></p>
 </div>
-
-<style>
-summary.row-head{list-style:none}
-summary.row-head::-webkit-details-marker{display:none}
-summary.row-head::marker{content:""}
-.prof{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
-.prof input{flex:1 1 110px;min-width:0;padding:6px 9px;border:1px solid var(--rule-2);border-radius:6px;background:var(--surface);font-size:13px}
-</style>
 
 <script>
 const DATA = /*__DATA__*/null;
-
-/* ---------- decode the compact payload into working records ---------- */
 const EFFORT_RANK = {Low:3, Medium:2, High:1};
+
+const ICON = {
+ "Demo":'<rect x="4" y="8" width="16" height="11" rx="2"></rect><path d="M12 8V4M9 13h.01M15 13h.01M9.5 16.5h5"></path>',
+ "Workshop":'<path d="M3 21l6.5-6.5M12.5 6.5l5 5-3 3-5-5z"></path><path d="M14 4.5a3.5 3.5 0 104.9 4.9"></path>',
+ "Mentoring":'<circle cx="9" cy="8" r="3"></circle><path d="M3 20a6 6 0 0112 0M16.5 11a3 3 0 100-6M18.5 20a5.5 5.5 0 00-3-4.9"></path>',
+ "Volunteering":'<path d="M12 20s-7-4.5-7-9a4 4 0 017-2.6A4 4 0 0119 11c0 4.5-7 9-7 9z"></path>',
+ "Equity":'<path d="M12 3l2.4 5.4 5.6.6-4.2 3.9 1.2 5.6L12 15.7 7 18.5l1.2-5.6L4 9l5.6-.6z"></path>',
+ "Community":'<path d="M3 21h18M5 21V9l5-4 5 4v12M9.5 21v-4h2v4M19 21v-8l-4-3"></path>',
+ "Community Service":'<path d="M20.5 12.5L12 21l-8.5-8.5a5 5 0 018.5-5 5 5 0 018.5 5z"></path><path d="M9 12h6"></path>',
+ "Accessibility":'<circle cx="12" cy="4.5" r="2"></circle><path d="M5 9h14M12 9v5M12 14l-3 6.5M12 14l3 6.5"></path>',
+ "Fundraising":'<ellipse cx="12" cy="6" rx="7" ry="2.8"></ellipse><path d="M5 6v6c0 1.6 3.1 2.8 7 2.8s7-1.2 7-2.8V6M5 12v6c0 1.6 3.1 2.8 7 2.8s7-1.2 7-2.8v-6"></path>',
+ "Camp":'<path d="M12 4L3.5 20h17L12 4zM12 4v16M8 20l4-6 4 6"></path>',
+ "Speaking":'<path d="M3 11v2a1 1 0 001 1h3l7 4V6l-7 4H4a1 1 0 00-1 1z"></path><path d="M18 8.5a5 5 0 010 7"></path>',
+ "Competition":'<path d="M7 4h10v5a5 5 0 01-10 0zM7 6H4.5v1.5A3.5 3.5 0 007 11M17 6h2.5v1.5A3.5 3.5 0 0117 11M9 19.5h6M12 14v5.5"></path>',
+ "Outreach Media":'<circle cx="12" cy="12" r="2"></circle><path d="M8.6 8.6a4.8 4.8 0 000 6.8M15.4 8.6a4.8 4.8 0 010 6.8M5.6 5.6a9 9 0 000 12.8M18.4 5.6a9 9 0 010 12.8"></path>',
+};
+const cssCat = c => "--c-" + c.replace(/\s+/g, "");
+const STATE_REGION = {};
+DATA.metros.forEach(m => { if (!STATE_REGION[m[1]]) STATE_REGION[m[1]] = m[3]; });
+
+/* ---------- decode ---------- */
 const ALL = [];
+const LINK_DIRECT = "direct", LINK_FINDER = "finder";
 
 DATA.verified.forEach((v, i) => ALL.push({
-  id: "V-" + String(i + 1).padStart(2, "0"),
-  kind: "verified",
-  title: v.program,
-  target: v.org,
-  place: "Nationwide",
-  region: "National", state: "", country: "",
+  id: "N-" + String(i + 1).padStart(3, "0"), tier: "programme",
+  title: v.program, host: v.org,
+  city: "", state: "", country: "USA", region: "Nationwide", area: "Nationwide",
   category: v.category, audience: v.audience, format: v.format,
   season: v.season, window: v.window, deadline: v.deadline,
-  duration: "Varies", hours: v.hours, reach: v.reach,
-  effort: v.effort, impact: v.impact, cost: "$0",
-  role: "Program or volunteer coordinator", applyType: v.applyType, leadTime: v.deadline,
-  url: v.url, search: v.org + " " + v.program,
-  blurb: v.notes, applyNote: v.applyNote,
+  duration: "Varies", hours: v.hours, reach: v.reach, effort: v.effort,
+  impact: v.impact, cost: "$0", role: "Program or volunteer coordinator",
+  applyType: v.applyType, blurb: v.notes, applyNote: v.applyNote,
   need: [], bring: [], tags: v.tags,
+  link: { url: v.url, label: v.org, kind: LINK_DIRECT,
+          what: "The organisation's own website.", todo: v.applyNote },
 }));
 
-DATA.leads.forEach((r, i) => {
-  const [pi, ti, mi, hours, reach, impact, season] = r;
-  const p = DATA.plays[pi], t = DATA.targets[ti], m = DATA.metros[mi];
-  const place = m[0] + ", " + m[1];
+DATA.uniRows.forEach((r, i) => {
+  const [ui, pi, hours, reach, impact, season] = r;
+  const [name, city, state, url] = DATA.unis[ui];
+  const p = DATA.plays[pi];
   ALL.push({
-    id: "L-" + String(i + 1).padStart(4, "0"),
-    kind: "lead",
-    title: p[0],
-    target: t[0],
-    place, region: m[3], state: m[1], country: m[2],
+    id: "U-" + String(i + 1).padStart(4, "0"), tier: "university",
+    title: p[0], host: name,
+    city, state, country: "USA", region: STATE_REGION[state] || "United States", area: city + ", " + state,
+    category: p[1], audience: p[2], format: p[3],
+    season, window: DATA.seasonMonths[season] || season,
+    deadline: "Term-time; contact 6-10 weeks ahead",
+    duration: p[4], hours, reach, impact, effort: p[5], cost: p[6],
+    role: "K-12 Outreach or Pre-College Programs office",
+    applyType: "Web form", blurb: p[9], applyNote: null,
+    need: p[7], bring: p[8], tags: [],
+    link: { url, label: name, kind: LINK_DIRECT,
+            what: "The university's own website.",
+            todo: "Look for K-12 Outreach, Pre-College Programs or Community Engagement." },
+  });
+});
+
+DATA.leads.forEach((r, i) => {
+  const [pi, ti, mi, hours, reach, impact, season, fi] = r;
+  const p = DATA.plays[pi], t = DATA.targets[ti], m = DATA.metros[mi];
+  const f = DATA.finders[fi];
+  ALL.push({
+    id: "L-" + String(i + 1).padStart(4, "0"), tier: "local",
+    title: p[0], host: t[0],
+    city: m[0], state: m[1], country: m[2], region: m[3], area: m[0] + ", " + m[1],
     category: p[1], audience: p[2], format: p[3],
     season, window: DATA.seasonMonths[season] || season,
     deadline: "Contact " + t[3] + " ahead",
-    duration: p[4], hours, reach, effort: p[5], impact, cost: p[6],
-    role: t[1], applyType: t[2], leadTime: t[3],
-    url: null,
-    search: t[4] + " " + m[0] + " " + m[1],
-    blurb: p[9], applyNote: null,
+    duration: p[4], hours, reach, impact, effort: p[5], cost: p[6],
+    role: t[1], applyType: t[2], blurb: p[9], applyNote: null,
     need: p[7], bring: p[8], tags: [],
+    link: { url: f[1], label: f[0], kind: LINK_FINDER, what: f[2], todo: f[3] },
   });
 });
 
 ALL.forEach(o => {
-  o.hay = [o.title, o.target, o.place, o.region, o.category, o.audience,
-           o.format, o.season, o.blurb, (o.tags || []).join(" "),
+  o.domain = (o.link.url.match(/^https?:\/\/(?:www\.)?([^/]+)/) || [, o.link.url])[1];
+  o.hay = [o.title, o.host, o.area, o.region, o.country, o.category, o.audience, o.format,
+           o.season, o.blurb, o.domain, (o.tags || []).join(" "),
            (o.need || []).join(" "), (o.bring || []).join(" ")].join(" ").toLowerCase();
   o.fit = o.impact * 2.2 + (EFFORT_RANK[o.effort] || 2)
-        + (o.kind === "verified" ? 2.4 : 0) + Math.log10(o.reach + 10);
+        + (o.tier === "programme" ? 2.4 : o.tier === "university" ? 1.1 : 0)
+        + (o.link.kind === LINK_DIRECT ? 1.0 : 0) + Math.log10(o.reach + 10);
 });
 
-/* ---------- pipeline state ---------- */
-const KEY = "outreach-bench-v1";
-let store = { status: {}, logged: {}, team: "", city: "" };
+/* ---------- saved state ---------- */
+const KEY = "outreach-bench-v2";
+let store = { status:{}, logged:{}, team:"", city:"", area:{country:"",state:"",metro:""} };
 try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+if (!store.area) store.area = {country:"",state:"",metro:""};
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} };
-const STATUSES = ["saved", "contacted", "confirmed", "done"];
+const STATUSES = ["saved","contacted","confirmed","done"];
 
-/* ---------- filter state ---------- */
+/* ---------- filters ---------- */
 const FACETS = [
-  { key: "category", label: "Activity" },
-  { key: "region",   label: "Region" },
-  { key: "season",   label: "Season" },
-  { key: "audience", label: "Who it reaches" },
-  { key: "effort",   label: "Effort" },
-  { key: "format",   label: "Format" },
-  { key: "kind",     label: "Confidence" },
+  { key:"category", label:"Activity" }, { key:"season", label:"Season" },
+  { key:"audience", label:"Who it reaches" }, { key:"effort", label:"Effort" },
+  { key:"format", label:"Format" }, { key:"linkKind", label:"Link goes to" },
+  { key:"region", label:"Region" },
 ];
+ALL.forEach(o => o.linkKind = o.link.kind === LINK_DIRECT
+  ? "The organisation itself" : "Official directory");
 const sel = {}; FACETS.forEach(f => sel[f.key] = new Set());
+
+const MONTH_SEASON = ["Winter","Build season","Build season","Competition","Competition","Offseason",
+                      "Summer","Summer","Fall","Fall","Fall","Winter"];
+const THIS_SEASON = MONTH_SEASON[new Date().getMonth()];
+const PRESETS = {
+  afternoon: { label:"One afternoon", icon:'<circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path>',
+    test: o => o.effort === "Low" && o.hours <= 10 },
+  impact: { label:"Biggest impact", icon:'<path d="M12 3l2.4 5.4 5.6.6-4.2 3.9 1.2 5.6L12 15.7 7 18.5l1.2-5.6L4 9l5.6-.6z"></path>',
+    test: o => o.impact >= 5 },
+  free: { label:"Costs nothing", icon:'<circle cx="12" cy="12" r="8"></circle><path d="M9.5 9.5h4M9.5 14.5h4M11 7v10"></path>',
+    test: o => o.cost === "$0" },
+  kids: { label:"Elementary kids", icon:'<circle cx="12" cy="7" r="3"></circle><path d="M5 20a7 7 0 0114 0"></path>',
+    test: o => /Elementary|Family|All ages/.test(o.audience) },
+  season: { label:"Right now (" + THIS_SEASON + ")", icon:'<rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path>',
+    test: o => o.season === THIS_SEASON },
+  remote: { label:"Can do remotely", icon:'<circle cx="12" cy="12" r="8"></circle><path d="M4 12h16M12 4a14 14 0 010 16M12 4a14 14 0 000 16"></path>',
+    test: o => o.format !== "In person" },
+  direct: { label:"Straight to the organisation", icon:'<path d="M10 13a4 4 0 006 .5l2.5-2.5a4 4 0 00-5.7-5.7L11.5 6.5"></path><path d="M14 11a4 4 0 00-6-.5L5.5 13a4 4 0 005.7 5.7l1.3-1.3"></path>',
+    test: o => o.link.kind === LINK_DIRECT },
+};
+const presetOn = new Set();
+let query = "", mineOnly = false, sortBy = "fit", shown = 24;
 const expanded = new Set();
-let query = "", mineOnly = false, sortBy = "fit", shown = 30;
 
 const $ = s => document.querySelector(s);
-const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const KINDLBL = { verified: "Verified organization", lead: "Lead — needs confirming",
-                  suggested: "Claude suggestion — verify everything" };
-const KINDCHIP = { verified: "verified", lead: "lead", suggested: "ai lead" };
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+function areaPass(o) {
+  const a = store.area;
+  if (o.region === "Nationwide") return true;   // runs everywhere, so it survives any area filter
+  if (a.metro && o.area !== a.metro) return false;
+  if (a.state && o.state !== a.state) return false;
+  if (a.country && o.country !== a.country) return false;
+  return true;
+}
 function passes(o, skip) {
   if (mineOnly && !store.status[o.id]) return false;
+  if (!areaPass(o)) return false;
   if (query && !o.hay.includes(query)) return false;
+  for (const k of presetOn) if (!PRESETS[k].test(o)) return false;
   for (const f of FACETS) {
     if (f.key === skip) continue;
     const s = sel[f.key];
@@ -361,123 +469,178 @@ function passes(o, skip) {
   }
   return true;
 }
-
 function results() {
-  const out = ALL.filter(o => passes(o, null));
   const cmp = {
-    fit:    (a, b) => b.fit - a.fit,
-    impact: (a, b) => b.impact - a.impact || b.fit - a.fit,
-    effort: (a, b) => EFFORT_RANK[b.effort] - EFFORT_RANK[a.effort] || a.hours - b.hours,
-    reach:  (a, b) => b.reach - a.reach,
-    hours:  (a, b) => a.hours - b.hours,
-    az:     (a, b) => a.title.localeCompare(b.title) || a.place.localeCompare(b.place),
+    fit:    (a,b) => b.fit - a.fit,
+    area:   (a,b) => (a.state||"ZZ").localeCompare(b.state||"ZZ") || a.area.localeCompare(b.area) || b.fit - a.fit,
+    impact: (a,b) => b.impact - a.impact || b.fit - a.fit,
+    effort: (a,b) => EFFORT_RANK[b.effort] - EFFORT_RANK[a.effort] || a.hours - b.hours,
+    reach:  (a,b) => b.reach - a.reach,
+    hours:  (a,b) => a.hours - b.hours,
   }[sortBy];
-  return out.sort(cmp);
+  return ALL.filter(o => passes(o, null)).sort(cmp);
 }
 
-/* ---------- meters ---------- */
-function renderMeters() {
+/* ---------- area selector ---------- */
+const COUNTRIES = [...new Set(ALL.map(o => o.country))].filter(Boolean).sort();
+function statesFor(c) {
+  return [...new Set(ALL.filter(o => (!c || o.country === c) && o.state).map(o => o.state))].sort();
+}
+function metrosFor(c, s) {
+  return [...new Set(ALL.filter(o => (!c || o.country === c) && (!s || o.state === s) && o.area !== "Nationwide")
+    .map(o => o.area))].sort();
+}
+function fillSel(el, items, cur, allLabel) {
+  el.innerHTML = `<option value="">${allLabel}</option>` +
+    items.map(v => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(v)}</option>`).join("");
+  el.disabled = !items.length;
+}
+function renderArea() {
+  const a = store.area;
+  fillSel($("#aCountry"), COUNTRIES, a.country, "All countries");
+  fillSel($("#aState"), statesFor(a.country), a.state, a.country === "USA" ? "All states" : "All states / provinces");
+  fillSel($("#aMetro"), metrosFor(a.country, a.state), a.metro, "All metro areas");
+  const n = ALL.filter(areaPass).length;
+  const where = a.metro || a.state || a.country;
+  const nat = ALL.filter(o => o.region === "Nationwide").length;
+  $("#areaNow").innerHTML = where
+    ? `<b>${n.toLocaleString()}</b> in ${esc(where)}, including ${nat} nationwide`
+    : `<b>${ALL.length.toLocaleString()}</b> everywhere`;
+}
+["aCountry","aState","aMetro"].forEach((id, i) => {
+  document.getElementById(id).addEventListener("change", e => {
+    const k = ["country","state","metro"][i];
+    store.area[k] = e.target.value;
+    if (k === "country") { store.area.state = ""; store.area.metro = ""; }
+    if (k === "state") store.area.metro = "";
+    save(); shown = 24; renderArea(); render();
+  });
+});
+$("#areaClear").addEventListener("click", () => {
+  store.area = {country:"",state:"",metro:""}; save(); shown = 24; renderArea(); render();
+});
+
+/* ---------- quick presets ---------- */
+$("#quick").innerHTML = Object.entries(PRESETS).map(([k, p]) =>
+  `<button class="qchip" data-preset="${k}" aria-pressed="false">
+     <svg viewBox="0 0 24 24" aria-hidden="true">${p.icon}</svg>${esc(p.label)}</button>`).join("");
+$("#quick").addEventListener("click", e => {
+  const b = e.target.closest("[data-preset]"); if (!b) return;
+  const k = b.dataset.preset;
+  presetOn.has(k) ? presetOn.delete(k) : presetOn.add(k);
+  b.setAttribute("aria-pressed", presetOn.has(k));
+  shown = 24; render();
+});
+
+/* ---------- ribbon ---------- */
+function renderRibbon() {
   const ids = Object.keys(store.status);
+  const byId = Object.fromEntries(ALL.map(o => [o.id, o]));
   const by = s => ids.filter(i => store.status[i] === s).length;
   const done = ids.filter(i => store.status[i] === "done");
-  const byId = Object.fromEntries(ALL.map(o => [o.id, o]));
   const hours = done.reduce((n, i) => n + (store.logged[i] ?? byId[i]?.hours ?? 0), 0);
   const reach = done.reduce((n, i) => n + (byId[i]?.reach || 0), 0);
-  const cells = [
-    ["On the board", ALL.length, null, false],
-    ["Saved", by("saved"), null, true],
-    ["Contacted", by("contacted"), null, true],
-    ["Confirmed", by("confirmed"), null, true],
-    ["Done", done.length, null, true],
-    ["Outreach hours", hours, Math.min(100, hours / 2), true],
-    ["People reached", reach.toLocaleString(), Math.min(100, reach / 20), true],
-  ];
-  $("#meters").innerHTML = cells.map(([k, n, pct, on]) => `
-    <div class="meter${on && n !== 0 && n !== "0" ? " on" : ""}">
-      <span class="n">${esc(typeof n === "number" ? n.toLocaleString() : n)}</span>
-      <div class="k eyebrow">${esc(k)}</div>
-      ${pct != null ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ""}
-    </div>`).join("");
+  const cells = [["On the board", ALL.length, 0], ["Saved", by("saved"), 1],
+    ["Contacted", by("contacted"), 1], ["Confirmed", by("confirmed"), 1],
+    ["Done", done.length, 1], ["Outreach hours", hours, 1], ["People reached", reach, 1]];
+  $("#ribbon").innerHTML = cells.map(([k, n, live]) =>
+    `<div class="rib${live && n ? " on" : ""}"><span class="n">${n.toLocaleString()}</span>
+     <div class="k eyebrow">${esc(k)}</div></div>`).join("");
 }
 
-/* ---------- facet rail ---------- */
-function renderRail() {
-  $("#rail").innerHTML = FACETS.map(f => {
+/* ---------- advanced facets ---------- */
+function renderFacets() {
+  if ($("#adv").hidden) return;
+  $("#adv").innerHTML = FACETS.map(f => {
     const counts = new Map();
     ALL.forEach(o => { if (passes(o, f.key)) counts.set(o[f.key], (counts.get(o[f.key]) || 0) + 1); });
     sel[f.key].forEach(v => { if (!counts.has(v)) counts.set(v, 0); });
     const opts = [...counts.entries()].sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])));
-    const open = f.expanded || opts.length <= 7;
-    const list = (open ? opts : opts.slice(0, 6)).map(([v, n]) => `
-      <button class="opt" data-facet="${f.key}" data-val="${esc(v)}"
-              aria-pressed="${sel[f.key].has(v)}" ${n === 0 && !sel[f.key].has(v) ? "disabled" : ""}>
-        <span class="tick"></span>
-        <span class="lbl">${esc(f.key === "kind" ? KINDLBL[v].split(" —")[0] : v)}</span>
-        <span class="ct">${n}</span>
-      </button>`).join("");
-    return `<div class="facet">
-      <div class="eyebrow">${esc(f.label)}
-        ${sel[f.key].size ? `<button class="clear" data-clear="${f.key}">clear</button>` : ""}
-      </div>
-      ${list}
-      ${opts.length > 7 ? `<button class="more" data-more="${f.key}">${open ? "− fewer" : "+ " + (opts.length - 6) + " more"}</button>` : ""}
+    const open = f.expanded || opts.length <= 6;
+    return `<div class="fgroup"><div class="eyebrow">${esc(f.label)}
+      ${sel[f.key].size ? `<button class="clear" data-clear="${f.key}">clear</button>` : ""}</div>
+      ${(open ? opts : opts.slice(0, 5)).map(([v, n]) => `
+        <button class="opt" data-facet="${f.key}" data-val="${esc(v)}" aria-pressed="${sel[f.key].has(v)}"
+          ${n === 0 && !sel[f.key].has(v) ? "disabled" : ""}>
+          <span class="tick"></span><span class="lbl">${esc(v)}</span><span class="ct">${n}</span></button>`).join("")}
+      ${opts.length > 6 ? `<button class="more" data-more="${f.key}">${open ? "− fewer" : "+ " + (opts.length - 5) + " more"}</button>` : ""}
     </div>`;
   }).join("");
 }
+$("#advBtn").addEventListener("click", e => {
+  const on = $("#adv").hidden;
+  $("#adv").hidden = !on; e.currentTarget.setAttribute("aria-pressed", on);
+  renderFacets();
+});
+$("#adv").addEventListener("click", e => {
+  const opt = e.target.closest(".opt");
+  if (opt) { const s = sel[opt.dataset.facet], v = opt.dataset.val;
+    s.has(v) ? s.delete(v) : s.add(v); shown = 24; render(); return; }
+  const c = e.target.closest("[data-clear]");
+  if (c) { sel[c.dataset.clear].clear(); shown = 24; render(); return; }
+  const m = e.target.closest("[data-more]");
+  if (m) { const f = FACETS.find(x => x.key === m.dataset.more); f.expanded = !f.expanded; renderFacets(); }
+});
 
-/* ---------- one result row ---------- */
-function rowHTML(o) {
+/* ---------- cards ---------- */
+function cardHTML(o) {
   const st = store.status[o.id] || "";
-  return `<details class="row" id="r-${o.id}" data-id="${o.id}" data-st="${st}"${expanded.has(o.id) ? " open" : ""}>
-    <summary class="row-head">
-      <span class="stripe"></span>
+  const open = expanded.has(o.id);
+  return `<div class="card${open ? " open" : ""}" id="c-${o.id}" data-id="${o.id}" style="--cat:var(${cssCat(o.category)})">
+    <button class="chead" data-toggle="${o.id}" aria-expanded="${open}">
+      <span class="badge"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[o.category] || ICON.Demo}</svg></span>
       <span>
-        <span class="rt">${esc(o.title)}</span>
-        <span class="rm">${esc(o.target)}<span class="sep">/</span>${esc(o.place)}${st ? `<span class="sep">/</span><b>${esc(st)}</b>` : ""}</span>
+        <span class="ct-title">${esc(o.title)}</span>
+        <span class="ct-sub">${esc(o.host)}</span>
+        <span class="ct-sub"><svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.2-6-9.5A6 6 0 0118 11.5C18 15.8 12 21 12 21z"></path><circle cx="12" cy="11" r="2"></circle></svg>${esc(o.area)}${st ? ` &middot; <b>${esc(st)}</b>` : ""}</span>
       </span>
-      <span class="chips">
-        <span class="chip ${o.kind === "verified" ? "ver" : "lead"}">${KINDCHIP[o.kind]}</span>
-        <span class="chip">${esc(o.season)}</span>
-        <span class="chip${o.effort === "Low" ? " hi" : ""}">${esc(o.effort)} effort</span>
-        <span class="chip">${o.hours}h</span>
-        <span class="chip">~${o.reach.toLocaleString()} reached</span>
-      </span>
-    </summary>
-    <div class="detail${o.need.length || o.bring.length ? "" : " lean"}" data-detail="${o.id}"></div>
-  </details>`;
+      <svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+    </button>
+    <div class="crow">
+      <span class="chip cat">${esc(o.category)}</span>
+      <span class="chip">${esc(o.season)}</span>
+      <span class="chip${o.effort === "Low" ? " ok" : ""}">${esc(o.effort)} effort</span>
+      <span class="chip">${o.hours}h</span>
+      <span class="chip">~${o.reach.toLocaleString()} reached</span>
+    </div>
+    ${linkHTML(o)}
+    <div class="det${o.need.length || o.bring.length ? "" : " lean"}" data-detail="${o.id}"${open ? "" : " hidden"}></div>
+  </div>`;
 }
-
-/* ---------- expanded detail ---------- */
+function linkHTML(o) {
+  return `<a class="link" href="${esc(o.link.url)}" target="_blank" rel="noopener">
+    <span style="min-width:0">
+      <span class="dom">${esc(o.domain)}</span>
+      <span class="what">${esc(o.link.label)}</span>
+    </span>
+    <span class="kind">${o.link.kind === LINK_DIRECT ? "their site" : "directory"}</span>
+    <svg class="go" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"></path></svg>
+  </a>`;
+}
 function detailHTML(o) {
   const st = store.status[o.id] || "";
-  const li = (arr, cls) => arr.length
-    ? `<ul class="need ${cls}">${arr.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
-  const action = o.url
-    ? `<a class="btn primary" href="${esc(o.url)}" target="_blank" rel="noopener">Open ${esc(o.target)} &#8599;</a>`
-    : `<a class="btn primary" href="https://www.google.com/search?q=${encodeURIComponent(o.search)}" target="_blank" rel="noopener">Find the real contact &#8599;</a>`;
-  return `
-    <div>
+  const li = (a, c) => a.length ? `<ul class="need ${c}">${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+  return `<div>
       <p class="lede">${esc(o.blurb)}</p>
       <dl class="dl">
         <dt>Reaches</dt><dd><b>${esc(o.audience)}</b> &middot; ${esc(o.format)} &middot; ${esc(o.duration)}</dd>
         <dt>When</dt><dd><b>${esc(o.season)}</b> &mdash; ${esc(o.window)}</dd>
         <dt>Lead time</dt><dd>${esc(o.deadline)}</dd>
         <dt>Costs you</dt><dd>${esc(o.cost)} &middot; about <b>${o.hours} outreach hours</b></dd>
-        <dt>Impact</dt><dd>${"●".repeat(o.impact)}${"○".repeat(5 - o.impact)} <span class="mono">${o.impact}/5</span> &middot; reaches roughly <b>${o.reach.toLocaleString()}</b> people</dd>
-        <dt>Confidence</dt><dd>${esc(KINDLBL[o.kind])}</dd>
+        <dt>Impact</dt><dd>${"●".repeat(o.impact)}${"○".repeat(5 - o.impact)} <span class="mono">${o.impact}/5</span> &middot; roughly <b>${o.reach.toLocaleString()}</b> people</dd>
       </dl>
-      ${o.need.length ? `<h4 class="eyebrow" style="margin-top:15px">You need first</h4>${li(o.need, "")}` : ""}
-      ${o.bring.length ? `<h4 class="eyebrow" style="margin-top:13px">Pack list</h4>${li(o.bring, "bring")}` : ""}
+      ${o.need.length ? `<h4 class="eyebrow" style="margin-top:13px">You need first</h4>${li(o.need, "")}` : ""}
+      ${o.bring.length ? `<h4 class="eyebrow" style="margin-top:11px">Pack list</h4>${li(o.bring, "bring")}` : ""}
     </div>
     <div>
       <div class="panel">
-        <h4>How to book it</h4>
-        <dl class="dl" style="margin-top:0">
+        <h4>Where that link goes</h4>
+        <p style="margin:0 0 7px;font-size:13.5px;color:var(--ink-2)">${esc(o.link.what)}</p>
+        <p style="margin:0;font-size:13.5px;color:var(--ink-2)"><b>${esc(o.link.todo || "")}</b></p>
+        <dl class="dl" style="margin-top:10px">
           <dt>Ask for</dt><dd><b>${esc(o.role)}</b></dd>
           <dt>Via</dt><dd>${esc(o.applyType)}</dd>
-          ${o.applyNote ? `<dt>Route</dt><dd>${esc(o.applyNote)}</dd>` : ""}
         </dl>
-        <div class="acts">${action}</div>
         <div class="statusbar" data-status="${o.id}">
           ${STATUSES.map(s => `<button data-set="${s}" aria-pressed="${st === s}">${s}</button>`).join("")}
         </div>
@@ -499,38 +662,62 @@ function detailHTML(o) {
 }
 
 /* ---------- the email, composed locally ---------- */
-const AUD_PHRASE = {
-  "All ages": "all ages", "Family": "families doing it together", "Adults": "adults",
-  "Seniors": "seniors", "Elementary (K-5)": "elementary students",
-  "Middle school (6-8)": "middle schoolers", "High school (9-12)": "high schoolers",
-};
-const HOST_ASK = {
-  "In person": "a room with tables and a power outlet, plus a rough idea of how many people to expect",
-  "Virtual": "a video link and a rough headcount",
-  "Hybrid": "either a room or a video link, plus a rough headcount",
-};
-// list items are written as capitalised fragments; splice them into prose cleanly
+const AUD_PHRASE = { "All ages":"all ages", "Family":"families doing it together", "Adults":"adults",
+  "Seniors":"seniors", "Elementary (K-5)":"elementary students", "Middle school (6-8)":"middle schoolers",
+  "High school (9-12)":"high schoolers" };
+const HOST_ASK = { "In person":"a room with tables and a power outlet, plus a rough idea of how many people to expect",
+  "Virtual":"a video link and a rough headcount",
+  "Hybrid":"either a room or a video link, plus a rough headcount" };
 const inline = x => /^[A-Z][^A-Z]/.test(x) ? x[0].toLowerCase() + x.slice(1) : x;
+const sig = t => `\n\nThank you for your time,\n\n[YOUR NAME]\nOutreach Lead, ${t}\n[EMAIL] · [PHONE]`;
 
 function emailFor(o) {
   const team = store.team || "[TEAM NUMBER AND NAME]";
   const city = store.city || "[YOUR CITY]";
-  const lead = o.kind === "lead";
-  if (!lead) return enquiryFor(o, team, city);
-  const who = /program or volunteer|see below/i.test(o.role) ? "there" : o.role.split(" or ")[0];
-  const bring = o.bring.length
-    ? o.bring.slice(0, 3).map(inline).join(", ")
+  const intro = `I'm a student on ${team}, a high school robotics team in ${city}. We compete in FIRST, and part of what our team does is bring hands-on engineering to people who don't otherwise get to see it up close.`;
+
+  if (o.tier === "programme") return `Subject: ${team} — taking part in ${o.title}
+
+Hi there,
+
+I'm the outreach lead on ${team}, a high school FIRST robotics team in ${city}. I'm writing about ${o.title}.
+
+${o.applyNote ? o.applyNote.replace(/^./, c => c.toUpperCase()) + "." : "I'd like to find out how a team like ours takes part."}
+
+Three things I'd like to understand:
+
+  • What you need from a student team before we can take part
+  • Whether there's a deadline or window we should be working toward
+  • Who locally we should be talking to, if it isn't you
+
+We're planning roughly ${o.hours} hours of our season around this.${sig(team)}`;
+
+  if (o.tier === "university") return `Subject: High school robotics team in ${o.city} — ${o.title}
+
+Hi there,
+
+${intro}
+
+I'm writing to your K-12 outreach office because we'd like to work together on ${o.title.toLowerCase()}. We can bring students, mentors and our own equipment; what we don't have is your reach or your space.
+
+Two ways this could work:
+
+  • We run it, you host and publicise it to the schools you already work with
+  • We join something you already run and supply the robotics half
+
+It's about ${o.duration.toLowerCase()}, built for ${AUD_PHRASE[o.audience] || o.audience.toLowerCase()}, and there's no cost to you.
+
+Would you be open to a short call?${sig(team)}`;
+
+  const bring = o.bring.length ? o.bring.slice(0, 3).map(inline).join(", ")
     : "our robot and everything we need to run it";
-  const subject = o.category === "Fundraising"
-    ? "Partnership with a local high school robotics team"
-    : "Free from a local robotics team: " + o.title;
-  const when = lead && o.window && o.window !== "Varies"
-    ? " We're aiming for " + o.window + ", but tell us what works." : "";
-  return `Subject: ${subject}
+  const when = o.window && o.window !== "Varies"
+    ? ` We're aiming for ${o.window}, but tell us what works.` : "";
+  return `Subject: Free from a local robotics team: ${o.title}
 
-Hi ${who},
+Hi ${o.role.split(" or ")[0]},
 
-I'm a student on ${team}, a high school robotics team in ${city}. We compete in FIRST, and part of what our team does is bring hands-on engineering to people who don't otherwise get to see it up close.
+${intro}
 
 I'd like to offer you something at no cost: ${o.title}. Here's what that looks like:
 
@@ -542,38 +729,7 @@ I'd like to offer you something at no cost: ${o.title}. Here's what that looks l
 
 We're flexible on dates and can work around your schedule.${when}
 
-Would you be open to a short call to see whether this fits what you already have planned? I'm glad to send references from places we've worked with before.
-
-Thank you for your time,
-
-[YOUR NAME]
-Outreach Lead, ${team}
-[EMAIL] · [PHONE]`;
-}
-
-/* national programmes: you are asking to take part, not offering them a session */
-function enquiryFor(o, team, city) {
-  return `Subject: ${team} \u2014 taking part in ${o.title}
-
-Hi there,
-
-I'm the outreach lead on ${team}, a high school FIRST robotics team in ${city}. We run hands-on engineering events for young people around us, and I'm writing about ${o.title}.
-
-${o.applyNote ? o.applyNote.replace(/^./, c => c.toUpperCase()) + "." : "I'd like to find out how a team like ours takes part."}
-
-Three things I'd like to understand:
-
-  \u2022 What you need from a student team before we can take part
-  \u2022 Whether there's a deadline or a window we should be working toward${o.window ? " (I have " + o.window + " written down \u2014 please correct me)" : ""}
-  \u2022 Who locally we should be talking to, if it isn't you
-
-For context, we can field a group of students with adult mentors, and we're planning roughly ${o.hours} hours of our season around this.
-
-Thank you for your time,
-
-[YOUR NAME]
-Outreach Lead, ${team}
-[EMAIL] \u00b7 [PHONE]`;
+Would you be open to a short call to see whether this fits what you already have planned?${sig(team)}`;
 }
 
 /* ---------- render ---------- */
@@ -581,164 +737,130 @@ let current = [];
 function render() {
   current = results();
   const slice = current.slice(0, shown);
-  $("#list").innerHTML = slice.length ? slice.map(rowHTML).join("") : `
-    <div class="empty"><h3>Nothing matches that combination.</h3>
-    <p>Loosen a filter, or ask Claude to look for something specific to your area.</p></div>`;
+  $("#grid").innerHTML = slice.length ? slice.map(cardHTML).join("")
+    : `<div class="empty"><h3>Nothing matches that yet.</h3>
+       <p>Widen the area, drop a quick filter, or ask Claude to look for something specific.</p></div>`;
   slice.forEach(o => { if (expanded.has(o.id)) fillDetail(o.id); });
-  $("#countTxt").textContent = current.length.toLocaleString() + " of " + ALL.length.toLocaleString()
-    + " opportunities" + (current.length > shown ? " — showing " + shown : "");
-  const act = FACETS.flatMap(f => [...sel[f.key]]).length + (query ? 1 : 0) + (mineOnly ? 1 : 0);
-  $("#activeTxt").textContent = act ? act + " filter" + (act > 1 ? "s" : "") + " on" : "no filters";
+  const a = store.area, where = a.metro || a.state || a.country;
+  $("#countTxt").textContent = current.length.toLocaleString()
+    + (where ? " in " + where : " opportunities")
+    + (current.length > shown ? " — showing " + shown : "");
+  const n = FACETS.reduce((s, f) => s + sel[f.key].size, 0) + presetOn.size
+          + (query ? 1 : 0) + (mineOnly ? 1 : 0) + (where ? 1 : 0);
+  $("#activeTxt").textContent = n ? n + " filter" + (n > 1 ? "s" : "") + " on" : "no filters";
   $("#moreBtn").hidden = current.length <= shown;
-  $("#moreBtn").textContent = "Show " + Math.min(30, current.length - shown) + " more";
-  renderRail(); renderMeters();
+  $("#moreBtn").textContent = "Show " + Math.min(24, current.length - shown) + " more";
+  renderFacets(); renderRibbon(); renderArea();
 }
 function fillDetail(id) {
-  const el = document.querySelector(`[data-detail="${id}"]`);
-  const o = ALL.find(x => x.id === id);
+  const el = document.querySelector(`[data-detail="${id}"]`), o = ALL.find(x => x.id === id);
   if (el && o && !el.dataset.done) { el.innerHTML = detailHTML(o); el.dataset.done = "1"; }
 }
 function refreshDetail(id) {
-  const el = document.querySelector(`[data-detail="${id}"]`);
-  const o = ALL.find(x => x.id === id);
+  const el = document.querySelector(`[data-detail="${id}"]`), o = ALL.find(x => x.id === id);
   if (el && o) { el.innerHTML = detailHTML(o); el.dataset.done = "1"; }
-  const row = document.getElementById("r-" + id);
-  if (row) row.dataset.st = store.status[id] || "";
-  renderMeters();
+  renderRibbon();
 }
 
 /* ---------- events ---------- */
-$("#list").addEventListener("toggle", e => {
-  const row = e.target.closest("details.row"); if (!row) return;
-  const id = row.dataset.id;
-  if (row.open) { expanded.add(id); fillDetail(id); } else { expanded.delete(id); }
-}, true);
-
-$("#list").addEventListener("click", e => {
-  const set = e.target.closest("[data-set]");
-  if (set) {
-    const id = set.closest("[data-status]").dataset.status;
-    const v = set.dataset.set;
-    store.status[id] = store.status[id] === v ? undefined : v;
-    if (!store.status[id]) delete store.status[id];
-    if (store.status[id] === "done" && store.logged[id] == null) {
-      store.logged[id] = ALL.find(o => o.id === id).hours;
-    }
-    save(); refreshDetail(id); renderRail(); return;
-  }
-  const clr = e.target.closest("[data-set-clear]");
-  if (clr) { const id = clr.dataset.setClear; delete store.status[id]; delete store.logged[id]; save(); refreshDetail(id); return; }
-  const cp = e.target.closest("[data-copy]");
-  if (cp) {
-    const ta = document.querySelector(`[data-draft="${cp.dataset.copy}"]`);
-    navigator.clipboard?.writeText(ta.value).then(() => {
-      cp.textContent = "Copied"; setTimeout(() => cp.textContent = "Copy email", 1600);
-    }).catch(() => { ta.select(); cp.textContent = "Select + copy"; });
+$("#grid").addEventListener("click", e => {
+  const tg = e.target.closest("[data-toggle]");
+  if (tg) {
+    const id = tg.dataset.toggle, card = document.getElementById("c-" + id);
+    const det = card.querySelector("[data-detail]"), open = !expanded.has(id);
+    open ? expanded.add(id) : expanded.delete(id);
+    card.classList.toggle("open", open); tg.setAttribute("aria-expanded", open);
+    det.hidden = !open; if (open) fillDetail(id);
     return;
   }
+  const set = e.target.closest("[data-set]");
+  if (set) {
+    const id = set.closest("[data-status]").dataset.status, v = set.dataset.set;
+    store.status[id] = store.status[id] === v ? undefined : v;
+    if (!store.status[id]) delete store.status[id];
+    else if (v === "done" && store.logged[id] == null) store.logged[id] = ALL.find(o => o.id === id).hours;
+    save(); refreshDetail(id); render(); return;
+  }
+  const clr = e.target.closest("[data-set-clear]");
+  if (clr) { const id = clr.dataset.setClear; delete store.status[id]; delete store.logged[id]; save(); refreshDetail(id); render(); return; }
+  const cp = e.target.closest("[data-copy]");
+  if (cp) { const ta = document.querySelector(`[data-draft="${cp.dataset.copy}"]`);
+    navigator.clipboard?.writeText(ta.value).then(() => { cp.textContent = "Copied";
+      setTimeout(() => cp.textContent = "Copy email", 1600); }).catch(() => ta.select()); return; }
   const ad = e.target.closest("[data-ai-draft]");
-  if (ad) { aiDraftFor(ad.dataset.aiDraft); return; }
+  if (ad) aiDraftFor(ad.dataset.aiDraft);
 });
-
-$("#list").addEventListener("input", e => {
-  const p = e.target.closest("[data-prof]");
-  if (!p) return;
+$("#grid").addEventListener("input", e => {
+  if (e.target.matches("[data-draft]")) { e.target.dataset.touched = "1"; return; }
+  const p = e.target.closest("[data-prof]"); if (!p) return;
   store[p.dataset.prof] = p.value; save();
   document.querySelectorAll("[data-draft]").forEach(ta => {
-    if (!ta.dataset.touched) ta.value = emailFor(ALL.find(o => o.id === ta.dataset.draft));
-  });
+    if (!ta.dataset.touched) ta.value = emailFor(ALL.find(o => o.id === ta.dataset.draft)); });
   document.querySelectorAll("[data-prof]").forEach(i => { if (i !== p) i.value = store[i.dataset.prof]; });
 });
-$("#list").addEventListener("input", e => { if (e.target.matches("[data-draft]")) e.target.dataset.touched = "1"; });
-
-$("#rail").addEventListener("click", e => {
-  const opt = e.target.closest(".opt");
-  if (opt) {
-    const s = sel[opt.dataset.facet], v = opt.dataset.val;
-    s.has(v) ? s.delete(v) : s.add(v);
-    shown = 30; render(); return;
-  }
-  const c = e.target.closest("[data-clear]");
-  if (c) { sel[c.dataset.clear].clear(); shown = 30; render(); return; }
-  const m = e.target.closest("[data-more]");
-  if (m) { const f = FACETS.find(x => x.key === m.dataset.more); f.expanded = !f.expanded; renderRail(); }
-});
-
 let qt;
-$("#q").addEventListener("input", e => {
-  clearTimeout(qt);
-  qt = setTimeout(() => { query = e.target.value.trim().toLowerCase(); shown = 30; render(); }, 130);
-});
-$("#sort").addEventListener("change", e => { sortBy = e.target.value; shown = 30; render(); });
-$("#moreBtn").addEventListener("click", () => { shown += 30; render(); });
-$("#mineBtn").addEventListener("click", e => {
-  mineOnly = !mineOnly; e.currentTarget.setAttribute("aria-pressed", mineOnly); shown = 30; render();
-});
+$("#q").addEventListener("input", e => { clearTimeout(qt);
+  qt = setTimeout(() => { query = e.target.value.trim().toLowerCase(); shown = 24; render(); }, 130); });
+$("#sort").addEventListener("change", e => { sortBy = e.target.value; shown = 24; render(); });
+$("#moreBtn").addEventListener("click", () => { shown += 24; render(); });
+$("#mineBtn").addEventListener("click", e => { mineOnly = !mineOnly;
+  e.currentTarget.setAttribute("aria-pressed", mineOnly); shown = 24; render(); });
 $("#resetBtn").addEventListener("click", () => {
-  FACETS.forEach(f => sel[f.key].clear());
-  query = ""; $("#q").value = ""; mineOnly = false;
-  $("#mineBtn").setAttribute("aria-pressed", "false"); shown = 30; render();
+  FACETS.forEach(f => sel[f.key].clear()); presetOn.clear();
+  document.querySelectorAll("[data-preset]").forEach(b => b.setAttribute("aria-pressed", "false"));
+  query = ""; $("#q").value = ""; mineOnly = false; $("#mineBtn").setAttribute("aria-pressed", "false");
+  store.area = {country:"",state:"",metro:""}; save(); shown = 24; renderArea(); render();
 });
 $("#themeBtn").addEventListener("click", () => {
   const now = document.documentElement.getAttribute("data-theme");
   const dark = now ? now === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
   document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
 });
-
-/* ---------- export ---------- */
 $("#csvBtn").addEventListener("click", async () => {
   const ids = Object.keys(store.status);
   const rows = ids.length ? ALL.filter(o => store.status[o.id]) : current.slice(0, shown);
-  const head = ["Status", "Hours logged", "Activity", "Where", "Place", "Region", "Season", "Window",
-                "Lead time", "Contact", "How to reach", "Audience", "Effort", "Est. hours",
-                "Est. reached", "Impact", "Cost", "Confidence", "Link or search"];
+  const head = ["Status","Hours logged","Activity","Where","City","State","Country","Season","Window",
+    "Lead time","Ask for","Via","Audience","Effort","Est. hours","Est. reached","Impact","Cost",
+    "Link type","Link","What that link is"];
   const cell = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
-  const csv = [head.map(cell).join(",")].concat(rows.map(o => [
-    store.status[o.id] || "", store.logged[o.id] ?? "", o.title, o.target, o.place, o.region,
-    o.season, o.window, o.deadline, o.role, o.applyType, o.audience, o.effort, o.hours,
-    o.reach, o.impact + "/5", o.cost, KINDLBL[o.kind],
-    o.url || "https://www.google.com/search?q=" + encodeURIComponent(o.search),
-  ].map(cell).join(","))).join("\r\n");
+  const csv = [head.map(cell).join(",")].concat(rows.map(o => [store.status[o.id] || "",
+    store.logged[o.id] ?? "", o.title, o.host, o.city, o.state, o.country, o.season, o.window,
+    o.deadline, o.role, o.applyType, o.audience, o.effort, o.hours, o.reach, o.impact + "/5",
+    o.cost, o.linkKind, o.link.url, o.link.what].map(cell).join(","))).join("\r\n");
   const name = ids.length ? "my-outreach-pipeline.csv" : "outreach-shortlist.csv";
   const dl = window.claude?.use ? await window.claude.use("downloads").catch(() => null) : null;
   if (dl) { try { await dl.save({ filename: name, data: csv }); return; } catch (e) { if (e?.code === "cancelled") return; } }
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
   a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 });
 
 /* ---------- ask claude ---------- */
 const MODES = {
-  find: {
-    hint: "Claude answers from what it knows — it cannot browse the web live. Confirm every name and date.",
-    ph: "Tell Claude where you are and what you're after. e.g. \"We're Team 4321 in Tacoma, WA. Six students, no van. We need two low-effort events between now and March that reach elementary kids, and something that would impress Impact Award judges.\"",
-  },
-  draft: {
-    hint: "Open an opportunity below and use “Rewrite with Claude”, or describe the one you mean.",
-    ph: "Describe who you're writing to and anything specific you want in the email — a date you want, a past event to mention, a person who referred you.",
-  },
-  plan: {
-    hint: "Uses whatever you've saved to your pipeline, plus what you write here.",
-    ph: "Anything Claude should know: your build season dates, how many students you can actually field, transport limits, when your Impact Award submission is due.",
-  },
+  find: { hint:"Claude answers from what it knows — it does not browse the web. Check every link opens.",
+    ph:"Your team, your area and your limits. e.g. \"Team 4321 in Tacoma WA. Six students, no van, two free Saturdays before March. We want elementary kids and something an Impact Award judge would notice.\"" },
+  draft: { hint:"Open a card and press “Rewrite with Claude”, or describe who you're writing to.",
+    ph:"Anything specific for the email — a date you want, a past event to mention, who referred you." },
+  plan: { hint:"Uses whatever you've saved to your pipeline, plus what you write here.",
+    ph:"Your build season dates, how many students you can field, transport limits, when Impact is due." },
 };
-const ERRCOPY = {
-  not_granted: "You turned the request down. Press Ask again if you want to run it.",
-  rate_limited: "Too many requests just now. Give it a minute, then ask again.",
-  prompt_too_large: "That's more text than one request can carry. Shorten it and ask again.",
-  invalid_json: "The answer didn't come back in a shape this page could read. Ask again, more specifically.",
-  refused: "Claude declined to answer that one. Try rephrasing it.",
-  empty_completion: "Nothing came back. Ask again.",
-  upstream_error: "The connection dropped partway. Ask again.",
-  session_expired: "Your session expired. Reload the page and try again.",
-  sampling_disabled: "AI features are switched off for this view.",
-  not_declared: "AI features aren't available on this copy of the page.",
-  capability_disabled: "AI features are switched off for this view.",
-  capability_removed: "AI features were switched off. Reload the page.",
-};
+const ERRCOPY = { not_granted:"You turned the request down. Press Ask again to run it.",
+  rate_limited:"Too many requests just now. Give it a minute.",
+  prompt_too_large:"That's more text than one request can carry. Shorten it.",
+  invalid_json:"The answer came back in a shape this page couldn't read. Ask again, more specifically.",
+  refused:"Claude declined that one. Try rephrasing.", empty_completion:"Nothing came back. Ask again.",
+  upstream_error:"The connection dropped partway. Ask again.",
+  session_expired:"Your session expired. Reload the page.",
+  sampling_disabled:"AI features are switched off for this view.",
+  not_declared:"AI features aren't available on this copy of the page.",
+  capability_disabled:"AI features are switched off for this view.",
+  capability_removed:"AI features were switched off. Reload the page." };
+
 const CATS = [...new Set(ALL.map(o => o.category))];
 const AUDS = [...new Set(ALL.map(o => o.audience))];
 const SEAS = [...new Set(ALL.map(o => o.season))];
+const DIRS = DATA.finders.map(f => f[0]);
+const DIR_URL = Object.fromEntries(DATA.finders.map(f => [f[0], { url:f[1], what:f[2], todo:f[3] }]));
 
 let sample = null, mode = "find", ctl = null, aiTarget = null;
 const out = () => $("#aiOut");
@@ -748,13 +870,13 @@ setHint();
 (async () => {
   if (!window.claude || typeof window.claude.use !== "function") {
     $("#aiState").textContent = "not available on this copy";
-    $("#aiHint").textContent = "This page is running outside claude.ai, so it can't reach Claude. Everything else works; the published version has AI search switched on.";
-    $("#aiGo").disabled = true; $("#aiGo").style.opacity = ".5";
-    return;
+    $("#aiHint").textContent = "This page is running outside claude.ai, so it can't reach Claude. Everything else works; the published version has AI search on.";
+    $("#aiGo").disabled = true; $("#aiGo").style.opacity = ".5"; return;
   }
   sample = await window.claude.use("sample").catch(() => null);
   if (sample) { $("#aiDot").classList.remove("off"); $("#aiState").textContent = "ready"; }
-  else { $("#aiState").textContent = "not available in this view"; $("#aiGo").disabled = true; $("#aiGo").style.opacity = ".5"; }
+  else { $("#aiState").textContent = "not available in this view";
+         $("#aiGo").disabled = true; $("#aiGo").style.opacity = ".5"; }
 })();
 
 $("#modes").addEventListener("click", e => {
@@ -765,111 +887,78 @@ $("#modes").addEventListener("click", e => {
 });
 $("#aiStop").addEventListener("click", () => ctl?.abort());
 $("#aiGo").addEventListener("click", () => run());
-
 function aiDraftFor(id) {
-  aiTarget = ALL.find(o => o.id === id);
-  mode = "draft";
+  aiTarget = ALL.find(o => o.id === id); mode = "draft";
   [...$("#modes").children].forEach(x => x.setAttribute("aria-pressed", x.dataset.mode === "draft"));
-  setHint();
-  $("#aiHint").textContent = "Rewriting the email for: " + aiTarget.title + " — " + aiTarget.target;
-  $("#ask").scrollIntoView({ behavior: "smooth", block: "start" });
-  run();
+  setHint(); $("#aiHint").textContent = "Rewriting for: " + aiTarget.title + " — " + aiTarget.host;
+  $("#ask").scrollIntoView({ behavior:"smooth", block:"start" }); run();
 }
-
-function busy(on) {
-  $("#aiGo").disabled = on; $("#aiStop").hidden = !on;
-  $("#aiGo").textContent = on ? "Asking…" : "Ask";
-}
-
-const NO_INVENT = "Never invent a specific street address, phone number, email address, staff member's name, or URL. "
-  + "If a contact detail is needed, give a search-engine query that would find the real one instead.";
+function busy(on) { $("#aiGo").disabled = on; $("#aiStop").hidden = !on;
+  $("#aiGo").textContent = on ? "Asking…" : "Ask"; }
+const areaWord = () => { const a = store.area;
+  return a.metro || a.state || a.country || "(they have not set an area — ask them for one)"; };
 
 async function run() {
   if (!sample) return;
   const extra = $("#aiIn").value.trim();
-  ctl = new AbortController();
-  busy(true);
+  ctl = new AbortController(); busy(true);
   out().innerHTML = `<div class="think">Thinking</div>`;
   try {
     if (mode === "find") await runFind(extra);
     else if (mode === "draft") await runDraft(extra);
     else await runPlan(extra);
   } catch (e) {
-    if (e?.code === "cancelled") {
+    if (e?.code === "cancelled")
       out().innerHTML = `<div class="stream">${esc(e.text || "")}</div><div class="err">Stopped.</div>`;
-    } else {
-      out().innerHTML = (e?.text ? `<div class="stream">${esc(e.text)}</div>` : "")
-        + `<div class="err">${esc(ERRCOPY[e?.code] || "Something went wrong. Ask again.")}</div>`;
-    }
+    else out().innerHTML = (e?.text ? `<div class="stream">${esc(e.text)}</div>` : "")
+      + `<div class="err">${esc(ERRCOPY[e?.code] || "Something went wrong. Ask again.")}</div>`;
   } finally { busy(false); ctl = null; }
 }
 
 async function runFind(extra) {
   const list = await sample.json(
-    `A high school FIRST robotics team's outreach lead needs outreach opportunities.\n\n` +
-    `What they told you:\n${extra || "(they gave no details — ask for general high-value options any team can run)"}\n\n` +
-    `Reply with ONLY a JSON array of up to 8 objects with exactly these keys:\n` +
-    `{"title": short activity name, "org": the organization or kind of organization, ` +
-    `"where": city/area they named, or "Nationwide", ` +
+    `A high school FIRST robotics team's outreach lead needs places to contact.\n\n` +
+    `Their area: ${areaWord()}\nWhat they told you: ${extra || "(nothing else)"}\n\n` +
+    `Reply with ONLY a JSON array of up to 10 objects, ordered by area then by usefulness, keys:\n` +
+    `{"org": the organisation's name, "area": "City, ST" (use their area unless the organisation is national, then "Nationwide"), ` +
+    `"site": the organisation's official website URL — ONLY if you are confident it is real and current, otherwise null, ` +
+    `"directory": if "site" is null, exactly one label from ${JSON.stringify(DIRS)} that would find this organisation, otherwise null, ` +
     `"category": one of ${JSON.stringify(CATS)}, "audience": one of ${JSON.stringify(AUDS)}, ` +
     `"season": one of ${JSON.stringify(SEAS)}, "effort": "Low"|"Medium"|"High", ` +
-    `"hours": integer estimate of team hours, "reach": integer estimate of people reached, ` +
-    `"why": one sentence on why it fits this team, ` +
-    `"how": one sentence naming the role to contact and how to reach them, ` +
-    `"search": a search-engine query that finds the real local contact}\n\n` +
-    `Prefer real, nameable programs you are confident exist. ${NO_INVENT}`,
-    { signal: ctl.signal, modelTier: "complex", onText: () => {} }
-  );
-  const arr = Array.isArray(list) ? list : [];
-  if (!arr.length) { out().innerHTML = `<div class="err">No suggestions came back. Try giving Claude your city and what you want.</div>`; return; }
-  out().innerHTML = `<div class="eyebrow" style="margin-bottom:9px">${arr.length} suggestions — Claude did not browse the web, so treat every one as a lead to confirm</div>
-    <div class="sugg">${arr.map((s, i) => `
-      <div class="card">
-        <h4>${esc(s.title || "Untitled")}</h4>
-        <p>${esc(s.org || "")}${s.where ? " — " + esc(s.where) : ""}</p>
-        <p style="margin-top:6px">${esc(s.why || "")}</p>
-        <p style="margin-top:6px"><b>${esc(s.how || "")}</b></p>
-        <div class="meta">
-          <span class="chip lead">ai lead</span>
+    `"hours": integer, "reach": integer, "why": one sentence on why it fits this team, ` +
+    `"how": one sentence naming the role to contact}\n\n` +
+    `Rules: prefer organisations that really exist in their area. Never invent a URL, street address, ` +
+    `phone number or staff member's name. If you are not certain a website URL is real, set "site" to null ` +
+    `and pick a "directory" instead — that is always the better answer than a guess.`,
+    { signal: ctl.signal, modelTier: "complex" });
+  const arr = (Array.isArray(list) ? list : []).map(s => {
+    const d = s.directory && DIR_URL[s.directory];
+    const url = (typeof s.site === "string" && /^https?:\/\//.test(s.site)) ? s.site : (d ? d.url : null);
+    return { ...s, url, kind: url && url === s.site ? "their site" : "directory",
+             what: url === s.site ? "Website Claude supplied — check it opens." : (d ? d.what : "") };
+  }).filter(s => s.url);
+  if (!arr.length) { out().innerHTML = `<div class="err">Nothing usable came back. Set your area above and try again.</div>`; return; }
+  const groups = {};
+  arr.forEach(s => (groups[s.area || "Unspecified"] ||= []).push(s));
+  out().innerHTML = `<div class="eyebrow">${arr.length} suggestions, grouped by area — Claude did not browse the web, so open each link before you rely on it</div>`
+    + Object.keys(groups).sort().map(area => `<div class="areagrp">
+      <h4>${esc(area)}<span>${groups[area].length}</span></h4>
+      <div class="sugg">${groups[area].map(s => `<div class="scard">
+        <h5>${esc(s.org || "Unnamed")}</h5>
+        <p>${esc(s.why || "")}</p>
+        <p style="margin-top:5px"><b>${esc(s.how || "")}</b></p>
+        <div class="crow" style="padding:8px 0 0">
+          ${s.category ? `<span class="chip">${esc(s.category)}</span>` : ""}
           ${s.season ? `<span class="chip">${esc(s.season)}</span>` : ""}
           ${s.effort ? `<span class="chip">${esc(s.effort)} effort</span>` : ""}
           ${s.hours ? `<span class="chip">${esc(s.hours)}h</span>` : ""}
-          ${s.reach ? `<span class="chip">~${esc(s.reach)} reached</span>` : ""}
         </div>
-        <div class="acts">
-          ${s.search ? `<a class="btn sm" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(s.search)}">Find the real contact &#8599;</a>` : ""}
-          <button class="btn sm" data-add="${i}">Add to the board</button>
-        </div>
-      </div>`).join("")}</div>`;
-  out().querySelectorAll("[data-add]").forEach(b => b.addEventListener("click", () => {
-    addSuggestion(arr[+b.dataset.add]); b.textContent = "Added ✓"; b.disabled = true;
-  }));
-}
-
-function addSuggestion(s) {
-  const o = {
-    id: "A-" + String(ALL.length).padStart(4, "0"), kind: "suggested",
-    title: String(s.title || "Untitled"), target: String(s.org || "Unknown organization"),
-    place: String(s.where || "Unspecified"), region: "Claude suggestion", state: "", country: "",
-    category: CATS.includes(s.category) ? s.category : "Community",
-    audience: AUDS.includes(s.audience) ? s.audience : "All ages",
-    format: "In person",
-    season: SEAS.includes(s.season) ? s.season : "Offseason",
-    window: DATA.seasonMonths[s.season] || "Confirm with the organization",
-    deadline: "Unknown — confirm before you commit",
-    duration: "Varies", hours: +s.hours || 8, reach: +s.reach || 25,
-    effort: ["Low", "Medium", "High"].includes(s.effort) ? s.effort : "Medium",
-    impact: 3, cost: "Unknown",
-    role: String(s.how || "See the note below"), applyType: "Search first",
-    leadTime: "Unknown", url: null,
-    search: String(s.search || (s.org || "") + " " + (s.where || "")),
-    blurb: String(s.why || ""), applyNote: null, need: [], bring: [], tags: ["claude"],
-  };
-  o.hay = [o.title, o.target, o.place, o.category, o.audience, o.season, o.blurb].join(" ").toLowerCase();
-  o.fit = o.impact * 2.2 + (EFFORT_RANK[o.effort] || 2) + Math.log10(o.reach + 10);
-  ALL.unshift(o);
-  store.status[o.id] = "saved"; save();
-  shown = Math.max(shown, 30); render();
+        <a class="link" style="margin:9px 0 0" href="${esc(s.url)}" target="_blank" rel="noopener">
+          <span style="min-width:0"><span class="dom">${esc((s.url.match(/^https?:\/\/(?:www\.)?([^/]+)/)||[,s.url])[1])}</span>
+          <span class="what">${esc(s.what)}</span></span>
+          <span class="kind">${esc(s.kind)}</span>
+          <svg class="go" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"></path></svg></a>
+      </div>`).join("")}</div></div>`).join("");
 }
 
 async function runDraft(extra) {
@@ -879,21 +968,17 @@ async function runDraft(extra) {
   const box = document.createElement("div"); box.className = "stream";
   out().innerHTML = ""; out().appendChild(box);
   const { text } = await sample(
-    `Rewrite this outreach email so a busy person says yes. Keep it under 200 words, plain and specific, ` +
+    `Rewrite this outreach email so a busy person says yes. Under 200 words, plain and specific, ` +
     `no corporate filler, no exclamation marks. Keep any [BRACKETED] placeholders exactly as they are. ` +
     `Return only the email, starting with the Subject line.\n\n` +
-    (o ? `Context: a high school robotics team is offering "${o.title}" to ${o.target}${o.place && o.place !== "Nationwide" ? " in " + o.place : ""}. ` +
-         `The reader is the ${o.role}.\n` : "") +
-    (extra ? `The team adds: ${extra}\n` : "") +
-    `\nCurrent draft:\n${base}`,
-    { signal: ctl.signal, cache: false, onText: ({ text }) => { box.textContent = text; } }
-  );
-  if (ta) {
-    ta.value = text; ta.dataset.touched = "1";
-    const b = document.createElement("button");
-    b.className = "btn sm"; b.textContent = "Put it back in the email box ✓"; b.disabled = true;
-    out().appendChild(b);
-  }
+    (o ? `Context: a high school robotics team is proposing "${o.title}" to ${o.host}` +
+         `${o.area && o.area !== "Nationwide" ? " in " + o.area : ""}. The reader is the ${o.role}.\n` : "") +
+    (extra ? `The team adds: ${extra}\n` : "") + `\nCurrent draft:\n${base}`,
+    { signal: ctl.signal, cache: false, onText: ({ text }) => { box.textContent = text; } });
+  if (ta) { ta.value = text; ta.dataset.touched = "1";
+    const b = document.createElement("div"); b.className = "eyebrow";
+    b.style.marginTop = "8px"; b.textContent = "Put back into the email box on that card";
+    out().appendChild(b); }
 }
 
 async function runPlan(extra) {
@@ -902,29 +987,34 @@ async function runPlan(extra) {
   out().innerHTML = ""; out().appendChild(box);
   await sample(
     `You are helping the outreach lead of a high school FIRST robotics team turn a shortlist into a season plan.\n\n` +
-    (mine.length
-      ? `Their pipeline (${mine.length} items):\n` + mine.map(o =>
-          `- [${store.status[o.id]}] ${o.title} — ${o.target}, ${o.place} · ${o.season} · ${o.effort} effort · ~${o.hours}h · reaches ~${o.reach}`).join("\n")
-      : `Their pipeline is empty. Build the plan from these strong starting options instead:\n` +
-        ALL.slice(0, 12).map(o => `- ${o.title} — ${o.target} · ${o.season} · ${o.effort} effort · ~${o.hours}h`).join("\n")) +
+    `Their area: ${areaWord()}\n\n` +
+    (mine.length ? `Their pipeline (${mine.length}):\n` + mine.slice(0, 40).map(o =>
+        `- [${store.status[o.id]}] ${o.title} — ${o.host}, ${o.area} · ${o.season} · ${o.effort} effort · ~${o.hours}h · reaches ~${o.reach}`).join("\n")
+      : `Their pipeline is empty. Use these strong starting options instead:\n` +
+        current.slice(0, 12).map(o => `- ${o.title} — ${o.host}, ${o.area} · ${o.season} · ${o.effort} effort · ~${o.hours}h`).join("\n")) +
     `\n\nWhat they told you: ${extra || "(nothing extra)"}\n\n` +
     `Give them, in plain prose with short headed sections:\n` +
-    `1. A month-by-month order of operations, keyed to the FIRST calendar (Kickoff in January, ` +
+    `1. A month-by-month order of operations keyed to the FIRST calendar (Kickoff in January, ` +
     `competition February to April, offseason May to August, recruiting in the fall).\n` +
     `2. Which items to drop, and why — be blunt if they have taken on too much.\n` +
-    `3. What to do in the next seven days, as three concrete actions.\n` +
+    `3. Three concrete actions for the next seven days.\n` +
     `4. What to write down as they go so the Impact Award submission writes itself in February.\n\n` +
-    `Be specific and short. ${NO_INVENT}`,
-    { signal: ctl.signal, modelTier: "complex", onText: ({ text }) => { box.textContent = text; } }
-  );
+    `Be specific and short. Never invent a URL, address, phone number or person's name.`,
+    { signal: ctl.signal, modelTier: "complex", onText: ({ text }) => { box.textContent = text; } });
 }
 
 /* ---------- go ---------- */
-$("#foot").innerHTML = `<b>${ALL.length.toLocaleString()} entries.</b> `
-  + `${DATA.counts.verified} are verified organizations — real, nationally operating, with their own websites. `
-  + `${DATA.counts.leads.toLocaleString()} are leads: a real activity paired with a real category of venue in a real metro area, `
-  + `with a search that finds the actual local contact. Leads are prospects to work, not bookings that exist. `
-  + `Hours, reach and impact figures are planning estimates, not measurements — replace them with your real numbers as you go, `
-  + `because those are the numbers a judge will ask you about. Your pipeline is saved in this browser only.`;
-render();
+const C = DATA.counts;
+$("#tagline").textContent = C.total.toLocaleString() + " ways to get your robot in front of people — every one with a real link";
+$("#linkNote").innerHTML = `<b>Every link goes somewhere real.</b> `
+  + `${(C.verified + C.universities).toLocaleString()} cards link straight to the organisation's own site — `
+  + `${C.verified} national programmes and ${DATA.unis.length} universities, whose addresses come from a public dataset of real institutions. `
+  + `The other ${C.local.toLocaleString()} link to one of ${C.finders} official national directories — the government or trade-body page whose whole job is to hand you the local contact. `
+  + `<b>There are no search-engine links anywhere on this board.</b> What no card can promise is that a slot is free: confirm every date before you promise it to your team.`;
+$("#foot").innerHTML = `<b>${C.total.toLocaleString()} opportunities across ${C.metros} metro areas in ${C.states} states and provinces.</b> `
+  + `Hours, reach and impact are planning estimates, not measurements — replace them with your real numbers as you go, `
+  + `because those are the numbers a judge will ask you about. `
+  + `Links were recorded from a public dataset and from known organisations; they could not be fetched to confirm they still resolve, so if one has moved, tell us and it gets fixed at the source. `
+  + `Your area, pipeline and team details are saved in this browser only.`;
+renderArea(); render();
 </script>

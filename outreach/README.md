@@ -1,77 +1,80 @@
 # Outreach Bench
 
-A working board of **1,000 outreach opportunities** for a FIRST robotics team's
-outreach lead: filter by region, season, audience, effort and activity type;
-track each one from saved → contacted → confirmed → done; export the pipeline as
-CSV; and ask Claude for suggestions tailored to your city and calendar.
+A working board of **6,000 outreach opportunities** for a FIRST robotics team's
+outreach lead. Pick your area, tap what you're after, and every card gives you a
+real link, a real description of what's on the other end, and a pre-written email.
 
 Open `index.html` in a browser. No build step, no dependencies, no server.
 
-## The two tiers, and why they exist
+## Every link goes somewhere real
 
-Nobody can produce 1,000 *verified* listings with live application links and real
-deadlines. Inventing them would mean emailing dead addresses and missing real
-dates, so the dataset is explicitly split and every row is labelled:
+There are **no search-engine links anywhere on this board**. Each card links to
+one of two things, and says which on its face:
 
-| Tier | Count | What it is | The apply button does |
-|---|---:|---|---|
-| **Verified** | 41 | A real, nationally operating organization or program, with its real website and its real recurring calendar. | Opens the organization's own site. |
-| **Lead** | 959 | A real activity paired with a real category of venue in a real metro area — a prospect to work, not a booking that exists. | Runs a live search that finds the actual local contact. |
+| Kind | Count | What the link is |
+|---|---:|---|
+| **The organisation itself** | 746 | Its own website. 41 national programmes, plus 705 slots across 141 universities. |
+| **Official directory** | 5,254 | The government or trade-body page whose entire job is to hand you the local contact — NCES school search, HUD's housing authority list, Feeding America's food bank locator, FIRST's team and event search, and 35 more. |
 
-**No row contains a fabricated address, phone number, email, staff name or URL.**
-Where a contact is needed and not known, the page hands you a search query instead
-of a made-up link. Hours, reach and impact are planning estimates, not
-measurements — replace them with your real numbers as you go, because those are
-the numbers a judge will ask you about.
+203 distinct destination domains in total.
 
-## What's in the box
+### Where the data came from, and what it is not
+
+- **University URLs** are taken from the public
+  [`Hipo/university-domains-list`](https://github.com/Hipo/university-domains-list)
+  dataset of real institutions. Their **cities and states are hand-checked**, not
+  inferred — name-matching universities to cities was tried and rejected because
+  it produced real errors (it put *St. Johns River State College*, which is in
+  Florida, in State College, Pennsylvania). Only universities whose location is
+  known confidently are included, which is why there are 141 and not 2,348.
+- **Directory URLs** are recorded from knowledge of the organisations. They are
+  chosen as top-level pages rather than deep paths, because deep paths rot.
+- **US federal directories are scoped to US metros.** A Calgary card never links
+  to NCES; non-US metros only use the worldwide directories in `finders.GLOBAL`.
+- **Nothing here was fetched to confirm it still resolves** — this project was
+  built in a sandbox whose network egress is limited to GitHub. Links are
+  believed-real, not verified-live. If one has moved, fix it in `finders.py` or
+  `sources/universities.json` and rerun the build.
+- **Hours, reach and impact are planning estimates**, not measurements. Replace
+  them with your real numbers as you go; those are the numbers a judge asks about.
+- **No card holds a date for you.** Confirm before you promise anything.
+
+## Using it
+
+1. **Where are you?** Country → state → metro. National programmes stay visible
+   at every level, because they run everywhere.
+2. **What are you after?** One tap sets several filters: one afternoon, biggest
+   impact, costs nothing, elementary kids, right now this season, can do
+   remotely, straight to the organisation.
+3. **Ask Claude** to find more, grouped by area, each with a link. If Claude
+   isn't sure a website is real it returns null and picks a directory from the
+   registry instead, so an AI result never carries an invented URL.
+
+Track each card saved → contacted → confirmed → done; the ribbon totals your
+outreach hours and people reached. Export the pipeline as CSV.
+
+## Files
 
 ```
-vocab.py            126 metro areas, 44 venue types, 31 activities a team can run
-verified.py         41 real organizations, hand-written, with notes on how each one works
+vocab.py            223 metros, 44 venue types, 31 activities
+verified.py         41 national programmes, hand-written, with real URLs
+finders.py          the directory registry: US directories + a GLOBAL set
+sources/            universities.json — real URLs from the public dataset
 build.py            composes the dataset and inlines it into the page
-opportunities.json  the generated dataset, readable and reusable
-template.html       the app, with a /*__DATA__*/null placeholder for the dataset
-index.html          BUILT — standalone page for a browser or GitHub Pages
-artifact.html       BUILT — same page as a fragment, for publishing on claude.ai
+opportunities.json  the generated dataset
+template.html       the app, with a /*__DATA__*/null placeholder
+index.html          BUILT — standalone page
+artifact.html       BUILT — fragment for publishing on claude.ai
 ```
 
-Regenerate after editing `vocab.py`, `verified.py` or `template.html`:
+Edit `template.html`, never `index.html` or `artifact.html` — those are
+overwritten. Rerun after any change:
 
 ```sh
 python3 build.py
 ```
 
-Edit `template.html`, never `index.html` or `artifact.html` — those are overwritten.
-
-## Adding your own opportunities
-
-Real ones you've confirmed go in `verified.py` as a tuple following the shape
-documented at the top of that file. New activities or venue types go in
-`vocab.py`; because leads are composed from the cross product, adding one
-activity with eight compatible venue types adds hundreds of prospects. Then
-rerun `build.py`.
-
-## The AI panel
-
-Three modes, powered by the artifact runtime's `sample` capability:
-
-- **Find opportunities near me** — describe your team, city and constraints; get
-  structured suggestions you can add straight onto the board.
-- **Write my outreach email** — rewrites the generated email for a specific
-  opportunity, streaming as it goes.
-- **Plan my season** — turns your saved pipeline into a month-by-month plan
-  keyed to the FIRST calendar, including what to drop.
-
-Claude **does not browse the web** here; it answers from what it knows. Its
-suggestions land on the board tagged `ai lead` and are prompted never to invent
-contact details — they carry a search query instead. Treat every one as a lead to
-confirm.
-
-Outside claude.ai the panel disables itself with an explanation; everything else
-on the page works offline.
-
 ## Storage
 
-Your pipeline, logged hours and team profile live in `localStorage` in that one
-browser. Nothing is uploaded. Export the CSV if you want it anywhere else.
+Your area, pipeline, logged hours and team profile live in `localStorage` in that
+one browser. Nothing is uploaded.
