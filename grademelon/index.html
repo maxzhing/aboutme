@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Grade Melon — MCPS Grade Calculator</title>
+<meta name="description" content="Grade Melon: paste your StudentVUE gradebook and calculate your MCPS grade. All Tasks / Assessments 90%, Practice / Preparation 10%, what-if assignments, semester and GPA calculators.">
+<meta name="theme-color" content="#1f7a3f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5A45 45 0 0 0 5 50h90A45 45 0 0 0 50 5z' fill='%231f7a3f' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 12A38 38 0 0 0 12 50h76A38 38 0 0 0 50 12z' fill='%23fff8f2' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 18A32 32 0 0 0 18 50h64A32 32 0 0 0 50 18z' fill='%23ff5b78' transform='rotate(180 50 50)'/%3E%3Cg fill='%231f2124'%3E%3Cellipse cx='38' cy='68' rx='3' ry='4.5'/%3E%3Cellipse cx='62' cy='68' rx='3' ry='4.5'/%3E%3Cellipse cx='50' cy='78' rx='3' ry='4.5'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   Grade Melon — MCPS grade calculator
+   Single file. No dependencies. Works offline.
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  color-scheme:light;
+  --rind:#1f7a3f; --rind2:#2ea55a; --rind-dark:#155c2e;
+  --flesh:#ff5b78; --flesh2:#ff8098; --flesh-dark:#e03f5f;
+  --seed:#1f2124;
+  --bg:#f4f6f3; --bg2:#eaeee8; --card:#ffffff; --card2:#f8faf7;
+  --ink:#16211c; --ink2:#33413a; --muted:#6c7d75; --faint:#9aa8a1;
+  --line:#e0e7e1; --line2:#cfdad2;
+  --A:#16a34a; --B:#2563eb; --C:#ca8a04; --D:#ea580c; --E:#dc2626;
+  --shadow:0 1px 2px rgba(20,40,30,.06),0 8px 24px -12px rgba(20,40,30,.18);
+  --shadow-lg:0 2px 4px rgba(20,40,30,.06),0 20px 48px -18px rgba(20,40,30,.28);
+  --r:14px; --r-sm:9px; --r-lg:20px;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --rind:#2ea55a; --rind2:#3fc46f; --rind-dark:#1c6b39;
+  --flesh:#ff6f89; --flesh2:#ff92a8; --flesh-dark:#e0506c;
+  --bg:#0f1512; --bg2:#131b17; --card:#182019; --card2:#1e2721;
+  --ink:#e9f0eb; --ink2:#c6d2ca; --muted:#8d9d94; --faint:#68786f;
+  --line:#26322b; --line2:#334036;
+  --A:#4ade80; --B:#60a5fa; --C:#fbbf24; --D:#fb923c; --E:#f87171;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-lg:0 2px 4px rgba(0,0,0,.4),0 20px 48px -18px rgba(0,0,0,.7);
+}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--sans); background:var(--bg); color:var(--ink);
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+img{max-width:100%}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--rind);text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3,h4{margin:0;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+main{padding-block:22px 60px}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(160deg,var(--rind-dark),var(--rind) 55%,var(--rind2));
+  color:#fff;box-shadow:0 2px 14px rgba(0,0,0,.16);
+}
+.topbar .wrap{display:flex;align-items:center;gap:14px;min-height:60px;flex-wrap:wrap;padding-block:8px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.22rem;letter-spacing:-.02em;color:#fff}
+.brand:hover{text-decoration:none}
+.melon{width:30px;height:30px;flex:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+.brand small{display:block;font-size:.6rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-top:-2px}
+.nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.nav button{
+  background:transparent;border:0;color:rgba(255,255,255,.82);
+  padding:8px 13px;border-radius:99px;cursor:pointer;font-weight:600;font-size:.86rem;
+  transition:background .15s,color .15s;
+}
+.nav button:hover{background:rgba(255,255,255,.14);color:#fff}
+.nav button[aria-current="true"]{background:#fff;color:var(--rind-dark)}
+.icon-btn{
+  background:rgba(255,255,255,.14);border:0;color:#fff;width:34px;height:34px;
+  border-radius:99px;cursor:pointer;display:grid;place-items:center;font-size:1rem;
+  transition:background .15s,transform .15s;
+}
+.icon-btn:hover{background:rgba(255,255,255,.26);transform:translateY(-1px)}
+
+/* ---------- generic ui ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.pad{padding:18px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px 15px;border-radius:99px;border:1px solid var(--line2);
+  background:var(--card);color:var(--ink);font-weight:600;font-size:.86rem;
+  cursor:pointer;transition:.15s;white-space:nowrap;
+}
+.btn:hover{border-color:var(--rind);color:var(--rind);transform:translateY(-1px)}
+.btn:active{transform:none}
+.btn-primary{background:var(--rind);border-color:var(--rind);color:#fff}
+.btn-primary:hover{background:var(--rind-dark);border-color:var(--rind-dark);color:#fff}
+.btn-melon{background:var(--flesh);border-color:var(--flesh);color:#fff}
+.btn-melon:hover{background:var(--flesh-dark);border-color:var(--flesh-dark);color:#fff}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn-ghost:hover{background:var(--bg2);color:var(--ink);border-color:transparent}
+.btn-sm{padding:6px 11px;font-size:.78rem}
+.btn-danger:hover{border-color:var(--E);color:var(--E)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spread{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.tiny{font-size:.76rem}
+.small{font-size:.84rem}
+label.fld{display:flex;flex-direction:column;gap:5px;font-size:.74rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+input[type=text],input[type=number],select,textarea{
+  background:var(--card2);border:1px solid var(--line2);border-radius:var(--r-sm);
+  padding:9px 11px;font-size:.9rem;font-weight:500;color:var(--ink);width:100%;
+  transition:border-color .15s,box-shadow .15s;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--rind);box-shadow:0 0 0 3px color-mix(in srgb,var(--rind) 22%,transparent);
+}
+textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertical;min-height:150px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;
+  background:var(--bg2);border:1px solid var(--line);font-size:.72rem;font-weight:700;
+  letter-spacing:.02em;color:var(--ink2);
+}
+.pill-A{background:color-mix(in srgb,var(--A) 16%,transparent);color:var(--A);border-color:color-mix(in srgb,var(--A) 32%,transparent)}
+.pill-B{background:color-mix(in srgb,var(--B) 16%,transparent);color:var(--B);border-color:color-mix(in srgb,var(--B) 32%,transparent)}
+.pill-C{background:color-mix(in srgb,var(--C) 18%,transparent);color:var(--C);border-color:color-mix(in srgb,var(--C) 34%,transparent)}
+.pill-D{background:color-mix(in srgb,var(--D) 16%,transparent);color:var(--D);border-color:color-mix(in srgb,var(--D) 32%,transparent)}
+.pill-E{background:color-mix(in srgb,var(--E) 16%,transparent);color:var(--E);border-color:color-mix(in srgb,var(--E) 32%,transparent)}
+.pill-N{background:var(--bg2);color:var(--muted)}
+.sec-title{font-size:.72rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--line)}
+.note{background:var(--card2);border:1px dashed var(--line2);border-radius:var(--r-sm);padding:11px 13px;font-size:.83rem;color:var(--ink2)}
+.divider{height:1px;background:var(--line);margin:16px 0}
+
+/* ---------- class tabs ---------- */
+.classtabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:thin}
+.classtab{
+  flex:none;display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:99px;
+  background:var(--card);border:1px solid var(--line);cursor:pointer;font-weight:650;font-size:.86rem;
+  color:var(--ink2);transition:.15s;box-shadow:var(--shadow);
+}
+.classtab:hover{transform:translateY(-1px);border-color:var(--line2)}
+.classtab[aria-current="true"]{border-color:var(--rind);box-shadow:0 0 0 2px color-mix(in srgb,var(--rind) 26%,transparent),var(--shadow);color:var(--ink)}
+.classtab .lg{font-weight:900;font-size:.9rem}
+
+/* ---------- grade hero ---------- */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.gradeball{
+  width:132px;height:132px;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(var(--gc) calc(var(--gp)*1%),var(--bg2) 0);
+  position:relative;flex:none;transition:--gp .5s;
+}
+.gradeball::after{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--card)}
+.gradeball .inner{position:relative;z-index:1;text-align:center;line-height:1}
+.gradeball .lt{font-size:2.9rem;font-weight:900;color:var(--gc);letter-spacing:-.04em}
+.gradeball .pc{font-size:.95rem;font-weight:800;color:var(--ink2);margin-top:3px;font-variant-numeric:tabular-nums}
+.hero h2{font-size:1.45rem;margin-bottom:2px}
+.hero .meta{color:var(--muted);font-size:.85rem;margin-bottom:12px}
+.nextline{font-size:.85rem;color:var(--ink2)}
+.nextline b{color:var(--rind)}
+
+/* ---------- category bars ---------- */
+.catlist{display:grid;gap:11px}
+.catrow{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.catrow .nm{font-weight:700;font-size:.87rem;display:flex;align-items:center;gap:7px;min-width:0}
+.catrow .nm span.w{font-size:.7rem;font-weight:800;color:#fff;background:var(--rind);padding:2px 7px;border-radius:99px;flex:none}
+.catrow .val{font-variant-numeric:tabular-nums;font-weight:800;font-size:.9rem;white-space:nowrap}
+.catrow .val small{font-weight:600;color:var(--muted);font-size:.76rem}
+.bar{grid-column:1/-1;height:8px;border-radius:99px;background:var(--bg2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--flesh),var(--flesh2));transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.bar.g i{background:linear-gradient(90deg,var(--rind),var(--rind2))}
+
+/* ---------- assignment table ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:.87rem}
+.tbl th{
+  text-align:left;font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);padding:8px 9px;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+.tbl th.n,.tbl td.n{text-align:right}
+.tbl th.c,.tbl td.c{text-align:center}
+.tbl td{padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tbody tr{transition:background .12s}
+.tbl tbody tr:hover{background:var(--card2)}
+.tbl tr.off{opacity:.42}
+.tbl tr.hypo td{background:color-mix(in srgb,var(--flesh) 7%,transparent)}
+.tbl tr.hypo:hover td{background:color-mix(in srgb,var(--flesh) 12%,transparent)}
+.aname{font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.aname .tag{font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  padding:2px 6px;border-radius:5px;background:var(--flesh);color:#fff}
+.aname .tag.mod{background:var(--C)}
+.aname .tag.miss{background:var(--E)}
+.aname .tag.ex{background:var(--muted)}
+.catdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--rind);flex:none}
+.score-cell{display:flex;align-items:center;gap:4px;justify-content:flex-end;white-space:nowrap}
+.score-cell input{width:62px;padding:5px 7px;text-align:right;font-variant-numeric:tabular-nums;font-size:.84rem}
+.score-cell .sl{color:var(--faint);font-weight:700}
+.pctcell{font-variant-numeric:tabular-nums;font-weight:800}
+.impact{font-variant-numeric:tabular-nums;font-weight:700;font-size:.8rem}
+.impact.up{color:var(--A)}.impact.down{color:var(--E)}.impact.flat{color:var(--faint)}
+.chk{width:17px;height:17px;accent-color:var(--rind);cursor:pointer}
+.rowbtn{background:none;border:0;color:var(--faint);cursor:pointer;padding:3px 5px;border-radius:6px;font-size:.9rem;line-height:1}
+.rowbtn:hover{color:var(--E);background:color-mix(in srgb,var(--E) 12%,transparent)}
+.rowbtn.reset:hover{color:var(--C);background:color-mix(in srgb,var(--C) 14%,transparent)}
+.tbl tfoot td{padding:10px 9px;font-weight:800;font-size:.85rem;border-top:2px solid var(--line2)}
+
+/* mobile stacked table */
+@media (max-width:600px){
+  .topbar .wrap{min-height:0}
+  .brand{flex:1;min-width:0}
+  #themeBtn{order:2;margin-left:auto}
+  .nav{order:3;width:100%;margin-left:0;justify-content:center;gap:1px}
+  .nav button{padding:7px 11px;font-size:.82rem}
+}
+@media (max-width:760px){
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+  .tbl thead,.tbl tfoot{display:none}
+  .tbl tr{border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:9px;padding:9px 11px;background:var(--card)}
+  .tbl tr.hypo{border-color:var(--flesh)}
+  .tbl td{border:0;padding:4px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:right}
+  .tbl td::before{content:attr(data-l);font-size:.68rem;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);text-align:left;flex:none}
+  .tbl td.full{display:block;text-align:left}
+  .tbl td.full::before{display:block;margin-bottom:3px}
+  .score-cell{justify-content:flex-end}
+  .hero{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .hero .txt{width:100%}
+}
+
+/* ---------- misc ---------- */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.stack{display:grid;gap:14px}
+.result{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--rind) 12%,transparent),color-mix(in srgb,var(--flesh) 12%,transparent));
+  border:1px solid var(--line2);border-radius:var(--r);padding:15px 17px;
+}
+.result .big{font-size:1.7rem;font-weight:900;letter-spacing:-.02em}
+.empty{text-align:center;padding:42px 20px;color:var(--muted)}
+.empty .big{font-size:2.6rem;margin-bottom:8px}
+.scale{width:100%;border-collapse:collapse;font-size:.85rem}
+.scale th,.scale td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
+.scale th{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.scale td:first-child{font-weight:900;font-size:1rem;width:52px}
+.semchart{width:100%;border-collapse:collapse;font-size:.83rem;text-align:center}
+.semchart th,.semchart td{border:1px solid var(--line);padding:7px;font-weight:700;width:16%;white-space:nowrap}
+.semchart th{background:var(--bg2);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.semchart td.hi{background:color-mix(in srgb,var(--rind) 18%,transparent);outline:2px solid var(--rind)}
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translate(-50%,120%);
+  background:var(--seed);color:#fff;padding:11px 20px;border-radius:99px;font-size:.85rem;
+  font-weight:600;box-shadow:var(--shadow-lg);z-index:200;transition:transform .3s cubic-bezier(.2,.9,.3,1);
+  max-width:calc(100% - 36px);text-align:center;
+}
+.toast.show{transform:translate(-50%,0)}
+details.help{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card2);overflow:hidden}
+details.help>summary{padding:11px 14px;cursor:pointer;font-weight:700;font-size:.88rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.help>summary::-webkit-details-marker{display:none}
+details.help>summary::after{content:'+';font-size:1.1rem;color:var(--muted);font-weight:400}
+details.help[open]>summary::after{content:'–'}
+details.help .body{padding:0 14px 14px;font-size:.87rem;color:var(--ink2);line-height:1.6}
+pre.sample{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;
+  font-family:var(--mono);font-size:.74rem;line-height:1.55;overflow-x:auto;color:var(--ink2);white-space:pre}
+ol.steps{margin:0;padding-left:20px;line-height:1.75;font-size:.88rem}
+ol.steps li{margin-bottom:4px}
+footer.foot{border-top:1px solid var(--line);padding:22px 0 34px;color:var(--muted);font-size:.79rem;text-align:center;line-height:1.7}
+@media print{
+  .topbar,.nav,.btn,.classtabs,.rowbtn,footer.foot{display:none!important}
+  body{background:#fff}
+  .card{box-shadow:none;border-color:#ccc;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#" onclick="GM.go('grades');return false">
+      <svg class="melon" viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M50 95A45 45 0 0 1 5 50h90A45 45 0 0 1 50 95z" fill="#1f7a3f"/>
+        <path d="M50 88A38 38 0 0 1 12 50h76A38 38 0 0 1 50 88z" fill="#fff8f2"/>
+        <path d="M50 82A32 32 0 0 1 18 50h64A32 32 0 0 1 50 82z" fill="#ff5b78"/>
+        <g fill="#1f2124"><ellipse cx="38" cy="62" rx="3" ry="4.5"/><ellipse cx="62" cy="62" rx="3" ry="4.5"/><ellipse cx="50" cy="72" rx="3" ry="4.5"/></g>
+      </svg>
+      <span>Grade Melon<small>MCPS Grade Calculator</small></span>
+    </a>
+    <nav class="nav" id="nav">
+      <button data-view="grades" aria-current="true">Grades</button>
+      <button data-view="semester">Semester</button>
+      <button data-view="gpa">GPA</button>
+      <button data-view="help">How to use</button>
+    </nav>
+    <button class="icon-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============================ GRADES ============================ -->
+<section id="view-grades">
+  <div class="classtabs" id="classtabs"></div>
+  <div id="classArea"></div>
+</section>
+
+<!-- ============================ SEMESTER ============================ -->
+<section id="view-semester" hidden>
+  <div class="stack">
+    <div class="card pad">
+      <h2 style="font-size:1.25rem;margin-bottom:4px">Semester grade calculator</h2>
+      <p class="muted small" style="margin:0 0 16px">MCPS builds a semester grade from your two marking period letter grades — not from averaging percentages. Each letter is worth quality points (A&nbsp;=&nbsp;4, B&nbsp;=&nbsp;3, C&nbsp;=&nbsp;2, D&nbsp;=&nbsp;1, E&nbsp;=&nbsp;0); the two are averaged and a tie (a&nbsp;.5) rounds <b>up</b>.</p>
+      <div class="grid3">
+        <label class="fld">Marking period 1
+          <select id="semMP1"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select>
+        </label>
+        <label class="fld">Marking period 2
+          <select id="semMP2"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select>
+        </label>
+        <label class="fld">Pull letters from a class
+          <select id="semFromClass"><option value="">— none —</option></select>
+        </label>
+      </div>
+      <div class="result" style="margin-top:16px">
+        <div class="tiny muted" style="letter-spacing:.1em;text-transform:uppercase;font-weight:800">Semester grade</div>
+        <div class="big" id="semOut">A</div>
+        <div class="small muted" id="semWhy"></div>
+      </div>
+    </div>
+
+    <div class="card pad">
+      <div class="sec-title">MCPS semester grade chart</div>
+      <div style="overflow-x:auto"><table class="semchart" id="semChart"></table></div>
+      <p class="tiny muted" style="margin:10px 0 0">The chart is symmetric — it does not matter which marking period was which.</p>
+    </div>
+
+    <div class="card pad">
+      <h3 style="font-size:1.08rem;margin-bottom:4px">State test / final exam blend</h3>
+      <p class="muted small" style="margin:0 0 14px">Some courses fold an outside assessment — a state test (MISA, HSA, MCAP), a county final, or an AP/IB exam — into the course grade for a set percentage. Enter what the assessment is worth and this blends it with your course percentage.</p>
+      <div class="grid3">
+        <label class="fld">Course grade so far (%)
+          <input type="number" id="blendCourse" value="87" step="0.01" min="0">
+        </label>
+        <label class="fld">Assessment score (%)
+          <input type="number" id="blendTest" value="90" step="0.01" min="0">
+        </label>
+        <label class="fld">Assessment is worth (%)
+          <input type="number" id="blendW" value="20" step="1" min="0" max="100">
+        </label>
+      </div>
+      <div class="result" style="margin-top:16px">
+        <div class="tiny muted" style="letter-spacing:.1em;text-transform:uppercase;font-weight:800">Final course grade</div>
+        <div class="big" id="blendOut">—</div>
+        <div class="small muted" id="blendWhy"></div>
+      </div>
+      <div class="note" style="margin-top:14px"><b>Not sure if this applies to you?</b> Ask your teacher. MCPS does not fold MISA/MCAP into course grades in every course or every year — this tool is here for the courses that do, and for AP/IB predicted-grade math.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ GPA ============================ -->
+<section id="view-gpa" hidden>
+  <div class="stack">
+    <div class="card pad">
+      <div class="spread" style="margin-bottom:14px">
+        <div>
+          <h2 style="font-size:1.25rem;margin-bottom:2px">GPA calculator</h2>
+          <p class="muted small" style="margin:0">A&nbsp;=&nbsp;4, B&nbsp;=&nbsp;3, C&nbsp;=&nbsp;2, D&nbsp;=&nbsp;1, E&nbsp;=&nbsp;0. Weighted GPA adds quality points for Honors and AP/IB courses.</p>
+        </div>
+        <div class="row">
+          <button class="btn btn-sm" id="gpaPull">Pull my classes</button>
+          <button class="btn btn-sm btn-primary" id="gpaAdd">+ Course</button>
+        </div>
+      </div>
+      <div id="gpaRows" class="stack"></div>
+      <div class="divider"></div>
+      <div class="row" style="justify-content:space-between">
+        <label class="fld" style="max-width:230px">Honors / AP / IB bump
+          <select id="gpaBump">
+            <option value="1">+1.0 for Honors and AP/IB (MCPS)</option>
+            <option value="0.5">+0.5 Honors, +1.0 AP/IB</option>
+            <option value="0">No bump (unweighted only)</option>
+          </select>
+        </label>
+        <div class="row" style="gap:22px">
+          <div style="text-align:right">
+            <div class="tiny muted" style="letter-spacing:.1em;text-transform:uppercase;font-weight:800">Unweighted</div>
+            <div style="font-size:1.7rem;font-weight:900" id="gpaUn">—</div>
+          </div>
+          <div style="text-align:right">
+            <div class="tiny muted" style="letter-spacing:.1em;text-transform:uppercase;font-weight:800">Weighted</div>
+            <div style="font-size:1.7rem;font-weight:900;color:var(--rind)" id="gpaW">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ HELP ============================ -->
+<section id="view-help" hidden>
+  <div class="stack">
+    <div class="card pad">
+      <h2 style="font-size:1.25rem;margin-bottom:10px">How to get your grades in here</h2>
+      <ol class="steps">
+        <li>Open <b>StudentVUE / Synergy</b> and go to <b>Grades</b> (Gradebook).</li>
+        <li>Pick the class and marking period you want, so the assignment list is on screen.</li>
+        <li>Select the whole assignment list — click just above the first assignment and drag to the bottom, or press <b>Ctrl&nbsp;+&nbsp;A</b> (<b>⌘&nbsp;+&nbsp;A</b> on Mac) — then <b>Ctrl&nbsp;+&nbsp;C</b> to copy.</li>
+        <li>Come back here, hit <b>Paste gradebook</b> on the class, and press <b>Ctrl&nbsp;+&nbsp;V</b> in the box.</li>
+        <li>Hit <b>Import</b>. Every assignment lands in the right category with its points, and your grade appears.</li>
+      </ol>
+      <div class="note" style="margin-top:14px">Extra text — menus, headers, week rows, the class name — is fine. Grade Melon skips anything that is not an assignment.</div>
+    </div>
+
+    <div class="card pad">
+      <div class="sec-title">What a paste looks like</div>
+      <pre class="sample">Week 01 - 8/25/2026 through 8/29/2026  (1 items)
+Aug
+27
+AT-Current Events due 8/27, deadline 8/28
+All Tasks / Assessments | 8.00 points
+8
+100%
+Week 02 - 8/30/2026 through 9/5/2026  (1 items)
+Aug
+31
+PP-Intro to Democracy due 8/31
+Practice / Preparation | 15.00 points
+15
+100%</pre>
+      <p class="small muted" style="margin:10px 0 0">Ungraded assignments (no score under the category line) are imported and left out of the math until you type a score in.</p>
+      <button class="btn btn-melon btn-sm" style="margin-top:12px" id="loadDemo">🍉 Try it with this sample</button>
+    </div>
+
+    <div class="card pad">
+      <div class="sec-title">How the grade is calculated</div>
+      <p class="small" style="margin:0 0 12px;color:var(--ink2)">MCPS uses <b>weighted categories</b>. Each category is scored on its own — total points you earned over total points possible <i>in that category</i> — and then the categories are combined by weight:</p>
+      <pre class="sample">Practice / Preparation   =  PP points earned ÷ PP points possible     → weight 10%
+All Tasks / Assessments  =  AT points earned ÷ AT points possible     → weight 90%
+
+Marking period grade = (PP% × 10 + AT% × 90) ÷ 100</pre>
+      <p class="small" style="margin:12px 0 0;color:var(--ink2)">This is <b>not</b> the same as adding up every point in the class. One 8-point Practice assignment does far less to your grade than one 8-point All&nbsp;Task.</p>
+      <div class="note" style="margin-top:12px"><b>Empty categories drop out.</b> If you have no Practice/Preparation grades yet, All&nbsp;Tasks carries 100% of your grade on its own — the remaining weights are re-scaled, exactly the way Synergy does it. The same happens to any category you add.</div>
+    </div>
+
+    <div class="card pad">
+      <div class="sec-title">MCPS grading scale</div>
+      <table class="scale">
+        <thead><tr><th>Grade</th><th>Percentage</th><th>Quality points</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--A)">A</td><td>89.5% – 100%</td><td>4</td></tr>
+          <tr><td style="color:var(--B)">B</td><td>79.5% – 89.49%</td><td>3</td></tr>
+          <tr><td style="color:var(--C)">C</td><td>69.5% – 79.49%</td><td>2</td></tr>
+          <tr><td style="color:var(--D)">D</td><td>59.5% – 69.49%</td><td>1</td></tr>
+          <tr><td style="color:var(--E)">E</td><td>below 59.5%</td><td>0</td></tr>
+        </tbody>
+      </table>
+      <p class="tiny muted" style="margin:10px 0 0">An 89.5 is an A. An 89.49 is a B. Grade Melon rounds the same way your report card does.</p>
+    </div>
+
+    <div class="card pad">
+      <div class="sec-title">Questions</div>
+      <div class="stack" style="gap:9px">
+        <details class="help"><summary>Where is my data stored?</summary><div class="body">In your own browser, on this device only (localStorage). Nothing is uploaded, there is no account, and no server ever sees your grades. Clearing your browser data clears your classes — use <b>Export</b> first if you want a backup.</div></details>
+        <details class="help"><summary>Do I need my StudentVUE login?</summary><div class="body">No, and you should never type your school password into a site that is not your school's. Grade Melon works entirely off what you copy and paste.</div></details>
+        <details class="help"><summary>Why doesn't this match StudentVUE exactly?</summary><div class="body">Check three things. (1) Ungraded assignments — Synergy leaves them out until a score exists, and so does Grade Melon; make sure a teacher hasn't entered a zero you didn't import. (2) Category weights — a few courses use weights other than 90/10; you can edit them per class. (3) Excused or dropped assignments — untick them here to match.</div></details>
+        <details class="help"><summary>What is a "what-if" assignment?</summary><div class="body">A fake assignment you add to see what would happen. It shows up pink with a <b>WHAT-IF</b> tag and counts in your grade so you can watch the number move. <b>Clear what-ifs</b> removes them all at once. Editing a real assignment's score works the same way — it gets an orange <b>EDITED</b> tag and a ↺ button to put the real score back.</div></details>
+        <details class="help"><summary>What does the Impact column mean?</summary><div class="body">How much that single assignment is moving your grade right now — the difference between your grade with it and your grade without it. A −2.1 means dropping that assignment would raise you 2.1 points.</div></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div style="margin-bottom:6px">🍉 <b>Grade Melon</b> — an MCPS grade calculator</div>
+    <div>Unofficial. Not affiliated with, endorsed by, or connected to Montgomery County Public Schools or Synergy/StudentVUE.<br>Your grades stay in your browser. Your official grade is the one in StudentVUE.</div>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn btn-sm" id="exportBtn">⬇ Export backup</button>
+      <button class="btn btn-sm" id="importBtn">⬆ Restore backup</button>
+      <button class="btn btn-sm btn-danger" id="wipeBtn">Delete everything</button>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="fileIn" accept="application/json" hidden>
+
+<script>
+"use strict";
+/* ==================================================================
+   Grade Melon
+   State + MCPS grade math + StudentVUE paste parser
+   ================================================================== */
+const GM = (() => {
+
+const KEY = 'grademelon.v1';
+const uid = () => Math.random().toString(36).slice(2,10);
+const $  = (s,r=document) => r.querySelector(s);
+const $$ = (s,r=document) => [...r.querySelectorAll(s)];
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
+const round2 = n => Math.round(n*100)/100;
+
+/* ---------------- MCPS grading scale ---------------- */
+const CUTS = [['A',89.5],['B',79.5],['C',69.5],['D',59.5],['E',-Infinity]];
+const POINTS = {A:4,B:3,C:2,D:1,E:0};
+const letterFor = p => p === null ? null : CUTS.find(c => p >= c[1])[0];
+/* Points needed to reach the next letter up */
+const nextCut = p => { for (let i=CUTS.length-1;i>=0;i--) if (CUTS[i][1] > p) return CUTS[i]; return null; };
+
+/* MCPS semester grade: average the two marking periods' quality points, round a .5 UP */
+const semesterGrade = (a,b) => {
+  const avg = (POINTS[a] + POINTS[b]) / 2;
+  const pts = Math.ceil(avg - 1e-9);
+  return Object.keys(POINTS).find(k => POINTS[k] === pts);
+};
+
+/* ---------------- default categories ---------------- */
+const DEFAULT_CATS = () => ([
+  { id:uid(), name:'All Tasks / Assessments', weight:90 },
+  { id:uid(), name:'Practice / Preparation',  weight:10 }
+]);
+
+/* Match a pasted category name to one of the class's categories */
+const norm = s => String(s||'').toLowerCase().replace(/[^a-z]/g,'');
+const ALIASES = [
+  { keys:['alltasksassessments','alltasks','alltask','assessments','assessment','at','summative','majorassessments','tasksassessments'], name:'All Tasks / Assessments', weight:90 },
+  { keys:['practicepreparation','practiceprep','practice','preparation','pp','homework','hw','formative','classwork','practiceandpreparation'], name:'Practice / Preparation', weight:10 }
+];
+function canonical(raw){
+  const n = norm(raw);
+  for (const a of ALIASES) if (a.keys.includes(n)) return a;
+  for (const a of ALIASES) if (a.keys.some(k => k.length > 3 && (n.includes(k) || k.includes(n)))) return a;
+  return null;
+}
+
+/* ==================================================================
+   PARSER — StudentVUE / Synergy gradebook paste
+   ================================================================== */
+const RE = {
+  week   : /^week\s*\d*\s*[-–—:]?\s*(\d{1,2})\/(\d{1,2})\/(\d{2,4})/i,
+  anchor : /^(.*?)\|\s*(-?\d+(?:\.\d+)?)\s*(?:points?|pts?)\b/i,
+  anchor2: /^([A-Za-z][A-Za-z .,'&\/-]{1,60}?)\s+(-?\d+(?:\.\d+)?)\s*(?:points?|pts?)\s*$/i,
+  month  : /^(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?$/i,
+  day    : /^([0-3]?\d)$/,
+  pct    : /^(-?\d+(?:\.\d+)?)\s*%$/,
+  numOnly: /^(-?\d+(?:\.\d+)?)$/,
+  outOf  : /^(-?\d+(?:\.\d+)?)\s*(?:\/|out\s*of)\s*(\d+(?:\.\d+)?)$/i,
+  flag   : /^(missing|late|absent|incomplete|excused|exempt|not\s*graded|ungraded|no\s*count|n\/a)$/i,
+  prefix : /^\s*(AT|PP)\s*[-–:]\s*/i,
+  due    : /\bdue\s+(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)/i,
+  itemcnt: /^\(?\d+\s*items?\)?$/i
+};
+const MONTHS = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,sept:8,oct:9,nov:10,dec:11};
+
+function parseGradebook(raw){
+  const lines = String(raw||'').replace(/\r/g,'').replace(/ /g,' ')
+    .split('\n').map(l => l.replace(/\s+/g,' ').trim());
+
+  const items = [];
+  const seenCats = new Map();
+  let year = new Date().getFullYear();
+  let firstAnchor = -1;
+
+  const isAnchor = l => RE.anchor.test(l) || (RE.anchor2.test(l) && /[a-z]{3}/i.test(l));
+  const matchAnchor = l => l.match(RE.anchor) || l.match(RE.anchor2);
+
+  for (let i = 0; i < lines.length; i++){
+    const L = lines[i];
+    const wk = L.match(RE.week);
+    if (wk){ let y = +wk[3]; if (y < 100) y += 2000; year = y; continue; }
+    if (!isAnchor(L)) continue;
+    if (firstAnchor < 0) firstAnchor = i;
+
+    const m = matchAnchor(L);
+    let catName  = m[1].replace(/[|•\-–—\s]+$/,'').replace(/^[|•\s]+/,'').trim();
+    let possible = parseFloat(m[2]);
+    if (!catName) catName = 'Uncategorized';
+
+    /* --- walk back for name + date --- */
+    let name = '', mon = null, day = null;
+    let j = i - 1;
+    while (j >= 0 && !lines[j]) j--;
+    if (j >= 0 && !RE.week.test(lines[j]) && !RE.month.test(lines[j]) && !RE.day.test(lines[j]) && !RE.itemcnt.test(lines[j])){
+      name = lines[j]; j--;
+    }
+    while (j >= 0 && !lines[j]) j--;
+    if (j >= 0 && RE.day.test(lines[j])){ day = +lines[j]; j--; while (j >= 0 && !lines[j]) j--; }
+    if (j >= 0 && RE.month.test(lines[j])) mon = MONTHS[lines[j].toLowerCase().replace(/[^a-z]/g,'').slice(0,4)] ?? MONTHS[lines[j].toLowerCase().slice(0,3)];
+    if (!name) name = 'Untitled assignment';
+
+    /* --- walk forward for score / percent / flags --- */
+    let earned = null, pct = null, flags = [];
+    for (let k = i + 1; k < lines.length && k <= i + 7; k++){
+      const s = lines[k];
+      if (!s) continue;
+      if (isAnchor(s) || RE.week.test(s) || RE.month.test(s)) break;
+      let mm;
+      if ((mm = s.match(RE.outOf))){ earned = parseFloat(mm[1]); possible = parseFloat(mm[2]); continue; }
+      if ((mm = s.match(RE.pct)))  { pct = parseFloat(mm[1]); continue; }
+      if (RE.flag.test(s))         { flags.push(s.toLowerCase()); continue; }
+      if ((mm = s.match(RE.numOnly))){ if (earned === null) earned = parseFloat(mm[1]); continue; }
+      break;
+    }
+    if (earned === null && pct !== null && possible > 0) earned = round2(possible * pct / 100);
+
+    const excused = flags.some(f => /excused|exempt|no count/.test(f));
+    const missing = flags.some(f => /missing/.test(f));
+
+    let date = null;
+    if (mon !== null && mon !== undefined && day) date = new Date(year, mon, day).getTime();
+    else { const d = name.match(RE.due); if (d){ const p = d[1].split('/'); date = new Date(p[2] ? (+p[2] < 100 ? 2000 + +p[2] : +p[2]) : year, +p[0]-1, +p[1]).getTime(); } }
+
+    seenCats.set(catName, (seenCats.get(catName)||0) + 1);
+    items.push({
+      id: uid(), name, catName, date,
+      possible: Number.isFinite(possible) ? possible : 0,
+      earned, graded: earned !== null,
+      included: !excused, missing, excused,
+      hypo: false, origEarned: earned, origPossible: Number.isFinite(possible) ? possible : 0
+    });
+  }
+
+  /* --- guess a class name from the text above the first assignment --- */
+  let guess = '';
+  if (firstAnchor > 0){
+    const head = lines.slice(0, Math.max(0, firstAnchor - 3)).filter(Boolean)
+      .filter(l => !RE.week.test(l) && !RE.month.test(l) && !RE.day.test(l) && !RE.itemcnt.test(l)
+                && !/^(grade|assignment|score|points|due|date|category|home|grades|gradebook|calendar|attendance|student|report|marking\s*period|week)/i.test(l)
+                && /[a-z]{3}/i.test(l) && l.length < 70);
+    if (head.length) guess = head[head.length-1]
+      .replace(/^\s*(course|class|subject|period)\s*\d*\s*[:\-–]\s*/i,'')
+      .replace(/\s*\(.*\)\s*$/,'').trim();
+  }
+  return { items, cats:[...seenCats.keys()], guess };
+}
+
+/* ==================================================================
+   GRADE MATH — MCPS weighted categories
+   ================================================================== */
+function computeClass(cls, opts = {}){
+  const skipId = opts.skipId || null;
+  const extra  = opts.extra  || null;   // {catId, earned, possible} hypothetical add-on
+
+  const cats = cls.categories.map(c => {
+    let earned = 0, possible = 0, count = 0;
+    for (const a of cls.assignments){
+      if (a.catId !== c.id) continue;
+      if (!a.included || !a.graded) continue;
+      if (a.id === skipId) continue;
+      earned += (num(a.earned) ?? 0);
+      possible += (num(a.possible) ?? 0);
+      count++;
+    }
+    if (extra && extra.catId === c.id){ earned += extra.earned; possible += extra.possible; count++; }
+    const active = possible > 0;
+    return { cat:c, earned:round2(earned), possible:round2(possible), count, active,
+             pct: active ? (earned / possible) * 100 : null };
+  });
+
+  const active = cats.filter(c => c.active && c.cat.weight > 0);
+  const totalW = active.reduce((s,c) => s + c.cat.weight, 0);
+  let pct = null;
+  if (totalW > 0) pct = active.reduce((s,c) => s + c.pct * c.cat.weight, 0) / totalW;
+
+  return { cats, pct, totalW, letter: letterFor(pct),
+           usedWeights: active.map(c => ({name:c.cat.name, w:round2(c.cat.weight / totalW * 100)})) };
+}
+
+/* Minimum score on a future assignment needed to hit a target percent */
+function scoreNeeded(cls, catId, possible, target){
+  if (!(possible > 0)) return null;
+  const at = x => { const r = computeClass(cls, { extra:{catId, earned:x, possible} }); return r.pct ?? 0; };
+  if (at(possible * 2) < target) return { impossible:true, best: at(possible), max: possible };
+  let lo = -possible * 2, hi = possible * 2;
+  for (let i = 0; i < 90; i++){ const mid = (lo + hi) / 2; if (at(mid) >= target) hi = mid; else lo = mid; }
+  return { need: Math.max(0, hi), possible, over: hi > possible, freebie: hi <= 0 };
+}
+
+/* ==================================================================
+   STATE
+   ================================================================== */
+let S = { classes:[], active:null, theme:'light', gpaBump:1, gpaCourses:[] };
+const ui = { paste:false, settings:false, sort:'date', q:'', showHidden:true, pasteText:'' };
+
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) S = Object.assign(S, JSON.parse(raw));
+  } catch(e){}
+  if (!Array.isArray(S.classes)) S.classes = [];
+  S.classes.forEach(c => {
+    c.categories = Array.isArray(c.categories) && c.categories.length ? c.categories : DEFAULT_CATS();
+    c.assignments = Array.isArray(c.assignments) ? c.assignments : [];
+  });
+  if (!S.active || !S.classes.some(c => c.id === S.active)) S.active = S.classes[0]?.id || null;
+}
+const activeClass = () => S.classes.find(c => c.id === S.active) || null;
+
+function newClass(name){
+  const c = { id:uid(), name:name || 'New class', teacher:'', period:'', term:'Q1',
+              categories: DEFAULT_CATS(), assignments:[] };
+  S.classes.push(c); S.active = c.id; save(); return c;
+}
+function catFor(cls, name){
+  const found = cls.categories.find(c => norm(c.name) === norm(name));
+  if (found) return found;
+  const canon = canonical(name);
+  if (canon){
+    const byCanon = cls.categories.find(c => norm(c.name) === norm(canon.name));
+    if (byCanon) return byCanon;
+    const nc = { id:uid(), name:canon.name, weight:canon.weight };
+    cls.categories.push(nc); return nc;
+  }
+  const nc = { id:uid(), name:name, weight:0, needsWeight:true };
+  cls.categories.push(nc); return nc;
+}
+
+/* ==================================================================
+   SMALL HELPERS
+   ================================================================== */
+let toastT;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600);
+}
+const fmtPct = p => p === null || p === undefined ? '—' : p.toFixed(2).replace(/\.00$/,'') + '%';
+const fmtPct1 = p => p === null || p === undefined ? '—' : p.toFixed(2) + '%';
+const dateLabel = ts => { if (!ts) return '—';
+  const d = new Date(ts); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'}); };
+const gcolor = L => L ? `var(--${L})` : 'var(--muted)';
+
+/* ==================================================================
+   RENDER — class view
+   ================================================================== */
+function renderTabs(){
+  const el = $('#classtabs');
+  el.innerHTML = S.classes.map(c => {
+    const r = computeClass(c);
+    const L = r.letter;
+    return `<button class="classtab" data-cls="${c.id}" aria-current="${c.id===S.active}">
+      <span class="chip pill-${L||'N'} lg">${L||'–'}</span>
+      <span>${esc(c.name)}</span>
+      <span class="muted tiny" style="font-variant-numeric:tabular-nums">${r.pct===null?'':r.pct.toFixed(2)+'%'}</span>
+    </button>`;
+  }).join('') + `<button class="classtab" data-add="1" style="color:var(--rind)">＋ Add class</button>`;
+}
+
+function renderClass(){
+  const area = $('#classArea');
+  const cls = activeClass();
+  if (!cls){
+    area.innerHTML = `<div class="card pad">
+      <div class="empty">
+        <div class="big">🍉</div>
+        <h2 style="font-size:1.3rem;color:var(--ink);margin-bottom:6px">Let's see those grades</h2>
+        <p style="max-width:440px;margin:0 auto 18px">Copy your assignment list out of StudentVUE and paste it below. Grade Melon sorts it into All&nbsp;Tasks and Practice&nbsp;/&nbsp;Preparation and does the MCPS math for you.</p>
+      </div>
+      <textarea id="firstPaste" placeholder="Paste your StudentVUE gradebook here…"></textarea>
+      <div class="row" style="margin-top:12px;justify-content:center">
+        <button class="btn btn-primary" id="firstImport">Import grades</button>
+        <button class="btn" id="firstBlank">Start an empty class</button>
+        <button class="btn btn-melon" id="firstDemo">🍉 Use the sample</button>
+      </div></div>`;
+    return;
+  }
+
+  const r = computeClass(cls);
+  const L = r.letter;
+  const graded = cls.assignments.filter(a => a.graded && a.included).length;
+  const ungraded = cls.assignments.filter(a => !a.graded).length;
+
+  area.innerHTML = `
+  <div class="stack">
+
+    <!-- HERO -->
+    <div class="card pad">
+      <div class="hero">
+        <div class="gradeball" style="--gc:${gcolor(L)};--gp:${Math.max(0,Math.min(100,r.pct??0))}">
+          <div class="inner">
+            <div class="lt">${L || '–'}</div>
+            <div class="pc">${r.pct===null ? 'no grades' : r.pct.toFixed(2)+'%'}</div>
+          </div>
+        </div>
+        <div class="txt">
+          <h2>${esc(cls.name)}</h2>
+          <div class="meta">${[cls.period && 'Period '+esc(cls.period), esc(cls.teacher), esc(cls.term)].filter(Boolean).join(' · ') || 'MCPS marking period grade'}</div>
+          <div class="nextline" id="nextline">${nextLineHTML(r)}</div>
+          <div class="row" id="heroActions" data-n="${whatIfCount(cls)}" style="margin-top:14px">${heroActionsHTML(cls)}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASTE -->
+    <div class="card pad" ${ui.paste ? '' : 'hidden'} id="pastePanel">
+      <div class="sec-title">Paste from StudentVUE</div>
+      <p class="small muted" style="margin:0 0 10px">Open Grades in StudentVUE, select the assignment list, copy it, and paste it here. Extra text is ignored.</p>
+      <textarea id="pasteBox" placeholder="Week 01 - 8/25/2026 through 8/29/2026  (1 items)&#10;Aug&#10;27&#10;AT-Current Events due 8/27, deadline 8/28&#10;All Tasks / Assessments | 8.00 points&#10;8&#10;100%">${esc(ui.pasteText)}</textarea>
+      <div class="row" style="margin-top:11px">
+        <button class="btn btn-primary btn-sm" data-act="import">Import</button>
+        <button class="btn btn-sm" data-act="importReplace">Replace everything</button>
+        <button class="btn btn-sm btn-ghost" data-act="pasteClose">Cancel</button>
+        <span class="tiny muted" style="margin-left:auto">Importing adds to this class and skips duplicates.</span>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="card pad" ${ui.settings ? '' : 'hidden'} id="settingsPanel">
+      <div class="sec-title">Class settings</div>
+      <div class="grid3">
+        <label class="fld">Class name<input type="text" data-cf="name" value="${esc(cls.name)}"></label>
+        <label class="fld">Teacher<input type="text" data-cf="teacher" value="${esc(cls.teacher)}" placeholder="optional"></label>
+        <label class="fld">Period<input type="text" data-cf="period" value="${esc(cls.period)}" placeholder="optional"></label>
+        <label class="fld">Marking period
+          <select data-cf="term">${['Q1','Q2','Q3','Q4','S1','S2'].map(t=>`<option ${t===cls.term?'selected':''}>${t}</option>`).join('')}</select>
+        </label>
+      </div>
+      <div class="divider"></div>
+      <div class="sec-title">Category weights</div>
+      <div class="stack" style="gap:8px" id="catEditor">
+        ${cls.categories.map(c => `
+          <div class="row" data-cat="${c.id}" style="gap:8px">
+            <input type="text" data-cw="name" value="${esc(c.name)}" style="flex:1;min-width:150px">
+            <div class="row" style="gap:4px;flex:none">
+              <input type="number" data-cw="weight" value="${c.weight}" step="1" min="0" style="width:82px;text-align:right">
+              <span class="muted" style="font-weight:700">%</span>
+            </div>
+            <button class="rowbtn" data-delcat="${c.id}" title="Remove category">✕</button>
+          </div>`).join('')}
+      </div>
+      <div class="row" style="margin-top:11px">
+        <button class="btn btn-sm" data-act="addcat">＋ Add category</button>
+        <button class="btn btn-sm btn-ghost" data-act="resetcats">Reset to 90 / 10</button>
+        <span class="tiny ${weightSum(cls)===100?'muted':''}" style="margin-left:auto;${weightSum(cls)===100?'':'color:var(--D);font-weight:700'}">
+          Total weight: ${weightSum(cls)}%${weightSum(cls)===100?'':' — weights are re-scaled to add to 100%'}</span>
+      </div>
+      <div class="note" style="margin-top:12px">MCPS default is <b>All Tasks / Assessments 90%</b> and <b>Practice / Preparation 10%</b>. Add a category here if your course counts something else — a state test, a county final, a lab grade — and give it its share of the grade.</div>
+      <div class="divider"></div>
+      <div class="row">
+        <button class="btn btn-sm btn-danger" data-act="delclass">Delete this class</button>
+        <button class="btn btn-sm btn-ghost" data-act="settingsClose" style="margin-left:auto">Done</button>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="card pad">
+      <div class="sec-title">Category breakdown</div>
+      <div class="catlist" id="catList">${catListHTML(cls, r)}</div>
+      ${r.totalW > 0 && r.cats.some(c => !c.active && c.cat.weight > 0) ? `
+        <div class="note" style="margin-top:13px">${r.cats.filter(c=>!c.active&&c.cat.weight>0).map(c=>esc(c.cat.name)).join(' and ')} ${r.cats.filter(c=>!c.active&&c.cat.weight>0).length>1?'have':'has'} no graded points yet, so ${r.usedWeights.length===1?`<b>${esc(r.usedWeights[0].name)} is carrying 100% of your grade</b>`:`the remaining categories were re-scaled to ${r.usedWeights.map(w=>esc(w.name)+' '+w.w+'%').join(' / ')}`}.</div>` : ''}
+    </div>
+
+    <!-- ASSIGNMENTS -->
+    <div class="card pad">
+      <div class="spread" style="margin-bottom:12px">
+        <div class="sec-title" style="margin:0;flex:none">Assignments <span class="muted" style="font-weight:600;letter-spacing:0;text-transform:none">${graded} counted${ungraded?` · ${ungraded} ungraded`:''}</span></div>
+        <div class="row" style="gap:7px">
+          <input type="text" id="searchBox" placeholder="Search…" value="${esc(ui.q)}" style="width:150px;padding:6px 10px;font-size:.83rem">
+          <select id="sortBox" style="width:auto;padding:6px 10px;font-size:.83rem">
+            <option value="date"${ui.sort==='date'?' selected':''}>Sort: date</option>
+            <option value="impact"${ui.sort==='impact'?' selected':''}>Sort: impact</option>
+            <option value="pct"${ui.sort==='pct'?' selected':''}>Sort: score %</option>
+            <option value="cat"${ui.sort==='cat'?' selected':''}>Sort: category</option>
+            <option value="name"${ui.sort==='name'?' selected':''}>Sort: name</option>
+          </select>
+        </div>
+      </div>
+      ${assignTableHTML(cls, r)}
+      <div class="row" style="margin-top:12px">
+        <button class="btn btn-sm btn-melon" data-act="addrow">＋ Add assignment</button>
+        <button class="btn btn-sm" data-act="paste">📋 Paste more</button>
+      </div>
+    </div>
+
+    <!-- WHAT-IF TOOLS -->
+    <div class="card pad">
+      <div class="sec-title">What do I need?</div>
+      <p class="small muted" style="margin:0 0 12px">One more assignment is coming. What score gets you where you want to be?</p>
+      <div class="grid3">
+        <label class="fld">Category
+          <select id="needCat">${cls.categories.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
+        </label>
+        <label class="fld">Worth (points)<input type="number" id="needPts" value="20" min="0.01" step="0.5"></label>
+        <label class="fld">I want at least
+          <select id="needTarget">
+            <option value="89.5">An A (89.5%)</option>
+            <option value="79.5">A B (79.5%)</option>
+            <option value="69.5">A C (69.5%)</option>
+            <option value="59.5">A D (59.5%)</option>
+            <option value="custom">A specific %…</option>
+          </select>
+        </label>
+      </div>
+      <div class="row" id="needCustomWrap" hidden style="margin-top:10px">
+        <label class="fld" style="max-width:180px">Target percent<input type="number" id="needCustom" value="90" step="0.01" min="0"></label>
+      </div>
+      <div class="result" style="margin-top:14px">
+        <div class="big" id="needOut">—</div>
+        <div class="small muted" id="needWhy">Pick a category and how many points it is worth.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="sec-title">Fill in the ungraded ones</div>
+      <div class="row">
+        <span class="small muted">Assume I score</span>
+        <select id="fillPct" style="width:auto;padding:6px 10px;font-size:.85rem">
+          <option value="100">100%</option><option value="95">95%</option><option value="90">90%</option>
+          <option value="85">85%</option><option value="80">80%</option><option value="70">70%</option>
+          <option value="50">50%</option><option value="0">0 (never turn them in)</option>
+        </select>
+        <span class="small muted">on all ${ungraded} ungraded assignment${ungraded===1?'':'s'}</span>
+        <button class="btn btn-sm" data-act="fill" ${ungraded?'':'disabled style="opacity:.45"'}>Apply</button>
+      </div>
+    </div>
+
+  </div>`;
+}
+
+const weightSum = cls => round2(cls.categories.reduce((s,c) => s + (num(c.weight)||0), 0));
+const isModified = a => !a.hypo && (num(a.earned) !== num(a.origEarned) || num(a.possible) !== num(a.origPossible));
+
+const whatIfCount = cls => cls.assignments.filter(a => a.hypo || isModified(a)).length;
+
+function heroActionsHTML(cls){
+  const n = whatIfCount(cls);
+  return `<button class="btn btn-primary btn-sm" data-act="paste">📋 Paste gradebook</button>
+    <button class="btn btn-melon btn-sm" data-act="addrow">＋ What-if assignment</button>
+    ${n ? `<button class="btn btn-sm" data-act="clearwhatif">↺ Clear what-ifs (${n})</button>` : ''}
+    <button class="btn btn-sm btn-ghost" data-act="settings">⚙ Class settings</button>`;
+}
+
+const article = L => (L === 'A' || L === 'E') ? 'an' : 'a';
+function nextLineHTML(r){
+  if (r.pct === null) return `<span class="muted">Nothing graded yet — paste your gradebook or add an assignment to get started.</span>`;
+  const nc = nextCut(r.pct);
+  const here = CUTS.find(c => c[1] <= r.pct);
+  const below = CUTS[CUTS.findIndex(c => c[0] === here[0]) + 1];
+  const bits = [];
+  if (nc) bits.push(`You are <b>${(nc[1] - r.pct).toFixed(2)} points</b> from ${article(nc[0])} <b>${nc[0]}</b>.`);
+  else bits.push(`Top of the scale — nice.`);
+  if (below) bits.push(`<span class="muted">You can lose ${(r.pct - here[1]).toFixed(2)} before this drops to ${article(below[0])} ${below[0]}.</span>`);
+  return bits.join(' ');
+}
+
+function catListHTML(cls, r){
+  return r.cats.map(c => {
+    const share = r.totalW > 0 && c.active ? round2(c.cat.weight / r.totalW * 100) : 0;
+    const contrib = c.active ? (c.pct * c.cat.weight / r.totalW) : null;
+    return `<div class="catrow" data-catrow="${c.cat.id}">
+      <div class="nm"><span class="w">${c.cat.weight}%</span> ${esc(c.cat.name)}
+        ${c.cat.weight===0?'<span class="chip pill-D tiny">set a weight</span>':''}
+        ${!c.active?'<span class="chip pill-N tiny">no grades yet</span>':''}</div>
+      <div class="val js-catval">${c.active ? fmtPct1(c.pct) : '—'}
+        <small>${c.active ? `(${c.earned} / ${c.possible} pts` + (share!==c.cat.weight?` · counts as ${share}%`:'') + `)` : ''}</small></div>
+      <div class="bar"><i style="width:${Math.max(0,Math.min(100,c.pct??0))}%;background:${c.pct===null?'var(--line2)':gcolor(letterFor(c.pct))}"></i></div>
+    </div>`;
+  }).join('');
+}
+
+function sortedAssignments(cls, r){
+  let list = cls.assignments.slice();
+  if (ui.q){ const q = ui.q.toLowerCase(); list = list.filter(a => a.name.toLowerCase().includes(q)); }
+  const impactOf = a => {
+    if (!a.graded || !a.included || r.pct === null) return 0;
+    const w = computeClass(cls, { skipId:a.id });
+    return w.pct === null ? 0 : r.pct - w.pct;
+  };
+  const catName = a => cls.categories.find(c => c.id === a.catId)?.name || '';
+  const cmp = {
+    date  : (a,b) => (a.date||0) - (b.date||0),
+    impact: (a,b) => Math.abs(impactOf(b)) - Math.abs(impactOf(a)),
+    pct   : (a,b) => (pctOf(a) ?? 999) - (pctOf(b) ?? 999),
+    cat   : (a,b) => catName(a).localeCompare(catName(b)) || (a.date||0)-(b.date||0),
+    name  : (a,b) => a.name.localeCompare(b.name)
+  }[ui.sort] || ((a,b)=>0);
+  return list.sort(cmp);
+}
+const pctOf = a => (a.graded && num(a.possible) > 0) ? (num(a.earned) / num(a.possible)) * 100 : null;
+
+function assignTableHTML(cls, r){
+  const list = sortedAssignments(cls, r);
+  if (!list.length) return `<div class="empty"><div class="big">🌱</div>No assignments yet. Paste your gradebook or add one by hand.</div>`;
+  const rows = list.map(a => {
+    const cat = cls.categories.find(c => c.id === a.catId);
+    const p = pctOf(a);
+    const modified = isModified(a);
+    let impact = '—', icls = 'flat';
+    if (a.graded && a.included && r.pct !== null){
+      const w = computeClass(cls, { skipId:a.id });
+      if (w.pct !== null){ const d = r.pct - w.pct; icls = d > 0.004 ? 'up' : d < -0.004 ? 'down' : 'flat';
+        impact = (d >= 0 ? '+' : '') + d.toFixed(2); }
+    }
+    return `<tr data-id="${a.id}" class="${a.included?'':'off'} ${a.hypo?'hypo':''}">
+      <td class="c" data-l="Count it"><input type="checkbox" class="chk" data-inc="${a.id}" ${a.included?'checked':''} title="Count this assignment"></td>
+      <td data-l="Date" class="muted tiny" style="white-space:nowrap">${dateLabel(a.date)}</td>
+      <td class="full" data-l="Assignment">
+        <div class="aname"><span class="nmtext" contenteditable="true" spellcheck="false" data-name="${a.id}">${esc(a.name)}</span>
+          ${a.hypo?'<span class="tag">what-if</span>':''}
+          ${modified?'<span class="tag mod">edited</span>':''}
+          ${a.missing?'<span class="tag miss">missing</span>':''}
+          ${a.excused?'<span class="tag ex">excused</span>':''}
+          ${!a.graded?'<span class="chip pill-N tiny">ungraded</span>':''}
+        </div></td>
+      <td data-l="Category">
+        <select data-cat="${a.id}" style="padding:5px 8px;font-size:.8rem;width:auto;max-width:190px">
+          ${cls.categories.map(c=>`<option value="${c.id}" ${c.id===a.catId?'selected':''}>${esc(c.name)}</option>`).join('')}
+        </select></td>
+      <td class="n" data-l="Score">
+        <div class="score-cell">
+          <input type="number" step="0.01" data-earned="${a.id}" value="${a.earned??''}" placeholder="—" aria-label="Points earned">
+          <span class="sl">/</span>
+          <input type="number" step="0.01" min="0" data-possible="${a.id}" value="${a.possible??''}" aria-label="Points possible">
+        </div></td>
+      <td class="n pctcell js-pct" data-l="Percent" style="color:${p===null?'var(--muted)':gcolor(letterFor(p))}">${p===null?'—':p.toFixed(1)+'%'}</td>
+      <td class="n impact ${icls} js-impact" data-l="Impact">${impact}</td>
+      <td class="c" data-l="">
+        ${modified?`<button class="rowbtn reset" data-reset="${a.id}" title="Put the real score back">↺</button>`:''}
+        <button class="rowbtn" data-del="${a.id}" title="Delete">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  const tot = r.cats.reduce((s,c) => ({e:s.e + c.earned, p:s.p + c.possible}), {e:0,p:0});
+  return `<div style="overflow-x:auto"><table class="tbl">
+    <thead><tr>
+      <th class="c" style="width:34px"></th><th style="width:64px">Date</th><th>Assignment</th>
+      <th style="width:150px">Category</th><th class="n" style="width:150px">Score</th>
+      <th class="n" style="width:74px">%</th><th class="n" style="width:74px" title="How much this assignment is moving your grade">Impact</th>
+      <th style="width:60px"></th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr>
+      <td colspan="4">Counted points (raw — <i>not</i> your grade, categories are weighted)</td>
+      <td class="n">${round2(tot.e)} / ${round2(tot.p)}</td>
+      <td class="n">${tot.p>0?((tot.e/tot.p)*100).toFixed(1)+'%':'—'}</td><td colspan="2"></td>
+    </tr></tfoot></table></div>`;
+}
+
+/* ==================================================================
+   LIVE NUMBER PATCHING (keeps focus while you type)
+   ================================================================== */
+function refreshNumbers(){
+  const cls = activeClass(); if (!cls) return;
+  const r = computeClass(cls);
+  const ball = $('#classArea .gradeball');
+  if (ball){
+    ball.style.setProperty('--gc', gcolor(r.letter));
+    ball.style.setProperty('--gp', Math.max(0, Math.min(100, r.pct ?? 0)));
+    ball.querySelector('.lt').textContent = r.letter || '–';
+    ball.querySelector('.pc').textContent = r.pct === null ? 'no grades' : r.pct.toFixed(2) + '%';
+  }
+  const nl = $('#nextline'); if (nl) nl.innerHTML = nextLineHTML(r);
+  const cl = $('#catList'); if (cl) cl.innerHTML = catListHTML(cls, r);
+
+  $$('#classArea tr[data-id]').forEach(tr => {
+    const a = cls.assignments.find(x => x.id === tr.dataset.id); if (!a) return;
+    const p = pctOf(a);
+    const pc = tr.querySelector('.js-pct');
+    if (pc){ pc.textContent = p === null ? '—' : p.toFixed(1) + '%';
+             pc.style.color = p === null ? 'var(--muted)' : gcolor(letterFor(p)); }
+    const ic = tr.querySelector('.js-impact');
+    if (ic){
+      let t = '—', c = 'flat';
+      if (a.graded && a.included && r.pct !== null){
+        const w = computeClass(cls, { skipId:a.id });
+        if (w.pct !== null){ const d = r.pct - w.pct; c = d > 0.004 ? 'up' : d < -0.004 ? 'down' : 'flat'; t = (d >= 0 ? '+' : '') + d.toFixed(2); }
+      }
+      ic.textContent = t; ic.className = 'n impact js-impact ' + c;
+    }
+    tr.classList.toggle('off', !a.included);
+
+    /* keep the EDITED tag + reset button in sync while you type */
+    const mod = isModified(a);
+    const nameCell = tr.querySelector('.aname');
+    let tag = nameCell && nameCell.querySelector('.tag.mod');
+    if (nameCell && mod && !tag){
+      tag = document.createElement('span'); tag.className = 'tag mod'; tag.textContent = 'edited';
+      nameCell.querySelector('[data-name]').after(tag);
+    } else if (tag && !mod){ tag.remove(); }
+    const actCell = tr.lastElementChild;
+    let rbtn = actCell && actCell.querySelector('[data-reset]');
+    if (actCell && mod && !rbtn){
+      rbtn = document.createElement('button'); rbtn.className = 'rowbtn reset';
+      rbtn.dataset.reset = a.id; rbtn.title = 'Put the real score back'; rbtn.textContent = '↺';
+      actCell.prepend(rbtn);
+    } else if (rbtn && !mod){ rbtn.remove(); }
+  });
+
+  const ha = $('#heroActions'), wn = whatIfCount(cls);
+  if (ha && +ha.dataset.n !== wn){ ha.innerHTML = heroActionsHTML(cls); ha.dataset.n = wn; }
+
+  const tf = $$('#classArea .tbl tfoot td.n');
+  if (tf.length >= 2){
+    const tot = r.cats.reduce((s,c) => ({e:s.e + c.earned, p:s.p + c.possible}), {e:0,p:0});
+    tf[0].textContent = round2(tot.e) + ' / ' + round2(tot.p);
+    tf[1].textContent = tot.p > 0 ? ((tot.e/tot.p)*100).toFixed(1) + '%' : '—';
+  }
+  renderTabs(); updateNeed(); save();
+}
+
+function rerender(){ renderTabs(); renderClass(); updateNeed(); save(); }
+
+/* ==================================================================
+   "WHAT DO I NEED" CALCULATOR
+   ================================================================== */
+function updateNeed(){
+  const cls = activeClass(); const out = $('#needOut'), why = $('#needWhy');
+  if (!cls || !out) return;
+  const catId = $('#needCat')?.value;
+  const pts   = num($('#needPts')?.value);
+  const tsel  = $('#needTarget')?.value;
+  const target = tsel === 'custom' ? num($('#needCustom')?.value) : num(tsel);
+  const wrap = $('#needCustomWrap'); if (wrap) wrap.hidden = tsel !== 'custom';
+  if (!catId || !(pts > 0) || target === null){
+    out.textContent = '—'; why.textContent = 'Enter how many points the assignment is worth.'; return;
+  }
+  const cat = cls.categories.find(c => c.id === catId);
+  const res = scoreNeeded(cls, catId, pts, target);
+  if (!res){ out.textContent = '—'; why.textContent = ''; return; }
+  if (res.impossible){
+    out.innerHTML = `Not reachable with this one assignment`;
+    why.innerHTML = `Even a perfect ${pts} / ${pts} in ${esc(cat.name)} only gets you to <b>${res.best.toFixed(2)}%</b>. You need more assignments — or a bigger one.`;
+    return;
+  }
+  if (res.freebie){
+    out.innerHTML = `You're already there 🎉`;
+    why.innerHTML = `You are above ${target}% right now, and a 0 on this ${pts}-point ${esc(cat.name)} assignment would still leave you at <b>${computeClass(cls,{extra:{catId,earned:0,possible:pts}}).pct.toFixed(2)}%</b>.`;
+    return;
+  }
+  const need = Math.ceil(res.need * 100) / 100;
+  const needPct = (need / pts) * 100;
+  out.innerHTML = `${need.toFixed(2).replace(/\.00$/,'')} / ${pts} <span style="font-size:1rem;font-weight:700;color:var(--muted)">= ${needPct.toFixed(1)}%</span>`;
+  const after = computeClass(cls, { extra:{catId, earned:need, possible:pts} });
+  why.innerHTML = `That is the lowest score on a <b>${pts}-point ${esc(cat.name)}</b> assignment that keeps you at or above <b>${target}%</b> — it would land you at ${after.pct.toFixed(2)}% (${after.letter}).` +
+    (res.over ? ` <b style="color:var(--D)">That is above full credit, so you would need extra credit.</b>` : '');
+}
+
+/* ==================================================================
+   EVENTS — class view
+   ================================================================== */
+function importPaste(text, replace){
+  const cls = activeClass(); if (!cls) return;
+  const { items, guess } = parseGradebook(text);
+  if (!items.length){ toast('Nothing recognizable in there — check the How to use page'); return; }
+  if (replace) cls.assignments = [];
+  const key = a => (a.name + '|' + a.possible + '|' + (a.date || '')).toLowerCase();
+  const have = new Set(cls.assignments.map(key));
+  let added = 0, skipped = 0;
+  for (const it of items){
+    if (have.has(key(it))){ skipped++; continue; }
+    const cat = catFor(cls, it.catName);
+    cls.assignments.push({ ...it, catId:cat.id });
+    have.add(key(it)); added++;
+  }
+  if (guess && /^(new class|untitled)/i.test(cls.name)) cls.name = guess;
+  ui.paste = false; ui.pasteText = '';
+  rerender();
+  toast(`Imported ${added} assignment${added===1?'':'s'}${skipped?` · ${skipped} already here`:''}`);
+}
+
+function addAssignment(){
+  const cls = activeClass(); if (!cls) return;
+  const cat = cls.categories[0];
+  cls.assignments.push({ id:uid(), name:'New assignment', catId:cat.id, date:Date.now(),
+    possible:10, earned:10, graded:true, included:true, hypo:true,
+    missing:false, excused:false, origEarned:null, origPossible:10 });
+  rerender();
+  const el = $$('#classArea [data-name]').pop();
+  if (el){ el.focus(); const rg = document.createRange(); rg.selectNodeContents(el);
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg);
+    el.scrollIntoView({block:'center', behavior:'smooth'}); }
+}
+
+$('#classtabs').addEventListener('click', e => {
+  const t = e.target.closest('[data-cls]'); const add = e.target.closest('[data-add]');
+  if (t){ S.active = t.dataset.cls; ui.paste = false; ui.settings = false; rerender(); }
+  else if (add){ newClass('New class'); ui.paste = true; ui.settings = false; rerender(); $('#pasteBox')?.focus(); }
+});
+
+$('#classArea').addEventListener('click', e => {
+  const cls = activeClass();
+  const act = e.target.closest('[data-act]')?.dataset.act;
+  const del = e.target.closest('[data-del]')?.dataset.del;
+  const rst = e.target.closest('[data-reset]')?.dataset.reset;
+  const dcat= e.target.closest('[data-delcat]')?.dataset.delcat;
+
+  if (e.target.id === 'firstImport'){ if (!activeClass()) newClass('New class'); importPaste($('#firstPaste').value, true); return; }
+  if (e.target.id === 'firstBlank'){ newClass('New class'); ui.settings = true; rerender(); return; }
+  if (e.target.id === 'firstDemo'){ loadDemo(); return; }
+  if (!cls) return;
+
+  if (del){ cls.assignments = cls.assignments.filter(a => a.id !== del); rerender(); return; }
+  if (rst){ const a = cls.assignments.find(x => x.id === rst);
+    if (a){ a.earned = a.origEarned; a.possible = a.origPossible; a.graded = a.origEarned !== null; } rerender(); return; }
+  if (dcat){
+    if (cls.categories.length <= 1){ toast('A class needs at least one category'); return; }
+    const moving = cls.assignments.filter(a => a.catId === dcat).length;
+    if (moving && !confirm(`${moving} assignment${moving===1?'':'s'} will move to ${cls.categories.find(c=>c.id!==dcat).name}. Continue?`)) return;
+    const fallback = cls.categories.find(c => c.id !== dcat).id;
+    cls.assignments.forEach(a => { if (a.catId === dcat) a.catId = fallback; });
+    cls.categories = cls.categories.filter(c => c.id !== dcat);
+    rerender(); return;
+  }
+
+  switch (act){
+    case 'paste': ui.paste = true; renderClass(); $('#pastePanel').scrollIntoView({block:'center',behavior:'smooth'}); $('#pasteBox').focus(); break;
+    case 'pasteClose': ui.paste = false; ui.pasteText = ''; renderClass(); break;
+    case 'import': ui.pasteText = $('#pasteBox').value; importPaste(ui.pasteText, false); break;
+    case 'importReplace':
+      if (cls.assignments.length && !confirm('Delete the ' + cls.assignments.length + ' assignments already in this class and import fresh?')) break;
+      ui.pasteText = $('#pasteBox').value; importPaste(ui.pasteText, true); break;
+    case 'addrow': addAssignment(); break;
+    case 'clearwhatif':
+      cls.assignments = cls.assignments.filter(a => !a.hypo);
+      cls.assignments.forEach(a => { a.earned = a.origEarned; a.possible = a.origPossible; a.graded = a.origEarned !== null; });
+      rerender(); toast('Back to your real grades'); break;
+    case 'settings': ui.settings = !ui.settings; renderClass(); if (ui.settings) $('#settingsPanel').scrollIntoView({block:'center',behavior:'smooth'}); break;
+    case 'settingsClose': ui.settings = false; renderClass(); break;
+    case 'addcat': cls.categories.push({ id:uid(), name:'New category', weight:0 }); renderClass(); break;
+    case 'resetcats': {
+      const keep = cls.categories.slice(0,2);
+      cls.categories = DEFAULT_CATS();
+      cls.assignments.forEach(a => {
+        const old = keep.find(k => k.id === a.catId);
+        const canon = canonical(old?.name || '') || canonical(a.name.replace(RE.prefix,'$1'));
+        const target = cls.categories.find(c => norm(c.name) === norm(canon?.name || 'All Tasks / Assessments'));
+        a.catId = (target || cls.categories[0]).id;
+      });
+      rerender(); break; }
+    case 'delclass':
+      if (!confirm(`Delete "${cls.name}" and its ${cls.assignments.length} assignments?`)) break;
+      S.classes = S.classes.filter(c => c.id !== cls.id);
+      S.active = S.classes[0]?.id || null; ui.settings = false; rerender(); break;
+    case 'fill': {
+      const p = num($('#fillPct').value) ?? 100; let n = 0;
+      cls.assignments.forEach(a => { if (!a.graded && num(a.possible) > 0){
+        a.earned = round2(num(a.possible) * p / 100); a.graded = true; a.hypo = true; a.included = true; n++; } });
+      rerender(); toast(n ? `Filled ${n} ungraded assignment${n===1?'':'s'} at ${p}%` : 'Nothing to fill'); break; }
+  }
+});
+
+$('#classArea').addEventListener('input', e => {
+  const cls = activeClass(); if (!cls) return;
+  const t = e.target;
+  const find = id => cls.assignments.find(a => a.id === id);
+
+  if (t.dataset.earned !== undefined){ const a = find(t.dataset.earned);
+    if (a){ const v = num(t.value); a.earned = t.value === '' ? null : v; a.graded = t.value !== '' && v !== null; refreshNumbers(); } return; }
+  if (t.dataset.possible !== undefined){ const a = find(t.dataset.possible);
+    if (a){ a.possible = num(t.value) ?? 0; refreshNumbers(); } return; }
+  if (t.dataset.name !== undefined){ const a = find(t.dataset.name);
+    if (a){ a.name = t.textContent.trim() || 'Untitled assignment'; save(); } return; }
+  if (t.dataset.cf){ cls[t.dataset.cf] = t.value; $('#classArea h2').textContent = cls.name; renderTabs(); save(); return; }
+  if (t.dataset.cw){
+    const id = t.closest('[data-cat]').dataset.cat;
+    const c = cls.categories.find(x => x.id === id);
+    if (c){ if (t.dataset.cw === 'weight'){ c.weight = num(t.value) ?? 0; delete c.needsWeight; } else c.name = t.value; refreshNumbers(); }
+    return; }
+  if (t.id === 'searchBox'){ ui.q = t.value; const tb = $('#classArea .tbl'); if (tb){ const p = tb.parentElement;
+      p.outerHTML = assignTableHTML(cls, computeClass(cls)); } return; }
+  if (['needPts','needCustom'].includes(t.id)) updateNeed();
+});
+
+$('#classArea').addEventListener('change', e => {
+  const cls = activeClass(); if (!cls) return;
+  const t = e.target;
+  if (t.dataset.inc !== undefined){ const a = cls.assignments.find(x => x.id === t.dataset.inc);
+    if (a){ a.included = t.checked; refreshNumbers(); } return; }
+  if (t.dataset.cat !== undefined){ const a = cls.assignments.find(x => x.id === t.dataset.cat);
+    if (a){ a.catId = t.value; rerender(); } return; }
+  if (t.dataset.earned !== undefined || t.dataset.possible !== undefined){ refreshNumbers(); return; }
+  if (t.id === 'sortBox'){ ui.sort = t.value; renderClass(); return; }
+  if (['needCat','needTarget'].includes(t.id)) updateNeed();
+});
+
+$('#classArea').addEventListener('blur', e => {
+  const t = e.target;
+  if (!t.dataset || t.dataset.name === undefined) return;
+  if (!t.textContent.trim()) t.textContent = 'Untitled assignment';
+  const cls = activeClass();
+  const a = cls && cls.assignments.find(x => x.id === t.dataset.name);
+  if (a){ a.name = t.textContent.trim(); save(); }
+}, true);
+
+/* ==================================================================
+   SEMESTER VIEW
+   ================================================================== */
+function renderSemChart(){
+  const L = ['A','B','C','D','E'];
+  const a = $('#semMP1').value, b = $('#semMP2').value;
+  let h = '<tr><th>MP1 &darr; / MP2 &rarr;</th>' + L.map(x => `<th>${x}</th>`).join('') + '</tr>';
+  for (const r of L){
+    h += `<tr><th>${r}</th>` + L.map(c => {
+      const g = semesterGrade(r,c);
+      const hi = (r === a && c === b) ? ' class="hi"' : '';
+      return `<td${hi} style="color:var(--${g})">${g}</td>`;
+    }).join('') + '</tr>';
+  }
+  $('#semChart').innerHTML = h;
+}
+function updateSemester(){
+  const a = $('#semMP1').value, b = $('#semMP2').value;
+  const g = semesterGrade(a,b);
+  const out = $('#semOut'); out.textContent = g; out.style.color = gcolor(g);
+  const avg = (POINTS[a] + POINTS[b]) / 2;
+  $('#semWhy').innerHTML = `${a} (${POINTS[a]}) + ${b} (${POINTS[b]}) = ${POINTS[a]+POINTS[b]} quality points ÷ 2 = <b>${avg}</b>` +
+    (avg % 1 ? ` → a tie rounds up → <b>${POINTS[g]}</b> = <b>${g}</b>` : ` = <b>${g}</b>`);
+  renderSemChart();
+}
+function updateBlend(){
+  const c = num($('#blendCourse').value), t = num($('#blendTest').value), w = num($('#blendW').value);
+  if (c === null || t === null || w === null){ $('#blendOut').textContent = '—'; $('#blendWhy').textContent = ''; return; }
+  const f = c * (100 - w) / 100 + t * w / 100;
+  const L = letterFor(f);
+  const out = $('#blendOut'); out.innerHTML = `${f.toFixed(2)}% <span style="color:var(--${L})">${L}</span>`; out.style.color = '';
+  $('#blendWhy').innerHTML = `${c}% × ${100-w}% + ${t}% × ${w}% = <b>${f.toFixed(2)}%</b>` +
+    (c !== 0 ? ` — the assessment moved your grade ${(f-c>=0?'+':'')}${(f-c).toFixed(2)} points.` : '');
+}
+function fillSemClasses(){
+  const sel = $('#semFromClass');
+  sel.innerHTML = '<option value="">— none —</option>' + S.classes.map(c => {
+    const r = computeClass(c);
+    return `<option value="${c.id}">${esc(c.name)} — ${r.letter || '?'}</option>`;
+  }).join('');
+}
+
+/* ==================================================================
+   GPA VIEW
+   ================================================================== */
+const LEVELS = [['std','Standard',0],['hon','Honors',1],['ap','AP / IB',2]];
+function renderGPA(){
+  const el = $('#gpaRows');
+  if (!S.gpaCourses.length) S.gpaCourses = [{ id:uid(), name:'', letter:'A', level:'std' }];
+  el.innerHTML = S.gpaCourses.map(c => `
+    <div class="row" data-gc="${c.id}" style="gap:8px">
+      <input type="text" data-gf="name" value="${esc(c.name)}" placeholder="Course name" style="flex:1;min-width:140px">
+      <select data-gf="letter" style="width:auto">${['A','B','C','D','E'].map(l=>`<option ${l===c.letter?'selected':''}>${l}</option>`).join('')}</select>
+      <select data-gf="level" style="width:auto">${LEVELS.map(([v,n])=>`<option value="${v}" ${v===c.level?'selected':''}>${n}</option>`).join('')}</select>
+      <button class="rowbtn" data-gdel="${c.id}" title="Remove">✕</button>
+    </div>`).join('');
+  computeGPA();
+}
+function computeGPA(){
+  const bump = num($('#gpaBump').value) ?? 1;
+  const rows = S.gpaCourses;
+  if (!rows.length){ $('#gpaUn').textContent = '—'; $('#gpaW').textContent = '—'; return; }
+  let un = 0, w = 0;
+  for (const c of rows){
+    const p = POINTS[c.letter] ?? 0;
+    un += p;
+    const lvl = LEVELS.find(l => l[0] === c.level)?.[2] || 0;
+    let add = 0;
+    if (lvl === 1) add = bump === 0.5 ? 0.5 : bump;
+    if (lvl === 2) add = bump === 0 ? 0 : 1;
+    w += p > 0 ? p + add : 0;
+  }
+  $('#gpaUn').textContent = (un / rows.length).toFixed(3);
+  $('#gpaW').textContent  = (w / rows.length).toFixed(3);
+  save();
+}
+$('#gpaAdd').addEventListener('click', () => { S.gpaCourses.push({ id:uid(), name:'', letter:'A', level:'std' }); renderGPA(); save(); });
+$('#gpaPull').addEventListener('click', () => {
+  const got = S.classes.map(c => { const r = computeClass(c); return r.letter ? { id:uid(), name:c.name, letter:r.letter, level:'std' } : null; }).filter(Boolean);
+  if (!got.length){ toast('No graded classes to pull yet'); return; }
+  S.gpaCourses = got; renderGPA(); save(); toast(`Pulled ${got.length} class${got.length===1?'':'es'}`);
+});
+$('#gpaRows').addEventListener('input', e => {
+  const row = e.target.closest('[data-gc]'); if (!row) return;
+  const c = S.gpaCourses.find(x => x.id === row.dataset.gc);
+  if (c && e.target.dataset.gf){ c[e.target.dataset.gf] = e.target.value; computeGPA(); }
+});
+$('#gpaRows').addEventListener('change', e => {
+  const row = e.target.closest('[data-gc]'); if (!row) return;
+  const c = S.gpaCourses.find(x => x.id === row.dataset.gc);
+  if (c && e.target.dataset.gf){ c[e.target.dataset.gf] = e.target.value; computeGPA(); }
+});
+$('#gpaRows').addEventListener('click', e => {
+  const d = e.target.closest('[data-gdel]'); if (!d) return;
+  S.gpaCourses = S.gpaCourses.filter(x => x.id !== d.dataset.gdel); renderGPA(); save();
+});
+$('#gpaBump').addEventListener('change', () => { S.gpaBump = num($('#gpaBump').value); computeGPA(); });
+
+/* ==================================================================
+   DEMO DATA
+   ================================================================== */
+const DEMO = `Week 01 - 8/25/2026 through 8/29/2026  (1 items)
+Aug
+27
+AT-Current Events due 8/27, deadline 8/28
+All Tasks / Assessments | 8.00 points
+8
+100%
+Week 02 - 8/30/2026 through 9/5/2026  (1 items)
+Aug
+31
+PP-Intro to Democracy due 8/31
+Practice / Preparation | 15.00 points
+15
+100%
+Week 03 - 9/6/2026 through 9/12/2026  (2 items)
+Sep
+9
+PP-Constitution Notes due 9/9
+Practice / Preparation | 10.00 points
+8
+80%
+Sep
+11
+AT-Unit 1 Quiz due 9/11
+All Tasks / Assessments | 25.00 points
+21
+84%
+Week 04 - 9/13/2026 through 9/19/2026  (2 items)
+Sep
+16
+AT-Federalism Essay due 9/16, deadline 9/18
+All Tasks / Assessments | 40.00 points
+34.5
+86.25%
+Sep
+18
+PP-Branches Worksheet due 9/18
+Practice / Preparation | 12.00 points`;
+
+function loadDemo(){
+  const c = newClass('NSL Government (sample)');
+  c.period = '3'; c.teacher = 'Sample data';
+  importPaste(DEMO, true);
+  go('grades');
+  toast('Sample loaded — try changing a score');
+}
+$('#loadDemo').addEventListener('click', loadDemo);
+
+/* ==================================================================
+   SHELL — nav, theme, backup
+   ================================================================== */
+function go(view){
+  $$('#nav button').forEach(b => b.setAttribute('aria-current', String(b.dataset.view === view)));
+  ['grades','semester','gpa','help'].forEach(v => { $('#view-' + v).hidden = v !== view; });
+  if (view === 'semester'){ fillSemClasses(); updateSemester(); updateBlend(); }
+  if (view === 'gpa') renderGPA();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+$('#nav').addEventListener('click', e => { const b = e.target.closest('button[data-view]'); if (b) go(b.dataset.view); });
+
+function applyTheme(){
+  document.documentElement.dataset.theme = S.theme;
+  $('#themeBtn').textContent = S.theme === 'dark' ? '☀️' : '🌙';
+  $('meta[name=theme-color]').setAttribute('content', S.theme === 'dark' ? '#1c6b39' : '#1f7a3f');
+}
+$('#themeBtn').addEventListener('click', () => { S.theme = S.theme === 'dark' ? 'light' : 'dark'; applyTheme(); save(); });
+
+$('#exportBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(S,null,2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'grade-melon-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click(); URL.revokeObjectURL(a.href); toast('Backup downloaded');
+});
+$('#importBtn').addEventListener('click', () => $('#fileIn').click());
+$('#fileIn').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => { try { const d = JSON.parse(rd.result);
+      if (!d.classes) throw 0; S = Object.assign(S, d); load(); applyTheme(); rerender(); toast('Backup restored');
+    } catch(err){ toast('That file is not a Grade Melon backup'); } };
+  rd.readAsText(f); e.target.value = '';
+});
+$('#wipeBtn').addEventListener('click', () => {
+  if (!confirm('Delete every class, assignment and GPA row on this device? This cannot be undone.')) return;
+  localStorage.removeItem(KEY);
+  S = { classes:[], active:null, theme:S.theme, gpaBump:1, gpaCourses:[] };
+  rerender(); go('grades'); toast('All cleared');
+});
+
+['semMP1','semMP2'].forEach(id => document.getElementById(id).addEventListener('change', updateSemester));
+$('#semFromClass').addEventListener('change', e => {
+  const c = S.classes.find(x => x.id === e.target.value); if (!c) return;
+  const r = computeClass(c);
+  if (!r.letter){ toast('That class has no graded assignments yet'); return; }
+  $('#semMP1').value = r.letter; updateSemester(); toast(`MP1 set to ${r.letter} from ${c.name}`);
+});
+['blendCourse','blendTest','blendW'].forEach(id => document.getElementById(id).addEventListener('input', updateBlend));
+
+/* keyboard: paste straight onto the page */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'v' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)
+      && !document.activeElement.isContentEditable && !$('#view-grades').hidden && activeClass()){
+    ui.paste = true; renderClass(); $('#pasteBox').focus();
+  }
+});
+
+/* ==================================================================
+   BOOT
+   ================================================================== */
+load();
+applyTheme();
+if (S.gpaBump != null) $('#gpaBump').value = S.gpaBump;
+renderTabs(); renderClass(); renderSemChart(); updateSemester(); updateBlend();
+updateNeed();
+
+return { go, loadDemo, parseGradebook, computeClass, semesterGrade, letterFor, scoreNeeded,
+         state:() => S, _test:{ CUTS, POINTS } };
+})();
+</script>
+</body>
+</html>
