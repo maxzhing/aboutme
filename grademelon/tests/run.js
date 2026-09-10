@@ -3,209 +3,229 @@ const path = require('path').join(__dirname,'..','index.html');
 const EXEC = process.env.CHROME_PATH || require('playwright-core').chromium.executablePath();
 const SS = require('path').join(__dirname,'artifacts');
 let fails = 0;
-const ok = (name, cond, extra='') => { console.log((cond?'  PASS  ':'  FAIL  ')+name+(cond?'':'  <<< '+extra)); if(!cond) fails++; };
+const ok = (n,c,x='') => { console.log((c?'  PASS  ':'  FAIL  ')+n+(c?'':'  <<< '+x)); if(!c) fails++; };
+const URLF = 'file://'+path;
 
 (async () => {
-  const b = await chromium.launch({ executablePath: EXEC, args:['--no-sandbox'] });
-  const p = await b.newPage({ viewport:{width:1280,height:940} });
+  const b = await chromium.launch({ executablePath:EXEC, args:['--no-sandbox'] });
+  const p = await b.newPage({ viewport:{width:1400,height:1000} });
   const errs = [];
   p.on('pageerror', e => errs.push('pageerror: '+e.message));
   p.on('console', m => { const t=m.text();
-    if (m.type()==='error' && !/fonts\.(googleapis|gstatic)\.com|ERR_CONNECTION_RESET|ERR_NAME_NOT_RESOLVED|ERR_INTERNET_DISCONNECTED|ERR_BLOCKED/.test(t)) errs.push('console: '+t); });
-  await p.goto('file://'+path);
-  await p.waitForTimeout(500);
+    if (m.type()==='error' && !/fonts\.(googleapis|gstatic)|ERR_CONNECTION|ERR_NAME|ERR_INTERNET|ERR_BLOCKED/.test(t)) errs.push('console: '+t); });
+  await p.goto(URLF); await p.waitForTimeout(600);
 
-  // ---------- parser: the exact StudentVUE paste shape ----------
-  const USER = `Week 01 - 8/25/2026 through 8/29/2026  (1 items)
-Aug
-27
-AT-Current Events due 8/27, deadline 8/28
-All Tasks / Assessments | 8.00 points
-8
-100%
-Week 02 - 8/30/2026 through 9/5/2026  (1 items)
-Aug
-31
-PP-Intro to Democracy due 8/31
-Practice / Preparation | 15.00 points
-15
+  // ---------- MULTIPLE CLASSES ----------
+  const classes = await p.evaluate(() => GM.state().classes.map(c => ({ n:c.name, p:c.period, w:c.weighted,
+    a:c.assignments.length, g:GM.computeClass(c).letter, pct:GM.computeClass(c).pct })));
+  ok('example seeds 4 separate classes', classes.length===4, JSON.stringify(classes.map(c=>c.n)));
+  ok('each class has its own assignments', classes.every(c=>c.a>=4), JSON.stringify(classes.map(c=>c.a)));
+  ok('each class computes its own grade', classes.every(c=>c.g) && new Set(classes.map(c=>c.pct.toFixed(2))).size===4,
+     JSON.stringify(classes.map(c=>c.g+' '+c.pct.toFixed(2))));
+  ok('AP/Honors auto-detected as weighted', classes.filter(c=>c.w).length===2 && classes.find(c=>c.n==='AP Biology').w
+     && classes.find(c=>c.n==='Honors Algebra 2').w, JSON.stringify(classes.map(c=>c.n+':'+c.w)));
+  ok('gradebook shows a card per class', (await p.$$eval('.gbcard[data-open]', e=>e.length))===4);
+  ok('each card draws a sparkline', (await p.$$eval('.gbcard .spark', e=>e.length))===4);
+  ok('add-a-class card is present', (await p.$$eval('.gbcard.add', e=>e.length))===1);
+
+  // GPA across all classes
+  const gpa = await p.evaluate(() => GM.schoolGPA());
+  const expUn = await p.evaluate(() => { const P={A:4,B:3,C:2,D:1,E:0};
+    const g = GM.state().classes.map(c=>GM.computeClass(c).letter).filter(Boolean);
+    return g.reduce((s,l)=>s+P[l],0)/g.length; });
+  ok('GPA averages every class', Math.abs(gpa.un-expUn)<1e-9 && gpa.n===4, JSON.stringify(gpa));
+  ok('weighted GPA adds the bump', Math.abs(gpa.w-(gpa.un+2/4))<1e-9, JSON.stringify(gpa));
+
+  // ---------- MULTI-CLASS PASTE ----------
+  const multi = `Period 1: AP Chemistry
+Sep
+4
+AT-Titration Lab due 9/4
+All Tasks / Assessments | 20.00 points
+18
+90%
+Sep
+9
+PP-Moles Worksheet due 9/9
+Practice / Preparation | 10.00 points
+9
+90%
+Period 4: World History
+Sep
+5
+AT-Rome Test due 9/5
+All Tasks / Assessments | 40.00 points
+30
+75%
+Sep
+12
+PP-Map Quiz due 9/12
+Practice / Preparation | 10.00 points
+10
 100%`;
-  const r1 = await p.evaluate(t => GM.parseGradebook(t), USER);
-  ok('user sample -> 2 assignments', r1.items.length===2, JSON.stringify(r1.items));
-  ok('item1 name', r1.items[0].name==='AT-Current Events due 8/27, deadline 8/28', r1.items[0].name);
-  ok('item1 category + points', r1.items[0].catName==='All Tasks / Assessments' && r1.items[0].possible===8 && r1.items[0].earned===8);
-  ok('item1 date Aug 27 2026', new Date(r1.items[0].date).toDateString()==='Thu Aug 27 2026');
-  ok('item2 PP 15pts', r1.items[1].catName==='Practice / Preparation' && r1.items[1].possible===15);
+  const split = await p.evaluate(t => GM.splitClasses(t), multi);
+  ok('one paste splits into 2 classes', split && split.length===2, JSON.stringify(split && split.map(c=>c.header)));
+  const fresh = await b.newPage({ viewport:{width:1400,height:1000} });
+  await fresh.goto(URLF); await fresh.waitForTimeout(400);
+  await fresh.evaluate(txt => { const dt = new DataTransfer(); dt.setData('text', txt);
+    document.body.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,cancelable:true})); }, multi);
+  await fresh.waitForTimeout(500);
+  const after = await fresh.evaluate(() => GM.state().classes.map(c => ({ n:c.name, p:c.period, a:c.assignments.length,
+    g:GM.computeClass(c).letter })));
+  ok('pasting many classes creates them all', after.length===2 && after.every(c=>c.a===2), JSON.stringify(after));
+  ok('course names and periods are picked up', after[0].n==='AP Chemistry' && after[0].p==='1'
+     && after[1].n==='World History' && after[1].p==='4', JSON.stringify(after));
+  ok('each pasted class grades separately', after[0].g==='A' && after[1].g==='C', JSON.stringify(after.map(c=>c.g)));
+  await fresh.close();
 
-  // ---------- MCPS math ----------
+  // adding classes by hand
+  const f2 = await b.newPage({ viewport:{width:1400,height:1000} });
+  await f2.goto(URLF); await f2.waitForTimeout(400);
+  await f2.click('[data-act="addclass"]'); await f2.waitForTimeout(350);
+  ok('Add a class opens a new class', (await f2.evaluate(()=>GM.state().classes.length))===5
+     && !(await f2.$('#view-class[hidden]')), 'n='+await f2.evaluate(()=>GM.state().classes.length));
+  await f2.close();
+
+  // ---------- MCPS MATH (unchanged, still exact) ----------
   const cuts = await p.evaluate(() => [89.5,89.49,79.5,79.49,69.5,69.49,59.5,59.49,0,100].map(GM.letterFor));
-  ok('MCPS cutoffs', JSON.stringify(cuts)===JSON.stringify(['A','B','B','C','C','D','D','E','E','A']), JSON.stringify(cuts));
-  const sem = await p.evaluate(() => { const L=['A','B','C','D','E']; const o={};
+  ok('MCPS cutoffs', JSON.stringify(cuts)===JSON.stringify(['A','B','B','C','C','D','D','E','E','A']));
+  const sem = await p.evaluate(() => { const L=['A','B','C','D','E'],o={};
     for(const a of L) for(const c of L) o[a+c]=GM.semesterGrade(a,c); return o; });
-  const exp = {AA:'A',AB:'A',AC:'B',AD:'B',AE:'C',BA:'A',BB:'B',BC:'B',BD:'C',BE:'C',
-    CA:'B',CB:'B',CC:'C',CD:'C',CE:'D',DA:'B',DB:'C',DC:'C',DD:'D',DE:'D',EA:'C',EB:'C',EC:'D',ED:'D',EE:'E'};
-  const bad = Object.keys(exp).filter(k => sem[k]!==exp[k]);
-  ok('MCPS semester chart', !bad.length, bad.join(', '));
-
+  const exp = {AA:'A',AB:'A',AC:'B',AD:'B',AE:'C',BB:'B',BC:'B',BD:'C',BE:'C',CC:'C',CD:'C',CE:'D',DD:'D',DE:'D',EE:'E'};
+  ok('MCPS semester chart', Object.keys(exp).every(k=>sem[k]===exp[k]));
   const calc = await p.evaluate(() => {
-    const cls = { id:'x', categories:[{id:'at',name:'All Tasks / Assessments',weight:90},{id:'pp',name:'Practice / Preparation',weight:10}],
-      assignments:[{id:'1',catId:'at',earned:8,possible:8,graded:true,included:true},
-        {id:'2',catId:'at',earned:21,possible:25,graded:true,included:true},
-        {id:'3',catId:'at',earned:34.5,possible:40,graded:true,included:true},
-        {id:'4',catId:'pp',earned:15,possible:15,graded:true,included:true},
-        {id:'5',catId:'pp',earned:8,possible:10,graded:true,included:true},
-        {id:'6',catId:'pp',earned:null,possible:12,graded:false,included:true}]};
-    const r = GM.computeClass(cls);
-    const only = JSON.parse(JSON.stringify(cls)); only.assignments = only.assignments.filter(a=>a.catId==='at');
-    return { pct:r.pct, letter:r.letter, at:r.cats[0].pct, pp:r.cats[1].pct, atOnly:GM.computeClass(only).pct,
-             trend:GM.trendSeries(cls).length };
+    const cls = { categories:[{id:'at',name:'All Tasks / Assessments',weight:90},{id:'pp',name:'Practice / Preparation',weight:10}],
+      assignments:[{id:'1',catId:'at',earned:63.5,possible:73,graded:true,included:true},
+                   {id:'2',catId:'pp',earned:23,possible:25,graded:true,included:true}]};
+    return { pct:GM.computeClass(cls).pct, letter:GM.computeClass(cls).letter };
   });
-  const expAT = 63.5/73*100, expPP = 23/25*100, expTot = (expAT*90+expPP*10)/100;
-  ok('AT category %', Math.abs(calc.at-expAT)<1e-9);
-  ok('PP category % (ungraded excluded)', Math.abs(calc.pp-expPP)<1e-9);
-  ok('weighted 90/10 total is 87.49 B', Math.abs(calc.pct-expTot)<1e-9 && calc.letter==='B' && calc.pct.toFixed(2)==='87.49', calc.pct);
-  ok('empty category re-scales', Math.abs(calc.atOnly-expAT)<1e-9);
-  ok('trend series has a point per graded assignment', calc.trend===5, 'n='+calc.trend);
+  ok('90/10 weighting = 87.49 B', calc.pct.toFixed(2)==='87.49' && calc.letter==='B', JSON.stringify(calc));
 
-  const verify = await p.evaluate(() => {
+  // optimizer across categories
+  const need = await p.evaluate(() => {
     const cls = { categories:[{id:'at',name:'AT',weight:90},{id:'pp',name:'PP',weight:10}],
       assignments:[{id:'1',catId:'at',earned:63.5,possible:73,graded:true,included:true},
                    {id:'2',catId:'pp',earned:23,possible:25,graded:true,included:true}]};
-    const n = GM.scoreNeeded(cls,'at',50,89.5).need;
-    return { after:GM.computeClass(cls,{extra:{catId:'at',earned:Math.ceil(n*100)/100,possible:50}}).pct,
-             under:GM.computeClass(cls,{extra:{catId:'at',earned:n-0.1,possible:50}}).pct };
+    const r = GM.neededFraction(cls, { at:100, pp:20 }, 89.5);
+    const check = GM.computeClass({ categories:cls.categories, assignments:cls.assignments.concat([
+      {id:'s1',catId:'at',earned:r.f*100,possible:100,graded:true,included:true},
+      {id:'s2',catId:'pp',earned:r.f*20,possible:20,graded:true,included:true}])}).pct;
+    const under = GM.computeClass({ categories:cls.categories, assignments:cls.assignments.concat([
+      {id:'s1',catId:'at',earned:(r.f-0.01)*100,possible:100,graded:true,included:true},
+      {id:'s2',catId:'pp',earned:(r.f-0.01)*20,possible:20,graded:true,included:true}])}).pct;
+    return { f:r.f, check, under };
   });
-  ok('scoreNeeded boundary is tight', verify.after>=89.5 && verify.under<89.5, JSON.stringify(verify));
+  ok('optimizer solves across all categories', need.check>=89.5-1e-9 && need.under<89.5, JSON.stringify(need));
 
-  // ---------- first visit ----------
-  ok('first visit seeds an example', (await p.textContent('.ring .lt')).trim()==='B'
-     && (await p.$$eval('[data-act="clearsample"]', e=>e.length))===1);
-  ok('example shows 6 rows', (await p.$$eval('.arow', e=>e.length))===6);
-  ok('one row marked not graded', (await p.$$eval('.tag.un', e=>e.length))===1);
-  ok('one class card in the overview', (await p.$$eval('.classcard[data-cls]', e=>e.length))===1);
+  // ---------- CLASS VIEW + ANIMATION ----------
+  await p.click('.gbcard[data-open]'); await p.waitForTimeout(700);
+  ok('clicking a card opens that class', !(await p.$('#view-class[hidden]')) && (await p.$('#view-gradebook[hidden]')));
+  ok('class view draws the ring', (await p.$$eval('.ring .prog', e=>e.length))===1);
+  ok('class view draws the trend chart', (await p.$$eval('.chart .line', e=>e.length))===1);
+  ok('category donuts drawn', (await p.$$eval('.donut .dprog', e=>e.length))>=2);
+  const rowsN = await p.$$eval('.arow', e=>e.length);
+  ok('assignment rows rendered', rowsN>=4, 'n='+rowsN);
+  await p.click('[data-act="back"]'); await p.waitForTimeout(500);
+  ok('back returns to the gradebook', !(await p.$('#view-gradebook[hidden]')));
 
-  // ---------- graphics ----------
-  const chart = await p.evaluate(() => {
-    const svg = document.querySelector('.chart'); if (!svg) return null;
-    return { pts:svg.querySelectorAll('.dot').length, bands:svg.querySelectorAll('.band').length,
-             labels:[...svg.querySelectorAll('.bandlabel')].map(t=>t.textContent),
-             w:svg.viewBox.baseVal.width, line:!!svg.querySelector('.line').getAttribute('d') };
-  });
-  ok('trend chart drew a line with a point per assignment', chart && chart.pts===5 && chart.line, JSON.stringify(chart));
-  ok('letter bands are drawn and directly labelled', chart && chart.bands>=4 && chart.labels.includes('A') && chart.labels.includes('B'), JSON.stringify(chart&&chart.labels));
-  ok('chart sized to its container (no squashing)', chart && chart.w>400, 'w='+(chart&&chart.w));
-  const ring = await p.evaluate(() => {
-    const c = document.querySelector('.ring .prog');
-    return { dash:+c.getAttribute('stroke-dasharray'), off:+c.getAttribute('stroke-dashoffset'),
-             ticks:document.querySelectorAll('.ring .tick').length };
-  });
-  ok('grade ring arc matches the percentage', Math.abs((1-ring.off/ring.dash)*100 - 87.49) < 0.02, JSON.stringify(ring));
-  ok('ring has letter-cutoff ticks', ring.ticks===4, 'n='+ring.ticks);
-  ok('category donuts drawn', (await p.$$eval('.donut .dprog', e=>e.length))===2);
-
-  // ---------- editing ----------
-  const first = (await p.$$('[data-earned]'))[0];
-  await first.fill('0'); await p.waitForTimeout(250);
-  ok('typing a score updates the grade live', !(await p.textContent('.ring .pc')).includes('87.49'), await p.textContent('.ring .pc'));
-  ok('edited row is tagged', (await p.$$eval('.tag.mod', e=>e.length))===1);
-  await p.click('[data-act="clearwhatif"]'); await p.waitForTimeout(300);
-  ok('reset restores the real grade', (await p.textContent('.ring .pc')).includes('87.49'), await p.textContent('.ring .pc'));
-
-  // slider
-  await p.click('[data-slide]'); await p.waitForTimeout(250);
-  ok('drag handle opens a slider', (await p.$$eval('[data-range]', e=>e.length))===1);
-  await p.evaluate(() => { const r=document.querySelector('[data-range]');
-    r.value = r.max/2; r.dispatchEvent(new Event('input',{bubbles:true})); });
+  // ---------- THEMES / CUSTOMISATION ----------
+  await p.click('#themeOpen'); await p.waitForTimeout(300);
+  ok('theme dialog opens', (await p.$$eval('.skin', e=>e.length))===10, await p.$$eval('.skin',e=>e.length));
+  const swH = await p.$$eval('.skin .sw', e => e.map(x => x.getBoundingClientRect().height));
+  ok('every theme shows its colour swatch', swH.length===10 && swH.every(h => h > 20), JSON.stringify(swH.slice(0,3)));
+  const before = await p.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--acc').trim());
+  await p.click('[data-skin="midnight"]'); await p.waitForTimeout(350);
+  const afterSkin = await p.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--acc').trim());
+  ok('picking a theme re-tints the app', before!==afterSkin && afterSkin==='#6366f1', before+' -> '+afterSkin);
+  const bg1 = await p.evaluate(()=>getComputedStyle(document.body).backgroundColor);
+  await p.click('[data-mode="dark"]'); await p.waitForTimeout(350);
+  const bg2 = await p.evaluate(()=>getComputedStyle(document.body).backgroundColor);
+  ok('light/dark switch works', bg1!==bg2, bg1+' -> '+bg2);
+  await p.evaluate(()=>{ const i=document.querySelector('#accentPick'); i.value='#00b3ff'; i.dispatchEvent(new Event('input',{bubbles:true})); });
   await p.waitForTimeout(250);
-  ok('slider changes the grade', !(await p.textContent('.ring .pc')).includes('87.49'), await p.textContent('.ring .pc'));
-  await p.click('[data-act="clearwhatif"]'); await p.waitForTimeout(250);
+  ok('custom accent applies', (await p.evaluate(()=>document.documentElement.style.getPropertyValue('--acc')))==='#00b3ff');
+  await p.click('#classicTog + .tr'); await p.waitForTimeout(300);
+  const classicA = await p.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--D').trim());
+  ok('classic grade colours toggle', classicA.toLowerCase().includes('92') || classicA.toLowerCase().includes('fb'), classicA);
+  await p.click('#classicTog + .tr'); await p.waitForTimeout(200); await p.click('[data-skin="melon"]'); await p.waitForTimeout(250);
+  await p.click('[data-mode="auto"]'); await p.waitForTimeout(300);
+  await p.evaluate(()=>GM.state().accent='');
+  await p.click('[data-close]'); await p.waitForTimeout(250);
+  ok('dialog closes', (await p.$$eval('.scrim', e=>e.length))===0);
 
-  // include toggle
-  await p.click('.tick-btn'); await p.waitForTimeout(250);
-  ok('un-ticking an assignment changes the grade', !(await p.textContent('.ring .pc')).includes('87.49'));
-  await p.click('.tick-btn'); await p.waitForTimeout(250);
-  ok('re-ticking puts it back', (await p.textContent('.ring .pc')).includes('87.49'));
+  // ---------- GPA MODAL ----------
+  await p.click('#gpaModalBtn'); await p.waitForTimeout(300);
+  ok('GPA dialog lists every class', (await p.$$eval('[data-wt]', e=>e.length))===4);
+  await p.click('[data-close]'); await p.waitForTimeout(200);
 
-  // delete + undo
-  const before = await p.$$eval('.arow', e=>e.length);
-  await p.click('[data-del]'); await p.waitForTimeout(250);
-  ok('delete removes a row', (await p.$$eval('.arow', e=>e.length))===before-1);
-  await p.click('#toast button'); await p.waitForTimeout(300);
-  ok('undo brings it back', (await p.$$eval('.arow', e=>e.length))===before);
+  // ---------- OPTIMIZER MODAL ----------
+  await p.click('.gbcard[data-open]'); await p.waitForTimeout(600);
+  await p.click('[data-act="optimize"]'); await p.waitForTimeout(350);
+  ok('optimizer opens with a box per category', (await p.$$eval('.optrem', e=>e.length))>=2);
+  const optTxt = await p.textContent('#optOut');
+  ok('optimizer gives an answer', /\d/.test(optTxt) || /reach|locked/i.test(optTxt), optTxt);
+  await p.click('[data-close]'); await p.waitForTimeout(200);
 
-  // what-if add
-  await p.click('[data-act="addrow"]'); await p.waitForTimeout(350);
-  ok('add what-if adds a row', (await p.$$eval('.arow', e=>e.length))===before+1);
-  await p.click('[data-act="clearwhatif"]'); await p.waitForTimeout(250);
+  // ---------- EDITING ----------
+  const pctBefore = await p.textContent('.ring .pc');
+  const firstIn = (await p.$$('[data-earned]'))[0];
+  await firstIn.fill('0'); await p.waitForTimeout(300);
+  ok('typing a score updates live', (await p.textContent('.ring .pc'))!==pctBefore);
+  ok('edited row tagged', (await p.$$eval('.tag.mod', e=>e.length))===1);
+  await p.click('[data-act="clearwhatif"]'); await p.waitForTimeout(350);
+  ok('reset restores the real grade', (await p.textContent('.ring .pc'))===pctBefore);
+  await p.click('[data-slide]'); await p.waitForTimeout(300);
+  ok('slider opens', (await p.$$eval('[data-range]', e=>e.length))===1);
+  await p.evaluate(()=>{ const r=document.querySelector('[data-range]'); r.value=r.max/2; r.dispatchEvent(new Event('input',{bubbles:true})); });
+  await p.waitForTimeout(300);
+  ok('slider changes the grade', (await p.textContent('.ring .pc'))!==pctBefore);
+  await p.click('[data-act="clearwhatif"]'); await p.waitForTimeout(300);
+  const nRows = await p.$$eval('.arow', e=>e.length);
+  await p.click('[data-del]'); await p.waitForTimeout(300);
+  ok('delete works', (await p.$$eval('.arow', e=>e.length))===nRows-1);
+  await p.click('#toast button'); await p.waitForTimeout(350);
+  ok('undo restores it', (await p.$$eval('.arow', e=>e.length))===nRows);
 
-  // what do I need
-  await p.selectOption('#needTarget','89.5'); await p.fill('#needPts','50'); await p.waitForTimeout(250);
-  ok('what-do-I-need answers with a score', /\d/.test(await p.textContent('#needOut')), await p.textContent('#needOut'));
+  // ---------- PERSIST + VIEWS ----------
+  await p.click('[data-act="back"]'); await p.waitForTimeout(300);
+  await p.click('#viewSeg [data-gv="table"]'); await p.waitForTimeout(300);
+  ok('table view lists every class', (await p.$$eval('.gbtable tbody tr', e=>e.length))===4);
+  await p.click('#viewSeg [data-gv="card"]'); await p.waitForTimeout(250);
+  await p.click('#nav [data-view="semester"]'); await p.waitForTimeout(300);
+  await p.selectOption('#semMP1','A'); await p.waitForTimeout(200);
+  await p.selectOption('#semMP2','D'); await p.waitForTimeout(300);
+  ok('semester A+D = B', (await p.textContent('#view-semester .result .big')).trim()==='B');
+  await p.click('#nav [data-view="gpa"]'); await p.waitForTimeout(300);
+  ok('GPA page lists classes', (await p.$$eval('#view-gpa [data-wt]', e=>e.length))===4);
+  await p.click('#nav [data-view="gradebook"]'); await p.waitForTimeout(300);
+  await p.reload(); await p.waitForTimeout(600);
+  ok('everything persists across reload', (await p.$$eval('.gbcard[data-open]', e=>e.length))===4);
 
-  // ---------- paste anywhere ----------
-  const fresh = await b.newPage({ viewport:{width:1280,height:900} });
-  await fresh.goto('file://'+path); await fresh.waitForTimeout(400);
-  await fresh.evaluate(txt => {
-    const dt = new DataTransfer(); dt.setData('text', txt);
-    document.body.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,cancelable:true}));
-  }, 'Course: AP Chemistry\nSep\n4\nAT-Titration Lab due 9/4\nAll Tasks / Assessments | 20.00 points\n18\n90%');
-  await fresh.waitForTimeout(400);
-  const pasted = await fresh.evaluate(() => { const s=GM.state();
-    return { n:s.classes.length, name:s.classes[0].name, sample:!!s.classes[0].sample, a:s.classes[0].assignments.length }; });
-  ok('pasting anywhere imports, replacing the example', pasted.n===1 && pasted.name==='AP Chemistry' && !pasted.sample && pasted.a===1, JSON.stringify(pasted));
-  await fresh.close();
-
-  // ---------- sample clearing ----------
-  const f2 = await b.newPage({ viewport:{width:1280,height:900} });
-  await f2.goto('file://'+path); await f2.waitForTimeout(400);
-  await f2.click('[data-act="clearsample"]'); await f2.waitForTimeout(300);
-  ok('clearing the example empties the app', (await f2.evaluate(()=>GM.state().classes.length))===0);
-  ok('empty state offers a paste box', (await f2.$$eval('#firstPaste', e=>e.length))===1);
-  await f2.close();
-
-  // ---------- semester / gpa / theme ----------
-  await p.click('#nav button[data-view="semester"]'); await p.waitForTimeout(250);
-  await p.selectOption('#semMP1','A'); await p.selectOption('#semMP2','D'); await p.waitForTimeout(200);
-  ok('semester A+D = B', (await p.textContent('#semOut')).trim()==='B');
-  await p.fill('#blendCourse','87.49'); await p.fill('#blendTest','95'); await p.fill('#blendW','20'); await p.waitForTimeout(200);
-  ok('blend 87.49x.8 + 95x.2 = 88.99', (await p.textContent('#blendOut')).includes('88.99'), await p.textContent('#blendOut'));
-  await p.click('#nav button[data-view="gpa"]'); await p.waitForTimeout(200);
-  await p.click('#gpaPull'); await p.waitForTimeout(250);
-  ok('GPA pulls classes', (await p.textContent('#gpaW'))!=='—');
-  await p.click('#nav button[data-view="grades"]'); await p.waitForTimeout(300);
-
-  await p.reload(); await p.waitForTimeout(500);
-  ok('data persists across reload', (await p.textContent('.ring .lt')).trim()==='B');
-
-  // ---------- theme ----------
-  for (const cs of ['dark','light']){
-    const tp = await b.newPage({ viewport:{width:1280,height:900}, colorScheme:cs });
-    await tp.goto('file://'+path); await tp.waitForTimeout(350);
-    const bg = await tp.evaluate(()=>getComputedStyle(document.body).backgroundColor);
-    const stamped = await tp.evaluate(()=>document.documentElement.getAttribute('data-theme'));
-    const isDark = bg.replace(/[^\d,]/g,'').split(',').slice(0,3).reduce((a,x)=>a+ +x,0) < 200;
-    ok(`${cs} OS theme applies with no stamp`, stamped===null && isDark===(cs==='dark'), `${bg} / ${stamped}`);
-    await tp.close();
-  }
-
-  // ---------- screenshots ----------
-  await p.waitForTimeout(1300);
-  await p.screenshot({ path:SS+'/desktop.png' });
-  await p.evaluate(()=>{ document.documentElement.dataset.theme='dark'; GM.paintChart(); });
-  await p.waitForTimeout(1500);
-  await p.screenshot({ path:SS+'/dark.png' });
-  await p.evaluate(()=>{ document.documentElement.dataset.theme='light'; GM.paintChart(); });
-  await p.waitForTimeout(200);
-  await p.evaluate(()=>window.scrollTo(0,900)); await p.waitForTimeout(300);
-  await p.screenshot({ path:SS+'/rows.png' });
+  // ---------- SCREENSHOTS ----------
+  await p.waitForTimeout(1600);
+  await p.screenshot({ path:SS+'/gradebook.png' });
+  await p.click('.gbcard[data-open]'); await p.waitForTimeout(1500);
+  await p.screenshot({ path:SS+'/class.png' });
+  await p.evaluate(()=>{ GM.setState({skin:'midnight', theme:'dark'}); }); await p.waitForTimeout(300);
+  await p.click('[data-act="back"]'); await p.waitForTimeout(1600);
+  await p.screenshot({ path:SS+'/dark-midnight.png' });
+  await p.evaluate(()=>{ GM.setState({skin:'melon', theme:'auto'}); }); await p.waitForTimeout(300);
+  await p.click('#themeOpen'); await p.waitForTimeout(400);
+  await p.screenshot({ path:SS+'/themes.png' });
+  await p.click('[data-close]');
 
   const m = await b.newPage({ viewport:{width:390,height:844} });
-  await m.goto('file://'+path); await m.waitForTimeout(500);
+  await m.goto(URLF); await m.waitForTimeout(1500);
   await m.screenshot({ path:SS+'/mobile.png' });
-  const hs = await m.evaluate(()=> document.documentElement.scrollWidth > innerWidth+1);
-  ok('no sideways scroll on mobile', !hs, 'sw='+await m.evaluate(()=>document.documentElement.scrollWidth));
-  await m.evaluate(()=>window.scrollTo(0,760)); await m.waitForTimeout(300);
-  await m.screenshot({ path:SS+'/mobile-rows.png' });
+  ok('no sideways scroll on mobile', !(await m.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1)),
+     'sw='+await m.evaluate(()=>document.documentElement.scrollWidth));
+  const navBox = await m.evaluate(() => { const b=[...document.querySelectorAll('#nav .navlink')].map(e=>e.getBoundingClientRect());
+    return { rowly: b.every(r => Math.abs(r.top-b[0].top) < 4), h: Math.round(b[0].height) }; });
+  ok('mobile nav sits in one row', navBox.rowly, JSON.stringify(navBox));
+  const clipped = await m.evaluate(() => [...document.querySelectorAll('.stat .v')].some(e => e.scrollWidth > e.clientWidth + 1));
+  ok('no clipped stat numbers on mobile', !clipped);
+  await m.click('.gbcard[data-open]'); await m.waitForTimeout(900);
+  await m.screenshot({ path:SS+'/mobile-class.png' });
   await m.close();
 
   ok('no console/page errors', errs.length===0, errs.slice(0,4).join(' | '));

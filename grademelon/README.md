@@ -8,6 +8,9 @@ Published on GitHub Pages at `/grademelon/`.
 
 ## How grades are calculated
 
+This matches `utils/grades.ts` in the original Grade Melon (`tinuh/grade-melon`) — same cut-offs,
+same category re-normalisation, same GPA rule.
+
 Categories are weighted, and each is scored on its own points before they are combined:
 
 ```
@@ -25,43 +28,43 @@ Marking period grade = (PP% × 10 + AT% × 90) ÷ 100
 * Semester grade: quality points (A=4 … E=0) from the two marking periods are averaged and
   a tie rounds **up** — which reproduces the MCPS semester chart exactly (A+C=B, B+E=C, A+D=B…).
 
-## Features
+## What it does
 
-* **Paste anywhere** — press Ctrl/⌘+V on the page and it imports. The parser anchors on the
-  `Category | N points` line, so menus, week headers and other junk are ignored. Handles ungraded
-  work, `Not Graded`, `Missing`, `Excused`, `17 / 20` scores, extra credit (0 points possible), `pts`.
-* **Drag a score** — every row has a slider; the grade, the ring, the donuts, the trend line and
-  each assignment's impact all move as you drag.
-* **What-if assignments**, **fill-ungraded**, and one-tap **Reset** back to your real grades.
-* **Impact** — how much each assignment is moving the grade right now.
-* **What do I need?** — the minimum score on an upcoming assignment to reach a target.
-* **Undo** on delete (toast button or Ctrl/⌘+Z).
-* **Multiple classes** with an overview grid, semester calculator, state-test/final blend, and
-  GPA (weighted and unweighted).
-* Dark mode that follows the OS until you pick a side, works offline, responsive to phone width,
-  export/restore backup.
+* **Gradebook of every class.** Add as many classes as you like; each keeps its own assignments,
+  category weights, marking period and grade. Card view or table view, per the original.
+* **Paste one class or all of them.** Press Ctrl/⌘+V anywhere. If the paste contains several
+  courses, they are split into separate classes with their names and periods picked out.
+* **Per-class grade** with a ring, a trend chart, category donuts and a sparkline on its card.
+* **GPA across all classes**, weighted and unweighted, with a per-course *Weighted?* toggle that is
+  auto-ticked from AP / IB / Honors / Magnet in the name — the same rule the original uses.
+* **Target optimiser** — enter the points still to come in each category and it solves for the
+  lowest score you can average on all of it and still land the grade you want.
+* **What-ifs** — type a score, drag the slider on any row, add an assignment that does not exist
+  yet, or fill in everything ungraded at once. *Reset* puts your real grades back.
+* **Impact** per assignment, **undo** on delete, search and sort, semester calculator and
+  state-test blend.
 
-## Graphics
+## Look & feel
 
-All drawn in-page — SVG, Canvas and CSS, no chart or animation library, so it works offline and
-inside a strict CSP.
-
-* **Grade ring** — SVG arc with the letter cut-offs notched onto it, animated on change.
-* **Trend chart** — hand-drawn SVG of your grade after each assignment, over A/B/C/D/E bands with
-  the cut-off values (89.5, 79.5, …) down the left and the letters on the right. Crosshair and
-  tooltip on hover; the current grade is labelled directly on the last point.
-* **Category donuts**, staggered row entry, spring buttons, an animated tick, an aurora backdrop,
-  and a watermelon-seed confetti burst when your letter grade goes up.
-* Everything respects `prefers-reduced-motion`.
+* **10 themes** (Watermelon, Midnight, Sunset, Ocean, Grape, Matcha, Candy, Ember, Mint, Slate)
+  plus **any custom accent colour** — the whole app re-tints around it, neutrals included, because
+  every surface token is a `color-mix` of the accent.
+* Light / dark / auto, independent of the theme.
+* Graphics are all hand-drawn — SVG, Canvas and CSS, no chart or animation library — so it works
+  offline and inside a strict CSP: animated grade ring with the letter cut-offs notched on, trend
+  chart over A/B/C/D/E bands with a crosshair tooltip, category donuts, per-card sparklines, a
+  shared-element (FLIP) transition from card to class, staggered entrances, and a watermelon-seed
+  confetti burst when a letter grade goes up. All of it honours `prefers-reduced-motion`.
 
 ### Grade colours
 
 A–E are the app's main colour code, so the five were re-stepped until they passed a
-colour-vision-deficiency check (adjacent-pair ΔE, normal-vision floor, lightness band, chroma
-floor and contrast, in both themes). The obvious green/blue/amber/orange/red set fails badly —
-amber, orange and red collapse into one colour for deuteranopes. The set in use is
+colour-vision-deficiency check (adjacent-pair ΔE, normal-vision floor, lightness band, chroma floor
+and contrast, in both themes). The obvious green/blue/amber/orange/red set fails badly — amber,
+orange and red collapse into one colour for deuteranopes. The set in use is
 `#15803d #2563eb #a16207 #c026d3 #9f1239` on light and `#19a855 #3b82f6 #bd8c0c #d946ef #fb4a68`
-on dark. Colour is never the only signal: the letter is printed everywhere it is used.
+on dark. **Look & feel → Classic grade colours** switches back to the StudentVUE set if you prefer
+it. Colour is never the only signal: the letter is printed everywhere it is used.
 
 ## Privacy
 
