@@ -4,333 +4,429 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Grade Melon</title>
-<meta name="description" content="Grade Melon: paste your StudentVUE gradebook and calculate your MCPS grade. All Tasks / Assessments 90%, Practice / Preparation 10%, what-if assignments, semester and GPA calculators.">
-<meta name="theme-color" content="#1f7a3f">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5A45 45 0 0 0 5 50h90A45 45 0 0 0 50 5z' fill='%231f7a3f' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 12A38 38 0 0 0 12 50h76A38 38 0 0 0 50 12z' fill='%23fff8f2' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 18A32 32 0 0 0 18 50h64A32 32 0 0 0 50 18z' fill='%23ff5b78' transform='rotate(180 50 50)'/%3E%3Cg fill='%231f2124'%3E%3Cellipse cx='38' cy='68' rx='3' ry='4.5'/%3E%3Cellipse cx='62' cy='68' rx='3' ry='4.5'/%3E%3Cellipse cx='50' cy='78' rx='3' ry='4.5'/%3E%3C/g%3E%3C/svg%3E">
+<meta name="description" content="Paste your StudentVUE gradebook and see your real MCPS grade. All Tasks 90%, Practice 10%, what-if scores, trend chart, semester and GPA calculators.">
+<meta name="theme-color" content="#1a7a42">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 95A45 45 0 0 1 5 50h90A45 45 0 0 1 50 95z' fill='%231a7a42'/%3E%3Cpath d='M50 88A38 38 0 0 1 12 50h76A38 38 0 0 1 50 88z' fill='%23fff8f2'/%3E%3Cpath d='M50 82A32 32 0 0 1 18 50h64A32 32 0 0 1 50 82z' fill='%23ff4d6d'/%3E%3Cg fill='%23121814'%3E%3Cellipse cx='38' cy='62' rx='3' ry='4.5'/%3E%3Cellipse cx='62' cy='62' rx='3' ry='4.5'/%3E%3Cellipse cx='50' cy='72' rx='3' ry='4.5'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* ============================================================
+/* ==========================================================================
    Grade Melon — MCPS grade calculator
-   Single file. No dependencies. Works offline.
-   ============================================================ */
+   One file. No dependencies. Works offline.
+   Grade colours validated for colour-vision deficiency (see README).
+   ========================================================================== */
 *,*::before,*::after{box-sizing:border-box}
+
 :root{
   color-scheme:light;
-  --rind:#1f7a3f; --rind2:#2ea55a; --rind-dark:#155c2e;
-  --flesh:#ff5b78; --flesh2:#ff8098; --flesh-dark:#e03f5f;
-  --seed:#1f2124;
-  --bg:#f4f6f3; --bg2:#eaeee8; --card:#ffffff; --card2:#f8faf7;
-  --ink:#16211c; --ink2:#33413a; --muted:#6c7d75; --faint:#9aa8a1;
-  --line:#e0e7e1; --line2:#cfdad2;
-  --A:#16a34a; --B:#2563eb; --C:#ca8a04; --D:#ea580c; --E:#dc2626;
-  --shadow:0 1px 2px rgba(20,40,30,.06),0 8px 24px -12px rgba(20,40,30,.18);
-  --shadow-lg:0 2px 4px rgba(20,40,30,.06),0 20px 48px -18px rgba(20,40,30,.28);
-  --r:14px; --r-sm:9px; --r-lg:20px;
+  /* watermelon */
+  --rind-900:#0f4a27; --rind-700:#1a7a42; --rind-500:#22a35a; --mint:#6dd99a;
+  --flesh-600:#d83a5e; --flesh-500:#ff4d6d; --flesh-300:#ffa3b4;
+  --seed:#121814;
+  /* surfaces — neutrals biased green so they read as chosen, not default */
+  --bg:#f2f6f3; --card:#ffffff; --card-2:#f7faf8; --glass:rgba(255,255,255,.72);
+  --ink:#0d1a12; --ink-2:#2c3d34; --muted:#5c6f65; --faint:#93a69b;
+  --line:#e1eae4; --line-2:#cddbd2;
+  /* grade scale — all six checks pass vs this surface */
+  --A:#15803d; --B:#2563eb; --C:#a16207; --D:#c026d3; --E:#9f1239;
+  --shadow-1:0 1px 2px rgba(12,40,24,.05),0 6px 16px -10px rgba(12,40,24,.16);
+  --shadow-2:0 2px 6px rgba(12,40,24,.06),0 18px 40px -18px rgba(12,40,24,.26);
+  --shadow-3:0 4px 10px rgba(12,40,24,.08),0 32px 64px -24px rgba(12,40,24,.34);
+  --r-s:10px; --r:16px; --r-l:24px; --r-xl:32px;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --display:"Bricolage Grotesque","IBM Plex Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ease:cubic-bezier(.2,.8,.25,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --rind:#2ea55a; --rind2:#3fc46f; --rind-dark:#1c6b39;
-  --flesh:#ff6f89; --flesh2:#ff92a8; --flesh-dark:#e0506c;
-  --bg:#0f1512; --bg2:#131b17; --card:#182019; --card2:#1e2721;
-  --ink:#e9f0eb; --ink2:#c6d2ca; --muted:#8d9d94; --faint:#68786f;
-  --line:#26322b; --line2:#334036;
-  --A:#4ade80; --B:#60a5fa; --C:#fbbf24; --D:#fb923c; --E:#f87171;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
-  --shadow-lg:0 2px 4px rgba(0,0,0,.4),0 20px 48px -18px rgba(0,0,0,.7);
+  --rind-900:#0b3a1f; --rind-700:#1e8f4d; --rind-500:#2fbe6c; --mint:#7ff0ac;
+  --flesh-600:#e8496b; --flesh-500:#ff5f7d; --flesh-300:#ffb3c1;
+  --bg:#0b100d; --card:#131a16; --card-2:#18211b; --glass:rgba(19,26,22,.72);
+  --ink:#e8f1eb; --ink-2:#c2d2c8; --muted:#88998f; --faint:#5f6f66;
+  --line:#1f2a24; --line-2:#2b3830;
+  --A:#19a855; --B:#3b82f6; --C:#bd8c0c; --D:#d946ef; --E:#fb4a68;
+  --shadow-1:0 1px 2px rgba(0,0,0,.5),0 6px 16px -10px rgba(0,0,0,.7);
+  --shadow-2:0 2px 6px rgba(0,0,0,.5),0 18px 40px -18px rgba(0,0,0,.8);
+  --shadow-3:0 4px 10px rgba(0,0,0,.55),0 32px 64px -24px rgba(0,0,0,.9);
 }
-@media (prefers-color-scheme: dark){
+@media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-  color-scheme:dark;
-  --rind:#2ea55a; --rind2:#3fc46f; --rind-dark:#1c6b39;
-  --flesh:#ff6f89; --flesh2:#ff92a8; --flesh-dark:#e0506c;
-  --bg:#0f1512; --bg2:#131b17; --card:#182019; --card2:#1e2721;
-  --ink:#e9f0eb; --ink2:#c6d2ca; --muted:#8d9d94; --faint:#68786f;
-  --line:#26322b; --line2:#334036;
-  --A:#4ade80; --B:#60a5fa; --C:#fbbf24; --D:#fb923c; --E:#f87171;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
-  --shadow-lg:0 2px 4px rgba(0,0,0,.4),0 20px 48px -18px rgba(0,0,0,.7);
+    color-scheme:dark;
+    --rind-900:#0b3a1f; --rind-700:#1e8f4d; --rind-500:#2fbe6c; --mint:#7ff0ac;
+    --flesh-600:#e8496b; --flesh-500:#ff5f7d; --flesh-300:#ffb3c1;
+    --bg:#0b100d; --card:#131a16; --card-2:#18211b; --glass:rgba(19,26,22,.72);
+    --ink:#e8f1eb; --ink-2:#c2d2c8; --muted:#88998f; --faint:#5f6f66;
+    --line:#1f2a24; --line-2:#2b3830;
+    --A:#19a855; --B:#3b82f6; --C:#bd8c0c; --D:#d946ef; --E:#fb4a68;
+    --shadow-1:0 1px 2px rgba(0,0,0,.5),0 6px 16px -10px rgba(0,0,0,.7);
+    --shadow-2:0 2px 6px rgba(0,0,0,.5),0 18px 40px -18px rgba(0,0,0,.8);
+    --shadow-3:0 4px 10px rgba(0,0,0,.55),0 32px 64px -24px rgba(0,0,0,.9);
   }
 }
+
 html,body{margin:0;padding:0}
 body{
-  font-family:var(--sans); background:var(--bg); color:var(--ink);
-  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
-  min-height:100vh;
+  font-family:var(--sans);background:var(--bg);color:var(--ink);
+  font-size:15.5px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;
 }
 img{max-width:100%}
 [hidden]{display:none!important}
 button,input,select,textarea{font:inherit;color:inherit}
-a{color:var(--rind);text-decoration:none}
-a:hover{text-decoration:underline}
-h1,h2,h3,h4{margin:0;line-height:1.15;font-family:var(--display);font-weight:700;letter-spacing:-.015em;text-wrap:balance}
+a{color:var(--rind-700);text-decoration:none}
+h1,h2,h3,h4{margin:0;font-family:var(--display);font-weight:700;line-height:1.12;letter-spacing:-.02em;text-wrap:balance}
+:focus-visible{outline:2.5px solid var(--rind-500);outline-offset:2px;border-radius:6px}
+
+/* ---------- aurora backdrop ---------- */
+#aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--bg)}
+#aurora i{position:absolute;display:block;border-radius:50%;filter:blur(70px);opacity:.5}
+#aurora i:nth-child(1){width:52vw;height:52vw;left:-12vw;top:-16vw;background:radial-gradient(circle,var(--rind-500),transparent 70%);animation:drift1 34s var(--ease) infinite alternate}
+#aurora i:nth-child(2){width:44vw;height:44vw;right:-10vw;top:6vh;background:radial-gradient(circle,var(--flesh-500),transparent 70%);opacity:.32;animation:drift2 40s var(--ease) infinite alternate}
+#aurora i:nth-child(3){width:60vw;height:60vw;left:22vw;bottom:-30vw;background:radial-gradient(circle,var(--mint),transparent 72%);opacity:.3;animation:drift3 46s var(--ease) infinite alternate}
+@keyframes drift1{to{transform:translate3d(10vw,8vh,0) scale(1.18)}}
+@keyframes drift2{to{transform:translate3d(-9vw,12vh,0) scale(1.22)}}
+@keyframes drift3{to{transform:translate3d(-12vw,-8vh,0) scale(1.12)}}
 
 /* ---------- layout ---------- */
-.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
-main{padding-block:22px 60px}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:18px}
+main{padding-block:20px 72px}
+.stack{display:grid;gap:16px}
 
 /* ---------- top bar ---------- */
-.topbar{
-  position:sticky;top:0;z-index:50;
-  background:linear-gradient(160deg,var(--rind-dark),var(--rind) 55%,var(--rind2));
-  color:#fff;box-shadow:0 2px 14px rgba(0,0,0,.16);
-}
-.topbar .wrap{display:flex;align-items:center;gap:14px;min-height:60px;flex-wrap:wrap;padding-block:8px}
-.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.3rem;letter-spacing:-.025em;color:#fff}
+.topbar{position:sticky;top:0;z-index:60;background:var(--glass);
+  -webkit-backdrop-filter:blur(16px) saturate(1.6);backdrop-filter:blur(16px) saturate(1.6);
+  border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:12px;min-height:62px;flex-wrap:wrap;padding-block:9px}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:800;
+  font-size:1.32rem;letter-spacing:-.03em;color:var(--ink)}
 .brand:hover{text-decoration:none}
-.melon{width:30px;height:30px;flex:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
-.brand small{display:block;font-family:var(--mono);font-size:.58rem;font-weight:400;letter-spacing:.15em;text-transform:uppercase;opacity:.8;margin-top:-1px}
-.nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
-.nav button{
-  background:transparent;border:0;color:rgba(255,255,255,.82);
-  padding:8px 13px;border-radius:99px;cursor:pointer;font-weight:600;font-size:.86rem;
-  transition:background .15s,color .15s;
-}
-.nav button:hover{background:rgba(255,255,255,.14);color:#fff}
-.nav button[aria-current="true"]{background:#fff;color:var(--rind-dark)}
-.icon-btn{
-  background:rgba(255,255,255,.14);border:0;color:#fff;width:34px;height:34px;
-  border-radius:99px;cursor:pointer;display:grid;place-items:center;font-size:1rem;
-  transition:background .15s,transform .15s;
-}
-.icon-btn:hover{background:rgba(255,255,255,.26);transform:translateY(-1px)}
+.brand small{display:block;font-family:var(--mono);font-size:.575rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+.melon{width:34px;height:34px;flex:none}
+.melon .seed{transform-origin:50% 50%;animation:seedpop .7s var(--spring) backwards}
+.melon .seed:nth-of-type(2){animation-delay:.08s}
+.melon .seed:nth-of-type(3){animation-delay:.16s}
+@keyframes seedpop{from{transform:translateY(-7px) scale(.2);opacity:0}}
+.nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap;background:var(--card-2);
+  padding:4px;border-radius:99px;border:1px solid var(--line)}
+.nav button{background:transparent;border:0;color:var(--muted);padding:7px 15px;border-radius:99px;
+  cursor:pointer;font-weight:600;font-size:.85rem;transition:color .18s,background .18s}
+.nav button:hover{color:var(--ink)}
+.nav button[aria-current="true"]{background:var(--card);color:var(--rind-700);box-shadow:var(--shadow-1)}
+.icon-btn{background:var(--card-2);border:1px solid var(--line);color:var(--ink);width:38px;height:38px;
+  border-radius:50%;cursor:pointer;display:grid;place-items:center;font-size:1rem;
+  transition:transform .22s var(--spring),background .18s}
+.icon-btn:hover{transform:translateY(-2px) rotate(-8deg);background:var(--card)}
+.icon-btn:active{transform:scale(.9)}
 
-/* ---------- generic ui ---------- */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
-.pad{padding:18px}
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  padding:9px 15px;border-radius:99px;border:1px solid var(--line2);
-  background:var(--card);color:var(--ink);font-weight:600;font-size:.86rem;
-  cursor:pointer;transition:.15s;white-space:nowrap;
-}
-.btn:hover{border-color:var(--rind);color:var(--rind);transform:translateY(-1px)}
-.btn:focus-visible,.icon-btn:focus-visible,.classtab:focus-visible,.rowbtn:focus-visible,[contenteditable]:focus-visible{outline:2px solid var(--rind);outline-offset:2px}
-.btn:active{transform:none}
-.btn-primary{background:var(--rind);border-color:var(--rind);color:#fff}
-.btn-primary:hover{background:var(--rind-dark);border-color:var(--rind-dark);color:#fff}
-.btn-melon{background:var(--flesh);border-color:var(--flesh);color:#fff}
-.btn-melon:hover{background:var(--flesh-dark);border-color:var(--flesh-dark);color:#fff}
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;
+  border-radius:99px;border:1px solid var(--line-2);background:var(--card);color:var(--ink);
+  font-weight:600;font-size:.88rem;cursor:pointer;white-space:nowrap;
+  transition:transform .2s var(--spring),box-shadow .2s,border-color .18s,background .18s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);border-color:var(--line-2)}
+.btn:active{transform:translateY(0) scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--rind-700),var(--rind-500));border-color:transparent;color:#fff}
+.btn-primary:hover{color:#fff}
+.btn-melon{background:linear-gradient(135deg,var(--flesh-600),var(--flesh-500));border-color:transparent;color:#fff}
+.btn-melon:hover{color:#fff}
 .btn-ghost{background:transparent;border-color:transparent;color:var(--muted)}
-.btn-ghost:hover{background:var(--bg2);color:var(--ink);border-color:transparent}
-.btn-sm{padding:6px 11px;font-size:.78rem}
-.btn-danger:hover{border-color:var(--E);color:var(--E)}
+.btn-ghost:hover{background:var(--card-2);color:var(--ink);box-shadow:none}
+.btn-sm{padding:8px 13px;font-size:.81rem}
+.btn-lg{padding:14px 26px;font-size:.98rem}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-l);box-shadow:var(--shadow-1)}
+.pad{padding:22px}
+@media (max-width:560px){.pad{padding:17px}}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.spread{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.spread{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .muted{color:var(--muted)}
-.tiny{font-size:.76rem}
-.small{font-size:.84rem}
-label.fld{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:.7rem;font-weight:600;
-  text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-input[type=text],input[type=number],select,textarea{
-  background:var(--card2);border:1px solid var(--line2);border-radius:var(--r-sm);
-  padding:9px 11px;font-size:.9rem;font-weight:500;color:var(--ink);width:100%;
-  transition:border-color .15s,box-shadow .15s;
-}
-input:focus,select:focus,textarea:focus{
-  outline:none;border-color:var(--rind);box-shadow:0 0 0 3px color-mix(in srgb,var(--rind) 22%,transparent);
-}
-textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertical;min-height:150px}
-.chip{
-  display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;
-  background:var(--bg2);border:1px solid var(--line);font-size:.72rem;font-weight:700;
-  letter-spacing:.02em;color:var(--ink2);
-}
-.pill-A{background:color-mix(in srgb,var(--A) 16%,transparent);color:var(--A);border-color:color-mix(in srgb,var(--A) 32%,transparent)}
-.pill-B{background:color-mix(in srgb,var(--B) 16%,transparent);color:var(--B);border-color:color-mix(in srgb,var(--B) 32%,transparent)}
-.pill-C{background:color-mix(in srgb,var(--C) 18%,transparent);color:var(--C);border-color:color-mix(in srgb,var(--C) 34%,transparent)}
-.pill-D{background:color-mix(in srgb,var(--D) 16%,transparent);color:var(--D);border-color:color-mix(in srgb,var(--D) 32%,transparent)}
-.pill-E{background:color-mix(in srgb,var(--E) 16%,transparent);color:var(--E);border-color:color-mix(in srgb,var(--E) 32%,transparent)}
-.pill-N{background:var(--bg2);color:var(--muted)}
-.sec-title{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.tiny{font-size:.77rem}
+.small{font-size:.86rem}
+.eyebrow{font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.sec-title{font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px}
 .sec-title::after{content:'';flex:1;height:1px;background:var(--line)}
-.note{background:var(--card2);border:1px dashed var(--line2);border-radius:var(--r-sm);padding:11px 13px;font-size:.83rem;color:var(--ink2)}
-.divider{height:1px;background:var(--line);margin:16px 0}
+.divider{height:1px;background:var(--line);margin:18px 0}
+label.fld{display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:.7rem;
+  font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+input[type=text],input[type=number],select,textarea{background:var(--card-2);border:1px solid var(--line-2);
+  border-radius:var(--r-s);padding:10px 12px;font-size:.92rem;font-weight:500;color:var(--ink);width:100%;
+  transition:border-color .18s,box-shadow .18s,background .18s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rind-500);background:var(--card);
+  box-shadow:0 0 0 3.5px color-mix(in srgb,var(--rind-500) 20%,transparent)}
+textarea{font-family:var(--mono);font-size:.81rem;line-height:1.6;resize:vertical;min-height:170px}
+.note{background:var(--card-2);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;
+  font-size:.85rem;color:var(--ink-2)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:99px;
+  background:var(--card-2);border:1px solid var(--line);font-family:var(--mono);font-size:.7rem;
+  font-weight:500;color:var(--ink-2)}
+.g-A{color:var(--A)}.g-B{color:var(--B)}.g-C{color:var(--C)}.g-D{color:var(--D)}.g-E{color:var(--E)}
+.pill{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 8px;border-radius:9px;
+  font-family:var(--display);font-weight:800;font-size:1rem;color:#fff;letter-spacing:-.02em}
+.pill-A{background:var(--A)}.pill-B{background:var(--B)}.pill-C{background:var(--C)}
+.pill-D{background:var(--D)}.pill-E{background:var(--E)}.pill-N{background:var(--faint)}
 
-/* ---------- class tabs ---------- */
-.classtabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:thin}
-.classtab{
-  flex:none;display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:99px;
-  background:var(--card);border:1px solid var(--line);cursor:pointer;font-weight:650;font-size:.86rem;
-  color:var(--ink2);transition:.15s;box-shadow:var(--shadow);
+/* ---------- hero: grade ring ---------- */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center}
+.ring{position:relative;width:176px;height:176px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .track{fill:none;stroke:var(--line);stroke-width:13}
+.ring .prog{fill:none;stroke:url(#ringgrad);stroke-width:13;stroke-linecap:round;
+  transition:stroke-dashoffset 1.1s var(--ease)}
+.ring .tick{stroke:var(--card);stroke-width:2.5}
+.ring .mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center;line-height:1}
+.ring .lt{font-family:var(--display);font-size:3.6rem;font-weight:800;letter-spacing:-.05em;
+  transition:color .45s}
+.ring .pc{font-family:var(--mono);font-size:1rem;font-weight:600;color:var(--ink-2);
+  margin-top:6px;font-variant-numeric:tabular-nums}
+.ring .cap{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin-top:5px}
+.hero h2{font-size:1.7rem;margin-bottom:3px}
+.hero .meta{color:var(--muted);font-size:.87rem;margin-bottom:13px}
+.headline{font-size:.95rem;color:var(--ink-2);margin-bottom:16px;min-height:1.4em}
+.headline b{color:var(--rind-700)}
+@media (max-width:720px){
+  .hero{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .hero .txt{width:100%}
+  .ring{width:158px;height:158px}
 }
-.classtab:hover{transform:translateY(-1px);border-color:var(--line2)}
-.classtab[aria-current="true"]{border-color:var(--rind);box-shadow:0 0 0 2px color-mix(in srgb,var(--rind) 26%,transparent),var(--shadow);color:var(--ink)}
-.classtab .lg{font-weight:900;font-size:.9rem}
 
-/* ---------- grade hero ---------- */
-.hero{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
-.gradeball{
-  width:132px;height:132px;border-radius:50%;display:grid;place-items:center;
-  background:conic-gradient(var(--gc) calc(var(--gp)*1%),var(--bg2) 0);
-  position:relative;flex:none;transition:--gp .5s;
-}
-.gradeball::after{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--card)}
-.gradeball .inner{position:relative;z-index:1;text-align:center;line-height:1}
-.gradeball .lt{font-family:var(--display);font-size:3rem;font-weight:800;color:var(--gc);letter-spacing:-.045em}
-.gradeball .pc{font-family:var(--mono);font-size:.88rem;font-weight:600;color:var(--ink2);margin-top:4px;font-variant-numeric:tabular-nums}
-.hero h2{font-size:1.45rem;margin-bottom:2px}
-.hero .meta{color:var(--muted);font-size:.85rem;margin-bottom:12px}
-.nextline{font-size:.85rem;color:var(--ink2)}
-.nextline b{color:var(--rind)}
+/* ---------- trend chart ---------- */
+.chartwrap{position:relative}
+.chart{width:100%;height:190px;display:block;overflow:visible;touch-action:pan-y}
+.chart .band{opacity:.09}
+.chart .bandline{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
+.chart .bandlabel{font-family:var(--mono);font-size:9.5px;fill:var(--muted);letter-spacing:.05em}
+.chart .line{fill:none;stroke:var(--rind-700);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.chart .dot{fill:var(--card);stroke:var(--rind-700);stroke-width:2.4}
+.chart .lastdot{fill:var(--rind-700);stroke:var(--card);stroke-width:2.5}
+.chart .cross{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;opacity:0;transition:opacity .15s}
+.chart .hit{fill:transparent}
+.chart .xlabel{font-family:var(--mono);font-size:9.5px;fill:var(--muted)}
+.chartwrap.live .cross{opacity:.7}
+.tip{position:absolute;pointer-events:none;background:var(--seed);color:#fff;padding:9px 12px;
+  border-radius:10px;font-size:.79rem;line-height:1.4;box-shadow:var(--shadow-2);opacity:0;
+  transform:translate(-50%,-116%);transition:opacity .14s;max-width:230px;z-index:5}
+.tip.on{opacity:1}
+.tip b{font-family:var(--mono);font-weight:600}
+.tip .t-sub{opacity:.72;font-size:.73rem}
+.chart-empty{display:grid;place-items:center;height:190px;color:var(--muted);font-size:.86rem;text-align:center}
 
-/* ---------- category bars ---------- */
-.catlist{display:grid;gap:11px}
-.catrow{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
-.catrow .nm{font-weight:700;font-size:.87rem;display:flex;align-items:center;gap:7px;min-width:0}
-.catrow .nm span.w{font-family:var(--mono);font-size:.66rem;font-weight:600;color:#fff;background:var(--rind);padding:2px 7px;border-radius:99px;flex:none}
-.catrow .val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.9rem;white-space:nowrap}
-.catrow .val small{font-weight:600;color:var(--muted);font-size:.76rem}
-.bar{grid-column:1/-1;height:8px;border-radius:99px;background:var(--bg2);overflow:hidden}
-.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--flesh),var(--flesh2));transition:width .45s cubic-bezier(.2,.8,.2,1)}
-.bar.g i{background:linear-gradient(90deg,var(--rind),var(--rind2))}
+@keyframes draw{to{stroke-dashoffset:0}}
 
-/* ---------- assignment table ---------- */
-.tbl{width:100%;border-collapse:collapse;font-size:.87rem}
-.tbl th{
-  text-align:left;font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--muted);padding:8px 9px;border-bottom:1px solid var(--line);white-space:nowrap;
-}
-.tbl th.n,.tbl td.n{text-align:right}
-.tbl th.c,.tbl td.c{text-align:center}
-.tbl td{padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:middle}
-.tbl tbody tr{transition:background .12s}
-.tbl tbody tr:hover{background:var(--card2)}
-.tbl tr.off{opacity:.42}
-.tbl tr.hypo td{background:color-mix(in srgb,var(--flesh) 7%,transparent)}
-.tbl tr.hypo:hover td{background:color-mix(in srgb,var(--flesh) 12%,transparent)}
-.aname{font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.aname .tag{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
-  padding:2px 6px;border-radius:5px;background:var(--flesh);color:#fff}
-.aname .tag.mod{background:var(--C)}
-.aname .tag.miss{background:var(--E)}
-.aname .tag.ex{background:var(--muted)}
-.catdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--rind);flex:none}
-.score-cell{display:flex;align-items:center;gap:4px;justify-content:flex-end;white-space:nowrap}
-.score-cell input{width:62px;padding:5px 7px;text-align:right;font-variant-numeric:tabular-nums;font-size:.84rem}
-.score-cell .sl{color:var(--faint);font-weight:700}
-.pctcell{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600}
-.impact{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.78rem}
-.impact.up{color:var(--A)}.impact.down{color:var(--E)}.impact.flat{color:var(--faint)}
-.chk{width:17px;height:17px;accent-color:var(--rind);cursor:pointer}
-.rowbtn{background:none;border:0;color:var(--faint);cursor:pointer;padding:3px 5px;border-radius:6px;font-size:.9rem;line-height:1}
-.rowbtn:hover{color:var(--E);background:color-mix(in srgb,var(--E) 12%,transparent)}
+/* ---------- category donuts ---------- */
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.catcard{display:flex;align-items:center;gap:15px;padding:15px;border-radius:var(--r);
+  background:var(--card-2);border:1px solid var(--line);transition:transform .25s var(--spring)}
+.catcard:hover{transform:translateY(-3px)}
+.donut{width:62px;height:62px;flex:none;position:relative}
+.donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.donut .dtrack{fill:none;stroke:var(--line);stroke-width:8}
+.donut .dprog{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .9s var(--ease)}
+.donut .dmid{position:absolute;inset:0;display:grid;place-content:center;font-family:var(--mono);
+  font-size:.68rem;font-weight:600;font-variant-numeric:tabular-nums}
+.catcard .cname{font-weight:650;font-size:.9rem;line-height:1.25;margin-bottom:4px}
+.catcard .cmeta{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.wbadge{display:inline-block;font-family:var(--mono);font-size:.66rem;font-weight:600;color:#fff;
+  background:var(--rind-700);padding:2px 7px;border-radius:99px;margin-right:6px}
+
+/* ---------- class cards (overview) ---------- */
+.classgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px}
+.classcard{display:flex;align-items:center;gap:14px;padding:16px;border-radius:var(--r);
+  background:var(--card);border:1px solid var(--line);cursor:pointer;text-align:left;
+  box-shadow:var(--shadow-1);transition:transform .25s var(--spring),box-shadow .25s,border-color .2s}
+.classcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+.classcard[aria-current="true"]{border-color:var(--rind-500);
+  box-shadow:0 0 0 2.5px color-mix(in srgb,var(--rind-500) 26%,transparent),var(--shadow-1)}
+.classcard .cc-name{font-weight:650;font-size:.93rem;line-height:1.25;overflow:hidden;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.classcard .cc-pct{font-family:var(--mono);font-size:.76rem;color:var(--muted);
+  font-variant-numeric:tabular-nums;margin-top:3px}
+.classcard.add{justify-content:center;color:var(--rind-700);font-weight:650;border-style:dashed;
+  background:transparent;box-shadow:none}
+
+/* ---------- assignment rows ---------- */
+.arows{display:grid;gap:9px}
+.arow{display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center;
+  padding:13px 15px;border-radius:var(--r);background:var(--card-2);border:1px solid var(--line);
+  transition:transform .2s var(--ease),box-shadow .2s,opacity .2s,border-color .2s;
+  animation:rowin .42s var(--ease) backwards}
+@keyframes rowin{from{opacity:0;transform:translateY(9px)}}
+.arow:hover{box-shadow:var(--shadow-1);border-color:var(--line-2)}
+.arow.off{opacity:.44}
+.arow.hypo{border-color:color-mix(in srgb,var(--flesh-500) 45%,transparent);
+  background:color-mix(in srgb,var(--flesh-500) 6%,var(--card-2))}
+.arow.flash{animation:flash .7s var(--ease)}
+@keyframes flash{0%{background:color-mix(in srgb,var(--rind-500) 22%,var(--card-2))}100%{}}
+.tick-btn{width:26px;height:26px;flex:none;border-radius:8px;border:2px solid var(--line-2);
+  background:var(--card);cursor:pointer;display:grid;place-items:center;padding:0;
+  transition:background .2s,border-color .2s,transform .2s var(--spring)}
+.tick-btn:hover{transform:scale(1.12)}
+.tick-btn[aria-pressed="true"]{background:var(--rind-700);border-color:var(--rind-700)}
+.tick-btn svg{width:15px;height:15px;stroke:#fff;stroke-width:3.2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:22;stroke-dashoffset:22}
+.tick-btn[aria-pressed="true"] svg{stroke-dashoffset:0;transition:stroke-dashoffset .3s var(--ease) .04s}
+.a-main{min-width:0}
+.a-name{font-weight:600;font-size:.92rem;display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+  line-height:1.3}
+.a-name .nmtext{outline:none;border-radius:5px}
+.a-sub{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:5px;
+  font-family:var(--mono);font-size:.71rem;color:var(--muted)}
+.a-sub .catdot{width:8px;height:8px;border-radius:50%;background:var(--rind-500);flex:none}
+.tag{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  padding:2px 7px;border-radius:6px;background:var(--flesh-500);color:#fff}
+.tag.mod{background:var(--C)}.tag.miss{background:var(--E)}.tag.ex{background:var(--faint)}
+.tag.un{background:transparent;color:var(--muted);border:1px solid var(--line-2)}
+.a-right{display:flex;align-items:center;gap:11px}
+.scorebox{display:flex;align-items:center;gap:3px}
+.scorebox input{width:68px;padding:6px 8px;text-align:right;font-family:var(--mono);
+  font-size:.85rem;font-variant-numeric:tabular-nums}
+.scorebox .sl{color:var(--faint);font-weight:600}
+.a-pct{font-family:var(--display);font-weight:800;font-size:1.02rem;min-width:58px;text-align:right;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.a-impact{font-family:var(--mono);font-size:.73rem;min-width:52px;text-align:right;
+  font-variant-numeric:tabular-nums;color:var(--muted)}
+.a-impact.up{color:var(--A)}.a-impact.down{color:var(--E)}
+.rowbtn{background:none;border:0;color:var(--faint);cursor:pointer;padding:5px;border-radius:7px;
+  font-size:.95rem;line-height:1;transition:color .18s,background .18s,transform .18s}
+.rowbtn:hover{color:var(--E);background:color-mix(in srgb,var(--E) 12%,transparent);transform:scale(1.15)}
 .rowbtn.reset:hover{color:var(--C);background:color-mix(in srgb,var(--C) 14%,transparent)}
-.tbl tfoot td{padding:10px 9px;font-weight:800;font-size:.85rem;border-top:2px solid var(--line2)}
+/* drag-a-score slider */
+.slider{grid-column:1/-1;display:flex;align-items:center;gap:11px;margin-top:2px}
+.slider input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;
+  background:linear-gradient(90deg,var(--rind-500) var(--fill,100%),var(--line) var(--fill,100%));
+  padding:0;border:0;cursor:pointer}
+.slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;
+  border-radius:50%;background:var(--card);border:2.5px solid var(--rind-700);cursor:grab;
+  box-shadow:var(--shadow-1);transition:transform .18s var(--spring)}
+.slider input[type=range]::-webkit-slider-thumb:active{transform:scale(1.25);cursor:grabbing}
+.slider input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--card);
+  border:2.5px solid var(--rind-700);cursor:grab;box-shadow:var(--shadow-1)}
+.slider .slabel{font-family:var(--mono);font-size:.71rem;color:var(--muted);min-width:46px;text-align:right}
+@media (max-width:640px){
+  .arow{grid-template-columns:auto 1fr;gap:10px}
+  .a-right{grid-column:1/-1;justify-content:space-between;padding-left:37px}
+  .a-pct{min-width:0}
+}
 
-/* mobile stacked table */
+/* ---------- misc ---------- */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:15px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:13px}
+.result{background:linear-gradient(135deg,color-mix(in srgb,var(--rind-500) 13%,var(--card)),
+  color-mix(in srgb,var(--flesh-500) 11%,var(--card)));border:1px solid var(--line-2);
+  border-radius:var(--r);padding:18px 20px}
+.result .big{font-family:var(--display);font-size:1.9rem;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.quickrow{display:flex;gap:9px;flex-wrap:wrap}
+.quick{padding:9px 15px;border-radius:99px;border:1px solid var(--line-2);background:var(--card);
+  cursor:pointer;font-weight:600;font-size:.84rem;transition:transform .2s var(--spring),border-color .2s,color .2s}
+.quick:hover{transform:translateY(-2px);border-color:var(--rind-500);color:var(--rind-700)}
+.empty{text-align:center;padding:46px 20px;color:var(--muted)}
+.empty .big{font-size:3rem;margin-bottom:10px;animation:bob 3.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-9px) rotate(-6deg)}}
+.scale{width:100%;border-collapse:collapse;font-size:.87rem}
+.scale th,.scale td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left}
+.scale th{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
+.scale td{font-variant-numeric:tabular-nums}
+.scale td:first-child{font-family:var(--display);font-weight:800;font-size:1.05rem;width:54px}
+.semchart{width:100%;border-collapse:separate;border-spacing:3px;font-size:.85rem;text-align:center}
+.semchart th,.semchart td{padding:9px 6px;font-weight:700;border-radius:8px;width:16%;white-space:nowrap}
+.semchart th{font-family:var(--mono);background:var(--card-2);font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--muted);font-weight:500}
+.semchart td{background:var(--card-2);font-family:var(--display);font-size:1rem;transition:transform .2s var(--spring)}
+.semchart td.hi{transform:scale(1.1);box-shadow:0 0 0 2.5px var(--rind-500);z-index:1;position:relative}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,180%);background:var(--seed);color:#fff;
+  padding:13px 22px;border-radius:99px;font-size:.87rem;font-weight:600;box-shadow:var(--shadow-3);
+  z-index:200;transition:transform .42s var(--spring);max-width:calc(100% - 34px);
+  display:flex;align-items:center;gap:14px}
+.toast.show{transform:translate(-50%,0)}
+.toast button{background:rgba(255,255,255,.18);border:0;color:#fff;padding:5px 13px;border-radius:99px;
+  font-size:.79rem;font-weight:700;cursor:pointer}
+.toast button:hover{background:rgba(255,255,255,.32)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:150}
+details.help{border:1px solid var(--line);border-radius:var(--r);background:var(--card-2);overflow:hidden}
+details.help>summary{padding:13px 16px;cursor:pointer;font-weight:650;font-size:.89rem;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.help>summary::-webkit-details-marker{display:none}
+details.help>summary::after{content:'';width:8px;height:8px;border-right:2px solid var(--muted);
+  border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .25s var(--ease);flex:none}
+details.help[open]>summary::after{transform:rotate(-135deg)}
+details.help .body{padding:0 16px 15px;font-size:.88rem;color:var(--ink-2);line-height:1.65}
+pre.sample{background:var(--card-2);border:1px solid var(--line);border-radius:var(--r);padding:14px;
+  font-family:var(--mono);font-size:.75rem;line-height:1.6;overflow-x:auto;color:var(--ink-2);white-space:pre}
+ol.steps{margin:0;padding-left:22px;line-height:1.85;font-size:.9rem}
+ol.steps li{margin-bottom:6px}
+ol.steps li::marker{font-family:var(--display);font-weight:800;color:var(--rind-700)}
+footer.foot{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--muted);font-size:.8rem;
+  text-align:center;line-height:1.75}
 @media (max-width:600px){
   .topbar .wrap{min-height:0}
   .brand{flex:1;min-width:0}
   #themeBtn{order:2;margin-left:auto}
-  .nav{order:3;width:100%;margin-left:0;justify-content:center;gap:1px}
-  .nav button{padding:7px 11px;font-size:.82rem}
+  .nav{order:3;width:100%;margin-left:0;justify-content:center}
+  .nav button{flex:1;padding:8px 6px;font-size:.8rem}
 }
-@media (max-width:760px){
-  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
-  .tbl thead,.tbl tfoot{display:none}
-  .tbl tr{border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:9px;padding:9px 11px;background:var(--card)}
-  .tbl tr.hypo{border-color:var(--flesh)}
-  .tbl td{border:0;padding:4px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:right}
-  .tbl td::before{content:attr(data-l);font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--muted);text-align:left;flex:none}
-  .tbl td.full{display:block;text-align:left}
-  .tbl td.full::before{display:block;margin-bottom:3px}
-  .score-cell{justify-content:flex-end}
-  .hero{grid-template-columns:1fr;justify-items:center;text-align:center}
-  .hero .txt{width:100%}
-}
-
-/* ---------- misc ---------- */
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
-.stack{display:grid;gap:14px}
-.result{
-  background:linear-gradient(135deg,color-mix(in srgb,var(--rind) 12%,transparent),color-mix(in srgb,var(--flesh) 12%,transparent));
-  border:1px solid var(--line2);border-radius:var(--r);padding:15px 17px;
-}
-.result .big{font-family:var(--display);font-size:1.75rem;font-weight:800;letter-spacing:-.025em}
-.empty{text-align:center;padding:42px 20px;color:var(--muted)}
-.empty .big{font-size:2.6rem;margin-bottom:8px}
-.scale{width:100%;border-collapse:collapse;font-size:.85rem}
-.scale th,.scale td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
-.scale td{font-variant-numeric:tabular-nums}
-.scale td:first-child{font-family:var(--display)}
-.scale th{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
-.scale td:first-child{font-weight:900;font-size:1rem;width:52px}
-.semchart{width:100%;border-collapse:collapse;font-size:.83rem;text-align:center}
-.semchart th,.semchart td{border:1px solid var(--line);padding:7px;font-weight:700;width:16%;white-space:nowrap}
-.semchart th{background:var(--bg2);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.semchart td.hi{background:color-mix(in srgb,var(--rind) 18%,transparent);outline:2px solid var(--rind)}
-.toast{
-  position:fixed;left:50%;bottom:24px;transform:translate(-50%,120%);
-  background:var(--seed);color:#fff;padding:11px 20px;border-radius:99px;font-size:.85rem;
-  font-weight:600;box-shadow:var(--shadow-lg);z-index:200;transition:transform .3s cubic-bezier(.2,.9,.3,1);
-  max-width:calc(100% - 36px);text-align:center;
-}
-.toast.show{transform:translate(-50%,0)}
-details.help{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card2);overflow:hidden}
-details.help>summary{padding:11px 14px;cursor:pointer;font-weight:700;font-size:.88rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
-details.help>summary::-webkit-details-marker{display:none}
-details.help>summary::after{content:'+';font-size:1.1rem;color:var(--muted);font-weight:400}
-details.help[open]>summary::after{content:'–'}
-details.help .body{padding:0 14px 14px;font-size:.87rem;color:var(--ink2);line-height:1.6}
-pre.sample{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;
-  font-family:var(--mono);font-size:.74rem;line-height:1.55;overflow-x:auto;color:var(--ink2);white-space:pre}
-ol.steps{margin:0;padding-left:20px;line-height:1.75;font-size:.88rem}
-ol.steps li{margin-bottom:4px}
-footer.foot{border-top:1px solid var(--line);padding:22px 0 34px;color:var(--muted);font-size:.79rem;text-align:center;line-height:1.7}
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important}
+  #aurora i{animation:none}
 }
 @media print{
-  .topbar,.nav,.btn,.classtabs,.rowbtn,footer.foot{display:none!important}
+  .topbar,.nav,.btn,.quick,.rowbtn,.slider,footer.foot,#aurora,#confetti{display:none!important}
   body{background:#fff}
-  .card{box-shadow:none;border-color:#ccc;break-inside:avoid}
+  .card{box-shadow:none;break-inside:avoid}
 }
 </style>
 </head>
 <body>
+<div id="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
 
 <header class="topbar">
   <div class="wrap">
     <a class="brand" href="#" onclick="GM.go('grades');return false">
       <svg class="melon" viewBox="0 0 100 100" aria-hidden="true">
-        <path d="M50 95A45 45 0 0 1 5 50h90A45 45 0 0 1 50 95z" fill="#1f7a3f"/>
+        <path d="M50 95A45 45 0 0 1 5 50h90A45 45 0 0 1 50 95z" fill="var(--rind-700)"/>
         <path d="M50 88A38 38 0 0 1 12 50h76A38 38 0 0 1 50 88z" fill="#fff8f2"/>
-        <path d="M50 82A32 32 0 0 1 18 50h64A32 32 0 0 1 50 82z" fill="#ff5b78"/>
-        <g fill="#1f2124"><ellipse cx="38" cy="62" rx="3" ry="4.5"/><ellipse cx="62" cy="62" rx="3" ry="4.5"/><ellipse cx="50" cy="72" rx="3" ry="4.5"/></g>
+        <path d="M50 82A32 32 0 0 1 18 50h64A32 32 0 0 1 50 82z" fill="var(--flesh-500)"/>
+        <ellipse class="seed" cx="38" cy="62" rx="3" ry="4.5" fill="#121814"/>
+        <ellipse class="seed" cx="62" cy="62" rx="3" ry="4.5" fill="#121814"/>
+        <ellipse class="seed" cx="50" cy="72" rx="3" ry="4.5" fill="#121814"/>
       </svg>
-      <span>Grade Melon<small>MCPS Grade Calculator</small></span>
+      <span>Grade Melon<small>MCPS grade calculator</small></span>
     </a>
     <nav class="nav" id="nav">
       <button data-view="grades" aria-current="true">Grades</button>
       <button data-view="semester">Semester</button>
       <button data-view="gpa">GPA</button>
-      <button data-view="help">How to use</button>
+      <button data-view="help">Help</button>
     </nav>
-    <button class="icon-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+    <button class="icon-btn" id="themeBtn" title="Switch theme" aria-label="Switch theme">🌙</button>
   </div>
 </header>
 
 <main class="wrap">
 
-<!-- ============================ GRADES ============================ -->
+<!-- ===================== GRADES ===================== -->
 <section id="view-grades">
-  <div class="classtabs" id="classtabs"></div>
-  <div id="classArea"></div>
+  <div class="stack">
+    <div id="classOverview"></div>
+    <div id="classArea"></div>
+  </div>
 </section>
 
-<!-- ============================ SEMESTER ============================ -->
+<!-- ===================== SEMESTER ===================== -->
 <section id="view-semester" hidden>
   <div class="stack">
     <div class="card pad">
-      <h2 style="font-size:1.25rem;margin-bottom:4px">Semester grade calculator</h2>
-      <p class="muted small" style="margin:0 0 16px">MCPS builds a semester grade from your two marking period letter grades — not from averaging percentages. Each letter is worth quality points (A&nbsp;=&nbsp;4, B&nbsp;=&nbsp;3, C&nbsp;=&nbsp;2, D&nbsp;=&nbsp;1, E&nbsp;=&nbsp;0); the two are averaged and a tie (a&nbsp;.5) rounds <b>up</b>.</p>
+      <div class="eyebrow" style="margin-bottom:8px">Two marking periods → one grade</div>
+      <h2 style="font-size:1.5rem;margin-bottom:8px">Semester grade calculator</h2>
+      <p class="muted small" style="margin:0 0 18px;max-width:62ch">MCPS builds the semester grade from your two marking period <b>letters</b>, not by averaging percentages. Each letter is worth quality points (A&nbsp;=&nbsp;4 down to E&nbsp;=&nbsp;0), the two are averaged, and a tie rounds <b>up</b>.</p>
       <div class="grid3">
         <label class="fld">Marking period 1
           <select id="semMP1"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select>
@@ -338,99 +434,88 @@ footer.foot{border-top:1px solid var(--line);padding:22px 0 34px;color:var(--mut
         <label class="fld">Marking period 2
           <select id="semMP2"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select>
         </label>
-        <label class="fld">Pull letters from a class
-          <select id="semFromClass"><option value="">— none —</option></select>
+        <label class="fld">Use a class's grade as MP1
+          <select id="semFromClass"><option value="">— pick a class —</option></select>
         </label>
       </div>
-      <div class="result" style="margin-top:16px">
-        <div class="tiny muted" style="letter-spacing:.1em;text-transform:uppercase;font-weight:800">Semester grade</div>
+      <div class="result" style="margin-top:18px">
+        <div class="eyebrow">Semester grade</div>
         <div class="big" id="semOut">A</div>
         <div class="small muted" id="semWhy"></div>
       </div>
     </div>
 
     <div class="card pad">
-      <div class="sec-title">MCPS semester grade chart</div>
+      <div class="sec-title">Every combination</div>
       <div style="overflow-x:auto"><table class="semchart" id="semChart"></table></div>
-      <p class="tiny muted" style="margin:10px 0 0">The chart is symmetric — it does not matter which marking period was which.</p>
+      <p class="tiny muted" style="margin:12px 0 0">Symmetric — it does not matter which marking period was which.</p>
     </div>
 
     <div class="card pad">
-      <h3 style="font-size:1.08rem;margin-bottom:4px">State test / final exam blend</h3>
-      <p class="muted small" style="margin:0 0 14px">Some courses fold an outside assessment — a state test (MISA, HSA, MCAP), a county final, or an AP/IB exam — into the course grade for a set percentage. Enter what the assessment is worth and this blends it with your course percentage.</p>
+      <h3 style="font-size:1.2rem;margin-bottom:6px">State test / final exam blend</h3>
+      <p class="muted small" style="margin:0 0 16px;max-width:62ch">Some courses fold an outside assessment — a state test (MISA, HSA, MCAP), a county final, or an AP/IB exam — into the course grade for a set percentage.</p>
       <div class="grid3">
-        <label class="fld">Course grade so far (%)
-          <input type="number" id="blendCourse" value="87" step="0.01" min="0">
-        </label>
-        <label class="fld">Assessment score (%)
-          <input type="number" id="blendTest" value="90" step="0.01" min="0">
-        </label>
-        <label class="fld">Assessment is worth (%)
-          <input type="number" id="blendW" value="20" step="1" min="0" max="100">
-        </label>
+        <label class="fld">Course grade so far (%)<input type="number" id="blendCourse" value="87" step="0.01" min="0"></label>
+        <label class="fld">Assessment score (%)<input type="number" id="blendTest" value="90" step="0.01" min="0"></label>
+        <label class="fld">Assessment is worth (%)<input type="number" id="blendW" value="20" step="1" min="0" max="100"></label>
       </div>
-      <div class="result" style="margin-top:16px">
-        <div class="tiny muted" style="letter-spacing:.1em;text-transform:uppercase;font-weight:800">Final course grade</div>
+      <div class="result" style="margin-top:18px">
+        <div class="eyebrow">Final course grade</div>
         <div class="big" id="blendOut">—</div>
         <div class="small muted" id="blendWhy"></div>
       </div>
-      <div class="note" style="margin-top:14px"><b>Not sure if this applies to you?</b> Ask your teacher. MCPS does not fold MISA/MCAP into course grades in every course or every year — this tool is here for the courses that do, and for AP/IB predicted-grade math.</div>
+      <div class="note" style="margin-top:16px"><b>Not sure this applies to you?</b> Ask your teacher. MCPS does not fold MISA/MCAP into course grades in every course or every year — this is here for the courses that do, and for AP/IB predicted-grade math.</div>
     </div>
   </div>
 </section>
 
-<!-- ============================ GPA ============================ -->
+<!-- ===================== GPA ===================== -->
 <section id="view-gpa" hidden>
-  <div class="stack">
-    <div class="card pad">
-      <div class="spread" style="margin-bottom:14px">
-        <div>
-          <h2 style="font-size:1.25rem;margin-bottom:2px">GPA calculator</h2>
-          <p class="muted small" style="margin:0">A&nbsp;=&nbsp;4, B&nbsp;=&nbsp;3, C&nbsp;=&nbsp;2, D&nbsp;=&nbsp;1, E&nbsp;=&nbsp;0. Weighted GPA adds quality points for Honors and AP/IB courses.</p>
-        </div>
-        <div class="row">
-          <button class="btn btn-sm" id="gpaPull">Pull my classes</button>
-          <button class="btn btn-sm btn-primary" id="gpaAdd">+ Course</button>
-        </div>
+  <div class="card pad">
+    <div class="spread" style="margin-bottom:18px">
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">Quality points</div>
+        <h2 style="font-size:1.5rem;margin-bottom:4px">GPA calculator</h2>
+        <p class="muted small" style="margin:0">A&nbsp;=&nbsp;4, B&nbsp;=&nbsp;3, C&nbsp;=&nbsp;2, D&nbsp;=&nbsp;1, E&nbsp;=&nbsp;0. Weighted GPA adds points for Honors and AP/IB.</p>
       </div>
-      <div id="gpaRows" class="stack"></div>
-      <div class="divider"></div>
-      <div class="row" style="justify-content:space-between">
-        <label class="fld" style="max-width:230px">Honors / AP / IB bump
-          <select id="gpaBump">
-            <option value="1">+1.0 for Honors and AP/IB (MCPS)</option>
-            <option value="0.5">+0.5 Honors, +1.0 AP/IB</option>
-            <option value="0">No bump (unweighted only)</option>
-          </select>
-        </label>
-        <div class="row" style="gap:22px">
-          <div style="text-align:right">
-            <div class="tiny muted" style="letter-spacing:.1em;text-transform:uppercase;font-weight:800">Unweighted</div>
-            <div style="font-size:1.7rem;font-weight:900" id="gpaUn">—</div>
-          </div>
-          <div style="text-align:right">
-            <div class="tiny muted" style="letter-spacing:.1em;text-transform:uppercase;font-weight:800">Weighted</div>
-            <div style="font-size:1.7rem;font-weight:900;color:var(--rind)" id="gpaW">—</div>
-          </div>
-        </div>
+      <div class="row">
+        <button class="btn btn-sm" id="gpaPull">Pull my classes</button>
+        <button class="btn btn-sm btn-primary" id="gpaAdd">＋ Course</button>
+      </div>
+    </div>
+    <div id="gpaRows" class="stack" style="gap:9px"></div>
+    <div class="divider"></div>
+    <div class="spread">
+      <label class="fld" style="max-width:250px">Honors / AP / IB bump
+        <select id="gpaBump">
+          <option value="1">+1.0 for Honors and AP/IB (MCPS)</option>
+          <option value="0.5">+0.5 Honors, +1.0 AP/IB</option>
+          <option value="0">No bump (unweighted only)</option>
+        </select>
+      </label>
+      <div class="row" style="gap:26px">
+        <div style="text-align:right"><div class="eyebrow">Unweighted</div>
+          <div style="font-family:var(--display);font-size:2rem;font-weight:800;letter-spacing:-.03em" id="gpaUn">—</div></div>
+        <div style="text-align:right"><div class="eyebrow">Weighted</div>
+          <div style="font-family:var(--display);font-size:2rem;font-weight:800;letter-spacing:-.03em;color:var(--rind-700)" id="gpaW">—</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============================ HELP ============================ -->
+<!-- ===================== HELP ===================== -->
 <section id="view-help" hidden>
   <div class="stack">
     <div class="card pad">
-      <h2 style="font-size:1.25rem;margin-bottom:10px">How to get your grades in here</h2>
+      <div class="eyebrow" style="margin-bottom:8px">Takes about 20 seconds</div>
+      <h2 style="font-size:1.5rem;margin-bottom:14px">Getting your grades in here</h2>
       <ol class="steps">
-        <li>Open <b>StudentVUE / Synergy</b> and go to <b>Grades</b> (Gradebook).</li>
-        <li>Pick the class and marking period you want, so the assignment list is on screen.</li>
-        <li>Select the whole assignment list — click just above the first assignment and drag to the bottom, or press <b>Ctrl&nbsp;+&nbsp;A</b> (<b>⌘&nbsp;+&nbsp;A</b> on Mac) — then <b>Ctrl&nbsp;+&nbsp;C</b> to copy.</li>
-        <li>Come back here, hit <b>Paste gradebook</b> on the class, and press <b>Ctrl&nbsp;+&nbsp;V</b> in the box.</li>
-        <li>Hit <b>Import</b>. Every assignment lands in the right category with its points, and your grade appears.</li>
+        <li>Open <b>StudentVUE</b> and go to <b>Grades</b>.</li>
+        <li>Pick the class and marking period you want.</li>
+        <li>Select the assignment list and copy it — <b>Ctrl&nbsp;+&nbsp;A</b> then <b>Ctrl&nbsp;+&nbsp;C</b> works (<b>⌘</b> on a Mac).</li>
+        <li>Come back here and just press <b>Ctrl&nbsp;+&nbsp;V</b>. Anywhere on the page.</li>
       </ol>
-      <div class="note" style="margin-top:14px">Extra text — menus, headers, week rows, the class name — is fine. Grade Melon skips anything that is not an assignment.</div>
+      <div class="note" style="margin-top:16px">That's it — you don't have to click anything first. Grade Melon spots a gradebook the moment you paste it and skips the menus, headers and week rows that come along for the ride.</div>
     </div>
 
     <div class="card pad">
@@ -449,19 +534,19 @@ PP-Intro to Democracy due 8/31
 Practice / Preparation | 15.00 points
 15
 100%</pre>
-      <p class="small muted" style="margin:10px 0 0">Ungraded assignments (no score under the category line) are imported and left out of the math until you type a score in.</p>
-      <button class="btn btn-melon btn-sm" style="margin-top:12px" id="loadDemo">🍉 Try it with this sample</button>
+      <p class="small muted" style="margin:12px 0 0">Assignments with no score yet come in too — they sit out of the math until a score exists.</p>
+      <button class="btn btn-melon btn-sm" style="margin-top:14px" id="loadDemo">🍉 Try it with this sample</button>
     </div>
 
     <div class="card pad">
-      <div class="sec-title">How the grade is calculated</div>
-      <p class="small" style="margin:0 0 12px;color:var(--ink2)">MCPS uses <b>weighted categories</b>. Each category is scored on its own — total points you earned over total points possible <i>in that category</i> — and then the categories are combined by weight:</p>
-      <pre class="sample">Practice / Preparation   =  PP points earned ÷ PP points possible     → weight 10%
-All Tasks / Assessments  =  AT points earned ÷ AT points possible     → weight 90%
+      <div class="sec-title">How the grade is worked out</div>
+      <p class="small" style="margin:0 0 14px;color:var(--ink-2);max-width:62ch">MCPS uses <b>weighted categories</b>. Each category is scored on its own points, and then the two are combined by weight:</p>
+      <pre class="sample">Practice / Preparation   =  PP earned ÷ PP possible     → weight 10%
+All Tasks / Assessments  =  AT earned ÷ AT possible     → weight 90%
 
 Marking period grade = (PP% × 10 + AT% × 90) ÷ 100</pre>
-      <p class="small" style="margin:12px 0 0;color:var(--ink2)">This is <b>not</b> the same as adding up every point in the class. One 8-point Practice assignment does far less to your grade than one 8-point All&nbsp;Task.</p>
-      <div class="note" style="margin-top:12px"><b>Empty categories drop out.</b> If you have no Practice/Preparation grades yet, All&nbsp;Tasks carries 100% of your grade on its own — the remaining weights are re-scaled, exactly the way Synergy does it. The same happens to any category you add.</div>
+      <p class="small" style="margin:14px 0 0;color:var(--ink-2);max-width:62ch">That is <b>not</b> the same as adding up every point. An 8-point Practice assignment barely moves your grade; an 8-point All&nbsp;Task moves it nine times as much.</p>
+      <div class="note" style="margin-top:14px"><b>Empty categories drop out.</b> No Practice grades yet? All&nbsp;Tasks carries 100% of your grade on its own — the weights re-scale exactly the way Synergy does it.</div>
     </div>
 
     <div class="card pad">
@@ -469,24 +554,25 @@ Marking period grade = (PP% × 10 + AT% × 90) ÷ 100</pre>
       <table class="scale">
         <thead><tr><th>Grade</th><th>Percentage</th><th>Quality points</th></tr></thead>
         <tbody>
-          <tr><td style="color:var(--A)">A</td><td>89.5% – 100%</td><td>4</td></tr>
-          <tr><td style="color:var(--B)">B</td><td>79.5% – 89.49%</td><td>3</td></tr>
-          <tr><td style="color:var(--C)">C</td><td>69.5% – 79.49%</td><td>2</td></tr>
-          <tr><td style="color:var(--D)">D</td><td>59.5% – 69.49%</td><td>1</td></tr>
-          <tr><td style="color:var(--E)">E</td><td>below 59.5%</td><td>0</td></tr>
+          <tr><td class="g-A">A</td><td>89.5% – 100%</td><td>4</td></tr>
+          <tr><td class="g-B">B</td><td>79.5% – 89.49%</td><td>3</td></tr>
+          <tr><td class="g-C">C</td><td>69.5% – 79.49%</td><td>2</td></tr>
+          <tr><td class="g-D">D</td><td>59.5% – 69.49%</td><td>1</td></tr>
+          <tr><td class="g-E">E</td><td>below 59.5%</td><td>0</td></tr>
         </tbody>
       </table>
-      <p class="tiny muted" style="margin:10px 0 0">An 89.5 is an A. An 89.49 is a B. Grade Melon rounds the same way your report card does.</p>
+      <p class="tiny muted" style="margin:12px 0 0">89.5 is an A. 89.49 is a B. Grade Melon rounds the way your report card does.</p>
     </div>
 
     <div class="card pad">
       <div class="sec-title">Questions</div>
       <div class="stack" style="gap:9px">
-        <details class="help"><summary>Where is my data stored?</summary><div class="body">In your own browser, on this device only (localStorage). Nothing is uploaded, there is no account, and no server ever sees your grades. Clearing your browser data clears your classes — use <b>Export</b> first if you want a backup.</div></details>
-        <details class="help"><summary>Do I need my StudentVUE login?</summary><div class="body">No, and you should never type your school password into a site that is not your school's. Grade Melon works entirely off what you copy and paste.</div></details>
-        <details class="help"><summary>Why doesn't this match StudentVUE exactly?</summary><div class="body">Check three things. (1) Ungraded assignments — Synergy leaves them out until a score exists, and so does Grade Melon; make sure a teacher hasn't entered a zero you didn't import. (2) Category weights — a few courses use weights other than 90/10; you can edit them per class. (3) Excused or dropped assignments — untick them here to match.</div></details>
-        <details class="help"><summary>What is a "what-if" assignment?</summary><div class="body">A fake assignment you add to see what would happen. It shows up pink with a <b>WHAT-IF</b> tag and counts in your grade so you can watch the number move. <b>Clear what-ifs</b> removes them all at once. Editing a real assignment's score works the same way — it gets an orange <b>EDITED</b> tag and a ↺ button to put the real score back.</div></details>
-        <details class="help"><summary>What does the Impact column mean?</summary><div class="body">How much that single assignment is moving your grade right now — the difference between your grade with it and your grade without it. A −2.1 means dropping that assignment would raise you 2.1 points.</div></details>
+        <details class="help"><summary>Where does my data go?</summary><div class="body">Nowhere. It stays in this browser on this device. No account, no server, no upload. Clearing your browser data clears your classes — use <b>Export</b> at the bottom of the page first if you want a backup.</div></details>
+        <details class="help"><summary>Do I need my StudentVUE password?</summary><div class="body">No — and don't type your school password into any site that isn't your school's. Grade Melon only reads what you paste.</div></details>
+        <details class="help"><summary>It doesn't match StudentVUE exactly</summary><div class="body">Three usual causes. <b>Ungraded work</b> — Synergy leaves it out until a score exists, and so does this; check a teacher hasn't put in a zero you didn't copy. <b>Weights</b> — a few courses don't use 90/10; you can change them in Class settings. <b>Dropped or excused work</b> — untick it here to match.</div></details>
+        <details class="help"><summary>What's a what-if score?</summary><div class="body">Any score you change or add here is a what-if. Drag a slider, type a number, or add an assignment that doesn't exist yet — the grade updates instantly and the row is marked. <b>Reset</b> puts your real grades back.</div></details>
+        <details class="help"><summary>What does the small number on the right mean?</summary><div class="body">How much that one assignment is moving your grade right now. <b>−2.10</b> means dropping it would raise you 2.1 points; <b>+1.44</b> means it is pulling you up.</div></details>
+        <details class="help"><summary>Keyboard shortcuts</summary><div class="body"><b>Ctrl/⌘ + V</b> — paste a gradebook from anywhere on the page. <b>Ctrl/⌘ + Z</b> — undo the last delete.</div></details>
       </div>
     </div>
   </div>
@@ -496,19 +582,18 @@ Marking period grade = (PP% × 10 + AT% × 90) ÷ 100</pre>
 
 <footer class="foot">
   <div class="wrap">
-    <div style="margin-bottom:6px">🍉 <b>Grade Melon</b> — an MCPS grade calculator</div>
-    <div>Unofficial. Not affiliated with, endorsed by, or connected to Montgomery County Public Schools or Synergy/StudentVUE.<br>Your grades stay in your browser. Your official grade is the one in StudentVUE.</div>
-    <div class="row" style="justify-content:center;margin-top:14px">
-      <button class="btn btn-sm" id="exportBtn">⬇ Export backup</button>
-      <button class="btn btn-sm" id="importBtn">⬆ Restore backup</button>
-      <button class="btn btn-sm btn-danger" id="wipeBtn">Delete everything</button>
+    <div style="margin-bottom:8px">🍉 <b>Grade Melon</b> — an MCPS grade calculator</div>
+    <div>Unofficial. Not affiliated with, endorsed by, or connected to Montgomery County Public Schools or Synergy/StudentVUE.<br>Your grades stay in your browser. The official grade is the one in StudentVUE.</div>
+    <div class="row" style="justify-content:center;margin-top:17px">
+      <button class="btn btn-sm" id="exportBtn">Export backup</button>
+      <button class="btn btn-sm" id="importBtn">Restore backup</button>
+      <button class="btn btn-sm btn-ghost" id="wipeBtn">Delete everything</button>
     </div>
   </div>
 </footer>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
 <input type="file" id="fileIn" accept="application/json" hidden>
-
 <script>
 "use strict";
 /* ==================================================================
@@ -701,18 +786,17 @@ function scoreNeeded(cls, catId, possible, target){
   return { need: Math.max(0, hi), possible, over: hi > possible, freebie: hi <= 0 };
 }
 
+
 /* ==================================================================
    STATE
    ================================================================== */
 let S = { classes:[], active:null, theme:'auto', gpaBump:1, gpaCourses:[] };
-const ui = { paste:false, settings:false, sort:'date', q:'', showHidden:true, pasteText:'' };
+const ui = { paste:false, settings:false, sort:'date', q:'', sliderFor:null, pasteText:'', animKey:'' };
+let undoStack = [];
 
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
 function load(){
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) S = Object.assign(S, JSON.parse(raw));
-  } catch(e){}
+  try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e){}
   if (!Array.isArray(S.classes)) S.classes = [];
   S.classes.forEach(c => {
     c.categories = Array.isArray(c.categories) && c.categories.length ? c.categories : DEFAULT_CATS();
@@ -724,7 +808,7 @@ const activeClass = () => S.classes.find(c => c.id === S.active) || null;
 
 function newClass(name){
   const c = { id:uid(), name:name || 'New class', teacher:'', period:'', term:'Q1',
-              categories: DEFAULT_CATS(), assignments:[] };
+              categories:DEFAULT_CATS(), assignments:[] };
   S.classes.push(c); S.active = c.id; save(); return c;
 }
 function catFor(cls, name){
@@ -737,38 +821,193 @@ function catFor(cls, name){
     const nc = { id:uid(), name:canon.name, weight:canon.weight };
     cls.categories.push(nc); return nc;
   }
-  const nc = { id:uid(), name:name, weight:0, needsWeight:true };
+  const nc = { id:uid(), name, weight:0 };
   cls.categories.push(nc); return nc;
 }
 
 /* ==================================================================
-   SMALL HELPERS
+   HELPERS
    ================================================================== */
 let toastT;
-function toast(msg){
-  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600);
+function toast(msg, action){
+  const t = $('#toast'); $('#toastMsg').textContent = msg;
+  const old = t.querySelector('button'); if (old) old.remove();
+  if (action){ const b = document.createElement('button'); b.textContent = action.label;
+    b.onclick = () => { action.run(); t.classList.remove('show'); }; t.appendChild(b); }
+  t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), action ? 6500 : 2800);
 }
-const fmtPct = p => p === null || p === undefined ? '—' : p.toFixed(2).replace(/\.00$/,'') + '%';
-const fmtPct1 = p => p === null || p === undefined ? '—' : p.toFixed(2) + '%';
-const dateLabel = ts => { if (!ts) return '—';
-  const d = new Date(ts); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'}); };
-const gcolor = L => L ? `var(--${L})` : 'var(--muted)';
+const fmt2 = p => p === null || p === undefined ? '—' : p.toFixed(2) + '%';
+const dateLabel = ts => ts ? new Date(ts).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '—';
+const gcolor = L => L ? `var(--${L})` : 'var(--faint)';
+const article = L => (L === 'A' || L === 'E') ? 'an' : 'a';
+const weightSum = cls => round2(cls.categories.reduce((s,c) => s + (num(c.weight)||0), 0));
+const isModified = a => !a.hypo && (num(a.earned) !== num(a.origEarned) || num(a.possible) !== num(a.origPossible));
+const whatIfCount = cls => cls.assignments.filter(a => a.hypo || isModified(a)).length;
+const pctOf = a => (a.graded && num(a.possible) > 0) ? (num(a.earned) / num(a.possible)) * 100 : null;
+const reduced = () => matchMedia('(prefers-reduced-motion:reduce)').matches;
 
 /* ==================================================================
-   RENDER — class view
+   CONFETTI — watermelon seeds, drawn on our own canvas
    ================================================================== */
-function renderTabs(){
-  const el = $('#classtabs');
-  el.innerHTML = S.classes.map(c => {
-    const r = computeClass(c);
-    const L = r.letter;
-    return `<button class="classtab" data-cls="${c.id}" aria-current="${c.id===S.active}">
-      <span class="chip pill-${L||'N'} lg">${L||'–'}</span>
-      <span>${esc(c.name)}</span>
-      <span class="muted tiny" style="font-variant-numeric:tabular-nums">${r.pct===null?'':r.pct.toFixed(2)+'%'}</span>
-    </button>`;
-  }).join('') + `<button class="classtab" data-add="1" style="color:var(--rind)">＋ Add class</button>`;
+const Confetti = (() => {
+  const cv = $('#confetti'); const ctx = cv.getContext('2d');
+  let parts = [], raf = null;
+  function resize(){
+    const d = Math.min(devicePixelRatio || 1, 2);
+    cv.width = innerWidth * d; cv.height = innerHeight * d;
+    cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px';
+    ctx.setTransform(d,0,0,d,0,0);
+  }
+  addEventListener('resize', resize); resize();
+  const COLORS = ['#22a35a','#ff4d6d','#6dd99a','#ffa3b4','#121814','#fff8f2'];
+  function burst(n){
+    if (reduced()) return;
+    n = n || 84;
+    for (let i = 0; i < n; i++) parts.push({
+      x: innerWidth/2 + (Math.random()-.5)*220, y: innerHeight*0.34,
+      vx:(Math.random()-.5)*12, vy:-(Math.random()*12+7),
+      w:5+Math.random()*7, h:4+Math.random()*7, seed: Math.random() < .35,
+      rot:Math.random()*6.283, vr:(Math.random()-.5)*.34,
+      c:COLORS[(Math.random()*COLORS.length)|0], life:0 });
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+  function tick(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    parts = parts.filter(p => p.life < 190 && p.y < innerHeight + 60);
+    for (const p of parts){
+      p.life++; p.vy += .34; p.vx *= .994; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.globalAlpha = Math.max(0, 1 - p.life/190); ctx.fillStyle = p.c;
+      if (p.seed){ ctx.beginPath(); ctx.ellipse(0,0,p.w/2,p.h/1.4,0,0,6.283); ctx.fill(); }
+      else ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    }
+    if (parts.length) raf = requestAnimationFrame(tick);
+    else { raf = null; ctx.clearRect(0,0,innerWidth,innerHeight); }
+  }
+  return { burst };
+})();
+
+/* ==================================================================
+   GRAPHICS — grade ring
+   ================================================================== */
+const RING_R = 52, RING_C = 2 * Math.PI * RING_R;
+function ringHTML(pct, letter, caption){
+  const p = Math.max(0, Math.min(100, pct ?? 0));
+  const off = RING_C * (1 - p/100);
+  const ticks = [59.5,69.5,79.5,89.5].map(v => {
+    const ang = (v/100) * 2 * Math.PI;
+    const x1 = 60 + Math.cos(ang)*(RING_R-6.5), y1 = 60 + Math.sin(ang)*(RING_R-6.5);
+    const x2 = 60 + Math.cos(ang)*(RING_R+6.5), y2 = 60 + Math.sin(ang)*(RING_R+6.5);
+    return `<line class="tick" x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`;
+  }).join('');
+  const c = gcolor(letter);
+  return `<div class="ring">
+    <svg viewBox="0 0 120 120" role="img" aria-label="${letter ? letter + ', ' + fmt2(pct) : 'No grade yet'}">
+      <defs><linearGradient id="ringgrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="${c}"/><stop offset="100%" stop-color="${c}" stop-opacity=".5"/>
+      </linearGradient></defs>
+      <circle class="track" cx="60" cy="60" r="${RING_R}"/>
+      <circle class="prog" cx="60" cy="60" r="${RING_R}"
+        stroke-dasharray="${RING_C.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}"/>
+      ${ticks}
+    </svg>
+    <div class="mid">
+      <div class="lt" style="color:${c}">${letter || '–'}</div>
+      <div class="pc">${pct === null ? 'no grades' : pct.toFixed(2) + '%'}</div>
+      ${caption ? `<div class="cap">${esc(caption)}</div>` : ''}
+    </div></div>`;
+}
+function donutHTML(pct, letter){
+  const r = 25, C = 2*Math.PI*r;
+  const p = Math.max(0, Math.min(100, pct ?? 0));
+  const c = gcolor(letter);
+  return `<div class="donut"><svg viewBox="0 0 60 60">
+      <circle class="dtrack" cx="30" cy="30" r="${r}"/>
+      <circle class="dprog" cx="30" cy="30" r="${r}" stroke="${c}"
+        stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${(C*(1-p/100)).toFixed(2)}"/>
+    </svg><div class="dmid" style="color:${c}">${pct === null ? '–' : Math.round(pct)}</div></div>`;
+}
+
+/* ==================================================================
+   GRAPHICS — grade trend chart (hand-drawn SVG, one series)
+   ================================================================== */
+function trendSeries(cls){
+  const graded = cls.assignments.filter(a => a.included && a.graded)
+    .slice().sort((a,b) => (a.date||0) - (b.date||0) || String(a.name||'').localeCompare(String(b.name||'')));
+  const pts = [], sub = { categories:cls.categories, assignments:[] };
+  for (const a of graded){
+    sub.assignments.push(a);
+    const r = computeClass(sub);
+    if (r.pct !== null) pts.push({ pct:r.pct, a });
+  }
+  return pts;
+}
+function chartHTML(cls, width){
+  const pts = trendSeries(cls);
+  if (pts.length < 2) return `<div class="chart-empty">Your grade line shows up once two assignments are graded.</div>`;
+  const W = Math.max(280, width || 620), H = 190;
+  const P = { l:34, r:48, t:12, b:24 };
+  const iw = W - P.l - P.r, ih = H - P.t - P.b;
+  const lo = Math.max(0, Math.min(55, Math.min(...pts.map(p => p.pct)) - 5));
+  const hi = 100;
+  const X = i => P.l + (pts.length === 1 ? iw/2 : (i/(pts.length-1)) * iw);
+  const Y = v => P.t + ih - ((v - lo)/(hi - lo)) * ih;
+
+  /* letter bands — status colour, each directly labelled so it is never colour alone */
+  const bands = [['A',89.5,100],['B',79.5,89.5],['C',69.5,79.5],['D',59.5,69.5],['E',0,59.5]]
+    .filter(([,a,b]) => b > lo)
+    .map(([L,a,b]) => {
+      const top = Y(Math.min(b,hi)), bot = Y(Math.max(a,lo));
+      const h = Math.max(0, bot - top);
+      const lbl = h > 13 ? `<text class="bandlabel" x="${W-P.r+7}" y="${top + h/2 + 3.4}">${L}</text>` : '';
+      return `<rect class="band" x="${P.l}" y="${top}" width="${iw}" height="${h}" fill="${gcolor(L)}"/>
+              <line class="bandline" x1="${P.l}" y1="${top}" x2="${W-P.r}" y2="${top}"/>${lbl}`;
+    }).join('');
+
+  const d = pts.map((p,i) => `${i?'L':'M'}${X(i).toFixed(1)},${Y(p.pct).toFixed(1)}`).join(' ');
+  const last = pts[pts.length-1], lastL = letterFor(last.pct);
+  const dots = pts.map((p,i) => `<circle class="dot" cx="${X(i).toFixed(1)}" cy="${Y(p.pct).toFixed(1)}" r="${pts.length>26?0:3.1}"/>`).join('');
+  const yTicks = [100, 89.5, 79.5, 69.5, 59.5].filter(v => v >= lo && v <= hi).map(v =>
+    `<text class="bandlabel" x="${P.l-8}" y="${(Y(v)+3.4).toFixed(1)}" text-anchor="end">${v}</text>`).join('');
+  const first = pts[0];
+  const xLabels = `<text class="xlabel" x="${P.l}" y="${H-6}">${esc(dateLabel(first.a.date))}</text>
+    <text class="xlabel" x="${W-P.r}" y="${H-6}" text-anchor="end">${esc(dateLabel(last.a.date))}</text>`;
+
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img"
+      aria-label="Your grade after each assignment, ending at ${fmt2(last.pct)}">
+    ${bands}${yTicks}${xLabels}
+    <path class="line" d="${d}" pathLength="1000" style="stroke-dasharray:1000;stroke-dashoffset:${reduced()?0:1000};animation:${reduced()?'none':'draw 1.1s var(--ease) forwards'}"/>
+    ${dots}
+    <line class="cross" x1="0" y1="${P.t}" x2="0" y2="${P.t+ih}"/>
+    <circle class="lastdot" cx="${X(pts.length-1).toFixed(1)}" cy="${Y(last.pct).toFixed(1)}" r="5"/>
+    <text class="bandlabel" x="${(X(pts.length-1)+9).toFixed(1)}" y="${(Y(last.pct)-9).toFixed(1)}"
+      style="fill:${gcolor(lastL)};font-weight:600">${last.pct.toFixed(1)}</text>
+    <rect class="hit" x="${P.l}" y="${P.t}" width="${iw}" height="${ih}"/>
+  </svg>`;
+}
+
+/* ==================================================================
+   RENDER
+   ================================================================== */
+function renderOverview(){
+  const el = $('#classOverview');
+  if (!S.classes.length){ el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="card pad">
+    <div class="sec-title">Your classes</div>
+    <div class="classgrid">
+      ${S.classes.map(c => {
+        const r = computeClass(c); const L = r.letter;
+        return `<button class="classcard" data-cls="${c.id}" aria-current="${c.id===S.active}">
+          <span class="pill pill-${L||'N'}">${L||'–'}</span>
+          <span style="min-width:0">
+            <span class="cc-name">${esc(c.name)}</span>
+            <span class="cc-pct">${r.pct===null ? 'no grades yet' : r.pct.toFixed(2)+'%'}</span>
+          </span></button>`;
+      }).join('')}
+      <button class="classcard add" data-add="1">＋ Add a class</button>
+    </div></div>`;
 }
 
 function renderClass(){
@@ -778,61 +1017,59 @@ function renderClass(){
     area.innerHTML = `<div class="card pad">
       <div class="empty">
         <div class="big">🍉</div>
-        <h2 style="font-size:1.3rem;color:var(--ink);margin-bottom:6px">Let's see those grades</h2>
-        <p style="max-width:440px;margin:0 auto 18px">Copy your assignment list out of StudentVUE and paste it below. Grade Melon sorts it into All&nbsp;Tasks and Practice&nbsp;/&nbsp;Preparation and does the MCPS math for you.</p>
+        <h2 style="font-size:1.55rem;color:var(--ink);margin-bottom:8px">Paste your grades</h2>
+        <p style="max-width:430px;margin:0 auto 20px">Copy the assignment list out of StudentVUE and press <b>Ctrl&nbsp;+&nbsp;V</b> right here. Grade Melon sorts it into All&nbsp;Tasks and Practice and does the MCPS math.</p>
       </div>
       <textarea id="firstPaste" placeholder="Paste your StudentVUE gradebook here…"></textarea>
-      <div class="row" style="margin-top:12px;justify-content:center">
+      <div class="row" style="margin-top:14px;justify-content:center">
         <button class="btn btn-primary" id="firstImport">Import grades</button>
-        <button class="btn" id="firstBlank">Start an empty class</button>
-        <button class="btn btn-melon" id="firstDemo">🍉 Use the sample</button>
+        <button class="btn btn-melon" id="firstDemo">🍉 Show me an example</button>
+        <button class="btn btn-ghost" id="firstBlank">Empty class</button>
       </div></div>`;
     return;
   }
 
   const r = computeClass(cls);
-  const L = r.letter;
   const graded = cls.assignments.filter(a => a.graded && a.included).length;
   const ungraded = cls.assignments.filter(a => !a.graded).length;
 
   area.innerHTML = `
   <div class="stack">
 
-    ${cls.sample ? `<div class="note" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-style:solid;border-color:var(--flesh)">
-      <span>🍉 <b>This is sample data</b> so you can see how it works — change a score and watch the grade move.</span>
+    ${cls.sample ? `<div class="note" style="display:flex;gap:13px;align-items:center;flex-wrap:wrap;border-color:var(--flesh-500)">
+      <span>🍉 <b>This is an example</b> so you can see how it works — drag a score and watch the grade move.</span>
       <span class="row" style="margin-left:auto;gap:8px">
-        <button class="btn btn-sm btn-primary" data-act="paste">Paste my own</button>
-        <button class="btn btn-sm btn-ghost" data-act="clearsample">Clear the sample</button>
+        <button class="btn btn-sm btn-primary" data-act="paste">Paste mine</button>
+        <button class="btn btn-sm btn-ghost" data-act="clearsample">Clear it</button>
       </span></div>` : ''}
 
     <!-- HERO -->
     <div class="card pad">
       <div class="hero">
-        <div class="gradeball" style="--gc:${gcolor(L)};--gp:${Math.max(0,Math.min(100,r.pct??0))}">
-          <div class="inner">
-            <div class="lt">${L || '–'}</div>
-            <div class="pc">${r.pct===null ? 'no grades' : r.pct.toFixed(2)+'%'}</div>
-          </div>
-        </div>
+        ${ringHTML(r.pct, r.letter, cls.term)}
         <div class="txt">
           <h2>${esc(cls.name)}</h2>
-          <div class="meta">${[cls.period && 'Period '+esc(cls.period), esc(cls.teacher), esc(cls.term)].filter(Boolean).join(' · ') || 'MCPS marking period grade'}</div>
-          <div class="nextline" id="nextline">${nextLineHTML(r)}</div>
-          <div class="row" id="heroActions" data-n="${whatIfCount(cls)}" style="margin-top:14px">${heroActionsHTML(cls)}</div>
+          <div class="meta">${[cls.period && 'Period '+esc(cls.period), esc(cls.teacher)].filter(Boolean).join(' · ') || 'Marking period grade'}</div>
+          <div class="headline" id="headline">${headlineHTML(r)}</div>
+          <div class="row" id="heroActions" data-n="${whatIfCount(cls)}">${heroActionsHTML(cls)}</div>
         </div>
       </div>
+    </div>
+
+    <!-- TREND -->
+    <div class="card pad">
+      <div class="sec-title">How your grade has moved</div>
+      <div class="chartwrap" id="chartwrap"></div>
     </div>
 
     <!-- PASTE -->
     <div class="card pad" ${ui.paste ? '' : 'hidden'} id="pastePanel">
       <div class="sec-title">Paste from StudentVUE</div>
-      <p class="small muted" style="margin:0 0 10px">Open Grades in StudentVUE, select the assignment list, copy it, and paste it here. Extra text is ignored.</p>
-      <textarea id="pasteBox" placeholder="Week 01 - 8/25/2026 through 8/29/2026  (1 items)&#10;Aug&#10;27&#10;AT-Current Events due 8/27, deadline 8/28&#10;All Tasks / Assessments | 8.00 points&#10;8&#10;100%">${esc(ui.pasteText)}</textarea>
-      <div class="row" style="margin-top:11px">
+      <textarea id="pasteBox" placeholder="Paste here — menus, headers and week rows are fine, they get skipped.">${esc(ui.pasteText)}</textarea>
+      <div class="row" style="margin-top:13px">
         <button class="btn btn-primary btn-sm" data-act="import">Import</button>
         <button class="btn btn-sm" data-act="importReplace">Replace everything</button>
         <button class="btn btn-sm btn-ghost" data-act="pasteClose">Cancel</button>
-        <span class="tiny muted" style="margin-left:auto">Importing adds to this class and skips duplicates.</span>
       </div>
     </div>
 
@@ -844,409 +1081,433 @@ function renderClass(){
         <label class="fld">Teacher<input type="text" data-cf="teacher" value="${esc(cls.teacher)}" placeholder="optional"></label>
         <label class="fld">Period<input type="text" data-cf="period" value="${esc(cls.period)}" placeholder="optional"></label>
         <label class="fld">Marking period
-          <select data-cf="term">${['Q1','Q2','Q3','Q4','S1','S2'].map(t=>`<option ${t===cls.term?'selected':''}>${t}</option>`).join('')}</select>
-        </label>
+          <select data-cf="term">${['Q1','Q2','Q3','Q4','S1','S2'].map(t=>`<option ${t===cls.term?'selected':''}>${t}</option>`).join('')}</select></label>
       </div>
       <div class="divider"></div>
       <div class="sec-title">Category weights</div>
-      <div class="stack" style="gap:8px" id="catEditor">
+      <div class="stack" style="gap:9px">
         ${cls.categories.map(c => `
-          <div class="row" data-cat="${c.id}" style="gap:8px">
+          <div class="row" data-cat="${c.id}" style="gap:9px">
             <input type="text" data-cw="name" value="${esc(c.name)}" style="flex:1;min-width:150px">
-            <div class="row" style="gap:4px;flex:none">
-              <input type="number" data-cw="weight" value="${c.weight}" step="1" min="0" style="width:82px;text-align:right">
+            <div class="row" style="gap:5px;flex:none">
+              <input type="number" data-cw="weight" value="${c.weight}" step="1" min="0" style="width:86px;text-align:right">
               <span class="muted" style="font-weight:700">%</span>
             </div>
-            <button class="rowbtn" data-delcat="${c.id}" title="Remove category">✕</button>
+            <button class="rowbtn" data-delcat="${c.id}" title="Remove category" aria-label="Remove category">✕</button>
           </div>`).join('')}
       </div>
-      <div class="row" style="margin-top:11px">
+      <div class="row" style="margin-top:13px">
         <button class="btn btn-sm" data-act="addcat">＋ Add category</button>
-        <button class="btn btn-sm btn-ghost" data-act="resetcats">Reset to 90 / 10</button>
-        <span class="tiny ${weightSum(cls)===100?'muted':''}" style="margin-left:auto;${weightSum(cls)===100?'':'color:var(--D);font-weight:700'}">
-          Total weight: ${weightSum(cls)}%${weightSum(cls)===100?'':' — weights are re-scaled to add to 100%'}</span>
+        <button class="btn btn-sm btn-ghost" data-act="resetcats">Back to 90 / 10</button>
+        <span class="tiny" style="margin-left:auto;${weightSum(cls)===100?'color:var(--muted)':'color:var(--D);font-weight:700'}">
+          Total ${weightSum(cls)}%${weightSum(cls)===100?'':' — re-scaled to 100%'}</span>
       </div>
-      <div class="note" style="margin-top:12px">MCPS default is <b>All Tasks / Assessments 90%</b> and <b>Practice / Preparation 10%</b>. Add a category here if your course counts something else — a state test, a county final, a lab grade — and give it its share of the grade.</div>
+      <div class="note" style="margin-top:14px">MCPS default is <b>All Tasks 90%</b> and <b>Practice 10%</b>. Add a category if your course counts something else — a state test, a county final, a lab grade.</div>
       <div class="divider"></div>
       <div class="row">
-        <button class="btn btn-sm btn-danger" data-act="delclass">Delete this class</button>
-        <button class="btn btn-sm btn-ghost" data-act="settingsClose" style="margin-left:auto">Done</button>
+        <button class="btn btn-sm btn-ghost" data-act="delclass" style="color:var(--E)">Delete this class</button>
+        <button class="btn btn-sm" data-act="settingsClose" style="margin-left:auto">Done</button>
       </div>
     </div>
 
     <!-- CATEGORIES -->
     <div class="card pad">
-      <div class="sec-title">Category breakdown</div>
-      <div class="catlist" id="catList">${catListHTML(cls, r)}</div>
+      <div class="sec-title">Where your grade comes from</div>
+      <div class="cats" id="catList">${catListHTML(cls, r)}</div>
       ${r.totalW > 0 && r.cats.some(c => !c.active && c.cat.weight > 0) ? `
-        <div class="note" style="margin-top:13px">${r.cats.filter(c=>!c.active&&c.cat.weight>0).map(c=>esc(c.cat.name)).join(' and ')} ${r.cats.filter(c=>!c.active&&c.cat.weight>0).length>1?'have':'has'} no graded points yet, so ${r.usedWeights.length===1?`<b>${esc(r.usedWeights[0].name)} is carrying 100% of your grade</b>`:`the remaining categories were re-scaled to ${r.usedWeights.map(w=>esc(w.name)+' '+w.w+'%').join(' / ')}`}.</div>` : ''}
+        <div class="note" style="margin-top:15px">${r.cats.filter(c=>!c.active&&c.cat.weight>0).map(c=>esc(c.cat.name)).join(' and ')} ${r.cats.filter(c=>!c.active&&c.cat.weight>0).length>1?'have':'has'} nothing graded yet, so ${r.usedWeights.length===1?`<b>${esc(r.usedWeights[0].name)} is carrying your whole grade</b>`:`the rest re-scaled to ${r.usedWeights.map(w=>esc(w.name)+' '+w.w+'%').join(' / ')}`}.</div>` : ''}
     </div>
 
     <!-- ASSIGNMENTS -->
     <div class="card pad">
-      <div class="spread" style="margin-bottom:12px">
-        <div class="sec-title" style="margin:0;flex:none">Assignments <span class="muted" style="font-weight:600;letter-spacing:0;text-transform:none">${graded} counted${ungraded?` · ${ungraded} ungraded`:''}</span></div>
-        <div class="row" style="gap:7px">
-          <input type="text" id="searchBox" placeholder="Search…" value="${esc(ui.q)}" style="width:150px;padding:6px 10px;font-size:.83rem">
-          <select id="sortBox" style="width:auto;padding:6px 10px;font-size:.83rem">
-            <option value="date"${ui.sort==='date'?' selected':''}>Sort: date</option>
-            <option value="impact"${ui.sort==='impact'?' selected':''}>Sort: impact</option>
-            <option value="pct"${ui.sort==='pct'?' selected':''}>Sort: score %</option>
-            <option value="cat"${ui.sort==='cat'?' selected':''}>Sort: category</option>
-            <option value="name"${ui.sort==='name'?' selected':''}>Sort: name</option>
+      <div class="spread" style="margin-bottom:15px">
+        <div class="sec-title" style="margin:0;flex:none">Assignments
+          <span class="muted" style="font-family:var(--sans);letter-spacing:0;text-transform:none;font-size:.8rem">${graded} counted${ungraded?` · ${ungraded} not graded yet`:''}</span></div>
+        <div class="row" style="gap:8px">
+          <input type="text" id="searchBox" placeholder="Search…" value="${esc(ui.q)}" style="width:145px;padding:7px 11px;font-size:.84rem">
+          <select id="sortBox" style="width:auto;padding:7px 11px;font-size:.84rem">
+            <option value="date"${ui.sort==='date'?' selected':''}>Newest last</option>
+            <option value="impact"${ui.sort==='impact'?' selected':''}>Biggest impact</option>
+            <option value="pct"${ui.sort==='pct'?' selected':''}>Worst score</option>
+            <option value="cat"${ui.sort==='cat'?' selected':''}>By category</option>
+            <option value="name"${ui.sort==='name'?' selected':''}>By name</option>
           </select>
         </div>
       </div>
-      ${assignTableHTML(cls, r)}
-      <div class="row" style="margin-top:12px">
-        <button class="btn btn-sm btn-melon" data-act="addrow">＋ Add assignment</button>
-        <button class="btn btn-sm" data-act="paste">📋 Paste more</button>
+      <div id="rowList">${rowsHTML(cls, r)}</div>
+      <div class="row" style="margin-top:15px">
+        <button class="btn btn-sm btn-melon" data-act="addrow">＋ Add an assignment</button>
+        <button class="btn btn-sm" data-act="paste">Paste more</button>
       </div>
     </div>
 
-    <!-- WHAT-IF TOOLS -->
-    <div class="card pad">
+    <!-- WHAT DO I NEED -->
+    <div class="card pad" id="needCard">
       <div class="sec-title">What do I need?</div>
-      <p class="small muted" style="margin:0 0 12px">One more assignment is coming. What score gets you where you want to be?</p>
+      <p class="small muted" style="margin:0 0 14px">One more assignment is coming. What score gets you where you want?</p>
       <div class="grid3">
         <label class="fld">Category
-          <select id="needCat">${cls.categories.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
-        </label>
+          <select id="needCat">${cls.categories.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label>
         <label class="fld">Worth (points)<input type="number" id="needPts" value="20" min="0.01" step="0.5"></label>
         <label class="fld">I want at least
           <select id="needTarget">
-            <option value="89.5">An A (89.5%)</option>
-            <option value="79.5">A B (79.5%)</option>
-            <option value="69.5">A C (69.5%)</option>
-            <option value="59.5">A D (59.5%)</option>
+            <option value="89.5">An A (89.5%)</option><option value="79.5">A B (79.5%)</option>
+            <option value="69.5">A C (69.5%)</option><option value="59.5">A D (59.5%)</option>
             <option value="custom">A specific %…</option>
-          </select>
-        </label>
+          </select></label>
       </div>
-      <div class="row" id="needCustomWrap" hidden style="margin-top:10px">
-        <label class="fld" style="max-width:180px">Target percent<input type="number" id="needCustom" value="90" step="0.01" min="0"></label>
+      <div class="row" id="needCustomWrap" hidden style="margin-top:11px">
+        <label class="fld" style="max-width:190px">Target percent<input type="number" id="needCustom" value="90" step="0.01" min="0"></label>
       </div>
-      <div class="result" style="margin-top:14px">
+      <div class="result" style="margin-top:16px">
         <div class="big" id="needOut">—</div>
-        <div class="small muted" id="needWhy">Pick a category and how many points it is worth.</div>
+        <div class="small muted" id="needWhy">Pick a category and how many points it's worth.</div>
       </div>
       <div class="divider"></div>
-      <div class="sec-title">Fill in the ungraded ones</div>
+      <div class="sec-title">Fill in what isn't graded yet</div>
       <div class="row">
         <span class="small muted">Assume I score</span>
-        <select id="fillPct" style="width:auto;padding:6px 10px;font-size:.85rem">
+        <select id="fillPct" style="width:auto;padding:7px 11px;font-size:.86rem">
           <option value="100">100%</option><option value="95">95%</option><option value="90">90%</option>
           <option value="85">85%</option><option value="80">80%</option><option value="70">70%</option>
-          <option value="50">50%</option><option value="0">0 (never turn them in)</option>
+          <option value="50">50%</option><option value="0">0 — never hand them in</option>
         </select>
-        <span class="small muted">on all ${ungraded} ungraded assignment${ungraded===1?'':'s'}</span>
-        <button class="btn btn-sm" data-act="fill" ${ungraded?'':'disabled style="opacity:.45"'}>Apply</button>
+        <span class="small muted">on ${ungraded} assignment${ungraded===1?'':'s'}</span>
+        <button class="btn btn-sm" data-act="fill" ${ungraded?'':'disabled'}>Apply</button>
       </div>
     </div>
-
   </div>`;
+  paintChart();
 }
-
-const weightSum = cls => round2(cls.categories.reduce((s,c) => s + (num(c.weight)||0), 0));
-const isModified = a => !a.hypo && (num(a.earned) !== num(a.origEarned) || num(a.possible) !== num(a.origPossible));
-
-const whatIfCount = cls => cls.assignments.filter(a => a.hypo || isModified(a)).length;
 
 function heroActionsHTML(cls){
   const n = whatIfCount(cls);
-  return `<button class="btn btn-primary btn-sm" data-act="paste">📋 Paste gradebook</button>
-    <button class="btn btn-melon btn-sm" data-act="addrow">＋ What-if assignment</button>
-    ${n ? `<button class="btn btn-sm" data-act="clearwhatif">↺ Clear what-ifs (${n})</button>` : ''}
-    <button class="btn btn-sm btn-ghost" data-act="settings">⚙ Class settings</button>`;
+  return `<button class="btn btn-primary" data-act="paste">Paste grades</button>
+    <button class="btn btn-melon btn-sm" data-act="addrow">＋ What-if</button>
+    ${n ? `<button class="btn btn-sm" data-act="clearwhatif">Reset (${n})</button>` : ''}
+    <button class="btn btn-sm btn-ghost" data-act="settings">Settings</button>`;
 }
 
-const article = L => (L === 'A' || L === 'E') ? 'an' : 'a';
-function nextLineHTML(r){
-  if (r.pct === null) return `<span class="muted">Nothing graded yet — paste your gradebook or add an assignment to get started.</span>`;
+function headlineHTML(r){
+  if (r.pct === null) return `<span class="muted">Nothing graded yet — paste your gradebook to get started.</span>`;
   const nc = nextCut(r.pct);
   const here = CUTS.find(c => c[1] <= r.pct);
   const below = CUTS[CUTS.findIndex(c => c[0] === here[0]) + 1];
   const bits = [];
-  if (nc) bits.push(`You are <b>${(nc[1] - r.pct).toFixed(2)} points</b> from ${article(nc[0])} <b>${nc[0]}</b>.`);
-  else bits.push(`Top of the scale — nice.`);
-  if (below) bits.push(`<span class="muted">You can lose ${(r.pct - here[1]).toFixed(2)} before this drops to ${article(below[0])} ${below[0]}.</span>`);
+  if (nc) bits.push(`<b>${(nc[1]-r.pct).toFixed(2)} points</b> from ${article(nc[0])} <b>${nc[0]}</b>.`);
+  else bits.push(`Top of the scale. 🍉`);
+  if (below) bits.push(`<span class="muted">${(r.pct-here[1]).toFixed(2)} of room before ${article(below[0])} ${below[0]}.</span>`);
   return bits.join(' ');
 }
 
 function catListHTML(cls, r){
   return r.cats.map(c => {
+    const L = c.pct === null ? null : letterFor(c.pct);
     const share = r.totalW > 0 && c.active ? round2(c.cat.weight / r.totalW * 100) : 0;
-    const contrib = c.active ? (c.pct * c.cat.weight / r.totalW) : null;
-    return `<div class="catrow" data-catrow="${c.cat.id}">
-      <div class="nm"><span class="w">${c.cat.weight}%</span> ${esc(c.cat.name)}
-        ${c.cat.weight===0?'<span class="chip pill-D tiny">set a weight</span>':''}
-        ${!c.active?'<span class="chip pill-N tiny">no grades yet</span>':''}</div>
-      <div class="val js-catval">${c.active ? fmtPct1(c.pct) : '—'}
-        <small>${c.active ? `(${c.earned} / ${c.possible} pts` + (share!==c.cat.weight?` · counts as ${share}%`:'') + `)` : ''}</small></div>
-      <div class="bar"><i style="width:${Math.max(0,Math.min(100,c.pct??0))}%;background:${c.pct===null?'var(--line2)':gcolor(letterFor(c.pct))}"></i></div>
-    </div>`;
+    return `<div class="catcard">
+      ${donutHTML(c.pct, L)}
+      <div style="min-width:0">
+        <div class="cname"><span class="wbadge">${c.cat.weight}%</span>${esc(c.cat.name)}</div>
+        <div class="cmeta">${c.active ? `${fmt2(c.pct)} · ${c.earned} / ${c.possible} pts${share!==c.cat.weight?` · counts ${share}%`:''}`
+          : (c.cat.weight===0 ? 'no weight set' : 'nothing graded yet')}</div>
+      </div></div>`;
   }).join('');
 }
 
 function sortedAssignments(cls, r){
   let list = cls.assignments.slice();
-  if (ui.q){ const q = ui.q.toLowerCase(); list = list.filter(a => a.name.toLowerCase().includes(q)); }
+  if (ui.q){ const q = ui.q.toLowerCase(); list = list.filter(a => String(a.name||'').toLowerCase().includes(q)); }
   const impactOf = a => {
     if (!a.graded || !a.included || r.pct === null) return 0;
     const w = computeClass(cls, { skipId:a.id });
     return w.pct === null ? 0 : r.pct - w.pct;
   };
   const catName = a => cls.categories.find(c => c.id === a.catId)?.name || '';
-  const cmp = {
+  return list.sort({
     date  : (a,b) => (a.date||0) - (b.date||0),
     impact: (a,b) => Math.abs(impactOf(b)) - Math.abs(impactOf(a)),
     pct   : (a,b) => (pctOf(a) ?? 999) - (pctOf(b) ?? 999),
     cat   : (a,b) => catName(a).localeCompare(catName(b)) || (a.date||0)-(b.date||0),
-    name  : (a,b) => a.name.localeCompare(b.name)
-  }[ui.sort] || ((a,b)=>0);
-  return list.sort(cmp);
+    name  : (a,b) => String(a.name||'').localeCompare(String(b.name||''))
+  }[ui.sort] || (() => 0));
 }
-const pctOf = a => (a.graded && num(a.possible) > 0) ? (num(a.earned) / num(a.possible)) * 100 : null;
 
-function assignTableHTML(cls, r){
+function rowsHTML(cls, r){
   const list = sortedAssignments(cls, r);
-  if (!list.length) return `<div class="empty"><div class="big">🌱</div>No assignments yet. Paste your gradebook or add one by hand.</div>`;
-  const rows = list.map(a => {
+  if (!list.length) return `<div class="empty"><div class="big">🌱</div>No assignments yet — paste your gradebook or add one.</div>`;
+  return `<div class="arows">` + list.map((a,i) => {
     const cat = cls.categories.find(c => c.id === a.catId);
-    const p = pctOf(a);
-    const modified = isModified(a);
-    let impact = '—', icls = 'flat';
+    const p = pctOf(a), L = p === null ? null : letterFor(p);
+    const mod = isModified(a);
+    let imp = '', icls = '';
     if (a.graded && a.included && r.pct !== null){
       const w = computeClass(cls, { skipId:a.id });
-      if (w.pct !== null){ const d = r.pct - w.pct; icls = d > 0.004 ? 'up' : d < -0.004 ? 'down' : 'flat';
-        impact = (d >= 0 ? '+' : '') + d.toFixed(2); }
+      if (w.pct !== null){ const dd = r.pct - w.pct; icls = dd > .004 ? 'up' : dd < -.004 ? 'down' : '';
+        imp = (dd >= 0 ? '+' : '') + dd.toFixed(2); }
     }
-    return `<tr data-id="${a.id}" class="${a.included?'':'off'} ${a.hypo?'hypo':''}">
-      <td class="c" data-l="Count it"><input type="checkbox" class="chk" data-inc="${a.id}" ${a.included?'checked':''} title="Count this assignment"></td>
-      <td data-l="Date" class="muted tiny" style="white-space:nowrap">${dateLabel(a.date)}</td>
-      <td class="full" data-l="Assignment">
-        <div class="aname"><span class="nmtext" contenteditable="true" spellcheck="false" data-name="${a.id}">${esc(a.name)}</span>
+    const open = ui.sliderFor === a.id;
+    const poss = num(a.possible) || 0;
+    return `<div class="arow ${a.included?'':'off'} ${a.hypo?'hypo':''}" data-id="${a.id}"
+        style="animation-delay:${Math.min(i*26,420)}ms">
+      <button class="tick-btn" data-inc="${a.id}" aria-pressed="${a.included}" title="Count this assignment"
+        aria-label="Count ${esc(a.name)}"><svg viewBox="0 0 24 24"><polyline points="4,12.5 9.5,18 20,6.5"/></svg></button>
+      <div class="a-main">
+        <div class="a-name"><span class="nmtext" contenteditable="true" spellcheck="false" data-name="${a.id}">${esc(a.name)}</span>
           ${a.hypo?'<span class="tag">what-if</span>':''}
-          ${modified?'<span class="tag mod">edited</span>':''}
+          ${mod?'<span class="tag mod">edited</span>':''}
           ${a.missing?'<span class="tag miss">missing</span>':''}
           ${a.excused?'<span class="tag ex">excused</span>':''}
-          ${!a.graded?'<span class="chip pill-N tiny">ungraded</span>':''}
-        </div></td>
-      <td data-l="Category">
-        <select data-cat="${a.id}" style="padding:5px 8px;font-size:.8rem;width:auto;max-width:190px">
-          ${cls.categories.map(c=>`<option value="${c.id}" ${c.id===a.catId?'selected':''}>${esc(c.name)}</option>`).join('')}
-        </select></td>
-      <td class="n" data-l="Score">
-        <div class="score-cell">
-          <input type="number" step="0.01" data-earned="${a.id}" value="${a.earned??''}" placeholder="—" aria-label="Points earned">
+          ${!a.graded?'<span class="tag un">not graded</span>':''}</div>
+        <div class="a-sub">
+          <span class="catdot" style="background:${gcolor(L)}"></span>
+          <select data-cat="${a.id}" style="width:auto;padding:2px 6px;font-size:.72rem;background:transparent;border:0">
+            ${cls.categories.map(c=>`<option value="${c.id}" ${c.id===a.catId?'selected':''}>${esc(c.name)}</option>`).join('')}
+          </select>
+          <span>${esc(dateLabel(a.date))}</span>
+        </div>
+      </div>
+      <div class="a-right">
+        <div class="scorebox">
+          <input type="number" step="0.01" data-earned="${a.id}" value="${a.earned??''}" placeholder="—" aria-label="Points earned on ${esc(a.name)}">
           <span class="sl">/</span>
           <input type="number" step="0.01" min="0" data-possible="${a.id}" value="${a.possible??''}" aria-label="Points possible">
-        </div></td>
-      <td class="n pctcell js-pct" data-l="Percent" style="color:${p===null?'var(--muted)':gcolor(letterFor(p))}">${p===null?'—':p.toFixed(1)+'%'}</td>
-      <td class="n impact ${icls} js-impact" data-l="Impact">${impact}</td>
-      <td class="c" data-l="">
-        ${modified?`<button class="rowbtn reset" data-reset="${a.id}" title="Put the real score back">↺</button>`:''}
-        <button class="rowbtn" data-del="${a.id}" title="Delete">✕</button></td>
-    </tr>`;
-  }).join('');
+        </div>
+        <div class="a-pct" style="color:${p===null?'var(--muted)':gcolor(L)}">${p===null?'—':p.toFixed(1)+'%'}</div>
+        <div class="a-impact ${icls}" title="How much this is moving your grade">${imp||'—'}</div>
+        ${poss>0?`<button class="rowbtn" data-slide="${a.id}" title="Drag the score" aria-label="Drag the score">⇅</button>`:''}
+        ${mod?`<button class="rowbtn reset" data-reset="${a.id}" title="Put the real score back" aria-label="Reset score">↺</button>`:''}
+        <button class="rowbtn" data-del="${a.id}" title="Delete" aria-label="Delete ${esc(a.name)}">✕</button>
+      </div>
+      ${open && poss>0 ? `<div class="slider">
+        <input type="range" min="0" max="${poss}" step="${(poss/100).toFixed(3)}" value="${num(a.earned)??0}"
+          data-range="${a.id}" style="--fill:${Math.max(0,Math.min(100,((num(a.earned)??0)/poss)*100)).toFixed(1)}%"
+          aria-label="Score slider for ${esc(a.name)}">
+        <span class="slabel" data-rlabel="${a.id}">${(num(a.earned)??0)} / ${poss}</span>
+      </div>` : ''}
+    </div>`;
+  }).join('') + `</div>`;
+}
 
-  const tot = r.cats.reduce((s,c) => ({e:s.e + c.earned, p:s.p + c.possible}), {e:0,p:0});
-  return `<div style="overflow-x:auto"><table class="tbl">
-    <thead><tr>
-      <th class="c" style="width:34px"></th><th style="width:64px">Date</th><th>Assignment</th>
-      <th style="width:150px">Category</th><th class="n" style="width:150px">Score</th>
-      <th class="n" style="width:74px">%</th><th class="n" style="width:74px" title="How much this assignment is moving your grade">Impact</th>
-      <th style="width:60px"></th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-    <tfoot><tr>
-      <td colspan="4">Counted points (raw — <i>not</i> your grade, categories are weighted)</td>
-      <td class="n">${round2(tot.e)} / ${round2(tot.p)}</td>
-      <td class="n">${tot.p>0?((tot.e/tot.p)*100).toFixed(1)+'%':'—'}</td><td colspan="2"></td>
-    </tr></tfoot></table></div>`;
+/* chart is painted after layout so it can be sized to its container */
+function paintChart(){
+  const wrap = $('#chartwrap'); const cls = activeClass();
+  if (!wrap || !cls) return;
+  wrap.innerHTML = chartHTML(cls, wrap.clientWidth) + `<div class="tip" id="chartTip"></div>`;
 }
 
 /* ==================================================================
-   LIVE NUMBER PATCHING (keeps focus while you type)
+   LIVE PATCHING — keeps focus (and the caret) while you type or drag
    ================================================================== */
-function refreshNumbers(){
+let lastLetter = null, chartT = null;
+function refreshNumbers(opts){
   const cls = activeClass(); if (!cls) return;
   const r = computeClass(cls);
-  const ball = $('#classArea .gradeball');
-  if (ball){
-    ball.style.setProperty('--gc', gcolor(r.letter));
-    ball.style.setProperty('--gp', Math.max(0, Math.min(100, r.pct ?? 0)));
-    ball.querySelector('.lt').textContent = r.letter || '–';
-    ball.querySelector('.pc').textContent = r.pct === null ? 'no grades' : r.pct.toFixed(2) + '%';
+
+  const ring = $('#classArea .ring');
+  if (ring){
+    const p = Math.max(0, Math.min(100, r.pct ?? 0));
+    ring.querySelector('.prog').setAttribute('stroke-dashoffset', (RING_C * (1 - p/100)).toFixed(2));
+    const c = gcolor(r.letter);
+    ring.querySelectorAll('#ringgrad stop').forEach(s => s.setAttribute('stop-color', c));
+    const lt = ring.querySelector('.lt'); lt.textContent = r.letter || '–'; lt.style.color = c;
+    ring.querySelector('.pc').textContent = r.pct === null ? 'no grades' : r.pct.toFixed(2) + '%';
   }
-  const nl = $('#nextline'); if (nl) nl.innerHTML = nextLineHTML(r);
+  const hl = $('#headline'); if (hl) hl.innerHTML = headlineHTML(r);
   const cl = $('#catList'); if (cl) cl.innerHTML = catListHTML(cls, r);
 
-  $$('#classArea tr[data-id]').forEach(tr => {
-    const a = cls.assignments.find(x => x.id === tr.dataset.id); if (!a) return;
-    const p = pctOf(a);
-    const pc = tr.querySelector('.js-pct');
-    if (pc){ pc.textContent = p === null ? '—' : p.toFixed(1) + '%';
-             pc.style.color = p === null ? 'var(--muted)' : gcolor(letterFor(p)); }
-    const ic = tr.querySelector('.js-impact');
+  $$('#classArea .arow').forEach(row => {
+    const a = cls.assignments.find(x => x.id === row.dataset.id); if (!a) return;
+    const p = pctOf(a), L = p === null ? null : letterFor(p);
+    const pc = row.querySelector('.a-pct');
+    if (pc){ pc.textContent = p === null ? '—' : p.toFixed(1) + '%'; pc.style.color = p === null ? 'var(--muted)' : gcolor(L); }
+    const dot = row.querySelector('.catdot'); if (dot) dot.style.background = gcolor(L);
+    const ic = row.querySelector('.a-impact');
     if (ic){
-      let t = '—', c = 'flat';
+      let t = '—', k = '';
       if (a.graded && a.included && r.pct !== null){
         const w = computeClass(cls, { skipId:a.id });
-        if (w.pct !== null){ const d = r.pct - w.pct; c = d > 0.004 ? 'up' : d < -0.004 ? 'down' : 'flat'; t = (d >= 0 ? '+' : '') + d.toFixed(2); }
+        if (w.pct !== null){ const dd = r.pct - w.pct; k = dd > .004 ? 'up' : dd < -.004 ? 'down' : ''; t = (dd>=0?'+':'') + dd.toFixed(2); }
       }
-      ic.textContent = t; ic.className = 'n impact js-impact ' + c;
+      ic.textContent = t; ic.className = 'a-impact ' + k;
     }
-    tr.classList.toggle('off', !a.included);
-
-    /* keep the EDITED tag + reset button in sync while you type */
+    row.classList.toggle('off', !a.included);
+    const tb = row.querySelector('.tick-btn'); if (tb) tb.setAttribute('aria-pressed', String(!!a.included));
+    /* the EDITED tag and its reset button, kept in step while typing */
     const mod = isModified(a);
-    const nameCell = tr.querySelector('.aname');
+    const nameCell = row.querySelector('.a-name');
     let tag = nameCell && nameCell.querySelector('.tag.mod');
     if (nameCell && mod && !tag){
       tag = document.createElement('span'); tag.className = 'tag mod'; tag.textContent = 'edited';
       nameCell.querySelector('[data-name]').after(tag);
-    } else if (tag && !mod){ tag.remove(); }
-    const actCell = tr.lastElementChild;
-    let rbtn = actCell && actCell.querySelector('[data-reset]');
-    if (actCell && mod && !rbtn){
-      rbtn = document.createElement('button'); rbtn.className = 'rowbtn reset';
-      rbtn.dataset.reset = a.id; rbtn.title = 'Put the real score back'; rbtn.textContent = '↺';
-      actCell.prepend(rbtn);
-    } else if (rbtn && !mod){ rbtn.remove(); }
+    } else if (tag && !mod) tag.remove();
+    const right = row.querySelector('.a-right');
+    let rb = right && right.querySelector('[data-reset]');
+    if (right && mod && !rb){
+      rb = document.createElement('button'); rb.className = 'rowbtn reset'; rb.dataset.reset = a.id;
+      rb.title = 'Put the real score back'; rb.textContent = '↺';
+      right.insertBefore(rb, right.querySelector('[data-del]'));
+    } else if (rb && !mod) rb.remove();
   });
 
   const ha = $('#heroActions'), wn = whatIfCount(cls);
   if (ha && +ha.dataset.n !== wn){ ha.innerHTML = heroActionsHTML(cls); ha.dataset.n = wn; }
 
-  const tf = $$('#classArea .tbl tfoot td.n');
-  if (tf.length >= 2){
-    const tot = r.cats.reduce((s,c) => ({e:s.e + c.earned, p:s.p + c.possible}), {e:0,p:0});
-    tf[0].textContent = round2(tot.e) + ' / ' + round2(tot.p);
-    tf[1].textContent = tot.p > 0 ? ((tot.e/tot.p)*100).toFixed(1) + '%' : '—';
-  }
-  renderTabs(); updateNeed(); save();
-}
+  clearTimeout(chartT); chartT = setTimeout(paintChart, 260);
+  renderOverview(); updateNeed(); save();
 
-function rerender(){ renderTabs(); renderClass(); updateNeed(); save(); }
+  /* a letter grade going up is worth a moment */
+  if (!opts || !opts.quiet){
+    const L = r.letter;
+    if (lastLetter && L && POINTS[L] > POINTS[lastLetter]){ Confetti.burst(); toast(`That's ${article(L)} ${L}. 🍉`); }
+    lastLetter = L;
+  } else lastLetter = r.letter;
+}
+function rerender(){ renderOverview(); renderClass(); updateNeed(); save(); }
 
 /* ==================================================================
-   "WHAT DO I NEED" CALCULATOR
+   WHAT DO I NEED
    ================================================================== */
 function updateNeed(){
   const cls = activeClass(); const out = $('#needOut'), why = $('#needWhy');
   if (!cls || !out) return;
-  const catId = $('#needCat')?.value;
-  const pts   = num($('#needPts')?.value);
-  const tsel  = $('#needTarget')?.value;
+  const catId = $('#needCat')?.value, pts = num($('#needPts')?.value), tsel = $('#needTarget')?.value;
   const target = tsel === 'custom' ? num($('#needCustom')?.value) : num(tsel);
   const wrap = $('#needCustomWrap'); if (wrap) wrap.hidden = tsel !== 'custom';
-  if (!catId || !(pts > 0) || target === null){
-    out.textContent = '—'; why.textContent = 'Enter how many points the assignment is worth.'; return;
-  }
+  if (!catId || !(pts > 0) || target === null){ out.textContent = '—'; why.textContent = 'Enter how many points it is worth.'; return; }
   const cat = cls.categories.find(c => c.id === catId);
   const res = scoreNeeded(cls, catId, pts, target);
   if (!res){ out.textContent = '—'; why.textContent = ''; return; }
   if (res.impossible){
-    out.innerHTML = `Not reachable with this one assignment`;
-    why.innerHTML = `Even a perfect ${pts} / ${pts} in ${esc(cat.name)} only gets you to <b>${res.best.toFixed(2)}%</b>. You need more assignments — or a bigger one.`;
+    out.textContent = 'Not with this one assignment';
+    why.innerHTML = `Even a perfect ${pts} / ${pts} in ${esc(cat.name)} only reaches <b>${res.best.toFixed(2)}%</b>. You need more assignments, or a bigger one.`;
     return;
   }
   if (res.freebie){
-    out.innerHTML = `You're already there 🎉`;
-    why.innerHTML = `You are above ${target}% right now, and a 0 on this ${pts}-point ${esc(cat.name)} assignment would still leave you at <b>${computeClass(cls,{extra:{catId,earned:0,possible:pts}}).pct.toFixed(2)}%</b>.`;
+    out.textContent = "You're already there 🎉";
+    why.innerHTML = `You are above ${target}% now — even a 0 on this ${pts}-point ${esc(cat.name)} leaves you at <b>${computeClass(cls,{extra:{catId,earned:0,possible:pts}}).pct.toFixed(2)}%</b>.`;
     return;
   }
   const need = Math.ceil(res.need * 100) / 100;
-  const needPct = (need / pts) * 100;
-  out.innerHTML = `${need.toFixed(2).replace(/\.00$/,'')} / ${pts} <span style="font-size:1rem;font-weight:700;color:var(--muted)">= ${needPct.toFixed(1)}%</span>`;
+  out.innerHTML = `${need.toFixed(2).replace(/\.00$/,'')} / ${pts}
+    <span style="font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--muted)">= ${((need/pts)*100).toFixed(1)}%</span>`;
   const after = computeClass(cls, { extra:{catId, earned:need, possible:pts} });
-  why.innerHTML = `That is the lowest score on a <b>${pts}-point ${esc(cat.name)}</b> assignment that keeps you at or above <b>${target}%</b> — it would land you at ${after.pct.toFixed(2)}% (${after.letter}).` +
-    (res.over ? ` <b style="color:var(--D)">That is above full credit, so you would need extra credit.</b>` : '');
+  why.innerHTML = `The lowest score on a <b>${pts}-point ${esc(cat.name)}</b> that keeps you at or above <b>${target}%</b> — it lands you on ${after.pct.toFixed(2)}% (${after.letter}).`
+    + (res.over ? ` <b style="color:var(--D)">That is above full credit, so you'd need extra credit.</b>` : '');
 }
 
 /* ==================================================================
-   EVENTS — class view
+   IMPORT / EDIT ACTIONS
    ================================================================== */
-function importPaste(text, replace){
-  const cls = activeClass(); if (!cls) return;
+function importPaste(text, replace, quiet){
+  let cls = activeClass();
+  if (!cls) cls = newClass('New class');
   const { items, guess } = parseGradebook(text);
-  if (!items.length){ toast('Nothing recognizable in there — check the How to use page'); return; }
-  /* your own grades always take the sample's place rather than piling on top of it */
-  if (replace || cls.sample) cls.assignments = [];
+  if (!items.length){ if (!quiet) toast("That doesn't look like a gradebook — see Help"); return 0; }
+  const before = cls.assignments.slice();
+  const wasSample = !!cls.sample;
+  if (replace || wasSample) cls.assignments = [];
   const key = a => (a.name + '|' + a.possible + '|' + (a.date || '')).toLowerCase();
   const have = new Set(cls.assignments.map(key));
   let added = 0, skipped = 0;
   for (const it of items){
     if (have.has(key(it))){ skipped++; continue; }
-    const cat = catFor(cls, it.catName);
-    cls.assignments.push({ ...it, catId:cat.id });
+    cls.assignments.push({ ...it, catId:catFor(cls, it.catName).id });
     have.add(key(it)); added++;
   }
-  if (cls.sample){ delete cls.sample; if (!guess) cls.name = 'My class'; }
-  if (guess && /^(new class|untitled|.*\(sample\))/i.test(cls.name)) cls.name = guess;
+  /* your own grades take the example's place, name and all */
+  if (wasSample){ delete cls.sample; cls.name = guess || 'My class'; cls.teacher = ''; cls.period = ''; }
+  else if (guess && /^(new class|untitled|my class)$/i.test(cls.name)) cls.name = guess;
   ui.paste = false; ui.pasteText = '';
-  rerender();
-  toast(`Imported ${added} assignment${added===1?'':'s'}${skipped?` · ${skipped} already here`:''}`);
+  rerender(); lastLetter = computeClass(cls).letter;
+  if (!quiet) toast(`Imported ${added} assignment${added===1?'':'s'}${skipped?` · ${skipped} already here`:''}`,
+        { label:'Undo', run(){ cls.assignments = before; rerender(); } });
+  return added;
 }
 
 function addAssignment(){
   const cls = activeClass(); if (!cls) return;
-  const cat = cls.categories[0];
-  cls.assignments.push({ id:uid(), name:'New assignment', catId:cat.id, date:Date.now(),
+  cls.assignments.push({ id:uid(), name:'New assignment', catId:cls.categories[0].id, date:Date.now(),
     possible:10, earned:10, graded:true, included:true, hypo:true,
     missing:false, excused:false, origEarned:null, origPossible:10 });
   rerender();
   const el = $$('#classArea [data-name]').pop();
   if (el){ el.focus(); const rg = document.createRange(); rg.selectNodeContents(el);
     const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg);
-    el.scrollIntoView({block:'center', behavior:'smooth'}); }
+    el.closest('.arow').scrollIntoView({ block:'center', behavior:'smooth' }); }
 }
 
-$('#classtabs').addEventListener('click', e => {
-  const t = e.target.closest('[data-cls]'); const add = e.target.closest('[data-add]');
-  if (t){ S.active = t.dataset.cls; ui.paste = false; ui.settings = false; rerender(); }
-  else if (add){ newClass('New class'); ui.paste = true; ui.settings = false; rerender(); $('#pasteBox')?.focus(); }
+function deleteAssignment(id){
+  const cls = activeClass(); const i = cls.assignments.findIndex(a => a.id === id);
+  if (i < 0) return;
+  const [gone] = cls.assignments.splice(i, 1);
+  undoStack.push({ clsId:cls.id, index:i, item:gone });
+  rerender();
+  toast(`Deleted "${gone.name.slice(0,32)}"`, { label:'Undo', run:undoDelete });
+}
+function undoDelete(){
+  const u = undoStack.pop(); if (!u) { toast('Nothing to undo'); return; }
+  const cls = S.classes.find(c => c.id === u.clsId); if (!cls) return;
+  cls.assignments.splice(u.index, 0, u.item);
+  S.active = cls.id; rerender(); toast('Back');
+}
+
+/* ==================================================================
+   EVENTS
+   ================================================================== */
+$('#classOverview').addEventListener('click', e => {
+  const t = e.target.closest('[data-cls]'), add = e.target.closest('[data-add]');
+  if (t){ S.active = t.dataset.cls; ui.paste = ui.settings = false; ui.sliderFor = null;
+    lastLetter = null; rerender(); refreshNumbers({quiet:true}); }
+  else if (add){ newClass('New class'); ui.paste = true; ui.settings = false; rerender();
+    $('#pasteBox')?.focus(); }
 });
 
 $('#classArea').addEventListener('click', e => {
   const cls = activeClass();
-  const act = e.target.closest('[data-act]')?.dataset.act;
-  const del = e.target.closest('[data-del]')?.dataset.del;
-  const rst = e.target.closest('[data-reset]')?.dataset.reset;
-  const dcat= e.target.closest('[data-delcat]')?.dataset.delcat;
+  const act  = e.target.closest('[data-act]')?.dataset.act;
+  const del  = e.target.closest('[data-del]')?.dataset.del;
+  const rst  = e.target.closest('[data-reset]')?.dataset.reset;
+  const dcat = e.target.closest('[data-delcat]')?.dataset.delcat;
+  const sld  = e.target.closest('[data-slide]')?.dataset.slide;
+  const inc  = e.target.closest('[data-inc]')?.dataset.inc;
 
-  if (e.target.id === 'firstImport'){ if (!activeClass()) newClass('New class'); importPaste($('#firstPaste').value, true); return; }
+  if (e.target.id === 'firstImport'){ importPaste($('#firstPaste').value, true); return; }
   if (e.target.id === 'firstBlank'){ newClass('New class'); ui.settings = true; rerender(); return; }
   if (e.target.id === 'firstDemo'){ loadDemo(); return; }
   if (!cls) return;
 
-  if (del){ cls.assignments = cls.assignments.filter(a => a.id !== del); rerender(); return; }
+  if (inc !== undefined){ const a = cls.assignments.find(x => x.id === inc);
+    if (a){ a.included = !a.included; refreshNumbers(); } return; }
+  if (sld !== undefined){ ui.sliderFor = ui.sliderFor === sld ? null : sld; renderClass(); return; }
+  if (del){ deleteAssignment(del); return; }
   if (rst){ const a = cls.assignments.find(x => x.id === rst);
-    if (a){ a.earned = a.origEarned; a.possible = a.origPossible; a.graded = a.origEarned !== null; } rerender(); return; }
+    if (a){ a.earned = a.origEarned; a.possible = a.origPossible; a.graded = a.origEarned !== null; }
+    rerender(); return; }
   if (dcat){
     if (cls.categories.length <= 1){ toast('A class needs at least one category'); return; }
     const moving = cls.assignments.filter(a => a.catId === dcat).length;
-    if (moving && !confirm(`${moving} assignment${moving===1?'':'s'} will move to ${cls.categories.find(c=>c.id!==dcat).name}. Continue?`)) return;
-    const fallback = cls.categories.find(c => c.id !== dcat).id;
-    cls.assignments.forEach(a => { if (a.catId === dcat) a.catId = fallback; });
+    const fallback = cls.categories.find(c => c.id !== dcat);
+    if (moving && !confirm(`${moving} assignment${moving===1?'':'s'} will move to ${fallback.name}. Continue?`)) return;
+    cls.assignments.forEach(a => { if (a.catId === dcat) a.catId = fallback.id; });
     cls.categories = cls.categories.filter(c => c.id !== dcat);
     rerender(); return;
   }
 
   switch (act){
-    case 'paste': ui.paste = true; renderClass(); $('#pastePanel').scrollIntoView({block:'center',behavior:'smooth'}); $('#pasteBox').focus(); break;
+    case 'paste': ui.paste = true; renderClass();
+      $('#pastePanel').scrollIntoView({block:'center',behavior:'smooth'}); $('#pasteBox').focus(); break;
     case 'pasteClose': ui.paste = false; ui.pasteText = ''; renderClass(); break;
-    case 'import': ui.pasteText = $('#pasteBox').value; importPaste(ui.pasteText, false); break;
+    case 'import': importPaste($('#pasteBox').value, false); break;
     case 'importReplace':
-      if (cls.assignments.length && !confirm('Delete the ' + cls.assignments.length + ' assignments already in this class and import fresh?')) break;
-      ui.pasteText = $('#pasteBox').value; importPaste(ui.pasteText, true); break;
+      if (cls.assignments.length && !confirm(`Delete the ${cls.assignments.length} assignments already here and import fresh?`)) break;
+      importPaste($('#pasteBox').value, true); break;
     case 'addrow': addAssignment(); break;
     case 'clearwhatif':
       cls.assignments = cls.assignments.filter(a => !a.hypo);
       cls.assignments.forEach(a => { a.earned = a.origEarned; a.possible = a.origPossible; a.graded = a.origEarned !== null; });
-      rerender(); toast('Back to your real grades'); break;
-    case 'settings': ui.settings = !ui.settings; renderClass(); if (ui.settings) $('#settingsPanel').scrollIntoView({block:'center',behavior:'smooth'}); break;
+      rerender(); refreshNumbers({quiet:true}); toast('Back to your real grades'); break;
+    case 'settings': ui.settings = !ui.settings; renderClass();
+      if (ui.settings) $('#settingsPanel').scrollIntoView({block:'center',behavior:'smooth'}); break;
     case 'settingsClose': ui.settings = false; renderClass(); break;
     case 'addcat': cls.categories.push({ id:uid(), name:'New category', weight:0 }); renderClass(); break;
     case 'resetcats': {
@@ -1261,155 +1522,199 @@ $('#classArea').addEventListener('click', e => {
       rerender(); break; }
     case 'clearsample':
       S.classes = S.classes.filter(c => !c.sample);
-      S.active = S.classes[0]?.id || null; ui.paste = !S.classes.length; rerender();
-      if (!S.classes.length) toast('Sample cleared — paste your own gradebook'); break;
+      S.active = S.classes[0]?.id || null; ui.paste = !S.classes.length; lastLetter = null; rerender();
+      if (!S.classes.length) toast('Cleared — paste your own gradebook'); break;
     case 'delclass':
       if (!confirm(`Delete "${cls.name}" and its ${cls.assignments.length} assignments?`)) break;
       S.classes = S.classes.filter(c => c.id !== cls.id);
-      S.active = S.classes[0]?.id || null; ui.settings = false; rerender(); break;
+      S.active = S.classes[0]?.id || null; ui.settings = false; lastLetter = null; rerender(); break;
     case 'fill': {
       const p = num($('#fillPct').value) ?? 100; let n = 0;
       cls.assignments.forEach(a => { if (!a.graded && num(a.possible) > 0){
         a.earned = round2(num(a.possible) * p / 100); a.graded = true; a.hypo = true; a.included = true; n++; } });
-      rerender(); toast(n ? `Filled ${n} ungraded assignment${n===1?'':'s'} at ${p}%` : 'Nothing to fill'); break; }
+      rerender(); toast(n ? `Filled ${n} at ${p}%` : 'Nothing to fill'); break; }
   }
 });
 
 $('#classArea').addEventListener('input', e => {
   const cls = activeClass(); if (!cls) return;
-  const t = e.target;
-  const find = id => cls.assignments.find(a => a.id === id);
-
+  const t = e.target, find = id => cls.assignments.find(a => a.id === id);
   if (t.dataset.earned !== undefined){ const a = find(t.dataset.earned);
-    if (a){ const v = num(t.value); a.earned = t.value === '' ? null : v; a.graded = t.value !== '' && v !== null; refreshNumbers(); } return; }
+    if (a){ const v = num(t.value); a.earned = t.value === '' ? null : v; a.graded = t.value !== '' && v !== null;
+      syncSlider(a); refreshNumbers(); } return; }
   if (t.dataset.possible !== undefined){ const a = find(t.dataset.possible);
     if (a){ a.possible = num(t.value) ?? 0; refreshNumbers(); } return; }
+  if (t.dataset.range !== undefined){ const a = find(t.dataset.range);
+    if (a){ a.earned = round2(num(t.value) ?? 0); a.graded = true;
+      const poss = num(a.possible) || 1;
+      t.style.setProperty('--fill', Math.max(0,Math.min(100,(a.earned/poss)*100)).toFixed(1) + '%');
+      const lab = $(`[data-rlabel="${a.id}"]`); if (lab) lab.textContent = `${a.earned} / ${poss}`;
+      const inp = $(`[data-earned="${a.id}"]`); if (inp) inp.value = a.earned;
+      refreshNumbers(); } return; }
   if (t.dataset.name !== undefined){ const a = find(t.dataset.name);
     if (a){ a.name = t.textContent.trim() || 'Untitled assignment'; save(); } return; }
-  if (t.dataset.cf){ cls[t.dataset.cf] = t.value; $('#classArea h2').textContent = cls.name; renderTabs(); save(); return; }
+  if (t.dataset.cf){ cls[t.dataset.cf] = t.value; const h = $('#classArea h2'); if (h) h.textContent = cls.name;
+    renderOverview(); save(); return; }
   if (t.dataset.cw){
-    const id = t.closest('[data-cat]').dataset.cat;
-    const c = cls.categories.find(x => x.id === id);
-    if (c){ if (t.dataset.cw === 'weight'){ c.weight = num(t.value) ?? 0; delete c.needsWeight; } else c.name = t.value; refreshNumbers(); }
+    const c = cls.categories.find(x => x.id === t.closest('[data-cat]').dataset.cat);
+    if (c){ if (t.dataset.cw === 'weight') c.weight = num(t.value) ?? 0; else c.name = t.value; refreshNumbers(); }
     return; }
-  if (t.id === 'searchBox'){ ui.q = t.value; const tb = $('#classArea .tbl'); if (tb){ const p = tb.parentElement;
-      p.outerHTML = assignTableHTML(cls, computeClass(cls)); } return; }
-  if (['needPts','needCustom'].includes(t.id)) updateNeed();
+  if (t.id === 'searchBox'){ ui.q = t.value; const rl = $('#rowList');
+    if (rl) rl.innerHTML = rowsHTML(cls, computeClass(cls)); return; }
+  if (t.id === 'needPts' || t.id === 'needCustom') updateNeed();
 });
+function syncSlider(a){
+  const rg = $(`[data-range="${a.id}"]`); if (!rg) return;
+  const poss = num(a.possible) || 1;
+  rg.value = num(a.earned) ?? 0;
+  rg.style.setProperty('--fill', Math.max(0,Math.min(100,((num(a.earned)??0)/poss)*100)).toFixed(1) + '%');
+  const lab = $(`[data-rlabel="${a.id}"]`); if (lab) lab.textContent = `${num(a.earned)??0} / ${poss}`;
+}
 
 $('#classArea').addEventListener('change', e => {
   const cls = activeClass(); if (!cls) return;
   const t = e.target;
-  if (t.dataset.inc !== undefined){ const a = cls.assignments.find(x => x.id === t.dataset.inc);
-    if (a){ a.included = t.checked; refreshNumbers(); } return; }
   if (t.dataset.cat !== undefined){ const a = cls.assignments.find(x => x.id === t.dataset.cat);
     if (a){ a.catId = t.value; rerender(); } return; }
   if (t.dataset.earned !== undefined || t.dataset.possible !== undefined){ refreshNumbers(); return; }
   if (t.id === 'sortBox'){ ui.sort = t.value; renderClass(); return; }
-  if (['needCat','needTarget'].includes(t.id)) updateNeed();
+  if (t.id === 'needCat' || t.id === 'needTarget') updateNeed();
 });
 
 $('#classArea').addEventListener('blur', e => {
   const t = e.target;
   if (!t.dataset || t.dataset.name === undefined) return;
   if (!t.textContent.trim()) t.textContent = 'Untitled assignment';
-  const cls = activeClass();
-  const a = cls && cls.assignments.find(x => x.id === t.dataset.name);
+  const cls = activeClass(); const a = cls && cls.assignments.find(x => x.id === t.dataset.name);
   if (a){ a.name = t.textContent.trim(); save(); }
 }, true);
 
+/* ---- chart crosshair + tooltip ---- */
+$('#classArea').addEventListener('pointermove', e => {
+  const svg = e.target.closest('.chart'); if (!svg) return;
+  const cls = activeClass(); if (!cls) return;
+  const pts = trendSeries(cls); if (pts.length < 2) return;
+  const wrap = svg.closest('.chartwrap'), tip = $('#chartTip');
+  const box = svg.getBoundingClientRect();
+  const W = svg.viewBox.baseVal.width, scale = box.width / W;
+  const P = { l:34, r:48 }, iw = W - P.l - P.r;
+  const local = (e.clientX - box.left) / scale;
+  let i = Math.round(((local - P.l) / iw) * (pts.length - 1));
+  i = Math.max(0, Math.min(pts.length - 1, i));
+  const x = P.l + (i/(pts.length-1)) * iw;
+  svg.querySelector('.cross').setAttribute('x1', x);
+  svg.querySelector('.cross').setAttribute('x2', x);
+  wrap.classList.add('live');
+  const p = pts[i];
+  tip.innerHTML = `<b>${fmt2(p.pct)}</b> ${letterFor(p.pct)}<div class="t-sub">after ${esc(p.a.name.slice(0,44))}</div>`;
+  tip.style.left = Math.max(70, Math.min(box.width - 70, x * scale)) + 'px';
+  tip.style.top = (svg.offsetTop + 26) + 'px';
+  tip.classList.add('on');
+});
+$('#classArea').addEventListener('pointerleave', e => {
+  const wrap = $('#chartwrap'); if (wrap) wrap.classList.remove('live');
+  const tip = $('#chartTip'); if (tip) tip.classList.remove('on');
+}, true);
+addEventListener('resize', () => { clearTimeout(chartT); chartT = setTimeout(paintChart, 180); });
+
+/* ---- paste anywhere ---- */
+addEventListener('paste', e => {
+  const el = document.activeElement;
+  if (el && (/INPUT|TEXTAREA/.test(el.tagName) || el.isContentEditable)) return;
+  if ($('#view-grades').hidden) return;
+  const text = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+  if (!text.trim()) return;
+  const probe = parseGradebook(text);
+  if (!probe.items.length) return;
+  e.preventDefault();
+  importPaste(text, false);
+});
+addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){
+    const el = document.activeElement;
+    if (el && (/INPUT|TEXTAREA/.test(el.tagName) || el.isContentEditable)) return;
+    if (undoStack.length){ e.preventDefault(); undoDelete(); }
+  }
+});
+
 /* ==================================================================
-   SEMESTER VIEW
+   SEMESTER
    ================================================================== */
 function renderSemChart(){
   const L = ['A','B','C','D','E'];
   const a = $('#semMP1').value, b = $('#semMP2').value;
   let h = '<tr><th>MP1 &darr; / MP2 &rarr;</th>' + L.map(x => `<th>${x}</th>`).join('') + '</tr>';
-  for (const r of L){
-    h += `<tr><th>${r}</th>` + L.map(c => {
-      const g = semesterGrade(r,c);
-      const hi = (r === a && c === b) ? ' class="hi"' : '';
-      return `<td${hi} style="color:var(--${g})">${g}</td>`;
+  for (const rr of L) h += `<tr><th>${rr}</th>` + L.map(c => {
+      const g = semesterGrade(rr,c);
+      return `<td class="${rr===a&&c===b?'hi':''}" style="color:${gcolor(g)}">${g}</td>`;
     }).join('') + '</tr>';
-  }
   $('#semChart').innerHTML = h;
 }
 function updateSemester(){
-  const a = $('#semMP1').value, b = $('#semMP2').value;
-  const g = semesterGrade(a,b);
+  const a = $('#semMP1').value, b = $('#semMP2').value, g = semesterGrade(a,b);
   const out = $('#semOut'); out.textContent = g; out.style.color = gcolor(g);
   const avg = (POINTS[a] + POINTS[b]) / 2;
-  $('#semWhy').innerHTML = `${a} (${POINTS[a]}) + ${b} (${POINTS[b]}) = ${POINTS[a]+POINTS[b]} quality points ÷ 2 = <b>${avg}</b>` +
-    (avg % 1 ? ` → a tie rounds up → <b>${POINTS[g]}</b> = <b>${g}</b>` : ` = <b>${g}</b>`);
+  $('#semWhy').innerHTML = `${a} (${POINTS[a]}) + ${b} (${POINTS[b]}) = ${POINTS[a]+POINTS[b]} quality points ÷ 2 = <b>${avg}</b>`
+    + (avg % 1 ? ` → a tie rounds up → <b>${POINTS[g]}</b> = <b>${g}</b>` : ` = <b>${g}</b>`);
   renderSemChart();
 }
 function updateBlend(){
   const c = num($('#blendCourse').value), t = num($('#blendTest').value), w = num($('#blendW').value);
   if (c === null || t === null || w === null){ $('#blendOut').textContent = '—'; $('#blendWhy').textContent = ''; return; }
-  const f = c * (100 - w) / 100 + t * w / 100;
-  const L = letterFor(f);
-  const out = $('#blendOut'); out.innerHTML = `${f.toFixed(2)}% <span style="color:var(--${L})">${L}</span>`; out.style.color = '';
-  $('#blendWhy').innerHTML = `${c}% × ${100-w}% + ${t}% × ${w}% = <b>${f.toFixed(2)}%</b>` +
-    (c !== 0 ? ` — the assessment moved your grade ${(f-c>=0?'+':'')}${(f-c).toFixed(2)} points.` : '');
+  const f = c*(100-w)/100 + t*w/100, L = letterFor(f);
+  $('#blendOut').innerHTML = `${f.toFixed(2)}% <span style="color:${gcolor(L)}">${L}</span>`;
+  $('#blendWhy').innerHTML = `${c}% × ${100-w}% + ${t}% × ${w}% = <b>${f.toFixed(2)}%</b>`
+    + (c !== 0 ? ` — the assessment moved it ${(f-c>=0?'+':'')}${(f-c).toFixed(2)} points.` : '');
 }
 function fillSemClasses(){
-  const sel = $('#semFromClass');
-  sel.innerHTML = '<option value="">— none —</option>' + S.classes.map(c => {
-    const r = computeClass(c);
-    return `<option value="${c.id}">${esc(c.name)} — ${r.letter || '?'}</option>`;
+  $('#semFromClass').innerHTML = '<option value="">— pick a class —</option>' + S.classes.map(c => {
+    const r = computeClass(c); return `<option value="${c.id}">${esc(c.name)} — ${r.letter || '?'}</option>`;
   }).join('');
 }
 
 /* ==================================================================
-   GPA VIEW
+   GPA
    ================================================================== */
 const LEVELS = [['std','Standard',0],['hon','Honors',1],['ap','AP / IB',2]];
 function renderGPA(){
-  const el = $('#gpaRows');
   if (!S.gpaCourses.length) S.gpaCourses = [{ id:uid(), name:'', letter:'A', level:'std' }];
-  el.innerHTML = S.gpaCourses.map(c => `
-    <div class="row" data-gc="${c.id}" style="gap:8px">
+  $('#gpaRows').innerHTML = S.gpaCourses.map(c => `
+    <div class="row" data-gc="${c.id}" style="gap:9px">
       <input type="text" data-gf="name" value="${esc(c.name)}" placeholder="Course name" style="flex:1;min-width:140px">
       <select data-gf="letter" style="width:auto">${['A','B','C','D','E'].map(l=>`<option ${l===c.letter?'selected':''}>${l}</option>`).join('')}</select>
       <select data-gf="level" style="width:auto">${LEVELS.map(([v,n])=>`<option value="${v}" ${v===c.level?'selected':''}>${n}</option>`).join('')}</select>
-      <button class="rowbtn" data-gdel="${c.id}" title="Remove">✕</button>
+      <button class="rowbtn" data-gdel="${c.id}" title="Remove" aria-label="Remove course">✕</button>
     </div>`).join('');
   computeGPA();
 }
 function computeGPA(){
-  const bump = num($('#gpaBump').value) ?? 1;
-  const rows = S.gpaCourses;
+  const bump = num($('#gpaBump').value) ?? 1, rows = S.gpaCourses;
   if (!rows.length){ $('#gpaUn').textContent = '—'; $('#gpaW').textContent = '—'; return; }
   let un = 0, w = 0;
   for (const c of rows){
-    const p = POINTS[c.letter] ?? 0;
-    un += p;
+    const p = POINTS[c.letter] ?? 0; un += p;
     const lvl = LEVELS.find(l => l[0] === c.level)?.[2] || 0;
     let add = 0;
     if (lvl === 1) add = bump === 0.5 ? 0.5 : bump;
     if (lvl === 2) add = bump === 0 ? 0 : 1;
     w += p > 0 ? p + add : 0;
   }
-  $('#gpaUn').textContent = (un / rows.length).toFixed(3);
-  $('#gpaW').textContent  = (w / rows.length).toFixed(3);
+  $('#gpaUn').textContent = (un/rows.length).toFixed(3);
+  $('#gpaW').textContent  = (w/rows.length).toFixed(3);
   save();
 }
 $('#gpaAdd').addEventListener('click', () => { S.gpaCourses.push({ id:uid(), name:'', letter:'A', level:'std' }); renderGPA(); save(); });
 $('#gpaPull').addEventListener('click', () => {
-  const got = S.classes.map(c => { const r = computeClass(c); return r.letter ? { id:uid(), name:c.name, letter:r.letter, level:'std' } : null; }).filter(Boolean);
+  const got = S.classes.map(c => { const r = computeClass(c);
+    return r.letter ? { id:uid(), name:c.name, letter:r.letter, level:'std' } : null; }).filter(Boolean);
   if (!got.length){ toast('No graded classes to pull yet'); return; }
   S.gpaCourses = got; renderGPA(); save(); toast(`Pulled ${got.length} class${got.length===1?'':'es'}`);
 });
-$('#gpaRows').addEventListener('input', e => {
+['input','change'].forEach(ev => $('#gpaRows').addEventListener(ev, e => {
   const row = e.target.closest('[data-gc]'); if (!row) return;
   const c = S.gpaCourses.find(x => x.id === row.dataset.gc);
   if (c && e.target.dataset.gf){ c[e.target.dataset.gf] = e.target.value; computeGPA(); }
-});
-$('#gpaRows').addEventListener('change', e => {
-  const row = e.target.closest('[data-gc]'); if (!row) return;
-  const c = S.gpaCourses.find(x => x.id === row.dataset.gc);
-  if (c && e.target.dataset.gf){ c[e.target.dataset.gf] = e.target.value; computeGPA(); }
-});
+}));
 $('#gpaRows').addEventListener('click', e => {
   const d = e.target.closest('[data-gdel]'); if (!d) return;
   S.gpaCourses = S.gpaCourses.filter(x => x.id !== d.dataset.gdel); renderGPA(); save();
@@ -1417,7 +1722,7 @@ $('#gpaRows').addEventListener('click', e => {
 $('#gpaBump').addEventListener('change', () => { S.gpaBump = num($('#gpaBump').value); computeGPA(); });
 
 /* ==================================================================
-   DEMO DATA
+   SAMPLE DATA
    ================================================================== */
 const DEMO = `Week 01 - 8/25/2026 through 8/29/2026  (1 items)
 Aug
@@ -1459,25 +1764,26 @@ PP-Branches Worksheet due 9/18
 Practice / Preparation | 12.00 points`;
 
 function loadDemo(quiet){
-  S.classes = S.classes.filter(c => !c.sample);   /* never stack two samples */
-  const c = newClass('NSL Government (sample)');
-  c.period = '3'; c.teacher = 'Sample data';
-  importPaste(DEMO, true);
+  S.classes = S.classes.filter(c => !c.sample);
+  const c = newClass('NSL Government (example)');
+  c.period = '3'; c.teacher = 'Example data';
+  importPaste(DEMO, true, true);
   const seeded = activeClass(); if (seeded) seeded.sample = true;
-  rerender();
-  if (!quiet){ go('grades'); toast('Sample loaded — try changing a score'); }
+  rerender(); lastLetter = computeClass(seeded).letter;
+  if (!quiet){ go('grades'); toast('Example loaded — drag a score'); }
 }
 $('#loadDemo').addEventListener('click', () => loadDemo());
 
 /* ==================================================================
-   SHELL — nav, theme, backup
+   SHELL
    ================================================================== */
 function go(view){
   $$('#nav button').forEach(b => b.setAttribute('aria-current', String(b.dataset.view === view)));
   ['grades','semester','gpa','help'].forEach(v => { $('#view-' + v).hidden = v !== view; });
+  if (view === 'grades') setTimeout(paintChart, 30);
   if (view === 'semester'){ fillSemClasses(); updateSemester(); updateBlend(); }
   if (view === 'gpa') renderGPA();
-  window.scrollTo({ top:0, behavior:'smooth' });
+  scrollTo({ top:0, behavior:'smooth' });
 }
 $('#nav').addEventListener('click', e => { const b = e.target.closest('button[data-view]'); if (b) go(b.dataset.view); });
 
@@ -1488,62 +1794,54 @@ function applyTheme(){
   if (S.theme === 'auto') delete root.dataset.theme; else root.dataset.theme = S.theme;
   const dark = effectiveTheme() === 'dark';
   $('#themeBtn').textContent = dark ? '☀️' : '🌙';
-  $('#themeBtn').title = dark ? 'Switch to light mode' : 'Switch to dark mode';
+  $('#themeBtn').title = dark ? 'Switch to light' : 'Switch to dark';
   const mt = $('meta[name=theme-color]');
-  if (mt) mt.setAttribute('content', dark ? '#1c6b39' : '#1f7a3f');
+  if (mt) mt.setAttribute('content', dark ? '#0b3a1f' : '#1a7a42');
 }
-$('#themeBtn').addEventListener('click', () => { S.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; applyTheme(); save(); });
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (S.theme === 'auto') applyTheme(); });
+$('#themeBtn').addEventListener('click', () => {
+  S.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; applyTheme(); save();
+  clearTimeout(chartT); chartT = setTimeout(paintChart, 60);
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (S.theme === 'auto'){ applyTheme(); paintChart(); } });
 
 $('#exportBtn').addEventListener('click', async () => {
   const json = JSON.stringify(S, null, 2);
   const filename = 'grade-melon-backup-' + new Date().toISOString().slice(0,10) + '.json';
-  /* hosted in a viewer that mediates saves (claude.ai artifacts) */
   let dl = null;
   try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch(e){}
   if (dl){
     try { await dl.save({ filename, data:json }); toast('Backup saved'); }
-    catch(err){ toast(err && err.code === 'declined' ? 'Backup cancelled' : 'Could not save the backup here'); }
+    catch(err){ toast(err && err.code === 'declined' ? 'Backup cancelled' : 'Could not save here'); }
     return;
   }
-  /* plain web page: ordinary download */
   const blob = new Blob([json], { type:'application/json' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = filename;
-  a.click(); URL.revokeObjectURL(a.href); toast('Backup downloaded');
+  a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+  URL.revokeObjectURL(a.href); toast('Backup downloaded');
 });
 $('#importBtn').addEventListener('click', () => $('#fileIn').click());
 $('#fileIn').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return;
   const rd = new FileReader();
-  rd.onload = () => { try { const d = JSON.parse(rd.result);
-      if (!d.classes) throw 0; S = Object.assign(S, d); load(); applyTheme(); rerender(); toast('Backup restored');
-    } catch(err){ toast('That file is not a Grade Melon backup'); } };
+  rd.onload = () => { try { const d = JSON.parse(rd.result); if (!d.classes) throw 0;
+      S = Object.assign(S, d); load(); applyTheme(); lastLetter = null; rerender(); toast('Backup restored');
+    } catch(err){ toast('That is not a Grade Melon backup'); } };
   rd.readAsText(f); e.target.value = '';
 });
 $('#wipeBtn').addEventListener('click', () => {
   if (!confirm('Delete every class, assignment and GPA row on this device? This cannot be undone.')) return;
   localStorage.removeItem(KEY);
   S = { classes:[], active:null, theme:S.theme, gpaBump:1, gpaCourses:[] };
-  rerender(); go('grades'); toast('All cleared');
+  undoStack = []; lastLetter = null; rerender(); go('grades'); toast('All cleared');
 });
-
-['semMP1','semMP2'].forEach(id => document.getElementById(id).addEventListener('change', updateSemester));
+['semMP1','semMP2'].forEach(id => $('#'+id).addEventListener('change', updateSemester));
 $('#semFromClass').addEventListener('change', e => {
   const c = S.classes.find(x => x.id === e.target.value); if (!c) return;
   const r = computeClass(c);
-  if (!r.letter){ toast('That class has no graded assignments yet'); return; }
+  if (!r.letter){ toast('That class has nothing graded yet'); return; }
   $('#semMP1').value = r.letter; updateSemester(); toast(`MP1 set to ${r.letter} from ${c.name}`);
 });
-['blendCourse','blendTest','blendW'].forEach(id => document.getElementById(id).addEventListener('input', updateBlend));
-
-/* keyboard: paste straight onto the page */
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'v' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)
-      && !document.activeElement.isContentEditable && !$('#view-grades').hidden && activeClass()){
-    ui.paste = true; renderClass(); $('#pasteBox').focus();
-  }
-});
+['blendCourse','blendTest','blendW'].forEach(id => $('#'+id).addEventListener('input', updateBlend));
 
 /* ==================================================================
    BOOT
@@ -1551,13 +1849,13 @@ document.addEventListener('keydown', e => {
 const firstVisit = !localStorage.getItem(KEY);
 load();
 applyTheme();
-if (firstVisit && !S.classes.length) loadDemo(true);
 if (S.gpaBump != null) $('#gpaBump').value = S.gpaBump;
-renderTabs(); renderClass(); renderSemChart(); updateSemester(); updateBlend();
-updateNeed();
+if (firstVisit && !S.classes.length) loadDemo(true);
+renderOverview(); renderClass(); renderSemChart(); updateSemester(); updateBlend(); updateNeed();
+lastLetter = activeClass() ? computeClass(activeClass()).letter : null;
 
 return { go, loadDemo, parseGradebook, computeClass, semesterGrade, letterFor, scoreNeeded,
-         state:() => S, _test:{ CUTS, POINTS } };
+         trendSeries, paintChart, confetti:() => Confetti.burst(), state:() => S };
 })();
 </script>
 </body>
