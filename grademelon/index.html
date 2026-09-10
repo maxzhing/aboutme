@@ -7,6 +7,9 @@
 <meta name="description" content="Grade Melon: paste your StudentVUE gradebook and calculate your MCPS grade. All Tasks / Assessments 90%, Practice / Preparation 10%, what-if assignments, semester and GPA calculators.">
 <meta name="theme-color" content="#1f7a3f">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5A45 45 0 0 0 5 50h90A45 45 0 0 0 50 5z' fill='%231f7a3f' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 12A38 38 0 0 0 12 50h76A38 38 0 0 0 50 12z' fill='%23fff8f2' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 18A32 32 0 0 0 18 50h64A32 32 0 0 0 50 18z' fill='%23ff5b78' transform='rotate(180 50 50)'/%3E%3Cg fill='%231f2124'%3E%3Cellipse cx='38' cy='68' rx='3' ry='4.5'/%3E%3Cellipse cx='62' cy='68' rx='3' ry='4.5'/%3E%3Cellipse cx='50' cy='78' rx='3' ry='4.5'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
 /* ============================================================
    Grade Melon — MCPS grade calculator
@@ -25,10 +28,11 @@
   --shadow:0 1px 2px rgba(20,40,30,.06),0 8px 24px -12px rgba(20,40,30,.18);
   --shadow-lg:0 2px 4px rgba(20,40,30,.06),0 20px 48px -18px rgba(20,40,30,.28);
   --r:14px; --r-sm:9px; --r-lg:20px;
-  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --display:"Bricolage Grotesque","IBM Plex Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
 }
-html[data-theme="dark"]{
+:root[data-theme="dark"]{
   color-scheme:dark;
   --rind:#2ea55a; --rind2:#3fc46f; --rind-dark:#1c6b39;
   --flesh:#ff6f89; --flesh2:#ff92a8; --flesh-dark:#e0506c;
@@ -38,6 +42,19 @@ html[data-theme="dark"]{
   --A:#4ade80; --B:#60a5fa; --C:#fbbf24; --D:#fb923c; --E:#f87171;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
   --shadow-lg:0 2px 4px rgba(0,0,0,.4),0 20px 48px -18px rgba(0,0,0,.7);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+  color-scheme:dark;
+  --rind:#2ea55a; --rind2:#3fc46f; --rind-dark:#1c6b39;
+  --flesh:#ff6f89; --flesh2:#ff92a8; --flesh-dark:#e0506c;
+  --bg:#0f1512; --bg2:#131b17; --card:#182019; --card2:#1e2721;
+  --ink:#e9f0eb; --ink2:#c6d2ca; --muted:#8d9d94; --faint:#68786f;
+  --line:#26322b; --line2:#334036;
+  --A:#4ade80; --B:#60a5fa; --C:#fbbf24; --D:#fb923c; --E:#f87171;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-lg:0 2px 4px rgba(0,0,0,.4),0 20px 48px -18px rgba(0,0,0,.7);
+  }
 }
 html,body{margin:0;padding:0}
 body{
@@ -50,7 +67,7 @@ img{max-width:100%}
 button,input,select,textarea{font:inherit;color:inherit}
 a{color:var(--rind);text-decoration:none}
 a:hover{text-decoration:underline}
-h1,h2,h3,h4{margin:0;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+h1,h2,h3,h4{margin:0;line-height:1.15;font-family:var(--display);font-weight:700;letter-spacing:-.015em;text-wrap:balance}
 
 /* ---------- layout ---------- */
 .wrap{max-width:1120px;margin:0 auto;padding:0 18px}
@@ -63,10 +80,10 @@ main{padding-block:22px 60px}
   color:#fff;box-shadow:0 2px 14px rgba(0,0,0,.16);
 }
 .topbar .wrap{display:flex;align-items:center;gap:14px;min-height:60px;flex-wrap:wrap;padding-block:8px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.22rem;letter-spacing:-.02em;color:#fff}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.3rem;letter-spacing:-.025em;color:#fff}
 .brand:hover{text-decoration:none}
 .melon{width:30px;height:30px;flex:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
-.brand small{display:block;font-size:.6rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-top:-2px}
+.brand small{display:block;font-family:var(--mono);font-size:.58rem;font-weight:400;letter-spacing:.15em;text-transform:uppercase;opacity:.8;margin-top:-1px}
 .nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
 .nav button{
   background:transparent;border:0;color:rgba(255,255,255,.82);
@@ -92,6 +109,7 @@ main{padding-block:22px 60px}
   cursor:pointer;transition:.15s;white-space:nowrap;
 }
 .btn:hover{border-color:var(--rind);color:var(--rind);transform:translateY(-1px)}
+.btn:focus-visible,.icon-btn:focus-visible,.classtab:focus-visible,.rowbtn:focus-visible,[contenteditable]:focus-visible{outline:2px solid var(--rind);outline-offset:2px}
 .btn:active{transform:none}
 .btn-primary{background:var(--rind);border-color:var(--rind);color:#fff}
 .btn-primary:hover{background:var(--rind-dark);border-color:var(--rind-dark);color:#fff}
@@ -106,7 +124,7 @@ main{padding-block:22px 60px}
 .muted{color:var(--muted)}
 .tiny{font-size:.76rem}
 .small{font-size:.84rem}
-label.fld{display:flex;flex-direction:column;gap:5px;font-size:.74rem;font-weight:700;
+label.fld{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:.7rem;font-weight:600;
   text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
 input[type=text],input[type=number],select,textarea{
   background:var(--card2);border:1px solid var(--line2);border-radius:var(--r-sm);
@@ -128,7 +146,7 @@ textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertica
 .pill-D{background:color-mix(in srgb,var(--D) 16%,transparent);color:var(--D);border-color:color-mix(in srgb,var(--D) 32%,transparent)}
 .pill-E{background:color-mix(in srgb,var(--E) 16%,transparent);color:var(--E);border-color:color-mix(in srgb,var(--E) 32%,transparent)}
 .pill-N{background:var(--bg2);color:var(--muted)}
-.sec-title{font-size:.72rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-title{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .sec-title::after{content:'';flex:1;height:1px;background:var(--line)}
 .note{background:var(--card2);border:1px dashed var(--line2);border-radius:var(--r-sm);padding:11px 13px;font-size:.83rem;color:var(--ink2)}
 .divider{height:1px;background:var(--line);margin:16px 0}
@@ -153,8 +171,8 @@ textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertica
 }
 .gradeball::after{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--card)}
 .gradeball .inner{position:relative;z-index:1;text-align:center;line-height:1}
-.gradeball .lt{font-size:2.9rem;font-weight:900;color:var(--gc);letter-spacing:-.04em}
-.gradeball .pc{font-size:.95rem;font-weight:800;color:var(--ink2);margin-top:3px;font-variant-numeric:tabular-nums}
+.gradeball .lt{font-family:var(--display);font-size:3rem;font-weight:800;color:var(--gc);letter-spacing:-.045em}
+.gradeball .pc{font-family:var(--mono);font-size:.88rem;font-weight:600;color:var(--ink2);margin-top:4px;font-variant-numeric:tabular-nums}
 .hero h2{font-size:1.45rem;margin-bottom:2px}
 .hero .meta{color:var(--muted);font-size:.85rem;margin-bottom:12px}
 .nextline{font-size:.85rem;color:var(--ink2)}
@@ -164,8 +182,8 @@ textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertica
 .catlist{display:grid;gap:11px}
 .catrow{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
 .catrow .nm{font-weight:700;font-size:.87rem;display:flex;align-items:center;gap:7px;min-width:0}
-.catrow .nm span.w{font-size:.7rem;font-weight:800;color:#fff;background:var(--rind);padding:2px 7px;border-radius:99px;flex:none}
-.catrow .val{font-variant-numeric:tabular-nums;font-weight:800;font-size:.9rem;white-space:nowrap}
+.catrow .nm span.w{font-family:var(--mono);font-size:.66rem;font-weight:600;color:#fff;background:var(--rind);padding:2px 7px;border-radius:99px;flex:none}
+.catrow .val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.9rem;white-space:nowrap}
 .catrow .val small{font-weight:600;color:var(--muted);font-size:.76rem}
 .bar{grid-column:1/-1;height:8px;border-radius:99px;background:var(--bg2);overflow:hidden}
 .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--flesh),var(--flesh2));transition:width .45s cubic-bezier(.2,.8,.2,1)}
@@ -174,7 +192,7 @@ textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertica
 /* ---------- assignment table ---------- */
 .tbl{width:100%;border-collapse:collapse;font-size:.87rem}
 .tbl th{
-  text-align:left;font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  text-align:left;font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
   color:var(--muted);padding:8px 9px;border-bottom:1px solid var(--line);white-space:nowrap;
 }
 .tbl th.n,.tbl td.n{text-align:right}
@@ -186,7 +204,7 @@ textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertica
 .tbl tr.hypo td{background:color-mix(in srgb,var(--flesh) 7%,transparent)}
 .tbl tr.hypo:hover td{background:color-mix(in srgb,var(--flesh) 12%,transparent)}
 .aname{font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.aname .tag{font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+.aname .tag{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
   padding:2px 6px;border-radius:5px;background:var(--flesh);color:#fff}
 .aname .tag.mod{background:var(--C)}
 .aname .tag.miss{background:var(--E)}
@@ -195,8 +213,8 @@ textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertica
 .score-cell{display:flex;align-items:center;gap:4px;justify-content:flex-end;white-space:nowrap}
 .score-cell input{width:62px;padding:5px 7px;text-align:right;font-variant-numeric:tabular-nums;font-size:.84rem}
 .score-cell .sl{color:var(--faint);font-weight:700}
-.pctcell{font-variant-numeric:tabular-nums;font-weight:800}
-.impact{font-variant-numeric:tabular-nums;font-weight:700;font-size:.8rem}
+.pctcell{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600}
+.impact{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.78rem}
 .impact.up{color:var(--A)}.impact.down{color:var(--E)}.impact.flat{color:var(--faint)}
 .chk{width:17px;height:17px;accent-color:var(--rind);cursor:pointer}
 .rowbtn{background:none;border:0;color:var(--faint);cursor:pointer;padding:3px 5px;border-radius:6px;font-size:.9rem;line-height:1}
@@ -218,7 +236,7 @@ textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertica
   .tbl tr{border:1px solid var(--line);border-radius:var(--r-sm);margin-bottom:9px;padding:9px 11px;background:var(--card)}
   .tbl tr.hypo{border-color:var(--flesh)}
   .tbl td{border:0;padding:4px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:right}
-  .tbl td::before{content:attr(data-l);font-size:.68rem;font-weight:800;letter-spacing:.08em;
+  .tbl td::before{content:attr(data-l);font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;
     text-transform:uppercase;color:var(--muted);text-align:left;flex:none}
   .tbl td.full{display:block;text-align:left}
   .tbl td.full::before{display:block;margin-bottom:3px}
@@ -235,11 +253,13 @@ textarea{font-family:var(--mono);font-size:.8rem;line-height:1.55;resize:vertica
   background:linear-gradient(135deg,color-mix(in srgb,var(--rind) 12%,transparent),color-mix(in srgb,var(--flesh) 12%,transparent));
   border:1px solid var(--line2);border-radius:var(--r);padding:15px 17px;
 }
-.result .big{font-size:1.7rem;font-weight:900;letter-spacing:-.02em}
+.result .big{font-family:var(--display);font-size:1.75rem;font-weight:800;letter-spacing:-.025em}
 .empty{text-align:center;padding:42px 20px;color:var(--muted)}
 .empty .big{font-size:2.6rem;margin-bottom:8px}
 .scale{width:100%;border-collapse:collapse;font-size:.85rem}
 .scale th,.scale td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
+.scale td{font-variant-numeric:tabular-nums}
+.scale td:first-child{font-family:var(--display)}
 .scale th{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
 .scale td:first-child{font-weight:900;font-size:1rem;width:52px}
 .semchart{width:100%;border-collapse:collapse;font-size:.83rem;text-align:center}
@@ -264,6 +284,9 @@ pre.sample{background:var(--bg2);border:1px solid var(--line);border-radius:var(
 ol.steps{margin:0;padding-left:20px;line-height:1.75;font-size:.88rem}
 ol.steps li{margin-bottom:4px}
 footer.foot{border-top:1px solid var(--line);padding:22px 0 34px;color:var(--muted);font-size:.79rem;text-align:center;line-height:1.7}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
 @media print{
   .topbar,.nav,.btn,.classtabs,.rowbtn,footer.foot{display:none!important}
   body{background:#fff}
@@ -681,7 +704,7 @@ function scoreNeeded(cls, catId, possible, target){
 /* ==================================================================
    STATE
    ================================================================== */
-let S = { classes:[], active:null, theme:'light', gpaBump:1, gpaCourses:[] };
+let S = { classes:[], active:null, theme:'auto', gpaBump:1, gpaCourses:[] };
 const ui = { paste:false, settings:false, sort:'date', q:'', showHidden:true, pasteText:'' };
 
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
@@ -774,6 +797,13 @@ function renderClass(){
 
   area.innerHTML = `
   <div class="stack">
+
+    ${cls.sample ? `<div class="note" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-style:solid;border-color:var(--flesh)">
+      <span>🍉 <b>This is sample data</b> so you can see how it works — change a score and watch the grade move.</span>
+      <span class="row" style="margin-left:auto;gap:8px">
+        <button class="btn btn-sm btn-primary" data-act="paste">Paste my own</button>
+        <button class="btn btn-sm btn-ghost" data-act="clearsample">Clear the sample</button>
+      </span></div>` : ''}
 
     <!-- HERO -->
     <div class="card pad">
@@ -1142,7 +1172,8 @@ function importPaste(text, replace){
   const cls = activeClass(); if (!cls) return;
   const { items, guess } = parseGradebook(text);
   if (!items.length){ toast('Nothing recognizable in there — check the How to use page'); return; }
-  if (replace) cls.assignments = [];
+  /* your own grades always take the sample's place rather than piling on top of it */
+  if (replace || cls.sample) cls.assignments = [];
   const key = a => (a.name + '|' + a.possible + '|' + (a.date || '')).toLowerCase();
   const have = new Set(cls.assignments.map(key));
   let added = 0, skipped = 0;
@@ -1152,7 +1183,8 @@ function importPaste(text, replace){
     cls.assignments.push({ ...it, catId:cat.id });
     have.add(key(it)); added++;
   }
-  if (guess && /^(new class|untitled)/i.test(cls.name)) cls.name = guess;
+  if (cls.sample){ delete cls.sample; if (!guess) cls.name = 'My class'; }
+  if (guess && /^(new class|untitled|.*\(sample\))/i.test(cls.name)) cls.name = guess;
   ui.paste = false; ui.pasteText = '';
   rerender();
   toast(`Imported ${added} assignment${added===1?'':'s'}${skipped?` · ${skipped} already here`:''}`);
@@ -1227,6 +1259,10 @@ $('#classArea').addEventListener('click', e => {
         a.catId = (target || cls.categories[0]).id;
       });
       rerender(); break; }
+    case 'clearsample':
+      S.classes = S.classes.filter(c => !c.sample);
+      S.active = S.classes[0]?.id || null; ui.paste = !S.classes.length; rerender();
+      if (!S.classes.length) toast('Sample cleared — paste your own gradebook'); break;
     case 'delclass':
       if (!confirm(`Delete "${cls.name}" and its ${cls.assignments.length} assignments?`)) break;
       S.classes = S.classes.filter(c => c.id !== cls.id);
@@ -1422,14 +1458,16 @@ Sep
 PP-Branches Worksheet due 9/18
 Practice / Preparation | 12.00 points`;
 
-function loadDemo(){
+function loadDemo(quiet){
+  S.classes = S.classes.filter(c => !c.sample);   /* never stack two samples */
   const c = newClass('NSL Government (sample)');
   c.period = '3'; c.teacher = 'Sample data';
   importPaste(DEMO, true);
-  go('grades');
-  toast('Sample loaded — try changing a score');
+  const seeded = activeClass(); if (seeded) seeded.sample = true;
+  rerender();
+  if (!quiet){ go('grades'); toast('Sample loaded — try changing a score'); }
 }
-$('#loadDemo').addEventListener('click', loadDemo);
+$('#loadDemo').addEventListener('click', () => loadDemo());
 
 /* ==================================================================
    SHELL — nav, theme, backup
@@ -1443,12 +1481,19 @@ function go(view){
 }
 $('#nav').addEventListener('click', e => { const b = e.target.closest('button[data-view]'); if (b) go(b.dataset.view); });
 
+const systemDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+const effectiveTheme = () => S.theme === 'auto' ? (systemDark() ? 'dark' : 'light') : S.theme;
 function applyTheme(){
-  document.documentElement.dataset.theme = S.theme;
-  $('#themeBtn').textContent = S.theme === 'dark' ? '☀️' : '🌙';
-  $('meta[name=theme-color]').setAttribute('content', S.theme === 'dark' ? '#1c6b39' : '#1f7a3f');
+  const root = document.documentElement;
+  if (S.theme === 'auto') delete root.dataset.theme; else root.dataset.theme = S.theme;
+  const dark = effectiveTheme() === 'dark';
+  $('#themeBtn').textContent = dark ? '☀️' : '🌙';
+  $('#themeBtn').title = dark ? 'Switch to light mode' : 'Switch to dark mode';
+  const mt = $('meta[name=theme-color]');
+  if (mt) mt.setAttribute('content', dark ? '#1c6b39' : '#1f7a3f');
 }
-$('#themeBtn').addEventListener('click', () => { S.theme = S.theme === 'dark' ? 'light' : 'dark'; applyTheme(); save(); });
+$('#themeBtn').addEventListener('click', () => { S.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; applyTheme(); save(); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (S.theme === 'auto') applyTheme(); });
 
 $('#exportBtn').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(S,null,2)], { type:'application/json' });
@@ -1493,8 +1538,10 @@ document.addEventListener('keydown', e => {
 /* ==================================================================
    BOOT
    ================================================================== */
+const firstVisit = !localStorage.getItem(KEY);
 load();
 applyTheme();
+if (firstVisit && !S.classes.length) loadDemo(true);
 if (S.gpaBump != null) $('#gpaBump').value = S.gpaBump;
 renderTabs(); renderClass(); renderSemChart(); updateSemester(); updateBlend();
 updateNeed();

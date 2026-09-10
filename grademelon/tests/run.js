@@ -9,7 +9,8 @@ const ok = (name, cond, extra='') => { console.log((cond?'  PASS  ':'  FAIL  ')+
   const p = await b.newPage({ viewport:{width:1280,height:900} });
   const errs = [];
   p.on('pageerror', e => errs.push('pageerror: '+e.message));
-  p.on('console', m => { if (m.type()==='error') errs.push('console: '+m.text()); });
+  p.on('console', m => { const t=m.text();
+    if (m.type()==='error' && !/fonts\.(googleapis|gstatic)\.com|ERR_CONNECTION_RESET|ERR_NAME_NOT_RESOLVED|ERR_INTERNET_DISCONNECTED/.test(t)) errs.push('console: '+t); });
   await p.goto('file://'+path);
   await p.waitForTimeout(400);
 
@@ -97,6 +98,8 @@ Practice / Preparation | 15.00 points
   const heroLetter = await p.textContent('.gradeball .lt');
   const heroPct = await p.textContent('.gradeball .pc');
   ok('demo loads and shows B / 87.49%', heroLetter.trim()==='B' && heroPct.includes('87.49'), heroLetter+' '+heroPct);
+  const tabs = await p.$$eval('.classtab[data-cls]', e => e.length);
+  ok('re-loading the sample does not stack a second copy', tabs===1, 'tabs='+tabs);
   const rows = await p.$$eval('.tbl tbody tr', r => r.length);
   ok('demo shows 6 assignment rows', rows===6, 'rows='+rows);
   const ungraded = await p.$$eval('.tbl tbody tr .pill-N', e => e.length);
@@ -162,6 +165,26 @@ Practice / Preparation | 15.00 points
   await p.reload(); await p.waitForTimeout(400);
   const persisted = await p.textContent('.gradeball .lt');
   ok('data persists across reload', persisted.trim()==='B', persisted);
+
+  // ---------- first visit shows a working sample, and it clears in one click ----------
+  const fresh = await b.newPage({ viewport:{width:1280,height:900} });
+  await fresh.goto('file://'+path); await fresh.waitForTimeout(400);
+  const banner = await fresh.$$eval('[data-act="clearsample"]', e => e.length);
+  ok('first visit seeds a sample gradebook', banner===1 && (await fresh.textContent('.gradeball .lt')).trim()==='B', 'banner='+banner);
+  await fresh.click('[data-act="clearsample"]'); await fresh.waitForTimeout(300);
+  const gone = await fresh.evaluate(() => GM.state().classes.length);
+  ok('clearing the sample empties the app', gone===0, 'classes='+gone);
+  const pasteBox = await fresh.$$eval('#firstPaste', e => e.length);
+  ok('empty state offers a paste box', pasteBox===1, 'n='+pasteBox);
+  // pasting into the seeded sample takes it over rather than stacking on it
+  const fresh2 = await b.newPage({ viewport:{width:1280,height:900} });
+  await fresh2.goto('file://'+path); await fresh2.waitForTimeout(400);
+  await fresh2.click('[data-act="paste"]');
+  await fresh2.fill('#pasteBox', 'Course: AP Chemistry\nSep\n4\nAT-Titration Lab due 9/4\nAll Tasks / Assessments | 20.00 points\n18\n90%');
+  await fresh2.click('[data-act="import"]'); await fresh2.waitForTimeout(300);
+  const taken = await fresh2.evaluate(() => { const s=GM.state(); return { n:s.classes.length, name:s.classes[0].name, sample:!!s.classes[0].sample, a:s.classes[0].assignments.length }; });
+  ok('pasting replaces the sample instead of stacking', taken.n===1 && taken.name==='AP Chemistry' && !taken.sample && taken.a===1, JSON.stringify(taken));
+  await fresh.close(); await fresh2.close();
 
   // ---------- screenshots ----------
   const SS = require('path').join(__dirname,'artifacts');
