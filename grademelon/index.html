@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Grade Melon — MCPS Grade Calculator</title>
+<title>Grade Melon</title>
 <meta name="description" content="Grade Melon: paste your StudentVUE gradebook and calculate your MCPS grade. All Tasks / Assessments 90%, Practice / Preparation 10%, what-if assignments, semester and GPA calculators.">
 <meta name="theme-color" content="#1f7a3f">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5A45 45 0 0 0 5 50h90A45 45 0 0 0 50 5z' fill='%231f7a3f' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 12A38 38 0 0 0 12 50h76A38 38 0 0 0 50 12z' fill='%23fff8f2' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 18A32 32 0 0 0 18 50h64A32 32 0 0 0 50 18z' fill='%23ff5b78' transform='rotate(180 50 50)'/%3E%3Cg fill='%231f2124'%3E%3Cellipse cx='38' cy='68' rx='3' ry='4.5'/%3E%3Cellipse cx='62' cy='68' rx='3' ry='4.5'/%3E%3Cellipse cx='50' cy='78' rx='3' ry='4.5'/%3E%3C/g%3E%3C/svg%3E">
@@ -1495,11 +1495,21 @@ function applyTheme(){
 $('#themeBtn').addEventListener('click', () => { S.theme = effectiveTheme() === 'dark' ? 'light' : 'dark'; applyTheme(); save(); });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (S.theme === 'auto') applyTheme(); });
 
-$('#exportBtn').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(S,null,2)], { type:'application/json' });
+$('#exportBtn').addEventListener('click', async () => {
+  const json = JSON.stringify(S, null, 2);
+  const filename = 'grade-melon-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  /* hosted in a viewer that mediates saves (claude.ai artifacts) */
+  let dl = null;
+  try { dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch(e){}
+  if (dl){
+    try { await dl.save({ filename, data:json }); toast('Backup saved'); }
+    catch(err){ toast(err && err.code === 'declined' ? 'Backup cancelled' : 'Could not save the backup here'); }
+    return;
+  }
+  /* plain web page: ordinary download */
+  const blob = new Blob([json], { type:'application/json' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'grade-melon-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.href = URL.createObjectURL(blob); a.download = filename;
   a.click(); URL.revokeObjectURL(a.href); toast('Backup downloaded');
 });
 $('#importBtn').addEventListener('click', () => $('#fileIn').click());
