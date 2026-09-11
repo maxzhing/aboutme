@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock AI Analyzer</title>
+<meta name="description" content="Analyses a stock from real market data, says whether the price is low or high for that stock, and runs a paper-money portfolio that learns from its own scored calls.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <div class="brand">
+      <h1>Stock <em>AI</em></h1>
+      <span class="tag">analyzer</span>
+    </div>
+
+    <div class="search">
+      <input id="q" class="input" placeholder="TICKER — e.g. IREN" autocomplete="off" spellcheck="false" aria-label="Ticker symbol">
+      <span class="hint" id="qhint">↵</span>
+      <div id="ac" class="ac" hidden></div>
+    </div>
+
+    <button id="go" class="btn primary">Analyze</button>
+
+    <div class="credits" title="Your own local daily cap on AI calls">
+      <span>AI</span>
+      <div class="bar"><i id="credbar" style="width:100%"></i></div>
+      <span id="credtxt">—</span>
+    </div>
+
+    <button id="theme" class="btn sm" title="Light / dark">◐</button>
+    <button id="settings-btn" class="btn sm">Settings</button>
+  </div>
+
+  <div class="wrap" style="padding-bottom:10px">
+    <div class="wl" id="watchlist"></div>
+  </div>
+
+  <div class="wrap">
+    <nav class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="analysis">Analysis</button>
+      <button role="tab" aria-selected="false" data-tab="chart">Chart</button>
+      <button role="tab" aria-selected="false" data-tab="portfolio">Paper Portfolio</button>
+      <button role="tab" aria-selected="false" data-tab="learning">What it has learned</button>
+      <button role="tab" aria-selected="false" data-tab="diag">Connections</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ ANALYSIS ============ -->
+  <section class="panel on" id="p-analysis" role="tabpanel">
+    <div id="analysis-empty" class="empty">
+      <div class="big">Type a ticker and press Analyze.</div>
+      <p>Real daily bars are pulled from public market-data sources, the numbers are computed in your
+      browser, and an AI turns them into a buy / sell / hold call with the price levels behind it.</p>
+      <p class="small" style="margin-top:1rem">Try <b class="mono">IREN</b>, <b class="mono">AAPL</b>,
+      <b class="mono">NVDA</b>, <b class="mono">MSTR</b> or <b class="mono">SPY</b>.</p>
+    </div>
+    <div id="analysis" hidden></div>
+  </section>
+
+  <!-- ============ CHART ============ -->
+  <section class="panel" id="p-chart" role="tabpanel">
+    <div id="chart-empty" class="empty"><div class="big">Nothing analysed yet.</div></div>
+    <div id="chart-body" hidden>
+      <div class="card">
+        <div class="flexbar">
+          <div>
+            <div class="lbl">Price, its own range, and the buy zones</div>
+            <h3 id="chart-title">—</h3>
+          </div>
+          <div class="range-btns" id="range-btns">
+            <button class="btn sm" data-bars="63">3M</button>
+            <button class="btn sm" data-bars="126">6M</button>
+            <button class="btn sm on" data-bars="252">1Y</button>
+            <button class="btn sm" data-bars="504">2Y</button>
+          </div>
+        </div>
+        <div class="chart-frame" style="margin-top:10px">
+          <canvas id="price-canvas" height="380"></canvas>
+          <div class="tip" id="price-tip"></div>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--series-price)"></i>Price</span>
+          <span><i style="background:var(--series-ma20);border-top:1px dashed"></i>20-day</span>
+          <span><i style="background:var(--series-ma50)"></i>50-day</span>
+          <span><i style="background:var(--series-ma200)"></i>200-day</span>
+          <span><i style="background:var(--band-fill);height:8px"></i>Normal range (25th–75th pct)</span>
+          <span><i style="background:var(--status-good)"></i>Buy zones</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="lbl">What this price level has actually paid</div>
+        <h3>Forward returns by decile of its own one-year range</h3>
+        <p class="small muted">Each bar is the median move over the following sessions, measured across
+        this stock's own history. The ringed bar is where it trades today.</p>
+        <div class="chart-frame" style="margin-top:10px"><canvas id="study-canvas" height="210"></canvas></div>
+        <div class="flexbar" style="margin-top:10px">
+          <span class="tiny muted">Out-of-sample by construction: each bar only uses prices that came after the bar it measures.</span>
+          <button class="btn sm" id="study-table-btn">Show data table</button>
+        </div>
+        <div id="study-table" hidden style="margin-top:12px"></div>
+      </div>
+
+      <div class="card">
+        <div class="lbl">Why the verdict came out that way</div>
+        <h3>Factor contributions</h3>
+        <p class="small muted">Each factor is scored from −1 to +1 and weighted. Weights shift as calls
+        are scored — see <b>What it has learned</b>.</p>
+        <div class="chart-frame" style="margin-top:6px"><canvas id="factor-canvas"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PORTFOLIO ============ -->
+  <section class="panel" id="p-portfolio" role="tabpanel">
+    <div class="card">
+      <div class="flexbar">
+        <div>
+          <div class="lbl">Fake money, real prices</div>
+          <h3>Paper portfolio</h3>
+        </div>
+        <div class="row" style="flex:0 0 auto">
+          <button class="btn sm" id="auto-btn">Autopilot: off</button>
+          <button class="btn sm" id="mark-btn">Refresh marks</button>
+          <button class="btn sm danger" id="reset-pf">Reset</button>
+        </div>
+      </div>
+      <div class="grid g4" id="pf-tiles" style="margin-top:14px"></div>
+      <p class="small muted" style="margin-top:10px">
+        Every fill pays slippage, so the record is not flattering. Autopilot lets the AI execute its own
+        recommendation the moment an analysis finishes, inside the risk budget and position cap.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Equity curve</div>
+      <div class="chart-frame"><canvas id="equity-canvas" height="190"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="flexbar">
+        <div class="lbl" style="margin:0">Open positions</div>
+        <div class="row" style="flex:0 0 auto;align-items:center">
+          <input id="t-sym" class="input mono" placeholder="SYM" style="width:88px;text-transform:uppercase">
+          <input id="t-shares" class="input mono" placeholder="Shares" type="number" min="1" step="1" style="width:96px">
+          <button class="btn sm" id="t-buy">Buy</button>
+          <button class="btn sm" id="t-sell">Sell</button>
+        </div>
+      </div>
+      <div class="tbl-wrap" style="margin-top:10px"><div id="pf-positions"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Trade log</div>
+      <div class="tbl-wrap"><div id="pf-trades"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ LEARNING ============ -->
+  <section class="panel" id="p-learning" role="tabpanel">
+    <div class="card">
+      <div class="flexbar">
+        <div>
+          <div class="lbl">Scored against prices that did not exist when the call was made</div>
+          <h3>What it has learned</h3>
+        </div>
+        <div class="row" style="flex:0 0 auto">
+          <button class="btn sm" id="eval-btn">Score matured calls</button>
+          <button class="btn sm danger" id="reset-learn">Reset learning</button>
+        </div>
+      </div>
+      <div class="grid g4" id="learn-tiles" style="margin-top:14px"></div>
+      <div id="learn-lessons" style="margin-top:16px"></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="lbl">Signal reliability &amp; live weights</div>
+        <p class="small muted">A signal that keeps being wrong here gets scaled down, and the next
+        verdict is computed with the new weights.</p>
+        <div class="tbl-wrap" style="margin-top:8px"><div id="learn-factors"></div></div>
+      </div>
+      <div class="card">
+        <div class="lbl">Is its confidence worth anything?</div>
+        <p class="small muted">Hit rate by the conviction it claimed at the time.</p>
+        <div class="tbl-wrap" style="margin-top:8px"><div id="learn-calib"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Every call it has made</div>
+      <div class="tbl-wrap"><div id="learn-preds"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ DIAGNOSTICS ============ -->
+  <section class="panel" id="p-diag" role="tabpanel">
+    <div class="card">
+      <div class="lbl">Does it work from your network?</div>
+      <h3>Connection check</h3>
+      <p class="small muted">Market-data APIs do not send CORS headers, so the app tries them directly
+      first and then through public relays. AI providers are checked with a one-token ping.
+      This runs from your browser, so it tells you what <em>you</em> can reach.</p>
+      <div class="row" style="margin-top:12px;flex:0 0 auto">
+        <button class="btn" id="test-data">Test data sources</button>
+        <button class="btn" id="test-relays">Test relays</button>
+        <button class="btn" id="test-ai">Test AI providers</button>
+      </div>
+      <div id="diag-out" style="margin-top:14px"></div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">If every source is blocked</div>
+      <h3>Paste history instead</h3>
+      <p class="small muted">Export daily bars from Yahoo, Stooq or your broker and paste them here —
+      <span class="mono">Date,Open,High,Low,Close,Volume</span>, oldest or newest first. The whole
+      analysis runs on pasted data exactly as it does on live data. Needs 60 rows, ideally 500+.</p>
+      <div class="row" style="margin-top:10px;align-items:flex-end">
+        <div style="flex:0 0 130px"><label class="tiny muted" for="csv-sym">Symbol</label>
+          <input id="csv-sym" class="input mono" placeholder="IREN" style="text-transform:uppercase"></div>
+        <button class="btn" id="csv-go" style="flex:0 0 auto">Analyze pasted data</button>
+      </div>
+      <textarea id="csv-text" class="input" rows="7" style="margin-top:10px"
+        placeholder="Date,Open,High,Low,Close,Volume&#10;2024-01-02,8.10,8.44,8.02,8.39,12400000&#10;..."></textarea>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Your data</div>
+      <h3>Export / import</h3>
+      <p class="small muted">Everything — portfolio, trade log, predictions, learned weights, API keys —
+      lives in this browser's local storage. Nothing is sent anywhere except the market-data and AI
+      providers you choose.</p>
+      <div class="row" style="margin-top:12px;flex:0 0 auto">
+        <button class="btn" id="export-btn">Export everything</button>
+        <button class="btn" id="import-btn">Import</button>
+        <input type="file" id="import-file" accept="application/json" hidden>
+      </div>
+    </div>
+  </section>
+
+  <p class="disclaimer">
+    Educational tool. It reads public market data and applies statistics and an AI narrative to it —
+    it has no knowledge of company fundamentals, earnings dates, filings or news, and it cannot know
+    the future. The portfolio is fake money. None of this is financial advice.
+  </p>
+</main>
+
+<!-- ============ SETTINGS ============ -->
+<div class="modal" id="settings-modal">
+  <div class="modal-in">
+    <div class="flexbar">
+      <h2>Settings</h2>
+      <button class="btn sm" id="close-settings">Close</button>
+    </div>
+    <p class="small muted">Stored in this browser only.</p>
+
+    <hr class="sep">
+    <div class="lbl">AI provider</div>
+    <div class="field">
+      <label for="s-provider">Provider</label>
+      <select id="s-provider" class="input"></select>
+      <div class="note" id="s-provider-note"></div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="s-model">Model</label>
+        <input id="s-model" class="input mono" list="model-list" placeholder="(provider default)">
+        <datalist id="model-list"></datalist>
+      </div>
+      <div class="field">
+        <label for="s-budget">Daily AI budget</label>
+        <input id="s-budget" class="input mono" type="number" min="1" max="500" step="1">
+        <div class="note">Your own local cap on calls per day.</div>
+      </div>
+    </div>
+    <div class="field" id="s-key-field" hidden>
+      <label for="s-key">API key</label>
+      <input id="s-key" class="input mono" type="password" placeholder="paste key" autocomplete="off">
+      <div class="note" id="s-key-note"></div>
+    </div>
+
+    <hr class="sep">
+    <div class="lbl">Paper trading</div>
+    <div class="row">
+      <div class="field"><label for="s-cash">Starting cash</label><input id="s-cash" class="input mono" type="number" min="100" step="100"></div>
+      <div class="field"><label for="s-risk">Risk per trade %</label><input id="s-risk" class="input mono" type="number" min="0.1" max="20" step="0.1"></div>
+      <div class="field"><label for="s-cap">Max position %</label><input id="s-cap" class="input mono" type="number" min="1" max="100" step="1"></div>
+      <div class="field"><label for="s-slip">Slippage (bps)</label><input id="s-slip" class="input mono" type="number" min="0" max="200" step="1"></div>
+    </div>
+    <div class="note">Changing starting cash only takes effect when you reset the portfolio.</div>
+
+    <hr class="sep">
+    <div class="lbl">Market data</div>
+    <div class="field">
+      <label for="s-source">Preferred source</label>
+      <select id="s-source" class="input">
+        <option value="auto">Auto — try everything</option>
+        <option value="yahoo">Yahoo Finance</option>
+        <option value="stooq">Stooq CSV</option>
+        <option value="alphavantage">Alpha Vantage</option>
+        <option value="twelvedata">Twelve Data</option>
+        <option value="fmp">Financial Modeling Prep</option>
+        <option value="polygon">Polygon.io</option>
+      </select>
+    </div>
+    <div class="row">
+      <div class="field"><label for="s-av">Alpha Vantage key</label><input id="s-av" class="input mono" type="password" autocomplete="off"></div>
+      <div class="field"><label for="s-td">Twelve Data key</label><input id="s-td" class="input mono" type="password" autocomplete="off"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="s-fmp">FMP key</label><input id="s-fmp" class="input mono" type="password" autocomplete="off"></div>
+      <div class="field"><label for="s-poly">Polygon key</label><input id="s-poly" class="input mono" type="password" autocomplete="off"></div>
+    </div>
+    <div class="field">
+      <label for="s-proxy">Your own CORS relay (most reliable)</label>
+      <input id="s-proxy" class="input mono" placeholder="https://my-worker.workers.dev/?url=">
+      <div class="note">A keyless source needs a relay to reach the browser. Public ones come and go;
+      a 20-line Cloudflare Worker of your own does not. The README has the code.</div>
+    </div>
+
+    <hr class="sep">
+    <div class="lbl">Accessibility</div>
+    <div class="field">
+      <label><input type="checkbox" id="s-cvd"> Colourblind-safe factor bars (blue / orange instead of green / red)</label>
+      <div class="note">Direction is always carried by position and a signed number as well as colour.</div>
+    </div>
+
+    <div class="row" style="margin-top:20px">
+      <button class="btn primary" id="save-settings">Save</button>
+      <button class="btn" id="reset-credits">Reset today's AI count</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
