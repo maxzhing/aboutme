@@ -30,41 +30,47 @@ Marking period grade = (PP% × 10 + AT% × 90) ÷ 100
 
 ## What it does
 
-* **Gradebook of every class.** Add as many classes as you like; each keeps its own assignments,
-  category weights, marking period and grade. Card view or table view, per the original.
-* **Paste one class or all of them.** Press Ctrl/⌘+V anywhere. If the paste contains several
-  courses, they are split into separate classes with their names and periods picked out.
-* **Per-class grade** with a ring, a trend chart, category donuts and a sparkline on its card.
-* **GPA across all classes**, weighted and unweighted, with a per-course *Weighted?* toggle that is
-  auto-ticked from AP / IB / Honors / Magnet in the name — the same rule the original uses.
-* **Target optimiser** — enter the points still to come in each category and it solves for the
-  lowest score you can average on all of it and still land the grade you want.
-* **What-ifs** — type a score, drag the slider on any row, add an assignment that does not exist
-  yet, or fill in everything ungraded at once. *Reset* puts your real grades back.
-* **Impact** per assignment, **undo** on delete, search and sort, semester calculator and
-  state-test blend.
+It does not stop at calculating a grade — it tells you what the grade means and what to do about it.
 
-## Look & feel
+**Dashboard**
+* **At a glance** — a plain-language verdict, weighted and unweighted GPA, and your letter tally.
+* **What matters most right now** — your classes ranked by how much your time can actually move them,
+  not by which is lowest. Each row says why it is there, with the numbers behind it.
+* **Goal mode** — maximise GPA, get all A's, raise my lowest, protect my A's, or just understand.
+  The ranking re-orders to match.
+* **Study plan** — say how long you have and it splits the time across the classes where it counts.
+* **Filter chips** — needs attention, close to next, A's, below 90%, trending down, what-if active.
 
-* **10 themes** (Watermelon, Midnight, Sunset, Ocean, Grape, Matcha, Candy, Ember, Mint, Slate)
-  plus **any custom accent colour** — the whole app re-tints around it, neutrals included, because
-  every surface token is a `color-mix` of the accent.
-* Light / dark / auto, independent of the theme.
-* Graphics are all hand-drawn — SVG, Canvas and CSS, no chart or animation library — so it works
-  offline and inside a strict CSP: animated grade ring with the letter cut-offs notched on, trend
-  chart over A/B/C/D/E bands with a crosshair tooltip, category donuts, per-card sparklines, a
-  shared-element (FLIP) transition from card to class, staggered entrances, and a watermelon-seed
-  confetti burst when a letter grade goes up. All of it honours `prefers-reduced-motion`.
+**Every class gets a status**, judged on where it is actually heading rather than the worst thing
+imaginable: **Safe**, **Close**, **At risk** (your recent scoring, projected onto the work left,
+drops the letter), or **Locked in** (no remaining work can change the letter). The label is a word,
+never colour alone.
 
-### Grade colours
+**Class page**
+* **What this means** — insights generated from the gradebook. Every one carries the number it is
+  based on; none of it is motivational filler.
+* **What if…** — one slider for "if I average X% on everything still ungraded", showing
+  `94.15% A → 60.65% D` and a plain verdict, plus one-tap 100 / 90 / 80 / 70 / zero.
+* **What is still in play** — ungraded work ranked by how far it can swing the grade, showing the
+  upside of a 100 and the cost of a 0 side by side.
+* **Target solver** across all categories at once, which tells you the required average — or says
+  plainly that the goal is unreachable and names your real ceiling instead.
+* **How is this calculated?** folded away until you ask.
 
-A–E are the app's main colour code, so the five were re-stepped until they passed a
-colour-vision-deficiency check (adjacent-pair ΔE, normal-vision floor, lightness band, chroma floor
-and contrast, in both themes). The obvious green/blue/amber/orange/red set fails badly — amber,
-orange and red collapse into one colour for deuteranopes. The set in use is
-`#15803d #2563eb #a16207 #c026d3 #9f1239` on light and `#19a855 #3b82f6 #bd8c0c #d946ef #fb4a68`
-on dark. **Look & feel → Classic grade colours** switches back to the StudentVUE set if you prefer
-it. Colour is never the only signal: the letter is printed everywhere it is used.
+**Ask anything** — a command bar (`/` to focus) that answers from your own gradebook:
+*what should I study*, *how close am I to an A in bio*, *what do I need for an A*, *which assignment
+matters most*, *why did my grade drop*, *classes below 90*, *what if I get 100 on everything*. It is
+rules-based, not a language model — it never invents a number, and when the data cannot answer it
+says so.
+
+**Import** reports what it recognised — classes, assignments, the resulting grade — and flags
+ungraded, missing, excused, duplicate and un-weighted categories rather than failing silently. When a
+paste changes a grade it names the single assignment most responsible. **Check my data** audits for
+weights that do not add up, duplicates and impossible scores.
+
+**Also:** multiple classes with edit and delete from anywhere, undo on every deletion, multi-class
+paste, semester calculator, GPA planning ("what if I get all A's"), a printable grade report,
+export/restore, 10 themes plus a custom accent, and light/dark/auto.
 
 ## Privacy
 

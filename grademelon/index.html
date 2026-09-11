@@ -239,9 +239,20 @@ textarea{font-family:var(--mono);font-size:.81rem;line-height:1.62;resize:vertic
 .gbcard .spark{width:96px;height:34px;flex:none;opacity:.95}
 .gbcard .spark path{fill:none;stroke:var(--gc);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .gbcard .spark .fill{fill:var(--gc);opacity:.13;stroke:none}
-.gbcard .gb-tag{position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:.6rem;font-weight:600;
-  text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:99px;
+.gbcard .gb-tag{display:inline-block;font-family:var(--mono);font-size:.6rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;padding:2px 7px;border-radius:99px;margin-left:7px;
   background:color-mix(in srgb,var(--acc) 16%,transparent);color:var(--acc)}
+.gb-actions{position:absolute;top:12px;right:12px;display:flex;gap:5px;z-index:3;
+  opacity:0;transform:translateY(-5px);transition:opacity .2s var(--ease),transform .2s var(--ease)}
+.gbcard:hover .gb-actions,.gbcard:focus-within .gb-actions{opacity:1;transform:none}
+@media (hover:none){.gb-actions{opacity:1;transform:none}}
+.gb-act{width:31px;height:31px;border-radius:9px;border:1px solid var(--line);background:var(--card);
+  display:grid;place-items:center;cursor:pointer;color:var(--muted);padding:0;
+  transition:color .18s,border-color .18s,transform .18s var(--spring)}
+.gb-act:hover{color:var(--acc);border-color:var(--acc);transform:scale(1.12)}
+.gb-act.del:hover{color:var(--E);border-color:var(--E)}
+.gb-act svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gbtable .rowacts{display:flex;gap:6px;justify-content:flex-end}
 .gbcard.add{align-items:center;justify-content:center;border-style:dashed;background:transparent;box-shadow:none;
   color:var(--acc);font-weight:700;min-height:168px;gap:8px}
 .gbcard.add::before,.gbcard.add::after{display:none}
@@ -257,6 +268,98 @@ textarea{font-family:var(--mono);font-size:.81rem;line-height:1.62;resize:vertic
 .gbtable .tname{font-weight:700}
 .gbtable .tgrade{font-weight:800;font-size:1.05rem}
 
+/* ---------- command bar ---------- */
+.topline{display:flex;justify-content:flex-end;margin-bottom:18px}
+.cmdwrap{position:relative;flex:1;min-width:190px;max-width:520px}
+@media (max-width:900px){.topline{margin-bottom:14px}.cmdwrap{max-width:none}}
+.cmdbar{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:13px;background:var(--card);
+  border:1px solid var(--line);box-shadow:var(--shadow-1);transition:border-color .18s,box-shadow .18s}
+.cmdbar:focus-within{border-color:var(--acc);box-shadow:0 0 0 3.5px color-mix(in srgb,var(--acc) 18%,transparent)}
+.cmdbar svg{width:17px;height:17px;flex:none;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
+.cmdbar input{border:0;background:transparent;padding:0;font-size:.9rem;font-weight:500;box-shadow:none!important}
+.cmdbar kbd{font-family:var(--mono);font-size:.66rem;color:var(--muted);background:var(--card-2);
+  border:1px solid var(--line);border-radius:6px;padding:2px 6px;flex:none}
+.cmdres{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;box-shadow:var(--shadow-3);z-index:70;overflow:hidden;animation:pop .2s var(--ease)}
+.cmdres .ans{padding:15px 17px;font-size:.92rem;line-height:1.55;border-bottom:1px solid var(--line)}
+.cmdres .ans b{color:var(--acc)}
+.cmdres .hits{max-height:260px;overflow:auto}
+.cmdres .hit{display:flex;align-items:center;gap:11px;padding:11px 17px;cursor:pointer;border:0;background:none;
+  width:100%;text-align:left;font-size:.88rem;color:var(--ink);transition:background .14s}
+.cmdres .hit:hover,.cmdres .hit[aria-selected="true"]{background:var(--card-2)}
+.cmdres .hit .k{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.cmdres .foot{padding:9px 17px;font-size:.74rem;color:var(--muted);background:var(--card-2);border-top:1px solid var(--line)}
+
+/* ---------- at a glance ---------- */
+.glance{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center}
+.glance .say{font-size:clamp(1.3rem,2.6vw,1.75rem);font-weight:800;letter-spacing:-.03em;line-height:1.18;margin-bottom:7px}
+.glance .sub{color:var(--muted);font-size:.9rem}
+.glance .tally{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.ltag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;font-weight:800;
+  font-size:.82rem;color:#fff}
+.goalpick{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex:none}
+.goalpick select{width:auto;min-width:180px;font-size:.85rem;padding:8px 11px}
+@media (max-width:860px){.glance{grid-template-columns:1fr;justify-items:start;gap:18px}
+  .goalpick{align-items:stretch;width:100%}.goalpick select{width:100%}}
+
+/* ---------- focus list ---------- */
+.focus{display:grid;gap:10px}
+.focusrow{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;
+  border-radius:var(--r);background:var(--card-2);border:1px solid var(--line);cursor:pointer;text-align:left;
+  transition:transform .22s var(--spring),border-color .2s,box-shadow .2s;width:100%}
+.focusrow:hover{transform:translateX(4px);border-color:var(--line-2);box-shadow:var(--shadow-1)}
+.focusrow .rank{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:800;
+  font-size:.86rem;background:var(--card);border:1px solid var(--line);color:var(--muted);flex:none}
+.focusrow:first-child .rank{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border-color:transparent}
+.focusrow .fname{font-weight:800;font-size:.98rem;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.focusrow .fwhy{font-size:.84rem;color:var(--muted);margin-top:4px;line-height:1.45}
+.focusrow .fgrade{text-align:right;flex:none;font-variant-numeric:tabular-nums}
+.focusrow .fgrade b{font-size:1.35rem;font-weight:800;letter-spacing:-.03em;display:block;line-height:1}
+.focusrow .fgrade span{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:99px;font-family:var(--mono);
+  font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border:1px solid}
+.badge i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.badge.good{color:var(--A);border-color:color-mix(in srgb,var(--A) 40%,transparent);background:color-mix(in srgb,var(--A) 11%,transparent)}
+.badge.warn{color:var(--C);border-color:color-mix(in srgb,var(--C) 40%,transparent);background:color-mix(in srgb,var(--C) 11%,transparent)}
+.badge.bad{color:var(--E);border-color:color-mix(in srgb,var(--E) 40%,transparent);background:color-mix(in srgb,var(--E) 11%,transparent)}
+.badge.info{color:var(--B);border-color:color-mix(in srgb,var(--B) 40%,transparent);background:color-mix(in srgb,var(--B) 11%,transparent)}
+.badge.muted{color:var(--muted);border-color:var(--line-2);background:var(--card-2)}
+@media (max-width:560px){
+  .focusrow{grid-template-columns:auto 1fr;gap:11px;padding:13px}
+  .focusrow .fgrade{grid-column:2;text-align:left;margin-top:6px;display:flex;align-items:baseline;gap:8px}
+  .focusrow .fgrade b{display:inline;font-size:1.15rem}
+  .focusrow:hover{transform:none}
+}
+.oppbar{display:flex;align-items:center;gap:7px;margin-top:7px}
+.oppbar .track{width:76px;height:6px;border-radius:99px;background:var(--line);overflow:hidden;flex:none}
+.oppbar .track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--acc2));
+  transition:width .7s var(--ease)}
+.oppbar .lab{font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- insight list ---------- */
+.ins{display:grid;gap:9px}
+.insrow{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);
+  background:var(--card-2);border:1px solid var(--line);font-size:.89rem;line-height:1.5}
+.insrow .dot{width:9px;height:9px;border-radius:50%;flex:none;margin-top:6px}
+.insrow.good .dot{background:var(--A)}.insrow.warn .dot{background:var(--C)}
+.insrow.bad .dot{background:var(--E)}.insrow.info .dot{background:var(--B)}.insrow.muted .dot{background:var(--faint)}
+.insrow .cta{margin-left:auto;flex:none}
+
+.checkgrid{display:grid;gap:8px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:.87rem;line-height:1.5}
+.chk span:first-child{flex:none;font-weight:800;width:16px;text-align:center}
+.chk.ok span:first-child{color:var(--A)}
+.chk.warn span:first-child{color:var(--C)}
+.impbanner{border-color:color-mix(in srgb,var(--acc) 34%,var(--line))}
+
+/* ---------- filter chips ---------- */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip-btn{padding:7px 14px;border-radius:99px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;
+  font-weight:650;font-size:.82rem;color:var(--muted);transition:transform .18s var(--spring),color .18s,border-color .18s,background .18s}
+.chip-btn:hover{transform:translateY(-2px);color:var(--ink)}
+.chip-btn[aria-pressed="true"]{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border-color:transparent}
+.chip-btn .n{opacity:.7;font-family:var(--mono);font-size:.74rem;margin-left:5px}
+
 /* ---------- stat strip ---------- */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
 .stat{padding:16px 18px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);
@@ -265,6 +368,9 @@ textarea{font-family:var(--mono);font-size:.81rem;line-height:1.62;resize:vertic
 .stat .v{font-size:1.85rem;font-weight:800;letter-spacing:-.04em;margin-top:5px;font-variant-numeric:tabular-nums;line-height:1.05}
 .stat .d{font-size:.76rem;color:var(--muted);margin-top:2px}
 @media (max-width:620px){.gpa-stat{grid-column:1/-1}.stat .v{font-size:1.6rem}}
+.ringbtn{background:none;border:0;padding:6px;cursor:pointer;display:grid;justify-items:center;gap:5px;
+  border-radius:18px;transition:transform .22s var(--spring),background .18s}
+.ringbtn:hover{transform:translateY(-3px);background:var(--card-2)}
 .gparing{width:74px;height:74px;flex:none;position:relative}
 .gparing svg{width:100%;height:100%;transform:rotate(-90deg)}
 .gparing .t{fill:none;stroke:var(--line);stroke-width:9}
@@ -329,6 +435,23 @@ textarea{font-family:var(--mono);font-size:.81rem;line-height:1.62;resize:vertic
 .catcard .cmeta{font-family:var(--mono);font-size:.71rem;color:var(--muted)}
 .wbadge{display:inline-block;font-family:var(--mono);font-size:.65rem;font-weight:600;color:#fff;
   background:linear-gradient(135deg,var(--acc),var(--acc2));padding:2px 8px;border-radius:99px;margin-right:7px}
+
+.wifrow{display:flex;align-items:center;gap:14px}
+.wifrow input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:8px;border-radius:99px;padding:0;border:0;cursor:pointer;
+  background:linear-gradient(90deg,var(--acc) var(--fill,90%),var(--line) var(--fill,90%))}
+.wifrow input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:var(--card);border:3px solid var(--acc);cursor:grab;box-shadow:var(--shadow-1);transition:transform .18s var(--spring)}
+.wifrow input[type=range]::-webkit-slider-thumb:active{transform:scale(1.22);cursor:grabbing}
+.wifrow input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--card);
+  border:3px solid var(--acc);cursor:grab}
+.wifnum{display:flex;align-items:center;gap:5px;flex:none}
+.wifnum input{width:74px;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wifnum span{color:var(--muted);font-weight:700}
+.wifout{margin-top:16px;padding:16px 18px;border-radius:var(--r);border:1px solid var(--line-2);
+  background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 12%,var(--card)),color-mix(in srgb,var(--acc3) 9%,var(--card)))}
+.wifout .line{font-size:1.35rem;font-weight:800;letter-spacing:-.03em;display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.wifout .arrow{color:var(--muted);font-weight:600}
+.wifout .verdict{font-size:.89rem;color:var(--ink-2);margin-top:7px}
 
 /* ---------- assignment rows ---------- */
 .arows{display:grid;gap:9px}
@@ -479,8 +602,15 @@ ol.steps li::marker{font-weight:800;color:var(--acc)}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   #aurora i{animation:none}
 }
+#printArea{display:none}
+.printing #printArea{display:block;padding:8px}
+.printing .app,.printing .toast,.printing #modalHost,.printing #aurora,.printing #confetti{display:none!important}
+.rep-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;
+  border-bottom:2px solid var(--line-2);padding-bottom:14px}
+.rep-head h1{font-size:1.5rem}
 @media print{
-  .side,.btn,.rowbtn,.slider,#aurora,#confetti,.segbar{display:none!important}
+  @page{margin:14mm}
+  .side,.btn,.rowbtn,.slider,#aurora,#confetti,.segbar,.chips,.gb-actions{display:none!important}
   .app{grid-template-columns:1fr}
   body{background:#fff}
   .card,.gbcard{box-shadow:none;break-inside:avoid}
@@ -525,6 +655,17 @@ ol.steps li::marker{font-weight:800;color:var(--acc)}
 </aside>
 
 <main>
+<div class="topline">
+  <div class="cmdwrap">
+    <div class="cmdbar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="cmd" type="text" autocomplete="off" spellcheck="false"
+        placeholder="Ask anything — what should I study?" aria-label="Ask about your grades">
+      <kbd>/</kbd>
+    </div>
+    <div id="cmdRes" hidden></div>
+  </div>
+</div>
 <section id="view-gradebook" class="view"></section>
 <section id="view-class" class="view" hidden></section>
 <section id="view-semester" class="view" hidden></section>
@@ -746,8 +887,8 @@ const SKINS = [
   ['mono','Slate','#475569','#94a3b8','#0f172a']
 ];
 let S = { classes:[], active:null, theme:'auto', skin:'melon', accent:'', classic:false,
-          gbView:'card', term:'Q1', gpaBump:1 };
-const ui = { paste:false, settings:false, sort:'date', q:'', sliderFor:null, pasteText:'', modal:null };
+          gbView:'card', term:'Q1', gpaBump:1, goal:'gpa' };
+const ui = { paste:false, settings:false, sort:'date', q:'', sliderFor:null, pasteText:'', modal:null, filter:'all', editing:null };
 let undoStack = [], lastLetter = null, chartT = null;
 
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
@@ -951,6 +1092,187 @@ function chartHTML(cls, width){
 }
 
 /* ==================================================================
+   INSIGHTS ENGINE
+   Deterministic. Every number below comes from the gradebook — nothing
+   here guesses, and nothing here is motivational filler.
+   ================================================================== */
+function classRemaining(cls){
+  const byCat = {}; let total = 0, count = 0;
+  for (const a of cls.assignments){
+    if (a.graded || !a.included || a.excused) continue;
+    const p = num(a.possible) || 0;
+    if (p <= 0) continue;
+    byCat[a.catId] = (byCat[a.catId] || 0) + p; total += p; count++;
+  }
+  return { byCat, total, count };
+}
+/* score `fraction` on everything still ungraded */
+function projectAll(cls, fraction){
+  const rem = classRemaining(cls);
+  if (!rem.total) return computeClass(cls);
+  const extra = Object.entries(rem.byCat).map(([catId,p]) =>
+    ({ id:'proj_'+catId, catId, earned:p*fraction, possible:p, graded:true, included:true }));
+  return computeClass({ categories:cls.categories, assignments:cls.assignments.filter(a => a.graded || !a.included).concat(extra) });
+}
+/* what this one assignment does to the class grade at a given score */
+function projectOne(cls, id, fraction){
+  const sub = { categories:cls.categories, assignments:cls.assignments.map(x =>
+    x.id === id ? { ...x, earned:(num(x.possible)||0)*fraction, graded:true, included:true } : x) };
+  return computeClass(sub).pct;
+}
+function trendOf(cls){
+  const pts = trendSeries(cls);
+  if (pts.length < 3) return { dir:'flat', delta:0, n:pts.length, enough:false };
+  const k = Math.min(4, pts.length - 1);
+  const delta = pts[pts.length-1].pct - pts[pts.length-1-k].pct;
+  return { dir: delta > .75 ? 'up' : delta < -.75 ? 'down' : 'flat', delta, n:pts.length, enough:true, over:k };
+}
+
+const STATUS = {
+  safe:    { label:'Safe',       tone:'good', note:'Comfortably inside this letter.' },
+  close:   { label:'Close',      tone:'warn', note:'Within reach of the next letter.' },
+  risk:    { label:'At risk',    tone:'bad',  note:'The current letter could slip.' },
+  locked:  { label:'Locked in',  tone:'info', note:'Remaining work cannot change the letter.' },
+  unknown: { label:'No grades',  tone:'muted',note:'Nothing graded yet.' }
+};
+
+function analyze(cls){
+  const r = computeClass(cls);
+  const rem = classRemaining(cls);
+  const trend = trendOf(cls);
+  const missing = cls.assignments.filter(a => a.missing && a.included).length;
+  const out = { r, rem, trend, missing, insights:[], opp:0, oppBand:'low', status:'unknown' };
+  if (r.pct === null){
+    out.insights.push({ sev:'muted', text:'Nothing is graded in this class yet, so there is no grade to work with.' });
+    return out;
+  }
+  const cur = r.letter;
+  const here = CUTS.find(c => c[1] <= r.pct);
+  const below = CUTS[CUTS.findIndex(c => c[0] === here[0]) + 1];
+  const nc = nextCut(r.pct);
+  const best = projectAll(cls, 1), worst = projectAll(cls, 0);
+  out.best = best.pct; out.worst = worst.pct;
+  out.bestL = letterFor(best.pct); out.worstL = letterFor(worst.pct);
+  out.toNext = nc ? nc[1] - r.pct : null;
+  out.nextL = nc ? nc[0] : null;
+  out.cushion = here[1] > -Infinity ? r.pct - here[1] : null;
+  out.dropL = below ? below[0] : null;
+  out.canReachNext = nc ? best.pct >= nc[1] : false;
+
+  /* the realistic path: keep scoring what you have been scoring lately */
+  const recent = cls.assignments.filter(a => a.graded && a.included && num(a.possible) > 0)
+    .sort((x,y) => (y.date||0) - (x.date||0)).slice(0,5);
+  const recentAvg = recent.length
+    ? recent.reduce((s,a) => s + num(a.earned)/num(a.possible), 0) / recent.length
+    : r.pct/100;
+  out.recentAvg = recentAvg * 100;
+  const expected = rem.total ? projectAll(cls, recentAvg) : r;
+  out.expected = expected.pct; out.expectedL = letterFor(expected.pct);
+
+  /* status — where you are actually heading, not the worst thing imaginable */
+  if (out.bestL === out.worstL) out.status = 'locked';
+  else if (POINTS[out.expectedL] < POINTS[cur]) out.status = 'risk';
+  else if (nc && out.toNext <= 2.5 && out.canReachNext) out.status = 'close';
+  else out.status = 'safe';
+
+  /* opportunity — is your time worth spending here, and why */
+  const inPlay = Math.min(1, (best.pct - worst.pct) / 12);
+  let opp = 0, kind = 'none';
+  if (nc && out.canReachNext){
+    const proximity = Math.max(0, 1 - out.toNext / 8);
+    const power = Math.min(1, ((best.pct - r.pct) / Math.max(out.toNext, .01)) / 3);
+    opp = 0.55 * proximity + 0.45 * power; kind = 'raise';
+  }
+  if (out.status === 'risk' && 0.72 > opp){ opp = 0.72; kind = 'protect'; }
+  if (missing && 0.5 + Math.min(.3, missing * .1) > opp){ opp = 0.5 + Math.min(.3, missing * .1); kind = 'recover'; }
+  if (inPlay * 0.34 > opp){ opp = inPlay * 0.34; kind = 'room'; }
+  if (out.status === 'locked'){ opp = Math.min(opp, .05); kind = 'locked'; }
+  out.opp = Math.round(opp * 100);
+  out.oppKind = kind;
+  out.oppLabel = { raise:'Can reach the next letter', protect:'Worth protecting', recover:'Missing work to recover',
+                   room:'Still movable', locked:'Locked in', none:'Nothing to gain' }[kind];
+  out.oppBand = out.opp >= 60 ? 'high' : out.opp >= 28 ? 'medium' : 'low';
+
+  /* insights — each one states the number it is based on */
+  if (nc && out.canReachNext && out.toNext <= 2.5)
+    out.insights.push({ sev:'good', key:'close',
+      text:`You are ${out.toNext.toFixed(2)} points from ${article(nc[0])} ${nc[0]}. Remaining work can cover that.`,
+      cta:{ label:'See what you need', act:'optimize' } });
+  else if (nc && !out.canReachNext && rem.total > 0)
+    out.insights.push({ sev:'info', key:'unreachable',
+      text:`${article(nc[0])[0].toUpperCase()+article(nc[0]).slice(1)} ${nc[0]} is out of reach from the work listed — 100% on everything left tops out at ${best.pct.toFixed(2)}%.` });
+  if (out.status === 'locked' && rem.total > 0)
+    out.insights.push({ sev:'info', key:'locked',
+      text:`This letter is settled: everything left still lands you between ${worst.pct.toFixed(2)}% and ${best.pct.toFixed(2)}% — all ${out.bestL}.` });
+  if (out.status === 'locked' && rem.total === 0)
+    out.insights.push({ sev:'info', key:'nowork',
+      text:`Nothing is ungraded here, so ${r.pct.toFixed(2)}% holds until your teacher posts more work.` });
+  if (out.status === 'risk')
+    out.insights.push({ sev:'warn', key:'risk',
+      text:`Keep scoring what you have lately (${out.recentAvg.toFixed(1)}%) and the ${rem.count} ungraded item${rem.count===1?'':'s'} land you on ${out.expected.toFixed(2)}% — ${out.expectedL}, down from ${cur}.` });
+  else if (POINTS[out.worstL] < POINTS[cur] && rem.total > 0 && out.cushion !== null && out.cushion < 4)
+    out.insights.push({ sev:'info', key:'floor',
+      text:`Only ${out.cushion.toFixed(2)} points of cushion — zeros on the ${rem.count} ungraded item${rem.count===1?'':'s'} would drop you to ${out.worstL}.` });
+  if (trend.enough && trend.dir === 'down')
+    out.insights.push({ sev:'warn', key:'down',
+      text:`Down ${Math.abs(trend.delta).toFixed(2)} points over the last ${trend.over} graded assignments.` });
+  if (trend.enough && trend.dir === 'up')
+    out.insights.push({ sev:'good', key:'up',
+      text:`Up ${trend.delta.toFixed(2)} points over the last ${trend.over} graded assignments.` });
+  if (missing)
+    out.insights.push({ sev:'bad', key:'missing',
+      text:`${missing} assignment${missing===1?' is':'s are'} marked missing. Those are usually the cheapest points to get back.` });
+  if (out.oppKind === 'room' && rem.total > 0)
+    out.insights.push({ sev:'info', key:'room',
+      text:`${rem.total} points are still ungraded — enough to land anywhere between ${worst.pct.toFixed(2)}% and ${best.pct.toFixed(2)}%.` });
+  /* the single most useful upcoming assignment */
+  const up = upcomingImpact(cls);
+  if (up.length){
+    const t = up[0];
+    if (t.swing >= .5) out.insights.push({ sev:'info', key:'biggest',
+      text:`${t.a.name.slice(0,44)} is the one that moves the needle — the gap between a 100 and a 0 on it is ${t.swing.toFixed(2)} points of your grade.`,
+      cta:{ label:'Show assignments', act:'scrollRows' } });
+  }
+  /* weakest category that actually carries weight */
+  const weak = r.cats.filter(c => c.active && c.cat.weight > 0).sort((a,b) => a.pct - b.pct)[0];
+  if (weak && r.cats.filter(c => c.active).length > 1 && weak.pct < r.pct - 3)
+    out.insights.push({ sev:'info', key:'category',
+      text:`${weak.cat.name} is your weakest category at ${weak.pct.toFixed(2)}%, and it is ${weak.cat.weight}% of the grade.` });
+  if (!out.insights.length)
+    out.insights.push({ sev:'good', key:'stable', text:`Nothing needs attention here — ${cur} with ${out.cushion !== null ? out.cushion.toFixed(2)+' points of cushion' : 'room to spare'}.` });
+  return out;
+}
+
+/* ungraded assignments ranked by how much they can swing the grade */
+function upcomingImpact(cls){
+  const base = computeClass(cls).pct;
+  if (base === null) return [];
+  return cls.assignments
+    .filter(a => !a.graded && a.included && num(a.possible) > 0)
+    .map(a => {
+      const hi = projectOne(cls, a.id, 1), lo = projectOne(cls, a.id, 0);
+      return { a, hi, lo, swing: (hi ?? 0) - (lo ?? 0), gain: (hi ?? 0) - base, loss: base - (lo ?? 0) };
+    })
+    .sort((x,y) => y.swing - x.swing);
+}
+
+/* stable order for the grid: by period, then the order they were added */
+function classRows(){
+  return S.classes.map((c,i) => ({ c, a:analyze(c), i }))
+    .sort((x,y) => {
+      const px = num(x.c.period), py = num(y.c.period);
+      if (px !== null && py !== null && px !== py) return px - py;
+      if (px !== null && py === null) return -1;
+      if (px === null && py !== null) return 1;
+      return x.i - y.i;
+    });
+}
+/* ranked by how much your time can actually move the grade */
+function analyzeAll(){
+  return classRows().sort((x,y) => y.a.opp - x.a.opp || (x.a.r.pct ?? 999) - (y.a.r.pct ?? 999));
+}
+
+/* ==================================================================
    MULTI-CLASS PASTE — split one paste into several classes
    ================================================================== */
 const isAnchorLine = l => RE.anchor.test(l) || (RE.anchor2.test(l) && /[a-z]{3}/i.test(l));
@@ -1009,7 +1331,7 @@ const periodFrom = h => (String(h||'').match(/\b(?:period|per\.?|pd\.?)\s*(\d+)/
 /* ==================================================================
    IMPORT
    ================================================================== */
-function importInto(cls, text, replace, quiet){
+function importInto(cls, text, replace, quiet, rep){
   const { items, guess } = parseGradebook(text);
   if (!items.length) return 0;
   const wasSample = !!cls.sample;
@@ -1018,8 +1340,13 @@ function importInto(cls, text, replace, quiet){
   const have = new Set(cls.assignments.map(key));
   let added = 0;
   for (const it of items){
-    if (have.has(key(it))) continue;
-    cls.assignments.push({ ...it, catId:catFor(cls, it.catName).id });
+    if (have.has(key(it))){ if (rep) rep.dupes++; continue; }
+    const cat = catFor(cls, it.catName);
+    if (rep && !cat.weight) rep.noWeight.add(cat.name);
+    if (rep){ if (it.graded) rep.graded++; else rep.ungraded++; if (it.missing) rep.missing++; if (it.excused) rep.excused++; }
+    const row = { ...it, catId:cat.id };
+    cls.assignments.push(row);
+    if (rep) (rep.newIds[cls.id] = rep.newIds[cls.id] || []).push(row.id);
     have.add(key(it)); added++;
   }
   if (wasSample){ delete cls.sample; cls.name = guess || 'My class'; cls.teacher = ''; cls.period = ''; }
@@ -1028,7 +1355,31 @@ function importInto(cls, text, replace, quiet){
   return added;
 }
 
+function newReport(){ return { classes:[], added:0, graded:0, ungraded:0, missing:0, excused:0, dupes:0,
+  noWeight:new Set(), changes:[], newIds:{} }; }
+/* of the rows that just arrived, which one moved the grade most? */
+function biggestCause(cls, ids){
+  if (!ids || !ids.length) return null;
+  const now = computeClass(cls).pct;
+  if (now === null) return null;
+  let best = null;
+  for (const id of ids){
+    const a = cls.assignments.find(x => x.id === id);
+    if (!a || !a.graded || !a.included) continue;
+    const without = computeClass(cls, { skipId:id }).pct;
+    if (without === null) continue;
+    const d = now - without;
+    if (!best || Math.abs(d) > Math.abs(best.d)) best = { a, d };
+  }
+  return best;
+}
+function finishReport(rep, quiet){
+  rep.noWeight = [...rep.noWeight];
+  if (!quiet){ S.lastImport = { ...rep, when:Date.now() }; }
+  save();
+}
 function importPaste(text, replace, quiet){
+  const rep = newReport();
   const chunks = splitClasses(text);
   if (chunks){
     const before = JSON.parse(JSON.stringify(S.classes));
@@ -1037,12 +1388,19 @@ function importPaste(text, replace, quiet){
     for (const ch of chunks){
       const nm = cleanCourseName(ch.header) || 'Class ' + (made+1);
       let cls = S.classes.find(c => norm(c.name) === norm(nm));
+      const before = cls ? computeClass(cls).pct : null;
       if (!cls){ cls = newClass(nm, periodFrom(ch.header)); made++; }
-      total += importInto(cls, ch.text, replace, true);
+      const n = importInto(cls, ch.text, replace, true, rep);
+      total += n;
+      const after = computeClass(cls).pct;
+      rep.classes.push({ id:cls.id, name:cls.name, n, before, after });
+      if (before !== null && after !== null && Math.abs(after-before) > .01)
+      rep.changes.push({ id:cls.id, name:cls.name, before, after, cause:biggestCause(cls, rep.newIds[cls.id]) });
     }
+    rep.added = total;
     S.active = S.classes[0]?.id || null;
     ui.paste = false; ui.pasteText = '';
-    render();
+    finishReport(rep, quiet); render();
     toast(`Added ${made} class${made===1?'':'es'} · ${total} assignments`,
       { label:'Undo', run(){ S.classes = before; S.active = S.classes[0]?.id||null; render(); } });
     return total;
@@ -1050,10 +1408,16 @@ function importPaste(text, replace, quiet){
   let cls = activeClass();
   if (!cls || ui.forceNewClass){ cls = newClass('New class'); S.active = cls.id; ui.forceNewClass = false; }
   const before = cls.assignments.slice(), beforeName = cls.name;
-  const added = importInto(cls, text, replace, quiet);
+  const beforePct = computeClass(cls).pct;
+  const added = importInto(cls, text, replace, quiet, rep);
   if (!added && !cls.assignments.length){ if (!quiet) toast("That doesn't look like a gradebook — see Help"); return 0; }
+  const afterPct = computeClass(cls).pct;
+  rep.added = added;
+  rep.classes.push({ id:cls.id, name:cls.name, n:added, before:beforePct, after:afterPct });
+  if (beforePct !== null && afterPct !== null && Math.abs(afterPct-beforePct) > .01)
+    rep.changes.push({ id:cls.id, name:cls.name, before:beforePct, after:afterPct, cause:biggestCause(cls, rep.newIds[cls.id]) });
   ui.paste = false; ui.pasteText = '';
-  render(); lastLetter = computeClass(cls).letter;
+  finishReport(rep, quiet); render(); lastLetter = computeClass(cls).letter;
   if (!quiet) toast(`Imported ${added} assignment${added===1?'':'s'}`,
     { label:'Undo', run(){ cls.assignments = before; cls.name = beforeName; render(); } });
   return added;
@@ -1086,87 +1450,223 @@ function flipTo(fromEl, run, targetSel){
 /* ==================================================================
    VIEW: GRADEBOOK
    ================================================================== */
+const GOALS = [
+  ['gpa',       'Maximize my GPA'],
+  ['allA',      "Get all A's"],
+  ['raiseLow',  'Raise my lowest class'],
+  ['protect',   "Protect the A's I have"],
+  ['understand','Just help me understand']
+];
+const FILTERS = [
+  ['all',    'All',              () => true],
+  ['attn',   'Needs attention',  x => x.a.status === 'risk' || x.a.missing > 0 || x.a.trend.dir === 'down'],
+  ['close',  'Close to next',    x => x.a.status === 'close'],
+  ['as',     "A's",              x => x.a.r.letter === 'A'],
+  ['under',  'Below 90%',        x => x.a.r.pct !== null && x.a.r.pct < 89.5],
+  ['down',   'Trending down',    x => x.a.trend.dir === 'down'],
+  ['whatif', 'What-if active',   x => whatIfCount(x.c) > 0]
+];
+
+function glanceSay(rows){
+  const graded = rows.filter(x => x.a.r.pct !== null);
+  if (!graded.length) return { say:'Paste your grades to get started.', sub:'Nothing is graded yet.' };
+  const g = schoolGPA();
+  const risky = graded.filter(x => x.a.status === 'risk').length;
+  const closeN = graded.filter(x => x.a.status === 'close').length;
+  const allA = graded.every(x => x.a.r.letter === 'A');
+  const ab = graded.filter(x => 'AB'.includes(x.a.r.letter)).length;
+  const low = graded.filter(x => 'DE'.includes(x.a.r.letter)).length;
+  let say;
+  if (allA) say = "Straight A's. Keep it there.";
+  else if (risky) say = `${risky} class${risky===1?'':'es'} ${risky===1?'is':'are'} heading the wrong way.`;
+  else if (low) say = `${low} class${low===1?'':'es'} ${low===1?'needs':'need'} the most work.`;
+  else if (closeN) say = `${closeN} class${closeN===1?'':'es'} within reach of the next letter.`;
+  else if (ab === graded.length) say = "You're doing well.";
+  else say = "Mostly steady, one class trailing.";
+  const counts = ['A','B','C','D','E'].map(L => [L, graded.filter(x => x.a.r.letter === L).length]).filter(([,n]) => n);
+  return { say, sub:`${graded.length} graded class${graded.length===1?'':'es'}`, counts };
+}
+
+/* one line saying why this class is where it is in the list */
+const KIND_KEY = { raise:'close', protect:'risk', recover:'missing', room:'room', locked:'locked' };
+function whyLine(x, goal){
+  const a = x.a;
+  if (a.r.pct === null) return 'Nothing graded yet.';
+  if (goal === 'understand') return `${a.r.pct.toFixed(2)}% — ${STATUS[a.status].note}`;
+  /* lead with the reason this class ranked where it did */
+  const want = KIND_KEY[a.oppKind];
+  const pick = a.insights.find(i => i.key === want)
+    || a.insights.find(i => ['locked','nowork','unreachable'].includes(i.key))
+    || a.insights[0];
+  return pick ? pick.text : `${a.r.pct.toFixed(2)}% right now.`;
+}
+
+function focusList(){
+  const goal = S.goal || 'gpa';
+  let list = analyzeAll().filter(x => x.a.r.pct !== null);
+  const riskRank = x => x.a.status === 'risk' ? 3 : x.a.status === 'close' ? 2 : x.a.status === 'safe' ? 1 : 0;
+  if (goal === 'raiseLow')        list.sort((x,y) => x.a.r.pct - y.a.r.pct);
+  else if (goal === 'protect')    list.sort((x,y) => riskRank(y) - riskRank(x) || (x.a.cushion ?? 99) - (y.a.cushion ?? 99));
+  else if (goal === 'understand') list.sort((x,y) => y.a.r.pct - x.a.r.pct);
+  else if (goal === 'allA')       list.sort((x,y) => (y.a.r.letter === 'A' ? -1 : 0) - (x.a.r.letter === 'A' ? -1 : 0) || y.a.opp - x.a.opp);
+  return list;
+}
+
+function oppBarHTML(a){
+  if (a.r.pct === null) return '';
+  return `<div class="oppbar"><span class="track"><i style="width:${Math.max(3,a.opp)}%"></i></span>
+    <span class="lab">${esc(a.oppLabel)}</span></div>`;
+}
+const badgeHTML = a => `<span class="badge ${STATUS[a.status].tone}"><i></i>${STATUS[a.status].label}</span>`;
+
 function renderGradebook(){
   const el = $('#view-gradebook');
+  const rows = classRows();
   const g = schoolGPA();
-  const rows = S.classes.map(c => ({ c, r:computeClass(c) }));
+  const goal = S.goal || 'gpa';
 
   const head = `<div class="pagehead">
     <div><h1>Gradebook</h1>
-      <div class="sub">${S.classes.length} class${S.classes.length===1?'':'es'}${g?` · ${g.n} graded`:''} · marking period ${esc(S.term)}</div></div>
+      <div class="sub">${S.classes.length} class${S.classes.length===1?'':'es'} · marking period ${esc(S.term)}</div></div>
     <div class="row">
-      <select id="termSel" style="width:auto">${['Q1','Q2','Q3','Q4','S1','S2'].map(t=>`<option ${t===S.term?'selected':''}>${t}</option>`).join('')}</select>
+      <select id="termSel" style="width:auto" aria-label="Marking period">${['Q1','Q2','Q3','Q4','S1','S2'].map(t=>`<option ${t===S.term?'selected':''}>${t}</option>`).join('')}</select>
       <div class="segbar" id="viewSeg">
         <button data-gv="card" aria-current="${S.gbView==='card'}">Cards</button>
-        <button data-gv="table" aria-current="${S.gbView==='table'}">Table</button>
-      </div>
-      <button class="btn btn-sm" id="gpaModalBtn"><svg viewBox="0 0 24 24"><path d="M22 9 12 4 2 9l10 5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>GPA</button>
+        <button data-gv="table" aria-current="${S.gbView==='table'}">Table</button></div>
+      <button class="btn btn-sm" id="reportBtn" title="Printable report">Report</button>
       <button class="btn btn-sm btn-primary" data-act="pasteNew"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>Paste grades</button>
     </div></div>`;
 
   if (!S.classes.length){
     el.innerHTML = head + `<div class="card pad"><div class="empty">
       <div class="big">🍉</div>
-      <h2 style="font-size:1.6rem;color:var(--ink);margin-bottom:10px">Add your classes</h2>
-      <p style="max-width:460px;margin:0 auto 22px">Copy the assignment list out of StudentVUE and press <b>Ctrl&nbsp;+&nbsp;V</b> anywhere on this page. Paste one class or paste them all at once — Grade Melon splits them up.</p>
+      <h2 style="font-size:1.7rem;color:var(--ink);margin-bottom:10px">See what your grades actually mean.</h2>
+      <p style="max-width:470px;margin:0 auto 22px">Copy the assignment list out of StudentVUE and press <b>Ctrl&nbsp;+&nbsp;V</b> anywhere on this page. One class or all of them at once.</p>
       </div>
-      <textarea id="firstPaste" placeholder="Paste your StudentVUE gradebook here…"></textarea>
+      <textarea id="firstPaste" placeholder="Paste your StudentVUE gradebook here…" aria-label="Paste your gradebook"></textarea>
       <div class="row" style="margin-top:14px;justify-content:center">
-        <button class="btn btn-primary" id="firstImport">Import</button>
-        <button class="btn" id="firstDemo">🍉 Load an example</button>
-        <button class="btn btn-ghost" id="firstBlank">Empty class</button>
-      </div></div>`;
+        <button class="btn btn-primary btn-lg" id="firstImport">Import my grades</button>
+        <button class="btn" id="firstDemo">🍉 Show me an example</button>
+        <button class="btn btn-ghost" id="firstBlank">Start an empty class</button>
+      </div>
+      <p class="tiny muted" style="text-align:center;margin:18px 0 0">No account. No password. Nothing leaves this device.</p>
+      </div>`;
     return;
   }
 
-  const stats = `<div class="stats" style="margin-bottom:18px">
-    <div class="stat gpa-stat" style="display:flex;align-items:center;gap:15px">
-      ${g ? gpaRingHTML(g.w, 5) : ''}
-      <div><div class="k">Weighted GPA</div>
-        <div class="v">${g ? g.w.toFixed(3) : '—'}</div>
-        <div class="d">${g ? `${g.un.toFixed(3)} unweighted` : 'nothing graded yet'}</div></div></div>
-    ${['A','B','C','D','E'].some(L => rows.some(x => x.r.letter === L)) ? `
-    <div class="stat"><div class="k">Letters</div>
-      <div class="row" style="gap:6px;margin-top:8px">
-        ${['A','B','C','D','E'].map(L => { const n = rows.filter(x => x.r.letter===L).length;
-          return n ? `<span class="chip" style="background:${gcolor(L)};color:#fff;border-color:transparent;font-weight:700">${n} ${L}</span>` : ''; }).join('')}
-      </div><div class="d" style="margin-top:8px">across ${rows.filter(x=>x.r.letter).length} classes</div></div>` : ''}
-    <div class="stat"><div class="k">Assignments</div>
-      <div class="v">${S.classes.reduce((s,c)=>s+c.assignments.length,0)}</div>
-      <div class="d">${S.classes.reduce((s,c)=>s+c.assignments.filter(a=>!a.graded).length,0)} not graded yet</div></div>
-    <div class="stat"><div class="k">What-ifs live</div>
-      <div class="v">${S.classes.reduce((s,c)=>s+whatIfCount(c),0)}</div>
-      <div class="d">${S.classes.reduce((s,c)=>s+whatIfCount(c),0) ? 'grades below are edited' : 'showing your real grades'}</div></div>
-  </div>`;
+  const imp = S.lastImport;
+  const impBanner = imp ? `<div class="card pad impbanner" style="margin-bottom:18px">
+    <div class="spread" style="align-items:flex-start">
+      <div style="min-width:0">
+        <div class="sec-title" style="margin-bottom:11px">Here's what came in</div>
+        <div class="checkgrid">
+          <div class="chk ok"><span>✓</span> ${imp.classes.length} class${imp.classes.length===1?'':'es'}: ${imp.classes.map(c=>esc(c.name)).join(', ')}</div>
+          <div class="chk ok"><span>✓</span> ${imp.added} assignment${imp.added===1?'':'s'} · ${imp.graded} graded</div>
+          ${imp.classes.filter(c=>c.after!==null).map(c=>`<div class="chk ok"><span>✓</span> ${esc(c.name)} is at ${c.after.toFixed(2)}% — ${letterFor(c.after)}</div>`).join('')}
+          ${(imp.changes||[]).map(ch => `<div class="chk ${ch.after>=ch.before?'ok':'warn'}"><span>${ch.after>=ch.before?'↑':'↓'}</span>
+            ${esc(ch.name)} ${ch.after>=ch.before?'rose':'fell'} from ${ch.before.toFixed(2)}% to ${ch.after.toFixed(2)}%${
+              ch.cause ? ` — the biggest single cause was <b>${esc(String(ch.cause.a.name).slice(0,40))}</b> (${ch.cause.a.earned}/${ch.cause.a.possible}), worth ${ch.cause.d>=0?'+':''}${ch.cause.d.toFixed(2)}` : ''}</div>`).join('')}
+          ${imp.ungraded ? `<div class="chk warn"><span>⚠</span> ${imp.ungraded} not graded yet — left out of the maths until a score exists</div>` : ''}
+          ${imp.missing ? `<div class="chk warn"><span>⚠</span> ${imp.missing} marked missing</div>` : ''}
+          ${imp.excused ? `<div class="chk warn"><span>⚠</span> ${imp.excused} excused — not counted</div>` : ''}
+          ${imp.dupes ? `<div class="chk warn"><span>⚠</span> ${imp.dupes} already here, skipped</div>` : ''}
+          ${imp.noWeight.length ? `<div class="chk warn"><span>⚠</span> ${imp.noWeight.map(esc).join(', ')} ${imp.noWeight.length===1?'is a category':'are categories'} I don't have a weight for — set one or it counts for nothing</div>` : ''}
+        </div>
+      </div>
+      <div class="row" style="gap:8px;flex:none">
+        ${imp.noWeight.length ? `<button class="btn btn-sm btn-primary" data-act="fixweights">Set the weight</button>` : ''}
+        <button class="btn btn-sm" id="checkBtn">Check my data</button>
+        <button class="btn btn-sm btn-ghost" data-act="dismissImport">Dismiss</button>
+      </div></div></div>` : '';
 
-  const cards = `<div class="gbgrid">${rows.map(({c,r}, i) => {
-    const L = r.letter;
-    return `<button class="gbcard" data-open="${c.id}" style="--gc:${gcolor(L)};--gscale:${((r.pct??0)/100).toFixed(3)};animation-delay:${Math.min(i*45,270)}ms">
-      ${c.sample?'<span class="gb-tag">example</span>':''}
+  const gl = glanceSay(rows);
+  const glance = `<div class="card pad" style="margin-bottom:18px"><div class="glance">
+    ${g ? `<button id="gpaModalBtn" class="ringbtn" title="GPA calculator" aria-label="Open the GPA calculator">
+      ${gpaRingHTML(g.w, 5)}<span class="eyebrow">GPA</span></button>` : '<div></div>'}
+    <div>
+      <div class="say">${esc(gl.say)}</div>
+      <div class="sub">${g ? `<b style="color:var(--ink)">${g.w.toFixed(2)}</b> weighted GPA · ${g.un.toFixed(2)} unweighted · ` : ''}${gl.sub}</div>
+      ${gl.counts && gl.counts.length ? `<div class="tally">${gl.counts.map(([L,n]) =>
+        `<span class="ltag" style="background:${gcolor(L)}">${n} ${L}${n>1?"'s":''}</span>`).join('')}</div>` : ''}
+    </div>
+    <div class="goalpick">
+      <label class="eyebrow" for="goalSel">My goal</label>
+      <select id="goalSel">${GOALS.map(([v,n])=>`<option value="${v}" ${v===goal?'selected':''}>${n}</option>`).join('')}</select>
+    </div></div></div>`;
+
+  const fl = focusList();
+  const focus = fl.length ? `<div class="card pad" style="margin-bottom:18px">
+    <div class="spread" style="margin-bottom:14px">
+      <div class="sec-title" style="margin:0;flex:none">${goal==='understand'?'Your classes, explained':'What matters most right now'}</div>
+      <button class="btn btn-sm" id="planBtn">Make me a study plan</button>
+    </div>
+    <div class="focus">${fl.slice(0,5).map((x,i) => `
+      <button class="focusrow" data-open="${x.c.id}">
+        <span class="rank">${i+1}</span>
+        <span style="min-width:0">
+          <span class="fname">${esc(x.c.name)} ${badgeHTML(x.a)}</span>
+          <span class="fwhy">${esc(whyLine(x, goal))}</span>
+          ${oppBarHTML(x.a)}
+        </span>
+        <span class="fgrade"><b style="color:${gcolor(x.a.r.letter)}">${x.a.r.letter}</b>
+          <span>${x.a.r.pct.toFixed(2)}%</span></span>
+      </button>`).join('')}</div>
+    ${fl.length > 5 ? `<p class="tiny muted" style="margin:12px 0 0">${fl.length-5} more below.</p>` : ''}
+  </div>` : '';
+
+  const counted = FILTERS.map(([id,label,fn]) => [id, label, rows.filter(fn).length]);
+  const chips = `<div class="chips">${counted.map(([id,label,n]) =>
+    `<button class="chip-btn" data-filter="${id}" aria-pressed="${(ui.filter||'all')===id}" ${n||id==='all'?'':'disabled'}>
+      ${label}<span class="n">${n}</span></button>`).join('')}</div>`;
+
+  const pred = (FILTERS.find(f => f[0] === (ui.filter||'all')) || FILTERS[0])[2];
+  const shown = rows.filter(pred);
+
+  const cards = `<div class="gbgrid">${shown.map(({c,a}, i) => {
+    const L = a.r.letter;
+    return `<div class="gbcard" role="button" tabindex="0" data-open="${c.id}"
+        aria-label="Open ${esc(c.name)}${L?', '+L:''}"
+        style="--gc:${gcolor(L)};--gscale:${((a.r.pct??0)/100).toFixed(3)};animation-delay:${Math.min(i*45,270)}ms">
+      <div class="gb-actions">
+        <button class="gb-act" data-edit="${c.id}" title="Edit ${esc(c.name)}" aria-label="Edit ${esc(c.name)}">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="gb-act del" data-delclass="${c.id}" title="Delete ${esc(c.name)}" aria-label="Delete ${esc(c.name)}">
+          <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>
+      </div>
       <div class="gb-top"><div style="min-width:0">
         <div class="gb-per">${c.period?`Period ${esc(c.period)}`:'&nbsp;'}${c.weighted?' · weighted':''}</div>
-        <div class="gb-name">${esc(c.name)}</div>
+        <div class="gb-name">${esc(c.name)}${c.sample?'<span class="gb-tag">example</span>':''}</div>
         ${c.teacher?`<div class="gb-teacher">${esc(c.teacher)}</div>`:''}
       </div></div>
       <div class="gb-bottom">
-        <div class="gb-grade">${L||'–'}${r.pct!==null?`<em>${r.pct.toFixed(2)}%</em>`:'<em>no grades</em>'}</div>
+        <div><div class="gb-grade">${L||'–'}${a.r.pct!==null?`<em>${a.r.pct.toFixed(2)}%</em>`:'<em>no grades</em>'}</div>
+          <div style="margin-top:9px">${badgeHTML(a)}</div></div>
         ${sparkHTML(c)}
-      </div></button>`;
+      </div></div>`;
   }).join('')}
   <button class="gbcard add" data-act="addclass"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a class</button></div>`;
 
   const table = `<div class="card" style="overflow-x:auto"><table class="gbtable">
-    <thead><tr><th>Period</th><th>Class</th><th>Teacher</th><th>Category split</th><th>Grade</th></tr></thead>
-    <tbody>${rows.map(({c,r}) => `<tr data-open="${c.id}">
+    <thead><tr><th>Period</th><th>Class</th><th>Teacher</th><th>Status</th><th>Grade</th><th></th></tr></thead>
+    <tbody>${shown.map(({c,a}) => `<tr data-open="${c.id}">
       <td class="muted" style="font-family:var(--mono)">${esc(c.period||'—')}</td>
       <td class="tname">${esc(c.name)}${c.sample?' <span class="chip">example</span>':''}</td>
       <td class="muted">${esc(c.teacher||'—')}</td>
-      <td class="muted tiny">${r.cats.filter(x=>x.active).map(x=>`${esc(x.cat.name.split(' ')[0])} ${x.pct.toFixed(1)}%`).join(' · ')||'—'}</td>
-      <td class="tgrade" style="color:${gcolor(r.letter)}">${r.letter||'–'}${r.pct!==null?` (${r.pct.toFixed(2)}%)`:''}</td>
+      <td>${badgeHTML(a)}</td>
+      <td class="tgrade" style="color:${gcolor(a.r.letter)}">${a.r.letter||'–'}${a.r.pct!==null?` (${a.r.pct.toFixed(2)}%)`:''}</td>
+      <td><div class="rowacts">
+        <button class="gb-act" data-edit="${c.id}" aria-label="Edit ${esc(c.name)}">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="gb-act del" data-delclass="${c.id}" aria-label="Delete ${esc(c.name)}">
+          <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>
+      </div></td>
     </tr>`).join('')}</tbody></table>
     <div class="pad" style="padding-top:14px"><button class="btn btn-sm" data-act="addclass">＋ Add a class</button></div></div>`;
 
-  el.innerHTML = head + stats + (S.gbView === 'table' ? table : cards) + pastePanelHTML();
+  el.innerHTML = head + impBanner + glance + focus + chips +
+    (shown.length || (ui.filter||'all')==='all' ? (S.gbView === 'table' ? table : cards)
+      : `<div class="card pad"><div class="empty">Nothing matches that filter.</div></div>`) +
+    pastePanelHTML();
 }
 
 function pastePanelHTML(){
@@ -1188,9 +1688,11 @@ function renderClassView(){
   const el = $('#view-class');
   const cls = activeClass();
   if (!cls){ el.innerHTML = ''; return; }
-  const r = computeClass(cls);
+  const an = analyze(cls);
+  const r = an.r;
   const graded = cls.assignments.filter(a => a.graded && a.included).length;
   const ungraded = cls.assignments.filter(a => !a.graded).length;
+  const up = upcomingImpact(cls);
 
   el.innerHTML = `
   <div class="stack">
@@ -1209,54 +1711,66 @@ function renderClassView(){
       <div class="hero">
         ${ringHTML(r.pct, r.letter, cls.term || S.term)}
         <div class="txt">
-          <h2>${esc(cls.name)}</h2>
+          <h2>${esc(cls.name)} ${badgeHTML(an)}</h2>
           <div class="meta">${[cls.period && 'Period '+esc(cls.period), esc(cls.teacher), cls.weighted && 'weighted course'].filter(Boolean).join(' · ') || 'Marking period grade'}</div>
           <div class="headline" id="headline">${headlineHTML(r)}</div>
           <div class="row" id="heroActions" data-n="${whatIfCount(cls)}">${heroActionsHTML(cls)}</div>
         </div></div></div>
 
+    ${an.insights.length ? `<div class="card pad">
+      <div class="sec-title">What this means</div>
+      <div class="ins">${an.insights.map(i => `<div class="insrow ${i.sev}"><span class="dot"></span>
+        <span>${i.text}</span>
+        ${i.cta ? `<span class="cta"><button class="btn btn-sm" data-act="${i.cta.act}">${esc(i.cta.label)}</button></span>` : ''}
+      </div>`).join('')}</div></div>` : ''}
+
     <div class="card pad">
       <div class="sec-title">How your grade has moved</div>
       <div class="chartwrap" id="chartwrap"></div></div>
 
-    ${pastePanelHTML()}
+    ${an.rem.total > 0 ? `<div class="card pad" id="whatifCard">
+      <div class="sec-title">What if…</div>
+      <p class="small muted" style="margin:0 0 14px">Drag it. This is your grade if you average that score on the ${an.rem.total} points still ungraded.</p>
+      <div class="wifrow">
+        <input type="range" id="wifRange" min="0" max="100" step="1" value="${S.wif ?? 90}"
+          style="--fill:${S.wif ?? 90}%" aria-label="Score on remaining work">
+        <div class="wifnum"><input type="number" id="wifNum" min="0" max="100" step="1" value="${S.wif ?? 90}" aria-label="Percent"><span>%</span></div>
+      </div>
+      <div class="wifout" id="wifOut"></div>
+      <div class="quickrow" style="margin-top:13px">
+        ${[100,90,80,70,0].map(v => `<button class="quick" data-wif="${v}">${v===0?'A zero':v+'%'}</button>`).join('')}
+      </div></div>` : ''}
 
-    <div class="card pad" ${ui.settings?'':'hidden'} id="settingsPanel">
-      <div class="sec-title">Class settings</div>
-      <div class="grid3">
-        <label class="fld">Class name<input type="text" data-cf="name" value="${esc(cls.name)}"></label>
-        <label class="fld">Teacher<input type="text" data-cf="teacher" value="${esc(cls.teacher)}" placeholder="optional"></label>
-        <label class="fld">Period<input type="text" data-cf="period" value="${esc(cls.period)}" placeholder="optional"></label>
-        <label class="fld">Marking period
-          <select data-cf="term">${['Q1','Q2','Q3','Q4','S1','S2'].map(t=>`<option ${t===(cls.term||S.term)?'selected':''}>${t}</option>`).join('')}</select></label>
-      </div>
-      <div class="togrow" style="margin-top:14px">
-        <label class="toggle"><input type="checkbox" id="wtToggle" ${cls.weighted?'checked':''}><span class="tr"></span></label>
-        <div><b>Weighted course</b> <span class="muted small">— Honors, AP or IB. Adds ${S.gpaBump} to this class's GPA points.</span></div>
-      </div>
-      <div class="divider"></div>
-      <div class="sec-title">Category weights</div>
-      <div class="stack" style="gap:9px">
-        ${cls.categories.map(c => `<div class="row" data-cat="${c.id}" style="gap:9px">
-          <input type="text" data-cw="name" value="${esc(c.name)}" style="flex:1;min-width:150px">
-          <div class="row" style="gap:5px;flex:none">
-            <input type="number" data-cw="weight" value="${c.weight}" step="1" min="0" style="width:86px;text-align:right">
-            <span class="muted" style="font-weight:700">%</span></div>
-          <button class="rowbtn" data-delcat="${c.id}" aria-label="Remove category">✕</button></div>`).join('')}
-      </div>
-      <div class="row" style="margin-top:13px">
-        <button class="btn btn-sm" data-act="addcat">＋ Add category</button>
-        <button class="btn btn-sm btn-ghost" data-act="resetcats">Back to 90 / 10</button>
-        <span class="tiny" style="margin-left:auto;${weightSum(cls)===100?'color:var(--muted)':'color:var(--D);font-weight:700'}">
-          Total ${weightSum(cls)}%${weightSum(cls)===100?'':' — re-scaled to 100%'}</span></div>
-      <div class="note" style="margin-top:14px">MCPS default is <b>All Tasks 90%</b> / <b>Practice 10%</b>. Add a category for anything else your course counts — a state test, a county final, a lab grade.</div>
-      <div class="divider"></div>
-      <div class="row"><button class="btn btn-sm btn-ghost" data-act="delclass" style="color:var(--E)">Delete this class</button>
-        <button class="btn btn-sm" data-act="settingsClose" style="margin-left:auto">Done</button></div></div>
+    ${up.length ? `<div class="card pad">
+      <div class="sec-title">What is still in play</div>
+      <p class="small muted" style="margin:0 0 14px">Ungraded work, ordered by how much it can move your grade.</p>
+      <div class="ins">${up.slice(0,6).map(t => {
+        const share = t.swing / (up[0].swing || 1);
+        const band = share >= .6 ? 'High' : share >= .25 ? 'Medium' : 'Low';
+        const w = Math.max(6, Math.min(100, share * 100));
+        return `<div class="insrow info" style="align-items:center">
+          <span style="min-width:0;flex:1">
+            <b style="font-size:.9rem">${esc(String(t.a.name).slice(0,60))}</b>
+            <div class="oppbar"><span class="track"><i style="width:${w}%"></i></span>
+              <span class="lab">${band} impact · ${num(t.a.possible)} pts</span></div>
+          </span>
+          <span style="text-align:right;font-family:var(--mono);font-size:.78rem;white-space:nowrap">
+            <span style="color:var(--A)">100 → ${t.gain>=0?'+':''}${t.gain.toFixed(2)}</span><br>
+            <span style="color:var(--E)">0 → −${t.loss.toFixed(2)}</span></span>
+        </div>`; }).join('')}</div></div>` : ''}
+
+    ${pastePanelHTML()}
 
     <div class="card pad">
       <div class="sec-title">Where your grade comes from</div>
       <div class="cats" id="catList">${catListHTML(cls, r)}</div>
+      <details class="help" style="margin-top:14px"><summary>How is this calculated?</summary><div class="body">
+        Each category is scored on its own points, then the categories are combined by weight:<br>
+        <code style="font-family:var(--mono);font-size:.82rem">${r.cats.filter(c=>c.active).map(c =>
+          `${esc(c.cat.name)} ${c.pct.toFixed(2)}% × ${round2(c.cat.weight/r.totalW*100)}%`).join(' &nbsp;+&nbsp; ')}
+          &nbsp;=&nbsp; <b>${r.pct===null?'—':r.pct.toFixed(2)}%</b></code><br><br>
+        A category with nothing graded drops out and the remaining weights re-scale — the same thing Synergy does.
+      </div></details>
       ${r.totalW > 0 && r.cats.some(c => !c.active && c.cat.weight > 0) ? `<div class="note" style="margin-top:15px">
         ${r.cats.filter(c=>!c.active&&c.cat.weight>0).map(c=>esc(c.cat.name)).join(' and ')} ${r.cats.filter(c=>!c.active&&c.cat.weight>0).length>1?'have':'has'} nothing graded yet, so ${r.usedWeights.length===1?`<b>${esc(r.usedWeights[0].name)} is carrying your whole grade</b>`:`the rest re-scaled to ${r.usedWeights.map(w=>esc(w.name)+' '+w.w+'%').join(' / ')}`}.</div>`:''}
     </div>
@@ -1281,7 +1795,7 @@ function renderClassView(){
         <button class="btn btn-sm btn-ghost" data-act="fillOpen" ${ungraded?'':'disabled'}>Fill ${ungraded} ungraded</button>
       </div></div>
   </div>`;
-  paintChart();
+  paintChart(); renderWif();
 }
 
 function heroActionsHTML(cls){
@@ -1289,7 +1803,7 @@ function heroActionsHTML(cls){
   return `<button class="btn btn-primary" data-act="optimize"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7h-5m5 0v5"/></svg>What do I need?</button>
     <button class="btn btn-sm" data-act="addrow">＋ What-if</button>
     ${n?`<button class="btn btn-sm" data-act="clearwhatif">Reset (${n})</button>`:''}
-    <button class="btn btn-sm btn-ghost" data-act="settings">Settings</button>`;
+    <button class="btn btn-sm btn-ghost" data-act="settings">Edit class</button>`;
 }
 function headlineHTML(r){
   if (r.pct === null) return `<span class="muted">Nothing graded yet — paste your gradebook to get started.</span>`;
@@ -1297,8 +1811,8 @@ function headlineHTML(r){
   const below = CUTS[CUTS.findIndex(c => c[0] === here[0]) + 1];
   const bits = [];
   if (nc) bits.push(`<b>${(nc[1]-r.pct).toFixed(2)} points</b> from ${article(nc[0])} <b>${nc[0]}</b>.`);
-  else bits.push(`Top of the scale. 🍉`);
-  if (below) bits.push(`<span class="muted">${(r.pct-here[1]).toFixed(2)} of room before ${article(below[0])} ${below[0]}.</span>`);
+  else bits.push(`Already ${article(r.letter)} <b>${r.letter}</b> — nothing above it.`);
+  if (below) bits.push(`<span class="muted">${(r.pct-here[1]).toFixed(2)} points of cushion before ${article(below[0])} ${below[0]}.</span>`);
   return bits.join(' ');
 }
 function catListHTML(cls, r){
@@ -1365,11 +1879,206 @@ function rowsHTML(cls, r){
     </div>`;
   }).join('') + `</div>`;
 }
+function renderWif(){
+  const cls = activeClass(), out = $('#wifOut'); if (!cls || !out) return;
+  const v = Math.max(0, Math.min(100, num($('#wifRange')?.value) ?? 90));
+  S.wif = v; save();
+  const rg = $('#wifRange'); if (rg){ rg.value = v; rg.style.setProperty('--fill', v + '%'); }
+  const nn = $('#wifNum'); if (nn && +nn.value !== v) nn.value = v;
+  const now = computeClass(cls), proj = projectAll(cls, v/100);
+  const a = analyze(cls);
+  const nowL = now.letter, pL = letterFor(proj.pct), d = proj.pct - now.pct;
+  let verdict;
+  if (POINTS[pL] > POINTS[nowL]) verdict = `<b>Yes.</b> Averaging ${v}% on what is left moves you from ${nowL} to ${pL}.`;
+  else if (POINTS[pL] < POINTS[nowL]) verdict = `That would drop you from ${nowL} to ${pL}.`;
+  else if (a.nextL && a.canReachNext){
+    const need = neededFraction(cls, a.rem.byCat, CUTS.find(c => c[0] === a.nextL)[1]);
+    verdict = need.f !== undefined
+      ? `Still ${pL}. ${article(a.nextL)[0].toUpperCase()+article(a.nextL).slice(1)} ${a.nextL} needs <b>${(need.f*100).toFixed(1)}%</b> on the same work.`
+      : `Still ${pL}.`;
+  }
+  else if (a.nextL) verdict = `Still ${pL}. ${article(a.nextL)[0].toUpperCase()+article(a.nextL).slice(1)} ${a.nextL} is out of reach from the work listed — the ceiling is ${a.best.toFixed(2)}%.`;
+  else verdict = `Still ${pL}.`;
+  out.innerHTML = `<div class="line">
+    <span style="color:${gcolor(nowL)}">${now.pct.toFixed(2)}% ${nowL}</span>
+    <span class="arrow" aria-hidden="true">→</span>
+    <span style="color:${gcolor(pL)}">${proj.pct.toFixed(2)}% ${pL}</span>
+    <span class="badge ${d>=0?'good':'bad'}"><i></i>${d>=0?'+':''}${d.toFixed(2)}</span></div>
+    <div class="verdict">${verdict}</div>`;
+}
+
 function paintChart(){
   const wrap = $('#chartwrap'), cls = activeClass();
   if (!wrap || !cls) return;
   wrap.innerHTML = chartHTML(cls, wrap.clientWidth) + `<div class="tip" id="chartTip"></div>`;
 }
+
+/* ==================================================================
+   ASSISTANT — answers from the gradebook, never from invention.
+   Rules-based intent matching, not a language model: if the data does
+   not support an answer it says so rather than guessing.
+   ================================================================== */
+function findClass(text){
+  const t = norm(text); if (!t) return null;
+  let best = null, score = 0;
+  for (const c of S.classes){
+    const n = norm(c.name); let sc = 0;
+    if (n === t) sc = 200;
+    else if (t.length >= 3 && n.includes(t)) sc = 90 + t.length;
+    else if (n.length >= 3 && t.includes(n)) sc = 80 + n.length;
+    else {
+      const ts = String(text).toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2);
+      const ns = String(c.name).toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 1);
+      sc = ts.filter(w => ns.some(x => x.startsWith(w) || w.startsWith(x))).length * 25;
+    }
+    if (sc > score){ score = sc; best = c; }
+  }
+  return score >= 25 ? best : null;
+}
+const LETTER_WORDS = { 'a':'A','an a':'A','b':'B','a b':'B','c':'C','a c':'C','d':'D','a d':'D' };
+function wantedLetter(q){
+  const m = q.match(/\b(?:get|make|reach|keep|hit|earn|finish with|to)?\s*an?\s*([abcde])\b/i);
+  if (m) return m[1].toUpperCase();
+  const m2 = q.match(/\b([abcde])\s*(?:in|for)\b/i);
+  if (m2) return m2[1].toUpperCase();
+  return null;
+}
+function wantedPct(q){ const m = q.match(/(\d{1,3}(?:\.\d+)?)\s*%/); return m ? parseFloat(m[1]) : null; }
+
+function ask(q){
+  const raw = String(q||'').trim();
+  const low = raw.toLowerCase();
+  if (!raw) return null;
+  const acts = [];
+  const cls = findClass(raw.replace(/^(what|how|which|can|show|why|do)\b/i,''));
+  const a = cls ? analyze(cls) : null;
+  const say = t => ({ answer:t, hits:acts });
+
+  /* straight navigation */
+  if (/^(gpa|my gpa|show (my )?gpa)$/.test(low) || /\bgpa\b/.test(low) && !cls){
+    const g = schoolGPA();
+    if (!g) return say(`Nothing is graded yet, so there is no GPA to show.`);
+    acts.push({ label:'Open GPA', act:()=>go('gpa') });
+    return say(`<b>${g.w.toFixed(3)}</b> weighted, <b>${g.un.toFixed(3)}</b> unweighted, across ${g.n} graded class${g.n===1?'':'es'}.`);
+  }
+  if (/\bsemester\b/.test(low)){ acts.push({ label:'Open semester', act:()=>go('semester') });
+    return say(`The semester grade comes from your two marking period letters — averaged, ties rounding up.`); }
+  if (/\b(theme|colour|color|dark mode|look)\b/.test(low)){ acts.push({ label:'Open Look & feel', act:themeModal });
+    return say(`Themes, light/dark and a custom accent colour live in Look & feel.`); }
+  if (/\b(help|how do i|instructions|paste)\b/.test(low) && !cls){ acts.push({ label:'Open help', act:()=>go('help') });
+    return say(`Copy your assignment list out of StudentVUE and press Ctrl/⌘ + V anywhere on this page.`); }
+
+  /* biggest-impact assignment */
+  if (/\b(assignment|test|quiz|which one)\b/.test(low) && /\b(matter|impact|biggest|most)\b/.test(low)){
+    const target = cls || focusList()[0]?.c;
+    if (!target) return say(`Add a class first.`);
+    const up = upcomingImpact(target);
+    if (!up.length) return say(`Everything in <b>${esc(target.name)}</b> is already graded, so no single assignment is still in play.`);
+    const t = up[0];
+    acts.push({ label:`Open ${target.name}`, act:()=>openClass(target.id, null) });
+    return say(`In <b>${esc(target.name)}</b>: <b>${esc(String(t.a.name).slice(0,48))}</b>. A 100 on it is worth ${t.gain>=0?'+':''}${t.gain.toFixed(2)} points; a 0 costs you ${t.loss.toFixed(2)}.`);
+  }
+  /* what should I do */
+  if (/\b(what should i|study|focus|priorit|work on|do next|matters)\b/.test(low)){
+    const f = focusList();
+    if (!f.length) return say(`Nothing is graded yet, so there is nothing to prioritise.`);
+    const t = f[0];
+    acts.push({ label:`Open ${t.c.name}`, act:()=>openClass(t.c.id, null) });
+    acts.push({ label:'Make a study plan', act:planModal });
+    return say(`<b>${esc(t.c.name)}</b> first. ${esc(whyLine(t, S.goal||'gpa'))}`);
+  }
+  /* classes below a number */
+  const belowM = low.match(/\b(below|under|less than)\s*(\d{1,3})/);
+  if (belowM){
+    const lim = +belowM[2];
+    const list = classRows().filter(x => x.a.r.pct !== null && x.a.r.pct < lim);
+    if (!list.length) return say(`No class is below ${lim}%.`);
+    acts.push({ label:'Show them', act:()=>{ ui.filter='under'; go('gradebook'); } });
+    return say(`${list.length} below ${lim}%: ${list.map(x => `<b>${esc(x.c.name)}</b> ${x.a.r.pct.toFixed(2)}%`).join(', ')}.`);
+  }
+  /* why did my grade drop */
+  if (/\b(why|drop|fell|went down|lower)\b/.test(low)){
+    const target = cls || classRows().map(x=>x).sort((x,y)=>(x.a.trend.delta)-(y.a.trend.delta))[0]?.c;
+    if (!target) return say(`Add a class first.`);
+    const an = analyze(target), pts = trendSeries(target);
+    if (!an.trend.enough) return say(`<b>${esc(target.name)}</b> has only ${pts.length} graded assignment${pts.length===1?'':'s'} — not enough to show a direction yet.`);
+    const worst = pts.slice(1).map((p,i) => ({ p, drop: pts[i].pct - p.pct })).sort((x,y) => y.drop - x.drop)[0];
+    acts.push({ label:`Open ${target.name}`, act:()=>openClass(target.id, null) });
+    if (an.trend.dir === 'down' && worst && worst.drop > 0.05)
+      return say(`<b>${esc(target.name)}</b> is down ${Math.abs(an.trend.delta).toFixed(2)} points over the last ${an.trend.over} graded assignments. The single biggest drop was after <b>${esc(String(worst.p.a.name).slice(0,44))}</b> — it took ${worst.drop.toFixed(2)} points off.`);
+    return say(`<b>${esc(target.name)}</b> is not falling — it is ${an.trend.dir === 'up' ? `up ${an.trend.delta.toFixed(2)}` : 'flat'} over the last ${an.trend.over} graded assignments.`);
+  }
+
+  /* everything below wants a class */
+  if (!cls){
+    const f = focusList();
+    if (!S.classes.length) return say(`Nothing is in here yet. Paste a gradebook and ask again.`);
+    if (f.length){ acts.push({ label:`Open ${f[0].c.name}`, act:()=>openClass(f[0].c.id, null) }); }
+    return say(`I could not tell which class you meant. Try naming one — ${S.classes.slice(0,3).map(c=>`<b>${esc(c.name)}</b>`).join(', ')}.`);
+  }
+  acts.push({ label:`Open ${cls.name}`, act:()=>openClass(cls.id, null) });
+  if (a.r.pct === null) return say(`<b>${esc(cls.name)}</b> has nothing graded yet.`);
+
+  /* what if I get everything right */
+  if (/\b(100|perfect|everything|all of it|ace)\b/.test(low) && /\b(what if|if i)\b/.test(low)){
+    const best = a.best;
+    return say(`100% on every ungraded item in <b>${esc(cls.name)}</b> takes it from ${a.r.pct.toFixed(2)}% to <b>${best.toFixed(2)}%</b> — ${letterFor(best)}.`);
+  }
+  if (/\bclose\b/.test(low) || /\bhow am i\b/.test(low)){
+    if (!a.nextL) return say(`<b>${esc(cls.name)}</b> is at ${a.r.pct.toFixed(2)}% — top of the scale.`);
+    return say(`<b>${esc(cls.name)}</b> is ${a.r.pct.toFixed(2)}% — ${a.toNext.toFixed(2)} points from ${article(a.nextL)} ${a.nextL}. ${a.canReachNext ? 'Remaining work can cover it.' : `From the work listed it tops out at ${a.best.toFixed(2)}%.`}`);
+  }
+  /* can I still get an X */
+  const want = wantedLetter(low), wantPct = wantedPct(low);
+  const targetPct = wantPct !== null ? wantPct : (want ? (CUTS.find(c => c[0] === want) || [])[1] : null);
+  if (targetPct !== null && /\b(need|get|reach|still|can i|close|what do i|how much)\b/.test(low)){
+    if (a.r.pct >= targetPct)
+      return say(`You are already there — <b>${esc(cls.name)}</b> is ${a.r.pct.toFixed(2)}%, above ${targetPct}%.`);
+    if (a.rem.total === 0)
+      return say(`Nothing is ungraded in <b>${esc(cls.name)}</b>, so ${a.r.pct.toFixed(2)}% is where it sits until your teacher posts more.`);
+    const res = neededFraction(cls, a.rem.byCat, targetPct);
+    acts.push({ label:'Open the solver', act:()=>{ S.active = cls.id; go('class'); setTimeout(optimizeModal, 260); } });
+    if (res.impossible)
+      return say(`Not reachable. Even 100% on all ${a.rem.total} remaining points in <b>${esc(cls.name)}</b> tops out at <b>${res.best.toFixed(2)}%</b>. Your realistic ceiling is ${letterFor(res.best)}.`);
+    return say(`You need to average <b>${(res.f*100).toFixed(1)}%</b> on the ${a.rem.total} points still to come in <b>${esc(cls.name)}</b>. That lands you at ${res.result.toFixed(2)}%.`);
+  }
+  /* fallback: the class summary */
+  return say(`<b>${esc(cls.name)}</b> is ${a.r.pct.toFixed(2)}% — ${a.r.letter}. ${esc(a.insights[0]?.text || '')}`);
+}
+
+let cmdActs = [];
+function runCmd(q){
+  const res = ask(q);
+  const box = $('#cmdRes');
+  if (!res){ box.hidden = true; box.innerHTML = ''; cmdActs = []; return; }
+  cmdActs = res.hits || [];
+  box.hidden = false;
+  box.innerHTML = `<div class="cmdres">
+    <div class="ans">${res.answer}</div>
+    ${cmdActs.length ? `<div class="hits">${cmdActs.map((h,i) =>
+      `<button class="hit" data-hit="${i}">${esc(h.label)}<span class="k">↵</span></button>`).join('')}</div>` : ''}
+    <div class="foot">Answers come from your own gradebook. Nothing here is guessed.</div></div>`;
+}
+function closeCmd(){ const b = $('#cmdRes'); if (b){ b.hidden = true; b.innerHTML = ''; } cmdActs = []; }
+
+let cmdT;
+$('#cmd').addEventListener('input', e => { clearTimeout(cmdT); const v = e.target.value;
+  cmdT = setTimeout(() => v.trim() ? runCmd(v) : closeCmd(), 160); });
+$('#cmd').addEventListener('keydown', e => {
+  if (e.key === 'Escape'){ e.target.value = ''; closeCmd(); e.target.blur(); }
+  if (e.key === 'Enter' && cmdActs.length){ cmdActs[0].act(); closeCmd(); e.target.blur(); }
+});
+$('#cmdRes').addEventListener('click', e => {
+  const h = e.target.closest('[data-hit]'); if (!h) return;
+  const act = cmdActs[+h.dataset.hit]; if (act){ act.act(); closeCmd(); $('#cmd').blur(); }
+});
+document.addEventListener('click', e => { if (!e.target.closest('.cmdwrap')) closeCmd(); });
+addEventListener('keydown', e => {
+  if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)
+      && !document.activeElement.isContentEditable && !ui.modal){
+    e.preventDefault(); $('#cmd').focus(); $('#cmd').select();
+  }
+});
 
 /* ==================================================================
    MODALS
@@ -1380,7 +2089,7 @@ function openModal(title, body, id){
     <header><h3>${esc(title)}</h3><button class="x" data-close="1" aria-label="Close">✕</button></header>
     <div class="body">${body}</div></div></div>`;
 }
-function closeModal(){ ui.modal = null; $('#modalHost').innerHTML = ''; }
+function closeModal(){ ui.modal = null; ui.editing = null; $('#modalHost').innerHTML = ''; }
 
 function themeModal(){
   const eff = effectiveTheme();
@@ -1503,9 +2212,13 @@ function updateOptimize(){
   if (!totalRem){ out.textContent = '—'; why.textContent = 'Put in the points still to come.'; brk.innerHTML = ''; return; }
   const res = neededFraction(cls, remaining, target);
   if (res.impossible){
-    out.textContent = 'Out of reach';
-    why.innerHTML = `Even 100% on all ${totalRem} remaining points only gets you to <b>${res.best.toFixed(2)}%</b>. Ask about extra credit or a retake.`;
-    brk.innerHTML = ''; return;
+    const bl = letterFor(res.best);
+    out.textContent = 'Not reachable';
+    why.innerHTML = `Even 100% on all ${totalRem} remaining points tops out at <b>${res.best.toFixed(2)}%</b> — ${bl}.
+      Your best realistic target is that <b>${res.best.toFixed(2)}% ${bl}</b>, so put the effort into the assessments that are left rather than the grade you can't reach.`;
+    const alt = [89.5,79.5,69.5,59.5].filter(v => v <= res.best && v > (computeClass(cls).pct ?? 0))[0];
+    brk.innerHTML = alt ? `<span class="chip">Reachable instead: ${letterFor(alt)} at ${alt}%</span>` : '';
+    return;
   }
   if (res.freebie){
     out.textContent = "Already locked in";
@@ -1517,6 +2230,171 @@ function updateOptimize(){
   why.innerHTML = `Average that across the remaining ${totalRem} points and you finish on <b>${res.result.toFixed(2)}%</b> — ${letterFor(res.result)}.`;
   brk.innerHTML = cls.categories.filter(c => remaining[c.id] > 0).map(c =>
     `<span class="chip">${esc(c.cat?c.cat.name:c.name)}: ${(res.f*remaining[c.id]).toFixed(1)} / ${remaining[c.id]}</span>`).join('');
+}
+
+function classModal(id){
+  const cls = S.classes.find(c => c.id === id); if (!cls) return;
+  openModal('Edit class', `
+    <div class="grid2">
+      <label class="fld">Class name<input type="text" data-cf="name" value="${esc(cls.name)}" autofocus></label>
+      <label class="fld">Teacher<input type="text" data-cf="teacher" value="${esc(cls.teacher)}" placeholder="optional"></label>
+      <label class="fld">Period<input type="text" data-cf="period" value="${esc(cls.period)}" placeholder="optional"></label>
+      <label class="fld">Marking period
+        <select data-cf="term">${['Q1','Q2','Q3','Q4','S1','S2'].map(t=>`<option ${t===(cls.term||S.term)?'selected':''}>${t}</option>`).join('')}</select></label>
+    </div>
+    <div class="togrow" style="margin-top:14px">
+      <label class="toggle"><input type="checkbox" id="wtToggle" ${cls.weighted?'checked':''}><span class="tr"></span></label>
+      <div><b>Weighted course</b> <span class="muted small">— Honors, AP or IB. Adds ${S.gpaBump} to this class's GPA points.</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-title">Category weights</div>
+    <div class="stack" style="gap:9px">
+      ${cls.categories.map(c => `<div class="row" data-cat="${c.id}" style="gap:9px">
+        <input type="text" data-cw="name" value="${esc(c.name)}" style="flex:1;min-width:140px">
+        <div class="row" style="gap:5px;flex:none">
+          <input type="number" data-cw="weight" value="${c.weight}" step="1" min="0" style="width:82px;text-align:right">
+          <span class="muted" style="font-weight:700">%</span></div>
+        <button class="rowbtn" data-delcat="${c.id}" aria-label="Remove category">\u2715</button></div>`).join('')}
+    </div>
+    <div class="row" style="margin-top:13px">
+      <button class="btn btn-sm" data-act="addcat">\uFF0B Add category</button>
+      <button class="btn btn-sm btn-ghost" data-act="resetcats">Back to 90 / 10</button>
+      <span class="tiny" style="margin-left:auto;${weightSum(cls)===100?'color:var(--muted)':'color:var(--D);font-weight:700'}">
+        Total ${weightSum(cls)}%${weightSum(cls)===100?'':' \u2014 re-scaled to 100%'}</span></div>
+    <div class="note" style="margin-top:14px">MCPS default is <b>All Tasks 90%</b> / <b>Practice 10%</b>. Add a category for anything else your course counts \u2014 a state test, a county final, a lab grade.</div>
+    <div class="divider"></div>
+    <div class="row">
+      <button class="btn btn-sm btn-ghost" data-delclass="${cls.id}" style="color:var(--E)">Delete this class</button>
+      <button class="btn btn-sm btn-primary" data-close="1" style="margin-left:auto">Done</button>
+    </div>`, 'class:'+id);
+  ui.editing = id;
+}
+
+function deleteClass(id){
+  const i = S.classes.findIndex(c => c.id === id); if (i < 0) return;
+  const [gone] = S.classes.splice(i,1);
+  if (S.active === id) S.active = S.classes[0]?.id || null;
+  undoStack.push({ kind:'class', index:i, item:gone });
+  closeModal(); lastLetter = null;
+  go('gradebook');
+  toast(`Deleted "${String(gone.name).slice(0,32)}"`, { label:'Undo', run:undoLast });
+}
+
+function dataCheckModal(){
+  const rows = classRows();
+  const totalA = S.classes.reduce((s,c) => s + c.assignments.length, 0);
+  const graded = S.classes.reduce((s,c) => s + c.assignments.filter(a => a.graded).length, 0);
+  const odd = [];
+  for (const c of S.classes){
+    if (weightSum(c) !== 100) odd.push(`${c.name}: category weights add to ${weightSum(c)}%, not 100 — they get re-scaled`);
+    for (const cat of c.categories) if (!cat.weight) odd.push(`${c.name}: "${cat.name}" has no weight, so it counts for nothing`);
+    for (const a of c.assignments){
+      if (a.graded && num(a.possible) > 0 && num(a.earned) > num(a.possible) * 1.5)
+        odd.push(`${c.name}: "${String(a.name).slice(0,34)}" scores ${a.earned} out of ${a.possible}`);
+      if (a.graded && num(a.earned) === null) odd.push(`${c.name}: "${String(a.name).slice(0,34)}" is marked graded with no score`);
+    }
+  }
+  const dupes = [];
+  for (const c of S.classes){
+    const seen = new Set();
+    for (const a of c.assignments){
+      const k = (String(a.name)+'|'+a.possible).toLowerCase();
+      if (seen.has(k)) dupes.push(`${c.name}: "${String(a.name).slice(0,34)}" appears more than once`);
+      seen.add(k);
+    }
+  }
+  const issues = odd.concat(dupes);
+  openModal('Check my data', `
+    <div class="checkgrid">
+      <div class="chk ok"><span>✓</span> ${S.classes.length} class${S.classes.length===1?'':'es'}</div>
+      <div class="chk ok"><span>✓</span> ${totalA} assignment${totalA===1?'':'s'} found</div>
+      <div class="chk ok"><span>✓</span> ${graded} graded · ${totalA-graded} waiting on a score</div>
+      <div class="chk ok"><span>✓</span> ${rows.filter(x=>x.a.r.pct!==null).length} class${rows.filter(x=>x.a.r.pct!==null).length===1?'':'es'} producing a grade</div>
+      ${issues.length ? issues.slice(0,10).map(t => `<div class="chk warn"><span>⚠</span> ${esc(t)}</div>`).join('')
+        : `<div class="chk ok"><span>✓</span> Nothing looks off</div>`}
+      ${issues.length > 10 ? `<div class="chk warn"><span>⚠</span> and ${issues.length-10} more</div>` : ''}
+    </div>
+    <p class="tiny muted" style="margin-top:16px">Everything here is read from what you pasted. Fix anything wrong by editing the class or the assignment directly.</p>`, 'check');
+}
+
+function planModal(){
+  const mins = S.planMins || 120;
+  openModal('Make me a study plan', `
+    <p class="small muted" style="margin:0 0 16px">Time you have, and this splits it across the classes where the time actually moves your grade — not simply the lowest ones.</p>
+    <div class="row" style="margin-bottom:6px">
+      <label class="fld" style="max-width:170px">I have
+        <select id="planMins">${[30,45,60,90,120,180,240].map(v=>`<option value="${v}" ${v==mins?'selected':''}>${v<60?v+' minutes':(v/60)+' hour'+(v>60?'s':'')}</option>`).join('')}</select></label>
+    </div>
+    <div id="planOut" style="margin-top:14px"></div>`, 'plan');
+  renderPlan();
+}
+function renderPlan(){
+  const out = $('#planOut'); if (!out) return;
+  const mins = num($('#planMins')?.value) ?? 120;
+  S.planMins = mins; save();
+  const cands = analyzeAll().filter(x => x.a.r.pct !== null)
+    .map(x => ({ x, w: x.a.opp + x.a.missing*18 + (x.a.status === 'risk' ? 30 : 0) + (x.a.trend.dir === 'down' ? 12 : 0) }))
+    .filter(c => c.w > 0)
+    .sort((a,b) => b.w - a.w).slice(0, 4);
+  if (!cands.length){
+    out.innerHTML = `<div class="note">Nothing here needs the time. Every class is either locked in or already where you want it — spend the time on something else.</div>`;
+    return;
+  }
+  const tot = cands.reduce((s,c) => s + c.w, 0);
+  let left = mins;
+  const slots = cands.map((c,i) => {
+    let m = i === cands.length-1 ? left : Math.max(15, Math.round(mins * c.w/tot / 5) * 5);
+    m = Math.min(m, left); left -= m; return { ...c, m };
+  }).filter(sl => sl.m >= 10);
+  out.innerHTML = `<div class="focus">${slots.map((sl,i) => {
+    const a = sl.x.a, why = a.missing ? `${a.missing} missing assignment${a.missing===1?'':'s'} — usually the cheapest points on the board.`
+      : a.status === 'risk' ? `Zeros on what's left drop this to ${a.worst.toFixed(2)}%.`
+      : a.status === 'close' ? `${a.toNext.toFixed(2)} points from ${article(a.nextL)} ${a.nextL}, and remaining work can cover it.`
+      : a.trend.dir === 'down' ? `Down ${Math.abs(a.trend.delta).toFixed(2)} points over the last ${a.trend.over} graded assignments.`
+      : `Still movable: up to ${a.best.toFixed(2)}% from here.`;
+    return `<button class="focusrow" data-open="${sl.x.c.id}" data-close="1">
+      <span class="rank">${sl.m}m</span>
+      <span style="min-width:0"><span class="fname">${esc(sl.x.c.name)} ${badgeHTML(a)}</span>
+        <span class="fwhy">${esc(why)}</span></span>
+      <span class="fgrade"><b style="color:${gcolor(a.r.letter)}">${a.r.letter}</b><span>${a.r.pct.toFixed(2)}%</span></span>
+    </button>`;
+  }).join('')}</div>
+  <p class="tiny muted" style="margin:14px 0 0">Split by how much each class can still move, weighted by missing work and recent direction. Tap one to open it.</p>`;
+}
+
+function buildReport(){
+  const rows = analyzeAll(), g = schoolGPA();
+  const when = new Date().toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
+  return `<div class="rep">
+    <div class="rep-head"><div><h1>Grade report</h1>
+      <div class="muted small">${esc(S.term)} · ${when} · ${S.classes.length} class${S.classes.length===1?'':'es'}</div></div>
+      <div style="text-align:right">
+        <div class="eyebrow">Weighted GPA</div>
+        <div style="font-size:2rem;font-weight:800;letter-spacing:-.04em">${g?g.w.toFixed(3):'—'}</div>
+        <div class="muted tiny">${g?g.un.toFixed(3)+' unweighted':''}</div></div></div>
+    <table class="scale" style="margin-top:18px">
+      <thead><tr><th>Period</th><th>Class</th><th>Grade</th><th>Status</th><th>Range left</th></tr></thead>
+      <tbody>${rows.map(({c,a}) => `<tr>
+        <td>${esc(c.period||'—')}</td>
+        <td><b>${esc(c.name)}</b>${c.weighted?' <span class="muted tiny">weighted</span>':''}</td>
+        <td style="color:${gcolor(a.r.letter)};font-weight:800">${a.r.letter||'–'}${a.r.pct!==null?` ${a.r.pct.toFixed(2)}%`:''}</td>
+        <td>${STATUS[a.status].label}</td>
+        <td class="muted">${a.worst!==undefined?`${a.worst.toFixed(1)}% – ${a.best.toFixed(1)}%`:'—'}</td>
+      </tr>`).join('')}</tbody></table>
+    <h2 style="font-size:1.05rem;margin:22px 0 10px">What matters most</h2>
+    <ol class="steps">${focusList().slice(0,5).map(x =>
+      `<li><b>${esc(x.c.name)}</b> — ${esc(whyLine(x, S.goal||'gpa'))}</li>`).join('') || '<li>Nothing graded yet.</li>'}</ol>
+    <p class="tiny muted" style="margin-top:22px">Generated by Grade Melon. Unofficial — the official grade is the one in StudentVUE.</p>
+  </div>`;
+}
+function printReport(){
+  let host = $('#printArea');
+  if (!host){ host = document.createElement('div'); host.id = 'printArea'; document.body.appendChild(host); }
+  host.innerHTML = buildReport();
+  document.documentElement.classList.add('printing');
+  const done = () => { document.documentElement.classList.remove('printing'); removeEventListener('afterprint', done); };
+  addEventListener('afterprint', done);
+  setTimeout(() => { try { print(); } catch(e){} setTimeout(done, 1200); }, 60);
 }
 
 function fillModal(){
@@ -1617,12 +2495,48 @@ function renderGPAView(){
       : '<p class="muted small">Add a class first.</p>'}
       <p class="tiny muted" style="margin-top:14px">Auto-ticked when the class name has AP, IB, Honors or Magnet in it — the same rule the original Grade Melon uses. Untick anything it got wrong.</p>
     </div>
+    <div class="card pad">
+      <div class="sec-title">What happens if…</div>
+      <p class="small muted" style="margin:0 0 14px">Same classes, different letters. Nothing here is saved — it is just the arithmetic.</p>
+      <div class="quickrow" id="gpaWhatIf">
+        <button class="quick" data-gpaif="allA">I get all A's</button>
+        <button class="quick" data-gpaif="oneUp">I raise my lowest class one letter</button>
+        <button class="quick" data-gpaif="allUp">Every class goes up one letter</button>
+        <button class="quick" data-gpaif="hold">I hold exactly where I am</button>
+        <button class="quick" data-gpaif="weighted">I add one more weighted course at an A</button>
+      </div>
+      <div class="result" style="margin-top:16px"><div class="big" id="gpaIfOut">—</div>
+        <div class="small muted" id="gpaIfWhy">Pick one to see what it does to your GPA.</div></div>
+    </div>
     <div class="card pad"><div class="sec-title">MCPS grading scale</div>
       <table class="scale"><thead><tr><th>Grade</th><th>Percentage</th><th>Quality points</th></tr></thead><tbody>
       ${[['A','89.5% – 100%',4],['B','79.5% – 89.49%',3],['C','69.5% – 79.49%',2],['D','59.5% – 69.49%',1],['E','below 59.5%',0]]
         .map(([l,p,q])=>`<tr><td class="g-${l}">${l}</td><td>${p}</td><td>${q}</td></tr>`).join('')}
       </tbody></table></div>
   </div>`;
+}
+
+function gpaWhatIf(kind){
+  const rows = classRows().filter(x => x.a.r.letter);
+  if (!rows.length) return { out:'—', why:'Nothing is graded yet.' };
+  const g = schoolGPA();
+  const up = L => ['E','D','C','B','A'][Math.min(4, ['E','D','C','B','A'].indexOf(L) + 1)];
+  let letters = rows.map(x => ({ L:x.a.r.letter, w:x.c.weighted, n:x.c.name }));
+  let note = '';
+  if (kind === 'allA'){ letters = letters.map(l => ({ ...l, L:'A' })); note = 'every class an A'; }
+  else if (kind === 'allUp'){ letters = letters.map(l => ({ ...l, L:up(l.L) })); note = 'each class one letter higher'; }
+  else if (kind === 'oneUp'){
+    const i = letters.reduce((lo,l,idx,arr) => POINTS[l.L] < POINTS[arr[lo].L] ? idx : lo, 0);
+    note = `${letters[i].n} from ${letters[i].L} to ${up(letters[i].L)}`;
+    letters = letters.map((l,idx) => idx === i ? { ...l, L:up(l.L) } : l);
+  }
+  else if (kind === 'weighted'){ letters = letters.concat([{ L:'A', w:true, n:'a new weighted course' }]); note = 'one more weighted course at an A'; }
+  else note = 'exactly what you have now';
+  const un = letters.reduce((s,l) => s + (POINTS[l.L] ?? 0), 0) / letters.length;
+  const w  = letters.reduce((s,l) => s + gpaPoints(l.L, l.w), 0) / letters.length;
+  const d = g ? w - g.w : 0;
+  return { out:`${w.toFixed(3)} <span style="font-size:1rem;font-weight:700;color:var(--muted)">weighted · ${un.toFixed(3)} unweighted</span>`,
+           why:`With ${note}: ${d>=0?'+':''}${d.toFixed(3)} on your weighted GPA${g?` (from ${g.w.toFixed(3)})`:''}.` };
 }
 
 function renderHelp(){
@@ -1722,7 +2636,7 @@ function refreshNumbers(opts){
   const ha = $('#heroActions'), wn = whatIfCount(cls);
   if (ha && +ha.dataset.n !== wn){ ha.innerHTML = heroActionsHTML(cls); ha.dataset.n = wn; }
   clearTimeout(chartT); chartT = setTimeout(paintChart, 260);
-  save();
+  renderWif(); save();
   if (!opts || !opts.quiet){
     const L = r.letter;
     if (lastLetter && L && POINTS[L] > POINTS[lastLetter]){ Confetti.burst(); toast(`That's ${article(L)} ${L}. 🍉`); }
@@ -1748,7 +2662,7 @@ function go(view, opts){
   if (!opts || !opts.noScroll) scrollTo({ top:0, behavior:'smooth' });
 }
 function openClass(id, fromEl){
-  S.active = id; ui.paste = ui.settings = false; ui.sliderFor = null;
+  S.active = id; ui.paste = false; ui.sliderFor = null;
   flipTo(fromEl, () => go('class', { noScroll:true }));
   if (reduced() || !fromEl) go('class');
 }
@@ -1771,16 +2685,21 @@ function deleteAssignment(id){
   const cls = activeClass(); const i = cls.assignments.findIndex(a => a.id === id);
   if (i < 0) return;
   const [gone] = cls.assignments.splice(i,1);
-  undoStack.push({ clsId:cls.id, index:i, item:gone });
+  undoStack.push({ kind:'assignment', clsId:cls.id, index:i, item:gone });
   render();
   toast(`Deleted "${String(gone.name).slice(0,30)}"`, { label:'Undo', run:undoDelete });
 }
-function undoDelete(){
+function undoLast(){
   const u = undoStack.pop(); if (!u){ toast('Nothing to undo'); return; }
+  if (u.kind === 'class'){
+    S.classes.splice(u.index, 0, u.item); S.active = u.item.id; lastLetter = null;
+    go('gradebook'); toast(`"${String(u.item.name).slice(0,28)}" is back`); return;
+  }
   const cls = S.classes.find(c => c.id === u.clsId); if (!cls) return;
   cls.assignments.splice(u.index, 0, u.item);
   S.active = cls.id; render(); toast('Back');
 }
+const undoDelete = undoLast;
 const DEMO_CLASSES = [
   ['NSL Government','3','Example data',`Week 01 - 8/25/2026 through 8/29/2026  (1 items)
 Aug
@@ -1841,7 +2760,15 @@ Sep
 AT-Enzyme Lab Report due 9/17
 All Tasks / Assessments | 30.00 points
 28.5
-95%`],
+95%
+Sep
+24
+AT-Genetics Unit Test due 9/24
+All Tasks / Assessments | 50.00 points
+Sep
+26
+PP-Punnett Practice due 9/26
+Practice / Preparation | 12.00 points`],
   ['Honors Algebra 2','5','Example data',`Aug
 26
 PP-Review Packet due 8/26
@@ -1939,18 +2866,32 @@ $('#nav').addEventListener('click', e => {
 
 /* ---- gradebook ---- */
 $('#view-gradebook').addEventListener('click', e => {
+  const ed = e.target.closest('[data-edit]');
+  if (ed){ e.stopPropagation(); classModal(ed.dataset.edit); return; }
+  const dc = e.target.closest('[data-delclass]');
+  if (dc){ e.stopPropagation(); deleteClass(dc.dataset.delclass); return; }
   const open = e.target.closest('[data-open]');
   if (open){ openClass(open.dataset.open, open.classList.contains('gbcard') ? open : null); return; }
   const gv = e.target.closest('[data-gv]');
   if (gv){ S.gbView = gv.dataset.gv; render(); return; }
+  const chip = e.target.closest('[data-filter]');
+  if (chip){ ui.filter = chip.dataset.filter; render(); return; }
+  if (e.target.closest('#planBtn')){ planModal(); return; }
+  if (e.target.closest('#reportBtn')){ printReport(); return; }
   if (e.target.closest('#gpaModalBtn')){ gpaModal(); return; }
+  if (e.target.closest('#checkBtn')){ dataCheckModal(); return; }
   if (e.target.id === 'firstImport'){ importPaste($('#firstPaste').value, true); return; }
-  if (e.target.id === 'firstBlank'){ const c = newClass('New class'); S.active = c.id; ui.settings = true; go('class'); return; }
+  if (e.target.id === 'firstBlank'){ const c = newClass('New class'); S.active = c.id; render(); classModal(c.id); return; }
   if (e.target.id === 'firstDemo'){ loadDemo(); return; }
   handleAct(e);
 });
+$('#view-gradebook').addEventListener('keydown', e => {
+  const card = e.target.closest('.gbcard[data-open]');
+  if (card && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); openClass(card.dataset.open, card); }
+});
 $('#view-gradebook').addEventListener('change', e => {
-  if (e.target.id === 'termSel'){ S.term = e.target.value; S.classes.forEach(c => c.term = S.term); render(); }
+  if (e.target.id === 'termSel'){ S.term = e.target.value; S.classes.forEach(c => c.term = S.term); render(); return; }
+  if (e.target.id === 'goalSel'){ S.goal = e.target.value; render(); save(); }
 });
 
 /* ---- shared action handler ---- */
@@ -1959,7 +2900,12 @@ function handleAct(e){
   if (!act) return false;
   const cls = activeClass();
   switch (act){
-    case 'addclass': { const c = newClass('New class'); S.active = c.id; ui.settings = true; go('class'); return true; }
+    case 'dismissImport': S.lastImport = null; render(); return true;
+    case 'fixweights': {
+      const bad = S.classes.find(c => c.categories.some(x => !x.weight));
+      if (bad){ S.active = bad.id; render(); classModal(bad.id); }
+      return true; }
+    case 'addclass': { const c = newClass('New class'); S.active = c.id; render(); classModal(c.id); return true; }
     case 'pasteNew': ui.paste = true; ui.forceNewClass = false; render();
       $('#pastePanel')?.scrollIntoView({block:'center',behavior:'smooth'}); $('#pasteBox')?.focus(); return true;
     case 'paste': ui.paste = true; render();
@@ -1971,6 +2917,7 @@ function handleAct(e){
       importPaste($('#pasteBox').value, true); return true;
     case 'back': go('gradebook'); return true;
     case 'optimize': optimizeModal(); return true;
+    case 'scrollRows': $('#rowList')?.scrollIntoView({ block:'start', behavior:'smooth' }); return true;
     case 'fillOpen': fillModal(); return true;
     case 'fillGo': {
       const p = num($('#fillPct').value) ?? 100; let n = 0;
@@ -1982,10 +2929,9 @@ function handleAct(e){
       cls.assignments = cls.assignments.filter(a => !a.hypo);
       cls.assignments.forEach(a => { a.earned = a.origEarned; a.possible = a.origPossible; a.graded = a.origEarned !== null; });
       render(); refreshNumbers({quiet:true}); toast('Back to your real grades'); return true;
-    case 'settings': ui.settings = !ui.settings; render();
-      if (ui.settings) $('#settingsPanel')?.scrollIntoView({block:'center',behavior:'smooth'}); return true;
-    case 'settingsClose': ui.settings = false; render(); return true;
-    case 'addcat': cls.categories.push({ id:uid(), name:'New category', weight:0 }); render(); return true;
+    case 'settings': classModal(S.active); return true;
+    case 'addcat': cls.categories.push({ id:uid(), name:'New category', weight:0 });
+      if (ui.editing) classModal(ui.editing); else render(); return true;
     case 'resetcats': {
       const keep = cls.categories.slice(0,2);
       cls.categories = DEFAULT_CATS();
@@ -1995,16 +2941,11 @@ function handleAct(e){
         const target = cls.categories.find(c => norm(c.name) === norm(canon?.name || 'All Tasks / Assessments'));
         a.catId = (target || cls.categories[0]).id;
       });
-      render(); return true; }
+      if (ui.editing) classModal(ui.editing); else render(); return true; }
     case 'clearsample':
       S.classes = S.classes.filter(c => !c.sample);
       S.active = S.classes[0]?.id || null; lastLetter = null;
       go('gradebook'); toast('Cleared — paste your own'); return true;
-    case 'delclass':
-      if (!confirm(`Delete "${cls.name}" and its ${cls.assignments.length} assignments?`)) return true;
-      S.classes = S.classes.filter(c => c.id !== cls.id);
-      S.active = S.classes[0]?.id || null; ui.settings = false; lastLetter = null;
-      go('gradebook'); return true;
     case 'clearAccent': S.accent = ''; applyTheme(); themeModal(); save(); return true;
   }
   return false;
@@ -2019,6 +2960,8 @@ $('#view-class').addEventListener('click', e => {
   const sld = e.target.closest('[data-slide]')?.dataset.slide;
   const inc = e.target.closest('[data-inc]')?.dataset.inc;
   if (inc !== undefined){ const a = cls.assignments.find(x => x.id === inc); if (a){ a.included = !a.included; refreshNumbers(); } return; }
+  const wq = e.target.closest('[data-wif]');
+  if (wq){ const rg = $('#wifRange'); if (rg){ rg.value = wq.dataset.wif; renderWif(); } return; }
   if (sld !== undefined){ ui.sliderFor = ui.sliderFor === sld ? null : sld; render(); return; }
   if (del){ deleteAssignment(del); return; }
   if (rst){ const a = cls.assignments.find(x => x.id === rst);
@@ -2058,6 +3001,8 @@ $('#view-class').addEventListener('input', e => {
     const c = cls.categories.find(x => x.id === t.closest('[data-cat]').dataset.cat);
     if (c){ if (t.dataset.cw === 'weight') c.weight = num(t.value) ?? 0; else c.name = t.value; refreshNumbers(); }
     return; }
+  if (t.id === 'wifRange'){ renderWif(); return; }
+  if (t.id === 'wifNum'){ const rg = $('#wifRange'); if (rg){ rg.value = Math.max(0, Math.min(100, num(t.value) ?? 0)); renderWif(); } return; }
   if (t.id === 'searchBox'){ ui.q = t.value; const rl = $('#rowList'); if (rl) rl.innerHTML = rowsHTML(cls, computeClass(cls)); return; }
 });
 function syncSlider(a){
@@ -2123,6 +3068,13 @@ $('#view-semester').addEventListener('input', e => {
 });
 
 /* ---- gpa view ---- */
+$('#view-gpa').addEventListener('click', e => {
+  const b = e.target.closest('[data-gpaif]'); if (!b) return;
+  $$('#gpaWhatIf .quick').forEach(x => x.style.borderColor = '');
+  b.style.borderColor = 'var(--acc)';
+  const r = gpaWhatIf(b.dataset.gpaif);
+  $('#gpaIfOut').innerHTML = r.out; $('#gpaIfWhy').textContent = r.why;
+});
 ['change','input'].forEach(ev => $('#view-gpa').addEventListener(ev, e => {
   if (e.target.dataset.wt){ const c = S.classes.find(x => x.id === e.target.dataset.wt);
     if (c){ c.weighted = e.target.checked; renderGPAView(); save(); } return; }
@@ -2132,7 +3084,20 @@ $('#view-help').addEventListener('click', e => { if (e.target.id === 'loadDemo')
 
 /* ---- modals ---- */
 $('#modalHost').addEventListener('click', e => {
-  if (e.target.dataset.scrim || e.target.closest('[data-close]')){ closeModal(); return; }
+  const openRow = e.target.closest('.focusrow[data-open]');
+  if (openRow){ closeModal(); openClass(openRow.dataset.open, null); return; }
+  const dc = e.target.closest('[data-delclass]');
+  if (dc){ deleteClass(dc.dataset.delclass); return; }
+  if (e.target.dataset.scrim || e.target.closest('[data-close]')){ closeModal(); render(); return; }
+  const dcat = e.target.closest('[data-delcat]')?.dataset.delcat;
+  if (dcat && ui.editing){
+    const cls = S.classes.find(c => c.id === ui.editing); if (!cls) return;
+    if (cls.categories.length <= 1){ toast('A class needs at least one category'); return; }
+    const fallback = cls.categories.find(c => c.id !== dcat);
+    cls.assignments.forEach(a => { if (a.catId === dcat) a.catId = fallback.id; });
+    cls.categories = cls.categories.filter(c => c.id !== dcat);
+    save(); classModal(ui.editing); return;
+  }
   const sk = e.target.closest('[data-skin]');
   if (sk){ S.skin = sk.dataset.skin; S.accent = ''; applyTheme(); save(); themeModal(); render(); return; }
   const md = e.target.closest('[data-mode]');
@@ -2148,11 +3113,24 @@ $('#modalHost').addEventListener('click', e => {
 });
 $('#modalHost').addEventListener('input', e => {
   if (e.target.id === 'accentPick'){ S.accent = e.target.value; applyTheme(); save(); return; }
+  const cls = ui.editing && S.classes.find(c => c.id === ui.editing);
+  if (cls && e.target.dataset.cf){
+    cls[e.target.dataset.cf] = e.target.value;
+    if (e.target.dataset.cf === 'name') cls.weighted = isWeighted(cls.name);
+    save(); return; }
+  if (cls && e.target.dataset.cw){
+    const c = cls.categories.find(x => x.id === e.target.closest('[data-cat]').dataset.cat);
+    if (c){ if (e.target.dataset.cw === 'weight') c.weight = num(e.target.value) ?? 0; else c.name = e.target.value; save(); }
+    return; }
   if (e.target.classList.contains('optrem') || e.target.id === 'optCustom') updateOptimize();
 });
 $('#modalHost').addEventListener('change', e => {
+  const ecls = ui.editing && S.classes.find(c => c.id === ui.editing);
+  if (ecls && e.target.id === 'wtToggle'){ ecls.weighted = e.target.checked; save(); return; }
+  if (ecls && e.target.dataset.cf){ ecls[e.target.dataset.cf] = e.target.value; save(); return; }
   if (e.target.id === 'classicTog'){ S.classic = e.target.checked; applyTheme(); save(); render(); return; }
   if (e.target.id === 'optTarget'){ updateOptimize(); return; }
+  if (e.target.id === 'planMins'){ renderPlan(); return; }
   if (e.target.id === 'bumpSel'){ S.gpaBump = num(e.target.value) ?? 1; save(); gpaModal(); return; }
   if (e.target.dataset.wt){ const c = S.classes.find(x => x.id === e.target.dataset.wt);
     if (c){ c.weighted = e.target.checked; save(); gpaModal(); } return; }
@@ -2171,7 +3149,7 @@ addEventListener('paste', e => {
   if (currentView !== 'class' && currentView !== 'gradebook') go('gradebook');
 });
 addEventListener('keydown', e => {
-  if (e.key === 'Escape' && ui.modal){ closeModal(); return; }
+  if (e.key === 'Escape' && ui.modal){ closeModal(); render(); return; }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){
     const el = document.activeElement;
     if (el && (/INPUT|TEXTAREA/.test(el.tagName) || el.isContentEditable)) return;
@@ -2213,6 +3191,8 @@ go('gradebook');
 
 return { go, openClass, loadDemo, parseGradebook, splitClasses, computeClass, semesterGrade, letterFor,
          scoreNeeded, neededFraction, trendSeries, paintChart, schoolGPA, applyTheme,
+         analyze, analyzeAll, classRows, focusList, ask, findClass, renderWif, buildReport, printReport,
+         gpaWhatIf, dataCheckModal, biggestCause, upcomingImpact, projectAll, projectOne, classRemaining, trendOf, STATUS,
          confetti:() => Confetti.burst(), state:() => S, setState:o => { S = Object.assign(S,o); applyTheme(); render(); } };
 })();
 </script>

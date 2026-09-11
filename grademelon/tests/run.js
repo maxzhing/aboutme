@@ -81,9 +81,36 @@ Practice / Preparation | 10.00 points
   // adding classes by hand
   const f2 = await b.newPage({ viewport:{width:1400,height:1000} });
   await f2.goto(URLF); await f2.waitForTimeout(400);
-  await f2.click('[data-act="addclass"]'); await f2.waitForTimeout(350);
-  ok('Add a class opens a new class', (await f2.evaluate(()=>GM.state().classes.length))===5
-     && !(await f2.$('#view-class[hidden]')), 'n='+await f2.evaluate(()=>GM.state().classes.length));
+  await f2.click('[data-act="addclass"]'); await f2.waitForTimeout(400);
+  ok('Add a class creates one and opens the editor', (await f2.evaluate(()=>GM.state().classes.length))===5
+     && (await f2.$$eval('.modal [data-cf="name"]', e=>e.length))===1);
+  await f2.fill('.modal [data-cf="name"]', 'AP Physics C'); await f2.waitForTimeout(250);
+  await f2.click('.modal [data-close]'); await f2.waitForTimeout(350);
+  ok('editing the name in the dialog renames the class',
+     (await f2.evaluate(()=>GM.state().classes.map(c=>c.name))).includes('AP Physics C'));
+  ok('renamed AP class is auto-weighted', await f2.evaluate(()=>GM.state().classes.find(c=>c.name==='AP Physics C').weighted));
+  ok('the new class shows on the gradebook', (await f2.$$eval('.gbcard[data-open]', e=>e.length))===5);
+
+  // edit an existing class from the gradebook
+  const firstCardId = await f2.$eval('.gbcard[data-open]', e => e.dataset.open);
+  await f2.click('.gbcard[data-open] [data-edit]'); await f2.waitForTimeout(400);
+  ok('edit button on a card opens the editor', (await f2.$$eval('.modal [data-cf="period"]', e=>e.length))===1);
+  await f2.fill('.modal [data-cf="teacher"]', 'Ms. Rivera');
+  await f2.fill('.modal [data-cw="weight"]', '80'); await f2.waitForTimeout(250);
+  await f2.click('.modal [data-close]'); await f2.waitForTimeout(350);
+  const edited = await f2.evaluate(id => { const c = GM.state().classes.find(x=>x.id===id);
+    return { t:c.teacher, w:c.categories[0].weight }; }, firstCardId);
+  ok('teacher and category weight save from the dialog', edited.t==='Ms. Rivera' && edited.w===80, JSON.stringify(edited));
+  const order = await f2.$$eval('.gbcard[data-open]', e => e.map(x => x.querySelector('.gb-per').textContent.trim()));
+  ok('grid stays in period order', order.join('|').startsWith('Period 1'), JSON.stringify(order));
+
+  // delete a class from the gradebook, then undo
+  const nBefore = await f2.evaluate(()=>GM.state().classes.length);
+  await f2.click('.gbcard[data-open] [data-delclass]'); await f2.waitForTimeout(400);
+  ok('delete button on a card removes the class', (await f2.evaluate(()=>GM.state().classes.length))===nBefore-1);
+  await f2.click('#toast button'); await f2.waitForTimeout(400);
+  ok('undo brings the class back', (await f2.evaluate(()=>GM.state().classes.length))===nBefore);
+  ok('undone class keeps its assignments', (await f2.evaluate(()=>GM.state().classes.some(c=>c.assignments.length>0))));
   await f2.close();
 
   // ---------- MCPS MATH (unchanged, still exact) ----------
