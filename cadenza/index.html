@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cadenza — Music Notation</title>
+<meta name="description" content="A notation and composition workstation that runs in the browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%8E%BC%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="app" class="loading">
+
+  <header id="topbar">
+    <div class="brand"><span class="brand-mark">&#9835;</span> Cadenza</div>
+    <div class="tb-group" id="file-actions"></div>
+    <div class="doc-title-wrap">
+      <input id="doc-title" class="doc-title" value="Untitled Score" spellcheck="false" aria-label="Score title">
+      <input id="doc-composer" class="doc-composer" value="" placeholder="composer" spellcheck="false" aria-label="Composer">
+    </div>
+    <div class="tb-group" id="top-right"></div>
+  </header>
+
+  <nav id="ribbon" aria-label="Editing tools"></nav>
+
+  <main id="workspace">
+    <aside id="left-panel">
+      <div class="panel-tabs" id="left-tabs">
+        <button class="ptab active" data-tab="parts">Instruments</button>
+        <button class="ptab" data-tab="mixer">Mixer</button>
+      </div>
+      <div class="panel-body" id="parts-panel"></div>
+      <div class="panel-body hidden" id="mixer-panel"></div>
+    </aside>
+
+    <div id="score-area">
+      <div id="score-scroll" tabindex="0" aria-label="Score">
+        <div id="score-pages"></div>
+      </div>
+      <div id="score-empty" class="hidden"></div>
+    </div>
+
+    <aside id="right-panel">
+      <div class="panel-tabs">
+        <button class="ptab active" data-tab="inspector">Properties</button>
+        <button class="ptab" data-tab="help">Shortcuts</button>
+      </div>
+      <div class="panel-body" id="inspector-panel"></div>
+      <div class="panel-body hidden" id="help-panel"></div>
+    </aside>
+  </main>
+
+  <footer id="transport">
+    <div class="tp-left" id="tp-buttons"></div>
+    <div class="tp-mid">
+      <div class="tp-field">
+        <label for="tempo-slider">Tempo</label>
+        <input id="tempo-slider" type="range" min="20" max="240" value="96">
+        <input id="tempo-input" type="number" min="20" max="300" value="96" aria-label="Tempo in beats per minute">
+        <span class="unit">bpm</span>
+      </div>
+      <div class="tp-position" id="tp-position"><span id="pos-measure">1</span><span class="sep">:</span><span id="pos-beat">1</span></div>
+    </div>
+    <div class="tp-right" id="tp-toggles"></div>
+  </footer>
+
+  <section id="piano-bar">
+    <div class="pb-controls" id="pb-controls"></div>
+    <div class="pb-keys" id="piano-keys"></div>
+  </section>
+
+  <div id="status-bar">
+    <span id="status-hint">Loading…</span>
+    <span id="status-right"></span>
+  </div>
+
+  <div id="tooltip" role="tooltip" hidden></div>
+  <div id="modal-root"></div>
+  <div id="toast-root"></div>
+</div>
+<noscript><p style="color:#ccc;font:14px system-ui;padding:2rem">Cadenza needs JavaScript enabled.</p></noscript>
+<script type="module" src="js/ui/app.js"></script>
+</body>
+</html>

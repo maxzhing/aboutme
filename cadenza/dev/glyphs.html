@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Glyph proof</title>
+<style>body{background:#fff;font:12px system-ui;margin:16px}svg{display:block}
+.lab{font:9px system-ui;fill:#888}</style></head><body>
+<div id="out"></div>
+<script type="module">
+import {GLYPHS, FLAG_GLYPHS} from '../js/engrave/glyphs.js';
+const SP=12;
+function staff(x,y,w){let s='';for(let i=0;i<5;i++){const yy=y+i*SP;s+=`<path d="M${x},${yy}H${x+w}" stroke="#000" stroke-width="1.1"/>`;}return s;}
+const groups=[
+ ['Clefs',[['gClef',0],['fClef',-2],['cClef',0],['percClef',0]]],
+ ['Noteheads',[['noteheadWhole',0],['noteheadHalf',0],['noteheadBlack',0],['noteheadX',0],['noteheadDiamond',0],['noteheadBreve',0]]],
+ ['Accidentals',[['accidentalSharp',0],['accidentalFlat',0],['accidentalNatural',0],['accidentalDoubleSharp',0],['accidentalDoubleFlat',0]]],
+ ['Rests',[['restWhole',-1],['restHalf',0],['restQuarter',0],['restEighth',0],['rest16th',0],['rest32nd',0],['rest64th',0]]],
+ ['Articulations',[['articStaccato',0],['articTenuto',0],['articAccent',0],['articMarcato',0],['fermata',-1],['articStaccatissimo',0]]],
+ ['Ornaments',[['ornamentTrill',-1],['ornamentMordent',-1],['ornamentTurn',-1],['segno',-1],['coda',-1],['pedal',-1]]],
+ ['Dynamics',[['dynamicP',0],['dynamicF',0],['dynamicM',0],['dynamicS',0],['dynamicZ',0],['dynamicR',0]]],
+ ['Digits',[['timeSig0',0],['timeSig1',0],['timeSig2',0],['timeSig3',0],['timeSig4',0],['timeSig5',0],['timeSig6',0],['timeSig7',0],['timeSig8',0],['timeSig9',0],['timeSigCommon',0],['timeSigCut',0]]],
+];
+let html='';
+for(const [name,items] of groups){
+  let g='';let x=40;
+  for(const [id,yoff] of items){
+    const gl=GLYPHS[id]; if(!gl){continue;}
+    g+=`<g transform="translate(${x},${60+yoff*SP}) scale(${SP})"><path d="${gl.d}" fill="#111" fill-rule="${gl.rule||'nonzero'}"/></g>`;
+    g+=`<text class="lab" x="${x}" y="132">${id.replace(/^(notehead|accidental|artic|ornament|dynamic|timeSig|rest)/,'')}</text>`;
+    x+=Math.max(50,(gl.w||1.2)*SP+26);
+  }
+  html+=`<div>${name}</div><svg width="1340" height="145">${staff(20,36,1300)}${g}</svg>`;
+}
+// flags
+let fg='';let fx=40;
+for(let n=1;n<=4;n++){
+  fg+=`<path d="M${fx},${36+4*SP}V${36-1.5*SP}" stroke="#111" stroke-width="1.5"/>`;
+  fg+=`<g transform="translate(${fx},${36-1.5*SP}) scale(${SP})"><path d="${FLAG_GLYPHS.up(n)}" fill="#111"/></g>`;
+  fx+=70;
+  fg+=`<path d="M${fx},${36}V${36+5.5*SP}" stroke="#111" stroke-width="1.5"/>`;
+  fg+=`<g transform="translate(${fx},${36+5.5*SP}) scale(${SP})"><path d="${FLAG_GLYPHS.down(n)}" fill="#111"/></g>`;
+  fx+=70;
+}
+html+=`<div>Flags</div><svg width="1340" height="160">${staff(20,36,1300)}${fg}</svg>`;
+document.getElementById('out').innerHTML=html;
+</script></body></html>
