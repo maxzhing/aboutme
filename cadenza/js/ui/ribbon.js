@@ -100,6 +100,7 @@ export const RIBBON = [
       { act: 'lyric', icon: 'ui:lyric', tip: 'Lyrics — type a syllable, space for the next note', key: 'Ctrl L' },
       { act: 'chordSymbol', icon: 'ui:chord', tip: 'Chord symbol', key: 'Ctrl K' },
       { act: 'roman', icon: 'ui:text', tip: 'Roman numeral analysis' },
+      { act: 'figuredBass', icon: 'ui:figures', tip: 'Figured bass', key: 'Ctrl G' },
       { act: 'fingering', icon: 'ui:text', tip: 'Fingering' },
       { act: 'rehearsal', icon: 'ui:text', tip: 'Rehearsal mark' },
     ],
@@ -134,6 +135,7 @@ export const RIBBON = [
     items: [
       { act: 'concertPitch', icon: 'ui:concert', tip: 'Concert pitch — show transposing instruments at sounding pitch', wide: true, label: 'Concert' },
       { act: 'partView', icon: 'ui:parts', tip: 'Switch between the full score and individual parts', wide: true, label: 'Score' },
+      { act: 'multiBarRests', icon: 'ui:multirest', tip: 'Collapse runs of empty bars into multi-bar rests (always on in parts)', wide: true, label: 'Bar rests' },
       { act: 'addInstrument', icon: 'ui:plus', tip: 'Add an instrument', wide: true, label: 'Instrument' },
     ],
   },

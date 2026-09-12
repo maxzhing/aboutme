@@ -45,6 +45,8 @@ export function makeNote(pitches, duration = 'quarter', opts = {}) {
     stemDir: 'auto',
     beamBreak: false,
     slur: null,
+    staff: null,        // null = the staff this voice normally lives on
+    figures: null,      // figured bass, bottom figure first
     ...opts,
   };
 }
@@ -71,6 +73,8 @@ export function makeRest(duration = 'quarter', opts = {}) {
     stemDir: 'auto',
     beamBreak: false,
     slur: null,
+    staff: null,
+    figures: null,
     fullMeasure: false,
     ...opts,
   };
@@ -301,10 +305,22 @@ export function normalizeMeasure(score, part, m) {
       }
       total = voiceTicks(voice);
     }
-    if (total < full) {
-      for (const d of splitIntoDurations(full - total, total, ts)) {
-        voice.push(makeRest(d.id, { dots: d.dots }));
+    /* Close the bar exactly.  A span left over from an interrupted tuplet (or
+     * from a foreign file) may not be expressible by any combination of
+     * notatable values; when that happens, give up the trailing event and try
+     * again rather than leaving the bar short. */
+    let guard = 0;
+    while (voiceTicks(voice) !== full && guard++ < 200) {
+      const cur = voiceTicks(voice);
+      if (cur > full) { voice.pop(); continue; }
+      const parts = splitIntoDurations(full - cur, cur, ts);
+      const sum = parts.reduce((a, d) => a + durationTicks(d.id, d.dots), 0);
+      if (sum === full - cur) {
+        for (const d of parts) voice.push(makeRest(d.id, { dots: d.dots }));
+        continue;
       }
+      if (!voice.length) break;
+      voice.pop();
     }
   }
   /* Remove trailing empty voices beyond the first. */

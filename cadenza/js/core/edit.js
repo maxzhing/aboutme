@@ -879,6 +879,54 @@ export function updatePart(app, partIndex, props) {
   history.commit();
 }
 
+/** Move notes to the other staff of a grand-staff instrument. */
+export function setEventStaff(app, targets, staff) {
+  const { score, history } = app;
+  if (!targets.length) return;
+  history.begin('Cross-staff');
+  for (const t of targets) {
+    const loc = locateEvent(score, t);
+    if (!loc || (loc.part.staves || 1) < 2) continue;
+    history.touch(loc.partIndex, loc.measure);
+    const home = loc.voice % 2 === 0 ? 0 : 1;
+    const next = staff === null || staff === home ? null
+      : Math.max(0, Math.min((loc.part.staves || 1) - 1, staff));
+    loc.event.staff = next;
+  }
+  history.commit();
+}
+
+/** Nudge the selection up or down one staff. */
+export function moveAcrossStaff(app, targets, delta) {
+  const { score } = app;
+  const loc = targets.length ? locateEvent(score, targets[0]) : null;
+  if (!loc || (loc.part.staves || 1) < 2) return false;
+  const home = loc.voice % 2 === 0 ? 0 : 1;
+  const current = loc.event.staff === null || loc.event.staff === undefined ? home : loc.event.staff;
+  setEventStaff(app, targets, current + delta);
+  return true;
+}
+
+/* ---------------------------------------------------------- figured bass */
+
+/** `figures` lists the stack from the top down, as it is spoken: ["6", "4"]. */
+export function setFigures(app, eventId, figures) {
+  const { score, history } = app;
+  const loc = locateEvent(score, eventId);
+  if (!loc) return;
+  history.begin('Figured bass');
+  history.touch(loc.partIndex, loc.measure);
+  const list = (figures || []).map((f) => String(f).trim()).filter(Boolean);
+  loc.event.figures = list.length ? list : null;
+  history.commit();
+}
+
+/** Parse the usual shorthand: "6 4", "6/4", "#6", "7," into separate figures. */
+export function parseFigures(text) {
+  if (!text) return [];
+  return String(text).trim().split(/[\s,/]+/).filter(Boolean).slice(0, 5);
+}
+
 /* ------------------------------------------------------------ voice tools */
 
 export function addVoice(app, partIndex, measureIndex) {

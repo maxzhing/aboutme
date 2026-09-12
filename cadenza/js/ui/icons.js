@@ -145,5 +145,9 @@ export const UI = {
   audio: S('<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M16 9a5 5 0 0 1 0 6M19.5 6.5a9 9 0 0 1 0 11"/>'),
   xml: S('<path d="M9 8 5 12l4 4M15 8l4 4-4 4M13 6l-2 12"/>'),
   image: S('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/>'),
+  crossUp: S('<path d="M4 7h16M4 17h16"/><path d="M12 20V9M12 9l-3 3M12 9l3 3"/>'),
+  crossDown: S('<path d="M4 7h16M4 17h16"/><path d="M12 4v11M12 15l-3-3M12 15l3 3"/>'),
+  figures: S('<path d="M4 5h16"/><path d="M7 10h3M8.5 10v5M7 15h3"/><path d="M14 10h3v2.5h-3V15h3"/>'),
+  multirest: S('<path d="M3 12h18" stroke-width="4"/><path d="M4 8v8M20 8v8" stroke-width="1.6"/>'),
   close: S('<path d="M18 6 6 18M6 6l12 12"/>'),
 };

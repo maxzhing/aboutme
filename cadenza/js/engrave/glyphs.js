@@ -509,7 +509,7 @@ export const GLYPHS = {
   arpeggio: { d: ARPEGGIO_UNIT, w: 0.52, h: 1.0 },
 
   dynamicP: { d: DYN_P, w: 1.34 },
-  dynamicF: { d: DYN_F, w: 1.28 },
+  dynamicF: { d: DYN_F, w: 1.42 },
   dynamicM: { d: DYN_M, w: 1.42 },
   dynamicS: { d: DYN_S, w: 0.84 },
   dynamicZ: { d: DYN_Z, w: 0.84 },

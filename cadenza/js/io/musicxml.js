@@ -164,6 +164,8 @@ function measureXML(score, part, pi, m) {
 
 function noteXML(score, part, ev, voice, staffNum, beam, accState, fifths, m) {
   const L = [];
+  /* A cross-staff note names the staff it is written on, not its voice's. */
+  const evStaff = ev.staff !== null && ev.staff !== undefined ? ev.staff + 1 : staffNum;
   const info = durationInfo(ev.duration);
   const dur = eventTicks(ev);
   const type = TYPE_NAMES[ev.duration] || 'quarter';
@@ -182,12 +184,29 @@ function noteXML(score, part, ev, voice, staffNum, beam, accState, fifths, m) {
     inner.push(`<voice>${voice + 1}</voice>`);
     inner.push(`<type>${type}</type>`);
     for (let d = 0; d < (ev.dots || 0); d++) inner.push('<dot/>');
-    if (staffNum) inner.push(`<staff>${staffNum}</staff>`);
+    if (ev.tuplet) {
+      inner.push('<time-modification>');
+      inner.push(`  <actual-notes>${ev.tuplet.actual}</actual-notes>`);
+      inner.push(`  <normal-notes>${ev.tuplet.normal}</normal-notes>`);
+      inner.push('</time-modification>');
+    }
+    if (evStaff) inner.push(`<staff>${evStaff}</staff>`);
     emit(inner);
     return L;
   }
 
   const dynamics = [];
+  for (const sp of score.spanners || []) {
+    if (sp.type !== 'cresc' && sp.type !== 'dim') continue;
+    if (sp.fromId === ev.id) {
+      dynamics.push('      <direction placement="below"><direction-type>' +
+        `<wedge type="${sp.type === 'cresc' ? 'crescendo' : 'diminuendo'}"/></direction-type></direction>`);
+    }
+    if (sp.toId === ev.id) {
+      dynamics.push('      <direction placement="below"><direction-type>' +
+        '<wedge type="stop"/></direction-type></direction>');
+    }
+  }
   if (ev.dynamic) {
     dynamics.push('      <direction placement="below"><direction-type><dynamics>' +
       `<${ev.dynamic}/></dynamics></direction-type></direction>`);
@@ -197,6 +216,19 @@ function noteXML(score, part, ev, voice, staffNum, beam, accState, fifths, m) {
       `<direction-type><words>${esc(t.content)}</words></direction-type></direction>`);
   }
   L.push(...dynamics);
+  if (ev.figures && ev.figures.length) {
+    L.push('      <figured-bass>');
+    for (const f of ev.figures) {
+      const m = /^([#b\u266f\u266d\u266e n+-]*)(\d*)(.*)$/.exec(String(f)) || [];
+      const prefix = { '#': 'sharp', '+': 'sharp', b: 'flat', '-': 'flat', n: 'natural',
+        '\u266f': 'sharp', '\u266d': 'flat', '\u266e': 'natural' }[(m[1] || '').trim()];
+      L.push('        <figure>');
+      if (prefix) L.push(`          <prefix>${prefix}</prefix>`);
+      if (m[2]) L.push(`          <figure-number>${m[2]}</figure-number>`);
+      L.push('        </figure>');
+    }
+    L.push('      </figured-bass>');
+  }
   if (ev.chordSymbol) {
     L.push(`      <harmony><root><root-step>${esc(ev.chordSymbol[0])}</root-step></root><kind text="${esc(ev.chordSymbol.slice(1))}">other</kind></harmony>`);
   }
@@ -227,7 +259,7 @@ function noteXML(score, part, ev, voice, staffNum, beam, accState, fifths, m) {
       inner.push('</time-modification>');
     }
     if (ev.stemDir && ev.stemDir !== 'auto') inner.push(`<stem>${ev.stemDir}</stem>`);
-    if (staffNum) inner.push(`<staff>${staffNum}</staff>`);
+    if (evStaff) inner.push(`<staff>${evStaff}</staff>`);
     if (beam && ni === 0 && info.beams > 0) inner.push(`<beam number="1">${beam}</beam>`);
 
     const notations = [];

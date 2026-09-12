@@ -40,6 +40,7 @@ export const M = {
   /* vertical */
   staffGap: 7.5,         // between staves of different parts
   graceStaffGap: 5.5,    // between staves of the same instrument
+  crossStaffGap: 7.8,    // widened when notes are written across the gap
   systemGap: 10,
   articGap: 0.55,
   articStep: 0.9,
@@ -50,6 +51,9 @@ export const M = {
   tempoY: -2.6,
   chordY: -2.0,
   tupletY: 1.2,
+  figureY: 5.3,          // first figured-bass line, below the staff
+  figureLine: 1.72,
+  figureSize: 1.95,
 
   /* text sizes, in staff spaces */
   titleSize: 5.2,

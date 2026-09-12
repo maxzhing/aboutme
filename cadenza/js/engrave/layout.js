@@ -204,6 +204,68 @@ function timeSigWidth(ts) {
   return Math.max(String(ts.beats).length, String(ts.beatType).length) * 1.28;
 }
 
+/* --------------------------------------------------------- multi-bar rests */
+
+/**
+ * Group the timeline into drawing blocks.  Consecutive bars in which every
+ * visible staff is silent collapse into one multi-bar rest, which is how parts
+ * are printed and how a player reads a long tacet.
+ */
+function buildBlocks(score, staves, o) {
+  const spannerEnds = new Set();
+  for (const sp of score.spanners || []) { spannerEnds.add(sp.fromId); spannerEnds.add(sp.toId); }
+
+  const silent = (m) => {
+    for (const sv of staves) {
+      const pm = sv.part.measures[m];
+      if (!pm) return false;
+      for (let v = 0; v < pm.voices.length; v++) {
+        if (voiceStaff(sv.part, v) !== sv.staff) continue;
+        for (const ev of pm.voices[v]) {
+          if (ev.type !== 'rest') return false;
+          if (ev.dynamic || spannerEnds.has(ev.id)) return false;
+          if ((ev.texts && ev.texts.length) || (ev.articulations && ev.articulations.length)) return false;
+          if (ev.figures && ev.figures.length) return false;
+        }
+      }
+    }
+    return true;
+  };
+  /* Anything a reader must see stops the run at that bar. */
+  const interrupts = (m) => {
+    const spec = score.measures[m] || {};
+    if (spec.timeSig || spec.keySig || spec.tempo || spec.rehearsal) return true;
+    if (spec.systemBreak || spec.pageBreak) return true;
+    if (spec.barline && spec.barline !== 'normal' && spec.barline !== 'final') return true;
+    for (const sv of staves) {
+      const cc = sv.part.measures[m] && sv.part.measures[m].clefChange;
+      if (cc && Object.keys(cc).length) return true;
+    }
+    return false;
+  };
+
+  const blocks = [];
+  const enabled = !!o.multiBarRests;
+  for (let m = 0; m < score.measures.length; m++) {
+    if (!enabled || !silent(m)) { blocks.push({ index: m, last: m, count: 1 }); continue; }
+    let end = m;
+    while (end + 1 < score.measures.length && silent(end + 1) && !interrupts(end + 1)) end++;
+    /* A run ends before a final barline so the closing bar keeps its own. */
+    if (end > m) {
+      blocks.push({ index: m, last: end, count: end - m + 1, multirest: true });
+      m = end;
+    } else {
+      blocks.push({ index: m, last: m, count: 1 });
+    }
+  }
+  return blocks;
+}
+
+/** A multi-bar rest takes a fixed width, growing only slightly with the count. */
+function multirestWidth(count) {
+  return 11 + Math.min(7, Math.log2(Math.max(1, count)) * 2.1);
+}
+
 /* ------------------------------------------------------------ main entry */
 
 export function layoutScore(score, opts = {}) {
@@ -214,6 +276,7 @@ export function layoutScore(score, opts = {}) {
     pageWidth: null,
     showMeasureNumbers: true,
     showTitle: true,
+    multiBarRests: false,
     spatiumMm: score.spatium || 1.75,
     ...opts,
   };
@@ -242,31 +305,39 @@ export function layoutScore(score, opts = {}) {
   const bracketW = staves.length > 1 ? 1.6 : 0;
 
   /* --- measure widths --------------------------------------------------- */
-  const grids = [];
-  for (let m = 0; m < score.measures.length; m++) grids.push(buildGrid(score, m, staves, o));
+  const blocks = buildBlocks(score, staves, o);
+  const gridFor = (b) => (b.multirest
+    ? { columns: [{ tick: 0, leftPad: 0, headW: 1.18, graceW: 0, advance: multirestWidth(b.count), duration: 0 }],
+      width: multirestWidth(b.count), total: measureTicks(timeSigAt(score, b.index)), ts: timeSigAt(score, b.index) }
+    : buildGrid(score, b.index, staves, o));
+  for (const b of blocks) b.grid = gridFor(b);
 
   /* --- system breaking --------------------------------------------------- */
   const contentW = pageW - margin.left - margin.right;
   const systems = [];
   let cur = null;
-  for (let m = 0; m < score.measures.length; m++) {
+  for (const b of blocks) {
+    const m = b.index;
     const atStart = !cur || cur.measures.length === 0;
     const lead = leadingBlock(score, m, staves, o, atStart);
-    const need = grids[m].width + lead.width + M.measurePadLeft + M.measurePadRight;
+    const need = b.grid.width + lead.width + M.measurePadLeft + M.measurePadRight;
     const indent = (systems.length === 0 ? nameW + bracketW : (showNames ? nameW * 0.55 + bracketW : bracketW));
     if (!cur) cur = { measures: [], width: 0, indent };
     const avail = contentW - cur.indent;
+    const entry = (l) => ({
+      index: m, last: b.last, count: b.count, multirest: !!b.multirest,
+      lead: l, grid: b.grid, natural: b.grid.width + l.width + M.measurePadLeft + M.measurePadRight,
+    });
     if (cur.measures.length && cur.width + need > avail) {
       systems.push(cur);
       cur = { measures: [], width: 0, indent: showNames ? nameW * 0.55 + bracketW : bracketW };
-      const l2 = leadingBlock(score, m, staves, o, true);
-      cur.measures.push({ index: m, lead: l2, grid: grids[m], natural: grids[m].width + l2.width + M.measurePadLeft + M.measurePadRight });
+      cur.measures.push(entry(leadingBlock(score, m, staves, o, true)));
       cur.width = cur.measures[0].natural;
     } else {
-      cur.measures.push({ index: m, lead, grid: grids[m], natural: need });
+      cur.measures.push(entry(lead));
       cur.width += need;
     }
-    if (score.measures[m].systemBreak && cur.measures.length) {
+    if (score.measures[b.last].systemBreak && cur.measures.length) {
       systems.push(cur);
       cur = null;
     }
@@ -361,6 +432,8 @@ function addTitleBlock(page, score, pageW, margin, o) {
 function buildSystem(score, sys, staves, o, isFirst) {
   const staffItems = staves.map(() => []);
   const extents = staves.map(() => ({ top: 0, bottom: M.staffHeight }));
+  const crossWork = [];
+  const crossParts = new Set();
 
   for (let si = 0; si < staves.length; si++) {
     const sv = staves[si];
@@ -370,6 +443,10 @@ function buildSystem(score, sys, staves, o, isFirst) {
       out.push(...res.items);
       extents[si].top = Math.min(extents[si].top, res.top);
       extents[si].bottom = Math.max(extents[si].bottom, res.bottom);
+      if ((res.crossChords && res.crossChords.length) || (res.pendingBeams && res.pendingBeams.length)) {
+        crossWork.push({ si, sv, out, res });
+        crossParts.add(sv.partIndex);
+      }
     }
     /* Lift tempo marks clear of anything reaching above the top staff. */
     const tempos = out.filter((i) => i.kind === 'tempo');
@@ -383,9 +460,11 @@ function buildSystem(score, sys, staves, o, isFirst) {
     }
     /* Align every dynamic on this staff, and tell the hairpins where to go. */
     const dyns = out.filter((i) => i.kind === 'dynamic');
+    const figs = out.filter((i) => i.cls === 'figure');
+    const figBottom = figs.length ? Math.max(...figs.map((f) => f.y)) + 1.5 : -Infinity;
     const line = dyns.length
-      ? Math.max(M.dynamicY, ...dyns.map((d) => d.minY || 0))
-      : M.hairpinY;
+      ? Math.max(M.dynamicY, figBottom, ...dyns.map((d) => d.minY || 0))
+      : Math.max(M.hairpinY, figBottom);
     for (const d of dyns) d.y = line;
     for (const a of out) if (a.kind === 'anchor') a.meta.dynLine = line;
     if (dyns.length) extents[si].bottom = Math.max(extents[si].bottom, line + 1.4);
@@ -397,7 +476,9 @@ function buildSystem(score, sys, staves, o, isFirst) {
   for (let si = 0; si < staves.length; si++) {
     if (si > 0) {
       const samePart = staves[si].partIndex === staves[si - 1].partIndex;
-      const gap = samePart ? M.graceStaffGap : M.staffGap;
+      /* Cross-staff writing lives in the gap, so widen it a little. */
+      const cross = samePart && crossParts.has(staves[si].partIndex);
+      const gap = samePart ? (cross ? M.crossStaffGap : M.graceStaffGap) : M.staffGap;
       y = ys[si - 1] + Math.max(
         M.staffHeight + gap,
         extents[si - 1].bottom + gap * 0.55 - extents[si].top,
@@ -405,9 +486,147 @@ function buildSystem(score, sys, staves, o, isFirst) {
     }
     ys.push(y);
   }
+
+  /* Now that the staves are placed, move the cross-staff notes onto their
+   * neighbour and beam the groups that span both. */
+  if (crossWork.length) {
+    const indexOf = (partIndex, staff) =>
+      staves.findIndex((k) => k.partIndex === partIndex && k.staff === staff);
+    for (const w of crossWork) {
+      for (const c of w.res.crossChords || []) {
+        const to = indexOf(w.sv.partIndex, c.crossTo);
+        if (to < 0) continue;
+        shiftChord(c, ys[to] - ys[w.si]);
+      }
+      for (const pb of w.res.pendingBeams || []) {
+        const shifts = new Set(pb.members.map((c) => c.staffShift || 0));
+        const r = shifts.size > 1
+          ? layoutCrossBeam(pb.members, pb.events, pb.indices, pb.ts)
+          : layoutBeam(pb.members, pb.events, pb.indices, pb.ts, pb.multi, pb.voice);
+        w.out.push(...r.items);
+        for (const c of pb.members) {
+          if (c.beamed || !c.flagCount) continue;
+          w.out.push(item('path', {
+            d: FLAG_GLYPHS[c.dir === 1 ? 'up' : 'down'](c.flagCount),
+            x: c.stemX + (c.dir === 1 ? -M.stem / 2 : M.stem / 2), y: c.stemEndY, cls: 'flag',
+          }));
+        }
+        extents[w.si].top = Math.min(extents[w.si].top, 0);
+      }
+    }
+  }
+
   const height = ys[ys.length - 1] + Math.max(M.staffHeight, extents[extents.length - 1].bottom)
     - Math.min(0, extents[0].top);
   return { staffItems, ys, extents, height, topPad: -Math.min(0, extents[0].top), sys };
+}
+
+/** Move an already-laid-out chord (and everything attached to it) vertically. */
+function shiftChord(c, dy) {
+  if (!dy) return;
+  for (const it of c.items) {
+    if (it.y !== undefined) it.y += dy;
+    if (it.y1 !== undefined) { it.y1 += dy; it.y2 += dy; }
+    if (it.kind === 'beam' || it.kind === 'curve') it.ty = (it.ty || 0) + dy;
+    if (it.meta) {
+      if (it.meta.notes) for (const n of it.meta.notes) n.y += dy;
+      if (it.meta.stemEndY !== undefined && it.meta.stemEndY !== null) it.meta.stemEndY += dy;
+      it.meta.staffShift = (it.meta.staffShift || 0) + dy;
+    }
+  }
+  for (const n of c.notes || []) n.y += dy;
+  if (c.stemEndY !== null && c.stemEndY !== undefined) c.stemEndY += dy;
+  c.top += dy;
+  c.bottom += dy;
+  c.staffShift = (c.staffShift || 0) + dy;
+}
+
+/**
+ * Beam a group whose notes are split between two staves.  The beam runs
+ * through the gap between them and each chord's stem points at it, so notes
+ * above the beam get down-stems and notes below get up-stems.
+ */
+function layoutCrossBeam(members, events, indices, ts) {
+  const items = [];
+  const shifts = members.map((c) => c.staffShift || 0);
+  const upper = Math.min(...shifts);
+  const lower = Math.max(...shifts);
+  /* Halfway between the lower edge of the upper staff and the top of the lower. */
+  const mid = (upper + M.staffHeight + lower) / 2;
+
+  const pts = members.map((c) => {
+    const ys = c.notes.map((n) => n.y);
+    return {
+      c,
+      x: c.x + c.headW / 2,
+      hi: Math.min(...ys),
+      lo: Math.max(...ys),
+      centre: (Math.min(...ys) + Math.max(...ys)) / 2,
+    };
+  });
+
+  /* A gentle slope following the outer chords, kept inside the gap. */
+  const first = pts[0];
+  const last = pts[pts.length - 1];
+  const dx = Math.max(0.01, last.x - first.x);
+  let slope = ((last.centre - first.centre) * 0.2) / dx;
+  slope = Math.max(-0.12, Math.min(0.12, slope));
+  let intercept = mid - slope * ((first.x + last.x) / 2);
+  const beamAt = (x) => slope * x + intercept;
+  /* Keep at least a little stem on every chord. */
+  const minStem = 1.1;
+  for (const p of pts) {
+    const y = beamAt(p.x);
+    if (p.lo < y && y - p.lo < minStem) intercept += minStem - (y - p.lo);
+    if (p.hi > y && p.hi - y < minStem) intercept -= minStem - (p.hi - y);
+  }
+
+  const levels = beamLevels(events, indices, 0, ts);
+  const maxBeams = Math.max(...levels.map((l) => l.beams));
+  const step = M.beam + M.beamGap;
+  for (let level = 1; level <= maxBeams; level++) {
+    let run = [];
+    const flush = () => {
+      if (run.length > 1) emitBeam(items, run[0].x, run[run.length - 1].x, level, 1, beamAt, step);
+      else if (run.length === 1) {
+        const k = pts.indexOf(run[0]);
+        const back = k === pts.length - 1;
+        emitBeam(items, back ? run[0].x - 1.05 : run[0].x, back ? run[0].x : run[0].x + 1.05,
+          level, 1, beamAt, step);
+      }
+      run = [];
+    };
+    for (let k = 0; k < pts.length; k++) {
+      const has = levels[k].beams >= level;
+      const linked = k > 0 && (levels[k].continued || 0) >= level && levels[k - 1].beams >= level;
+      if (!has) { flush(); continue; }
+      if (run.length && !linked) flush();
+      run.push(pts[k]);
+    }
+    flush();
+  }
+
+  let top = Infinity;
+  let bottom = -Infinity;
+  for (const p of pts) {
+    const y = beamAt(p.x);
+    /* Point the stem at the beam from whichever side the chord sits on. */
+    const above = p.centre < y;
+    const dir = above ? -1 : 1;
+    const anchor = above ? p.lo : p.hi;
+    p.c.beamed = true;
+    p.c.dir = dir;
+    p.c.stemEndY = y;
+    if (p.c.stemItem) {
+      p.c.stemItem.x1 = p.x;
+      p.c.stemItem.x2 = p.x;
+      p.c.stemItem.y1 = anchor - dir * 0.06;
+      p.c.stemItem.y2 = y;
+    }
+    top = Math.min(top, p.hi - 0.6, y - 0.6);
+    bottom = Math.max(bottom, p.lo + 0.6, y + 0.6 + (maxBeams - 1) * step);
+  }
+  return { items, top, bottom };
 }
 
 function placeSystem(page, built, x0, y0, sys, score, staves, o) {
@@ -520,17 +739,18 @@ function drawBarlines(page, score, sys, staves, built, x0, top, o, topExtent) {
     page.items.push(item('line', { x1: x0, y1, x2: x0, y2, w: M.barlineThin, cls: 'barline' }));
   }
   for (const mm of sys.measures) {
-    const spec = score.measures[mm.index] || {};
+    const spec = score.measures[mm.last === undefined ? mm.index : mm.last] || {};
+    const startSpec = score.measures[mm.index] || {};
     const x = x0 + mm.x + mm.width;
     drawAt(x, spec.barline || 'normal', true);
-    if (spec.barline === 'repeat-start' || spec.barline === 'repeat-both') {
+    if (startSpec.barline === 'repeat-start' || startSpec.barline === 'repeat-both') {
       drawAt(x0 + mm.x, 'repeat-start', false);
     }
-    if (spec.rehearsal) {
+    if (startSpec.rehearsal) {
       page.items.push(item('rehearsal', {
         x: x0 + mm.x + 0.4,
         y: yTop(0) + Math.min(-2.4, (topExtent ? topExtent.top : 0) - 1.0),
-        str: spec.rehearsal, size: M.rehearsalSize,
+        str: startSpec.rehearsal, size: M.rehearsalSize,
         ref: { measure: mm.index, kind: 'rehearsal' },
       }));
     }
@@ -652,6 +872,36 @@ function layoutMeasureStaff(score, mm, sv, staffIndex, o, sys) {
   }
   if (lead.width > 0) x += M.leadingPad;
 
+  /* --- a multi-bar rest replaces the contents of the block --------------- */
+  if (mm.multirest) {
+    const left = x + 0.6;
+    const right = mm.x + mm.width - M.measurePadRight - 0.6;
+    const barTop = 1.5;
+    const barBottom = 2.5;
+    const serif = 0.19;
+    items.push(item('rect', { x: left, y: barTop, w: Math.max(2, right - left), h: barBottom - barTop, cls: 'multirest' }));
+    items.push(item('rect', { x: left, y: 1.0, w: serif, h: 2.0, cls: 'multirest' }));
+    items.push(item('rect', { x: right - serif, y: 1.0, w: serif, h: 2.0, cls: 'multirest' }));
+    const label = String(mm.count);
+    const digitW = 1.12;
+    let dx = (left + right) / 2 - (label.length * digitW) / 2 + digitW / 2;
+    for (const ch of label) {
+      items.push(gl('timeSig' + ch, dx, -1.5, { scale: 0.86, cls: 'multirest-num' }));
+      dx += digitW;
+    }
+    grow(-3.0, M.staffHeight);
+    items.push(item('anchor', {
+      x: left, y: 2,
+      ref: { measure: mm.index, partIndex: sv.partIndex, staff: sv.staff, kind: 'multirest' },
+      meta: { top, bottom, isRest: true, dir: 1, notes: [] },
+    }));
+    if (!mm.noteArea) {
+      mm.noteArea = { start: left, end: right };
+      mm.columns = [{ tick: 0, x: left }];
+    }
+    return { items, top, bottom, crossChords: [], pendingBeams: [] };
+  }
+
   /* --- column positions -------------------------------------------------- */
   const noteStart = x;
   const avail = mm.x + mm.width - M.measurePadRight - noteStart;
@@ -686,6 +936,29 @@ function layoutMeasureStaff(score, mm, sv, staffIndex, o, sys) {
   const voicesHere = [];
   for (let v = 0; v < pm.voices.length; v++) if (voiceStaff(sv.part, v) === sv.staff) voicesHere.push(v);
   const multi = voicesHere.length > 1;
+  /* If another voice is writing onto this staff, its notes fill the bar; an
+   * extra whole-bar rest here would be redundant. */
+  let receivesCross = false;
+  for (let v = 0; v < pm.voices.length; v++) {
+    if (voiceStaff(sv.part, v) === sv.staff) continue;
+    for (const ev of pm.voices[v]) {
+      if (ev.staff !== null && ev.staff !== undefined && ev.staff === sv.staff) { receivesCross = true; break; }
+    }
+    if (receivesCross) break;
+  }
+
+  const crossChords = [];
+  const pendingBeams = [];
+  /* A cross-staff note is written on its neighbour's staff; we lay it out here
+   * and shift it once the staves have been stacked. */
+  const staffOf = (ev) => (ev.staff === null || ev.staff === undefined ? sv.staff : ev.staff);
+  const clefCache = new Map([[sv.staff, clef]]);
+  const clefForStaff = (st) => {
+    if (!clefCache.has(st)) {
+      clefCache.set(st, CLEFS[clefAt(score, sv.part, mm.index, st)] || clef);
+    }
+    return clefCache.get(st);
+  };
 
   for (const v of voicesHere) {
     const voice = pm.voices[v];
@@ -697,10 +970,13 @@ function layoutMeasureStaff(score, mm, sv, staffIndex, o, sys) {
       const ev = voice[i];
       if (ev.grace) { pendingGrace.push(ev); continue; }
       const bx = colX.get(tick) ?? noteStart;
+      const target = staffOf(ev);
       const ctx = {
-        x: bx, clef, fifths, accState, o, score, sv, ts, tick,
+        x: bx, clef: clefForStaff(target), fifths, accState, o, score, sv, ts, tick,
         voiceIndex: v, multi, measure: mm.index, k, measureRight,
+        crossTo: target === sv.staff ? null : target,
         isFullMeasure: ev.type === 'rest' && (ev.fullMeasure || voice.length === 1),
+        hideRest: receivesCross && voice.every((e) => e.type === 'rest'),
       };
       if (pendingGrace.length) {
         let gx = bx - 0.5;
@@ -716,30 +992,39 @@ function layoutMeasureStaff(score, mm, sv, staffIndex, o, sys) {
       const c = layoutChord(ev, ctx);
       c.index = i;
       c.tick = tick;
+      c.crossTo = ctx.crossTo;
       chords.push(c);
       items.push(...c.items);
-      grow(c.top, c.bottom);
+      if (c.crossTo === null) grow(c.top, c.bottom);
+      else crossChords.push(c);
       tick += eventTicks(ev);
     }
 
     /* beams */
     const real = chords.filter((c) => !c.grace);
-    const groups = computeBeams(voice.filter((e) => !e.grace), ts);
+    const flat = voice.filter((e) => !e.grace);
+    const groups = computeBeams(flat, ts);
     for (const g of groups) {
       const members = g.map((idx) => real[idx]).filter(Boolean);
-      if (members.length > 1) {
-        const r = layoutBeam(members, voice.filter((e) => !e.grace), g, ts, multi, v);
-        items.push(...r.items);
-        grow(r.top, r.bottom);
+      if (members.length < 2) continue;
+      if (members.some((c) => c.crossTo !== null)) {
+        /* Wait until the staves are placed: the beam spans both of them. */
+        pendingBeams.push({ members, events: flat, indices: g, ts, multi, voice: v });
+        continue;
       }
+      const r = layoutBeam(members, flat, g, ts, multi, v);
+      items.push(...r.items);
+      grow(r.top, r.bottom);
     }
     for (const c of real) {
-      if (!c.beamed && c.flagCount > 0) {
-        items.push(item('path', {
+      if (!c.beamed && c.flagCount > 0 && !pendingBeams.some((b) => b.members.includes(c))) {
+        const flag = item('path', {
           d: FLAG_GLYPHS[c.dir === 1 ? 'up' : 'down'](c.flagCount),
           x: c.stemX + (c.dir === 1 ? -M.stem / 2 : M.stem / 2), y: c.stemEndY, cls: 'flag',
-        }));
-        grow(Math.min(top, c.stemEndY - 0.4), Math.max(bottom, c.stemEndY + 0.4));
+        });
+        items.push(flag);
+        if (c.crossTo !== null) c.items.push(flag);
+        else grow(Math.min(top, c.stemEndY - 0.4), Math.max(bottom, c.stemEndY + 0.4));
       }
     }
 
@@ -750,11 +1035,12 @@ function layoutMeasureStaff(score, mm, sv, staffIndex, o, sys) {
     for (const c of real) {
       const r = layoutMarks(c, multi, ts);
       items.push(...r.items);
-      grow(r.top, r.bottom);
+      if (c.crossTo !== null) c.items.push(...r.items);
+      else grow(r.top, r.bottom);
     }
   }
 
-  return { items, top, bottom };
+  return { items, top, bottom, crossChords, pendingBeams };
 }
 
 function sameSign(a, b) { return (a >= 0 && b >= 0) || (a <= 0 && b <= 0); }
@@ -817,6 +1103,12 @@ function layoutChord(ev, ctx) {
   const grow = (t, b) => { top = Math.min(top, t); bottom = Math.max(bottom, b); };
 
   if (ev.type === 'rest') {
+    if (ctx.hideRest) {
+      return {
+        items, top, bottom, ev, x: ctx.x, isRest: true, grace, flagCount: 0, dir: 1,
+        tuplet: ev.tuplet, notes: [], crossTo: null,
+      };
+    }
     const restName = ctx.isFullMeasure ? 'restWhole' : {
       breve: 'restBreve', whole: 'restWhole', half: 'restHalf', quarter: 'restQuarter',
       eighth: 'restEighth', '16th': 'rest16th', '32nd': 'rest32nd', '64th': 'rest64th',
@@ -1243,6 +1535,18 @@ function layoutMarks(c, multi, ts) {
     grow(top, minY + 1.4);
   }
 
+  /* Figured bass: a stack under the staff, read from the top down. */
+  if (ev.figures && ev.figures.length) {
+    ev.figures.forEach((f, i) => {
+      items.push(item('text', {
+        x: cx, y: M.figureY + i * M.figureLine, str: prettyFigure(f),
+        size: M.figureSize, anchor: 'middle', cls: 'figure',
+        ref: { eventId: ev.id, kind: 'figure', line: i },
+      }));
+    });
+    grow(top, M.figureY + (ev.figures.length - 1) * M.figureLine + 1.0);
+  }
+
   if (ev.chordSymbol) {
     items.push(item('text', {
       x: cx, y: M.chordY, str: ev.chordSymbol, size: M.chordSize, anchor: 'middle',
@@ -1291,6 +1595,13 @@ function layoutMarks(c, multi, ts) {
   }
 
   return { items, top, bottom };
+}
+
+/** Spell a figure with real accidental signs: "#6" reads as a sharp then 6. */
+function prettyFigure(f) {
+  return String(f)
+    .replace(/#/g, '\u266F').replace(/\bb/g, '\u266D').replace(/n/g, '\u266E')
+    .replace(/-/g, '\u266D').replace(/\+/g, '\u266F');
 }
 
 function aboveTaken(items, y) {

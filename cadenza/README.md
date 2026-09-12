@@ -33,7 +33,8 @@ node build.mjs                   # writes cadenza.html (~400 KB, no dependencies
 ## What it does
 
 **Notation.** Whole notes through 64ths, dotted and double-dotted, tuplets,
-grace notes, ties, chords, tremolos, and all five accidentals. Treble, bass,
+grace notes, ties, chords, tremolos, cross-staff writing, multi-bar rests,
+figured bass, and all five accidentals. Treble, bass,
 alto, tenor, soprano, mezzo, baritone, percussion and octave-transposed clefs.
 Key signatures from seven flats to seven sharps in major or minor, changeable at
 any bar, with transposing instruments written in their own key automatically.
@@ -45,6 +46,12 @@ breaking at the beat; slopes and stem lengths follow the usual conventions.
 Accidentals stack, seconds displace across the stem, ledger lines and dots place
 themselves, systems justify to the margin, and the staff size steps down as the
 ensemble grows — the way a printed score is set.
+
+A beam that spans both staves of a grand staff runs through the gap between
+them, with each chord's stem pointing at it from whichever side it sits on.
+Runs of empty bars collapse into multi-bar rests — always in a part, and in the
+full score on request — stopping wherever a rehearsal mark, meter change or
+repeat needs to be read.
 
 **Sound.** Every instrument is synthesised with the Web Audio API: layered and
 slightly detuned partials with a hammer transient for the piano, bowed
@@ -58,9 +65,12 @@ fermatas, with a cursor that follows the music.
 **Input.** Type note letters, click the staff, play a MIDI keyboard, or use the
 on-screen piano. Every command has a shortcut, and every button shows it.
 
-**Files.** Native `.cadenza` documents, plus export to MusicXML 4.0, Standard
-MIDI File, WAV (rendered offline, faster than real time), SVG, PNG and PDF via
-print. Work in progress is kept in local storage between sessions.
+**Files.** Native `.cadenza` documents and MusicXML in both directions — open a
+file from Sibelius, Finale, Dorico or MuseScore and it comes in with its parts,
+voices, transpositions, cross-staff writing, tuplets, slurs, hairpins, lyrics
+and repeats intact. Export to MusicXML 4.0, Standard MIDI File, WAV (rendered
+offline, faster than real time), SVG, PNG and PDF via print. Work in progress is
+kept in local storage between sessions.
 
 ---
 
@@ -98,6 +108,7 @@ js/
     player.js      flattening the score to events, and the look-ahead scheduler
   io/
     musicxml.js    MusicXML 4.0 partwise export
+    musicxml-import.js  reading MusicXML back in
     midifile.js    Standard MIDI File export
     audiofile.js   offline rendering and WAV encoding
     files.js       save, open, autosave
@@ -127,5 +138,9 @@ proportional.
   same ground everywhere.
 - Audio needs a user gesture before it can start, which is why the first sound
   follows your first click or keypress.
-- MusicXML is written, not read. Import is the obvious next piece of work.
-- Cross-staff beaming, multi-bar rests and figured bass are not implemented.
+- Compressed MusicXML (`.mxl`) is not read; re-save as uncompressed
+  `.musicxml` first. The importer says so rather than failing silently.
+- Percussion is written on a single-line-agnostic five-line staff; separate
+  drum-kit staff positions per instrument are not modelled.
+- Playback does not follow first- and second-time endings; repeats are taken
+  once through.

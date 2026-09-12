@@ -1,0 +1,14 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{background:#fff;margin:16px}
+.pagebg{fill:#fff}.ink{fill:#111}.l{stroke:#111;stroke-linecap:butt}text{fill:#111}</style></head>
+<body><svg id="s" width="1200" height="120" viewBox="0 0 100 10"><g class="ink"></g></svg>
+<script type="module">
+import {GLYPHS, DYNAMIC_LETTERS, DYNAMIC_MARKS} from '../js/engrave/glyphs.js';
+let out=''; let X=1;
+for (const d of DYNAMIC_MARKS) {
+  let x=X; const letters=d.label.split('');
+  for (const ch of letters){ const g=GLYPHS[DYNAMIC_LETTERS[ch]]; if(!g) continue;
+    out+=`<path transform="translate(${x},5)" d="${g.d}"/>`; x+=g.w+0.09; }
+  X = x + 1.4;
+}
+document.querySelector('#s .ink').innerHTML = out;
+</script></body></html>

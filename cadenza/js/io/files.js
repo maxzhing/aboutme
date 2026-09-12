@@ -1,6 +1,7 @@
 /* Cadenza — saving, loading and autosave. */
 
 import { serialize, deserialize } from '../core/model.js';
+import { importMusicXML } from './musicxml-import.js';
 
 const AUTOSAVE_KEY = 'cadenza.autosave.v1';
 const RECENT_KEY = 'cadenza.recent.v1';
@@ -25,24 +26,38 @@ export function saveScoreFile(score) {
   download(safeName(score.title, 'cadenza'), serialize(score), 'application/json');
 }
 
+/** Open a Cadenza document or a MusicXML file, picking the reader by content. */
 export function openScoreFile() {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.cadenza,.json,application/json';
+    input.accept = '.cadenza,.json,.musicxml,.xml,application/json,application/vnd.recordare.musicxml+xml,text/xml';
     input.onchange = () => {
       const file = input.files && input.files[0];
       if (!file) { reject(new Error('No file chosen')); return; }
       const reader = new FileReader();
       reader.onload = () => {
-        try { resolve({ score: deserialize(String(reader.result)), name: file.name }); }
-        catch (err) { reject(err); }
+        const data = String(reader.result);
+        try {
+          resolve({ score: parseScoreData(data, file.name), name: file.name });
+        } catch (err) {
+          reject(err);
+        }
       };
       reader.onerror = () => reject(reader.error);
       reader.readAsText(file);
     };
     input.click();
   });
+}
+
+/** Decide the format from the content rather than trusting the extension. */
+export function parseScoreData(data, name = '') {
+  const head = data.replace(/^\uFEFF/, '').trimStart();
+  if (head.startsWith('<')) return importMusicXML(head);
+  if (head.startsWith('{')) return deserialize(head);
+  if (/\.musicxml$|\.xml$/i.test(name)) return importMusicXML(head);
+  throw new Error('Unrecognised file format.');
 }
 
 export function autosave(score) {

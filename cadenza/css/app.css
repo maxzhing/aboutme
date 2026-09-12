@@ -228,6 +228,7 @@ kbd {
 .score-page .beam, .score-page .tie, .score-page .slur { fill: var(--ink); }
 .score-page .rehearsal rect { stroke: var(--ink); fill: none; }
 .score-page .measnum { fill: #8d8d93; }
+.score-page .multirest, .score-page .multirest-num { fill: var(--ink); }
 .score-page .partname { fill: #33373d; }
 .score-page .staffline { stroke: #1c1f24; }
 

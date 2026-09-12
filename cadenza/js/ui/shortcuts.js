@@ -59,6 +59,7 @@ export const SHORTCUT_HELP = [
     ['Ctrl + E', 'Expression text'],
     ['Ctrl + L', 'Lyrics'],
     ['Ctrl + K', 'Chord symbol'],
+    ['Ctrl + G', 'Figured bass'],
   ]],
   ['File & view', [
     ['Ctrl + S', 'Save'],
@@ -107,6 +108,7 @@ export function installShortcuts(app) {
     if (mod && lower === 'e') { e.preventDefault(); app.act('text:expression'); return; }
     if (mod && lower === 'l') { e.preventDefault(); app.act('lyric'); return; }
     if (mod && lower === 'k') { e.preventDefault(); app.act('chordSymbol'); return; }
+    if (mod && lower === 'g') { e.preventDefault(); app.act('figuredBass'); return; }
     if (mod && e.altKey && lower === 'v') { e.preventDefault(); app.act('voice'); return; }
     if (mod && (k === 'Delete' || k === 'Backspace')) { e.preventDefault(); app.act('deleteMeasure'); return; }
     if (mod && k === 'Insert') { e.preventDefault(); app.act('insertMeasure'); return; }
@@ -126,6 +128,22 @@ export function installShortcuts(app) {
       else app.clearSelection();
       return;
     }
+    /* --- navigation (before the modifier guard: Ctrl and Shift both bind) -- */
+    if (k === 'ArrowUp' || k === 'ArrowDown') {
+      e.preventDefault();
+      const dir = k === 'ArrowUp' ? 1 : -1;
+      if (mod && e.shiftKey) app.act('crossStaff:' + (dir > 0 ? 'up' : 'down'));
+      else if (e.altKey) app.moveStaff(-dir);
+      else if (mod) app.act('octave:' + (dir > 0 ? 'up' : 'down'));
+      else app.stepPitch(dir);
+      return;
+    }
+    if (k === 'ArrowLeft' || k === 'ArrowRight') {
+      e.preventDefault();
+      app.navigate(k === 'ArrowRight' ? 1 : -1, { extend: e.shiftKey });
+      return;
+    }
+
     if (mod) return;   // leave remaining browser shortcuts alone
 
     /* --- note values ---------------------------------------------------- */
@@ -159,20 +177,6 @@ export function installShortcuts(app) {
     if (k === '-' || k === '[') { e.preventDefault(); app.act('alter:-1'); return; }
     if (k === '=') { e.preventDefault(); app.act('acc:0'); return; }
 
-    /* --- navigation ----------------------------------------------------- */
-    if (k === 'ArrowUp' || k === 'ArrowDown') {
-      e.preventDefault();
-      const dir = k === 'ArrowUp' ? 1 : -1;
-      if (e.altKey) app.moveStaff(-dir);
-      else if (e.ctrlKey || e.metaKey) app.act('octave:' + (dir > 0 ? 'up' : 'down'));
-      else app.stepPitch(dir);
-      return;
-    }
-    if (k === 'ArrowLeft' || k === 'ArrowRight') {
-      e.preventDefault();
-      app.navigate(k === 'ArrowRight' ? 1 : -1, { extend: e.shiftKey });
-      return;
-    }
     if (k === 'Tab') { e.preventDefault(); app.navigateMeasure(e.shiftKey ? -1 : 1); return; }
     if (k === 'Home') { e.preventDefault(); app.gotoMeasure(0); return; }
     if (k === 'End') { e.preventDefault(); app.gotoMeasure(app.score.measures.length - 1); return; }

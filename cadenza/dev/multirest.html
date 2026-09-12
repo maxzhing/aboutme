@@ -1,0 +1,24 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Multi-bar rests</title><style>
+body{background:#fff;margin:14px;font:12px system-ui}.pagebg{fill:#fff}.ink{fill:#111}
+.l{stroke:#111;stroke-linecap:butt}text{fill:#111}.beam,.tie,.slur{fill:#111}
+.multirest,.multirest-num{fill:#111}.rehearsal rect{stroke:#111;fill:none}.measnum{fill:#888}
+</style></head><body><div id="o"></div>
+<script type="module">
+import * as M from '../js/core/model.js';import * as T from '../js/core/theory.js';
+import {layoutScore} from '../js/engrave/layout.js';import {renderPageSVG} from '../js/engrave/render.js';
+const score=M.createScore({title:'',instrumentIds:['trumpet'],measures:40});
+const P=n=>T.pitchFromName(n);
+function put(m,list){const v=M.getVoice(score,0,m,0);v.length=0;
+ for(const [n,d] of list) v.push(M.makeNote(n.split('+').map(P),d));
+ M.normalizeMeasure(score,score.parts[0],m);}
+put(0,[['G4','quarter'],['A4','quarter'],['B4','half']]);
+put(1,[['C5','whole']]);
+put(18,[['D5','quarter'],['E5','quarter'],['F5','half']]);
+put(19,[['G5','whole']]);
+put(35,[['C5','half'],['G4','half']]);
+score.measures[10].rehearsal='A';
+score.measures[24].rehearsal='B';
+score.measures[24].timeSig={beats:3,beatType:4};
+const res=layoutScore(score,{multiBarRests:true, showTitle:false});
+document.getElementById('o').innerHTML=res.pages.map(p=>renderPageSVG(p,{spatium:11})).join('');
+</script></body></html>

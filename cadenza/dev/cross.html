@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Cross-staff + figures</title><style>
+body{background:#fff;margin:14px;font:12px system-ui}.pagebg{fill:#fff}.ink{fill:#111}
+.l{stroke:#111;stroke-linecap:butt}text{fill:#111}.beam,.tie,.slur{fill:#111}
+</style></head><body><div id="o"></div>
+<script type="module">
+import * as M from '../js/core/model.js';import * as T from '../js/core/theory.js';
+import * as E from '../js/core/edit.js';import {History} from '../js/core/history.js';
+import {layoutScore} from '../js/engrave/layout.js';import {renderPageSVG} from '../js/engrave/render.js';
+const score=M.createScore({title:'',instrumentIds:['piano'],measures:4});
+const app={score,history:new History(score)};
+const P=n=>T.pitchFromName(n);
+function put(m,v,list){const vo=M.getVoice(score,0,m,v);vo.length=0;
+ for(const [n,d,dots] of list) vo.push(n==='R'?M.makeRest(d,{dots:dots||0}):M.makeNote(n.split('+').map(P),d,{dots:dots||0}));
+ M.normalizeMeasure(score,score.parts[0],m); return vo;}
+// bar 1: an arpeggio starting in the bass and running up through the treble
+const v1=put(0,1,[['C2','16th'],['G2','16th'],['C3','16th'],['E3','16th'],['G3','16th'],['C4','16th'],['E4','16th'],['G4','16th'],
+                  ['C5','16th'],['G4','16th'],['E4','16th'],['C4','16th'],['G3','16th'],['E3','16th'],['C3','16th'],['G2','16th']]);
+put(0,0,[['R','whole']]);
+// the upper half of each run is written on the treble staff
+for (const i of [5,6,7,8,9,10]) E.setEventStaff(app,[v1[i].id],0);
+// bar 2: left hand crossing above the right
+const v2=put(1,1,[['C3','eighth'],['E3','eighth'],['G3','eighth'],['C5','eighth'],['E5','eighth'],['G4','eighth'],['E4','eighth'],['C4','eighth']]);
+put(1,0,[['R','whole']]);
+for (const i of [3,4,5]) E.setEventStaff(app,[v2[i].id],0);
+// bar 3: a plain bass line with figured bass
+const v3=put(2,1,[['C3','quarter'],['B2','quarter'],['A2','quarter'],['G2','quarter']]);
+put(2,0,[['E4+G4','quarter'],['D4+G4','quarter'],['C4+F4','quarter'],['B3+D4','quarter']]);
+E.setFigures(app,v3[1].id,['6']);
+E.setFigures(app,v3[2].id,['6','4']);
+E.setFigures(app,v3[3].id,['#7','5']);
+const res=layoutScore(score,{showTitle:false});
+document.getElementById('o').innerHTML=res.pages.map(p=>renderPageSVG(p,{spatium:12})).join('');
+</script></body></html>

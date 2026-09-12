@@ -155,6 +155,8 @@ export class Cadenza {
       concertPitch: !!this.score.concertPitch,
       showTitle: this.viewPart === null,
       showMeasureNumbers: true,
+      /* Parts are always printed with multi-bar rests; the score only when asked. */
+      multiBarRests: !!this.score.multiBarRests || this.viewPart !== null,
     });
     const sp = this.spatiumPx;
     const html = this.layout.pages.map((p) => renderPageSVG(p, { spatium: sp })).join('');
@@ -176,12 +178,15 @@ export class Cadenza {
     this.layout.pages.forEach((pg, pi) => {
       for (const sys of pg.systems) {
         for (const mm of sys.measures) {
-          const list = this.measureRects.get(mm.index) || [];
-          list.push({
-            page: pi, x: sys.x + mm.x, y: sys.top ?? sys.y, w: mm.width,
-            h: sys.height, sys, mm,
-          });
-          this.measureRects.set(mm.index, list);
+          const last = mm.last === undefined ? mm.index : mm.last;
+          for (let m = mm.index; m <= last; m++) {
+            const list = this.measureRects.get(m) || [];
+            list.push({
+              page: pi, x: sys.x + mm.x, y: sys.top ?? sys.y, w: mm.width,
+              h: sys.height, sys, mm, runFrom: mm.index, runTo: last,
+            });
+            this.measureRects.set(m, list);
+          }
         }
       }
     });
@@ -195,6 +200,7 @@ export class Cadenza {
 
   paintSelection() {
     this.el.pages.querySelectorAll('.sel').forEach((n) => n.classList.remove('sel'));
+    this.el.pages.querySelectorAll('.loop-band').forEach((n) => n.remove());
     for (const id of this.selection) {
       this.el.pages.querySelectorAll(`[data-ev="${id}"]`).forEach((n) => n.classList.add('sel'));
     }
@@ -1001,6 +1007,23 @@ export class Cadenza {
         const cin = c.querySelector('#i-chord');
         cin.value = ev.chordSymbol || '';
         cin.onchange = () => { Edit.setChordSymbol(this, ev.id, cin.value.trim()); this.render(); };
+        const fb = field('Figured bass', '<input type="text" id="i-fig" placeholder="6 4">');
+        const fin = fb.querySelector('#i-fig');
+        fin.value = (ev.figures || []).join(' ');
+        fin.onchange = () => { Edit.setFigures(this, ev.id, Edit.parseFigures(fin.value)); this.render(); };
+        if ((loc.part.staves || 1) > 1) {
+          const cs = field('Staff', '<div class="insp-row" id="i-cross"></div>');
+          const row = cs.querySelector('#i-cross');
+          const home = loc.voice % 2 === 0 ? 0 : 1;
+          for (let st = 0; st < loc.part.staves; st++) {
+            const b = document.createElement('button');
+            const cur = ev.staff === null || ev.staff === undefined ? home : ev.staff;
+            b.className = 'chip' + (cur === st ? ' on' : '');
+            b.textContent = st === 0 ? 'Upper' : 'Lower';
+            b.onclick = () => { Edit.setEventStaff(this, this.selectedIds, st); this.render(); };
+            row.appendChild(b);
+          }
+        }
       }
     }
     if (this.measureSel) {
@@ -1030,6 +1053,7 @@ export class Cadenza {
     set('dot:1', this.dots === 1);
     set('dot:2', this.dots === 2);
     set('concertPitch', this.score.concertPitch);
+    set('multiBarRests', !!this.score.multiBarRests || this.viewPart !== null);
     set('partView', this.viewPart !== null);
     set('metronome', this.player.metronome);
     set('countIn', this.player.countIn);
@@ -1150,6 +1174,14 @@ export class Cadenza {
         this.render();
         return;
       }
+      case 'crossStaff': {
+        if (!needs()) return;
+        const ok = Edit.moveAcrossStaff(this, ids, arg === 'up' ? -1 : 1);
+        if (!ok) { Dlg.toast('Cross-staff needs an instrument with two staves', 'err'); return; }
+        this.render();
+        return;
+      }
+      case 'figuredBass': { this.editFigures(); return; }
       case 'voice': {
         const part = this.score.parts[this.cursor.partIndex];
         const next = (this.cursor.voice + 1) % 4;
@@ -1285,6 +1317,14 @@ export class Cadenza {
         return;
       }
       case 'partView': { this.togglePartView(); return; }
+      case 'multiBarRests': {
+        this.score.multiBarRests = !this.score.multiBarRests;
+        this.render();
+        Dlg.toast(this.score.multiBarRests
+          ? 'Multi-bar rests on' + (this.viewPart === null ? '' : ' (always on in parts)')
+          : 'Multi-bar rests off' + (this.viewPart === null ? '' : ' \u2014 parts still use them'));
+        return;
+      }
       case 'addInstrument': {
         Dlg.instrumentDialog((id) => {
           const at = Edit.addPart(this, id);
@@ -1562,6 +1602,21 @@ export class Cadenza {
     this.render();
   }
 
+  async editFigures() {
+    const loc = this.firstSelected();
+    if (!loc) { Dlg.toast('Select a note first', 'err'); return; }
+    const value = await Dlg.promptDialog({
+      title: 'Figured bass',
+      label: 'Figures, top to bottom \u2014 e.g. "6", "6 4", "#6 5", "7 b5"',
+      value: (loc.event.figures || []).join(' '),
+      placeholder: '6 4',
+    });
+    if (value === null) return;
+    Edit.setFigures(this, loc.event.id, Edit.parseFigures(value));
+    this.render();
+    this.navigate(1);
+  }
+
   async editRoman() {
     const loc = this.firstSelected();
     if (!loc) { Dlg.toast('Select a note first', 'err'); return; }
@@ -1697,7 +1752,11 @@ export class Cadenza {
     const svg = this.pageSVG(r.page);
     const ov = svg && svg.querySelector('.overlay');
     if (!ov) return;
-    const x = r.x + r.w * this.playhead.fraction;
+    const span = (r.runTo - r.runFrom) + 1;
+    const within = span > 1
+      ? ((this.playhead.measure - r.runFrom) + this.playhead.fraction) / span
+      : this.playhead.fraction;
+    const x = r.x + r.w * Math.max(0, Math.min(1, within));
     ov.insertAdjacentHTML('beforeend',
       `<rect class="play-measure" x="${r.x}" y="${r.y - 1}" width="${r.w}" height="${r.h + 2}"/>` +
       `<line class="play-line" x1="${x}" y1="${r.y - 1.4}" x2="${x}" y2="${r.y + r.h + 1.4}"/>`);
@@ -1777,16 +1836,20 @@ export class Cadenza {
 
   async openFile() {
     try {
-      const { score } = await Files.openScoreFile();
+      const { score, name } = await Files.openScoreFile();
       this.setScore(score);
       this.el.title.value = score.title || '';
       this.el.composer.value = score.composer || '';
+      this.el.tempoSlider.value = score.tempo;
+      this.el.tempoInput.value = score.tempo;
       this.render();
       this.buildParts();
       this.buildMixer();
-      Dlg.toast('Opened');
+      const bars = score.measures.length;
+      Dlg.toast(`Opened ${name} \u2014 ${score.parts.length} part${score.parts.length > 1 ? 's' : ''}, ${bars} bars`, 'ok');
     } catch (err) {
-      if (err && err.message !== 'No file chosen') Dlg.toast('Could not open that file', 'err');
+      if (!err || err.message === 'No file chosen') return;
+      Dlg.toast(err.message || 'Could not open that file', 'err');
     }
   }
 
@@ -1795,7 +1858,7 @@ export class Cadenza {
       title: 'Export',
       build: (body) => {
         const options = [
-          ['MusicXML', 'Open in Sibelius, Finale, Dorico, MuseScore', UI.xml, () => {
+          ['MusicXML', 'Open in Sibelius, Finale, Dorico or MuseScore', UI.xml, () => {
             Files.download(Files.safeName(this.score.title, 'musicxml'), exportMusicXML(this.score), 'application/vnd.recordare.musicxml+xml');
           }],
           ['MIDI file', 'Standard MIDI File for any DAW', UI.midi, () => {
