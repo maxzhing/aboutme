@@ -1,8 +1,8 @@
 /* Cadenza — MusicXML 4.0 (partwise) export. */
 
 import { TPQ, measureTicks, eventTicks, durationInfo, computeBeams } from '../core/rhythm.js';
-import { timeSigAt, keySigAt, tempoAt, clefAt, writtenFifths } from '../core/model.js';
-import { STEP_NAMES, CLEFS, staffPos, keyAlterations, neededAccidental } from '../core/theory.js';
+import { timeSigAt, keySigAt, tempoAt, clefAt, writtenFifths, measureAccidentals } from '../core/model.js';
+import { STEP_NAMES, CLEFS } from '../core/theory.js';
 import { getInstrument } from '../core/instruments.js';
 import { DYNAMIC_BY_ID } from '../engrave/glyphs.js';
 
@@ -139,12 +139,12 @@ function measureXML(score, part, pi, m) {
     const beams = computeBeams(voice.filter((e) => !e.grace), ts);
     const beamOf = new Map();
     beams.forEach((g) => g.forEach((idx, k) => beamOf.set(idx, k === 0 ? 'begin' : k === g.length - 1 ? 'end' : 'continue')));
-    const accState = {};
     const fifths = writtenFifths(score, part, m);
-    let realIndex = 0;
     const staffNum = staves > 1 ? (v % 2) + 1 : null;
+    const accMap = measureAccidentals(score, part, m, staffNum ? staffNum - 1 : 0, fifths);
+    let realIndex = 0;
     for (const ev of voice) {
-      L.push(...noteXML(score, part, ev, v, staffNum, beamOf.get(realIndex), accState, fifths, m));
+      L.push(...noteXML(score, part, ev, v, staffNum, beamOf.get(realIndex), accMap, fifths, m));
       if (!ev.grace) realIndex++;
     }
   }
@@ -162,7 +162,7 @@ function measureXML(score, part, pi, m) {
   return L;
 }
 
-function noteXML(score, part, ev, voice, staffNum, beam, accState, fifths, m) {
+function noteXML(score, part, ev, voice, staffNum, beam, accMap, fifths, m) {
   const L = [];
   /* A cross-staff note names the staff it is written on, not its voice's. */
   const evStaff = ev.staff !== null && ev.staff !== undefined ? ev.staff + 1 : staffNum;
@@ -250,8 +250,10 @@ function noteXML(score, part, ev, voice, staffNum, beam, accState, fifths, m) {
     inner.push(`<voice>${voice + 1}</voice>`);
     inner.push(`<type>${type}</type>`);
     for (let d = 0; d < (ev.dots || 0); d++) inner.push('<dot/>');
-    const alter = neededAccidental(n.pitch, fifths, accState, n.accidental === 'show' ? 'show' : n.accidental === 'none' ? 'none' : null);
-    if (alter !== null && ACC_NAMES[String(alter)]) inner.push(`<accidental>${ACC_NAMES[String(alter)]}</accidental>`);
+    const alter = accMap.get(ev.id + ':' + ni);
+    if (alter !== null && alter !== undefined && ACC_NAMES[String(alter)]) {
+      inner.push(`<accidental>${ACC_NAMES[String(alter)]}</accidental>`);
+    }
     if (ev.tuplet) {
       inner.push('<time-modification>');
       inner.push(`  <actual-notes>${ev.tuplet.actual}</actual-notes>`);

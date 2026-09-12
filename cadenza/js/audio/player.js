@@ -9,8 +9,8 @@
 import { SynthEngine } from './synth.js';
 import { DYNAMIC_BY_ID } from '../engrave/glyphs.js';
 import { TPQ, measureTicks, eventTicks, durationTicks, beatTicks } from '../core/rhythm.js';
-import { timeSigAt, keySigAt, tempoAt, soundingPitch, UNIT_TICKS } from '../core/model.js';
-import { toMidi, pitch } from '../core/theory.js';
+import { timeSigAt, keySigAt, tempoAt, soundingPitch, writtenFifths, UNIT_TICKS } from '../core/model.js';
+import { toMidi, pitch, diatonic, fromDiatonic, keyAlterations } from '../core/theory.js';
 import { getInstrument } from '../core/instruments.js';
 
 const LOOKAHEAD = 0.14;     // seconds of events scheduled ahead of the clock
@@ -232,6 +232,14 @@ export class Player {
       : arts.includes('accent') ? 'accent' : arts.includes('marcato') ? 'marcato' : null;
     const preset = this.presetFor(part, inst);
     const arpStep = ev.arpeggio ? 0.035 : 0;
+    /* Ornaments move to the neighbouring scale degree, so the step they take is
+     * whole or half depending on the key — a trill on E in C major is a
+     * semitone, the same trill in A major is a tone. */
+    const alts = keyAlterations(writtenFifths(score, part, m));
+    const neighbour = (p, dir) => {
+      const b = fromDiatonic(diatonic(p) + dir);
+      return toMidi(pitch(b.step, b.octave, alts[b.step])) - toMidi(p);
+    };
 
     ev.notes.forEach((n, ni) => {
       const sounding = soundingPitch(part, n.pitch);
@@ -239,6 +247,7 @@ export class Player {
       const base = {
         time: time + ni * arpStep, dur, midi, velocity: vel, partIndex,
         channel: part.id, preset, articulation, measure: m, eventId: ev.id,
+        up: neighbour(n.pitch, 1), down: neighbour(n.pitch, -1),
       };
       if (ev.tremolo) this.emitTremolo(base, ticks, secPerTick);
       else if (ev.ornaments && ev.ornaments.length) this.emitOrnament(base, ev, ticks, secPerTick);
@@ -299,13 +308,13 @@ export class Player {
       for (let k = 0; k < n; k++) {
         this.events.push({
           ...base, time: base.time + k * (total / n), dur: (total / n) * 0.95,
-          midi: base.midi + (k % 2 ? 2 : 0),
+          midi: base.midi + (k % 2 ? (base.up ?? 2) : 0),
         });
       }
       return;
     }
     if (ids.includes('mordent') || ids.includes('mordentLower')) {
-      const off = ids.includes('mordentLower') ? -1 : 2;
+      const off = ids.includes('mordentLower') ? (base.down ?? -1) : (base.up ?? 2);
       const q = Math.min(0.07, total / 4);
       this.events.push({ ...base, dur: q });
       this.events.push({ ...base, time: base.time + q, dur: q, midi: base.midi + off });
@@ -314,7 +323,7 @@ export class Player {
     }
     if (ids.includes('turn')) {
       const q = Math.min(0.075, total / 5);
-      [2, 0, -1, 0].forEach((off, k) => {
+      [base.up ?? 2, 0, base.down ?? -1, 0].forEach((off, k) => {
         this.events.push({ ...base, time: base.time + k * q, dur: k === 3 ? total - q * 3 : q, midi: base.midi + off });
       });
       return;

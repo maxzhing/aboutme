@@ -9,7 +9,7 @@
  * pitch is derived from the part's transposition at playback and export time.
  */
 
-import { pitch, toMidi, diatonic, fromDiatonic } from './theory.js';
+import { pitch, toMidi, diatonic, fromDiatonic, neededAccidental } from './theory.js';
 import { TPQ, measureTicks, durationTicks, eventTicks, splitIntoDurations, durationForTicks } from './rhythm.js';
 import { getInstrument, scoreOrder } from './instruments.js';
 import { suggestSpatium } from '../engrave/metrics.js';
@@ -76,6 +76,7 @@ export function makeRest(duration = 'quarter', opts = {}) {
     staff: null,
     figures: null,
     fullMeasure: false,
+    barTicks: 0,        // set on whole-bar rests: the length of the bar
     ...opts,
   };
 }
@@ -258,6 +259,98 @@ export function indexAtTick(voice, tick) {
   return -1;
 }
 
+/* --------------------------------------------------------- accidentals */
+
+/** Which staff of its part a voice normally sits on. */
+export function voiceStaffOf(part, voiceIndex) {
+  if ((part.staves || 1) < 2) return 0;
+  return voiceIndex % 2 === 0 ? 0 : 1;
+}
+
+/**
+ * Decide which accidental every note on one staff of one bar needs.
+ *
+ * An accidental holds for the rest of the bar at that pitch and octave, and it
+ * holds for *every voice on the staff* — so this walks the bar in time order
+ * rather than voice by voice.  A note tied over the barline keeps the
+ * accidental it was given, and never restates it.
+ *
+ * Returns a map from "eventId:noteIndex" to the alteration to print, or null.
+ */
+export function measureAccidentals(score, part, mIdx, staff, fifths, transform) {
+  const pm = part.measures[mIdx];
+  const out = new Map();
+  if (!pm) return out;
+  const show = transform || ((p) => p);
+  const writtenStaff = (ev, v) =>
+    (ev.staff === null || ev.staff === undefined ? voiceStaffOf(part, v) : ev.staff);
+
+  const entries = [];
+  for (let v = 0; v < pm.voices.length; v++) {
+    let tick = 0;
+    for (const ev of pm.voices[v]) {
+      if (ev.type === 'note' && writtenStaff(ev, v) === staff) entries.push({ tick, voice: v, ev });
+      if (!ev.grace) tick += eventTicks(ev);
+    }
+  }
+  entries.sort((a, b) => a.tick - b.tick || a.voice - b.voice);
+
+  /* Seed from anything tied in over the barline. */
+  const state = {};
+  const prev = mIdx > 0 ? part.measures[mIdx - 1] : null;
+  if (prev) {
+    for (let v = 0; v < prev.voices.length; v++) {
+      for (const ev of prev.voices[v]) {
+        if (ev.type !== 'note' || writtenStaff(ev, v) !== staff) continue;
+        for (const n of ev.notes) {
+          if (n.tie !== 'start' && n.tie !== 'both') continue;
+          const p = show(n.pitch);
+          state[p.step + ':' + p.octave] = p.alter;
+        }
+      }
+    }
+  }
+
+  for (const e of entries) {
+    e.ev.notes.forEach((n, ni) => {
+      const p = show(n.pitch);
+      const forced = n.accidental === 'show' ? 'show' : n.accidental === 'none' ? 'none' : null;
+      if (n.tie === 'stop' && forced !== 'show') {
+        state[p.step + ':' + p.octave] = p.alter;
+        out.set(e.ev.id + ':' + ni, null);
+        return;
+      }
+      out.set(e.ev.id + ':' + ni, neededAccidental(p, fifths, state, forced));
+    });
+  }
+  return out;
+}
+
+/**
+ * The alteration already in force for a pitch at a point in a bar, from any
+ * voice on the staff — what a player would carry over when reading on.
+ * Returns null when nothing has altered that pitch yet.
+ */
+export function alterInForce(part, mIdx, staff, tick, step, octave) {
+  const pm = part.measures[mIdx];
+  if (!pm) return null;
+  let found = null;
+  let foundAt = -1;
+  for (let v = 0; v < pm.voices.length; v++) {
+    const home = (ev) => (ev.staff === null || ev.staff === undefined ? voiceStaffOf(part, v) : ev.staff);
+    let t = 0;
+    for (const ev of pm.voices[v]) {
+      if (ev.type === 'note' && t <= tick && home(ev) === staff && t >= foundAt) {
+        for (const n of ev.notes) {
+          if (n.pitch.step === step && n.pitch.octave === octave) { found = n.pitch.alter; foundAt = t; }
+        }
+      }
+      if (!ev.grace) t += eventTicks(ev);
+    }
+  }
+  return found;
+}
+
 /* --------------------------------------------------------- normalisation */
 
 /**
@@ -285,8 +378,22 @@ export function normalizeMeasure(score, part, m) {
   for (let v = 0; v < pm.voices.length; v++) {
     const voice = pm.voices[v];
     if (!voice.length) {
-      if (v === 0) voice.push(makeRest('whole', { fullMeasure: true }));
+      if (v === 0) voice.push(makeRest('whole', { fullMeasure: true, barTicks: full }));
       continue;
+    }
+    /* A bar holding one rest is a whole-bar rest: drawn as a semibreve in any
+     * meter, and re-measured here so a change of meter keeps it exact. */
+    if (voice.length === 1 && voice[0].type === 'rest' && !voice[0].tuplet
+      && (voice[0].fullMeasure || eventTicks(voice[0]) === full)) {
+      voice[0].fullMeasure = true;
+      voice[0].barTicks = full;
+      voice[0].duration = 'whole';
+      voice[0].dots = 0;
+      continue;
+    }
+    /* Conversely, a rest that is no longer alone is an ordinary rest again. */
+    for (const ev of voice) {
+      if (ev.fullMeasure && voice.length > 1) { ev.fullMeasure = false; ev.barTicks = 0; }
     }
     /* Drop a stale full-measure rest that now shares the bar with real notes. */
     if (voice.length > 1) for (const ev of voice) ev.fullMeasure = false;

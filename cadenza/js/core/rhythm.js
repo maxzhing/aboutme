@@ -186,6 +186,9 @@ export function computeBeams(events, ts) {
 }
 
 export function eventTicks(ev) {
+  /* A whole-bar rest is drawn as a semibreve whatever the meter, so its length
+   * is the bar's, not the one its written value would imply. */
+  if (ev.fullMeasure && ev.barTicks) return ev.barTicks;
   return durationTicks(ev.duration, ev.dots || 0, ev.tuplet || null);
 }
 

@@ -74,6 +74,27 @@ kept in local storage between sessions.
 
 ---
 
+## Musical correctness
+
+The rules of common-practice notation are written down as executable checks:
+
+```sh
+node cadenza/test/rules.mjs
+```
+
+Sixty-seven of them, each stating a rule and asserting the engine follows it —
+that an accidental holds for the rest of the bar across *every* voice on the
+staff, that it does not survive the barline, that a note tied over one never
+restates it; that a note on the middle line stems down; that eighths beam in
+half-bars in 4/4 and in threes in 6/8, with secondary beams breaking at the
+beat; that a whole-bar rest is drawn as a semibreve in every meter from 3/8 to
+4/2; that stepping a note up a staff position takes its accidental from the key
+rather than carrying the old one; that a trill moves to the next scale degree,
+so the same trill is a semitone in C major and a tone in A major; and that every
+transposing instrument sounds where it should.
+
+---
+
 ## Getting started in the app
 
 1. Press <kbd>N</kbd> for note input.
@@ -120,8 +141,11 @@ js/
     dialogs.js     modals
     piano.js       the on-screen keyboard
     midi.js        Web MIDI input
+test/
+  rules.mjs        the rules of notation, as executable checks
 dev/
   glyphs.html      a proof sheet of every glyph, for checking the engraving
+  accidentals.html, cross.html, multirest.html, dyn.html  visual proofs
 ```
 
 Coordinates throughout the engraver are in **staff spaces**, with the origin of

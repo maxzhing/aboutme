@@ -18,6 +18,7 @@ import {
 } from '../core/rhythm.js';
 import {
   timeSigAt, keySigAt, tempoAt, clefAt, tickAt, writtenFifths, soundingPitch, locateEvent,
+  measureAccidentals, voiceStaffOf,
 } from '../core/model.js';
 import { bracketGroups, getInstrument } from '../core/instruments.js';
 
@@ -54,9 +55,12 @@ export function visibleStaves(score, partFilter) {
   return out;
 }
 
-function voiceStaff(part, voiceIndex) {
-  if ((part.staves || 1) < 2) return 0;
-  return voiceIndex % 2 === 0 ? 0 : 1;
+const voiceStaff = voiceStaffOf;
+
+/** Resolve a bar's accidentals, honouring the concert-pitch view. */
+function resolveAccidentals(score, sv, mIdx, fifths, o) {
+  return measureAccidentals(score, sv.part, mIdx, sv.staff, fifths,
+    (p) => displayPitch(score, sv.part, p, o));
 }
 
 /* ------------------------------------------------- per-measure rhythm grid */
@@ -79,16 +83,16 @@ function buildGrid(score, mIdx, staves, opts) {
     const pm = sv.part.measures[mIdx];
     if (!pm) continue;
     const fifths = displayFifths(score, sv.part, mIdx, opts);
+    const accMap = resolveAccidentals(score, sv, mIdx, fifths, opts);
     for (let v = 0; v < pm.voices.length; v++) {
       if (voiceStaff(sv.part, v) !== sv.staff) continue;
-      const accState = {};
       let tick = 0;
       let graceRun = 0;
       for (const ev of pm.voices[v]) {
         if (ev.grace) { graceRun += 1; continue; }
         const col = touch(tick);
         if (graceRun) { col.graceW = Math.max(col.graceW, graceRun * 1.5 + 0.3); graceRun = 0; }
-        const info = analyseEvent(ev, sv, score, mIdx, fifths, accState, opts);
+        const info = analyseEvent(ev, sv, score, mIdx, fifths, accMap, opts);
         col.leftPad = Math.max(col.leftPad, info.accWidth);
         col.headW = Math.max(col.headW, info.width);
         tick += eventTicks(ev);
@@ -122,19 +126,19 @@ function displayPitch(score, part, p, opts) {
 }
 
 /** Width contributions of one event: accidentals on the left, heads on the right. */
-function analyseEvent(ev, sv, score, mIdx, fifths, accState, opts) {
+function analyseEvent(ev, sv, score, mIdx, fifths, accMap, opts) {
   if (ev.type === 'rest') return { accWidth: 0, width: GLYPHS.restQuarter.w };
-  const clef = clefAt(score, sv.part, mIdx, sv.staff);
+  const clef = clefAt(score, sv.part, mIdx, ev.staff ?? sv.staff);
   let accWidth = 0;
   let heads = 1.18;
   let seconds = false;
   const positions = [];
-  for (const n of ev.notes) {
+  ev.notes.forEach((n, ni) => {
     const p = displayPitch(score, sv.part, n.pitch, opts);
-    const alter = neededAccidental(p, fifths, accState, n.accidental === 'show' ? 'show' : n.accidental === 'none' ? 'none' : null);
-    if (alter !== null) accWidth = Math.max(accWidth, accGlyphFor(alter).w + M.accidentalGap);
+    const alter = accMap.get(ev.id + ':' + ni);
+    if (alter !== null && alter !== undefined) accWidth = Math.max(accWidth, accGlyphFor(alter).w + M.accidentalGap);
     positions.push(staffPos(p, clef));
-  }
+  });
   positions.sort((a, b) => a - b);
   for (let i = 1; i < positions.length; i++) if (positions[i] - positions[i - 1] === 1) seconds = true;
   if (seconds) heads = 1.18 * 2;
@@ -960,9 +964,10 @@ function layoutMeasureStaff(score, mm, sv, staffIndex, o, sys) {
     return clefCache.get(st);
   };
 
+  const accMap = resolveAccidentals(score, sv, mm.index, fifths, o);
+
   for (const v of voicesHere) {
     const voice = pm.voices[v];
-    const accState = {};
     const chords = [];
     let tick = 0;
     let pendingGrace = [];
@@ -972,7 +977,7 @@ function layoutMeasureStaff(score, mm, sv, staffIndex, o, sys) {
       const bx = colX.get(tick) ?? noteStart;
       const target = staffOf(ev);
       const ctx = {
-        x: bx, clef: clefForStaff(target), fifths, accState, o, score, sv, ts, tick,
+        x: bx, clef: clefForStaff(target), fifths, accMap, o, score, sv, ts, tick,
         voiceIndex: v, multi, measure: mm.index, k, measureRight,
         crossTo: target === sv.staff ? null : target,
         isFullMeasure: ev.type === 'rest' && (ev.fullMeasure || voice.length === 1),
@@ -1142,8 +1147,8 @@ function layoutChord(ev, ctx) {
   const notes = ev.notes.map((n, ni) => {
     const p = displayPitch(ctx.score, ctx.sv.part, n.pitch, ctx.o);
     const pos = staffPos(p, ctx.clef);
-    const alter = neededAccidental(p, ctx.fifths, ctx.accState,
-      n.accidental === 'show' ? 'show' : n.accidental === 'none' ? 'none' : null);
+    const resolved = ctx.accMap ? ctx.accMap.get(ev.id + ':' + ni) : null;
+    const alter = resolved === undefined ? null : resolved;
     return { n, ni, p, pos, y: posY(pos), alter, head: n.head || 'normal' };
   }).sort((a, b) => a.pos - b.pos);
 
@@ -1156,7 +1161,7 @@ function layoutChord(ev, ctx) {
     const lo = notes[0].pos;
     const hi = notes[notes.length - 1].pos;
     const far = Math.abs(hi - 4) >= Math.abs(4 - lo) ? hi : lo;
-    dir = far > 4 ? -1 : 1;
+    dir = far >= 4 ? -1 : 1;
   }
 
   /* --- seconds are displaced to the far side of the stem ----------------- */

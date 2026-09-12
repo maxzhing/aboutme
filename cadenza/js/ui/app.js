@@ -1410,7 +1410,12 @@ export class Cadenza {
     }
     const p = Theory.fromDiatonic(best);
     const fifths = Model.writtenFifths(this.score, part, this.cursor.measure);
-    const alter = Theory.keyAlterations(fifths)[step];
+    /* An accidental earlier in the bar still applies, so typing F after an
+     * F-sharp gives another F-sharp — the note a reader would play. */
+    const inForce = Model.alterInForce(
+      part, this.cursor.measure, this.cursor.staff, this.cursor.tick, p.step, p.octave,
+    );
+    const alter = inForce === null ? Theory.keyAlterations(fifths)[step] : inForce;
     this.enterPitch(Theory.pitch(p.step, p.octave, alter), { chord });
   }
 

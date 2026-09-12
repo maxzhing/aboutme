@@ -5,7 +5,9 @@
  * scattered through the UI.
  */
 
-import { pitch, toMidi, diatonic, fromDiatonic, staffPos, diatonicAtPos, CLEFS, octaveShift } from './theory.js';
+import {
+  pitch, toMidi, diatonic, fromDiatonic, staffPos, diatonicAtPos, CLEFS, octaveShift, keyAlterations,
+} from './theory.js';
 import {
   TPQ, measureTicks, durationTicks, eventTicks, durationForTicks, splitIntoDurations, durationInfo,
 } from './rhythm.js';
@@ -295,10 +297,13 @@ export function transposeTargets(app, targets, { steps = 0, octaves = 0, semiton
     for (const n of loc.event.notes) {
       if (octaves) { n.pitch = octaveShift(n.pitch, octaves); continue; }
       if (steps) {
-        const dia = diatonic(n.pitch) + steps;
-        const base = fromDiatonic(dia);
-        /* Keep the written accidental, letting the key signature do its job. */
-        n.pitch = pitch(base.step, base.octave, n.pitch.alter);
+        /* Step to the next staff position and take the accidental the key
+         * signature gives it: moving F-sharp up a step must reach G, not
+         * G-sharp. */
+        const base = fromDiatonic(diatonic(n.pitch) + steps);
+        const fifths = writtenFifths(score, loc.part, loc.measure);
+        n.pitch = pitch(base.step, base.octave, keyAlterations(fifths)[base.step]);
+        n.accidental = 'auto';
         continue;
       }
       if (semitones) {

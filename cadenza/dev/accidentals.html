@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Accidental rules</title><style>
+body{background:#fff;margin:14px;font:12px system-ui}.pagebg{fill:#fff}.ink{fill:#111}
+.l{stroke:#111;stroke-linecap:butt}text{fill:#111}.beam,.tie,.slur{fill:#111}.measnum{fill:#888}
+</style></head><body><div id="o"></div>
+<script type="module">
+import * as M from '../js/core/model.js';import * as T from '../js/core/theory.js';
+import * as E from '../js/core/edit.js';import {History} from '../js/core/history.js';
+import {layoutScore} from '../js/engrave/layout.js';import {renderPageSVG} from '../js/engrave/render.js';
+const score=M.createScore({title:'',instrumentIds:['piano'],measures:5,keySig:{fifths:2,mode:'major'}});
+const app={score,history:new History(score)};
+const P=n=>T.pitchFromName(n);
+function put(m,v,list){const vo=M.getVoice(score,0,m,v);vo.length=0;
+ for(const [n,d] of list) vo.push(n==='R'?M.makeRest(d):M.makeNote(n.split('+').map(P),d));
+ M.normalizeMeasure(score,score.parts[0],m); return vo;}
+// bar 1: key gives F# and C#, so no accidentals; then G# needs one, and the
+// repeat of G does not; the octave above does.
+put(0,0,[['F#5','quarter'],['C#5','quarter'],['G#5','quarter'],['G#5','quarter']]);
+put(0,1,[['D3','half'],['A3','half']]);
+// bar 2: two voices on one staff - a sharp in one must cancel in the other
+put(1,0,[['F5','half'],['A5','half']]);
+put(1,2,[['R','quarter'],['F#5','quarter'],['R','half']]);
+put(1,1,[['D3','whole']]);
+// bar 3: accidental does not cross the barline
+put(2,0,[['F5','whole']]);
+put(2,1,[['D3','whole']]);
+// bar 4-5: tied accidental is not restated
+const a=put(3,0,[['E#5','whole']]); put(4,0,[['E#5','whole']]);
+put(3,1,[['C#3','whole']]); put(4,1,[['C#3','whole']]);
+E.toggleTie(app,[a[0].id]);
+const res=layoutScore(score,{showTitle:false});
+document.getElementById('o').innerHTML=res.pages.map(p=>renderPageSVG(p,{spatium:13})).join('');
+</script></body></html>
