@@ -408,7 +408,9 @@ export function layoutScore(score, opts = {}) {
 
 function addTitleBlock(page, score, pageW, margin, o) {
   const cx = pageW / 2;
-  let y = margin.top - 6;
+  /* The title sits above the first system but inside the page: a baseline high
+   * enough to clear the staves can still put the capitals off the paper. */
+  let y = Math.max(margin.top - 6, M.titleSize * 0.9);
   if (score.title) {
     page.items.push(item('text', { x: cx, y, str: score.title, size: M.titleSize, anchor: 'middle', cls: 'title' }));
     y += M.titleSize * 0.95;

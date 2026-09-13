@@ -323,14 +323,24 @@ export function quantise(notes, beat, opts = {}) {
    * division: a beat holding one staccato quaver has a single attack, so its
    * attacks are fitted to the beat itself, but writing the note as filling the
    * whole beat would lose the silence the player left after it. */
+  /* Releases are written no finer than this.  Where a note stops is not a
+   * rhythmic event the way an attack is — a player lets go when the next note
+   * needs the finger — so reading a release to the nearest thirty-second finds
+   * a rhythm nobody played, and reading it as a triplet is worse still. */
+  const releaseLimit = (beatDiv) => Math.max(beatDiv, 4);
   for (const n of out) {
     const raw = toBeats(n.end);
     let d = n.division;
     let snapped = Math.round(raw * d) / d;
     if (Math.abs(raw - snapped) * d > tolerance) {
+      const limit = releaseLimit(n.division);
+      let bestErr = Math.abs(raw - snapped) * d;
       for (const cand of allowed) {
+        if (cand > limit) continue;
         const s = Math.round(raw * cand) / cand;
-        if (Math.abs(raw - s) * cand <= tolerance) { d = cand; snapped = s; break; }
+        const err = Math.abs(raw - s) * cand;
+        if (err <= tolerance) { d = cand; snapped = s; bestErr = err; break; }
+        if (err < bestErr) { d = cand; snapped = s; bestErr = err; }
       }
     }
     const step = 1 / Math.max(d, n.division);

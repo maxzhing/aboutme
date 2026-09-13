@@ -9,6 +9,7 @@ export class MidiInput {
     this.onNoteOn = opts.onNoteOn || (() => {});
     this.onNoteOff = opts.onNoteOff || (() => {});
     this.onStatus = opts.onStatus || (() => {});
+    this.onMessage = opts.onMessage || (() => {});
     this.access = null;
     this.enabled = false;
     this.inputs = [];
@@ -53,6 +54,9 @@ export class MidiInput {
 
   handle(input, msg) {
     if (this.selected !== 'all' && input.id !== this.selected) return;
+    /* Pass the message on untouched as well: recording wants the pedal and the
+     * device's own timestamp, which is taken before the page sees the event. */
+    this.onMessage(msg.data, msg.timeStamp);
     const [status, a, b] = msg.data;
     const cmd = status & 0xf0;
     if (cmd === 0x90 && b > 0) this.onNoteOn(a, b);

@@ -496,6 +496,23 @@ reading('a score survives a trip out to MIDI and back', () => {
     : 'tempo ' + back.analysis.bpm + ' for ' + first.analysis.bpm;
 });
 
+reading('a note let go early at the end of a piece still fills its bar', () => {
+  /* A release is not a rhythm: read as one it becomes a triplet, or a tail of
+   * rests too short to have been played. */
+  const ev = [];
+  for (let b = 0; b < 8; b++) ev.push([72 + [0, 2, 4, 5, 7, 5, 4, 2][b], b, 1]);
+  ev.push([74, 8, 2], [72, 10, 2], [48, 0, 4, 100], [41, 4, 4, 100], [48, 8, 4, 100]);
+  const notes = perf(ev, 120).map((n) => ({ ...n, end: n.start + (n.end - n.start) * 0.92 }));
+  const r = transcribeMidi(notes);
+  const written = readVoice(r.score, 0).concat(readVoice(r.score, 1));
+  const tiny = written.filter((e) => ['32nd', '64th', '128th'].includes(e.duration));
+  const tuplets = written.filter((e) => e.tuplet);
+  if (tiny.length) return tiny.length + ' notes shorter than a sixteenth';
+  if (tuplets.length) return tuplets.length + ' spurious tuplets';
+  const bad = barsAddUp(r.score);
+  return bad.length === 0 ? true : bad.join('; ');
+});
+
 reading('the tempo written into the score is the tempo that was played', () => {
   const r = transcribeMidi(perf([[60, 0, 1], [62, 1, 1], [64, 2, 1], [65, 3, 1],
     [67, 4, 1], [69, 5, 1], [71, 6, 1], [72, 7, 1]], 88));

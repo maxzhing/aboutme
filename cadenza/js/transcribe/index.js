@@ -16,7 +16,7 @@ import { extractNotes } from './notes.js';
 import { attackEvents, estimateBeat, estimateMetre, quantise, toTicks } from './rhythm.js';
 import { separateHands, assignVoices, groupChords } from './voices.js';
 import { buildScore, detectKey } from './build.js';
-import { beatTicks, TPQ } from '../core/rhythm.js';
+import { beatTicks, measureTicks, TPQ } from '../core/rhythm.js';
 
 export const SOURCE = { AUDIO: 'audio', MIDI: 'midi' };
 
@@ -76,7 +76,7 @@ export function notesToScore(rawNotes, opts = {}) {
   const staffCount = splitHands && new Set(fitted.map((n) => n.staff)).size > 1 ? 2 : 1;
   for (const staff of new Set(fitted.map((n) => n.staff))) {
     const ofStaff = fitted.filter((n) => n.staff === staff);
-    closeGaps(ofStaff, perBeat);
+    closeGaps(ofStaff, perBeat, measureTicks(metre.timeSig));
     assignVoices(ofStaff);
   }
 
@@ -145,7 +145,7 @@ export function notesToScore(rawNotes, opts = {}) {
  * have been meant stays open and becomes a rest.  The notes of one chord let
  * go at slightly different moments are levelled for the same reason.
  */
-function closeGaps(notes, perBeat) {
+function closeGaps(notes, perBeat, barTicks) {
   if (!notes.length) return;
   const attacks = [...new Set(notes.map((n) => n.startTicks))].sort((a, b) => a - b);
   const hold = Math.round(perBeat * 0.34);
@@ -167,9 +167,16 @@ function closeGaps(notes, perBeat) {
 
   for (const n of notes) {
     const next = attacks.find((t) => t > n.startTicks);
-    if (next === undefined) continue;
-    if (n.endTicks >= next) { n.endTicks = Math.max(n.startTicks + 1, next); continue; }
-    if (next - n.endTicks <= hold) n.endTicks = next;
+    if (next !== undefined) {
+      if (n.endTicks >= next) { n.endTicks = Math.max(n.startTicks + 1, next); continue; }
+      if (next - n.endTicks <= hold) n.endTicks = next;
+      continue;
+    }
+    /* The last note of a line has nothing after it to reach towards, so it
+     * reaches the end of its bar instead — a final chord let go a moment early
+     * is still a whole bar, not a whole bar and a scattering of rests. */
+    const barEnd = (Math.floor(n.startTicks / barTicks) + 1) * barTicks;
+    if (n.endTicks < barEnd && barEnd - n.endTicks <= hold) n.endTicks = barEnd;
   }
 }
 

@@ -24,7 +24,8 @@ import { UI, noteIcon, glyphIcon, dynamicIcon } from './icons.js';
 import * as Dlg from './dialogs.js';
 import { PianoKeyboard } from './piano.js';
 import { MidiInput } from './midi.js';
-import { RIBBON } from './ribbon.js';
+import { ESSENTIALS, PALETTES } from './ribbon.js';
+import { TranscribePanel } from './transcribe-panel.js';
 import { installShortcuts, SHORTCUT_HELP } from './shortcuts.js';
 
 const ZOOM_STEPS = [0.5, 0.62, 0.75, 0.88, 1, 1.15, 1.35, 1.6, 1.9, 2.3, 2.8];
@@ -50,7 +51,11 @@ export class Cadenza {
     this.playhead = null;
     this.pendingRender = null;
     this.midiHeld = new Set();
+    this.midiTaps = new Set();       // listeners for raw MIDI, used by Transcribe
     this.lastSaved = null;
+    this.openPaletteId = null;
+    this.flagged = new Map();        // eventId -> confidence, from a transcription
+    this.audition = null;
   }
 
   /* ------------------------------------------------------------- startup */
@@ -77,6 +82,8 @@ export class Cadenza {
       pianoKeys: document.getElementById('piano-keys'),
       pbControls: document.getElementById('pb-controls'),
       tooltip: document.getElementById('tooltip'),
+      palettes: document.getElementById('palettes'),
+      palette: document.getElementById('palette-drawer'),
     };
 
     const restored = Files.loadAutosave();
@@ -104,10 +111,16 @@ export class Cadenza {
     this.player.on('position', (t, at) => this.onPlayPosition(t, at));
     this.player.on('state', (s) => this.onPlayState(s));
 
+    const palette = Files.recallSetting('palette', '');
+    if (palette) this.togglePalette(palette);
+
     this.el.app.classList.remove('loading');
     this.render();
     this.setHint();
-    if (!restored) setTimeout(() => this.showWelcome(), 350);
+    /* One piece of onboarding, not two: labels pointing at the real controls
+     * beat a dialog listing them, and the dialog is what people close without
+     * reading. */
+    if (!Files.recallSetting('coached', 0)) setTimeout(() => this.showCoachMarks(), 500);
     setInterval(() => this.autosave(), 20000);
     window.addEventListener('beforeunload', () => this.autosave());
     window.addEventListener('resize', () => this.scheduleRender());
@@ -163,6 +176,7 @@ export class Cadenza {
     this.el.pages.innerHTML = html;
     this.indexMeasures();
     this.paintSelection();
+    this.paintFlags();
     this.paintCursor();
     this.paintPlayhead();
     this.buildInspector();
@@ -577,37 +591,132 @@ export class Cadenza {
     this.redoBtn = right.querySelector('[data-act=redo]');
   }
 
+  /**
+   * The toolbar, and the palettes under it.
+   *
+   * The bar holds what is used constantly.  Everything else is one click away
+   * behind a named heading, which is not the same as being hidden: a palette
+   * says what it contains before you open it, and closes again when you are
+   * done with it.
+   */
   buildRibbon() {
     const bar = this.el.ribbon;
     bar.innerHTML = '';
-    for (const grp of RIBBON) {
+
+    const button = (it) => {
+      const b = document.createElement('button');
+      b.className = 'rb' + (it.wide ? ' wide' : '') + (it.primary ? ' primary' : '');
+      b.dataset.act = it.act;
+      b.dataset.tip = it.tip;
+      if (it.key) b.dataset.key = it.key;
+      b.innerHTML = this.iconFor(it.icon) + (it.label ? `<span class="lbl">${it.label}</span>` : '');
+      b.onclick = () => this.act(it.act);
+      return b;
+    };
+
+    for (const grp of ESSENTIALS) {
       const g = document.createElement('section');
       g.className = 'grp';
       const row = document.createElement('div');
       row.className = 'grp-row';
-      for (const it of grp.items) {
-        if (it.sep) {
-          const s = document.createElement('span');
-          s.className = 'sepv';
-          row.appendChild(s);
-          continue;
-        }
-        const b = document.createElement('button');
-        b.className = 'rb' + (it.wide ? ' wide' : '');
-        b.dataset.act = it.act;
-        b.dataset.tip = it.tip;
-        if (it.key) b.dataset.key = it.key;
-        b.innerHTML = this.iconFor(it.icon) + (it.label ? `<span class="lbl">${it.label}</span>` : '');
-        b.onclick = () => this.act(it.act);
-        row.appendChild(b);
+      for (const it of grp.items) row.appendChild(button(it));
+      g.appendChild(row);
+      if (grp.label) {
+        const label = document.createElement('div');
+        label.className = 'grp-label';
+        label.textContent = grp.label;
+        g.appendChild(label);
       }
-      const label = document.createElement('div');
-      label.className = 'grp-label';
-      label.textContent = grp.label;
-      g.append(row, label);
       bar.appendChild(g);
     }
+
+    /* The palettes, named so nothing has to be hunted for. */
+    const more = document.createElement('section');
+    more.className = 'grp grp-more';
+    const row = document.createElement('div');
+    row.className = 'grp-row';
+    for (const pal of PALETTES) {
+      const b = document.createElement('button');
+      b.className = 'rb pal-tab';
+      b.dataset.pal = pal.id;
+      b.dataset.tip = pal.tip;
+      b.innerHTML = this.iconFor(pal.icon) + `<span class="lbl">${pal.label}</span>`;
+      b.onclick = () => this.togglePalette(pal.id);
+      row.appendChild(b);
+    }
+    more.appendChild(row);
+    const label = document.createElement('div');
+    label.className = 'grp-label';
+    label.textContent = 'More';
+    more.appendChild(label);
+    bar.appendChild(more);
+
+    /* Transcribe sits on its own at the end: it is a different kind of act
+     * from everything to its left — it brings music in rather than editing
+     * what is there. */
+    const end = document.createElement('section');
+    end.className = 'grp grp-end';
+    const endRow = document.createElement('div');
+    endRow.className = 'grp-row';
+    const tb = document.createElement('button');
+    tb.className = 'rb wide accent';
+    tb.dataset.act = 'transcribe';
+    tb.dataset.tip = 'Turn a recording, a MIDI file or your playing into notation';
+    tb.innerHTML = UI.transcribe + '<span class="lbl">Transcribe</span>';
+    tb.onclick = () => this.act('transcribe');
+    endRow.appendChild(tb);
+    end.appendChild(endRow);
+    bar.appendChild(end);
+
+    this.buildPalettes();
     this.refreshChrome();
+  }
+
+  buildPalettes() {
+    const host = this.el.palette;
+    if (!host) return;
+    host.innerHTML = '';
+    for (const pal of PALETTES) {
+      const sheet = document.createElement('div');
+      sheet.className = 'palette hidden';
+      sheet.dataset.pal = pal.id;
+      for (const grp of pal.groups) {
+        const g = document.createElement('section');
+        g.className = 'pal-grp';
+        const head = document.createElement('div');
+        head.className = 'pal-grp-label';
+        head.textContent = grp.label;
+        const row = document.createElement('div');
+        row.className = 'pal-row';
+        for (const it of grp.items) {
+          const b = document.createElement('button');
+          b.className = 'rb' + (it.wide ? ' wide' : '');
+          b.dataset.act = it.act;
+          b.dataset.tip = it.tip;
+          if (it.key) b.dataset.key = it.key;
+          b.innerHTML = this.iconFor(it.icon) + (it.label ? `<span class="lbl">${it.label}</span>` : '');
+          b.onclick = () => this.act(it.act);
+          row.appendChild(b);
+        }
+        g.append(head, row);
+        sheet.appendChild(g);
+      }
+      host.appendChild(sheet);
+    }
+  }
+
+  togglePalette(id) {
+    const next = this.openPaletteId === id ? null : id;
+    this.openPaletteId = next;
+    for (const sheet of this.el.palette.querySelectorAll('.palette')) {
+      sheet.classList.toggle('hidden', sheet.dataset.pal !== next);
+    }
+    for (const tab of this.el.ribbon.querySelectorAll('.pal-tab')) {
+      tab.classList.toggle('on', tab.dataset.pal === next);
+    }
+    this.el.palettes.classList.toggle('open', !!next);
+    Files.rememberSetting('palette', next || '');
+    this.scheduleRender();
   }
 
   iconFor(spec) {
@@ -633,8 +742,8 @@ export class Cadenza {
     };
     left.append(
       mk('rewind', UI.rewind, 'Return to the beginning', 'Home'),
-      mk('playPause', UI.play, 'Play / pause', 'Space', 'tp-btn primary'),
-      mk('stop', UI.stop, 'Stop', 'Esc'),
+      mk('playPause', UI.play + '<span>Play</span>', 'Play the score from the cursor', 'Space', 'tp-btn primary labelled'),
+      mk('stop', UI.stop + '<span>Stop</span>', 'Stop and return to where playback began', 'Esc', 'tp-btn labelled'),
     );
     this.playBtn = left.querySelector('[data-act=playPause]');
     right.append(
@@ -781,8 +890,14 @@ export class Cadenza {
     document.addEventListener('mousedown', () => { clearTimeout(timer); tip.hidden = true; });
   }
 
+  /** Listen to raw MIDI as well as the note events, for recording. */
+  onMidi(fn) { this.midiTaps.add(fn); }
+
+  offMidi(fn) { this.midiTaps.delete(fn); }
+
   async initMidi() {
     this.midi = new MidiInput({
+      onMessage: (data, stamp) => { for (const fn of this.midiTaps) fn(data, stamp); },
       onNoteOn: (midi, vel) => {
         this.midiHeld.add(midi);
         this.piano.light(midi, true);
@@ -899,6 +1014,12 @@ export class Cadenza {
   buildHelpPanel() {
     const h = this.el.help;
     h.innerHTML = '';
+    const tour = document.createElement('button');
+    tour.className = 'btn ghost';
+    tour.style.cssText = 'width:100%;margin-bottom:12px';
+    tour.textContent = 'Show me around again';
+    tour.onclick = () => this.showCoachMarks();
+    h.appendChild(tour);
     for (const [section, rows] of SHORTCUT_HELP) {
       const t = document.createElement('div');
       t.className = 'sec-title';
@@ -1111,6 +1232,7 @@ export class Cadenza {
         this.refreshChrome();
         return;
       }
+      case 'transcribe': this.openTranscribe(); return;
       case 'rest': {
         if (this.noteEntry) {
           this.setCursor(Edit.enterRest(this, this.cursor, { duration: this.duration, dots: this.dots }), { scroll: true });
@@ -1730,7 +1852,10 @@ export class Cadenza {
   }
 
   onPlayState(state) {
-    if (this.playBtn) this.playBtn.innerHTML = state === 'playing' ? UI.pause : UI.play;
+    if (this.playBtn) {
+      this.playBtn.innerHTML = (state === 'playing' ? UI.pause : UI.play)
+        + `<span>${state === 'playing' ? 'Pause' : 'Play'}</span>`;
+    }
     if (state === 'stopped') {
       this.playhead = null;
       this.paintPlayhead();
@@ -1930,12 +2055,141 @@ export class Cadenza {
     img.src = url;
   }
 
+  /* ------------------------------------------------------- transcription */
+
+  openTranscribe() {
+    if (!this.transcriber) this.transcriber = new TranscribePanel(this);
+    this.transcriber.open();
+  }
+
+  /** Play a score that is not the document, so a transcription can be heard. */
+  auditionScore(score) {
+    this.stopAudition();
+    this.audition = new Player(this.synth);
+    this.audition.setScore(score);
+    this.audition.play();
+  }
+
+  stopAudition() {
+    if (this.audition) { this.audition.stop(); this.audition = null; }
+  }
+
+  /**
+   * Take a transcription into the document.
+   *
+   * The proposed score is kept alongside it, so that when the user has
+   * finished correcting it the difference between the two is what the
+   * correction model learns from.  Undo puts the previous document back, as
+   * with any other edit.
+   */
+  adoptTranscription(score, panel) {
+    const previous = this.score;
+    this.pendingLearn = { panel, proposed: Model.deserialize(Model.serialize(score)) };
+    this.setScore(score);
+    this.history.begin('Transcribe');
+    this.history.commit();
+    this.flagged = new Map();
+    for (const { event } of Model.iterEvents(score)) {
+      if (event.transcribeConfidence !== undefined && event.transcribeConfidence < 0.55) {
+        this.flagged.set(event.id, event.transcribeConfidence);
+      }
+    }
+    this.setNoteEntry(false);
+    this.render();
+    const n = this.flagged.size;
+    Dlg.toast(n ? `Transcription placed — ${n} note${n === 1 ? '' : 's'} marked for a second look`
+      : 'Transcription placed', 'ok');
+    this.setHint(n
+      ? `<b>Transcribed.</b> The marked notes are the ones Cadenza was least sure of — click one to correct it. `
+        + `Your corrections tune the next transcription.`
+      : undefined);
+    this.previousScore = previous;
+  }
+
+  /** Fold the corrections made since a transcription back into what is learned. */
+  learnFromEdits() {
+    if (!this.pendingLearn) return;
+    const { panel, proposed } = this.pendingLearn;
+    this.pendingLearn = null;
+    try {
+      panel.learnFrom(proposed, this.score);
+    } catch (err) { /* learning is a convenience; never let it break an edit */ }
+  }
+
+  paintFlags() {
+    this.el.pages.querySelectorAll('.uncertain').forEach((n) => n.classList.remove('uncertain'));
+    for (const id of this.flagged.keys()) {
+      this.el.pages.querySelectorAll(`[data-ev="${id}"]`).forEach((n) => n.classList.add('uncertain'));
+    }
+  }
+
   autosave() {
+    if (this.pendingLearn && this.history.canUndo) this.learnFromEdits();
     if (!this.score) return;
     Files.autosave(this.score);
   }
 
   /* ------------------------------------------------------------- onboarding */
+
+  /**
+   * The first five minutes.
+   *
+   * Four labels pointing at the four things someone has to find before they
+   * can do anything at all.  Shown once, dismissed by clicking anywhere, and
+   * available again from the help button — a tour that cannot be got back is
+   * worse than no tour.
+   */
+  showCoachMarks() {
+    Files.rememberSetting('coached', 1);
+    const steps = [
+      { sel: '[data-act=noteEntry]', text: '1 · Click here (or press N), then type A–G or click the staff' },
+      { sel: '[data-act="dur:quarter"]', text: '2 · Pick how long each note is — or press 1 to 7' },
+      { sel: '[data-act=playPause]', text: '3 · Play it back — the space bar does the same' },
+      { sel: '[data-act=transcribe]', text: '4 · Already played it? Turn a recording into notation here' },
+    ];
+    const layer = document.createElement('div');
+    layer.className = 'coach-layer';
+    let placed = 0;
+    const taken = [];
+    for (const step of steps) {
+      const target = document.querySelector(step.sel);
+      if (!target) continue;
+      const r = target.getBoundingClientRect();
+      const mark = document.createElement('div');
+      mark.className = 'coach-mark';
+      mark.textContent = step.text;
+      const left = Math.max(8, Math.min(window.innerWidth - 300, r.left - 10));
+      const below = r.bottom + 120 < window.innerHeight;
+      let top = below ? r.bottom + 12 : r.top - 62;
+      /* Two controls side by side would put their labels on top of each other;
+       * step the later one down until it has room. */
+      let guard = 0;
+      while (guard++ < 6 && taken.some((t) => Math.abs(t.top - top) < 52
+        && left < t.left + 300 && t.left < left + 300)) top += 54;
+      taken.push({ left, top });
+      mark.style.left = left + 'px';
+      mark.style.top = top + 'px';
+      const ring = document.createElement('div');
+      ring.className = 'coach-ring';
+      ring.style.left = (r.left - 6) + 'px';
+      ring.style.top = (r.top - 6) + 'px';
+      ring.style.width = (r.width + 12) + 'px';
+      ring.style.height = (r.height + 12) + 'px';
+      layer.append(ring, mark);
+      placed++;
+    }
+    if (!placed) return;
+    const done = document.createElement('button');
+    done.className = 'coach-done';
+    done.textContent = 'Got it';
+    layer.appendChild(done);
+    const close = () => layer.remove();
+    done.onclick = close;
+    layer.onclick = (e) => { if (e.target === layer) close(); };
+    document.body.appendChild(layer);
+  }
+
+  showTour() { this.showCoachMarks(); }
 
   showShortcuts() {
     Dlg.modal({

@@ -51,7 +51,7 @@ input, select { font: inherit; color: inherit; }
 
 #app {
   display: grid;
-  grid-template-rows: 44px auto 1fr 46px auto 24px;
+  grid-template-rows: 44px auto auto 1fr 46px auto 24px;
   height: 100%;
 }
 
@@ -126,6 +126,163 @@ input, select { font: inherit; color: inherit; }
 .rb:disabled { opacity: .3; cursor: default; }
 .rb:disabled:hover { background: none; }
 .sepv { width: 1px; background: var(--line-soft); margin: 4px 5px; align-self: stretch; }
+
+/* The one button that starts everything, and the one that brings music in. */
+.rb.primary {
+  background: var(--accent); color: #fff; padding: 0 12px; gap: 6px; height: 31px;
+  font-weight: 600; box-shadow: 0 1px 0 rgba(0,0,0,.25);
+}
+.rb.primary:hover { background: #6d9bf2; color: #fff; }
+.rb.primary.on {
+  background: var(--ok); color: #06231a; box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
+}
+.rb.accent {
+  background: var(--accent-2-soft); color: var(--accent-2); padding: 0 12px; gap: 6px; height: 31px;
+  box-shadow: inset 0 0 0 1px rgba(232,163,61,.35); font-weight: 600;
+}
+.rb.accent:hover { background: rgba(232,163,61,.3); color: #ffcf86; }
+.grp-more .rb { padding: 0 8px; gap: 5px; }
+.grp-end { margin-left: auto; border-right: 0; }
+
+/* ------------------------------------------------------------- palettes */
+
+#palettes {
+  max-height: 0; overflow: hidden; background: var(--panel);
+  border-bottom: 1px solid var(--line); transition: max-height .16s ease;
+}
+#palettes.open { max-height: 220px; overflow: auto; }
+.palette { display: flex; flex-wrap: wrap; gap: 0; padding: 2px 0; }
+.palette.hidden { display: none; }
+.pal-grp { padding: 7px 12px 8px; border-right: 1px solid var(--line-soft); }
+.pal-grp-label {
+  font-size: 9.5px; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--text-faint); padding-bottom: 5px; user-select: none;
+}
+.pal-row { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; }
+
+/* A note the transcription was unsure of, so the eye goes there first. */
+.uncertain { outline: none; }
+.uncertain path, .uncertain ellipse, .uncertain circle, .uncertain rect {
+  fill: #b8791f;
+}
+.uncertain line, .uncertain polyline { stroke: #b8791f; }
+
+/* ----------------------------------------------------------- coach marks */
+
+.coach-layer { position: fixed; inset: 0; z-index: 60; background: rgba(8,10,14,.62); }
+.coach-ring {
+  position: absolute; border: 2px solid var(--accent-2); border-radius: 8px;
+  box-shadow: 0 0 0 4px rgba(232,163,61,.22); pointer-events: none;
+}
+.coach-mark {
+  position: absolute; max-width: 290px; background: var(--accent-2); color: #1a1205;
+  font-size: 12.5px; font-weight: 600; line-height: 1.35; padding: 8px 11px;
+  border-radius: 7px; box-shadow: 0 6px 20px rgba(0,0,0,.45); pointer-events: none;
+}
+.coach-done {
+  position: absolute; left: 50%; bottom: 42px; transform: translateX(-50%);
+  background: var(--panel-3); color: var(--text); padding: 9px 20px; border-radius: 7px;
+  font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,.5);
+}
+.coach-done:hover { background: var(--accent); color: #fff; }
+
+/* Play and Stop are named, not guessed at. */
+.tp-btn.labelled { width: auto; padding: 0 13px; gap: 6px; }
+.tp-btn.labelled span { font-size: 12.5px; font-weight: 600; }
+
+/* ------------------------------------------------------ transcribe panel */
+
+.modal.wide { width: min(860px, 94vw); }
+.tr-lead { color: var(--text-dim); margin: 0 0 14px; font-size: 13px; line-height: 1.5; }
+.tr-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tr-choice {
+  display: grid; grid-template-columns: 34px 1fr; grid-template-rows: auto auto;
+  gap: 2px 12px; text-align: left; padding: 14px; border-radius: 9px;
+  background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--line);
+}
+.tr-choice:hover { background: var(--panel-3); box-shadow: inset 0 0 0 1px var(--accent); }
+.tr-choice-icon { grid-row: 1 / 3; align-self: center; color: var(--accent); }
+.tr-choice-icon svg { width: 24px; height: 24px; }
+.tr-choice-title { font-size: 13.5px; font-weight: 600; color: var(--text); }
+.tr-choice-sub { font-size: 11.5px; color: var(--text-dim); }
+.tr-honest {
+  margin-top: 14px; padding: 11px 13px; border-radius: 8px; background: var(--panel-2);
+  font-size: 11.8px; line-height: 1.55; color: var(--text-dim);
+}
+.tr-honest b { color: var(--text); }
+.tr-learned {
+  margin-top: 10px; padding: 10px 13px; border-radius: 8px;
+  background: rgba(75,189,138,.08); box-shadow: inset 0 0 0 1px rgba(75,189,138,.25);
+  font-size: 11.8px; color: var(--text-dim);
+}
+.tr-learned b { color: var(--ok); }
+.tr-learned ul { margin: 6px 0 6px 16px; padding: 0; }
+.linkish { color: var(--accent); text-decoration: underline; font-size: 11.5px; padding: 0; }
+
+.tr-record { text-align: center; padding: 26px 0 10px; }
+.tr-level {
+  height: 10px; border-radius: 5px; background: var(--panel-3); overflow: hidden;
+  margin: 0 auto 18px; max-width: 420px;
+}
+.tr-level-fill { display: block; height: 100%; width: 0; background: var(--ok); transition: width .06s linear; }
+.tr-clock { font: 600 30px/1 var(--mono); color: var(--text); letter-spacing: .04em; }
+.tr-notecount { font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+.tr-record-actions { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
+
+.tr-progress { text-align: center; padding: 40px 0; }
+.tr-spinner {
+  width: 30px; height: 30px; margin: 0 auto 16px; border-radius: 50%;
+  border: 3px solid var(--panel-3); border-top-color: var(--accent);
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.tr-progress-text { font-size: 13px; color: var(--text-dim); margin-bottom: 14px; }
+.tr-progress-track {
+  height: 6px; border-radius: 3px; background: var(--panel-3);
+  max-width: 340px; margin: 0 auto; overflow: hidden;
+}
+.tr-progress-fill { display: block; height: 100%; background: var(--accent); transition: width .2s; }
+
+.tr-result { display: grid; grid-template-columns: 1fr 300px; gap: 18px; }
+.tr-headline { font-size: 14px; line-height: 1.7; color: var(--text-dim); margin-bottom: 14px; }
+.tr-headline b { color: var(--text); font-size: 15px; }
+.tr-meters { display: flex; flex-direction: column; gap: 6px; }
+.tr-meter { display: grid; grid-template-columns: 54px 1fr 38px; align-items: center; gap: 8px; font-size: 11.5px; }
+.tr-meter-label { color: var(--text-dim); }
+.tr-meter-track { height: 7px; border-radius: 4px; background: var(--panel-3); overflow: hidden; }
+.tr-meter-fill { display: block; height: 100%; }
+.tr-meter-fill.good { background: var(--ok); }
+.tr-meter-fill.fair { background: var(--accent-2); }
+.tr-meter-fill.poor { background: var(--danger); }
+.tr-meter-value { text-align: right; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.tr-meter-note { grid-column: 2 / 4; font-size: 10.5px; color: var(--text-faint); }
+.tr-shaky {
+  margin-top: 14px; padding: 10px 12px; border-radius: 7px; font-size: 12px;
+  background: var(--accent-2-soft); color: var(--accent-2);
+}
+.tr-shaky.good { background: rgba(75,189,138,.1); color: var(--ok); }
+.tr-faint { color: var(--text-faint); }
+.tr-tweaks { border-left: 1px solid var(--line); padding-left: 18px; }
+.tr-tweaks h3 { font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--text-faint); margin: 0 0 10px; }
+.tr-field { display: block; margin-bottom: 12px; font-size: 12px; }
+.tr-field > span { display: block; color: var(--text-dim); margin-bottom: 3px; }
+.tr-field small { display: block; color: var(--text-faint); font-size: 10.5px; margin-top: 3px; line-height: 1.4; }
+.tr-field select, .tr-field input[type=number] {
+  width: 100%; background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 5px; padding: 5px 7px;
+}
+.tr-field input[type=range] { width: 100%; }
+.tr-check { display: grid; grid-template-columns: 1fr auto; align-items: center; }
+.tr-check small { grid-column: 1 / 3; }
+.tr-actions { display: flex; align-items: center; gap: 10px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.tr-spacer { flex: 1; }
+.tr-actions .btn svg { vertical-align: -3px; margin-right: 4px; }
+
+@media (max-width: 820px) {
+  .tr-choices { grid-template-columns: 1fr; }
+  .tr-result { grid-template-columns: 1fr; }
+  .tr-tweaks { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 14px; }
+}
 
 /* ------------------------------------------------------------ workspace */
 
@@ -398,6 +555,7 @@ kbd {
 @keyframes toastin { from { opacity: 0; transform: translateY(6px); } }
 
 #app.loading #workspace, #app.loading #ribbon { opacity: .3; pointer-events: none; }
+#app.loading #palettes { display: none; }
 
 /* Compact layout: fold the side panels away on small screens. */
 @media (max-width: 1180px) {
@@ -411,7 +569,7 @@ kbd {
 }
 
 @media print {
-  #topbar, #ribbon, #left-panel, #right-panel, #transport, #piano-bar, #status-bar { display: none !important; }
+  #topbar, #ribbon, #palettes, #left-panel, #right-panel, #transport, #piano-bar, #status-bar { display: none !important; }
   #app { display: block; height: auto; }
   #score-area, #score-scroll { position: static; overflow: visible; background: #fff; padding: 0; }
   #score-pages { gap: 0; }
@@ -435,6 +593,7 @@ kbd {
   </header>
 
   <nav id="ribbon" aria-label="Editing tools"></nav>
+  <div id="palettes"><div id="palette-drawer"></div></div>
 
   <main id="workspace">
     <aside id="left-panel">
@@ -523,7 +682,8 @@ const { UI, noteIcon, glyphIcon, dynamicIcon } = __req("js/ui/icons.js");
 const Dlg = __req("js/ui/dialogs.js");
 const { PianoKeyboard } = __req("js/ui/piano.js");
 const { MidiInput } = __req("js/ui/midi.js");
-const { RIBBON } = __req("js/ui/ribbon.js");
+const { ESSENTIALS, PALETTES } = __req("js/ui/ribbon.js");
+const { TranscribePanel } = __req("js/ui/transcribe-panel.js");
 const { installShortcuts, SHORTCUT_HELP } = __req("js/ui/shortcuts.js");
 
 const ZOOM_STEPS = [0.5, 0.62, 0.75, 0.88, 1, 1.15, 1.35, 1.6, 1.9, 2.3, 2.8];
@@ -549,7 +709,11 @@ class Cadenza {
     this.playhead = null;
     this.pendingRender = null;
     this.midiHeld = new Set();
+    this.midiTaps = new Set();       // listeners for raw MIDI, used by Transcribe
     this.lastSaved = null;
+    this.openPaletteId = null;
+    this.flagged = new Map();        // eventId -> confidence, from a transcription
+    this.audition = null;
   }
 
   /* ------------------------------------------------------------- startup */
@@ -576,6 +740,8 @@ class Cadenza {
       pianoKeys: document.getElementById('piano-keys'),
       pbControls: document.getElementById('pb-controls'),
       tooltip: document.getElementById('tooltip'),
+      palettes: document.getElementById('palettes'),
+      palette: document.getElementById('palette-drawer'),
     };
 
     const restored = Files.loadAutosave();
@@ -603,10 +769,16 @@ class Cadenza {
     this.player.on('position', (t, at) => this.onPlayPosition(t, at));
     this.player.on('state', (s) => this.onPlayState(s));
 
+    const palette = Files.recallSetting('palette', '');
+    if (palette) this.togglePalette(palette);
+
     this.el.app.classList.remove('loading');
     this.render();
     this.setHint();
-    if (!restored) setTimeout(() => this.showWelcome(), 350);
+    /* One piece of onboarding, not two: labels pointing at the real controls
+     * beat a dialog listing them, and the dialog is what people close without
+     * reading. */
+    if (!Files.recallSetting('coached', 0)) setTimeout(() => this.showCoachMarks(), 500);
     setInterval(() => this.autosave(), 20000);
     window.addEventListener('beforeunload', () => this.autosave());
     window.addEventListener('resize', () => this.scheduleRender());
@@ -662,6 +834,7 @@ class Cadenza {
     this.el.pages.innerHTML = html;
     this.indexMeasures();
     this.paintSelection();
+    this.paintFlags();
     this.paintCursor();
     this.paintPlayhead();
     this.buildInspector();
@@ -1076,37 +1249,132 @@ class Cadenza {
     this.redoBtn = right.querySelector('[data-act=redo]');
   }
 
+  /**
+   * The toolbar, and the palettes under it.
+   *
+   * The bar holds what is used constantly.  Everything else is one click away
+   * behind a named heading, which is not the same as being hidden: a palette
+   * says what it contains before you open it, and closes again when you are
+   * done with it.
+   */
   buildRibbon() {
     const bar = this.el.ribbon;
     bar.innerHTML = '';
-    for (const grp of RIBBON) {
+
+    const button = (it) => {
+      const b = document.createElement('button');
+      b.className = 'rb' + (it.wide ? ' wide' : '') + (it.primary ? ' primary' : '');
+      b.dataset.act = it.act;
+      b.dataset.tip = it.tip;
+      if (it.key) b.dataset.key = it.key;
+      b.innerHTML = this.iconFor(it.icon) + (it.label ? `<span class="lbl">${it.label}</span>` : '');
+      b.onclick = () => this.act(it.act);
+      return b;
+    };
+
+    for (const grp of ESSENTIALS) {
       const g = document.createElement('section');
       g.className = 'grp';
       const row = document.createElement('div');
       row.className = 'grp-row';
-      for (const it of grp.items) {
-        if (it.sep) {
-          const s = document.createElement('span');
-          s.className = 'sepv';
-          row.appendChild(s);
-          continue;
-        }
-        const b = document.createElement('button');
-        b.className = 'rb' + (it.wide ? ' wide' : '');
-        b.dataset.act = it.act;
-        b.dataset.tip = it.tip;
-        if (it.key) b.dataset.key = it.key;
-        b.innerHTML = this.iconFor(it.icon) + (it.label ? `<span class="lbl">${it.label}</span>` : '');
-        b.onclick = () => this.act(it.act);
-        row.appendChild(b);
+      for (const it of grp.items) row.appendChild(button(it));
+      g.appendChild(row);
+      if (grp.label) {
+        const label = document.createElement('div');
+        label.className = 'grp-label';
+        label.textContent = grp.label;
+        g.appendChild(label);
       }
-      const label = document.createElement('div');
-      label.className = 'grp-label';
-      label.textContent = grp.label;
-      g.append(row, label);
       bar.appendChild(g);
     }
+
+    /* The palettes, named so nothing has to be hunted for. */
+    const more = document.createElement('section');
+    more.className = 'grp grp-more';
+    const row = document.createElement('div');
+    row.className = 'grp-row';
+    for (const pal of PALETTES) {
+      const b = document.createElement('button');
+      b.className = 'rb pal-tab';
+      b.dataset.pal = pal.id;
+      b.dataset.tip = pal.tip;
+      b.innerHTML = this.iconFor(pal.icon) + `<span class="lbl">${pal.label}</span>`;
+      b.onclick = () => this.togglePalette(pal.id);
+      row.appendChild(b);
+    }
+    more.appendChild(row);
+    const label = document.createElement('div');
+    label.className = 'grp-label';
+    label.textContent = 'More';
+    more.appendChild(label);
+    bar.appendChild(more);
+
+    /* Transcribe sits on its own at the end: it is a different kind of act
+     * from everything to its left — it brings music in rather than editing
+     * what is there. */
+    const end = document.createElement('section');
+    end.className = 'grp grp-end';
+    const endRow = document.createElement('div');
+    endRow.className = 'grp-row';
+    const tb = document.createElement('button');
+    tb.className = 'rb wide accent';
+    tb.dataset.act = 'transcribe';
+    tb.dataset.tip = 'Turn a recording, a MIDI file or your playing into notation';
+    tb.innerHTML = UI.transcribe + '<span class="lbl">Transcribe</span>';
+    tb.onclick = () => this.act('transcribe');
+    endRow.appendChild(tb);
+    end.appendChild(endRow);
+    bar.appendChild(end);
+
+    this.buildPalettes();
     this.refreshChrome();
+  }
+
+  buildPalettes() {
+    const host = this.el.palette;
+    if (!host) return;
+    host.innerHTML = '';
+    for (const pal of PALETTES) {
+      const sheet = document.createElement('div');
+      sheet.className = 'palette hidden';
+      sheet.dataset.pal = pal.id;
+      for (const grp of pal.groups) {
+        const g = document.createElement('section');
+        g.className = 'pal-grp';
+        const head = document.createElement('div');
+        head.className = 'pal-grp-label';
+        head.textContent = grp.label;
+        const row = document.createElement('div');
+        row.className = 'pal-row';
+        for (const it of grp.items) {
+          const b = document.createElement('button');
+          b.className = 'rb' + (it.wide ? ' wide' : '');
+          b.dataset.act = it.act;
+          b.dataset.tip = it.tip;
+          if (it.key) b.dataset.key = it.key;
+          b.innerHTML = this.iconFor(it.icon) + (it.label ? `<span class="lbl">${it.label}</span>` : '');
+          b.onclick = () => this.act(it.act);
+          row.appendChild(b);
+        }
+        g.append(head, row);
+        sheet.appendChild(g);
+      }
+      host.appendChild(sheet);
+    }
+  }
+
+  togglePalette(id) {
+    const next = this.openPaletteId === id ? null : id;
+    this.openPaletteId = next;
+    for (const sheet of this.el.palette.querySelectorAll('.palette')) {
+      sheet.classList.toggle('hidden', sheet.dataset.pal !== next);
+    }
+    for (const tab of this.el.ribbon.querySelectorAll('.pal-tab')) {
+      tab.classList.toggle('on', tab.dataset.pal === next);
+    }
+    this.el.palettes.classList.toggle('open', !!next);
+    Files.rememberSetting('palette', next || '');
+    this.scheduleRender();
   }
 
   iconFor(spec) {
@@ -1132,8 +1400,8 @@ class Cadenza {
     };
     left.append(
       mk('rewind', UI.rewind, 'Return to the beginning', 'Home'),
-      mk('playPause', UI.play, 'Play / pause', 'Space', 'tp-btn primary'),
-      mk('stop', UI.stop, 'Stop', 'Esc'),
+      mk('playPause', UI.play + '<span>Play</span>', 'Play the score from the cursor', 'Space', 'tp-btn primary labelled'),
+      mk('stop', UI.stop + '<span>Stop</span>', 'Stop and return to where playback began', 'Esc', 'tp-btn labelled'),
     );
     this.playBtn = left.querySelector('[data-act=playPause]');
     right.append(
@@ -1280,8 +1548,14 @@ class Cadenza {
     document.addEventListener('mousedown', () => { clearTimeout(timer); tip.hidden = true; });
   }
 
+  /** Listen to raw MIDI as well as the note events, for recording. */
+  onMidi(fn) { this.midiTaps.add(fn); }
+
+  offMidi(fn) { this.midiTaps.delete(fn); }
+
   async initMidi() {
     this.midi = new MidiInput({
+      onMessage: (data, stamp) => { for (const fn of this.midiTaps) fn(data, stamp); },
       onNoteOn: (midi, vel) => {
         this.midiHeld.add(midi);
         this.piano.light(midi, true);
@@ -1398,6 +1672,12 @@ class Cadenza {
   buildHelpPanel() {
     const h = this.el.help;
     h.innerHTML = '';
+    const tour = document.createElement('button');
+    tour.className = 'btn ghost';
+    tour.style.cssText = 'width:100%;margin-bottom:12px';
+    tour.textContent = 'Show me around again';
+    tour.onclick = () => this.showCoachMarks();
+    h.appendChild(tour);
     for (const [section, rows] of SHORTCUT_HELP) {
       const t = document.createElement('div');
       t.className = 'sec-title';
@@ -1610,6 +1890,7 @@ class Cadenza {
         this.refreshChrome();
         return;
       }
+      case 'transcribe': this.openTranscribe(); return;
       case 'rest': {
         if (this.noteEntry) {
           this.setCursor(Edit.enterRest(this, this.cursor, { duration: this.duration, dots: this.dots }), { scroll: true });
@@ -2229,7 +2510,10 @@ class Cadenza {
   }
 
   onPlayState(state) {
-    if (this.playBtn) this.playBtn.innerHTML = state === 'playing' ? UI.pause : UI.play;
+    if (this.playBtn) {
+      this.playBtn.innerHTML = (state === 'playing' ? UI.pause : UI.play)
+        + `<span>${state === 'playing' ? 'Pause' : 'Play'}</span>`;
+    }
     if (state === 'stopped') {
       this.playhead = null;
       this.paintPlayhead();
@@ -2429,12 +2713,141 @@ class Cadenza {
     img.src = url;
   }
 
+  /* ------------------------------------------------------- transcription */
+
+  openTranscribe() {
+    if (!this.transcriber) this.transcriber = new TranscribePanel(this);
+    this.transcriber.open();
+  }
+
+  /** Play a score that is not the document, so a transcription can be heard. */
+  auditionScore(score) {
+    this.stopAudition();
+    this.audition = new Player(this.synth);
+    this.audition.setScore(score);
+    this.audition.play();
+  }
+
+  stopAudition() {
+    if (this.audition) { this.audition.stop(); this.audition = null; }
+  }
+
+  /**
+   * Take a transcription into the document.
+   *
+   * The proposed score is kept alongside it, so that when the user has
+   * finished correcting it the difference between the two is what the
+   * correction model learns from.  Undo puts the previous document back, as
+   * with any other edit.
+   */
+  adoptTranscription(score, panel) {
+    const previous = this.score;
+    this.pendingLearn = { panel, proposed: Model.deserialize(Model.serialize(score)) };
+    this.setScore(score);
+    this.history.begin('Transcribe');
+    this.history.commit();
+    this.flagged = new Map();
+    for (const { event } of Model.iterEvents(score)) {
+      if (event.transcribeConfidence !== undefined && event.transcribeConfidence < 0.55) {
+        this.flagged.set(event.id, event.transcribeConfidence);
+      }
+    }
+    this.setNoteEntry(false);
+    this.render();
+    const n = this.flagged.size;
+    Dlg.toast(n ? `Transcription placed — ${n} note${n === 1 ? '' : 's'} marked for a second look`
+      : 'Transcription placed', 'ok');
+    this.setHint(n
+      ? `<b>Transcribed.</b> The marked notes are the ones Cadenza was least sure of — click one to correct it. `
+        + `Your corrections tune the next transcription.`
+      : undefined);
+    this.previousScore = previous;
+  }
+
+  /** Fold the corrections made since a transcription back into what is learned. */
+  learnFromEdits() {
+    if (!this.pendingLearn) return;
+    const { panel, proposed } = this.pendingLearn;
+    this.pendingLearn = null;
+    try {
+      panel.learnFrom(proposed, this.score);
+    } catch (err) { /* learning is a convenience; never let it break an edit */ }
+  }
+
+  paintFlags() {
+    this.el.pages.querySelectorAll('.uncertain').forEach((n) => n.classList.remove('uncertain'));
+    for (const id of this.flagged.keys()) {
+      this.el.pages.querySelectorAll(`[data-ev="${id}"]`).forEach((n) => n.classList.add('uncertain'));
+    }
+  }
+
   autosave() {
+    if (this.pendingLearn && this.history.canUndo) this.learnFromEdits();
     if (!this.score) return;
     Files.autosave(this.score);
   }
 
   /* ------------------------------------------------------------- onboarding */
+
+  /**
+   * The first five minutes.
+   *
+   * Four labels pointing at the four things someone has to find before they
+   * can do anything at all.  Shown once, dismissed by clicking anywhere, and
+   * available again from the help button — a tour that cannot be got back is
+   * worse than no tour.
+   */
+  showCoachMarks() {
+    Files.rememberSetting('coached', 1);
+    const steps = [
+      { sel: '[data-act=noteEntry]', text: '1 · Click here (or press N), then type A–G or click the staff' },
+      { sel: '[data-act="dur:quarter"]', text: '2 · Pick how long each note is — or press 1 to 7' },
+      { sel: '[data-act=playPause]', text: '3 · Play it back — the space bar does the same' },
+      { sel: '[data-act=transcribe]', text: '4 · Already played it? Turn a recording into notation here' },
+    ];
+    const layer = document.createElement('div');
+    layer.className = 'coach-layer';
+    let placed = 0;
+    const taken = [];
+    for (const step of steps) {
+      const target = document.querySelector(step.sel);
+      if (!target) continue;
+      const r = target.getBoundingClientRect();
+      const mark = document.createElement('div');
+      mark.className = 'coach-mark';
+      mark.textContent = step.text;
+      const left = Math.max(8, Math.min(window.innerWidth - 300, r.left - 10));
+      const below = r.bottom + 120 < window.innerHeight;
+      let top = below ? r.bottom + 12 : r.top - 62;
+      /* Two controls side by side would put their labels on top of each other;
+       * step the later one down until it has room. */
+      let guard = 0;
+      while (guard++ < 6 && taken.some((t) => Math.abs(t.top - top) < 52
+        && left < t.left + 300 && t.left < left + 300)) top += 54;
+      taken.push({ left, top });
+      mark.style.left = left + 'px';
+      mark.style.top = top + 'px';
+      const ring = document.createElement('div');
+      ring.className = 'coach-ring';
+      ring.style.left = (r.left - 6) + 'px';
+      ring.style.top = (r.top - 6) + 'px';
+      ring.style.width = (r.width + 12) + 'px';
+      ring.style.height = (r.height + 12) + 'px';
+      layer.append(ring, mark);
+      placed++;
+    }
+    if (!placed) return;
+    const done = document.createElement('button');
+    done.className = 'coach-done';
+    done.textContent = 'Got it';
+    layer.appendChild(done);
+    const close = () => layer.remove();
+    done.onclick = close;
+    layer.onclick = (e) => { if (e.target === layer) close(); };
+    document.body.appendChild(layer);
+  }
+
+  showTour() { this.showCoachMarks(); }
 
   showShortcuts() {
     Dlg.modal({
@@ -5694,7 +6107,9 @@ function layoutScore(score, opts = {}) {
 
 function addTitleBlock(page, score, pageW, margin, o) {
   const cx = pageW / 2;
-  let y = margin.top - 6;
+  /* The title sits above the first system but inside the page: a baseline high
+   * enough to clear the staves can still put the capitals off the paper. */
+  let y = Math.max(margin.top - 6, M.titleSize * 0.9);
   if (score.title) {
     page.items.push(item('text', { x: cx, y, str: score.title, size: M.titleSize, anchor: 'middle', cls: 'title' }));
     y += M.titleSize * 0.95;
@@ -10752,6 +11167,9 @@ const UI = {
   crossDown: S('<path d="M4 7h16M4 17h16"/><path d="M12 4v11M12 15l-3-3M12 15l3 3"/>'),
   figures: S('<path d="M4 5h16"/><path d="M7 10h3M8.5 10v5M7 15h3"/><path d="M14 10h3v2.5h-3V15h3"/>'),
   multirest: S('<path d="M3 12h18" stroke-width="4"/><path d="M4 8v8M20 8v8" stroke-width="1.6"/>'),
+  mic: S('<rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/>'),
+  transcribe: S('<path d="M4 18V7l7-2v11"/><circle cx="2.6" cy="18" r="2.4"/><path d="M15 6a5 5 0 0 1 0 8M18 4a8 8 0 0 1 0 12"/>'),
+  more: S('<path d="M6 9l6 6 6-6"/>'),
   close: S('<path d="M18 6 6 18M6 6l12 12"/>'),
 };
 
@@ -11401,6 +11819,7 @@ class MidiInput {
     this.onNoteOn = opts.onNoteOn || (() => {});
     this.onNoteOff = opts.onNoteOff || (() => {});
     this.onStatus = opts.onStatus || (() => {});
+    this.onMessage = opts.onMessage || (() => {});
     this.access = null;
     this.enabled = false;
     this.inputs = [];
@@ -11445,6 +11864,9 @@ class MidiInput {
 
   handle(input, msg) {
     if (this.selected !== 'all' && input.id !== this.selected) return;
+    /* Pass the message on untouched as well: recording wants the pedal and the
+     * device's own timestamp, which is taken before the page sees the event. */
+    this.onMessage(msg.data, msg.timeStamp);
     const [status, a, b] = msg.data;
     const cmd = status & 0xf0;
     if (cmd === 0x90 && b > 0) this.onNoteOn(a, b);
@@ -11461,150 +11883,3711 @@ class MidiInput {
 __exp.MidiInput = MidiInput;
 },
   "js/ui/ribbon.js": function (__exp, __req) {
-/* Cadenza — the ribbon definition.
+/* Cadenza — what is on the toolbar, and what is one click away.
  *
- * Every command a composer needs day to day is on this bar, labelled and
- * grouped, so nothing important is hidden inside a menu.
+ * The bar carries the things used in every session and nothing else: start
+ * writing, choose a note length, add a rest, alter a pitch, tie and slur.
+ * Everything else lives in a named palette that opens under the bar when it is
+ * wanted and stays shut when it is not.
+ *
+ * Nothing has been removed.  A score with ninety commands on screen is not
+ * more capable than one with fifteen, it is only harder to start; the other
+ * seventy-five are a click away, each under a heading that says what it is
+ * for, and every one of them still has its keyboard shortcut.
  */
 
-const RIBBON = [
+const ESSENTIALS = [
   {
-    id: 'durations',
-    label: 'Note value',
+    id: 'write',
     items: [
-      { act: 'dur:whole', icon: 'note:whole', tip: 'Whole note', key: '7' },
-      { act: 'dur:half', icon: 'note:half', tip: 'Half note', key: '6' },
-      { act: 'dur:quarter', icon: 'note:quarter', tip: 'Quarter note', key: '5' },
-      { act: 'dur:eighth', icon: 'note:eighth', tip: 'Eighth note', key: '4' },
-      { act: 'dur:16th', icon: 'note:16th', tip: 'Sixteenth note', key: '3' },
-      { act: 'dur:32nd', icon: 'note:32nd', tip: 'Thirty-second note', key: '2' },
-      { act: 'dur:64th', icon: 'note:64th', tip: 'Sixty-fourth note', key: '1' },
-      { sep: true },
-      { act: 'dot:1', icon: 'note:quarter:1', tip: 'Dotted', key: '.' },
-      { act: 'dot:2', icon: 'note:quarter:2', tip: 'Double dotted', key: ',' },
+      {
+        act: 'noteEntry',
+        icon: 'ui:wand',
+        label: 'Write',
+        tip: 'Start writing notes — then type A to G, click the staff, or play your keyboard',
+        key: 'N',
+        primary: true,
+      },
     ],
   },
   {
-    id: 'entry',
-    label: 'Entry',
+    id: 'durations',
+    label: 'Note length',
     items: [
-      { act: 'noteEntry', icon: 'ui:wand', tip: 'Note input mode — then type A–G or click the staff', key: 'N', wide: true, label: 'Input' },
-      { act: 'rest', icon: 'glyph:restQuarter', tip: 'Insert rest', key: '0' },
-      { act: 'tie', icon: 'ui:tie', tip: 'Tie to next note', key: 'T' },
-      { act: 'slur', icon: 'ui:slur', tip: 'Slur across the selection', key: 'S' },
-      { act: 'grace', icon: 'ui:grace', tip: 'Make grace note', key: '/' },
-      { sep: true },
-      { act: 'tuplet:3', icon: 'ui:tuplet', tip: 'Triplet', key: 'Ctrl 3' },
-      { act: 'voice', icon: 'ui:voice', tip: 'Cycle voice 1–4 (independent rhythms on one staff)', key: 'Ctrl Alt V' },
+      { act: 'dur:whole', icon: 'note:whole', tip: 'Whole note (semibreve)', key: '7' },
+      { act: 'dur:half', icon: 'note:half', tip: 'Half note (minim)', key: '6' },
+      { act: 'dur:quarter', icon: 'note:quarter', tip: 'Quarter note (crotchet)', key: '5' },
+      { act: 'dur:eighth', icon: 'note:eighth', tip: 'Eighth note (quaver)', key: '4' },
+      { act: 'dur:16th', icon: 'note:16th', tip: 'Sixteenth note (semiquaver)', key: '3' },
+      { act: 'dot:1', icon: 'note:quarter:1', tip: 'Dotted — half as long again', key: '.' },
+    ],
+  },
+  {
+    id: 'rest',
+    items: [
+      { act: 'rest', icon: 'glyph:restQuarter', tip: 'Rest — silence for the chosen length', key: '0' },
     ],
   },
   {
     id: 'accidentals',
-    label: 'Accidentals',
+    label: 'Pitch',
     items: [
-      { act: 'acc:-2', icon: 'glyph:accidentalDoubleFlat', tip: 'Double flat' },
-      { act: 'acc:-1', icon: 'glyph:accidentalFlat', tip: 'Flat', key: '-' },
-      { act: 'acc:0', icon: 'glyph:accidentalNatural', tip: 'Natural', key: '=' },
-      { act: 'acc:1', icon: 'glyph:accidentalSharp', tip: 'Sharp', key: '+' },
-      { act: 'acc:2', icon: 'glyph:accidentalDoubleSharp', tip: 'Double sharp' },
-      { act: 'respell', icon: 'ui:concert', tip: 'Respell enharmonically', key: 'J' },
+      { act: 'acc:-1', icon: 'glyph:accidentalFlat', tip: 'Flat — a semitone lower', key: '-' },
+      { act: 'acc:0', icon: 'glyph:accidentalNatural', tip: 'Natural — cancel a sharp or flat', key: '=' },
+      { act: 'acc:1', icon: 'glyph:accidentalSharp', tip: 'Sharp — a semitone higher', key: '+' },
     ],
   },
   {
-    id: 'articulations',
-    label: 'Articulations',
+    id: 'join',
+    label: 'Join',
     items: [
-      { act: 'art:staccato', icon: 'glyph:articStaccato', tip: 'Staccato', key: 'Shift S' },
-      { act: 'art:tenuto', icon: 'glyph:articTenuto', tip: 'Tenuto', key: 'Shift T' },
-      { act: 'art:accent', icon: 'glyph:articAccent', tip: 'Accent', key: 'Shift V' },
-      { act: 'art:marcato', icon: 'glyph:articMarcato', tip: 'Marcato', key: 'Shift M' },
-      { act: 'art:staccatissimo', icon: 'glyph:articStaccatissimo', tip: 'Staccatissimo' },
-      { act: 'art:fermata', icon: 'glyph:fermata', tip: 'Fermata', key: ';' },
+      { act: 'tie', icon: 'ui:tie', tip: 'Tie — hold the same note into the next one', key: 'T' },
+      { act: 'slur', icon: 'ui:slur', tip: 'Slur — play the selected notes smoothly', key: 'S' },
     ],
   },
+];
+
+/* Everything else, under a heading that says what it is for. */
+const PALETTES = [
   {
-    id: 'ornaments',
-    label: 'Ornaments',
-    items: [
-      { act: 'orn:trill', icon: 'glyph:ornamentTrill', tip: 'Trill', key: 'Shift R' },
-      { act: 'orn:mordent', icon: 'glyph:ornamentMordent', tip: 'Mordent' },
-      { act: 'orn:mordentLower', icon: 'glyph:ornamentMordentLower', tip: 'Lower mordent' },
-      { act: 'orn:turn', icon: 'glyph:ornamentTurn', tip: 'Turn' },
-      { act: 'tremolo:3', icon: 'ui:tremolo', tip: 'Tremolo' },
-      { act: 'arpeggio', icon: 'ui:arpeggio', tip: 'Arpeggiate chord' },
+    id: 'marks',
+    label: 'Marks',
+    tip: 'Articulations and ornaments: how each note is played',
+    icon: 'glyph:articStaccato',
+    groups: [
+      {
+        label: 'Articulations',
+        items: [
+          { act: 'art:staccato', icon: 'glyph:articStaccato', tip: 'Staccato — short and detached', key: 'Shift S' },
+          { act: 'art:tenuto', icon: 'glyph:articTenuto', tip: 'Tenuto — held for its full length', key: 'Shift T' },
+          { act: 'art:accent', icon: 'glyph:articAccent', tip: 'Accent — struck harder', key: 'Shift V' },
+          { act: 'art:marcato', icon: 'glyph:articMarcato', tip: 'Marcato — strongly accented', key: 'Shift M' },
+          { act: 'art:staccatissimo', icon: 'glyph:articStaccatissimo', tip: 'Staccatissimo — very short' },
+          { act: 'art:fermata', icon: 'glyph:fermata', tip: 'Fermata — pause, held at the player’s discretion', key: ';' },
+        ],
+      },
+      {
+        label: 'Ornaments',
+        items: [
+          { act: 'orn:trill', icon: 'glyph:ornamentTrill', tip: 'Trill — alternate rapidly with the note above', key: 'Shift R' },
+          { act: 'orn:mordent', icon: 'glyph:ornamentMordent', tip: 'Mordent — a quick turn to the note above and back' },
+          { act: 'orn:mordentLower', icon: 'glyph:ornamentMordentLower', tip: 'Lower mordent — down to the note below and back' },
+          { act: 'orn:turn', icon: 'glyph:ornamentTurn', tip: 'Turn — above, the note, below, the note' },
+          { act: 'tremolo:3', icon: 'ui:tremolo', tip: 'Tremolo — repeat the note as fast as possible' },
+          { act: 'arpeggio', icon: 'ui:arpeggio', tip: 'Arpeggiate — spread the chord from the bottom up' },
+        ],
+      },
     ],
   },
   {
     id: 'dynamics',
     label: 'Dynamics',
-    items: [
-      { act: 'dyn:ppp', icon: 'dyn:ppp', tip: 'Pianississimo' },
-      { act: 'dyn:pp', icon: 'dyn:pp', tip: 'Pianissimo' },
-      { act: 'dyn:p', icon: 'dyn:p', tip: 'Piano' },
-      { act: 'dyn:mp', icon: 'dyn:mp', tip: 'Mezzo-piano' },
-      { act: 'dyn:mf', icon: 'dyn:mf', tip: 'Mezzo-forte' },
-      { act: 'dyn:f', icon: 'dyn:f', tip: 'Forte' },
-      { act: 'dyn:ff', icon: 'dyn:ff', tip: 'Fortissimo' },
-      { act: 'dyn:fff', icon: 'dyn:fff', tip: 'Fortississimo' },
-      { sep: true },
-      { act: 'dyn:sfz', icon: 'dyn:sfz', tip: 'Sforzando' },
-      { act: 'dyn:fp', icon: 'dyn:fp', tip: 'Fortepiano' },
-      { act: 'hairpin:cresc', icon: 'ui:cresc', tip: 'Crescendo over the selection', key: 'H' },
-      { act: 'hairpin:dim', icon: 'ui:dim', tip: 'Diminuendo over the selection', key: 'Shift H' },
+    tip: 'How loud, and where it changes',
+    icon: 'dyn:f',
+    groups: [
+      {
+        label: 'Levels',
+        items: [
+          { act: 'dyn:ppp', icon: 'dyn:ppp', tip: 'Pianississimo — as soft as possible' },
+          { act: 'dyn:pp', icon: 'dyn:pp', tip: 'Pianissimo — very soft' },
+          { act: 'dyn:p', icon: 'dyn:p', tip: 'Piano — soft' },
+          { act: 'dyn:mp', icon: 'dyn:mp', tip: 'Mezzo-piano — moderately soft' },
+          { act: 'dyn:mf', icon: 'dyn:mf', tip: 'Mezzo-forte — moderately loud' },
+          { act: 'dyn:f', icon: 'dyn:f', tip: 'Forte — loud' },
+          { act: 'dyn:ff', icon: 'dyn:ff', tip: 'Fortissimo — very loud' },
+          { act: 'dyn:fff', icon: 'dyn:fff', tip: 'Fortississimo — as loud as possible' },
+        ],
+      },
+      {
+        label: 'Sudden and gradual',
+        items: [
+          { act: 'dyn:sfz', icon: 'dyn:sfz', tip: 'Sforzando — a sudden strong accent' },
+          { act: 'dyn:fp', icon: 'dyn:fp', tip: 'Fortepiano — loud, then immediately soft' },
+          { act: 'hairpin:cresc', icon: 'ui:cresc', tip: 'Crescendo — grow louder across the selection', key: 'H' },
+          { act: 'hairpin:dim', icon: 'ui:dim', tip: 'Diminuendo — grow softer across the selection', key: 'Shift H' },
+        ],
+      },
     ],
   },
   {
     id: 'text',
     label: 'Text',
-    items: [
-      { act: 'tempoMark', icon: 'ui:tempo', tip: 'Tempo marking' },
-      { act: 'text:expression', icon: 'ui:text', tip: 'Expression text (dolce, cantabile…)', key: 'Ctrl E' },
-      { act: 'text:technique', icon: 'ui:wand', tip: 'Technique text (pizz., con sord.…)' },
-      { act: 'lyric', icon: 'ui:lyric', tip: 'Lyrics — type a syllable, space for the next note', key: 'Ctrl L' },
-      { act: 'chordSymbol', icon: 'ui:chord', tip: 'Chord symbol', key: 'Ctrl K' },
-      { act: 'roman', icon: 'ui:text', tip: 'Roman numeral analysis' },
-      { act: 'figuredBass', icon: 'ui:figures', tip: 'Figured bass', key: 'Ctrl G' },
-      { act: 'fingering', icon: 'ui:text', tip: 'Fingering' },
-      { act: 'rehearsal', icon: 'ui:text', tip: 'Rehearsal mark' },
+    tip: 'Words on the score: tempo, expression, lyrics, chords, analysis',
+    icon: 'ui:text',
+    groups: [
+      {
+        label: 'Directions',
+        items: [
+          { act: 'tempoMark', icon: 'ui:tempo', tip: 'Tempo marking — Allegro, Andante, rit., a tempo' },
+          { act: 'text:expression', icon: 'ui:text', tip: 'Expression — dolce, cantabile, espressivo', key: 'Ctrl E' },
+          { act: 'text:technique', icon: 'ui:wand', tip: 'Technique — pizz., con sord., arco' },
+          { act: 'rehearsal', icon: 'ui:text', tip: 'Rehearsal mark — a letter or number to rehearse from' },
+        ],
+      },
+      {
+        label: 'Attached to notes',
+        items: [
+          { act: 'lyric', icon: 'ui:lyric', tip: 'Lyrics — type a syllable, space moves to the next note', key: 'Ctrl L' },
+          { act: 'chordSymbol', icon: 'ui:chord', tip: 'Chord symbol — Cmaj7, G7, Am', key: 'Ctrl K' },
+          { act: 'roman', icon: 'ui:text', tip: 'Roman numeral — harmonic analysis under the staff' },
+          { act: 'figuredBass', icon: 'ui:figures', tip: 'Figured bass — the numerals under a continuo line', key: 'Ctrl G' },
+          { act: 'fingering', icon: 'ui:text', tip: 'Fingering — which finger plays the note' },
+        ],
+      },
     ],
   },
   {
-    id: 'lines',
-    label: 'Lines',
-    items: [
-      { act: 'octave:up', icon: 'ui:octave', tip: '8va — sounds an octave higher' },
-      { act: 'octave:down', icon: 'ui:octave', tip: '8vb — sounds an octave lower' },
-      { act: 'pedal', icon: 'ui:pedal', tip: 'Sustain pedal' },
+    id: 'rhythm',
+    label: 'Rhythm',
+    tip: 'Longer and shorter values, tuplets, grace notes, voices',
+    icon: 'ui:tuplet',
+    groups: [
+      {
+        label: 'More note lengths',
+        items: [
+          { act: 'dur:breve', icon: 'note:whole', tip: 'Breve — twice a whole note' },
+          { act: 'dur:32nd', icon: 'note:32nd', tip: 'Thirty-second note (demisemiquaver)', key: '2' },
+          { act: 'dur:64th', icon: 'note:64th', tip: 'Sixty-fourth note (hemidemisemiquaver)', key: '1' },
+          { act: 'dot:2', icon: 'note:quarter:2', tip: 'Double dotted', key: ',' },
+        ],
+      },
+      {
+        label: 'Divisions and voices',
+        items: [
+          { act: 'tuplet:3', icon: 'ui:tuplet', tip: 'Triplet — three in the time of two', key: 'Ctrl 3' },
+          { act: 'tuplet:5', icon: 'ui:tuplet', tip: 'Quintuplet — five in the time of four' },
+          { act: 'tuplet:6', icon: 'ui:tuplet', tip: 'Sextuplet — six in the time of four' },
+          { act: 'grace', icon: 'ui:grace', tip: 'Grace note — an ornament before the beat', key: '/' },
+          { act: 'voice', icon: 'ui:voice', tip: 'Next voice — independent rhythms on one staff', key: 'Ctrl Alt V' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'spelling',
+    label: 'Spelling',
+    tip: 'Double accidentals and enharmonic respelling',
+    icon: 'glyph:accidentalDoubleSharp',
+    groups: [
+      {
+        label: 'Accidentals',
+        items: [
+          { act: 'acc:-2', icon: 'glyph:accidentalDoubleFlat', tip: 'Double flat — a whole tone lower' },
+          { act: 'acc:2', icon: 'glyph:accidentalDoubleSharp', tip: 'Double sharp — a whole tone higher' },
+          { act: 'respell', icon: 'ui:concert', tip: 'Respell — the same sound written the other way (F♯ / G♭)', key: 'J' },
+        ],
+      },
+      {
+        label: 'Octave lines',
+        items: [
+          { act: 'octave:up', icon: 'ui:octave', tip: '8va — written an octave lower than it sounds' },
+          { act: 'octave:down', icon: 'ui:octave', tip: '8vb — written an octave higher than it sounds' },
+          { act: 'pedal', icon: 'ui:pedal', tip: 'Sustain pedal line' },
+        ],
+      },
     ],
   },
   {
     id: 'bars',
-    label: 'Measures & keys',
-    items: [
-      { act: 'insertMeasure', icon: 'ui:insertBar', tip: 'Insert measure before the selection', key: 'Ctrl Ins' },
-      { act: 'appendMeasure', icon: 'ui:plus', tip: 'Add measure at the end', key: 'Ctrl B' },
-      { act: 'deleteMeasure', icon: 'ui:deleteBar', tip: 'Delete selected measures', key: 'Ctrl Del' },
-      { sep: true },
-      { act: 'timeSig', icon: 'glyph:timeSigCommon', tip: 'Time signature' },
-      { act: 'keySig', icon: 'glyph:accidentalSharp', tip: 'Key signature' },
-      { act: 'clef', icon: 'glyph:gClef', tip: 'Clef' },
-      { act: 'barline', icon: 'ui:clef', tip: 'Barline style' },
-      { act: 'systemBreak', icon: 'ui:insertBar', tip: 'Break the system here' },
+    label: 'Bars & keys',
+    tip: 'Measures, time signatures, key signatures, clefs',
+    icon: 'glyph:timeSigCommon',
+    groups: [
+      {
+        label: 'Measures',
+        items: [
+          { act: 'insertMeasure', icon: 'ui:insertBar', tip: 'Insert a measure before the selection', key: 'Ctrl Ins' },
+          { act: 'appendMeasure', icon: 'ui:plus', tip: 'Add a measure at the end', key: 'Ctrl B' },
+          { act: 'deleteMeasure', icon: 'ui:deleteBar', tip: 'Delete the selected measures', key: 'Ctrl Del' },
+          { act: 'systemBreak', icon: 'ui:insertBar', tip: 'Start a new system here' },
+          { act: 'barline', icon: 'ui:clef', tip: 'Barline style — double, final, repeat' },
+        ],
+      },
+      {
+        label: 'Signatures',
+        items: [
+          { act: 'timeSig', icon: 'glyph:timeSigCommon', tip: 'Time signature — from this bar onward' },
+          { act: 'keySig', icon: 'glyph:accidentalSharp', tip: 'Key signature — from this bar onward' },
+          { act: 'clef', icon: 'glyph:gClef', tip: 'Clef — from this bar onward' },
+        ],
+      },
     ],
   },
   {
-    id: 'view',
-    label: 'View',
-    items: [
-      { act: 'concertPitch', icon: 'ui:concert', tip: 'Concert pitch — show transposing instruments at sounding pitch', wide: true, label: 'Concert' },
-      { act: 'partView', icon: 'ui:parts', tip: 'Switch between the full score and individual parts', wide: true, label: 'Score' },
-      { act: 'multiBarRests', icon: 'ui:multirest', tip: 'Collapse runs of empty bars into multi-bar rests (always on in parts)', wide: true, label: 'Bar rests' },
-      { act: 'addInstrument', icon: 'ui:plus', tip: 'Add an instrument', wide: true, label: 'Instrument' },
+    id: 'score',
+    label: 'Score',
+    tip: 'Instruments, parts, and how the score is shown',
+    icon: 'ui:parts',
+    groups: [
+      {
+        label: 'Instruments',
+        items: [
+          { act: 'addInstrument', icon: 'ui:plus', tip: 'Add an instrument to the score', wide: true, label: 'Add instrument' },
+          { act: 'partView', icon: 'ui:parts', tip: 'Switch between the full score and one part', wide: true, label: 'Full score' },
+        ],
+      },
+      {
+        label: 'How it is shown',
+        items: [
+          { act: 'concertPitch', icon: 'ui:concert', tip: 'Concert pitch — show transposing instruments at sounding pitch', wide: true, label: 'Concert pitch' },
+          { act: 'multiBarRests', icon: 'ui:multirest', tip: 'Collapse runs of empty bars into multi-bar rests (always on in parts)', wide: true, label: 'Multi-bar rests' },
+        ],
+      },
     ],
   },
 ];
 
-__exp.RIBBON = RIBBON;
+/** Every action on the bar or in a palette, for tooltips and the shortcut list. */
+function allItems() {
+  const out = [];
+  for (const g of ESSENTIALS) out.push(...g.items);
+  for (const p of PALETTES) for (const g of p.groups) out.push(...g.items);
+  return out;
+}
+
+__exp.allItems = allItems;
+__exp.ESSENTIALS = ESSENTIALS;
+__exp.PALETTES = PALETTES;
+},
+  "js/ui/transcribe-panel.js": function (__exp, __req) {
+/* Cadenza — the Transcribe panel.
+ *
+ * One button, then a short path: get the music in, listen to it, read it, look
+ * at what came back, change what is wrong, keep it.  The settings that matter
+ * afterwards — how hard to listen, how tightly to fit the rhythm, what tempo
+ * and metre and key to assume — are all on the result screen, because that is
+ * where you find out whether they were right, and re-reading with different
+ * ones takes no time at all: the notes are already known.
+ *
+ * What it does not do is claim more than it found.  Every stage reports its
+ * own confidence, the bars it is least sure of are listed by number, and the
+ * notes it is least sure of are marked on the page.
+ */
+
+const Dlg = __req("js/ui/dialogs.js");
+const { UI } = __req("js/ui/icons.js");
+const { extractNotes, transcribeMidi, notesToScore, SOURCE } = __req("js/transcribe/index.js");
+const { MidiRecorder, AudioRecorder, parseMIDI } = __req("js/transcribe/capture.js");
+const { GRID_PRESETS } = __req("js/transcribe/rhythm.js");
+const { CorrectionModel, compareScores } = __req("js/transcribe/learn.js");
+const { TIME_SIG_PRESETS } = __req("js/core/rhythm.js");
+const { MAJOR_KEYS, keyName } = __req("js/core/theory.js");
+
+const pct = (v) => Math.round(Math.max(0, Math.min(1, v || 0)) * 100);
+
+/** A labelled bar, so a confidence reads as a quantity rather than a word. */
+function meter(label, value, note = '') {
+  const p = pct(value);
+  const tone = p >= 75 ? 'good' : p >= 45 ? 'fair' : 'poor';
+  return `<div class="tr-meter"><span class="tr-meter-label">${label}</span>`
+    + `<span class="tr-meter-track"><span class="tr-meter-fill ${tone}" style="width:${p}%"></span></span>`
+    + `<span class="tr-meter-value">${p}%</span>`
+    + (note ? `<span class="tr-meter-note">${note}</span>` : '') + '</div>';
+}
+
+class TranscribePanel {
+  constructor(app) {
+    this.app = app;
+    this.model = new CorrectionModel();
+    this.reset();
+  }
+
+  reset() {
+    this.notes = null;         // raw note events, before any musical reading
+    this.duration = 0;
+    this.source = null;
+    this.result = null;        // the last reading
+    this.settings = {
+      sensitivity: 1,
+      grid: 'auto',
+      quantiseStrength: 1,
+      splitHands: true,
+      bpm: null,
+      timeSig: null,
+      keyFifths: null,
+    };
+    this.audio = null;
+    this.midiRec = null;
+    this.recorder = null;
+    this.busy = false;
+  }
+
+  open() {
+    this.reset();
+    const m = Dlg.modal({
+      title: 'Transcribe',
+      width: 'wide',
+      build: (body) => { this.body = body; this.renderStart(); },
+      onClose: () => this.cleanup(),
+    });
+    this.modalClose = m.close;
+  }
+
+  cleanup() {
+    if (this.recorder && this.recorder.recording) this.recorder.stop();
+    if (this.midiHook) { this.app.offMidi(this.midiHook); this.midiHook = null; }
+    if (this.timer) { clearInterval(this.timer); this.timer = null; }
+  }
+
+  /* ------------------------------------------------------------ step one */
+
+  renderStart() {
+    const learned = this.model.summary();
+    this.body.innerHTML = `
+      <p class="tr-lead">Play it, or bring in a file. Cadenza works out the notes, the beat,
+        the metre and the key, and writes them into the score for you to edit.</p>
+      <div class="tr-choices">
+        <button class="tr-choice" data-go="mic">
+          <span class="tr-choice-icon">${UI.mic || UI.midi}</span>
+          <span class="tr-choice-title">Record audio</span>
+          <span class="tr-choice-sub">Play into the microphone or an audio interface</span>
+        </button>
+        <button class="tr-choice" data-go="keys">
+          <span class="tr-choice-icon">${UI.keyboard}</span>
+          <span class="tr-choice-title">Play a MIDI keyboard</span>
+          <span class="tr-choice-sub">Far more accurate — the notes arrive exactly</span>
+        </button>
+        <button class="tr-choice" data-go="audioFile">
+          <span class="tr-choice-icon">${UI.open}</span>
+          <span class="tr-choice-title">Import audio</span>
+          <span class="tr-choice-sub">WAV, MP3, FLAC, OGG, M4A</span>
+        </button>
+        <button class="tr-choice" data-go="midiFile">
+          <span class="tr-choice-icon">${UI.midi}</span>
+          <span class="tr-choice-title">Import MIDI</span>
+          <span class="tr-choice-sub">A .mid file from any instrument or program</span>
+        </button>
+      </div>
+      <div class="tr-honest">
+        <b>What to expect.</b> A MIDI instrument states every note exactly, so those
+        transcriptions are limited only by the musical reading. Audio has to be listened
+        to: a single clean line comes back reliably, chords and two independent hands
+        come back well, and a dense orchestral recording will need editing. Nothing here
+        is sent anywhere — it all runs on this machine.
+      </div>
+      ${learned.empty ? '' : `<div class="tr-learned"><b>Adjusted to your corrections</b><ul>${learned.lines.map((l) => `<li>${l}</li>`).join('')}</ul>
+        <button class="linkish" data-go="forget">Forget what was learned</button></div>`}
+    `;
+    this.body.querySelectorAll('[data-go]').forEach((b) => {
+      b.onclick = () => this.go(b.dataset.go);
+    });
+  }
+
+  go(where) {
+    if (where === 'mic') return this.startRecording();
+    if (where === 'keys') return this.startMidiCapture();
+    if (where === 'audioFile') return this.pickFile('audio/*', (f) => this.loadAudioFile(f));
+    if (where === 'midiFile') return this.pickFile('.mid,.midi,audio/midi', (f) => this.loadMidiFile(f));
+    if (where === 'forget') { this.model.reset(); return this.renderStart(); }
+    if (where === 'back') return this.renderStart();
+    return undefined;
+  }
+
+  pickFile(accept, then) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = accept;
+    input.onchange = () => { if (input.files[0]) then(input.files[0]); };
+    input.click();
+  }
+
+  /* ------------------------------------------------------------ recording */
+
+  async startRecording() {
+    if (!AudioRecorder.supported) {
+      Dlg.toast('This browser cannot record audio', 'err');
+      return;
+    }
+    this.body.innerHTML = `
+      <div class="tr-record">
+        <div class="tr-level"><span class="tr-level-fill"></span></div>
+        <div class="tr-clock">0:00</div>
+        <p class="tr-lead">Play when you are ready. A steady beat helps — the metre is read
+          from where the strong notes fall.</p>
+        <div class="tr-record-actions">
+          <button class="btn danger" data-stop>Stop and transcribe</button>
+          <button class="btn" data-go="back">Cancel</button>
+        </div>
+      </div>`;
+    const fill = this.body.querySelector('.tr-level-fill');
+    const clock = this.body.querySelector('.tr-clock');
+    this.recorder = new AudioRecorder({
+      onLevel: (peak, seconds) => {
+        fill.style.width = Math.min(100, peak * 140) + '%';
+        clock.textContent = `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+      },
+    });
+    this.body.querySelector('[data-stop]').onclick = () => this.finishRecording();
+    this.body.querySelector('[data-go=back]').onclick = async () => {
+      await this.recorder.stop();
+      this.renderStart();
+    };
+    try {
+      await this.recorder.start();
+    } catch (err) {
+      Dlg.toast('Microphone access was refused', 'err');
+      this.renderStart();
+    }
+  }
+
+  async finishRecording() {
+    const { samples, sampleRate, duration } = await this.recorder.stop();
+    if (duration < 0.4) {
+      Dlg.toast('That was too short to read', 'err');
+      return this.renderStart();
+    }
+    this.audio = { samples, sampleRate };
+    this.source = SOURCE.AUDIO;
+    return this.listen();
+  }
+
+  /* --------------------------------------------------------- MIDI capture */
+
+  startMidiCapture() {
+    this.midiRec = new MidiRecorder();
+    this.midiRec.start();
+    this.body.innerHTML = `
+      <div class="tr-record">
+        <div class="tr-notecount">0 notes</div>
+        <div class="tr-clock">0:00</div>
+        <p class="tr-lead">Play. Every note, its length and how hard it was struck are taken
+          exactly as your instrument sends them, sustain pedal included.</p>
+        <div class="tr-record-actions">
+          <button class="btn danger" data-stop>Stop and transcribe</button>
+          <button class="btn" data-go="back">Cancel</button>
+        </div>
+      </div>`;
+    const count = this.body.querySelector('.tr-notecount');
+    const clock = this.body.querySelector('.tr-clock');
+    this.timer = setInterval(() => {
+      const s = this.midiRec.duration;
+      clock.textContent = `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+      const n = this.midiRec.notes.length + this.midiRec.sounding.size;
+      count.textContent = n === 1 ? '1 note' : `${n} notes`;
+    }, 200);
+
+    this.midiHook = (data, stamp) => this.midiRec.message(data, stamp);
+    this.app.onMidi(this.midiHook);
+
+    this.body.querySelector('[data-stop]').onclick = () => {
+      clearInterval(this.timer);
+      this.timer = null;
+      this.app.offMidi(this.midiHook);
+      this.midiHook = null;
+      const notes = this.midiRec.stop();
+      if (!notes.length) { Dlg.toast('No notes were played', 'err'); return this.renderStart(); }
+      this.notes = notes;
+      this.duration = this.midiRec.duration;
+      this.source = SOURCE.MIDI;
+      return this.read();
+    };
+    this.body.querySelector('[data-go=back]').onclick = () => {
+      clearInterval(this.timer);
+      this.timer = null;
+      this.app.offMidi(this.midiHook);
+      this.midiHook = null;
+      this.midiRec.stop();
+      this.renderStart();
+    };
+  }
+
+  /* ------------------------------------------------------------- importing */
+
+  async loadAudioFile(file) {
+    this.progress('Decoding ' + file.name);
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const buffer = await ctx.decodeAudioData(await file.arrayBuffer());
+      await ctx.close();
+      this.audio = { buffer, sampleRate: buffer.sampleRate };
+      this.source = SOURCE.AUDIO;
+      this.fileName = file.name;
+      await this.listen();
+    } catch (err) {
+      Dlg.toast('That file could not be decoded', 'err');
+      this.renderStart();
+    }
+  }
+
+  async loadMidiFile(file) {
+    try {
+      const notes = parseMIDI(new Uint8Array(await file.arrayBuffer()));
+      if (!notes.length) throw new Error('no notes');
+      this.notes = notes;
+      this.duration = Math.max(...notes.map((n) => n.end));
+      this.source = SOURCE.MIDI;
+      this.fileName = file.name;
+      this.read();
+    } catch (err) {
+      Dlg.toast('That does not look like a MIDI file with notes in it', 'err');
+      this.renderStart();
+    }
+  }
+
+  /* --------------------------------------------------------------- reading */
+
+  progress(text, value = null) {
+    this.body.innerHTML = `
+      <div class="tr-progress">
+        <div class="tr-spinner"></div>
+        <div class="tr-progress-text">${text}</div>
+        <div class="tr-progress-track"><span class="tr-progress-fill" style="width:${value === null ? 8 : pct(value)}%"></span></div>
+      </div>`;
+  }
+
+  /** Listen to the audio: the slow part, and the only part that can be wrong. */
+  async listen() {
+    this.progress('Listening for notes…', 0);
+    await new Promise((r) => setTimeout(r, 30));
+    const fill = this.body.querySelector('.tr-progress-fill');
+    const text = this.body.querySelector('.tr-progress-text');
+    const learned = this.model.parameters();
+    const input = this.audio.buffer || this.audio.samples;
+    try {
+      const extracted = await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          try {
+            resolve(extractNotes(input, {
+              sampleRate: this.audio.sampleRate,
+              sensitivity: this.settings.sensitivity * learned.sensitivity,
+              onProgress: (p) => {
+                if (fill) fill.style.width = pct(p * 0.95) + '%';
+                if (text && p > 0.5) text.textContent = 'Sorting out the chords…';
+              },
+            }));
+          } catch (err) { reject(err); }
+        }, 20);
+      });
+      this.notes = extracted.notes;
+      this.duration = extracted.duration;
+      this.onsets = extracted.onsets;
+    } catch (err) {
+      Dlg.toast('The audio could not be analysed', 'err');
+      return this.renderStart();
+    }
+    if (!this.notes.length) {
+      Dlg.toast('No notes were found — try recording a little louder', 'err');
+      return this.renderStart();
+    }
+    return this.read();
+  }
+
+  /** Read the notes as music.  Fast, so every setting can be changed and re-read. */
+  read() {
+    const learned = this.model.parameters();
+    const grid = GRID_PRESETS.find((g) => g.id === this.settings.grid) || GRID_PRESETS[0];
+    const opts = {
+      duration: this.duration,
+      grid: grid.division,
+      quantiseStrength: this.settings.quantiseStrength,
+      splitHands: this.settings.splitHands,
+      bpm: this.settings.bpm,
+      timeSig: this.settings.timeSig,
+      keyFifths: this.settings.keyFifths,
+      title: this.fileName ? this.fileName.replace(/\.[^.]+$/, '') : 'Transcription',
+      source: this.source,
+      divisionWeights: learned.divisionWeights,
+      splitCentre: learned.splitCentre,
+      spellingLean: learned.spellingLean,
+      octaveBias: learned.octave,
+    };
+    this.result = this.source === SOURCE.MIDI
+      ? transcribeMidi(this.notes, opts)
+      : notesToScore(this.notes, opts);
+    this.renderResult();
+  }
+
+  /* --------------------------------------------------------------- result */
+
+  /** The bars worth a second look, worst first. */
+  uncertainBars() {
+    if (!this.result) return [];
+    const perBar = new Map();
+    const beats = this.result.analysis.timeSig.beats;
+    const bar = (n) => Math.floor(n.startTicks / (960 * beats * (4 / this.result.analysis.timeSig.beatType))) + 1;
+    for (const n of this.result.notes) {
+      const b = bar(n);
+      const c = Math.min(n.confidence ?? 1, n.rhythmConfidence ?? 1);
+      const cur = perBar.get(b) || { bar: b, worst: 1, count: 0 };
+      cur.worst = Math.min(cur.worst, c);
+      cur.count++;
+      perBar.set(b, cur);
+    }
+    return [...perBar.values()].filter((b) => b.worst < 0.55)
+      .sort((a, b) => a.worst - b.worst).slice(0, 8);
+  }
+
+  renderResult() {
+    const a = this.result.analysis;
+    const c = a.confidence;
+    const shaky = this.uncertainBars();
+    const heard = this.result.notes.length;
+    const gridOptions = GRID_PRESETS.map((g) =>
+      `<option value="${g.id}"${g.id === this.settings.grid ? ' selected' : ''}>${g.label}</option>`).join('');
+    const tsOptions = ['auto', ...TIME_SIG_PRESETS.map((t) => `${t.beats}/${t.beatType}`)]
+      .map((v) => {
+        const cur = this.settings.timeSig
+          ? `${this.settings.timeSig.beats}/${this.settings.timeSig.beatType}` : 'auto';
+        return `<option value="${v}"${v === cur ? ' selected' : ''}>${v === 'auto' ? 'Heard: ' + a.timeSig.beats + '/' + a.timeSig.beatType : v}</option>`;
+      }).join('');
+    const keyOptions = ['auto', ...Object.keys(MAJOR_KEYS)].map((v) => {
+      const cur = this.settings.keyFifths === null ? 'auto' : String(this.settings.keyFifths);
+      const label = v === 'auto' ? 'Heard: ' + keyName(a.key.fifths, a.key.mode) : keyName(+v, 'major');
+      return `<option value="${v}"${v === cur ? ' selected' : ''}>${label}</option>`;
+    }).join('');
+
+    this.body.innerHTML = `
+      <div class="tr-result">
+        <div class="tr-summary">
+          <div class="tr-headline">
+            <b>${heard}</b> note${heard === 1 ? '' : 's'} ·
+            <b>${Math.round(a.bpm)}</b> bpm ·
+            <b>${a.timeSig.beats}/${a.timeSig.beatType}</b> ·
+            <b>${keyName(a.key.fifths, a.key.mode)}</b> ·
+            <b>${a.measures}</b> bar${a.measures === 1 ? '' : 's'}
+          </div>
+          <div class="tr-meters">
+            ${meter('Pitch', c.pitch, this.source === SOURCE.MIDI ? 'exact, from MIDI' : '')}
+            ${meter('Rhythm', c.rhythm)}
+            ${meter('Beat', c.beat)}
+            ${meter('Metre', c.metre)}
+            ${meter('Key', c.key)}
+          </div>
+          ${shaky.length ? `<div class="tr-shaky"><b>Look at these bars first:</b> ${shaky.map((b) => b.bar).join(', ')}
+            <span class="tr-faint">— marked on the page once you accept</span></div>`
+    : '<div class="tr-shaky good">Nothing stood out as doubtful.</div>'}
+        </div>
+
+        <div class="tr-tweaks">
+          <h3>If something is wrong</h3>
+          <label class="tr-field"><span>Rhythm grid</span>
+            <select data-set="grid">${gridOptions}</select>
+            <small>The shortest value to write. Automatic picks one beat at a time.</small></label>
+          <label class="tr-field"><span>Fit to the beat</span>
+            <input type="range" min="0" max="100" value="${Math.round(this.settings.quantiseStrength * 100)}" data-set="quantiseStrength">
+            <small>All the way fits the grid exactly; lower keeps more of how it was played.</small></label>
+          <label class="tr-field"><span>Tempo</span>
+            <input type="number" min="20" max="300" placeholder="${Math.round(a.bpm)}"
+              value="${this.settings.bpm || ''}" data-set="bpm">
+            <small>Leave empty to use the tempo that was heard.</small></label>
+          <label class="tr-field"><span>Time signature</span>
+            <select data-set="timeSig">${tsOptions}</select></label>
+          <label class="tr-field"><span>Key</span>
+            <select data-set="keyFifths">${keyOptions}</select></label>
+          <label class="tr-field tr-check"><span>Two staves</span>
+            <input type="checkbox" data-set="splitHands"${this.settings.splitHands ? ' checked' : ''}>
+            <small>Split into a right and a left hand.</small></label>
+          ${this.source === SOURCE.AUDIO ? `<label class="tr-field"><span>Listening</span>
+            <input type="range" min="50" max="180" value="${Math.round(this.settings.sensitivity * 100)}" data-set="sensitivity">
+            <small>Higher finds quieter notes and risks inventing some. Changing this listens again.</small></label>` : ''}
+        </div>
+      </div>
+      <div class="tr-actions">
+        <button class="btn" data-do="play">${UI.play} Play it</button>
+        <button class="btn" data-do="stop">Stop</button>
+        <button class="btn" data-do="discard">Start over</button>
+        <span class="tr-spacer"></span>
+        <span class="tr-faint">Undo puts the score back as it was</span>
+        <button class="btn primary" data-do="accept">Put it in the score</button>
+      </div>`;
+
+    this.body.querySelectorAll('[data-set]').forEach((el) => {
+      el.onchange = () => this.changeSetting(el);
+    });
+    this.body.querySelectorAll('[data-do]').forEach((b) => {
+      b.onclick = () => this.doAction(b.dataset.do);
+    });
+  }
+
+  changeSetting(el) {
+    const key = el.dataset.set;
+    if (key === 'grid') this.settings.grid = el.value;
+    else if (key === 'quantiseStrength') this.settings.quantiseStrength = +el.value / 100;
+    else if (key === 'bpm') this.settings.bpm = el.value ? +el.value : null;
+    else if (key === 'splitHands') this.settings.splitHands = el.checked;
+    else if (key === 'timeSig') {
+      if (el.value === 'auto') this.settings.timeSig = null;
+      else {
+        const [beats, beatType] = el.value.split('/').map(Number);
+        this.settings.timeSig = { beats, beatType, symbol: null };
+      }
+    } else if (key === 'keyFifths') {
+      this.settings.keyFifths = el.value === 'auto' ? null : +el.value;
+    } else if (key === 'sensitivity') {
+      this.settings.sensitivity = +el.value / 100;
+      /* Listening again means running the whole analysis, so it is the one
+       * setting that costs something. */
+      this.listen();
+      return;
+    }
+    this.read();
+  }
+
+  doAction(what) {
+    if (what === 'play') return this.app.auditionScore(this.result.score);
+    if (what === 'stop') return this.app.stopAudition();
+    if (what === 'discard') { this.app.stopAudition(); return this.renderStart(); }
+    if (what === 'accept') return this.accept();
+    return undefined;
+  }
+
+  accept() {
+    this.app.stopAudition();
+    const proposed = this.result.score;
+    /* Remember what was proposed: when the score is edited afterwards, the
+     * difference is what there is to learn from. */
+    this.app.adoptTranscription(proposed, this);
+    this.modalClose();
+  }
+
+  /**
+   * Called by the application once the user has edited an accepted
+   * transcription, with the score as it now stands.
+   */
+  learnFrom(before, after) {
+    for (const c of compareScores(before, after)) this.model.observe(c);
+  }
+}
+
+__exp.TranscribePanel = TranscribePanel;
+},
+  "js/transcribe/index.js": function (__exp, __req) {
+/* Cadenza — transcription, end to end.
+ *
+ * Audio or MIDI in, an editable score out.  The stages are deliberately
+ * separate and each reports how sure it is, because the useful thing to tell
+ * someone is not "here is your music" but "here is your music, and these three
+ * bars are where I would look first".
+ *
+ * The two inputs are not equally easy and the code does not pretend otherwise.
+ * MIDI states the pitches and the timing exactly, so everything from the pitch
+ * stage is certain and only the musical reading — metre, key, hands, voices —
+ * is inferred.  Audio has to recover the notes first, and that is the part
+ * that can be wrong.
+ */
+
+const { extractNotes } = __req("js/transcribe/notes.js");
+const { attackEvents, estimateBeat, estimateMetre, quantise, toTicks } = __req("js/transcribe/rhythm.js");
+const { separateHands, assignVoices, groupChords } = __req("js/transcribe/voices.js");
+const { buildScore, detectKey } = __req("js/transcribe/build.js");
+const { beatTicks, measureTicks, TPQ } = __req("js/core/rhythm.js");
+
+const SOURCE = { AUDIO: 'audio', MIDI: 'midi' };
+
+/**
+ * Turn note events into a score.
+ *
+ * Shared by both inputs: once there are notes with times, pitches and
+ * confidences, the musical reading is the same problem either way.
+ */
+function notesToScore(rawNotes, opts = {}) {
+  const {
+    duration = 0,
+    bpm = null,
+    grid = null,             // a fixed division, or null to choose per beat
+    quantiseStrength = 1,
+    timeSig = null,          // override the inferred metre
+    keyFifths = null,        // override the inferred key
+    splitHands = true,
+    title = 'Transcription',
+    composer = '',
+    source = SOURCE.AUDIO,
+    divisionWeights = null,
+    splitCentre = 60,
+    spellingLean = 0,
+    octaveBias = null,
+  } = opts;
+
+  const notes = rawNotes.map((n) => ({ ...n }));
+  /* Corrections this player has made before, applied before anything else so
+   * the rest of the reading sees the pitches they meant. */
+  if (octaveBias) {
+    for (const n of notes) {
+      const shift = n.midi < 48 ? octaveBias.low : n.midi < 72 ? octaveBias.mid : octaveBias.high;
+      if (shift) n.midi = Math.max(0, Math.min(127, n.midi + shift * 12));
+    }
+  }
+  if (!notes.length) {
+    const { score } = buildScore([], { title, composer, staves: splitHands ? 2 : 1 });
+    return { score, notes: [], analysis: { empty: true } };
+  }
+
+  const span = duration || Math.max(...notes.map((n) => n.end)) + 0.5;
+  const attacks = attackEvents(notes);
+  const beat = estimateBeat(attacks, span, { fixedBpm: bpm });
+
+  /* Quantise once against a quarter-note beat to learn how the beats divide,
+   * since that is what says whether the metre is simple or compound. */
+  const trial = quantise(notes, beat, { division: grid, strength: quantiseStrength, divisionWeights });
+  const metre = timeSig
+    ? { timeSig, beatsPerBar: timeSig.beats, confidence: 1 }
+    : estimateMetre(attacks, beat, trial.compound);
+
+  const perBeat = beatTicks(metre.timeSig);
+  const fitted = toTicks(trial.notes, perBeat);
+
+  separateHands(fitted, { forceSingleStaff: !splitHands, centre: splitCentre });
+  const staffCount = splitHands && new Set(fitted.map((n) => n.staff)).size > 1 ? 2 : 1;
+  for (const staff of new Set(fitted.map((n) => n.staff))) {
+    const ofStaff = fitted.filter((n) => n.staff === staff);
+    closeGaps(ofStaff, perBeat, measureTicks(metre.timeSig));
+    assignVoices(ofStaff);
+  }
+
+  const chords = groupChords(fitted);
+  const key = keyFifths === null ? detectKey(fitted)
+    : { fifths: keyFifths, mode: 'major', confidence: 1 };
+
+  /* The tempo mark is in quarter notes however the beat was felt. */
+  const quarterBpm = beat.period > 0
+    ? Math.round((60 / beat.period) * (TPQ / perBeat) * 10) / 10 : 120;
+
+  /* Which beats were played in threes, so the layout can write them as
+   * triplets rather than as values that do not exist. */
+  const divisions = new Map();
+  for (const n of fitted) {
+    const b = Math.floor(n.startTicks / perBeat);
+    divisions.set(b, Math.max(divisions.get(b) || 1, n.division));
+  }
+
+  const built = buildScore(chords, {
+    plan: { perBeat, divisions },
+    timeSig: metre.timeSig,
+    bpm: quarterBpm,
+    fifths: key.fifths,
+    mode: key.mode,
+    staves: staffCount,
+    spellingLean,
+    title,
+    composer,
+  });
+
+  return {
+    score: built.score,
+    notes: fitted,
+    chords,
+    analysis: {
+      source,
+      bpm: quarterBpm,
+      beat,
+      timeSig: metre.timeSig,
+      key,
+      measures: built.measures,
+      noteCount: fitted.length,
+      divisions: trial.divisions,
+      confidence: {
+        /* Pitch is certain from MIDI and estimated from audio; saying so is the
+         * difference between a useful number and a decorative one. */
+        pitch: source === SOURCE.MIDI ? 1
+          : average(fitted.map((n) => n.confidence ?? 0.5)),
+        rhythm: average(fitted.map((n) => n.rhythmConfidence ?? 0.5)),
+        beat: beat.confidence,
+        metre: metre.confidence,
+        key: key.confidence,
+      },
+    },
+  };
+}
+
+/**
+ * Decide where the silences really are.
+ *
+ * Players lift a key a moment before the next note; that release is
+ * articulation, not rhythm, and writing it down produces a page littered with
+ * rests nobody played.  A gap small enough to be a release closes up — the
+ * note is written as holding until the next one — while a gap long enough to
+ * have been meant stays open and becomes a rest.  The notes of one chord let
+ * go at slightly different moments are levelled for the same reason.
+ */
+function closeGaps(notes, perBeat, barTicks) {
+  if (!notes.length) return;
+  const attacks = [...new Set(notes.map((n) => n.startTicks))].sort((a, b) => a - b);
+  const hold = Math.round(perBeat * 0.34);
+
+  /* One chord, one release. */
+  const byStart = new Map();
+  for (const n of notes) {
+    if (!byStart.has(n.startTicks)) byStart.set(n.startTicks, []);
+    byStart.get(n.startTicks).push(n);
+  }
+  for (const group of byStart.values()) {
+    if (group.length < 2) continue;
+    const ends = group.map((n) => n.endTicks).sort((a, b) => a - b);
+    const median = ends[Math.floor(ends.length / 2)];
+    for (const n of group) {
+      if (Math.abs(n.endTicks - median) <= hold) n.endTicks = median;
+    }
+  }
+
+  for (const n of notes) {
+    const next = attacks.find((t) => t > n.startTicks);
+    if (next !== undefined) {
+      if (n.endTicks >= next) { n.endTicks = Math.max(n.startTicks + 1, next); continue; }
+      if (next - n.endTicks <= hold) n.endTicks = next;
+      continue;
+    }
+    /* The last note of a line has nothing after it to reach towards, so it
+     * reaches the end of its bar instead — a final chord let go a moment early
+     * is still a whole bar, not a whole bar and a scattering of rests. */
+    const barEnd = (Math.floor(n.startTicks / barTicks) + 1) * barTicks;
+    if (n.endTicks < barEnd && barEnd - n.endTicks <= hold) n.endTicks = barEnd;
+  }
+}
+
+function average(list) {
+  if (!list.length) return 0;
+  return list.reduce((a, b) => a + b, 0) / list.length;
+}
+
+/**
+ * Transcribe recorded or imported audio.
+ * `audio` is an AudioBuffer or a Float32Array of mono samples.
+ */
+function transcribeAudio(audio, opts = {}) {
+  const sampleRate = opts.sampleRate || audio.sampleRate || 44100;
+  const extracted = extractNotes(audio, { ...opts, sampleRate });
+  const result = notesToScore(extracted.notes, {
+    ...opts,
+    duration: extracted.duration,
+    source: SOURCE.AUDIO,
+  });
+  result.analysis.onsets = extracted.onsets;
+  result.analysis.duration = extracted.duration;
+  return result;
+}
+
+/**
+ * Transcribe MIDI.
+ *
+ * `events` are { midi, start, end, velocity } in seconds.  Nothing here has to
+ * be guessed at, so every note carries full pitch confidence and the result is
+ * markedly better than the same performance recorded as audio — which is the
+ * honest reason to prefer this path when an instrument can provide it.
+ */
+function transcribeMidi(events, opts = {}) {
+  const notes = events
+    .filter((e) => e.end > e.start)
+    .map((e) => ({
+      midi: e.midi,
+      start: e.start,
+      end: e.end,
+      velocity: e.velocity ?? 80,
+      confidence: 1,
+      salience: e.velocity ?? 80,
+    }))
+    .sort((a, b) => a.start - b.start || a.midi - b.midi);
+  const duration = notes.length ? Math.max(...notes.map((n) => n.end)) : 0;
+  return notesToScore(notes, { ...opts, duration, source: SOURCE.MIDI });
+}
+
+
+const __re0 = __req("js/transcribe/rhythm.js");
+const GRID_PRESETS = __re0.GRID_PRESETS;
+
+__exp.GRID_PRESETS = GRID_PRESETS;
+__exp.notesToScore = notesToScore;
+__exp.transcribeAudio = transcribeAudio;
+__exp.transcribeMidi = transcribeMidi;
+__exp.SOURCE = SOURCE;
+__exp.extractNotes = extractNotes;
+__exp.detectKey = detectKey;
+},
+  "js/transcribe/notes.js": function (__exp, __req) {
+/* Cadenza — turning audio into note events.
+ *
+ * Analysis is driven by the attacks, not by a fixed grid.  A window that
+ * straddles two notes reports both, so instead the onsets cut the take into
+ * segments and each segment is analysed on its own; what sounds during a
+ * segment is what was played there.
+ *
+ * A pitch that was already sounding simply continues, which keeps a held chord
+ * from being re-detected under every melody note above it, and a pitch that
+ * gains energy at an attack starts a new note, which is what tells a repeated
+ * note from one long one.
+ */
+
+const { stft, toMono, rms, midiToHz } = __req("js/transcribe/dsp.js");
+const { estimateF0s, ownPartialEnergy } = __req("js/transcribe/polyphony.js");
+const { detectOnsets } = __req("js/transcribe/onsets.js");
+
+const POW2 = [1024, 2048, 4096, 8192, 16384];
+const fitWindow = (seconds, sampleRate, cap) => {
+  const want = seconds * sampleRate;
+  let best = POW2[0];
+  for (const p of POW2) if (p <= want && p <= cap) best = p;
+  return Math.max(2048, best);
+};
+
+/** Analyse one stretch of audio and report the pitches sounding in it. */
+function analyseSegment(samples, sampleRate, from, to, opts) {
+  const { maxVoices, sensitivity, pitchCap } = opts;
+  const length = to - from;
+  /* Long enough for good low-frequency resolution, but never long enough to
+   * reach into the next note — a window that overruns reports the note after
+   * this one as though it had already started. */
+  const settle = Math.min(0.022, length * 0.25);
+  /* Leave room to step past the attack before measuring.  The first few
+   * milliseconds of a struck note are broadband noise, and a window that opens
+   * on them reads that noise as extra notes. */
+  const size = fitWindow(Math.min(length - settle, 0.22), sampleRate, pitchCap);
+  const span = size / sampleRate;
+  /* Every window has to finish inside the segment.  One that runs past the end
+   * hears the next attack and reports that note as though it had already been
+   * playing — which is how a transcription acquires notes a beat early. */
+  const last = to - span;
+  const positions = [];
+  positions.push(Math.max(from, Math.min(from + settle, last)));
+  for (const frac of [0.45, 0.7]) {
+    if (length < 0.12) break;
+    const at = Math.min(from + length * frac, last);
+    if (at > positions[positions.length - 1] + 0.03) positions.push(at);
+  }
+  /* A staccato note leaves most of its segment empty.  Looking there and then
+   * insisting a pitch be found in every window would throw the note away, so
+   * only the windows that still have sound in them get a vote. */
+  const loud = positions.map((at) => rms(samples, Math.round(at * sampleRate),
+    Math.round((at + span) * sampleRate)));
+  const peak = Math.max(...loud);
+  const heard = positions.filter((_, i) => loud[i] >= peak * 0.15);
+
+  const tally = new Map();
+  let used = 0;
+  for (const pos of heard) {
+    const start = Math.round(pos * sampleRate);
+    if (start + size > samples.length) continue;
+    const slice = samples.subarray(start, start + size);
+    const spec = stft(slice, { size, hop: size, sampleRate });
+    if (!spec.frames.length) continue;
+    const det = estimateF0s(spec.frames[0], spec.binHz, {
+      maxVoices,
+      relThreshold: 0.13 / Math.max(0.3, sensitivity),
+    });
+    used++;
+    for (const d of det) {
+      const prev = tally.get(d.midi) || { count: 0, salience: 0, confidence: 0, hz: d.hz };
+      prev.count++;
+      prev.salience += d.salience;
+      prev.confidence += d.confidence;
+      tally.set(d.midi, prev);
+    }
+  }
+  if (!used) return new Map();
+
+  /* A pitch has to hold up across the segment, not flash in one window. */
+  const need = used >= 2 ? 2 : 1;
+  const out = new Map();
+  let strongest = 0;
+  for (const [, v] of tally) strongest = Math.max(strongest, v.salience / v.count);
+  for (const [midi, v] of tally) {
+    if (v.count < need) continue;
+    const salience = v.salience / v.count;
+    /* Anything this far below the loudest thing in the segment is residue. */
+    if (salience < strongest * 0.11) continue;
+    out.set(midi, {
+      midi,
+      salience,
+      confidence: (v.confidence / v.count) * (v.count / used),
+    });
+  }
+  return out;
+}
+
+/* Windows for the re-attack test, shortest first. */
+const ATTACK_WINDOWS = [1024, 2048, 4096];
+
+/**
+ * Was this pitch struck again at `t`, or is it simply still ringing?
+ *
+ * A struck string starts over: the energy just after the attack stands well
+ * above the decayed level just before it.  A note that is merely still
+ * sounding while the music changes around it does not.  The measurement uses
+ * only the partials this pitch does not share with its neighbours, so a held
+ * note is not reported as re-struck every time a melody note above it moves
+ * through one of its harmonics.
+ *
+ * Returns the after/before ratio, or null when there is not room to measure.
+ */
+function reattackRatio(samples, sampleRate, t, midi, others, earliest, latest) {
+  const gap = 0.012;
+  const hz = midiToHz(midi);
+  const room = Math.min(t - earliest, latest - t) - gap;
+  /* The shortest window that can still tell this note apart from its
+   * neighbours.  Long windows average across the whole of the previous note
+   * instead of reporting the level it had fallen to just before this attack;
+   * short ones cannot separate two notes a tone apart, and measure their sum.
+   * The compromise is to ask only for enough resolution to separate them at
+   * the third partial, where neighbouring notes are three times further apart
+   * in Hz than they are at the fundamental.  When even the longest window
+   * available cannot manage that — a low bass note, or an attack too close to
+   * the one before — the honest answer is that we cannot tell, and the note
+   * stays whole. */
+  const needed = 14 * sampleRate / hz;
+  let size = 0;
+  for (const w of ATTACK_WINDOWS) {
+    if (w / sampleRate <= room && w >= needed) { size = w; break; }
+  }
+  if (!size) return null;
+  const measure = (at) => {
+    const start = Math.round(at * sampleRate);
+    if (start < 0 || start + size > samples.length) return null;
+    const spec = stft(samples.subarray(start, start + size), { size, hop: size, sampleRate });
+    if (!spec.frames.length) return null;
+    return ownPartialEnergy(spec.frames[0], spec.binHz, hz, others).energy;
+  };
+  const before = measure(t - gap - size / sampleRate);
+  const after = measure(t + gap);
+  if (before === null || after === null) return null;
+  if (before < 1e-7) return after > 1e-7 ? Infinity : null;
+  return after / before;
+}
+
+/**
+ * Extract note events from audio.
+ * Returns { notes, onsets, duration, sampleRate }; each note is
+ * { midi, start, end, velocity, confidence }.
+ */
+function extractNotes(audio, options = {}) {
+  const {
+    sampleRate = 44100,
+    maxVoices = 6,
+    sensitivity = 1,
+    minDuration = 0.05,
+    pitchCap = 8192,
+    silenceFloor = 0.012,
+    reattack = 1.45,
+    attackFloor = 0.42,
+    onProgress = null,
+  } = options;
+
+  const samples = toMono(audio);
+  const duration = samples.length / sampleRate;
+  const { onsets } = detectOnsets(samples, { sampleRate, sensitivity });
+
+  /* Attacks cut the take into segments, starting from the first sound. */
+  const bounds = [{ time: onsets.length ? Math.min(onsets[0].time, 0.02) : 0, strength: 1 }];
+  for (const o of onsets) {
+    if (o.time > bounds[bounds.length - 1].time + 0.05) bounds.push(o);
+  }
+  bounds.push({ time: duration, strength: 0 });
+
+  const segments = [];
+  for (let i = 0; i < bounds.length - 1; i++) {
+    const from = bounds[i].time;
+    const to = bounds[i + 1].time;
+    if (to - from < 0.03) continue;
+    const level = rms(samples, Math.round(from * sampleRate), Math.round(to * sampleRate));
+    segments.push({ from, to, level, strength: bounds[i].strength, strongest: 0, pitches: new Map() });
+  }
+  let loudestSeg = 0;
+  for (const s of segments) loudestSeg = Math.max(loudestSeg, s.level);
+
+  segments.forEach((seg, i) => {
+    if (seg.level > loudestSeg * silenceFloor) {
+      seg.pitches = analyseSegment(samples, sampleRate, seg.from, seg.to,
+        { maxVoices, sensitivity, pitchCap });
+      for (const p of seg.pitches.values()) seg.strongest = Math.max(seg.strongest, p.salience);
+    }
+    if (onProgress) onProgress((i + 1) / segments.length);
+  });
+
+  /* Stitch segments into notes. */
+  const open = new Map();   // midi -> note being built
+  const notes = [];
+  const close = (midi, end) => {
+    const n = open.get(midi);
+    if (!n) return;
+    n.end = end;
+    open.delete(midi);
+    if (n.end - n.start >= minDuration) notes.push(n);
+  };
+
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
+    const prev = segments[i - 1];
+    for (const [midi, info] of seg.pitches) {
+      const cur = open.get(midi);
+      if (cur && prev) {
+        /* Everything else sounding across this boundary, so the test can
+         * ignore the partials this pitch shares with any of it. */
+        const others = [];
+        for (const m of seg.pitches.keys()) if (m !== midi) others.push(midiToHz(m));
+        for (const m of prev.pitches.keys()) {
+          if (m !== midi && !seg.pitches.has(m)) others.push(midiToHz(m));
+        }
+        /* Two independent things have to agree before a held note is cut in
+         * two: something was struck at this instant, and it was this note's
+         * own partials that gained the energy. */
+        const struck = (seg.strength || 0) >= attackFloor;
+        const ratio = struck ? reattackRatio(samples, sampleRate, seg.from, midi, others,
+          Math.max(prev.from, cur.start), seg.to) : null;
+        if (ratio !== null && ratio > reattack) close(midi, seg.from);
+      }
+      if (!open.has(midi)) {
+        /* Notes begin when something is struck.  A pitch that first appears at
+         * a boundary where nothing much happened, and is faint beside what is
+         * already sounding, is the residue of the notes around it rather than
+         * a note of its own — real playing that soft does not arrive without
+         * an attack to announce it. */
+        if (i > 0 && (seg.strength || 0) < attackFloor
+            && info.salience < seg.strongest * 0.25) continue;
+        open.set(midi, {
+          midi, start: seg.from, end: seg.to, velocity: 0,
+          salience: info.salience, confidence: info.confidence, frames: 1,
+        });
+      } else {
+        const n = open.get(midi);
+        n.end = seg.to;
+        n.frames++;
+        n.confidence = (n.confidence * (n.frames - 1) + info.confidence) / n.frames;
+        n.salience = Math.max(n.salience, info.salience);
+      }
+    }
+    /* A pitch missing from this segment stopped at its boundary, not at the
+     * far end of it — closing late would swallow the rest that follows. */
+    for (const midi of [...open.keys()]) {
+      if (!seg.pitches.has(midi)) close(midi, seg.from);
+    }
+  }
+  for (const midi of [...open.keys()]) close(midi, duration);
+
+  /* Drop what is left of decayed notes: real notes stand far above this. */
+  let strongest = 0;
+  for (const n of notes) strongest = Math.max(strongest, n.salience);
+  const floor = strongest * 0.035;
+  for (let i = notes.length - 1; i >= 0; i--) if (notes[i].salience < floor) notes.splice(i, 1);
+
+  /* Velocity from the level at each attack, scaled across the whole take. */
+  let loudest = 0;
+  for (const n of notes) {
+    const a = Math.round(n.start * sampleRate);
+    n._level = rms(samples, a, a + Math.round(0.05 * sampleRate));
+    loudest = Math.max(loudest, n._level);
+  }
+  for (const n of notes) {
+    n.velocity = Math.max(20, Math.min(127, Math.round(32 + 78 * (n._level / (loudest || 1)))));
+    delete n._level;
+    delete n.frames;
+  }
+
+  notes.sort((a, b) => a.start - b.start || a.midi - b.midi);
+  return { notes, onsets, duration, sampleRate };
+}
+
+__exp.analyseSegment = analyseSegment;
+__exp.extractNotes = extractNotes;
+},
+  "js/transcribe/dsp.js": function (__exp, __req) {
+/* Cadenza — signal processing for transcription.
+ *
+ * Plain arrays and a radix-2 FFT: no dependencies, and fast enough that a
+ * minute of audio analyses in well under a second.
+ */
+
+/** In-place iterative Cooley-Tukey FFT.  `re`/`im` must be a power of two. */
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) {
+      let t = re[i]; re[i] = re[j]; re[j] = t;
+      t = im[i]; im[i] = im[j]; im[j] = t;
+    }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = (-2 * Math.PI) / len;
+    const wr = Math.cos(ang);
+    const wi = Math.sin(ang);
+    for (let i = 0; i < n; i += len) {
+      let cr = 1;
+      let ci = 0;
+      for (let k = 0; k < len / 2; k++) {
+        const ur = re[i + k];
+        const ui = im[i + k];
+        const vr = re[i + k + len / 2] * cr - im[i + k + len / 2] * ci;
+        const vi = re[i + k + len / 2] * ci + im[i + k + len / 2] * cr;
+        re[i + k] = ur + vr;
+        im[i + k] = ui + vi;
+        re[i + k + len / 2] = ur - vr;
+        im[i + k + len / 2] = ui - vi;
+        const ncr = cr * wr - ci * wi;
+        ci = cr * wi + ci * wr;
+        cr = ncr;
+      }
+    }
+  }
+}
+
+function hann(size) {
+  const w = new Float32Array(size);
+  for (let i = 0; i < size; i++) w[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (size - 1));
+  return w;
+}
+
+/**
+ * Short-time magnitude spectrum.
+ * Returns { frames: Float32Array[], hop, size, sampleRate, times }.
+ */
+function stft(samples, { size = 4096, hop = 512, sampleRate = 44100 } = {}) {
+  const win = hann(size);
+  const bins = size / 2;
+  const frames = [];
+  const times = [];
+  const re = new Float64Array(size);
+  const im = new Float64Array(size);
+  for (let start = 0; start + size <= samples.length; start += hop) {
+    for (let i = 0; i < size; i++) {
+      re[i] = samples[start + i] * win[i];
+      im[i] = 0;
+    }
+    fft(re, im);
+    const mag = new Float32Array(bins);
+    for (let k = 0; k < bins; k++) mag[k] = Math.hypot(re[k], im[k]);
+    frames.push(mag);
+    times.push(start / sampleRate);
+  }
+  return { frames, hop, size, sampleRate, times, binHz: sampleRate / size };
+}
+
+/** Mix an AudioBuffer (or an array of channels) down to mono. */
+function toMono(buffer) {
+  if (buffer instanceof Float32Array) return buffer;
+  const channels = buffer.numberOfChannels !== undefined
+    ? Array.from({ length: buffer.numberOfChannels }, (_, c) => buffer.getChannelData(c))
+    : buffer;
+  if (channels.length === 1) return channels[0];
+  const out = new Float32Array(channels[0].length);
+  for (let i = 0; i < out.length; i++) {
+    let s = 0;
+    for (const ch of channels) s += ch[i];
+    out[i] = s / channels.length;
+  }
+  return out;
+}
+
+/** Parabolic interpolation around a spectral peak, for sub-bin accuracy. */
+function refinePeak(mag, k) {
+  if (k <= 0 || k >= mag.length - 1) return { bin: k, value: mag[k] };
+  const a = mag[k - 1];
+  const b = mag[k];
+  const c = mag[k + 1];
+  const denom = a - 2 * b + c;
+  if (Math.abs(denom) < 1e-12) return { bin: k, value: b };
+  const delta = (0.5 * (a - c)) / denom;
+  return { bin: k + Math.max(-0.5, Math.min(0.5, delta)), value: b - 0.25 * (a - c) * delta };
+}
+
+/** Largest magnitude within +/- `width` bins of `centre`, with interpolation. */
+function peakNear(mag, centre, width) {
+  const lo = Math.max(1, Math.floor(centre - width));
+  const hi = Math.min(mag.length - 2, Math.ceil(centre + width));
+  let best = lo;
+  for (let k = lo; k <= hi; k++) if (mag[k] > mag[best]) best = k;
+  if (best <= lo || best >= hi) return { bin: best, value: mag[best] };
+  return refinePeak(mag, best);
+}
+
+const midiToHz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+const hzToMidi = (f) => 69 + 12 * Math.log2(Math.max(1e-6, f) / 440);
+
+/** Root-mean-square level of a window of samples. */
+function rms(samples, from, to) {
+  let s = 0;
+  const a = Math.max(0, from);
+  const b = Math.min(samples.length, to);
+  for (let i = a; i < b; i++) s += samples[i] * samples[i];
+  return Math.sqrt(s / Math.max(1, b - a));
+}
+
+/** Running median, used for adaptive thresholds. */
+function movingMedian(values, radius) {
+  const out = new Float32Array(values.length);
+  const window = [];
+  for (let i = 0; i < values.length; i++) {
+    const lo = Math.max(0, i - radius);
+    const hi = Math.min(values.length - 1, i + radius);
+    window.length = 0;
+    for (let k = lo; k <= hi; k++) window.push(values[k]);
+    window.sort((a, b) => a - b);
+    out[i] = window[window.length >> 1];
+  }
+  return out;
+}
+
+__exp.fft = fft;
+__exp.hann = hann;
+__exp.stft = stft;
+__exp.toMono = toMono;
+__exp.refinePeak = refinePeak;
+__exp.peakNear = peakNear;
+__exp.rms = rms;
+__exp.movingMedian = movingMedian;
+__exp.midiToHz = midiToHz;
+__exp.hzToMidi = hzToMidi;
+},
+  "js/transcribe/polyphony.js": function (__exp, __req) {
+/* Cadenza — polyphonic pitch estimation.
+ *
+ * The approach is the one that has held up best for piano: build a salience
+ * function over candidate fundamentals by summing the spectrum at each
+ * candidate's harmonic positions, take the strongest candidate, subtract the
+ * harmonic series it explains, and repeat.  Because each detection removes its
+ * own energy, a chord comes out as a chord rather than as its loudest note
+ * repeated.
+ *
+ * After Klapuri's multiple-F0 estimator, with an explicit octave test — the
+ * error that matters most in practice is calling a note an octave wrong.
+ */
+
+const { peakNear, midiToHz, hzToMidi } = __req("js/transcribe/dsp.js");
+
+const MIN_MIDI = 21;    // A0
+const MAX_MIDI = 108;   // C8
+
+const ALPHA = 52;              // Hz, harmonic weighting constants
+const BETA = 320;
+
+/**
+ * Flatten the spectrum so a bright note and a dull one compete fairly.
+ * Each bin is divided by a smoothed local average of its neighbourhood.
+ */
+function whiten(mag, { strength = 0.66 } = {}) {
+  const n = mag.length;
+  const out = new Float32Array(n);
+  const env = new Float32Array(n);
+  /* A wide running average approximates the spectral envelope. */
+  let acc = 0;
+  const radius = Math.max(4, Math.round(n / 64));
+  for (let i = 0; i < n; i++) {
+    acc += mag[i];
+    if (i >= 2 * radius + 1) acc -= mag[i - 2 * radius - 1];
+    env[Math.max(0, i - radius)] = acc / Math.min(i + 1, 2 * radius + 1);
+  }
+  for (let i = n - radius; i < n; i++) env[i] = env[Math.max(0, n - radius - 1)];
+  for (let i = 0; i < n; i++) {
+    const e = Math.max(1e-9, env[i]);
+    out[i] = mag[i] / Math.pow(e, strength);
+  }
+  return out;
+}
+
+/** Harmonic weight: lower partials count for more. */
+const weight = (f0, h) => (f0 + ALPHA) / (h * f0 + BETA);
+
+const MAX_B = 0.0008;          // stiffness of the stiffest strings we expect
+const MAX_BINS = 2.5;          // how far a partial may sit from its prediction
+
+/**
+ * How far from its predicted place a partial may land and still count.
+ *
+ * Two limits, whichever is tighter.  Low down, bins are fine compared with the
+ * interval between notes, so the limit is musical — a fraction of a semitone.
+ * High up, a fraction of a semitone spans many bins, and a window that wide
+ * finds a peak wherever it looks: that is how a note nobody played collects a
+ * full set of partials out of the other notes' harmonics.  There the limit is
+ * the resolution of the transform itself.
+ */
+const tolerance = (f, binHz, tolCents) =>
+  Math.min(f * (Math.pow(2, tolCents / 1200) - 1), MAX_BINS * binHz);
+
+/**
+ * Where a real string puts its h-th partial.
+ *
+ * A string is not an ideal one: its stiffness pushes each partial sharp of the
+ * exact multiple, and the error grows with the square of the partial number.
+ * By the tenth partial of a piano note this is most of a semitone — enough
+ * that looking for partials at exact multiples finds them out of tune, loses
+ * them, and then builds a phantom note out of the ones it missed.
+ */
+const partialHz = (f0, h, B) => f0 * h * Math.sqrt(1 + B * h * h);
+
+/**
+ * Measure a string's stiffness from its own low partials.
+ *
+ * Those are searched in a window wide enough for any plausible stiffness; the
+ * implied value is read off each one and the weighted median taken, so a
+ * partial that landed on some other note's energy cannot skew the result.
+ */
+function fitStiffness(mag, binHz, f0, tolCents) {
+  const est = [];
+  for (let h = 2; h <= 6; h++) {
+    const nominal = f0 * h;
+    const slack = tolerance(nominal, binHz, tolCents);
+    const lo = nominal - slack;
+    const hi = partialHz(f0, h, MAX_B) + slack;
+    const centre = (lo + hi) / 2 / binHz;
+    /* Never wide enough to reach the neighbouring partial. */
+    const width = Math.min(Math.max(1.2, (hi - lo) / 2 / binHz), (0.42 * f0) / binHz);
+    if (centre + width >= mag.length - 2) break;
+    const p = peakNear(mag, centre, width);
+    if (p.value <= 0) continue;
+    const ratio = (p.bin * binHz) / nominal;
+    const b = (ratio * ratio - 1) / (h * h);
+    if (b < -0.0002 || b > MAX_B * 1.5) continue;
+    est.push({ b: Math.max(0, b), w: p.value * h });
+  }
+  if (est.length < 2) return 0;
+  est.sort((x, y) => x.b - y.b);
+  const half = est.reduce((sum, e) => sum + e.w, 0) / 2;
+  let acc = 0;
+  for (const e of est) { acc += e.w; if (acc >= half) return Math.min(MAX_B, e.b); }
+  return Math.min(MAX_B, est[est.length - 1].b);
+}
+
+/**
+ * Salience of one candidate fundamental: how much of the spectrum its
+ * harmonic series accounts for.
+ */
+function salienceAt(mag, binHz, f0, opts = {}) {
+  const { harmonics = 16, tolCents = 45 } = opts;
+  const B = opts.B !== undefined ? opts.B : fitStiffness(mag, binHz, f0, tolCents);
+  const nyquist = mag.length * binHz;
+  let sum = 0;
+  let hits = 0;
+  const used = [];
+  for (let h = 1; h <= harmonics; h++) {
+    const f = partialHz(f0, h, B);
+    if (f > nyquist * 0.96) break;
+    const centre = f / binHz;
+    const slack = tolerance(f, binHz, tolCents);
+    const p = peakNear(mag, centre, Math.max(1.2, slack / binHz));
+    /* Only count a partial that actually lands where it should. */
+    const aligned = Math.abs(p.bin * binHz - f) <= slack;
+    if (aligned && p.value > 0) { sum += weight(f0, h) * p.value; hits++; }
+    used.push({ h, bin: p.bin, hz: aligned ? p.bin * binHz : f, value: aligned ? p.value : 0 });
+  }
+  return { salience: sum, hits, partials: used, B };
+}
+
+/**
+ * The energy a pitch holds in partials that are its own — those it does not
+ * share with any of `others`.  Asking whether a note was struck again means
+ * asking about that note alone: a partial shared with whatever else is
+ * sounding rises and falls with the other note, so counting it would report a
+ * re-strike every time the music changed around a held note.
+ */
+function ownPartialEnergy(mag, binHz, f0, others = [], opts = {}) {
+  const { harmonics = 12, tolCents = 60 } = opts;
+  const mine = salienceAt(mag, binHz, f0, { harmonics, tolCents });
+  const theirs = others.map((g) => salienceAt(mag, binHz, g, { harmonics, tolCents }));
+  let sum = 0;
+  let used = 0;
+  for (const p of mine.partials) {
+    let shared = false;
+    for (const other of theirs) {
+      for (const q of other.partials) {
+        if (q.hz > p.hz * 1.2) break;
+        if (Math.abs(1200 * Math.log2(p.hz / q.hz)) < tolCents * 1.5) { shared = true; break; }
+      }
+      if (shared) break;
+    }
+    if (shared) continue;
+    sum += weight(f0, p.h) * p.value;
+    used++;
+  }
+  return { energy: used ? sum / used : 0, used };
+}
+
+/** Salience across every semitone in the piano range. */
+function salienceCurve(mag, binHz, opts = {}) {
+  const out = new Float32Array(MAX_MIDI - MIN_MIDI + 1);
+  for (let m = MIN_MIDI; m <= MAX_MIDI; m++) {
+    out[m - MIN_MIDI] = salienceAt(mag, binHz, midiToHz(m), opts).salience;
+  }
+  return out;
+}
+
+/**
+ * A smooth envelope through a note's partial amplitudes.
+ *
+ * An instrument's partials fall away gradually.  Where one partial towers over
+ * its neighbours, the excess almost always belongs to *another* note sounding
+ * at that frequency — an octave above, say — so a running median is used, which
+ * a single inflated value cannot drag upwards.
+ */
+function partialEnvelope(partials) {
+  const a = partials.map((p) => p.value);
+  const env = a.slice();
+  for (let i = 1; i < a.length - 1; i++) {
+    const w = [a[i - 1], a[i], a[i + 1]].sort((x, y) => x - y);
+    env[i] = Math.min(a[i], w[1]);
+  }
+  if (a.length > 2) env[a.length - 1] = Math.min(a[a.length - 1], env[a.length - 2]);
+  return env;
+}
+
+/**
+ * Remove only as much as this note's own envelope accounts for.  Subtracting
+ * the full observed peak would delete any note hiding under a shared partial,
+ * which is how a C and the C an octave above it collapse into one.
+ */
+function subtract(mag, binHz, f0, partials, amount, env) {
+  partials.forEach((p, i) => {
+    if (!p.value) return;
+    const take = amount * Math.min(p.value, env ? env[i] : p.value);
+    const centre = p.bin;
+    /* At least as wide as the analysis window's main lobe: a peak occupies
+     * several bins, and leaving its skirts behind leaves enough energy for the
+     * semitone either side to look like a note of its own. */
+    const spread = Math.max(2.0, centre * 0.004);
+    const lo = Math.max(0, Math.floor(centre - spread));
+    const hi = Math.min(mag.length - 1, Math.ceil(centre + spread));
+    for (let k = lo; k <= hi; k++) {
+      const d = Math.abs(k - centre) / spread;
+      const shape = Math.max(0, 1 - d * d);
+      mag[k] = Math.max(0, mag[k] - take * shape);
+    }
+  });
+}
+
+/**
+ * What a partial's amplitude *should* be if this note were sounding alone.
+ *
+ * An instrument's partials fall away as a power of the partial number, near
+ * enough that a straight line through them in log-log space predicts one well.
+ * The fit is repeated on the lowest-residual partials only: contamination from
+ * another note sounding at the same frequency always pushes a partial *up*, so
+ * discarding the partials that sit highest above the line leaves the ones this
+ * note can account for on its own.  Predicting from a partial's immediate
+ * neighbours instead fails exactly when it matters — in a chord voiced in
+ * octaves and fifths, the neighbours are contaminated too.
+ */
+function partialFit(partials) {
+  const pts = [];
+  for (const p of partials) if (p.value > 0) pts.push({ x: Math.log(p.h), y: Math.log(p.value) });
+  if (pts.length < 4) return null;
+  let use = pts;
+  let inter = 0;
+  let slope = 0;
+  for (let iter = 0; iter < 3; iter++) {
+    let sx = 0, sy = 0, sxx = 0, sxy = 0;
+    for (const q of use) { sx += q.x; sy += q.y; sxx += q.x * q.x; sxy += q.x * q.y; }
+    const n = use.length;
+    const den = n * sxx - sx * sx;
+    slope = den ? (n * sxy - sx * sy) / den : 0;
+    inter = (sy - slope * sx) / n;
+    if (iter === 2) break;
+    /* Drop the partials that sit highest above the line — those carry another
+     * note's energy — but drop a few of the lowest too: fitting only the
+     * bottom of the scatter biases every prediction downwards, and a
+     * prediction that is too low turns ordinary partials into evidence of
+     * notes that were never played. */
+    const res = pts.map((q) => ({ q, r: q.y - (inter + slope * q.x) }));
+    res.sort((a, b) => a.r - b.r);
+    const lo = Math.floor(pts.length * 0.12);
+    const hi = Math.max(lo + 3, Math.round(pts.length * 0.72));
+    use = res.slice(lo, hi).map((e) => e.q);
+    if (use.length < 3) use = res.slice(0, 3).map((e) => e.q);
+  }
+  if (slope > 0) slope = 0;        // partials never grow with h
+  return (h) => Math.exp(inter + slope * Math.log(h));
+}
+
+/** What a note alone would put in its h-th partial. */
+function expectedPartial(partials, i) {
+  const fit = partialFit(partials);
+  if (fit) return fit(partials[i].h);
+  const a = partials.map((p) => p.value);
+  const prev = i > 0 ? a[i - 1] : null;
+  const next = i < a.length - 1 ? a[i + 1] : null;
+  if (prev && next) return Math.sqrt(Math.max(1e-9, prev) * Math.max(1e-9, next));
+  if (prev) return prev * 0.8;
+  if (next) return next * 1.2;
+  return a[i];
+}
+
+/** How far a partial exceeds what this note alone would produce. */
+function partialExcess(partials, h) {
+  const i = partials.findIndex((p) => p.h === h);
+  if (i < 0) return 0;
+  const expect = expectedPartial(partials, i);
+  return expect > 0 ? partials[i].value / expect : 0;
+}
+
+/**
+ * A second cue for the octave and the twelfth, where neighbour prediction
+ * fails because *those* partials are shared too.
+ *
+ * On its own, no instrument puts as much energy into its second or third
+ * partial as into its fundamental.  When it appears to, the extra energy is a
+ * second note sounding an octave or a twelfth higher.  This is the one case
+ * where a note's whole harmonic series hides inside another's, so without this
+ * test a played octave is invisible.
+ */
+function outweighsFundamental(partials, h) {
+  const first = partials.find((p) => p.h === 1);
+  const at = partials.find((p) => p.h === h);
+  if (!first || !at || !first.value) return false;
+  return at.value > first.value * 0.95;
+}
+
+/**
+ * Partials that stand well above the envelope are evidence of a note masked
+ * underneath — typically an octave or a twelfth above the note we just found.
+ */
+function maskedCandidates(f0, partials) {
+  const out = [];
+  partials.forEach((p, i) => {
+    if (p.h < 2 || p.h > 6 || !p.value) return;
+    const ratio = partialExcess(partials, p.h);
+    if (ratio > 1.5 || ((p.h === 2 || p.h === 3) && outweighsFundamental(partials, p.h))) {
+      const midi = Math.round(hzToMidi(p.hz));
+      if (midi >= MIN_MIDI && midi <= MAX_MIDI) out.push({ midi, excess: ratio });
+    }
+  });
+  return out;
+}
+
+/**
+ * Weighted support from a candidate's odd and even partials.
+ *
+ * A note an octave below a real one borrows all of its partials, but only the
+ * even ones — its own fundamental and third partial are missing.  That
+ * asymmetry is what separates a real low note from a phantom.
+ */
+function octaveSupport(mag, binHz, f0) {
+  const { partials } = salienceAt(mag, binHz, f0, { harmonics: 10, tolCents: 30 });
+  let odd = 0;
+  let even = 0;
+  for (const p of partials) {
+    const v = p.value * weight(f0, p.h);
+    if (p.h % 2) odd += v; else even += v;
+  }
+  return { odd, even };
+}
+
+/** True when a candidate lives entirely on another note's even partials. */
+function isPhantomSubOctave(mag, binHz, f0) {
+  const { odd, even } = octaveSupport(mag, binHz, f0);
+  return even > 0 && odd < even * 0.28;
+}
+
+/**
+ * Does this candidate sit on a harmonic of a note already found?
+ *
+ * If it does, it is a real note only when there is more energy at that
+ * frequency than every note already found can account for between them.  Two
+ * notes often put a partial in the same place — the fourth partial of G4 and
+ * the third of C5 both land on G6 — and taking that doubled energy as proof of
+ * a note at G6 is how a clean chord grows a top note nobody played.
+ */
+function coincidesWithFound(mag, binHz, hz, found, harmonics) {
+  let coincident = false;
+  let observed = 0;
+  let predicted = 0;
+  let octaveEvidence = false;
+  for (const note of found) {
+    const info = salienceAt(mag, binHz, note.hz, { harmonics });
+    let matched = false;
+    info.partials.forEach((p, i) => {
+      if (p.h < 2 || p.h > 12) return;
+      if (Math.abs(1200 * Math.log2(hz / p.hz)) > 55) return;
+      matched = true;
+      coincident = true;
+      observed = Math.max(observed, p.value);
+      predicted += expectedPartial(info.partials, i);
+      if ((p.h === 2 || p.h === 3) && outweighsFundamental(info.partials, p.h)) octaveEvidence = true;
+    });
+    if (matched) continue;
+    /* A bass note's twentieth partial is inaudible on its own, yet quite loud
+     * enough to inflate a partial of the note above it and conjure a third
+     * note out of the pair.  Those partials are past where the salience model
+     * looks, so what this note would put there is read off its own envelope
+     * rather than measured. */
+    /* Which partial would land here?  Stiffness has pushed the series sharp by
+     * this far up, so the plain ratio names the wrong one. */
+    let h = 0;
+    let closest = 55;
+    const guess = Math.round(hz / note.hz);
+    for (let k = Math.max(13, guess - 3); k <= Math.min(40, guess + 3); k++) {
+      const cents = Math.abs(1200 * Math.log2(hz / partialHz(note.hz, k, info.B)));
+      if (cents < closest) { closest = cents; h = k; }
+    }
+    if (!h) continue;
+    const fit = partialFit(info.partials);
+    if (!fit) continue;
+    coincident = true;
+    observed = Math.max(observed, peakNear(mag, hz / binHz, 2.5).value);
+    predicted += fit(h);
+  }
+  if (!coincident) return false;
+  if (observed > predicted * 1.5) return false;
+  /* The octave and the twelfth hide a whole series inside another, so they get
+   * a lower bar — but not a low one: two notes whose partials merely meet at
+   * one frequency clear 1.1 without either of them being there. */
+  if (octaveEvidence && observed > predicted * 1.3) return false;
+  return true;
+}
+
+/**
+ * Check every detection in the presence of the others.
+ *
+ * Each note is re-measured against a spectrum with all the *other* detections
+ * removed.  A real note still stands on its own; one that was only an artefact
+ * of a neighbour's harmonics collapses and is dropped.
+ */
+function verifySet(mag, binHz, found, opts) {
+  const { harmonics = 16, keepRatio = 0.10 } = opts;
+  let list = found.slice();
+  for (let pass = 0; pass < 3 && list.length > 1; pass++) {
+    const scores = list.map((note) => {
+      const residual = Float32Array.from(mag);
+      for (const other of list) {
+        if (other === note) continue;
+        const info = salienceAt(residual, binHz, other.hz, { harmonics });
+        subtract(residual, binHz, other.hz, info.partials, 0.9, partialEnvelope(info.partials));
+      }
+      const info = salienceAt(residual, binHz, note.hz, { harmonics });
+      const phantom = isPhantomSubOctave(residual, binHz, note.hz);
+      return { note, score: phantom ? 0 : info.salience, hits: info.hits, phantom };
+    });
+    const best = Math.max(...scores.map((s) => s.score));
+    const survivors = scores.filter((s) => s.score >= best * keepRatio && s.hits >= 2 && !s.phantom);
+    if (survivors.length === list.length) break;
+    if (!survivors.length) break;
+    list = survivors.map((s) => {
+      s.note.confidence = Math.min(1, s.score / Math.max(1e-9, best));
+      return s.note;
+    });
+  }
+  return list;
+}
+
+/**
+ * Estimate the fundamentals present in one spectral frame.
+ * Returns [{ midi, hz, salience, confidence }], strongest first.
+ */
+function estimateF0s(magIn, binHz, opts = {}) {
+  const {
+    maxVoices = 6,
+    relThreshold = 0.14,
+    absThreshold = 0,
+    harmonics = 16,
+    minMidi = MIN_MIDI,
+    maxMidi = MAX_MIDI,
+    octaveCheck = true,
+    neighbourRatio = 2.6,
+  } = opts;
+
+  const mag = whiten(magIn);
+  const residual = Float32Array.from(mag);
+  const found = [];
+  const masked = [];
+  let first = 0;
+
+  for (let v = 0; v < maxVoices; v++) {
+    let bestMidi = -1;
+    let bestSal = 0;
+    let bestInfo = null;
+    for (let m = minMidi; m <= maxMidi; m++) {
+      const info = salienceAt(residual, binHz, midiToHz(m), { harmonics });
+      if (info.salience > bestSal) { bestSal = info.salience; bestMidi = m; bestInfo = info; }
+    }
+    if (bestMidi < 0 || bestSal <= 0) break;
+    if (v === 0) first = bestSal;
+    /* A harmonic series runs upwards, so an artefact of a note already found
+     * lies above it, never far below.  A candidate well below everything found
+     * so far is therefore held to a lower bar — which is what lets a soft bass
+     * note be heard under a loud treble one.  The sub-octave test below is
+     * what guards the one case that does point downwards. */
+    let lowest = Infinity;
+    for (const f of found) lowest = Math.min(lowest, f.midi);
+    const floor = bestMidi < lowest - 6 ? relThreshold * 0.35 : relThreshold;
+    if (bestSal < first * floor || bestSal < absThreshold) break;
+
+    let midi = bestMidi;
+    let info = bestInfo;
+    /* If the octave below has its own fundamental and odd partials present,
+     * that is the note being played and this is its second harmonic. */
+    if (octaveCheck && midi - 12 >= minMidi) {
+      const lowHz = midiToHz(midi - 12);
+      const sup = octaveSupport(residual, binHz, lowHz);
+      if (sup.odd > sup.even * 0.55) {
+        const lower = salienceAt(residual, binHz, lowHz, { harmonics });
+        if (lower.salience > bestSal * 0.75) { midi -= 12; info = lower; }
+      }
+    }
+    /* A candidate lying on another note's harmonic must earn its place. */
+    if (found.length && coincidesWithFound(mag, binHz, midiToHz(midi), found, harmonics)) {
+      subtract(residual, binHz, midiToHz(midi), info.partials, 0.9, partialEnvelope(info.partials));
+      continue;
+    }
+    if (found.some((f) => f.midi === midi)) {
+      /* Already have it: strip what is left of this series and move on. */
+      subtract(residual, binHz, midiToHz(midi), info.partials, 0.9, partialEnvelope(info.partials));
+      continue;
+    }
+
+    /* Refine the pitch from where the partials actually landed. */
+    let num = 0;
+    let den = 0;
+    for (const p of info.partials) {
+      if (!p.value || p.h > 6) continue;
+      num += (p.hz / (p.h * Math.sqrt(1 + info.B * p.h * p.h))) * p.value;
+      den += p.value;
+    }
+    const hz = den > 0 ? num / den : midiToHz(midi);
+    const env = partialEnvelope(info.partials);
+
+    found.push({
+      midi,
+      hz,
+      salience: bestSal,
+      confidence: Math.min(1, bestSal / Math.max(1e-9, first)) * Math.min(1, info.hits / 6),
+    });
+    for (const c of maskedCandidates(hz, info.partials)) masked.push(c);
+    subtract(residual, binHz, hz, info.partials, 0.9, env);
+  }
+
+  /* Follow up the masked candidates: a note is only added if it still has
+   * salience of its own once everything found so far has been removed. */
+  for (const c of masked.sort((a, b) => b.excess - a.excess)) {
+    if (isPhantomSubOctave(residual, binHz, midiToHz(c.midi))) continue;
+    if (found.length >= maxVoices) break;
+    if (found.some((f) => f.midi === c.midi)) continue;
+    if (c.midi < minMidi || c.midi > maxMidi) continue;
+    if (coincidesWithFound(mag, binHz, midiToHz(c.midi), found, harmonics)) continue;
+    const info = salienceAt(residual, binHz, midiToHz(c.midi), { harmonics });
+    if (info.salience < first * relThreshold * 1.1 || info.hits < 3) continue;
+    const env = partialEnvelope(info.partials);
+    found.push({
+      midi: c.midi,
+      hz: midiToHz(c.midi),
+      salience: info.salience,
+      confidence: Math.min(1, info.salience / Math.max(1e-9, first)) * 0.8,
+      masked: true,
+    });
+    subtract(residual, binHz, midiToHz(c.midi), info.partials, 0.9, env);
+  }
+
+  const verified = verifySet(mag, binHz, found, opts);
+
+  /* No window short enough to follow a performance resolves two low notes a
+   * semitone apart, so a weak detection beside a strong one is usually the
+   * strong one's own skirts.  A cluster that was really played comes out with
+   * its notes at comparable strength. */
+  const pruned = verified.filter((n) => !verified.some((o) => o !== n
+    && Math.abs(o.midi - n.midi) <= 2 && o.salience > n.salience * neighbourRatio));
+
+  pruned.sort((a, b) => b.salience - a.salience);
+  return pruned;
+}
+
+/**
+ * Run the estimator over every frame.
+ * Returns a per-frame array of detections plus a pitch-salience matrix used
+ * later to spot repeated notes inside a held chord.
+ */
+function analyseFrames(spec, opts = {}) {
+  const { frames, binHz } = spec;
+  const perFrame = [];
+  const range = MAX_MIDI - MIN_MIDI + 1;
+  const salience = [];
+  for (let t = 0; t < frames.length; t++) {
+    const det = estimateF0s(frames[t], binHz, opts);
+    perFrame.push(det);
+    const row = new Float32Array(range);
+    for (const d of det) row[d.midi - MIN_MIDI] = d.salience;
+    salience.push(row);
+  }
+  return { perFrame, salience };
+}
+
+__exp.whiten = whiten;
+__exp.salienceAt = salienceAt;
+__exp.ownPartialEnergy = ownPartialEnergy;
+__exp.salienceCurve = salienceCurve;
+__exp.estimateF0s = estimateF0s;
+__exp.analyseFrames = analyseFrames;
+__exp.MIN_MIDI = MIN_MIDI;
+__exp.MAX_MIDI = MAX_MIDI;
+},
+  "js/transcribe/onsets.js": function (__exp, __req) {
+/* Cadenza — onset detection.
+ *
+ * Onsets carry the rhythm, and they are the only way to tell a repeated note
+ * from one long one, so they are detected on their own short-window analysis
+ * where timing is sharp, independently of the pitch analysis.
+ */
+
+const { stft, movingMedian } = __req("js/transcribe/dsp.js");
+
+/**
+ * Spectral flux: how much energy appeared since the previous frame.  Only
+ * increases count, so a note dying away does not read as an attack.
+ */
+function spectralFlux(frames) {
+  const flux = new Float32Array(frames.length);
+  for (let t = 1; t < frames.length; t++) {
+    const a = frames[t - 1];
+    const b = frames[t];
+    let sum = 0;
+    for (let k = 0; k < b.length; k++) {
+      const d = b[k] - a[k];
+      if (d > 0) sum += d;
+    }
+    flux[t] = sum;
+  }
+  return flux;
+}
+
+/**
+ * Find onsets in a signal.
+ * `sensitivity` scales the threshold: higher finds more (and riskier) attacks.
+ * Returns [{ time, strength }].
+ */
+function detectOnsets(samples, {
+  sampleRate = 44100, size = 1024, hop = 256, sensitivity = 1,
+  minGap = 0.085,
+} = {}) {
+  const spec = stft(samples, { size, hop, sampleRate });
+  if (spec.frames.length < 3) return { onsets: [], flux: new Float32Array(0), spec };
+
+  const flux = spectralFlux(spec.frames);
+  /* Normalise so the threshold means the same thing at any recording level. */
+  let peak = 0;
+  for (const v of flux) peak = Math.max(peak, v);
+  if (peak <= 0) return { onsets: [], flux, spec };
+  const norm = Float32Array.from(flux, (v) => v / peak);
+
+  const radius = Math.max(3, Math.round(0.25 / (hop / sampleRate)));
+  const median = movingMedian(norm, radius);
+  const delta = 0.055 / Math.max(0.2, sensitivity);
+  const lambda = 1.35 / Math.max(0.2, Math.min(3, sensitivity));
+
+  const onsets = [];
+  /* A take that begins on a note has no rising flux to find, because there is
+   * no quieter frame before it — so the first sounding frame is an attack. */
+  let firstSound = -1;
+  for (let t = 0; t < spec.frames.length; t++) {
+    let e = 0;
+    for (let k = 0; k < spec.frames[t].length; k++) e += spec.frames[t][k];
+    if (e > peak * 0.02) { firstSound = t; break; }
+  }
+  if (firstSound >= 0) onsets.push({ time: spec.times[firstSound], strength: 1 });
+
+  for (let t = 1; t < norm.length - 1; t++) {
+    const threshold = median[t] * lambda + delta;
+    if (norm[t] < threshold) continue;
+    if (norm[t] < norm[t - 1] || norm[t] < norm[t + 1]) continue;   // local peak only
+    const time = spec.times[t];
+    const last = onsets[onsets.length - 1];
+    if (last) {
+      const gap = time - last.time;
+      /* A chord's attack is broad and rings for a moment, so the flux peaks
+       * more than once.  Only a clearly stronger event counts as a new attack
+       * this soon after the last one. */
+      if (gap < minGap) {
+        if (norm[t] > last.strength) { last.time = time; last.strength = norm[t]; }
+        continue;
+      }
+      if (gap < minGap * 1.8 && norm[t] < last.strength * 0.85) continue;
+    }
+    onsets.push({ time, strength: norm[t] });
+  }
+  return { onsets, flux: norm, spec };
+}
+
+/**
+ * The energy envelope, used to tell silence from sound so that rests can be
+ * written where the performer actually stopped playing.
+ */
+function energyEnvelope(samples, { sampleRate = 44100, window = 0.02 } = {}) {
+  const size = Math.max(64, Math.round(window * sampleRate));
+  const n = Math.floor(samples.length / size);
+  const env = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    let s = 0;
+    for (let k = 0; k < size; k++) {
+      const v = samples[i * size + k];
+      s += v * v;
+    }
+    env[i] = Math.sqrt(s / size);
+  }
+  return { env, step: size / sampleRate };
+}
+
+__exp.spectralFlux = spectralFlux;
+__exp.detectOnsets = detectOnsets;
+__exp.energyEnvelope = energyEnvelope;
+},
+  "js/transcribe/rhythm.js": function (__exp, __req) {
+/* Cadenza — finding the beat, and fitting what was played to it.
+ *
+ * A list of notes with times in seconds is not yet music.  Someone played
+ * them at some tempo, in some metre, and a little ahead of or behind the beat
+ * as players do.  This works out the pulse, then writes the performance onto
+ * it — but only as far as the evidence goes.  Snapping every onset to the
+ * nearest sixteenth turns a triplet into a limp, and turns a phrase that was
+ * deliberately held back into a wrong rhythm.  So each beat gets the coarsest
+ * division that actually accounts for what happened inside it, and anything
+ * that fits no division is kept as it was and marked uncertain rather than
+ * forced.
+ */
+
+const { TPQ } = __req("js/core/rhythm.js");
+
+const MIN_PERIOD = 0.22;   // ~272 bpm
+const MAX_PERIOD = 1.5;    // 40 bpm
+const PREFERRED = 0.5;     // 120 bpm: where listeners hear the beat by default
+
+/** A smooth curve that peaks wherever notes begin. */
+function pulseTrain(events, duration, rate = 200) {
+  const n = Math.max(1, Math.ceil(duration * rate));
+  const out = new Float64Array(n);
+  const spread = Math.round(0.02 * rate);
+  for (const e of events) {
+    const c = Math.round(e.time * rate);
+    for (let k = -spread * 2; k <= spread * 2; k++) {
+      const i = c + k;
+      if (i < 0 || i >= n) continue;
+      out[i] += e.weight * Math.exp(-(k * k) / (2 * spread * spread));
+    }
+  }
+  return { curve: out, rate };
+}
+
+/**
+ * How strongly the performance repeats at each candidate period.
+ *
+ * Autocorrelation alone prefers short periods, since every beat is also a
+ * half-beat; the preference curve pulls the answer back towards the rate a
+ * listener would tap, which is what a tempo marking is supposed to mean.
+ */
+function tempogram({ curve, rate }) {
+  const lo = Math.round(MIN_PERIOD * rate);
+  const hi = Math.min(Math.round(MAX_PERIOD * rate), Math.floor(curve.length / 2));
+  const out = [];
+  for (let lag = lo; lag <= hi; lag++) {
+    let sum = 0;
+    for (let i = 0; i + lag < curve.length; i++) sum += curve[i] * curve[i + lag];
+    const period = lag / rate;
+    const bias = Math.exp(-Math.pow(Math.log(period / PREFERRED) / 0.9, 2) / 2);
+    out.push({ period, score: (sum / (curve.length - lag)) * bias });
+  }
+  return out;
+}
+
+/** How well a pulse of this period and phase lines up with the attacks. */
+function alignment(events, period, phase, sigma = 0.05) {
+  let hit = 0;
+  let total = 0;
+  for (const e of events) {
+    const k = Math.round((e.time - phase) / period);
+    const d = e.time - (phase + k * period);
+    hit += e.weight * Math.exp(-(d * d) / (2 * sigma * sigma));
+    total += e.weight;
+  }
+  return total ? hit / total : 0;
+}
+
+/**
+ * The share of beats that carry a note.
+ *
+ * A pulse at twice the real tempo lines up with every attack just as well as
+ * the real one — it simply has an empty beat between each pair.  Counting the
+ * empty ones is what tells the two apart, and it is why a slow piece is not
+ * written out at double speed.
+ */
+function occupancy(events, period, phase) {
+  if (!events.length) return 0;
+  const index = (t) => Math.round((t - phase) / period);
+  const first = index(events[0].time);
+  const last = index(events[events.length - 1].time);
+  const span = Math.max(1, last - first + 1);
+  const filled = new Set();
+  for (const e of events) {
+    const k = index(e.time);
+    if (Math.abs(e.time - (phase + k * period)) < period * 0.25) filled.add(k);
+  }
+  return Math.min(1, filled.size / span);
+}
+
+/** Where the first beat falls, given a period. */
+function bestPhase(events, period) {
+  let best = { phase: 0, score: -1 };
+  const steps = 48;
+  for (let i = 0; i < steps; i++) {
+    const phase = (i / steps) * period;
+    const score = alignment(events, period, phase);
+    if (score > best.score) best = { phase, score };
+  }
+  /* Refine against the onsets themselves so the grid starts on a real note. */
+  for (const e of events) {
+    const k = Math.round((e.time - best.phase) / period);
+    const phase = e.time - k * period;
+    const score = alignment(events, period, phase);
+    if (score > best.score) best = { phase, score };
+  }
+  return best;
+}
+
+/**
+ * Estimate the pulse.
+ * Returns { period, bpm, phase, confidence }.
+ */
+function estimateBeat(events, duration, opts = {}) {
+  const { fixedBpm = null } = opts;
+  if (!events.length) return { period: PREFERRED, bpm: 120, phase: 0, confidence: 0 };
+  if (fixedBpm) {
+    const period = 60 / fixedBpm;
+    const { phase, score } = bestPhase(events, period);
+    return { period, bpm: fixedBpm, phase, confidence: score };
+  }
+
+  const grid = tempogram(pulseTrain(events, duration));
+  let peak = grid[0];
+  for (const g of grid) if (g.score > peak.score) peak = g;
+
+  /* A pulse and its half and double all correlate; decide between them by how
+   * well each explains where the notes actually fell. */
+  const options = [peak.period / 2, peak.period, peak.period * 2]
+    .filter((p) => p >= MIN_PERIOD && p <= MAX_PERIOD);
+  let best = null;
+  for (const period of options) {
+    const { phase, score } = bestPhase(events, period);
+    const bias = Math.exp(-Math.pow(Math.log(period / PREFERRED) / 0.9, 2) / 2);
+    const full = occupancy(events, period, phase);
+    const total = score * (0.55 + 0.45 * bias) * (0.65 + 0.35 * full);
+    if (!best || total > best.total) best = { period, phase, score, total };
+  }
+
+  const bpm = Math.round((60 / best.period) * 10) / 10;
+  return { period: best.period, bpm, phase: best.phase, confidence: best.score };
+}
+
+/* ------------------------------------------------------------------ metre */
+
+const METRES = [
+  { beats: 4, ts: { beats: 4, beatType: 4, symbol: 'common' }, compound: false },
+  { beats: 3, ts: { beats: 3, beatType: 4, symbol: null }, compound: false },
+  { beats: 2, ts: { beats: 2, beatType: 4, symbol: null }, compound: false },
+  { beats: 2, ts: { beats: 6, beatType: 8, symbol: null }, compound: true },
+  { beats: 3, ts: { beats: 9, beatType: 8, symbol: null }, compound: true },
+  { beats: 4, ts: { beats: 12, beatType: 8, symbol: null }, compound: true },
+];
+
+/**
+ * Choose a time signature.
+ *
+ * Downbeats are heavier and carry more notes than the beats around them, so
+ * the bar length is the one whose first beat stands out most from the rest.
+ */
+function estimateMetre(events, beat, compound) {
+  const accent = new Map();
+  let longest = 0;
+  let lowest = Infinity;
+  let highest = -Infinity;
+  for (const e of events) {
+    longest = Math.max(longest, e.length || 0);
+    lowest = Math.min(lowest, e.low === undefined ? 60 : e.low);
+    highest = Math.max(highest, e.low === undefined ? 60 : e.low);
+  }
+  const range = Math.max(1, highest - lowest);
+  for (const e of events) {
+    const b = Math.round((e.time - beat.phase) / beat.period);
+    if (b < 0) continue;
+    /* Three things mark a downbeat: more notes struck, longer notes, and the
+     * bass moving.  Loudness alone is not enough — a performance played evenly
+     * still has a metre, and it shows up in these. */
+    const len = longest > 0 ? Math.min(1, (e.length || 0) / longest) : 0;
+    const bass = e.low === undefined ? 0 : 1 - (e.low - lowest) / range;
+    const w = e.weight * (1 + 0.6 * len + 0.45 * bass);
+    accent.set(b, (accent.get(b) || 0) + w);
+  }
+  const beatsSeen = Math.max(0, ...accent.keys()) + 1;
+
+  let best = null;
+  for (const m of METRES) {
+    if (m.compound !== compound) continue;
+    if (beatsSeen < m.beats * 2) continue;
+    const buckets = new Array(m.beats).fill(0);
+    const counts = new Array(m.beats).fill(0);
+    for (let b = 0; b < beatsSeen; b++) {
+      buckets[b % m.beats] += accent.get(b) || 0;
+      counts[b % m.beats]++;
+    }
+    const mean = buckets.map((v, i) => v / (counts[i] || 1));
+    const rest = mean.slice(1).reduce((a, v) => a + v, 0) / Math.max(1, m.beats - 1);
+    const contrast = rest > 0 ? mean[0] / rest : 1;
+    /* Music comes in whole bars.  A bar length that leaves a fragment over at
+     * the end is usually the wrong bar length. */
+    const over = beatsSeen % m.beats;
+    const whole = over === 0 ? 1 : 1 - Math.min(over, m.beats - over) / m.beats * 0.35;
+    /* Four beats wins ties: it is what most music is in, and a bar of four
+     * read as two bars of two is a worse error than the other way round. */
+    const common = m.beats === 4 ? 1.15 : m.beats === 3 ? 1 : 0.95;
+    const score = contrast * whole * common;
+    if (!best || score > best.score) best = { ...m, score, contrast };
+  }
+  const fallback = METRES.find((m) => m.compound === compound && m.beats === 4) || METRES[0];
+  const chosen = best || { ...fallback, contrast: 1 };
+  return {
+    timeSig: chosen.ts,
+    beatsPerBar: chosen.beats,
+    confidence: Math.max(0, Math.min(1, (chosen.contrast - 1) / 0.6)),
+  };
+}
+
+/* ----------------------------------------------------------- quantisation */
+
+/* Divisions of one beat we are willing to write down, simplest first. */
+const DIVISIONS = [1, 2, 4, 3, 8, 6, 16, 12];
+
+const GRID_PRESETS = [
+  { id: 'auto', label: 'Automatic', division: null },
+  { id: '4', label: 'Quarter', division: 1 },
+  { id: '8', label: 'Eighth', division: 2 },
+  { id: '8t', label: 'Eighth triplet', division: 3 },
+  { id: '16', label: 'Sixteenth', division: 4 },
+  { id: '16t', label: 'Sixteenth triplet', division: 6 },
+  { id: '32', label: 'Thirty-second', division: 8 },
+];
+
+/**
+ * Fit the notes to the pulse.
+ *
+ * Each beat is examined on its own and given the simplest division that
+ * accounts for every attack inside it.  A beat with notes a third of the way
+ * through is a triplet beat whatever its neighbours are doing, and a beat
+ * whose notes fit nowhere keeps its measured timing and says so, because a
+ * wrong rhythm written confidently is harder to repair than a right one
+ * written in an awkward place.
+ */
+function quantise(notes, beat, opts = {}) {
+  const {
+    division = null,      // force a division, or null to choose per beat
+    strength = 1,         // 0 leaves the performance alone, 1 fits it fully
+    tolerance = 0.16,     // how far off a grid point an attack may be, in divisions
+    divisionWeights = null,   // divisions this player has needed before
+  } = opts;
+  /* A player who works in triplets gets a little more latitude for them, so a
+   * beat that is nearly but not quite in threes is read the way they play
+   * rather than as a stumble.  It is latitude, not a decision: a beat that is
+   * plainly in twos still comes out in twos. */
+  const latitude = (d) => tolerance * (1 + ((divisionWeights && divisionWeights[d]) || 0) * 0.5);
+
+  const toBeats = (t) => (t - beat.phase) / beat.period;
+  const allowed = division ? [division] : DIVISIONS;
+
+  /* The simplest division that accounts for every attack inside one beat. */
+  const fitBeat = (group, idx, scale = 1) => {
+    let chosen = allowed[allowed.length - 1];
+    let chosenErr = Infinity;
+    for (const d of allowed) {
+      let worst = 0;
+      for (const n of group) {
+        const pos = (toBeats(n.start) - idx) * d;
+        worst = Math.max(worst, Math.abs(pos - Math.round(pos)));
+      }
+      if (worst <= latitude(d) * scale) return { division: d, error: worst };
+      if (worst < chosenErr) { chosen = d; chosenErr = worst; }
+    }
+    return { division: chosen, error: chosenErr };
+  };
+
+  const byBeat = new Map();
+  for (const n of notes) {
+    const idx = Math.max(0, Math.floor(toBeats(n.start) + 1e-9));
+    if (!byBeat.has(idx)) byBeat.set(idx, []);
+    byBeat.get(idx).push(n);
+  }
+
+  const beatDivision = new Map();
+  for (const [idx, group] of byBeat) beatDivision.set(idx, fitBeat(group, idx));
+
+  /* A division that appears in one beat and nowhere else is more often a
+   * stumble than a triplet, so a beat is allowed to fall in with its
+   * neighbours when their division explains it nearly as well. */
+  const tally = new Map();
+  for (const { division: d } of beatDivision.values()) tally.set(d, (tally.get(d) || 0) + 1);
+  for (const [idx, info] of beatDivision) {
+    if ((tally.get(info.division) || 0) > 1) continue;
+    for (const [d, count] of [...tally].sort((a, b) => b[1] - a[1])) {
+      if (count < 2 || d === info.division) continue;
+      const alt = fitBeat(byBeat.get(idx), idx, 1.6);
+      if (alt.division === d) { beatDivision.set(idx, alt); break; }
+      let worst = 0;
+      for (const n of byBeat.get(idx)) {
+        const pos = (toBeats(n.start) - idx) * d;
+        worst = Math.max(worst, Math.abs(pos - Math.round(pos)));
+      }
+      if (worst <= tolerance * 1.6) { beatDivision.set(idx, { division: d, error: worst }); break; }
+    }
+  }
+
+  const out = [];
+  for (const n of notes) {
+    const raw = toBeats(n.start);
+    const idx = Math.max(0, Math.floor(raw + 1e-9));
+    const d = (beatDivision.get(idx) || { division: 4 }).division;
+    const snapped = Math.round(raw * d) / d;
+    const drift = Math.abs(raw - snapped) * d;
+    const beats = Math.max(0, raw + (snapped - raw) * strength);
+    out.push({
+      ...n,
+      beats,
+      startTicks: Math.round(beats * TPQ),
+      division: d,
+      rhythmConfidence: Math.max(0, Math.min(1, 1 - (drift / tolerance) * 0.8)),
+    });
+  }
+
+  /* Lengths, fitted the same way.  Where a note is released needs its own
+   * division: a beat holding one staccato quaver has a single attack, so its
+   * attacks are fitted to the beat itself, but writing the note as filling the
+   * whole beat would lose the silence the player left after it. */
+  /* Releases are written no finer than this.  Where a note stops is not a
+   * rhythmic event the way an attack is — a player lets go when the next note
+   * needs the finger — so reading a release to the nearest thirty-second finds
+   * a rhythm nobody played, and reading it as a triplet is worse still. */
+  const releaseLimit = (beatDiv) => Math.max(beatDiv, 4);
+  for (const n of out) {
+    const raw = toBeats(n.end);
+    let d = n.division;
+    let snapped = Math.round(raw * d) / d;
+    if (Math.abs(raw - snapped) * d > tolerance) {
+      const limit = releaseLimit(n.division);
+      let bestErr = Math.abs(raw - snapped) * d;
+      for (const cand of allowed) {
+        if (cand > limit) continue;
+        const s = Math.round(raw * cand) / cand;
+        const err = Math.abs(raw - s) * cand;
+        if (err <= tolerance) { d = cand; snapped = s; bestErr = err; break; }
+        if (err < bestErr) { d = cand; snapped = s; bestErr = err; }
+      }
+    }
+    const step = 1 / Math.max(d, n.division);
+    if (snapped <= n.beats + 1e-9) snapped = n.beats + step;
+    n.endBeats = Math.max(n.beats + step * 0.5, raw + (snapped - raw) * strength);
+    n.endDivision = Math.max(d, n.division);
+    n.endTicks = Math.max(n.startTicks + Math.round((TPQ * step) / 2),
+      Math.round(n.endBeats * TPQ));
+  }
+
+  const ranked = [...tally.entries()].sort((a, b) => b[1] - a[1]);
+  return {
+    notes: out,
+    /* Compound metre is a property of how the beat divides, not of the tempo. */
+    compound: ranked.length > 0 && ranked[0][0] % 3 === 0 && ranked[0][0] > 1,
+    divisions: ranked,
+  };
+}
+
+/** Onset events for the beat estimator, one per simultaneity. */
+function attackEvents(notes) {
+  const groups = [];
+  for (const n of [...notes].sort((a, b) => a.start - b.start)) {
+    const last = groups[groups.length - 1];
+    if (last && n.start - last.time < 0.045) {
+      last.weight += n.velocity / 127;
+      last.time = (last.time * last.count + n.start) / (last.count + 1);
+      last.low = Math.min(last.low, n.midi);
+      last.length = Math.max(last.length, n.end - n.start);
+      last.count++;
+    } else {
+      groups.push({
+        time: n.start,
+        weight: n.velocity / 127,
+        low: n.midi,
+        length: n.end - n.start,
+        count: 1,
+      });
+    }
+  }
+  return groups;
+}
+
+/**
+ * Convert quantised positions from beats to ticks.
+ *
+ * The beat is whatever the player was feeling — a quarter in 4/4, a dotted
+ * quarter in 6/8 — so this is done once the metre is known rather than
+ * assuming every beat is a quarter note.
+ */
+function toTicks(notes, ticksPerBeat) {
+  for (const n of notes) {
+    n.startTicks = Math.max(0, Math.round(n.beats * ticksPerBeat));
+    const fine = Math.max(n.division, n.endDivision || n.division);
+    n.endTicks = Math.max(n.startTicks + Math.round(ticksPerBeat / (fine * 2)),
+      Math.round(n.endBeats * ticksPerBeat));
+  }
+  return notes;
+}
+
+__exp.estimateBeat = estimateBeat;
+__exp.estimateMetre = estimateMetre;
+__exp.quantise = quantise;
+__exp.attackEvents = attackEvents;
+__exp.toTicks = toTicks;
+__exp.GRID_PRESETS = GRID_PRESETS;
+},
+  "js/transcribe/voices.js": function (__exp, __req) {
+/* Cadenza — sorting notes into hands, voices and chords.
+ *
+ * A pianist's two hands produce one stream of notes, and writing that stream
+ * out as a single line is the difference between a transcription and a mess.
+ * What is needed is the division back into parts: which hand played what,
+ * which notes belong to the same chord, and where one staff is carrying two
+ * independent lines at once.
+ *
+ * The hand split is found for the whole take at once rather than note by note.
+ * A choice that looks right for one chord — put the low note in the left hand —
+ * can be wrong for the passage, because hands do not leap back and forth; they
+ * stay where they are and move when the music moves.  So the split is the path
+ * through the piece that keeps each hand within its reach while changing
+ * position as little as possible.
+ */
+
+const MAX_SPAN = 14;       // semitones a hand can comfortably cover
+const MAX_FINGERS = 5;
+
+/** Every moment at which the set of sounding notes changes. */
+function slices(notes) {
+  const times = [...new Set(notes.map((n) => n.startTicks))].sort((a, b) => a - b);
+  return times.map((t) => ({
+    tick: t,
+    active: notes.filter((n) => n.startTicks <= t && n.endTicks > t),
+  })).filter((s) => s.active.length);
+}
+
+function spanOf(list) {
+  if (list.length < 2) return 0;
+  let lo = Infinity;
+  let hi = -Infinity;
+  for (const n of list) { lo = Math.min(lo, n.midi); hi = Math.max(hi, n.midi); }
+  return hi - lo;
+}
+
+/** What it costs to divide this moment's notes at this pitch. */
+function sliceCost(active, split, centre) {
+  const left = [];
+  const right = [];
+  for (const n of active) (n.midi < split ? left : right).push(n);
+  let cost = 0;
+  cost += Math.max(0, spanOf(left) - MAX_SPAN) * 2.5;
+  cost += Math.max(0, spanOf(right) - MAX_SPAN) * 2.5;
+  cost += Math.max(0, left.length - MAX_FINGERS) * 4;
+  cost += Math.max(0, right.length - MAX_FINGERS) * 4;
+  /* Middle C is where the hands usually meet; drifting far from it wants a
+   * reason, which the costs above supply when there is one. */
+  cost += Math.abs(split - centre) * 0.03;
+  return cost;
+}
+
+/**
+ * Decide which hand played each note.
+ *
+ * A Viterbi pass over the possible dividing pitches: the cheapest path is the
+ * one that keeps both hands within reach throughout while moving the division
+ * as little as it can.  Notes at or above the division are the right hand.
+ */
+function separateHands(notes, opts = {}) {
+  const { move = 0.1, forceSingleStaff = false, centre = 60 } = opts;
+  if (!notes.length) return { splits: [], staves: 1 };
+  if (forceSingleStaff) {
+    for (const n of notes) n.staff = 0;
+    return { splits: [], staves: 1 };
+  }
+
+  const points = slices(notes);
+  const lo = Math.min(...notes.map((n) => n.midi));
+  const hi = Math.max(...notes.map((n) => n.midi)) + 1;
+  const candidates = [];
+  for (let s = lo; s <= hi; s++) candidates.push(s);
+  if (candidates.length < 2) {
+    for (const n of notes) n.staff = notes[0].midi >= centre ? 0 : 1;
+    return { splits: [], staves: 1 };
+  }
+
+  const n = candidates.length;
+  let prev = candidates.map((s) => sliceCost(points[0].active, s, centre));
+  const back = [];
+  for (let t = 1; t < points.length; t++) {
+    const cur = new Float64Array(n);
+    const from = new Int32Array(n);
+    for (let j = 0; j < n; j++) {
+      let best = Infinity;
+      let arg = j;
+      for (let i = 0; i < n; i++) {
+        const c = prev[i] + Math.abs(candidates[i] - candidates[j]) * move;
+        if (c < best) { best = c; arg = i; }
+      }
+      cur[j] = best + sliceCost(points[t].active, candidates[j], centre);
+      from[j] = arg;
+    }
+    back.push(from);
+    prev = cur;
+  }
+
+  let j = 0;
+  for (let k = 1; k < n; k++) if (prev[k] < prev[j]) j = k;
+  const path = new Array(points.length);
+  path[points.length - 1] = candidates[j];
+  for (let t = points.length - 1; t > 0; t--) {
+    j = back[t - 1][j];
+    path[t - 1] = candidates[j];
+  }
+
+  const splits = points.map((p, i) => ({ tick: p.tick, split: path[i] }));
+  for (const note of notes) {
+    let split = splits[0].split;
+    for (const s of splits) { if (s.tick <= note.startTicks) split = s.split; else break; }
+    note.staff = note.midi >= split ? 0 : 1;
+  }
+
+  /* One hand with nothing in it means the music sits on a single staff. */
+  const used = new Set(notes.map((x) => x.staff));
+  if (used.size === 1) for (const note of notes) note.staff = 0;
+  return { splits, staves: used.size };
+}
+
+/* ------------------------------------------------------------------ voices */
+
+/**
+ * Split one staff into independent lines.
+ *
+ * Notes that begin together and end together are a chord and stay in one
+ * voice.  A note that begins while another is still sounding, and outlasts it
+ * or is outlasted by it, is a second line and needs its own — that is what
+ * makes a held bass under a moving inner part readable instead of a thicket of
+ * ties.
+ */
+function assignVoices(notes, { maxVoices = 4 } = {}) {
+  const groups = new Map();
+  for (const n of notes) {
+    const key = n.startTicks + ':' + n.endTicks;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(n);
+  }
+  const chords = [...groups.values()]
+    .map((list) => ({
+      start: list[0].startTicks,
+      end: list[0].endTicks,
+      notes: list,
+      mean: list.reduce((a, x) => a + x.midi, 0) / list.length,
+    }))
+    .sort((a, b) => a.start - b.start || b.mean - a.mean);
+
+  const voices = [];
+  for (const chord of chords) {
+    let pick = -1;
+    let bestGap = Infinity;
+    voices.forEach((v, i) => {
+      if (v.end > chord.start + 1) return;              // still sounding
+      const gap = Math.abs(v.mean - chord.mean) + (chord.start - v.end) / 960;
+      if (gap < bestGap) { bestGap = gap; pick = i; }
+    });
+    if (pick < 0 && voices.length < maxVoices) {
+      voices.push({ end: 0, mean: chord.mean, chords: [] });
+      pick = voices.length - 1;
+    }
+    if (pick < 0) {
+      /* More simultaneous lines than a staff can show: fold this one into the
+       * nearest voice and let the chord carry it. */
+      pick = 0;
+      let near = Infinity;
+      voices.forEach((v, i) => {
+        const d = Math.abs(v.mean - chord.mean);
+        if (d < near) { near = d; pick = i; }
+      });
+    }
+    const v = voices[pick];
+    v.chords.push(chord);
+    v.end = Math.max(v.end, chord.end);
+    v.mean = (v.mean + chord.mean) / 2;
+  }
+
+  /* Highest line first: that is the order a reader expects, and the order the
+   * engraver uses to decide stem directions. */
+  voices.sort((a, b) => {
+    const am = a.chords.reduce((s, c) => s + c.mean, 0) / Math.max(1, a.chords.length);
+    const bm = b.chords.reduce((s, c) => s + c.mean, 0) / Math.max(1, b.chords.length);
+    return bm - am;
+  });
+  voices.forEach((v, i) => {
+    for (const c of v.chords) for (const note of c.notes) note.voice = i;
+  });
+  return voices.length;
+}
+
+/**
+ * Collect notes into chord events: same staff, same voice, same attack.
+ * Returns [{ startTicks, endTicks, staff, voice, notes, confidence }].
+ */
+function groupChords(notes) {
+  const map = new Map();
+  for (const n of notes) {
+    const key = [n.staff || 0, n.voice || 0, n.startTicks].join(':');
+    if (!map.has(key)) {
+      map.set(key, {
+        startTicks: n.startTicks,
+        endTicks: n.endTicks,
+        staff: n.staff || 0,
+        voice: n.voice || 0,
+        notes: [],
+      });
+    }
+    const g = map.get(key);
+    g.notes.push(n);
+    /* A chord is written with one duration; the notes of a real chord are
+     * struck together and released together, so the shortest is the honest
+     * length and the rest are held by the pedal. */
+    g.endTicks = Math.min(g.endTicks, n.endTicks);
+  }
+  const out = [...map.values()].sort((a, b) =>
+    a.staff - b.staff || a.voice - b.voice || a.startTicks - b.startTicks);
+  for (const g of out) {
+    g.notes.sort((a, b) => a.midi - b.midi);
+    g.confidence = g.notes.reduce((s, n) => s + Math.min(n.confidence,
+      n.rhythmConfidence === undefined ? 1 : n.rhythmConfidence), 0) / g.notes.length;
+  }
+  return out;
+}
+
+__exp.separateHands = separateHands;
+__exp.assignVoices = assignVoices;
+__exp.groupChords = groupChords;
+},
+  "js/transcribe/build.js": function (__exp, __req) {
+/* Cadenza — writing what was played out as notation.
+ *
+ * By this point the notes are known, as are the pulse, the metre and which
+ * hand played what.  What is left is the part a copyist would do: decide the
+ * key, spell each note within it, divide the music into bars, and write each
+ * note as a value a reader can read — tying across barlines, filling silence
+ * with rests, and never leaving a bar that does not add up.
+ */
+
+const M = __req("js/core/model.js");
+const T = __req("js/core/theory.js");
+const { TPQ, measureTicks, splitIntoDurations, durationTicks, durationForTicks } = __req("js/core/rhythm.js");
+
+/* ------------------------------------------------------------------- key */
+
+/* Krumhansl and Kessler's profiles: how much each degree of the scale is used
+ * in tonal music, measured from listeners rather than assumed. */
+const MAJOR_PROFILE = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88];
+const MINOR_PROFILE = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17];
+
+const FIFTHS_MAJOR = { 0: 0, 7: 1, 2: 2, 9: 3, 4: 4, 11: 5, 6: 6, 1: -5, 8: -4, 3: -3, 10: -2, 5: -1 };
+const FIFTHS_MINOR = { 9: 0, 4: 1, 11: 2, 6: 3, 1: 4, 8: 5, 3: 6, 10: -5, 5: -4, 0: -3, 7: -2, 2: -1 };
+
+function correlate(hist, profile, rotation) {
+  const n = 12;
+  let sx = 0;
+  let sy = 0;
+  for (let i = 0; i < n; i++) { sx += hist[i]; sy += profile[i]; }
+  const mx = sx / n;
+  const my = sy / n;
+  let num = 0;
+  let dx = 0;
+  let dy = 0;
+  for (let i = 0; i < n; i++) {
+    const a = hist[(i + rotation) % n] - mx;
+    const b = profile[i] - my;
+    num += a * b; dx += a * a; dy += b * b;
+  }
+  return dx && dy ? num / Math.sqrt(dx * dy) : 0;
+}
+
+/**
+ * Work out the key, weighting each pitch class by how long it sounded.
+ * A passing note touched once counts for much less than a tonic held.
+ */
+function detectKey(notes) {
+  const hist = new Array(12).fill(0);
+  for (const n of notes) {
+    const len = Math.max(1, (n.endTicks || 0) - (n.startTicks || 0)) / TPQ;
+    hist[((n.midi % 12) + 12) % 12] += Math.min(4, len);
+  }
+  if (!hist.some((v) => v > 0)) return { fifths: 0, mode: 'major', tonic: 0, confidence: 0 };
+
+  let best = null;
+  for (let tonic = 0; tonic < 12; tonic++) {
+    for (const mode of ['major', 'minor']) {
+      const score = correlate(hist, mode === 'major' ? MAJOR_PROFILE : MINOR_PROFILE, tonic);
+      if (!best || score > best.score) best = { tonic, mode, score };
+    }
+  }
+  /* How clearly the winner beats the runner-up is the honest confidence. */
+  let second = -1;
+  for (let tonic = 0; tonic < 12; tonic++) {
+    for (const mode of ['major', 'minor']) {
+      if (tonic === best.tonic && mode === best.mode) continue;
+      second = Math.max(second, correlate(hist, mode === 'major' ? MAJOR_PROFILE : MINOR_PROFILE, tonic));
+    }
+  }
+  const fifths = best.mode === 'major' ? FIFTHS_MAJOR[best.tonic] : FIFTHS_MINOR[best.tonic];
+  return {
+    fifths: fifths === undefined ? 0 : fifths,
+    mode: best.mode,
+    tonic: best.tonic,
+    confidence: Math.max(0, Math.min(1, (best.score - second) * 3)),
+  };
+}
+
+/* --------------------------------------------------------------- spelling */
+
+/* Which letter to use for each semitone above C, written sharp then flat. */
+const SHARP_SPELLING = [
+  [0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [3, 0], [3, 1], [4, 0], [4, 1], [5, 0], [5, 1], [6, 0],
+];
+const FLAT_SPELLING = [
+  [0, 0], [1, -1], [1, 0], [2, -1], [2, 0], [3, 0], [4, -1], [4, 0], [5, -1], [5, 0], [6, -1], [6, 0],
+];
+
+/**
+ * Name a pitch inside a key.
+ *
+ * A note that belongs to the key is spelled as the key spells it, so that no
+ * accidental is needed.  One that does not takes the direction the key is
+ * already going — sharps in sharp keys, flats in flat keys — which is what
+ * makes an F sharp in G major and a G flat in D flat major the same sound
+ * written the way each key wants it.
+ */
+function spell(midi, fifths = 0, lean = 0) {
+  const pc = ((midi % 12) + 12) % 12;
+  const scale = new Set();
+  const alters = T.keyAlterations(fifths);
+  for (let step = 0; step < 7; step++) {
+    scale.add((((T.STEP_SEMITONES[step] + (alters[step] || 0)) % 12) + 12) % 12);
+  }
+  let step;
+  let alter;
+  if (scale.has(pc)) {
+    for (let s = 0; s < 7; s++) {
+      const semi = (((T.STEP_SEMITONES[s] + (alters[s] || 0)) % 12) + 12) % 12;
+      if (semi === pc) { step = s; alter = alters[s] || 0; break; }
+    }
+  } else {
+    const flats = fifths < 0 || (fifths === 0 && lean < 0);
+    [step, alter] = flats ? FLAT_SPELLING[pc] : SHARP_SPELLING[pc];
+  }
+  /* B sharp and C flat cross the octave; keep the sounding pitch exact. */
+  const naturalMidi = T.STEP_SEMITONES[step] + alter;
+  let octave = Math.floor(midi / 12) - 1;
+  if (naturalMidi >= 12) octave -= 1;
+  if (naturalMidi < 0) octave += 1;
+  return T.pitch(step, octave, alter);
+}
+
+/* ----------------------------------------------------------------- score */
+
+/* A beat divided into three, five or six parts is a tuplet beat: its division
+ * is not a power of two, so no plain note value fits it. */
+const isTupletDivision = (d) => d > 1 && (d & (d - 1)) !== 0;
+
+/** What a tuplet of this division is written against: 3 against 2, 6 against 4. */
+function normalFor(division) {
+  let n = 1;
+  while (n * 2 < division) n *= 2;
+  return n;
+}
+
+/** One voice's worth of events laid out through the piece. */
+function layOutVoice(chords, ts, measures, fifths, plan, lean = 0) {
+  const bar = measureTicks(ts);
+  const out = [];
+  for (let m = 0; m < measures; m++) out.push([]);
+  const state = { out, ts, measures, fifths, plan, lean, tupletIds: new Map() };
+
+  const sorted = [...chords].sort((a, b) => a.startTicks - b.startTicks);
+  let pos = 0;
+  for (const chord of sorted) {
+    if (chord.startTicks < pos) continue;             // overlapped; already covered
+    if (chord.startTicks > pos) fill(state, pos, chord.startTicks, null);
+    const end = Math.max(chord.startTicks + 1, chord.endTicks);
+    fill(state, chord.startTicks, end, chord);
+    pos = end;
+  }
+  const total = measures * bar;
+  if (pos < total) fill(state, pos, total, null);
+  return out;
+}
+
+/**
+ * Write a span from `from` to `to` as notes or rests.
+ *
+ * The span is cut at every barline, and at the edge of any beat that was
+ * played in threes, because a triplet is written inside its beat and not
+ * across it.  Each piece gets the values a reader expects for where it starts
+ * in the bar, and the pieces of one note are joined with ties.
+ */
+function fill(state, from, to, chord) {
+  const { out, ts, measures, fifths, plan } = state;
+  const bar = measureTicks(ts);
+  const perBeat = plan.perBeat;
+  let pos = from;
+  let first = true;
+  let guard = 0;
+
+  const emit = (m, id, dots, tuplet, last) => {
+    if (!chord) {
+      out[m].push(M.makeRest(id, { dots, tuplet: tuplet || null }));
+      return;
+    }
+    const ev = M.makeNote(chord.notes.map((n) => spell(n.midi, fifths, state.lean)), id,
+      { dots, tuplet: tuplet || null });
+    for (const note of ev.notes) {
+      note.tie = first && last ? null : first ? 'start' : last ? 'stop' : 'both';
+    }
+    if (chord.confidence !== undefined) ev.transcribeConfidence = chord.confidence;
+    out[m].push(ev);
+    first = false;
+  };
+
+  while (pos < to && guard++ < 512) {
+    const m = Math.floor(pos / bar);
+    if (m >= measures) break;
+    const barEnd = (m + 1) * bar;
+    const bi = Math.floor(pos / perBeat);
+    const division = plan.divisionAt(bi);
+
+    if (isTupletDivision(division)) {
+      const beatEnd = (bi + 1) * perBeat;
+      const stop = Math.min(to, beatEnd, barEnd);
+      pos = writeTuplet(state, m, bi, pos, stop, division, to, emit);
+      continue;
+    }
+
+    /* Run on through the following beats for as long as they are ordinary, so
+     * a long note stays one note instead of a chain of tied beats. */
+    let stop = Math.min(to, barEnd);
+    for (let b = bi + 1; b * perBeat < stop; b++) {
+      if (isTupletDivision(plan.divisionAt(b))) { stop = b * perBeat; break; }
+    }
+    if (stop <= pos) break;
+    const pieces = splitIntoDurations(stop - pos, pos - m * bar, ts);
+    if (!pieces.length) break;
+    for (let i = 0; i < pieces.length; i++) {
+      const d = pieces[i];
+      emit(m, d.id, d.dots, null, stop >= to && i === pieces.length - 1);
+      pos += durationTicks(d.id, d.dots);
+    }
+  }
+}
+
+/**
+ * Write part of a beat that was played in threes (or fives, or sixes).
+ *
+ * The unit is the beat divided by however many parts were played in it, and a
+ * note lasting so many of those units is written as the value it would have
+ * had in an ordinary beat, marked as belonging to the tuplet.  A note that
+ * happens to fill the whole beat needs no tuplet at all and is written plainly.
+ */
+function writeTuplet(state, m, beatIndex, from, to, division, spanEnd, emit) {
+  const { plan } = state;
+  const perBeat = plan.perBeat;
+  const unit = perBeat / division;
+  const normal = normalFor(division);
+  let units = Math.round((to - from) / unit);
+  if (units <= 0) return to;
+
+  const beatStart = beatIndex * perBeat;
+  if (from === beatStart && units === division) {
+    const whole = durationForTicks(perBeat);
+    if (whole) {
+      emit(m, whole.id, whole.dots, null, to >= spanEnd);
+      return to;
+    }
+  }
+
+  if (!state.tupletIds.has(beatIndex)) state.tupletIds.set(beatIndex, M.newId('t'));
+  const id = state.tupletIds.get(beatIndex);
+  let pos = from;
+  let guard = 0;
+  while (units > 0 && guard++ < 32) {
+    let take = units;
+    let value = null;
+    while (take > 0) {
+      value = durationForTicks(Math.round((take * perBeat) / normal));
+      if (value) break;
+      take--;
+    }
+    if (!value) break;
+    emit(m, value.id, value.dots,
+      { id, actual: division, normal, bracket: true, number: true },
+      pos + take * unit >= spanEnd);
+    pos += take * unit;
+    units -= take;
+  }
+  return pos;
+}
+
+/**
+ * Build a playable, editable score from the analysed performance.
+ *
+ * Returns { score, stats } where stats carries what the analysis was sure of,
+ * so the interface can show where to look rather than claiming it is all
+ * correct.
+ */
+function buildScore(chords, opts = {}) {
+  const {
+    timeSig = { beats: 4, beatType: 4, symbol: 'common' },
+    bpm = 120,
+    fifths = 0,
+    mode = 'major',
+    staves = 2,
+    instrumentId = staves > 1 ? 'piano' : 'flute',
+    title = 'Transcription',
+    composer = '',
+    plan = null,
+    spellingLean = 0,
+  } = opts;
+  const perBeat = plan ? plan.perBeat : TPQ;
+  const divisions = plan ? plan.divisions : new Map();
+  const layout = { perBeat, divisionAt: (b) => divisions.get(b) || 1 };
+
+  const bar = measureTicks(timeSig);
+  const last = chords.reduce((a, c) => Math.max(a, c.endTicks), 0);
+  const measures = Math.max(1, Math.ceil(last / bar));
+
+  const score = M.createScore({
+    title,
+    composer,
+    instrumentIds: [instrumentId],
+    measures,
+    timeSig,
+    keySig: { fifths, mode },
+    tempo: Math.round(bpm),
+  });
+  const part = score.parts[0];
+
+  /* Cadenza puts even voice numbers on the upper staff and odd ones on the
+   * lower, so a hand and a line together name the voice to write into. */
+  const streams = new Map();
+  for (const c of chords) {
+    const staff = staves > 1 ? (c.staff || 0) : 0;
+    const idx = staves > 1 ? (c.voice || 0) * 2 + staff : (c.voice || 0);
+    if (!streams.has(idx)) streams.set(idx, []);
+    streams.get(idx).push(c);
+  }
+  if (!streams.size) streams.set(0, []);
+
+  const voiceCount = Math.max(...streams.keys()) + 1;
+  for (let m = 0; m < measures; m++) {
+    const pm = part.measures[m];
+    pm.voices = [];
+    for (let v = 0; v < voiceCount; v++) pm.voices.push([]);
+  }
+  for (const [idx, list] of streams) {
+    const laid = layOutVoice(list, timeSig, measures, fifths, layout, spellingLean);
+    for (let m = 0; m < measures; m++) part.measures[m].voices[idx] = laid[m];
+  }
+
+  M.normalizeScore(score);
+  return { score, measures, voiceCount };
+}
+
+__exp.detectKey = detectKey;
+__exp.spell = spell;
+__exp.buildScore = buildScore;
+},
+  "js/transcribe/capture.js": function (__exp, __req) {
+/* Cadenza — capturing a performance.
+ *
+ * Two ways in.  MIDI states what was played: the pitch is exact, the timing is
+ * exact, and the sustain pedal is there to be read, so a transcription from
+ * MIDI is limited only by how well the music is read afterwards.  Audio has to
+ * be listened to, which is a harder problem and a less certain answer.  Where
+ * an instrument can send MIDI, it is worth using.
+ *
+ * Audio is captured as raw samples rather than through a compressing recorder.
+ * Opus at 64 kbit/s sounds fine and analyses badly: it discards exactly the
+ * quiet high partials that tell one note from another in a chord.
+ */
+
+/**
+ * Record MIDI as it is played.
+ *
+ * Timestamps come from the MIDI message where the browser provides them —
+ * those are taken at the device rather than when the page got round to the
+ * event, which matters at speed.  The sustain pedal holds notes past their
+ * release, as it does on the instrument.
+ */
+class MidiRecorder {
+  constructor() {
+    this.notes = [];
+    this.sounding = new Map();   // midi -> { start, velocity }
+    this.held = new Set();       // released under the pedal, still sounding
+    this.pedal = false;
+    this.startedAt = 0;
+    this.recording = false;
+  }
+
+  start(now = performance.now()) {
+    this.notes = [];
+    this.sounding.clear();
+    this.held.clear();
+    this.pedal = false;
+    this.startedAt = now;
+    this.recording = true;
+  }
+
+  get duration() {
+    return this.recording ? (performance.now() - this.startedAt) / 1000 : this._duration || 0;
+  }
+
+  seconds(stamp) {
+    return Math.max(0, ((stamp === undefined ? performance.now() : stamp) - this.startedAt) / 1000);
+  }
+
+  noteOn(midi, velocity, stamp) {
+    if (!this.recording) return;
+    if (this.sounding.has(midi)) this.noteOff(midi, stamp, true);
+    this.held.delete(midi);
+    this.sounding.set(midi, { start: this.seconds(stamp), velocity: velocity || 80 });
+  }
+
+  noteOff(midi, stamp, force = false) {
+    if (!this.recording) return;
+    if (this.pedal && !force) { this.held.add(midi); return; }
+    const on = this.sounding.get(midi);
+    if (!on) return;
+    this.sounding.delete(midi);
+    const end = this.seconds(stamp);
+    if (end > on.start) this.notes.push({ midi, start: on.start, end, velocity: on.velocity });
+  }
+
+  setPedal(down, stamp) {
+    if (!this.recording) return;
+    this.pedal = down;
+    if (!down) for (const midi of [...this.held]) { this.held.delete(midi); this.noteOff(midi, stamp, true); }
+  }
+
+  /** Feed a raw MIDI message straight in. */
+  message(data, stamp) {
+    const [status, a, b] = data;
+    const cmd = status & 0xf0;
+    if (cmd === 0x90 && b > 0) this.noteOn(a, b, stamp);
+    else if (cmd === 0x80 || (cmd === 0x90 && b === 0)) this.noteOff(a, stamp);
+    else if (cmd === 0xb0 && a === 64) this.setPedal(b >= 64, stamp);
+  }
+
+  stop(stamp) {
+    if (!this.recording) return this.notes;
+    const end = this.seconds(stamp);
+    this.pedal = false;
+    for (const midi of [...this.sounding.keys()]) this.noteOff(midi, stamp, true);
+    this.recording = false;
+    this._duration = end;
+    this.notes.sort((x, y) => x.start - y.start || x.midi - y.midi);
+    return this.notes;
+  }
+}
+
+/* ------------------------------------------------------------------ audio */
+
+/* A worklet kept in a string so the whole application stays one file.  All it
+ * does is hand each block of input back to the page. */
+const WORKLET = `
+class CadenzaTap extends AudioWorkletProcessor {
+  process(inputs) {
+    const input = inputs[0];
+    if (input && input[0]) this.port.postMessage(input[0].slice());
+    return true;
+  }
+}
+registerProcessor('cadenza-tap', CadenzaTap);
+`;
+
+/**
+ * Record from the microphone or an audio interface as raw samples.
+ *
+ * Echo cancellation, noise suppression and automatic gain are all turned off:
+ * each of them is designed to make speech clearer by removing things that, in
+ * music, are the music.
+ */
+class AudioRecorder {
+  constructor(opts = {}) {
+    this.onLevel = opts.onLevel || (() => {});
+    this.chunks = [];
+    this.frames = 0;
+    this.context = null;
+    this.stream = null;
+    this.node = null;
+    this.recording = false;
+    this.sampleRate = 44100;
+  }
+
+  static get supported() {
+    return typeof navigator !== 'undefined' && !!(navigator.mediaDevices
+      && navigator.mediaDevices.getUserMedia) && typeof AudioContext !== 'undefined';
+  }
+
+  async start() {
+    this.stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        channelCount: 1,
+      },
+    });
+    this.context = new AudioContext();
+    this.sampleRate = this.context.sampleRate;
+    const source = this.context.createMediaStreamSource(this.stream);
+    this.chunks = [];
+    this.frames = 0;
+
+    const take = (block) => {
+      if (!this.recording) return;
+      this.chunks.push(block);
+      this.frames += block.length;
+      let peak = 0;
+      for (let i = 0; i < block.length; i += 16) peak = Math.max(peak, Math.abs(block[i]));
+      this.onLevel(peak, this.frames / this.sampleRate);
+    };
+
+    let attached = false;
+    if (this.context.audioWorklet) {
+      try {
+        const url = URL.createObjectURL(new Blob([WORKLET], { type: 'text/javascript' }));
+        await this.context.audioWorklet.addModule(url);
+        URL.revokeObjectURL(url);
+        this.node = new AudioWorkletNode(this.context, 'cadenza-tap');
+        this.node.port.onmessage = (e) => take(e.data);
+        attached = true;
+      } catch (err) {
+        attached = false;
+      }
+    }
+    if (!attached) {
+      /* Older browsers: the deprecated processor node still captures the same
+       * samples, and a recording that works matters more than a tidy API. */
+      this.node = this.context.createScriptProcessor(4096, 1, 1);
+      this.node.onaudioprocess = (e) => take(new Float32Array(e.inputBuffer.getChannelData(0)));
+    }
+    source.connect(this.node);
+    /* A muted destination keeps the graph running without playing back. */
+    const sink = this.context.createGain();
+    sink.gain.value = 0;
+    this.node.connect(sink);
+    sink.connect(this.context.destination);
+    this.recording = true;
+    return true;
+  }
+
+  /** Everything recorded so far, as one mono buffer. */
+  collect() {
+    const out = new Float32Array(this.frames);
+    let at = 0;
+    for (const c of this.chunks) { out.set(c, at); at += c.length; }
+    return { samples: out, sampleRate: this.sampleRate, duration: this.frames / this.sampleRate };
+  }
+
+  async stop() {
+    this.recording = false;
+    const result = this.collect();
+    if (this.node) { this.node.disconnect(); this.node = null; }
+    if (this.stream) { for (const t of this.stream.getTracks()) t.stop(); this.stream = null; }
+    if (this.context) { await this.context.close().catch(() => {}); this.context = null; }
+    return result;
+  }
+}
+
+/* ------------------------------------------------------------- MIDI files */
+
+const readVar = (data, at) => {
+  let value = 0;
+  let i = at;
+  for (; i < data.length; i++) {
+    value = (value << 7) | (data[i] & 0x7f);
+    if (!(data[i] & 0x80)) { i++; break; }
+  }
+  return { value, next: i };
+};
+
+/**
+ * Read a standard MIDI file into timed notes.
+ *
+ * Tempo changes are followed so the times come out in seconds, which is what
+ * the rest of the chain works in — and which means a file whose tempo map is
+ * wrong still transcribes into the rhythm that was written.
+ */
+function parseMIDI(bytes) {
+  const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  if (data.length < 14 || String.fromCharCode(...data.slice(0, 4)) !== 'MThd') {
+    throw new Error('Not a MIDI file');
+  }
+  const division = view.getUint16(12);
+  const tracks = view.getUint16(10);
+  const ticksPerQuarter = division & 0x8000 ? 480 : division;
+
+  /* Gather every track's events on one tick timeline, then convert once. */
+  const events = [];
+  let at = 14;
+  for (let t = 0; t < tracks && at + 8 <= data.length; t++) {
+    const length = view.getUint32(at + 4);
+    let pos = at + 8;
+    const end = Math.min(data.length, pos + length);
+    let tick = 0;
+    let running = 0;
+    while (pos < end) {
+      const delta = readVar(data, pos);
+      tick += delta.value;
+      pos = delta.next;
+      if (pos >= end) break;
+      let status = data[pos];
+      if (status & 0x80) pos++; else status = running;
+      running = status;
+      const cmd = status & 0xf0;
+      if (status === 0xff) {
+        const type = data[pos++];
+        const len = readVar(data, pos);
+        pos = len.next;
+        if (type === 0x51 && len.value === 3) {
+          events.push({ tick, kind: 'tempo', usPerQuarter: (data[pos] << 16) | (data[pos + 1] << 8) | data[pos + 2] });
+        }
+        pos += len.value;
+      } else if (status === 0xf0 || status === 0xf7) {
+        const len = readVar(data, pos);
+        pos = len.next + len.value;
+      } else if (cmd === 0x90 || cmd === 0x80) {
+        const midi = data[pos];
+        const vel = data[pos + 1];
+        pos += 2;
+        events.push({ tick, kind: cmd === 0x90 && vel > 0 ? 'on' : 'off', midi, velocity: vel });
+      } else if (cmd === 0xb0) {
+        const cc = data[pos];
+        const value = data[pos + 1];
+        pos += 2;
+        if (cc === 64) events.push({ tick, kind: 'pedal', down: value >= 64 });
+      } else if (cmd === 0xc0 || cmd === 0xd0) {
+        pos += 1;
+      } else {
+        pos += 2;
+      }
+    }
+    at += 8 + length;
+  }
+
+  events.sort((a, b) => a.tick - b.tick);
+  const recorder = new MidiRecorder();
+  recorder.start(0);
+  recorder.startedAt = 0;
+  let usPerQuarter = 500000;
+  let lastTick = 0;
+  let seconds = 0;
+  const timeOf = (tick) => {
+    seconds += ((tick - lastTick) / ticksPerQuarter) * (usPerQuarter / 1e6);
+    lastTick = tick;
+    return seconds;
+  };
+  for (const e of events) {
+    const when = timeOf(e.tick) * 1000;   // the recorder works in milliseconds
+    if (e.kind === 'tempo') { usPerQuarter = e.usPerQuarter; continue; }
+    if (e.kind === 'on') recorder.noteOn(e.midi, e.velocity, when);
+    else if (e.kind === 'off') recorder.noteOff(e.midi, when);
+    else if (e.kind === 'pedal') recorder.setPedal(e.down, when);
+  }
+  return recorder.stop(timeOf(lastTick) * 1000);
+}
+
+__exp.parseMIDI = parseMIDI;
+__exp.MidiRecorder = MidiRecorder;
+__exp.AudioRecorder = AudioRecorder;
+},
+  "js/transcribe/learn.js": function (__exp, __req) {
+/* Cadenza — learning from corrections.
+ *
+ * What this is: a handful of parameters fitted to the changes you make after
+ * a transcription — an octave bias per register, how often you end up in
+ * triplets, where your hands divide, whether the engine tends to hear notes
+ * that were not there, and which way you spell accidentals.  Each one is an
+ * online estimate with a learning rate, and each one actually changes what the
+ * next transcription produces.
+ *
+ * What this is not: a trained model.  There is no network here and no
+ * training, and calling five running averages "AI" would be a lie that makes
+ * the feature sound better than it is.  The summary shown in the interface
+ * says exactly what has been observed and how many times, so it can be
+ * judged rather than believed.
+ */
+
+const { toMidi } = __req("js/core/theory.js");
+const { eventTicks } = __req("js/core/rhythm.js");
+
+const KEY = 'cadenza.transcribe.corrections.v1';
+
+/* Weighted towards recent corrections without forgetting the rest: playing
+ * changes, and last month's habits should not outvote this week's. */
+const RATE = 0.25;
+
+const REGISTERS = [
+  { id: 'low', from: 0, to: 47 },
+  { id: 'mid', from: 48, to: 71 },
+  { id: 'high', from: 72, to: 127 },
+];
+
+const registerOf = (midi) => (REGISTERS.find((r) => midi >= r.from && midi <= r.to) || REGISTERS[1]).id;
+
+function blank() {
+  return {
+    octave: { low: { value: 0, n: 0 }, mid: { value: 0, n: 0 }, high: { value: 0, n: 0 } },
+    divisions: {},              // division -> how often it survived correction
+    splitCentre: { value: 60, n: 0 },
+    spurious: 0,                // notes the engine invented, as seen by deletions
+    missed: 0,                  // notes it failed to hear, as seen by additions
+    kept: 0,                    // notes accepted untouched
+    spelling: { sharp: 0, flat: 0 },
+    corrections: 0,
+  };
+}
+
+class CorrectionModel {
+  constructor(storage = null) {
+    this.storage = storage !== null ? storage
+      : (typeof localStorage !== 'undefined' ? localStorage : null);
+    this.data = blank();
+    this.load();
+  }
+
+  load() {
+    if (!this.storage) return;
+    try {
+      const raw = this.storage.getItem(KEY);
+      if (raw) this.data = { ...blank(), ...JSON.parse(raw) };
+    } catch (err) {
+      this.data = blank();
+    }
+  }
+
+  save() {
+    if (!this.storage) return;
+    try {
+      this.storage.setItem(KEY, JSON.stringify(this.data));
+    } catch (err) { /* a full or disabled store is not worth failing over */ }
+  }
+
+  reset() {
+    this.data = blank();
+    this.save();
+  }
+
+  /** Fold one observed correction into the estimates. */
+  observe(correction) {
+    const d = this.data;
+    switch (correction.kind) {
+      case 'octave': {
+        const r = registerOf(correction.midi);
+        const slot = d.octave[r];
+        slot.value += (correction.octaves - slot.value) * RATE;
+        slot.n++;
+        d.corrections++;
+        break;
+      }
+      case 'division': {
+        const key = String(correction.division);
+        d.divisions[key] = (d.divisions[key] || 0) + 1;
+        d.corrections++;
+        break;
+      }
+      case 'staff': {
+        /* The note moved hands, so the division between them lies on the
+         * other side of it than we supposed. */
+        const target = correction.toStaff === 0 ? correction.midi : correction.midi + 1;
+        d.splitCentre.value += (target - d.splitCentre.value) * RATE;
+        d.splitCentre.n++;
+        d.corrections++;
+        break;
+      }
+      case 'spurious': d.spurious++; d.corrections++; break;
+      case 'missed': d.missed++; d.corrections++; break;
+      case 'kept': d.kept += correction.count || 1; break;
+      case 'spelling':
+        if (correction.alter > 0) d.spelling.sharp++;
+        else if (correction.alter < 0) d.spelling.flat++;
+        d.corrections++;
+        break;
+      default: break;
+    }
+    this.save();
+    return this;
+  }
+
+  /** The fitted parameters, with the evidence behind each one. */
+  parameters() {
+    const d = this.data;
+    const seen = d.spurious + d.missed + d.kept;
+    /* Hearing notes that were not played says the threshold is too low;
+     * missing notes says it is too high.  One correction should nudge, not
+     * lurch, so the shift is bounded and needs evidence to reach its limit. */
+    let sensitivity = 1;
+    if (seen >= 8) {
+      const bias = (d.missed - d.spurious) / seen;
+      sensitivity = Math.max(0.6, Math.min(1.6, 1 + bias * 0.8));
+    }
+    const octave = {};
+    for (const r of REGISTERS) {
+      const slot = d.octave[r.id];
+      /* Below three observations an octave bias is one slip, not a habit. */
+      octave[r.id] = slot.n >= 3 ? Math.round(slot.value) : 0;
+    }
+    const total = Object.values(d.divisions).reduce((a, b) => a + b, 0);
+    const divisionWeights = {};
+    for (const [k, v] of Object.entries(d.divisions)) divisionWeights[k] = v / total;
+    return {
+      sensitivity,
+      octave,
+      divisionWeights,
+      splitCentre: d.splitCentre.n >= 3 ? Math.round(d.splitCentre.value) : 60,
+      spellingLean: d.spelling.sharp === d.spelling.flat ? 0
+        : d.spelling.sharp > d.spelling.flat ? 1 : -1,
+      evidence: { corrections: d.corrections, notesSeen: seen },
+    };
+  }
+
+  /** Transcription options adjusted by what has been learned. */
+  apply(options = {}) {
+    const p = this.parameters();
+    const out = { ...options };
+    if (options.sensitivity === undefined) out.sensitivity = p.sensitivity;
+    if (options.splitCentre === undefined) out.splitCentre = p.splitCentre;
+    out.divisionWeights = p.divisionWeights;
+    out.octaveBias = p.octave;
+    return out;
+  }
+
+  /** Move notes by the octave bias learned for their register. */
+  adjust(notes) {
+    const { octave } = this.parameters();
+    for (const n of notes) {
+      const shift = octave[registerOf(n.midi)] || 0;
+      if (shift) n.midi = Math.max(0, Math.min(127, n.midi + shift * 12));
+    }
+    return notes;
+  }
+
+  /** A plain account of what has been observed, for showing to the user. */
+  summary() {
+    const p = this.parameters();
+    const lines = [];
+    for (const r of REGISTERS) {
+      const slot = this.data.octave[r.id];
+      if (slot.n >= 3 && Math.round(slot.value) !== 0) {
+        const dir = slot.value > 0 ? 'up' : 'down';
+        lines.push(`${r.id} notes moved ${dir} an octave ${slot.n} times — now transposed to match`);
+      }
+    }
+    const divs = Object.entries(this.data.divisions).sort((a, b) => b[1] - a[1]);
+    if (divs.length && divs[0][1] >= 3) {
+      lines.push(`beats most often divided into ${divs[0][0]} (${divs[0][1]} corrections)`);
+    }
+    if (this.data.splitCentre.n >= 3) {
+      lines.push(`hands divide around MIDI ${Math.round(this.data.splitCentre.value)} (${this.data.splitCentre.n} moves between staves)`);
+    }
+    if (p.evidence.notesSeen >= 8 && Math.abs(p.sensitivity - 1) > 0.02) {
+      lines.push(p.sensitivity > 1
+        ? `listening harder: ${this.data.missed} notes were missing against ${this.data.spurious} invented`
+        : `listening more strictly: ${this.data.spurious} notes were invented against ${this.data.missed} missing`);
+    }
+    if (p.spellingLean) {
+      lines.push(`accidentals spelled as ${p.spellingLean > 0 ? 'sharps' : 'flats'}`);
+    }
+    return {
+      corrections: this.data.corrections,
+      lines,
+      empty: lines.length === 0,
+    };
+  }
+}
+
+/* --------------------------------------------------------------- diffing */
+
+/** Every sounding note in a score, with where it sits. */
+function flatten(score) {
+  const out = [];
+  for (const part of score.parts) {
+    part.measures.forEach((pm, m) => {
+      pm.voices.forEach((voice, v) => {
+        let tick = 0;
+        for (const ev of voice) {
+          if (ev.type === 'note') {
+            for (const n of ev.notes) {
+              out.push({
+                measure: m,
+                tick,
+                voice: v,
+                staff: ev.staff === null || ev.staff === undefined
+                  ? (part.staves > 1 ? v % 2 : 0) : ev.staff,
+                midi: toMidi(n.pitch),
+                alter: n.pitch.alter,
+                duration: ev.duration,
+                dots: ev.dots,
+                division: ev.tuplet ? ev.tuplet.actual : null,
+              });
+            }
+          }
+          if (!ev.grace) tick += eventTicks(ev);
+        }
+      });
+    });
+  }
+  return out;
+}
+
+/**
+ * Work out what the user changed.
+ *
+ * Comparison is by position, not by identity, because editing replaces events.
+ * A note in the same place an octave away is a correction of the octave; one
+ * that is gone was invented; one that appeared was missed.
+ */
+function compareScores(before, after) {
+  const a = flatten(before);
+  const b = flatten(after);
+  const corrections = [];
+  const usedB = new Set();
+  let kept = 0;
+
+  for (const note of a) {
+    let match = -1;
+    let exact = -1;
+    b.forEach((other, i) => {
+      if (usedB.has(i)) return;
+      if (other.measure !== note.measure || other.tick !== note.tick) return;
+      if (other.midi === note.midi) { exact = i; return; }
+      if (Math.abs(other.midi - note.midi) % 12 === 0 && match < 0) match = i;
+    });
+    if (exact >= 0) {
+      usedB.add(exact);
+      kept++;
+      const moved = b[exact];
+      if (moved.staff !== note.staff) {
+        corrections.push({ kind: 'staff', midi: note.midi, toStaff: moved.staff });
+      }
+      if (moved.division && moved.division !== note.division) {
+        corrections.push({ kind: 'division', division: moved.division });
+      }
+      if (moved.alter !== note.alter && moved.alter) {
+        corrections.push({ kind: 'spelling', alter: moved.alter });
+      }
+      continue;
+    }
+    if (match >= 0) {
+      usedB.add(match);
+      corrections.push({
+        kind: 'octave',
+        midi: note.midi,
+        octaves: (b[match].midi - note.midi) / 12,
+      });
+      continue;
+    }
+    corrections.push({ kind: 'spurious', midi: note.midi });
+  }
+  b.forEach((note, i) => {
+    if (!usedB.has(i)) corrections.push({ kind: 'missed', midi: note.midi });
+  });
+  if (kept) corrections.push({ kind: 'kept', count: kept });
+  return corrections;
+}
+
+__exp.compareScores = compareScores;
+__exp.CorrectionModel = CorrectionModel;
 },
   "js/ui/shortcuts.js": function (__exp, __req) {
 /* Cadenza — keyboard handling.

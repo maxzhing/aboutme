@@ -149,5 +149,8 @@ export const UI = {
   crossDown: S('<path d="M4 7h16M4 17h16"/><path d="M12 4v11M12 15l-3-3M12 15l3 3"/>'),
   figures: S('<path d="M4 5h16"/><path d="M7 10h3M8.5 10v5M7 15h3"/><path d="M14 10h3v2.5h-3V15h3"/>'),
   multirest: S('<path d="M3 12h18" stroke-width="4"/><path d="M4 8v8M20 8v8" stroke-width="1.6"/>'),
+  mic: S('<rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/>'),
+  transcribe: S('<path d="M4 18V7l7-2v11"/><circle cx="2.6" cy="18" r="2.4"/><path d="M15 6a5 5 0 0 1 0 8M18 4a8 8 0 0 1 0 12"/>'),
+  more: S('<path d="M6 9l6 6 6-6"/>'),
   close: S('<path d="M18 6 6 18M6 6l12 12"/>'),
 };
