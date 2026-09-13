@@ -5,17 +5,15 @@
  * scattered through the UI.
  */
 
+import { pitch, toMidi, diatonic, fromDiatonic, octaveShift, keyAlterations } from './theory.js';
 import {
-  pitch, toMidi, diatonic, fromDiatonic, staffPos, diatonicAtPos, CLEFS, octaveShift, keyAlterations,
-} from './theory.js';
-import {
-  TPQ, measureTicks, durationTicks, eventTicks, durationForTicks, splitIntoDurations, durationInfo,
+  measureTicks, durationTicks, eventTicks, durationForTicks, splitIntoDurations
 } from './rhythm.js';
 import {
-  makeNote, makeRest, cloneEvent, newId, makeMeasureSpec, makePartMeasure, makePart,
-  timeSigAt, keySigAt, clefAt, voiceTicks, tickAt, indexAtTick, normalizeMeasure, normalizeScore,
-  pruneSpanners, locateEvent, getVoice, insertMeasures as modelInsertMeasures,
-  removeMeasures as modelRemoveMeasures, writtenFifths, autoScale,
+  makeNote, makeRest, cloneEvent, newId, makeMeasureSpec, makePartMeasure, makePart, timeSigAt,
+  clefAt, tickAt, indexAtTick, normalizeMeasure, normalizeScore, pruneSpanners, locateEvent,
+  getVoice, insertMeasures as modelInsertMeasures, removeMeasures as modelRemoveMeasures,
+  writtenFifths, autoScale
 } from './model.js';
 import { getInstrument, scoreOrder } from './instruments.js';
 

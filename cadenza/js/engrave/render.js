@@ -8,7 +8,7 @@
 
 import { GLYPHS, DYNAMIC_LETTERS, DYNAMIC_BY_ID } from './glyphs.js';
 import { M, TEXT_FONT, TEXT_FONT_SANS } from './metrics.js';
-import { strokeOutline, smoothPath } from './geom.js';
+import { strokeOutline } from './geom.js';
 
 const r = (n) => Math.round(n * 1000) / 1000;
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

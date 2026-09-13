@@ -148,7 +148,6 @@ function reattackRatio(samples, sampleRate, t, midi, others, earliest, latest) {
 }
 
 
-
 /**
  * Did the recording actually get louder here?
  *

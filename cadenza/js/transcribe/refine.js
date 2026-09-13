@@ -25,9 +25,10 @@
  * wander: the worst it can do is stop where it started.
  */
 
-import { renderNotation, renderSteps } from './render.js';
-import { compareAudio, compareSteps, salienceMap, salienceSteps,
-  candidatePitches, activePitches, verifyPitchAt } from './compare.js';
+import { renderSteps } from './render.js';
+import {
+  compareSteps, salienceSteps, candidatePitches, activePitches, verifyPitchAt
+} from './compare.js';
 import { toMono, midiToHz } from './dsp.js';
 import { runSync } from './steps.js';
 

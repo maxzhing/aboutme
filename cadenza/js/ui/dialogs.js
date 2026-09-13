@@ -2,7 +2,7 @@
 
 import { INSTRUMENTS, FAMILIES, ENSEMBLES, getInstrument } from '../core/instruments.js';
 import { TIME_SIG_PRESETS } from '../core/rhythm.js';
-import { MAJOR_KEYS, MINOR_KEYS, keyName, CLEFS } from '../core/theory.js';
+import { keyName, CLEFS } from '../core/theory.js';
 import { UI, glyphIcon } from './icons.js';
 import { tempoText } from '../core/model.js';
 

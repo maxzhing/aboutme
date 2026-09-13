@@ -1,10 +1,10 @@
 /* Cadenza — MusicXML 4.0 (partwise) export. */
 
 import { TPQ, measureTicks, eventTicks, durationInfo, computeBeams } from '../core/rhythm.js';
-import { timeSigAt, keySigAt, tempoAt, clefAt, writtenFifths, measureAccidentals } from '../core/model.js';
+import { timeSigAt, keySigAt, clefAt, writtenFifths, measureAccidentals } from '../core/model.js';
 import { STEP_NAMES, CLEFS } from '../core/theory.js';
 import { getInstrument } from '../core/instruments.js';
-import { DYNAMIC_BY_ID } from '../engrave/glyphs.js';
+
 
 const esc = (s) => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')

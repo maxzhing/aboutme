@@ -8,8 +8,8 @@
 
 import { SynthEngine } from './synth.js';
 import { DYNAMIC_BY_ID } from '../engrave/glyphs.js';
-import { TPQ, measureTicks, eventTicks, durationTicks, beatTicks } from '../core/rhythm.js';
-import { timeSigAt, keySigAt, tempoAt, soundingPitch, writtenFifths, UNIT_TICKS } from '../core/model.js';
+import { TPQ, measureTicks, eventTicks, beatTicks } from '../core/rhythm.js';
+import { timeSigAt, tempoAt, soundingPitch, writtenFifths, UNIT_TICKS } from '../core/model.js';
 import { toMidi, pitch, diatonic, fromDiatonic, keyAlterations } from '../core/theory.js';
 import { getInstrument } from '../core/instruments.js';
 

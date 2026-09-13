@@ -9,18 +9,15 @@
  */
 
 import { M, PAGE_SIZES, MARGINS, idealSpace, TEXT_FONT } from './metrics.js';
-import { GLYPHS, FLAG_GLYPHS, DYNAMIC_LETTERS, ARTICULATIONS, ORNAMENTS } from './glyphs.js';
+import { GLYPHS, FLAG_GLYPHS, ARTICULATIONS, ORNAMENTS } from './glyphs.js';
+import { CLEFS, staffPos, keySignatureLayout, toMidi } from '../core/theory.js';
 import {
-  CLEFS, staffPos, keySignatureLayout, neededAccidental, toMidi, keyAlterations,
-} from '../core/theory.js';
-import {
-  TPQ, durationInfo, eventTicks, measureTicks, computeBeams, beamLevels, beatTicks,
+  TPQ, durationInfo, eventTicks, measureTicks, computeBeams, beamLevels
 } from '../core/rhythm.js';
 import {
-  timeSigAt, keySigAt, tempoAt, clefAt, tickAt, writtenFifths, soundingPitch, locateEvent,
-  measureAccidentals, voiceStaffOf,
+  timeSigAt, keySigAt, clefAt, writtenFifths, soundingPitch, measureAccidentals, voiceStaffOf
 } from '../core/model.js';
-import { bracketGroups, getInstrument } from '../core/instruments.js';
+import { bracketGroups } from '../core/instruments.js';
 
 /* ------------------------------------------------------------ text metrics */
 

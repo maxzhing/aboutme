@@ -20,9 +20,8 @@
 import * as Dlg from './dialogs.js';
 import { UI } from './icons.js';
 import {
-  extractNotes, transcribeAudio, transcribeAudioAsync, transcribeMidi, readMusic, SOURCE,
-  QUANTISE_LEVELS, STYLES, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget,
-  renderNotation, describeDifference,
+  transcribeAudioAsync, transcribeMidi, readMusic, SOURCE, QUANTISE_LEVELS, STYLES, PASSES,
+  TARGETS, PRESETS, ALL_PARTS, resolveTarget, describeDifference
 } from '../transcribe/index.js';
 import { MidiRecorder, AudioRecorder, parseMIDI } from '../transcribe/capture.js';
 import { GRID_PRESETS } from '../transcribe/rhythm.js';

@@ -773,12 +773,12 @@ const Model = __req("js/core/model.js");
 const Edit = __req("js/core/edit.js");
 const Theory = __req("js/core/theory.js");
 const { History } = __req("js/core/history.js");
-const { DURATIONS, durationInfo, durationTicks, measureTicks, eventTicks, TPQ, beatTicks } = __req("js/core/rhythm.js");
-const { getInstrument, INSTRUMENTS } = __req("js/core/instruments.js");
+const { DURATIONS, durationTicks, measureTicks, beatTicks } = __req("js/core/rhythm.js");
+const { getInstrument } = __req("js/core/instruments.js");
 const { layoutScore } = __req("js/engrave/layout.js");
 const { renderPageSVG, renderPageStandalone } = __req("js/engrave/render.js");
-const { DYNAMIC_MARKS, ARTICULATIONS, ORNAMENTS } = __req("js/engrave/glyphs.js");
-const { M: Metrics, PAGE_SIZES } = __req("js/engrave/metrics.js");
+const { DYNAMIC_MARKS, ARTICULATIONS } = __req("js/engrave/glyphs.js");
+const { M: Metrics } = __req("js/engrave/metrics.js");
 const { SynthEngine } = __req("js/audio/synth.js");
 const { Player } = __req("js/audio/player.js");
 const { exportMIDI } = __req("js/io/midifile.js");
@@ -4603,9 +4603,9 @@ __exp.TEXT_FONT_SANS = TEXT_FONT_SANS;
  * scattered through the UI.
  */
 
-const { pitch, toMidi, diatonic, fromDiatonic, staffPos, diatonicAtPos, CLEFS, octaveShift, keyAlterations } = __req("js/core/theory.js");
-const { TPQ, measureTicks, durationTicks, eventTicks, durationForTicks, splitIntoDurations, durationInfo } = __req("js/core/rhythm.js");
-const { makeNote, makeRest, cloneEvent, newId, makeMeasureSpec, makePartMeasure, makePart, timeSigAt, keySigAt, clefAt, voiceTicks, tickAt, indexAtTick, normalizeMeasure, normalizeScore, pruneSpanners, locateEvent, getVoice, insertMeasures: modelInsertMeasures, removeMeasures: modelRemoveMeasures, writtenFifths, autoScale } = __req("js/core/model.js");
+const { pitch, toMidi, diatonic, fromDiatonic, octaveShift, keyAlterations } = __req("js/core/theory.js");
+const { measureTicks, durationTicks, eventTicks, durationForTicks, splitIntoDurations } = __req("js/core/rhythm.js");
+const { makeNote, makeRest, cloneEvent, newId, makeMeasureSpec, makePartMeasure, makePart, timeSigAt, clefAt, tickAt, indexAtTick, normalizeMeasure, normalizeScore, pruneSpanners, locateEvent, getVoice, insertMeasures: modelInsertMeasures, removeMeasures: modelRemoveMeasures, writtenFifths, autoScale } = __req("js/core/model.js");
 const { getInstrument, scoreOrder } = __req("js/core/instruments.js");
 
 /* ------------------------------------------------------------- primitives */
@@ -5869,11 +5869,11 @@ __exp.History = History;
  */
 
 const { M, PAGE_SIZES, MARGINS, idealSpace, TEXT_FONT } = __req("js/engrave/metrics.js");
-const { GLYPHS, FLAG_GLYPHS, DYNAMIC_LETTERS, ARTICULATIONS, ORNAMENTS } = __req("js/engrave/glyphs.js");
-const { CLEFS, staffPos, keySignatureLayout, neededAccidental, toMidi, keyAlterations } = __req("js/core/theory.js");
-const { TPQ, durationInfo, eventTicks, measureTicks, computeBeams, beamLevels, beatTicks } = __req("js/core/rhythm.js");
-const { timeSigAt, keySigAt, tempoAt, clefAt, tickAt, writtenFifths, soundingPitch, locateEvent, measureAccidentals, voiceStaffOf } = __req("js/core/model.js");
-const { bracketGroups, getInstrument } = __req("js/core/instruments.js");
+const { GLYPHS, FLAG_GLYPHS, ARTICULATIONS, ORNAMENTS } = __req("js/engrave/glyphs.js");
+const { CLEFS, staffPos, keySignatureLayout, toMidi } = __req("js/core/theory.js");
+const { TPQ, durationInfo, eventTicks, measureTicks, computeBeams, beamLevels } = __req("js/core/rhythm.js");
+const { timeSigAt, keySigAt, clefAt, writtenFifths, soundingPitch, measureAccidentals, voiceStaffOf } = __req("js/core/model.js");
+const { bracketGroups } = __req("js/core/instruments.js");
 
 /* ------------------------------------------------------------ text metrics */
 
@@ -8414,7 +8414,7 @@ __exp.boundsOf = boundsOf;
 
 const { GLYPHS, DYNAMIC_LETTERS, DYNAMIC_BY_ID } = __req("js/engrave/glyphs.js");
 const { M, TEXT_FONT, TEXT_FONT_SANS } = __req("js/engrave/metrics.js");
-const { strokeOutline, smoothPath } = __req("js/engrave/geom.js");
+const { strokeOutline } = __req("js/engrave/geom.js");
 
 const r = (n) => Math.round(n * 1000) / 1000;
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -9378,8 +9378,8 @@ __exp.DRUM_MAP = DRUM_MAP;
 
 const { SynthEngine } = __req("js/audio/synth.js");
 const { DYNAMIC_BY_ID } = __req("js/engrave/glyphs.js");
-const { TPQ, measureTicks, eventTicks, durationTicks, beatTicks } = __req("js/core/rhythm.js");
-const { timeSigAt, keySigAt, tempoAt, soundingPitch, writtenFifths, UNIT_TICKS } = __req("js/core/model.js");
+const { TPQ, measureTicks, eventTicks, beatTicks } = __req("js/core/rhythm.js");
+const { timeSigAt, tempoAt, soundingPitch, writtenFifths, UNIT_TICKS } = __req("js/core/model.js");
 const { toMidi, pitch, diatonic, fromDiatonic, keyAlterations } = __req("js/core/theory.js");
 const { getInstrument } = __req("js/core/instruments.js");
 
@@ -10089,10 +10089,10 @@ __exp.exportMIDI = exportMIDI;
 /* Cadenza — MusicXML 4.0 (partwise) export. */
 
 const { TPQ, measureTicks, eventTicks, durationInfo, computeBeams } = __req("js/core/rhythm.js");
-const { timeSigAt, keySigAt, tempoAt, clefAt, writtenFifths, measureAccidentals } = __req("js/core/model.js");
+const { timeSigAt, keySigAt, clefAt, writtenFifths, measureAccidentals } = __req("js/core/model.js");
 const { STEP_NAMES, CLEFS } = __req("js/core/theory.js");
 const { getInstrument } = __req("js/core/instruments.js");
-const { DYNAMIC_BY_ID } = __req("js/engrave/glyphs.js");
+
 
 const esc = (s) => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -10612,9 +10612,9 @@ __exp.recallSetting = recallSetting;
  * assignment, both handled below.
  */
 
-const { makeScore, makeMeasureSpec, makePartMeasure, makePart, makeNote, makeRest, normalizeScore, autoScale, newId } = __req("js/core/model.js");
+const { makeScore, makeMeasureSpec, makePart, makeNote, makeRest, normalizeScore, autoScale, newId } = __req("js/core/model.js");
 const { pitch, STEP_NAMES } = __req("js/core/theory.js");
-const { TPQ, durationForTicks, splitIntoDurations, measureTicks } = __req("js/core/rhythm.js");
+const { TPQ, durationForTicks, splitIntoDurations } = __req("js/core/rhythm.js");
 const { INSTRUMENTS, getInstrument } = __req("js/core/instruments.js");
 
 const TYPE_TICKS = {
@@ -11337,7 +11337,7 @@ __exp.UI = UI;
 
 const { INSTRUMENTS, FAMILIES, ENSEMBLES, getInstrument } = __req("js/core/instruments.js");
 const { TIME_SIG_PRESETS } = __req("js/core/rhythm.js");
-const { MAJOR_KEYS, MINOR_KEYS, keyName, CLEFS } = __req("js/core/theory.js");
+const { keyName, CLEFS } = __req("js/core/theory.js");
 const { UI, glyphIcon } = __req("js/ui/icons.js");
 const { tempoText } = __req("js/core/model.js");
 
@@ -12325,7 +12325,7 @@ __exp.PALETTES = PALETTES;
 
 const Dlg = __req("js/ui/dialogs.js");
 const { UI } = __req("js/ui/icons.js");
-const { extractNotes, transcribeAudio, transcribeAudioAsync, transcribeMidi, readMusic, SOURCE, QUANTISE_LEVELS, STYLES, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget, renderNotation, describeDifference } = __req("js/transcribe/index.js");
+const { transcribeAudioAsync, transcribeMidi, readMusic, SOURCE, QUANTISE_LEVELS, STYLES, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget, describeDifference } = __req("js/transcribe/index.js");
 const { MidiRecorder, AudioRecorder, parseMIDI } = __req("js/transcribe/capture.js");
 const { GRID_PRESETS } = __req("js/transcribe/rhythm.js");
 const { CorrectionModel, compareScores } = __req("js/transcribe/learn.js");
@@ -13729,7 +13729,6 @@ function reattackRatio(samples, sampleRate, t, midi, others, earliest, latest) {
   if (before < 1e-7) return after > 1e-7 ? Infinity : null;
   return after / before;
 }
-
 
 
 /**
@@ -18071,8 +18070,8 @@ __exp.ALL_PARTS = ALL_PARTS;
  * wander: the worst it can do is stop where it started.
  */
 
-const { renderNotation, renderSteps } = __req("js/transcribe/render.js");
-const { compareAudio, compareSteps, salienceMap, salienceSteps, candidatePitches, activePitches, verifyPitchAt } = __req("js/transcribe/compare.js");
+const { renderSteps } = __req("js/transcribe/render.js");
+const { compareSteps, salienceSteps, candidatePitches, activePitches, verifyPitchAt } = __req("js/transcribe/compare.js");
 const { toMono, midiToHz } = __req("js/transcribe/dsp.js");
 const { runSync } = __req("js/transcribe/steps.js");
 

@@ -7,11 +7,10 @@
  */
 
 import {
-  makeScore, makeMeasureSpec, makePartMeasure, makePart, makeNote, makeRest,
-  normalizeScore, autoScale, newId,
+  makeScore, makeMeasureSpec, makePart, makeNote, makeRest, normalizeScore, autoScale, newId
 } from '../core/model.js';
 import { pitch, STEP_NAMES } from '../core/theory.js';
-import { TPQ, durationForTicks, splitIntoDurations, measureTicks } from '../core/rhythm.js';
+import { TPQ, durationForTicks, splitIntoDurations } from '../core/rhythm.js';
 import { INSTRUMENTS, getInstrument } from '../core/instruments.js';
 
 const TYPE_TICKS = {
