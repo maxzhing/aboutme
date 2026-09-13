@@ -207,7 +207,7 @@ function removeHarmonicLeaks(notes) {
 export function extractNotes(audio, options = {}) {
   const {
     sampleRate = 44100,
-    maxVoices = 6,
+    maxVoices = 10,
     sensitivity = 1,
     minDuration = 0.05,
     pitchCap = 8192,
@@ -258,6 +258,9 @@ export function extractNotes(audio, options = {}) {
    * is the same note carrying on.  Without this a held bass under a moving
    * hand comes out as the same note struck four times. */
   const bridge = 0.13;
+  /* How far back a note may be dated to the attack it belongs to. */
+  const backdate = 0.5;
+  let struckAt = null;         // the last boundary where something was played
   const open = new Map();      // midi -> note being built
   const parked = new Map();    // midi -> note that has gone quiet but may return
   const notes = [];
@@ -341,6 +344,7 @@ export function extractNotes(audio, options = {}) {
      * note above it. */
     const fresh = [...seg.pitches.keys()].filter((m) => !open.has(m) && !parked.has(m));
     const groupStruck = rise >= 1.25 && fresh.length === 0 && carried.length > 1;
+    if (i === 0 || louder) struckAt = seg.from;
 
     for (const c of carried) {
       const again = louder && (groupStruck || (c.ratio !== null
@@ -371,8 +375,17 @@ export function extractNotes(audio, options = {}) {
          * being nothing at all beside the music. */
         if (i > 0 && (seg.strength || 0) < attackFloor
             && seg.level < loudestSeg * 0.12) continue;
+        /* Notes begin when something is struck.  If nothing was struck here,
+         * this pitch did not begin here either — it has been sounding since
+         * the last attack and has only now become possible to see, which is
+         * the ordinary fate of the middle of a chord voiced in octaves.  It is
+         * dated to the attack it belongs to, so the chord keeps one moment
+         * instead of being dealt out across the segments that uncovered it. */
+        const hidden = info.salience < seg.strongest * 0.55;
+        const began = !louder && hidden && struckAt !== null && seg.from - struckAt <= backdate
+          ? struckAt : seg.from;
         open.set(midi, {
-          midi, start: seg.from, end: seg.to, velocity: 0,
+          midi, start: began, end: seg.to, velocity: 0,
           salience: info.salience, confidence: info.confidence, frames: 1,
         });
       } else {

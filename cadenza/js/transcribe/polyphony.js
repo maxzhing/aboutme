@@ -293,6 +293,43 @@ function outweighsFundamental(partials, h) {
   return at.value > first.value * 0.95;
 }
 
+
+/**
+ * What a note alone would put in its h-th partial, judged without the help of
+ * an octave that may be hiding inside it.
+ *
+ * Every partial of the octave above lands on an even partial of the note
+ * below.  A fall-off curve fitted through all the partials is therefore lifted
+ * by the very note we are trying to find, the prediction rises to meet the
+ * observation, and the octave becomes invisible by construction — which is why
+ * a chord voiced in octaves loses its middle.  The odd partials are the ones
+ * the octave cannot reach, so the curve is fitted through those alone and the
+ * even ones are then measured against it.
+ */
+function oddPartialFit(partials) {
+  return partialFit(partials.filter((p) => p.h % 2 === 1));
+}
+
+/**
+ * Do the even partials, as a group, stand above where the odd ones say they
+ * should?  One partial above the line is noise; most of them together is
+ * another note an octave up.
+ */
+function evenPartialsInflated(partials) {
+  const fit = oddPartialFit(partials);
+  if (!fit) return false;
+  let above = 0;
+  let tested = 0;
+  for (const p of partials) {
+    if (p.h % 2 === 1 || p.h > 8 || !p.value) continue;
+    const want = fit(p.h);
+    if (want <= 0) continue;
+    tested++;
+    if (p.value > want * 1.45) above++;
+  }
+  return tested >= 2 && above * 2 > tested;
+}
+
 /**
  * Partials that stand well above the envelope are evidence of a note masked
  * underneath — typically an octave or a twelfth above the note we just found.
@@ -302,9 +339,11 @@ function maskedCandidates(f0, partials) {
   partials.forEach((p, i) => {
     if (p.h < 2 || p.h > 6 || !p.value) return;
     const ratio = partialExcess(partials, p.h);
-    if (ratio > 1.5 || ((p.h === 2 || p.h === 3) && outweighsFundamental(partials, p.h))) {
+    const octaveLike = (p.h === 2 || p.h === 3)
+      && (outweighsFundamental(partials, p.h) || evenPartialsInflated(partials));
+    if (ratio > 1.5 || octaveLike) {
       const midi = Math.round(hzToMidi(p.hz));
-      if (midi >= MIN_MIDI && midi <= MAX_MIDI) out.push({ midi, excess: ratio });
+      if (midi >= MIN_MIDI && midi <= MAX_MIDI) out.push({ midi, excess: ratio, octaveLike });
     }
   });
   return out;
@@ -357,8 +396,14 @@ function coincidesWithFound(mag, binHz, hz, found, harmonics) {
       matched = true;
       coincident = true;
       observed = Math.max(observed, p.value);
-      predicted += expectedPartial(info.partials, i);
-      if ((p.h === 2 || p.h === 3) && outweighsFundamental(info.partials, p.h)) octaveEvidence = true;
+      /* An even partial is exactly where an octave hides, so what this note
+       * alone would put there is read off its odd partials. */
+      const clean = p.h % 2 === 0 ? oddPartialFit(info.partials) : null;
+      predicted += clean ? clean(p.h) : expectedPartial(info.partials, i);
+      if ((p.h === 2 || p.h === 3)
+        && (outweighsFundamental(info.partials, p.h) || evenPartialsInflated(info.partials))) {
+        octaveEvidence = true;
+      }
     });
     if (matched) continue;
     /* A bass note's twentieth partial is inaudible on its own, yet quite loud
@@ -414,7 +459,17 @@ function verifySet(mag, binHz, found, opts) {
       return { note, score: phantom ? 0 : info.salience, hits: info.hits, phantom };
     });
     const best = Math.max(...scores.map((s) => s.score));
-    const survivors = scores.filter((s) => s.score >= best * keepRatio && s.hits >= 2 && !s.phantom);
+    /* Leave-one-out cannot see a note hiding inside another's harmonic series:
+     * every partial it has is shared, so removing its host removes it too and
+     * it always collapses.  Its evidence was gathered where it is visible —
+     * the host's even partials standing above its odd ones — so it is asked
+     * only to still be there at all, not to stand up beside notes sounding in
+     * the clear.  The host has to have survived too, or there is nothing for
+     * it to have been hiding in. */
+    const alive = new Set(scores.filter((x) => x.score > 0).map((x) => x.note.midi));
+    const barFor = (s) => (s.note.hiddenIn !== undefined && alive.has(s.note.hiddenIn)
+      ? best * keepRatio * 0.25 : best * keepRatio);
+    const survivors = scores.filter((s) => s.score >= barFor(s) && s.hits >= 2 && !s.phantom);
     if (survivors.length === list.length) break;
     if (!survivors.length) break;
     list = survivors.map((s) => {
@@ -530,7 +585,7 @@ export function estimateF0s(magIn, binHz, opts = {}) {
       salience: bestSal,
       confidence: Math.min(1, bestSal / Math.max(1e-9, first)) * Math.min(1, info.hits / 6),
     });
-    for (const c of maskedCandidates(hz, info.partials)) masked.push(c);
+    for (const c of maskedCandidates(hz, info.partials)) masked.push({ ...c, host: midi });
     subtract(residual, binHz, hz, info.partials, 0.9, env);
   }
 
@@ -543,7 +598,15 @@ export function estimateF0s(magIn, binHz, opts = {}) {
     if (c.midi < minMidi || c.midi > maxMidi) continue;
     if (coincidesWithFound(mag, binHz, midiToHz(c.midi), found, harmonics)) continue;
     const info = salienceAt(residual, binHz, midiToHz(c.midi), { harmonics });
-    if (info.salience < first * relThreshold * 1.1 || info.hits < 3) continue;
+    /* A note hidden inside another's harmonics is judged against the note it
+     * is hiding in, not against the loudest note in the chord.  Every one of
+     * its partials has already been subtracted along with its host's, so what
+     * is left of it is bound to be small — holding it to the same bar as a
+     * note sounding in the clear is what loses the middle of a chord voiced in
+     * octaves.  The evidence that it is there was collected where it is
+     * visible: in the host's own partials standing above its odd series. */
+    const bar = first * relThreshold * (c.octaveLike ? 0.35 : 1.1);
+    if (info.salience < bar || info.hits < 3) continue;
     const env = partialEnvelope(info.partials);
     found.push({
       midi: c.midi,
@@ -551,6 +614,7 @@ export function estimateF0s(magIn, binHz, opts = {}) {
       salience: info.salience,
       confidence: Math.min(1, info.salience / Math.max(1e-9, first)) * 0.8,
       masked: true,
+      hiddenIn: c.octaveLike ? c.host : undefined,
     });
     subtract(residual, binHz, midiToHz(c.midi), info.partials, 0.9, env);
   }

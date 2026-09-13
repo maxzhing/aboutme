@@ -223,6 +223,77 @@ testCase('counterpoint', {
   },
 });
 
+
+/* ------------------------------------------------------ the hard repertoire
+
+   Everything above is a single difficulty in isolation.  These are the
+   textures that actually break a transcriber, taken from the kind of writing
+   in Stravinsky's Danse Russe and the first tableau of Petrushka: fast, dense,
+   doubled in octaves, four hands at once, and harmonically nobody's idea of a
+   triad.  They are scored the same way and counted in the same totals, because
+   a reader that only works on a C major triad is not a reader. */
+
+const FAST = 60 / 152;      // Danse Russe goes at about this
+
+testCase('four-hand chords doubled in octaves', {
+  /* Two players, each hand in octaves: eight notes an attack, which is where
+     an estimator built for six voices quietly gives up. */
+  perf: [0, 1, 2, 3].flatMap((b) => strike([36, 48, 55, 60, 64, 67, 72, 76], b * FAST, FAST * 0.9, 88, 0.022)),
+  bpm: 152,
+  expect: {
+    events: [[36, 48, 55, 60, 64, 67, 72, 76], [36, 48, 55, 60, 64, 67, 72, 76],
+      [36, 48, 55, 60, 64, 67, 72, 76], [36, 48, 55, 60, 64, 67, 72, 76]],
+    staves: 2, voices: 1,
+  },
+});
+
+testCase('repeated chords at speed', {
+  /* The same chord eight times at semiquaver speed.  Every strike has to be
+     found, and none of them may turn into a different chord. */
+  perf: Array.from({ length: 8 }, (_, i) =>
+    strike([50, 57, 62, 66], i * FAST * 0.5, FAST * 0.46, 92, 0.012)).flat(),
+  bpm: 152,
+  expect: {
+    events: Array.from({ length: 8 }, () => [50, 57, 62, 66]),
+    staves: 1, voices: 1,
+  },
+});
+
+testCase('semiquaver run doubled at the octave', {
+  /* A scale in octaves: every note of it masks its own doubling. */
+  perf: [62, 64, 66, 67, 69, 71, 73, 74].flatMap((m, i) =>
+    strike([m, m + 12], i * FAST * 0.5, FAST * 0.46, 90, 0.008)),
+  bpm: 152,
+  expect: {
+    events: [62, 64, 66, 67, 69, 71, 73, 74].map((m) => [m, m + 12]),
+    staves: 1, voices: 1,
+  },
+});
+
+testCase('two triads a tritone apart', {
+  /* C major against F sharp major — the Petrushka chord.  No chord name fits
+     it and none should be forced on it; the pitches are the answer. */
+  perf: strike([48, 52, 55, 54, 58, 61], 0, FAST * 4, 86, 0.02),
+  bpm: 152,
+  expect: { events: [[48, 52, 54, 55, 58, 61]], staves: 2, voices: 1 },
+});
+
+testCase('ten-note duet chord', {
+  /* Four hands, five octaves, everything at once. */
+  perf: strike([24, 36, 43, 48, 55, 60, 64, 67, 72, 79], 0, FAST * 4, 90, 0.03),
+  bpm: 152,
+  expect: { events: [[24, 36, 43, 48, 55, 60, 64, 67, 72, 79]], staves: 2, voices: 1 },
+});
+
+testCase('offbeat accented chords', {
+  /* Chords on the second and fourth semiquaver of each beat — the syncopation
+     is the music, and must not be flattened onto the beat. */
+  perf: [0.25, 0.75, 1.25, 1.75, 2.25, 2.75].flatMap((b) =>
+    strike([45, 52, 57, 61], b * FAST, FAST * 0.4, 94, 0.014)),
+  bpm: 152,
+  expect: { events: Array.from({ length: 6 }, () => [45, 52, 57, 61]), staves: 1, voices: 1 },
+});
+
 /* ------------------------------------------------------------------ scoring */
 
 const setOf = (list) => [...new Set(list)].sort((a, b) => a - b).join(',');
@@ -239,30 +310,53 @@ function outputEvents(result) {
 }
 
 /**
- * How much of each expected simultaneity survived.
+ * How much of each expected simultaneity survived, as one moment.
  *
- * An expected chord is matched against the output chord that shares the most
- * of its pitches; the score is how much of the chord that one chord holds, so
- * a triad written as a triad scores 1 and a triad split across three separate
- * events scores a third.
+ * The question is whether the notes played together were written together, so
+ * an expected chord is matched against everything the notation puts at one
+ * position — across both staves, across voices.  A two-handed chord divided
+ * between the hands is right, and has to score as right; a chord dealt out
+ * across three positions in the bar is wrong however tidy each position looks.
+ *
+ * Notes the performance did not contain are counted separately, by
+ * spuriousCount, so that a reading cannot buy recall by inventing pitches.
  */
 function chordScore(expected, got) {
   if (!expected.length) return 1;
+  const byTick = new Map();
+  for (const g of got) {
+    if (!byTick.has(g.tick)) byTick.set(g.tick, new Set());
+    for (const p of g.pitches) byTick.get(g.tick).add(p);
+  }
+  const ticks = [...byTick.keys()].sort((a, b) => a - b);
+  if (!ticks.length) return 0;
+
   let total = 0;
-  const used = new Set();
+  const order = [...new Set(expected.map((e) => e.join(',')))];
+  /* Expected events are in performance order; walk the output positions in
+   * step with them so a chord is judged against the moment it belongs to. */
+  let at = 0;
   for (const want of expected) {
     let best = 0;
-    let bestIdx = -1;
-    got.forEach((g, i) => {
-      if (used.has(i)) return;
-      const shared = g.pitches.filter((p) => want.includes(p)).length;
-      const score = shared / Math.max(want.length, g.pitches.length);
-      if (score > best) { best = score; bestIdx = i; }
-    });
-    if (bestIdx >= 0) used.add(bestIdx);
+    let bestAt = at;
+    for (let k = Math.max(0, at - 1); k < ticks.length; k++) {
+      const here = byTick.get(ticks[k]);
+      const held = want.filter((p) => here.has(p)).length / want.length;
+      if (held > best) { best = held; bestAt = k; }
+      if (best === 1) break;
+    }
+    at = Math.min(ticks.length - 1, bestAt + (order.length > 1 ? 1 : 0));
     total += best;
   }
   return total / expected.length;
+}
+
+/** Pitches the notation contains that were never played. */
+function spuriousCount(expected, got) {
+  const played = new Set(expected.flat());
+  let extra = 0;
+  for (const g of got) for (const p of g.pitches) if (!played.has(p)) extra++;
+  return extra;
 }
 
 /** Of the pairs of pitches played together, how many are written together. */
@@ -274,12 +368,18 @@ function simultaneityScore(expected, got) {
     }
   }
   if (!pairs.length) return 1;
+  /* Together means at the same position in the bar, whichever staff or voice
+   * each ended up in: two hands playing one chord is still one chord. */
+  const byTick = new Map();
+  for (const g of got) {
+    if (!byTick.has(g.tick)) byTick.set(g.tick, new Set());
+    for (const p of g.pitches) byTick.get(g.tick).add(p);
+  }
   let held = 0;
   for (const [a, b] of pairs) {
-    const together = got.some((g) => g.pitches.includes(a) && g.pitches.includes(b))
-      || got.some((g) => g.pitches.includes(a)
-        && got.some((h) => h.tick === g.tick && h.pitches.includes(b)));
-    if (together) held++;
+    for (const here of byTick.values()) {
+      if (here.has(a) && here.has(b)) { held++; break; }
+    }
   }
   return held / pairs.length;
 }
@@ -316,6 +416,30 @@ function handScore(hands, result) {
   return right / notes.length;
 }
 
+/**
+ * How much the reader is being asked to take in beyond the notes themselves.
+ *
+ * Ties across barlines are ordinary; ties inside a beat, and tuplets, are what
+ * a passage acquires when the reading has over-interpreted the playing.  They
+ * are counted because "still too complicated" has to be a number before it can
+ * be fixed.
+ */
+function clutter(result) {
+  let ties = 0;
+  let tuplets = 0;
+  for (const part of result.score.parts || []) {
+    for (const measure of part.measures || []) {
+      for (const voice of measure.voices || []) {
+        for (const ev of voice) {
+          if (ev.tie === 'start') ties++;
+          if (ev.tuplet || ev.timeMod) tuplets++;
+        }
+      }
+    }
+  }
+  return ties + tuplets;
+}
+
 /** How many lines the notation used, per staff. */
 function voiceCount(result) {
   const perStaff = new Map();
@@ -339,24 +463,27 @@ for (const c of CASES) {
   try {
     result = AUDIO
       ? transcribeAudio(performAudio(perf), {
-        sampleRate: SR, plan: piano, style: 'balanced', bpm: 120, listen: !process.argv.includes('--quick'), maxPasses: 3,
+        sampleRate: SR, plan: piano, style: 'balanced', bpm: c.bpm || 120,
+        listen: !process.argv.includes('--quick'), maxPasses: 3,
       })
-      : transcribeMidi(perf, { plan: piano, style: 'balanced', bpm: 120 });
+      : transcribeMidi(perf, { plan: piano, style: 'balanced', bpm: c.bpm || 120 });
   } catch (err) {
     rows.push({ name: c.name, error: err.message });
     continue;
   }
   const got = outputEvents(result);
   const chords = chordScore(c.expect.events, got);
+  const spurious = spuriousCount(c.expect.events, got);
   const simul = simultaneityScore(c.expect.events, got);
   const rhythm = rhythmScore(c.expect.beats, got);
   const hands = handScore(c.expect.hands, result);
   const voices = voiceCount(result);
+  const fuss = clutter(result);
   rows.push({
     name: c.name,
     chords, simul,
     rhythmFit: rhythm.fit, kinds: rhythm.kinds,
-    hands, voices, wantVoices: c.expect.voices ?? null,
+    hands, voices, wantVoices: c.expect.voices ?? null, fuss, spurious,
     events: got.length, wantEvents: c.expect.events.length,
     detail: got.map((g) => `${g.tick}:${setOf(g.pitches)}${g.staff ? '/L' : ''}`).join(' '),
   });
@@ -369,8 +496,8 @@ const pad = (s, n) => String(s).padEnd(n);
 
 console.log('');
 console.log((AUDIO ? 'AUDIO' : 'MIDI') + ' path\n');
-console.log(pad('case', 32) + ' chords simul rhythm  kinds hands voices  events');
-console.log('-'.repeat(84));
+console.log(pad('case', 32) + ' chords simul rhythm  kinds  fuss  bad hands voices');
+console.log('-'.repeat(90));
 for (const r of rows) {
   if (r.error) { console.log(pad(r.name, 32) + '  ERROR: ' + r.error); continue; }
   console.log(
@@ -379,9 +506,10 @@ for (const r of rows) {
     + '  ' + pct(r.simul)
     + '  ' + pct(r.rhythmFit)
     + '   ' + String(r.kinds).padStart(3)
+    + '  ' + String(r.fuss).padStart(4)
+    + '  ' + String(r.spurious).padStart(3)
     + '  ' + pct(r.hands)
-    + '   ' + String(r.voices).padStart(2) + (r.wantVoices ? '/' + r.wantVoices : '  ')
-    + '   ' + String(r.events).padStart(3) + '/' + r.wantEvents,
+    + '   ' + String(r.voices).padStart(2) + (r.wantVoices ? '/' + r.wantVoices : '  '),
   );
 }
 
@@ -397,15 +525,19 @@ const summary = {
   hands: mean('hands'),
   extraVoices: ok.filter((r) => r.wantVoices && r.voices > r.wantVoices).length,
   rhythmKinds: ok.reduce((a, r) => a + r.kinds, 0) / Math.max(1, ok.length),
+  clutter: ok.reduce((a, r) => a + r.fuss, 0),
+  spurious: ok.reduce((a, r) => a + r.spurious, 0),
   errors: rows.filter((r) => r.error).length,
 };
-console.log('-'.repeat(84));
+console.log('-'.repeat(90));
 console.log('chords ' + pct(summary.chords)
   + '   simultaneity ' + pct(summary.simultaneity)
   + '   rhythm ' + pct(summary.rhythm)
   + '   hands ' + pct(summary.hands));
 console.log('passages given more voices than they have: ' + summary.extraVoices + ' of ' + ok.length
-  + '        average distinct note values: ' + summary.rhythmKinds.toFixed(2));
+  + '        average distinct note values: ' + summary.rhythmKinds.toFixed(2)
+  + '\nties and tuplets: ' + summary.clutter
+  + '        notes written that were never played: ' + summary.spurious);
 console.log('');
 
 if (process.argv.includes('--verbose')) {
