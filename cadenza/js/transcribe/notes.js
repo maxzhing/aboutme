@@ -12,6 +12,7 @@
  */
 
 import { stft, toMono, rms, midiToHz } from './dsp.js';
+import { runSync } from './steps.js';
 import { estimateF0s, ownPartialEnergy } from './polyphony.js';
 import { detectOnsets } from './onsets.js';
 
@@ -204,7 +205,7 @@ function removeHarmonicLeaks(notes) {
  * Returns { notes, onsets, duration, sampleRate }; each note is
  * { midi, start, end, velocity, confidence }.
  */
-export function extractNotes(audio, options = {}) {
+function* extractSteps(audio, options = {}) {
   const {
     sampleRate = 44100,
     maxVoices = 10,
@@ -239,14 +240,19 @@ export function extractNotes(audio, options = {}) {
   let loudestSeg = 0;
   for (const s of segments) loudestSeg = Math.max(loudestSeg, s.level);
 
-  segments.forEach((seg, i) => {
+  /* The expensive part of the whole program: one multiple-F0 estimation per
+   * segment.  It pauses between segments so a browser can breathe. */
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
     if (seg.level > loudestSeg * silenceFloor) {
       seg.pitches = analyseSegment(samples, sampleRate, seg.from, seg.to,
         { maxVoices, sensitivity, pitchCap });
       for (const p of seg.pitches.values()) seg.strongest = Math.max(seg.strongest, p.salience);
     }
-    if (onProgress) onProgress((i + 1) / segments.length);
-  });
+    const done = (i + 1) / segments.length;
+    if (onProgress) onProgress(done);
+    yield { stage: 'pitch', progress: done };
+  }
 
   /* Stitch segments into notes.
    *
@@ -452,3 +458,14 @@ export function extractNotes(audio, options = {}) {
   notes.sort((a, b) => a.start - b.start || a.midi - b.midi);
   return { notes, onsets, duration, sampleRate };
 }
+
+/**
+ * Extract note events from audio.
+ * Returns { notes, onsets, duration, sampleRate }; each note is
+ * { midi, start, end, velocity, confidence }.
+ */
+export function extractNotes(audio, options = {}) {
+  return runSync(extractSteps(audio, options));
+}
+
+export { extractSteps };

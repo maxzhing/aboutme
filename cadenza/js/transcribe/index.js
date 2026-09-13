@@ -21,7 +21,7 @@
  * recovered first, and that is the part that can be wrong.
  */
 
-import { extractNotes } from './notes.js';
+import { extractNotes, extractSteps } from './notes.js';
 import { attackEvents, estimateBeat, estimateMetre, quantise, toTicks, normaliseRuns, STYLES, styleById } from './rhythm.js';
 import { groupChords } from './voices.js';
 import { buildEvents, eventsOf } from './events.js';
@@ -31,7 +31,8 @@ import { analyseHarmony, harmonyFitter } from './harmony.js';
 import { buildParts, detectKey } from './build.js';
 import { buildTrace } from './trace.js';
 import { resolveTarget } from './ensembles.js';
-import { refineByListening } from './refine.js';
+import { refineByListening, refineSteps } from './refine.js';
+import { runSync, runYielding, CancelledError } from './steps.js';
 import { beatTicks, measureTicks, TPQ } from '../core/rhythm.js';
 
 export const SOURCE = { AUDIO: 'audio', MIDI: 'midi' };
@@ -332,7 +333,7 @@ export function notesToScore(rawNotes, opts = {}) {
  * is on, the notation is played back and compared with the recording, and the
  * score is corrected until it stops improving.
  */
-export function transcribeAudio(audio, opts = {}) {
+function* transcribeSteps(audio, opts = {}) {
   const {
     listen = true,
     maxPasses = 5,
@@ -343,7 +344,7 @@ export function transcribeAudio(audio, opts = {}) {
   const sampleRate = opts.sampleRate || audio.sampleRate || 44100;
 
   onPass('events');
-  const extracted = extractNotes(audio, { ...rest, sampleRate, onProgress });
+  const extracted = yield* extractSteps(audio, { ...rest, sampleRate, onProgress });
   const base = { ...rest, duration: extracted.duration, source: SOURCE.AUDIO, onPass };
   let result = readMusic(extracted.notes, base);
   result.analysis.onsets = extracted.onsets;
@@ -358,7 +359,7 @@ export function transcribeAudio(audio, opts = {}) {
   /* Play the notation, measure it against the recording, correct the score,
    * and do it again until it stops getting closer. */
   const harmonyFit = harmonyFitter(result.harmony);
-  const refined = refineByListening({
+  const refined = yield* refineSteps({
     audio,
     sampleRate,
     notes: extracted.notes,
@@ -385,6 +386,34 @@ export function transcribeAudio(audio, opts = {}) {
   result.analysis.difference = refined.diff;
   result.analysis.confidence.match = refined.similarity;
   return result;
+}
+
+/**
+ * Transcribe audio, straight through.
+ *
+ * Everything from the recording to the finished score.  This is the form the
+ * tests use and the one to reach for when nothing else needs the thread.
+ */
+export function transcribeAudio(audio, opts = {}) {
+  return runSync(transcribeSteps(audio, opts));
+}
+
+/**
+ * The same, handing the thread back as it goes.
+ *
+ * Minutes of audio are tens of seconds of arithmetic, and a page that spends
+ * those seconds without pausing stops answering: the progress list freezes and
+ * the browser offers to close the tab.  This form pauses at every segment and
+ * every listening pass, so the page stays alive and what it says is happening
+ * is what is actually happening.  `onStep` reports each pause and `cancelled`
+ * is asked at each one whether to stop.
+ */
+export async function transcribeAudioAsync(audio, opts = {}) {
+  return runYielding(transcribeSteps(audio, opts), {
+    onStep: opts.onStep || null,
+    cancelled: opts.cancelled || null,
+    slice: opts.slice,
+  });
 }
 
 /**
@@ -415,7 +444,7 @@ export function transcribeMidi(events, opts = {}) {
   return result;
 }
 
-export { extractNotes, detectKey, resolveTarget, refineByListening };
+export { extractNotes, detectKey, resolveTarget, refineByListening, CancelledError };
 export { GRID_PRESETS, STYLES, styleById } from './rhythm.js';
 export { TARGETS, PRESETS, SECTIONS, ALL_PARTS, findTarget } from './ensembles.js';
 export { analyseHarmony, readChord, romanNumeral } from './harmony.js';

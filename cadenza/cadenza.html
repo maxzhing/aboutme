@@ -12325,7 +12325,7 @@ __exp.PALETTES = PALETTES;
 
 const Dlg = __req("js/ui/dialogs.js");
 const { UI } = __req("js/ui/icons.js");
-const { extractNotes, transcribeAudio, transcribeMidi, readMusic, SOURCE, QUANTISE_LEVELS, STYLES, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget, renderNotation, describeDifference } = __req("js/transcribe/index.js");
+const { extractNotes, transcribeAudio, transcribeAudioAsync, transcribeMidi, readMusic, SOURCE, QUANTISE_LEVELS, STYLES, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget, renderNotation, describeDifference } = __req("js/transcribe/index.js");
 const { MidiRecorder, AudioRecorder, parseMIDI } = __req("js/transcribe/capture.js");
 const { GRID_PRESETS } = __req("js/transcribe/rhythm.js");
 const { CorrectionModel, compareScores } = __req("js/transcribe/learn.js");
@@ -12380,10 +12380,12 @@ class TranscribePanel {
     this.midiRec = null;
     this.recorder = null;
     this.abTimer = null;
+    this.closed = false;
   }
 
   open() {
     this.reset();
+    this.closed = false;
     const m = Dlg.modal({
       title: 'Transcribe',
       width: 'wide',
@@ -12394,6 +12396,10 @@ class TranscribePanel {
   }
 
   cleanup() {
+    /* A transcription in progress stops here.  It pauses often enough to
+     * notice, so closing the panel does not leave tens of seconds of
+     * arithmetic running behind a window nobody is looking at. */
+    this.closed = true;
     if (this.recorder && this.recorder.recording) this.recorder.stop();
     if (this.midiHook) { this.app.offMidi(this.midiHook); this.midiHook = null; }
     if (this.timer) { clearInterval(this.timer); this.timer = null; }
@@ -12751,25 +12757,25 @@ class TranscribePanel {
       if (this.source === SOURCE.MIDI) {
         this.result = transcribeMidi(this.notes, opts);
       } else {
+        /* The analysis hands the thread back as it goes, so the page keeps
+         * answering and the progress list opposite actually moves. */
         const input = this.audio.buffer || this.audio.samples;
-        this.result = await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            try {
-              resolve(transcribeAudio(input, {
-                ...opts,
-                sampleRate: this.audio.sampleRate,
-                sensitivity: this.settings.sensitivity * learned.sensitivity,
-                listen: this.settings.listen,
-              }));
-            } catch (err) { reject(err); }
-          }, 20);
+        this.result = await transcribeAudioAsync(input, {
+          ...opts,
+          sampleRate: this.audio.sampleRate,
+          sensitivity: this.settings.sensitivity * learned.sensitivity,
+          listen: this.settings.listen,
+          cancelled: () => this.closed,
         });
         this.notes = this.result.notes;
       }
     } catch (err) {
+      /* Closed while it was working: nothing to report, and nothing to show. */
+      if (err && err.cancelled) return undefined;
       Dlg.toast('The analysis failed: ' + err.message, 'err');
       return this.renderStart();
     }
+    if (this.closed) return undefined;
     if (!this.result.notes.length) {
       Dlg.toast('No notes were found — try recording a little louder', 'err');
       return this.renderStart();
@@ -13112,7 +13118,7 @@ __exp.TranscribePanel = TranscribePanel;
  * recovered first, and that is the part that can be wrong.
  */
 
-const { extractNotes } = __req("js/transcribe/notes.js");
+const { extractNotes, extractSteps } = __req("js/transcribe/notes.js");
 const { attackEvents, estimateBeat, estimateMetre, quantise, toTicks, normaliseRuns, STYLES, styleById } = __req("js/transcribe/rhythm.js");
 const { groupChords } = __req("js/transcribe/voices.js");
 const { buildEvents, eventsOf } = __req("js/transcribe/events.js");
@@ -13122,7 +13128,8 @@ const { analyseHarmony, harmonyFitter } = __req("js/transcribe/harmony.js");
 const { buildParts, detectKey } = __req("js/transcribe/build.js");
 const { buildTrace } = __req("js/transcribe/trace.js");
 const { resolveTarget } = __req("js/transcribe/ensembles.js");
-const { refineByListening } = __req("js/transcribe/refine.js");
+const { refineByListening, refineSteps } = __req("js/transcribe/refine.js");
+const { runSync, runYielding, CancelledError } = __req("js/transcribe/steps.js");
 const { beatTicks, measureTicks, TPQ } = __req("js/core/rhythm.js");
 
 const SOURCE = { AUDIO: 'audio', MIDI: 'midi' };
@@ -13423,7 +13430,7 @@ function notesToScore(rawNotes, opts = {}) {
  * is on, the notation is played back and compared with the recording, and the
  * score is corrected until it stops improving.
  */
-function transcribeAudio(audio, opts = {}) {
+function* transcribeSteps(audio, opts = {}) {
   const {
     listen = true,
     maxPasses = 5,
@@ -13434,7 +13441,7 @@ function transcribeAudio(audio, opts = {}) {
   const sampleRate = opts.sampleRate || audio.sampleRate || 44100;
 
   onPass('events');
-  const extracted = extractNotes(audio, { ...rest, sampleRate, onProgress });
+  const extracted = yield* extractSteps(audio, { ...rest, sampleRate, onProgress });
   const base = { ...rest, duration: extracted.duration, source: SOURCE.AUDIO, onPass };
   let result = readMusic(extracted.notes, base);
   result.analysis.onsets = extracted.onsets;
@@ -13449,7 +13456,7 @@ function transcribeAudio(audio, opts = {}) {
   /* Play the notation, measure it against the recording, correct the score,
    * and do it again until it stops getting closer. */
   const harmonyFit = harmonyFitter(result.harmony);
-  const refined = refineByListening({
+  const refined = yield* refineSteps({
     audio,
     sampleRate,
     notes: extracted.notes,
@@ -13476,6 +13483,34 @@ function transcribeAudio(audio, opts = {}) {
   result.analysis.difference = refined.diff;
   result.analysis.confidence.match = refined.similarity;
   return result;
+}
+
+/**
+ * Transcribe audio, straight through.
+ *
+ * Everything from the recording to the finished score.  This is the form the
+ * tests use and the one to reach for when nothing else needs the thread.
+ */
+function transcribeAudio(audio, opts = {}) {
+  return runSync(transcribeSteps(audio, opts));
+}
+
+/**
+ * The same, handing the thread back as it goes.
+ *
+ * Minutes of audio are tens of seconds of arithmetic, and a page that spends
+ * those seconds without pausing stops answering: the progress list freezes and
+ * the browser offers to close the tab.  This form pauses at every segment and
+ * every listening pass, so the page stays alive and what it says is happening
+ * is what is actually happening.  `onStep` reports each pause and `cancelled`
+ * is asked at each one whether to stop.
+ */
+async function transcribeAudioAsync(audio, opts = {}) {
+  return runYielding(transcribeSteps(audio, opts), {
+    onStep: opts.onStep || null,
+    cancelled: opts.cancelled || null,
+    slice: opts.slice,
+  });
 }
 
 /**
@@ -13534,6 +13569,7 @@ __exp.groupEvents = __re5.groupEvents;
 __exp.readMusic = readMusic;
 __exp.notesToScore = notesToScore;
 __exp.transcribeAudio = transcribeAudio;
+__exp.transcribeAudioAsync = transcribeAudioAsync;
 __exp.transcribeMidi = transcribeMidi;
 __exp.SOURCE = SOURCE;
 __exp.QUANTISE_LEVELS = QUANTISE_LEVELS;
@@ -13542,6 +13578,7 @@ __exp.extractNotes = extractNotes;
 __exp.detectKey = detectKey;
 __exp.resolveTarget = resolveTarget;
 __exp.refineByListening = refineByListening;
+__exp.CancelledError = CancelledError;
 },
   "js/transcribe/notes.js": function (__exp, __req) {
 /* Cadenza — turning audio into note events.
@@ -13558,6 +13595,7 @@ __exp.refineByListening = refineByListening;
  */
 
 const { stft, toMono, rms, midiToHz } = __req("js/transcribe/dsp.js");
+const { runSync } = __req("js/transcribe/steps.js");
 const { estimateF0s, ownPartialEnergy } = __req("js/transcribe/polyphony.js");
 const { detectOnsets } = __req("js/transcribe/onsets.js");
 
@@ -13750,7 +13788,7 @@ function removeHarmonicLeaks(notes) {
  * Returns { notes, onsets, duration, sampleRate }; each note is
  * { midi, start, end, velocity, confidence }.
  */
-function extractNotes(audio, options = {}) {
+function* extractSteps(audio, options = {}) {
   const {
     sampleRate = 44100,
     maxVoices = 10,
@@ -13785,14 +13823,19 @@ function extractNotes(audio, options = {}) {
   let loudestSeg = 0;
   for (const s of segments) loudestSeg = Math.max(loudestSeg, s.level);
 
-  segments.forEach((seg, i) => {
+  /* The expensive part of the whole program: one multiple-F0 estimation per
+   * segment.  It pauses between segments so a browser can breathe. */
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
     if (seg.level > loudestSeg * silenceFloor) {
       seg.pitches = analyseSegment(samples, sampleRate, seg.from, seg.to,
         { maxVoices, sensitivity, pitchCap });
       for (const p of seg.pitches.values()) seg.strongest = Math.max(seg.strongest, p.salience);
     }
-    if (onProgress) onProgress((i + 1) / segments.length);
-  });
+    const done = (i + 1) / segments.length;
+    if (onProgress) onProgress(done);
+    yield { stage: 'pitch', progress: done };
+  }
 
   /* Stitch segments into notes.
    *
@@ -13999,8 +14042,20 @@ function extractNotes(audio, options = {}) {
   return { notes, onsets, duration, sampleRate };
 }
 
+/**
+ * Extract note events from audio.
+ * Returns { notes, onsets, duration, sampleRate }; each note is
+ * { midi, start, end, velocity, confidence }.
+ */
+function extractNotes(audio, options = {}) {
+  return runSync(extractSteps(audio, options));
+}
+
+
+
 __exp.analyseSegment = analyseSegment;
 __exp.extractNotes = extractNotes;
+__exp.extractSteps = extractSteps;
 },
   "js/transcribe/dsp.js": function (__exp, __req) {
 /* Cadenza — signal processing for transcription.
@@ -14151,6 +14206,68 @@ __exp.rms = rms;
 __exp.movingMedian = movingMedian;
 __exp.midiToHz = midiToHz;
 __exp.hzToMidi = hzToMidi;
+},
+  "js/transcribe/steps.js": function (__exp, __req) {
+/* Cadenza — doing long work without freezing the page.
+ *
+ * Analysing a few minutes of audio is tens of seconds of arithmetic.  Run
+ * straight through, it holds the one thread a browser gives a page, and the
+ * browser eventually offers to kill the tab — which is what happens if you
+ * look away while it works.  Worse, the progress list cannot repaint while it
+ * runs, so the one thing that would tell you it is still working is the one
+ * thing the work prevents.
+ *
+ * The heavy stages are therefore written as generators that stop at natural
+ * boundaries — a segment analysed, a pass completed.  What drives them decides
+ * what that pause is for: the tests run them straight through, and the app
+ * hands the thread back so the page stays alive and the progress list moves.
+ * The arithmetic is identical either way; only the pauses differ.
+ */
+
+/** Run a generator to its return value without pausing. */
+function runSync(iter) {
+  let step = iter.next();
+  while (!step.done) step = iter.next();
+  return step.value;
+}
+
+/**
+ * Run a generator, handing the thread back at every pause.
+ *
+ * `onStep` is called with whatever the stage yielded, which is how the panel
+ * knows how far along it is.  `cancelled` is checked at every pause so that
+ * closing the panel stops the work rather than leaving it running unseen.
+ */
+async function runYielding(iter, opts = {}) {
+  const { onStep = null, cancelled = null, slice = 24 } = opts;
+  let step = iter.next();
+  let since = Date.now();
+  while (!step.done) {
+    if (onStep) onStep(step.value);
+    /* Pause on a clock rather than every iteration: a yield costs about a
+     * millisecond, and a short segment does not need one. */
+    if (Date.now() - since >= slice) {
+      await new Promise((resolve) => { setTimeout(resolve, 0); });
+      since = Date.now();
+      if (cancelled && cancelled()) throw new CancelledError();
+    }
+    step = iter.next();
+  }
+  return step.value;
+}
+
+/** Thrown when the panel is closed while a transcription is running. */
+class CancelledError extends Error {
+  constructor() {
+    super('Transcription cancelled');
+    this.name = 'CancelledError';
+    this.cancelled = true;
+  }
+}
+
+__exp.runSync = runSync;
+__exp.runYielding = runYielding;
+__exp.CancelledError = CancelledError;
 },
   "js/transcribe/polyphony.js": function (__exp, __req) {
 /* Cadenza — polyphonic pitch estimation.
@@ -17954,9 +18071,10 @@ __exp.ALL_PARTS = ALL_PARTS;
  * wander: the worst it can do is stop where it started.
  */
 
-const { renderNotation } = __req("js/transcribe/render.js");
-const { compareAudio, salienceMap, candidatePitches, activePitches, verifyPitchAt } = __req("js/transcribe/compare.js");
+const { renderNotation, renderSteps } = __req("js/transcribe/render.js");
+const { compareAudio, compareSteps, salienceMap, salienceSteps, candidatePitches, activePitches, verifyPitchAt } = __req("js/transcribe/compare.js");
 const { toMono, midiToHz } = __req("js/transcribe/dsp.js");
+const { runSync } = __req("js/transcribe/steps.js");
 
 const MIN_GAIN = 0.004;        // an improvement smaller than this is noise
 const MIN_RUN_STRENGTH = 0.26; // how clearly a difference must show to act on
@@ -18099,7 +18217,7 @@ function applyCorrections(notes, diff, opts) {
  * Returns the best result found, the history of every pass, and the edits made,
  * so the interface can show what changed and why.
  */
-function refineByListening(ctx, opts = {}) {
+function* refineSteps(ctx, opts = {}) {
   const {
     maxPasses = 5,
     target = 0.985,
@@ -18120,7 +18238,7 @@ function refineByListening(ctx, opts = {}) {
   const hi = Math.min(108, Math.max(...notes.map((n) => n.midi), 60) + 14);
   const wide = [];
   for (let m = lo; m <= hi; m++) wide.push(m);
-  const fullMap = salienceMap(original.audio, sampleRate, { pitches: wide });
+  const fullMap = yield* salienceSteps(original.audio, sampleRate, { pitches: wide });
   const heard = activePitches(fullMap);
 
   const history = [];
@@ -18133,12 +18251,14 @@ function refineByListening(ctx, opts = {}) {
 
   for (let pass = 1; pass <= maxPasses; pass++) {
     onProgress('rendering', { pass });
-    const rendered = renderNotation(built.score, { sampleRate });
+    yield { stage: 'rendering', pass };
+    const rendered = yield* renderSteps(built.score, { sampleRate });
     const used = rendered.events.map((e) => e.midi);
     const pitches = candidatePitches(heard, used).filter((p) => p >= lo && p <= hi);
 
     onProgress('comparing', { pass });
-    let diff = compareAudio(original, { audio: rendered.samples, sampleRate },
+    yield { stage: 'comparing', pass };
+    let diff = yield* compareSteps(original, { audio: rendered.samples, sampleRate },
       { pitches, originalMap: fullMap });
 
     const entry = {
@@ -18206,11 +18326,14 @@ function refineByListening(ctx, opts = {}) {
       verified.set(key, ok);
       return ok;
     };
+    yield { stage: 'correcting', pass };
     const step = applyCorrections(notes, diff, { limit, harmonyAt, verify, exclude: rejected });
     if (!step.edits.length) { entry.stopped = 'nothing left to correct'; break; }
+    yield { stage: 'correcting', pass };
     lastEdits = step.edits.map((e) => ({ pass, kind: e.kind, what: e.describe }));
     allEdits = allEdits.concat(lastEdits);
     notes = step.notes;
+    yield { stage: 'correcting', pass };
     built = ctx.rebuild(notes);
   }
 
@@ -18225,7 +18348,22 @@ function refineByListening(ctx, opts = {}) {
   };
 }
 
+/**
+ * Play the notation, measure it against the recording, correct the score, and
+ * do it again until it stops getting closer.
+ *
+ * `ctx` is { audio, sampleRate, notes, rebuild }.  The score is rebuilt from
+ * corrected notes each time rather than patched.  `ctx.onProgress(stage,
+ * detail)` is called as each pass runs.
+ */
+function refineByListening(ctx, opts = {}) {
+  return runSync(refineSteps(ctx, opts));
+}
+
+
+
 __exp.refineByListening = refineByListening;
+__exp.refineSteps = refineSteps;
 },
   "js/transcribe/render.js": function (__exp, __req) {
 /* Cadenza — playing the notation back, so it can be checked against the source.
@@ -18247,6 +18385,7 @@ __exp.refineByListening = refineByListening;
  */
 
 const { Player } = __req("js/audio/player.js");
+const { runSync } = __req("js/transcribe/steps.js");
 
 /* Partial structure by instrument family.  Timbre is not what the comparison
  * looks at — it measures energy along each pitch's harmonic series — but a
@@ -18317,7 +18456,7 @@ function layNote(buf, sampleRate, ev, amp) {
  * notation actually says, which the comparison uses to name what is different
  * in musical terms rather than only in spectral ones.
  */
-function renderNotation(score, opts = {}) {
+function* renderSteps(score, opts = {}) {
   const { sampleRate = 44100, tail = 1.2, maxSeconds = 120 } = opts;
   const player = new Player();
   player.setScore(score);
@@ -18325,9 +18464,14 @@ function renderNotation(score, opts = {}) {
   const events = player.events.filter((e) => e.midi !== undefined && e.channel !== 'click');
   const duration = Math.min(maxSeconds, (player.totalTime || 0) + tail);
   const samples = new Float32Array(Math.max(1, Math.round(duration * sampleRate)));
-  for (const ev of events) {
+  /* One note laid down at a time, pausing now and then: on a long take this
+   * is several seconds of arithmetic, and it must not be several seconds of a
+   * page that has stopped answering. */
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i];
     if (ev.time > duration) continue;
     layNote(samples, sampleRate, ev, 0.16 * (ev.velocity / 90));
+    if ((i & 31) === 31) yield { stage: 'rendering', progress: (i + 1) / events.length };
   }
   /* Keep the peak where a recording's would be, so the two are comparable
    * without either being scaled to flatter it. */
@@ -18336,6 +18480,16 @@ function renderNotation(score, opts = {}) {
   if (peak > 0.99) { const g = 0.99 / peak; for (let i = 0; i < samples.length; i++) samples[i] *= g; }
   return { samples, sampleRate, duration, events, totalTime: player.totalTime };
 }
+
+/**
+ * Play the notation as audio, so it can be measured against the recording.
+ * Returns { samples, sampleRate, duration, events }.
+ */
+function renderNotation(score, opts = {}) {
+  return runSync(renderSteps(score, opts));
+}
+
+
 
 /**
  * The notes the notation says, as plain timed events.
@@ -18354,6 +18508,7 @@ function notationEvents(score) {
 
 __exp.renderNotation = renderNotation;
 __exp.notationEvents = notationEvents;
+__exp.renderSteps = renderSteps;
 },
   "js/transcribe/compare.js": function (__exp, __req) {
 /* Cadenza — measuring a transcription against the recording it came from.
@@ -18381,6 +18536,7 @@ __exp.notationEvents = notationEvents;
  */
 
 const { stft, toMono, rms, midiToHz } = __req("js/transcribe/dsp.js");
+const { runSync } = __req("js/transcribe/steps.js");
 const { salienceAt, whiten, estimateF0s, residualSpectrum, estimateFromWhitened, MIN_MIDI, MAX_MIDI } = __req("js/transcribe/polyphony.js");
 const { detectOnsets } = __req("js/transcribe/onsets.js");
 
@@ -18391,7 +18547,7 @@ const { detectOnsets } = __req("js/transcribe/onsets.js");
  * compared on the same footing as a loud one and a difference in overall level
  * between a recording and a render does not read as a difference in notes.
  */
-function salienceMap(audio, sampleRate, opts = {}) {
+function* salienceSteps(audio, sampleRate, opts = {}) {
   const { pitches = null, size = 4096, hop = 2048, harmonics = 12 } = opts;
   const samples = toMono(audio);
   const spec = stft(samples, { size, hop, sampleRate });
@@ -18410,6 +18566,8 @@ function salienceMap(audio, sampleRate, opts = {}) {
       if (s > strongest) strongest = s;
     }
     level[f] = strongest;
+    /* Several seconds of work on a long take, so it pauses as it goes. */
+    if ((f & 15) === 15) yield { stage: 'measuring', progress: (f + 1) / frames };
   }
 
   /* Normalise against the take, not against each frame on its own.
@@ -18436,6 +18594,15 @@ function salienceMap(audio, sampleRate, opts = {}) {
   for (let f = 0; f < frames; f++) times.push((f * hop + size / 2) / sampleRate);
   return { data, pitches: list, times, frames, level, hop, size, sampleRate };
 }
+
+/**
+ * How strongly each pitch is present, frame by frame.
+ * Returns { data, frames, pitches, hop, sampleRate, level }.
+ */
+function salienceMap(audio, sampleRate, opts = {}) {
+  return runSync(salienceSteps(audio, sampleRate, opts));
+}
+
 
 /* Ratios at which one pitch's energy is really another's.
  * A note's octave, twelfth and double octave all light up when only the lower
@@ -18657,13 +18824,13 @@ function findRuns(map, otherMap, times, minFrames, span, tailFrames) {
  * Returns a similarity between 0 and 1 and, more usefully, the specific
  * disagreements: which pitch, from when to when, and how strongly.
  */
-function compareAudio(original, rendered, opts = {}) {
+function* compareSteps(original, rendered, opts = {}) {
   const { pitches = null, size = 4096, hop = 2048, minFrames = 1, sensitivity = 1 } = opts;
   const rate = original.sampleRate;
   const mapOpts = { pitches, size, hop };
-  let a = opts.originalMap || salienceMap(original.audio, rate, mapOpts);
+  let a = opts.originalMap || (yield* salienceSteps(original.audio, rate, mapOpts));
   if (pitches && pitches.length && pitches.length < a.pitches.length) a = restrictMap(a, pitches);
-  const b = salienceMap(rendered.audio, rendered.sampleRate, { ...mapOpts, pitches: a.pitches });
+  const b = yield* salienceSteps(rendered.audio, rendered.sampleRate, { ...mapOpts, pitches: a.pitches });
 
   /* Only the stretch where the recording has sound in it is compared. */
   const span = activeSpan(a);
@@ -18684,8 +18851,10 @@ function compareAudio(original, rendered, opts = {}) {
     }
     if (na > 1e-6 && nb > 1e-6) { spectral += dot / Math.sqrt(na * nb); counted++; }
     else if (na <= 1e-6 && nb <= 1e-6) { spectral += 1; counted++; }
+    if ((f & 63) === 63) yield { stage: 'comparing', progress: (f - span.from) / Math.max(1, upTo - span.from) };
   }
   spectral = counted ? spectral / counted : 0;
+  yield { stage: 'comparing', progress: 1 };
 
   const onA = detectOnsets(toMono(original.audio), { sampleRate: rate, sensitivity }).onsets;
   const onB = detectOnsets(toMono(rendered.audio), { sampleRate: rendered.sampleRate, sensitivity }).onsets;
@@ -18727,6 +18896,19 @@ function compareAudio(original, rendered, opts = {}) {
     renderedMap: b,
   };
 }
+
+/**
+ * Measure a rendered score against the recording it came from.
+ *
+ * Returns a similarity and, more usefully, what differs: which pitches are
+ * missing, which are extra, and where.
+ */
+function compareAudio(original, rendered, opts = {}) {
+  return runSync(compareSteps(original, rendered, opts));
+}
+
+
+
 
 /**
  * Say what is wrong in musical terms, bar by bar.
@@ -18799,6 +18981,8 @@ __exp.onsetAgreement = onsetAgreement;
 __exp.compareAudio = compareAudio;
 __exp.describe = describe;
 __exp.verifyPitchAt = verifyPitchAt;
+__exp.compareSteps = compareSteps;
+__exp.salienceSteps = salienceSteps;
 },
   "js/transcribe/capture.js": function (__exp, __req) {
 /* Cadenza — capturing a performance.

@@ -25,9 +25,11 @@
  * wander: the worst it can do is stop where it started.
  */
 
-import { renderNotation } from './render.js';
-import { compareAudio, salienceMap, candidatePitches, activePitches, verifyPitchAt } from './compare.js';
+import { renderNotation, renderSteps } from './render.js';
+import { compareAudio, compareSteps, salienceMap, salienceSteps,
+  candidatePitches, activePitches, verifyPitchAt } from './compare.js';
 import { toMono, midiToHz } from './dsp.js';
+import { runSync } from './steps.js';
 
 const MIN_GAIN = 0.004;        // an improvement smaller than this is noise
 const MIN_RUN_STRENGTH = 0.26; // how clearly a difference must show to act on
@@ -170,7 +172,7 @@ function applyCorrections(notes, diff, opts) {
  * Returns the best result found, the history of every pass, and the edits made,
  * so the interface can show what changed and why.
  */
-export function refineByListening(ctx, opts = {}) {
+function* refineSteps(ctx, opts = {}) {
   const {
     maxPasses = 5,
     target = 0.985,
@@ -191,7 +193,7 @@ export function refineByListening(ctx, opts = {}) {
   const hi = Math.min(108, Math.max(...notes.map((n) => n.midi), 60) + 14);
   const wide = [];
   for (let m = lo; m <= hi; m++) wide.push(m);
-  const fullMap = salienceMap(original.audio, sampleRate, { pitches: wide });
+  const fullMap = yield* salienceSteps(original.audio, sampleRate, { pitches: wide });
   const heard = activePitches(fullMap);
 
   const history = [];
@@ -204,12 +206,14 @@ export function refineByListening(ctx, opts = {}) {
 
   for (let pass = 1; pass <= maxPasses; pass++) {
     onProgress('rendering', { pass });
-    const rendered = renderNotation(built.score, { sampleRate });
+    yield { stage: 'rendering', pass };
+    const rendered = yield* renderSteps(built.score, { sampleRate });
     const used = rendered.events.map((e) => e.midi);
     const pitches = candidatePitches(heard, used).filter((p) => p >= lo && p <= hi);
 
     onProgress('comparing', { pass });
-    let diff = compareAudio(original, { audio: rendered.samples, sampleRate },
+    yield { stage: 'comparing', pass };
+    let diff = yield* compareSteps(original, { audio: rendered.samples, sampleRate },
       { pitches, originalMap: fullMap });
 
     const entry = {
@@ -277,11 +281,14 @@ export function refineByListening(ctx, opts = {}) {
       verified.set(key, ok);
       return ok;
     };
+    yield { stage: 'correcting', pass };
     const step = applyCorrections(notes, diff, { limit, harmonyAt, verify, exclude: rejected });
     if (!step.edits.length) { entry.stopped = 'nothing left to correct'; break; }
+    yield { stage: 'correcting', pass };
     lastEdits = step.edits.map((e) => ({ pass, kind: e.kind, what: e.describe }));
     allEdits = allEdits.concat(lastEdits);
     notes = step.notes;
+    yield { stage: 'correcting', pass };
     built = ctx.rebuild(notes);
   }
 
@@ -295,3 +302,17 @@ export function refineByListening(ctx, opts = {}) {
     edits: allEdits,
   };
 }
+
+/**
+ * Play the notation, measure it against the recording, correct the score, and
+ * do it again until it stops getting closer.
+ *
+ * `ctx` is { audio, sampleRate, notes, rebuild }.  The score is rebuilt from
+ * corrected notes each time rather than patched.  `ctx.onProgress(stage,
+ * detail)` is called as each pass runs.
+ */
+export function refineByListening(ctx, opts = {}) {
+  return runSync(refineSteps(ctx, opts));
+}
+
+export { refineSteps };

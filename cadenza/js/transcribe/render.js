@@ -17,6 +17,7 @@
  */
 
 import { Player } from '../audio/player.js';
+import { runSync } from './steps.js';
 
 /* Partial structure by instrument family.  Timbre is not what the comparison
  * looks at — it measures energy along each pitch's harmonic series — but a
@@ -87,7 +88,7 @@ function layNote(buf, sampleRate, ev, amp) {
  * notation actually says, which the comparison uses to name what is different
  * in musical terms rather than only in spectral ones.
  */
-export function renderNotation(score, opts = {}) {
+function* renderSteps(score, opts = {}) {
   const { sampleRate = 44100, tail = 1.2, maxSeconds = 120 } = opts;
   const player = new Player();
   player.setScore(score);
@@ -95,9 +96,14 @@ export function renderNotation(score, opts = {}) {
   const events = player.events.filter((e) => e.midi !== undefined && e.channel !== 'click');
   const duration = Math.min(maxSeconds, (player.totalTime || 0) + tail);
   const samples = new Float32Array(Math.max(1, Math.round(duration * sampleRate)));
-  for (const ev of events) {
+  /* One note laid down at a time, pausing now and then: on a long take this
+   * is several seconds of arithmetic, and it must not be several seconds of a
+   * page that has stopped answering. */
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i];
     if (ev.time > duration) continue;
     layNote(samples, sampleRate, ev, 0.16 * (ev.velocity / 90));
+    if ((i & 31) === 31) yield { stage: 'rendering', progress: (i + 1) / events.length };
   }
   /* Keep the peak where a recording's would be, so the two are comparable
    * without either being scaled to flatter it. */
@@ -106,6 +112,16 @@ export function renderNotation(score, opts = {}) {
   if (peak > 0.99) { const g = 0.99 / peak; for (let i = 0; i < samples.length; i++) samples[i] *= g; }
   return { samples, sampleRate, duration, events, totalTime: player.totalTime };
 }
+
+/**
+ * Play the notation as audio, so it can be measured against the recording.
+ * Returns { samples, sampleRate, duration, events }.
+ */
+export function renderNotation(score, opts = {}) {
+  return runSync(renderSteps(score, opts));
+}
+
+export { renderSteps };
 
 /**
  * The notes the notation says, as plain timed events.

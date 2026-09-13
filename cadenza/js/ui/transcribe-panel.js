@@ -20,7 +20,7 @@
 import * as Dlg from './dialogs.js';
 import { UI } from './icons.js';
 import {
-  extractNotes, transcribeAudio, transcribeMidi, readMusic, SOURCE,
+  extractNotes, transcribeAudio, transcribeAudioAsync, transcribeMidi, readMusic, SOURCE,
   QUANTISE_LEVELS, STYLES, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget,
   renderNotation, describeDifference,
 } from '../transcribe/index.js';
@@ -78,10 +78,12 @@ export class TranscribePanel {
     this.midiRec = null;
     this.recorder = null;
     this.abTimer = null;
+    this.closed = false;
   }
 
   open() {
     this.reset();
+    this.closed = false;
     const m = Dlg.modal({
       title: 'Transcribe',
       width: 'wide',
@@ -92,6 +94,10 @@ export class TranscribePanel {
   }
 
   cleanup() {
+    /* A transcription in progress stops here.  It pauses often enough to
+     * notice, so closing the panel does not leave tens of seconds of
+     * arithmetic running behind a window nobody is looking at. */
+    this.closed = true;
     if (this.recorder && this.recorder.recording) this.recorder.stop();
     if (this.midiHook) { this.app.offMidi(this.midiHook); this.midiHook = null; }
     if (this.timer) { clearInterval(this.timer); this.timer = null; }
@@ -449,25 +455,25 @@ export class TranscribePanel {
       if (this.source === SOURCE.MIDI) {
         this.result = transcribeMidi(this.notes, opts);
       } else {
+        /* The analysis hands the thread back as it goes, so the page keeps
+         * answering and the progress list opposite actually moves. */
         const input = this.audio.buffer || this.audio.samples;
-        this.result = await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            try {
-              resolve(transcribeAudio(input, {
-                ...opts,
-                sampleRate: this.audio.sampleRate,
-                sensitivity: this.settings.sensitivity * learned.sensitivity,
-                listen: this.settings.listen,
-              }));
-            } catch (err) { reject(err); }
-          }, 20);
+        this.result = await transcribeAudioAsync(input, {
+          ...opts,
+          sampleRate: this.audio.sampleRate,
+          sensitivity: this.settings.sensitivity * learned.sensitivity,
+          listen: this.settings.listen,
+          cancelled: () => this.closed,
         });
         this.notes = this.result.notes;
       }
     } catch (err) {
+      /* Closed while it was working: nothing to report, and nothing to show. */
+      if (err && err.cancelled) return undefined;
       Dlg.toast('The analysis failed: ' + err.message, 'err');
       return this.renderStart();
     }
+    if (this.closed) return undefined;
     if (!this.result.notes.length) {
       Dlg.toast('No notes were found — try recording a little louder', 'err');
       return this.renderStart();

@@ -23,6 +23,7 @@
  */
 
 import { stft, toMono, rms, midiToHz } from './dsp.js';
+import { runSync } from './steps.js';
 import { salienceAt, whiten, estimateF0s, residualSpectrum, estimateFromWhitened, MIN_MIDI, MAX_MIDI } from './polyphony.js';
 import { detectOnsets } from './onsets.js';
 
@@ -33,7 +34,7 @@ import { detectOnsets } from './onsets.js';
  * compared on the same footing as a loud one and a difference in overall level
  * between a recording and a render does not read as a difference in notes.
  */
-export function salienceMap(audio, sampleRate, opts = {}) {
+function* salienceSteps(audio, sampleRate, opts = {}) {
   const { pitches = null, size = 4096, hop = 2048, harmonics = 12 } = opts;
   const samples = toMono(audio);
   const spec = stft(samples, { size, hop, sampleRate });
@@ -52,6 +53,8 @@ export function salienceMap(audio, sampleRate, opts = {}) {
       if (s > strongest) strongest = s;
     }
     level[f] = strongest;
+    /* Several seconds of work on a long take, so it pauses as it goes. */
+    if ((f & 15) === 15) yield { stage: 'measuring', progress: (f + 1) / frames };
   }
 
   /* Normalise against the take, not against each frame on its own.
@@ -78,6 +81,15 @@ export function salienceMap(audio, sampleRate, opts = {}) {
   for (let f = 0; f < frames; f++) times.push((f * hop + size / 2) / sampleRate);
   return { data, pitches: list, times, frames, level, hop, size, sampleRate };
 }
+
+/**
+ * How strongly each pitch is present, frame by frame.
+ * Returns { data, frames, pitches, hop, sampleRate, level }.
+ */
+export function salienceMap(audio, sampleRate, opts = {}) {
+  return runSync(salienceSteps(audio, sampleRate, opts));
+}
+
 
 /* Ratios at which one pitch's energy is really another's.
  * A note's octave, twelfth and double octave all light up when only the lower
@@ -299,13 +311,13 @@ function findRuns(map, otherMap, times, minFrames, span, tailFrames) {
  * Returns a similarity between 0 and 1 and, more usefully, the specific
  * disagreements: which pitch, from when to when, and how strongly.
  */
-export function compareAudio(original, rendered, opts = {}) {
+function* compareSteps(original, rendered, opts = {}) {
   const { pitches = null, size = 4096, hop = 2048, minFrames = 1, sensitivity = 1 } = opts;
   const rate = original.sampleRate;
   const mapOpts = { pitches, size, hop };
-  let a = opts.originalMap || salienceMap(original.audio, rate, mapOpts);
+  let a = opts.originalMap || (yield* salienceSteps(original.audio, rate, mapOpts));
   if (pitches && pitches.length && pitches.length < a.pitches.length) a = restrictMap(a, pitches);
-  const b = salienceMap(rendered.audio, rendered.sampleRate, { ...mapOpts, pitches: a.pitches });
+  const b = yield* salienceSteps(rendered.audio, rendered.sampleRate, { ...mapOpts, pitches: a.pitches });
 
   /* Only the stretch where the recording has sound in it is compared. */
   const span = activeSpan(a);
@@ -326,8 +338,10 @@ export function compareAudio(original, rendered, opts = {}) {
     }
     if (na > 1e-6 && nb > 1e-6) { spectral += dot / Math.sqrt(na * nb); counted++; }
     else if (na <= 1e-6 && nb <= 1e-6) { spectral += 1; counted++; }
+    if ((f & 63) === 63) yield { stage: 'comparing', progress: (f - span.from) / Math.max(1, upTo - span.from) };
   }
   spectral = counted ? spectral / counted : 0;
+  yield { stage: 'comparing', progress: 1 };
 
   const onA = detectOnsets(toMono(original.audio), { sampleRate: rate, sensitivity }).onsets;
   const onB = detectOnsets(toMono(rendered.audio), { sampleRate: rendered.sampleRate, sensitivity }).onsets;
@@ -369,6 +383,19 @@ export function compareAudio(original, rendered, opts = {}) {
     renderedMap: b,
   };
 }
+
+/**
+ * Measure a rendered score against the recording it came from.
+ *
+ * Returns a similarity and, more usefully, what differs: which pitches are
+ * missing, which are extra, and where.
+ */
+export function compareAudio(original, rendered, opts = {}) {
+  return runSync(compareSteps(original, rendered, opts));
+}
+
+export { compareSteps, salienceSteps };
+
 
 /**
  * Say what is wrong in musical terms, bar by bar.
