@@ -348,6 +348,12 @@ input, select { font: inherit; color: inherit; }
 .tr-ab { display: flex; align-items: center; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
 .tr-ab-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); }
 .tr-ab .btn svg { vertical-align: -3px; margin-right: 3px; }
+.tr-simplified {
+  margin-top: 12px; padding: 9px 12px; border-radius: 7px; font-size: 11.8px;
+  line-height: 1.5; background: var(--panel-2); color: var(--text-dim);
+}
+.tr-simplified b { color: var(--text); }
+.tr-simplified ul { margin: 5px 0 0 16px; padding: 0; }
 .tr-issues { margin-top: 12px; font-size: 12px; }
 .tr-issues > b { display: block; margin-bottom: 6px; }
 .tr-issues ul { list-style: none; margin: 0 0 6px; padding: 0; }
@@ -12299,7 +12305,7 @@ __exp.PALETTES = PALETTES;
 
 const Dlg = __req("js/ui/dialogs.js");
 const { UI } = __req("js/ui/icons.js");
-const { extractNotes, transcribeAudio, transcribeMidi, readMusic, SOURCE, QUANTISE_LEVELS, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget, renderNotation, describeDifference } = __req("js/transcribe/index.js");
+const { extractNotes, transcribeAudio, transcribeMidi, readMusic, SOURCE, QUANTISE_LEVELS, STYLES, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget, renderNotation, describeDifference } = __req("js/transcribe/index.js");
 const { MidiRecorder, AudioRecorder, parseMIDI } = __req("js/transcribe/capture.js");
 const { GRID_PRESETS } = __req("js/transcribe/rhythm.js");
 const { CorrectionModel, compareScores } = __req("js/transcribe/learn.js");
@@ -12343,6 +12349,7 @@ class TranscribePanel {
       sensitivity: 1,
       grid: 'auto',
       quantise: 'auto',
+      style: 'balanced',
       bpm: null,
       timeSig: null,
       keyFifths: null,
@@ -12707,6 +12714,7 @@ class TranscribePanel {
       duration: this.duration,
       grid: grid.division,
       quantise: this.settings.quantise,
+      style: this.settings.style,
       bpm: this.settings.bpm,
       timeSig: this.settings.timeSig,
       keyFifths: this.settings.keyFifths,
@@ -12759,6 +12767,7 @@ class TranscribePanel {
       duration: this.duration || previous.duration,
       grid: grid.division,
       quantise: this.settings.quantise,
+      style: this.settings.style,
       bpm: this.settings.bpm,
       timeSig: this.settings.timeSig,
       keyFifths: this.settings.keyFifths,
@@ -12841,6 +12850,9 @@ class TranscribePanel {
       `<option value="${g.id}"${g.id === this.settings.grid ? ' selected' : ''}>${esc(g.label)}</option>`).join('');
     const quantOptions = QUANTISE_LEVELS.map((q) =>
       `<option value="${q.id}"${q.id === this.settings.quantise ? ' selected' : ''}>${esc(q.label)}</option>`).join('');
+    const style = STYLES.find((x) => x.id === this.settings.style) || STYLES[1];
+    const styleOptions = STYLES.map((x) =>
+      `<option value="${x.id}"${x.id === this.settings.style ? ' selected' : ''}>${esc(x.label)}</option>`).join('');
     const tsOptions = ['auto', ...TIME_SIG_PRESETS.map((t) => `${t.beats}/${t.beatType}`)]
       .map((v) => {
         const cur = this.settings.timeSig
@@ -12894,6 +12906,10 @@ class TranscribePanel {
             <button class="btn" data-do="stop">Stop</button>
           </div>
 
+          ${a.simplified && a.simplified.length ? `<div class="tr-simplified">
+            <b>Kept simple</b>
+            <ul>${a.simplified.map((line) => `<li>${esc(line)}</li>`).join('')}</ul>
+          </div>` : ''}
           ${issues.length ? `<div class="tr-issues">
             <b>Worth a second look</b>
             <ul>${issues.map((i) => `<li data-bar="${i.bar || ''}" class="tr-issue ${i.kind}">
@@ -12905,6 +12921,9 @@ class TranscribePanel {
 
         <div class="tr-tweaks">
           <h3>If something is wrong</h3>
+          <label class="tr-field"><span>Transcription style</span>
+            <select data-set="style">${styleOptions}</select>
+            <small>${esc(style.tip)}</small></label>
           <label class="tr-field"><span>Quantisation</span>
             <select data-set="quantise">${quantOptions}</select>
             <small>Automatic reads each beat on its own, which is what writes a triplet
@@ -12954,6 +12973,7 @@ class TranscribePanel {
   changeSetting(el) {
     const key = el.dataset.set;
     if (key === 'grid') this.settings.grid = el.value;
+    else if (key === 'style') this.settings.style = el.value;
     else if (key === 'quantise') this.settings.quantise = el.value;
     else if (key === 'bpm') this.settings.bpm = el.value ? +el.value : null;
     else if (key === 'annotate') this.settings.annotate = el.checked;
@@ -13060,9 +13080,10 @@ __exp.TranscribePanel = TranscribePanel;
  */
 
 const { extractNotes } = __req("js/transcribe/notes.js");
-const { attackEvents, estimateBeat, estimateMetre, quantise, toTicks } = __req("js/transcribe/rhythm.js");
+const { attackEvents, estimateBeat, estimateMetre, quantise, toTicks, normaliseRuns, STYLES, styleById } = __req("js/transcribe/rhythm.js");
 const { markPerformedEvents, groupChords } = __req("js/transcribe/voices.js");
 const { assignToParts } = __req("js/transcribe/assign.js");
+const { review } = __req("js/transcribe/simplify.js");
 const { analyseHarmony, harmonyFitter } = __req("js/transcribe/harmony.js");
 const { buildParts, detectKey } = __req("js/transcribe/build.js");
 const { resolveTarget } = __req("js/transcribe/ensembles.js");
@@ -13093,6 +13114,7 @@ const PASSES = [
   { id: 'chords', label: 'Detecting chords' },
   { id: 'voices', label: 'Separating voices' },
   { id: 'harmony', label: 'Reading the harmony' },
+  { id: 'review', label: 'Checking it reads sensibly' },
   { id: 'notation', label: 'Building notation' },
   { id: 'listening', label: 'Listening back' },
   { id: 'comparing', label: 'Comparing with the original' },
@@ -13115,6 +13137,7 @@ function readMusic(rawNotes, opts = {}) {
     bpm = null,
     grid = null,
     quantise: level = 'auto',
+    style: styleId = 'balanced',
     timeSig = null,
     keyFifths = null,
     plan: chosen = null,
@@ -13156,15 +13179,21 @@ function readMusic(rawNotes, opts = {}) {
   const span = duration || Math.max(...notes.map((n) => n.end)) + 0.5;
   const attacks = attackEvents(notes);
   const beat = estimateBeat(attacks, span, { fixedBpm: bpm });
+  const style = styleById(styleId);
   const q = QUANTISE_LEVELS.find((x) => x.id === level) || QUANTISE_LEVELS[0];
   const trial = quantise(notes, beat, {
-    division: grid, strength: q.strength, tolerance: q.tolerance, divisionWeights,
+    division: grid,
+    style,
+    strength: level === 'auto' ? style.strength : q.strength,
+    tolerance: level === 'auto' ? style.tolerance : q.tolerance,
+    divisionWeights,
   });
   const metre = timeSig
     ? { timeSig, beatsPerBar: timeSig.beats, confidence: 1 }
     : estimateMetre(attacks, beat, trial.compound);
   const perBeat = beatTicks(metre.timeSig);
   const fitted = toTicks(trial.notes, perBeat);
+  levelChords(fitted, perBeat);
 
   /* --- voices and parts -------------------------------------------------- */
   onPass('voices');
@@ -13178,8 +13207,25 @@ function readMusic(rawNotes, opts = {}) {
       if (!lines.has(key)) lines.set(key, []);
       lines.get(key).push(n);
     }
-    for (const line of lines.values()) closeGaps(line, perBeat, measureTicks(metre.timeSig));
+    for (const line of lines.values()) closeGaps(line, perBeat, measureTicks(metre.timeSig), style.fill);
   }
+
+  /* A repeated rhythm should look repeated: now that the lines are known, an
+   * even run is given one length rather than four that happen to add up. */
+  if (style.normalise) {
+    for (const entry of assignment.parts) normaliseRuns(entry.notes, style.tolerance);
+    toTicks(fitted, perBeat);
+  }
+
+  /* --- review: is any of this more complicated than it needs to be? ------ */
+  onPass('review');
+  const simplified = review(assignment.parts, {
+    perBeat,
+    tolerance: style.tolerance,
+    hands: style.merge,
+    voices: style.merge,
+    tuplets: style.merge,
+  });
 
   /* --- harmony: read, never imposed -------------------------------------- */
   onPass('harmony');
@@ -13234,6 +13280,7 @@ function readMusic(rawNotes, opts = {}) {
       key,
       measures: built.measures,
       noteCount: fitted.length,
+      simplified,
       divisions: trial.divisions,
       perBeat,
       confidence: {
@@ -13252,6 +13299,36 @@ const FIFTH_TONIC = { 0: 0, 1: 7, 2: 2, 3: 9, 4: 4, 5: 11, 6: 6, '-1': 5, '-2': 
 const fifthsToTonic = (f) => FIFTH_TONIC[String(f)] ?? 0;
 
 /**
+ * One chord, one length.
+ *
+ * The notes of a chord are let go a few milliseconds apart, and a few
+ * milliseconds is enough for the voice separator to decide they are separate
+ * lines — which is how a plain three-note chord becomes three voices with
+ * three different note values.  Notes struck together and released at close to
+ * the same moment are given one length before any of that happens.
+ *
+ * A held bass under a moving melody is not levelled: it differs from the
+ * melody by far more than the window allows, which is exactly what makes it a
+ * separate line rather than part of the chord.
+ */
+function levelChords(notes, perBeat) {
+  const byStart = new Map();
+  for (const n of notes) {
+    if (!byStart.has(n.startTicks)) byStart.set(n.startTicks, []);
+    byStart.get(n.startTicks).push(n);
+  }
+  const window = Math.round(perBeat * 0.34);
+  for (const group of byStart.values()) {
+    if (group.length < 2) continue;
+    const ends = group.map((n) => n.endTicks).sort((a, b) => a - b);
+    const median = ends[Math.floor(ends.length / 2)];
+    for (const n of group) {
+      if (Math.abs(n.endTicks - median) <= window) n.endTicks = median;
+    }
+  }
+}
+
+/**
  * Decide where the silences really are.
  *
  * Players lift a key a moment before the next note; that release is
@@ -13261,10 +13338,10 @@ const fifthsToTonic = (f) => FIFTH_TONIC[String(f)] ?? 0;
  * of one chord let go at slightly different moments are levelled for the same
  * reason.
  */
-function closeGaps(notes, perBeat, barTicks) {
+function closeGaps(notes, perBeat, barTicks, fill = 0.4) {
   if (!notes.length) return;
   const attacks = [...new Set(notes.map((n) => n.startTicks))].sort((a, b) => a - b);
-  const hold = Math.round(perBeat * 0.34);
+  const hold = Math.round(perBeat * fill);
 
   const byStart = new Map();
   for (const n of notes) {
@@ -13398,6 +13475,8 @@ function transcribeMidi(events, opts = {}) {
 
 const __re0 = __req("js/transcribe/rhythm.js");
 __exp.GRID_PRESETS = __re0.GRID_PRESETS;
+__exp.STYLES = __re0.STYLES;
+__exp.styleById = __re0.styleById;
 const __re1 = __req("js/transcribe/ensembles.js");
 __exp.TARGETS = __re1.TARGETS;
 __exp.PRESETS = __re1.PRESETS;
@@ -13659,6 +13738,17 @@ function extractNotes(audio, options = {}) {
         const ratio = struck ? reattackRatio(samples, sampleRate, seg.from, midi, others,
           Math.max(prev.from, cur.start), seg.to) : null;
         if (ratio !== null && ratio > reattack) close(midi, seg.from);
+        else if (struck && ratio === null) {
+          /* The pitch-specific measurement needs partials this note does not
+           * share with anything else sounding, and a chord of five or six
+           * leaves it almost none.  Repeated chords are exactly that case, so
+           * when the measurement cannot be made the segment's own reading of
+           * the pitch is used instead: something was clearly struck here, and
+           * this pitch is louder than it was, so it was struck again. */
+          const before = prev.pitches.get(midi);
+          if (before && info.salience > before.salience * 1.3
+            && seg.from - cur.start > 0.09) close(midi, seg.from);
+        }
       }
       if (!open.has(midi)) {
         /* Notes begin when something is struck.  A pitch that first appears at
@@ -13668,6 +13758,11 @@ function extractNotes(audio, options = {}) {
          * an attack to announce it. */
         if (i > 0 && (seg.strength || 0) < attackFloor
             && info.salience < seg.strongest * 0.25) continue;
+        /* Nor in the fading tail of what came before.  Everything in a decay is
+         * quiet, so a note there can look strong beside its neighbours while
+         * being nothing at all beside the music. */
+        if (i > 0 && (seg.strength || 0) < attackFloor
+            && seg.level < loudestSeg * 0.12) continue;
         open.set(midi, {
           midi, start: seg.from, end: seg.to, velocity: 0,
           salience: info.salience, confidence: info.confidence, frames: 1,
@@ -14820,6 +14915,10 @@ function estimateMetre(events, beat, compound) {
 /* Divisions of one beat we are willing to write down, simplest first. */
 const DIVISIONS = [1, 2, 4, 3, 8, 6, 16, 12];
 
+/* The same list in order of how complicated they are to read, which is the
+ * order they are tried in when choosing a grid for a whole phrase. */
+const BY_SIMPLICITY = [1, 2, 3, 4, 6, 8, 12, 16];
+
 const GRID_PRESETS = [
   { id: 'auto', label: 'Automatic', division: null },
   { id: '4', label: 'Quarter', division: 1 },
@@ -14831,46 +14930,99 @@ const GRID_PRESETS = [
 ];
 
 /**
+ * How readable a transcription should try to be.
+ *
+ * The setting that matters is `gain`: how much better a finer grid has to
+ * explain the playing before it is worth the extra complication on the page.
+ * At the simple end a division has to earn its place convincingly, so a phrase
+ * of quavers comes out as quavers; at the precise end small departures are
+ * preserved, which is what an expressive performance needs and what makes a
+ * plain one look fussy.
+ */
+const STYLES = [
+  {
+    id: 'simple',
+    label: 'Simple',
+    tip: 'Conventional rhythms, repeated patterns kept consistent, few ties or tuplets.',
+    gain: 0.24, tolerance: 0.24, strength: 1, fill: 0.52, merge: true, normalise: true,
+  },
+  {
+    id: 'balanced',
+    label: 'Balanced',
+    tip: 'The default. Keeps expressive timing that means something, still writes conventionally.',
+    gain: 0.14, tolerance: 0.19, strength: 1, fill: 0.40, merge: true, normalise: true,
+  },
+  {
+    id: 'precise',
+    label: 'Precise',
+    tip: 'Keeps more of how it was actually played. For rubato and free playing.',
+    gain: 0.06, tolerance: 0.14, strength: 0.85, fill: 0.28, merge: false, normalise: false,
+  },
+];
+
+const styleById = (id) => STYLES.find((s) => s.id === id) || STYLES[1];
+
+/** The share of attacks a division lands on, within tolerance. */
+function gridFit(positions, d, tol) {
+  if (!positions.length) return 1;
+  let hits = 0;
+  for (const b of positions) {
+    const pos = b * d;
+    if (Math.abs(pos - Math.round(pos)) <= tol) hits++;
+  }
+  return hits / positions.length;
+}
+
+/**
+ * One grid for the whole phrase.
+ *
+ * A finer division always explains at least as much as a coarser one, so left
+ * to itself the search would always end at the finest available and write a
+ * run of quavers as a scatter of demisemiquavers and ties.  The rule is that a
+ * finer grid has to explain a good deal more of the playing than the grid
+ * already chosen — not merely as much — before it is adopted.  That is the
+ * whole of "do not invent complexity", expressed as one number.
+ */
+function chooseGrid(positions, allowed, tol, gain) {
+  const ordered = BY_SIMPLICITY.filter((d) => allowed.includes(d));
+  if (!ordered.length) return { division: 4, fit: 0 };
+  let best = ordered[0];
+  let bestFit = gridFit(positions, best, tol);
+  for (const d of ordered.slice(1)) {
+    const fit = gridFit(positions, d, tol);
+    if (fit > bestFit + gain) { best = d; bestFit = fit; }
+  }
+  return { division: best, fit: bestFit };
+}
+
+/**
  * Fit the notes to the pulse.
  *
- * Each beat is examined on its own and given the simplest division that
- * accounts for every attack inside it.  A beat with notes a third of the way
- * through is a triplet beat whatever its neighbours are doing, and a beat
- * whose notes fit nowhere keeps its measured timing and says so, because a
- * wrong rhythm written confidently is harder to repair than a right one
- * written in an awkward place.
+ * The phrase decides the grid, not each beat on its own.  A beat is allowed to
+ * depart from it — a bar of triplets in a piece of quavers is a real thing —
+ * but only when the phrase's own grid plainly cannot account for what happened
+ * in that beat and another division plainly can.  Anything less than that and
+ * the beat falls in with its neighbours, because a rhythm written five
+ * different ways in five bars is wrong even when each bar is defensible.
  */
 function quantise(notes, beat, opts = {}) {
+  const style = opts.style || STYLES[1];
   const {
-    division = null,      // force a division, or null to choose per beat
-    strength = 1,         // 0 leaves the performance alone, 1 fits it fully
-    tolerance = 0.16,     // how far off a grid point an attack may be, in divisions
-    divisionWeights = null,   // divisions this player has needed before
+    division = null,
+    strength = style.strength,
+    tolerance = style.tolerance,
+    gain = style.gain,
+    divisionWeights = null,
   } = opts;
-  /* A player who works in triplets gets a little more latitude for them, so a
-   * beat that is nearly but not quite in threes is read the way they play
-   * rather than as a stumble.  It is latitude, not a decision: a beat that is
-   * plainly in twos still comes out in twos. */
-  const latitude = (d) => tolerance * (1 + ((divisionWeights && divisionWeights[d]) || 0) * 0.5);
 
   const toBeats = (t) => (t - beat.phase) / beat.period;
   const allowed = division ? [division] : DIVISIONS;
+  /* A player who works in triplets gets a little more latitude for them. */
+  const latitude = (d) => tolerance * (1 + ((divisionWeights && divisionWeights[d]) || 0) * 0.5);
 
-  /* The simplest division that accounts for every attack inside one beat. */
-  const fitBeat = (group, idx, scale = 1) => {
-    let chosen = allowed[allowed.length - 1];
-    let chosenErr = Infinity;
-    for (const d of allowed) {
-      let worst = 0;
-      for (const n of group) {
-        const pos = (toBeats(n.start) - idx) * d;
-        worst = Math.max(worst, Math.abs(pos - Math.round(pos)));
-      }
-      if (worst <= latitude(d) * scale) return { division: d, error: worst };
-      if (worst < chosenErr) { chosen = d; chosenErr = worst; }
-    }
-    return { division: chosen, error: chosenErr };
-  };
+  const attacks = [...new Set(notes.map((n) => Math.round(toBeats(n.start) * 1e4) / 1e4))]
+    .sort((a, b) => a - b);
+  const global = chooseGrid(attacks, allowed, tolerance, gain);
 
   const byBeat = new Map();
   for (const n of notes) {
@@ -14879,34 +15031,33 @@ function quantise(notes, beat, opts = {}) {
     byBeat.get(idx).push(n);
   }
 
+  /* Where the phrase's grid does not fit a beat, that beat may use its own —
+   * but the alternative has to fit where the phrase's grid does not, and it is
+   * tried in order of simplicity so a beat never becomes more complicated than
+   * it has to be. */
   const beatDivision = new Map();
-  for (const [idx, group] of byBeat) beatDivision.set(idx, fitBeat(group, idx));
-
-  /* A division that appears in one beat and nowhere else is more often a
-   * stumble than a triplet, so a beat is allowed to fall in with its
-   * neighbours when their division explains it nearly as well. */
-  const tally = new Map();
-  for (const { division: d } of beatDivision.values()) tally.set(d, (tally.get(d) || 0) + 1);
-  for (const [idx, info] of beatDivision) {
-    if ((tally.get(info.division) || 0) > 1) continue;
-    for (const [d, count] of [...tally].sort((a, b) => b[1] - a[1])) {
-      if (count < 2 || d === info.division) continue;
-      const alt = fitBeat(byBeat.get(idx), idx, 1.6);
-      if (alt.division === d) { beatDivision.set(idx, alt); break; }
-      let worst = 0;
-      for (const n of byBeat.get(idx)) {
-        const pos = (toBeats(n.start) - idx) * d;
-        worst = Math.max(worst, Math.abs(pos - Math.round(pos)));
-      }
-      if (worst <= tolerance * 1.6) { beatDivision.set(idx, { division: d, error: worst }); break; }
+  for (const [idx, group] of byBeat) {
+    const local = group.map((n) => toBeats(n.start) - idx);
+    const worst = (d) => Math.max(...local.map((p) => Math.abs(p * d - Math.round(p * d))));
+    if (worst(global.division) <= latitude(global.division)) {
+      beatDivision.set(idx, { division: global.division, error: worst(global.division) });
+      continue;
     }
+    let chosen = global.division;
+    let chosenErr = worst(global.division);
+    for (const d of BY_SIMPLICITY.filter((x) => allowed.includes(x))) {
+      const err = worst(d);
+      if (err <= latitude(d)) { chosen = d; chosenErr = err; break; }
+      if (err < chosenErr) { chosen = d; chosenErr = err; }
+    }
+    beatDivision.set(idx, { division: chosen, error: chosenErr });
   }
 
   const out = [];
   for (const n of notes) {
     const raw = toBeats(n.start);
     const idx = Math.max(0, Math.floor(raw + 1e-9));
-    const d = (beatDivision.get(idx) || { division: 4 }).division;
+    const d = (beatDivision.get(idx) || { division: global.division }).division;
     const snapped = Math.round(raw * d) / d;
     const drift = Math.abs(raw - snapped) * d;
     const beats = Math.max(0, raw + (snapped - raw) * strength);
@@ -14919,45 +15070,102 @@ function quantise(notes, beat, opts = {}) {
     });
   }
 
-  /* Lengths, fitted the same way.  Where a note is released needs its own
-   * division: a beat holding one staccato quaver has a single attack, so its
-   * attacks are fitted to the beat itself, but writing the note as filling the
-   * whole beat would lose the silence the player left after it. */
-  /* Releases are written no finer than this.  Where a note stops is not a
-   * rhythmic event the way an attack is — a player lets go when the next note
-   * needs the finger — so reading a release to the nearest thirty-second finds
-   * a rhythm nobody played, and reading it as a triplet is worse still. */
-  const releaseLimit = (beatDiv) => Math.max(beatDiv, 4);
+  /* Lengths, on the same grid as the attacks.
+   *
+   * Giving releases a finer grid of their own is what turns a run of quavers
+   * into dotted semiquavers tied to demisemiquavers: the attacks are right and
+   * the ends are measured to a precision nobody played to.  A note ends where
+   * the grid says, and if that is the next attack it is simply a quaver. */
   for (const n of out) {
     const raw = toBeats(n.end);
     let d = n.division;
+    /* A note much shorter than one step of the grid is a real silence, not a
+     * rounding error, and writing it as a full step would throw that silence
+     * away.  Only then is the grid refined, and only by halving it, so a
+     * staccato quaver becomes a semiquaver and a rest rather than anything
+     * stranger. */
+    const played = raw - n.beats;
+    while (played > 0 && played < 0.62 / d && d < 16) d *= 2;
     let snapped = Math.round(raw * d) / d;
-    if (Math.abs(raw - snapped) * d > tolerance) {
-      const limit = releaseLimit(n.division);
-      let bestErr = Math.abs(raw - snapped) * d;
-      for (const cand of allowed) {
-        if (cand > limit) continue;
-        const s = Math.round(raw * cand) / cand;
-        const err = Math.abs(raw - s) * cand;
-        if (err <= tolerance) { d = cand; snapped = s; bestErr = err; break; }
-        if (err < bestErr) { d = cand; snapped = s; bestErr = err; }
-      }
-    }
-    const step = 1 / Math.max(d, n.division);
-    if (snapped <= n.beats + 1e-9) snapped = n.beats + step;
-    n.endBeats = Math.max(n.beats + step * 0.5, raw + (snapped - raw) * strength);
-    n.endDivision = Math.max(d, n.division);
-    n.endTicks = Math.max(n.startTicks + Math.round((TPQ * step) / 2),
-      Math.round(n.endBeats * TPQ));
+    if (snapped <= n.beats + 1e-9) snapped = n.beats + 1 / d;
+    n.endBeats = raw + (snapped - raw) * strength;
+    if (n.endBeats <= n.beats + 1e-9) n.endBeats = n.beats + 1 / d;
+    n.endDivision = d;
+    n.division = Math.max(n.division, 0);
+    n.endTicks = Math.max(n.startTicks + Math.round(TPQ / (d * 2)), Math.round(n.endBeats * TPQ));
   }
 
+  const tally = new Map();
+  for (const { division: d } of beatDivision.values()) tally.set(d, (tally.get(d) || 0) + 1);
   const ranked = [...tally.entries()].sort((a, b) => b[1] - a[1]);
   return {
     notes: out,
-    /* Compound metre is a property of how the beat divides, not of the tempo. */
+    grid: global,
     compound: ranked.length > 0 && ranked[0][0] % 3 === 0 && ranked[0][0] > 1,
     divisions: ranked,
   };
+}
+
+/**
+ * Make a repeated rhythm look repeated.
+ *
+ * A run of evenly spaced notes is one rhythmic idea, and a reader should see
+ * one value repeated rather than four values that happen to add up.  Where
+ * consecutive attacks are evenly spaced, the notes between them are given the
+ * length that most of them already have — which is the length the player was
+ * playing.  Nothing moves: the attacks stay where they were quantised to, and
+ * only the written lengths are made consistent with each other.
+ */
+function normaliseRuns(notes, tolerance = 0.2) {
+  const byLine = new Map();
+  for (const n of notes) {
+    const key = n.staff !== undefined ? `${n.staff}:${n.voice}` : 'all';
+    if (!byLine.has(key)) byLine.set(key, []);
+    byLine.get(key).push(n);
+  }
+  for (const line of byLine.values()) {
+    const heads = [];
+    const seen = new Map();
+    for (const n of line.sort((a, b) => a.beats - b.beats)) {
+      if (!seen.has(n.beats)) { seen.set(n.beats, []); heads.push(n.beats); }
+      seen.get(n.beats).push(n);
+    }
+    if (heads.length < 3) continue;
+    let i = 0;
+    while (i < heads.length - 2) {
+      const step = heads[i + 1] - heads[i];
+      if (step <= 0) { i++; continue; }
+      let j = i + 1;
+      while (j < heads.length - 1 && Math.abs((heads[j + 1] - heads[j]) - step) < step * 0.12) j++;
+      if (j - i >= 2) {
+        /* An even run.  Whatever most of its notes last, they all last. */
+        const lengths = [];
+        for (let k = i; k <= j; k++) {
+          for (const n of seen.get(heads[k])) lengths.push(Math.round((n.endBeats - n.beats) * 48));
+        }
+        lengths.sort((a, b) => a - b);
+        const counts = new Map();
+        for (const l of lengths) counts.set(l, (counts.get(l) || 0) + 1);
+        let modal = lengths[0];
+        let most = 0;
+        for (const [l, c] of counts) if (c > most || (c === most && l > modal)) { most = c; modal = l; }
+        const want = modal / 48;
+        /* Only where the note was already close to that length: a genuinely
+         * held note in the middle of a run keeps its length. */
+        for (let k = i; k <= j; k++) {
+          for (const n of seen.get(heads[k])) {
+            const had = n.endBeats - n.beats;
+            if (Math.abs(had - want) <= Math.max(step * 0.5, tolerance)) {
+              n.endBeats = n.beats + want;
+              n.endTicks = Math.round(n.endBeats * TPQ);
+              n.patterned = true;
+            }
+          }
+        }
+        i = j;
+      } else i++;
+    }
+  }
 }
 
 /** Onset events for the beat estimator, one per simultaneity. */
@@ -15004,9 +15212,12 @@ function toTicks(notes, ticksPerBeat) {
 __exp.estimateBeat = estimateBeat;
 __exp.estimateMetre = estimateMetre;
 __exp.quantise = quantise;
+__exp.normaliseRuns = normaliseRuns;
 __exp.attackEvents = attackEvents;
 __exp.toTicks = toTicks;
 __exp.GRID_PRESETS = GRID_PRESETS;
+__exp.STYLES = STYLES;
+__exp.styleById = styleById;
 },
   "js/transcribe/voices.js": function (__exp, __req) {
 /* Cadenza — sorting notes into hands, voices and chords.
@@ -15778,6 +15989,326 @@ function assignToParts(notes, plan, opts = {}) {
 __exp.separateLines = separateLines;
 __exp.assignToParts = assignToParts;
 __exp.groupChords = groupChords;
+},
+  "js/transcribe/simplify.js": function (__exp, __req) {
+/* Cadenza — reading the transcription back and asking whether it is sensible.
+ *
+ * Everything upstream decides one thing at a time: this beat's division, this
+ * note's length, this note's hand.  Each decision can be defensible and the
+ * page still wrong, because notation is judged as a whole — a rhythm written
+ * five different ways in five bars is wrong even when every bar is defensible
+ * on its own.
+ *
+ * So before the score is built, it is reviewed.  The questions are the ones a
+ * copyist would ask:
+ *
+ *   Are there voices here that are really one chord?
+ *   Is a hand holding notes that belong to the other one?
+ *   Is a beat written as a triplet that is plainly in twos?
+ *   Is a repeated figure written differently each time it appears?
+ *
+ * The rule throughout is the one that matters: where two notations represent
+ * the same performance, take the simpler.  Where they do not — where
+ * simplifying would throw away something that was actually played — leave it
+ * alone.  Accuracy first, readability second.
+ */
+
+const { TPQ } = __req("js/core/rhythm.js");
+
+/**
+ * Are these two lines really independent?
+ *
+ * They are if one of them ever moves while the other is holding: that is what
+ * a second voice is for.  If they always start together, they are one chord
+ * written twice, and a reader would rather see the chord.
+ */
+function independent(a, b) {
+  const starts = (list) => new Set(list.map((n) => n.startTicks));
+  const aStarts = starts(a);
+  const bStarts = starts(b);
+  const movesAlone = (one, other, otherStarts) => one.some((n) => {
+    if (otherStarts.has(n.startTicks)) return false;
+    /* It began while the other was sounding, and the other did not begin with
+     * it — a genuine entry against a held note. */
+    return other.some((m) => m.startTicks < n.startTicks && m.endTicks > n.startTicks + 1);
+  });
+  if (movesAlone(a, b, bStarts) || movesAlone(b, a, aStarts)) return true;
+
+  /* Or if, where they do start together, one is much longer than the other:
+   * a melody over a held bass, not a chord. */
+  for (const n of a) {
+    for (const m of b) {
+      if (n.startTicks !== m.startTicks) continue;
+      const longer = Math.max(n.endTicks - n.startTicks, m.endTicks - m.startTicks);
+      const shorter = Math.min(n.endTicks - n.startTicks, m.endTicks - m.startTicks);
+      if (longer > shorter * 1.9 && longer - shorter > TPQ / 2) return true;
+    }
+  }
+  return false;
+}
+
+/** Collapse two lines into one, and give each chord a single length. */
+function mergeVoices(notes, keep, drop) {
+  for (const n of notes) if (n.voice === drop) n.voice = keep;
+  const byStart = new Map();
+  for (const n of notes) {
+    if (n.voice !== keep) continue;
+    if (!byStart.has(n.startTicks)) byStart.set(n.startTicks, []);
+    byStart.get(n.startTicks).push(n);
+  }
+  for (const group of byStart.values()) {
+    if (group.length < 2) continue;
+    const ends = group.map((n) => n.endTicks).sort((x, y) => x - y);
+    const median = ends[Math.floor(ends.length / 2)];
+    for (const n of group) n.endTicks = median;
+  }
+}
+
+/**
+ * Merge lines that are really chords.
+ *
+ * Done once per staff, repeatedly, because collapsing two voices can leave a
+ * third that is now plainly part of the same chord.
+ */
+function reviewVoices(notes, log) {
+  const staves = [...new Set(notes.map((n) => n.staff || 0))];
+  for (const staff of staves) {
+    const own = notes.filter((n) => (n.staff || 0) === staff);
+    let changed = true;
+    let guard = 0;
+    while (changed && guard++ < 6) {
+      changed = false;
+      const voices = [...new Set(own.map((n) => n.voice || 0))].sort((a, b) => a - b);
+      outer:
+      for (let i = 0; i < voices.length; i++) {
+        for (let j = i + 1; j < voices.length; j++) {
+          const a = own.filter((n) => (n.voice || 0) === voices[i]);
+          const b = own.filter((n) => (n.voice || 0) === voices[j]);
+          if (!a.length || !b.length) continue;
+          if (independent(a, b)) continue;
+          mergeVoices(own, voices[i], voices[j]);
+          log.push(`merged two lines on staff ${staff + 1} into one chord part`);
+          changed = true;
+          break outer;
+        }
+      }
+    }
+    /* Renumber so voice one is the highest line, as a reader expects. */
+    const order = [...new Set(own.map((n) => n.voice || 0))]
+      .map((v) => ({ v, mean: mean(own.filter((n) => (n.voice || 0) === v)) }))
+      .sort((x, y) => y.mean - x.mean);
+    const map = new Map(order.map((o, i) => [o.v, i]));
+    for (const n of own) n.voice = map.get(n.voice || 0);
+  }
+}
+
+const mean = (list) => list.reduce((s, n) => s + n.midi, 0) / Math.max(1, list.length);
+
+/**
+ * Put a chord back in one hand.
+ *
+ * The hand division is chosen a moment at a time, so a chord whose notes
+ * straddle it is torn in two.  Where the notes struck at one instant fall into
+ * clear groups — a gap of an octave or more between them — each group belongs
+ * to one hand, and a group that has been split between hands is put back into
+ * whichever hand holds most of it.
+ */
+function reviewHands(notes, log) {
+  const byStart = new Map();
+  for (const n of notes) {
+    if (!byStart.has(n.startTicks)) byStart.set(n.startTicks, []);
+    byStart.get(n.startTicks).push(n);
+  }
+  for (const group of byStart.values()) {
+    if (group.length < 2) continue;
+    const sorted = [...group].sort((a, b) => a.midi - b.midi);
+    /* Split where the notes themselves are furthest apart, if that gap is wide
+     * enough to be the space between two hands. */
+    const clusters = [[sorted[0]]];
+    for (let i = 1; i < sorted.length; i++) {
+      if (sorted[i].midi - sorted[i - 1].midi >= 12) clusters.push([]);
+      clusters[clusters.length - 1].push(sorted[i]);
+    }
+    for (const cluster of clusters) {
+      if (cluster.length < 2) continue;
+      /* Never wider than a hand can reach: that really is two hands. */
+      if (cluster[cluster.length - 1].midi - cluster[0].midi > 14) continue;
+      const votes = new Map();
+      for (const n of cluster) votes.set(n.staff, (votes.get(n.staff) || 0) + 1);
+      if (votes.size < 2) continue;
+      let win = cluster[0].staff;
+      let most = 0;
+      for (const [staff, count] of votes) if (count > most) { most = count; win = staff; }
+      for (const n of cluster) n.staff = win;
+      log.push('put a chord back into one hand');
+    }
+  }
+}
+
+/**
+ * Take away a tuplet that nothing needed.
+ *
+ * A beat is written in threes only when it was played in threes.  Where the
+ * same attacks sit just as well on an ordinary division, the ordinary division
+ * is what a reader should see.
+ */
+function reviewTuplets(notes, perBeat, tolerance, log) {
+  const byBeat = new Map();
+  for (const n of notes) {
+    const b = Math.floor(n.startTicks / perBeat);
+    if (!byBeat.has(b)) byBeat.set(b, []);
+    byBeat.get(b).push(n);
+  }
+  for (const [beatIndex, group] of byBeat) {
+    const d = Math.max(...group.map((n) => n.division || 1));
+    if (d % 3 !== 0) continue;
+    const base = beatIndex * perBeat;
+    for (const plain of [1, 2, 4, 8]) {
+      if (plain > d) break;
+      const step = perBeat / plain;
+      const fits = group.every((n) => {
+        const off = (n.startTicks - base) / step;
+        return Math.abs(off - Math.round(off)) <= tolerance;
+      });
+      if (!fits) continue;
+      for (const n of group) {
+        n.division = plain;
+        n.startTicks = base + Math.round((n.startTicks - base) / step) * step;
+        const len = Math.max(step, Math.round((n.endTicks - n.startTicks) / step) * step);
+        n.endTicks = n.startTicks + len;
+      }
+      log.push(`bar beat ${beatIndex + 1} was written in threes but sits on ordinary beats`);
+      break;
+    }
+  }
+}
+
+/**
+ * Pull a straggler back into the chord it belongs to.
+ *
+ * When five notes of a chord are heard at the beat and the sixth a moment
+ * later, the sixth is not a syncopation — it is the same chord, heard late.
+ * Left alone it drags its whole beat onto a finer grid and the bar fills with
+ * values nobody played.  A note that arrives alone, close to a chord, and is
+ * not already in that chord, joins it.
+ *
+ * The window is deliberately narrow.  A note genuinely played off the beat is
+ * further away than this, and keeps its place.
+ */
+function reviewStragglers(notes, perBeat, log) {
+  const byStart = new Map();
+  for (const n of notes) {
+    if (!byStart.has(n.startTicks)) byStart.set(n.startTicks, []);
+    byStart.get(n.startTicks).push(n);
+  }
+  const starts = [...byStart.keys()].sort((a, b) => a - b);
+  if (starts.length < 3) return;
+  const sizes = starts.map((t) => byStart.get(t).length).sort((a, b) => a - b);
+  const typical = sizes[Math.floor(sizes.length / 2)];
+  if (typical < 2) return;
+  const window = Math.round(perBeat * 0.45);
+
+  for (const t of starts) {
+    const group = byStart.get(t);
+    if (group.length * 2 > typical) continue;        // not a straggler
+    let best = null;
+    let bestGap = window + 1;
+    for (const other of starts) {
+      if (other === t) continue;
+      const gap = Math.abs(other - t);
+      if (gap > window || gap >= bestGap) continue;
+      const host = byStart.get(other);
+      if (host.length <= group.length) continue;
+      if (group.some((n) => host.some((m) => m.midi === n.midi))) continue;
+      best = other;
+      bestGap = gap;
+    }
+    if (best === null) continue;
+    const host = byStart.get(best);
+    const ends = host.map((n) => n.endTicks).sort((a, b) => a - b);
+    const median = ends[Math.floor(ends.length / 2)];
+    for (const n of group) {
+      n.startTicks = best;
+      n.endTicks = median;
+      n.division = host[0].division;
+      host.push(n);
+    }
+    byStart.delete(t);
+    log.push('a note heard a moment late was put back in its chord');
+  }
+}
+
+/**
+ * Give a chord one length.
+ *
+ * Notes struck together in one hand are let go together, and where the same
+ * hand strikes again the chord before it lasted until then.  Heard from a
+ * recording those six releases land at six slightly different moments, and
+ * six slightly different lengths become several voices with several note
+ * values — the commonest way a plain accompaniment turns into a thicket.
+ *
+ * Applied only where most of the chord already reaches the next attack.  A
+ * melody note and a held bass struck together are not a chord in this sense,
+ * and the test that most of the group agrees is what tells them apart.
+ */
+function reviewChordLengths(notes, perBeat, log) {
+  const staves = [...new Set(notes.map((n) => n.staff || 0))];
+  for (const staff of staves) {
+    const own = notes.filter((n) => (n.staff || 0) === staff);
+    const byStart = new Map();
+    for (const n of own) {
+      if (!byStart.has(n.startTicks)) byStart.set(n.startTicks, []);
+      byStart.get(n.startTicks).push(n);
+    }
+    const chordStarts = [...byStart.keys()].filter((t) => byStart.get(t).length >= 2)
+      .sort((a, b) => a - b);
+    for (let i = 0; i < chordStarts.length; i++) {
+      const t1 = chordStarts[i];
+      const group = byStart.get(t1);
+      /* The next moment this hand plays anything at all. */
+      const next = [...byStart.keys()].filter((t) => t > t1).sort((a, b) => a - b)[0];
+      if (next === undefined) continue;
+      const span = next - t1;
+      if (span <= 0 || span > perBeat * 8) continue;
+      const reaching = group.filter((n) => n.endTicks >= next - perBeat * 0.2).length;
+      if (reaching * 2 <= group.length) continue;      // not a chord held to the next
+      let moved = 0;
+      for (const n of group) {
+        if (n.endTicks === next) continue;
+        n.endTicks = next;
+        moved++;
+      }
+      if (moved) log.push('gave a chord one length instead of several');
+    }
+  }
+}
+
+/**
+ * Review the whole reading and simplify what can be simplified.
+ *
+ * `parts` is the assignment: one entry per instrument, each with its notes.
+ * Returns the list of what was changed, which the panel shows so the
+ * simplification is visible rather than silent.
+ */
+function review(parts, opts = {}) {
+  const { perBeat = TPQ, tolerance = 0.2, hands = true, voices = true, tuplets = true } = opts;
+  const log = [];
+  for (const entry of parts) {
+    if (!entry.notes || !entry.notes.length) continue;
+    if (voices) reviewStragglers(entry.notes, perBeat, log);
+    if (voices) reviewChordLengths(entry.notes, perBeat, log);
+    if (hands && entry.part && entry.part.staves > 1) reviewHands(entry.notes, log);
+    if (tuplets) reviewTuplets(entry.notes, perBeat, tolerance, log);
+    if (voices) reviewVoices(entry.notes, log);
+  }
+  /* One line per kind of change, with a count: a list of forty identical
+   * entries tells the reader nothing. */
+  const counts = new Map();
+  for (const line of log) counts.set(line, (counts.get(line) || 0) + 1);
+  return [...counts.entries()].map(([line, n]) => (n > 1 ? `${line} (${n}×)` : line));
+}
+
+__exp.review = review;
 },
   "js/transcribe/harmony.js": function (__exp, __req) {
 /* Cadenza — reading the harmony, without rewriting the music.

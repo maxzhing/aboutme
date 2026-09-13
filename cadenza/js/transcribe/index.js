@@ -22,9 +22,10 @@
  */
 
 import { extractNotes } from './notes.js';
-import { attackEvents, estimateBeat, estimateMetre, quantise, toTicks } from './rhythm.js';
+import { attackEvents, estimateBeat, estimateMetre, quantise, toTicks, normaliseRuns, STYLES, styleById } from './rhythm.js';
 import { markPerformedEvents, groupChords } from './voices.js';
 import { assignToParts } from './assign.js';
+import { review } from './simplify.js';
 import { analyseHarmony, harmonyFitter } from './harmony.js';
 import { buildParts, detectKey } from './build.js';
 import { resolveTarget } from './ensembles.js';
@@ -55,6 +56,7 @@ export const PASSES = [
   { id: 'chords', label: 'Detecting chords' },
   { id: 'voices', label: 'Separating voices' },
   { id: 'harmony', label: 'Reading the harmony' },
+  { id: 'review', label: 'Checking it reads sensibly' },
   { id: 'notation', label: 'Building notation' },
   { id: 'listening', label: 'Listening back' },
   { id: 'comparing', label: 'Comparing with the original' },
@@ -77,6 +79,7 @@ export function readMusic(rawNotes, opts = {}) {
     bpm = null,
     grid = null,
     quantise: level = 'auto',
+    style: styleId = 'balanced',
     timeSig = null,
     keyFifths = null,
     plan: chosen = null,
@@ -118,15 +121,21 @@ export function readMusic(rawNotes, opts = {}) {
   const span = duration || Math.max(...notes.map((n) => n.end)) + 0.5;
   const attacks = attackEvents(notes);
   const beat = estimateBeat(attacks, span, { fixedBpm: bpm });
+  const style = styleById(styleId);
   const q = QUANTISE_LEVELS.find((x) => x.id === level) || QUANTISE_LEVELS[0];
   const trial = quantise(notes, beat, {
-    division: grid, strength: q.strength, tolerance: q.tolerance, divisionWeights,
+    division: grid,
+    style,
+    strength: level === 'auto' ? style.strength : q.strength,
+    tolerance: level === 'auto' ? style.tolerance : q.tolerance,
+    divisionWeights,
   });
   const metre = timeSig
     ? { timeSig, beatsPerBar: timeSig.beats, confidence: 1 }
     : estimateMetre(attacks, beat, trial.compound);
   const perBeat = beatTicks(metre.timeSig);
   const fitted = toTicks(trial.notes, perBeat);
+  levelChords(fitted, perBeat);
 
   /* --- voices and parts -------------------------------------------------- */
   onPass('voices');
@@ -140,8 +149,25 @@ export function readMusic(rawNotes, opts = {}) {
       if (!lines.has(key)) lines.set(key, []);
       lines.get(key).push(n);
     }
-    for (const line of lines.values()) closeGaps(line, perBeat, measureTicks(metre.timeSig));
+    for (const line of lines.values()) closeGaps(line, perBeat, measureTicks(metre.timeSig), style.fill);
   }
+
+  /* A repeated rhythm should look repeated: now that the lines are known, an
+   * even run is given one length rather than four that happen to add up. */
+  if (style.normalise) {
+    for (const entry of assignment.parts) normaliseRuns(entry.notes, style.tolerance);
+    toTicks(fitted, perBeat);
+  }
+
+  /* --- review: is any of this more complicated than it needs to be? ------ */
+  onPass('review');
+  const simplified = review(assignment.parts, {
+    perBeat,
+    tolerance: style.tolerance,
+    hands: style.merge,
+    voices: style.merge,
+    tuplets: style.merge,
+  });
 
   /* --- harmony: read, never imposed -------------------------------------- */
   onPass('harmony');
@@ -196,6 +222,7 @@ export function readMusic(rawNotes, opts = {}) {
       key,
       measures: built.measures,
       noteCount: fitted.length,
+      simplified,
       divisions: trial.divisions,
       perBeat,
       confidence: {
@@ -214,6 +241,36 @@ const FIFTH_TONIC = { 0: 0, 1: 7, 2: 2, 3: 9, 4: 4, 5: 11, 6: 6, '-1': 5, '-2': 
 const fifthsToTonic = (f) => FIFTH_TONIC[String(f)] ?? 0;
 
 /**
+ * One chord, one length.
+ *
+ * The notes of a chord are let go a few milliseconds apart, and a few
+ * milliseconds is enough for the voice separator to decide they are separate
+ * lines — which is how a plain three-note chord becomes three voices with
+ * three different note values.  Notes struck together and released at close to
+ * the same moment are given one length before any of that happens.
+ *
+ * A held bass under a moving melody is not levelled: it differs from the
+ * melody by far more than the window allows, which is exactly what makes it a
+ * separate line rather than part of the chord.
+ */
+function levelChords(notes, perBeat) {
+  const byStart = new Map();
+  for (const n of notes) {
+    if (!byStart.has(n.startTicks)) byStart.set(n.startTicks, []);
+    byStart.get(n.startTicks).push(n);
+  }
+  const window = Math.round(perBeat * 0.34);
+  for (const group of byStart.values()) {
+    if (group.length < 2) continue;
+    const ends = group.map((n) => n.endTicks).sort((a, b) => a - b);
+    const median = ends[Math.floor(ends.length / 2)];
+    for (const n of group) {
+      if (Math.abs(n.endTicks - median) <= window) n.endTicks = median;
+    }
+  }
+}
+
+/**
  * Decide where the silences really are.
  *
  * Players lift a key a moment before the next note; that release is
@@ -223,10 +280,10 @@ const fifthsToTonic = (f) => FIFTH_TONIC[String(f)] ?? 0;
  * of one chord let go at slightly different moments are levelled for the same
  * reason.
  */
-function closeGaps(notes, perBeat, barTicks) {
+function closeGaps(notes, perBeat, barTicks, fill = 0.4) {
   if (!notes.length) return;
   const attacks = [...new Set(notes.map((n) => n.startTicks))].sort((a, b) => a - b);
-  const hold = Math.round(perBeat * 0.34);
+  const hold = Math.round(perBeat * fill);
 
   const byStart = new Map();
   for (const n of notes) {
@@ -358,7 +415,7 @@ export function transcribeMidi(events, opts = {}) {
 }
 
 export { extractNotes, detectKey, resolveTarget, refineByListening };
-export { GRID_PRESETS } from './rhythm.js';
+export { GRID_PRESETS, STYLES, styleById } from './rhythm.js';
 export { TARGETS, PRESETS, SECTIONS, ALL_PARTS, findTarget } from './ensembles.js';
 export { analyseHarmony, readChord, romanNumeral } from './harmony.js';
 export { renderNotation, notationEvents } from './render.js';

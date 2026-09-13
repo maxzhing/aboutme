@@ -226,6 +226,17 @@ export function extractNotes(audio, options = {}) {
         const ratio = struck ? reattackRatio(samples, sampleRate, seg.from, midi, others,
           Math.max(prev.from, cur.start), seg.to) : null;
         if (ratio !== null && ratio > reattack) close(midi, seg.from);
+        else if (struck && ratio === null) {
+          /* The pitch-specific measurement needs partials this note does not
+           * share with anything else sounding, and a chord of five or six
+           * leaves it almost none.  Repeated chords are exactly that case, so
+           * when the measurement cannot be made the segment's own reading of
+           * the pitch is used instead: something was clearly struck here, and
+           * this pitch is louder than it was, so it was struck again. */
+          const before = prev.pitches.get(midi);
+          if (before && info.salience > before.salience * 1.3
+            && seg.from - cur.start > 0.09) close(midi, seg.from);
+        }
       }
       if (!open.has(midi)) {
         /* Notes begin when something is struck.  A pitch that first appears at
@@ -235,6 +246,11 @@ export function extractNotes(audio, options = {}) {
          * an attack to announce it. */
         if (i > 0 && (seg.strength || 0) < attackFloor
             && info.salience < seg.strongest * 0.25) continue;
+        /* Nor in the fading tail of what came before.  Everything in a decay is
+         * quiet, so a note there can look strong beside its neighbours while
+         * being nothing at all beside the music. */
+        if (i > 0 && (seg.strength || 0) < attackFloor
+            && seg.level < loudestSeg * 0.12) continue;
         open.set(midi, {
           midi, start: seg.from, end: seg.to, velocity: 0,
           salience: info.salience, confidence: info.confidence, frames: 1,

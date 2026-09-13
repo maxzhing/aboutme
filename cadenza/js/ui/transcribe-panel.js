@@ -21,7 +21,7 @@ import * as Dlg from './dialogs.js';
 import { UI } from './icons.js';
 import {
   extractNotes, transcribeAudio, transcribeMidi, readMusic, SOURCE,
-  QUANTISE_LEVELS, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget,
+  QUANTISE_LEVELS, STYLES, PASSES, TARGETS, PRESETS, ALL_PARTS, resolveTarget,
   renderNotation, describeDifference,
 } from '../transcribe/index.js';
 import { MidiRecorder, AudioRecorder, parseMIDI } from '../transcribe/capture.js';
@@ -67,6 +67,7 @@ export class TranscribePanel {
       sensitivity: 1,
       grid: 'auto',
       quantise: 'auto',
+      style: 'balanced',
       bpm: null,
       timeSig: null,
       keyFifths: null,
@@ -431,6 +432,7 @@ export class TranscribePanel {
       duration: this.duration,
       grid: grid.division,
       quantise: this.settings.quantise,
+      style: this.settings.style,
       bpm: this.settings.bpm,
       timeSig: this.settings.timeSig,
       keyFifths: this.settings.keyFifths,
@@ -483,6 +485,7 @@ export class TranscribePanel {
       duration: this.duration || previous.duration,
       grid: grid.division,
       quantise: this.settings.quantise,
+      style: this.settings.style,
       bpm: this.settings.bpm,
       timeSig: this.settings.timeSig,
       keyFifths: this.settings.keyFifths,
@@ -565,6 +568,9 @@ export class TranscribePanel {
       `<option value="${g.id}"${g.id === this.settings.grid ? ' selected' : ''}>${esc(g.label)}</option>`).join('');
     const quantOptions = QUANTISE_LEVELS.map((q) =>
       `<option value="${q.id}"${q.id === this.settings.quantise ? ' selected' : ''}>${esc(q.label)}</option>`).join('');
+    const style = STYLES.find((x) => x.id === this.settings.style) || STYLES[1];
+    const styleOptions = STYLES.map((x) =>
+      `<option value="${x.id}"${x.id === this.settings.style ? ' selected' : ''}>${esc(x.label)}</option>`).join('');
     const tsOptions = ['auto', ...TIME_SIG_PRESETS.map((t) => `${t.beats}/${t.beatType}`)]
       .map((v) => {
         const cur = this.settings.timeSig
@@ -618,6 +624,10 @@ export class TranscribePanel {
             <button class="btn" data-do="stop">Stop</button>
           </div>
 
+          ${a.simplified && a.simplified.length ? `<div class="tr-simplified">
+            <b>Kept simple</b>
+            <ul>${a.simplified.map((line) => `<li>${esc(line)}</li>`).join('')}</ul>
+          </div>` : ''}
           ${issues.length ? `<div class="tr-issues">
             <b>Worth a second look</b>
             <ul>${issues.map((i) => `<li data-bar="${i.bar || ''}" class="tr-issue ${i.kind}">
@@ -629,6 +639,9 @@ export class TranscribePanel {
 
         <div class="tr-tweaks">
           <h3>If something is wrong</h3>
+          <label class="tr-field"><span>Transcription style</span>
+            <select data-set="style">${styleOptions}</select>
+            <small>${esc(style.tip)}</small></label>
           <label class="tr-field"><span>Quantisation</span>
             <select data-set="quantise">${quantOptions}</select>
             <small>Automatic reads each beat on its own, which is what writes a triplet
@@ -678,6 +691,7 @@ export class TranscribePanel {
   changeSetting(el) {
     const key = el.dataset.set;
     if (key === 'grid') this.settings.grid = el.value;
+    else if (key === 'style') this.settings.style = el.value;
     else if (key === 'quantise') this.settings.quantise = el.value;
     else if (key === 'bpm') this.settings.bpm = el.value ? +el.value : null;
     else if (key === 'annotate') this.settings.annotate = el.checked;

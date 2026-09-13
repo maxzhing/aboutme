@@ -144,6 +144,42 @@ since a transcription that only ever adds notes is as wrong as one that only
 ever drops them. Release tails are exempt: how a note fades is not which note it
 is.
 
+**It does not invent complexity.** The rule throughout: where two notations
+represent the same performance, take the simpler one. Where they do not —
+where simplifying would throw away something that was actually played — leave
+it alone. Accuracy first, readability second.
+
+That rule is one number in practice. A finer rhythmic grid always explains a
+performance at least as well as a coarser one, so a search left to itself ends
+at the finest grid available and writes a run of quavers as a scatter of
+demisemiquavers and ties. Here a finer grid has to explain a good deal *more*
+of the playing than the grid already chosen before it is adopted, and the grid
+is chosen for the phrase rather than beat by beat: a rhythm written five
+different ways in five bars is wrong even when every bar is defensible on its
+own. Eight evenly spaced notes come back as eight identical values, and so do
+eight notes played at 120, 121, 119, 122 milliseconds apart. A beat may still
+depart from the phrase's grid — a bar of triplets in a piece of quavers is a
+real thing — but only when the phrase's grid plainly cannot account for it.
+
+Note endings are read on the same grid as the attacks. Giving releases a finer
+grid of their own is exactly what turns a run of quavers into dotted
+semiquavers tied to demisemiquavers: the attacks are right and the ends are
+measured to a precision nobody played to. The one exception is a note much
+shorter than a grid step, which is a real silence and keeps its rest.
+
+**Transcription style** — Simple, Balanced (the default), or Precise — is that
+threshold, exposed. Simple makes a division earn its place convincingly and
+keeps repeated figures consistent; Precise preserves more of how a phrase was
+actually played, for rubato and free playing.
+
+**And then it reads its own work back.** Before the score is built it is
+reviewed, with the questions a copyist would ask. Are there voices here that
+are really one chord? Is a hand holding notes that belong to the other? Is a
+beat written as a triplet that is plainly in twos? Did a note heard a moment
+late get left out of its chord? Does a chord have six slightly different
+lengths where it should have one? Each answer that is yes is fixed, and the
+panel lists what was changed rather than doing it silently.
+
 **A chord, a run and an arpeggio are three different things.** The same three
 notes struck together, played in turn, or rolled and held are three different
 events and three different pages, and a fixed time window cannot tell them
@@ -155,6 +191,15 @@ are sorted and the largest jump between them is taken as the line between
 "within an event" and "between events". A harmony rolled across the keyboard is
 recognised as one harmony and still written as separate notes, because that is
 what was played.
+
+**A chord is a chord before it is two hands.** The question "is this a chord?"
+comes before "which hand played each note?", so a left hand playing C2-G2-C3
+under a right hand playing E4-G4-C5 comes back as two chords and not as six
+notes distributed by pitch. Notes struck together are clustered by the gaps
+between them — an octave or more apart is two hands, anything closer is one —
+and a cluster that has been torn across the division is put back into whichever
+hand holds most of it. Hands are tracked through time, so a division that has
+to move as the music moves does.
 
 **Voices are followed, not sorted by pitch.** An inner part that rises above the
 bass is lost the moment it crosses if voices are assigned by pitch order, and
@@ -263,7 +308,7 @@ rest changing — and it would be an improvement, because basic signal processin
 alone does not produce perfect polyphonic transcription and this does not
 pretend otherwise.
 
-Accuracy is checked by 94 executable cases:
+Accuracy is checked by 108 executable cases:
 
 ```sh
 node cadenza/test/transcribe.mjs
@@ -299,7 +344,17 @@ with a staff each, a string quartet as four lines and not as chords, a wind
 quintet keeping five lines apart, and an orchestral passage written in sections
 rather than for piano.
 
-All 94 pass. What that does **not** prove is stated at the top of the test file:
+Then simplicity, which is what a transcriber usually gets wrong: eight even
+quavers written as eight quavers, a slightly uneven run written as one rhythm,
+a scale that acquires no ties or tuplets, each hand keeping its own chord, a
+chord progression staying one voice per hand, a repeated accompaniment not
+becoming four lines, and the same passage coming out simpler under Simple than
+under Precise — alongside the checks that simplicity has not cost accuracy: a
+genuine triplet still written as a triplet, a genuine staccato still leaving
+its rest, a wide chord not split because it is wide, and hands that move
+keeping their notes as they go.
+
+All 108 pass. What that does **not** prove is stated at the top of the test file:
 the material is synthesised — plausible partial structure, inharmonicity, attack
 and decay, but not recordings of real instruments in real rooms. Treat the
 scores as a regression floor, not as a claim about studio audio.
@@ -393,6 +448,7 @@ js/
     events.js      chord, run or arpeggio — what was played at once
     rhythm.js      pulse, metre, and fitting a performance to the beat
     voices.js      hands, and following a line through a texture
+    simplify.js    reading the result back and asking whether it is sensible
     harmony.js     chords, inversions, degrees, non-chord tones — read only
     ensembles.js   what is being transcribed, and the score it implies
     assign.js      fitting the lines that were found to the players

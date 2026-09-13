@@ -949,6 +949,210 @@ function countRecovered(got, wanted, tolerance = 0.16) {
   return hit;
 }
 
+/* ---------------------------------------------- not inventing complexity */
+
+console.log('\nSimplicity — a simple performance must come back as simple notation.');
+
+/** Every written value in the score, so oddities show up by name. */
+function writtenValues(score) {
+  const out = [];
+  for (const part of score.parts) {
+    for (const pm of part.measures) {
+      pm.voices.forEach((voice, vi) => {
+        for (const ev of voice) {
+          out.push({
+            voice: vi,
+            rest: ev.type === 'rest',
+            duration: ev.duration,
+            dots: ev.dots,
+            tuplet: !!ev.tuplet,
+            tie: ev.type === 'note' ? ev.notes[0].tie : null,
+            midis: ev.type === 'note' ? ev.notes.map((n) => T.toMidi(n.pitch)).sort((a, b) => a - b) : [],
+            staff: ev.staff,
+          });
+        }
+      });
+    }
+  }
+  return out;
+}
+
+const shape = (v) => v.duration + '.'.repeat(v.dots) + (v.tuplet ? '[t]' : '') + (v.tie ? '~' : '');
+
+reading('eight even eighth notes are written as eight eighth notes', () => {
+  const ev = [];
+  for (let i = 0; i < 8; i++) ev.push([60 + [0, 2, 4, 5, 7, 9, 11, 12][i], i * 0.25, 0.23]);
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const notes = writtenValues(r.score).filter((v) => !v.rest);
+  const kinds = [...new Set(notes.map(shape))];
+  return kinds.length === 1 && !kinds[0].includes('[t]') && !kinds[0].includes('~')
+    ? true : 'written as ' + writtenValues(r.score).map(shape).join(' ');
+});
+
+reading('a run played slightly unevenly is still one rhythm', () => {
+  /* 120, 121, 119, 122, 120, 118, 121 milliseconds between attacks. */
+  const gaps = [0.120, 0.121, 0.119, 0.122, 0.120, 0.118, 0.121];
+  const ev = [];
+  let t = 0;
+  [60, 62, 64, 65, 67, 69, 71, 72].forEach((m, i) => {
+    ev.push([m, t, 0.11]);
+    t += gaps[i] === undefined ? 0.12 : gaps[i];
+  });
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const kinds = [...new Set(writtenValues(r.score).filter((v) => !v.rest).map(shape))];
+  return kinds.length === 1 ? true : 'written as ' + kinds.join(' / ');
+});
+
+reading('a scale at an even tempo does not acquire ties or tuplets', () => {
+  const ev = [];
+  [60, 62, 64, 65, 67, 69, 71, 72].forEach((m, i) => ev.push([m, i * 0.25, 0.24]));
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const written = writtenValues(r.score);
+  const odd = written.filter((v) => v.tuplet || v.tie || v.dots > 0
+    || ['32nd', '64th', '128th'].includes(v.duration));
+  return odd.length === 0 ? true : odd.map(shape).join(' ') + ' among ' + written.map(shape).join(' ');
+});
+
+reading('a hand keeps its own chord', () => {
+  /* Left hand C2 G2 C3, right hand E4 G4 C5, struck together four times. */
+  const ev = [];
+  for (let b = 0; b < 4; b++) {
+    for (const m of [36, 43, 48]) ev.push([m, b * 0.5, 0.46, 74]);
+    for (const m of [64, 67, 72]) ev.push([m, b * 0.5, 0.46, 96]);
+  }
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const wrong = r.notes.filter((n) => (n.midi < 60) !== (n.staff === 1));
+  const written = writtenValues(r.score).filter((v) => !v.rest);
+  const triads = written.filter((v) => v.midis.length === 3).length;
+  return wrong.length === 0 && triads === 8
+    ? true : `${wrong.length} notes in the wrong hand, ${triads} three-note chords of 8`;
+});
+
+reading('a chord progression stays one voice per hand', () => {
+  const ev = [];
+  [[60, 64, 67], [65, 69, 72], [67, 71, 74], [60, 64, 67]].forEach((set, b) => {
+    for (const m of set) ev.push([m, b * 0.6, 0.56, 88]);
+  });
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const voices = new Set(r.notes.map((n) => `${n.staff}:${n.voice}`));
+  const written = writtenValues(r.score).filter((v) => !v.rest);
+  return voices.size === 1 && written.every((v) => v.midis.length === 3)
+    ? true : `${voices.size} voices, chord sizes ${written.map((v) => v.midis.length).join(',')}`;
+});
+
+reading('a repeated accompaniment is not read as four separate lines', () => {
+  const ev = [];
+  const bass = [[48, 55], [41, 48], [43, 50], [48, 55]];
+  bass.forEach((pair, b) => {
+    ev.push([pair[0], b * 1.0, 0.48, 70], [pair[1], b * 1.0 + 0.5, 0.48, 70]);
+  });
+  for (let i = 0; i < 8; i++) ev.push([72 + [0, 2, 4, 2, 0, 2, 4, 5][i], i * 0.5, 0.46, 98]);
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const low = r.notes.filter((n) => n.midi < 60);
+  const voices = new Set(low.map((n) => `${n.staff}:${n.voice}`));
+  const strayed = low.filter((n) => n.staff !== 1).length;
+  return voices.size === 1 && strayed === 0
+    ? true : `${voices.size} voices in the left hand, ${strayed} notes on the wrong staff`;
+});
+
+reading('melody over an accompaniment keeps one voice in each hand', () => {
+  const ev = [];
+  for (let i = 0; i < 8; i++) ev.push([72 + [0, 2, 4, 5, 4, 2, 0, 2][i], i * 0.25, 0.23, 100]);
+  for (let b = 0; b < 4; b++) { ev.push([48, b * 0.5, 0.48, 70], [55, b * 0.5, 0.48, 70]); }
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const perStaff = new Map();
+  for (const n of r.notes) {
+    const key = n.staff;
+    if (!perStaff.has(key)) perStaff.set(key, new Set());
+    perStaff.get(key).add(n.voice);
+  }
+  const counts = [...perStaff.entries()].sort().map(([, v]) => v.size);
+  return counts.every((c) => c === 1) ? true : 'voices per staff ' + counts.join(',');
+});
+
+reading('the simple style is simpler than the precise one', () => {
+  const gaps = [0.243, 0.262, 0.238, 0.268, 0.241, 0.259, 0.246];
+  const ev = [];
+  let t = 0;
+  [60, 62, 64, 65, 67, 69, 71, 72].forEach((m, i) => { ev.push([m, t, 0.22]); t += gaps[i] ?? 0.25; });
+  const simple = transcribeMidi(perfSeconds(ev), { style: 'simple' });
+  const precise = transcribeMidi(perfSeconds(ev), { style: 'precise' });
+  const count = (r) => new Set(writtenValues(r.score).map(shape)).size;
+  return count(simple) <= count(precise)
+    ? true : `simple used ${count(simple)} kinds of value, precise ${count(precise)}`;
+});
+
+reading('a genuine triplet still comes through', () => {
+  /* Simplicity must not cost accuracy: three in the time of two is real. */
+  const ev = [[60, 0, 0.48], [62, 0.5, 0.48]];
+  for (let k = 0; k < 3; k++) ev.push([64 + k, 1.0 + k / 6, 0.15]);
+  ev.push([67, 1.5, 0.48], [65, 2.0, 0.48], [64, 2.5, 0.48], [62, 3.0, 0.9]);
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const trips = writtenValues(r.score).filter((v) => v.tuplet).length;
+  return trips === 3 ? true : trips + ' tuplet notes written';
+});
+
+reading('a genuine staccato still leaves its rest', () => {
+  const ev = [[60, 0, 0.1], [62, 0.5, 0.1], [64, 1.0, 0.1], [65, 1.5, 0.1]];
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const rests = writtenValues(r.score).filter((v) => v.rest).length;
+  return rests >= 4 ? true : rests + ' rests for four short notes';
+});
+
+reading('eight even eighths heard as audio are still eight eighth notes', () => {
+  const ev = [];
+  [60, 62, 64, 65, 67, 69, 71, 72].forEach((m, i) => ev.push([m, i * 0.25, 0.235]));
+  const r = transcribeAudio(render(ev, 2.6), { sampleRate: SR, listen: false, style: 'balanced' });
+  const written = writtenValues(r.score).filter((v) => !v.rest);
+  const kinds = [...new Set(written.map(shape))];
+  const odd = written.filter((v) => v.tuplet || v.tie || ['32nd', '64th', '128th'].includes(v.duration));
+  return kinds.length <= 2 && odd.length === 0
+    ? true : 'written as ' + writtenValues(r.score).map(shape).join(' ');
+});
+
+reading('a two-handed chord heard as audio keeps each hand together', () => {
+  const ev = [];
+  for (let b = 0; b < 4; b++) {
+    for (const m of [43, 50, 55]) ev.push([m, b * 0.6, 0.56, 0.2]);
+    for (const m of [64, 67, 72]) ev.push([m, b * 0.6, 0.56, 0.2]);
+  }
+  const r = transcribeAudio(render(ev, 3.0), { sampleRate: SR, listen: true, style: 'balanced', maxVoices: 7 });
+  const wrong = r.notes.filter((n) => (n.midi < 60) !== (n.staff === 1)).length;
+  const perStaff = new Map();
+  for (const n of r.notes) perStaff.set(n.staff, (perStaff.get(n.staff) || new Set()).add(n.voice));
+  const voices = [...perStaff.values()].map((v) => v.size);
+  return wrong === 0 && voices.every((v) => v === 1)
+    ? true : `${wrong} notes in the wrong hand, voices per staff ${voices.join(',')}`;
+});
+
+reading('a hand is not split just because a chord is wide', () => {
+  /* Left hand spans a tenth, right hand a sixth; the gap between the hands is
+   * what separates them, not the distance inside either. */
+  const ev = [];
+  for (let b = 0; b < 3; b++) {
+    for (const m of [40, 47, 52]) ev.push([m, b * 0.6, 0.56, 76]);
+    for (const m of [67, 72, 76]) ev.push([m, b * 0.6, 0.56, 96]);
+  }
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const wrong = r.notes.filter((n) => (n.midi < 60) !== (n.staff === 1)).length;
+  return wrong === 0 ? true : wrong + ' notes in the wrong hand';
+});
+
+reading('hands that move keep their notes together as they go', () => {
+  /* The left hand walks up while the right walks down; a division fixed at
+   * middle C would hand notes to the wrong player halfway through. */
+  const ev = [];
+  const left = [36, 40, 43, 48, 50, 52];
+  const right = [79, 76, 74, 72, 69, 67];
+  left.forEach((m, i) => { ev.push([m, i * 0.5, 0.46, 74], [m + 7, i * 0.5, 0.46, 74]); });
+  right.forEach((m, i) => ev.push([m, i * 0.5, 0.46, 98]));
+  const r = transcribeMidi(perfSeconds(ev), { style: 'balanced' });
+  const wrongLeft = r.notes.filter((n) => left.includes(n.midi) && n.staff !== 1).length;
+  const wrongRight = r.notes.filter((n) => right.includes(n.midi) && n.staff !== 0).length;
+  return wrongLeft + wrongRight === 0
+    ? true : `${wrongLeft} left-hand and ${wrongRight} right-hand notes misplaced`;
+});
+
 /* ---------------------------------------------------------------- report */
 
 const total = pass + failures.length;

@@ -339,6 +339,12 @@ input, select { font: inherit; color: inherit; }
 .tr-ab { display: flex; align-items: center; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
 .tr-ab-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); }
 .tr-ab .btn svg { vertical-align: -3px; margin-right: 3px; }
+.tr-simplified {
+  margin-top: 12px; padding: 9px 12px; border-radius: 7px; font-size: 11.8px;
+  line-height: 1.5; background: var(--panel-2); color: var(--text-dim);
+}
+.tr-simplified b { color: var(--text); }
+.tr-simplified ul { margin: 5px 0 0 16px; padding: 0; }
 .tr-issues { margin-top: 12px; font-size: 12px; }
 .tr-issues > b { display: block; margin-bottom: 6px; }
 .tr-issues ul { list-style: none; margin: 0 0 6px; padding: 0; }
