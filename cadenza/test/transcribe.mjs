@@ -21,6 +21,10 @@ import { transcribeMidi, transcribeAudio } from '../js/transcribe/index.js';
 import { timeSigAt } from '../js/core/model.js';
 import { measureTicks, eventTicks } from '../js/core/rhythm.js';
 import * as T from '../js/core/theory.js';
+import { MidiRecorder, parseMIDI } from '../js/transcribe/capture.js';
+import { CorrectionModel, compareScores } from '../js/transcribe/learn.js';
+import { exportMIDI } from '../js/io/midifile.js';
+import { tempoAt } from '../js/core/model.js';
 
 const SR = 44100;
 
@@ -424,6 +428,149 @@ reading('the whole chain works on audio, not just on MIDI', () => {
   if (Math.abs(r.analysis.bpm - 120) > 6) return 'tempo ' + r.analysis.bpm;
   const bad = barsAddUp(r.score);
   return bad.length === 0 ? true : bad.join('; ');
+});
+
+/* --------------------------------------------------- capture and learning */
+
+console.log('\nCapture and correction — what comes in, and what is learned from what you change.');
+
+const memory = () => {
+  const store = new Map();
+  return { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, v) };
+};
+
+reading('a recorded performance keeps its timing', () => {
+  const rec = new MidiRecorder();
+  rec.start(1000);
+  rec.noteOn(60, 90, 1000);
+  rec.noteOn(64, 88, 1000);
+  rec.noteOff(60, 1480);
+  rec.noteOff(64, 1500);
+  rec.noteOn(67, 91, 1500);
+  rec.noteOff(67, 1990);
+  const notes = rec.stop(2200);
+  if (notes.length !== 3) return notes.length + ' notes';
+  if (Math.abs(notes[0].start) > 1e-9 || Math.abs(notes[0].end - 0.48) > 1e-9) {
+    return 'first note ' + notes[0].start + '-' + notes[0].end;
+  }
+  return Math.abs(notes[2].start - 0.5) < 1e-9 ? true : 'third note at ' + notes[2].start;
+});
+
+reading('the sustain pedal holds notes past their release', () => {
+  const rec = new MidiRecorder();
+  rec.start(0);
+  rec.setPedal(true, 0);
+  rec.noteOn(60, 90, 0);
+  rec.noteOff(60, 200);            // key released, pedal still down
+  rec.noteOn(64, 90, 400);
+  rec.noteOff(64, 600);
+  rec.setPedal(false, 1000);
+  const notes = rec.stop(1200);
+  const c = notes.find((n) => n.midi === 60);
+  return c && Math.abs(c.end - 1) < 1e-9 ? true
+    : 'held until ' + (c ? c.end : 'gone');
+});
+
+reading('a note struck again before its release is two notes', () => {
+  const rec = new MidiRecorder();
+  rec.start(0);
+  rec.noteOn(60, 90, 0);
+  rec.noteOn(60, 95, 300);         // re-struck, no note-off in between
+  rec.noteOff(60, 600);
+  const notes = rec.stop(800);
+  return notes.length === 2 ? true : notes.length + ' notes';
+});
+
+reading('a score survives a trip out to MIDI and back', () => {
+  const ev = [];
+  for (let b = 0; b < 8; b++) ev.push([60 + [0, 2, 4, 5, 7, 5, 4, 2][b], b, 1]);
+  ev.push([36, 0, 4, 100], [36, 4, 4, 100]);
+  const first = transcribeMidi(perf(ev, 120));
+  const back = transcribeMidi(parseMIDI(exportMIDI(first.score)));
+  const line = (s) => readVoice(s, 0).filter((e) => !e.rest && e.tie !== 'stop' && e.tie !== 'both')
+    .map((e) => e.midis.join('+')).join(' ');
+  if (line(first.score) !== line(back.score)) {
+    return line(back.score) + ' for ' + line(first.score);
+  }
+  return Math.abs(back.analysis.bpm - first.analysis.bpm) < 2 ? true
+    : 'tempo ' + back.analysis.bpm + ' for ' + first.analysis.bpm;
+});
+
+reading('the tempo written into the score is the tempo that was played', () => {
+  const r = transcribeMidi(perf([[60, 0, 1], [62, 1, 1], [64, 2, 1], [65, 3, 1],
+    [67, 4, 1], [69, 5, 1], [71, 6, 1], [72, 7, 1]], 88));
+  const written = tempoAt(r.score, 0);
+  return written.bpm > 80 && written.bpm < 96 ? true : 'score says ' + written.bpm;
+});
+
+reading('an octave correction made three times changes the next transcription', () => {
+  const model = new CorrectionModel(memory());
+  for (let i = 0; i < 3; i++) model.observe({ kind: 'octave', midi: 40, octaves: -1 });
+  const notes = [{ midi: 40 }, { midi: 64 }, { midi: 84 }];
+  model.adjust(notes);
+  return notes[0].midi === 28 && notes[1].midi === 64 && notes[2].midi === 84
+    ? true : notes.map((n) => n.midi).join(' ');
+});
+
+reading('one stray correction is not treated as a habit', () => {
+  const model = new CorrectionModel(memory());
+  model.observe({ kind: 'octave', midi: 40, octaves: -1 });
+  const notes = [{ midi: 40 }];
+  model.adjust(notes);
+  return notes[0].midi === 40 ? true : 'moved to ' + notes[0].midi;
+});
+
+reading('deleting invented notes makes the engine stricter', () => {
+  const model = new CorrectionModel(memory());
+  model.observe({ kind: 'kept', count: 30 });
+  for (let i = 0; i < 10; i++) model.observe({ kind: 'spurious', midi: 70 });
+  const strict = model.parameters().sensitivity;
+  const other = new CorrectionModel(memory());
+  other.observe({ kind: 'kept', count: 30 });
+  for (let i = 0; i < 10; i++) other.observe({ kind: 'missed', midi: 70 });
+  const keen = other.parameters().sensitivity;
+  return strict < 0.98 && keen > 1.02 ? true : 'strict ' + strict.toFixed(2) + ', keen ' + keen.toFixed(2);
+});
+
+reading('moving notes between staves moves where the hands divide', () => {
+  const model = new CorrectionModel(memory());
+  for (let i = 0; i < 5; i++) model.observe({ kind: 'staff', midi: 55, toStaff: 0 });
+  return model.parameters().splitCentre <= 57 ? true
+    : 'centre ' + model.parameters().splitCentre;
+});
+
+reading('a learned hand division actually changes the staff a note lands on', () => {
+  const ev = [];
+  for (let b = 0; b < 8; b++) ev.push([55 + (b % 3), b, 1, 90]);
+  for (let b = 0; b < 8; b += 2) ev.push([40, b, 2, 80]);
+  const plain = transcribeMidi(perf(ev, 120));
+  const taught = transcribeMidi(perf(ev, 120), { splitCentre: 52 });
+  const at = (r, midi) => (r.notes.find((n) => n.midi === midi) || {}).staff;
+  return at(plain, 55) !== undefined && at(taught, 55) === 0 ? true
+    : 'plain ' + at(plain, 55) + ', taught ' + at(taught, 55);
+});
+
+reading('the difference between two scores is read back as corrections', () => {
+  const ev = [[60, 0, 1], [62, 1, 1], [64, 2, 1], [65, 3, 1]];
+  const before = transcribeMidi(perf(ev, 120)).score;
+  const after = transcribeMidi(perf(ev, 120)).score;
+  /* Move the first note down an octave, as a user would. */
+  const first = after.parts[0].measures[0].voices[0][0];
+  first.notes[0].pitch = { ...first.notes[0].pitch, octave: first.notes[0].pitch.octave - 1 };
+  const found = compareScores(before, after);
+  const octave = found.find((c) => c.kind === 'octave');
+  return octave && octave.octaves === -1 ? true
+    : found.map((c) => c.kind).join(' ');
+});
+
+reading('the account of what was learned matches what was observed', () => {
+  const model = new CorrectionModel(memory());
+  const summary = model.summary();
+  if (!summary.empty) return 'a fresh model claims to have learned something';
+  for (let i = 0; i < 4; i++) model.observe({ kind: 'octave', midi: 84, octaves: 1 });
+  const after = model.summary();
+  return after.corrections === 4 && after.lines.length === 1
+    && after.lines[0].includes('4 times') ? true : JSON.stringify(after);
 });
 
 /* ---------------------------------------------------------------- report */

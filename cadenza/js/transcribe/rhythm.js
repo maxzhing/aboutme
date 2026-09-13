@@ -245,13 +245,19 @@ export function quantise(notes, beat, opts = {}) {
     division = null,      // force a division, or null to choose per beat
     strength = 1,         // 0 leaves the performance alone, 1 fits it fully
     tolerance = 0.16,     // how far off a grid point an attack may be, in divisions
+    divisionWeights = null,   // divisions this player has needed before
   } = opts;
+  /* A player who works in triplets gets a little more latitude for them, so a
+   * beat that is nearly but not quite in threes is read the way they play
+   * rather than as a stumble.  It is latitude, not a decision: a beat that is
+   * plainly in twos still comes out in twos. */
+  const latitude = (d) => tolerance * (1 + ((divisionWeights && divisionWeights[d]) || 0) * 0.5);
 
   const toBeats = (t) => (t - beat.phase) / beat.period;
   const allowed = division ? [division] : DIVISIONS;
 
   /* The simplest division that accounts for every attack inside one beat. */
-  const fitBeat = (group, idx, tol) => {
+  const fitBeat = (group, idx, scale = 1) => {
     let chosen = allowed[allowed.length - 1];
     let chosenErr = Infinity;
     for (const d of allowed) {
@@ -260,7 +266,7 @@ export function quantise(notes, beat, opts = {}) {
         const pos = (toBeats(n.start) - idx) * d;
         worst = Math.max(worst, Math.abs(pos - Math.round(pos)));
       }
-      if (worst <= tol) return { division: d, error: worst };
+      if (worst <= latitude(d) * scale) return { division: d, error: worst };
       if (worst < chosenErr) { chosen = d; chosenErr = worst; }
     }
     return { division: chosen, error: chosenErr };
@@ -274,7 +280,7 @@ export function quantise(notes, beat, opts = {}) {
   }
 
   const beatDivision = new Map();
-  for (const [idx, group] of byBeat) beatDivision.set(idx, fitBeat(group, idx, tolerance));
+  for (const [idx, group] of byBeat) beatDivision.set(idx, fitBeat(group, idx));
 
   /* A division that appears in one beat and nowhere else is more often a
    * stumble than a triplet, so a beat is allowed to fall in with its
@@ -285,7 +291,7 @@ export function quantise(notes, beat, opts = {}) {
     if ((tally.get(info.division) || 0) > 1) continue;
     for (const [d, count] of [...tally].sort((a, b) => b[1] - a[1])) {
       if (count < 2 || d === info.division) continue;
-      const alt = fitBeat(byBeat.get(idx), idx, tolerance * 1.6);
+      const alt = fitBeat(byBeat.get(idx), idx, 1.6);
       if (alt.division === d) { beatDivision.set(idx, alt); break; }
       let worst = 0;
       for (const n of byBeat.get(idx)) {

@@ -38,9 +38,21 @@ export function notesToScore(rawNotes, opts = {}) {
     title = 'Transcription',
     composer = '',
     source = SOURCE.AUDIO,
+    divisionWeights = null,
+    splitCentre = 60,
+    spellingLean = 0,
+    octaveBias = null,
   } = opts;
 
   const notes = rawNotes.map((n) => ({ ...n }));
+  /* Corrections this player has made before, applied before anything else so
+   * the rest of the reading sees the pitches they meant. */
+  if (octaveBias) {
+    for (const n of notes) {
+      const shift = n.midi < 48 ? octaveBias.low : n.midi < 72 ? octaveBias.mid : octaveBias.high;
+      if (shift) n.midi = Math.max(0, Math.min(127, n.midi + shift * 12));
+    }
+  }
   if (!notes.length) {
     const { score } = buildScore([], { title, composer, staves: splitHands ? 2 : 1 });
     return { score, notes: [], analysis: { empty: true } };
@@ -52,7 +64,7 @@ export function notesToScore(rawNotes, opts = {}) {
 
   /* Quantise once against a quarter-note beat to learn how the beats divide,
    * since that is what says whether the metre is simple or compound. */
-  const trial = quantise(notes, beat, { division: grid, strength: quantiseStrength });
+  const trial = quantise(notes, beat, { division: grid, strength: quantiseStrength, divisionWeights });
   const metre = timeSig
     ? { timeSig, beatsPerBar: timeSig.beats, confidence: 1 }
     : estimateMetre(attacks, beat, trial.compound);
@@ -60,7 +72,7 @@ export function notesToScore(rawNotes, opts = {}) {
   const perBeat = beatTicks(metre.timeSig);
   const fitted = toTicks(trial.notes, perBeat);
 
-  separateHands(fitted, { forceSingleStaff: !splitHands });
+  separateHands(fitted, { forceSingleStaff: !splitHands, centre: splitCentre });
   const staffCount = splitHands && new Set(fitted.map((n) => n.staff)).size > 1 ? 2 : 1;
   for (const staff of new Set(fitted.map((n) => n.staff))) {
     const ofStaff = fitted.filter((n) => n.staff === staff);
@@ -91,6 +103,7 @@ export function notesToScore(rawNotes, opts = {}) {
     fifths: key.fifths,
     mode: key.mode,
     staves: staffCount,
+    spellingLean,
     title,
     composer,
   });

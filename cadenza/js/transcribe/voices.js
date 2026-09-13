@@ -35,7 +35,7 @@ function spanOf(list) {
 }
 
 /** What it costs to divide this moment's notes at this pitch. */
-function sliceCost(active, split) {
+function sliceCost(active, split, centre) {
   const left = [];
   const right = [];
   for (const n of active) (n.midi < split ? left : right).push(n);
@@ -46,7 +46,7 @@ function sliceCost(active, split) {
   cost += Math.max(0, right.length - MAX_FINGERS) * 4;
   /* Middle C is where the hands usually meet; drifting far from it wants a
    * reason, which the costs above supply when there is one. */
-  cost += Math.abs(split - 60) * 0.03;
+  cost += Math.abs(split - centre) * 0.03;
   return cost;
 }
 
@@ -58,7 +58,7 @@ function sliceCost(active, split) {
  * as little as it can.  Notes at or above the division are the right hand.
  */
 export function separateHands(notes, opts = {}) {
-  const { move = 0.1, forceSingleStaff = false } = opts;
+  const { move = 0.1, forceSingleStaff = false, centre = 60 } = opts;
   if (!notes.length) return { splits: [], staves: 1 };
   if (forceSingleStaff) {
     for (const n of notes) n.staff = 0;
@@ -71,12 +71,12 @@ export function separateHands(notes, opts = {}) {
   const candidates = [];
   for (let s = lo; s <= hi; s++) candidates.push(s);
   if (candidates.length < 2) {
-    for (const n of notes) n.staff = notes[0].midi >= 60 ? 0 : 1;
+    for (const n of notes) n.staff = notes[0].midi >= centre ? 0 : 1;
     return { splits: [], staves: 1 };
   }
 
   const n = candidates.length;
-  let prev = candidates.map((s) => sliceCost(points[0].active, s));
+  let prev = candidates.map((s) => sliceCost(points[0].active, s, centre));
   const back = [];
   for (let t = 1; t < points.length; t++) {
     const cur = new Float64Array(n);
@@ -88,7 +88,7 @@ export function separateHands(notes, opts = {}) {
         const c = prev[i] + Math.abs(candidates[i] - candidates[j]) * move;
         if (c < best) { best = c; arg = i; }
       }
-      cur[j] = best + sliceCost(points[t].active, candidates[j]);
+      cur[j] = best + sliceCost(points[t].active, candidates[j], centre);
       from[j] = arg;
     }
     back.push(from);

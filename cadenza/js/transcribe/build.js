@@ -94,7 +94,7 @@ const FLAT_SPELLING = [
  * makes an F sharp in G major and a G flat in D flat major the same sound
  * written the way each key wants it.
  */
-export function spell(midi, fifths = 0) {
+export function spell(midi, fifths = 0, lean = 0) {
   const pc = ((midi % 12) + 12) % 12;
   const scale = new Set();
   const alters = T.keyAlterations(fifths);
@@ -109,7 +109,8 @@ export function spell(midi, fifths = 0) {
       if (semi === pc) { step = s; alter = alters[s] || 0; break; }
     }
   } else {
-    [step, alter] = fifths < 0 ? FLAT_SPELLING[pc] : SHARP_SPELLING[pc];
+    const flats = fifths < 0 || (fifths === 0 && lean < 0);
+    [step, alter] = flats ? FLAT_SPELLING[pc] : SHARP_SPELLING[pc];
   }
   /* B sharp and C flat cross the octave; keep the sounding pitch exact. */
   const naturalMidi = T.STEP_SEMITONES[step] + alter;
@@ -133,11 +134,11 @@ function normalFor(division) {
 }
 
 /** One voice's worth of events laid out through the piece. */
-function layOutVoice(chords, ts, measures, fifths, plan) {
+function layOutVoice(chords, ts, measures, fifths, plan, lean = 0) {
   const bar = measureTicks(ts);
   const out = [];
   for (let m = 0; m < measures; m++) out.push([]);
-  const state = { out, ts, measures, fifths, plan, tupletIds: new Map() };
+  const state = { out, ts, measures, fifths, plan, lean, tupletIds: new Map() };
 
   const sorted = [...chords].sort((a, b) => a.startTicks - b.startTicks);
   let pos = 0;
@@ -174,7 +175,7 @@ function fill(state, from, to, chord) {
       out[m].push(M.makeRest(id, { dots, tuplet: tuplet || null }));
       return;
     }
-    const ev = M.makeNote(chord.notes.map((n) => spell(n.midi, fifths)), id,
+    const ev = M.makeNote(chord.notes.map((n) => spell(n.midi, fifths, state.lean)), id,
       { dots, tuplet: tuplet || null });
     for (const note of ev.notes) {
       note.tie = first && last ? null : first ? 'start' : last ? 'stop' : 'both';
@@ -280,6 +281,7 @@ export function buildScore(chords, opts = {}) {
     title = 'Transcription',
     composer = '',
     plan = null,
+    spellingLean = 0,
   } = opts;
   const perBeat = plan ? plan.perBeat : TPQ;
   const divisions = plan ? plan.divisions : new Map();
@@ -296,7 +298,7 @@ export function buildScore(chords, opts = {}) {
     measures,
     timeSig,
     keySig: { fifths, mode },
-    tempo: { bpm: Math.round(bpm), unit: 'quarter' },
+    tempo: Math.round(bpm),
   });
   const part = score.parts[0];
 
@@ -318,7 +320,7 @@ export function buildScore(chords, opts = {}) {
     for (let v = 0; v < voiceCount; v++) pm.voices.push([]);
   }
   for (const [idx, list] of streams) {
-    const laid = layOutVoice(list, timeSig, measures, fifths, layout);
+    const laid = layOutVoice(list, timeSig, measures, fifths, layout, spellingLean);
     for (let m = 0; m < measures; m++) part.measures[m].voices[idx] = laid[m];
   }
 
