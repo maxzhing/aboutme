@@ -2,17 +2,26 @@
  *
  * A pianist's two hands produce one stream of notes, and writing that stream
  * out as a single line is the difference between a transcription and a mess.
- * What is needed is the division back into parts: which hand played what,
- * which notes belong to the same chord, and where one staff is carrying two
- * independent lines at once.
+ * Two separate questions have to be answered: which hand played each note, and
+ * which line each note belongs to.
  *
  * The hand split is found for the whole take at once rather than note by note.
  * A choice that looks right for one chord — put the low note in the left hand —
  * can be wrong for the passage, because hands do not leap back and forth; they
- * stay where they are and move when the music moves.  So the split is the path
- * through the piece that keeps each hand within its reach while changing
- * position as little as possible.
+ * stay where they are and move when the music moves.
+ *
+ * Voices are harder, and dividing by pitch does not do it.  An inner voice can
+ * rise above the bass and fall below the melody within a bar, and a rule that
+ * says "the lowest note is voice two" loses the line the moment it crosses.
+ * What works is to find the stretches during which the same notes are sounding
+ * throughout — inside one of those nothing starts or stops, so the lines are
+ * in a fixed order and cannot have crossed — and then to join those stretches
+ * end to end by following each line across the joins.  That is the contig
+ * method of Chew and Wu, and it follows a part through a texture the way a
+ * reader does.
  */
+
+import { groupEvents } from './events.js';
 
 const MAX_SPAN = 14;       // semitones a hand can comfortably cover
 const MAX_FINGERS = 5;
@@ -111,79 +120,188 @@ export function separateHands(notes, opts = {}) {
     note.staff = note.midi >= split ? 0 : 1;
   }
 
+  keepLinesTogether(notes, splits);
+
   /* One hand with nothing in it means the music sits on a single staff. */
   const used = new Set(notes.map((x) => x.staff));
   if (used.size === 1) for (const note of notes) note.staff = 0;
   return { splits, staves: used.size };
 }
 
+/**
+ * Stop a line changing hands in the middle of itself.
+ *
+ * The division is chosen a moment at a time, so a melody that dips below it
+ * for one note gets handed across and comes straight back — which is how a
+ * right-hand tune ends up with one note stranded in the bass staff.  A note
+ * goes back where its neighbours are when most of them are in the other hand
+ * and the division was close enough for it to have been a judgement call.
+ */
+function keepLinesTogether(notes, splits) {
+  const byTime = [...notes].sort((a, b) => a.startTicks - b.startTicks || a.midi - b.midi);
+  const splitAt = (tick) => {
+    let s = splits[0].split;
+    for (const x of splits) { if (x.tick <= tick) s = x.split; else break; }
+    return s;
+  };
+  for (const n of byTime) {
+    const near = byTime.filter((o) => o !== n
+      && Math.abs(o.startTicks - n.startTicks) <= 960
+      && Math.abs(o.midi - n.midi) <= 7);
+    if (near.length < 2) continue;
+    const elsewhere = near.filter((o) => o.staff !== n.staff);
+    if (elsewhere.length <= near.length / 2) continue;
+    if (Math.abs(n.midi - splitAt(n.startTicks)) > 4) continue;
+    n.staff = elsewhere[0].staff;
+  }
+}
+
 /* ------------------------------------------------------------------ voices */
+
+/** Notes that begin and end together are one chord and share a voice. */
+function chordsOf(notes) {
+  const map = new Map();
+  for (const n of notes) {
+    const key = n.startTicks + ':' + n.endTicks;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(n);
+  }
+  return [...map.values()].map((list) => ({
+    start: list[0].startTicks,
+    end: list[0].endTicks,
+    notes: list,
+    mean: list.reduce((a, x) => a + x.midi, 0) / list.length,
+  })).sort((a, b) => a.start - b.start || b.mean - a.mean);
+}
+
+/**
+ * Stretches during which the same chords sound throughout.
+ *
+ * Inside one of these nothing starts and nothing stops, so the lines run in a
+ * fixed order from the bottom up and cannot have crossed.  That is what makes
+ * the ordering inside a stretch trustworthy, and it leaves the crossings to be
+ * worked out only at the joins.
+ */
+function contigs(chords) {
+  const edges = new Set();
+  for (const c of chords) { edges.add(c.start); edges.add(c.end); }
+  const points = [...edges].sort((a, b) => a - b);
+  const out = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const from = points[i];
+    const to = points[i + 1];
+    const active = chords.filter((c) => c.start <= from && c.end >= to);
+    if (!active.length) continue;
+    active.sort((a, b) => b.mean - a.mean);      // highest line first
+    const last = out[out.length - 1];
+    if (last && last.to === from && last.active.length === active.length
+      && last.active.every((c, k) => c === active[k])) { last.to = to; continue; }
+    out.push({ from, to, active });
+  }
+  return out;
+}
+
+const lineMean = (line) =>
+  line.chords.reduce((s, c) => s + c.mean, 0) / Math.max(1, line.chords.length);
 
 /**
  * Split one staff into independent lines.
  *
- * Notes that begin together and end together are a chord and stay in one
- * voice.  A note that begins while another is still sounding, and outlasts it
- * or is outlasted by it, is a second line and needs its own — that is what
- * makes a held bass under a moving inner part readable instead of a thicket of
- * ties.
+ * The lines in each stretch are joined to the lines in the next by the
+ * cheapest pairing — nearest in pitch, and preferring one that carries on from
+ * where it stopped — so a part that crosses another is followed rather than
+ * swapped with it.  Voice one is the highest line, which is the order both a
+ * reader and the engraver expect.
  */
 export function assignVoices(notes, { maxVoices = 4 } = {}) {
-  const groups = new Map();
-  for (const n of notes) {
-    const key = n.startTicks + ':' + n.endTicks;
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(n);
-  }
-  const chords = [...groups.values()]
-    .map((list) => ({
-      start: list[0].startTicks,
-      end: list[0].endTicks,
-      notes: list,
-      mean: list.reduce((a, x) => a + x.midi, 0) / list.length,
-    }))
-    .sort((a, b) => a.start - b.start || b.mean - a.mean);
-
-  const voices = [];
-  for (const chord of chords) {
-    let pick = -1;
-    let bestGap = Infinity;
-    voices.forEach((v, i) => {
-      if (v.end > chord.start + 1) return;              // still sounding
-      const gap = Math.abs(v.mean - chord.mean) + (chord.start - v.end) / 960;
-      if (gap < bestGap) { bestGap = gap; pick = i; }
-    });
-    if (pick < 0 && voices.length < maxVoices) {
-      voices.push({ end: 0, mean: chord.mean, chords: [] });
-      pick = voices.length - 1;
-    }
-    if (pick < 0) {
-      /* More simultaneous lines than a staff can show: fold this one into the
-       * nearest voice and let the chord carry it. */
-      pick = 0;
-      let near = Infinity;
-      voices.forEach((v, i) => {
-        const d = Math.abs(v.mean - chord.mean);
-        if (d < near) { near = d; pick = i; }
-      });
-    }
-    const v = voices[pick];
-    v.chords.push(chord);
-    v.end = Math.max(v.end, chord.end);
-    v.mean = (v.mean + chord.mean) / 2;
+  if (!notes.length) return 0;
+  const chords = chordsOf(notes);
+  const blocks = contigs(chords);
+  if (!blocks.length) {
+    for (const n of notes) n.voice = 0;
+    return 1;
   }
 
-  /* Highest line first: that is the order a reader expects, and the order the
-   * engraver uses to decide stem directions. */
-  voices.sort((a, b) => {
-    const am = a.chords.reduce((s, c) => s + c.mean, 0) / Math.max(1, a.chords.length);
-    const bm = b.chords.reduce((s, c) => s + c.mean, 0) / Math.max(1, b.chords.length);
-    return bm - am;
+  const lineOf = new Map();     // chord -> line id
+  const lines = [];
+  const newLine = (chord) => {
+    const id = lines.length;
+    lines.push({ id, chords: [chord], lastPitch: chord.mean, lastEnd: chord.end });
+    lineOf.set(chord, id);
+    return id;
+  };
+
+  for (const c of blocks[0].active) newLine(c);
+
+  for (let b = 1; b < blocks.length; b++) {
+    const block = blocks[b];
+    const held = new Set();
+    const fresh = [];
+    for (const c of block.active) {
+      if (lineOf.has(c)) held.add(lineOf.get(c));
+      else fresh.push(c);
+    }
+    /* A line is available to be continued once its chord has finished. */
+    const free = lines
+      .filter((l) => !held.has(l.id) && l.lastEnd <= block.from + 1)
+      .map((l) => l.id);
+
+    /* Pair the new chords with the free lines, cheapest pairing first, so a
+     * crossing is followed instead of being resolved by pitch order. */
+    const pairs = [];
+    for (const c of fresh) {
+      for (const id of free) {
+        const line = lines[id];
+        const leap = Math.abs(line.lastPitch - c.mean);
+        if (leap > 24) continue;
+        const rest = Math.max(0, c.start - line.lastEnd) / 960;
+        pairs.push({ c, id, cost: leap + rest * 1.5 });
+      }
+    }
+    pairs.sort((a, b2) => a.cost - b2.cost);
+    const takenLine = new Set();
+    const takenChord = new Set();
+    for (const p of pairs) {
+      if (takenLine.has(p.id) || takenChord.has(p.c)) continue;
+      takenLine.add(p.id);
+      takenChord.add(p.c);
+      lines[p.id].chords.push(p.c);
+      lineOf.set(p.c, p.id);
+    }
+    for (const c of fresh) if (!lineOf.has(c)) newLine(c);
+    for (const c of block.active) {
+      const line = lines[lineOf.get(c)];
+      line.lastPitch = c.mean;
+      line.lastEnd = Math.max(line.lastEnd, c.end);
+    }
+  }
+
+  /* More lines than a staff can show: fold the sparsest into their nearest
+   * neighbour rather than dropping the notes. */
+  let kept = lines.filter((l) => l.chords.length);
+  if (kept.length > maxVoices) {
+    kept.sort((a, b) => b.chords.length - a.chords.length);
+    const keep = kept.slice(0, maxVoices);
+    for (const extra of kept.slice(maxVoices)) {
+      for (const c of extra.chords) {
+        let near = keep[0];
+        let d = Infinity;
+        for (const k of keep) {
+          const gap = Math.abs(lineMean(k) - c.mean);
+          if (gap < d) { d = gap; near = k; }
+        }
+        near.chords.push(c);
+      }
+    }
+    kept = keep;
+  }
+
+  kept.sort((a, b) => lineMean(b) - lineMean(a));
+  kept.forEach((line, i) => {
+    for (const c of line.chords) for (const n of c.notes) n.voice = i;
   });
-  voices.forEach((v, i) => {
-    for (const c of v.chords) for (const note of c.notes) note.voice = i;
-  });
-  return voices.length;
+  for (const n of notes) if (n.voice === undefined) n.voice = 0;
+  return kept.length;
 }
 
 /**
@@ -218,4 +336,22 @@ export function groupChords(notes) {
       n.rhythmConfidence === undefined ? 1 : n.rhythmConfidence), 0) / g.notes.length;
   }
   return out;
+}
+
+/**
+ * Record how each note was played, before anything is quantised.
+ *
+ * Once onsets have been moved onto a grid, a chord rolled across the keyboard
+ * and a written arpeggio look identical, so the distinction has to be drawn
+ * while the performance timing is still there.
+ */
+export function markPerformedEvents(notes, opts = {}) {
+  const events = groupEvents(notes, opts);
+  for (const ev of events) {
+    for (const n of ev.notes) {
+      n.eventKind = ev.kind;
+      if (ev.rolled) n.rolledWith = ev.harmony;
+    }
+  }
+  return events;
 }

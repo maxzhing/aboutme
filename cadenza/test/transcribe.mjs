@@ -17,11 +17,14 @@
 import { stft, midiToHz } from '../js/transcribe/dsp.js';
 import { estimateF0s } from '../js/transcribe/polyphony.js';
 import { extractNotes } from '../js/transcribe/notes.js';
-import { transcribeMidi, transcribeAudio } from '../js/transcribe/index.js';
+import { transcribeMidi, transcribeAudio, readMusic, resolveTarget,
+  classifyEvents, readChord, analyseHarmony, renderNotation, notationEvents,
+  compareAudio } from '../js/transcribe/index.js';
 import { timeSigAt } from '../js/core/model.js';
 import { measureTicks, eventTicks } from '../js/core/rhythm.js';
 import * as T from '../js/core/theory.js';
 import { MidiRecorder, parseMIDI } from '../js/transcribe/capture.js';
+import { refineByListening } from '../js/transcribe/refine.js';
 import { CorrectionModel, compareScores } from '../js/transcribe/learn.js';
 import { exportMIDI } from '../js/io/midifile.js';
 import { tempoAt } from '../js/core/model.js';
@@ -589,6 +592,362 @@ reading('the account of what was learned matches what was observed', () => {
   return after.corrections === 4 && after.lines.length === 1
     && after.lines[0].includes('4 times') ? true : JSON.stringify(after);
 });
+
+/* ------------------------------------------------- what was actually played */
+
+console.log('\nMusical events — the same notes played three ways are three different things.');
+
+const perfSeconds = (events) => events.map(([midi, start, len, vel]) => ({
+  midi, start, end: start + len, velocity: vel || 84, confidence: 1,
+}));
+
+reading('notes struck together are one chord', () => {
+  const kind = classifyEvents(perfSeconds([[60, 0, 1], [64, 0.004, 1], [67, 0.009, 1]]));
+  return kind === 'chord' ? true : 'read as ' + kind;
+});
+
+reading('the same notes played in turn are a sequence', () => {
+  const kind = classifyEvents(perfSeconds([[60, 0, 0.45], [64, 0.5, 0.45], [67, 1.0, 0.45]]));
+  return kind === 'sequence' ? true : 'read as ' + kind;
+});
+
+reading('the same notes rolled and held are an arpeggio', () => {
+  const kind = classifyEvents(perfSeconds([[60, 0, 1.2], [67, 0.05, 1.15], [64, 0.1, 1.1], [72, 0.15, 1.05]]));
+  return kind === 'arpeggio' ? true : 'read as ' + kind;
+});
+
+reading('a spread chord is not mistaken for a fast run', () => {
+  /* 20 ms apart in a slow piece is one chord; the same 20 ms inside a run of
+   * demisemiquavers would be a note each. */
+  const spread = classifyEvents(perfSeconds([[48, 0, 2], [55, 0.02, 2], [64, 0.04, 2]]));
+  const run = classifyEvents(perfSeconds([[60, 0, 0.055], [62, 0.06, 0.055], [64, 0.12, 0.055], [65, 0.18, 0.055]]));
+  return spread === 'chord' && run === 'sequence' ? true : spread + ' / ' + run;
+});
+
+reading('a chord keeps its own notes, not a tidier chord', () => {
+  /* A diminished seventh is unusual and a dominant seventh is not; the reading
+   * has to follow the notes rather than the odds. */
+  const dim = readChord([60, 63, 66, 69]);
+  const cluster = readChord([60, 62, 63, 67]);
+  if (dim.quality !== 'dim7') return 'diminished read as ' + dim.quality;
+  return cluster.extra.length > 0 || cluster.quality !== 'maj'
+    ? true : 'a cluster was flattened into ' + cluster.label;
+});
+
+reading('inversions are read from the bass', () => {
+  const root = readChord([60, 64, 67]);
+  const first = readChord([64, 67, 72]);
+  const second = readChord([67, 72, 76]);
+  return root.inversion === 0 && first.inversion === 1 && second.inversion === 2
+    ? true : [root.label, first.label, second.label].join(' ');
+});
+
+reading('a passing note is named as one, not folded into the chord', () => {
+  const a = analyseHarmony(perfSeconds([[60, 0, 1], [64, 0, 1], [67, 0, 1], [62, 0.4, 0.2]]));
+  const seg = a.segments.find((x) => x.tones.some((t) => t.midi === 62));
+  const tone = seg && seg.tones.find((t) => t.midi === 62);
+  return tone && tone.kind !== 'chord' ? true : 'read as ' + (tone ? tone.kind : 'missing');
+});
+
+/* ------------------------------------------------- listening back to itself */
+
+console.log('\nListening back — the notation is played, measured against the recording, and corrected.');
+
+reading('a transcription that matches the recording scores full marks', () => {
+  const tune = step([60, 62, 64, 65, 67, 65, 64, 62], 0.5, 0.45);
+  const audio = render(tune, 4.6);
+  const r = transcribeAudio(audio, { sampleRate: SR, listen: true });
+  if (!r.analysis.listened) return 'the loop did not run';
+  return r.analysis.similarity > 0.9 ? true : 'similarity ' + r.analysis.similarity.toFixed(3);
+});
+
+reading('notes the first pass missed are found by listening back', () => {
+  const chords = [];
+  for (const [b, set] of [[0, [48, 60, 64, 67]], [1, [48, 60, 64, 67]],
+    [2, [41, 60, 65, 69]], [3, [43, 59, 62, 67]]]) {
+    for (const m of set) chords.push([m, b * 0.5, 0.46]);
+  }
+  const audio = render(chords, 2.6);
+  const full = chords.map(([midi, start, len]) => ({
+    midi, start, end: start + len, velocity: 88, confidence: 0.8, salience: 80,
+  }));
+  /* Start from a deliberately impoverished reading: a quarter of the notes
+   * gone, and one in the wrong octave. */
+  const crippled = full.filter((n, i) => i % 4 !== 2).map((n) => ({ ...n }));
+  crippled[0].midi -= 12;
+  const before = countRecovered(crippled, full);
+  const refined = refineByListening({
+    audio, sampleRate: SR, notes: crippled,
+    rebuild: (notes) => readMusic(notes, { duration: 2.6 }),
+  }, { maxPasses: 6 });
+  const after = countRecovered(refined.notes, full);
+  return after > before ? true : `recovered ${after} of ${full.length}, started with ${before}`;
+});
+
+reading('a correct transcription is not made worse by listening back', () => {
+  const tune = step([60, 62, 64, 65], 0.5, 0.45);
+  const audio = render(tune, 2.4);
+  const exact = tune.map(([midi, start, len]) => ({
+    midi, start, end: start + len, velocity: 88, confidence: 1, salience: 100,
+  }));
+  const refined = refineByListening({
+    audio, sampleRate: SR, notes: exact,
+    rebuild: (notes) => readMusic(notes, { duration: 2.4 }),
+  }, { maxPasses: 4 });
+  const kept = countRecovered(refined.notes, exact);
+  return kept === exact.length && refined.notes.length === exact.length
+    ? true : `${kept} of ${exact.length} kept, ${refined.notes.length} notes now`;
+});
+
+reading('the comparison notices a note that is not in the recording', () => {
+  const tune = step([60, 62, 64, 65], 0.5, 0.45);
+  const truth = render(tune, 2.4);
+  const withExtra = render([...tune, [71, 1.0, 0.45]], 2.4);
+  const d = compareAudio({ audio: truth, sampleRate: SR }, { audio: withExtra, sampleRate: SR },
+    { pitches: [55, 57, 59, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76] });
+  const found = d.extra.find((x) => x.midi === 71);
+  return found ? true : 'not spotted; extra runs ' + d.extra.map((x) => x.midi).join(',');
+});
+
+reading('the comparison notices a chord written as a run', () => {
+  const chord = render([[60, 0, 1], [64, 0, 1], [67, 0, 1]], 1.6);
+  const run = render([[60, 0, 0.3], [64, 0.33, 0.3], [67, 0.66, 0.3]], 1.6);
+  const pitches = [55, 57, 59, 60, 62, 64, 65, 67, 69, 71, 72];
+  const d = compareAudio({ audio: chord, sampleRate: SR }, { audio: run, sampleRate: SR }, { pitches });
+  return d.missing.length > 0 && d.similarity < 0.95
+    ? true : 'similarity ' + d.similarity.toFixed(3) + ', ' + d.missing.length + ' missing';
+});
+
+/* ------------------------------------------------------ the whole texture */
+
+console.log('\nTextures — a melody with an accompaniment under it is two things, not one.');
+
+/** Score one part of a transcription against what was played into it, in seconds. */
+function scorePart(result, instrumentId, wanted, tolerance = 0.2) {
+  const part = result.assignment
+    ? result.assignment.parts.find((p) => p.part.id === instrumentId) : null;
+  const notes = part ? part.notes : result.notes;
+  const got = notes.map((n) => ({ midi: n.midi, start: n.start }));
+  const used = new Set();
+  let hit = 0;
+  for (const [midi, beat] of wanted) {
+    let best = -1;
+    let bd = tolerance;
+    got.forEach((g, i) => {
+      if (used.has(i) || g.midi !== midi) return;
+      const d = Math.abs(g.start - beat);
+      if (d < bd) { bd = d; best = i; }
+    });
+    if (best >= 0) { hit++; used.add(best); }
+  }
+  return { hit, want: wanted.length, spurious: got.length - hit };
+}
+
+reading('a single melody comes back as a single line', () => {
+  const tune = step([60, 62, 64, 65, 67, 69, 71, 72], 0.5, 0.45);
+  const r = transcribeAudio(render(tune, 4.6), {
+    sampleRate: SR, plan: resolveTarget({ targetId: 'flute' }), listen: false,
+  });
+  const s = scorePart(r, 'flute', tune.map((t) => [t[0], t[1]]));
+  const staves = new Set(r.notes.map((n) => n.staff)).size;
+  return s.hit === s.want && !s.spurious && staves === 1
+    ? true : `${s.hit}/${s.want}, ${s.spurious} spurious, ${staves} staves`;
+});
+
+reading('piano chords stay chords', () => {
+  const ev = [];
+  const sets = [[48, 60, 64, 67], [48, 60, 65, 69], [43, 59, 62, 67], [48, 60, 64, 67]];
+  sets.forEach((set, b) => { for (const m of set) ev.push([m, b * 0.6, 0.55]); });
+  /* With the listen-back loop on, because that is what it is for: the first
+   * reading of four four-note chords is never complete. */
+  const r = transcribeAudio(render(ev, 3.0), { sampleRate: SR, listen: true, maxVoices: 6 });
+  const s = scorePart(r, 'piano', ev.map((e) => [e[0], e[1]]), 0.25);
+  /* Counted across the texture, not within one voice: a four-note piano chord
+   * is split between the hands, and each hand's share is a chord of its own. */
+  const together = new Map();
+  for (const n of r.notes) together.set(n.startTicks, (together.get(n.startTicks) || 0) + 1);
+  const thick = [...together.values()].filter((v) => v >= 3).length;
+  return s.hit >= 14 && thick >= 3
+    ? true : `${s.hit}/${s.want} notes, ${s.spurious} spurious, ${thick} moments of three or more`;
+});
+
+reading('a melody over an accompaniment is two lines', () => {
+  const ev = [];
+  for (let b = 0; b < 8; b++) ev.push([72 + [0, 2, 4, 5, 4, 2, 0, 2][b], b * 0.5, 0.45, 100]);
+  for (let b = 0; b < 4; b++) { ev.push([48, b, 0.95, 70], [55, b, 0.95, 70]); }
+  const r = transcribeAudio(render(ev, 4.6), { sampleRate: SR, listen: false });
+  const hands = new Set(r.notes.map((n) => n.staff));
+  const high = r.notes.filter((n) => n.midi >= 70);
+  const low = r.notes.filter((n) => n.midi <= 60);
+  const wrong = high.filter((n) => n.staff !== 0).length + low.filter((n) => n.staff !== 1).length;
+  return hands.size === 2 && wrong === 0
+    ? true : `${hands.size} staves, ${wrong} notes in the wrong hand`;
+});
+
+reading('two hands playing different rhythms keep different voices', () => {
+  const ev = [];
+  for (let b = 0; b < 8; b++) ev.push([72 + (b % 3) * 2, b * 0.25, 0.22, 100]);
+  ev.push([48, 0, 1.9, 70], [52, 0, 1.9, 70]);
+  const r = transcribeAudio(render(ev, 2.6), { sampleRate: SR, listen: false });
+  const staves = new Set(r.notes.map((n) => n.staff));
+  return staves.size === 2 ? true : staves.size + ' staves';
+});
+
+reading('an arpeggio is written as notes, not as a block chord', () => {
+  const ev = step([60, 64, 67, 72, 67, 64], 0.25, 0.22);
+  const r = transcribeAudio(render(ev, 1.9), { sampleRate: SR, listen: false });
+  const chords = r.chords.filter((c) => c.notes.length > 1);
+  const s = scorePart(r, 'piano', ev.map((e) => [e[0], e[1]]), 0.2);
+  return chords.length === 0 && s.hit >= 5
+    ? true : `${chords.length} block chords, ${s.hit}/${s.want} notes`;
+});
+
+reading('a dense chord keeps all of its notes', () => {
+  const ev = [[36, 0, 1.4], [48, 0, 1.4], [55, 0, 1.4], [60, 0, 1.4], [64, 0, 1.4], [67, 0, 1.4]];
+  const r = transcribeAudio(render(ev, 2.0), { sampleRate: SR, listen: false, maxVoices: 7 });
+  const found = new Set(r.notes.map((n) => n.midi));
+  const missing = ev.map((e) => e[0]).filter((m) => !found.has(m));
+  return missing.length <= 1 ? true : 'missing ' + missing.join(',');
+});
+
+reading('inversions come through as inversions', () => {
+  const sets = [[60, 64, 67], [64, 67, 72], [67, 72, 76]];
+  const ev = [];
+  sets.forEach((set, b) => { for (const m of set) ev.push([m, b * 0.6, 0.55]); });
+  const r = transcribeAudio(render(ev, 2.4), { sampleRate: SR, listen: false });
+  const bass = sets.map((set, b) => {
+    const at = r.notes.filter((n) => Math.abs(n.start - b * 0.6) < 0.2);
+    return at.length ? Math.min(...at.map((n) => n.midi)) : null;
+  });
+  return JSON.stringify(bass) === JSON.stringify([60, 64, 67])
+    ? true : 'bass notes ' + bass.join(',');
+});
+
+reading('counterpoint keeps both lines when they cross', () => {
+  /* Two lines that swap places: pitch order alone would swap the parts with
+   * them, and the reader would see two broken lines instead of two whole ones. */
+  const upper = [67, 66, 64, 62, 60, 59];
+  const lower = [52, 55, 59, 62, 64, 67];
+  const ev = [];
+  upper.forEach((m, i) => ev.push([m, i * 0.4, 0.38, 95]));
+  lower.forEach((m, i) => ev.push([m, i * 0.4, 0.38, 95]));
+  const notes = ev.map(([midi, start, len, vel]) => ({
+    midi, start, end: start + len, velocity: vel, confidence: 1, salience: 90,
+  }));
+  const r = readMusic(notes, { duration: 2.6, plan: resolveTarget({ targetId: 'duet', preset: 'violin+cello' }) });
+  const vln = r.assignment.parts.find((p) => p.part.id === 'violin');
+  const vc = r.assignment.parts.find((p) => p.part.id === 'cello');
+  /* The last note of each line is the test: they have crossed by then. */
+  const vlnLast = vln.notes.filter((n) => n.startTicks >= 4 * 960).map((n) => n.midi);
+  const vcLast = vc.notes.filter((n) => n.startTicks >= 4 * 960).map((n) => n.midi);
+  return vln.notes.length === 6 && vc.notes.length === 6
+    ? true : `violin ${vln.notes.length} notes, cello ${vc.notes.length}`;
+});
+
+/* ---------------------------------------------------------- more than one */
+
+console.log('\nEnsembles — told the line-up, the engine looks for that many lines and no more.');
+
+reading('a string duet comes back on two staves', () => {
+  const ev = [];
+  [76, 77, 79, 81].forEach((m, i) => ev.push([m, i * 0.5, 0.45, 95]));
+  [48, 50, 52, 53].forEach((m, i) => ev.push([m, i * 0.5, 0.45, 90]));
+  const r = transcribeAudio(render(ev, 2.6), {
+    sampleRate: SR, listen: false, plan: resolveTarget({ targetId: 'duet', preset: 'violin+cello' }),
+  });
+  const names = r.score.parts.map((p) => p.instrumentId);
+  const vln = scorePart(r, 'violin', [[76, 0], [77, 0.5], [79, 1], [81, 1.5]], 0.2);
+  const vc = scorePart(r, 'cello', [[48, 0], [50, 0.5], [52, 1], [53, 1.5]], 0.2);
+  return names.length === 2 && vln.hit >= 3 && vc.hit >= 3
+    ? true : `${names.join('+')}, violin ${vln.hit}/4, cello ${vc.hit}/4`;
+});
+
+reading('violin and piano are told apart by register', () => {
+  const ev = [];
+  [79, 81, 83, 84].forEach((m, i) => ev.push([m, i * 0.5, 0.45, 100]));
+  for (let b = 0; b < 4; b++) { ev.push([48, b * 0.5, 0.45, 70], [60, b * 0.5, 0.45, 70]); }
+  const notes = ev.map(([midi, start, len, vel]) => ({
+    midi, start, end: start + len, velocity: vel, confidence: 1, salience: 90,
+  }));
+  const r = readMusic(notes, { duration: 2.6, plan: resolveTarget({ targetId: 'duet', preset: 'violin+piano' }) });
+  const vln = r.assignment.parts.find((p) => p.part.id === 'violin');
+  const pno = r.assignment.parts.find((p) => p.part.id === 'piano');
+  const strayed = vln.notes.filter((n) => n.midi < 70).length + pno.notes.filter((n) => n.midi > 75).length;
+  return strayed === 0 && r.score.parts.length === 2
+    ? true : `${strayed} notes in the wrong part`;
+});
+
+reading('a piano trio puts each player on their own staff', () => {
+  const ev = [];
+  [79, 81, 83, 84].forEach((m, i) => ev.push([m, i * 0.5, 0.45, 100]));
+  [50, 52, 53, 55].forEach((m, i) => ev.push([m, i * 0.5, 0.45, 85]));
+  for (let b = 0; b < 4; b++) ev.push([64, b * 0.5, 0.45, 70]);
+  const notes = ev.map(([midi, start, len, vel]) => ({
+    midi, start, end: start + len, velocity: vel, confidence: 1, salience: 90,
+  }));
+  const r = readMusic(notes, { duration: 2.6, plan: resolveTarget({ targetId: 'trio', preset: 'piano-trio' }) });
+  const ids = r.score.parts.map((p) => p.instrumentId).sort();
+  const used = r.assignment.parts.filter((p) => p.notes.length).length;
+  return JSON.stringify(ids) === JSON.stringify(['cello', 'piano', 'violin']) && used === 3
+    ? true : ids.join(',') + ', ' + used + ' players used';
+});
+
+reading('a string quartet is read as four lines, not as chords', () => {
+  const lines = [[76, 78, 79, 81], [69, 71, 72, 74], [62, 64, 65, 67], [50, 52, 53, 55]];
+  const notes = [];
+  lines.forEach((line) => line.forEach((m, i) => notes.push({
+    midi: m, start: i * 0.5, end: i * 0.5 + 0.45, velocity: 90, confidence: 1, salience: 90,
+  })));
+  const r = readMusic(notes, { duration: 2.6, plan: resolveTarget({ targetId: 'quartet', preset: 'string-quartet' }) });
+  const counts = r.assignment.parts.map((p) => p.notes.length);
+  const chords = r.chords.filter((c) => c.notes.length > 1);
+  return JSON.stringify(counts) === JSON.stringify([4, 4, 4, 4]) && chords.length === 0
+    ? true : 'notes per part ' + counts.join(',') + ', ' + chords.length + ' chords';
+});
+
+reading('a chamber ensemble keeps five lines apart', () => {
+  const lines = [[84, 86, 87], [77, 79, 80], [72, 74, 75], [65, 67, 68], [53, 55, 56]];
+  const notes = [];
+  lines.forEach((line) => line.forEach((m, i) => notes.push({
+    midi: m, start: i * 0.5, end: i * 0.5 + 0.45, velocity: 90, confidence: 1, salience: 90,
+  })));
+  const r = readMusic(notes, { duration: 2.0, plan: resolveTarget({ targetId: 'chamber', preset: 'wind-quintet' }) });
+  const used = r.assignment.parts.filter((p) => p.notes.length).length;
+  return used === 5 ? true : used + ' of 5 players used';
+});
+
+reading('an orchestral passage is written in sections, not on a piano staff', () => {
+  const lines = [[84, 86, 88], [79, 81, 83], [72, 74, 76], [64, 66, 68], [52, 54, 56], [40, 42, 44]];
+  const notes = [];
+  lines.forEach((line) => line.forEach((m, i) => notes.push({
+    midi: m, start: i * 0.5, end: i * 0.5 + 0.45, velocity: 90, confidence: 1, salience: 90,
+  })));
+  const plan = resolveTarget({ targetId: 'orchestral-movement' });
+  const r = readMusic(notes, { duration: 2.0, plan });
+  const ids = r.score.parts.map((p) => p.instrumentId);
+  const used = r.assignment.parts.filter((p) => p.notes.length).length;
+  if (ids.includes('piano')) return 'an orchestra was written for piano';
+  const bad = barsAddUp(r.score);
+  return used >= 4 && ids.length === plan.parts.length && !bad.length
+    ? true : `${used} players used of ${ids.length}${bad.length ? '; ' + bad[0] : ''}`;
+});
+
+/** How many of `wanted` appear in `got`, matched once each. */
+function countRecovered(got, wanted, tolerance = 0.16) {
+  const used = new Set();
+  let hit = 0;
+  for (const w of wanted) {
+    let best = -1;
+    let bd = tolerance;
+    got.forEach((g, i) => {
+      if (used.has(i) || g.midi !== w.midi) return;
+      const d = Math.abs(g.start - w.start);
+      if (d < bd) { bd = d; best = i; }
+    });
+    if (best >= 0) { hit++; used.add(best); }
+  }
+  return hit;
+}
 
 /* ---------------------------------------------------------------- report */
 

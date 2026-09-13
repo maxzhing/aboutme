@@ -9,7 +9,7 @@
 
 import * as M from '../core/model.js';
 import * as T from '../core/theory.js';
-import { TPQ, measureTicks, splitIntoDurations, durationTicks, durationForTicks } from '../core/rhythm.js';
+import { TPQ, measureTicks, splitIntoDurations, durationTicks, durationForTicks, eventTicks } from '../core/rhythm.js';
 
 /* ------------------------------------------------------------------- key */
 
@@ -271,59 +271,118 @@ function writeTuplet(state, m, beatIndex, from, to, division, spanEnd, emit) {
  * correct.
  */
 export function buildScore(chords, opts = {}) {
+  return buildParts([{ instrumentId: opts.instrumentId || ((opts.staves || 2) > 1 ? 'piano' : 'flute'),
+    staves: opts.staves === undefined ? 2 : opts.staves, chords }], opts);
+}
+
+/**
+ * Build a score from several parts at once.
+ *
+ * `parts` is [{ instrumentId, staves, chords }] in the order the player chose
+ * them; the score puts them in the order a score is written in, and each
+ * part's chords are laid into its own staves and voices.
+ */
+export function buildParts(parts, opts = {}) {
   const {
     timeSig = { beats: 4, beatType: 4, symbol: 'common' },
     bpm = 120,
     fifths = 0,
     mode = 'major',
-    staves = 2,
-    instrumentId = staves > 1 ? 'piano' : 'flute',
     title = 'Transcription',
     composer = '',
     plan = null,
     spellingLean = 0,
+    annotations = null,
   } = opts;
   const perBeat = plan ? plan.perBeat : TPQ;
   const divisions = plan ? plan.divisions : new Map();
   const layout = { perBeat, divisionAt: (b) => divisions.get(b) || 1 };
 
   const bar = measureTicks(timeSig);
-  const last = chords.reduce((a, c) => Math.max(a, c.endTicks), 0);
+  let last = 0;
+  for (const p of parts) for (const c of p.chords) last = Math.max(last, c.endTicks);
   const measures = Math.max(1, Math.ceil(last / bar));
 
   const score = M.createScore({
     title,
     composer,
-    instrumentIds: [instrumentId],
+    instrumentIds: parts.map((p) => p.instrumentId),
     measures,
     timeSig,
     keySig: { fifths, mode },
     tempo: Math.round(bpm),
   });
-  const part = score.parts[0];
 
-  /* Cadenza puts even voice numbers on the upper staff and odd ones on the
-   * lower, so a hand and a line together name the voice to write into. */
-  const streams = new Map();
-  for (const c of chords) {
-    const staff = staves > 1 ? (c.staff || 0) : 0;
-    const idx = staves > 1 ? (c.voice || 0) * 2 + staff : (c.voice || 0);
-    if (!streams.has(idx)) streams.set(idx, []);
-    streams.get(idx).push(c);
-  }
-  if (!streams.size) streams.set(0, []);
+  /* createScore puts the instruments in score order, which is not necessarily
+   * the order they were chosen in; match each back to its own notes. */
+  const claimed = new Set();
+  score.parts.forEach((scorePart, pi) => {
+    const source = parts.find((p, i) => !claimed.has(i) && p.instrumentId === scorePart.instrumentId
+      && (claimed.add(i) || true));
+    const data = source || { chords: [], staves: scorePart.staves };
+    const staves = scorePart.staves || 1;
 
-  const voiceCount = Math.max(...streams.keys()) + 1;
-  for (let m = 0; m < measures; m++) {
-    const pm = part.measures[m];
-    pm.voices = [];
-    for (let v = 0; v < voiceCount; v++) pm.voices.push([]);
-  }
-  for (const [idx, list] of streams) {
-    const laid = layOutVoice(list, timeSig, measures, fifths, layout, spellingLean);
-    for (let m = 0; m < measures; m++) part.measures[m].voices[idx] = laid[m];
-  }
+    /* Cadenza puts even voice numbers on the upper staff and odd ones on the
+     * lower, so a hand and a line together name the voice to write into. */
+    const streams = new Map();
+    for (const c of data.chords) {
+      const staff = staves > 1 ? (c.staff || 0) : 0;
+      const idx = staves > 1 ? (c.voice || 0) * 2 + staff : (c.voice || 0);
+      if (!streams.has(idx)) streams.set(idx, []);
+      streams.get(idx).push(c);
+    }
+    if (!streams.size) streams.set(0, []);
+    const voiceCount = Math.max(...streams.keys()) + 1;
+    for (let m = 0; m < measures; m++) {
+      scorePart.measures[m].voices = [];
+      for (let v = 0; v < voiceCount; v++) scorePart.measures[m].voices.push([]);
+    }
+    for (const [idx, list] of streams) {
+      const laid = layOutVoice(list, timeSig, measures, fifths, layout, spellingLean);
+      for (let m = 0; m < measures; m++) scorePart.measures[m].voices[idx] = laid[m];
+    }
+    scorePart.transcribeIndex = pi;
+  });
 
   M.normalizeScore(score);
-  return { score, measures, voiceCount };
+  if (annotations) applyAnnotations(score, annotations, perBeat, timeSig);
+  return { score, measures, parts: score.parts.length };
+}
+
+/**
+ * Write the harmonic reading onto the score as chord symbols and numerals.
+ *
+ * These are annotations: they say what the notes amount to and change no note.
+ * They go on the lowest part, where an analysis is normally written.
+ */
+function applyAnnotations(score, annotations, perBeat, timeSig) {
+  const { segments = [], showChords = true, showRoman = false } = annotations;
+  if (!segments.length) return;
+  const bar = measureTicks(timeSig);
+  const part = score.parts[score.parts.length - 1];
+  if (!part) return;
+  let lastLabel = null;
+  for (const seg of segments) {
+    if (!seg.chord || !seg.chord.label) continue;
+    if (seg.chord.label === lastLabel) continue;
+    lastLabel = seg.chord.label;
+    const tick = Math.round(seg.fromTicks !== undefined ? seg.fromTicks : seg.from * perBeat);
+    const m = Math.floor(tick / bar);
+    const within = tick - m * bar;
+    const pm = part.measures[m];
+    if (!pm) continue;
+    /* Attach to the event that starts at, or most recently before, that tick. */
+    let best = null;
+    let bestTick = -1;
+    for (const voice of pm.voices) {
+      let at = 0;
+      for (const ev of voice) {
+        if (ev.type === 'note' && at <= within && at > bestTick) { best = ev; bestTick = at; }
+        if (!ev.grace) at += eventTicks(ev);
+      }
+    }
+    if (!best) continue;
+    if (showChords) best.chordSymbol = seg.chord.label;
+    if (showRoman && seg.roman) best.roman = seg.roman;
+  }
 }
