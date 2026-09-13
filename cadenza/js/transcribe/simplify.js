@@ -217,6 +217,8 @@ function reviewStragglers(notes, perBeat, log) {
 
   for (const t of starts) {
     const group = byStart.get(t);
+    /* This moment has already been folded into a neighbouring chord. */
+    if (!group) continue;
     if (group.length * 2 > typical) continue;        // not a straggler
     let best = null;
     let bestGap = window + 1;
@@ -225,6 +227,7 @@ function reviewStragglers(notes, perBeat, log) {
       const gap = Math.abs(other - t);
       if (gap > window || gap >= bestGap) continue;
       const host = byStart.get(other);
+      if (!host) continue;                           // that chord has moved
       if (host.length <= group.length) continue;
       if (group.some((n) => host.some((m) => m.midi === n.midi))) continue;
       best = other;

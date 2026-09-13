@@ -25,6 +25,7 @@ import { measureTicks, eventTicks } from '../js/core/rhythm.js';
 import * as T from '../js/core/theory.js';
 import { MidiRecorder, parseMIDI } from '../js/transcribe/capture.js';
 import { refineByListening } from '../js/transcribe/refine.js';
+import { review } from '../js/transcribe/simplify.js';
 import { CorrectionModel, compareScores } from '../js/transcribe/learn.js';
 import { exportMIDI } from '../js/io/midifile.js';
 import { tempoAt } from '../js/core/model.js';
@@ -1151,6 +1152,72 @@ reading('hands that move keep their notes together as they go', () => {
   const wrongRight = r.notes.filter((n) => right.includes(n.midi) && n.staff !== 0).length;
   return wrongLeft + wrongRight === 0
     ? true : `${wrongLeft} left-hand and ${wrongRight} right-hand notes misplaced`;
+});
+
+/* ------------------------------------------------- nothing throws at the user
+
+   A transcription that stops with an error message is worse than a rough one,
+   so the reader has to survive whatever a performance turns out to be: a
+   single chord, two seconds of playing, a stretch where several notes arrive
+   a moment late together, or several hundred notes at once. */
+
+reading('a chord that catches two late notes still reviews', () => {
+  /* Two stragglers, each near the same chord: folding the first away must not
+   * leave the second looking for a moment that is no longer there. */
+  const notes = [];
+  const add = (t, len, midis) => {
+    for (const m of midis) notes.push({ midi: m, startTicks: t, endTicks: t + len, division: 4, staff: 0, voice: 1 });
+  };
+  add(0, 480, [60, 64, 67]);
+  add(100, 380, [72]);
+  add(200, 280, [74]);
+  add(480, 480, [60, 64, 67]);
+  add(960, 480, [62, 65, 69]);
+  add(1440, 480, [64, 67, 71]);
+  const log = review([{ notes }], { perBeat: 480 });
+  const late = notes.filter((n) => n.startTicks === 0).length;
+  return late === 5 ? true : `${late} notes in the opening chord, and the log said ${log.join('; ')}`;
+});
+
+reading('a performance too short to have a tempo still transcribes', () => {
+  /* Under half a second there is nothing for the playing to repeat against,
+   * so no pulse can be measured — which is not a reason to fail. */
+  const r = transcribeMidi(perfSeconds([[60, 0, 0.2], [64, 0.01, 0.2], [67, 0.02, 0.25]]), {});
+  if (r.notes.length !== 3) return r.notes.length + ' notes survived';
+  return r.score.measures.length >= 1 ? true : 'no bars were written';
+});
+
+reading('no performance stops the reader with an error', () => {
+  /* Two hundred performances made of random pitches, densities and timings,
+   * through every style and every quantisation setting. */
+  const styles = ['simple', 'balanced', 'precise'];
+  const quant = ['none', 'light', 'medium', 'strong'];
+  let seed = 1;
+  const next = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  for (let run = 0; run < 200; run++) {
+    const events = [];
+    let t = next() * 2;
+    const count = Math.floor(next() * 40);
+    for (let i = 0; i < count; i++) {
+      const poly = 1 + Math.floor(next() * 4);
+      const len = [0.02, 0.12, 0.25, 0.5, 1, 2][Math.floor(next() * 6)];
+      for (let p = 0; p < poly; p++) {
+        events.push([21 + Math.floor(next() * 88), t + (next() < 0.3 ? next() * 0.04 : 0), len, 40 + Math.floor(next() * 80)]);
+      }
+      t += [0, 0.001, 0.06, 0.125, 0.25, 0.5, 1, 3][Math.floor(next() * 8)];
+    }
+    try {
+      transcribeMidi(perfSeconds(events), {
+        style: styles[run % 3],
+        quantise: quant[run % 4],
+        bpm: [null, 40, 120, 208][run % 4],
+        timeSig: [null, { beats: 4, beatType: 4 }, { beats: 3, beatType: 4 }, { beats: 6, beatType: 8 }][run % 4],
+      });
+    } catch (err) {
+      return `run ${run} (${events.length} notes) failed: ${err.message}`;
+    }
+  }
+  return true;
 });
 
 /* ---------------------------------------------------------------- report */

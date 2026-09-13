@@ -122,6 +122,14 @@ export function estimateBeat(events, duration, opts = {}) {
   }
 
   const grid = tempogram(pulseTrain(events, duration));
+  /* Under about half a second there is nothing for the performance to repeat
+   * against, so no period can be measured.  A single chord, or two notes, is
+   * a real thing to hand in; write it at the default tempo and say, through
+   * the confidence, that the tempo was not heard rather than invented. */
+  if (!grid.length) {
+    const { phase, score } = bestPhase(events, PREFERRED);
+    return { period: PREFERRED, bpm: 120, phase, confidence: Math.min(0.25, score) };
+  }
   let peak = grid[0];
   for (const g of grid) if (g.score > peak.score) peak = g;
 
