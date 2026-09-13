@@ -146,6 +146,59 @@ function reattackRatio(samples, sampleRate, t, midi, others, earliest, latest) {
   return after / before;
 }
 
+
+
+/**
+ * Did the recording actually get louder here?
+ *
+ * Striking a string puts energy in.  Letting the analysis settle does not: a
+ * held chord decays across every boundary inside it, so a boundary where the
+ * level is falling had nothing struck at it, whatever the spectrum seems to
+ * say once the attack transient has cleared.  This is the measurement that
+ * tells a chord played twice from one chord read twice, and it comes from the
+ * recording rather than from a rule about how chords behave.
+ */
+function levelRise(samples, sampleRate, at, window = 0.045) {
+  const w = Math.round(window * sampleRate);
+  const i = Math.round(at * sampleRate);
+  if (i - w < 0 || i + w > samples.length) return 1;
+  const before = rms(samples, i - w, i);
+  const after = rms(samples, i, i + w);
+  if (before <= 1e-9) return after > 1e-9 ? 4 : 1;
+  return after / before;
+}
+
+/**
+ * Drop partials that were read as notes.
+ *
+ * A struck string puts energy at two, three and four times its pitch, and when
+ * the estimator cannot account for all of it the leftover comes back as a note
+ * that nobody played — faint, brief, uncertain, and sitting exactly on a
+ * harmonic of something louder sounding at the same moment.  All four have to
+ * hold before anything is removed: a genuine octave or twelfth in a chord is
+ * neither faint nor brief, and survives every one of these tests.
+ */
+function removeHarmonicLeaks(notes) {
+  for (let i = notes.length - 1; i >= 0; i--) {
+    const n = notes[i];
+    let loudest = 0;
+    for (const o of notes) {
+      if (o !== n && o.start < n.end && o.end > n.start) loudest = Math.max(loudest, o.salience || 0);
+    }
+    if (!loudest || (n.salience || 0) > loudest * 0.18) continue;
+    if (n.end - n.start >= 0.15 && (n.confidence ?? 1) >= 0.35) continue;
+    const leak = notes.some((o) => {
+      if (o === n || o.midi >= n.midi) return false;
+      if (!(o.start < n.end && o.end > n.start)) return false;
+      if ((o.salience || 0) < (n.salience || 0) * 2) return false;
+      const ratio = Math.pow(2, (n.midi - o.midi) / 12);
+      const h = Math.round(ratio);
+      return h >= 2 && Math.abs(ratio - h) < 0.035;
+    });
+    if (leak) notes.splice(i, 1);
+  }
+}
+
 /**
  * Extract note events from audio.
  * Returns { notes, onsets, duration, sampleRate }; each note is
@@ -195,23 +248,63 @@ export function extractNotes(audio, options = {}) {
     if (onProgress) onProgress((i + 1) / segments.length);
   });
 
-  /* Stitch segments into notes. */
-  const open = new Map();   // midi -> note being built
+  /* Stitch segments into notes.
+   *
+   * A pitch is not finished the moment the estimator stops reporting it.  A
+   * low note under a chord is hard to see, and the reading of one segment can
+   * lose it and the next find it again while the string never stopped
+   * sounding.  So a pitch that disappears is set aside rather than ended, and
+   * if it comes back before a note could plausibly have been played again it
+   * is the same note carrying on.  Without this a held bass under a moving
+   * hand comes out as the same note struck four times. */
+  const bridge = 0.13;
+  const open = new Map();      // midi -> note being built
+  const parked = new Map();    // midi -> note that has gone quiet but may return
   const notes = [];
+  const keep = (n) => { if (n.end - n.start >= minDuration) notes.push(n); };
   const close = (midi, end) => {
     const n = open.get(midi);
     if (!n) return;
     n.end = end;
     open.delete(midi);
-    if (n.end - n.start >= minDuration) notes.push(n);
+    keep(n);
+  };
+  const park = (midi, end) => {
+    const n = open.get(midi);
+    if (!n) return;
+    n.end = end;
+    open.delete(midi);
+    parked.set(midi, n);
+  };
+  const retire = (midi) => {
+    const n = parked.get(midi);
+    if (!n) return;
+    parked.delete(midi);
+    keep(n);
   };
 
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i];
     const prev = segments[i - 1];
-    for (const [midi, info] of seg.pitches) {
-      const cur = open.get(midi);
-      if (cur && prev) {
+    const struck = (seg.strength || 0) >= attackFloor;
+
+    /* A pitch that has been quiet too long to be the same note is finished. */
+    for (const [midi, n] of [...parked]) if (seg.from - n.end > bridge) retire(midi);
+
+    /* Which of the pitches carrying across this boundary were struck again.
+     *
+     * Every one of them is measured before any of them is acted on, because
+     * the answer for one depends on the answer for the rest.  A repeated chord
+     * re-strikes all of its notes at once.  A single note in the middle of a
+     * held chord that appears to gain energy on its own has almost always done
+     * nothing of the kind: it is the estimator settling, finally seeing a
+     * pitch that the attack transient had been masking.  Cutting the note
+     * there is what turns one chord into a chord followed by fragments. */
+    const carried = [];
+    if (prev && struck) {
+      for (const [midi, info] of seg.pitches) {
+        const cur = open.get(midi);
+        if (!cur) continue;
         /* Everything else sounding across this boundary, so the test can
          * ignore the partials this pitch shares with any of it. */
         const others = [];
@@ -219,24 +312,51 @@ export function extractNotes(audio, options = {}) {
         for (const m of prev.pitches.keys()) {
           if (m !== midi && !seg.pitches.has(m)) others.push(midiToHz(m));
         }
-        /* Two independent things have to agree before a held note is cut in
-         * two: something was struck at this instant, and it was this note's
-         * own partials that gained the energy. */
-        const struck = (seg.strength || 0) >= attackFloor;
-        const ratio = struck ? reattackRatio(samples, sampleRate, seg.from, midi, others,
-          Math.max(prev.from, cur.start), seg.to) : null;
-        if (ratio !== null && ratio > reattack) close(midi, seg.from);
-        else if (struck && ratio === null) {
-          /* The pitch-specific measurement needs partials this note does not
-           * share with anything else sounding, and a chord of five or six
-           * leaves it almost none.  Repeated chords are exactly that case, so
-           * when the measurement cannot be made the segment's own reading of
-           * the pitch is used instead: something was clearly struck here, and
-           * this pitch is louder than it was, so it was struck again. */
-          const before = prev.pitches.get(midi);
-          if (before && info.salience > before.salience * 1.3
-            && seg.from - cur.start > 0.09) close(midi, seg.from);
-        }
+        const ratio = reattackRatio(samples, sampleRate, seg.from, midi, others,
+          Math.max(prev.from, cur.start), seg.to);
+        const before = prev.pitches.get(midi);
+        const rose = !!before && info.salience > before.salience * 1.3
+          && seg.from - cur.start > 0.09;
+        carried.push({ midi, ratio, rose });
+      }
+    }
+    /* The pitch-specific measurement stands on its own: it looked at this
+     * note's own partials.  The fallback — this pitch simply reads louder than
+     * it did — is only worth anything when the notes around it agree, or when
+     * there are too few of them for their agreement to mean anything. */
+    const looksStruck = (c) => (c.ratio !== null ? c.ratio > reattack : c.rose);
+    const together = carried.filter(looksStruck).length * 2 > carried.length;
+    /* Nothing is cut in two at a boundary the recording gets quieter across. */
+    const rise = i > 0 ? levelRise(samples, sampleRate, seg.from) : 1;
+    const louder = rise >= 1.1;
+
+    /* A rise in level has to be explained by something.  If no pitch is new
+     * here, then whatever was struck is already sounding — the chord was
+     * played again.  This is what holds a repeated chord together when its
+     * lower notes are too masked for their own re-attack to be measurable:
+     * the whole group is re-struck, or none of it is, because the group is
+     * what the player struck.  When something new does arrive it explains the
+     * rise by itself, and the notes still sounding underneath are left alone,
+     * which is what keeps a held bass from being restruck under every melody
+     * note above it. */
+    const fresh = [...seg.pitches.keys()].filter((m) => !open.has(m) && !parked.has(m));
+    const groupStruck = rise >= 1.25 && fresh.length === 0 && carried.length > 1;
+
+    for (const c of carried) {
+      const again = louder && (groupStruck || (c.ratio !== null
+        ? c.ratio > reattack
+        : (c.rose && (together || carried.length < 3))));
+      if (again) close(c.midi, seg.from);
+    }
+
+    for (const [midi, info] of seg.pitches) {
+      /* Back again, soon enough, and with nothing struck to explain it: the
+       * same note, which was simply hard to see for a moment. */
+      if (!open.has(midi) && parked.has(midi) && !louder) {
+        const back = parked.get(midi);
+        parked.delete(midi);
+        back.end = seg.to;
+        open.set(midi, back);
       }
       if (!open.has(midi)) {
         /* Notes begin when something is struck.  A pitch that first appears at
@@ -264,12 +384,14 @@ export function extractNotes(audio, options = {}) {
       }
     }
     /* A pitch missing from this segment stopped at its boundary, not at the
-     * far end of it — closing late would swallow the rest that follows. */
+     * far end of it — closing late would swallow the rest that follows.  It is
+     * set aside rather than ended, in case it is only out of sight. */
     for (const midi of [...open.keys()]) {
-      if (!seg.pitches.has(midi)) close(midi, seg.from);
+      if (!seg.pitches.has(midi)) park(midi, seg.from);
     }
   }
   for (const midi of [...open.keys()]) close(midi, duration);
+  for (const midi of [...parked.keys()]) retire(midi);
 
   /* A take usually ends with silence on the end of it, and a note held open to
    * the last sample becomes a note held for several bars.  Where nothing
@@ -292,6 +414,8 @@ export function extractNotes(audio, options = {}) {
       if (n.end >= duration - 1e-6 && n.start < stops) n.end = Math.max(n.start + minDuration, stops);
     }
   }
+
+  removeHarmonicLeaks(notes);
 
   /* Drop what is left of decayed notes: real notes stand far above this. */
   let strongest = 0;

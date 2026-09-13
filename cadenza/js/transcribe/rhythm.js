@@ -89,23 +89,34 @@ function occupancy(events, period, phase) {
   return Math.min(1, filled.size / span);
 }
 
-/** Where the first beat falls, given a period. */
+/**
+ * Where the first beat falls, given a period.
+ *
+ * A pulse of one period fits equally well at several phases — put it half a
+ * beat later and it lines up with the other half of an even run just as
+ * neatly.  Music begins on a beat far more often than half a beat after one,
+ * so a phase that puts the first attack on the pulse wins a close contest.
+ * Without that, an ordinary run of quavers is read as beginning off the beat.
+ */
 function bestPhase(events, period) {
-  let best = { phase: 0, score: -1 };
+  const onFirst = (phase) => {
+    if (!events.length) return 1;
+    const k = Math.round((events[0].time - phase) / period);
+    const off = Math.abs(events[0].time - (phase + k * period));
+    return 1 + 0.05 * (1 - Math.min(1, off / (period * 0.5)));
+  };
+  let best = { phase: 0, score: -1, raw: -1 };
+  const consider = (phase) => {
+    const raw = alignment(events, period, phase);
+    const score = raw * onFirst(phase);
+    if (score > best.score) best = { phase, score, raw };
+  };
+
   const steps = 48;
-  for (let i = 0; i < steps; i++) {
-    const phase = (i / steps) * period;
-    const score = alignment(events, period, phase);
-    if (score > best.score) best = { phase, score };
-  }
+  for (let i = 0; i < steps; i++) consider((i / steps) * period);
   /* Refine against the onsets themselves so the grid starts on a real note. */
-  for (const e of events) {
-    const k = Math.round((e.time - best.phase) / period);
-    const phase = e.time - k * period;
-    const score = alignment(events, period, phase);
-    if (score > best.score) best = { phase, score };
-  }
-  return best;
+  for (const e of events) consider(e.time - Math.round((e.time - best.phase) / period) * period);
+  return { phase: best.phase, score: best.raw };
 }
 
 /**
@@ -328,18 +339,32 @@ export function quantise(notes, beat, opts = {}) {
     divisionWeights = null,
   } = opts;
 
-  const toBeats = (t) => (t - beat.phase) / beat.period;
+  const rawBeats = (t) => (t - beat.phase) / beat.period;
   const allowed = division ? [division] : DIVISIONS;
   /* A player who works in triplets gets a little more latitude for them. */
   const latitude = (d) => tolerance * (1 + ((divisionWeights && divisionWeights[d]) || 0) * 0.5);
 
-  const attacks = [...new Set(notes.map((n) => Math.round(toBeats(n.start) * 1e4) / 1e4))]
+  const rawAttacks = [...new Set(notes.map((n) => Math.round(rawBeats(n.start) * 1e4) / 1e4))]
     .sort((a, b) => a - b);
-  const global = chooseGrid(attacks, allowed, tolerance, gain);
+  const global = chooseGrid(rawAttacks, allowed, tolerance, gain);
+
+  /* The pulse can be found after the first note.  An even run of quavers fits
+   * a pulse just as well half a beat later, and the metre can settle there; a
+   * note played a hair early is before the beat by a hair.  Either way the
+   * positions in front of the pulse must not be clamped to zero, because that
+   * lands two different attacks on the same moment and writes a sequence of
+   * notes as a chord.  The grid moves instead, by the amount the first attack
+   * misses it by *on the grid* — so a note a hair early still starts the bar,
+   * while a run that turned out to begin half a beat before the pulse keeps
+   * its spacing and simply starts there. */
+  const first = rawAttacks.length ? rawAttacks[0] : 0;
+  const lead = first < 0 ? -Math.round(first * global.division) / global.division : 0;
+  const toBeats = (t) => rawBeats(t) + lead;
+  const attacks = rawAttacks.map((a) => a + lead);
 
   const byBeat = new Map();
   for (const n of notes) {
-    const idx = Math.max(0, Math.floor(toBeats(n.start) + 1e-9));
+    const idx = Math.floor(toBeats(n.start) + 1e-9);
     if (!byBeat.has(idx)) byBeat.set(idx, []);
     byBeat.get(idx).push(n);
   }
@@ -369,11 +394,11 @@ export function quantise(notes, beat, opts = {}) {
   const out = [];
   for (const n of notes) {
     const raw = toBeats(n.start);
-    const idx = Math.max(0, Math.floor(raw + 1e-9));
+    const idx = Math.floor(raw + 1e-9);
     const d = (beatDivision.get(idx) || { division: global.division }).division;
     const snapped = Math.round(raw * d) / d;
     const drift = Math.abs(raw - snapped) * d;
-    const beats = Math.max(0, raw + (snapped - raw) * strength);
+    const beats = raw + (snapped - raw) * strength;
     out.push({
       ...n,
       beats,
@@ -406,6 +431,21 @@ export function quantise(notes, beat, opts = {}) {
     n.endDivision = d;
     n.division = Math.max(n.division, 0);
     n.endTicks = Math.max(n.startTicks + Math.round(TPQ / (d * 2)), Math.round(n.endBeats * TPQ));
+  }
+
+  /* Whatever is left over — a note a fraction before the pulse that the style
+   * did not pull all the way onto it — moves the whole passage rather than one
+   * note, so no distance between attacks changes. */
+  let below = 0;
+  for (const n of out) below = Math.min(below, n.beats);
+  if (below < 0) {
+    for (const n of out) {
+      n.beats -= below;
+      n.endBeats -= below;
+      n.startTicks = Math.round(n.beats * TPQ);
+      n.endTicks = Math.max(n.startTicks + Math.round(TPQ / (n.endDivision * 2)),
+        Math.round(n.endBeats * TPQ));
+    }
   }
 
   const tally = new Map();

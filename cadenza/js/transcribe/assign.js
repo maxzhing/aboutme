@@ -11,7 +11,9 @@
  * it cannot tell, because the first has to be found and undone.
  */
 
-import { assignVoices, separateHands, groupChords } from './voices.js';
+import { assignVoices, groupChords } from './voices.js';
+import { assignHands, levelEvents } from './hands.js';
+import { eventsOf } from './events.js';
 
 /** Everything sounding as one line, described by where it sits and what it does. */
 function describeLine(notes) {
@@ -102,6 +104,22 @@ export function separateLines(notes, maxLines) {
   return lines.filter((l) => l.notes.length).map((l) => describeLine(l.notes));
 }
 
+
+/**
+ * Hands for a keyboard part, decided event by event.
+ *
+ * The events are rebuilt from the notes so that a chord is handed to a hand
+ * whole, and each hand's share of a chord is then given one length — after
+ * which the voice separator sees chords rather than a scatter of notes that
+ * happen to have started together.
+ */
+function keyboardHands(notes, centre, perBeat) {
+  const events = eventsOf(notes);
+  const result = assignHands(events, { centre });
+  levelEvents(events, perBeat);
+  return result;
+}
+
 /** What it costs to give this line to this instrument. */
 function cost(line, part) {
   const [lo, hi] = part.range;
@@ -125,14 +143,14 @@ function cost(line, part) {
  * reading can be handed to the user rather than asserted.
  */
 export function assignToParts(notes, plan, opts = {}) {
-  const { splitCentre = 60 } = opts;
+  const { splitCentre = 60, perBeat = 480 } = opts;
   const parts = plan.parts;
 
   /* One instrument: the old question, which hand and which voice. */
   if (parts.length === 1) {
     const only = parts[0];
     if (only.staves > 1 && plan.hands !== false) {
-      separateHands(notes, { centre: splitCentre });
+      keyboardHands(notes, splitCentre, perBeat);
       for (const staff of new Set(notes.map((n) => n.staff))) {
         assignVoices(notes.filter((n) => n.staff === staff));
       }
@@ -213,7 +231,7 @@ export function assignToParts(notes, plan, opts = {}) {
   result.forEach((entry, i) => {
     if (!entry.notes.length) return;
     if (entry.part.staves > 1) {
-      separateHands(entry.notes, { centre: splitCentre });
+      keyboardHands(entry.notes, splitCentre, perBeat);
       for (const staff of new Set(entry.notes.map((n) => n.staff))) {
         assignVoices(entry.notes.filter((n) => n.staff === staff));
       }

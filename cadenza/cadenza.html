@@ -664,6 +664,26 @@ kbd {
   body { background: #fff; overflow: visible; }
 }
 
+/* The record of how a transcription was arrived at: every stage, in order.
+   Folded away by default — it is for when something is wrong. */
+.tr-trace { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+.tr-trace > summary {
+  cursor: pointer; font-weight: 600; color: var(--text);
+  padding: 4px 0; list-style: none; user-select: none;
+}
+.tr-trace > summary::before { content: '▸ '; color: var(--muted); }
+.tr-trace[open] > summary::before { content: '▾ '; }
+.tr-trace > summary::-webkit-details-marker { display: none; }
+.tr-stage { margin: 10px 0 0; }
+.tr-stage b { display: block; color: var(--text); font-size: 12px; }
+.tr-trace .tr-faint { color: var(--text-faint); font-size: 11px; }
+.tr-stage pre {
+  margin: 4px 0 0; padding: 7px 9px; overflow-x: auto;
+  background: var(--bg); border: 1px solid var(--line-soft); border-radius: 5px;
+  font: 11px/1.55 var(--mono);
+  color: var(--text); white-space: pre;
+}
+
 </style>
 </head>
 <body>
@@ -12917,6 +12937,19 @@ class TranscribePanel {
             </li>`).join('')}</ul>
             <span class="tr-faint">These bars are marked on the page once you accept.</span>
           </div>` : '<div class="tr-shaky good">Nothing stood out as doubtful.</div>'}
+
+          ${a.trace && a.trace.length ? `<details class="tr-trace">
+            <summary>Show the working</summary>
+            <p class="tr-faint">Each stage, in the order it ran, and what it handed to the next
+              one. If the notation is wrong, this is where to see which stage got it wrong —
+              whether a chord was heard as separate notes, or heard correctly and taken apart
+              afterwards.</p>
+            ${a.trace.map((st) => `<div class="tr-stage">
+              <b>${esc(st.label)}</b>
+              <div class="tr-faint">${esc(st.note || `${st.count} line${st.count === 1 ? '' : 's'}`)}</div>
+              ${st.lines.length ? `<pre>${esc(st.lines.join('\n'))}</pre>` : ''}
+            </div>`).join('')}
+          </details>` : ''}
         </div>
 
         <div class="tr-tweaks">
@@ -13081,11 +13114,13 @@ __exp.TranscribePanel = TranscribePanel;
 
 const { extractNotes } = __req("js/transcribe/notes.js");
 const { attackEvents, estimateBeat, estimateMetre, quantise, toTicks, normaliseRuns, STYLES, styleById } = __req("js/transcribe/rhythm.js");
-const { markPerformedEvents, groupChords } = __req("js/transcribe/voices.js");
+const { groupChords } = __req("js/transcribe/voices.js");
+const { buildEvents, eventsOf } = __req("js/transcribe/events.js");
 const { assignToParts } = __req("js/transcribe/assign.js");
 const { review } = __req("js/transcribe/simplify.js");
 const { analyseHarmony, harmonyFitter } = __req("js/transcribe/harmony.js");
 const { buildParts, detectKey } = __req("js/transcribe/build.js");
+const { buildTrace } = __req("js/transcribe/trace.js");
 const { resolveTarget } = __req("js/transcribe/ensembles.js");
 const { refineByListening } = __req("js/transcribe/refine.js");
 const { beatTicks, measureTicks, TPQ } = __req("js/core/rhythm.js");
@@ -13154,6 +13189,11 @@ function readMusic(rawNotes, opts = {}) {
 
   const plan = chosen || resolveTarget({ targetId: 'piano' });
   const notes = rawNotes.map((n) => ({ ...n }));
+  /* What the pitch stage handed over, kept as it was so the record of the
+   * reading can show it beside what the reading made of it. */
+  const heard = notes.map((n) => ({
+    midi: n.midi, start: n.start, end: n.end, confidence: n.confidence,
+  }));
   if (!notes.length) {
     const { score } = buildParts(plan.parts.map((p) => ({
       instrumentId: p.id, staves: p.staves, chords: [],
@@ -13170,9 +13210,13 @@ function readMusic(rawNotes, opts = {}) {
     }
   }
 
-  /* --- chords: what was struck together, decided before anything moves ---- */
+  /* --- events: what happened, before anything is called a note ----------- */
+  /* This is the first question and it governs everything after it.  Notes
+   * struck together become one event and share one moment, so nothing later
+   * in the chain is in a position to take a chord apart: the rhythm stage
+   * sees one attack for a chord, and the hands are given events, not notes. */
   onPass('chords');
-  markPerformedEvents(notes);
+  const performed = buildEvents(notes);
 
   /* --- rhythm ------------------------------------------------------------ */
   onPass('timing');
@@ -13193,11 +13237,13 @@ function readMusic(rawNotes, opts = {}) {
     : estimateMetre(attacks, beat, trial.compound);
   const perBeat = beatTicks(metre.timeSig);
   const fitted = toTicks(trial.notes, perBeat);
-  levelChords(fitted, perBeat);
 
   /* --- voices and parts -------------------------------------------------- */
+  /* Hands first, and hands are given events: a chord goes to a hand whole.
+   * Only then are the lines within each hand followed, so a voice can never be
+   * invented by a chord's notes having been let go a moment apart. */
   onPass('voices');
-  const assignment = assignToParts(fitted, plan, { splitCentre });
+  const assignment = assignToParts(fitted, plan, { splitCentre, perBeat });
   /* Gaps are closed within a line, not within a part.  A held melody note is
    * not cut short because the accompaniment moved underneath it. */
   for (const entry of assignment.parts) {
@@ -13265,6 +13311,23 @@ function readMusic(rawNotes, opts = {}) {
       : null,
   });
 
+  /* The record of how this reading was arrived at, stage by stage.  It costs
+   * a few lines of text and it is the only way to tell a chord that was heard
+   * as three notes from a chord that was heard correctly and then taken apart
+   * by the hands. */
+  const trace = buildTrace({
+    heard,
+    events: eventsOf(fitted),
+    beat,
+    timeSig: metre.timeSig,
+    perBeat,
+    divisions: trial.divisions,
+    parts: assignment.parts,
+    chords: partData.flatMap((p) => p.chords),
+    key,
+    simplified,
+  });
+
   return {
     score: built.score,
     notes: fitted,
@@ -13281,6 +13344,7 @@ function readMusic(rawNotes, opts = {}) {
       measures: built.measures,
       noteCount: fitted.length,
       simplified,
+      trace,
       divisions: trial.divisions,
       perBeat,
       confidence: {
@@ -13297,36 +13361,6 @@ function readMusic(rawNotes, opts = {}) {
 
 const FIFTH_TONIC = { 0: 0, 1: 7, 2: 2, 3: 9, 4: 4, 5: 11, 6: 6, '-1': 5, '-2': 10, '-3': 3, '-4': 8, '-5': 1, '-6': 6 };
 const fifthsToTonic = (f) => FIFTH_TONIC[String(f)] ?? 0;
-
-/**
- * One chord, one length.
- *
- * The notes of a chord are let go a few milliseconds apart, and a few
- * milliseconds is enough for the voice separator to decide they are separate
- * lines — which is how a plain three-note chord becomes three voices with
- * three different note values.  Notes struck together and released at close to
- * the same moment are given one length before any of that happens.
- *
- * A held bass under a moving melody is not levelled: it differs from the
- * melody by far more than the window allows, which is exactly what makes it a
- * separate line rather than part of the chord.
- */
-function levelChords(notes, perBeat) {
-  const byStart = new Map();
-  for (const n of notes) {
-    if (!byStart.has(n.startTicks)) byStart.set(n.startTicks, []);
-    byStart.get(n.startTicks).push(n);
-  }
-  const window = Math.round(perBeat * 0.34);
-  for (const group of byStart.values()) {
-    if (group.length < 2) continue;
-    const ends = group.map((n) => n.endTicks).sort((a, b) => a - b);
-    const median = ends[Math.floor(ends.length / 2)];
-    for (const n of group) {
-      if (Math.abs(n.endTicks - median) <= window) n.endTicks = median;
-    }
-  }
-}
 
 /**
  * Decide where the silences really are.
@@ -13658,6 +13692,59 @@ function reattackRatio(samples, sampleRate, t, midi, others, earliest, latest) {
   return after / before;
 }
 
+
+
+/**
+ * Did the recording actually get louder here?
+ *
+ * Striking a string puts energy in.  Letting the analysis settle does not: a
+ * held chord decays across every boundary inside it, so a boundary where the
+ * level is falling had nothing struck at it, whatever the spectrum seems to
+ * say once the attack transient has cleared.  This is the measurement that
+ * tells a chord played twice from one chord read twice, and it comes from the
+ * recording rather than from a rule about how chords behave.
+ */
+function levelRise(samples, sampleRate, at, window = 0.045) {
+  const w = Math.round(window * sampleRate);
+  const i = Math.round(at * sampleRate);
+  if (i - w < 0 || i + w > samples.length) return 1;
+  const before = rms(samples, i - w, i);
+  const after = rms(samples, i, i + w);
+  if (before <= 1e-9) return after > 1e-9 ? 4 : 1;
+  return after / before;
+}
+
+/**
+ * Drop partials that were read as notes.
+ *
+ * A struck string puts energy at two, three and four times its pitch, and when
+ * the estimator cannot account for all of it the leftover comes back as a note
+ * that nobody played — faint, brief, uncertain, and sitting exactly on a
+ * harmonic of something louder sounding at the same moment.  All four have to
+ * hold before anything is removed: a genuine octave or twelfth in a chord is
+ * neither faint nor brief, and survives every one of these tests.
+ */
+function removeHarmonicLeaks(notes) {
+  for (let i = notes.length - 1; i >= 0; i--) {
+    const n = notes[i];
+    let loudest = 0;
+    for (const o of notes) {
+      if (o !== n && o.start < n.end && o.end > n.start) loudest = Math.max(loudest, o.salience || 0);
+    }
+    if (!loudest || (n.salience || 0) > loudest * 0.18) continue;
+    if (n.end - n.start >= 0.15 && (n.confidence ?? 1) >= 0.35) continue;
+    const leak = notes.some((o) => {
+      if (o === n || o.midi >= n.midi) return false;
+      if (!(o.start < n.end && o.end > n.start)) return false;
+      if ((o.salience || 0) < (n.salience || 0) * 2) return false;
+      const ratio = Math.pow(2, (n.midi - o.midi) / 12);
+      const h = Math.round(ratio);
+      return h >= 2 && Math.abs(ratio - h) < 0.035;
+    });
+    if (leak) notes.splice(i, 1);
+  }
+}
+
 /**
  * Extract note events from audio.
  * Returns { notes, onsets, duration, sampleRate }; each note is
@@ -13707,23 +13794,63 @@ function extractNotes(audio, options = {}) {
     if (onProgress) onProgress((i + 1) / segments.length);
   });
 
-  /* Stitch segments into notes. */
-  const open = new Map();   // midi -> note being built
+  /* Stitch segments into notes.
+   *
+   * A pitch is not finished the moment the estimator stops reporting it.  A
+   * low note under a chord is hard to see, and the reading of one segment can
+   * lose it and the next find it again while the string never stopped
+   * sounding.  So a pitch that disappears is set aside rather than ended, and
+   * if it comes back before a note could plausibly have been played again it
+   * is the same note carrying on.  Without this a held bass under a moving
+   * hand comes out as the same note struck four times. */
+  const bridge = 0.13;
+  const open = new Map();      // midi -> note being built
+  const parked = new Map();    // midi -> note that has gone quiet but may return
   const notes = [];
+  const keep = (n) => { if (n.end - n.start >= minDuration) notes.push(n); };
   const close = (midi, end) => {
     const n = open.get(midi);
     if (!n) return;
     n.end = end;
     open.delete(midi);
-    if (n.end - n.start >= minDuration) notes.push(n);
+    keep(n);
+  };
+  const park = (midi, end) => {
+    const n = open.get(midi);
+    if (!n) return;
+    n.end = end;
+    open.delete(midi);
+    parked.set(midi, n);
+  };
+  const retire = (midi) => {
+    const n = parked.get(midi);
+    if (!n) return;
+    parked.delete(midi);
+    keep(n);
   };
 
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i];
     const prev = segments[i - 1];
-    for (const [midi, info] of seg.pitches) {
-      const cur = open.get(midi);
-      if (cur && prev) {
+    const struck = (seg.strength || 0) >= attackFloor;
+
+    /* A pitch that has been quiet too long to be the same note is finished. */
+    for (const [midi, n] of [...parked]) if (seg.from - n.end > bridge) retire(midi);
+
+    /* Which of the pitches carrying across this boundary were struck again.
+     *
+     * Every one of them is measured before any of them is acted on, because
+     * the answer for one depends on the answer for the rest.  A repeated chord
+     * re-strikes all of its notes at once.  A single note in the middle of a
+     * held chord that appears to gain energy on its own has almost always done
+     * nothing of the kind: it is the estimator settling, finally seeing a
+     * pitch that the attack transient had been masking.  Cutting the note
+     * there is what turns one chord into a chord followed by fragments. */
+    const carried = [];
+    if (prev && struck) {
+      for (const [midi, info] of seg.pitches) {
+        const cur = open.get(midi);
+        if (!cur) continue;
         /* Everything else sounding across this boundary, so the test can
          * ignore the partials this pitch shares with any of it. */
         const others = [];
@@ -13731,24 +13858,51 @@ function extractNotes(audio, options = {}) {
         for (const m of prev.pitches.keys()) {
           if (m !== midi && !seg.pitches.has(m)) others.push(midiToHz(m));
         }
-        /* Two independent things have to agree before a held note is cut in
-         * two: something was struck at this instant, and it was this note's
-         * own partials that gained the energy. */
-        const struck = (seg.strength || 0) >= attackFloor;
-        const ratio = struck ? reattackRatio(samples, sampleRate, seg.from, midi, others,
-          Math.max(prev.from, cur.start), seg.to) : null;
-        if (ratio !== null && ratio > reattack) close(midi, seg.from);
-        else if (struck && ratio === null) {
-          /* The pitch-specific measurement needs partials this note does not
-           * share with anything else sounding, and a chord of five or six
-           * leaves it almost none.  Repeated chords are exactly that case, so
-           * when the measurement cannot be made the segment's own reading of
-           * the pitch is used instead: something was clearly struck here, and
-           * this pitch is louder than it was, so it was struck again. */
-          const before = prev.pitches.get(midi);
-          if (before && info.salience > before.salience * 1.3
-            && seg.from - cur.start > 0.09) close(midi, seg.from);
-        }
+        const ratio = reattackRatio(samples, sampleRate, seg.from, midi, others,
+          Math.max(prev.from, cur.start), seg.to);
+        const before = prev.pitches.get(midi);
+        const rose = !!before && info.salience > before.salience * 1.3
+          && seg.from - cur.start > 0.09;
+        carried.push({ midi, ratio, rose });
+      }
+    }
+    /* The pitch-specific measurement stands on its own: it looked at this
+     * note's own partials.  The fallback — this pitch simply reads louder than
+     * it did — is only worth anything when the notes around it agree, or when
+     * there are too few of them for their agreement to mean anything. */
+    const looksStruck = (c) => (c.ratio !== null ? c.ratio > reattack : c.rose);
+    const together = carried.filter(looksStruck).length * 2 > carried.length;
+    /* Nothing is cut in two at a boundary the recording gets quieter across. */
+    const rise = i > 0 ? levelRise(samples, sampleRate, seg.from) : 1;
+    const louder = rise >= 1.1;
+
+    /* A rise in level has to be explained by something.  If no pitch is new
+     * here, then whatever was struck is already sounding — the chord was
+     * played again.  This is what holds a repeated chord together when its
+     * lower notes are too masked for their own re-attack to be measurable:
+     * the whole group is re-struck, or none of it is, because the group is
+     * what the player struck.  When something new does arrive it explains the
+     * rise by itself, and the notes still sounding underneath are left alone,
+     * which is what keeps a held bass from being restruck under every melody
+     * note above it. */
+    const fresh = [...seg.pitches.keys()].filter((m) => !open.has(m) && !parked.has(m));
+    const groupStruck = rise >= 1.25 && fresh.length === 0 && carried.length > 1;
+
+    for (const c of carried) {
+      const again = louder && (groupStruck || (c.ratio !== null
+        ? c.ratio > reattack
+        : (c.rose && (together || carried.length < 3))));
+      if (again) close(c.midi, seg.from);
+    }
+
+    for (const [midi, info] of seg.pitches) {
+      /* Back again, soon enough, and with nothing struck to explain it: the
+       * same note, which was simply hard to see for a moment. */
+      if (!open.has(midi) && parked.has(midi) && !louder) {
+        const back = parked.get(midi);
+        parked.delete(midi);
+        back.end = seg.to;
+        open.set(midi, back);
       }
       if (!open.has(midi)) {
         /* Notes begin when something is struck.  A pitch that first appears at
@@ -13776,12 +13930,14 @@ function extractNotes(audio, options = {}) {
       }
     }
     /* A pitch missing from this segment stopped at its boundary, not at the
-     * far end of it — closing late would swallow the rest that follows. */
+     * far end of it — closing late would swallow the rest that follows.  It is
+     * set aside rather than ended, in case it is only out of sight. */
     for (const midi of [...open.keys()]) {
-      if (!seg.pitches.has(midi)) close(midi, seg.from);
+      if (!seg.pitches.has(midi)) park(midi, seg.from);
     }
   }
   for (const midi of [...open.keys()]) close(midi, duration);
+  for (const midi of [...parked.keys()]) retire(midi);
 
   /* A take usually ends with silence on the end of it, and a note held open to
    * the last sample becomes a note held for several bars.  Where nothing
@@ -13804,6 +13960,8 @@ function extractNotes(audio, options = {}) {
       if (n.end >= duration - 1e-6 && n.start < stops) n.end = Math.max(n.start + minDuration, stops);
     }
   }
+
+  removeHarmonicLeaks(notes);
 
   /* Drop what is left of decayed notes: real notes stand far above this. */
   let strongest = 0;
@@ -14784,23 +14942,34 @@ function occupancy(events, period, phase) {
   return Math.min(1, filled.size / span);
 }
 
-/** Where the first beat falls, given a period. */
+/**
+ * Where the first beat falls, given a period.
+ *
+ * A pulse of one period fits equally well at several phases — put it half a
+ * beat later and it lines up with the other half of an even run just as
+ * neatly.  Music begins on a beat far more often than half a beat after one,
+ * so a phase that puts the first attack on the pulse wins a close contest.
+ * Without that, an ordinary run of quavers is read as beginning off the beat.
+ */
 function bestPhase(events, period) {
-  let best = { phase: 0, score: -1 };
+  const onFirst = (phase) => {
+    if (!events.length) return 1;
+    const k = Math.round((events[0].time - phase) / period);
+    const off = Math.abs(events[0].time - (phase + k * period));
+    return 1 + 0.05 * (1 - Math.min(1, off / (period * 0.5)));
+  };
+  let best = { phase: 0, score: -1, raw: -1 };
+  const consider = (phase) => {
+    const raw = alignment(events, period, phase);
+    const score = raw * onFirst(phase);
+    if (score > best.score) best = { phase, score, raw };
+  };
+
   const steps = 48;
-  for (let i = 0; i < steps; i++) {
-    const phase = (i / steps) * period;
-    const score = alignment(events, period, phase);
-    if (score > best.score) best = { phase, score };
-  }
+  for (let i = 0; i < steps; i++) consider((i / steps) * period);
   /* Refine against the onsets themselves so the grid starts on a real note. */
-  for (const e of events) {
-    const k = Math.round((e.time - best.phase) / period);
-    const phase = e.time - k * period;
-    const score = alignment(events, period, phase);
-    if (score > best.score) best = { phase, score };
-  }
-  return best;
+  for (const e of events) consider(e.time - Math.round((e.time - best.phase) / period) * period);
+  return { phase: best.phase, score: best.raw };
 }
 
 /**
@@ -15023,18 +15192,32 @@ function quantise(notes, beat, opts = {}) {
     divisionWeights = null,
   } = opts;
 
-  const toBeats = (t) => (t - beat.phase) / beat.period;
+  const rawBeats = (t) => (t - beat.phase) / beat.period;
   const allowed = division ? [division] : DIVISIONS;
   /* A player who works in triplets gets a little more latitude for them. */
   const latitude = (d) => tolerance * (1 + ((divisionWeights && divisionWeights[d]) || 0) * 0.5);
 
-  const attacks = [...new Set(notes.map((n) => Math.round(toBeats(n.start) * 1e4) / 1e4))]
+  const rawAttacks = [...new Set(notes.map((n) => Math.round(rawBeats(n.start) * 1e4) / 1e4))]
     .sort((a, b) => a - b);
-  const global = chooseGrid(attacks, allowed, tolerance, gain);
+  const global = chooseGrid(rawAttacks, allowed, tolerance, gain);
+
+  /* The pulse can be found after the first note.  An even run of quavers fits
+   * a pulse just as well half a beat later, and the metre can settle there; a
+   * note played a hair early is before the beat by a hair.  Either way the
+   * positions in front of the pulse must not be clamped to zero, because that
+   * lands two different attacks on the same moment and writes a sequence of
+   * notes as a chord.  The grid moves instead, by the amount the first attack
+   * misses it by *on the grid* — so a note a hair early still starts the bar,
+   * while a run that turned out to begin half a beat before the pulse keeps
+   * its spacing and simply starts there. */
+  const first = rawAttacks.length ? rawAttacks[0] : 0;
+  const lead = first < 0 ? -Math.round(first * global.division) / global.division : 0;
+  const toBeats = (t) => rawBeats(t) + lead;
+  const attacks = rawAttacks.map((a) => a + lead);
 
   const byBeat = new Map();
   for (const n of notes) {
-    const idx = Math.max(0, Math.floor(toBeats(n.start) + 1e-9));
+    const idx = Math.floor(toBeats(n.start) + 1e-9);
     if (!byBeat.has(idx)) byBeat.set(idx, []);
     byBeat.get(idx).push(n);
   }
@@ -15064,11 +15247,11 @@ function quantise(notes, beat, opts = {}) {
   const out = [];
   for (const n of notes) {
     const raw = toBeats(n.start);
-    const idx = Math.max(0, Math.floor(raw + 1e-9));
+    const idx = Math.floor(raw + 1e-9);
     const d = (beatDivision.get(idx) || { division: global.division }).division;
     const snapped = Math.round(raw * d) / d;
     const drift = Math.abs(raw - snapped) * d;
-    const beats = Math.max(0, raw + (snapped - raw) * strength);
+    const beats = raw + (snapped - raw) * strength;
     out.push({
       ...n,
       beats,
@@ -15101,6 +15284,21 @@ function quantise(notes, beat, opts = {}) {
     n.endDivision = d;
     n.division = Math.max(n.division, 0);
     n.endTicks = Math.max(n.startTicks + Math.round(TPQ / (d * 2)), Math.round(n.endBeats * TPQ));
+  }
+
+  /* Whatever is left over — a note a fraction before the pulse that the style
+   * did not pull all the way onto it — moves the whole passage rather than one
+   * note, so no distance between attacks changes. */
+  let below = 0;
+  for (const n of out) below = Math.min(below, n.beats);
+  if (below < 0) {
+    for (const n of out) {
+      n.beats -= below;
+      n.endBeats -= below;
+      n.startTicks = Math.round(n.beats * TPQ);
+      n.endTicks = Math.max(n.startTicks + Math.round(TPQ / (n.endDivision * 2)),
+        Math.round(n.endBeats * TPQ));
+    }
   }
 
   const tally = new Map();
@@ -15592,62 +15790,82 @@ __exp.groupChords = groupChords;
 __exp.markPerformedEvents = markPerformedEvents;
 },
   "js/transcribe/events.js": function (__exp, __req) {
-/* Cadenza — deciding what belongs to the same musical event.
+/* Cadenza — the musical event.
  *
- * Three things that look alike in a list of note onsets are not alike at all
- * on the page:
+ * The unit of a performance is not the note.  A pianist who plays a C major
+ * triad has performed one thing, not three, and everything downstream — the
+ * rhythm, the hands, the voices, the page — is wrong if that one thing has
+ * already been taken apart into three.  So the first question asked of a
+ * performance is never "what note is this" but "what happened here", and the
+ * answer is an event: a moment, and the pitches that belong to it.
  *
- *   C E G struck together        one chord
- *   C then E then G              three melodic notes
- *   C G E C rolled upwards       an arpeggio — one harmony, played in turn
+ *     MUSICAL EVENT at 1.00s
+ *       ├── C3
+ *       ├── G3
+ *       ├── C4
+ *       └── E4
  *
- * Getting this wrong is the difference between a transcription and a guess, so
- * the decision is made from the performance rather than from a fixed window.
- * A player spreading a chord puts its notes 20 milliseconds apart; the same 20
- * milliseconds in a fast run is a whole note's worth of time.  The tolerance
- * therefore comes from how quickly this performance is moving, and the notes
- * still have to overlap in time before they are called simultaneous.
+ * That is a different object from C3 → G3 → C4 → E4, and the difference is the
+ * whole of this file.  Once the events are known they are what gets quantised,
+ * what gets given to a hand, and what becomes a chord on the page; the notes
+ * travel inside them.  Simultaneity cannot be lost later because nothing later
+ * is allowed to look at the notes on their own.
  *
- * Nothing here alters a note.  It only says which notes were played at once.
+ * Four things have to be told apart, and none of them can be told apart by a
+ * fixed window:
+ *
+ *   one note                     a single pitch
+ *   a chord                      pitches struck together
+ *   a chord spread by the hand   pitches struck in turn, very fast, all held
+ *   an arpeggio or a run         pitches struck in turn, at the pace of the music
+ *
+ * A player's chord is not mathematically simultaneous — 10 to 40 milliseconds
+ * between the outer notes is ordinary — and 40 milliseconds inside a fast run
+ * is a note each.  What separates the cases is not the size of the gaps but
+ * their size *relative to the music around them*, and whether the notes go on
+ * sounding together.  Both of those are measured here, from the performance.
  */
 
-const MAX_CHORD_SPREAD = 0.05;      // seconds, for a deliberate simultaneity
-const MAX_ROLL_SPREAD = 0.22;       // seconds, the longest a rolled chord runs
+/* A chord's notes are never spread wider than this, however slow the music. */
+const MAX_SPREAD = 0.075;
+/* Nor closer than this, however fast: a player is not a sequencer. */
+const MIN_SPREAD = 0.030;
+/* The longest a hand takes to roll a chord from bottom to top. */
+const MAX_ROLL = 0.200;
+/* How much of the local pace a chord's spread may take up. */
+const SPREAD_SHARE = 0.28;
+/* A roll has to be this much tighter than the music around it. */
+const ROLL_CONTRAST = 2.2;
+
+/* ------------------------------------------------------------------ pace */
 
 /**
- * How close together two attacks have to be to count as one event.
+ * How fast the music is moving, moment by moment.
  *
- * This cannot be a fixed window.  A pianist spreading a chord puts its notes
- * twenty milliseconds apart; twenty milliseconds inside a run of
- * demisemiquavers is a note each.  What separates the two cases is not the
- * size of the gaps but their shape: a performance of chords has small gaps
- * inside each chord and large ones between them, while a run has gaps all the
- * same size.  So the gaps are sorted and the largest jump between consecutive
- * ones is looked for; where there is one, it is the line between within and
- * between.  Where there is none, the gaps are all alike and the answer is
- * decided by whether they are short enough to be a chord at all.
+ * Taken over neighbouring attacks rather than a fixed number of seconds, so a
+ * passage that speeds up is measured at the speed it is actually going.  The
+ * median is used rather than the mean because one long note between two short
+ * ones should not make the passage look slow.
  */
-function spreadTolerance(notes) {
-  const starts = [...new Set(notes.map((n) => n.start))].sort((a, b) => a - b);
+function paceOver(onsets, span = 8) {
+  if (onsets.length < 2) return () => 0.5;
   const gaps = [];
-  for (let i = 1; i < starts.length; i++) {
-    const d = starts[i] - starts[i - 1];
-    if (d > 0.002) gaps.push(d);
-  }
-  if (!gaps.length) return MAX_CHORD_SPREAD;
-  gaps.sort((a, b) => a - b);
+  for (let i = 1; i < onsets.length; i++) gaps.push(onsets[i] - onsets[i - 1]);
 
-  let split = -1;
-  let ratio = 2.5;
-  for (let i = 0; i < gaps.length - 1; i++) {
-    const r = gaps[i + 1] / gaps[i];
-    if (r > ratio && gaps[i] < MAX_CHORD_SPREAD * 1.5) { ratio = r; split = i; }
-  }
-  if (split >= 0) return Math.max(0.012, Math.min(MAX_CHORD_SPREAD, gaps[split] * 1.4));
+  const local = gaps.map((_, i) => {
+    const from = Math.max(0, i - span);
+    const to = Math.min(gaps.length, i + span + 1);
+    const near = gaps.slice(from, to).sort((a, b) => a - b);
+    return near[Math.floor(near.length / 2)];
+  });
 
-  const median = gaps[Math.floor(gaps.length / 2)];
-  /* No two kinds of gap: either everything is one chord, or nothing is. */
-  return median <= 0.03 ? MAX_CHORD_SPREAD : 0.012;
+  return (t) => {
+    /* The gap before the nearest attack at or after t. */
+    let i = 0;
+    while (i < onsets.length && onsets[i] < t - 1e-9) i++;
+    const k = Math.max(0, Math.min(local.length - 1, i - 1));
+    return local[k] || 0.5;
+  };
 }
 
 /** How much of the shorter note's life is spent sounding with the other. */
@@ -15659,89 +15877,227 @@ function overlap(a, b) {
   return shared / Math.max(1e-6, Math.min(a.end - a.start, b.end - b.start));
 }
 
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+/* -------------------------------------------------------------- grouping */
+
 /**
- * Group notes into musical events.
+ * Does this note belong to the event being built?
  *
- * Returns [{ kind, notes, start, spread, harmony }] where kind is
- * 'chord' (struck together), 'rolled' (one harmony spread across the keyboard)
- * or 'single'.  A rolled group keeps its notes separate — it was played as
- * separate notes and is written as separate notes — but records that they
- * belong to one harmony, which is what lets the harmonic analysis read a
- * broken chord correctly without the notation pretending it was a block chord.
+ * Three things have to hold.  It has to have arrived inside the window a
+ * struck chord occupies; it has to still be sounding along with what is
+ * already there, because a chord is notes held together and not merely notes
+ * begun together; and its pitch must be new, since the same pitch twice is by
+ * definition two events.
  */
-function groupEvents(notes, opts = {}) {
-  const sorted = [...notes].sort((a, b) => a.start - b.start || a.midi - b.midi);
-  if (!sorted.length) return [];
-  const tol = opts.tolerance !== undefined ? opts.tolerance : spreadTolerance(sorted);
+function belongs(group, note, tol) {
+  if (note.start - group.onset > tol) return false;
+  if (group.notes.some((m) => m.midi === note.midi)) return false;
+  return group.notes.some((m) => overlap(m, note) > 0.2);
+}
 
-  /* Struck together: onsets inside the tolerance, and sounding together. */
-  const groups = [];
-  let current = [sorted[0]];
-  for (let i = 1; i < sorted.length; i++) {
-    const n = sorted[i];
-    const head = current[0];
-    const together = n.start - head.start <= tol
-      && current.some((m) => overlap(m, n) > 0.25);
-    if (together) current.push(n);
-    else { groups.push(current); current = [n]; }
+function agglomerate(notes, tolAt) {
+  const out = [];
+  let cur = null;
+  for (const n of notes) {
+    if (cur && belongs(cur, n, tolAt(cur.onset))) {
+      cur.notes.push(n);
+      cur.end = Math.max(cur.end, n.end);
+      cur.spread = n.start - cur.onset;
+    } else {
+      cur = { onset: n.start, end: n.end, spread: 0, notes: [n] };
+      out.push(cur);
+    }
   }
-  groups.push(current);
+  return out;
+}
 
-  const events = groups.map((list) => ({
-    kind: list.length > 1 ? 'chord' : 'single',
-    notes: list,
-    start: Math.min(...list.map((n) => n.start)),
-    end: Math.max(...list.map((n) => n.end)),
-    spread: Math.max(...list.map((n) => n.start)) - Math.min(...list.map((n) => n.start)),
-  }));
+/**
+ * A chord the hand spread out is still one chord.
+ *
+ * This is the distinction the user hears and no fixed rule catches: the same
+ * four pitches, one after another, are a rolled chord in one performance and
+ * an arpeggio in another.  Three things decide it, and all three are about the
+ * performance rather than the pitches.
+ *
+ * The notes have to go on sounding together — a roll is held, an arpeggio is
+ * usually let go.  The whole figure has to fit inside the time a hand takes to
+ * roll a chord, both absolutely and as a share of the pace the music is going.
+ * And it has to stand out from its surroundings: the gaps inside a roll are
+ * far smaller than the gaps on either side of it, whereas an arpeggio's notes
+ * are spaced like the music around them, because they *are* the music.  An
+ * arpeggio at the pace of the piece fails all three, which is the point.
+ */
+function joinRolls(events, paceAt) {
+  const out = [];
+  let i = 0;
+  while (i < events.length) {
+    let j = i;
+    /* How far the run could reach while staying a roll. */
+    const limit = Math.min(MAX_ROLL, Math.max(MAX_SPREAD, 0.55 * paceAt(events[i].onset)));
+    let worstGap = 0;
+    while (j + 1 < events.length) {
+      const next = events[j + 1];
+      if (next.onset - events[i].onset > limit) break;
+      /* Still sounding together, and no pitch repeated. */
+      const held = events[i].notes.some((a) => next.notes.some((b) => overlap(a, b) > 0.35));
+      const fresh = next.notes.every((b) => !eventsBetween(events, i, j).includes(b.midi));
+      if (!held || !fresh) break;
+      worstGap = Math.max(worstGap, next.onset - events[j].onset);
+      j++;
+    }
 
-  markRolled(events);
+    if (j > i) {
+      /* Stand-out test: the silence on either side must dwarf the gaps inside. */
+      const before = i > 0 ? events[i].onset - events[i - 1].onset : Infinity;
+      const after = j + 1 < events.length ? events[j + 1].onset - events[j].onset : Infinity;
+      const outside = Math.min(before, after);
+      if (outside >= worstGap * ROLL_CONTRAST) {
+        const merged = {
+          onset: events[i].onset,
+          end: Math.max(...events.slice(i, j + 1).map((e) => e.end)),
+          spread: events[j].onset - events[i].onset,
+          notes: events.slice(i, j + 1).flatMap((e) => e.notes),
+          rolled: true,
+        };
+        out.push(merged);
+        i = j + 1;
+        continue;
+      }
+    }
+    out.push(events[i]);
+    i++;
+  }
+  return out;
+}
+
+const eventsBetween = (events, i, j) =>
+  events.slice(i, j + 1).flatMap((e) => e.notes.map((n) => n.midi));
+
+/* -------------------------------------------------------------- the event */
+
+/**
+ * What kind of thing this event is.
+ *
+ * Descriptive only.  Nothing downstream is allowed to change the pitches
+ * because of the label; the label exists so that the notation can show a roll
+ * as a roll, and so the debug view can say what the reader thought it heard.
+ */
+function classifyOne(ev) {
+  if (ev.notes.length === 1) return 'single';
+  if (ev.rolled) return 'rolled';
+  return 'chord';
+}
+
+function finish(ev, id) {
+  ev.id = id;
+  ev.notes.sort((a, b) => a.midi - b.midi);
+  ev.pitches = ev.notes.map((n) => n.midi);
+  ev.kind = classifyOne(ev);
+  ev.low = ev.pitches[0];
+  ev.high = ev.pitches[ev.pitches.length - 1];
+  ev.span = ev.high - ev.low;
+  /* The moment the event is heard to begin.  For a struck chord that is where
+   * its notes agree; for a rolled one it is the first note, because that is
+   * where a listener places the beat. */
+  ev.time = ev.rolled ? ev.onset : median(ev.notes.map((n) => n.start));
+  ev.velocity = Math.round(average(ev.notes.map((n) => n.velocity ?? 80)));
+  ev.confidence = average(ev.notes.map((n) => n.confidence ?? 0.5));
+  ev.salience = ev.notes.reduce((s, n) => s + (n.salience ?? 0), 0);
+  for (const n of ev.notes) {
+    n.eventId = id;
+    n.eventKind = ev.kind;
+    n.performedStart = n.start;
+    /* Everything downstream sees one moment, which is what the player played. */
+    n.start = ev.time;
+  }
+  return ev;
+}
+
+const average = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+const median = (xs) => {
+  if (!xs.length) return 0;
+  const s = [...xs].sort((a, b) => a - b);
+  return s[Math.floor(s.length / 2)];
+};
+
+/**
+ * Read a performance as a sequence of musical events.
+ *
+ * Two passes, because the tolerance depends on the pace and the pace depends
+ * on the grouping.  The first pass groups at the tightest window a chord can
+ * possibly occupy, which is enough to see roughly where the attacks are; the
+ * second regroups with the window the music's own speed implies.
+ */
+function buildEvents(notes, opts = {}) {
+  const sorted = [...notes]
+    .filter((n) => n.end > n.start)
+    .sort((a, b) => a.start - b.start || a.midi - b.midi);
+  if (!sorted.length) return [];
+
+  const first = agglomerate(sorted, () => MIN_SPREAD);
+  const pace = paceOver(first.map((e) => e.onset));
+
+  const tolAt = opts.tolerance !== undefined
+    ? () => opts.tolerance
+    : (t) => clamp(SPREAD_SHARE * pace(t), MIN_SPREAD, MAX_SPREAD);
+
+  let events = agglomerate(sorted, tolAt);
+  if (opts.rolls !== false) events = joinRolls(events, pace);
+  events.forEach((e, i) => finish(e, i));
   return events;
 }
 
+/* ------------------------------------------------------- older interfaces */
+
 /**
- * Find harmonies played one note at a time.
+ * The grouping, as the rest of the program used to ask for it.
  *
- * A run of single notes that all keep sounding — because the hand held them,
- * or the pedal did — and that spans no more than a rolled chord's worth of
- * time is one harmony spread out, not a melodic phrase.  They stay separate
- * notes; what changes is that the analysis knows they belong together.
+ * Kept because the voice separator and the tests read events this way; it is
+ * the same analysis, without the side effect of moving the notes onto their
+ * event's moment.
  */
-function markRolled(events) {
-  for (let i = 0; i < events.length; i++) {
-    if (events[i].kind !== 'single') continue;
-    let j = i;
-    while (j + 1 < events.length
-      && events[j + 1].kind === 'single'
-      && events[j + 1].start - events[i].start <= MAX_ROLL_SPREAD
-      && overlap(events[j].notes[0], events[j + 1].notes[0]) > 0.5) j++;
-    if (j - i >= 2) {
-      const set = [];
-      for (let k = i; k <= j; k++) { events[k].rolled = true; set.push(events[k].notes[0].midi); }
-      for (let k = i; k <= j; k++) events[k].harmony = set.slice();
-      i = j;
-    }
-  }
+function groupEvents(notes, opts = {}) {
+  const copies = notes.map((n) => ({ ...n }));
+  const events = buildEvents(copies, opts);
+  /* Map back to the callers' own note objects. */
+  const byKey = new Map();
+  for (const n of notes) byKey.set(n.midi + ':' + n.start.toFixed(6), n);
+  return events.map((e) => ({
+    kind: e.kind,
+    rolled: !!e.rolled,
+    harmony: e.rolled ? e.pitches.slice() : undefined,
+    start: e.time,
+    end: e.end,
+    spread: e.spread,
+    pitches: e.pitches,
+    notes: e.notes.map((c) => byKey.get(c.midi + ':' + c.performedStart.toFixed(6)) || c),
+  }));
 }
 
 /**
- * Classify how a group of consecutive notes was played.
- *
- * Used by the tests and by the diagnosis, which wants to say "these three were
- * struck together" or "these three were a run" in plain terms.
+ * Classify a short passage, for the tests and for the explanation the panel
+ * shows.  Returns 'chord', 'rolled', 'arpeggio', 'sequence' or 'mixed'.
  */
 function classify(notes, opts = {}) {
   const events = groupEvents(notes, opts);
-  if (events.length === 1 && events[0].notes.length > 1) return 'chord';
-  if (events.length > 1 && events.every((e) => e.rolled)) return 'arpeggio';
-  if (events.length > 1 && events.every((e) => e.notes.length === 1)) return 'sequence';
+  if (events.length === 1) return events[0].notes.length > 1 ? 'chord' : 'single';
+  if (events.every((e) => e.notes.length === 1)) {
+    /* Several separate attacks, all still sounding together and covering one
+     * harmony: played one at a time, heard as a chord. */
+    const held = events.every((e, i) => i === 0
+      || overlap(events[i - 1].notes[0], e.notes[0]) > 0.5);
+    const spread = events[events.length - 1].start - events[0].start;
+    if (held && spread <= MAX_ROLL * 1.6) return 'arpeggio';
+    return 'sequence';
+  }
   return 'mixed';
 }
 
 /**
  * The pitches sounding at a given moment.
- * Used by the harmony reader and by the comparison, both of which ask what was
- * actually sounding rather than what was struck.
+ * Asked by the harmony reader and by the comparison, both of which want what
+ * was sounding rather than what was struck.
  */
 function soundingAt(notes, time) {
   const out = [];
@@ -15749,9 +16105,49 @@ function soundingAt(notes, time) {
   return out.sort((a, b) => a - b);
 }
 
+/**
+ * Rebuild the events from notes that have been through the rhythm stage.
+ *
+ * Quantisation works on copies, so the event records made from the performance
+ * no longer point at the notes that will be engraved.  Every note still
+ * carries the event it belongs to, which is what makes the grouping survive
+ * the journey: the events are reassembled from that rather than guessed at a
+ * second time.  A note with no event of its own — one the correction loop
+ * added, say — becomes an event by itself.
+ */
+function eventsOf(notes) {
+  const map = new Map();
+  let loose = -1;
+  for (const n of notes) {
+    const key = n.eventId === undefined ? `loose${loose--}` : n.eventId;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(n);
+  }
+  const out = [];
+  for (const [key, list] of map) {
+    list.sort((a, b) => a.midi - b.midi);
+    out.push({
+      id: key,
+      notes: list,
+      pitches: list.map((n) => n.midi),
+      low: list[0].midi,
+      high: list[list.length - 1].midi,
+      span: list[list.length - 1].midi - list[0].midi,
+      time: list[0].start,
+      startTicks: Math.min(...list.map((n) => n.startTicks ?? 0)),
+      endTicks: Math.max(...list.map((n) => n.endTicks ?? 0)),
+      kind: list[0].eventKind || (list.length > 1 ? 'chord' : 'single'),
+      rolled: list[0].eventKind === 'rolled',
+    });
+  }
+  return out.sort((a, b) => a.startTicks - b.startTicks || a.low - b.low);
+}
+
+__exp.buildEvents = buildEvents;
 __exp.groupEvents = groupEvents;
 __exp.classify = classify;
 __exp.soundingAt = soundingAt;
+__exp.eventsOf = eventsOf;
 },
   "js/transcribe/assign.js": function (__exp, __req) {
 /* Cadenza — putting the lines that were found onto the right staves.
@@ -15767,7 +16163,9 @@ __exp.soundingAt = soundingAt;
  * it cannot tell, because the first has to be found and undone.
  */
 
-const { assignVoices, separateHands, groupChords } = __req("js/transcribe/voices.js");
+const { assignVoices, groupChords } = __req("js/transcribe/voices.js");
+const { assignHands, levelEvents } = __req("js/transcribe/hands.js");
+const { eventsOf } = __req("js/transcribe/events.js");
 
 /** Everything sounding as one line, described by where it sits and what it does. */
 function describeLine(notes) {
@@ -15858,6 +16256,22 @@ function separateLines(notes, maxLines) {
   return lines.filter((l) => l.notes.length).map((l) => describeLine(l.notes));
 }
 
+
+/**
+ * Hands for a keyboard part, decided event by event.
+ *
+ * The events are rebuilt from the notes so that a chord is handed to a hand
+ * whole, and each hand's share of a chord is then given one length — after
+ * which the voice separator sees chords rather than a scatter of notes that
+ * happen to have started together.
+ */
+function keyboardHands(notes, centre, perBeat) {
+  const events = eventsOf(notes);
+  const result = assignHands(events, { centre });
+  levelEvents(events, perBeat);
+  return result;
+}
+
 /** What it costs to give this line to this instrument. */
 function cost(line, part) {
   const [lo, hi] = part.range;
@@ -15881,14 +16295,14 @@ function cost(line, part) {
  * reading can be handed to the user rather than asserted.
  */
 function assignToParts(notes, plan, opts = {}) {
-  const { splitCentre = 60 } = opts;
+  const { splitCentre = 60, perBeat = 480 } = opts;
   const parts = plan.parts;
 
   /* One instrument: the old question, which hand and which voice. */
   if (parts.length === 1) {
     const only = parts[0];
     if (only.staves > 1 && plan.hands !== false) {
-      separateHands(notes, { centre: splitCentre });
+      keyboardHands(notes, splitCentre, perBeat);
       for (const staff of new Set(notes.map((n) => n.staff))) {
         assignVoices(notes.filter((n) => n.staff === staff));
       }
@@ -15969,7 +16383,7 @@ function assignToParts(notes, plan, opts = {}) {
   result.forEach((entry, i) => {
     if (!entry.notes.length) return;
     if (entry.part.staves > 1) {
-      separateHands(entry.notes, { centre: splitCentre });
+      keyboardHands(entry.notes, splitCentre, perBeat);
       for (const staff of new Set(entry.notes.map((n) => n.staff))) {
         assignVoices(entry.notes.filter((n) => n.staff === staff));
       }
@@ -15997,6 +16411,205 @@ function assignToParts(notes, plan, opts = {}) {
 __exp.separateLines = separateLines;
 __exp.assignToParts = assignToParts;
 __exp.groupChords = groupChords;
+},
+  "js/transcribe/hands.js": function (__exp, __req) {
+/* Cadenza — which hand played it.
+ *
+ * The old question was asked of each note: is this note above or below the
+ * dividing line?  Asked that way, a chord is not a chord — it is five separate
+ * notes that happen to be near each other, and a dividing line drawn through
+ * the middle of one sends half of it to the other staff.  That is how
+ * C2+G2+C3 and E4+G4+C5 turn into a column of unrelated notes.
+ *
+ * So the question is asked of the event instead.  A chord goes to a hand
+ * whole, and is divided only where the music genuinely divides it: where there
+ * is a gap between the notes wide enough that no hand was covering both sides
+ * of it, or where one hand could not have reached from bottom to top.  Where
+ * there is a real gap the split is free; where there is not, it is expensive,
+ * and the reader will take almost any other answer first.
+ *
+ * The division is then found for the whole passage at once, not chord by
+ * chord.  Hands do not jump about: they stay where they are and move when the
+ * music moves, so the cheapest path through the passage is the one that keeps
+ * both hands in reach while moving the division as little as it can.  A right
+ * hand playing low and a left hand playing high are both perfectly ordinary,
+ * and come out of this correctly for the same reason.
+ */
+
+const MAX_SPAN = 14;        // semitones one hand covers without strain
+const COMFORT = 10;         // ... and covers comfortably
+const MAX_FINGERS = 5;
+/* A gap this wide is a natural place for the hands to part. */
+const NATURAL_GAP = 12;
+/* What it costs to divide a chord where there is no gap at all. */
+const TEAR = 9;
+
+const span = (list) => (list.length < 2 ? 0
+  : list[list.length - 1].midi - list[0].midi);
+
+/**
+ * What it costs to divide this event at this pitch.
+ *
+ * Everything below the divider is the left hand.  The terms are, in order of
+ * how much they matter: a hand asked to stretch further than it can, a hand
+ * asked for more notes than it has fingers, and a chord torn where there is
+ * nothing to tear along.
+ */
+function eventCost(ev, divider, centre) {
+  const notes = ev.notes;
+  const left = notes.filter((n) => n.midi < divider);
+  const right = notes.filter((n) => n.midi >= divider);
+  let cost = 0;
+
+  for (const hand of [left, right]) {
+    const width = span(hand);
+    if (width > MAX_SPAN) cost += (width - MAX_SPAN) * 3;
+    else if (width > COMFORT) cost += (width - COMFORT) * 0.4;
+    if (hand.length > MAX_FINGERS) cost += (hand.length - MAX_FINGERS) * 5;
+  }
+
+  /* Dividing a chord where its notes are close together means claiming the
+   * player used two hands for something one hand was holding. */
+  if (left.length && right.length) {
+    const gap = right[0].midi - left[left.length - 1].midi;
+    if (gap < NATURAL_GAP) cost += Math.pow(NATURAL_GAP - gap, 1.4) * (TEAR / 30);
+  }
+
+  /* Middle C is where the hands usually meet; going elsewhere wants a reason,
+   * and the terms above supply one when there is one. */
+  cost += Math.abs(divider - centre) * 0.02;
+  return cost;
+}
+
+/**
+ * Choose the division for a whole passage.
+ *
+ * A Viterbi pass over the candidate dividing pitches: the cheapest path is the
+ * one that plays every event comfortably while moving the hands as little as
+ * possible.  `move` is what a shift of one semitone costs, and it is what
+ * stops the division chasing every chord.
+ */
+function assignHands(events, opts = {}) {
+  const { centre = 60, move = 0.12, single = false } = opts;
+  if (!events.length) return { splits: [], staves: 1 };
+
+  if (single) {
+    for (const ev of events) for (const n of ev.notes) n.staff = 0;
+    return { splits: [], staves: 1 };
+  }
+
+  let lo = Infinity;
+  let hi = -Infinity;
+  for (const ev of events) { lo = Math.min(lo, ev.low); hi = Math.max(hi, ev.high); }
+  const candidates = [];
+  for (let p = lo; p <= hi + 1; p++) candidates.push(p);
+  if (candidates.length < 2) {
+    for (const ev of events) for (const n of ev.notes) n.staff = 0;
+    return { splits: [], staves: 1 };
+  }
+
+  const n = candidates.length;
+  let prev = candidates.map((p) => eventCost(events[0], p, centre));
+  const back = [];
+  for (let t = 1; t < events.length; t++) {
+    const cur = new Float64Array(n);
+    const from = new Int32Array(n);
+    for (let j = 0; j < n; j++) {
+      let best = Infinity;
+      let arg = j;
+      for (let i = 0; i < n; i++) {
+        const c = prev[i] + Math.abs(candidates[i] - candidates[j]) * move;
+        if (c < best) { best = c; arg = i; }
+      }
+      cur[j] = best + eventCost(events[t], candidates[j], centre);
+      from[j] = arg;
+    }
+    back.push(from);
+    prev = cur;
+  }
+
+  let j = 0;
+  for (let k = 1; k < n; k++) if (prev[k] < prev[j]) j = k;
+  const path = new Array(events.length);
+  path[events.length - 1] = candidates[j];
+  for (let t = events.length - 1; t > 0; t--) {
+    j = back[t - 1][j];
+    path[t - 1] = candidates[j];
+  }
+
+  const splits = events.map((ev, i) => ({ tick: ev.startTicks ?? 0, time: ev.time, split: path[i] }));
+  events.forEach((ev, i) => {
+    for (const note of ev.notes) note.staff = note.midi >= path[i] ? 0 : 1;
+    ev.divider = path[i];
+  });
+
+  followLines(events);
+
+  /* Everything in one hand: the music sits on one staff, and which staff that
+   * is follows the register.  A bass-register passage does not belong above
+   * middle C under a pile of ledger lines. */
+  const used = new Set();
+  for (const ev of events) for (const n of ev.notes) used.add(n.staff);
+  if (used.size === 1) {
+    const all = events.flatMap((ev) => ev.notes.map((n) => n.midi)).sort((a, b) => a - b);
+    const staff = all[Math.floor(all.length / 2)] < centre ? 1 : 0;
+    for (const ev of events) for (const n of ev.notes) n.staff = staff;
+  }
+  return { splits, staves: used.size };
+}
+
+/**
+ * Stop a line changing hands in the middle of itself.
+ *
+ * The division is settled for the passage, but a melody that dips under it for
+ * one note is still handed across and comes straight back, which strands a
+ * note in the wrong staff.  A note goes back to where its neighbours are when
+ * most of them are in the other hand and it was a close call anyway — and only
+ * when it is alone in its hand at that moment, so this can never take a chord
+ * apart.
+ */
+function followLines(events) {
+  const notes = events.flatMap((ev) => ev.notes.map((n) => ({ n, ev })));
+  for (const { n, ev } of notes) {
+    const alone = ev.notes.filter((m) => m.staff === n.staff).length === 1;
+    if (!alone) continue;
+    if (Math.abs(n.midi - ev.divider) > 4) continue;
+    const near = notes.filter(({ n: o }) => o !== n
+      && Math.abs(o.midi - n.midi) <= 7
+      && Math.abs((o.start ?? 0) - (n.start ?? 0)) <= 2);
+    if (near.length < 2) continue;
+    const elsewhere = near.filter(({ n: o }) => o.staff !== n.staff);
+    if (elsewhere.length * 2 <= near.length) continue;
+    n.staff = elsewhere[0].n.staff;
+  }
+}
+
+/**
+ * Give one hand's share of a chord a single length.
+ *
+ * The notes of a chord are let go a few milliseconds apart, and a few
+ * milliseconds is enough to make them separate voices with separate note
+ * values.  Where a hand's notes agree about when they stopped they are given
+ * one length; where one of them plainly went on far longer it is a held note
+ * against a moving line, which is a real second voice, and it keeps its own.
+ */
+function levelEvents(events, perBeat) {
+  const window = Math.max(1, Math.round(perBeat * 0.3));
+  for (const ev of events) {
+    for (const staff of new Set(ev.notes.map((n) => n.staff || 0))) {
+      const hand = ev.notes.filter((n) => (n.staff || 0) === staff);
+      if (hand.length < 2) continue;
+      const ends = hand.map((n) => n.endTicks).sort((a, b) => a - b);
+      const mid = ends[Math.floor(ends.length / 2)];
+      const agree = hand.filter((n) => Math.abs(n.endTicks - mid) <= window);
+      if (agree.length * 2 <= hand.length) continue;
+      for (const note of agree) note.endTicks = mid;
+    }
+  }
+}
+
+__exp.assignHands = assignHands;
+__exp.levelEvents = levelEvents;
 },
   "js/transcribe/simplify.js": function (__exp, __req) {
 /* Cadenza — reading the transcription back and asking whether it is sensible.
@@ -16967,6 +17580,123 @@ __exp.detectKey = detectKey;
 __exp.spell = spell;
 __exp.buildScore = buildScore;
 __exp.buildParts = buildParts;
+},
+  "js/transcribe/trace.js": function (__exp, __req) {
+/* Cadenza — showing the working.
+ *
+ * When a transcription comes out wrong the useful question is not "is it
+ * wrong" but "where did it go wrong", and that cannot be answered from the
+ * finished page.  A chord written as three notes might have been heard as
+ * three notes, or heard as a chord and taken apart by the hands, or heard as a
+ * chord and pulled apart by the rhythm.  Those are three different faults with
+ * three different fixes, and from the page they look identical.
+ *
+ * So every stage records what it handed to the next one, in the order the
+ * pipeline runs, and the panel shows it.  Nothing here changes a note: this is
+ * a window, not a stage.
+ */
+
+const { readChord } = __req("js/transcribe/harmony.js");
+
+const LIMIT = 60;          // lines kept per stage; a long take is summarised
+
+const NAMES = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
+const noteName = (midi) => NAMES[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1);
+const secs = (t) => t.toFixed(2).padStart(5) + 's';
+const pitches = (list) => list.map(noteName).join(' ');
+
+/** A stage's worth of lines, with a note of anything left out. */
+function stage(id, label, lines, note) {
+  const kept = lines.slice(0, LIMIT);
+  if (lines.length > LIMIT) kept.push(`… and ${lines.length - LIMIT} more`);
+  return { id, label, lines: kept, count: lines.length, note };
+}
+
+/**
+ * Build the record of a reading.
+ *
+ * Everything passed in is what that stage actually produced, so the view can
+ * never drift from what the code did.
+ */
+function buildTrace(ctx) {
+  const {
+    heard = [], events = [], beat, timeSig, perBeat = 480, divisions = [],
+    parts = [], chords = [], key, simplified = [], listened = null,
+  } = ctx;
+  const out = [];
+
+  out.push(stage('pitch', 'Detected pitch events',
+    heard.map((n) => `${secs(n.start)} → ${secs(n.end)}  ${noteName(n.midi).padEnd(4)}`
+      + `  certainty ${Math.round((n.confidence ?? 0.5) * 100)}%`),
+    `${heard.length} pitch${heard.length === 1 ? '' : 'es'} found in the recording`));
+
+  out.push(stage('events', 'Grouped into musical events',
+    events.map((e) => `${secs(e.time)}  ${e.kind.padEnd(7)}  ${pitches(e.pitches)}`),
+    'Notes struck together share one moment from here on, so nothing later can separate them'));
+
+  /* What each simultaneity is, harmonically — said about the event, never
+   * instead of it.  The pitches above are what gets written; this is only a
+   * reading of them, and it is allowed to say it does not know. */
+  const harmonic = events.filter((e) => e.pitches.length > 1).map((e) => {
+    const read = readChord(e.pitches, { fifths: key ? key.fifths : 0 });
+    const named = read && read.quality !== 'unclear'
+      ? `${read.label}${read.inversion ? `, inversion ${read.inversion}` : ''}`
+      : 'no chord name fits — kept exactly as played';
+    return `${secs(e.time)}  ${pitches(e.pitches).padEnd(22)}  ${named}`;
+  });
+  out.push(stage('chords', 'Harmonic reading of each simultaneity', harmonic,
+    'A name is a description of the notes, never a replacement for them'));
+
+  const bpm = beat && beat.period ? Math.round((60 / beat.period) * 10) / 10 : null;
+  const gridLines = [];
+  if (bpm) gridLines.push(`pulse ${bpm} per minute, first beat at ${secs(beat.phase)}`);
+  if (timeSig) gridLines.push(`time signature ${timeSig.beats}/${timeSig.beatType}`);
+  for (const [d, n] of divisions) {
+    gridLines.push(`${n} beat${n === 1 ? '' : 's'} divided into ${d}`
+      + (d === 1 ? ' — whole beats' : d % 3 === 0 && d > 1 ? ' — triplets' : ''));
+  }
+  out.push(stage('rhythm', 'Rhythmic grid', gridLines,
+    'The grid is chosen for the phrase, and a beat departs from it only on real evidence'));
+
+  const handLines = [];
+  for (const entry of parts) {
+    const staves = new Set(entry.notes.map((n) => n.staff || 0));
+    for (const st of [...staves].sort()) {
+      const own = entry.notes.filter((n) => (n.staff || 0) === st);
+      const voices = new Set(own.map((n) => n.voice || 0));
+      handLines.push(`${entry.part.name} — ${st === 1 ? 'lower staff' : 'upper staff'}: `
+        + `${own.length} notes in ${voices.size} voice${voices.size === 1 ? '' : 's'}`);
+    }
+  }
+  const split = events.filter((e) => new Set(e.notes.map((n) => n.staff)).size > 1);
+  if (split.length) {
+    handLines.push(`${split.length} chord${split.length === 1 ? ' was' : 's were'} divided between the hands:`);
+    for (const e of split.slice(0, 8)) {
+      const lower = e.notes.filter((n) => n.staff === 1).map((n) => n.midi);
+      const upper = e.notes.filter((n) => n.staff !== 1).map((n) => n.midi);
+      handLines.push(`  ${secs(e.time)}  ${pitches(lower)}  |  ${pitches(upper)}`);
+    }
+  } else if (events.some((e) => e.pitches.length > 1)) {
+    handLines.push('No chord was divided between the hands');
+  }
+  out.push(stage('hands', 'Hands and voices', handLines,
+    'A chord goes to a hand whole unless the music leaves a gap to divide it at'));
+
+  out.push(stage('notation', 'What was written',
+    chords.map((c) => `bar ${Math.floor(c.startTicks / (perBeat * (timeSig ? timeSig.beats : 4))) + 1}`
+      + `  ${(c.staff === 1 ? 'lower' : 'upper')}/v${(c.voice || 0) + 1}`
+      + `  ${pitches(c.notes.map((n) => n.midi))}`),
+    simplified.length ? simplified.join('; ') : undefined));
+
+  if (listened) {
+    out.push(stage('listening', 'Checked against the recording', listened.lines || [],
+      listened.note));
+  }
+  return out;
+}
+
+__exp.buildTrace = buildTrace;
+__exp.noteName = noteName;
 },
   "js/transcribe/ensembles.js": function (__exp, __req) {
 /* Cadenza — what is being transcribed.

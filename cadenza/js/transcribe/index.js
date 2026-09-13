@@ -23,11 +23,13 @@
 
 import { extractNotes } from './notes.js';
 import { attackEvents, estimateBeat, estimateMetre, quantise, toTicks, normaliseRuns, STYLES, styleById } from './rhythm.js';
-import { markPerformedEvents, groupChords } from './voices.js';
+import { groupChords } from './voices.js';
+import { buildEvents, eventsOf } from './events.js';
 import { assignToParts } from './assign.js';
 import { review } from './simplify.js';
 import { analyseHarmony, harmonyFitter } from './harmony.js';
 import { buildParts, detectKey } from './build.js';
+import { buildTrace } from './trace.js';
 import { resolveTarget } from './ensembles.js';
 import { refineByListening } from './refine.js';
 import { beatTicks, measureTicks, TPQ } from '../core/rhythm.js';
@@ -96,6 +98,11 @@ export function readMusic(rawNotes, opts = {}) {
 
   const plan = chosen || resolveTarget({ targetId: 'piano' });
   const notes = rawNotes.map((n) => ({ ...n }));
+  /* What the pitch stage handed over, kept as it was so the record of the
+   * reading can show it beside what the reading made of it. */
+  const heard = notes.map((n) => ({
+    midi: n.midi, start: n.start, end: n.end, confidence: n.confidence,
+  }));
   if (!notes.length) {
     const { score } = buildParts(plan.parts.map((p) => ({
       instrumentId: p.id, staves: p.staves, chords: [],
@@ -112,9 +119,13 @@ export function readMusic(rawNotes, opts = {}) {
     }
   }
 
-  /* --- chords: what was struck together, decided before anything moves ---- */
+  /* --- events: what happened, before anything is called a note ----------- */
+  /* This is the first question and it governs everything after it.  Notes
+   * struck together become one event and share one moment, so nothing later
+   * in the chain is in a position to take a chord apart: the rhythm stage
+   * sees one attack for a chord, and the hands are given events, not notes. */
   onPass('chords');
-  markPerformedEvents(notes);
+  const performed = buildEvents(notes);
 
   /* --- rhythm ------------------------------------------------------------ */
   onPass('timing');
@@ -135,11 +146,13 @@ export function readMusic(rawNotes, opts = {}) {
     : estimateMetre(attacks, beat, trial.compound);
   const perBeat = beatTicks(metre.timeSig);
   const fitted = toTicks(trial.notes, perBeat);
-  levelChords(fitted, perBeat);
 
   /* --- voices and parts -------------------------------------------------- */
+  /* Hands first, and hands are given events: a chord goes to a hand whole.
+   * Only then are the lines within each hand followed, so a voice can never be
+   * invented by a chord's notes having been let go a moment apart. */
   onPass('voices');
-  const assignment = assignToParts(fitted, plan, { splitCentre });
+  const assignment = assignToParts(fitted, plan, { splitCentre, perBeat });
   /* Gaps are closed within a line, not within a part.  A held melody note is
    * not cut short because the accompaniment moved underneath it. */
   for (const entry of assignment.parts) {
@@ -207,6 +220,23 @@ export function readMusic(rawNotes, opts = {}) {
       : null,
   });
 
+  /* The record of how this reading was arrived at, stage by stage.  It costs
+   * a few lines of text and it is the only way to tell a chord that was heard
+   * as three notes from a chord that was heard correctly and then taken apart
+   * by the hands. */
+  const trace = buildTrace({
+    heard,
+    events: eventsOf(fitted),
+    beat,
+    timeSig: metre.timeSig,
+    perBeat,
+    divisions: trial.divisions,
+    parts: assignment.parts,
+    chords: partData.flatMap((p) => p.chords),
+    key,
+    simplified,
+  });
+
   return {
     score: built.score,
     notes: fitted,
@@ -223,6 +253,7 @@ export function readMusic(rawNotes, opts = {}) {
       measures: built.measures,
       noteCount: fitted.length,
       simplified,
+      trace,
       divisions: trial.divisions,
       perBeat,
       confidence: {
@@ -239,36 +270,6 @@ export function readMusic(rawNotes, opts = {}) {
 
 const FIFTH_TONIC = { 0: 0, 1: 7, 2: 2, 3: 9, 4: 4, 5: 11, 6: 6, '-1': 5, '-2': 10, '-3': 3, '-4': 8, '-5': 1, '-6': 6 };
 const fifthsToTonic = (f) => FIFTH_TONIC[String(f)] ?? 0;
-
-/**
- * One chord, one length.
- *
- * The notes of a chord are let go a few milliseconds apart, and a few
- * milliseconds is enough for the voice separator to decide they are separate
- * lines — which is how a plain three-note chord becomes three voices with
- * three different note values.  Notes struck together and released at close to
- * the same moment are given one length before any of that happens.
- *
- * A held bass under a moving melody is not levelled: it differs from the
- * melody by far more than the window allows, which is exactly what makes it a
- * separate line rather than part of the chord.
- */
-function levelChords(notes, perBeat) {
-  const byStart = new Map();
-  for (const n of notes) {
-    if (!byStart.has(n.startTicks)) byStart.set(n.startTicks, []);
-    byStart.get(n.startTicks).push(n);
-  }
-  const window = Math.round(perBeat * 0.34);
-  for (const group of byStart.values()) {
-    if (group.length < 2) continue;
-    const ends = group.map((n) => n.endTicks).sort((a, b) => a - b);
-    const median = ends[Math.floor(ends.length / 2)];
-    for (const n of group) {
-      if (Math.abs(n.endTicks - median) <= window) n.endTicks = median;
-    }
-  }
-}
 
 /**
  * Decide where the silences really are.

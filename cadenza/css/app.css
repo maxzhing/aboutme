@@ -654,3 +654,23 @@ kbd {
   .score-page { box-shadow: none; page-break-after: always; }
   body { background: #fff; overflow: visible; }
 }
+
+/* The record of how a transcription was arrived at: every stage, in order.
+   Folded away by default — it is for when something is wrong. */
+.tr-trace { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+.tr-trace > summary {
+  cursor: pointer; font-weight: 600; color: var(--text);
+  padding: 4px 0; list-style: none; user-select: none;
+}
+.tr-trace > summary::before { content: '▸ '; color: var(--muted); }
+.tr-trace[open] > summary::before { content: '▾ '; }
+.tr-trace > summary::-webkit-details-marker { display: none; }
+.tr-stage { margin: 10px 0 0; }
+.tr-stage b { display: block; color: var(--text); font-size: 12px; }
+.tr-trace .tr-faint { color: var(--text-faint); font-size: 11px; }
+.tr-stage pre {
+  margin: 4px 0 0; padding: 7px 9px; overflow-x: auto;
+  background: var(--bg); border: 1px solid var(--line-soft); border-radius: 5px;
+  font: 11px/1.55 var(--mono);
+  color: var(--text); white-space: pre;
+}

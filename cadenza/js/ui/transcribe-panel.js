@@ -635,6 +635,19 @@ export class TranscribePanel {
             </li>`).join('')}</ul>
             <span class="tr-faint">These bars are marked on the page once you accept.</span>
           </div>` : '<div class="tr-shaky good">Nothing stood out as doubtful.</div>'}
+
+          ${a.trace && a.trace.length ? `<details class="tr-trace">
+            <summary>Show the working</summary>
+            <p class="tr-faint">Each stage, in the order it ran, and what it handed to the next
+              one. If the notation is wrong, this is where to see which stage got it wrong —
+              whether a chord was heard as separate notes, or heard correctly and taken apart
+              afterwards.</p>
+            ${a.trace.map((st) => `<div class="tr-stage">
+              <b>${esc(st.label)}</b>
+              <div class="tr-faint">${esc(st.note || `${st.count} line${st.count === 1 ? '' : 's'}`)}</div>
+              ${st.lines.length ? `<pre>${esc(st.lines.join('\n'))}</pre>` : ''}
+            </div>`).join('')}
+          </details>` : ''}
         </div>
 
         <div class="tr-tweaks">
