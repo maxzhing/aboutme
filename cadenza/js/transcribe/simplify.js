@@ -293,6 +293,47 @@ function reviewChordLengths(notes, perBeat, log) {
   }
 }
 
+
+/**
+ * A note struck again inside one step of the grid was struck once.
+ *
+ * Quantisation puts every attack on the grid, so two notes of the same pitch
+ * in the same line are at least one step apart — unless something went wrong
+ * upstream, and in a decaying chord it does: the estimator loses a pitch for a
+ * moment and finds it again, and what should be one held note arrives as a
+ * note, a thirty-second, and a hundred-and-twenty-eighth.  Nobody played that
+ * and nobody can read it.  Notes closer together than the grid they were
+ * written on are one note, lasting as long as the pieces did between them.
+ */
+function reviewRepeats(notes, perBeat, log) {
+  const lines = new Map();
+  for (const n of notes) {
+    const key = (n.staff || 0) + ':' + (n.voice || 0) + ':' + n.midi;
+    if (!lines.has(key)) lines.set(key, []);
+    lines.get(key).push(n);
+  }
+  const dead = new Set();
+  for (const line of lines.values()) {
+    line.sort((a, b) => a.startTicks - b.startTicks);
+    for (let i = 0; i < line.length - 1; i++) {
+      if (dead.has(line[i])) continue;
+      let head = line[i];
+      let j = i + 1;
+      while (j < line.length) {
+        const next = line[j];
+        const step = perBeat / Math.max(1, Math.max(head.division || 4, next.division || 4));
+        if (next.startTicks - head.startTicks >= step - 1) break;
+        head.endTicks = Math.max(head.endTicks, next.endTicks);
+        dead.add(next);
+        j++;
+      }
+      if (j > i + 1) log.push('a note heard twice inside one beat-division was written once');
+    }
+  }
+  if (!dead.size) return;
+  for (let i = notes.length - 1; i >= 0; i--) if (dead.has(notes[i])) notes.splice(i, 1);
+}
+
 /**
  * Review the whole reading and simplify what can be simplified.
  *
@@ -305,6 +346,7 @@ export function review(parts, opts = {}) {
   const log = [];
   for (const entry of parts) {
     if (!entry.notes || !entry.notes.length) continue;
+    reviewRepeats(entry.notes, perBeat, log);
     if (voices) reviewStragglers(entry.notes, perBeat, log);
     if (voices) reviewChordLengths(entry.notes, perBeat, log);
     if (hands && entry.part && entry.part.staves > 1) reviewHands(entry.notes, log);

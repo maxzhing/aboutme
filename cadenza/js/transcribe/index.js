@@ -146,7 +146,7 @@ export function readMusic(rawNotes, opts = {}) {
     ? { timeSig, beatsPerBar: timeSig.beats, confidence: 1 }
     : estimateMetre(attacks, beat, trial.compound);
   const perBeat = beatTicks(metre.timeSig);
-  const fitted = toTicks(trial.notes, perBeat);
+  const fitted = snapToGrid(toTicks(trial.notes, perBeat), perBeat);
 
   /* --- voices and parts -------------------------------------------------- */
   /* Hands first, and hands are given events: a chord goes to a hand whole.
@@ -170,7 +170,9 @@ export function readMusic(rawNotes, opts = {}) {
    * even run is given one length rather than four that happen to add up. */
   if (style.normalise) {
     for (const entry of assignment.parts) normaliseRuns(entry.notes, style.tolerance);
-    toTicks(fitted, perBeat);
+    /* Back onto the grid: normalising works in beats and re-derives the ticks,
+     * which would otherwise undo the snapping done above. */
+    snapToGrid(toTicks(fitted, perBeat), perBeat);
   }
 
   /* --- review: is any of this more complicated than it needs to be? ------ */
@@ -271,6 +273,72 @@ export function readMusic(rawNotes, opts = {}) {
 
 const FIFTH_TONIC = { 0: 0, 1: 7, 2: 2, 3: 9, 4: 4, 5: 11, 6: 6, '-1': 5, '-2': 10, '-3': 3, '-4': 8, '-5': 1, '-6': 6 };
 const fifthsToTonic = (f) => FIFTH_TONIC[String(f)] ?? 0;
+
+
+/**
+ * Put every note exactly on the grid its beat was written on.
+ *
+ * Quantisation moves the attacks, but a note's end is measured separately and
+ * can land between two steps of the grid — and a remainder of a few ticks has
+ * to be written as something.  What it gets written as is a sixty-fourth tied
+ * to a hundred-and-twenty-eighth, which is not a rhythm anybody played or can
+ * read.  Rounding both ends onto the grid costs at most half a step of
+ * accuracy and removes that whole class of nonsense from the page.
+ *
+ * The grid is the one that beat actually uses, so a beat of triplets is
+ * snapped to thirds and its neighbours to quarters, exactly as written.
+ */
+function snapToGrid(notes, perBeat) {
+  /* One grid per beat.  A beat cannot be in thirds and quarters at once, and
+   * handing the engraver a beat that is both is what produces a
+   * hundred-and-twenty-eighth note: it writes the beat in quarters and then
+   * has to account for a note two thirds of it long.  Where the notes of a
+   * beat disagree, the grid that explains all of them with the least movement
+   * wins, and every note in the beat is then written on it. */
+  const inBeat = new Map();
+  for (const n of notes) {
+    const b = Math.floor(n.startTicks / perBeat);
+    if (!inBeat.has(b)) inBeat.set(b, []);
+    inBeat.get(b).push(n);
+  }
+
+  for (const [beat, group] of inBeat) {
+    const wanted = [...new Set(group.map((n) => Math.max(1, n.division || 1)))];
+    let division = wanted[0];
+    if (wanted.length > 1) {
+      let bestCost = Infinity;
+      for (const d of wanted) {
+        const unit = perBeat / d;
+        let cost = 0;
+        for (const n of group) {
+          cost += Math.abs(n.startTicks - Math.round(n.startTicks / unit) * unit);
+          cost += Math.abs(n.endTicks - Math.round(n.endTicks / unit) * unit);
+        }
+        if (cost < bestCost) { bestCost = cost; division = d; }
+      }
+    }
+    const unit = Math.max(1, Math.round(perBeat / division));
+    const from = beat * perBeat;
+    for (const n of group) {
+      n.division = division;
+      /* Attacks go on the beat's own grid.  Ends may go on a finer one — a
+       * staccato quaver ends a semiquaver in, and rounding that up to the next
+       * step would swallow the silence the player left.  The finer grid has to
+       * be a division of the beat's own, though, or the two are incompatible
+       * again and the engraver is back to writing remainders. */
+      let endDiv = division;
+      const want = Math.max(division, n.endDivision || division);
+      while (endDiv < want && endDiv < division * 4) endDiv *= 2;
+      n.endDivision = endDiv;
+      const endUnit = Math.max(1, Math.round(perBeat / endDiv));
+      n.startTicks = from + Math.round((n.startTicks - from) / unit) * unit;
+      let end = from + Math.round((n.endTicks - from) / endUnit) * endUnit;
+      if (end <= n.startTicks) end = n.startTicks + endUnit;
+      n.endTicks = end;
+    }
+  }
+  return notes;
+}
 
 /**
  * Decide where the silences really are.

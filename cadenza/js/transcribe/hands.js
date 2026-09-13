@@ -179,16 +179,21 @@ function followLines(events) {
  * against a moving line, which is a real second voice, and it keeps its own.
  */
 export function levelEvents(events, perBeat) {
-  const window = Math.max(1, Math.round(perBeat * 0.3));
+  const window = Math.max(1, Math.round(perBeat * 0.35));
   for (const ev of events) {
     for (const staff of new Set(ev.notes.map((n) => n.staff || 0))) {
       const hand = ev.notes.filter((n) => (n.staff || 0) === staff);
       if (hand.length < 2) continue;
       const ends = hand.map((n) => n.endTicks).sort((a, b) => a - b);
       const mid = ends[Math.floor(ends.length / 2)];
-      const agree = hand.filter((n) => Math.abs(n.endTicks - mid) <= window);
-      if (agree.length * 2 <= hand.length) continue;
-      for (const note of agree) note.endTicks = mid;
+      /* Every note of the chord that stopped anywhere near the others stops
+       * with them.  A note that went on plainly longer is a held note against
+       * a moving line — a real second voice — and keeps its own length; but a
+       * few ticks of difference is a release, not a line, and writing it as
+       * one is how a plain chord acquires a second voice it never had. */
+      for (const note of hand) {
+        if (Math.abs(note.endTicks - mid) <= window) note.endTicks = mid;
+      }
     }
   }
 }

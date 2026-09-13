@@ -294,6 +294,128 @@ testCase('offbeat accented chords', {
   expect: { events: Array.from({ length: 6 }, () => [45, 52, 57, 61]), staves: 1, voices: 1 },
 });
 
+
+/* -------------------------------------------------------- ordinary playing
+
+   Not difficulties chosen to break the reader, but the things anybody sits
+   down and plays: an Alberti bass, a dotted rhythm, a legato scale with the
+   notes overlapping, a stride left hand, playing quietly, slowing down at the
+   end.  A transcriber that manages Stravinsky and not these is no use. */
+
+testCase('alberti bass under a melody', {
+  perf: [
+    ...line([76, 74, 72, 74], 0, BEAT * 2, BEAT * 1.8, 96),
+    ...[0, 1, 2, 3, 4, 5, 6, 7].flatMap((i) =>
+      line([[48, 55, 52, 55][i % 4]], i * BEAT, BEAT, BEAT * 0.9, 66)),
+  ],
+  expect: {
+    events: [[76], [48], [55], [52], [55], [74], [48], [55], [52], [55],
+      [72], [48], [55], [52], [55], [74], [48], [55], [52], [55]],
+    hands: { 76: 0, 74: 0, 72: 0, 48: 1, 55: 1, 52: 1 },
+    staves: 2, voices: 1,
+  },
+});
+
+testCase('legato scale, notes overlapping', {
+  /* Each note held past the next: the reader must not hear chords. */
+  perf: [60, 62, 64, 65, 67, 69, 71, 72].map((m, i) => ({
+    midi: m, start: i * BEAT / 2, end: i * BEAT / 2 + BEAT * 0.62, velocity: 84,
+  })),
+  expect: {
+    events: [[60], [62], [64], [65], [67], [69], [71], [72]],
+    staves: 1, voices: 1, beats: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+  },
+});
+
+testCase('staccato melody', {
+  perf: line([67, 69, 71, 72, 71, 69], 0, BEAT, BEAT * 0.22, 90),
+  expect: { events: [[67], [69], [71], [72], [71], [69]], staves: 1, voices: 1 },
+});
+
+testCase('dotted rhythm', {
+  /* Long-short, long-short: a dotted quaver and a semiquaver to the beat. */
+  perf: [0, 0.75, 1, 1.75, 2, 2.75, 3, 3.75].map((b, i) => ({
+    midi: [67, 69, 71, 72, 71, 69, 67, 65][i],
+    start: b * BEAT, end: b * BEAT + (i % 2 ? BEAT * 0.22 : BEAT * 0.7), velocity: 88,
+  })),
+  expect: {
+    events: [[67], [69], [71], [72], [71], [69], [67], [65]],
+    staves: 1, voices: 1, beats: [0.75, 0.25, 0.75, 0.25, 0.75, 0.25, 0.75, 0.25],
+  },
+});
+
+testCase('triplet quavers', {
+  perf: [0, 1, 2, 3, 4, 5].map((i) => ({
+    midi: [60, 64, 67, 72, 67, 64][i],
+    start: (i / 3) * BEAT, end: (i / 3) * BEAT + BEAT * 0.3, velocity: 86,
+  })),
+  expect: { events: [[60], [64], [67], [72], [67], [64]], staves: 1, voices: 1 },
+});
+
+testCase('stride left hand', {
+  /* Bass note then chord, an octave and a half apart, alternating. */
+  perf: [0, 1, 2, 3].flatMap((b) => [
+    ...strike([36], b * BEAT * 2, BEAT * 0.9, 78),
+    ...strike([55, 60, 64], b * BEAT * 2 + BEAT, BEAT * 0.9, 70),
+  ]),
+  expect: {
+    events: [[36], [55, 60, 64], [36], [55, 60, 64], [36], [55, 60, 64], [36], [55, 60, 64]],
+    staves: 1, voices: 1,
+  },
+});
+
+testCase('played quietly', {
+  perf: line([64, 65, 67, 69], 0, BEAT, BEAT * 0.9, 38),
+  expect: { events: [[64], [65], [67], [69]], staves: 1, voices: 1, beats: [1, 1, 1, 1] },
+});
+
+testCase('slowing down at the end', {
+  /* A ritardando: the last notes are further apart than the first. */
+  perf: [0, 1, 2, 3, 4.15, 5.4, 6.8].map((b, i) => ({
+    midi: [72, 71, 69, 67, 65, 64, 62][i],
+    start: b * BEAT, end: b * BEAT + BEAT * 0.85, velocity: 86,
+  })),
+  expect: { events: [[72], [71], [69], [67], [65], [64], [62]], staves: 1, voices: 1 },
+});
+
+testCase('melody with real rests', {
+  perf: [0, 1, 3, 4, 6, 7].map((b, i) => ({
+    midi: [67, 69, 71, 72, 69, 67][i],
+    start: b * BEAT, end: b * BEAT + BEAT * 0.85, velocity: 88,
+  })),
+  expect: { events: [[67], [69], [71], [72], [69], [67]], staves: 1, voices: 1 },
+});
+
+testCase('chromatic line in the bass', {
+  perf: line([40, 41, 42, 43, 44, 45], 0, BEAT, BEAT * 0.9, 72),
+  expect: { events: [[40], [41], [42], [43], [44], [45]], staves: 1, voices: 1 },
+});
+
+testCase('two voices in one hand', {
+  /* A held upper note against a moving lower one — a real second voice, and
+     one the reader is supposed to write as two. */
+  perf: [
+    { midi: 76, start: 0, end: BEAT * 2, velocity: 92 },
+    ...line([67, 69, 71, 72], 0, BEAT / 2, BEAT * 0.45, 80),
+    { midi: 74, start: BEAT * 2, end: BEAT * 4, velocity: 92 },
+    ...line([72, 71, 69, 67], BEAT * 2, BEAT / 2, BEAT * 0.45, 80),
+  ],
+  expect: {
+    events: [[67, 76], [69], [71], [72], [72, 74], [71], [69], [67]],
+    staves: 1, voices: 2,
+  },
+});
+
+testCase('high register', {
+  perf: line([84, 86, 88, 89, 91], 0, BEAT / 2, BEAT * 0.44, 90),
+  expect: { events: [[84], [86], [88], [89], [91]], staves: 1, voices: 1 },
+});
+
+testCase('low register', {
+  perf: line([28, 30, 32, 33, 35], 0, BEAT, BEAT * 0.9, 80),
+  expect: { events: [[28], [30], [32], [33], [35]], staves: 1, voices: 1 },
+});
+
 /* ------------------------------------------------------------------ scoring */
 
 const setOf = (list) => [...new Set(list)].sort((a, b) => a - b).join(',');

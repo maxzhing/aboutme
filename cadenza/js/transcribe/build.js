@@ -122,9 +122,22 @@ export function spell(midi, fifths = 0, lean = 0) {
 
 /* ----------------------------------------------------------------- score */
 
-/* A beat divided into three, five or six parts is a tuplet beat: its division
- * is not a power of two, so no plain note value fits it. */
-const isTupletDivision = (d) => d > 1 && (d & (d - 1)) !== 0;
+/* A beat divides into a tuplet when one of its parts cannot be written as a
+ * plain note value — and that depends on the beat, not on the number.  Three
+ * parts of a crotchet are a triplet and need a bracket; three parts of a
+ * dotted crotchet are quavers and need nothing at all.  Marking those as
+ * triplets is how a perfectly ordinary bar of 6/8 comes out covered in
+ * brackets over notes that are exactly what they look like. */
+function writableTicks(ticks) {
+  if (!Number.isInteger(ticks) || ticks <= 0) return false;
+  for (let base = TPQ * 4; base >= 1; base /= 2) {
+    if (ticks === base || ticks === base * 1.5 || ticks === base * 1.75) return true;
+  }
+  return false;
+}
+
+const isTupletDivision = (d, perBeat) => d > 1
+  && !(Number.isInteger(perBeat / d) && writableTicks(perBeat / d));
 
 /** What a tuplet of this division is written against: 3 against 2, 6 against 4. */
 function normalFor(division) {
@@ -192,7 +205,7 @@ function fill(state, from, to, chord) {
     const bi = Math.floor(pos / perBeat);
     const division = plan.divisionAt(bi);
 
-    if (isTupletDivision(division)) {
+    if (isTupletDivision(division, perBeat)) {
       const beatEnd = (bi + 1) * perBeat;
       const stop = Math.min(to, beatEnd, barEnd);
       pos = writeTuplet(state, m, bi, pos, stop, division, to, emit);
@@ -203,7 +216,7 @@ function fill(state, from, to, chord) {
      * a long note stays one note instead of a chain of tied beats. */
     let stop = Math.min(to, barEnd);
     for (let b = bi + 1; b * perBeat < stop; b++) {
-      if (isTupletDivision(plan.divisionAt(b))) { stop = b * perBeat; break; }
+      if (isTupletDivision(plan.divisionAt(b), perBeat)) { stop = b * perBeat; break; }
     }
     if (stop <= pos) break;
     const pieces = splitIntoDurations(stop - pos, pos - m * bar, ts);

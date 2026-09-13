@@ -13243,7 +13243,7 @@ function readMusic(rawNotes, opts = {}) {
     ? { timeSig, beatsPerBar: timeSig.beats, confidence: 1 }
     : estimateMetre(attacks, beat, trial.compound);
   const perBeat = beatTicks(metre.timeSig);
-  const fitted = toTicks(trial.notes, perBeat);
+  const fitted = snapToGrid(toTicks(trial.notes, perBeat), perBeat);
 
   /* --- voices and parts -------------------------------------------------- */
   /* Hands first, and hands are given events: a chord goes to a hand whole.
@@ -13267,7 +13267,9 @@ function readMusic(rawNotes, opts = {}) {
    * even run is given one length rather than four that happen to add up. */
   if (style.normalise) {
     for (const entry of assignment.parts) normaliseRuns(entry.notes, style.tolerance);
-    toTicks(fitted, perBeat);
+    /* Back onto the grid: normalising works in beats and re-derives the ticks,
+     * which would otherwise undo the snapping done above. */
+    snapToGrid(toTicks(fitted, perBeat), perBeat);
   }
 
   /* --- review: is any of this more complicated than it needs to be? ------ */
@@ -13368,6 +13370,72 @@ function readMusic(rawNotes, opts = {}) {
 
 const FIFTH_TONIC = { 0: 0, 1: 7, 2: 2, 3: 9, 4: 4, 5: 11, 6: 6, '-1': 5, '-2': 10, '-3': 3, '-4': 8, '-5': 1, '-6': 6 };
 const fifthsToTonic = (f) => FIFTH_TONIC[String(f)] ?? 0;
+
+
+/**
+ * Put every note exactly on the grid its beat was written on.
+ *
+ * Quantisation moves the attacks, but a note's end is measured separately and
+ * can land between two steps of the grid — and a remainder of a few ticks has
+ * to be written as something.  What it gets written as is a sixty-fourth tied
+ * to a hundred-and-twenty-eighth, which is not a rhythm anybody played or can
+ * read.  Rounding both ends onto the grid costs at most half a step of
+ * accuracy and removes that whole class of nonsense from the page.
+ *
+ * The grid is the one that beat actually uses, so a beat of triplets is
+ * snapped to thirds and its neighbours to quarters, exactly as written.
+ */
+function snapToGrid(notes, perBeat) {
+  /* One grid per beat.  A beat cannot be in thirds and quarters at once, and
+   * handing the engraver a beat that is both is what produces a
+   * hundred-and-twenty-eighth note: it writes the beat in quarters and then
+   * has to account for a note two thirds of it long.  Where the notes of a
+   * beat disagree, the grid that explains all of them with the least movement
+   * wins, and every note in the beat is then written on it. */
+  const inBeat = new Map();
+  for (const n of notes) {
+    const b = Math.floor(n.startTicks / perBeat);
+    if (!inBeat.has(b)) inBeat.set(b, []);
+    inBeat.get(b).push(n);
+  }
+
+  for (const [beat, group] of inBeat) {
+    const wanted = [...new Set(group.map((n) => Math.max(1, n.division || 1)))];
+    let division = wanted[0];
+    if (wanted.length > 1) {
+      let bestCost = Infinity;
+      for (const d of wanted) {
+        const unit = perBeat / d;
+        let cost = 0;
+        for (const n of group) {
+          cost += Math.abs(n.startTicks - Math.round(n.startTicks / unit) * unit);
+          cost += Math.abs(n.endTicks - Math.round(n.endTicks / unit) * unit);
+        }
+        if (cost < bestCost) { bestCost = cost; division = d; }
+      }
+    }
+    const unit = Math.max(1, Math.round(perBeat / division));
+    const from = beat * perBeat;
+    for (const n of group) {
+      n.division = division;
+      /* Attacks go on the beat's own grid.  Ends may go on a finer one — a
+       * staccato quaver ends a semiquaver in, and rounding that up to the next
+       * step would swallow the silence the player left.  The finer grid has to
+       * be a division of the beat's own, though, or the two are incompatible
+       * again and the engraver is back to writing remainders. */
+      let endDiv = division;
+      const want = Math.max(division, n.endDivision || division);
+      while (endDiv < want && endDiv < division * 4) endDiv *= 2;
+      n.endDivision = endDiv;
+      const endUnit = Math.max(1, Math.round(perBeat / endDiv));
+      n.startTicks = from + Math.round((n.startTicks - from) / unit) * unit;
+      let end = from + Math.round((n.endTicks - from) / endUnit) * endUnit;
+      if (end <= n.startTicks) end = n.startTicks + endUnit;
+      n.endTicks = end;
+    }
+  }
+  return notes;
+}
 
 /**
  * Decide where the silences really are.
@@ -15286,8 +15354,17 @@ function estimateMetre(events, beat, compound) {
 const DIVISIONS = [1, 2, 4, 3, 8, 6, 16, 12];
 
 /* The same list in order of how complicated they are to read, which is the
- * order they are tried in when choosing a grid for a whole phrase. */
-const BY_SIMPLICITY = [1, 2, 3, 4, 6, 8, 12, 16];
+ * order they are tried in when choosing a grid for a whole phrase.
+ *
+ * Three is not simpler than four.  It is a smaller number, but on the page it
+ * is a bracket and a figure over every group, and a passage of semiquavers
+ * written as triplets is unreadable in a way that a passage of semiquavers is
+ * not.  So the duple divisions come first at every level, and a tuplet has to
+ * earn its place against the binary division of the same fineness. */
+const BY_SIMPLICITY = [1, 2, 4, 3, 8, 6, 16, 12];
+
+/** Divisions that need a bracket and a number over them. */
+const isTuplet = (d) => d % 3 === 0 && d > 1;
 
 const GRID_PRESETS = [
   { id: 'auto', label: 'Automatic', division: null },
@@ -15314,19 +15391,19 @@ const STYLES = [
     id: 'simple',
     label: 'Simple',
     tip: 'Conventional rhythms, repeated patterns kept consistent, few ties or tuplets.',
-    gain: 0.24, tolerance: 0.24, strength: 1, fill: 0.52, merge: true, normalise: true,
+    gain: 0.24, tolerance: 0.24, strength: 1, fill: 0.52, merge: true, normalise: true, finest: 4,
   },
   {
     id: 'balanced',
     label: 'Balanced',
     tip: 'The default. Keeps expressive timing that means something, still writes conventionally.',
-    gain: 0.14, tolerance: 0.19, strength: 1, fill: 0.40, merge: true, normalise: true,
+    gain: 0.14, tolerance: 0.19, strength: 1, fill: 0.40, merge: true, normalise: true, finest: 8,
   },
   {
     id: 'precise',
     label: 'Precise',
     tip: 'Keeps more of how it was actually played. For rubato and free playing.',
-    gain: 0.06, tolerance: 0.14, strength: 0.85, fill: 0.28, merge: false, normalise: false,
+    gain: 0.06, tolerance: 0.14, strength: 0.85, fill: 0.28, merge: false, normalise: false, finest: 16,
   },
 ];
 
@@ -15360,7 +15437,13 @@ function chooseGrid(positions, allowed, tol, gain) {
   let bestFit = gridFit(positions, best, tol);
   for (const d of ordered.slice(1)) {
     const fit = gridFit(positions, d, tol);
-    if (fit > bestFit + gain) { best = d; bestFit = fit; }
+    /* A tuplet costs the reader a bracket over every group it touches, so it
+     * has to explain the playing appreciably better than the plain division
+     * of the same fineness — not merely as well.  This is what stops a phrase
+     * whose attacks happen to sit near both grids from being written in
+     * threes. */
+    const margin = isTuplet(d) && !isTuplet(best) ? gain * 2.2 : gain;
+    if (fit > bestFit + margin) { best = d; bestFit = fit; }
   }
   return { division: best, fit: bestFit };
 }
@@ -15383,6 +15466,7 @@ function quantise(notes, beat, opts = {}) {
     tolerance = style.tolerance,
     gain = style.gain,
     divisionWeights = null,
+    finest = style.finest || 8,
   } = opts;
 
   const rawBeats = (t) => (t - beat.phase) / beat.period;
@@ -15431,10 +15515,41 @@ function quantise(notes, beat, opts = {}) {
     let chosenErr = worst(global.division);
     for (const d of BY_SIMPLICITY.filter((x) => allowed.includes(x))) {
       const err = worst(d);
-      if (err <= latitude(d)) { chosen = d; chosenErr = err; break; }
+      /* Same rule beat by beat: a beat goes into threes only when the duple
+       * divisions genuinely cannot account for what happened in it. */
+      const room = isTuplet(d) ? latitude(d) * 0.6 : latitude(d);
+      if (err <= room) { chosen = d; chosenErr = err; break; }
       if (err < chosenErr) { chosen = d; chosenErr = err; }
     }
     beatDivision.set(idx, { division: chosen, error: chosenErr });
+  }
+
+  /* A single beat of threes in a passage of halves and quarters is almost
+   * always a misreading, not a triplet.  Players do not put one triplet in the
+   * middle of a dotted rhythm and then go back; and the cost of getting it
+   * wrong is not a slightly odd beat but an unwritable one, because a beat in
+   * threes surrounded by beats in fours cannot be tied across its own
+   * barline.  So a tuplet has to be corroborated by a neighbour, exactly as a
+   * reader would corroborate it — by hearing the same subdivision again. */
+  for (const [idx, choice] of beatDivision) {
+    if (!isTuplet(choice.division)) continue;
+    const before = beatDivision.get(idx - 1);
+    const after = beatDivision.get(idx + 1);
+    const alone = (!before || !isTuplet(before.division)) && (!after || !isTuplet(after.division));
+    if (!alone) continue;
+    const group = byBeat.get(idx) || [];
+    const local = group.map((n) => toBeats(n.start) - idx);
+    const worst = (d) => (local.length ? Math.max(...local.map((p) => Math.abs(p * d - Math.round(p * d)))) : 0);
+    let best = global.division;
+    let bestErr = Infinity;
+    for (const d of BY_SIMPLICITY.filter((x) => allowed.includes(x) && !isTuplet(x))) {
+      const err = worst(d);
+      if (err < bestErr) { best = d; bestErr = err; }
+    }
+    /* Only overrule the tuplet if a plain division actually accounts for the
+     * beat.  Where none does, the threes are what was played — an isolated
+     * triplet is a real thing, and this must not be the rule that loses it. */
+    if (bestErr <= latitude(best)) beatDivision.set(idx, { division: best, error: bestErr });
   }
 
   const out = [];
@@ -15468,15 +15583,23 @@ function quantise(notes, beat, opts = {}) {
      * away.  Only then is the grid refined, and only by halving it, so a
      * staccato quaver becomes a semiquaver and a rest rather than anything
      * stranger. */
+    /* A release may be measured more finely than the attacks were, but only
+     * so far.  Nobody plays a hundred-and-twenty-eighth note, and nobody can
+     * read one: past the finest value this style will write, the difference
+     * between a short note and a shorter one is not musical information, it is
+     * the analysis reporting its own noise. */
     const played = raw - n.beats;
-    while (played > 0 && played < 0.62 / d && d < 16) d *= 2;
+    while (played > 0 && played < 0.62 / d && d < finest) d *= 2;
     let snapped = Math.round(raw * d) / d;
     if (snapped <= n.beats + 1e-9) snapped = n.beats + 1 / d;
     n.endBeats = raw + (snapped - raw) * strength;
     if (n.endBeats <= n.beats + 1e-9) n.endBeats = n.beats + 1 / d;
     n.endDivision = d;
     n.division = Math.max(n.division, 0);
-    n.endTicks = Math.max(n.startTicks + Math.round(TPQ / (d * 2)), Math.round(n.endBeats * TPQ));
+    /* Nothing is written shorter than one step of the grid it was written on. */
+    const floorTicks = Math.max(1, Math.round(TPQ / finest));
+    n.endTicks = Math.max(n.startTicks + floorTicks, Math.round(n.endBeats * TPQ));
+    n.endBeats = Math.max(n.endBeats, n.beats + 1 / finest);
   }
 
   /* Whatever is left over — a note a fraction before the pulse that the style
@@ -15497,10 +15620,15 @@ function quantise(notes, beat, opts = {}) {
   const tally = new Map();
   for (const { division: d } of beatDivision.values()) tally.set(d, (tally.get(d) || 0) + 1);
   const ranked = [...tally.entries()].sort((a, b) => b[1] - a[1]);
+  /* Compound time is a claim about the whole piece, not about which division
+   * happened to win by one beat.  Six-eight means nearly every beat divides
+   * into three; anything less is a few triplets in simple time. */
+  const inThrees = ranked.filter(([d]) => isTuplet(d)).reduce((a, [, n]) => a + n, 0);
+  const beats = ranked.reduce((a, [, n]) => a + n, 0);
   return {
     notes: out,
     grid: global,
-    compound: ranked.length > 0 && ranked[0][0] % 3 === 0 && ranked[0][0] > 1,
+    compound: beats > 0 && inThrees >= beats * 0.8 && isTuplet(global.division),
     divisions: ranked,
   };
 }
@@ -15601,8 +15729,10 @@ function attackEvents(notes) {
 function toTicks(notes, ticksPerBeat) {
   for (const n of notes) {
     n.startTicks = Math.max(0, Math.round(n.beats * ticksPerBeat));
-    const fine = Math.max(n.division, n.endDivision || n.division);
-    n.endTicks = Math.max(n.startTicks + Math.round(ticksPerBeat / (fine * 2)),
+    const fine = Math.max(1, Math.max(n.division, n.endDivision || n.division));
+    /* One step of the note's own grid is the shortest thing worth writing: a
+     * value half a step long is the measurement's noise, not the music's. */
+    n.endTicks = Math.max(n.startTicks + Math.max(1, Math.round(ticksPerBeat / fine)),
       Math.round(n.endBeats * ticksPerBeat));
   }
   return notes;
@@ -16787,16 +16917,21 @@ function followLines(events) {
  * against a moving line, which is a real second voice, and it keeps its own.
  */
 function levelEvents(events, perBeat) {
-  const window = Math.max(1, Math.round(perBeat * 0.3));
+  const window = Math.max(1, Math.round(perBeat * 0.35));
   for (const ev of events) {
     for (const staff of new Set(ev.notes.map((n) => n.staff || 0))) {
       const hand = ev.notes.filter((n) => (n.staff || 0) === staff);
       if (hand.length < 2) continue;
       const ends = hand.map((n) => n.endTicks).sort((a, b) => a - b);
       const mid = ends[Math.floor(ends.length / 2)];
-      const agree = hand.filter((n) => Math.abs(n.endTicks - mid) <= window);
-      if (agree.length * 2 <= hand.length) continue;
-      for (const note of agree) note.endTicks = mid;
+      /* Every note of the chord that stopped anywhere near the others stops
+       * with them.  A note that went on plainly longer is a held note against
+       * a moving line — a real second voice — and keeps its own length; but a
+       * few ticks of difference is a release, not a line, and writing it as
+       * one is how a plain chord acquires a second voice it never had. */
+      for (const note of hand) {
+        if (Math.abs(note.endTicks - mid) <= window) note.endTicks = mid;
+      }
     }
   }
 }
@@ -17100,6 +17235,47 @@ function reviewChordLengths(notes, perBeat, log) {
   }
 }
 
+
+/**
+ * A note struck again inside one step of the grid was struck once.
+ *
+ * Quantisation puts every attack on the grid, so two notes of the same pitch
+ * in the same line are at least one step apart — unless something went wrong
+ * upstream, and in a decaying chord it does: the estimator loses a pitch for a
+ * moment and finds it again, and what should be one held note arrives as a
+ * note, a thirty-second, and a hundred-and-twenty-eighth.  Nobody played that
+ * and nobody can read it.  Notes closer together than the grid they were
+ * written on are one note, lasting as long as the pieces did between them.
+ */
+function reviewRepeats(notes, perBeat, log) {
+  const lines = new Map();
+  for (const n of notes) {
+    const key = (n.staff || 0) + ':' + (n.voice || 0) + ':' + n.midi;
+    if (!lines.has(key)) lines.set(key, []);
+    lines.get(key).push(n);
+  }
+  const dead = new Set();
+  for (const line of lines.values()) {
+    line.sort((a, b) => a.startTicks - b.startTicks);
+    for (let i = 0; i < line.length - 1; i++) {
+      if (dead.has(line[i])) continue;
+      let head = line[i];
+      let j = i + 1;
+      while (j < line.length) {
+        const next = line[j];
+        const step = perBeat / Math.max(1, Math.max(head.division || 4, next.division || 4));
+        if (next.startTicks - head.startTicks >= step - 1) break;
+        head.endTicks = Math.max(head.endTicks, next.endTicks);
+        dead.add(next);
+        j++;
+      }
+      if (j > i + 1) log.push('a note heard twice inside one beat-division was written once');
+    }
+  }
+  if (!dead.size) return;
+  for (let i = notes.length - 1; i >= 0; i--) if (dead.has(notes[i])) notes.splice(i, 1);
+}
+
 /**
  * Review the whole reading and simplify what can be simplified.
  *
@@ -17112,6 +17288,7 @@ function review(parts, opts = {}) {
   const log = [];
   for (const entry of parts) {
     if (!entry.notes || !entry.notes.length) continue;
+    reviewRepeats(entry.notes, perBeat, log);
     if (voices) reviewStragglers(entry.notes, perBeat, log);
     if (voices) reviewChordLengths(entry.notes, perBeat, log);
     if (hands && entry.part && entry.part.staves > 1) reviewHands(entry.notes, log);
@@ -17504,9 +17681,22 @@ function spell(midi, fifths = 0, lean = 0) {
 
 /* ----------------------------------------------------------------- score */
 
-/* A beat divided into three, five or six parts is a tuplet beat: its division
- * is not a power of two, so no plain note value fits it. */
-const isTupletDivision = (d) => d > 1 && (d & (d - 1)) !== 0;
+/* A beat divides into a tuplet when one of its parts cannot be written as a
+ * plain note value — and that depends on the beat, not on the number.  Three
+ * parts of a crotchet are a triplet and need a bracket; three parts of a
+ * dotted crotchet are quavers and need nothing at all.  Marking those as
+ * triplets is how a perfectly ordinary bar of 6/8 comes out covered in
+ * brackets over notes that are exactly what they look like. */
+function writableTicks(ticks) {
+  if (!Number.isInteger(ticks) || ticks <= 0) return false;
+  for (let base = TPQ * 4; base >= 1; base /= 2) {
+    if (ticks === base || ticks === base * 1.5 || ticks === base * 1.75) return true;
+  }
+  return false;
+}
+
+const isTupletDivision = (d, perBeat) => d > 1
+  && !(Number.isInteger(perBeat / d) && writableTicks(perBeat / d));
 
 /** What a tuplet of this division is written against: 3 against 2, 6 against 4. */
 function normalFor(division) {
@@ -17574,7 +17764,7 @@ function fill(state, from, to, chord) {
     const bi = Math.floor(pos / perBeat);
     const division = plan.divisionAt(bi);
 
-    if (isTupletDivision(division)) {
+    if (isTupletDivision(division, perBeat)) {
       const beatEnd = (bi + 1) * perBeat;
       const stop = Math.min(to, beatEnd, barEnd);
       pos = writeTuplet(state, m, bi, pos, stop, division, to, emit);
@@ -17585,7 +17775,7 @@ function fill(state, from, to, chord) {
      * a long note stays one note instead of a chain of tied beats. */
     let stop = Math.min(to, barEnd);
     for (let b = bi + 1; b * perBeat < stop; b++) {
-      if (isTupletDivision(plan.divisionAt(b))) { stop = b * perBeat; break; }
+      if (isTupletDivision(plan.divisionAt(b), perBeat)) { stop = b * perBeat; break; }
     }
     if (stop <= pos) break;
     const pieces = splitIntoDurations(stop - pos, pos - m * bar, ts);
