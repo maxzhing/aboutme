@@ -76,8 +76,10 @@ function collect(file) {
         const m2 = /^([A-Za-z_$][\w$]*)\s+as\s+([A-Za-z_$][\w$]*)$/.exec(b);
         const from = m2 ? m2[1] : b;
         const to = m2 ? m2[2] : b;
-        lines.push(`const ${to} = ${tmp}.${from};`);
-        exported.push(to);
+        /* Assigned straight onto the exports rather than bound to a name: the
+         * module may already have imported the same thing for its own use, and
+         * declaring it twice is a syntax error. */
+        lines.push(`__exp.${to} = ${tmp}.${from};`);
       }
       return lines.join('\n');
     },

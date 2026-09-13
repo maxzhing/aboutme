@@ -255,6 +255,28 @@ export function extractNotes(audio, options = {}) {
   }
   for (const midi of [...open.keys()]) close(midi, duration);
 
+  /* A take usually ends with silence on the end of it, and a note held open to
+   * the last sample becomes a note held for several bars.  Where nothing
+   * follows a note, its end is trimmed to where the recording actually stops
+   * sounding.  Only the last notes are treated this way: while other notes are
+   * still playing, the overall level says nothing about when this one ended. */
+  if (notes.length) {
+    const step = Math.round(0.02 * sampleRate);
+    let peak = 0;
+    const level = [];
+    for (let at = 0; at + step <= samples.length; at += step) {
+      const v = rms(samples, at, at + step);
+      level.push(v);
+      peak = Math.max(peak, v);
+    }
+    let lastLoud = level.length - 1;
+    while (lastLoud > 0 && level[lastLoud] < peak * 0.08) lastLoud--;
+    const stops = ((lastLoud + 1) * step) / sampleRate;
+    for (const n of notes) {
+      if (n.end >= duration - 1e-6 && n.start < stops) n.end = Math.max(n.start + minDuration, stops);
+    }
+  }
+
   /* Drop what is left of decayed notes: real notes stand far above this. */
   let strongest = 0;
   for (const n of notes) strongest = Math.max(strongest, n.salience);

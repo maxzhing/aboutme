@@ -23,7 +23,7 @@
  */
 
 import { stft, toMono, rms, midiToHz } from './dsp.js';
-import { salienceAt, whiten, estimateF0s, MIN_MIDI, MAX_MIDI } from './polyphony.js';
+import { salienceAt, whiten, estimateF0s, residualSpectrum, estimateFromWhitened, MIN_MIDI, MAX_MIDI } from './polyphony.js';
 import { detectOnsets } from './onsets.js';
 
 /**
@@ -386,7 +386,7 @@ export function describe(diff, locate, opts = {}) {
     const cur = issues.get(key) || { bar, kind, count: 0, strength: 0, pitches: [] };
     cur.count++;
     cur.strength = Math.max(cur.strength, strength);
-    if (cur.pitches.length < 4) cur.pitches.push(midi);
+    if (!cur.pitches.includes(midi) && cur.pitches.length < 4) cur.pitches.push(midi);
     issues.set(key, cur);
   };
   for (const r of diff.missing) if (r.strength >= minStrength) add(r.from, 'missing', r.midi, r.strength);
@@ -410,13 +410,19 @@ export function describe(diff, locate, opts = {}) {
  * recording really does say what the map suggested.
  */
 export function verifyPitchAt(audio, sampleRate, time, midi, opts = {}) {
-  const { size = 8192, maxVoices = 6 } = opts;
+  const { size = 8192, maxVoices = 6, without = null } = opts;
   const samples = toMono(audio);
   const start = Math.max(0, Math.min(samples.length - size, Math.round(time * sampleRate)));
   if (samples.length < size) return { present: false, heard: [] };
   const spec = stft(samples.subarray(start, start + size), { size, hop: size, sampleRate });
   if (!spec.frames.length) return { present: false, heard: [] };
-  const det = estimateF0s(spec.frames[0], spec.binHz, { maxVoices });
+  /* Where the notation already accounts for some of what is sounding, take
+   * that away first: a note hidden under its own octave is invisible until the
+   * octave above it has been subtracted. */
+  const det = without && without.length
+    ? estimateFromWhitened(residualSpectrum(spec.frames[0], spec.binHz,
+      without.filter((hz) => Math.abs(1200 * Math.log2(hz / midiToHz(midi))) > 40)), spec.binHz, { maxVoices })
+    : estimateF0s(spec.frames[0], spec.binHz, { maxVoices });
   const heard = det.map((d) => d.midi);
   const found = det.find((d) => d.midi === midi);
   return {

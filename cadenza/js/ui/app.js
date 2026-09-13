@@ -55,6 +55,7 @@ export class Cadenza {
     this.lastSaved = null;
     this.openPaletteId = null;
     this.flagged = new Map();        // eventId -> confidence, from a transcription
+    this.flaggedBars = new Set();    // bars where the score and the recording disagreed
     this.audition = null;
   }
 
@@ -2078,6 +2079,36 @@ export class Cadenza {
   }
 
   /**
+   * Play raw audio — the recording a transcription came from.
+   *
+   * Hearing the recording and the score one after the other is the quickest
+   * way to find what is wrong with a transcription, so the panel needs to be
+   * able to play both through the same output.
+   */
+  playAudio(samples, sampleRate) {
+    this.stopAudio();
+    const ctx = this.synth.init();
+    if (!ctx) return;
+    const buffer = ctx.createBuffer(1, samples.length, sampleRate);
+    buffer.copyToChannel ? buffer.copyToChannel(samples, 0) : buffer.getChannelData(0).set(samples);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.9;
+    source.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+    this.audioSource = source;
+  }
+
+  stopAudio() {
+    if (this.audioSource) {
+      try { this.audioSource.stop(); } catch (err) { /* already finished */ }
+      this.audioSource = null;
+    }
+  }
+
+  /**
    * Take a transcription into the document.
    *
    * The proposed score is kept alongside it, so that when the user has
@@ -2085,7 +2116,7 @@ export class Cadenza {
    * correction model learns from.  Undo puts the previous document back, as
    * with any other edit.
    */
-  adoptTranscription(score, panel) {
+  adoptTranscription(score, panel, info = {}) {
     const previous = this.score;
     this.pendingLearn = { panel, proposed: Model.deserialize(Model.serialize(score)) };
     this.setScore(score);
@@ -2097,10 +2128,12 @@ export class Cadenza {
         this.flagged.set(event.id, event.transcribeConfidence);
       }
     }
+    /* Bars where playing the score back disagreed with the recording. */
+    this.flaggedBars = new Set(info.bars || []);
     this.setNoteEntry(false);
     this.render();
-    const n = this.flagged.size;
-    Dlg.toast(n ? `Transcription placed — ${n} note${n === 1 ? '' : 's'} marked for a second look`
+    const n = this.flagged.size + this.flaggedBars.size;
+    Dlg.toast(n ? `Transcription placed — ${n} place${n === 1 ? '' : 's'} marked for a second look`
       : 'Transcription placed', 'ok');
     this.setHint(n
       ? `<b>Transcribed.</b> The marked notes are the ones Cadenza was least sure of — click one to correct it. `
@@ -2121,8 +2154,19 @@ export class Cadenza {
 
   paintFlags() {
     this.el.pages.querySelectorAll('.uncertain').forEach((n) => n.classList.remove('uncertain'));
+    this.el.pages.querySelectorAll('.bar-flag').forEach((n) => n.remove());
     for (const id of this.flagged.keys()) {
       this.el.pages.querySelectorAll(`[data-ev="${id}"]`).forEach((n) => n.classList.add('uncertain'));
+    }
+    if (!this.flaggedBars || !this.flaggedBars.size) return;
+    for (const bar of this.flaggedBars) {
+      for (const r of this.measureRects.get(bar - 1) || []) {
+        const svg = this.pageSVG(r.page);
+        const ov = svg && svg.querySelector('.overlay');
+        if (!ov) continue;
+        ov.insertAdjacentHTML('beforeend',
+          `<rect class="bar-flag" x="${r.x}" y="${r.y - 1}" width="${r.w}" height="${r.h + 2}"/>`);
+      }
     }
   }
 

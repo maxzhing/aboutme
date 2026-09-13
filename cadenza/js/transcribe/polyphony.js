@@ -426,6 +426,28 @@ function verifySet(mag, binHz, found, opts) {
 }
 
 /**
+ * Remove the harmonic series of pitches already accounted for.
+ *
+ * What is left is what the notation does not explain, and a note hidden under
+ * its own octave becomes visible in it.  This is the analysis-by-synthesis
+ * step: take away what has been written down, and look at the remainder.
+ */
+export function residualSpectrum(magIn, binHz, hzList, opts = {}) {
+  const { harmonics = 16, amount = 0.92 } = opts;
+  const mag = whiten(magIn);
+  for (const hz of hzList) {
+    const info = salienceAt(mag, binHz, hz, { harmonics });
+    subtract(mag, binHz, hz, info.partials, amount, partialEnvelope(info.partials));
+  }
+  return mag;
+}
+
+/** Estimate fundamentals from a spectrum that has already been whitened. */
+export function estimateFromWhitened(mag, binHz, opts = {}) {
+  return estimateF0s(mag, binHz, { ...opts, prewhitened: true });
+}
+
+/**
  * Estimate the fundamentals present in one spectral frame.
  * Returns [{ midi, hz, salience, confidence }], strongest first.
  */
@@ -439,9 +461,10 @@ export function estimateF0s(magIn, binHz, opts = {}) {
     maxMidi = MAX_MIDI,
     octaveCheck = true,
     neighbourRatio = 2.6,
+    prewhitened = false,
   } = opts;
 
-  const mag = whiten(magIn);
+  const mag = prewhitened ? Float32Array.from(magIn) : whiten(magIn);
   const residual = Float32Array.from(mag);
   const found = [];
   const masked = [];

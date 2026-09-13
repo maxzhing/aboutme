@@ -27,10 +27,16 @@
 
 import { renderNotation } from './render.js';
 import { compareAudio, salienceMap, candidatePitches, activePitches, verifyPitchAt } from './compare.js';
-import { toMono } from './dsp.js';
+import { toMono, midiToHz } from './dsp.js';
 
 const MIN_GAIN = 0.004;        // an improvement smaller than this is noise
 const MIN_RUN_STRENGTH = 0.26; // how clearly a difference must show to act on
+
+/**
+ * A note the first reading was sure of, which the evidence against is not
+ * strong enough to overturn.
+ */
+const settled = (note, against) => (note.confidence ?? 0) >= 0.8 && against < 0.72;
 
 /** Is there a note of this pitch sounding across this span? */
 const covering = (notes, midi, from, to) =>
@@ -43,7 +49,7 @@ const covering = (notes, midi, from, to) =>
  * once cannot tell which of its changes helped.
  */
 function applyCorrections(notes, diff, opts) {
-  const { limit, harmonyAt = null, verify = () => true } = opts;
+  const { limit, harmonyAt = null, verify = () => true, exclude = null } = opts;
   const out = notes.map((n) => ({ ...n }));
   const edits = [];
 
@@ -52,13 +58,15 @@ function applyCorrections(notes, diff, opts) {
   const usedExtra = new Set();
   for (const miss of diff.missing) {
     if (miss.strength < MIN_RUN_STRENGTH) continue;
+    /* One octave, or two.  Further than that and these are not one note in the
+     * wrong octave but two unrelated mistakes that happen to share a letter. */
     const partner = diff.extra.find((x, i) => !usedExtra.has(i)
-      && Math.abs(x.midi - miss.midi) % 12 === 0 && x.midi !== miss.midi
+      && (Math.abs(x.midi - miss.midi) === 12 || Math.abs(x.midi - miss.midi) === 24)
       && x.from < miss.to && x.to > miss.from);
     if (!partner) continue;
     usedExtra.add(diff.extra.indexOf(partner));
     const wrong = covering(out, partner.midi, partner.from, partner.to);
-    if (wrong) {
+    if (wrong && !settled(wrong, partner.strength)) {
       edits.push({
         kind: 'octave', weight: miss.strength * miss.frames + partner.strength * partner.frames,
         apply: () => { wrong.midi = miss.midi; wrong.corrected = 'octave'; },
@@ -109,6 +117,10 @@ function applyCorrections(notes, diff, opts) {
     if (usedExtra.has(i) || x.strength < MIN_RUN_STRENGTH) continue;
     const note = covering(out, x.midi, x.from, x.to);
     if (!note) continue;
+    /* What the first reading heard clearly is evidence too.  The loop's job is
+     * mostly to find what was missed; undoing a confident detection needs the
+     * recording to disagree strongly, not merely to disagree. */
+    if (settled(note, x.strength)) continue;
     /* Only drop a note the recording does not support anywhere across its life;
      * one that is merely quieter than the render is still a note. */
     const spans = diff.extra.filter((y) => y.midi === x.midi
@@ -137,7 +149,10 @@ function applyCorrections(notes, diff, opts) {
    * fits the harmony around it goes first.  The tie-break never promotes a
    * change the audio does not already support. */
   edits.sort((a, b) => (b.weight - a.weight) || ((b.harmonyFit || 0) - (a.harmonyFit || 0)));
-  const taken = edits.slice(0, limit);
+  /* A retry must try something else.  Repeating the correction that spoiled the
+   * last pass would only spoil this one. */
+  const usable = exclude ? edits.filter((e) => !exclude.has(e.kind + ' ' + e.describe)) : edits;
+  const taken = usable.slice(0, limit);
   for (const e of taken) e.apply();
 
   const kept = out.filter((n) => !n.remove && n.end - n.start > 0.03);
@@ -182,6 +197,10 @@ export function refineByListening(ctx, opts = {}) {
   const history = [];
   let best = null;
   let allEdits = [];
+  let retries = 0;
+  let narrow = false;
+  const rejected = new Set();
+  let lastEdits = [];
 
   for (let pass = 1; pass <= maxPasses; pass++) {
     onProgress('rendering', { pass });
@@ -190,7 +209,7 @@ export function refineByListening(ctx, opts = {}) {
     const pitches = candidatePitches(heard, used).filter((p) => p >= lo && p <= hi);
 
     onProgress('comparing', { pass });
-    const diff = compareAudio(original, { audio: rendered.samples, sampleRate },
+    let diff = compareAudio(original, { audio: rendered.samples, sampleRate },
       { pitches, originalMap: fullMap });
 
     const entry = {
@@ -205,34 +224,63 @@ export function refineByListening(ctx, opts = {}) {
 
     if (!best || diff.similarity > best.similarity + 1e-9) {
       best = { similarity: diff.similarity, notes: notes.map((n) => ({ ...n })), built, diff };
+      retries = 0;
+    } else if (retries < 1) {
+      /* That round of corrections made things worse.  One of them was probably
+       * wrong and took the others down with it, so go back to the best version
+       * and try again with only the best-evidenced few. */
+      entry.reverted = true;
+      retries++;
+      narrow = true;
+      for (const e of lastEdits) rejected.add(e.kind + ' ' + e.what);
+      notes = best.notes.map((n) => ({ ...n }));
+      built = best.built;
+      diff = best.diff;
     } else {
-      /* The last round of corrections made it worse.  Stop, and keep the
-       * version that matched the recording best. */
       entry.reverted = true;
       break;
     }
 
-    if (diff.similarity >= target) { entry.stopped = 'close enough'; break; }
-    if (pass === maxPasses) { entry.stopped = 'passes exhausted'; break; }
-    if (history.length > 1) {
-      const gain = diff.similarity - history[history.length - 2].similarity;
-      if (gain >= 0 && gain < MIN_GAIN && pass > 1) { entry.stopped = 'no further gain'; break; }
+    if (!entry.reverted) {
+      if (diff.similarity >= target) { entry.stopped = 'close enough'; break; }
+      if (history.length > 1) {
+        const gain = diff.similarity - history[history.length - 2].similarity;
+        if (gain >= 0 && gain < MIN_GAIN && pass > 1) { entry.stopped = 'no further gain'; break; }
+      }
     }
+    if (pass === maxPasses) { entry.stopped = 'passes exhausted'; break; }
 
     onProgress('correcting', { pass, missing: diff.missing.length, extra: diff.extra.length });
-    const limit = Math.max(1, Math.min(40, Math.ceil(notes.length * 0.3)));
+    const share = narrow ? 0.08 : 0.3;
+    narrow = false;
+    const limit = Math.max(1, Math.min(40, Math.ceil(notes.length * share)));
     const verified = new Map();
     const verify = (midi, time) => {
       const key = midi + ':' + Math.round(time * 40);
-      if (!verified.has(key)) {
-        const v = verifyPitchAt(original.audio, sampleRate, time - 0.04, midi);
-        verified.set(key, v.present && v.strength >= 0.25);
+      if (verified.has(key)) return verified.get(key);
+      const at = time - 0.04;
+      let ok = false;
+      const plain = verifyPitchAt(original.audio, sampleRate, at, midi);
+      if (plain.present && plain.strength >= 0.12) ok = true;
+      else {
+        /* Ask again with everything the score already says taken away.  A note
+         * under its own octave cannot be heard until the octave is removed,
+         * and those are exactly the notes a first reading loses. */
+        const sounding = rendered.events
+          .filter((e) => e.time <= at && e.time + e.dur > at)
+          .map((e) => midiToHz(e.midi));
+        if (sounding.length) {
+          const deep = verifyPitchAt(original.audio, sampleRate, at, midi, { without: sounding });
+          ok = deep.present && deep.strength >= 0.18;
+        }
       }
-      return verified.get(key);
+      verified.set(key, ok);
+      return ok;
     };
-    const step = applyCorrections(notes, diff, { limit, harmonyAt, verify });
+    const step = applyCorrections(notes, diff, { limit, harmonyAt, verify, exclude: rejected });
     if (!step.edits.length) { entry.stopped = 'nothing left to correct'; break; }
-    allEdits = allEdits.concat(step.edits.map((e) => ({ pass, kind: e.kind, what: e.describe })));
+    lastEdits = step.edits.map((e) => ({ pass, kind: e.kind, what: e.describe }));
+    allEdits = allEdits.concat(lastEdits);
     notes = step.notes;
     built = ctx.rebuild(notes);
   }

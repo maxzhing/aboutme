@@ -81,17 +81,110 @@ kept in local storage between sessions.
 
 ## Transcription
 
-**The Transcribe button.** Record audio, play a MIDI keyboard, import audio
-(WAV, MP3, FLAC, OGG, M4A) or import a MIDI file. What comes back is a summary —
-how many notes, at what tempo, in what metre and key — with a confidence figure
-for each stage, a list of the bars worth a second look, and the settings to
-change if something is wrong: the rhythm grid, how tightly to fit the beat, the
-tempo, the metre, the key, one staff or two, and how hard to listen. Re-reading
-with different settings is instant, because the notes are already known. Then
-play it, and put it in the score, where undo works as it does for any edit.
+**It asks what it is listening to first.** Solo — piano, violin, viola, cello,
+flute, or anything else in the catalogue. Ensemble — duet, trio, quartet,
+chamber group, with ready-made line-ups (violin and piano, string quartet, piano
+trio) or your own choice. Orchestra — a movement or a full score, laid out in
+sections. The answer decides how many independent lines the engine looks for and
+what the score is laid out as, which is the difference between a string quartet
+coming back as four staves and coming back as piano chords. Told nothing, a
+transcriber's only honest option is to pour everything onto a grand staff and
+hope.
+
+**Then the recording.** Record audio, play a MIDI keyboard, import audio (WAV,
+MP3, FLAC, OGG, M4A) or import a MIDI file. What comes back is a summary — how
+many notes, at what tempo, in what metre and key — with a confidence figure for
+each stage, the recording and the transcription side by side to play against
+each other, a list of the bars worth a second look with the reason for each, and
+the settings to change if something is wrong: quantisation from none to strong,
+the rhythm grid, the tempo, the metre, the key, the instruments, and how hard to
+listen. Re-reading with different settings is instant, because the notes are
+already known. Then put it in the score, where undo works as it does for any
+edit.
+
+**It plays its own transcription back and corrects it.** This is the part that
+makes the difference between a first guess and a transcription:
+
+```
+  recording → notes → notation → play the notation → compare with the
+  recording → correct the notation → play it again → …
+```
+
+The *notation* is what gets corrected. The render is thrown away every pass and
+made again from whatever the score now says, so the only way for the two to come
+closer together is for the score to become more like the recording; making the
+playback flatter the transcription would be easy and would prove nothing.
+
+Every correction is driven by the recording and only by the recording. A note is
+added because the recording has energy along that pitch's harmonic series which
+the notation does not produce, and the pitch estimator is asked directly before
+anything is added, so a harmonic is never mistaken for a note. Where the score
+already accounts for part of what is sounding, that part is subtracted and the
+estimator asked again — which is how a note hidden under its own octave is
+found. Nothing is changed because a chord would be more usual, a rhythm more
+regular, or a harmony more idiomatic; the goal is to reconstruct what was
+performed, and a musically plausible wrong answer is still a wrong answer. Where
+two corrections are equally supported by the audio — and only then — the one
+fitting the surrounding harmony goes first, which is a tie-break and not a
+decision. What the first reading heard clearly is evidence too, so undoing it
+takes strong disagreement rather than any disagreement.
+
+A pass is kept only if it improves the match, so the loop cannot wander: the
+worst it can do is stop where it started. When a round of corrections makes
+things worse it goes back and tries again with only the best-evidenced few,
+leaving out whatever it just tried.
+
+**What the comparison measures.** Not waveforms — two pianos playing the same
+notes produce quite different waveforms. Both signals are reduced to the same
+four representations and compared in each: how much energy sits on each pitch's
+harmonic series frame by frame, where notes begin and how strongly, the loudness
+envelope, and what the notation says in notes. The headline figure is how much
+of the recording's pitch energy the notation accounts for, in both directions,
+since a transcription that only ever adds notes is as wrong as one that only
+ever drops them. Release tails are exempt: how a note fades is not which note it
+is.
+
+**A chord, a run and an arpeggio are three different things.** The same three
+notes struck together, played in turn, or rolled and held are three different
+events and three different pages, and a fixed time window cannot tell them
+apart: a pianist spreading a chord puts its notes twenty milliseconds apart, and
+twenty milliseconds inside a run of demisemiquavers is a note each. What
+separates the cases is not the size of the gaps but their shape — chords have
+small gaps within and large ones between, a run has gaps all alike — so the gaps
+are sorted and the largest jump between them is taken as the line between
+"within an event" and "between events". A harmony rolled across the keyboard is
+recognised as one harmony and still written as separate notes, because that is
+what was played.
+
+**Voices are followed, not sorted by pitch.** An inner part that rises above the
+bass is lost the moment it crosses if voices are assigned by pitch order, and
+that is most of what makes counterpoint worth writing down. Instead the
+stretches during which the same notes sound throughout are found — inside one of
+those nothing starts or stops, so the lines cannot have crossed — and those
+stretches are joined end to end by following each line across the joins,
+cheapest pairing first. A part that crosses another is followed rather than
+swapped with it. For an ensemble the unit is the single note rather than the
+chord, because four players sounding four notes together are four lines and not
+one chord.
+
+**Lines are fitted to players by what they can play.** Register, range, and how
+many notes the instrument can sound at once — a violin can stop two strings
+together, a flute cannot, a piano takes two staves and several lines. The whole
+assignment is settled together rather than one line at a time, because giving
+the highest line to the violin can be right on its own and wrong for the
+quartet. Where the reading is uncertain it says so and the instruments can be
+changed, rather than a confident label being invented.
+
+**Harmony is read, never imposed.** Chords, inversions, degrees in the key,
+suspensions, passing and neighbouring notes, anticipations and chromaticism are
+all identified and can be written on the page as chord symbols — and none of it
+changes a note. A system that tidies a diminished seventh into a dominant
+seventh because dominants are commoner has stopped transcribing and started
+composing.
 
 **Frequencies sounding together are a chord.** This is the part that separates a
-transcriber from a pitch detector, and it is what the engine is built around.
+transcriber from a pitch detector, and it is what the pitch stage is built
+around.
 The spectrum is summed along each candidate's harmonic series; the strongest
 candidate is taken, the energy its series explains is subtracted, and the search
 repeats — so C, E and G played together come back as a C major chord rather than
@@ -154,7 +247,23 @@ sensitivity moves the threshold. It is five running estimates, not a trained
 model, and the panel shows the counts behind every claim so it can be checked
 rather than believed. It can be forgotten in one click.
 
-Accuracy is checked by 68 executable cases:
+**Priorities, in order.** Correct pitches, then correct simultaneities, then
+timing, then durations, then voice separation, then harmony, then instrument and
+staff assignment, and only then clean engraving. A beautiful wrong score is
+useless.
+
+**Where it can be replaced.** Each stage is a module with one entry point and
+its own tests: audio analysis (`dsp.js`), pitch and event detection
+(`polyphony.js`, `onsets.js`, `notes.js`), polyphonic separation (`events.js`,
+`voices.js`), musical interpretation (`rhythm.js`, `harmony.js`, `assign.js`),
+notation (`build.js`), audio rendering (`render.js`), similarity evaluation
+(`compare.js`) and correction (`refine.js`). A genuinely strong polyphonic
+transcription model can be dropped in behind the pitch stage without any of the
+rest changing — and it would be an improvement, because basic signal processing
+alone does not produce perfect polyphonic transcription and this does not
+pretend otherwise.
+
+Accuracy is checked by 94 executable cases:
 
 ```sh
 node cadenza/test/transcribe.mjs
@@ -174,12 +283,26 @@ whole chain on audio rather than MIDI. Then capture and learning: recorded
 timing, the sustain pedal, re-struck notes, a score out to MIDI and back
 unchanged, and each learned parameter shown to change what comes out.
 
-All 68 pass. What that does **not** prove is stated at the top of the test file:
+Then the musical events: a chord, a run and an arpeggio of the same notes told
+apart; a spread chord not mistaken for a fast run; a diminished seventh not
+tidied into a dominant; inversions read from the bass; a passing note named as
+one. Then the listening loop: a correct transcription scoring full marks and not
+being made worse; a reading that starts with a quarter of its notes missing and
+one in the wrong octave having them found; the comparison spotting a note that is
+not in the recording, and a chord written as a run. Then the textures: a single
+melody as a single line, piano chords staying chords, a melody over an
+accompaniment as two lines, two hands in different rhythms as two voices, an
+arpeggio as notes rather than a block chord, a dense six-note chord keeping its
+notes, inversions coming through, counterpoint surviving a crossing. Then the
+ensembles: a string duet on two staves, violin and piano told apart, a piano trio
+with a staff each, a string quartet as four lines and not as chords, a wind
+quintet keeping five lines apart, and an orchestral passage written in sections
+rather than for piano.
+
+All 94 pass. What that does **not** prove is stated at the top of the test file:
 the material is synthesised — plausible partial structure, inharmonicity, attack
 and decay, but not recordings of real instruments in real rooms. Treat the
-scores as a regression floor, not as a claim about studio audio. The pitch stage
-is a module with one entry point, so a stronger model can be dropped in behind
-it without the rest of the chain changing.
+scores as a regression floor, not as a claim about studio audio.
 
 ---
 
@@ -267,12 +390,19 @@ js/
     polyphony.js   multiple-F0 estimation over a whole spectrum
     onsets.js      spectral-flux attack detection
     notes.js       onset-delimited segments assembled into note events
+    events.js      chord, run or arpeggio — what was played at once
     rhythm.js      pulse, metre, and fitting a performance to the beat
-    voices.js      which hand played what, and where a staff carries two lines
+    voices.js      hands, and following a line through a texture
+    harmony.js     chords, inversions, degrees, non-chord tones — read only
+    ensembles.js   what is being transcribed, and the score it implies
+    assign.js      fitting the lines that were found to the players
     build.js       key, spelling, bars, ties, rests, tuplets
+    render.js      playing the notation back, to be measured
+    compare.js     measuring a render against the recording
+    refine.js      the correction loop
     capture.js     live MIDI, raw audio, and standard MIDI files
     learn.js       parameters fitted to the corrections you make
-    index.js       both inputs, end to end, with confidence per stage
+    index.js       the whole chain, with confidence per stage
   ui/
     app.js         the controller: selection, cursor, commands
     ribbon.js      the toolbar and the palettes
