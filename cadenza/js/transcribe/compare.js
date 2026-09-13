@@ -437,7 +437,7 @@ export function describe(diff, locate, opts = {}) {
  * recording really does say what the map suggested.
  */
 export function verifyPitchAt(audio, sampleRate, time, midi, opts = {}) {
-  const { size = 8192, maxVoices = 6, without = null } = opts;
+  const { size = 8192, maxVoices = 12, without = null } = opts;
   const samples = toMono(audio);
   const start = Math.max(0, Math.min(samples.length - size, Math.round(time * sampleRate)));
   if (samples.length < size) return { present: false, heard: [] };
@@ -446,15 +446,43 @@ export function verifyPitchAt(audio, sampleRate, time, midi, opts = {}) {
   /* Where the notation already accounts for some of what is sounding, take
    * that away first: a note hidden under its own octave is invisible until the
    * octave above it has been subtracted. */
-  const det = without && without.length
-    ? estimateFromWhitened(residualSpectrum(spec.frames[0], spec.binHz,
-      without.filter((hz) => Math.abs(1200 * Math.log2(hz / midiToHz(midi))) > 40)), spec.binHz, { maxVoices })
-    : estimateF0s(spec.frames[0], spec.binHz, { maxVoices });
+  const mag = without && without.length
+    ? residualSpectrum(spec.frames[0], spec.binHz,
+      without.filter((hz) => Math.abs(1200 * Math.log2(hz / midiToHz(midi))) > 40))
+    : whiten(spec.frames[0]);
+  const det = estimateFromWhitened(mag, spec.binHz, { maxVoices });
   const heard = det.map((d) => d.midi);
   const found = det.find((d) => d.midi === midi);
+
+  /* Measure the pitch itself, as well as asking whether it won a place among
+   * the loudest few.
+   *
+   * Asking only the second question is what stops this ever confirming
+   * anything in dense music: in a texture of ten notes the one being asked
+   * about is frequently the eleventh loudest, and would never win that
+   * contest however plainly it is sounding.  The comparison that found it
+   * missing measured its energy; so does this, and the two can therefore
+   * agree.  Fifteen notes of a Stravinsky chord are not fifteen mistakes. */
+  const own = salienceAt(mag, spec.binHz, midiToHz(midi), { harmonics: 12 });
+  let loudest = 0;
+  for (const d of det) loudest = Math.max(loudest, d.salience || 0);
+  const relative = loudest > 0 ? Math.min(1, own.salience / loudest) : 0;
+
+  /* The measurement counts only once the notes the score already accounts for
+   * have been taken out of the spectrum.  Asked of the whole mix it is far too
+   * willing — every pitch has some energy along its series in a thick texture,
+   * and believing that invents notes.  Asked of the residual it is the right
+   * question: this is energy the notation does not explain, and if it lies
+   * along one pitch's harmonic series then that pitch is missing from the
+   * page.  Ranking alone cannot see it, because the missing note is rarely
+   * among the loudest few of what is left. */
+  const residualView = !!(without && without.length);
+  const measured = residualView && relative >= 0.2 && own.hits >= 4;
+
   return {
-    present: !!found,
-    strength: found ? found.confidence : 0,
+    present: !!found || measured,
+    strength: found ? Math.max(found.confidence, residualView ? relative : 0)
+      : (measured ? relative : 0),
     heard,
   };
 }

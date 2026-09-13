@@ -404,7 +404,7 @@ export function notesToScore(rawNotes, opts = {}) {
 function* transcribeSteps(audio, opts = {}) {
   const {
     listen = true,
-    maxPasses = 5,
+    maxPasses = 14,
     onPass = () => {},
     onProgress = null,
     ...rest
@@ -453,6 +453,8 @@ function* transcribeSteps(audio, opts = {}) {
   result.analysis.corrections = refined.edits;
   result.analysis.difference = refined.diff;
   result.analysis.confidence.match = refined.similarity;
+  result.analysis.matchFloor = refined.floor;
+  result.analysis.reachedFloor = refined.reachedFloor;
   return result;
 }
 

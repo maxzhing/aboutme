@@ -52,7 +52,19 @@ const covering = (notes, midi, from, to) =>
  * once cannot tell which of its changes helped.
  */
 function applyCorrections(notes, diff, opts) {
-  const { limit, harmonyAt = null, verify = () => true, exclude = null } = opts;
+  const {
+    limit, harmonyAt = null, exclude = null,
+    /* How clearly the recording has to show a pitch before one is written in,
+     * and how clearly it has to *not* show one before it is taken out.  They
+     * are different numbers on purpose: adding a note the recording faintly
+     * supports is a small mistake and the match will reject it next pass,
+     * while removing a note that is really there loses information the reading
+     * had.  One threshold for both is what makes the loop either deaf or
+     * destructive — deaf, in practice, because the same bar that admits a
+     * missed inner voice also protects every wrong note in the score. */
+    measure = () => 1, addBar = 0.12, dropBar = 0.1,
+  } = opts;
+  const verify = (midi, time) => measure(midi, time) >= addBar;
   const out = notes.map((n) => ({ ...n }));
   const edits = [];
 
@@ -101,6 +113,11 @@ function applyCorrections(notes, diff, opts) {
     const to = miss.to;
     const midi = miss.midi;
     const strength = miss.strength;
+    /* A pitch the recording shows for a single frame is a flicker — the edge of
+     * another note's attack, or the analysis wobbling — and writing it down is
+     * how a reading acquires notes nobody played.  Something written on the
+     * page has to have lasted. */
+    if ((miss.frames || 0) < 2) continue;
     edits.push({
       kind: 'add', weight: strength * miss.frames,
       apply: () => out.push({
@@ -130,7 +147,8 @@ function applyCorrections(notes, diff, opts) {
       && y.from <= note.end && y.to >= note.start);
     const covered = spans.reduce((s, y) => s + (Math.min(y.to, note.end) - Math.max(y.from, note.start)), 0);
     const life = Math.max(0.01, note.end - note.start);
-    if (verify(x.midi, (x.from + x.to) / 2)) continue;   // the recording has it after all
+    /* Taken out only where the recording plainly has nothing there. */
+    if (measure(x.midi, (x.from + x.to) / 2) >= dropBar) continue;
     if (covered / life < 0.6) {
       const cut = Math.max(note.start + 0.05, x.from);
       edits.push({
@@ -175,8 +193,14 @@ function applyCorrections(notes, diff, opts) {
  */
 function* refineSteps(ctx, opts = {}) {
   const {
-    maxPasses = 5,
+    maxPasses = 14,
     target = 0.985,
+    /* Below this the loop does not accept a plateau as a reason to stop: it
+     * widens what it will attempt and tries again.  It is not a promise — some
+     * recordings do not contain enough for any reading to reach it — but it is
+     * the difference between stopping at the first flat pass and actually
+     * working at the problem. */
+    floor = 0.7,
     sampleRate = ctx.sampleRate || 44100,
     onProgress = ctx.onProgress || (() => {}),
     harmonyAt = null,
@@ -204,6 +228,17 @@ function* refineSteps(ctx, opts = {}) {
   let narrow = false;
   const rejected = new Set();
   let lastEdits = [];
+  /* How hard to try.  It goes up only when the match has stalled below the
+   * floor: the same correction pass repeated gains nothing, so what changes is
+   * how much is attempted at once and how much evidence a note needs before it
+   * is believed.  Every round is still kept only if it improves the measured
+   * match, so trying harder can never leave a worse answer than trying less. */
+  let reach = 0;
+  const escalate = () => {
+    if (reach >= 2) return false;
+    reach++;
+    return true;
+  };
 
   for (let pass = 1; pass <= maxPasses; pass++) {
     onProgress('rendering', { pass });
@@ -227,16 +262,34 @@ function* refineSteps(ctx, opts = {}) {
     };
     history.push(entry);
 
+    /* Round and round: the same two readings alternating means the corrections
+     * on offer have been tried and the loop is burning time re-proving it. */
+    const seenBefore = history.slice(0, -1)
+      .filter((h) => Math.abs(h.similarity - diff.similarity) < 1e-9).length;
+    if (seenBefore >= 2) { entry.stopped = 'going round in circles'; break; }
+
     if (!best || diff.similarity > best.similarity + 1e-9) {
       best = { similarity: diff.similarity, notes: notes.map((n) => ({ ...n })), built, diff };
       retries = 0;
-    } else if (retries < 1) {
+    } else if (retries < (best && best.similarity < floor ? 3 : 1)) {
       /* That round of corrections made things worse.  One of them was probably
        * wrong and took the others down with it, so go back to the best version
        * and try again with only the best-evidenced few. */
       entry.reverted = true;
       retries++;
       narrow = true;
+      for (const e of lastEdits) rejected.add(e.kind + ' ' + e.what);
+      notes = best.notes.map((n) => ({ ...n }));
+      built = best.built;
+      diff = best.diff;
+    } else if (best.similarity < floor && escalate()) {
+      /* Out of retries, but still well short of a reading worth handing over.
+       * Go back to the best version and try a wider net rather than stop —
+       * remembering what has already been tried and found wanting, or the
+       * wider net simply catches the same failures again. */
+      entry.reverted = true;
+      entry.escalated = reach;
+      retries = 0;
       for (const e of lastEdits) rejected.add(e.kind + ' ' + e.what);
       notes = best.notes.map((n) => ({ ...n }));
       built = best.built;
@@ -250,24 +303,38 @@ function* refineSteps(ctx, opts = {}) {
       if (diff.similarity >= target) { entry.stopped = 'close enough'; break; }
       if (history.length > 1) {
         const gain = diff.similarity - history[history.length - 2].similarity;
-        if (gain >= 0 && gain < MIN_GAIN && pass > 1) { entry.stopped = 'no further gain'; break; }
+        if (gain >= 0 && gain < MIN_GAIN && pass > 1) {
+          /* A pass that gained nothing used to end the whole attempt, whatever
+           * the match had reached.  That is right once the reading is good
+           * enough to hand over, and quite wrong at forty per cent: it stops
+           * on the first plateau and calls it finished.  Below the floor a
+           * plateau means try differently, not stop. */
+          if (diff.similarity >= floor || !escalate()) {
+            entry.stopped = diff.similarity >= floor ? 'no further gain' : 'nothing further to try';
+            break;
+          }
+          entry.escalated = reach;
+        }
       }
     }
     if (pass === maxPasses) { entry.stopped = 'passes exhausted'; break; }
 
-    onProgress('correcting', { pass, missing: diff.missing.length, extra: diff.extra.length });
-    const share = narrow ? 0.08 : 0.3;
-    narrow = false;
-    const limit = Math.max(1, Math.min(40, Math.ceil(notes.length * share)));
-    const verified = new Map();
-    const verify = (midi, time) => {
+    onProgress('correcting', {
+      pass, missing: diff.missing.length, extra: diff.extra.length,
+      similarity: diff.similarity, reach,
+    });
+    let verified = new Map();
+    const measure = (midi, time) => {
       const key = midi + ':' + Math.round(time * 40);
       if (verified.has(key)) return verified.get(key);
       const at = time - 0.04;
-      let ok = false;
+      let strength = 0;
       const plain = verifyPitchAt(original.audio, sampleRate, at, midi);
-      if (plain.present && plain.strength >= 0.12) ok = true;
-      else {
+      if (plain.present) strength = plain.strength;
+      {
+        /* Ask again with everything the score already says taken away.  A note
+         * under its own octave cannot be heard until the octave is removed,
+         * and those are exactly the notes a first reading loses. */
         /* Ask again with everything the score already says taken away.  A note
          * under its own octave cannot be heard until the octave is removed,
          * and those are exactly the notes a first reading loses. */
@@ -276,14 +343,38 @@ function* refineSteps(ctx, opts = {}) {
           .map((e) => midiToHz(e.midi));
         if (sounding.length) {
           const deep = verifyPitchAt(original.audio, sampleRate, at, midi, { without: sounding });
-          ok = deep.present && deep.strength >= 0.18;
+          if (deep.present) strength = Math.max(strength, deep.strength * 0.9);
         }
       }
-      verified.set(key, ok);
-      return ok;
+      verified.set(key, strength);
+      return strength;
     };
     yield { stage: 'correcting', pass };
-    const step = applyCorrections(notes, diff, { limit, harmonyAt, verify, exclude: rejected });
+    const attempt = () => {
+      const share = narrow ? 0.08 : [0.3, 0.5, 0.75][reach];
+      const limit = Math.max(1, Math.min(40, Math.ceil(notes.length * share)));
+      /* Trying harder means accepting slightly thinner evidence for a note.
+       * It is bounded, and a round built on it is thrown away unless the match
+       * actually improves. */
+      return applyCorrections(notes, diff, {
+        limit, harmonyAt, measure, exclude: rejected,
+        addBar: [0.12, 0.09, 0.07][reach], dropBar: 0.1,
+      });
+    };
+    yield { stage: 'correcting', pass };
+    let step = attempt();
+    /* Nothing to correct is a fine reason to stop with a good reading and a
+     * poor one with a bad one.  While the match is below the floor, having run
+     * out of corrections means the net was too narrow, not that the score is
+     * right — so widen it and look again before giving up. */
+    while (!step.edits.length && diff.similarity < floor && escalate()) {
+      entry.escalated = reach;
+      verified = new Map();
+      narrow = false;
+      yield { stage: 'correcting', pass, reach };
+      step = attempt();
+    }
+    narrow = false;
     if (!step.edits.length) { entry.stopped = 'nothing left to correct'; break; }
     yield { stage: 'correcting', pass };
     lastEdits = step.edits.map((e) => ({ pass, kind: e.kind, what: e.describe }));
@@ -301,6 +392,8 @@ function* refineSteps(ctx, opts = {}) {
     diff: best.diff,
     history,
     edits: allEdits,
+    floor,
+    reachedFloor: best.similarity >= floor,
   };
 }
 

@@ -608,6 +608,14 @@ export class TranscribePanel {
     ? `Match rose from ${pct(a.passes[0].similarity)}% to ${pct(a.similarity)}%.`
     : 'The corrections it tried after that did not improve the match, so it kept this reading.'}
           </div>` : ''}
+          ${a.listened && a.reachedFloor === false ? `<div class="tr-shaky">
+            It kept working until the corrections ran out and reached
+            ${pct(a.similarity)}%, short of the ${pct(a.matchFloor)}% it aims for.
+            The recording has more in it than this reading accounts for — dense
+            or many-voiced music is the usual reason. What is on the page is the
+            best of ${a.passes.length} attempt${a.passes.length === 1 ? '' : 's'};
+            everything it could not account for is listed under Show the working.
+          </div>` : ''}
           <div class="tr-meters">
             ${a.listened ? meter('Match', a.similarity, 'how much of the recording the score accounts for') : ''}
             ${meter('Pitch', c.pitch, this.source === SOURCE.MIDI ? 'exact, from MIDI' : '')}
