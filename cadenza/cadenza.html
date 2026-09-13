@@ -2523,7 +2523,10 @@ class Cadenza {
 
   onPlayPosition(time, at) {
     if (!at) return;
-    this.playhead = at;
+    /* Stopping reports the position it returned to as well as the state, and
+     * the two arrive in that order; drawing a cursor for it would leave the
+     * score looking as though it were still playing. */
+    this.playhead = this.player.state === 'stopped' ? null : at;
     this.paintPlayhead();
     const ts = Model.timeSigAt(this.score, at.measure);
     const beats = Math.max(1, Math.round(measureTicks(ts) / beatTicks(ts)));
