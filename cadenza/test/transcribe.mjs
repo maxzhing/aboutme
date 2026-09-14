@@ -392,11 +392,24 @@ reading('a slow performance is not read as a fast one', () => {
   return Math.abs(r.analysis.bpm - 66) < 4 ? true : 'read as ' + r.analysis.bpm;
 });
 
-reading('a fast performance is not read as a slow one', () => {
+reading('a fast performance keeps its speed, however it is written', () => {
+  /* Sixteen notes a second and a half apart are the same music whether they
+   * are written as crotchets at 168 or as quavers at 84 — and the second is
+   * how a player would rather read them.  What must not change is how fast
+   * the notes actually go, so that is what is checked: the written value, in
+   * seconds, against what was played. */
   const ev = [];
   for (let b = 0; b < 16; b++) ev.push([60 + (b % 8), b, 1]);
   const r = transcribeMidi(perf(ev, 168));
-  return Math.abs(r.analysis.bpm - 168) < 8 ? true : 'read as ' + r.analysis.bpm;
+  const v = readVoice(r.score).filter((e) => !e.rest);
+  if (!v.length) return 'nothing was written';
+  const secondsPerQuarter = 60 / r.analysis.bpm;
+  const beats = { whole: 4, half: 2, quarter: 1, eighth: 0.5, '16th': 0.25 }[v[0].duration];
+  if (!beats) return 'written as a ' + v[0].duration;
+  const gap = beats * secondsPerQuarter;
+  const played = 60 / 168;
+  return Math.abs(gap - played) < played * 0.06 ? true
+    : `notes every ${gap.toFixed(3)}s, played every ${played.toFixed(3)}s`;
 });
 
 reading('playing behind the beat is still read as straight quarters', () => {

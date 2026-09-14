@@ -119,6 +119,45 @@ function bestPhase(events, period) {
   return { phase: best.phase, score: best.raw };
 }
 
+
+/**
+ * How much of the playing a pulse accounts for, allowed its subdivisions.
+ *
+ * Judging a candidate pulse by how many attacks land exactly on it is what
+ * makes a run of quavers look like a piece of crotchets at twice the speed:
+ * every note lands on the quaver pulse, so the quaver wins, and a phrase at
+ * 120 is written at 240 with no quavers in it anywhere.  That is not a small
+ * error — it is why the reader appears to hate quavers, because there is no
+ * tempo at which it will write one.
+ *
+ * A beat is not "wherever the notes are".  It is the pulse whose subdivisions
+ * explain where the notes are, and a pulse that needs a division of two to
+ * explain a run of quavers has explained it just as completely as one that
+ * calls every quaver a beat.  Once the two are scored alike, the preference
+ * for a tempo a listener would actually tap decides between them — which is
+ * the right reason to choose.
+ */
+function explains(events, period, phase) {
+  if (!events.length) return { fit: 0, division: 1 };
+  let best = { fit: 0, division: 1 };
+  for (const d of [1, 2, 4, 3]) {
+    const step = period / d;
+    let hit = 0;
+    let total = 0;
+    for (const e of events) {
+      const pos = (e.time - phase) / step;
+      const off = Math.abs(pos - Math.round(pos));
+      hit += e.weight * Math.exp(-(off * off) / (2 * 0.17 * 0.17));
+      total += e.weight;
+    }
+    const fit = (total ? hit / total : 0) - (d > 1 ? 0.02 : 0);
+    /* A finer subdivision can always explain more, so it has to explain
+     * appreciably more before it counts as a better account of the pulse. */
+    if (fit > best.fit) best = { fit, division: d };
+  }
+  return best;
+}
+
 /**
  * Estimate the pulse.
  * Returns { period, bpm, phase, confidence }.
@@ -153,7 +192,21 @@ export function estimateBeat(events, duration, opts = {}) {
     const { phase, score } = bestPhase(events, period);
     const bias = Math.exp(-Math.pow(Math.log(period / PREFERRED) / 0.9, 2) / 2);
     const full = occupancy(events, period, phase);
-    const total = score * (0.55 + 0.45 * bias) * (0.65 + 0.35 * full);
+    const account = explains(events, period, phase);
+    /* A pulse that every note lands on, with nothing at all between the
+     * beats, is far more often the subdivision than the beat.  Real playing
+     * puts notes inside its beats; a reading in which it never does has
+     * usually taken the note rate for the pulse — and that is exactly what
+     * produces a page of crotchets at twice the true tempo with no quavers
+     * anywhere in it. */
+    /* Only where taking this pulse as the beat would give a tempo faster than
+     * anyone taps.  A piece genuinely in crotchets at 168 is a piece in
+     * crotchets at 168; the same notes at 240 are quavers at 120, because
+     * nobody writes music at 240 and nobody reads it that way. */
+    const everyBeat = account.division === 1 && full > 0.95 && events.length >= 5
+      && period < 0.435;
+    const total = account.fit * (0.55 + 0.45 * bias) * (0.65 + 0.35 * full)
+      * (everyBeat ? 0.9 : 1);
     if (!best || total > best.total) best = { period, phase, score, total };
   }
 
@@ -293,7 +346,7 @@ export const STYLES = [
   },
 ];
 
-export const styleById = (id) => STYLES.find((s) => s.id === id) || STYLES[1];
+export const styleById = (id) => STYLES.find((s) => s.id === id) || STYLES[0];
 
 /** The share of attacks a division lands on, within tolerance. */
 function gridFit(positions, d, tol) {

@@ -328,79 +328,152 @@ function killAt(nodes, stopTime) {
 const PRESETS = {};
 
 /* --- piano ------------------------------------------------------------- */
-PRESETS.piano = (eng, { freq, midi, v, time, dur, out }) => {
+/* A grand.
+ *
+ * Four things make a piano sound like a piano rather than like a filtered
+ * oscillator with a click on the front, and this has all four.
+ *
+ * Its strings come in threes, tuned very slightly apart and decaying at
+ * slightly different rates.  That is where the shimmer comes from, and also
+ * the double decay every pianist knows: the note drops quickly at first as the
+ * strings push energy into the bridge together, then far more slowly once they
+ * have drifted out of phase with each other.
+ *
+ * Its partials are not in tune with themselves.  Real strings are stiff, so
+ * the second partial sits above twice the fundamental and the error grows as
+ * you go up — which is why the bass of a piano sounds rich rather than muddy,
+ * and why a perfectly harmonic synthesiser sounds like an organ.
+ *
+ * Its case resonates.  A few fixed frequencies ring whatever note is played.
+ *
+ * And it is played by a hand.  Struck softly the hammer is felt and the tone
+ * is nearly all fundamental; struck hard the felt compresses, the hammer turns
+ * hard, and the note arrives with an edge on it.  Loud is a different sound,
+ * not the same sound turned up.
+ */
+PRESETS.piano = (eng, { freq, midi, v, time, dur, out, h }) => {
   const ctx = eng.ctx;
+  const dev = h || { attack: 1, bright: 1, level: 1, vibDepth: 1 };
   const wave = midi < 48 ? eng.waves.pianoBass : midi < 76 ? eng.waves.pianoMid : eng.waves.pianoTreble;
+  const hard = eng.waves[(midi < 48 ? 'pianoBass' : midi < 76 ? 'pianoMid' : 'pianoTreble') + 'Bright'];
 
   const amp = ctx.createGain();
   amp.gain.value = 0;
   const tone = ctx.createBiquadFilter();
   tone.type = 'lowpass';
-  /* Brightness follows both register and how hard the key was struck. */
-  const bright = 1400 + v * v * 7000 + Math.max(0, (midi - 40)) * 55;
+  /* Brightness follows the register and, far more, how hard the key was hit. */
+  const bright = (900 + v * v * 9000 + Math.max(0, midi - 40) * 60) * dev.bright;
   tone.frequency.setValueAtTime(Math.min(16000, bright), time);
-  tone.frequency.exponentialRampToValueAtTime(Math.max(420, bright * 0.20), time + 0.55);
+  tone.frequency.exponentialRampToValueAtTime(Math.max(380, bright * 0.18), time + 0.6);
   tone.Q.value = 0.5;
 
   const nodes = [];
-  /* Two strings per note, very slightly apart: this is what gives a piano its
-   * shimmer and its slow beating as the note decays. */
-  for (const cents of [-1.6, 1.9]) {
+  /* Three strings to a note through most of the compass, one in the deep bass
+   * as on the instrument itself.  Each is tuned and damped a shade
+   * differently; that difference is the shimmer and the double decay. */
+  const unisons = midi < 33 ? [0] : midi < 45 ? [-1.4, 1.7] : [-2.1, 0.4, 2.3];
+  const felt = Math.min(0.85, v * v * 1.05);
+  unisons.forEach((cents, i) => {
     const o = ctx.createOscillator();
     o.setPeriodicWave(wave);
     o.frequency.value = freq;
-    o.detune.value = cents;
+    o.detune.value = cents * (dev.vibDepth || 1);
     const g = ctx.createGain();
-    g.gain.value = 0.5;
+    g.gain.value = (1 - felt * 0.45) / unisons.length;
     o.connect(g).connect(tone);
     o.start(time);
     nodes.push(o);
-  }
-  /* A quiet octave partial thickens the bass without muddying it. */
-  if (midi < 60) {
-    const o2 = ctx.createOscillator();
-    o2.type = 'sine';
-    o2.frequency.value = freq * 2;
-    const g2 = ctx.createGain();
-    g2.gain.value = 0.10;
-    o2.connect(g2).connect(tone);
-    o2.start(time);
-    nodes.push(o2);
+
+    /* The hard-hammer layer, which only appears when the key is struck hard. */
+    if (hard && felt > 0.05 && i === 0) {
+      const ob = ctx.createOscillator();
+      ob.setPeriodicWave(hard);
+      ob.frequency.value = freq;
+      ob.detune.value = cents;
+      const gb = ctx.createGain();
+      gb.gain.setValueAtTime(felt * 0.5, time);
+      /* The edge is on the attack; it leaves before the tone does. */
+      gb.gain.exponentialRampToValueAtTime(Math.max(0.0002, felt * 0.05), time + 0.35);
+      ob.connect(gb).connect(tone);
+      ob.start(time);
+      nodes.push(ob);
+    }
+  });
+
+  /* Stiffness: the upper partials of a real string run sharp, and the lower
+   * the note the more they do.  Adding them by hand where it is audible is
+   * cheaper than stretching a whole wavetable and does the same work. */
+  if (midi < 64) {
+    const B = midi < 40 ? 0.0009 : 0.0004;
+    for (const n of [4, 6]) {
+      const o = ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.value = freq * n * Math.sqrt(1 + B * n * n);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.055 * v / n, time);
+      g.gain.exponentialRampToValueAtTime(0.0002, time + 1.6);
+      o.connect(g).connect(tone);
+      o.start(time);
+      nodes.push(o);
+    }
   }
 
-  /* Hammer thump: a short noise burst that sells the attack. */
+  /* The hammer itself: felt on wire, brief and pitched with the note. */
   const n = eng.noise(time, 0.09);
   const nf = ctx.createBiquadFilter();
   nf.type = 'bandpass';
-  nf.frequency.value = Math.min(7000, freq * 5 + 700);
-  nf.Q.value = 0.8;
+  nf.frequency.value = Math.min(7000, freq * 4 + 600);
+  nf.Q.value = 0.7;
   const ng = ctx.createGain();
-  ng.gain.setValueAtTime(0.13 * v * v, time);
-  ng.gain.exponentialRampToValueAtTime(0.0002, time + 0.055);
+  ng.gain.setValueAtTime(0.16 * v * v, time);
+  ng.gain.exponentialRampToValueAtTime(0.0002, time + 0.05);
   n.connect(nf).connect(ng).connect(amp);
   nodes.push(n);
 
-  tone.connect(amp);
+  /* The case and the soundboard, ringing at their own frequencies whatever is
+   * played — the part of the sound that belongs to the instrument rather than
+   * to the note. */
+  let chain = tone;
+  for (const b of [
+    { freq: 120, q: 1.2, gain: 3 },
+    { freq: 320, q: 1.1, gain: 2 },
+    { freq: 1800, q: 0.6, gain: 2.5 },
+  ]) {
+    const f = ctx.createBiquadFilter();
+    f.type = 'peaking';
+    f.frequency.value = b.freq;
+    f.Q.value = b.q;
+    f.gain.value = b.gain;
+    chain.connect(f);
+    chain = f;
+  }
+  chain.connect(amp);
   amp.connect(out);
 
-  /* Long notes keep ringing; the decay rate tracks the register, as on a
-   * real instrument where bass strings sustain far longer than treble. */
-  const bodyDecay = midi < 48 ? 14 : midi < 72 ? 8 : 3.4;
-  const peak = 0.34 * (0.28 + v * 0.85);
+  /* Bass strings ring for a very long time, the top of the keyboard hardly at
+   * all, and every note falls quickly at first and slowly afterwards. */
+  const bodyDecay = midi < 40 ? 20 : midi < 52 ? 13 : midi < 72 ? 7 : 2.8;
+  const peak = 0.34 * (0.24 + v * 0.9) * dev.level;
   amp.gain.setValueAtTime(0.0001, time);
-  amp.gain.linearRampToValueAtTime(peak, time + 0.006);
-  amp.gain.exponentialRampToValueAtTime(peak * 0.48, time + 0.22);
+  amp.gain.linearRampToValueAtTime(peak, time + 0.005 * dev.attack);
+  amp.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * 0.55), time + 0.18);
+  amp.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * 0.2), time + 1.1);
   amp.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * 0.02), time + bodyDecay);
+
+  /* The damper comes down when the key is released: quickly, but the heavy
+   * bass dampers take longer to stop a thick string than the treble ones. */
   const off = time + dur;
-  const rel = 0.28;
+  const rel = midi < 48 ? 0.34 : midi < 72 ? 0.22 : 0.13;
   amp.gain.cancelScheduledValues(off);
   amp.gain.setValueAtTime(Math.max(0.0002, peak * Math.pow(0.5, dur / (bodyDecay * 0.35))), off);
   amp.gain.exponentialRampToValueAtTime(0.00012, off + rel);
   killAt(nodes, off + rel + 0.05);
-  return { stop: (t) => { amp.gain.cancelScheduledValues(t); amp.gain.setTargetAtTime(0, t, 0.03); killAt(nodes, t + 0.2); }, tail: rel };
+  return {
+    stop: (t) => { amp.gain.cancelScheduledValues(t); amp.gain.setTargetAtTime(0, t, 0.03); killAt(nodes, t + 0.2); },
+    tail: rel,
+  };
 };
 
-/* --- generic sustaining wind/string voice ------------------------------- */
 function sustained(spec) {
   return (eng, { freq, midi, v, time, dur, out, articulation, h, legato }) => {
     const ctx = eng.ctx;
@@ -435,6 +508,15 @@ function sustained(spec) {
       o.detune.value = voices > 1 ? (i - (voices - 1) / 2) * (spec.spread || 7) : 0;
       const g = ctx.createGain();
       g.gain.value = (1 - edge) / voices;
+      /* A bowed string does not arrive in tune.  The bow grips, the string
+       * takes a moment to settle into its period, and the pitch slides the
+       * last few cents into place.  It lasts about a twentieth of a second and
+       * it is a great deal of what makes a string sound bowed rather than
+       * switched on. */
+      if (spec.scoop && !legato) {
+        o.detune.setValueAtTime(o.detune.value - spec.scoop * (0.6 + v * 0.8), time);
+        o.detune.linearRampToValueAtTime(o.detune.value, time + 0.05 + spec.a * 0.5);
+      }
       o.connect(g).connect(filt);
       o.start(time);
       nodes.push(o);
@@ -554,6 +636,7 @@ function sustained(spec) {
  * size puts them, which is why a viola is not a low violin.
  */
 PRESETS.violin = sustained({
+  scoop: 16,
   wave: 'stringRich', gain: 0.19, a: 0.075, d: 0.16, s: 0.86, r: 0.22, q: 0.9,
   unison: 2, spread: 5, cutoff: (f, v) => Math.min(11000, f * 9 + 1400 + v * 3200),
   vibrato: { rate: 5.6, depth: 0.0038, delay: 0.22 },
@@ -567,6 +650,7 @@ PRESETS.violin = sustained({
   noise: { type: 'bandpass', freq: 3200, q: 0.7, level: 0.02 },
 });
 PRESETS.viola = sustained({
+  scoop: 15,
   wave: 'stringRich', gain: 0.20, a: 0.085, d: 0.17, s: 0.85, r: 0.24, q: 0.9,
   unison: 2, spread: 5, cutoff: (f, v) => Math.min(9000, f * 8 + 1100 + v * 2600),
   vibrato: { rate: 5.2, depth: 0.0036, delay: 0.24 },
@@ -579,6 +663,7 @@ PRESETS.viola = sustained({
   noise: { type: 'bandpass', freq: 2500, q: 0.7, level: 0.019 },
 });
 PRESETS.cello = sustained({
+  scoop: 14,
   wave: 'stringRich', gain: 0.22, a: 0.095, d: 0.18, s: 0.86, r: 0.27, q: 0.9,
   unison: 2, spread: 4, cutoff: (f, v) => Math.min(7200, f * 8 + 800 + v * 2000),
   vibrato: { rate: 4.9, depth: 0.0034, delay: 0.26 },
@@ -591,6 +676,7 @@ PRESETS.cello = sustained({
   noise: { type: 'bandpass', freq: 1800, q: 0.7, level: 0.018 },
 });
 PRESETS.bass = sustained({
+  scoop: 12,
   wave: 'stringRich', gain: 0.24, a: 0.11, d: 0.2, s: 0.84, r: 0.3, q: 0.9,
   unison: 2, spread: 4, cutoff: (f, v) => Math.min(4200, f * 7 + 500 + v * 1200),
   vibrato: { rate: 4.4, depth: 0.003, delay: 0.3 },
@@ -604,6 +690,7 @@ PRESETS.bass = sustained({
 /* A section, not a soloist: more players, further apart in tuning and in time,
  * and no single vibrato they all share. */
 PRESETS.strings = sustained({
+  scoop: 9,
   wave: 'stringRich', gain: 0.17, a: 0.16, d: 0.22, s: 0.9, r: 0.42, q: 0.9,
   unison: 4, spread: 13, cutoff: (f, v) => Math.min(9000, f * 8 + 1100 + v * 2400),
   vibrato: { rate: 5.0, depth: 0.0026, delay: 0.3 },

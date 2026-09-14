@@ -81,7 +81,7 @@ export class TranscribePanel {
       sensitivity: 1,
       grid: 'auto',
       quantise: 'auto',
-      style: 'balanced',
+      style: 'simple',
       bpm: null,
       timeSig: null,
       keyFifths: null,
