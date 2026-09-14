@@ -47,6 +47,7 @@ export class ComposePanel {
       bars: 16,
       ensemble: 'piano',
       melodyInstrument: 'violin',
+      complexity: 'moderate',
       bpm: null,
     };
     this.piece = null;
@@ -116,6 +117,13 @@ export class ComposePanel {
     return part ? `<option value="${id}"${id === s.melodyInstrument ? ' selected' : ''}>${esc(part.name)}</option>` : '';
   }).join('')}
             </select></label>` : ''}
+          <label class="cp-field"><span>How involved</span>
+            <select data-set="complexity">
+              <option value="simple"${s.complexity === 'simple' ? ' selected' : ''}>Simple — plain rhythms, easy to follow</option>
+              <option value="moderate"${s.complexity === 'moderate' ? ' selected' : ''}>Moderate — the default</option>
+              <option value="complex"${s.complexity === 'complex' ? ' selected' : ''}>Involved — dotted figures, notes off the beat</option>
+            </select>
+            <small>How much the tune does with its idea, not how hard it is to play.</small></label>
           <label class="cp-field"><span>Tempo</span>
             <input type="number" min="30" max="240" placeholder="${character.bpm[0]}–${character.bpm[1]}"
               value="${s.bpm || ''}" data-set="bpm">
@@ -155,6 +163,7 @@ export class ComposePanel {
         bars: s.bars,
         ensemble: s.ensemble,
         melodyInstrument: s.melodyInstrument,
+        complexity: s.complexity,
         bpm: s.bpm,
         seed,
         title: 'Untitled piece',
@@ -180,7 +189,7 @@ export class ComposePanel {
         <div class="cp-summary">
           <b>${esc(d.key)}</b> · <b>${esc(d.character)}</b> ·
           <b>${d.bars}</b> bars · <b>${d.tempo}</b> bpm · <b>${esc(d.timeSig)}</b> ·
-          ${esc(d.texture)}
+          ${esc(d.texture)} · ${esc(d.complexity)}
         </div>
 
         <div class="cp-ab">
@@ -197,8 +206,9 @@ export class ComposePanel {
           </li>`).join('')}
         </ol>
         <p class="cp-note">Four-bar phrases: each asks or answers, and only the last one
-          closes fully. The tune is written over these chords — chord notes on the beat,
-          steps between them, and one high point.</p>
+          closes fully. The tune states an idea in the first phrase and refers back to it —
+          repeated, sequenced, turned upside down — so the piece has something to remember.
+          It saves its highest note for one phrase near the end.</p>
 
         <div class="cp-go">
           <button class="btn primary" data-do="use">Put it on the page</button>

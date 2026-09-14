@@ -8744,7 +8744,7 @@ class SynthEngine {
     this.maxVoices = 64;
     this.noiseBuffer = null;
     this.masterVolume = 0.9;
-    this.reverbAmount = 0.22;
+    this.reverbAmount = 0.28;
   }
 
   /** Must be called from a user gesture the first time. */
@@ -8780,7 +8780,7 @@ class SynthEngine {
     this.wet = ctx.createGain();
     this.wet.gain.value = this.reverbAmount;
     this.reverb = ctx.createConvolver();
-    this.reverb.buffer = this.makeImpulse(2.2, 2.6);
+    this.reverb.buffer = this.makeImpulse(2.8, 2.2);
 
     this.master.connect(this.dry);
     this.dry.connect(this.comp);
@@ -8789,7 +8789,20 @@ class SynthEngine {
     this.wet.connect(this.comp);
     this.comp.connect(ctx.destination);
 
-    for (const [k, amps] of Object.entries(SPECTRA)) this.waves[k] = waveFromHarmonics(ctx, amps);
+    for (const [k, amps] of Object.entries(SPECTRA)) {
+      this.waves[k] = waveFromHarmonics(ctx, amps);
+      /* A brighter twin of every tone.
+       *
+       * Playing louder does not simply turn a note up: pressing the bow or
+       * blowing harder puts proportionally more energy into the high partials,
+       * so the tone changes colour as well as level.  Reaching for that with a
+       * filter alone does not work when the filter already sits above
+       * everything the wave contains — the harmonics have to be there to let
+       * through.  So each instrument has a second spectrum with the upper
+       * partials lifted, mixed in as the note gets louder. */
+      this.waves[k + 'Bright'] = waveFromHarmonics(ctx,
+        amps.map((a, i) => a * Math.pow(i + 1, 0.55)));
+    }
     this.waves.pianoAttack = waveFromHarmonics(ctx, decayHarmonics(24, 0.75));
     this.noiseBuffer = this.makeNoise(2.0);
     this.ready = true;
@@ -8886,9 +8899,15 @@ class SynthEngine {
     const out = this.channel(channel).input;
     const fn = PRESETS[preset] || PRESETS.piano;
     const v = Math.max(0.02, Math.min(1, velocity / 127));
+    /* Seeded from the note itself, so a passage plays the same way twice while
+     * still differing from note to note within it. */
+    const h = human(((midi * 2654435761) ^ (Math.round(time * 1000) * 40503)
+      ^ (Math.round(velocity) * 2246822519)) >>> 0);
+    const at = Math.max(this.ctx.currentTime, time + (opts.ensemble === false ? 0 : h.onset));
     const handle = fn(this, {
-      freq: midiToFreq(midi + detune / 100), midi, v, time,
-      dur: Math.max(0.03, duration), out, articulation,
+      freq: midiToFreq(midi + (detune + h.tune) / 100), midi, v, time: at,
+      dur: Math.max(0.03, duration), out, articulation, h,
+      legato: !!opts.legato,
     });
     if (handle) {
       this.active.add(handle);
@@ -8920,6 +8939,42 @@ class SynthEngine {
 }
 
 /* ------------------------------------------------------------- envelopes */
+
+
+/**
+ * The small differences between one note and the next.
+ *
+ * Two notes played by a person are never the same note twice: the bow lands a
+ * little differently, the vibrato is a shade faster, the finger is a cent or
+ * two off.  A synthesiser that renders every note from identical numbers
+ * sounds like a machine for exactly that reason, and no amount of better
+ * waveform design fixes it — the fault is not the tone, it is the sameness.
+ *
+ * So each note draws its own small deviations.  They are deliberately tiny:
+ * enough that a repeated note is not a copy, not enough to sound out of tune
+ * or out of time.
+ */
+function human(seed) {
+  let s = (seed >>> 0) || 1;
+  const next = () => {
+    s ^= s << 13; s >>>= 0;
+    s ^= s >> 17;
+    s ^= s << 5; s >>>= 0;
+    return s / 4294967296;
+  };
+  const spread = (amount) => 1 + (next() * 2 - 1) * amount;
+  return {
+    attack: spread(0.22),      // how quickly it speaks
+    bright: spread(0.1),       // how open the tone is
+    tune: (next() * 2 - 1) * 4,   // cents
+    vibRate: spread(0.12),
+    vibDepth: spread(0.28),
+    vibDelay: spread(0.35),
+    level: spread(0.06),
+    onset: (next() * 2 - 1) * 0.006,   // seconds: an ensemble is not a sequencer
+    next,
+  };
+}
 
 function adsr(param, ctx, t, { a, d, s, r, peak = 1, dur }) {
   param.cancelScheduledValues(t);
@@ -9018,46 +9073,84 @@ PRESETS.piano = (eng, { freq, midi, v, time, dur, out }) => {
 
 /* --- generic sustaining wind/string voice ------------------------------- */
 function sustained(spec) {
-  return (eng, { freq, midi, v, time, dur, out, articulation }) => {
+  return (eng, { freq, midi, v, time, dur, out, articulation, h, legato }) => {
     const ctx = eng.ctx;
+    const dev = h || { attack: 1, bright: 1, vibRate: 1, vibDepth: 1, vibDelay: 1, level: 1 };
     const amp = ctx.createGain();
     amp.gain.value = 0;
     const filt = ctx.createBiquadFilter();
     filt.type = 'lowpass';
-    const cutoff = spec.cutoff(freq, v, midi);
+    /* Loud playing is not just louder, it is brighter: a bow pressed harder
+     * puts more energy into the upper partials, and a tone that only changes
+     * in volume is the clearest sign of a synthesiser. */
+    const cutoff = spec.cutoff(freq, v, midi) * dev.bright * (0.5 + v * 0.95);
     filt.frequency.setValueAtTime(cutoff * (spec.attackOpen ? 0.35 : 1), time);
     if (spec.attackOpen) filt.frequency.linearRampToValueAtTime(cutoff, time + spec.a * 1.6);
+    /* The tone opens through the first moments of the note rather than
+     * arriving fully formed. */
+    filt.frequency.linearRampToValueAtTime(cutoff * 1.06, time + Math.min(0.35, dur));
     filt.Q.value = spec.q || 0.7;
 
     const nodes = [];
     const wave = eng.waves[spec.wave];
+    const bright = eng.waves[spec.wave + 'Bright'];
     const voices = spec.unison || 1;
+    /* How much of the brighter spectrum this note wants.  Squared, because the
+     * change from quiet to loud is not a straight line: the difference between
+     * mezzo-forte and forte is far more than between pianissimo and piano. */
+    const edge = Math.min(0.8, v * v * (spec.edge === undefined ? 0.85 : spec.edge));
     for (let i = 0; i < voices; i++) {
       const o = ctx.createOscillator();
       if (wave) o.setPeriodicWave(wave); else o.type = spec.osc || 'sawtooth';
       o.frequency.value = freq;
       o.detune.value = voices > 1 ? (i - (voices - 1) / 2) * (spec.spread || 7) : 0;
       const g = ctx.createGain();
-      g.gain.value = 1 / voices;
+      g.gain.value = (1 - edge) / voices;
       o.connect(g).connect(filt);
       o.start(time);
       nodes.push(o);
+
+      if (bright && edge > 0.02) {
+        const ob = ctx.createOscillator();
+        ob.setPeriodicWave(bright);
+        ob.frequency.value = freq;
+        ob.detune.value = o.detune.value;
+        const gb = ctx.createGain();
+        gb.gain.value = edge / voices;
+        ob.connect(gb).connect(filt);
+        ob.start(time);
+        nodes.push(ob);
+        /* Vibrato has to reach the bright layer too, or the note splits in two. */
+        o.brightTwin = ob;
+      }
     }
 
-    /* Vibrato, delayed so the note speaks cleanly first. */
+    /* Vibrato: delayed so the note speaks cleanly first, then grown in rather
+     * than switched on, and never at quite the same speed twice.  A vibrato
+     * that is identical on every note is heard as an effect rather than as
+     * playing. */
     if (spec.vibrato) {
       const lfo = ctx.createOscillator();
-      lfo.frequency.value = spec.vibrato.rate;
+      const rate = spec.vibrato.rate * dev.vibRate;
+      lfo.frequency.setValueAtTime(rate * 0.88, time);
+      lfo.frequency.linearRampToValueAtTime(rate, time + 0.6);
+      const delay = (spec.vibrato.delay || 0.25) * dev.vibDelay;
       const depth = ctx.createGain();
+      /* Deeper when the note is long and loud, as a player would. */
+      const reach = freq * spec.vibrato.depth * dev.vibDepth * (0.7 + v * 0.6);
       depth.gain.setValueAtTime(0, time);
-      depth.gain.linearRampToValueAtTime(freq * spec.vibrato.depth, time + (spec.vibrato.delay || 0.25));
+      depth.gain.linearRampToValueAtTime(reach * 0.35, time + delay);
+      depth.gain.linearRampToValueAtTime(reach, time + delay + Math.min(0.5, dur * 0.5));
       lfo.connect(depth);
       for (const o of nodes) if (o.frequency) depth.connect(o.frequency);
       lfo.start(time);
       nodes.push(lfo);
     }
 
-    /* Breath / bow noise. */
+    /* Breath and bow noise.  Loudest as the note starts — the bite of the bow
+     * catching the string, the breath before a flute speaks — then settling
+     * back into the tone.  Held flat for the whole note it sounds like hiss;
+     * shaped like this it sounds like an instrument being played. */
     if (spec.noise) {
       const n = eng.noise(time, dur + 0.4);
       const nf = ctx.createBiquadFilter();
@@ -9065,32 +9158,45 @@ function sustained(spec) {
       nf.frequency.value = spec.noise.freq;
       nf.Q.value = spec.noise.q || 0.8;
       const ng = ctx.createGain();
+      const bite = spec.noise.level * (0.4 + v * 1.4) * (legato ? 0.45 : 1);
       ng.gain.setValueAtTime(0, time);
-      ng.gain.linearRampToValueAtTime(spec.noise.level * v, time + spec.a);
+      ng.gain.linearRampToValueAtTime(bite * 2.4, time + spec.a * 0.6 * dev.attack);
+      ng.gain.exponentialRampToValueAtTime(Math.max(0.00005, bite * 0.55), time + spec.a * 3 + 0.08);
       n.connect(nf).connect(ng).connect(amp);
       nodes.push(n);
     }
 
-    /* Formant body resonance gives strings and voices their character. */
+    /* The body of the instrument.
+     *
+     * A violin is not a filtered sawtooth: what makes it sound like wood and
+     * air is a set of fixed resonances that stay where they are whatever note
+     * is played — the air resonance low down, the main wood resonance above
+     * it, and the broad lift around two to three kilohertz that players call
+     * the bridge hill and listeners hear as "a violin".  One peak cannot do
+     * that; these instruments get as many as they need. */
     let chain = filt;
-    if (spec.body) {
-      const b = ctx.createBiquadFilter();
-      b.type = 'peaking';
-      b.frequency.value = spec.body.freq;
-      b.Q.value = spec.body.q;
-      b.gain.value = spec.body.gain;
-      chain.connect(b);
-      chain = b;
+    const bodies = spec.bodies || (spec.body ? [spec.body] : []);
+    for (const b of bodies) {
+      const f = ctx.createBiquadFilter();
+      f.type = b.type || 'peaking';
+      f.frequency.value = b.freq;
+      f.Q.value = b.q;
+      f.gain.value = b.gain;
+      chain.connect(f);
+      chain = f;
     }
     chain.connect(amp);
     amp.connect(out);
 
     const staccato = articulation === 'staccato' || articulation === 'staccatissimo';
     const accent = articulation === 'accent' || articulation === 'marcato';
-    let a = spec.a;
+    let a = spec.a * dev.attack;
     if (staccato) a = Math.min(a, 0.018);
     if (accent) a = Math.min(a, a * 0.5);
-    const peak = spec.gain * (0.22 + v * 0.9) * (accent ? 1.18 : 1);
+    /* A note that continues from the one before does not start again from
+     * nothing: the bow is already moving, the breath already going. */
+    if (legato) a = Math.min(a, Math.max(0.012, a * 0.45));
+    const peak = spec.gain * (0.22 + v * 0.9) * (accent ? 1.18 : 1) * dev.level;
     const sus = spec.s === undefined ? 0.82 : spec.s;
     const rel = staccato ? 0.09 : spec.r;
 
@@ -9108,38 +9214,76 @@ function sustained(spec) {
   };
 }
 
+/* The violin family.
+ *
+ * Three resonances rather than one, because that is what a box of wood and air
+ * does: the air inside it rings at one frequency, the plates at another, and
+ * the bridge lifts a broad band a couple of octaves above — the region players
+ * call the bridge hill and everyone else simply hears as the sound of a
+ * violin.  There is also a hollow just below it, which is as much a part of
+ * the character as the peaks are.  Each instrument's resonances sit where its
+ * size puts them, which is why a viola is not a low violin.
+ */
 PRESETS.violin = sustained({
   wave: 'stringRich', gain: 0.19, a: 0.075, d: 0.16, s: 0.86, r: 0.22, q: 0.9,
   unison: 2, spread: 5, cutoff: (f, v) => Math.min(11000, f * 9 + 1400 + v * 3200),
   vibrato: { rate: 5.6, depth: 0.0038, delay: 0.22 },
-  body: { freq: 520, q: 1.1, gain: 5.5 },
-  noise: { type: 'highpass', freq: 2600, level: 0.016 },
+  bodies: [
+    { freq: 280, q: 1.6, gain: 4.5 },        // the air inside the body
+    { freq: 500, q: 1.3, gain: 5 },          // the wood itself
+    { freq: 1100, q: 1.1, gain: -3.5 },      // the hollow above it
+    { freq: 2600, q: 0.7, gain: 6 },         // the bridge hill: the violin sound
+    { freq: 3900, q: 1.4, gain: 2.5 },
+  ],
+  noise: { type: 'bandpass', freq: 3200, q: 0.7, level: 0.02 },
 });
 PRESETS.viola = sustained({
   wave: 'stringRich', gain: 0.20, a: 0.085, d: 0.17, s: 0.85, r: 0.24, q: 0.9,
   unison: 2, spread: 5, cutoff: (f, v) => Math.min(9000, f * 8 + 1100 + v * 2600),
   vibrato: { rate: 5.2, depth: 0.0036, delay: 0.24 },
-  body: { freq: 380, q: 1.1, gain: 5.5 },
-  noise: { type: 'highpass', freq: 2200, level: 0.016 },
+  bodies: [
+    { freq: 220, q: 1.6, gain: 4.5 },
+    { freq: 380, q: 1.3, gain: 5.5 },
+    { freq: 900, q: 1.1, gain: -3 },
+    { freq: 2000, q: 0.8, gain: 5 },
+  ],
+  noise: { type: 'bandpass', freq: 2500, q: 0.7, level: 0.019 },
 });
 PRESETS.cello = sustained({
   wave: 'stringRich', gain: 0.22, a: 0.095, d: 0.18, s: 0.86, r: 0.27, q: 0.9,
   unison: 2, spread: 4, cutoff: (f, v) => Math.min(7200, f * 8 + 800 + v * 2000),
   vibrato: { rate: 4.9, depth: 0.0034, delay: 0.26 },
-  body: { freq: 250, q: 1.2, gain: 6 },
-  noise: { type: 'highpass', freq: 1600, level: 0.015 },
+  bodies: [
+    { freq: 105, q: 1.6, gain: 4.5 },
+    { freq: 200, q: 1.3, gain: 5.5 },
+    { freq: 600, q: 1.1, gain: -2.5 },
+    { freq: 1400, q: 0.8, gain: 4.5 },
+  ],
+  noise: { type: 'bandpass', freq: 1800, q: 0.7, level: 0.018 },
 });
 PRESETS.bass = sustained({
   wave: 'stringRich', gain: 0.24, a: 0.11, d: 0.2, s: 0.84, r: 0.3, q: 0.9,
   unison: 2, spread: 4, cutoff: (f, v) => Math.min(4200, f * 7 + 500 + v * 1200),
   vibrato: { rate: 4.4, depth: 0.003, delay: 0.3 },
-  body: { freq: 140, q: 1.2, gain: 6 },
+  bodies: [
+    { freq: 60, q: 1.5, gain: 4 },
+    { freq: 130, q: 1.3, gain: 5 },
+    { freq: 900, q: 0.9, gain: 3 },
+  ],
+  noise: { type: 'bandpass', freq: 1200, q: 0.7, level: 0.014 },
 });
+/* A section, not a soloist: more players, further apart in tuning and in time,
+ * and no single vibrato they all share. */
 PRESETS.strings = sustained({
   wave: 'stringRich', gain: 0.17, a: 0.16, d: 0.22, s: 0.9, r: 0.42, q: 0.9,
-  unison: 3, spread: 11, cutoff: (f, v) => Math.min(9000, f * 8 + 1100 + v * 2400),
-  vibrato: { rate: 5.0, depth: 0.0032, delay: 0.3 },
-  body: { freq: 420, q: 0.9, gain: 4.5 },
+  unison: 4, spread: 13, cutoff: (f, v) => Math.min(9000, f * 8 + 1100 + v * 2400),
+  vibrato: { rate: 5.0, depth: 0.0026, delay: 0.3 },
+  bodies: [
+    { freq: 280, q: 1.4, gain: 3.5 },
+    { freq: 500, q: 1.1, gain: 4 },
+    { freq: 2400, q: 0.6, gain: 4 },
+  ],
+  noise: { type: 'bandpass', freq: 3000, q: 0.6, level: 0.012 },
 });
 
 PRESETS.flute = sustained({
@@ -20084,6 +20228,7 @@ class ComposePanel {
       bars: 16,
       ensemble: 'piano',
       melodyInstrument: 'violin',
+      complexity: 'moderate',
       bpm: null,
     };
     this.piece = null;
@@ -20153,6 +20298,13 @@ class ComposePanel {
     return part ? `<option value="${id}"${id === s.melodyInstrument ? ' selected' : ''}>${esc(part.name)}</option>` : '';
   }).join('')}
             </select></label>` : ''}
+          <label class="cp-field"><span>How involved</span>
+            <select data-set="complexity">
+              <option value="simple"${s.complexity === 'simple' ? ' selected' : ''}>Simple — plain rhythms, easy to follow</option>
+              <option value="moderate"${s.complexity === 'moderate' ? ' selected' : ''}>Moderate — the default</option>
+              <option value="complex"${s.complexity === 'complex' ? ' selected' : ''}>Involved — dotted figures, notes off the beat</option>
+            </select>
+            <small>How much the tune does with its idea, not how hard it is to play.</small></label>
           <label class="cp-field"><span>Tempo</span>
             <input type="number" min="30" max="240" placeholder="${character.bpm[0]}–${character.bpm[1]}"
               value="${s.bpm || ''}" data-set="bpm">
@@ -20192,6 +20344,7 @@ class ComposePanel {
         bars: s.bars,
         ensemble: s.ensemble,
         melodyInstrument: s.melodyInstrument,
+        complexity: s.complexity,
         bpm: s.bpm,
         seed,
         title: 'Untitled piece',
@@ -20217,7 +20370,7 @@ class ComposePanel {
         <div class="cp-summary">
           <b>${esc(d.key)}</b> · <b>${esc(d.character)}</b> ·
           <b>${d.bars}</b> bars · <b>${d.tempo}</b> bpm · <b>${esc(d.timeSig)}</b> ·
-          ${esc(d.texture)}
+          ${esc(d.texture)} · ${esc(d.complexity)}
         </div>
 
         <div class="cp-ab">
@@ -20234,8 +20387,9 @@ class ComposePanel {
           </li>`).join('')}
         </ol>
         <p class="cp-note">Four-bar phrases: each asks or answers, and only the last one
-          closes fully. The tune is written over these chords — chord notes on the beat,
-          steps between them, and one high point.</p>
+          closes fully. The tune states an idea in the first phrase and refers back to it —
+          repeated, sequenced, turned upside down — so the piece has something to remember.
+          It saves its highest note for one phrase near the end.</p>
 
         <div class="cp-go">
           <button class="btn primary" data-do="use">Put it on the page</button>
@@ -20383,6 +20537,7 @@ function composePiece(opts = {}) {
     bars = 16,
     ensemble = 'piano',
     melodyInstrument = 'violin',
+    complexity = 'moderate',
     seed = Math.floor(Math.random() * 1e9),
     title = 'New piece',
     composer = '',
@@ -20428,9 +20583,11 @@ function composePiece(opts = {}) {
     scaleTones: scale,
     range,
     beatsPerBar: ts.beats,
-    cells: cellsFor(ts.beats, style.busy),
+    cells: cellsFor(ts.beats, style.busy, complexity),
     r,
     rest: style.rest || 0,
+    barsPerPhrase: phraseBars,
+    complexity,
   });
 
   /* The accompaniment, voiced so the hand moves as little as it can. */
@@ -20514,6 +20671,7 @@ function composePiece(opts = {}) {
     description: {
       key: `${tonicName(tonic)} ${MODE_NAMES[chosenMode] || chosenMode}`,
       character: style.name,
+      complexity,
       texture: TEXTURES[style.texture],
       bars: totalBars,
       phrases,
@@ -20776,16 +20934,16 @@ function candidates(pitchClasses, lo, hi) {
  * unless it is passing between two notes that are.
  */
 function cost(from, to, prev, ctx) {
-  const { chordTones, scaleTones, strong, centre, climax, atClimax, span } = ctx;
+  const { chordTones, scaleTones, strong, centre, climax, atClimax, span, pull = 0.2 } = ctx;
   const leap = Math.abs(to - from);
   let c = 0;
 
-  if (leap === 0) c += 2.5;                       // a repeated note says nothing
+  if (leap === 0) c += 3.6;                       // a repeated note says nothing
   else if (leap <= 2) c += 0;                     // stepwise: the default
-  else if (leap <= 4) c += 1.2;
-  else if (leap <= 7) c += 2.6;
-  else if (leap <= 12) c += 5;
-  else c += 14;                                   // more than an octave: almost never
+  else if (leap <= 4) c += 2.2;
+  else if (leap <= 7) c += 4.5;
+  else if (leap <= 12) c += 8;
+  else c += 18;                                   // more than an octave: almost never
 
   /* A leap is answered by a step the other way; two leaps the same way run the
    * line out of range and out of shape. */
@@ -20808,97 +20966,245 @@ function cost(from, to, prev, ctx) {
   if (!scaleTones.includes(pcOf(to))) c += 6;     // outside the key
 
   /* Stay in the middle of the voice unless heading for the climax. */
-  c += Math.abs(to - centre) * 0.09;
+  c += Math.abs(to - centre) * pull;
   if (atClimax) c -= Math.max(0, 6 - Math.abs(to - climax)) * 1.6;
   else if (to > climax) c += 5;                   // the top note happens once
   if (span && (to < span[0] || to > span[1])) c += 20;
   return c;
 }
 
+/* ------------------------------------------------------------------ shape */
+
+/* Where a phrase goes.  A tune that has no plan beyond "the next note should
+ * sound all right" wanders; one with a shape arrives somewhere. */
+const CONTOURS = {
+  arch: (t) => Math.sin(Math.PI * t),
+  rise: (t) => t,
+  fall: (t) => 1 - t,
+  wave: (t) => (Math.sin(Math.PI * 2 * t) + 1) / 2,
+  level: () => 0.5,
+};
+
+/**
+ * How a phrase treats the motif it was given.
+ *
+ * This is what separates a piece from a stream of plausible notes.  A tune
+ * states an idea, answers it, does something to it, and brings it back — and a
+ * listener recognises all four without being told, because the intervals and
+ * the rhythm are the same idea each time.  Generating every bar afresh gives
+ * music with no memory, which is the commonest reason a generated tune sounds
+ * generated however correct each note is.
+ */
+const DEVELOPMENTS = {
+  state: { transpose: 0, invert: false, keepRhythm: true },
+  answer: { transpose: 0, invert: false, keepRhythm: true },
+  sequence: { transpose: 1, invert: false, keepRhythm: true },
+  sequenceDown: { transpose: -1, invert: false, keepRhythm: true },
+  invert: { transpose: 0, invert: true, keepRhythm: true },
+  free: { transpose: 0, invert: false, keepRhythm: false },
+};
+
+/** The plan for a piece of this many phrases. */
+function developmentPlan(phrases, r) {
+  const out = ['state', 'answer'];
+  for (let i = 2; i < phrases; i++) {
+    const last = i === phrases - 1;
+    if (last) out.push('answer');                       // the idea comes back to close
+    else if (i % 2 === 0) out.push(r() < 0.6 ? 'sequence' : 'invert');
+    else out.push(r() < 0.5 ? 'sequenceDown' : 'free');
+  }
+  return out.slice(0, phrases);
+}
+
 /**
  * Write a melody over a chord plan.
  *
- * `cells` are the rhythmic shapes available, each a list of beat lengths
- * adding up to one bar.  A phrase picks a few and repeats them, because a tune
- * whose rhythm never repeats has no shape to remember.
+ * The chords say what is available; the contour says where the phrase is
+ * going; the motif says what the tune is made of.  Each note is then the
+ * cheapest one that satisfies all three, which is why the line holds together
+ * locally as well as over the phrase.
  */
 function melody(chords, opts) {
   const {
     scaleTones, range, beatsPerBar, cells, r,
-    climaxAt = 0.68, lift = 7, rest = 0,
+    barsPerPhrase = 4, lift = 7, rest = 0, complexity = 'moderate',
   } = opts;
   const [lo, hi] = range;
   const centre = Math.round((lo + hi) / 2);
-  const climax = Math.min(hi, centre + lift);
+  const phrases = Math.max(1, Math.round(chords.length / barsPerPhrase));
+  const climaxPhrase = phrases > 2 ? phrases - 2 : phrases - 1;
+  const develop = developmentPlan(phrases, r);
 
-  /* One rhythm for the phrase, with a variation for its second half: the ear
-   * hears the repeat and the change against it. */
-  const shape = [];
-  const a = cells[Math.floor(r() * cells.length)];
-  const b = cells[Math.floor(r() * cells.length)];
-  for (let i = 0; i < chords.length; i++) shape.push(i % 4 === 3 ? b : (i % 2 ? a : a));
+  /* The rhythmic idea: one bar's worth, plus a second for variety.  A busier
+   * setting gets more of them and allows notes to arrive off the beat. */
+  const pickCell = () => cells[Math.floor(r() * cells.length)];
+  const motifRhythm = [pickCell(), pickCell()];
+  const varied = complexity === 'complex' ? [pickCell(), pickCell()] : motifRhythm;
+
+  /* Filled in by the first phrase and imitated by the rest. */
+  let motifIntervals = null;
 
   const notes = [];
   let prev = null;
   let current = null;
-  chords.forEach((chord, bar) => {
-    const chordTones = chord.pitches;
-    const cell = shape[bar];
-    let at = 0;
-    cell.forEach((len, k) => {
-      const strong = at === 0 || (beatsPerBar === 4 && at === 2);
-      const last = bar === chords.length - 1 && k === cell.length - 1;
-      const atClimax = bar === Math.round(chords.length * climaxAt) && k === 0;
+  let highest = -Infinity;
 
-      /* A rest in the texture: only between phrases, never mid-gesture. */
-      if (rest > 0 && k === cell.length - 1 && bar % 4 === 3 && r() < rest) {
-        at += len;
-        return;
-      }
+  for (let ph = 0; ph < phrases; ph++) {
+    const how = DEVELOPMENTS[develop[ph]] || DEVELOPMENTS.free;
+    const contourName = ph === climaxPhrase ? 'arch'
+      : ph === phrases - 1 ? 'fall'
+        : ['arch', 'rise', 'wave'][Math.floor(r() * 3)];
+    const contour = CONTOURS[contourName];
+    /* The high point belongs to one phrase; the others stay below it. */
+    /* Only the climax phrase gets the whole compass.  The gap between that and
+     * what the other phrases may reach is what makes the high note sound like
+     * an arrival rather than another note near the top. */
+    const reach = ph === climaxPhrase ? lift : lift * 0.4;
+    const phraseIntervals = [];
+    let step = 0;
+    /* One moment is the high point of the phrase, not a region of it. */
+    const peakBar = Math.max(0, barsPerPhrase - 2);
+    /* How high this phrase is allowed to go.  Only the climax phrase may reach
+     * the top of the line's compass; the others stay under it, which is what
+     * makes the climax a climax rather than simply another high note.  Judging
+     * this against the highest note written so far cannot work: if the tune
+     * happens to open high, it can then never rise. */
+    const ceiling = centre + Math.round(reach) + (ph === climaxPhrase ? 1 : 0);
+    let phraseTop = -Infinity;
 
-      let choose = candidates(scaleTones, lo, hi);
-      if (last) {
-        /* The last note is the tonic, reached by step wherever possible. */
-        const tonicPc = chordTones[0];
-        choose = choose.filter((m) => pcOf(m) === tonicPc);
-      }
-      let best = null;
-      let bestCost = Infinity;
-      for (const cand of choose) {
+    for (let b = 0; b < barsPerPhrase; b++) {
+      const bar = ph * barsPerPhrase + b;
+      if (bar >= chords.length) break;
+      const chord = chords[bar];
+      const chordTones = chord.pitches;
+      const source = how.keepRhythm ? (b % 4 === 3 ? varied[1] : motifRhythm[b % 2]) : pickCell();
+      const cell = source;
+      let at = 0;
+
+      cell.forEach((len, k) => {
+        const strong = at === 0 || (beatsPerBar === 4 && at === 2);
+        const last = bar === chords.length - 1 && k === cell.length - 1;
+        const through = (b * beatsPerBar + at) / (barsPerPhrase * beatsPerBar);
+        const wanted = centre + Math.round(contour(through) * reach - reach * 0.2);
+
+        /* A breath at the end of a phrase, never inside a gesture. */
+        if (rest > 0 && b === barsPerPhrase - 1 && k === cell.length - 1 && r() < rest) {
+          at += len;
+          step++;
+          return;
+        }
+
+        let choose = candidates(scaleTones, lo, hi);
+        if (last) choose = choose.filter((m) => pcOf(m) === chordTones[0]);
+
+        /* What the motif did at this point in its phrase, if anything. */
+        let want = null;
+        if (motifIntervals && how.keepRhythm && motifIntervals[step] !== undefined) {
+          const iv = motifIntervals[step];
+          want = how.invert ? -iv : iv;
+        }
+
+        let best = null;
+        let bestCost = Infinity;
         const from = current === null ? centre : current;
-        let c = cost(from, cand, prev, {
-          chordTones, scaleTones, strong, centre, climax, atClimax, span: range,
-        });
-        if (last) c += Math.abs(cand - (current === null ? centre : current)) > 2 ? 4 : 0;
-        /* A little noise so two pieces in the same key are not the same piece. */
-        c += r() * 0.9;
-        if (c < bestCost) { bestCost = c; best = cand; }
-      }
-      if (best === null) best = centre;
-      notes.push({ midi: best, beat: bar * beatsPerBar + at, beats: len });
-      prev = current;
-      current = best;
-      at += len;
-    });
-  });
+        for (const cand of choose) {
+          let c = cost(from, cand, prev, {
+            chordTones, scaleTones, strong, centre: wanted, climax: centre + lift,
+            atClimax: ph === climaxPhrase && b === peakBar && k === 0, span: range,
+            /* The phrase that carries the climax has to be able to get there:
+             * a shape that only nudges cannot lift a line ten semitones inside
+             * four bars, and the arrival is the whole point of the phrase. */
+            pull: ph === climaxPhrase ? 0.6 : 0.2,
+          });
+          /* The top note is reached once.  Without this the contour simply
+           * parks the tune on its ceiling and leaves it there. */
+          if (cand > ceiling) c += (cand - ceiling) * 3.5;
+          /* Do not sit on the phrase's high note — but going *above* it must
+           * stay free, or the line can never climb: each new top would bar the
+           * next, and the tune would ratchet downwards for the whole piece. */
+          if (cand === phraseTop) c += 2.2;
+          /* Follow the idea: the same interval, up or turned upside down.  It
+           * is a pull rather than a rule, so the harmony still wins where the
+           * two disagree. */
+          if (want !== null) {
+            /* A pull towards the shape of the idea, not an instruction: where
+             * the motif leapt and the line here should not, the line wins. */
+            const moved = cand - from;
+            const asked = Math.max(-5, Math.min(5, want));
+            c += Math.min(5, Math.abs(moved - asked)) * 0.6;
+          }
+          if (complexity === 'simple') c += Math.abs(cand - from) > 4 ? 2 : 0;
+          if (complexity === 'complex' && !chordTones.includes(pcOf(cand))) c -= 0.5;
+          c += r() * (complexity === 'complex' ? 1.3 : 0.8);
+          if (c < bestCost) { bestCost = c; best = cand; }
+        }
+        /* Nothing was chosen — fall back to the nearest note of the key, never
+         * to a raw pitch: the fallback is the one place a tune can pick up a
+         * note that does not belong to the key it is in. */
+        if (best === null) {
+          const inKey = candidates(scaleTones, lo, hi);
+          best = inKey.length
+            ? inKey.reduce((a, m) => (Math.abs(m - centre) < Math.abs(a - centre) ? m : a))
+            : centre;
+        }
+
+        notes.push({ midi: best, beat: bar * beatsPerBar + at, beats: len });
+        highest = Math.max(highest, best);
+        phraseTop = Math.max(phraseTop, best);
+        if (current !== null) phraseIntervals[step] = best - current;
+        prev = current;
+        current = best;
+        at += len;
+        step++;
+      });
+    }
+
+    /* The first phrase is the idea; everything after it refers back. */
+    if (ph === 0) motifIntervals = phraseIntervals;
+  }
   return notes;
 }
 
-/** Rhythmic cells, by how busy the music should be, each adding to one bar. */
-function cellsFor(beatsPerBar, busy) {
-  const whole = [[beatsPerBar]];
+/**
+ * Rhythmic cells, each adding up to exactly one bar.
+ *
+ * `busy` is the character's own pace; `complexity` is what the writer asked
+ * for on top of it.  At the simple end the cells are plain and few, so a
+ * phrase repeats recognisably; at the complex end they include dotted figures
+ * and notes that arrive off the beat, which is where a tune stops sounding
+ * like an exercise.  Nothing here is shorter than a semiquaver, because the
+ * point is interest rather than difficulty.
+ */
+function cellsFor(beatsPerBar, busy, complexity = 'moderate') {
+  let list;
   if (beatsPerBar === 3) {
     const calm = [[3], [2, 1], [1, 2]];
     const walking = [[1, 1, 1], [2, 1], [1, 0.5, 0.5, 1]];
     const lively = [[1, 0.5, 0.5, 1], [0.5, 0.5, 1, 1], [1, 1, 0.5, 0.5]];
-    return busy === 'calm' ? calm : busy === 'lively' ? lively : walking;
+    list = busy === 'calm' ? calm : busy === 'lively' ? lively : walking;
+    if (complexity === 'complex') {
+      list = list.concat([[0.5, 1, 1, 0.5], [1.5, 0.5, 1], [0.5, 0.5, 0.5, 0.5, 1]]);
+    }
+    if (complexity === 'simple') list = list.slice(0, 2);
+    return list;
   }
   const calm = [[4], [2, 2], [3, 1]];
   const walking = [[2, 1, 1], [1, 1, 2], [1, 1, 1, 1], [2, 2]];
   const lively = [
     [1, 0.5, 0.5, 1, 1], [0.5, 0.5, 1, 1, 1], [1, 1, 0.5, 0.5, 1], [0.5, 0.5, 0.5, 0.5, 2],
   ];
-  return busy === 'calm' ? calm : busy === 'lively' ? lively : walking.concat(whole);
+  list = busy === 'calm' ? calm : busy === 'lively' ? lively : walking.concat([[4]]);
+  if (complexity === 'complex') {
+    list = list.concat([
+      [1.5, 0.5, 1, 1],            // dotted, then the answer
+      [0.5, 1, 1, 1, 0.5],         // arriving off the beat
+      [1, 1.5, 0.5, 1],
+      [0.5, 0.5, 1, 0.5, 0.5, 1],
+      [1.5, 1.5, 1],
+    ]);
+  }
+  if (complexity === 'simple') list = list.filter((c) => c.length <= 3).slice(0, 3);
+  return list.length ? list : [[beatsPerBar]];
 }
 
 __exp.melody = melody;

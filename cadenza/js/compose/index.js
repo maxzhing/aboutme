@@ -109,6 +109,7 @@ export function composePiece(opts = {}) {
     bars = 16,
     ensemble = 'piano',
     melodyInstrument = 'violin',
+    complexity = 'moderate',
     seed = Math.floor(Math.random() * 1e9),
     title = 'New piece',
     composer = '',
@@ -154,9 +155,11 @@ export function composePiece(opts = {}) {
     scaleTones: scale,
     range,
     beatsPerBar: ts.beats,
-    cells: cellsFor(ts.beats, style.busy),
+    cells: cellsFor(ts.beats, style.busy, complexity),
     r,
     rest: style.rest || 0,
+    barsPerPhrase: phraseBars,
+    complexity,
   });
 
   /* The accompaniment, voiced so the hand moves as little as it can. */
@@ -240,6 +243,7 @@ export function composePiece(opts = {}) {
     description: {
       key: `${tonicName(tonic)} ${MODE_NAMES[chosenMode] || chosenMode}`,
       character: style.name,
+      complexity,
       texture: TEXTURES[style.texture],
       bars: totalBars,
       phrases,

@@ -73,7 +73,7 @@ export class SynthEngine {
     this.maxVoices = 64;
     this.noiseBuffer = null;
     this.masterVolume = 0.9;
-    this.reverbAmount = 0.22;
+    this.reverbAmount = 0.28;
   }
 
   /** Must be called from a user gesture the first time. */
@@ -109,7 +109,7 @@ export class SynthEngine {
     this.wet = ctx.createGain();
     this.wet.gain.value = this.reverbAmount;
     this.reverb = ctx.createConvolver();
-    this.reverb.buffer = this.makeImpulse(2.2, 2.6);
+    this.reverb.buffer = this.makeImpulse(2.8, 2.2);
 
     this.master.connect(this.dry);
     this.dry.connect(this.comp);
@@ -118,7 +118,20 @@ export class SynthEngine {
     this.wet.connect(this.comp);
     this.comp.connect(ctx.destination);
 
-    for (const [k, amps] of Object.entries(SPECTRA)) this.waves[k] = waveFromHarmonics(ctx, amps);
+    for (const [k, amps] of Object.entries(SPECTRA)) {
+      this.waves[k] = waveFromHarmonics(ctx, amps);
+      /* A brighter twin of every tone.
+       *
+       * Playing louder does not simply turn a note up: pressing the bow or
+       * blowing harder puts proportionally more energy into the high partials,
+       * so the tone changes colour as well as level.  Reaching for that with a
+       * filter alone does not work when the filter already sits above
+       * everything the wave contains — the harmonics have to be there to let
+       * through.  So each instrument has a second spectrum with the upper
+       * partials lifted, mixed in as the note gets louder. */
+      this.waves[k + 'Bright'] = waveFromHarmonics(ctx,
+        amps.map((a, i) => a * Math.pow(i + 1, 0.55)));
+    }
     this.waves.pianoAttack = waveFromHarmonics(ctx, decayHarmonics(24, 0.75));
     this.noiseBuffer = this.makeNoise(2.0);
     this.ready = true;
@@ -215,9 +228,15 @@ export class SynthEngine {
     const out = this.channel(channel).input;
     const fn = PRESETS[preset] || PRESETS.piano;
     const v = Math.max(0.02, Math.min(1, velocity / 127));
+    /* Seeded from the note itself, so a passage plays the same way twice while
+     * still differing from note to note within it. */
+    const h = human(((midi * 2654435761) ^ (Math.round(time * 1000) * 40503)
+      ^ (Math.round(velocity) * 2246822519)) >>> 0);
+    const at = Math.max(this.ctx.currentTime, time + (opts.ensemble === false ? 0 : h.onset));
     const handle = fn(this, {
-      freq: midiToFreq(midi + detune / 100), midi, v, time,
-      dur: Math.max(0.03, duration), out, articulation,
+      freq: midiToFreq(midi + (detune + h.tune) / 100), midi, v, time: at,
+      dur: Math.max(0.03, duration), out, articulation, h,
+      legato: !!opts.legato,
     });
     if (handle) {
       this.active.add(handle);
@@ -249,6 +268,42 @@ export class SynthEngine {
 }
 
 /* ------------------------------------------------------------- envelopes */
+
+
+/**
+ * The small differences between one note and the next.
+ *
+ * Two notes played by a person are never the same note twice: the bow lands a
+ * little differently, the vibrato is a shade faster, the finger is a cent or
+ * two off.  A synthesiser that renders every note from identical numbers
+ * sounds like a machine for exactly that reason, and no amount of better
+ * waveform design fixes it — the fault is not the tone, it is the sameness.
+ *
+ * So each note draws its own small deviations.  They are deliberately tiny:
+ * enough that a repeated note is not a copy, not enough to sound out of tune
+ * or out of time.
+ */
+function human(seed) {
+  let s = (seed >>> 0) || 1;
+  const next = () => {
+    s ^= s << 13; s >>>= 0;
+    s ^= s >> 17;
+    s ^= s << 5; s >>>= 0;
+    return s / 4294967296;
+  };
+  const spread = (amount) => 1 + (next() * 2 - 1) * amount;
+  return {
+    attack: spread(0.22),      // how quickly it speaks
+    bright: spread(0.1),       // how open the tone is
+    tune: (next() * 2 - 1) * 4,   // cents
+    vibRate: spread(0.12),
+    vibDepth: spread(0.28),
+    vibDelay: spread(0.35),
+    level: spread(0.06),
+    onset: (next() * 2 - 1) * 0.006,   // seconds: an ensemble is not a sequencer
+    next,
+  };
+}
 
 function adsr(param, ctx, t, { a, d, s, r, peak = 1, dur }) {
   param.cancelScheduledValues(t);
@@ -347,46 +402,84 @@ PRESETS.piano = (eng, { freq, midi, v, time, dur, out }) => {
 
 /* --- generic sustaining wind/string voice ------------------------------- */
 function sustained(spec) {
-  return (eng, { freq, midi, v, time, dur, out, articulation }) => {
+  return (eng, { freq, midi, v, time, dur, out, articulation, h, legato }) => {
     const ctx = eng.ctx;
+    const dev = h || { attack: 1, bright: 1, vibRate: 1, vibDepth: 1, vibDelay: 1, level: 1 };
     const amp = ctx.createGain();
     amp.gain.value = 0;
     const filt = ctx.createBiquadFilter();
     filt.type = 'lowpass';
-    const cutoff = spec.cutoff(freq, v, midi);
+    /* Loud playing is not just louder, it is brighter: a bow pressed harder
+     * puts more energy into the upper partials, and a tone that only changes
+     * in volume is the clearest sign of a synthesiser. */
+    const cutoff = spec.cutoff(freq, v, midi) * dev.bright * (0.5 + v * 0.95);
     filt.frequency.setValueAtTime(cutoff * (spec.attackOpen ? 0.35 : 1), time);
     if (spec.attackOpen) filt.frequency.linearRampToValueAtTime(cutoff, time + spec.a * 1.6);
+    /* The tone opens through the first moments of the note rather than
+     * arriving fully formed. */
+    filt.frequency.linearRampToValueAtTime(cutoff * 1.06, time + Math.min(0.35, dur));
     filt.Q.value = spec.q || 0.7;
 
     const nodes = [];
     const wave = eng.waves[spec.wave];
+    const bright = eng.waves[spec.wave + 'Bright'];
     const voices = spec.unison || 1;
+    /* How much of the brighter spectrum this note wants.  Squared, because the
+     * change from quiet to loud is not a straight line: the difference between
+     * mezzo-forte and forte is far more than between pianissimo and piano. */
+    const edge = Math.min(0.8, v * v * (spec.edge === undefined ? 0.85 : spec.edge));
     for (let i = 0; i < voices; i++) {
       const o = ctx.createOscillator();
       if (wave) o.setPeriodicWave(wave); else o.type = spec.osc || 'sawtooth';
       o.frequency.value = freq;
       o.detune.value = voices > 1 ? (i - (voices - 1) / 2) * (spec.spread || 7) : 0;
       const g = ctx.createGain();
-      g.gain.value = 1 / voices;
+      g.gain.value = (1 - edge) / voices;
       o.connect(g).connect(filt);
       o.start(time);
       nodes.push(o);
+
+      if (bright && edge > 0.02) {
+        const ob = ctx.createOscillator();
+        ob.setPeriodicWave(bright);
+        ob.frequency.value = freq;
+        ob.detune.value = o.detune.value;
+        const gb = ctx.createGain();
+        gb.gain.value = edge / voices;
+        ob.connect(gb).connect(filt);
+        ob.start(time);
+        nodes.push(ob);
+        /* Vibrato has to reach the bright layer too, or the note splits in two. */
+        o.brightTwin = ob;
+      }
     }
 
-    /* Vibrato, delayed so the note speaks cleanly first. */
+    /* Vibrato: delayed so the note speaks cleanly first, then grown in rather
+     * than switched on, and never at quite the same speed twice.  A vibrato
+     * that is identical on every note is heard as an effect rather than as
+     * playing. */
     if (spec.vibrato) {
       const lfo = ctx.createOscillator();
-      lfo.frequency.value = spec.vibrato.rate;
+      const rate = spec.vibrato.rate * dev.vibRate;
+      lfo.frequency.setValueAtTime(rate * 0.88, time);
+      lfo.frequency.linearRampToValueAtTime(rate, time + 0.6);
+      const delay = (spec.vibrato.delay || 0.25) * dev.vibDelay;
       const depth = ctx.createGain();
+      /* Deeper when the note is long and loud, as a player would. */
+      const reach = freq * spec.vibrato.depth * dev.vibDepth * (0.7 + v * 0.6);
       depth.gain.setValueAtTime(0, time);
-      depth.gain.linearRampToValueAtTime(freq * spec.vibrato.depth, time + (spec.vibrato.delay || 0.25));
+      depth.gain.linearRampToValueAtTime(reach * 0.35, time + delay);
+      depth.gain.linearRampToValueAtTime(reach, time + delay + Math.min(0.5, dur * 0.5));
       lfo.connect(depth);
       for (const o of nodes) if (o.frequency) depth.connect(o.frequency);
       lfo.start(time);
       nodes.push(lfo);
     }
 
-    /* Breath / bow noise. */
+    /* Breath and bow noise.  Loudest as the note starts — the bite of the bow
+     * catching the string, the breath before a flute speaks — then settling
+     * back into the tone.  Held flat for the whole note it sounds like hiss;
+     * shaped like this it sounds like an instrument being played. */
     if (spec.noise) {
       const n = eng.noise(time, dur + 0.4);
       const nf = ctx.createBiquadFilter();
@@ -394,32 +487,45 @@ function sustained(spec) {
       nf.frequency.value = spec.noise.freq;
       nf.Q.value = spec.noise.q || 0.8;
       const ng = ctx.createGain();
+      const bite = spec.noise.level * (0.4 + v * 1.4) * (legato ? 0.45 : 1);
       ng.gain.setValueAtTime(0, time);
-      ng.gain.linearRampToValueAtTime(spec.noise.level * v, time + spec.a);
+      ng.gain.linearRampToValueAtTime(bite * 2.4, time + spec.a * 0.6 * dev.attack);
+      ng.gain.exponentialRampToValueAtTime(Math.max(0.00005, bite * 0.55), time + spec.a * 3 + 0.08);
       n.connect(nf).connect(ng).connect(amp);
       nodes.push(n);
     }
 
-    /* Formant body resonance gives strings and voices their character. */
+    /* The body of the instrument.
+     *
+     * A violin is not a filtered sawtooth: what makes it sound like wood and
+     * air is a set of fixed resonances that stay where they are whatever note
+     * is played — the air resonance low down, the main wood resonance above
+     * it, and the broad lift around two to three kilohertz that players call
+     * the bridge hill and listeners hear as "a violin".  One peak cannot do
+     * that; these instruments get as many as they need. */
     let chain = filt;
-    if (spec.body) {
-      const b = ctx.createBiquadFilter();
-      b.type = 'peaking';
-      b.frequency.value = spec.body.freq;
-      b.Q.value = spec.body.q;
-      b.gain.value = spec.body.gain;
-      chain.connect(b);
-      chain = b;
+    const bodies = spec.bodies || (spec.body ? [spec.body] : []);
+    for (const b of bodies) {
+      const f = ctx.createBiquadFilter();
+      f.type = b.type || 'peaking';
+      f.frequency.value = b.freq;
+      f.Q.value = b.q;
+      f.gain.value = b.gain;
+      chain.connect(f);
+      chain = f;
     }
     chain.connect(amp);
     amp.connect(out);
 
     const staccato = articulation === 'staccato' || articulation === 'staccatissimo';
     const accent = articulation === 'accent' || articulation === 'marcato';
-    let a = spec.a;
+    let a = spec.a * dev.attack;
     if (staccato) a = Math.min(a, 0.018);
     if (accent) a = Math.min(a, a * 0.5);
-    const peak = spec.gain * (0.22 + v * 0.9) * (accent ? 1.18 : 1);
+    /* A note that continues from the one before does not start again from
+     * nothing: the bow is already moving, the breath already going. */
+    if (legato) a = Math.min(a, Math.max(0.012, a * 0.45));
+    const peak = spec.gain * (0.22 + v * 0.9) * (accent ? 1.18 : 1) * dev.level;
     const sus = spec.s === undefined ? 0.82 : spec.s;
     const rel = staccato ? 0.09 : spec.r;
 
@@ -437,38 +543,76 @@ function sustained(spec) {
   };
 }
 
+/* The violin family.
+ *
+ * Three resonances rather than one, because that is what a box of wood and air
+ * does: the air inside it rings at one frequency, the plates at another, and
+ * the bridge lifts a broad band a couple of octaves above — the region players
+ * call the bridge hill and everyone else simply hears as the sound of a
+ * violin.  There is also a hollow just below it, which is as much a part of
+ * the character as the peaks are.  Each instrument's resonances sit where its
+ * size puts them, which is why a viola is not a low violin.
+ */
 PRESETS.violin = sustained({
   wave: 'stringRich', gain: 0.19, a: 0.075, d: 0.16, s: 0.86, r: 0.22, q: 0.9,
   unison: 2, spread: 5, cutoff: (f, v) => Math.min(11000, f * 9 + 1400 + v * 3200),
   vibrato: { rate: 5.6, depth: 0.0038, delay: 0.22 },
-  body: { freq: 520, q: 1.1, gain: 5.5 },
-  noise: { type: 'highpass', freq: 2600, level: 0.016 },
+  bodies: [
+    { freq: 280, q: 1.6, gain: 4.5 },        // the air inside the body
+    { freq: 500, q: 1.3, gain: 5 },          // the wood itself
+    { freq: 1100, q: 1.1, gain: -3.5 },      // the hollow above it
+    { freq: 2600, q: 0.7, gain: 6 },         // the bridge hill: the violin sound
+    { freq: 3900, q: 1.4, gain: 2.5 },
+  ],
+  noise: { type: 'bandpass', freq: 3200, q: 0.7, level: 0.02 },
 });
 PRESETS.viola = sustained({
   wave: 'stringRich', gain: 0.20, a: 0.085, d: 0.17, s: 0.85, r: 0.24, q: 0.9,
   unison: 2, spread: 5, cutoff: (f, v) => Math.min(9000, f * 8 + 1100 + v * 2600),
   vibrato: { rate: 5.2, depth: 0.0036, delay: 0.24 },
-  body: { freq: 380, q: 1.1, gain: 5.5 },
-  noise: { type: 'highpass', freq: 2200, level: 0.016 },
+  bodies: [
+    { freq: 220, q: 1.6, gain: 4.5 },
+    { freq: 380, q: 1.3, gain: 5.5 },
+    { freq: 900, q: 1.1, gain: -3 },
+    { freq: 2000, q: 0.8, gain: 5 },
+  ],
+  noise: { type: 'bandpass', freq: 2500, q: 0.7, level: 0.019 },
 });
 PRESETS.cello = sustained({
   wave: 'stringRich', gain: 0.22, a: 0.095, d: 0.18, s: 0.86, r: 0.27, q: 0.9,
   unison: 2, spread: 4, cutoff: (f, v) => Math.min(7200, f * 8 + 800 + v * 2000),
   vibrato: { rate: 4.9, depth: 0.0034, delay: 0.26 },
-  body: { freq: 250, q: 1.2, gain: 6 },
-  noise: { type: 'highpass', freq: 1600, level: 0.015 },
+  bodies: [
+    { freq: 105, q: 1.6, gain: 4.5 },
+    { freq: 200, q: 1.3, gain: 5.5 },
+    { freq: 600, q: 1.1, gain: -2.5 },
+    { freq: 1400, q: 0.8, gain: 4.5 },
+  ],
+  noise: { type: 'bandpass', freq: 1800, q: 0.7, level: 0.018 },
 });
 PRESETS.bass = sustained({
   wave: 'stringRich', gain: 0.24, a: 0.11, d: 0.2, s: 0.84, r: 0.3, q: 0.9,
   unison: 2, spread: 4, cutoff: (f, v) => Math.min(4200, f * 7 + 500 + v * 1200),
   vibrato: { rate: 4.4, depth: 0.003, delay: 0.3 },
-  body: { freq: 140, q: 1.2, gain: 6 },
+  bodies: [
+    { freq: 60, q: 1.5, gain: 4 },
+    { freq: 130, q: 1.3, gain: 5 },
+    { freq: 900, q: 0.9, gain: 3 },
+  ],
+  noise: { type: 'bandpass', freq: 1200, q: 0.7, level: 0.014 },
 });
+/* A section, not a soloist: more players, further apart in tuning and in time,
+ * and no single vibrato they all share. */
 PRESETS.strings = sustained({
   wave: 'stringRich', gain: 0.17, a: 0.16, d: 0.22, s: 0.9, r: 0.42, q: 0.9,
-  unison: 3, spread: 11, cutoff: (f, v) => Math.min(9000, f * 8 + 1100 + v * 2400),
-  vibrato: { rate: 5.0, depth: 0.0032, delay: 0.3 },
-  body: { freq: 420, q: 0.9, gain: 4.5 },
+  unison: 4, spread: 13, cutoff: (f, v) => Math.min(9000, f * 8 + 1100 + v * 2400),
+  vibrato: { rate: 5.0, depth: 0.0026, delay: 0.3 },
+  bodies: [
+    { freq: 280, q: 1.4, gain: 3.5 },
+    { freq: 500, q: 1.1, gain: 4 },
+    { freq: 2400, q: 0.6, gain: 4 },
+  ],
+  noise: { type: 'bandpass', freq: 3000, q: 0.6, level: 0.012 },
 });
 
 PRESETS.flute = sustained({

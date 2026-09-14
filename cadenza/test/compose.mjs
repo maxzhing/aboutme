@@ -273,6 +273,45 @@ check('the tune has one high point, not several', () => {
   return times <= 3 ? true : `the highest note is reached ${times} times`;
 });
 
+
+check('the tune states an idea and comes back to it', () => {
+  /* The rhythm of the opening phrase should be recognisable later: a tune with
+     no memory is the commonest way generated music gives itself away. */
+  const p = composePiece({ character: 'classical', tonic: 0, bars: 32, seed: 77 });
+  const notes = allNotes(p.score).filter((n) => n.part === p.melodyPart && n.voice === 0);
+  const perBar = new Map();
+  for (const n of notes) perBar.set(n.bar, (perBar.get(n.bar) || 0) + 1);
+  const shape = (from) => [0, 1, 2, 3].map((i) => perBar.get(from + i) || 0).join('-');
+  const first = shape(0);
+  const later = [shape(4), shape(8), shape(12), shape(16), shape(20), shape(24), shape(28)];
+  const echoes = later.filter((x) => x === first).length;
+  return echoes >= 2 ? true : `the opening rhythm (${first}) recurs ${echoes} times in ${later.length} phrases`;
+});
+
+check('asking for complex writes more than asking for simple', () => {
+  let simpler = 0;
+  let richer = 0;
+  for (let seed = 1; seed <= 6; seed++) {
+    const a = composePiece({ character: 'classical', tonic: 0, bars: 16, seed, complexity: 'simple' });
+    const b = composePiece({ character: 'classical', tonic: 0, bars: 16, seed, complexity: 'complex' });
+    simpler += allNotes(a.score).filter((n) => n.part === a.melodyPart && n.voice === 0).length;
+    richer += allNotes(b.score).filter((n) => n.part === b.melodyPart && n.voice === 0).length;
+  }
+  return richer > simpler * 1.1 ? true
+    : `simple wrote ${simpler} notes, complex wrote ${richer}`;
+});
+
+check('the high point falls late, where a climax belongs', () => {
+  for (const seed of [3, 9, 27, 51]) {
+    const p = composePiece({ character: 'romantic', tonic: 0, bars: 32, seed });
+    const notes = allNotes(p.score).filter((n) => n.part === p.melodyPart && n.voice === 0);
+    const top = Math.max(...notes.map((n) => n.midi));
+    const where = notes.find((n) => n.midi === top).bar / 32;
+    if (where < 0.35) return `seed ${seed}: the tune peaks ${Math.round(where * 100)}% of the way in`;
+  }
+  return true;
+});
+
 /* ----------------------------------------------------------- the writing */
 
 console.log('\nThe writing — what a harmony teacher would mark.');
