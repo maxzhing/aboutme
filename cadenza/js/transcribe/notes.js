@@ -14,7 +14,7 @@
 import { stft, toMono, rms, midiToHz } from './dsp.js';
 import { runSync } from './steps.js';
 import { estimateF0s, ownPartialEnergy } from './polyphony.js';
-import { detectOnsets, onsetSteps } from './onsets.js';
+import { onsetSteps } from './onsets.js';
 
 const POW2 = [1024, 2048, 4096, 8192, 16384];
 const fitWindow = (seconds, sampleRate, cap) => {

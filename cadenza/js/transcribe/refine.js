@@ -208,7 +208,7 @@ function applyCorrections(notes, diff, opts) {
  */
 function* refineSteps(ctx, opts = {}) {
   const {
-    maxPasses = 14,
+    maxPasses = 20,
     target = 0.985,
     /* Below this the loop does not accept a plateau as a reason to stop: it
      * widens what it will attempt and tries again.  It is not a promise — some
@@ -251,8 +251,14 @@ function* refineSteps(ctx, opts = {}) {
    * is believed.  Every round is still kept only if it improves the measured
    * match, so trying harder can never leave a worse answer than trying less. */
   let reach = 0;
+  const REACH = {
+    /* How much of the score one pass may rewrite. */
+    share: [0.3, 0.5, 0.75, 0.9, 1],
+    /* How clearly the recording must show a pitch before it is written in. */
+    add: [0.12, 0.09, 0.07, 0.055, 0.045],
+  };
   const escalate = () => {
-    if (reach >= 2) return false;
+    if (reach >= REACH.share.length - 1) return false;
     reach++;
     return true;
   };
@@ -368,14 +374,14 @@ function* refineSteps(ctx, opts = {}) {
     };
     yield { stage: 'correcting', pass };
     const attempt = function* () {
-      const share = narrow ? 0.08 : [0.3, 0.5, 0.75][reach];
+      const share = narrow ? 0.08 : REACH.share[reach];
       const limit = Math.max(1, Math.min(40, Math.ceil(notes.length * share)));
       /* Trying harder means accepting slightly thinner evidence for a note.
        * It is bounded, and a round built on it is thrown away unless the match
        * actually improves. */
       return yield* correctionSteps(notes, diff, {
         limit, harmonyAt, measure, exclude: rejected,
-        addBar: [0.12, 0.09, 0.07][reach], dropBar: 0.1,
+        addBar: REACH.add[reach], dropBar: 0.1,
       });
     };
     yield { stage: 'correcting', pass };
@@ -411,6 +417,10 @@ function* refineSteps(ctx, opts = {}) {
     edits: allEdits,
     floor,
     reachedFloor: best.similarity >= floor,
+    /* Why it stopped, in the loop's own words, so the panel can say something
+     * more useful than that it tried. */
+    stopped: (history[history.length - 1] || {}).stopped || 'passes exhausted',
+    tried: reach + 1,
   };
 }
 

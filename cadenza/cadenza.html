@@ -684,6 +684,37 @@ kbd {
   color: var(--text); white-space: pre;
 }
 
+/* The composer: a few questions that change the music, then what it decided. */
+.cp { display: flex; flex-direction: column; gap: 14px; }
+.cp-lead { margin: 0; color: var(--text-dim); font-size: 12px; line-height: 1.6; max-width: 62ch; }
+.cp h3 { margin: 2px 0 0; font-size: 12px; color: var(--text); font-weight: 600; }
+.cp-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 8px; }
+.cp-card {
+  display: flex; flex-direction: column; gap: 3px; text-align: left; cursor: pointer;
+  padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--panel-2); color: var(--text); font: inherit;
+}
+.cp-card:hover { border-color: var(--accent); }
+.cp-card.on { border-color: var(--accent); background: var(--accent-soft); }
+.cp-card-name { font-weight: 600; font-size: 12px; }
+.cp-card-tip { font-size: 11px; color: var(--text-dim); line-height: 1.45; }
+.cp-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.cp-field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 170px; font-size: 12px; }
+.cp-field > span { color: var(--text-dim); }
+.cp-field small { color: var(--text-faint); font-size: 11px; line-height: 1.4; }
+.cp-summary {
+  padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--panel-2); font-size: 12px; color: var(--text-dim);
+}
+.cp-summary b { color: var(--text); }
+.cp-ab { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cp-phrases { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+.cp-phrases li { font-size: 12px; }
+.cp-chords { font-family: var(--mono); color: var(--text); }
+.cp-close { color: var(--text-faint); margin-left: 8px; }
+.cp-note { margin: 0; color: var(--text-dim); font-size: 11px; line-height: 1.6; max-width: 62ch; }
+.cp-go { display: flex; gap: 8px; margin-top: 2px; }
+
 </style>
 </head>
 <body>
@@ -791,6 +822,7 @@ const { PianoKeyboard } = __req("js/ui/piano.js");
 const { MidiInput } = __req("js/ui/midi.js");
 const { ESSENTIALS, PALETTES } = __req("js/ui/ribbon.js");
 const { TranscribePanel } = __req("js/ui/transcribe-panel.js");
+const { ComposePanel } = __req("js/ui/compose-panel.js");
 const { installShortcuts, SHORTCUT_HELP } = __req("js/ui/shortcuts.js");
 
 const ZOOM_STEPS = [0.5, 0.62, 0.75, 0.88, 1, 1.15, 1.35, 1.6, 1.9, 2.3, 2.8];
@@ -1424,6 +1456,14 @@ class Cadenza {
     end.className = 'grp grp-end';
     const endRow = document.createElement('div');
     endRow.className = 'grp-row';
+    const cb = document.createElement('button');
+    cb.className = 'rb wide';
+    cb.dataset.act = 'compose';
+    cb.dataset.tip = 'Write a piece from a key and a character, then edit it';
+    cb.innerHTML = UI.compose + '<span class="lbl">Compose</span>';
+    cb.onclick = () => this.act('compose');
+    endRow.appendChild(cb);
+
     const tb = document.createElement('button');
     tb.className = 'rb wide accent';
     tb.dataset.act = 'transcribe';
@@ -1999,6 +2039,7 @@ class Cadenza {
         return;
       }
       case 'transcribe': this.openTranscribe(); return;
+      case 'compose': this.openCompose(); return;
       case 'rest': {
         if (this.noteEntry) {
           this.setCursor(Edit.enterRest(this, this.cursor, { duration: this.duration, dots: this.dots }), { scroll: true });
@@ -2829,6 +2870,13 @@ class Cadenza {
   openTranscribe() {
     if (!this.transcriber) this.transcriber = new TranscribePanel(this);
     this.transcriber.open();
+  }
+
+  /* --------------------------------------------------------- composition */
+
+  openCompose() {
+    if (!this.composer) this.composer = new ComposePanel(this);
+    this.composer.open();
   }
 
   /** Play a score that is not the document, so a transcription can be heard. */
@@ -11322,6 +11370,7 @@ const UI = {
   figures: S('<path d="M4 5h16"/><path d="M7 10h3M8.5 10v5M7 15h3"/><path d="M14 10h3v2.5h-3V15h3"/>'),
   multirest: S('<path d="M3 12h18" stroke-width="4"/><path d="M4 8v8M20 8v8" stroke-width="1.6"/>'),
   mic: S('<rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/>'),
+  compose: S('<path d="M4 17h9"/><path d="M4 13h5"/><path d="M4 9h7"/><path d="M14 12.5 19 7.5l2 2-5 5-2.6.6z"/>'),
   transcribe: S('<path d="M4 18V7l7-2v11"/><circle cx="2.6" cy="18" r="2.4"/><path d="M15 6a5 5 0 0 1 0 8M18 4a8 8 0 0 1 0 12"/>'),
   more: S('<path d="M6 9l6 6 6-6"/>'),
   close: S('<path d="M18 6 6 18M6 6l12 12"/>'),
@@ -12345,6 +12394,21 @@ function meter(label, value, note = '') {
     + (note ? `<span class="tr-meter-note">${note}</span>` : '') + '</div>';
 }
 
+/* What the listening loop meant by the reason it gave for stopping.  A reader
+ * who is told only that it "tried" has been told nothing; these say which of
+ * the loop's own limits was reached, so the number on the meter can be
+ * understood rather than merely believed. */
+const WHY_STOPPED = {
+  'close enough': 'It matched closely enough to stop.',
+  'no further gain': 'Further passes stopped improving it.',
+  'nothing further to try': 'It worked through five levels of effort, down to the faintest '
+    + 'evidence it will act on, and none of the remaining corrections improved the match.',
+  'nothing left to correct': 'It ran out of differences it could act on: what is left is energy '
+    + 'in the recording that does not sit on any one pitch clearly enough to write down.',
+  'going round in circles': 'It began repeating readings it had already measured, so it kept the best one.',
+  'passes exhausted': 'It used all twenty passes and was still improving when it stopped.',
+};
+
 const ISSUE_TEXT = {
   missing: 'a note in the recording that is not in the score',
   extra: 'a note in the score that is not in the recording',
@@ -12904,20 +12968,21 @@ class TranscribePanel {
             <b>${a.measures}</b> bar${a.measures === 1 ? '' : 's'}
           </div>
           ${a.listened ? `<div class="tr-verified">
-            <b>Checked against the recording.</b> Cadenza played its own score back
-            ${a.passes.length} time${a.passes.length === 1 ? '' : 's'}, compared it with what you played
-            and made ${a.corrections.length} correction${a.corrections.length === 1 ? '' : 's'}.
-            ${a.passes.length > 1 && pct(a.similarity) > pct(a.passes[0].similarity)
-    ? `Match rose from ${pct(a.passes[0].similarity)}% to ${pct(a.similarity)}%.`
-    : 'The corrections it tried after that did not improve the match, so it kept this reading.'}
+            <b>Checked against the recording.</b> Played its own score back
+            ${a.passes.length} time${a.passes.length === 1 ? '' : 's'} and made
+            ${a.corrections.length} correction${a.corrections.length === 1 ? '' : 's'}.
+            ${a.passes.length > 1 ? `Match went from ${pct(a.passes[0].similarity)}%
+              to ${pct(a.similarity)}%.` : ''}
           </div>` : ''}
           ${a.listened && a.reachedFloor === false ? `<div class="tr-shaky">
-            It kept working until the corrections ran out and reached
-            ${pct(a.similarity)}%, short of the ${pct(a.matchFloor)}% it aims for.
-            The recording has more in it than this reading accounts for — dense
-            or many-voiced music is the usual reason. What is on the page is the
-            best of ${a.passes.length} attempt${a.passes.length === 1 ? '' : 's'};
-            everything it could not account for is listed under Show the working.
+            <b>Reached ${pct(a.similarity)}% — short of the ${pct(a.matchFloor)}% it works towards.</b>
+            ${esc(WHY_STOPPED[a.stoppedBecause] || 'It ran out of passes.')}
+            ${a.difference ? `The recording still holds ${a.difference.missing.length}
+              sound${a.difference.missing.length === 1 ? '' : 's'} this score does not
+              account for${a.difference.extra.length ? `, and the score has
+              ${a.difference.extra.length} the recording does not` : ''}.` : ''}
+            Each one is listed under <b>Show the working</b>, so what it could not place
+            can be looked at rather than taken on trust.
           </div>` : ''}
           <div class="tr-meters">
             ${a.listened ? meter('Match', a.similarity, 'how much of the recording the score accounts for') : ''}
@@ -13509,7 +13574,7 @@ function notesToScore(rawNotes, opts = {}) {
 function* transcribeSteps(audio, opts = {}) {
   const {
     listen = true,
-    maxPasses = 14,
+    maxPasses = 20,
     onPass = () => {},
     onProgress = null,
     ...rest
@@ -13560,6 +13625,7 @@ function* transcribeSteps(audio, opts = {}) {
   result.analysis.confidence.match = refined.similarity;
   result.analysis.matchFloor = refined.floor;
   result.analysis.reachedFloor = refined.reachedFloor;
+  result.analysis.stoppedBecause = refined.stopped;
   return result;
 }
 
@@ -13675,7 +13741,7 @@ __exp.CancelledError = CancelledError;
 const { stft, toMono, rms, midiToHz } = __req("js/transcribe/dsp.js");
 const { runSync } = __req("js/transcribe/steps.js");
 const { estimateF0s, ownPartialEnergy } = __req("js/transcribe/polyphony.js");
-const { detectOnsets, onsetSteps } = __req("js/transcribe/onsets.js");
+const { onsetSteps } = __req("js/transcribe/onsets.js");
 
 const POW2 = [1024, 2048, 4096, 8192, 16384];
 const fitWindow = (seconds, sampleRate, cap) => {
@@ -18479,7 +18545,7 @@ function applyCorrections(notes, diff, opts) {
  */
 function* refineSteps(ctx, opts = {}) {
   const {
-    maxPasses = 14,
+    maxPasses = 20,
     target = 0.985,
     /* Below this the loop does not accept a plateau as a reason to stop: it
      * widens what it will attempt and tries again.  It is not a promise — some
@@ -18522,8 +18588,14 @@ function* refineSteps(ctx, opts = {}) {
    * is believed.  Every round is still kept only if it improves the measured
    * match, so trying harder can never leave a worse answer than trying less. */
   let reach = 0;
+  const REACH = {
+    /* How much of the score one pass may rewrite. */
+    share: [0.3, 0.5, 0.75, 0.9, 1],
+    /* How clearly the recording must show a pitch before it is written in. */
+    add: [0.12, 0.09, 0.07, 0.055, 0.045],
+  };
   const escalate = () => {
-    if (reach >= 2) return false;
+    if (reach >= REACH.share.length - 1) return false;
     reach++;
     return true;
   };
@@ -18639,14 +18711,14 @@ function* refineSteps(ctx, opts = {}) {
     };
     yield { stage: 'correcting', pass };
     const attempt = function* () {
-      const share = narrow ? 0.08 : [0.3, 0.5, 0.75][reach];
+      const share = narrow ? 0.08 : REACH.share[reach];
       const limit = Math.max(1, Math.min(40, Math.ceil(notes.length * share)));
       /* Trying harder means accepting slightly thinner evidence for a note.
        * It is bounded, and a round built on it is thrown away unless the match
        * actually improves. */
       return yield* correctionSteps(notes, diff, {
         limit, harmonyAt, measure, exclude: rejected,
-        addBar: [0.12, 0.09, 0.07][reach], dropBar: 0.1,
+        addBar: REACH.add[reach], dropBar: 0.1,
       });
     };
     yield { stage: 'correcting', pass };
@@ -18682,6 +18754,10 @@ function* refineSteps(ctx, opts = {}) {
     edits: allEdits,
     floor,
     reachedFloor: best.similarity >= floor,
+    /* Why it stopped, in the loop's own words, so the panel can say something
+     * more useful than that it tried. */
+    stopped: (history[history.length - 1] || {}).stopped || 'passes exhausted',
+    tried: reach + 1,
   };
 }
 
@@ -18874,8 +18950,8 @@ __exp.renderSteps = renderSteps;
 
 const { stft, stftSteps, toMono, rms, midiToHz } = __req("js/transcribe/dsp.js");
 const { runSync } = __req("js/transcribe/steps.js");
-const { salienceAt, whiten, estimateF0s, residualSpectrum, estimateFromWhitened, MIN_MIDI, MAX_MIDI } = __req("js/transcribe/polyphony.js");
-const { detectOnsets, onsetSteps } = __req("js/transcribe/onsets.js");
+const { salienceAt, whiten, residualSpectrum, estimateFromWhitened, MIN_MIDI, MAX_MIDI } = __req("js/transcribe/polyphony.js");
+const { onsetSteps } = __req("js/transcribe/onsets.js");
 
 /**
  * How much each pitch is sounding, frame by frame.
@@ -19957,6 +20033,1085 @@ function compareScores(before, after) {
 
 __exp.compareScores = compareScores;
 __exp.CorrectionModel = CorrectionModel;
+},
+  "js/ui/compose-panel.js": function (__exp, __req) {
+/* Cadenza — writing a piece from a description.
+ *
+ * You say what kind of thing you want and in what key; this writes one.  The
+ * point of the panel is that it asks the few questions that actually change
+ * the music — character, key, length, who is playing — and then shows what it
+ * decided, chord by chord, rather than presenting a finished page as though it
+ * had come from nowhere.  The progression is on screen because a composer
+ * looking at a generated piece wants to know what the harmony is before
+ * deciding whether to keep it.
+ *
+ * Nothing here is a recording of anything.  Every piece is built from the key,
+ * the chord functions and the shape rules in js/compose, so each one is new.
+ */
+
+const Dlg = __req("js/ui/dialogs.js");
+const { composePiece, CHARACTERS, tonicName } = __req("js/compose/index.js");
+const { ALL_PARTS } = __req("js/transcribe/index.js");
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const TONICS = [0, 7, 2, 9, 4, 11, 5, 10, 3, 8, 1, 6];
+const MODES = [
+  { id: 'major', name: 'Major', tip: 'Bright, and where most music lives' },
+  { id: 'minor', name: 'Minor', tip: 'Darker, with a leading note at the cadences' },
+  { id: 'dorian', name: 'Dorian', tip: 'Minor with a raised sixth — folk and modal writing' },
+  { id: 'mixolydian', name: 'Mixolydian', tip: 'Major with a flattened seventh' },
+];
+const LENGTHS = [
+  { bars: 8, name: 'Short', tip: 'Two phrases — a sentence' },
+  { bars: 16, name: 'Standard', tip: 'Four phrases — a complete little piece' },
+  { bars: 24, name: 'Longer', tip: 'Six phrases' },
+  { bars: 32, name: 'Full', tip: 'Eight phrases' },
+];
+const SOLOISTS = ['violin', 'flute', 'cello', 'clarinet', 'oboe', 'trumpet', 'guitar'];
+
+class ComposePanel {
+  constructor(app) {
+    this.app = app;
+    this.reset();
+  }
+
+  reset() {
+    this.settings = {
+      character: 'classical',
+      tonic: 0,
+      mode: 'major',
+      bars: 16,
+      ensemble: 'piano',
+      melodyInstrument: 'violin',
+      bpm: null,
+    };
+    this.piece = null;
+  }
+
+  open() {
+    this.reset();
+    const m = Dlg.modal({
+      title: 'Compose',
+      width: 'wide',
+      build: (body) => { this.body = body; this.renderSetup(); },
+      onClose: () => this.app.stopAudition(),
+    });
+    this.modalClose = m.close;
+  }
+
+  /* ------------------------------------------------------------- setup */
+
+  renderSetup() {
+    const s = this.settings;
+    const character = CHARACTERS.find((c) => c.id === s.character) || CHARACTERS[0];
+    /* A mode the chosen character does not write in is not offered. */
+    if (!character.modes.includes(s.mode)) s.mode = character.modes[0];
+
+    this.body.innerHTML = `
+      <div class="cp">
+        <p class="cp-lead">Say what you want and it will be written. Everything is made from
+          the key and the harmony — each piece is new, and you can edit it afterwards like
+          anything else.</p>
+
+        <h3>What kind of piece</h3>
+        <div class="cp-cards">
+          ${CHARACTERS.map((c) => `
+            <button class="cp-card${c.id === s.character ? ' on' : ''}" data-character="${c.id}">
+              <span class="cp-card-name">${esc(c.name)}</span>
+              <span class="cp-card-tip">${esc(c.tip)}</span>
+            </button>`).join('')}
+        </div>
+
+        <div class="cp-row">
+          <label class="cp-field"><span>Key</span>
+            <select data-set="tonic">
+              ${TONICS.map((t) => `<option value="${t}"${t === s.tonic ? ' selected' : ''}>${tonicName(t)}</option>`).join('')}
+            </select></label>
+          <label class="cp-field"><span>Mode</span>
+            <select data-set="mode">
+              ${MODES.filter((m) => character.modes.includes(m.id)).map((m) =>
+    `<option value="${m.id}"${m.id === s.mode ? ' selected' : ''}>${esc(m.name)}</option>`).join('')}
+            </select>
+            <small>${esc((MODES.find((m) => m.id === s.mode) || MODES[0]).tip)}</small></label>
+          <label class="cp-field"><span>Length</span>
+            <select data-set="bars">
+              ${LENGTHS.map((l) => `<option value="${l.bars}"${l.bars === s.bars ? ' selected' : ''}>${esc(l.name)} — ${l.bars} bars</option>`).join('')}
+            </select></label>
+        </div>
+
+        <div class="cp-row">
+          <label class="cp-field"><span>Who plays it</span>
+            <select data-set="ensemble">
+              <option value="piano"${s.ensemble === 'piano' ? ' selected' : ''}>Solo piano</option>
+              <option value="duo"${s.ensemble === 'duo' ? ' selected' : ''}>A melody instrument and piano</option>
+            </select></label>
+          ${s.ensemble === 'duo' ? `<label class="cp-field"><span>Melody instrument</span>
+            <select data-set="melodyInstrument">
+              ${SOLOISTS.map((id) => {
+    const part = ALL_PARTS.find((p) => p.id === id);
+    return part ? `<option value="${id}"${id === s.melodyInstrument ? ' selected' : ''}>${esc(part.name)}</option>` : '';
+  }).join('')}
+            </select></label>` : ''}
+          <label class="cp-field"><span>Tempo</span>
+            <input type="number" min="30" max="240" placeholder="${character.bpm[0]}–${character.bpm[1]}"
+              value="${s.bpm || ''}" data-set="bpm">
+            <small>Leave empty and it will choose one to suit.</small></label>
+        </div>
+
+        <div class="cp-go">
+          <button class="btn primary" data-do="write">Write it</button>
+        </div>
+      </div>`;
+
+    this.body.querySelectorAll('[data-character]').forEach((el) => {
+      el.onclick = () => { this.settings.character = el.dataset.character; this.renderSetup(); };
+    });
+    this.body.querySelectorAll('[data-set]').forEach((el) => {
+      el.onchange = () => {
+        const key = el.dataset.set;
+        const value = el.value;
+        if (key === 'tonic' || key === 'bars') this.settings[key] = Number(value);
+        else if (key === 'bpm') this.settings.bpm = value ? Number(value) : null;
+        else this.settings[key] = value;
+        if (key === 'ensemble' || key === 'mode') this.renderSetup();
+      };
+    });
+    this.body.querySelector('[data-do=write]').onclick = () => this.write();
+  }
+
+  /* ------------------------------------------------------------ writing */
+
+  write(seed = undefined) {
+    const s = this.settings;
+    try {
+      this.piece = composePiece({
+        character: s.character,
+        tonic: s.tonic,
+        mode: s.mode,
+        bars: s.bars,
+        ensemble: s.ensemble,
+        melodyInstrument: s.melodyInstrument,
+        bpm: s.bpm,
+        seed,
+        title: 'Untitled piece',
+      });
+    } catch (err) {
+      Dlg.toast('It could not write that: ' + err.message, 'err');
+      return;
+    }
+    this.renderResult();
+  }
+
+  renderResult() {
+    const d = this.piece.description;
+    const CLOSES = {
+      half: 'ends on the dominant, asking',
+      authentic: 'a full close',
+      deceptive: 'turns aside at the last moment',
+      plagal: 'a plagal close',
+    };
+
+    this.body.innerHTML = `
+      <div class="cp">
+        <div class="cp-summary">
+          <b>${esc(d.key)}</b> · <b>${esc(d.character)}</b> ·
+          <b>${d.bars}</b> bars · <b>${d.tempo}</b> bpm · <b>${esc(d.timeSig)}</b> ·
+          ${esc(d.texture)}
+        </div>
+
+        <div class="cp-ab">
+          <button class="btn" data-do="play">▶ Listen</button>
+          <button class="btn" data-do="stop">Stop</button>
+          <button class="btn" data-do="again">Another version</button>
+        </div>
+
+        <h3>The harmony it wrote</h3>
+        <ol class="cp-phrases">
+          ${d.progression.map((p, i) => `<li>
+            <span class="cp-chords">${esc(p)}</span>
+            <span class="cp-close">${esc(CLOSES[d.cadences[i]] || d.cadences[i])}</span>
+          </li>`).join('')}
+        </ol>
+        <p class="cp-note">Four-bar phrases: each asks or answers, and only the last one
+          closes fully. The tune is written over these chords — chord notes on the beat,
+          steps between them, and one high point.</p>
+
+        <div class="cp-go">
+          <button class="btn primary" data-do="use">Put it on the page</button>
+          <button class="btn" data-do="back">Change something</button>
+        </div>
+      </div>`;
+
+    this.body.querySelector('[data-do=play]').onclick = () => this.app.auditionScore(this.piece.score);
+    this.body.querySelector('[data-do=stop]').onclick = () => this.app.stopAudition();
+    this.body.querySelector('[data-do=again]').onclick = () => {
+      this.app.stopAudition();
+      this.write(Math.floor(Math.random() * 1e9));
+    };
+    this.body.querySelector('[data-do=back]').onclick = () => { this.app.stopAudition(); this.renderSetup(); };
+    this.body.querySelector('[data-do=use]').onclick = () => this.adopt();
+  }
+
+  adopt() {
+    this.app.stopAudition();
+    const d = this.piece.description;
+    this.app.setScore(this.piece.score);
+    this.app.history.begin('Compose');
+    this.app.history.commit();
+    this.app.flagged = new Map();
+    this.app.flaggedBars = new Set();
+    this.app.render();
+    this.app.buildParts();
+    this.app.buildMixer();
+    if (this.modalClose) this.modalClose();
+    Dlg.toast(`${d.bars} bars in ${d.key} — edit it like anything else`, 'ok');
+  }
+}
+
+__exp.ComposePanel = ComposePanel;
+},
+  "js/compose/index.js": function (__exp, __req) {
+/* Cadenza — writing a piece.
+ *
+ * Given a key, a character and a length, this produces a real score: a
+ * progression that goes somewhere and closes, a tune shaped over it, and an
+ * accompaniment that suits the character asked for.  It is composition by
+ * rule, not by imitation — nothing is copied from anywhere, and the rules are
+ * the ordinary ones about function, phrase and line that a first-year harmony
+ * class would recognise.
+ *
+ * The result goes through the same engraver the transcriber uses, so what
+ * comes out is an editable score with beams, rests, ties and accidentals
+ * decided the same way they are everywhere else in the program.
+ */
+
+const { plan: harmonicPlan, chordPitches, keyPitches, rng, MODE_NAMES } = __req("js/compose/harmony.js");
+const { melody, cellsFor } = __req("js/compose/melody.js");
+const { voiceChord, layOut, TEXTURES } = __req("js/compose/texture.js");
+const { buildParts } = __req("js/transcribe/build.js");
+const { beatTicks, measureTicks } = __req("js/core/rhythm.js");
+const { INSTRUMENTS } = __req("js/core/instruments.js");
+
+/* What a character actually means, in things the generator can act on. */
+const CHARACTERS = [
+  {
+    id: 'classical', name: 'Classical',
+    tip: 'Balanced four-bar phrases, an Alberti bass, cadences you can hear coming.',
+    texture: 'alberti', sevenths: false, busy: 'walking', bpm: [96, 126],
+    modes: ['major', 'minor'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+  },
+  {
+    id: 'romantic', name: 'Romantic',
+    tip: 'Broken chords under a singing line, richer harmony, slower to unfold.',
+    texture: 'arpeggio', sevenths: true, busy: 'calm', bpm: [64, 92],
+    modes: ['major', 'minor'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+  },
+  {
+    id: 'waltz', name: 'Waltz',
+    tip: 'Three to a bar, bass on one, chords on two and three.',
+    texture: 'waltz', sevenths: false, busy: 'walking', bpm: [138, 172],
+    modes: ['major', 'minor'], timeSig: { beats: 3, beatType: 4, symbol: null },
+  },
+  {
+    id: 'hymn', name: 'Chorale',
+    tip: 'Four parts moving together, one chord to a beat, strict voice leading.',
+    texture: 'chorale', sevenths: false, busy: 'calm', bpm: [68, 88],
+    modes: ['major', 'minor'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+    strict: true, voices: 4,
+  },
+  {
+    id: 'folk', name: 'Folk',
+    tip: 'Modal, tune-led, plain chords underneath.',
+    texture: 'block', sevenths: false, busy: 'walking', bpm: [104, 132],
+    modes: ['major', 'dorian', 'mixolydian', 'minor'],
+    timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+  },
+  {
+    id: 'jazz', name: 'Jazz',
+    tip: 'Sevenths throughout, a walking bass, a line that syncopates.',
+    texture: 'walking', sevenths: true, busy: 'lively', bpm: [108, 148],
+    modes: ['major', 'minor', 'mixolydian'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+  },
+  {
+    id: 'calm', name: 'Quiet',
+    tip: 'Slow harmony, sustained chords, a line with room around it.',
+    texture: 'sustained', sevenths: true, busy: 'calm', bpm: [58, 76],
+    modes: ['major', 'minor'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+    harmonicRhythm: 0.5, rest: 0.5,
+  },
+];
+
+const characterById = (id) => CHARACTERS.find((c) => c.id === id) || CHARACTERS[0];
+
+/* Key signatures.  A mode borrows the signature of the major it sits inside. */
+const MAJOR_FIFTHS = { 0: 0, 7: 1, 2: 2, 9: 3, 4: 4, 11: 5, 6: 6, 5: -1, 10: -2, 3: -3, 8: -4, 1: -5 };
+const MINOR_FIFTHS = { 9: 0, 4: 1, 11: 2, 6: 3, 1: 4, 8: 5, 3: 6, 2: -1, 7: -2, 0: -3, 5: -4, 10: -5 };
+
+function fifthsFor(tonic, mode) {
+  const pc = ((tonic % 12) + 12) % 12;
+  if (mode === 'minor') return MINOR_FIFTHS[pc] ?? 0;
+  if (mode === 'dorian') return MAJOR_FIFTHS[((pc - 2) + 12) % 12] ?? 0;
+  if (mode === 'mixolydian') return MAJOR_FIFTHS[((pc - 7) + 12) % 12] ?? 0;
+  return MAJOR_FIFTHS[pc] ?? 0;
+}
+
+const NAMES = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
+const tonicName = (pc) => NAMES[((pc % 12) + 12) % 12];
+
+const instrument = (id) => INSTRUMENTS.find((i) => i.id === id) || INSTRUMENTS[0];
+
+/** A comfortable register for a tune on this instrument. */
+function singingRange(inst) {
+  const [lo, hi] = inst.range;
+  const centre = Math.round((lo + hi) / 2);
+  return [Math.max(lo, centre - 9), Math.min(hi, centre + 14)];
+}
+
+/**
+ * Write a piece.
+ *
+ * Returns { score, description, harmony } — the score ready to edit, and an
+ * account of what was written, so the panel can say what it did rather than
+ * present it as magic.
+ */
+function composePiece(opts = {}) {
+  const {
+    character = 'classical',
+    tonic = 0,
+    mode = null,
+    bars = 16,
+    ensemble = 'piano',
+    melodyInstrument = 'violin',
+    seed = Math.floor(Math.random() * 1e9),
+    title = 'New piece',
+    composer = '',
+    bpm = null,
+  } = opts;
+
+  const style = characterById(character);
+  const r = rng(seed);
+  const chosenMode = mode && style.modes.includes(mode) ? mode
+    : style.modes[Math.floor(r() * style.modes.length)];
+  const ts = style.timeSig;
+  const beatsPerBar = ts.beats * (4 / ts.beatType) / (ts.beatType === 8 ? 3 : 1) || ts.beats;
+  const perBeat = beatTicks(ts);
+  const barTicks = measureTicks(ts);
+
+  /* Four-bar phrases, and a whole number of them. */
+  const phraseBars = 4;
+  const phrases = Math.max(2, Math.round(bars / phraseBars));
+  const totalBars = phrases * phraseBars;
+
+  const harmony = harmonicPlan(phrases, phraseBars, chosenMode, r, {
+    sevenths: style.sevenths,
+    harmonicRhythm: style.harmonicRhythm || 1,
+  });
+
+  /* One chord per bar, stretched or repeated to fill the phrase. */
+  const perBar = [];
+  for (const ph of harmony) {
+    const n = ph.chords.length;
+    for (let b = 0; b < phraseBars; b++) {
+      const chord = ph.chords[Math.min(n - 1, Math.floor((b / phraseBars) * n))];
+      perBar.push({ ...chord, pitches: chordPitches(chord, tonic), close: ph.close });
+    }
+  }
+
+  const scale = keyPitches(tonic, chosenMode);
+  const melodyInst = ensemble === 'piano' ? instrument('piano') : instrument(melodyInstrument);
+  const range = ensemble === 'piano'
+    ? [Math.max(60, 60), 84]
+    : singingRange(melodyInst);
+
+  const tune = melody(perBar, {
+    scaleTones: scale,
+    range,
+    beatsPerBar: ts.beats,
+    cells: cellsFor(ts.beats, style.busy),
+    r,
+    rest: style.rest || 0,
+  });
+
+  /* The accompaniment, voiced so the hand moves as little as it can. */
+  const accompaniment = [];
+  let previous = null;
+  perBar.forEach((chord, bar) => {
+    const voicing = voiceChord(chord.pitches, {
+      range: style.texture === 'chorale' ? [48, 76] : [40, 64],
+      previous,
+      size: style.voices || (chord.seventh ? 4 : 3),
+      strict: !!style.strict,
+    });
+    previous = voicing;
+    const laid = layOut(style.texture, voicing, ts.beats, { r, last: bar === perBar.length - 1 });
+    for (const n of laid) {
+      accompaniment.push({ midi: n.midi, beat: bar * ts.beats + n.beat, beats: n.beats });
+    }
+  });
+
+  /* Into the shape the engraver wants: one entry per simultaneity. */
+  const toChords = (notes, staff, voice) => {
+    const byStart = new Map();
+    for (const n of notes) {
+      const startTicks = Math.round(n.beat * perBeat);
+      const endTicks = startTicks + Math.max(1, Math.round(n.beats * perBeat));
+      const key = startTicks + ':' + endTicks;
+      if (!byStart.has(key)) {
+        byStart.set(key, { startTicks, endTicks, staff, voice, notes: [], confidence: 1 });
+      }
+      byStart.get(key).notes.push({ midi: n.midi, confidence: 1 });
+    }
+    return [...byStart.values()].sort((a, b) => a.startTicks - b.startTicks);
+  };
+
+  const fifths = fifthsFor(tonic, chosenMode);
+  const tempo = bpm || Math.round(style.bpm[0] + r() * (style.bpm[1] - style.bpm[0]));
+
+  /* Divisions per beat, so the engraver writes the values the cells imply. */
+  const divisions = new Map();
+  const allBeats = [...tune, ...accompaniment];
+  for (const n of allBeats) {
+    const b = Math.floor(n.beat);
+    const d = n.beats < 0.5 ? 4 : n.beats < 1 ? 2 : 1;
+    divisions.set(b, Math.max(divisions.get(b) || 1, d));
+  }
+
+  let parts;
+  if (ensemble === 'piano') {
+    parts = [{
+      instrumentId: 'piano', staves: 2,
+      chords: [...toChords(tune, 0, 0), ...toChords(accompaniment, 1, 0)],
+    }];
+  } else {
+    parts = [
+      { instrumentId: melodyInst.id, staves: 1, chords: toChords(tune, 0, 0) },
+      { instrumentId: 'piano', staves: 2, chords: toChords(accompaniment, 1, 0) },
+    ];
+  }
+
+  const built = buildParts(parts, {
+    plan: { perBeat, divisions },
+    timeSig: ts,
+    bpm: tempo,
+    fifths,
+    mode: chosenMode === 'minor' ? 'minor' : 'major',
+    title,
+    composer,
+  });
+
+  /* The engraver puts parts in score order, which is not the order they were
+   * handed over in, so the caller is told where each ended up rather than left
+   * to assume. */
+  const partIndex = (id) => built.score.parts.findIndex((p) => p.instrumentId === id);
+
+  return {
+    score: built.score,
+    harmony: perBar,
+    seed,
+    melodyPart: ensemble === 'piano' ? partIndex('piano') : partIndex(melodyInst.id),
+    accompanimentPart: partIndex('piano'),
+    description: {
+      key: `${tonicName(tonic)} ${MODE_NAMES[chosenMode] || chosenMode}`,
+      character: style.name,
+      texture: TEXTURES[style.texture],
+      bars: totalBars,
+      phrases,
+      tempo,
+      timeSig: `${ts.beats}/${ts.beatType}`,
+      progression: harmony.map((ph) => ph.chords.map((c) => c.roman).join(' – ')),
+      cadences: harmony.map((ph) => ph.close),
+    },
+  };
+}
+
+
+
+__exp.fifthsFor = fifthsFor;
+__exp.composePiece = composePiece;
+__exp.CHARACTERS = CHARACTERS;
+__exp.characterById = characterById;
+__exp.tonicName = tonicName;
+__exp.TEXTURES = TEXTURES;
+__exp.MODE_NAMES = MODE_NAMES;
+},
+  "js/compose/harmony.js": function (__exp, __req) {
+/* Cadenza — the harmony a piece is built on.
+ *
+ * Chords are not picked at random from the ones that fit the key.  Tonal music
+ * moves in one direction — away from the tonic, through a preparation, to a
+ * dominant, and back — and a progression that ignores that sounds like a list
+ * of chords rather than a sentence.  So each chord is chosen for what it does
+ * rather than for what it is called:
+ *
+ *   tonic         where the phrase rests            I   vi  iii
+ *   predominant   what prepares the dominant        IV  ii
+ *   dominant      what wants to resolve             V   vii°
+ *
+ * and the phrase endings are written first, because those are what make a
+ * phrase a phrase.  A four-bar antecedent stops on the dominant, asking a
+ * question; its consequent answers it with a full close.  Everything between
+ * is filled in afterwards, moving forward through the functions.
+ *
+ * Nothing here knows about notes yet.  A chord is a set of scale degrees; what
+ * those become depends on the key, and where they are played depends on the
+ * texture.
+ */
+
+/* Scale steps from the tonic, in semitones. */
+const SCALES = {
+  major: [0, 2, 4, 5, 7, 9, 11],
+  minor: [0, 2, 3, 5, 7, 8, 10],
+  dorian: [0, 2, 3, 5, 7, 9, 10],
+  mixolydian: [0, 2, 4, 5, 7, 9, 10],
+};
+
+const MODE_NAMES = {
+  major: 'major',
+  minor: 'minor',
+  dorian: 'Dorian',
+  mixolydian: 'Mixolydian',
+};
+
+const TONIC = [0, 5, 2];        // I, vi, iii
+const PREDOMINANT = [3, 1];     // IV, ii
+const DOMINANT = [4, 6];        // V, vii
+
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+
+/** A small, seedable random source, so a piece can be made again exactly. */
+function rng(seed) {
+  let s = (seed >>> 0) || 1;
+  return () => {
+    s ^= s << 13; s >>>= 0;
+    s ^= s >> 17;
+    s ^= s << 5; s >>>= 0;
+    return s / 4294967296;
+  };
+}
+
+const pick = (list, r) => list[Math.floor(r() * list.length) % list.length];
+
+/**
+ * The chord on a scale degree.
+ *
+ * Built by stacking thirds inside the scale, which is what makes it belong to
+ * the key without anything having to check that it does.  In the minor the
+ * seventh degree is raised wherever the chord is acting as a dominant: the
+ * flat seventh of the natural minor has no leading note, and a cadence without
+ * a leading note does not close.
+ */
+function chordOn(degree, mode, opts = {}) {
+  const { seventh = false, raiseLeading = true } = opts;
+  const scale = SCALES[mode] || SCALES.major;
+  const steps = seventh ? [0, 2, 4, 6] : [0, 2, 4];
+  const tones = steps.map((s) => {
+    const i = (degree + s) % 7;
+    let semi = scale[i];
+    /* The leading note, where the harmony needs one. */
+    const minorish = mode === 'minor' || mode === 'dorian';
+    if (raiseLeading && minorish && i === 6 && (degree === 4 || degree === 6)) semi = 11;
+    return semi;
+  });
+  const third = ((tones[1] - tones[0]) + 12) % 12;
+  const fifth = ((tones[2] - tones[0]) + 12) % 12;
+  const quality = third === 3 && fifth === 6 ? 'diminished'
+    : third === 4 && fifth === 8 ? 'augmented'
+      : third === 3 ? 'minor' : 'major';
+  const numeral = quality === 'major' || quality === 'augmented'
+    ? ROMAN[degree] : ROMAN[degree].toLowerCase();
+  return {
+    degree,
+    tones,
+    quality,
+    seventh,
+    roman: numeral + (quality === 'diminished' ? '°' : '') + (seventh ? '7' : ''),
+  };
+}
+
+const functionOf = (degree) => (TONIC.includes(degree) ? 'tonic'
+  : PREDOMINANT.includes(degree) ? 'predominant' : 'dominant');
+
+/** Where a chord of this function may go next. */
+function successors(fn, r) {
+  if (fn === 'tonic') return r() < 0.55 ? PREDOMINANT : (r() < 0.6 ? DOMINANT : TONIC);
+  if (fn === 'predominant') return r() < 0.75 ? DOMINANT : PREDOMINANT;
+  return r() < 0.85 ? TONIC : DOMINANT;
+}
+
+/**
+ * A phrase's worth of chords, ending where the phrase should end.
+ *
+ * `close` is what the last bar has to be: a full close for a consequent, the
+ * dominant for an antecedent, a deceptive turn where a piece wants one more
+ * phrase before it finishes.  The ending is placed first and the way there is
+ * filled in backwards from it, because the cadence is the point of the phrase
+ * and everything before it is approach.
+ */
+function phrase(bars, mode, close, r, opts = {}) {
+  const { sevenths = false, harmonicRhythm = 1 } = opts;
+  const slots = Math.max(2, Math.round(bars * harmonicRhythm));
+  const degrees = new Array(slots).fill(0);
+
+  if (close === 'half') {
+    degrees[slots - 1] = 4;                       // ends on V, question unanswered
+    degrees[slots - 2] = pick(PREDOMINANT, r);
+  } else if (close === 'deceptive') {
+    degrees[slots - 1] = 5;                       // V–vi, the answer withheld
+    degrees[slots - 2] = 4;
+    if (slots > 2) degrees[slots - 3] = pick(PREDOMINANT, r);
+  } else if (close === 'plagal') {
+    degrees[slots - 1] = 0;
+    degrees[slots - 2] = 3;
+  } else {
+    degrees[slots - 1] = 0;                       // full close
+    degrees[slots - 2] = 4;
+    if (slots > 2) degrees[slots - 3] = pick(PREDOMINANT, r);
+  }
+
+  /* The opening is the tonic more often than not — a phrase has to say where
+   * it is before it can go anywhere. */
+  degrees[0] = r() < 0.75 ? 0 : pick(TONIC, r);
+
+  const fixed = new Set([0, slots - 1, slots - 2, close === 'deceptive' && slots > 2 ? slots - 3 : -1]);
+  for (let i = 1; i < slots - 2; i++) {
+    if (fixed.has(i)) continue;
+    const from = functionOf(degrees[i - 1]);
+    let next = pick(successors(from, r), r);
+    /* Do not sit on the same chord twice unless the harmony is deliberately
+     * slow; repetition is the texture's job, not the harmony's. */
+    if (next === degrees[i - 1] && r() < 0.8) next = pick(successors(from, r), r);
+    degrees[i] = next;
+  }
+
+  /* A chord repeated across a bar line is the harmony standing still while
+   * pretending to move.  Where that happens, the earlier of the two changes to
+   * another chord doing the same job — never the later one, because the later
+   * one is usually part of the cadence. */
+  for (let i = 1; i < slots; i++) {
+    if (degrees[i] !== degrees[i - 1] || fixed.has(i - 1)) continue;
+    const family = functionOf(degrees[i - 1]) === 'tonic' ? TONIC
+      : functionOf(degrees[i - 1]) === 'predominant' ? PREDOMINANT : DOMINANT;
+    const other = family.filter((d) => d !== degrees[i]);
+    if (other.length) degrees[i - 1] = pick(other, r);
+  }
+
+  return degrees.map((d, i) => {
+    /* A seventh on the dominant sharpens the cadence; elsewhere it is colour
+     * and is used more sparingly. */
+    const isCadential = i === slots - 2 && close !== 'half';
+    const wantSeventh = sevenths && (isCadential || (d === 4 && r() < 0.6) || r() < 0.25);
+    return chordOn(d, mode, { seventh: wantSeventh });
+  });
+}
+
+/**
+ * The whole piece's harmony, as a list of phrases.
+ *
+ * Periods: an antecedent that asks and a consequent that answers.  A piece of
+ * more than two phrases keeps asking until the last one, which is the only
+ * place a full close belongs — a cadence in the middle stops the piece there
+ * whatever comes after it.
+ */
+function plan(phrases, barsPerPhrase, mode, r, opts = {}) {
+  const out = [];
+  for (let i = 0; i < phrases; i++) {
+    const last = i === phrases - 1;
+    const close = last ? 'authentic'
+      : i % 2 === 0 ? 'half'
+        : (i === phrases - 2 ? 'deceptive' : 'authentic');
+    out.push({ close, chords: phrase(barsPerPhrase, mode, close, r, opts) });
+  }
+  return out;
+}
+
+/** The pitch classes of a chord, in the key. */
+const chordPitches = (chord, tonic) => chord.tones.map((t) => (tonic + t) % 12);
+
+/** Every pitch class the key contains. */
+const keyPitches = (tonic, mode) =>
+  (SCALES[mode] || SCALES.major).map((s) => (tonic + s) % 12);
+
+__exp.rng = rng;
+__exp.chordOn = chordOn;
+__exp.phrase = phrase;
+__exp.plan = plan;
+__exp.SCALES = SCALES;
+__exp.MODE_NAMES = MODE_NAMES;
+__exp.chordPitches = chordPitches;
+__exp.keyPitches = keyPitches;
+},
+  "js/compose/melody.js": function (__exp, __req) {
+/* Cadenza — the tune.
+ *
+ * A melody is not a walk through the chord tones.  What makes a line sound
+ * composed rather than generated is the shape of it: it moves mostly by step,
+ * it fills a leap by turning back, it saves its highest note for one place and
+ * goes there once, and it arrives at the cadence by step rather than landing
+ * on the tonic from nowhere.  Those are the rules here, and they are applied
+ * as costs rather than prohibitions, so the line has somewhere to go when they
+ * conflict.
+ *
+ * The harmony decides which notes are available; this decides which of them
+ * the tune actually wants.  Chord tones fall on strong beats, and the notes
+ * between them are passing and neighbour notes — the same distinction a
+ * listener makes without being told.
+ */
+
+const pcOf = (midi) => ((midi % 12) + 12) % 12;
+
+/** Every pitch of a set within a range, nearest first to a given centre. */
+function candidates(pitchClasses, lo, hi) {
+  const out = [];
+  for (let m = lo; m <= hi; m++) if (pitchClasses.includes(pcOf(m))) out.push(m);
+  return out;
+}
+
+/**
+ * What it costs for the line to go from `from` to `to` at this moment.
+ *
+ * Every term is a way a tune can go wrong.  Steps are free, leaps are not, a
+ * leap that follows a leap in the same direction is worse still, and a note
+ * that is not in the chord on a beat that carries the harmony is worst of all
+ * unless it is passing between two notes that are.
+ */
+function cost(from, to, prev, ctx) {
+  const { chordTones, scaleTones, strong, centre, climax, atClimax, span } = ctx;
+  const leap = Math.abs(to - from);
+  let c = 0;
+
+  if (leap === 0) c += 2.5;                       // a repeated note says nothing
+  else if (leap <= 2) c += 0;                     // stepwise: the default
+  else if (leap <= 4) c += 1.2;
+  else if (leap <= 7) c += 2.6;
+  else if (leap <= 12) c += 5;
+  else c += 14;                                   // more than an octave: almost never
+
+  /* A leap is answered by a step the other way; two leaps the same way run the
+   * line out of range and out of shape. */
+  if (prev !== null) {
+    const before = from - prev;
+    const now = to - from;
+    if (Math.abs(before) > 2 && Math.sign(now) === Math.sign(before)) c += 2.2;
+    if (Math.abs(before) > 4 && Math.abs(now) > 2) c += 2;
+    if (Math.abs(before) > 2 && Math.abs(now) <= 2
+      && Math.sign(now) !== Math.sign(before)) c -= 1.4;   // the answered leap
+  }
+
+  const inChord = chordTones.includes(pcOf(to));
+  if (strong && !inChord) c += 3.2;
+  if (!strong && !inChord) {
+    /* Off the beat, a non-chord note has to be going somewhere: passing or
+     * neighbouring, which both mean stepwise on the way in. */
+    c += leap <= 2 ? 0.4 : 3.5;
+  }
+  if (!scaleTones.includes(pcOf(to))) c += 6;     // outside the key
+
+  /* Stay in the middle of the voice unless heading for the climax. */
+  c += Math.abs(to - centre) * 0.09;
+  if (atClimax) c -= Math.max(0, 6 - Math.abs(to - climax)) * 1.6;
+  else if (to > climax) c += 5;                   // the top note happens once
+  if (span && (to < span[0] || to > span[1])) c += 20;
+  return c;
+}
+
+/**
+ * Write a melody over a chord plan.
+ *
+ * `cells` are the rhythmic shapes available, each a list of beat lengths
+ * adding up to one bar.  A phrase picks a few and repeats them, because a tune
+ * whose rhythm never repeats has no shape to remember.
+ */
+function melody(chords, opts) {
+  const {
+    scaleTones, range, beatsPerBar, cells, r,
+    climaxAt = 0.68, lift = 7, rest = 0,
+  } = opts;
+  const [lo, hi] = range;
+  const centre = Math.round((lo + hi) / 2);
+  const climax = Math.min(hi, centre + lift);
+
+  /* One rhythm for the phrase, with a variation for its second half: the ear
+   * hears the repeat and the change against it. */
+  const shape = [];
+  const a = cells[Math.floor(r() * cells.length)];
+  const b = cells[Math.floor(r() * cells.length)];
+  for (let i = 0; i < chords.length; i++) shape.push(i % 4 === 3 ? b : (i % 2 ? a : a));
+
+  const notes = [];
+  let prev = null;
+  let current = null;
+  chords.forEach((chord, bar) => {
+    const chordTones = chord.pitches;
+    const cell = shape[bar];
+    let at = 0;
+    cell.forEach((len, k) => {
+      const strong = at === 0 || (beatsPerBar === 4 && at === 2);
+      const last = bar === chords.length - 1 && k === cell.length - 1;
+      const atClimax = bar === Math.round(chords.length * climaxAt) && k === 0;
+
+      /* A rest in the texture: only between phrases, never mid-gesture. */
+      if (rest > 0 && k === cell.length - 1 && bar % 4 === 3 && r() < rest) {
+        at += len;
+        return;
+      }
+
+      let choose = candidates(scaleTones, lo, hi);
+      if (last) {
+        /* The last note is the tonic, reached by step wherever possible. */
+        const tonicPc = chordTones[0];
+        choose = choose.filter((m) => pcOf(m) === tonicPc);
+      }
+      let best = null;
+      let bestCost = Infinity;
+      for (const cand of choose) {
+        const from = current === null ? centre : current;
+        let c = cost(from, cand, prev, {
+          chordTones, scaleTones, strong, centre, climax, atClimax, span: range,
+        });
+        if (last) c += Math.abs(cand - (current === null ? centre : current)) > 2 ? 4 : 0;
+        /* A little noise so two pieces in the same key are not the same piece. */
+        c += r() * 0.9;
+        if (c < bestCost) { bestCost = c; best = cand; }
+      }
+      if (best === null) best = centre;
+      notes.push({ midi: best, beat: bar * beatsPerBar + at, beats: len });
+      prev = current;
+      current = best;
+      at += len;
+    });
+  });
+  return notes;
+}
+
+/** Rhythmic cells, by how busy the music should be, each adding to one bar. */
+function cellsFor(beatsPerBar, busy) {
+  const whole = [[beatsPerBar]];
+  if (beatsPerBar === 3) {
+    const calm = [[3], [2, 1], [1, 2]];
+    const walking = [[1, 1, 1], [2, 1], [1, 0.5, 0.5, 1]];
+    const lively = [[1, 0.5, 0.5, 1], [0.5, 0.5, 1, 1], [1, 1, 0.5, 0.5]];
+    return busy === 'calm' ? calm : busy === 'lively' ? lively : walking;
+  }
+  const calm = [[4], [2, 2], [3, 1]];
+  const walking = [[2, 1, 1], [1, 1, 2], [1, 1, 1, 1], [2, 2]];
+  const lively = [
+    [1, 0.5, 0.5, 1, 1], [0.5, 0.5, 1, 1, 1], [1, 1, 0.5, 0.5, 1], [0.5, 0.5, 0.5, 0.5, 2],
+  ];
+  return busy === 'calm' ? calm : busy === 'lively' ? lively : walking.concat(whole);
+}
+
+__exp.melody = melody;
+__exp.cellsFor = cellsFor;
+},
+  "js/compose/texture.js": function (__exp, __req) {
+/* Cadenza — what the other hand is doing.
+ *
+ * The same progression is a hymn, a waltz or a nocturne depending only on how
+ * its chords are laid out in time, so the texture is kept separate from the
+ * harmony that feeds it.  Two things matter and both are easy to get wrong.
+ *
+ * The first is register: a chord written wherever its notes happen to fall
+ * will jump about the keyboard between bars.  So each chord is voiced near the
+ * last one — the same notes, arranged to move as little as possible — which is
+ * what a player's hand does without being asked.
+ *
+ * The second is the bass.  The lowest note is the one that says which chord
+ * this is, so it follows the root except where an inversion makes a smoother
+ * line, and it never leaps where it could step.
+ */
+
+const pcOf = (midi) => ((midi % 12) + 12) % 12;
+
+/**
+ * Put a chord where the hand already is.
+ *
+ * Every arrangement of the chord's notes inside the range is tried, and the
+ * one that moves least from the previous chord wins.  Parallel octaves and
+ * fifths between the outer parts are given a cost rather than a ban: they are
+ * a fault in four-part writing and unremarkable in a guitar strum, and the
+ * caller says which this is.
+ */
+function voiceChord(pitches, opts) {
+  const { range, previous = null, size = 3, bass = null, strict = false } = opts;
+  const [lo, hi] = range;
+  const pool = [];
+  for (let m = lo; m <= hi; m++) if (pitches.includes(pcOf(m))) pool.push(m);
+  if (!pool.length) return [];
+
+  /* The bass first: the root, low, and near where the last one was. */
+  const rootPc = bass === null ? pitches[0] : bass;
+  const prevBass = previous && previous.length ? previous[0] : lo + 7;
+  /* Two or three places the bass could go, not one.  Fixing the bass before
+   * looking at the upper parts is what makes parallels unavoidable: once the
+   * outer pair has been committed to, no arrangement of the middle can undo
+   * the fifths between them. */
+  const bassOptions = (pool.filter((m) => pcOf(m) === rootPc && m <= lo + 24).length
+    ? pool.filter((m) => pcOf(m) === rootPc && m <= lo + 24) : pool)
+    .sort((a, b) => Math.abs(a - prevBass) - Math.abs(b - prevBass))
+    .slice(0, 3);
+
+  /* Then every reasonable arrangement of the rest, scored.  Searching beats
+   * patching: a voicing with a parallel fifth in it cannot always be repaired
+   * by swapping two notes, but there is nearly always another arrangement of
+   * the same chord that never had one. */
+  const wanted = pitches.filter((pc) => pc !== rootPc);
+  const need = Math.max(1, Math.min(size - 1, wanted.length));
+
+  const parallelWith = (before, after) => {
+    if (!before || before.length < 2 || after.length < 2) return 0;
+    let count = 0;
+    /* Outer parts are what a listener follows, so those are what is checked. */
+    const pairs = [[0, before.length - 1, 0, after.length - 1]];
+    for (const [i0, i1, j0, j1] of pairs) {
+      const was = ((before[i1] - before[i0]) % 12 + 12) % 12;
+      const now = ((after[j1] - after[j0]) % 12 + 12) % 12;
+      const moved = after[j1] !== before[i1] && after[j0] !== before[i0];
+      const sameWay = Math.sign(after[j1] - before[i1]) === Math.sign(after[j0] - before[i0]);
+      if (was === now && (now === 0 || now === 7) && moved && sameWay) count++;
+    }
+    return count;
+  };
+
+  let best = null;
+  let bestCost = Infinity;
+  let low = bassOptions[0];
+  let choices = [];
+  const walk = (i, acc) => {
+    if (i === choices.length) {
+      const voicing = [low, ...acc].sort((a, b) => a - b);
+      let cost = 0;
+      acc.forEach((m, k) => {
+        const was = previous && previous[k + 1] !== undefined ? previous[k + 1] : m;
+        cost += Math.abs(m - was);
+      });
+      cost += Math.abs(low - prevBass) * 0.5;
+      /* Voices crossing or piling up in one octave. */
+      for (let k = 1; k < voicing.length; k++) {
+        const gap = voicing[k] - voicing[k - 1];
+        if (gap === 0) cost += 8;
+        if (gap > 12) cost += (gap - 12) * 0.4;
+      }
+      if (strict) cost += parallelWith(previous, voicing) * 60;
+      if (cost < bestCost) { bestCost = cost; best = voicing; }
+      return;
+    }
+    for (const m of choices[i]) {
+      if (acc.includes(m)) continue;
+      walk(i + 1, acc.concat(m));
+    }
+  };
+
+  for (const option of bassOptions) {
+    low = option;
+    choices = wanted.slice(0, need).map((pc, i) => {
+      const target = previous && previous[i + 1] !== undefined ? previous[i + 1] : low + 5 + i * 4;
+      return pool.filter((m) => pcOf(m) === pc && m > low)
+        .sort((a, b) => Math.abs(a - target) - Math.abs(b - target))
+        .slice(0, 3);
+    });
+    if (choices.some((c) => !c.length)) continue;
+    walk(0, []);
+  }
+  return best || [bassOptions[0], ...pool.filter((m) => m > bassOptions[0]).slice(0, need)];
+}
+
+/**
+ * Lay one chord out across one bar.
+ *
+ * Returns [{ midi, beat, beats }] with beats measured from the start of the
+ * bar.  Every pattern fills the bar exactly; nothing here decides harmony.
+ */
+function layOut(style, voicing, beatsPerBar, opts = {}) {
+  const { r = Math.random, last = false } = opts;
+  const out = [];
+  const add = (midi, beat, beats) => out.push({ midi, beat, beats });
+  const [bass, ...upper] = voicing;
+  const chord = upper.length ? upper : [bass];
+
+  switch (style) {
+    case 'block':
+      for (const m of voicing) add(m, 0, beatsPerBar);
+      break;
+
+    case 'chorale': {
+      /* One chord to a beat, so the part-writing is audible. */
+      for (let b = 0; b < beatsPerBar; b++) for (const m of voicing) add(m, b, 1);
+      break;
+    }
+
+    case 'waltz': {
+      add(bass, 0, 1);
+      for (let b = 1; b < beatsPerBar; b++) for (const m of chord) add(m, b, 1);
+      break;
+    }
+
+    case 'alberti': {
+      /* Low, high, middle, high — the figure that keeps a chord sounding while
+       * leaving the tune room above it.  In quavers, because the pattern has
+       * to divide the bar into values that can be written. */
+      const order = [bass, chord[chord.length - 1], chord[0], chord[chord.length - 1]];
+      const step = 0.5;
+      const count = Math.round(beatsPerBar / step);
+      for (let i = 0; i < count; i++) {
+        const m = order[i % order.length];
+        add(m === undefined ? bass : m, i * step, step);
+      }
+      break;
+    }
+
+    case 'arpeggio': {
+      /* Up and back down, in quavers.  Dividing the bar by however many notes
+       * the chord happens to have is what produces durations no one can read:
+       * five notes to a bar is a quintuplet, and nobody asked for one. */
+      const step = 0.5;
+      const count = Math.round(beatsPerBar / step);
+      const cycle = [bass, ...chord];
+      const span = Math.max(1, cycle.length * 2 - 2);
+      for (let i = 0; i < count; i++) {
+        const k = i % span;
+        const m = cycle[k < cycle.length ? k : span - k];
+        add(m === undefined ? bass : m, i * step, step);
+      }
+      break;
+    }
+
+    case 'walking': {
+      /* One note a beat, mostly stepping: a bass line rather than a chord. */
+      const tones = voicing.slice();
+      for (let b = 0; b < beatsPerBar; b++) {
+        const m = b === 0 ? bass : tones[Math.min(tones.length - 1, b % tones.length)];
+        add(m, b, 1);
+      }
+      break;
+    }
+
+    case 'sustained':
+    default:
+      for (const m of voicing) add(m, 0, beatsPerBar);
+      break;
+  }
+
+  /* The last bar of a piece is held, whatever the pattern was doing. */
+  if (last) {
+    return voicing.map((m) => ({ midi: m, beat: 0, beats: beatsPerBar }));
+  }
+  return out;
+}
+
+const TEXTURES = {
+  block: 'Block chords',
+  chorale: 'Four-part chorale',
+  waltz: 'Waltz accompaniment',
+  alberti: 'Alberti bass',
+  arpeggio: 'Broken chords',
+  walking: 'Walking bass',
+  sustained: 'Sustained chords',
+};
+
+__exp.voiceChord = voiceChord;
+__exp.layOut = layOut;
+__exp.TEXTURES = TEXTURES;
 },
   "js/ui/shortcuts.js": function (__exp, __req) {
 /* Cadenza — keyboard handling.

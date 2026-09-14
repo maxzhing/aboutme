@@ -42,6 +42,21 @@ function meter(label, value, note = '') {
     + (note ? `<span class="tr-meter-note">${note}</span>` : '') + '</div>';
 }
 
+/* What the listening loop meant by the reason it gave for stopping.  A reader
+ * who is told only that it "tried" has been told nothing; these say which of
+ * the loop's own limits was reached, so the number on the meter can be
+ * understood rather than merely believed. */
+const WHY_STOPPED = {
+  'close enough': 'It matched closely enough to stop.',
+  'no further gain': 'Further passes stopped improving it.',
+  'nothing further to try': 'It worked through five levels of effort, down to the faintest '
+    + 'evidence it will act on, and none of the remaining corrections improved the match.',
+  'nothing left to correct': 'It ran out of differences it could act on: what is left is energy '
+    + 'in the recording that does not sit on any one pitch clearly enough to write down.',
+  'going round in circles': 'It began repeating readings it had already measured, so it kept the best one.',
+  'passes exhausted': 'It used all twenty passes and was still improving when it stopped.',
+};
+
 const ISSUE_TEXT = {
   missing: 'a note in the recording that is not in the score',
   extra: 'a note in the score that is not in the recording',
@@ -601,20 +616,21 @@ export class TranscribePanel {
             <b>${a.measures}</b> bar${a.measures === 1 ? '' : 's'}
           </div>
           ${a.listened ? `<div class="tr-verified">
-            <b>Checked against the recording.</b> Cadenza played its own score back
-            ${a.passes.length} time${a.passes.length === 1 ? '' : 's'}, compared it with what you played
-            and made ${a.corrections.length} correction${a.corrections.length === 1 ? '' : 's'}.
-            ${a.passes.length > 1 && pct(a.similarity) > pct(a.passes[0].similarity)
-    ? `Match rose from ${pct(a.passes[0].similarity)}% to ${pct(a.similarity)}%.`
-    : 'The corrections it tried after that did not improve the match, so it kept this reading.'}
+            <b>Checked against the recording.</b> Played its own score back
+            ${a.passes.length} time${a.passes.length === 1 ? '' : 's'} and made
+            ${a.corrections.length} correction${a.corrections.length === 1 ? '' : 's'}.
+            ${a.passes.length > 1 ? `Match went from ${pct(a.passes[0].similarity)}%
+              to ${pct(a.similarity)}%.` : ''}
           </div>` : ''}
           ${a.listened && a.reachedFloor === false ? `<div class="tr-shaky">
-            It kept working until the corrections ran out and reached
-            ${pct(a.similarity)}%, short of the ${pct(a.matchFloor)}% it aims for.
-            The recording has more in it than this reading accounts for — dense
-            or many-voiced music is the usual reason. What is on the page is the
-            best of ${a.passes.length} attempt${a.passes.length === 1 ? '' : 's'};
-            everything it could not account for is listed under Show the working.
+            <b>Reached ${pct(a.similarity)}% — short of the ${pct(a.matchFloor)}% it works towards.</b>
+            ${esc(WHY_STOPPED[a.stoppedBecause] || 'It ran out of passes.')}
+            ${a.difference ? `The recording still holds ${a.difference.missing.length}
+              sound${a.difference.missing.length === 1 ? '' : 's'} this score does not
+              account for${a.difference.extra.length ? `, and the score has
+              ${a.difference.extra.length} the recording does not` : ''}.` : ''}
+            Each one is listed under <b>Show the working</b>, so what it could not place
+            can be looked at rather than taken on trust.
           </div>` : ''}
           <div class="tr-meters">
             ${a.listened ? meter('Match', a.similarity, 'how much of the recording the score accounts for') : ''}

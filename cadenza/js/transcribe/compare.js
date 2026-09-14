@@ -24,8 +24,10 @@
 
 import { stft, stftSteps, toMono, rms, midiToHz } from './dsp.js';
 import { runSync } from './steps.js';
-import { salienceAt, whiten, estimateF0s, residualSpectrum, estimateFromWhitened, MIN_MIDI, MAX_MIDI } from './polyphony.js';
-import { detectOnsets, onsetSteps } from './onsets.js';
+import {
+  salienceAt, whiten, residualSpectrum, estimateFromWhitened, MIN_MIDI, MAX_MIDI
+} from './polyphony.js';
+import { onsetSteps } from './onsets.js';
 
 /**
  * How much each pitch is sounding, frame by frame.

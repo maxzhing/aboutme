@@ -26,6 +26,7 @@ import { PianoKeyboard } from './piano.js';
 import { MidiInput } from './midi.js';
 import { ESSENTIALS, PALETTES } from './ribbon.js';
 import { TranscribePanel } from './transcribe-panel.js';
+import { ComposePanel } from './compose-panel.js';
 import { installShortcuts, SHORTCUT_HELP } from './shortcuts.js';
 
 const ZOOM_STEPS = [0.5, 0.62, 0.75, 0.88, 1, 1.15, 1.35, 1.6, 1.9, 2.3, 2.8];
@@ -659,6 +660,14 @@ export class Cadenza {
     end.className = 'grp grp-end';
     const endRow = document.createElement('div');
     endRow.className = 'grp-row';
+    const cb = document.createElement('button');
+    cb.className = 'rb wide';
+    cb.dataset.act = 'compose';
+    cb.dataset.tip = 'Write a piece from a key and a character, then edit it';
+    cb.innerHTML = UI.compose + '<span class="lbl">Compose</span>';
+    cb.onclick = () => this.act('compose');
+    endRow.appendChild(cb);
+
     const tb = document.createElement('button');
     tb.className = 'rb wide accent';
     tb.dataset.act = 'transcribe';
@@ -1234,6 +1243,7 @@ export class Cadenza {
         return;
       }
       case 'transcribe': this.openTranscribe(); return;
+      case 'compose': this.openCompose(); return;
       case 'rest': {
         if (this.noteEntry) {
           this.setCursor(Edit.enterRest(this, this.cursor, { duration: this.duration, dots: this.dots }), { scroll: true });
@@ -2064,6 +2074,13 @@ export class Cadenza {
   openTranscribe() {
     if (!this.transcriber) this.transcriber = new TranscribePanel(this);
     this.transcriber.open();
+  }
+
+  /* --------------------------------------------------------- composition */
+
+  openCompose() {
+    if (!this.composer) this.composer = new ComposePanel(this);
+    this.composer.open();
   }
 
   /** Play a score that is not the document, so a transcription can be heard. */
