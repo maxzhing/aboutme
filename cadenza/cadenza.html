@@ -13675,7 +13675,7 @@ __exp.CancelledError = CancelledError;
 const { stft, toMono, rms, midiToHz } = __req("js/transcribe/dsp.js");
 const { runSync } = __req("js/transcribe/steps.js");
 const { estimateF0s, ownPartialEnergy } = __req("js/transcribe/polyphony.js");
-const { detectOnsets } = __req("js/transcribe/onsets.js");
+const { detectOnsets, onsetSteps } = __req("js/transcribe/onsets.js");
 
 const POW2 = [1024, 2048, 4096, 8192, 16384];
 const fitWindow = (seconds, sampleRate, cap) => {
@@ -13880,7 +13880,7 @@ function* extractSteps(audio, options = {}) {
 
   const samples = toMono(audio);
   const duration = samples.length / sampleRate;
-  const { onsets } = detectOnsets(samples, { sampleRate, sensitivity });
+  const { onsets } = yield* onsetSteps(samples, { sampleRate, sensitivity });
 
   /* Attacks cut the take into segments, starting from the first sound. */
   const bounds = [{ time: onsets.length ? Math.min(onsets[0].time, 0.02) : 0, strength: 1 }];
@@ -14135,6 +14135,8 @@ __exp.extractNotes = extractNotes;
 __exp.extractSteps = extractSteps;
 },
   "js/transcribe/dsp.js": function (__exp, __req) {
+const { runSync } = __req("js/transcribe/steps.js");
+
 /* Cadenza — signal processing for transcription.
  *
  * Plain arrays and a radix-2 FFT: no dependencies, and fast enough that a
@@ -14187,7 +14189,7 @@ function hann(size) {
  * Short-time magnitude spectrum.
  * Returns { frames: Float32Array[], hop, size, sampleRate, times }.
  */
-function stft(samples, { size = 4096, hop = 512, sampleRate = 44100 } = {}) {
+function* stftSteps(samples, { size = 4096, hop = 512, sampleRate = 44100 } = {}) {
   const win = hann(size);
   const bins = size / 2;
   const frames = [];
@@ -14204,8 +14206,20 @@ function stft(samples, { size = 4096, hop = 512, sampleRate = 44100 } = {}) {
     for (let k = 0; k < bins; k++) mag[k] = Math.hypot(re[k], im[k]);
     frames.push(mag);
     times.push(start / sampleRate);
+    /* A few minutes of audio is thousands of transforms.  Done in one run that
+     * is seconds with no chance for anything else to happen, which on a page is
+     * seconds of not answering. */
+    if ((frames.length & 63) === 0) yield { stage: 'transform', frames: frames.length };
   }
   return { frames, hop, size, sampleRate, times, binHz: sampleRate / size };
+}
+
+/**
+ * Short-time Fourier transform: overlapping windows, each one a spectrum.
+ * Returns { frames, times, binHz, hop, size, sampleRate }.
+ */
+function stft(samples, opts) {
+  return runSync(stftSteps(samples, opts));
 }
 
 /** Mix an AudioBuffer (or an array of channels) down to mono. */
@@ -14275,6 +14289,7 @@ function movingMedian(values, radius) {
 
 __exp.fft = fft;
 __exp.hann = hann;
+__exp.stftSteps = stftSteps;
 __exp.stft = stft;
 __exp.toMono = toMono;
 __exp.refinePeak = refinePeak;
@@ -15020,7 +15035,8 @@ __exp.MAX_MIDI = MAX_MIDI;
  * where timing is sharp, independently of the pitch analysis.
  */
 
-const { stft, movingMedian } = __req("js/transcribe/dsp.js");
+const { stftSteps, movingMedian } = __req("js/transcribe/dsp.js");
+const { runSync } = __req("js/transcribe/steps.js");
 
 /**
  * Spectral flux: how much energy appeared since the previous frame.  Only
@@ -15046,11 +15062,11 @@ function spectralFlux(frames) {
  * `sensitivity` scales the threshold: higher finds more (and riskier) attacks.
  * Returns [{ time, strength }].
  */
-function detectOnsets(samples, {
+function* onsetSteps(samples, {
   sampleRate = 44100, size = 1024, hop = 256, sensitivity = 1,
   minGap = 0.085,
 } = {}) {
-  const spec = stft(samples, { size, hop, sampleRate });
+  const spec = yield* stftSteps(samples, { size, hop, sampleRate });
   if (spec.frames.length < 3) return { onsets: [], flux: new Float32Array(0), spec };
 
   const flux = spectralFlux(spec.frames);
@@ -15099,6 +15115,17 @@ function detectOnsets(samples, {
 }
 
 /**
+ * Where the attacks are.
+ * Returns { onsets: [{ time, strength }], flux, spec }.
+ */
+function detectOnsets(samples, opts) {
+  return runSync(onsetSteps(samples, opts));
+}
+
+
+
+
+/**
  * The energy envelope, used to tell silence from sound so that rests can be
  * written where the performer actually stopped playing.
  */
@@ -15120,6 +15147,7 @@ function energyEnvelope(samples, { sampleRate = 44100, window = 0.02 } = {}) {
 __exp.spectralFlux = spectralFlux;
 __exp.detectOnsets = detectOnsets;
 __exp.energyEnvelope = energyEnvelope;
+__exp.onsetSteps = onsetSteps;
 },
   "js/transcribe/rhythm.js": function (__exp, __req) {
 /* Cadenza — finding the beat, and fitting what was played to it.
@@ -18273,6 +18301,7 @@ __exp.ALL_PARTS = ALL_PARTS;
 const { renderSteps } = __req("js/transcribe/render.js");
 const { compareSteps, salienceSteps, candidatePitches, activePitches, verifyPitchAt } = __req("js/transcribe/compare.js");
 const { toMono, midiToHz } = __req("js/transcribe/dsp.js");
+const { onsetSteps } = __req("js/transcribe/onsets.js");
 const { runSync } = __req("js/transcribe/steps.js");
 
 const MIN_GAIN = 0.004;        // an improvement smaller than this is noise
@@ -18294,7 +18323,7 @@ const covering = (notes, midi, from, to) =>
  * Strongest first, and capped per pass: a loop that rewrites half the piece at
  * once cannot tell which of its changes helped.
  */
-function applyCorrections(notes, diff, opts) {
+function* correctionSteps(notes, diff, opts) {
   const {
     limit, harmonyAt = null, exclude = null,
     /* How clearly the recording has to show a pitch before one is written in,
@@ -18314,7 +18343,14 @@ function applyCorrections(notes, diff, opts) {
   /* Pair a missing pitch with an extra one an octave away at the same moment:
    * that is one note in the wrong octave, not two separate mistakes. */
   const usedExtra = new Set();
+  let work = 0;
+  /* Checking a candidate against the recording is a spectrum transform each
+   * time, and there are hundreds of candidates on a few minutes of audio.
+   * Done in one go that is the longest block in the program — long enough for
+   * a browser to offer to close the tab.  It pauses as it goes. */
+  const breathe = function* () { if ((work++ & 3) === 3) yield { stage: "correcting", work }; };
   for (const miss of diff.missing) {
+    yield* breathe();
     if (miss.strength < MIN_RUN_STRENGTH) continue;
     /* One octave, or two.  Further than that and these are not one note in the
      * wrong octave but two unrelated mistakes that happen to share a letter. */
@@ -18334,6 +18370,7 @@ function applyCorrections(notes, diff, opts) {
   }
 
   for (const miss of diff.missing) {
+    yield* breathe();
     if (miss.strength < MIN_RUN_STRENGTH) continue;
     if (edits.some((e) => e.kind === 'octave' && e.describe.endsWith('→ ' + miss.midi))) continue;
     const near = out.find((n) => n.midi === miss.midi
@@ -18376,6 +18413,7 @@ function applyCorrections(notes, diff, opts) {
   }
 
   for (let i = 0; i < diff.extra.length; i++) {
+    yield* breathe();
     const x = diff.extra[i];
     if (usedExtra.has(i) || x.strength < MIN_RUN_STRENGTH) continue;
     const note = covering(out, x.midi, x.from, x.to);
@@ -18424,6 +18462,11 @@ function applyCorrections(notes, diff, opts) {
   return { notes: kept, edits: taken };
 }
 
+/** The same, straight through, for callers that are not pausing. */
+function applyCorrections(notes, diff, opts) {
+  return runSync(correctionSteps(notes, diff, opts));
+}
+
 /**
  * Listen to the transcription and correct it until it stops improving.
  *
@@ -18462,6 +18505,8 @@ function* refineSteps(ctx, opts = {}) {
   const wide = [];
   for (let m = lo; m <= hi; m++) wide.push(m);
   const fullMap = yield* salienceSteps(original.audio, sampleRate, { pitches: wide });
+  /* Found once and reused: the recording's attacks do not move between passes. */
+  const originalOnsets = (yield* onsetSteps(toMono(ctx.audio), { sampleRate })).onsets;
   const heard = activePitches(fullMap);
 
   const history = [];
@@ -18493,7 +18538,7 @@ function* refineSteps(ctx, opts = {}) {
     onProgress('comparing', { pass });
     yield { stage: 'comparing', pass };
     let diff = yield* compareSteps(original, { audio: rendered.samples, sampleRate },
-      { pitches, originalMap: fullMap });
+      { pitches, originalMap: fullMap, originalOnsets });
 
     const entry = {
       pass,
@@ -18593,19 +18638,19 @@ function* refineSteps(ctx, opts = {}) {
       return strength;
     };
     yield { stage: 'correcting', pass };
-    const attempt = () => {
+    const attempt = function* () {
       const share = narrow ? 0.08 : [0.3, 0.5, 0.75][reach];
       const limit = Math.max(1, Math.min(40, Math.ceil(notes.length * share)));
       /* Trying harder means accepting slightly thinner evidence for a note.
        * It is bounded, and a round built on it is thrown away unless the match
        * actually improves. */
-      return applyCorrections(notes, diff, {
+      return yield* correctionSteps(notes, diff, {
         limit, harmonyAt, measure, exclude: rejected,
         addBar: [0.12, 0.09, 0.07][reach], dropBar: 0.1,
       });
     };
     yield { stage: 'correcting', pass };
-    let step = attempt();
+    let step = yield* attempt();
     /* Nothing to correct is a fine reason to stop with a good reading and a
      * poor one with a bad one.  While the match is below the floor, having run
      * out of corrections means the net was too narrow, not that the score is
@@ -18615,7 +18660,7 @@ function* refineSteps(ctx, opts = {}) {
       verified = new Map();
       narrow = false;
       yield { stage: 'correcting', pass, reach };
-      step = attempt();
+      step = yield* attempt();
     }
     narrow = false;
     if (!step.edits.length) { entry.stopped = 'nothing left to correct'; break; }
@@ -18827,10 +18872,10 @@ __exp.renderSteps = renderSteps;
  * the original — the recording is the authority.
  */
 
-const { stft, toMono, rms, midiToHz } = __req("js/transcribe/dsp.js");
+const { stft, stftSteps, toMono, rms, midiToHz } = __req("js/transcribe/dsp.js");
 const { runSync } = __req("js/transcribe/steps.js");
 const { salienceAt, whiten, estimateF0s, residualSpectrum, estimateFromWhitened, MIN_MIDI, MAX_MIDI } = __req("js/transcribe/polyphony.js");
-const { detectOnsets } = __req("js/transcribe/onsets.js");
+const { detectOnsets, onsetSteps } = __req("js/transcribe/onsets.js");
 
 /**
  * How much each pitch is sounding, frame by frame.
@@ -18842,7 +18887,7 @@ const { detectOnsets } = __req("js/transcribe/onsets.js");
 function* salienceSteps(audio, sampleRate, opts = {}) {
   const { pitches = null, size = 4096, hop = 2048, harmonics = 12 } = opts;
   const samples = toMono(audio);
-  const spec = stft(samples, { size, hop, sampleRate });
+  const spec = yield* stftSteps(samples, { size, hop, sampleRate });
   const list = pitches && pitches.length ? [...pitches].sort((a, b) => a - b)
     : rangeOf(MIN_MIDI, MAX_MIDI);
   const frames = spec.frames.length;
@@ -19148,8 +19193,13 @@ function* compareSteps(original, rendered, opts = {}) {
   spectral = counted ? spectral / counted : 0;
   yield { stage: 'comparing', progress: 1 };
 
-  const onA = detectOnsets(toMono(original.audio), { sampleRate: rate, sensitivity }).onsets;
-  const onB = detectOnsets(toMono(rendered.audio), { sampleRate: rendered.sampleRate, sensitivity }).onsets;
+  /* The recording does not change between passes, so its attacks are found
+   * once and handed back in.  Finding them again every pass was several
+   * seconds of the same answer, a dozen times over. */
+  const onA = opts.originalOnsets
+    || (yield* onsetSteps(toMono(original.audio), { sampleRate: rate, sensitivity })).onsets;
+  const onB = (yield* onsetSteps(toMono(rendered.audio),
+    { sampleRate: rendered.sampleRate, sensitivity })).onsets;
   const onsets = onsetAgreement(onA, onB);
 
   const envA = envelope(original.audio, rate, hop, frames, size);

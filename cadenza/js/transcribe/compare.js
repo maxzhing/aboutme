@@ -22,10 +22,10 @@
  * the original — the recording is the authority.
  */
 
-import { stft, toMono, rms, midiToHz } from './dsp.js';
+import { stft, stftSteps, toMono, rms, midiToHz } from './dsp.js';
 import { runSync } from './steps.js';
 import { salienceAt, whiten, estimateF0s, residualSpectrum, estimateFromWhitened, MIN_MIDI, MAX_MIDI } from './polyphony.js';
-import { detectOnsets } from './onsets.js';
+import { detectOnsets, onsetSteps } from './onsets.js';
 
 /**
  * How much each pitch is sounding, frame by frame.
@@ -37,7 +37,7 @@ import { detectOnsets } from './onsets.js';
 function* salienceSteps(audio, sampleRate, opts = {}) {
   const { pitches = null, size = 4096, hop = 2048, harmonics = 12 } = opts;
   const samples = toMono(audio);
-  const spec = stft(samples, { size, hop, sampleRate });
+  const spec = yield* stftSteps(samples, { size, hop, sampleRate });
   const list = pitches && pitches.length ? [...pitches].sort((a, b) => a - b)
     : rangeOf(MIN_MIDI, MAX_MIDI);
   const frames = spec.frames.length;
@@ -343,8 +343,13 @@ function* compareSteps(original, rendered, opts = {}) {
   spectral = counted ? spectral / counted : 0;
   yield { stage: 'comparing', progress: 1 };
 
-  const onA = detectOnsets(toMono(original.audio), { sampleRate: rate, sensitivity }).onsets;
-  const onB = detectOnsets(toMono(rendered.audio), { sampleRate: rendered.sampleRate, sensitivity }).onsets;
+  /* The recording does not change between passes, so its attacks are found
+   * once and handed back in.  Finding them again every pass was several
+   * seconds of the same answer, a dozen times over. */
+  const onA = opts.originalOnsets
+    || (yield* onsetSteps(toMono(original.audio), { sampleRate: rate, sensitivity })).onsets;
+  const onB = (yield* onsetSteps(toMono(rendered.audio),
+    { sampleRate: rendered.sampleRate, sensitivity })).onsets;
   const onsets = onsetAgreement(onA, onB);
 
   const envA = envelope(original.audio, rate, hop, frames, size);

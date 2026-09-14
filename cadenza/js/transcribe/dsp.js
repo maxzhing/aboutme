@@ -1,3 +1,5 @@
+import { runSync } from './steps.js';
+
 /* Cadenza — signal processing for transcription.
  *
  * Plain arrays and a radix-2 FFT: no dependencies, and fast enough that a
@@ -50,7 +52,7 @@ export function hann(size) {
  * Short-time magnitude spectrum.
  * Returns { frames: Float32Array[], hop, size, sampleRate, times }.
  */
-export function stft(samples, { size = 4096, hop = 512, sampleRate = 44100 } = {}) {
+export function* stftSteps(samples, { size = 4096, hop = 512, sampleRate = 44100 } = {}) {
   const win = hann(size);
   const bins = size / 2;
   const frames = [];
@@ -67,8 +69,20 @@ export function stft(samples, { size = 4096, hop = 512, sampleRate = 44100 } = {
     for (let k = 0; k < bins; k++) mag[k] = Math.hypot(re[k], im[k]);
     frames.push(mag);
     times.push(start / sampleRate);
+    /* A few minutes of audio is thousands of transforms.  Done in one run that
+     * is seconds with no chance for anything else to happen, which on a page is
+     * seconds of not answering. */
+    if ((frames.length & 63) === 0) yield { stage: 'transform', frames: frames.length };
   }
   return { frames, hop, size, sampleRate, times, binHz: sampleRate / size };
+}
+
+/**
+ * Short-time Fourier transform: overlapping windows, each one a spectrum.
+ * Returns { frames, times, binHz, hop, size, sampleRate }.
+ */
+export function stft(samples, opts) {
+  return runSync(stftSteps(samples, opts));
 }
 
 /** Mix an AudioBuffer (or an array of channels) down to mono. */

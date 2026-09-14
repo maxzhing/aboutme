@@ -14,7 +14,7 @@
 import { stft, toMono, rms, midiToHz } from './dsp.js';
 import { runSync } from './steps.js';
 import { estimateF0s, ownPartialEnergy } from './polyphony.js';
-import { detectOnsets } from './onsets.js';
+import { detectOnsets, onsetSteps } from './onsets.js';
 
 const POW2 = [1024, 2048, 4096, 8192, 16384];
 const fitWindow = (seconds, sampleRate, cap) => {
@@ -219,7 +219,7 @@ function* extractSteps(audio, options = {}) {
 
   const samples = toMono(audio);
   const duration = samples.length / sampleRate;
-  const { onsets } = detectOnsets(samples, { sampleRate, sensitivity });
+  const { onsets } = yield* onsetSteps(samples, { sampleRate, sensitivity });
 
   /* Attacks cut the take into segments, starting from the first sound. */
   const bounds = [{ time: onsets.length ? Math.min(onsets[0].time, 0.02) : 0, strength: 1 }];

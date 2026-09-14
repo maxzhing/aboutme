@@ -5,7 +5,8 @@
  * where timing is sharp, independently of the pitch analysis.
  */
 
-import { stft, movingMedian } from './dsp.js';
+import { stftSteps, movingMedian } from './dsp.js';
+import { runSync } from './steps.js';
 
 /**
  * Spectral flux: how much energy appeared since the previous frame.  Only
@@ -31,11 +32,11 @@ export function spectralFlux(frames) {
  * `sensitivity` scales the threshold: higher finds more (and riskier) attacks.
  * Returns [{ time, strength }].
  */
-export function detectOnsets(samples, {
+function* onsetSteps(samples, {
   sampleRate = 44100, size = 1024, hop = 256, sensitivity = 1,
   minGap = 0.085,
 } = {}) {
-  const spec = stft(samples, { size, hop, sampleRate });
+  const spec = yield* stftSteps(samples, { size, hop, sampleRate });
   if (spec.frames.length < 3) return { onsets: [], flux: new Float32Array(0), spec };
 
   const flux = spectralFlux(spec.frames);
@@ -82,6 +83,17 @@ export function detectOnsets(samples, {
   }
   return { onsets, flux: norm, spec };
 }
+
+/**
+ * Where the attacks are.
+ * Returns { onsets: [{ time, strength }], flux, spec }.
+ */
+export function detectOnsets(samples, opts) {
+  return runSync(onsetSteps(samples, opts));
+}
+
+export { onsetSteps };
+
 
 /**
  * The energy envelope, used to tell silence from sound so that rests can be

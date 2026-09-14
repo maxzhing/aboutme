@@ -30,6 +30,7 @@ import {
   compareSteps, salienceSteps, candidatePitches, activePitches, verifyPitchAt
 } from './compare.js';
 import { toMono, midiToHz } from './dsp.js';
+import { onsetSteps } from './onsets.js';
 import { runSync } from './steps.js';
 
 const MIN_GAIN = 0.004;        // an improvement smaller than this is noise
@@ -51,7 +52,7 @@ const covering = (notes, midi, from, to) =>
  * Strongest first, and capped per pass: a loop that rewrites half the piece at
  * once cannot tell which of its changes helped.
  */
-function applyCorrections(notes, diff, opts) {
+function* correctionSteps(notes, diff, opts) {
   const {
     limit, harmonyAt = null, exclude = null,
     /* How clearly the recording has to show a pitch before one is written in,
@@ -71,7 +72,14 @@ function applyCorrections(notes, diff, opts) {
   /* Pair a missing pitch with an extra one an octave away at the same moment:
    * that is one note in the wrong octave, not two separate mistakes. */
   const usedExtra = new Set();
+  let work = 0;
+  /* Checking a candidate against the recording is a spectrum transform each
+   * time, and there are hundreds of candidates on a few minutes of audio.
+   * Done in one go that is the longest block in the program — long enough for
+   * a browser to offer to close the tab.  It pauses as it goes. */
+  const breathe = function* () { if ((work++ & 3) === 3) yield { stage: "correcting", work }; };
   for (const miss of diff.missing) {
+    yield* breathe();
     if (miss.strength < MIN_RUN_STRENGTH) continue;
     /* One octave, or two.  Further than that and these are not one note in the
      * wrong octave but two unrelated mistakes that happen to share a letter. */
@@ -91,6 +99,7 @@ function applyCorrections(notes, diff, opts) {
   }
 
   for (const miss of diff.missing) {
+    yield* breathe();
     if (miss.strength < MIN_RUN_STRENGTH) continue;
     if (edits.some((e) => e.kind === 'octave' && e.describe.endsWith('→ ' + miss.midi))) continue;
     const near = out.find((n) => n.midi === miss.midi
@@ -133,6 +142,7 @@ function applyCorrections(notes, diff, opts) {
   }
 
   for (let i = 0; i < diff.extra.length; i++) {
+    yield* breathe();
     const x = diff.extra[i];
     if (usedExtra.has(i) || x.strength < MIN_RUN_STRENGTH) continue;
     const note = covering(out, x.midi, x.from, x.to);
@@ -181,6 +191,11 @@ function applyCorrections(notes, diff, opts) {
   return { notes: kept, edits: taken };
 }
 
+/** The same, straight through, for callers that are not pausing. */
+function applyCorrections(notes, diff, opts) {
+  return runSync(correctionSteps(notes, diff, opts));
+}
+
 /**
  * Listen to the transcription and correct it until it stops improving.
  *
@@ -219,6 +234,8 @@ function* refineSteps(ctx, opts = {}) {
   const wide = [];
   for (let m = lo; m <= hi; m++) wide.push(m);
   const fullMap = yield* salienceSteps(original.audio, sampleRate, { pitches: wide });
+  /* Found once and reused: the recording's attacks do not move between passes. */
+  const originalOnsets = (yield* onsetSteps(toMono(ctx.audio), { sampleRate })).onsets;
   const heard = activePitches(fullMap);
 
   const history = [];
@@ -250,7 +267,7 @@ function* refineSteps(ctx, opts = {}) {
     onProgress('comparing', { pass });
     yield { stage: 'comparing', pass };
     let diff = yield* compareSteps(original, { audio: rendered.samples, sampleRate },
-      { pitches, originalMap: fullMap });
+      { pitches, originalMap: fullMap, originalOnsets });
 
     const entry = {
       pass,
@@ -350,19 +367,19 @@ function* refineSteps(ctx, opts = {}) {
       return strength;
     };
     yield { stage: 'correcting', pass };
-    const attempt = () => {
+    const attempt = function* () {
       const share = narrow ? 0.08 : [0.3, 0.5, 0.75][reach];
       const limit = Math.max(1, Math.min(40, Math.ceil(notes.length * share)));
       /* Trying harder means accepting slightly thinner evidence for a note.
        * It is bounded, and a round built on it is thrown away unless the match
        * actually improves. */
-      return applyCorrections(notes, diff, {
+      return yield* correctionSteps(notes, diff, {
         limit, harmonyAt, measure, exclude: rejected,
         addBar: [0.12, 0.09, 0.07][reach], dropBar: 0.1,
       });
     };
     yield { stage: 'correcting', pass };
-    let step = attempt();
+    let step = yield* attempt();
     /* Nothing to correct is a fine reason to stop with a good reading and a
      * poor one with a bad one.  While the match is below the floor, having run
      * out of corrections means the net was too narrow, not that the score is
@@ -372,7 +389,7 @@ function* refineSteps(ctx, opts = {}) {
       verified = new Map();
       narrow = false;
       yield { stage: 'correcting', pass, reach };
-      step = attempt();
+      step = yield* attempt();
     }
     narrow = false;
     if (!step.edits.length) { entry.stopped = 'nothing left to correct'; break; }
