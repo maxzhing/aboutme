@@ -14,6 +14,7 @@
 
 import * as Dlg from './dialogs.js';
 import { composePiece, CHARACTERS, tonicName } from '../compose/index.js';
+import { FORMS } from '../compose/form.js';
 import { ALL_PARTS } from '../transcribe/index.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -30,7 +31,30 @@ const LENGTHS = [
   { bars: 16, name: 'Standard', tip: 'Four phrases — a complete little piece' },
   { bars: 24, name: 'Longer', tip: 'Six phrases' },
   { bars: 32, name: 'Full', tip: 'Eight phrases' },
+  { bars: 48, name: 'Extended', tip: 'Twelve phrases — room for a middle section' },
+  { bars: 64, name: 'Large', tip: 'Sixteen phrases — enough for a real form' },
 ];
+
+/* The shapes a piece can take.  '' means whatever the character normally does,
+ * which for everything but the ballade is a single stretch. */
+const SHAPES = [
+  { id: '', name: 'As the character does' },
+  { id: 'none', name: 'One stretch — no sections' },
+  { id: 'ternary', name: 'Ternary — out to another key and back' },
+  { id: 'ballade', name: 'Ballade — lyrical, interrupted, overwhelmed' },
+  { id: 'driving', name: 'Driving — faster and louder each time' },
+];
+const SHAPE_TIP = {
+  '': 'The ballade writes itself in sections; everything else runs straight through.',
+  none: 'One key, one tempo, one texture from beginning to end.',
+  ternary: 'A middle section in the subdominant, then the opening again.',
+  ballade: 'A slow idea, a storm from a third away, the idea again, then the storm wins — '
+    + 'so the piece ends in a different key from the one it began in.',
+  driving: 'The same idea three times, quicker and louder, ending in the parallel key.',
+};
+/* A form needs at least two phrases a section to be one. */
+const shapeFits = (id, bars) => !id || id === 'none'
+  || Math.round(bars / 4) >= (FORMS[id] || []).length * 2;
 const SOLOISTS = ['violin', 'flute', 'cello', 'clarinet', 'oboe', 'trumpet', 'guitar'];
 
 export class ComposePanel {
@@ -48,6 +72,7 @@ export class ComposePanel {
       ensemble: 'piano',
       melodyInstrument: 'violin',
       complexity: 'moderate',
+      shape: '',
       bpm: null,
     };
     this.piece = null;
@@ -130,6 +155,18 @@ export class ComposePanel {
             <small>Leave empty and it will choose one to suit.</small></label>
         </div>
 
+        <div class="cp-row">
+          <label class="cp-field"><span>Shape</span>
+            <select data-set="shape">
+              ${SHAPES.map((f) => `<option value="${f.id}"${f.id === s.shape ? ' selected' : ''}${
+  shapeFits(f.id, s.bars) ? '' : ' disabled'}>${esc(f.name)}${
+  shapeFits(f.id, s.bars) ? '' : ' — needs more bars'}</option>`).join('')}
+            </select>
+            <small>${esc(SHAPE_TIP[s.shape] || '')}${
+  shapeFits(s.shape, s.bars) ? '' : ' This needs a longer piece; it will run straight through.'}</small>
+          </label>
+        </div>
+
         <div class="cp-go">
           <button class="btn primary" data-do="write">Write it</button>
         </div>
@@ -145,7 +182,7 @@ export class ComposePanel {
         if (key === 'tonic' || key === 'bars') this.settings[key] = Number(value);
         else if (key === 'bpm') this.settings.bpm = value ? Number(value) : null;
         else this.settings[key] = value;
-        if (key === 'ensemble' || key === 'mode') this.renderSetup();
+        if (key === 'ensemble' || key === 'mode' || key === 'shape' || key === 'bars') this.renderSetup();
       };
     });
     this.body.querySelector('[data-do=write]').onclick = () => this.write();
@@ -164,6 +201,7 @@ export class ComposePanel {
         ensemble: s.ensemble,
         melodyInstrument: s.melodyInstrument,
         complexity: s.complexity,
+        form: s.shape === '' ? undefined : (s.shape === 'none' ? null : s.shape),
         bpm: s.bpm,
         seed,
         title: 'Untitled piece',
@@ -187,7 +225,8 @@ export class ComposePanel {
     this.body.innerHTML = `
       <div class="cp">
         <div class="cp-summary">
-          <b>${esc(d.key)}</b> · <b>${esc(d.character)}</b> ·
+          <b>${esc(d.key)}</b>${d.endsIn && d.endsIn !== d.key
+    ? `, ending in <b>${esc(d.endsIn)}</b>` : ''} · <b>${esc(d.character)}</b> ·
           <b>${d.bars}</b> bars · <b>${d.tempo}</b> bpm · <b>${esc(d.timeSig)}</b> ·
           ${esc(d.texture)} · ${esc(d.complexity)}${d.dynamics
     ? ` · <b>${esc(d.dynamics)}</b>` : ''}
@@ -199,9 +238,25 @@ export class ComposePanel {
           <button class="btn" data-do="again">Another version</button>
         </div>
 
+        ${d.sections ? `<h3>The shape of it</h3>
+        <ol class="cp-sections">
+          ${d.sections.map((sec) => `<li>
+            <b>${esc(sec.name)}</b>
+            <span class="cp-close">bar ${sec.from}, ${sec.bars} bars ·
+              ${esc(sec.key)} · ${sec.tempo} bpm · ${esc(sec.texture || '')}</span>
+          </li>`).join('')}
+        </ol>
+        <p class="cp-note">Each section has its own key, speed and texture, and closes
+          properly before the next one begins${d.endsIn && d.endsIn !== d.key
+    ? `. The piece ends in ${esc(d.endsIn)} rather than the ${esc(d.key)} it opened in —
+          the interrupting music takes it over and keeps it, which is what the form is for`
+    : ''}.</p>` : ''}
+
         <h3>The harmony it wrote</h3>
         <ol class="cp-phrases">
-          ${d.progression.map((p, i) => `<li>
+          ${d.progression.map((p, i) => `<li${d.phraseSections
+    && (i === 0 || d.phraseSections[i] !== d.phraseSections[i - 1])
+    && d.sections ? ` class="cp-seam" data-sec="${esc(d.sections[d.phraseSections[i]].name)}"` : ''}>
             <span class="cp-chords">${esc(p)}</span>
             <span class="cp-close">${esc(CLOSES[d.cadences[i]] || d.cadences[i])}</span>
           </li>`).join('')}
@@ -245,6 +300,7 @@ export class ComposePanel {
     this.app.buildParts();
     this.app.buildMixer();
     if (this.modalClose) this.modalClose();
-    Dlg.toast(`${d.bars} bars in ${d.key} — edit it like anything else`, 'ok');
+    Dlg.toast(`${d.bars} bars in ${d.key}${d.endsIn && d.endsIn !== d.key
+      ? `, ending in ${d.endsIn}` : ''} — edit it like anything else`, 'ok');
   }
 }

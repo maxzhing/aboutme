@@ -712,6 +712,13 @@ kbd {
 .cp-phrases li { font-size: 12px; }
 .cp-chords { font-family: var(--mono); color: var(--text); }
 .cp-close { color: var(--text-faint); margin-left: 8px; }
+.cp-sections { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+.cp-sections li { font-size: 12px; }
+.cp-phrases li.cp-seam { margin-top: 7px; }
+.cp-phrases li.cp-seam::before {
+  content: attr(data-sec); display: block; margin: 0 0 3px -20px;
+  color: var(--text-faint); font-size: 11px; letter-spacing: 0.03em; text-transform: uppercase;
+}
 .cp-note { margin: 0; color: var(--text-dim); font-size: 11px; line-height: 1.6; max-width: 62ch; }
 .cp-go { display: flex; gap: 8px; margin-top: 2px; }
 
@@ -18093,7 +18100,11 @@ function normalFor(division) {
   return n;
 }
 
-/** One voice's worth of events laid out through the piece. */
+/** One voice's worth of events laid out through the piece.
+ *
+ * `fifths` is a function of the measure index rather than a number, so a piece
+ * that changes key partway through is spelled in the key it is actually in at
+ * that point instead of in the one it opened in. */
 function layOutVoice(chords, ts, measures, fifths, plan, lean = 0) {
   const bar = measureTicks(ts);
   const out = [];
@@ -18135,7 +18146,7 @@ function fill(state, from, to, chord) {
       out[m].push(M.makeRest(id, { dots, tuplet: tuplet || null }));
       return;
     }
-    const ev = M.makeNote(chord.notes.map((n) => spell(n.midi, fifths, state.lean)), id,
+    const ev = M.makeNote(chord.notes.map((n) => spell(n.midi, fifths(m), state.lean)), id,
       { dots, tuplet: tuplet || null });
     for (const note of ev.notes) {
       note.tie = first && last ? null : first ? 'start' : last ? 'stop' : 'both';
@@ -18254,6 +18265,10 @@ function buildParts(parts, opts = {}) {
     spellingLean = 0,
     annotations = null,
   } = opts;
+  /* A key signature that holds for the whole piece, or one that answers per
+   * measure — the composer hands over the second kind when a piece changes
+   * key partway through. */
+  const fifthsAt = typeof fifths === 'function' ? fifths : () => fifths;
   const perBeat = plan ? plan.perBeat : TPQ;
   const divisions = plan ? plan.divisions : new Map();
   const layout = { perBeat, divisionAt: (b) => divisions.get(b) || 1 };
@@ -18269,7 +18284,7 @@ function buildParts(parts, opts = {}) {
     instrumentIds: parts.map((p) => p.instrumentId),
     measures,
     timeSig,
-    keySig: { fifths, mode },
+    keySig: { fifths: fifthsAt(0), mode },
     tempo: Math.round(bpm),
   });
 
@@ -18298,7 +18313,7 @@ function buildParts(parts, opts = {}) {
       for (let v = 0; v < voiceCount; v++) scorePart.measures[m].voices.push([]);
     }
     for (const [idx, list] of streams) {
-      const laid = layOutVoice(list, timeSig, measures, fifths, layout, spellingLean);
+      const laid = layOutVoice(list, timeSig, measures, fifthsAt, layout, spellingLean);
       for (let m = 0; m < measures; m++) scorePart.measures[m].voices[idx] = laid[m];
     }
     scorePart.transcribeIndex = pi;
@@ -20335,6 +20350,7 @@ __exp.CorrectionModel = CorrectionModel;
 
 const Dlg = __req("js/ui/dialogs.js");
 const { composePiece, CHARACTERS, tonicName } = __req("js/compose/index.js");
+const { FORMS } = __req("js/compose/form.js");
 const { ALL_PARTS } = __req("js/transcribe/index.js");
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -20351,7 +20367,30 @@ const LENGTHS = [
   { bars: 16, name: 'Standard', tip: 'Four phrases — a complete little piece' },
   { bars: 24, name: 'Longer', tip: 'Six phrases' },
   { bars: 32, name: 'Full', tip: 'Eight phrases' },
+  { bars: 48, name: 'Extended', tip: 'Twelve phrases — room for a middle section' },
+  { bars: 64, name: 'Large', tip: 'Sixteen phrases — enough for a real form' },
 ];
+
+/* The shapes a piece can take.  '' means whatever the character normally does,
+ * which for everything but the ballade is a single stretch. */
+const SHAPES = [
+  { id: '', name: 'As the character does' },
+  { id: 'none', name: 'One stretch — no sections' },
+  { id: 'ternary', name: 'Ternary — out to another key and back' },
+  { id: 'ballade', name: 'Ballade — lyrical, interrupted, overwhelmed' },
+  { id: 'driving', name: 'Driving — faster and louder each time' },
+];
+const SHAPE_TIP = {
+  '': 'The ballade writes itself in sections; everything else runs straight through.',
+  none: 'One key, one tempo, one texture from beginning to end.',
+  ternary: 'A middle section in the subdominant, then the opening again.',
+  ballade: 'A slow idea, a storm from a third away, the idea again, then the storm wins — '
+    + 'so the piece ends in a different key from the one it began in.',
+  driving: 'The same idea three times, quicker and louder, ending in the parallel key.',
+};
+/* A form needs at least two phrases a section to be one. */
+const shapeFits = (id, bars) => !id || id === 'none'
+  || Math.round(bars / 4) >= (FORMS[id] || []).length * 2;
 const SOLOISTS = ['violin', 'flute', 'cello', 'clarinet', 'oboe', 'trumpet', 'guitar'];
 
 class ComposePanel {
@@ -20369,6 +20408,7 @@ class ComposePanel {
       ensemble: 'piano',
       melodyInstrument: 'violin',
       complexity: 'moderate',
+      shape: '',
       bpm: null,
     };
     this.piece = null;
@@ -20451,6 +20491,18 @@ class ComposePanel {
             <small>Leave empty and it will choose one to suit.</small></label>
         </div>
 
+        <div class="cp-row">
+          <label class="cp-field"><span>Shape</span>
+            <select data-set="shape">
+              ${SHAPES.map((f) => `<option value="${f.id}"${f.id === s.shape ? ' selected' : ''}${
+  shapeFits(f.id, s.bars) ? '' : ' disabled'}>${esc(f.name)}${
+  shapeFits(f.id, s.bars) ? '' : ' — needs more bars'}</option>`).join('')}
+            </select>
+            <small>${esc(SHAPE_TIP[s.shape] || '')}${
+  shapeFits(s.shape, s.bars) ? '' : ' This needs a longer piece; it will run straight through.'}</small>
+          </label>
+        </div>
+
         <div class="cp-go">
           <button class="btn primary" data-do="write">Write it</button>
         </div>
@@ -20466,7 +20518,7 @@ class ComposePanel {
         if (key === 'tonic' || key === 'bars') this.settings[key] = Number(value);
         else if (key === 'bpm') this.settings.bpm = value ? Number(value) : null;
         else this.settings[key] = value;
-        if (key === 'ensemble' || key === 'mode') this.renderSetup();
+        if (key === 'ensemble' || key === 'mode' || key === 'shape' || key === 'bars') this.renderSetup();
       };
     });
     this.body.querySelector('[data-do=write]').onclick = () => this.write();
@@ -20485,6 +20537,7 @@ class ComposePanel {
         ensemble: s.ensemble,
         melodyInstrument: s.melodyInstrument,
         complexity: s.complexity,
+        form: s.shape === '' ? undefined : (s.shape === 'none' ? null : s.shape),
         bpm: s.bpm,
         seed,
         title: 'Untitled piece',
@@ -20508,7 +20561,8 @@ class ComposePanel {
     this.body.innerHTML = `
       <div class="cp">
         <div class="cp-summary">
-          <b>${esc(d.key)}</b> · <b>${esc(d.character)}</b> ·
+          <b>${esc(d.key)}</b>${d.endsIn && d.endsIn !== d.key
+    ? `, ending in <b>${esc(d.endsIn)}</b>` : ''} · <b>${esc(d.character)}</b> ·
           <b>${d.bars}</b> bars · <b>${d.tempo}</b> bpm · <b>${esc(d.timeSig)}</b> ·
           ${esc(d.texture)} · ${esc(d.complexity)}${d.dynamics
     ? ` · <b>${esc(d.dynamics)}</b>` : ''}
@@ -20520,9 +20574,25 @@ class ComposePanel {
           <button class="btn" data-do="again">Another version</button>
         </div>
 
+        ${d.sections ? `<h3>The shape of it</h3>
+        <ol class="cp-sections">
+          ${d.sections.map((sec) => `<li>
+            <b>${esc(sec.name)}</b>
+            <span class="cp-close">bar ${sec.from}, ${sec.bars} bars ·
+              ${esc(sec.key)} · ${sec.tempo} bpm · ${esc(sec.texture || '')}</span>
+          </li>`).join('')}
+        </ol>
+        <p class="cp-note">Each section has its own key, speed and texture, and closes
+          properly before the next one begins${d.endsIn && d.endsIn !== d.key
+    ? `. The piece ends in ${esc(d.endsIn)} rather than the ${esc(d.key)} it opened in —
+          the interrupting music takes it over and keeps it, which is what the form is for`
+    : ''}.</p>` : ''}
+
         <h3>The harmony it wrote</h3>
         <ol class="cp-phrases">
-          ${d.progression.map((p, i) => `<li>
+          ${d.progression.map((p, i) => `<li${d.phraseSections
+    && (i === 0 || d.phraseSections[i] !== d.phraseSections[i - 1])
+    && d.sections ? ` class="cp-seam" data-sec="${esc(d.sections[d.phraseSections[i]].name)}"` : ''}>
             <span class="cp-chords">${esc(p)}</span>
             <span class="cp-close">${esc(CLOSES[d.cadences[i]] || d.cadences[i])}</span>
           </li>`).join('')}
@@ -20566,7 +20636,8 @@ class ComposePanel {
     this.app.buildParts();
     this.app.buildMixer();
     if (this.modalClose) this.modalClose();
-    Dlg.toast(`${d.bars} bars in ${d.key} — edit it like anything else`, 'ok');
+    Dlg.toast(`${d.bars} bars in ${d.key}${d.endsIn && d.endsIn !== d.key
+      ? `, ending in ${d.endsIn}` : ''} — edit it like anything else`, 'ok');
   }
 }
 
@@ -20589,9 +20660,11 @@ __exp.ComposePanel = ComposePanel;
 
 const { plan: harmonicPlan, chordPitches, keyPitches, rng, MODE_NAMES } = __req("js/compose/harmony.js");
 const { melody, cellsFor, ornament, compound } = __req("js/compose/melody.js");
+const { layOutForm, sectionKey } = __req("js/compose/form.js");
 const { voiceChord, layOut, TEXTURES } = __req("js/compose/texture.js");
 const { buildParts } = __req("js/transcribe/build.js");
-const { beatTicks, measureTicks } = __req("js/core/rhythm.js");
+const { beatTicks } = __req("js/core/rhythm.js");
+const { tempoText } = __req("js/core/model.js");
 const { INSTRUMENTS } = __req("js/core/instruments.js");
 
 /* What a character actually means, in things the generator can act on. */
@@ -20636,11 +20709,12 @@ const CHARACTERS = [
   },
   {
     id: 'ballade', name: 'Ballade',
-    tip: 'A long lyrical line over a wide, moving left hand. Chromatic harmony, '
-      + 'written-out ornament, and a real climax.',
+    tip: 'A slow lyrical idea, a storm that interrupts it from a third away, and '
+      + 'an ending in the storm\u2019s key rather than its own. Needs 32 bars or more.',
     texture: 'wide', sevenths: true, busy: 'walking', bpm: [58, 78],
-    modes: ['minor', 'major'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+    modes: ['major', 'minor'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
     colour: 1, ornament: 0.45, compound: 0.22, complexity: 'elaborate',
+    form: 'ballade',
     arc: ['p', 'mp', 'mf', 'f', 'ff', 'mf', 'p', 'pp'],
   },
   {
@@ -20708,6 +20782,7 @@ function composePiece(opts = {}) {
     title = 'New piece',
     composer = '',
     bpm = null,
+    form = undefined,   // undefined: whatever the character does; null: no form
   } = opts;
 
   const style = characterById(character);
@@ -20715,80 +20790,122 @@ function composePiece(opts = {}) {
   const chosenMode = mode && style.modes.includes(mode) ? mode
     : style.modes[Math.floor(r() * style.modes.length)];
   const ts = style.timeSig;
-  const beatsPerBar = ts.beats * (4 / ts.beatType) / (ts.beatType === 8 ? 3 : 1) || ts.beats;
   const perBeat = beatTicks(ts);
-  const barTicks = measureTicks(ts);
 
   /* Four-bar phrases, and a whole number of them. */
   const phraseBars = 4;
   const phrases = Math.max(2, Math.round(bars / phraseBars));
   const totalBars = phrases * phraseBars;
 
-  const harmony = harmonicPlan(phrases, phraseBars, chosenMode, r, {
-    sevenths: style.sevenths,
-    harmonicRhythm: style.harmonicRhythm || 1,
-    colour: style.colour || 0,
-    planeRuns: !!style.plane,
-  });
+  /* A piece is either one character from beginning to end, or a sequence of
+   * them.
+   *
+   * Where a form applies, each section gets its own key, tempo, texture, pace
+   * and loudness, and the contrast between them is what makes the piece feel
+   * larger than its bar count.  Where none does, there is exactly one section
+   * covering the whole piece — everything below reads the same way either
+   * way, so the sectional path is the only path and cannot quietly rot. */
+  const formId = form === undefined ? style.form : form;
+  const sections = (formId ? layOutForm(formId, totalBars, phraseBars) : null) || [{
+    index: 0, from: 0, bars: totalBars, phrases, key: 'home',
+    tempo: 1, name: '', last: true,
+  }];
 
-  /* One chord per bar, stretched or repeated to fill the phrase. */
+  /* The harmony, section by section.  Each one closes properly, so the seam
+   * between two sections is a cadence rather than a splice. */
+  const harmony = [];
   const perBar = [];
-  for (const ph of harmony) {
-    const n = ph.chords.length;
-    for (let b = 0; b < phraseBars; b++) {
-      const chord = ph.chords[Math.min(n - 1, Math.floor((b / phraseBars) * n))];
-      perBar.push({ ...chord, pitches: chordPitches(chord, tonic), close: ph.close });
+  for (const sec of sections) {
+    const key = sectionKey(tonic, chosenMode, sec.key);
+    sec.tonic = key.tonic;
+    sec.keyMode = key.mode;
+    sec.fifths = fifthsFor(key.tonic, key.mode);
+    sec.scale = keyPitches(key.tonic, key.mode);
+    sec.chordsFrom = perBar.length;
+    const progression = harmonicPlan(sec.phrases, phraseBars, key.mode, r, {
+      sevenths: style.sevenths,
+      harmonicRhythm: style.harmonicRhythm || 1,
+      colour: sec.colour !== undefined ? sec.colour : (style.colour || 0),
+      planeRuns: !!style.plane,
+    });
+    for (const ph of progression) {
+      harmony.push({ ...ph, section: sec.index });
+      const n = ph.chords.length;
+      for (let b = 0; b < phraseBars; b++) {
+        const chord = ph.chords[Math.min(n - 1, Math.floor((b / phraseBars) * n))];
+        perBar.push({
+          ...chord,
+          pitches: chordPitches(chord, key.tonic),
+          close: ph.close,
+          section: sec.index,
+        });
+      }
     }
   }
 
-  const scale = keyPitches(tonic, chosenMode);
   const melodyInst = ensemble === 'piano' ? instrument('piano') : instrument(melodyInstrument);
-  const range = ensemble === 'piano'
-    ? [Math.max(60, 60), 84]
-    : singingRange(melodyInst);
+  const range = ensemble === 'piano' ? [60, 84] : singingRange(melodyInst);
+  const asked = style.complexity || complexity;
 
-  const level = style.complexity || complexity;
-  let tune = melody(perBar, {
-    scaleTones: scale,
-    range,
-    beatsPerBar: ts.beats,
-    cells: cellsFor(ts.beats, style.busy, level),
-    r,
-    rest: style.rest || 0,
-    barsPerPhrase: phraseBars,
-    complexity: level,
-  });
-
-  /* A line that implies two voices, then the decoration written out.  Both
-   * happen after the line exists, because both are things done *to* a melody —
-   * deciding them while choosing the notes would leave neither recognisable. */
-  if (style.compound) {
-    tune = compound(tune, { scaleTones: scale, r, amount: style.compound, drop: 12 });
-  }
-  if (style.ornament) {
-    const chordAt = (beat) => {
-      const bar = Math.floor(beat / ts.beats);
-      return (perBar[Math.min(perBar.length - 1, Math.max(0, bar))] || {}).pitches;
-    };
-    tune = ornament(tune, {
-      scaleTones: scale, chordAt, r,
-      amount: style.ornament,
-      minLength: ts.beats >= 4 ? 1 : 1,
+  /* The tune, section by section for the same reason.
+   *
+   * A phrase of the Presto has no business being a variation of one from the
+   * Andantino, and a melody written straight across the seam would make it
+   * one.  Each section states its own idea, develops it and climaxes inside
+   * itself; the sections are related by key and character, not by motif. */
+  const tune = [];
+  for (const sec of sections) {
+    const level = sec.complexity || asked;
+    let line = melody(perBar.slice(sec.chordsFrom, sec.chordsFrom + sec.bars), {
+      scaleTones: sec.scale,
+      range,
+      beatsPerBar: ts.beats,
+      cells: cellsFor(ts.beats, sec.busy || style.busy, level),
+      r,
+      rest: style.rest || 0,
+      barsPerPhrase: phraseBars,
+      complexity: level,
     });
+
+    /* A line that implies two voices, then the decoration written out.  Both
+     * happen after the line exists, because both are things done *to* a
+     * melody — deciding them while choosing the notes would leave neither
+     * recognisable. */
+    if (style.compound) {
+      line = compound(line, { scaleTones: sec.scale, r, amount: style.compound, drop: 12 });
+    }
+    const decoration = sec.ornament !== undefined ? sec.ornament : style.ornament;
+    if (decoration) {
+      const chordAt = (beat) => {
+        const bar = sec.chordsFrom + Math.floor(beat / ts.beats);
+        return (perBar[Math.min(perBar.length - 1, Math.max(0, bar))] || {}).pitches;
+      };
+      line = ornament(line, {
+        scaleTones: sec.scale, chordAt, r, amount: decoration, minLength: 1,
+      });
+    }
+
+    const offset = sec.from * ts.beats;
+    for (const n of line) tune.push({ ...n, beat: n.beat + offset, section: sec.index });
   }
 
-  /* The accompaniment, voiced so the hand moves as little as it can. */
+  /* The accompaniment, in the texture its own section asked for, voiced so the
+   * hand moves as little as it can. */
   const accompaniment = [];
   let previous = null;
   perBar.forEach((chord, bar) => {
+    const sec = sections[chord.section] || sections[0];
+    const texture = sec.texture || style.texture;
     const voicing = voiceChord(chord.pitches, {
-      range: style.texture === 'chorale' ? [48, 76] : [40, 64],
+      range: texture === 'chorale' ? [48, 76] : [40, 64],
       previous,
       size: style.voices || (chord.seventh ? 4 : 3),
       strict: !!style.strict,
     });
     previous = voicing;
-    const laid = layOut(style.texture, voicing, ts.beats, { r, last: bar === perBar.length - 1 });
+    const laid = layOut(texture, voicing, ts.beats, {
+      r, last: bar === sec.from + sec.bars - 1,
+    });
     for (const n of laid) {
       accompaniment.push({ midi: n.midi, beat: bar * ts.beats + n.beat, beats: n.beats });
     }
@@ -20809,13 +20926,20 @@ function composePiece(opts = {}) {
     return [...byStart.values()].sort((a, b) => a.startTicks - b.startTicks);
   };
 
-  const fifths = fifthsFor(tonic, chosenMode);
   const tempo = bpm || Math.round(style.bpm[0] + r() * (style.bpm[1] - style.bpm[0]));
+
+  /* Which key each bar is written in.  A section in another key is spelled in
+   * that key: the engraver is handed the question, not an answer fixed at the
+   * first bar. */
+  const fifthsAt = (measureIndex) => {
+    let here = sections[0];
+    for (const sec of sections) if (measureIndex >= sec.from) here = sec;
+    return here.fifths;
+  };
 
   /* Divisions per beat, so the engraver writes the values the cells imply. */
   const divisions = new Map();
-  const allBeats = [...tune, ...accompaniment];
-  for (const n of allBeats) {
+  for (const n of [...tune, ...accompaniment]) {
     const b = Math.floor(n.beat);
     const d = n.beats < 0.5 ? 4 : n.beats < 1 ? 2 : 1;
     divisions.set(b, Math.max(divisions.get(b) || 1, d));
@@ -20838,43 +20962,60 @@ function composePiece(opts = {}) {
     plan: { perBeat, divisions },
     timeSig: ts,
     bpm: tempo,
-    fifths,
-    mode: chosenMode === 'minor' ? 'minor' : 'major',
+    fifths: fifthsAt,
+    mode: sections[0].keyMode === 'minor' ? 'minor' : 'major',
     title,
     composer,
   });
 
+  /* The tempo and key each section arrives in, written where it arrives.
+   *
+   * A section that is twice the speed of the one before it is the whole point
+   * of the form, and a reader is told about it the way a reader is always
+   * told: a mark over the first bar.  The key signature only changes when the
+   * accidentals do — F major and A minor share one, and printing a redundant
+   * signature there would say something untrue about the music. */
+  for (const sec of sections) {
+    const spec = built.score.measures[sec.from];
+    if (!spec) continue;
+    const here = Math.round(tempo * (sec.tempo || 1));
+    if (sec.from > 0 || sec.name) {
+      spec.tempo = { bpm: here, unit: 'quarter', text: sec.name || tempoText(here) };
+    }
+    if (sec.from > 0 && sec.fifths !== fifthsAt(sec.from - 1)) {
+      spec.keySig = { fifths: sec.fifths, mode: sec.keyMode === 'minor' ? 'minor' : 'major' };
+    }
+    if (sec.from > 0) built.score.measures[sec.from - 1].barline = 'double';
+  }
+
   /* The shape of the piece as sound.
    *
-   * A dynamic mark at the head of every phrase, following the character's own
-   * arc: quiet at the opening, building to the phrase that carries the
-   * climax, receding afterwards.  Without this a piece is played at one
-   * loudness throughout, which is the difference between the notes of a piece
-   * and a performance of it — and the arc has to agree with where the tune
-   * puts its high point, or the two pull against each other. */
-  if (style.arc && style.arc.length) {
-    const ORDER = ['pppp', 'ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff', 'ffff'];
-    const loudest = style.arc.reduce((a, b) => (ORDER.indexOf(b) > ORDER.indexOf(a) ? b : a));
-    const top = built.score.parts[0];
-    const perPhrase = phraseBars;
-    for (let ph = 0; ph < phrases; ph++) {
-      const bar = ph * perPhrase;
-      const measure = top && top.measures[bar];
+   * A dynamic mark at the head of every phrase, following the arc of the
+   * section it belongs to: quiet at the opening, building to the phrase that
+   * carries the climax, receding afterwards.  Without this a piece is played
+   * at one loudness throughout, which is the difference between the notes of a
+   * piece and a performance of it — and the arc has to agree with where the
+   * tune puts its high point, or the two pull against each other. */
+  const ORDER = ['pppp', 'ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff', 'ffff'];
+  const top = built.score.parts[0];
+  for (const sec of top ? sections : []) {
+    const arc = sec.arc || style.arc;
+    if (!arc || !arc.length) continue;
+    const loudest = arc.reduce((a, b) => (ORDER.indexOf(b) > ORDER.indexOf(a) ? b : a));
+    const peak = arc.indexOf(loudest);
+    /* Where the tune climaxes, which melody() decides the same way. */
+    const climax = sec.phrases > 2 ? sec.phrases - 2 : sec.phrases - 1;
+    for (let ph = 0; ph < sec.phrases; ph++) {
+      const measure = top.measures[sec.from + ph * phraseBars];
       if (!measure) continue;
       const voice = (measure.voices || []).find((v) => v.some((e) => e.type === 'note'));
       const first = voice && voice.find((e) => e.type === 'note');
       if (!first) continue;
-      /* Stretch the arc over however many phrases there are — but pin its
-       * loudest mark to the phrase the tune actually climaxes in.  An arc that
-       * peaks two phrases before the melody does pulls against it, and the
-       * piece arrives twice, weakly, instead of once. */
-      const peak = style.arc.indexOf(loudest);
-      const climax = phrases > 2 ? phrases - 2 : phrases - 1;
       const at = ph <= climax
         ? Math.round((ph / Math.max(1, climax)) * peak)
-        : peak + Math.round(((ph - climax) / Math.max(1, phrases - 1 - climax))
-          * (style.arc.length - 1 - peak));
-      first.dynamic = style.arc[Math.max(0, Math.min(style.arc.length - 1, at))];
+        : peak + Math.round(((ph - climax) / Math.max(1, sec.phrases - 1 - climax))
+          * (arc.length - 1 - peak));
+      first.dynamic = arc[Math.max(0, Math.min(arc.length - 1, at))];
     }
   }
 
@@ -20894,13 +21035,35 @@ function composePiece(opts = {}) {
       character: style.name,
       complexity: style.complexity || complexity,
       dynamics: style.arc ? style.arc.filter((d, i, a) => a.indexOf(d) === i).join(' – ') : null,
-      texture: TEXTURES[style.texture],
+      /* A sectional piece has several textures, and saying it has one would
+       * be false about the very thing the form exists to do. */
+      texture: [...new Set(sections.map((sec) => TEXTURES[sec.texture || style.texture]))]
+        .join(' → '),
       bars: totalBars,
       phrases,
       tempo,
       timeSig: `${ts.beats}/${ts.beatType}`,
+      /* What shape the piece is in, if it is in one.  A ballade that ends in
+       * another key is a fact about the piece, not a bug, and the panel says
+       * so rather than leaving a reader to wonder. */
+      sections: sections.length > 1 ? sections.map((sec) => ({
+        /* An unnamed section is marked with the ordinary tempo word, which is
+         * what the score itself shows over its first bar. */
+        name: sec.name || tempoText(Math.round(tempo * (sec.tempo || 1))),
+        from: sec.from + 1,
+        bars: sec.bars,
+        key: `${tonicName(sec.tonic)} ${MODE_NAMES[sec.keyMode] || sec.keyMode}`,
+        tempo: Math.round(tempo * (sec.tempo || 1)),
+        texture: TEXTURES[sec.texture || style.texture],
+      })) : null,
+      endsIn: sections.length > 1
+        ? `${tonicName(sections[sections.length - 1].tonic)} `
+          + `${MODE_NAMES[sections[sections.length - 1].keyMode]
+            || sections[sections.length - 1].keyMode}`
+        : null,
       progression: harmony.map((ph) => ph.chords.map((c) => c.roman).join(' – ')),
       cadences: harmony.map((ph) => ph.close),
+      phraseSections: harmony.map((ph) => ph.section),
     },
   };
 }
@@ -21748,6 +21911,187 @@ __exp.melody = melody;
 __exp.ornament = ornament;
 __exp.compound = compound;
 __exp.cellsFor = cellsFor;
+},
+  "js/compose/form.js": function (__exp, __req) {
+/* Cadenza — pieces that go somewhere and come back changed.
+ *
+ * Everything the composer wrote until now was one character from beginning to
+ * end: a tempo, a texture, a key, sixteen bars, done.  That is a piece of
+ * music the way a paragraph is a novel.  What makes the big Romantic forms
+ * feel large is not length but *contrast* — a lyrical idea, something violent
+ * that interrupts it, the idea returning altered by what happened to it, and
+ * an ending that does not simply restore the opening.
+ *
+ * So a form here is a list of sections, each with its own tempo, key, texture,
+ * loudness and pace.  They share a time signature, because the bar lengths are
+ * what the engraver lays notes into and changing them mid-piece is a different
+ * job; everything else is free to change, which is more than enough for the
+ * music to have a shape.
+ *
+ * The last section's key is the key the piece ends in, and it need not be the
+ * one it started in.  A piece that opens serenely in a major key and is
+ * finally overwhelmed by the storm that keeps interrupting it — ending in the
+ * minor, in the wrong key, unresolved — is a real and very Romantic thing for
+ * a piece to do, and it is the kind of shape this could not previously express
+ * at all.
+ */
+
+/* Where a section sits relative to the key the piece opened in.
+ *
+ * Named relationships rather than raw semitones, because the same number of
+ * semitones means different things from a major and a minor tonic: three down
+ * from a major tonic is its relative minor and shares its key signature, while
+ * three down from a minor tonic is a genuinely distant key.  A form that says
+ * what it means harmonically survives being started in either mode. */
+const RELATIONS = {
+  home: (t, m) => ({ tonic: t, mode: m }),
+  parallel: (t, m) => ({ tonic: t, mode: m === 'minor' ? 'major' : 'minor' }),
+  relative: (t, m) => (m === 'minor'
+    ? { tonic: (t + 3) % 12, mode: 'major' }
+    : { tonic: (t + 9) % 12, mode: 'minor' }),
+  subdominant: (t, m) => ({ tonic: (t + 5) % 12, mode: m }),
+  dominant: (t, m) => ({ tonic: (t + 7) % 12, mode: m }),
+  /* The key the interruption arrives in: a third away, and always minor.
+   * From a major tonic that is the mediant — F major against A minor, which
+   * is the pairing the second Chopin ballade is built on — and from a minor
+   * tonic the subdominant minor, which is as dark a step in the other
+   * direction. */
+  storm: (t, m) => (m === 'minor'
+    ? { tonic: (t + 5) % 12, mode: 'minor' }
+    : { tonic: (t + 4) % 12, mode: 'minor' }),
+};
+
+function sectionKey(tonic, mode, relation) {
+  const how = RELATIONS[relation] || RELATIONS.home;
+  const got = how(((tonic % 12) + 12) % 12, mode);
+  return { tonic: ((got.tonic % 12) + 12) % 12, mode: got.mode };
+}
+
+/* A section says only what it changes.
+ *
+ * Tempo, key and loudness are the form's business, and every section names
+ * them.  Texture, pace and how decorated the line is are the *character's*
+ * business, so a section leaves them out and the character's own choice
+ * stands — that is why asking for a Classical piece in ballade form gives an
+ * Alberti bass that is twice interrupted, rather than a piece with no
+ * Classical left in it.  The interrupting sections are the exception: they
+ * have to sound like an interruption, so they name their own. */
+const FORMS = {
+  /* Lyrical, interrupted, interrupted again, and lost to it.
+   *
+   * The shape of a ballade: a slow idea stated whole, a fast one that breaks
+   * in from a third away, the slow one returning unable to continue as it
+   * was, and the fast one taking the piece over and keeping it.  The last
+   * section closes, so the piece ends in the storm's key rather than its
+   * own. */
+  ballade: [
+    {
+      name: 'Andantino', share: 0.34, tempo: 1, key: 'home',
+      colour: 0.8, arc: ['p', 'mp', 'mf', 'mp'],
+    },
+    {
+      name: 'Presto con fuoco', share: 0.18, tempo: 2.2, key: 'storm',
+      texture: 'filigree', busy: 'lively', complexity: 'complex',
+      colour: 1, ornament: 0.12, arc: ['f', 'ff', 'ff'],
+    },
+    {
+      name: 'Tempo I', share: 0.30, tempo: 1, key: 'home',
+      colour: 0.95, arc: ['p', 'mp', 'f'],
+    },
+    {
+      name: 'Agitato', share: 0.18, tempo: 2.2, key: 'storm',
+      texture: 'filigree', busy: 'lively', complexity: 'complex',
+      colour: 1, ornament: 0.15, arc: ['ff', 'ff', 'f', 'p'], closes: true,
+    },
+  ],
+
+  /* Out and back: a middle section in another key, then the opening again. */
+  ternary: [
+    {
+      name: '', share: 0.4, tempo: 1, key: 'home',
+      texture: null, busy: null, arc: ['mf', 'mp', 'mf'],
+    },
+    {
+      name: 'Meno mosso', share: 0.25, tempo: 0.8, key: 'subdominant',
+      texture: 'sustained', busy: 'calm', arc: ['p', 'pp', 'p'],
+    },
+    {
+      name: 'Tempo I', share: 0.35, tempo: 1, key: 'home',
+      texture: null, busy: null, arc: ['mf', 'f', 'mf', 'p'], closes: true,
+    },
+  ],
+
+  /* One idea, faster and louder each time it returns. */
+  driving: [
+    { name: '', share: 0.3, tempo: 1, key: 'home', arc: ['mp', 'mf'] },
+    { name: 'Più mosso', share: 0.3, tempo: 1.3, key: 'home', arc: ['mf', 'f'] },
+    {
+      name: 'Presto', share: 0.4, tempo: 1.6, key: 'parallel',
+      busy: 'lively', arc: ['f', 'ff', 'fff'], closes: true,
+    },
+  ],
+};
+
+const formById = (id) => FORMS[id] || null;
+
+/**
+ * Turn a form and a length into the actual sections, in bars.
+ *
+ * Every section is a whole number of four-bar phrases, because a section that
+ * stops halfway through a phrase does not sound like a section — it sounds
+ * like a mistake.  What is left over after rounding goes to whichever sections
+ * came closest to earning another phrase.
+ */
+function layOutForm(formId, totalBars, phraseBars = 4) {
+  const spec = FORMS[formId];
+  if (!spec) return null;
+  const phrases = Math.round(totalBars / phraseBars);
+  /* A form needs room to be one.  You cannot state an idea, be interrupted,
+   * return to it and be overwhelmed inside sixteen bars — at that length the
+   * sections would be one phrase each, and what came out would read as four
+   * unrelated fragments rather than a shape.  Below two phrases a section the
+   * piece stays single, which is what it was before and is the right answer
+   * for something short. */
+  if (phrases < spec.length * 2) return null;
+  /* Largest remainder: give every section the whole phrases its share earns,
+   * then hand the leftovers to whichever sections were closest to another one.
+   * Rounding each share on its own and then trimming the largest flattens the
+   * proportions until every section is the same length, which is the one thing
+   * a form must not be. */
+  const exact = spec.map((s) => phrases * s.share);
+  const counts = exact.map((v) => Math.max(1, Math.floor(v)));
+  let left = phrases - counts.reduce((a, b) => a + b, 0);
+  const order = exact
+    .map((v, i) => ({ i, frac: v - Math.floor(v) }))
+    .sort((a, b) => b.frac - a.frac);
+  let k = 0;
+  while (left > 0 && order.length) {
+    counts[order[k % order.length].i]++;
+    left--;
+    k++;
+  }
+  while (left < 0) {
+    let at = 0;
+    for (let i = 1; i < counts.length; i++) if (counts[i] > counts[at]) at = i;
+    if (counts[at] <= 1) break;
+    counts[at]--;
+    left++;
+  }
+
+  let bar = 0;
+  return spec.map((s, i) => {
+    const bars = counts[i] * phraseBars;
+    const from = bar;
+    bar += bars;
+    return { ...s, index: i, from, bars, phrases: counts[i], last: i === spec.length - 1 };
+  });
+}
+
+__exp.sectionKey = sectionKey;
+__exp.layOutForm = layOutForm;
+__exp.RELATIONS = RELATIONS;
+__exp.FORMS = FORMS;
+__exp.formById = formById;
 },
   "js/compose/texture.js": function (__exp, __req) {
 /* Cadenza — what the other hand is doing.

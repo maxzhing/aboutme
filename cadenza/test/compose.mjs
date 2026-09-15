@@ -9,6 +9,8 @@
  */
 
 import { composePiece, CHARACTERS, fifthsFor } from '../js/compose/index.js';
+import { exportMusicXML } from '../js/io/musicxml.js';
+import { exportMIDI } from '../js/io/midifile.js';
 import { keyPitches, chordOn, plan as harmonicPlan, rng } from '../js/compose/harmony.js';
 import { voiceChord } from '../js/compose/texture.js';
 import { timeSigAt } from '../js/core/model.js';
@@ -380,17 +382,30 @@ check('an ornamented character writes more notes than a plain one', () => {
     : `plain wrote ${plain} melody notes, ornamented wrote ${decorated}`;
 });
 
+const DYN = ['pppp', 'ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff', 'ffff'];
+
+/** Every dynamic mark in a score, with the bar it sits over. */
+function dynamics(score) {
+  const marks = [];
+  score.parts.forEach((part) => part.measures.forEach((m, mi) =>
+    (m.voices || []).forEach((v) => v.forEach((e) => {
+      if (e.dynamic) marks.push({ bar: mi, id: e.dynamic });
+    }))));
+  return marks;
+}
+
+const loudestOf = (marks) =>
+  marks.reduce((a, b) => (DYN.indexOf(b.id) > DYN.indexOf(a.id) ? b : a));
+
 check('the dynamic arc peaks where the tune does', () => {
-  const ORDER = ['pppp', 'ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff', 'ffff'];
+  /* A piece in one character throughout has one climax, and the loudness has
+   * to arrive with it.  (A sectional piece has one per section; that is the
+   * check below.) */
   for (const bars of [16, 24, 32]) {
-    const p = composePiece({ character: 'ballade', tonic: 9, bars, seed: 5 });
-    const marks = [];
-    p.score.parts.forEach((part) => part.measures.forEach((m, mi) =>
-      (m.voices || []).forEach((v) => v.forEach((e) => {
-        if (e.dynamic) marks.push({ bar: mi, id: e.dynamic });
-      }))));
+    const p = composePiece({ character: 'ballade', form: null, tonic: 9, bars, seed: 5 });
+    const marks = dynamics(p.score);
     if (!marks.length) return `${bars} bars: no dynamics were written at all`;
-    const loudest = marks.reduce((a, b) => (ORDER.indexOf(b.id) > ORDER.indexOf(a.id) ? b : a));
+    const loudest = loudestOf(marks);
     const phrases = Math.round(bars / 4);
     const climaxBar = (phrases > 2 ? phrases - 2 : phrases - 1) * 4;
     if (Math.abs(loudest.bar - climaxBar) > 4) {
@@ -398,6 +413,145 @@ check('the dynamic arc peaks where the tune does', () => {
     }
   }
   return true;
+});
+
+/* ----------------------------------------------------------------- form */
+
+console.log('\nForm — a piece that goes somewhere and comes back changed.');
+
+check('a ballade long enough to be one is written in sections', () => {
+  for (const seed of [1, 4, 9]) {
+    const p = composePiece({ character: 'ballade', tonic: 5, mode: 'major', bars: 64, seed });
+    const secs = p.description.sections;
+    if (!secs || secs.length !== 4) return `seed ${seed}: got ${secs ? secs.length : 0} sections`;
+    if (secs.reduce((a, b) => a + b.bars, 0) !== p.description.bars) {
+      return `seed ${seed}: sections add up to ${secs.reduce((a, b) => a + b.bars, 0)}`;
+    }
+    /* Not all the same length, which is the failure mode whole-phrase
+     * rounding falls into and the thing that makes a form stop being one. */
+    if (new Set(secs.map((x) => x.bars)).size < 2) {
+      return `seed ${seed}: every section came out ${secs[0].bars} bars`;
+    }
+  }
+  return true;
+});
+
+check('a short piece stays in one section', () => {
+  for (const bars of [8, 16, 24]) {
+    const p = composePiece({ character: 'ballade', tonic: 5, bars, seed: 3 });
+    if (p.description.sections) return `${bars} bars was split into sections`;
+  }
+  return true;
+});
+
+check('the storm section is faster, louder and in another key', () => {
+  const p = composePiece({ character: 'ballade', tonic: 5, mode: 'major', bars: 64, seed: 7 });
+  const [opening, storm] = p.description.sections;
+  if (storm.tempo <= opening.tempo * 1.5) {
+    return `the storm is ${storm.tempo} bpm against ${opening.tempo}`;
+  }
+  if (storm.key === opening.key) return `both sections are in ${storm.key}`;
+  if (!/minor/.test(storm.key)) return `the storm came out in ${storm.key}`;
+  return true;
+});
+
+check('a ballade ends in the key it was driven into, not the one it began in', () => {
+  const p = composePiece({ character: 'ballade', tonic: 5, mode: 'major', bars: 64, seed: 7 });
+  if (p.description.endsIn === p.description.key) {
+    return `it began and ended in ${p.description.key}`;
+  }
+  /* F major against A minor — a third apart, which is the relationship the
+   * form is built on. */
+  return p.description.endsIn === 'A minor' ? true
+    : `F major went to ${p.description.endsIn}`;
+});
+
+check('each section is marked with its tempo where it begins', () => {
+  const p = composePiece({ character: 'ballade', tonic: 5, mode: 'major', bars: 64, seed: 7 });
+  for (const sec of p.description.sections) {
+    const spec = p.score.measures[sec.from - 1];
+    if (!spec || !spec.tempo) return `no tempo mark at bar ${sec.from}`;
+    if (spec.tempo.text !== sec.name) return `bar ${sec.from} says "${spec.tempo.text}"`;
+    if (spec.tempo.bpm !== sec.tempo) return `bar ${sec.from}: ${spec.tempo.bpm} not ${sec.tempo}`;
+  }
+  return true;
+});
+
+check('a section in another key is spelled in that key', () => {
+  /* F major writes B flats; A minor writes B naturals and G sharps.  If the
+   * engraver were still spelling from the opening key signature the storm
+   * would be full of enharmonic nonsense. */
+  const p = composePiece({ character: 'ballade', tonic: 5, mode: 'major', bars: 64, seed: 7 });
+  const storm = p.description.sections[1];
+  const spec = p.score.measures[storm.from - 1];
+  if (!spec || !spec.keySig) return `no key change at bar ${storm.from}`;
+  if (spec.keySig.fifths !== 0) return `the storm was given ${spec.keySig.fifths} sharps/flats`;
+  const inStorm = allNotes(p.score)
+    .filter((n) => n.bar >= storm.from - 1 && n.bar < storm.from - 1 + storm.bars);
+  const flats = inStorm.filter((n) => pcOf(n.midi) === 10).length;   // B flat
+  const naturals = inStorm.filter((n) => pcOf(n.midi) === 11).length; // B natural
+  return naturals > flats ? true
+    : `the storm wrote ${flats} B flats against ${naturals} B naturals`;
+});
+
+check('a form keeps the character it was given', () => {
+  /* Shape and character are different questions.  Asking for a Classical
+   * piece in ballade form must give a piece that is still Classical between
+   * the interruptions, not a ballade with the word "Classical" on it. */
+  const plain = composePiece({ character: 'classical', tonic: 5, bars: 16, seed: 3 });
+  const shaped = composePiece({ character: 'classical', tonic: 5, bars: 64, seed: 3, form: 'ballade' });
+  const home = shaped.description.sections[0];
+  if (home.texture !== plain.description.texture) {
+    return `the opening section is "${home.texture}", not the character's "${plain.description.texture}"`;
+  }
+  const storm = shaped.description.sections[1];
+  if (storm.texture === home.texture) return `the storm is in the same texture, ${storm.texture}`;
+  return true;
+});
+
+check('the sections survive being exported', () => {
+  /* A key or tempo change that only exists inside Cadenza is not a change —
+   * it has to come out the other end of both exporters, or the piece opens in
+   * someone else's program at one speed in one key. */
+  const p = composePiece({ character: 'ballade', tonic: 5, mode: 'major', bars: 64, seed: 7 });
+  const want = p.description.sections.length;
+
+  const xml = exportMusicXML(p.score);
+  const keys = (xml.match(/<key>/g) || []).length;
+  const tempos = (xml.match(/<sound tempo=/g) || []).length;
+  if (tempos !== want) return `MusicXML carried ${tempos} of ${want} tempo changes`;
+  if (keys !== want) return `MusicXML carried ${keys} of ${want} key signatures`;
+  for (const sec of p.description.sections) {
+    if (!xml.includes(`>${sec.name}<`)) return `MusicXML lost the mark "${sec.name}"`;
+  }
+
+  const midi = new Uint8Array(exportMIDI(p.score));
+  let midiTempos = 0;
+  let midiKeys = 0;
+  for (let i = 0; i < midi.length - 2; i++) {
+    if (midi[i] === 0xff && midi[i + 1] === 0x51 && midi[i + 2] === 0x03) midiTempos++;
+    if (midi[i] === 0xff && midi[i + 1] === 0x59) midiKeys++;
+  }
+  if (midiTempos !== want) return `MIDI carried ${midiTempos} of ${want} tempo changes`;
+  if (midiKeys !== want) return `MIDI carried ${midiKeys} of ${want} key signatures`;
+  return true;
+});
+
+check('every section arrives at its own loudest point', () => {
+  const p = composePiece({ character: 'ballade', tonic: 5, mode: 'major', bars: 64, seed: 7 });
+  const marks = dynamics(p.score);
+  for (const sec of p.description.sections) {
+    const mine = marks.filter((m) => m.bar >= sec.from - 1 && m.bar < sec.from - 1 + sec.bars);
+    if (!mine.length) return `${sec.name} was given no dynamics at all`;
+  }
+  /* And the piece as a whole is loudest inside one of the fast sections,
+   * because that is where a ballade breaks. */
+  const loudest = loudestOf(marks);
+  const at = p.description.sections.find((sec) =>
+    loudest.bar >= sec.from - 1 && loudest.bar < sec.from - 1 + sec.bars);
+  if (!at) return `the loudest mark at bar ${loudest.bar + 1} is in no section`;
+  return at.tempo > p.description.tempo ? true
+    : `the piece is loudest in ${at.name}, which is not one of the fast sections`;
 });
 
 check('a dynamic mark opens the piece', () => {

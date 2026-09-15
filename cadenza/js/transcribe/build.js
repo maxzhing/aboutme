@@ -146,7 +146,11 @@ function normalFor(division) {
   return n;
 }
 
-/** One voice's worth of events laid out through the piece. */
+/** One voice's worth of events laid out through the piece.
+ *
+ * `fifths` is a function of the measure index rather than a number, so a piece
+ * that changes key partway through is spelled in the key it is actually in at
+ * that point instead of in the one it opened in. */
 function layOutVoice(chords, ts, measures, fifths, plan, lean = 0) {
   const bar = measureTicks(ts);
   const out = [];
@@ -188,7 +192,7 @@ function fill(state, from, to, chord) {
       out[m].push(M.makeRest(id, { dots, tuplet: tuplet || null }));
       return;
     }
-    const ev = M.makeNote(chord.notes.map((n) => spell(n.midi, fifths, state.lean)), id,
+    const ev = M.makeNote(chord.notes.map((n) => spell(n.midi, fifths(m), state.lean)), id,
       { dots, tuplet: tuplet || null });
     for (const note of ev.notes) {
       note.tie = first && last ? null : first ? 'start' : last ? 'stop' : 'both';
@@ -307,6 +311,10 @@ export function buildParts(parts, opts = {}) {
     spellingLean = 0,
     annotations = null,
   } = opts;
+  /* A key signature that holds for the whole piece, or one that answers per
+   * measure — the composer hands over the second kind when a piece changes
+   * key partway through. */
+  const fifthsAt = typeof fifths === 'function' ? fifths : () => fifths;
   const perBeat = plan ? plan.perBeat : TPQ;
   const divisions = plan ? plan.divisions : new Map();
   const layout = { perBeat, divisionAt: (b) => divisions.get(b) || 1 };
@@ -322,7 +330,7 @@ export function buildParts(parts, opts = {}) {
     instrumentIds: parts.map((p) => p.instrumentId),
     measures,
     timeSig,
-    keySig: { fifths, mode },
+    keySig: { fifths: fifthsAt(0), mode },
     tempo: Math.round(bpm),
   });
 
@@ -351,7 +359,7 @@ export function buildParts(parts, opts = {}) {
       for (let v = 0; v < voiceCount; v++) scorePart.measures[m].voices.push([]);
     }
     for (const [idx, list] of streams) {
-      const laid = layOutVoice(list, timeSig, measures, fifths, layout, spellingLean);
+      const laid = layOutVoice(list, timeSig, measures, fifthsAt, layout, spellingLean);
       for (let m = 0; m < measures; m++) scorePart.measures[m].voices[idx] = laid[m];
     }
     scorePart.transcribeIndex = pi;
