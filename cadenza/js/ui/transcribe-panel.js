@@ -63,6 +63,43 @@ const ISSUE_TEXT = {
   timing: 'the rhythm does not line up with the recording',
 };
 
+/** Every channel of a decoded file, averaged into one. */
+function mixToMono(buffer) {
+  const n = buffer.length;
+  const channels = buffer.numberOfChannels;
+  if (channels === 1) return buffer.getChannelData(0);
+  const out = new Float32Array(n);
+  for (let c = 0; c < channels; c++) {
+    const data = buffer.getChannelData(c);
+    for (let i = 0; i < n; i++) out[i] += data[i] / channels;
+  }
+  return out;
+}
+
+/**
+ * Why a file would not open, in terms of what to do about it.
+ *
+ * Browsers differ in which formats they can decode — the ones covered by
+ * patents are missing from some builds entirely — so "could not be decoded"
+ * is usually a fact about the browser rather than about the file, and saying
+ * only that leaves someone re-exporting a file that was never the problem.
+ */
+function explainDecodeFailure(file) {
+  const name = (file && file.name) || '';
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  const probe = typeof document !== 'undefined' ? document.createElement('audio') : null;
+  const canPlay = (type) => !!probe && !!probe.canPlayType(type);
+  if (['m4a', 'mp4', 'mov', 'aac', 'm4v'].includes(ext) && !canPlay('audio/mp4; codecs="mp4a.40.2"')) {
+    return 'This browser cannot decode AAC. Safari and Chrome can — or save the '
+      + 'recording as WAV or MP3 and try again.';
+  }
+  if (file && file.size > 400 * 1024 * 1024) {
+    return 'That file is too large for the browser to decode in one piece. '
+      + 'Export just the audio, or a shorter stretch of it.';
+  }
+  return `${name || 'That file'} could not be decoded. WAV and MP3 work everywhere.`;
+}
+
 export class TranscribePanel {
   constructor(app) {
     this.app = app;
@@ -233,8 +270,9 @@ export class TranscribePanel {
         </button>
         <button class="tr-choice" data-go="audioFile">
           <span class="tr-choice-icon">${UI.open}</span>
-          <span class="tr-choice-title">Import audio</span>
-          <span class="tr-choice-sub">WAV, MP3, FLAC, OGG, M4A</span>
+          <span class="tr-choice-title">Import a recording</span>
+          <span class="tr-choice-sub">Audio or video — WAV, MP3, M4A, FLAC, OGG, MP4, MOV.
+            A video taken on a phone is fine; the picture is ignored.</span>
         </button>
         <button class="tr-choice" data-go="midiFile">
           <span class="tr-choice-icon">${UI.midi}</span>
@@ -261,7 +299,14 @@ export class TranscribePanel {
     if (where === 'setup') return this.renderSetup();
     if (where === 'mic') return this.startRecording();
     if (where === 'keys') return this.startMidiCapture();
-    if (where === 'audioFile') return this.pickFile('audio/*', (f) => this.loadAudioFile(f));
+    /* Video too.  A phone points its camera at the keyboard and records a
+     * .mov, and that is how most people have a recording of themselves
+     * playing at all; refusing it because the file begins with a picture
+     * would be refusing the commonest case.  The picture is thrown away and
+     * the sound goes through unchanged. */
+    if (where === 'audioFile') {
+      return this.pickFile('audio/*,video/*', (f) => this.loadAudioFile(f));
+    }
     if (where === 'midiFile') return this.pickFile('.mid,.midi,audio/midi', (f) => this.loadMidiFile(f));
     if (where === 'forget') { this.model.reset(); return this.renderStart(); }
     if (where === 'back') return this.renderStart();
@@ -375,16 +420,27 @@ export class TranscribePanel {
 
   async loadAudioFile(file) {
     this.showProgress('events');
+    let ctx = null;
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
       const buffer = await ctx.decodeAudioData(await file.arrayBuffer());
       await ctx.close();
-      this.audio = { buffer, sampleRate: buffer.sampleRate, samples: buffer.getChannelData(0) };
+      ctx = null;
+      /* Every channel, mixed down.  Taking the left one alone throws away
+       * half of a stereo recording, and on a phone recording the two
+       * channels are not the same thing: one of them is often nearer the
+       * instrument than the other. */
+      this.audio = {
+        buffer,
+        sampleRate: buffer.sampleRate,
+        samples: mixToMono(buffer),
+      };
       this.source = SOURCE.AUDIO;
       this.fileName = file.name;
       await this.run();
     } catch (err) {
-      Dlg.toast('That file could not be decoded', 'err');
+      if (ctx) { try { await ctx.close(); } catch (ignored) { /* already gone */ } }
+      Dlg.toast(explainDecodeFailure(file), 'err');
       this.renderStart();
     }
   }
@@ -615,12 +671,22 @@ export class TranscribePanel {
             <b>${esc(keyName(a.key.fifths, a.key.mode))}</b> ·
             <b>${a.measures}</b> bar${a.measures === 1 ? '' : 's'}
           </div>
+          ${a.levelling > 6 ? `<div class="tr-verified">
+            <b>The recording's level moved by ${Math.round(a.levelling)} dB.</b>
+            Either the microphone moved or the playing did. It was evened out before
+            reading, so the quiet stretches could be heard at all; the dynamics written
+            on the page still come from the recording as it arrived.
+          </div>` : ''}
           ${a.listened ? `<div class="tr-verified">
             <b>Checked against the recording.</b> Played its own score back
             ${a.passes.length} time${a.passes.length === 1 ? '' : 's'} and made
             ${a.corrections.length} correction${a.corrections.length === 1 ? '' : 's'}.
             ${a.passes.length > 1 ? `Match went from ${pct(a.passes[0].similarity)}%
               to ${pct(a.similarity)}%.` : ''}
+            ${(a.passes || []).filter((x) => x.refused).length ? `
+              ${(a.passes || []).filter((x) => x.refused).length} pass${
+  (a.passes || []).filter((x) => x.refused).length === 1 ? ' was' : 'es were'} thrown away
+              for buying a little more match with a great deal more to read.` : ''}
           </div>` : ''}
           ${a.listened && a.reachedFloor === false ? `<div class="tr-shaky">
             <b>Reached ${pct(a.similarity)}% — short of the ${pct(a.matchFloor)}% it works towards.</b>
@@ -631,6 +697,11 @@ export class TranscribePanel {
               ${a.difference.extra.length} the recording does not` : ''}.` : ''}
             Each one is listed under <b>Show the working</b>, so what it could not place
             can be looked at rather than taken on trust.
+            ${this.source === SOURCE.AUDIO ? `<br><br>For scale: a <i>flawless</i> transcription
+              of a real piano recorded in a room, with the pedal down, scores around 75–80%
+              rather than 100% — the recording holds the room, the pedal and the other strings
+              ringing, and no notation accounts for those. A microphone close to the
+              instrument, a quiet room and less pedal all raise the ceiling.` : ''}
           </div>` : ''}
           <div class="tr-meters">
             ${a.listened ? meter('Match', a.similarity, 'how much of the recording the score accounts for') : ''}

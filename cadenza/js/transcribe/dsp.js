@@ -135,6 +135,114 @@ export function rms(samples, from, to) {
   return Math.sqrt(s / Math.max(1, b - a));
 }
 
+/**
+ * Even out a recording's level before reading it.
+ *
+ * A phone held over a piano is not a fixed microphone.  It gets carried
+ * closer and further away, put down, picked up; the player turns towards it
+ * and away.  On a real recording this moves the level by twenty-five or
+ * thirty decibels over a few seconds — far more than the playing does — and
+ * the multiple-F0 estimator simply goes deaf in the quiet stretches, because
+ * every threshold it has is relative to the loudest thing in the take.
+ * Measured on one handheld take of a grand piano, a passage that was thirty
+ * decibels down yielded one note where it should have yielded forty-six.
+ *
+ * So the gain follows the *local peak*, not the local average.  Tracking the
+ * average would lift the silence between phrases along with everything else
+ * and turn room noise into notes; the loudest thing in a couple of seconds is
+ * a measure of how close the microphone is, and nothing else.  Where there is
+ * nothing to hear the gain stays at one, so a silence remains a silence.
+ *
+ * Two seconds is the window because that is the gap between the two things
+ * being told apart: a microphone moves over seconds, a phrase shapes itself
+ * over beats.  On a recording whose level is already even the gain moves by
+ * about three decibels from end to end, nearly all of it in the decay after
+ * the last note, against the eighteen it applies to a take where the
+ * microphone walked away — so this costs close to nothing where it is not
+ * needed.  Loudness is measured from the original samples elsewhere, so the
+ * dynamics written on the page are the ones that were played.
+ */
+export function levelOut(samples, sampleRate, opts = {}) {
+  const { window = 2, ceiling = 8, floor = 0.02 } = opts;
+  const n = samples.length;
+  const step = Math.max(1, Math.round(sampleRate * 0.02));
+  const frames = Math.ceil(n / step);
+  if (frames < 3) return { audio: samples, gain: null, step, range: 0 };
+
+  const energy = new Float64Array(frames);
+  for (let f = 0; f < frames; f++) {
+    const a = f * step;
+    const b = Math.min(n, a + step);
+    let s = 0;
+    for (let i = a; i < b; i++) s += samples[i] * samples[i];
+    energy[f] = Math.sqrt(s / Math.max(1, b - a));
+  }
+
+  /* The loudest moment within `window` of each frame. */
+  const half = Math.max(1, Math.round((window * sampleRate) / step / 2));
+  const peak = slidingMax(energy, half);
+  let top = 0;
+  for (const v of peak) top = Math.max(top, v);
+  if (!(top > 0)) return { audio: samples, gain: null, step, range: 0 };
+
+  const gain = new Float64Array(frames);
+  for (let f = 0; f < frames; f++) {
+    gain[f] = peak[f] > top * floor ? Math.min(ceiling, top / peak[f]) : 1;
+  }
+  /* Smooth it, so the gain never steps in the middle of a note. */
+  const smooth = boxFilter(gain, Math.max(1, Math.round(half / 2)));
+
+  let lo = Infinity;
+  let hi = 0;
+  for (const g of smooth) { lo = Math.min(lo, g); hi = Math.max(hi, g); }
+  const range = 20 * Math.log10(hi / Math.max(1e-9, lo));
+
+  const out = new Float32Array(n);
+  for (let i = 0; i < n; i++) out[i] = samples[i] * smooth[Math.min(frames - 1, (i / step) | 0)];
+  return { audio: out, gain: smooth, step, range };
+}
+
+/**
+ * The largest value within `radius` of each position.
+ *
+ * A monotonic queue: indices whose value is already beaten by a later one are
+ * dropped, so the front of the queue is always the maximum of the window and
+ * every index enters and leaves once.  One pass, whatever the radius.
+ */
+function slidingMax(values, radius) {
+  const n = values.length;
+  const out = new Float64Array(n);
+  const queue = new Int32Array(n);
+  let head = 0;
+  let tail = 0;
+  for (let i = 0; i < n + radius; i++) {
+    if (i < n) {
+      while (tail > head && values[queue[tail - 1]] <= values[i]) tail--;
+      queue[tail++] = i;
+    }
+    const at = i - radius;
+    if (at >= 0) {
+      while (queue[head] < at - radius) head++;
+      out[at] = values[queue[head]];
+    }
+  }
+  return out;
+}
+
+/** A moving average of `radius` either side. */
+function boxFilter(values, radius) {
+  const n = values.length;
+  const sum = new Float64Array(n + 1);
+  for (let i = 0; i < n; i++) sum[i + 1] = sum[i] + values[i];
+  const out = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const a = Math.max(0, i - radius);
+    const b = Math.min(n, i + radius + 1);
+    out[i] = (sum[b] - sum[a]) / (b - a);
+  }
+  return out;
+}
+
 /** Running median, used for adaptive thresholds. */
 export function movingMedian(values, radius) {
   const out = new Float32Array(values.length);

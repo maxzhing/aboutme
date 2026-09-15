@@ -42,9 +42,51 @@ const MIN_RUN_STRENGTH = 0.26; // how clearly a difference must show to act on
  */
 const settled = (note, against) => (note.confidence ?? 0) >= 0.8 && against < 0.72;
 
+/* What a pass may add to the cost of reading the page: a little for free, and
+ * beyond that only in proportion to the match it buys.  A point of match is
+ * worth about one tie in twenty notes. */
+const FUSS_ALLOWANCE = 0.05;
+const FUSS_PER_POINT = 2.5;
+
 /** Is there a note of this pitch sounding across this span? */
 const covering = (notes, midi, from, to) =>
   notes.find((n) => n.midi === midi && n.end > from + 0.02 && n.start < to - 0.02);
+
+/**
+ * What it costs to read a score.
+ *
+ * Ties, tuplets and a wide spread of note values are what make a transcription
+ * unreadable, and they are the currency the listening loop spends: chasing the
+ * last few percent of spectral match, it will happily turn a page of crotchets
+ * and quavers into one of tied demisemiquaver triplets.  Counting the cost
+ * lets the loop be told what it may spend.
+ *
+ * Zero is a page of plain values with no ties and no tuplets.  A tuplet costs
+ * twice a tie because it is twice the work to read, and every note value past
+ * the fourth costs a little, because a reader holding four values in their
+ * head is reading and one holding nine is decoding.
+ */
+export function fussOf(score) {
+  let notes = 0;
+  let ties = 0;
+  let tuplets = 0;
+  const values = new Set();
+  for (const part of score.parts || []) {
+    for (const measure of part.measures || []) {
+      for (const voice of measure.voices || []) {
+        for (const ev of voice) {
+          if (ev.type !== 'note') continue;
+          notes++;
+          if (ev.tuplet) tuplets++;
+          if (ev.notes.some((n) => n.tie)) ties++;
+          values.add(`${ev.duration}:${ev.dots || 0}${ev.tuplet ? 't' : ''}`);
+        }
+      }
+    }
+  }
+  if (!notes) return 0;
+  return (ties + 2 * tuplets) / notes + Math.max(0, values.size - 4) * 0.05;
+}
 
 /**
  * Turn a set of measured differences into changes to the note list.
@@ -64,9 +106,41 @@ function* correctionSteps(notes, diff, opts) {
      * destructive — deaf, in practice, because the same bar that admits a
      * missed inner voice also protects every wrong note in the score. */
     measure = () => 1, addBar = 0.12, dropBar = 0.1,
+    attacks = null, attackWindow = 0.07,
   } = opts;
   const verify = (midi, time) => measure(midi, time) >= addBar;
   const out = notes.map((n) => ({ ...n }));
+
+  /* Where the performance actually begins things.
+   *
+   * The difference map has its own frame rate, and a missing pitch is reported
+   * at whatever frame the energy appeared in — a time that has nothing to do
+   * with when anybody played.  A note written in at such a time does not land
+   * on any grid, and the rhythm stage, asked to write a score containing it,
+   * answers with tuplets and demisemiquavers.  Measured on a handheld
+   * recording, the listening loop turned three tuplets into forty-five and ten
+   * note values into twenty: it was not reading rhythm badly, it was being
+   * handed times no rhythm could explain.
+   *
+   * So a note added by listening has to begin at a moment the performance
+   * already has: an attack the onset detector found, or the start of a note
+   * the first reading was sure of.  A pitch appearing at a moment when nothing
+   * begins is a partial, a reverberation, or a smear across a barline — not a
+   * note somebody played. */
+  const beginnings = attacks && attacks.length
+    ? [...attacks].sort((a, b) => a - b) : null;
+  const beginning = (t) => {
+    if (!beginnings) return t;
+    let lo = 0;
+    let hi = beginnings.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (beginnings[mid] < t) lo = mid + 1; else hi = mid;
+    }
+    let best = beginnings[lo];
+    if (lo > 0 && Math.abs(beginnings[lo - 1] - t) < Math.abs(best - t)) best = beginnings[lo - 1];
+    return Math.abs(best - t) <= attackWindow ? best : null;
+  };
   const edits = [];
 
   /* Pair a missing pitch with an extra one an octave away at the same moment:
@@ -127,10 +201,13 @@ function* correctionSteps(notes, diff, opts) {
      * how a reading acquires notes nobody played.  Something written on the
      * page has to have lasted. */
     if ((miss.frames || 0) < 2) continue;
+    const begins = beginning(from);
+    if (begins === null) continue;
+    const ends = Math.max(begins + 0.06, to);
     edits.push({
       kind: 'add', weight: strength * miss.frames,
       apply: () => out.push({
-        midi, start: from, end: to,
+        midi, start: begins, end: ends,
         velocity: Math.max(24, Math.min(120, Math.round(40 + 70 * strength))),
         confidence: Math.min(0.9, 0.35 + strength * 0.5),
         salience: strength * 100,
@@ -236,6 +313,14 @@ function* refineSteps(ctx, opts = {}) {
   const fullMap = yield* salienceSteps(original.audio, sampleRate, { pitches: wide });
   /* Found once and reused: the recording's attacks do not move between passes. */
   const originalOnsets = (yield* onsetSteps(toMono(ctx.audio), { sampleRate })).onsets;
+  /* Every moment the performance begins something: its attacks, and the starts
+   * of the notes already read.  Added notes are pinned to these. */
+  const onsetTimes = originalOnsets.map((o) => o.time);
+  const attackTimes = (list) => {
+    const seen = new Set(onsetTimes);
+    for (const n of list) seen.add(n.start);
+    return [...seen];
+  };
   const heard = activePitches(fullMap);
 
   const history = [];
@@ -275,9 +360,11 @@ function* refineSteps(ctx, opts = {}) {
     let diff = yield* compareSteps(original, { audio: rendered.samples, sampleRate },
       { pitches, originalMap: fullMap, originalOnsets });
 
+    const fuss = fussOf(built.score);
     const entry = {
       pass,
       similarity: diff.similarity,
+      fuss,
       coverage: diff.coverage,
       missing: diff.missing.length,
       extra: diff.extra.length,
@@ -291,8 +378,30 @@ function* refineSteps(ctx, opts = {}) {
       .filter((h) => Math.abs(h.similarity - diff.similarity) < 1e-9).length;
     if (seenBefore >= 2) { entry.stopped = 'going round in circles'; break; }
 
-    if (!best || diff.similarity > best.similarity + 1e-9) {
-      best = { similarity: diff.similarity, notes: notes.map((n) => ({ ...n })), built, diff };
+    /* A better match, but not at any price.
+     *
+     * The loop's whole method is to add notes the recording seems to show, and
+     * on a real recording — room, microphone, pedal, a piano that is not the
+     * one being synthesised — there is always a little more it seems to show.
+     * Each such note lands between the beats and has to be written as a tuplet
+     * or a tie, so the match creeps up by fractions of a percent while the page
+     * turns into a thicket.  Measured on a handheld recording, listening took
+     * three tuplets to forty-five and ten note values to twenty, for eight
+     * points of match.
+     *
+     * So a pass may make the page harder to read only in proportion to what it
+     * actually gains.  A correction that genuinely finds a missing voice earns
+     * its keep several times over; one that buys half a percent with a dozen
+     * tuplets does not.  On a clean recording corrections add no fuss at all,
+     * and this allows everything it allowed before. */
+    const gained = best ? diff.similarity - best.similarity : diff.similarity;
+    const spent = best ? fuss - best.fuss : 0;
+    const affordable = spent <= FUSS_ALLOWANCE + gained * FUSS_PER_POINT;
+    entry.refused = gained > 1e-9 && !affordable ? 'too fussy to be worth it' : undefined;
+    if (!best || (gained > 1e-9 && affordable)) {
+      best = {
+        similarity: diff.similarity, fuss, notes: notes.map((n) => ({ ...n })), built, diff,
+      };
       retries = 0;
     } else if (retries < (best && best.similarity < floor ? 3 : 1)) {
       /* That round of corrections made things worse.  One of them was probably
@@ -382,6 +491,7 @@ function* refineSteps(ctx, opts = {}) {
       return yield* correctionSteps(notes, diff, {
         limit, harmonyAt, measure, exclude: rejected,
         addBar: REACH.add[reach], dropBar: 0.1,
+        attacks: attackTimes(notes),
       });
     };
     yield { stage: 'correcting', pass };

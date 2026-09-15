@@ -12653,6 +12653,43 @@ const ISSUE_TEXT = {
   timing: 'the rhythm does not line up with the recording',
 };
 
+/** Every channel of a decoded file, averaged into one. */
+function mixToMono(buffer) {
+  const n = buffer.length;
+  const channels = buffer.numberOfChannels;
+  if (channels === 1) return buffer.getChannelData(0);
+  const out = new Float32Array(n);
+  for (let c = 0; c < channels; c++) {
+    const data = buffer.getChannelData(c);
+    for (let i = 0; i < n; i++) out[i] += data[i] / channels;
+  }
+  return out;
+}
+
+/**
+ * Why a file would not open, in terms of what to do about it.
+ *
+ * Browsers differ in which formats they can decode — the ones covered by
+ * patents are missing from some builds entirely — so "could not be decoded"
+ * is usually a fact about the browser rather than about the file, and saying
+ * only that leaves someone re-exporting a file that was never the problem.
+ */
+function explainDecodeFailure(file) {
+  const name = (file && file.name) || '';
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  const probe = typeof document !== 'undefined' ? document.createElement('audio') : null;
+  const canPlay = (type) => !!probe && !!probe.canPlayType(type);
+  if (['m4a', 'mp4', 'mov', 'aac', 'm4v'].includes(ext) && !canPlay('audio/mp4; codecs="mp4a.40.2"')) {
+    return 'This browser cannot decode AAC. Safari and Chrome can — or save the '
+      + 'recording as WAV or MP3 and try again.';
+  }
+  if (file && file.size > 400 * 1024 * 1024) {
+    return 'That file is too large for the browser to decode in one piece. '
+      + 'Export just the audio, or a shorter stretch of it.';
+  }
+  return `${name || 'That file'} could not be decoded. WAV and MP3 work everywhere.`;
+}
+
 class TranscribePanel {
   constructor(app) {
     this.app = app;
@@ -12823,8 +12860,9 @@ class TranscribePanel {
         </button>
         <button class="tr-choice" data-go="audioFile">
           <span class="tr-choice-icon">${UI.open}</span>
-          <span class="tr-choice-title">Import audio</span>
-          <span class="tr-choice-sub">WAV, MP3, FLAC, OGG, M4A</span>
+          <span class="tr-choice-title">Import a recording</span>
+          <span class="tr-choice-sub">Audio or video — WAV, MP3, M4A, FLAC, OGG, MP4, MOV.
+            A video taken on a phone is fine; the picture is ignored.</span>
         </button>
         <button class="tr-choice" data-go="midiFile">
           <span class="tr-choice-icon">${UI.midi}</span>
@@ -12851,7 +12889,14 @@ class TranscribePanel {
     if (where === 'setup') return this.renderSetup();
     if (where === 'mic') return this.startRecording();
     if (where === 'keys') return this.startMidiCapture();
-    if (where === 'audioFile') return this.pickFile('audio/*', (f) => this.loadAudioFile(f));
+    /* Video too.  A phone points its camera at the keyboard and records a
+     * .mov, and that is how most people have a recording of themselves
+     * playing at all; refusing it because the file begins with a picture
+     * would be refusing the commonest case.  The picture is thrown away and
+     * the sound goes through unchanged. */
+    if (where === 'audioFile') {
+      return this.pickFile('audio/*,video/*', (f) => this.loadAudioFile(f));
+    }
     if (where === 'midiFile') return this.pickFile('.mid,.midi,audio/midi', (f) => this.loadMidiFile(f));
     if (where === 'forget') { this.model.reset(); return this.renderStart(); }
     if (where === 'back') return this.renderStart();
@@ -12965,16 +13010,27 @@ class TranscribePanel {
 
   async loadAudioFile(file) {
     this.showProgress('events');
+    let ctx = null;
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
       const buffer = await ctx.decodeAudioData(await file.arrayBuffer());
       await ctx.close();
-      this.audio = { buffer, sampleRate: buffer.sampleRate, samples: buffer.getChannelData(0) };
+      ctx = null;
+      /* Every channel, mixed down.  Taking the left one alone throws away
+       * half of a stereo recording, and on a phone recording the two
+       * channels are not the same thing: one of them is often nearer the
+       * instrument than the other. */
+      this.audio = {
+        buffer,
+        sampleRate: buffer.sampleRate,
+        samples: mixToMono(buffer),
+      };
       this.source = SOURCE.AUDIO;
       this.fileName = file.name;
       await this.run();
     } catch (err) {
-      Dlg.toast('That file could not be decoded', 'err');
+      if (ctx) { try { await ctx.close(); } catch (ignored) { /* already gone */ } }
+      Dlg.toast(explainDecodeFailure(file), 'err');
       this.renderStart();
     }
   }
@@ -13205,12 +13261,22 @@ class TranscribePanel {
             <b>${esc(keyName(a.key.fifths, a.key.mode))}</b> ·
             <b>${a.measures}</b> bar${a.measures === 1 ? '' : 's'}
           </div>
+          ${a.levelling > 6 ? `<div class="tr-verified">
+            <b>The recording's level moved by ${Math.round(a.levelling)} dB.</b>
+            Either the microphone moved or the playing did. It was evened out before
+            reading, so the quiet stretches could be heard at all; the dynamics written
+            on the page still come from the recording as it arrived.
+          </div>` : ''}
           ${a.listened ? `<div class="tr-verified">
             <b>Checked against the recording.</b> Played its own score back
             ${a.passes.length} time${a.passes.length === 1 ? '' : 's'} and made
             ${a.corrections.length} correction${a.corrections.length === 1 ? '' : 's'}.
             ${a.passes.length > 1 ? `Match went from ${pct(a.passes[0].similarity)}%
               to ${pct(a.similarity)}%.` : ''}
+            ${(a.passes || []).filter((x) => x.refused).length ? `
+              ${(a.passes || []).filter((x) => x.refused).length} pass${
+  (a.passes || []).filter((x) => x.refused).length === 1 ? ' was' : 'es were'} thrown away
+              for buying a little more match with a great deal more to read.` : ''}
           </div>` : ''}
           ${a.listened && a.reachedFloor === false ? `<div class="tr-shaky">
             <b>Reached ${pct(a.similarity)}% — short of the ${pct(a.matchFloor)}% it works towards.</b>
@@ -13221,6 +13287,11 @@ class TranscribePanel {
               ${a.difference.extra.length} the recording does not` : ''}.` : ''}
             Each one is listed under <b>Show the working</b>, so what it could not place
             can be looked at rather than taken on trust.
+            ${this.source === SOURCE.AUDIO ? `<br><br>For scale: a <i>flawless</i> transcription
+              of a real piano recorded in a room, with the pedal down, scores around 75–80%
+              rather than 100% — the recording holds the room, the pedal and the other strings
+              ringing, and no notation accounts for those. A microphone close to the
+              instrument, a quiet room and less pedal all raise the ceiling.` : ''}
           </div>` : ''}
           <div class="tr-meters">
             ${a.listened ? meter('Match', a.similarity, 'how much of the recording the score accounts for') : ''}
@@ -13821,6 +13892,9 @@ function* transcribeSteps(audio, opts = {}) {
 
   onPass('events');
   const extracted = yield* extractSteps(audio, { ...rest, sampleRate, onProgress });
+  /* Extraction evens out the recording's level before reading it; everything
+   * downstream that listens to the recording listens to the same copy. */
+  const heard = extracted.audio || audio;
   const base = { ...rest, duration: extracted.duration, source: SOURCE.AUDIO, onPass };
   let result = readMusic(extracted.notes, base);
   result.analysis.onsets = extracted.onsets;
@@ -13828,6 +13902,7 @@ function* transcribeSteps(audio, opts = {}) {
   result.analysis.heard = extracted.notes.length;
 
   if (!listen || !extracted.notes.length) {
+    result.analysis.levelling = extracted.levelling || 0;
     result.analysis.listened = false;
     return result;
   }
@@ -13836,7 +13911,7 @@ function* transcribeSteps(audio, opts = {}) {
    * and do it again until it stops getting closer. */
   const harmonyFit = harmonyFitter(result.harmony);
   const refined = yield* refineSteps({
-    audio,
+    audio: heard,
     sampleRate,
     notes: extracted.notes,
     rebuild: (notes) => readMusic(notes, { ...base, onPass: () => {} }),
@@ -13855,6 +13930,7 @@ function* transcribeSteps(audio, opts = {}) {
   result.analysis.onsets = extracted.onsets;
   result.analysis.duration = extracted.duration;
   result.analysis.heard = extracted.notes.length;
+  result.analysis.levelling = extracted.levelling || 0;
   result.analysis.listened = true;
   result.analysis.similarity = refined.similarity;
   result.analysis.passes = refined.history;
@@ -13976,7 +14052,7 @@ __exp.CancelledError = CancelledError;
  * note from one long one.
  */
 
-const { stft, toMono, rms, midiToHz } = __req("js/transcribe/dsp.js");
+const { stft, toMono, rms, midiToHz, levelOut } = __req("js/transcribe/dsp.js");
 const { runSync } = __req("js/transcribe/steps.js");
 const { estimateF0s, ownPartialEnergy } = __req("js/transcribe/polyphony.js");
 const { onsetSteps } = __req("js/transcribe/onsets.js");
@@ -14179,10 +14255,30 @@ function* extractSteps(audio, options = {}) {
     silenceFloor = 0.012,
     reattack = 1.45,
     attackFloor = 0.42,
+    /* How much louder the recording has to get across a boundary before
+     * anything may be cut there, and before a group counts as re-struck. */
+    holdRise = 1.1,
+    groupRise = 1.25,
+    /* A clear attack at which no new pitch appears says something already
+     * sounding was struck again, whatever the overall level does: in a
+     * tremolo or a repeated figure the ringing of the last note is louder
+     * than the attack of the next, so waiting for a rise in level means
+     * waiting for ever. */
+    struckAgain = 1.4,
     onProgress = null,
   } = options;
 
-  const samples = toMono(audio);
+  /* Even out the microphone before reading anything.
+   *
+   * Everything below judges sound against the loudest thing in the take, so a
+   * passage recorded from further away is not quiet — it is inaudible.  On a
+   * handheld recording that is most of the take.  `levelOut` follows the local
+   * peak and leaves silence alone, so this recovers the quiet stretches
+   * without inventing anything in the gaps, and does nothing at all to a
+   * recording whose level was already even. */
+  const heard = toMono(audio);
+  const evened = levelOut(heard, sampleRate, options.level || {});
+  const samples = evened.audio;
   const duration = samples.length / sampleRate;
   const { onsets } = yield* onsetSteps(samples, { sampleRate, sensitivity });
 
@@ -14301,7 +14397,8 @@ function* extractSteps(audio, options = {}) {
     const together = carried.filter(looksStruck).length * 2 > carried.length;
     /* Nothing is cut in two at a boundary the recording gets quieter across. */
     const rise = i > 0 ? levelRise(samples, sampleRate, seg.from) : 1;
-    const louder = rise >= 1.1;
+    const clear = (seg.strength || 0) >= attackFloor * struckAgain;
+    const louder = rise >= holdRise || (clear && rise >= 0.92);
 
     /* A rise in level has to be explained by something.  If no pitch is new
      * here, then whatever was struck is already sounding — the chord was
@@ -14313,7 +14410,8 @@ function* extractSteps(audio, options = {}) {
      * which is what keeps a held bass from being restruck under every melody
      * note above it. */
     const fresh = [...seg.pitches.keys()].filter((m) => !open.has(m) && !parked.has(m));
-    const groupStruck = rise >= 1.25 && fresh.length === 0 && carried.length > 1;
+    const groupStruck = fresh.length === 0 && carried.length >= 1
+      && (rise >= groupRise || (clear && rise >= 0.92));
     if (i === 0 || louder) struckAt = seg.from;
 
     for (const c of carried) {
@@ -14406,11 +14504,14 @@ function* extractSteps(audio, options = {}) {
   const floor = strongest * 0.035;
   for (let i = notes.length - 1; i >= 0; i--) if (notes[i].salience < floor) notes.splice(i, 1);
 
-  /* Velocity from the level at each attack, scaled across the whole take. */
+  /* Velocity from the level at each attack, scaled across the whole take —
+   * measured on the recording as it arrived, not on the evened-out copy.  The
+   * levelling exists so that quiet passages can be *read*; how loud they were
+   * is a separate question, and its answer belongs on the page. */
   let loudest = 0;
   for (const n of notes) {
     const a = Math.round(n.start * sampleRate);
-    n._level = rms(samples, a, a + Math.round(0.05 * sampleRate));
+    n._level = rms(heard, a, a + Math.round(0.05 * sampleRate));
     loudest = Math.max(loudest, n._level);
   }
   for (const n of notes) {
@@ -14420,7 +14521,11 @@ function* extractSteps(audio, options = {}) {
   }
 
   notes.sort((a, b) => a.start - b.start || a.midi - b.midi);
-  return { notes, onsets, duration, sampleRate };
+  /* The evened-out audio goes back with the notes, so the listen-back loop
+   * compares the notation against the same signal the notes were read from.
+   * Comparing against the recording as it arrived would have it delete, as
+   * unheard, every note the levelling had just recovered. */
+  return { notes, onsets, duration, sampleRate, audio: samples, levelling: evened.range };
 }
 
 /**
@@ -14576,6 +14681,114 @@ function rms(samples, from, to) {
   return Math.sqrt(s / Math.max(1, b - a));
 }
 
+/**
+ * Even out a recording's level before reading it.
+ *
+ * A phone held over a piano is not a fixed microphone.  It gets carried
+ * closer and further away, put down, picked up; the player turns towards it
+ * and away.  On a real recording this moves the level by twenty-five or
+ * thirty decibels over a few seconds — far more than the playing does — and
+ * the multiple-F0 estimator simply goes deaf in the quiet stretches, because
+ * every threshold it has is relative to the loudest thing in the take.
+ * Measured on one handheld take of a grand piano, a passage that was thirty
+ * decibels down yielded one note where it should have yielded forty-six.
+ *
+ * So the gain follows the *local peak*, not the local average.  Tracking the
+ * average would lift the silence between phrases along with everything else
+ * and turn room noise into notes; the loudest thing in a couple of seconds is
+ * a measure of how close the microphone is, and nothing else.  Where there is
+ * nothing to hear the gain stays at one, so a silence remains a silence.
+ *
+ * Two seconds is the window because that is the gap between the two things
+ * being told apart: a microphone moves over seconds, a phrase shapes itself
+ * over beats.  On a recording whose level is already even the gain moves by
+ * about three decibels from end to end, nearly all of it in the decay after
+ * the last note, against the eighteen it applies to a take where the
+ * microphone walked away — so this costs close to nothing where it is not
+ * needed.  Loudness is measured from the original samples elsewhere, so the
+ * dynamics written on the page are the ones that were played.
+ */
+function levelOut(samples, sampleRate, opts = {}) {
+  const { window = 2, ceiling = 8, floor = 0.02 } = opts;
+  const n = samples.length;
+  const step = Math.max(1, Math.round(sampleRate * 0.02));
+  const frames = Math.ceil(n / step);
+  if (frames < 3) return { audio: samples, gain: null, step, range: 0 };
+
+  const energy = new Float64Array(frames);
+  for (let f = 0; f < frames; f++) {
+    const a = f * step;
+    const b = Math.min(n, a + step);
+    let s = 0;
+    for (let i = a; i < b; i++) s += samples[i] * samples[i];
+    energy[f] = Math.sqrt(s / Math.max(1, b - a));
+  }
+
+  /* The loudest moment within `window` of each frame. */
+  const half = Math.max(1, Math.round((window * sampleRate) / step / 2));
+  const peak = slidingMax(energy, half);
+  let top = 0;
+  for (const v of peak) top = Math.max(top, v);
+  if (!(top > 0)) return { audio: samples, gain: null, step, range: 0 };
+
+  const gain = new Float64Array(frames);
+  for (let f = 0; f < frames; f++) {
+    gain[f] = peak[f] > top * floor ? Math.min(ceiling, top / peak[f]) : 1;
+  }
+  /* Smooth it, so the gain never steps in the middle of a note. */
+  const smooth = boxFilter(gain, Math.max(1, Math.round(half / 2)));
+
+  let lo = Infinity;
+  let hi = 0;
+  for (const g of smooth) { lo = Math.min(lo, g); hi = Math.max(hi, g); }
+  const range = 20 * Math.log10(hi / Math.max(1e-9, lo));
+
+  const out = new Float32Array(n);
+  for (let i = 0; i < n; i++) out[i] = samples[i] * smooth[Math.min(frames - 1, (i / step) | 0)];
+  return { audio: out, gain: smooth, step, range };
+}
+
+/**
+ * The largest value within `radius` of each position.
+ *
+ * A monotonic queue: indices whose value is already beaten by a later one are
+ * dropped, so the front of the queue is always the maximum of the window and
+ * every index enters and leaves once.  One pass, whatever the radius.
+ */
+function slidingMax(values, radius) {
+  const n = values.length;
+  const out = new Float64Array(n);
+  const queue = new Int32Array(n);
+  let head = 0;
+  let tail = 0;
+  for (let i = 0; i < n + radius; i++) {
+    if (i < n) {
+      while (tail > head && values[queue[tail - 1]] <= values[i]) tail--;
+      queue[tail++] = i;
+    }
+    const at = i - radius;
+    if (at >= 0) {
+      while (queue[head] < at - radius) head++;
+      out[at] = values[queue[head]];
+    }
+  }
+  return out;
+}
+
+/** A moving average of `radius` either side. */
+function boxFilter(values, radius) {
+  const n = values.length;
+  const sum = new Float64Array(n + 1);
+  for (let i = 0; i < n; i++) sum[i + 1] = sum[i] + values[i];
+  const out = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const a = Math.max(0, i - radius);
+    const b = Math.min(n, i + radius + 1);
+    out[i] = (sum[b] - sum[a]) / (b - a);
+  }
+  return out;
+}
+
 /** Running median, used for adaptive thresholds. */
 function movingMedian(values, radius) {
   const out = new Float32Array(values.length);
@@ -14599,6 +14812,7 @@ __exp.toMono = toMono;
 __exp.refinePeak = refinePeak;
 __exp.peakNear = peakNear;
 __exp.rms = rms;
+__exp.levelOut = levelOut;
 __exp.movingMedian = movingMedian;
 __exp.midiToHz = midiToHz;
 __exp.hzToMidi = hzToMidi;
@@ -18678,9 +18892,51 @@ const MIN_RUN_STRENGTH = 0.26; // how clearly a difference must show to act on
  */
 const settled = (note, against) => (note.confidence ?? 0) >= 0.8 && against < 0.72;
 
+/* What a pass may add to the cost of reading the page: a little for free, and
+ * beyond that only in proportion to the match it buys.  A point of match is
+ * worth about one tie in twenty notes. */
+const FUSS_ALLOWANCE = 0.05;
+const FUSS_PER_POINT = 2.5;
+
 /** Is there a note of this pitch sounding across this span? */
 const covering = (notes, midi, from, to) =>
   notes.find((n) => n.midi === midi && n.end > from + 0.02 && n.start < to - 0.02);
+
+/**
+ * What it costs to read a score.
+ *
+ * Ties, tuplets and a wide spread of note values are what make a transcription
+ * unreadable, and they are the currency the listening loop spends: chasing the
+ * last few percent of spectral match, it will happily turn a page of crotchets
+ * and quavers into one of tied demisemiquaver triplets.  Counting the cost
+ * lets the loop be told what it may spend.
+ *
+ * Zero is a page of plain values with no ties and no tuplets.  A tuplet costs
+ * twice a tie because it is twice the work to read, and every note value past
+ * the fourth costs a little, because a reader holding four values in their
+ * head is reading and one holding nine is decoding.
+ */
+function fussOf(score) {
+  let notes = 0;
+  let ties = 0;
+  let tuplets = 0;
+  const values = new Set();
+  for (const part of score.parts || []) {
+    for (const measure of part.measures || []) {
+      for (const voice of measure.voices || []) {
+        for (const ev of voice) {
+          if (ev.type !== 'note') continue;
+          notes++;
+          if (ev.tuplet) tuplets++;
+          if (ev.notes.some((n) => n.tie)) ties++;
+          values.add(`${ev.duration}:${ev.dots || 0}${ev.tuplet ? 't' : ''}`);
+        }
+      }
+    }
+  }
+  if (!notes) return 0;
+  return (ties + 2 * tuplets) / notes + Math.max(0, values.size - 4) * 0.05;
+}
 
 /**
  * Turn a set of measured differences into changes to the note list.
@@ -18700,9 +18956,41 @@ function* correctionSteps(notes, diff, opts) {
      * destructive — deaf, in practice, because the same bar that admits a
      * missed inner voice also protects every wrong note in the score. */
     measure = () => 1, addBar = 0.12, dropBar = 0.1,
+    attacks = null, attackWindow = 0.07,
   } = opts;
   const verify = (midi, time) => measure(midi, time) >= addBar;
   const out = notes.map((n) => ({ ...n }));
+
+  /* Where the performance actually begins things.
+   *
+   * The difference map has its own frame rate, and a missing pitch is reported
+   * at whatever frame the energy appeared in — a time that has nothing to do
+   * with when anybody played.  A note written in at such a time does not land
+   * on any grid, and the rhythm stage, asked to write a score containing it,
+   * answers with tuplets and demisemiquavers.  Measured on a handheld
+   * recording, the listening loop turned three tuplets into forty-five and ten
+   * note values into twenty: it was not reading rhythm badly, it was being
+   * handed times no rhythm could explain.
+   *
+   * So a note added by listening has to begin at a moment the performance
+   * already has: an attack the onset detector found, or the start of a note
+   * the first reading was sure of.  A pitch appearing at a moment when nothing
+   * begins is a partial, a reverberation, or a smear across a barline — not a
+   * note somebody played. */
+  const beginnings = attacks && attacks.length
+    ? [...attacks].sort((a, b) => a - b) : null;
+  const beginning = (t) => {
+    if (!beginnings) return t;
+    let lo = 0;
+    let hi = beginnings.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (beginnings[mid] < t) lo = mid + 1; else hi = mid;
+    }
+    let best = beginnings[lo];
+    if (lo > 0 && Math.abs(beginnings[lo - 1] - t) < Math.abs(best - t)) best = beginnings[lo - 1];
+    return Math.abs(best - t) <= attackWindow ? best : null;
+  };
   const edits = [];
 
   /* Pair a missing pitch with an extra one an octave away at the same moment:
@@ -18763,10 +19051,13 @@ function* correctionSteps(notes, diff, opts) {
      * how a reading acquires notes nobody played.  Something written on the
      * page has to have lasted. */
     if ((miss.frames || 0) < 2) continue;
+    const begins = beginning(from);
+    if (begins === null) continue;
+    const ends = Math.max(begins + 0.06, to);
     edits.push({
       kind: 'add', weight: strength * miss.frames,
       apply: () => out.push({
-        midi, start: from, end: to,
+        midi, start: begins, end: ends,
         velocity: Math.max(24, Math.min(120, Math.round(40 + 70 * strength))),
         confidence: Math.min(0.9, 0.35 + strength * 0.5),
         salience: strength * 100,
@@ -18872,6 +19163,14 @@ function* refineSteps(ctx, opts = {}) {
   const fullMap = yield* salienceSteps(original.audio, sampleRate, { pitches: wide });
   /* Found once and reused: the recording's attacks do not move between passes. */
   const originalOnsets = (yield* onsetSteps(toMono(ctx.audio), { sampleRate })).onsets;
+  /* Every moment the performance begins something: its attacks, and the starts
+   * of the notes already read.  Added notes are pinned to these. */
+  const onsetTimes = originalOnsets.map((o) => o.time);
+  const attackTimes = (list) => {
+    const seen = new Set(onsetTimes);
+    for (const n of list) seen.add(n.start);
+    return [...seen];
+  };
   const heard = activePitches(fullMap);
 
   const history = [];
@@ -18911,9 +19210,11 @@ function* refineSteps(ctx, opts = {}) {
     let diff = yield* compareSteps(original, { audio: rendered.samples, sampleRate },
       { pitches, originalMap: fullMap, originalOnsets });
 
+    const fuss = fussOf(built.score);
     const entry = {
       pass,
       similarity: diff.similarity,
+      fuss,
       coverage: diff.coverage,
       missing: diff.missing.length,
       extra: diff.extra.length,
@@ -18927,8 +19228,30 @@ function* refineSteps(ctx, opts = {}) {
       .filter((h) => Math.abs(h.similarity - diff.similarity) < 1e-9).length;
     if (seenBefore >= 2) { entry.stopped = 'going round in circles'; break; }
 
-    if (!best || diff.similarity > best.similarity + 1e-9) {
-      best = { similarity: diff.similarity, notes: notes.map((n) => ({ ...n })), built, diff };
+    /* A better match, but not at any price.
+     *
+     * The loop's whole method is to add notes the recording seems to show, and
+     * on a real recording — room, microphone, pedal, a piano that is not the
+     * one being synthesised — there is always a little more it seems to show.
+     * Each such note lands between the beats and has to be written as a tuplet
+     * or a tie, so the match creeps up by fractions of a percent while the page
+     * turns into a thicket.  Measured on a handheld recording, listening took
+     * three tuplets to forty-five and ten note values to twenty, for eight
+     * points of match.
+     *
+     * So a pass may make the page harder to read only in proportion to what it
+     * actually gains.  A correction that genuinely finds a missing voice earns
+     * its keep several times over; one that buys half a percent with a dozen
+     * tuplets does not.  On a clean recording corrections add no fuss at all,
+     * and this allows everything it allowed before. */
+    const gained = best ? diff.similarity - best.similarity : diff.similarity;
+    const spent = best ? fuss - best.fuss : 0;
+    const affordable = spent <= FUSS_ALLOWANCE + gained * FUSS_PER_POINT;
+    entry.refused = gained > 1e-9 && !affordable ? 'too fussy to be worth it' : undefined;
+    if (!best || (gained > 1e-9 && affordable)) {
+      best = {
+        similarity: diff.similarity, fuss, notes: notes.map((n) => ({ ...n })), built, diff,
+      };
       retries = 0;
     } else if (retries < (best && best.similarity < floor ? 3 : 1)) {
       /* That round of corrections made things worse.  One of them was probably
@@ -19018,6 +19341,7 @@ function* refineSteps(ctx, opts = {}) {
       return yield* correctionSteps(notes, diff, {
         limit, harmonyAt, measure, exclude: rejected,
         addBar: REACH.add[reach], dropBar: 0.1,
+        attacks: attackTimes(notes),
       });
     };
     yield { stage: 'correcting', pass };
@@ -19074,6 +19398,7 @@ function refineByListening(ctx, opts = {}) {
 
 
 
+__exp.fussOf = fussOf;
 __exp.refineByListening = refineByListening;
 __exp.refineSteps = refineSteps;
 },

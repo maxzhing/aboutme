@@ -413,6 +413,9 @@ function* transcribeSteps(audio, opts = {}) {
 
   onPass('events');
   const extracted = yield* extractSteps(audio, { ...rest, sampleRate, onProgress });
+  /* Extraction evens out the recording's level before reading it; everything
+   * downstream that listens to the recording listens to the same copy. */
+  const heard = extracted.audio || audio;
   const base = { ...rest, duration: extracted.duration, source: SOURCE.AUDIO, onPass };
   let result = readMusic(extracted.notes, base);
   result.analysis.onsets = extracted.onsets;
@@ -420,6 +423,7 @@ function* transcribeSteps(audio, opts = {}) {
   result.analysis.heard = extracted.notes.length;
 
   if (!listen || !extracted.notes.length) {
+    result.analysis.levelling = extracted.levelling || 0;
     result.analysis.listened = false;
     return result;
   }
@@ -428,7 +432,7 @@ function* transcribeSteps(audio, opts = {}) {
    * and do it again until it stops getting closer. */
   const harmonyFit = harmonyFitter(result.harmony);
   const refined = yield* refineSteps({
-    audio,
+    audio: heard,
     sampleRate,
     notes: extracted.notes,
     rebuild: (notes) => readMusic(notes, { ...base, onPass: () => {} }),
@@ -447,6 +451,7 @@ function* transcribeSteps(audio, opts = {}) {
   result.analysis.onsets = extracted.onsets;
   result.analysis.duration = extracted.duration;
   result.analysis.heard = extracted.notes.length;
+  result.analysis.levelling = extracted.levelling || 0;
   result.analysis.listened = true;
   result.analysis.similarity = refined.similarity;
   result.analysis.passes = refined.history;

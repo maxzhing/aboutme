@@ -14,7 +14,7 @@
  * Run with:  node cadenza/test/transcribe.mjs
  */
 
-import { stft, midiToHz } from '../js/transcribe/dsp.js';
+import { stft, midiToHz, levelOut } from '../js/transcribe/dsp.js';
 import { estimateF0s } from '../js/transcribe/polyphony.js';
 import { extractNotes } from '../js/transcribe/notes.js';
 import { transcribeMidi, transcribeAudio, readMusic, resolveTarget,
@@ -24,7 +24,7 @@ import { timeSigAt } from '../js/core/model.js';
 import { measureTicks, eventTicks } from '../js/core/rhythm.js';
 import * as T from '../js/core/theory.js';
 import { MidiRecorder, parseMIDI } from '../js/transcribe/capture.js';
-import { refineByListening } from '../js/transcribe/refine.js';
+import { refineByListening, fussOf } from '../js/transcribe/refine.js';
 import { review } from '../js/transcribe/simplify.js';
 import { CorrectionModel, compareScores } from '../js/transcribe/learn.js';
 import { exportMIDI } from '../js/io/midifile.js';
@@ -1231,6 +1231,173 @@ reading('no performance stops the reader with an error', () => {
     }
   }
   return true;
+});
+
+
+/* ------------------------------------------- recordings made by a person */
+
+console.log('\nReal recordings — a phone, a room, and a microphone that will not hold still.');
+
+/* A note with a timbre the renderer does not have: slower partial rolloff,
+ * more inharmonicity, a hammer thump at the attack.  Nothing downstream was
+ * tuned on this, which is the point of it. */
+function otherPiano(buf, midi, start, length, amp = 0.2) {
+  const f0 = midiToHz(midi);
+  const B = 0.0011;
+  const decay = 0.9 + 1.8 * (midi / 108);
+  const a = Math.round(start * SR);
+  const n = Math.round((length + 1.2) * SR);
+  const partials = [];
+  for (let h = 1; h <= 20; h++) {
+    const f = f0 * h * Math.sqrt(1 + B * h * h);
+    if (f > SR * 0.45) break;
+    partials.push({ f, a: Math.pow(h, -1) * (0.7 + 0.6 * Math.sin(h * 2.4)), p: (h * 1.37) % 6.283 });
+  }
+  let seed = midi * 7919;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff - 0.5; };
+  for (let i = 0; i < n && a + i < buf.length; i++) {
+    const t = i / SR;
+    let v = 0;
+    for (const q of partials) v += q.a * Math.sin(2 * Math.PI * q.f * t + q.p);
+    const thump = t < 0.012 ? rnd() * 0.35 * (1 - t / 0.012) * 6 : 0;
+    const env = Math.min(1, t / 0.004) * Math.exp(-decay * t);
+    buf[a + i] += amp * (v + thump) * env;
+  }
+}
+
+/** Delays, damping and a noise floor: a room, crudely but honestly. */
+function room(src, { rt = 1.1, wet = 0.5, noise = 0.004 } = {}) {
+  const out = Float32Array.from(src);
+  const taps = [0.011, 0.019, 0.031, 0.047, 0.067, 0.089, 0.113, 0.149, 0.191, 0.241, 0.307, 0.389];
+  for (const d of taps) {
+    const k = Math.round(d * SR);
+    const g = (wet * Math.exp(-d / rt) * 3) / taps.length;
+    let lp = 0;
+    for (let i = k; i < out.length; i++) { lp = lp * 0.5 + src[i - k] * 0.5; out[i] += lp * g; }
+  }
+  let seed = 7331;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff - 0.5; };
+  let lp = 0;
+  for (let i = 0; i < out.length; i++) { lp = lp * 0.96 + rnd() * 0.04; out[i] += lp * noise; }
+  return out;
+}
+
+/* A take where the phone is carried away from the piano and brought back, with
+ * three seconds of genuine silence in the middle.  This is not a contrived
+ * case: it is what a handheld recording of yourself playing actually looks
+ * like, and before the level was evened out the quiet stretch yielded one note
+ * where it should have yielded forty-six. */
+function walkAwayTake() {
+  const seconds = 20;
+  const buf = new Float32Array(SR * seconds);
+  const want = [];
+  const play = (midi, at, len, amp) => { addTone(buf, midi, at, len, amp); want.push({ midi, at }); };
+  [60, 62, 64, 65, 67, 69, 71, 72].forEach((m, i) => play(m, 0.5 + i * 0.5, 0.45, 0.22));
+  [48, 55].forEach((m, i) => play(m, 0.5 + i * 2, 1.9, 0.20));
+  /* eight seconds in, nothing at all until eleven */
+  [72, 71, 69, 67, 65, 64, 62, 60].forEach((m, i) => play(m, 11 + i * 0.5, 0.45, 0.22 / 25));
+  [55, 48].forEach((m, i) => play(m, 11 + i * 2, 1.9, 0.20 / 25));
+  [64, 67, 72].forEach((m, i) => play(m, 16 + i * 0.5, 0.45, 0.22));
+  let seed = 12345;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff - 0.5; };
+  let lp = 0;
+  for (let i = 0; i < buf.length; i++) { lp = lp * 0.96 + rnd() * 0.04; buf[i] += lp * 0.004; }
+  return { buf, want, farFrom: 11, farTo: 15.5, silentFrom: 8.2, silentTo: 10.8 };
+}
+
+reading('a passage recorded from further away is still heard', () => {
+  const take = walkAwayTake();
+  const got = extractNotes(take.buf, { sampleRate: SR }).notes || [];
+  const far = take.want.filter((w) => w.at >= take.farFrom && w.at <= take.farTo);
+  const found = far.filter((w) =>
+    got.some((g) => g.midi === w.midi && Math.abs(g.start - w.at) < 0.2)).length;
+  return found >= far.length * 0.7 ? true
+    : `${found} of ${far.length} notes found in the far half of the take`;
+});
+
+reading('and nothing is invented in the silence', () => {
+  const take = walkAwayTake();
+  const got = extractNotes(take.buf, { sampleRate: SR }).notes || [];
+  const ghosts = got.filter((g) => g.start > take.silentFrom && g.start < take.silentTo);
+  return ghosts.length === 0 ? true
+    : `${ghosts.length} notes written where the recording is silent: `
+      + ghosts.map((g) => g.midi).join(' ');
+});
+
+reading('a recording whose level is already even is left alone', () => {
+  const tune = step([60, 62, 64, 65, 67, 69, 71, 72], 0.45, 0.4);
+  const evened = levelOut(render(tune, 4.5), SR);
+  if (!evened.gain) return 'no gain was computed at all';
+  /* About three decibels end to end, nearly all of it in the decay after the
+   * last note, against the eighteen it applies to a take where the microphone
+   * walked away.  Whatever this does to a handheld recording, it does close to
+   * nothing to one that did not need it. */
+  return evened.range < 3.5 ? true
+    : `the gain moved by ${evened.range.toFixed(1)} dB on a level recording`;
+});
+
+reading('the loudness written down is the loudness that was played', () => {
+  /* Levelling is for reading quiet passages, not for flattening them: the
+   * dynamics on the page come from the recording as it arrived. */
+  const events = [];
+  [60, 64, 67, 72].forEach((m, i) => events.push([m, i * 0.5, 0.45]));
+  const buf = new Float32Array(SR * 5);
+  events.forEach(([m, at, len], i) => addTone(buf, m, at, len, 0.24 * Math.pow(0.45, i)));
+  const got = (extractNotes(buf, { sampleRate: SR }).notes || []).sort((a, b) => a.start - b.start);
+  if (got.length < 3) return `only ${got.length} notes came back`;
+  const first = got[0].velocity;
+  const last = got[got.length - 1].velocity;
+  return first > last + 15 ? true
+    : `it was played from loud to quiet; the page says ${first} then ${last}`;
+});
+
+reading('listening back does not make the page harder to read', () => {
+  /* The loop buys match with ties, tuplets and odd note values, and on a real
+   * recording there is always a little more it seems to hear.  It may spend
+   * only in proportion to what it gains. */
+  const tune = [];
+  [60, 62, 64, 65, 67, 69, 71, 72].forEach((m, i) => tune.push([m, i * 0.5, 0.45]));
+  [48, 55, 52, 55].forEach((m, i) => tune.push([m, i * 1, 0.95]));
+  const audio = room(new Float32Array(SR * 6).map((_, i) => 0), { wet: 0 });
+  const buf = new Float32Array(SR * 6);
+  for (const [m, at, len] of tune) otherPiano(buf, m, at, len);
+  const played = room(buf);
+  const plain = transcribeAudio(played, { sampleRate: SR, listen: false, style: 'simple' });
+  const heard = transcribeAudio(played, { sampleRate: SR, listen: true, style: 'simple' });
+  const before = fussOf(plain.score);
+  const after = fussOf(heard.score);
+  void audio;
+  return after <= before + 0.35 ? true
+    : `reading it plainly costs ${before.toFixed(2)}; after listening it costs ${after.toFixed(2)}`;
+});
+
+reading('the yardstick itself works on a real piano sound', () => {
+  /* What a PERFECT transcription scores against a piano that is not the one
+   * being synthesised, played with the pedal down, in a room.  This is the
+   * ceiling every real recording is measured against; if it ever falls near
+   * the floor the loop is chasing a target it cannot reach, and the number
+   * shown to the player stops meaning anything. */
+  const perf = [];
+  [60, 62, 64, 65, 67, 69, 71, 72].forEach((m, i) =>
+    perf.push({ midi: m, start: i * 0.5, end: i * 0.5 + 0.45, velocity: 90 }));
+  [48, 55, 52, 55].forEach((m, i) =>
+    perf.push({ midi: m, start: i * 1, end: i * 1 + 0.95, velocity: 80 }));
+  const buf = new Float32Array(SR * 7);
+  for (const n of perf) otherPiano(buf, n.midi, n.start, 6 - n.start);   // pedal down
+  for (const n of perf) {                                                // strings ringing along
+    for (const step_ of [12, 19, 24, 28, 31]) {
+      if (n.midi + step_ <= 108) otherPiano(buf, n.midi + step_, n.start + 0.01, 6 - n.start, 0.011);
+    }
+  }
+  const perfect = transcribeMidi(perf, { style: 'simple' });
+  const rendered = renderNotation(perfect.score, { sampleRate: SR });
+  const pitches = [];
+  for (let m = 21; m <= 100; m++) pitches.push(m);
+  const d = compareAudio({ audio: room(buf), sampleRate: SR },
+    { audio: rendered.samples, sampleRate: SR }, { pitches });
+  return d.similarity > 0.7 ? true
+    : `a perfect transcription of a real-sounding piano only scores `
+      + `${(d.similarity * 100).toFixed(0)}%, so no reading of one can pass`;
 });
 
 /* ---------------------------------------------------------------- report */

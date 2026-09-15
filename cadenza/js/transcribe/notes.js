@@ -11,7 +11,7 @@
  * note from one long one.
  */
 
-import { stft, toMono, rms, midiToHz } from './dsp.js';
+import { stft, toMono, rms, midiToHz, levelOut } from './dsp.js';
 import { runSync } from './steps.js';
 import { estimateF0s, ownPartialEnergy } from './polyphony.js';
 import { onsetSteps } from './onsets.js';
@@ -214,10 +214,30 @@ function* extractSteps(audio, options = {}) {
     silenceFloor = 0.012,
     reattack = 1.45,
     attackFloor = 0.42,
+    /* How much louder the recording has to get across a boundary before
+     * anything may be cut there, and before a group counts as re-struck. */
+    holdRise = 1.1,
+    groupRise = 1.25,
+    /* A clear attack at which no new pitch appears says something already
+     * sounding was struck again, whatever the overall level does: in a
+     * tremolo or a repeated figure the ringing of the last note is louder
+     * than the attack of the next, so waiting for a rise in level means
+     * waiting for ever. */
+    struckAgain = 1.4,
     onProgress = null,
   } = options;
 
-  const samples = toMono(audio);
+  /* Even out the microphone before reading anything.
+   *
+   * Everything below judges sound against the loudest thing in the take, so a
+   * passage recorded from further away is not quiet — it is inaudible.  On a
+   * handheld recording that is most of the take.  `levelOut` follows the local
+   * peak and leaves silence alone, so this recovers the quiet stretches
+   * without inventing anything in the gaps, and does nothing at all to a
+   * recording whose level was already even. */
+  const heard = toMono(audio);
+  const evened = levelOut(heard, sampleRate, options.level || {});
+  const samples = evened.audio;
   const duration = samples.length / sampleRate;
   const { onsets } = yield* onsetSteps(samples, { sampleRate, sensitivity });
 
@@ -336,7 +356,8 @@ function* extractSteps(audio, options = {}) {
     const together = carried.filter(looksStruck).length * 2 > carried.length;
     /* Nothing is cut in two at a boundary the recording gets quieter across. */
     const rise = i > 0 ? levelRise(samples, sampleRate, seg.from) : 1;
-    const louder = rise >= 1.1;
+    const clear = (seg.strength || 0) >= attackFloor * struckAgain;
+    const louder = rise >= holdRise || (clear && rise >= 0.92);
 
     /* A rise in level has to be explained by something.  If no pitch is new
      * here, then whatever was struck is already sounding — the chord was
@@ -348,7 +369,8 @@ function* extractSteps(audio, options = {}) {
      * which is what keeps a held bass from being restruck under every melody
      * note above it. */
     const fresh = [...seg.pitches.keys()].filter((m) => !open.has(m) && !parked.has(m));
-    const groupStruck = rise >= 1.25 && fresh.length === 0 && carried.length > 1;
+    const groupStruck = fresh.length === 0 && carried.length >= 1
+      && (rise >= groupRise || (clear && rise >= 0.92));
     if (i === 0 || louder) struckAt = seg.from;
 
     for (const c of carried) {
@@ -441,11 +463,14 @@ function* extractSteps(audio, options = {}) {
   const floor = strongest * 0.035;
   for (let i = notes.length - 1; i >= 0; i--) if (notes[i].salience < floor) notes.splice(i, 1);
 
-  /* Velocity from the level at each attack, scaled across the whole take. */
+  /* Velocity from the level at each attack, scaled across the whole take —
+   * measured on the recording as it arrived, not on the evened-out copy.  The
+   * levelling exists so that quiet passages can be *read*; how loud they were
+   * is a separate question, and its answer belongs on the page. */
   let loudest = 0;
   for (const n of notes) {
     const a = Math.round(n.start * sampleRate);
-    n._level = rms(samples, a, a + Math.round(0.05 * sampleRate));
+    n._level = rms(heard, a, a + Math.round(0.05 * sampleRate));
     loudest = Math.max(loudest, n._level);
   }
   for (const n of notes) {
@@ -455,7 +480,11 @@ function* extractSteps(audio, options = {}) {
   }
 
   notes.sort((a, b) => a.start - b.start || a.midi - b.midi);
-  return { notes, onsets, duration, sampleRate };
+  /* The evened-out audio goes back with the notes, so the listen-back loop
+   * compares the notation against the same signal the notes were read from.
+   * Comparing against the recording as it arrived would have it delete, as
+   * unheard, every note the levelling had just recovered. */
+  return { notes, onsets, duration, sampleRate, audio: samples, levelling: evened.range };
 }
 
 /**
