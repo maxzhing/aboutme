@@ -13,7 +13,7 @@
  */
 
 import { plan as harmonicPlan, chordPitches, keyPitches, rng, MODE_NAMES } from './harmony.js';
-import { melody, cellsFor } from './melody.js';
+import { melody, cellsFor, ornament, compound } from './melody.js';
 import { voiceChord, layOut, TEXTURES } from './texture.js';
 import { buildParts } from '../transcribe/build.js';
 import { beatTicks, measureTicks } from '../core/rhythm.js';
@@ -58,6 +58,25 @@ export const CHARACTERS = [
     tip: 'Sevenths throughout, a walking bass, a line that syncopates.',
     texture: 'walking', sevenths: true, busy: 'lively', bpm: [108, 148],
     modes: ['major', 'minor', 'mixolydian'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+  },
+  {
+    id: 'ballade', name: 'Ballade',
+    tip: 'A long lyrical line over a wide, moving left hand. Chromatic harmony, '
+      + 'written-out ornament, and a real climax.',
+    texture: 'wide', sevenths: true, busy: 'walking', bpm: [58, 78],
+    modes: ['minor', 'major'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+    colour: 1, ornament: 0.45, compound: 0.22, complexity: 'elaborate',
+    arc: ['p', 'mp', 'mf', 'f', 'ff', 'mf', 'p', 'pp'],
+  },
+  {
+    id: 'impression', name: 'Impressionist',
+    tip: 'Extended chords moved in parallel, modal colour, running figuration '
+      + 'and almost no cadence.',
+    texture: 'filigree', sevenths: true, busy: 'calm', bpm: [64, 88],
+    modes: ['dorian', 'mixolydian', 'major'],
+    timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+    colour: 0.9, plane: true, ornament: 0.3, complexity: 'complex',
+    harmonicRhythm: 0.5, arc: ['pp', 'p', 'mp', 'p', 'mf', 'mp', 'p', 'pp'],
   },
   {
     id: 'calm', name: 'Quiet',
@@ -133,6 +152,8 @@ export function composePiece(opts = {}) {
   const harmony = harmonicPlan(phrases, phraseBars, chosenMode, r, {
     sevenths: style.sevenths,
     harmonicRhythm: style.harmonicRhythm || 1,
+    colour: style.colour || 0,
+    planeRuns: !!style.plane,
   });
 
   /* One chord per bar, stretched or repeated to fill the phrase. */
@@ -151,16 +172,35 @@ export function composePiece(opts = {}) {
     ? [Math.max(60, 60), 84]
     : singingRange(melodyInst);
 
-  const tune = melody(perBar, {
+  const level = style.complexity || complexity;
+  let tune = melody(perBar, {
     scaleTones: scale,
     range,
     beatsPerBar: ts.beats,
-    cells: cellsFor(ts.beats, style.busy, complexity),
+    cells: cellsFor(ts.beats, style.busy, level),
     r,
     rest: style.rest || 0,
     barsPerPhrase: phraseBars,
-    complexity,
+    complexity: level,
   });
+
+  /* A line that implies two voices, then the decoration written out.  Both
+   * happen after the line exists, because both are things done *to* a melody —
+   * deciding them while choosing the notes would leave neither recognisable. */
+  if (style.compound) {
+    tune = compound(tune, { scaleTones: scale, r, amount: style.compound, drop: 12 });
+  }
+  if (style.ornament) {
+    const chordAt = (beat) => {
+      const bar = Math.floor(beat / ts.beats);
+      return (perBar[Math.min(perBar.length - 1, Math.max(0, bar))] || {}).pitches;
+    };
+    tune = ornament(tune, {
+      scaleTones: scale, chordAt, r,
+      amount: style.ornament,
+      minLength: ts.beats >= 4 ? 1 : 1,
+    });
+  }
 
   /* The accompaniment, voiced so the hand moves as little as it can. */
   const accompaniment = [];
@@ -229,6 +269,40 @@ export function composePiece(opts = {}) {
     composer,
   });
 
+  /* The shape of the piece as sound.
+   *
+   * A dynamic mark at the head of every phrase, following the character's own
+   * arc: quiet at the opening, building to the phrase that carries the
+   * climax, receding afterwards.  Without this a piece is played at one
+   * loudness throughout, which is the difference between the notes of a piece
+   * and a performance of it — and the arc has to agree with where the tune
+   * puts its high point, or the two pull against each other. */
+  if (style.arc && style.arc.length) {
+    const ORDER = ['pppp', 'ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff', 'ffff'];
+    const loudest = style.arc.reduce((a, b) => (ORDER.indexOf(b) > ORDER.indexOf(a) ? b : a));
+    const top = built.score.parts[0];
+    const perPhrase = phraseBars;
+    for (let ph = 0; ph < phrases; ph++) {
+      const bar = ph * perPhrase;
+      const measure = top && top.measures[bar];
+      if (!measure) continue;
+      const voice = (measure.voices || []).find((v) => v.some((e) => e.type === 'note'));
+      const first = voice && voice.find((e) => e.type === 'note');
+      if (!first) continue;
+      /* Stretch the arc over however many phrases there are — but pin its
+       * loudest mark to the phrase the tune actually climaxes in.  An arc that
+       * peaks two phrases before the melody does pulls against it, and the
+       * piece arrives twice, weakly, instead of once. */
+      const peak = style.arc.indexOf(loudest);
+      const climax = phrases > 2 ? phrases - 2 : phrases - 1;
+      const at = ph <= climax
+        ? Math.round((ph / Math.max(1, climax)) * peak)
+        : peak + Math.round(((ph - climax) / Math.max(1, phrases - 1 - climax))
+          * (style.arc.length - 1 - peak));
+      first.dynamic = style.arc[Math.max(0, Math.min(style.arc.length - 1, at))];
+    }
+  }
+
   /* The engraver puts parts in score order, which is not the order they were
    * handed over in, so the caller is told where each ended up rather than left
    * to assume. */
@@ -243,7 +317,8 @@ export function composePiece(opts = {}) {
     description: {
       key: `${tonicName(tonic)} ${MODE_NAMES[chosenMode] || chosenMode}`,
       character: style.name,
-      complexity,
+      complexity: style.complexity || complexity,
+      dynamics: style.arc ? style.arc.filter((d, i, a) => a.indexOf(d) === i).join(' – ') : null,
       texture: TEXTURES[style.texture],
       bars: totalBars,
       phrases,

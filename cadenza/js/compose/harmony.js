@@ -111,7 +111,7 @@ function successors(fn, r) {
  * and everything before it is approach.
  */
 export function phrase(bars, mode, close, r, opts = {}) {
-  const { sevenths = false, harmonicRhythm = 1 } = opts;
+  const { sevenths = false, harmonicRhythm = 1, colour = 0, planeRuns = false } = opts;
   const slots = Math.max(2, Math.round(bars * harmonicRhythm));
   const degrees = new Array(slots).fill(0);
 
@@ -158,13 +158,78 @@ export function phrase(bars, mode, close, r, opts = {}) {
     if (other.length) degrees[i - 1] = pick(other, r);
   }
 
-  return degrees.map((d, i) => {
+  let chords = degrees.map((d, i) => {
     /* A seventh on the dominant sharpens the cadence; elsewhere it is colour
      * and is used more sparingly. */
     const isCadential = i === slots - 2 && close !== 'half';
     const wantSeventh = sevenths && (isCadential || (d === 4 && r() < 0.6) || r() < 0.25);
     return chordOn(d, mode, { seventh: wantSeventh });
   });
+
+  if (colour <= 0) return chords;
+
+  /* ---- colour -----------------------------------------------------------
+   *
+   * The diatonic frame is now in place and stays in place: every substitution
+   * below keeps the chord's job in the phrase and changes only its colour, so
+   * the progression still goes somewhere.  Chromaticism that ignores function
+   * is not richer, it is merely harder to follow. */
+
+  /* Tonicisation.  For one chord's length the music behaves as though some
+   * other note were the tonic — the commonest way a Romantic phrase gets its
+   * colour without leaving the key at all. */
+  for (let i = 2; i < chords.length - 1; i++) {
+    const target = degrees[i];
+    if (target === 0 || chords[i].chromatic) continue;
+    if (r() > colour * 0.55) continue;
+    const prev = degrees[i - 1];
+    if (prev === target) continue;
+    /* Never the opening chord: a phrase has to say what key it is in before it
+     * can afford to lean away from it, and a piece that begins on a secondary
+     * dominant has told the listener nothing to lean away from. */
+    if (i - 1 === 0) continue;
+    chords[i - 1] = secondaryOf(target, mode);
+  }
+
+  /* Mixture: the major key reaching into its own minor.  Applied to what
+   * prepares the dominant, where the darkening is heard as expression rather
+   * than as a mistake. */
+  if (mode === 'major' || mode === 'mixolydian') {
+    for (let i = 0; i < chords.length - 1; i++) {
+      if (chords[i].chromatic) continue;
+      if (functionOf(degrees[i]) !== 'predominant') continue;
+      if (r() > colour * 0.5) continue;
+      chords[i] = pick([BORROWED.iv, BORROWED.bVI, BORROWED.bVII], r);
+    }
+  }
+
+  /* The approach to the last cadence, where a piece can afford its strongest
+   * preparation: a Neapolitan leaning on the dominant, or an augmented sixth
+   * pulling onto it from both sides at once. */
+  if (close !== 'half' && slots >= 3 && r() < colour * 0.45) {
+    chords[slots - 3] = r() < 0.5 ? neapolitan()
+      : augmentedSixth(pick(['german', 'german', 'french', 'italian'], r));
+  }
+
+  /* Sevenths, ninths and added sixths on what is left. */
+  for (let i = 0; i < chords.length; i++) {
+    if (chords[i].chromatic || chords[i].seventh) continue;
+    if (r() > colour * 0.45) continue;
+    chords[i] = extend(chords[i], mode, pick(['ninth', 'sixth', 'ninth'], r));
+  }
+
+  /* Parallel motion: a run of chords treated as one thickened line.  Only
+   * where the character asks for it, and never across the cadence. */
+  if (planeRuns && slots >= 4 && r() < colour * 0.5) {
+    const at = 1 + Math.floor(r() * Math.max(1, slots - 3));
+    const dir = r() < 0.5 ? 1 : -1;
+    const base = chords[at];
+    for (let k = 1; k < Math.min(3, slots - 1 - at); k++) {
+      chords[at + k] = planing(base, dir * k, mode);
+    }
+  }
+
+  return chords;
 }
 
 /**
@@ -193,3 +258,113 @@ export const chordPitches = (chord, tonic) => chord.tones.map((t) => (tonic + t)
 /** Every pitch class the key contains. */
 export const keyPitches = (tonic, mode) =>
   (SCALES[mode] || SCALES.major).map((s) => (tonic + s) % 12);
+/* appended to harmony.js */
+
+/* --------------------------------------------------------- chromatic colour
+ *
+ * Diatonic triads are the grammar; these are the vocabulary that makes a piece
+ * sound like the nineteenth century rather than a harmony exercise.  Every one
+ * of them is a standard device with a standard behaviour, and each is defined
+ * by where its notes sit above the tonic, so a key change is a transposition
+ * and nothing else.
+ */
+
+/** A chord given directly as semitones above the tonic. */
+const sonority = (tones, roman, quality, fn, opts = {}) => ({
+  tones, roman, quality, function: fn, chromatic: true, ...opts,
+});
+
+/**
+ * The dominant seventh of another degree.
+ *
+ * Tonicisation: for one chord's length the music behaves as though some other
+ * note were the tonic, which is the commonest way a Romantic phrase gets its
+ * colour without leaving the key.  V/V, V/vi and V/IV account for most of it.
+ */
+export function secondaryOf(degree, mode) {
+  const scale = SCALES[mode] || SCALES.major;
+  const target = scale[degree % 7];
+  const root = (target + 7) % 12;
+  return sonority(
+    [root, (root + 4) % 12, (root + 7) % 12, (root + 10) % 12],
+    `V7/${ROMAN[degree % 7]}`, 'dominant seventh', 'dominant',
+    { resolvesTo: degree },
+  );
+}
+
+/**
+ * The Neapolitan: a major triad on the flattened second, almost always in
+ * first inversion, almost always walking into the dominant.  A minor-key
+ * device that major keys borrow when they want the shadow.
+ */
+export const neapolitan = () =>
+  sonority([1, 5, 8], '♭II', 'major', 'predominant', { prefersInversion: 1 });
+
+/**
+ * The augmented sixth.  Two voices a sixth apart pull outward onto the
+ * dominant — the most decisive way of arriving at one.  German, French and
+ * Italian differ only in what fills the middle.
+ */
+export function augmentedSixth(kind = 'german') {
+  const base = [8, 0];                 // ♭6 and the tonic
+  const top = 6;                       // the sharpened fourth: the sixth itself
+  const middle = kind === 'french' ? [2] : kind === 'italian' ? [] : [3];
+  const names = { german: 'Ger+6', french: 'Fr+6', italian: 'It+6' };
+  return sonority([...base, ...middle, top].sort((a, b) => a - b),
+    names[kind] || 'Ger+6', 'augmented sixth', 'predominant');
+}
+
+/**
+ * Chords borrowed from the parallel mode.
+ *
+ * A major key reaching into its own minor — the flattened sixth, the minor
+ * subdominant, the flattened seventh — is the sound of harmony darkening
+ * without the key changing.
+ */
+export const BORROWED = {
+  iv: sonority([5, 8, 0], 'iv', 'minor', 'predominant'),
+  bVI: sonority([8, 0, 3], '♭VI', 'major', 'tonic'),
+  bVII: sonority([10, 2, 5], '♭VII', 'major', 'predominant'),
+  bIII: sonority([3, 7, 10], '♭III', 'major', 'tonic'),
+  iiDim: sonority([2, 5, 8], 'ii°', 'diminished', 'predominant'),
+};
+
+/**
+ * Chromatic mediants: a major triad a third away sharing one note with the
+ * tonic.  They do not belong to the key and do not need to — the shared note
+ * is the whole justification, and the sudden change of light is the point.
+ */
+export const MEDIANTS = {
+  III: sonority([4, 8, 11], 'III', 'major', 'tonic'),
+  VI: sonority([9, 1, 4], 'VI', 'major', 'tonic'),
+  bVI: sonority([8, 0, 3], '♭VI', 'major', 'tonic'),
+  bIII: sonority([3, 7, 10], '♭III', 'major', 'tonic'),
+};
+
+/** An added sixth or ninth on a diatonic chord: colour without function. */
+export function extend(chord, mode, kind) {
+  const scale = SCALES[mode] || SCALES.major;
+  const root = chord.tones[0];
+  const add = kind === 'ninth' ? 2 : kind === 'sixth' ? 9 : 5;
+  const tones = [...new Set([...chord.tones, (root + add) % 12])].sort((a, b) => a - b);
+  const mark = kind === 'ninth' ? '9' : kind === 'sixth' ? '6' : 'sus4';
+  return { ...chord, tones, roman: chord.roman.replace(/7$/, '') + mark, extended: kind };
+}
+
+/**
+ * Parallel harmony — every voice moving in the same direction by the same
+ * interval, the chord treated as a thickened melody rather than as a function.
+ * It is the sound that separates the turn of the twentieth century from
+ * everything before it, and it is the one device here that deliberately
+ * ignores where a chord is supposed to resolve.
+ */
+export function planing(chord, steps, mode) {
+  const scale = SCALES[mode] || SCALES.major;
+  const shift = scale[((steps % 7) + 7) % 7] + (steps < 0 ? -12 : 0);
+  return {
+    ...chord,
+    tones: chord.tones.map((t) => ((t + shift) % 12 + 12) % 12),
+    roman: chord.roman + (steps > 0 ? '↑' : '↓'),
+    planed: true,
+  };
+}

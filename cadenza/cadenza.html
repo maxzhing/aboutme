@@ -20510,7 +20510,8 @@ class ComposePanel {
         <div class="cp-summary">
           <b>${esc(d.key)}</b> · <b>${esc(d.character)}</b> ·
           <b>${d.bars}</b> bars · <b>${d.tempo}</b> bpm · <b>${esc(d.timeSig)}</b> ·
-          ${esc(d.texture)} · ${esc(d.complexity)}
+          ${esc(d.texture)} · ${esc(d.complexity)}${d.dynamics
+    ? ` · <b>${esc(d.dynamics)}</b>` : ''}
         </div>
 
         <div class="cp-ab">
@@ -20529,7 +20530,13 @@ class ComposePanel {
         <p class="cp-note">Four-bar phrases: each asks or answers, and only the last one
           closes fully. The tune states an idea in the first phrase and refers back to it —
           repeated, sequenced, turned upside down — so the piece has something to remember.
-          It saves its highest note for one phrase near the end.</p>
+          It saves its highest note for one phrase near the end, and the dynamics are shaped
+          to arrive there with it.</p>
+        <p class="cp-note">Roman numerals with a slash are secondary dominants — the music
+          leaning on another note as though it were the tonic for a moment. <b>♭II</b> is a
+          Neapolitan, <b>+6</b> an augmented sixth, and a flat before a numeral means the
+          chord was borrowed from the parallel minor. Notes outside the key belong to these
+          chords rather than to mistakes.</p>
 
         <div class="cp-go">
           <button class="btn primary" data-do="use">Put it on the page</button>
@@ -20581,7 +20588,7 @@ __exp.ComposePanel = ComposePanel;
  */
 
 const { plan: harmonicPlan, chordPitches, keyPitches, rng, MODE_NAMES } = __req("js/compose/harmony.js");
-const { melody, cellsFor } = __req("js/compose/melody.js");
+const { melody, cellsFor, ornament, compound } = __req("js/compose/melody.js");
 const { voiceChord, layOut, TEXTURES } = __req("js/compose/texture.js");
 const { buildParts } = __req("js/transcribe/build.js");
 const { beatTicks, measureTicks } = __req("js/core/rhythm.js");
@@ -20626,6 +20633,25 @@ const CHARACTERS = [
     tip: 'Sevenths throughout, a walking bass, a line that syncopates.',
     texture: 'walking', sevenths: true, busy: 'lively', bpm: [108, 148],
     modes: ['major', 'minor', 'mixolydian'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+  },
+  {
+    id: 'ballade', name: 'Ballade',
+    tip: 'A long lyrical line over a wide, moving left hand. Chromatic harmony, '
+      + 'written-out ornament, and a real climax.',
+    texture: 'wide', sevenths: true, busy: 'walking', bpm: [58, 78],
+    modes: ['minor', 'major'], timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+    colour: 1, ornament: 0.45, compound: 0.22, complexity: 'elaborate',
+    arc: ['p', 'mp', 'mf', 'f', 'ff', 'mf', 'p', 'pp'],
+  },
+  {
+    id: 'impression', name: 'Impressionist',
+    tip: 'Extended chords moved in parallel, modal colour, running figuration '
+      + 'and almost no cadence.',
+    texture: 'filigree', sevenths: true, busy: 'calm', bpm: [64, 88],
+    modes: ['dorian', 'mixolydian', 'major'],
+    timeSig: { beats: 4, beatType: 4, symbol: 'common' },
+    colour: 0.9, plane: true, ornament: 0.3, complexity: 'complex',
+    harmonicRhythm: 0.5, arc: ['pp', 'p', 'mp', 'p', 'mf', 'mp', 'p', 'pp'],
   },
   {
     id: 'calm', name: 'Quiet',
@@ -20701,6 +20727,8 @@ function composePiece(opts = {}) {
   const harmony = harmonicPlan(phrases, phraseBars, chosenMode, r, {
     sevenths: style.sevenths,
     harmonicRhythm: style.harmonicRhythm || 1,
+    colour: style.colour || 0,
+    planeRuns: !!style.plane,
   });
 
   /* One chord per bar, stretched or repeated to fill the phrase. */
@@ -20719,16 +20747,35 @@ function composePiece(opts = {}) {
     ? [Math.max(60, 60), 84]
     : singingRange(melodyInst);
 
-  const tune = melody(perBar, {
+  const level = style.complexity || complexity;
+  let tune = melody(perBar, {
     scaleTones: scale,
     range,
     beatsPerBar: ts.beats,
-    cells: cellsFor(ts.beats, style.busy, complexity),
+    cells: cellsFor(ts.beats, style.busy, level),
     r,
     rest: style.rest || 0,
     barsPerPhrase: phraseBars,
-    complexity,
+    complexity: level,
   });
+
+  /* A line that implies two voices, then the decoration written out.  Both
+   * happen after the line exists, because both are things done *to* a melody —
+   * deciding them while choosing the notes would leave neither recognisable. */
+  if (style.compound) {
+    tune = compound(tune, { scaleTones: scale, r, amount: style.compound, drop: 12 });
+  }
+  if (style.ornament) {
+    const chordAt = (beat) => {
+      const bar = Math.floor(beat / ts.beats);
+      return (perBar[Math.min(perBar.length - 1, Math.max(0, bar))] || {}).pitches;
+    };
+    tune = ornament(tune, {
+      scaleTones: scale, chordAt, r,
+      amount: style.ornament,
+      minLength: ts.beats >= 4 ? 1 : 1,
+    });
+  }
 
   /* The accompaniment, voiced so the hand moves as little as it can. */
   const accompaniment = [];
@@ -20797,6 +20844,40 @@ function composePiece(opts = {}) {
     composer,
   });
 
+  /* The shape of the piece as sound.
+   *
+   * A dynamic mark at the head of every phrase, following the character's own
+   * arc: quiet at the opening, building to the phrase that carries the
+   * climax, receding afterwards.  Without this a piece is played at one
+   * loudness throughout, which is the difference between the notes of a piece
+   * and a performance of it — and the arc has to agree with where the tune
+   * puts its high point, or the two pull against each other. */
+  if (style.arc && style.arc.length) {
+    const ORDER = ['pppp', 'ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff', 'ffff'];
+    const loudest = style.arc.reduce((a, b) => (ORDER.indexOf(b) > ORDER.indexOf(a) ? b : a));
+    const top = built.score.parts[0];
+    const perPhrase = phraseBars;
+    for (let ph = 0; ph < phrases; ph++) {
+      const bar = ph * perPhrase;
+      const measure = top && top.measures[bar];
+      if (!measure) continue;
+      const voice = (measure.voices || []).find((v) => v.some((e) => e.type === 'note'));
+      const first = voice && voice.find((e) => e.type === 'note');
+      if (!first) continue;
+      /* Stretch the arc over however many phrases there are — but pin its
+       * loudest mark to the phrase the tune actually climaxes in.  An arc that
+       * peaks two phrases before the melody does pulls against it, and the
+       * piece arrives twice, weakly, instead of once. */
+      const peak = style.arc.indexOf(loudest);
+      const climax = phrases > 2 ? phrases - 2 : phrases - 1;
+      const at = ph <= climax
+        ? Math.round((ph / Math.max(1, climax)) * peak)
+        : peak + Math.round(((ph - climax) / Math.max(1, phrases - 1 - climax))
+          * (style.arc.length - 1 - peak));
+      first.dynamic = style.arc[Math.max(0, Math.min(style.arc.length - 1, at))];
+    }
+  }
+
   /* The engraver puts parts in score order, which is not the order they were
    * handed over in, so the caller is told where each ended up rather than left
    * to assume. */
@@ -20811,7 +20892,8 @@ function composePiece(opts = {}) {
     description: {
       key: `${tonicName(tonic)} ${MODE_NAMES[chosenMode] || chosenMode}`,
       character: style.name,
-      complexity,
+      complexity: style.complexity || complexity,
+      dynamics: style.arc ? style.arc.filter((d, i, a) => a.indexOf(d) === i).join(' – ') : null,
       texture: TEXTURES[style.texture],
       bars: totalBars,
       phrases,
@@ -20947,7 +21029,7 @@ function successors(fn, r) {
  * and everything before it is approach.
  */
 function phrase(bars, mode, close, r, opts = {}) {
-  const { sevenths = false, harmonicRhythm = 1 } = opts;
+  const { sevenths = false, harmonicRhythm = 1, colour = 0, planeRuns = false } = opts;
   const slots = Math.max(2, Math.round(bars * harmonicRhythm));
   const degrees = new Array(slots).fill(0);
 
@@ -20994,13 +21076,78 @@ function phrase(bars, mode, close, r, opts = {}) {
     if (other.length) degrees[i - 1] = pick(other, r);
   }
 
-  return degrees.map((d, i) => {
+  let chords = degrees.map((d, i) => {
     /* A seventh on the dominant sharpens the cadence; elsewhere it is colour
      * and is used more sparingly. */
     const isCadential = i === slots - 2 && close !== 'half';
     const wantSeventh = sevenths && (isCadential || (d === 4 && r() < 0.6) || r() < 0.25);
     return chordOn(d, mode, { seventh: wantSeventh });
   });
+
+  if (colour <= 0) return chords;
+
+  /* ---- colour -----------------------------------------------------------
+   *
+   * The diatonic frame is now in place and stays in place: every substitution
+   * below keeps the chord's job in the phrase and changes only its colour, so
+   * the progression still goes somewhere.  Chromaticism that ignores function
+   * is not richer, it is merely harder to follow. */
+
+  /* Tonicisation.  For one chord's length the music behaves as though some
+   * other note were the tonic — the commonest way a Romantic phrase gets its
+   * colour without leaving the key at all. */
+  for (let i = 2; i < chords.length - 1; i++) {
+    const target = degrees[i];
+    if (target === 0 || chords[i].chromatic) continue;
+    if (r() > colour * 0.55) continue;
+    const prev = degrees[i - 1];
+    if (prev === target) continue;
+    /* Never the opening chord: a phrase has to say what key it is in before it
+     * can afford to lean away from it, and a piece that begins on a secondary
+     * dominant has told the listener nothing to lean away from. */
+    if (i - 1 === 0) continue;
+    chords[i - 1] = secondaryOf(target, mode);
+  }
+
+  /* Mixture: the major key reaching into its own minor.  Applied to what
+   * prepares the dominant, where the darkening is heard as expression rather
+   * than as a mistake. */
+  if (mode === 'major' || mode === 'mixolydian') {
+    for (let i = 0; i < chords.length - 1; i++) {
+      if (chords[i].chromatic) continue;
+      if (functionOf(degrees[i]) !== 'predominant') continue;
+      if (r() > colour * 0.5) continue;
+      chords[i] = pick([BORROWED.iv, BORROWED.bVI, BORROWED.bVII], r);
+    }
+  }
+
+  /* The approach to the last cadence, where a piece can afford its strongest
+   * preparation: a Neapolitan leaning on the dominant, or an augmented sixth
+   * pulling onto it from both sides at once. */
+  if (close !== 'half' && slots >= 3 && r() < colour * 0.45) {
+    chords[slots - 3] = r() < 0.5 ? neapolitan()
+      : augmentedSixth(pick(['german', 'german', 'french', 'italian'], r));
+  }
+
+  /* Sevenths, ninths and added sixths on what is left. */
+  for (let i = 0; i < chords.length; i++) {
+    if (chords[i].chromatic || chords[i].seventh) continue;
+    if (r() > colour * 0.45) continue;
+    chords[i] = extend(chords[i], mode, pick(['ninth', 'sixth', 'ninth'], r));
+  }
+
+  /* Parallel motion: a run of chords treated as one thickened line.  Only
+   * where the character asks for it, and never across the cadence. */
+  if (planeRuns && slots >= 4 && r() < colour * 0.5) {
+    const at = 1 + Math.floor(r() * Math.max(1, slots - 3));
+    const dir = r() < 0.5 ? 1 : -1;
+    const base = chords[at];
+    for (let k = 1; k < Math.min(3, slots - 1 - at); k++) {
+      chords[at + k] = planing(base, dir * k, mode);
+    }
+  }
+
+  return chords;
 }
 
 /**
@@ -21029,15 +21176,132 @@ const chordPitches = (chord, tonic) => chord.tones.map((t) => (tonic + t) % 12);
 /** Every pitch class the key contains. */
 const keyPitches = (tonic, mode) =>
   (SCALES[mode] || SCALES.major).map((s) => (tonic + s) % 12);
+/* appended to harmony.js */
+
+/* --------------------------------------------------------- chromatic colour
+ *
+ * Diatonic triads are the grammar; these are the vocabulary that makes a piece
+ * sound like the nineteenth century rather than a harmony exercise.  Every one
+ * of them is a standard device with a standard behaviour, and each is defined
+ * by where its notes sit above the tonic, so a key change is a transposition
+ * and nothing else.
+ */
+
+/** A chord given directly as semitones above the tonic. */
+const sonority = (tones, roman, quality, fn, opts = {}) => ({
+  tones, roman, quality, function: fn, chromatic: true, ...opts,
+});
+
+/**
+ * The dominant seventh of another degree.
+ *
+ * Tonicisation: for one chord's length the music behaves as though some other
+ * note were the tonic, which is the commonest way a Romantic phrase gets its
+ * colour without leaving the key.  V/V, V/vi and V/IV account for most of it.
+ */
+function secondaryOf(degree, mode) {
+  const scale = SCALES[mode] || SCALES.major;
+  const target = scale[degree % 7];
+  const root = (target + 7) % 12;
+  return sonority(
+    [root, (root + 4) % 12, (root + 7) % 12, (root + 10) % 12],
+    `V7/${ROMAN[degree % 7]}`, 'dominant seventh', 'dominant',
+    { resolvesTo: degree },
+  );
+}
+
+/**
+ * The Neapolitan: a major triad on the flattened second, almost always in
+ * first inversion, almost always walking into the dominant.  A minor-key
+ * device that major keys borrow when they want the shadow.
+ */
+const neapolitan = () =>
+  sonority([1, 5, 8], '♭II', 'major', 'predominant', { prefersInversion: 1 });
+
+/**
+ * The augmented sixth.  Two voices a sixth apart pull outward onto the
+ * dominant — the most decisive way of arriving at one.  German, French and
+ * Italian differ only in what fills the middle.
+ */
+function augmentedSixth(kind = 'german') {
+  const base = [8, 0];                 // ♭6 and the tonic
+  const top = 6;                       // the sharpened fourth: the sixth itself
+  const middle = kind === 'french' ? [2] : kind === 'italian' ? [] : [3];
+  const names = { german: 'Ger+6', french: 'Fr+6', italian: 'It+6' };
+  return sonority([...base, ...middle, top].sort((a, b) => a - b),
+    names[kind] || 'Ger+6', 'augmented sixth', 'predominant');
+}
+
+/**
+ * Chords borrowed from the parallel mode.
+ *
+ * A major key reaching into its own minor — the flattened sixth, the minor
+ * subdominant, the flattened seventh — is the sound of harmony darkening
+ * without the key changing.
+ */
+const BORROWED = {
+  iv: sonority([5, 8, 0], 'iv', 'minor', 'predominant'),
+  bVI: sonority([8, 0, 3], '♭VI', 'major', 'tonic'),
+  bVII: sonority([10, 2, 5], '♭VII', 'major', 'predominant'),
+  bIII: sonority([3, 7, 10], '♭III', 'major', 'tonic'),
+  iiDim: sonority([2, 5, 8], 'ii°', 'diminished', 'predominant'),
+};
+
+/**
+ * Chromatic mediants: a major triad a third away sharing one note with the
+ * tonic.  They do not belong to the key and do not need to — the shared note
+ * is the whole justification, and the sudden change of light is the point.
+ */
+const MEDIANTS = {
+  III: sonority([4, 8, 11], 'III', 'major', 'tonic'),
+  VI: sonority([9, 1, 4], 'VI', 'major', 'tonic'),
+  bVI: sonority([8, 0, 3], '♭VI', 'major', 'tonic'),
+  bIII: sonority([3, 7, 10], '♭III', 'major', 'tonic'),
+};
+
+/** An added sixth or ninth on a diatonic chord: colour without function. */
+function extend(chord, mode, kind) {
+  const scale = SCALES[mode] || SCALES.major;
+  const root = chord.tones[0];
+  const add = kind === 'ninth' ? 2 : kind === 'sixth' ? 9 : 5;
+  const tones = [...new Set([...chord.tones, (root + add) % 12])].sort((a, b) => a - b);
+  const mark = kind === 'ninth' ? '9' : kind === 'sixth' ? '6' : 'sus4';
+  return { ...chord, tones, roman: chord.roman.replace(/7$/, '') + mark, extended: kind };
+}
+
+/**
+ * Parallel harmony — every voice moving in the same direction by the same
+ * interval, the chord treated as a thickened melody rather than as a function.
+ * It is the sound that separates the turn of the twentieth century from
+ * everything before it, and it is the one device here that deliberately
+ * ignores where a chord is supposed to resolve.
+ */
+function planing(chord, steps, mode) {
+  const scale = SCALES[mode] || SCALES.major;
+  const shift = scale[((steps % 7) + 7) % 7] + (steps < 0 ? -12 : 0);
+  return {
+    ...chord,
+    tones: chord.tones.map((t) => ((t + shift) % 12 + 12) % 12),
+    roman: chord.roman + (steps > 0 ? '↑' : '↓'),
+    planed: true,
+  };
+}
 
 __exp.rng = rng;
 __exp.chordOn = chordOn;
 __exp.phrase = phrase;
 __exp.plan = plan;
+__exp.secondaryOf = secondaryOf;
+__exp.augmentedSixth = augmentedSixth;
+__exp.extend = extend;
+__exp.planing = planing;
 __exp.SCALES = SCALES;
 __exp.MODE_NAMES = MODE_NAMES;
 __exp.chordPitches = chordPitches;
 __exp.keyPitches = keyPitches;
+__exp.neapolitan = neapolitan;
+__exp.BORROWED = BORROWED;
+__exp.MEDIANTS = MEDIANTS;
 },
   "js/compose/melody.js": function (__exp, __req) {
 /* Cadenza — the tune.
@@ -21103,7 +21367,17 @@ function cost(from, to, prev, ctx) {
      * neighbouring, which both mean stepwise on the way in. */
     c += leap <= 2 ? 0.4 : 3.5;
   }
-  if (!scaleTones.includes(pcOf(to))) c += 6;     // outside the key
+  if (!scaleTones.includes(pcOf(to))) {
+    /* A note outside the key is not forbidden, it is expensive — and it earns
+     * its place by leaning onto a chord note a semitone away.  That is what an
+     * accented chromatic neighbour is, and a line that never risks one has no
+     * chromaticism in it at all. */
+    const leansOnChord = chordTones.some((pc) => {
+      const d = Math.abs(((to - pc) % 12 + 18) % 12 - 6);
+      return d === 5;
+    });
+    c += ctx.chromatic && leansOnChord && !strong ? 1.6 : 6;
+  }
 
   /* Stay in the middle of the voice unless heading for the climax. */
   c += Math.abs(to - centre) * pull;
@@ -21255,6 +21529,7 @@ function melody(chords, opts) {
              * a shape that only nudges cannot lift a line ten semitones inside
              * four bars, and the arrival is the whole point of the phrase. */
             pull: ph === climaxPhrase ? 0.6 : 0.2,
+            chromatic: complexity === 'complex' || complexity === 'elaborate',
           });
           /* The top note is reached once.  Without this the contour simply
            * parks the tune on its ceiling and leaves it there. */
@@ -21305,6 +21580,128 @@ function melody(chords, opts) {
   return notes;
 }
 
+
+/* -------------------------------------------------------------- ornament */
+
+const STEP_UP = (scaleTones, midi) => {
+  for (let m = midi + 1; m <= midi + 3; m++) if (scaleTones.includes(pcOf(m))) return m;
+  return midi + 2;
+};
+const STEP_DOWN = (scaleTones, midi) => {
+  for (let m = midi - 1; m >= midi - 3; m--) if (scaleTones.includes(pcOf(m))) return m;
+  return midi - 2;
+};
+
+/**
+ * Write the ornaments out.
+ *
+ * In this repertoire the decoration is not an editorial sign over the note —
+ * it is the notes themselves, and it is most of what the right hand is doing.
+ * A long note becomes an appoggiatura leaning on the beat and resolving off
+ * it, or a turn round its own pitch, or a run filling the step to the next
+ * note.  All of it is written out at half the note's value or less, so the
+ * beat is never disturbed: the figure occupies the note's own time and
+ * nothing after it moves.
+ *
+ * Only long notes are decorated, and never the last note of the piece, which
+ * has to arrive plainly.
+ */
+function ornament(notes, opts) {
+  const { scaleTones, chordAt, r, amount = 0.35, minLength = 1, floor = 0.25 } = opts;
+  const out = [];
+  notes.forEach((n, i) => {
+    const last = i === notes.length - 1;
+    const room = n.beats >= minLength;
+    if (last || !room || r() > amount) { out.push(n); return; }
+    /* Decoration divides the note's own time, so the note has to have enough
+     * of it — and the division has to land on the grid.  A dotted note cut
+     * into four gives three-eighths of a beat each, which is not a value at
+     * all: the engraver has to write it as a tie between two smaller ones, and
+     * then the ornament that was meant to decorate the line is a thicket.  So
+     * only notes whose halves and quarters are themselves plain values are
+     * decorated, and the rest are left alone. */
+    const plain = (x) => [0.25, 0.5, 1, 2, 4].some((v) => Math.abs(x - v) < 1e-9);
+    const smallest = n.beats / 4;
+    if (!plain(smallest) || smallest < floor) {
+      /* Only the two-part figures will fit, and only if they are plain too. */
+      if (!plain(n.beats / 2) || n.beats / 2 < floor) { out.push(n); return; }
+      const from = r() < 0.65 ? STEP_UP(scaleTones, n.midi) : STEP_DOWN(scaleTones, n.midi);
+      out.push({ midi: from, beat: n.beat, beats: n.beats / 2, ornament: 'appoggiatura' });
+      out.push({ midi: n.midi, beat: n.beat + n.beats / 2, beats: n.beats / 2 });
+      return;
+    }
+
+    const tones = chordAt(n.beat) || scaleTones;
+    const next = notes[i + 1];
+    const half = n.beats / 2;
+    const quarter = n.beats / 4;
+    const kind = r();
+
+    if (kind < 0.34) {
+      /* Appoggiatura: the decoration takes the beat and the note it belongs to
+       * arrives late, which is what makes it expressive rather than merely
+       * decorative. */
+      const from = r() < 0.65 ? STEP_UP(scaleTones, n.midi) : STEP_DOWN(scaleTones, n.midi);
+      out.push({ midi: from, beat: n.beat, beats: half, ornament: 'appoggiatura' });
+      out.push({ midi: n.midi, beat: n.beat + half, beats: half });
+      return;
+    }
+    if (kind < 0.62) {
+      /* A turn about the note. */
+      const up = STEP_UP(scaleTones, n.midi);
+      const down = STEP_DOWN(scaleTones, n.midi);
+      out.push({ midi: n.midi, beat: n.beat, beats: quarter, ornament: 'turn' });
+      out.push({ midi: up, beat: n.beat + quarter, beats: quarter });
+      out.push({ midi: n.midi, beat: n.beat + quarter * 2, beats: quarter });
+      out.push({ midi: down, beat: n.beat + quarter * 3, beats: quarter });
+      return;
+    }
+    if (kind < 0.82 && next && Math.abs(next.midi - n.midi) >= 3
+      && Math.abs(next.midi - n.midi) <= 12) {
+      /* Fill the gap to the next note, stepwise, in the note's own time — the
+       * filigree that joins one part of a phrase to the next. */
+      const dir = Math.sign(next.midi - n.midi);
+      const run = [n.midi];
+      let m = n.midi;
+      while (run.length < 4) {
+        m = dir > 0 ? STEP_UP(scaleTones, m) : STEP_DOWN(scaleTones, m);
+        if ((dir > 0 && m >= next.midi) || (dir < 0 && m <= next.midi)) break;
+        run.push(m);
+      }
+      const each = n.beats / Math.max(1, run.length);
+      if (each < floor || !plain(each)) { out.push(n); return; }
+      run.forEach((midi, k) => out.push({
+        midi, beat: n.beat + k * each, beats: each, ornament: k ? 'run' : undefined,
+      }));
+      return;
+    }
+    /* A neighbour and back: the smallest decoration there is. */
+    const nb = r() < 0.5 ? STEP_UP(scaleTones, n.midi) : STEP_DOWN(scaleTones, n.midi);
+    out.push({ midi: n.midi, beat: n.beat, beats: half });
+    out.push({ midi: nb, beat: n.beat + half, beats: half, ornament: 'neighbour' });
+  });
+  return out;
+}
+
+/**
+ * One line that implies two.
+ *
+ * A single melodic line can carry two voices by alternating between registers
+ * — the ear separates them and hears a duet where the hand plays a line.  It
+ * is a favourite device of keyboard writing and it costs nothing but the
+ * decision to leap regularly instead of avoiding leaps.
+ */
+function compound(notes, opts) {
+  const { scaleTones, drop = 12, r, amount = 0.3 } = opts;
+  return notes.map((n, i) => {
+    if (i === 0 || i === notes.length - 1) return n;
+    if (i % 2 === 0 || r() > amount) return n;
+    let low = n.midi - drop;
+    while (low > 20 && !scaleTones.includes(pcOf(low))) low--;
+    return { ...n, midi: low, compound: true };
+  });
+}
+
 /**
  * Rhythmic cells, each adding up to exactly one bar.
  *
@@ -21348,6 +21745,8 @@ function cellsFor(beatsPerBar, busy, complexity = 'moderate') {
 }
 
 __exp.melody = melody;
+__exp.ornament = ornament;
+__exp.compound = compound;
 __exp.cellsFor = cellsFor;
 },
   "js/compose/texture.js": function (__exp, __req) {
@@ -21532,6 +21931,45 @@ function layOut(style, voicing, beatsPerBar, opts = {}) {
       break;
     }
 
+    case 'wide': {
+      /* The left hand of a nocturne or a ballade: a low bass note, then the
+       * chord climbing away above it across two octaves and settling back.
+       * The hand is open and moving the whole time, which is what keeps the
+       * texture alive under a slow tune — a block chord under the same melody
+       * sounds like an accompaniment, this sounds like the piece. */
+      const step = 0.5;
+      const count = Math.round(beatsPerBar / step);
+      /* Each note lasts exactly its own step.  Letting them overlap to sound
+       * more sustained seems harmless and is not: a note eight tenths of a
+       * beat long starting every half beat is a duration no notation can
+       * express, and the engraver has to write it as a tie between values
+       * nobody can read.  Sustain belongs to the pedal and the instrument,
+       * not to the written length. */
+      const spread = [bass];
+      for (const m of chord) spread.push(m);
+      for (const m of chord) if (m + 12 <= 84) spread.push(m + 12);
+      const span = Math.max(2, spread.length);
+      for (let i = 0; i < count; i++) {
+        const k = i % (span * 2 - 2);
+        const m = spread[k < span ? k : span * 2 - 2 - k];
+        add(m === undefined ? bass : m, i * step, step);
+      }
+      break;
+    }
+
+    case 'filigree': {
+      /* Faster and lighter: the same idea in semiquavers, high enough to
+       * shimmer rather than to support. */
+      const step = 0.25;
+      const count = Math.round(beatsPerBar / step);
+      const line = [bass, ...chord, ...chord.map((m) => m + 12).filter((m) => m <= 88)];
+      for (let i = 0; i < count; i++) {
+        const k = i % Math.max(1, line.length);
+        add(line[k] === undefined ? bass : line[k], i * step, step);
+      }
+      break;
+    }
+
     case 'sustained':
     default:
       for (const m of voicing) add(m, 0, beatsPerBar);
@@ -21546,6 +21984,8 @@ function layOut(style, voicing, beatsPerBar, opts = {}) {
 }
 
 const TEXTURES = {
+  wide: 'Wide broken chords',
+  filigree: 'Running figuration',
   block: 'Block chords',
   chorale: 'Four-part chorale',
   waltz: 'Waltz accompaniment',

@@ -122,7 +122,12 @@ check('different seeds write different pieces', () => {
 
 console.log('\nThe key — everything in it, or out of it for a reason.');
 
-check('every note belongs to the key', () => {
+check('every note belongs to the key, or to the chord under it', () => {
+  /* Chromatic harmony is the point of some of these characters, so "in the
+     key" is the wrong test for them: a secondary dominant or an augmented
+     sixth is *supposed* to contain notes the scale does not.  What must never
+     happen is a note belonging to neither the key nor the chord sounding
+     beneath it, which is not colour but a mistake. */
   for (const c of CHARACTERS) {
     for (const tonic of [0, 2, 5, 8, 11]) {
       const p = composePiece({ character: c.id, tonic, bars: 16, seed: 21 });
@@ -130,13 +135,19 @@ check('every note belongs to the key', () => {
         : p.description.key.includes('Dorian') ? 'dorian'
           : p.description.key.includes('Mixolydian') ? 'mixolydian' : 'major';
       const inKey = keyPitches(tonic, mode);
-      /* The minor raises its seventh to make a leading note: that is the one
-       * note outside the scale that belongs in the key. */
       const leading = (mode === 'minor' || mode === 'dorian') ? [(tonic + 11) % 12] : [];
       const allowed = inKey.concat(leading);
-      const stray = allNotes(p.score).filter((n) => !allowed.includes(pcOf(n.midi)));
+      const stray = allNotes(p.score).filter((n) => {
+        if (allowed.includes(pcOf(n.midi))) return false;
+        const chord = p.harmony[Math.min(p.harmony.length - 1, n.bar)];
+        if (chord && chord.pitches.includes(pcOf(n.midi))) return false;
+        /* A chromatic note leaning by a semitone onto a note of the chord. */
+        return !(chord && chord.pitches.some((pc) =>
+          Math.abs(((pcOf(n.midi) - pc) % 12 + 18) % 12 - 6) === 5));
+      });
       if (stray.length) {
-        return `${c.id} in ${tonic}: ${stray.length} notes outside ${p.description.key}`;
+        return `${c.id} in ${tonic}: ${stray.length} notes belonging to neither `
+          + `${p.description.key} nor the chord beneath them`;
       }
     }
   }
@@ -308,6 +319,93 @@ check('the high point falls late, where a climax belongs', () => {
     const top = Math.max(...notes.map((n) => n.midi));
     const where = notes.find((n) => n.midi === top).bar / 32;
     if (where < 0.35) return `seed ${seed}: the tune peaks ${Math.round(where * 100)}% of the way in`;
+  }
+  return true;
+});
+
+
+/* ------------------------------------------------------- chromatic colour */
+
+console.log('\nColour — harmony beyond the seven notes of the key.');
+
+check('the ballade writes chromatic harmony, not just triads', () => {
+  const found = new Set();
+  for (let seed = 1; seed <= 12; seed++) {
+    const p = composePiece({ character: 'ballade', tonic: 9, bars: 16, seed });
+    for (const line of p.description.progression) {
+      if (/V7\//.test(line)) found.add('secondary dominant');
+      if (/♭II/.test(line)) found.add('Neapolitan');
+      if (/\+6/.test(line)) found.add('augmented sixth');
+      if (/♭VI|♭VII|♭III/.test(line)) found.add('borrowed chord');
+      if (/9|6(?!\/)/.test(line)) found.add('extended chord');
+    }
+  }
+  return found.size >= 3 ? true
+    : `only found: ${[...found].join(', ') || 'nothing chromatic at all'}`;
+});
+
+check('a plain character stays diatomic when it should', () => {
+  for (let seed = 1; seed <= 8; seed++) {
+    const p = composePiece({ character: 'hymn', tonic: 0, bars: 16, seed });
+    for (const line of p.description.progression) {
+      if (/V7\/|♭|\+6/.test(line)) return `the chorale wrote ${line}`;
+    }
+  }
+  return true;
+});
+
+check('every phrase still begins in its own key', () => {
+  for (let seed = 1; seed <= 10; seed++) {
+    const p = composePiece({ character: 'ballade', tonic: 0, bars: 16, seed });
+    const first = p.description.progression[0].split(' – ')[0];
+    if (/V7\/|\+6/.test(first)) return `a phrase opened on ${first}`;
+  }
+  return true;
+});
+
+/* ------------------------------------------------------------ decoration */
+
+console.log('\nDecoration and shape.');
+
+check('an ornamented character writes more notes than a plain one', () => {
+  let plain = 0;
+  let decorated = 0;
+  for (let seed = 1; seed <= 5; seed++) {
+    const a = composePiece({ character: 'hymn', tonic: 0, bars: 16, seed });
+    const b = composePiece({ character: 'ballade', tonic: 0, bars: 16, seed });
+    plain += allNotes(a.score).filter((n) => n.part === a.melodyPart && n.voice === 0).length;
+    decorated += allNotes(b.score).filter((n) => n.part === b.melodyPart && n.voice === 0).length;
+  }
+  return decorated > plain * 1.3 ? true
+    : `plain wrote ${plain} melody notes, ornamented wrote ${decorated}`;
+});
+
+check('the dynamic arc peaks where the tune does', () => {
+  const ORDER = ['pppp', 'ppp', 'pp', 'p', 'mp', 'mf', 'f', 'ff', 'fff', 'ffff'];
+  for (const bars of [16, 24, 32]) {
+    const p = composePiece({ character: 'ballade', tonic: 9, bars, seed: 5 });
+    const marks = [];
+    p.score.parts.forEach((part) => part.measures.forEach((m, mi) =>
+      (m.voices || []).forEach((v) => v.forEach((e) => {
+        if (e.dynamic) marks.push({ bar: mi, id: e.dynamic });
+      }))));
+    if (!marks.length) return `${bars} bars: no dynamics were written at all`;
+    const loudest = marks.reduce((a, b) => (ORDER.indexOf(b.id) > ORDER.indexOf(a.id) ? b : a));
+    const phrases = Math.round(bars / 4);
+    const climaxBar = (phrases > 2 ? phrases - 2 : phrases - 1) * 4;
+    if (Math.abs(loudest.bar - climaxBar) > 4) {
+      return `${bars} bars: loudest at bar ${loudest.bar + 1}, tune climaxes at bar ${climaxBar + 1}`;
+    }
+  }
+  return true;
+});
+
+check('a dynamic mark opens the piece', () => {
+  for (const id of ['ballade', 'impression']) {
+    const p = composePiece({ character: id, tonic: 0, bars: 16, seed: 2 });
+    const first = p.score.parts[0].measures[0];
+    const has = (first.voices || []).some((v) => v.some((e) => e.dynamic));
+    if (!has) return `${id} began with no dynamic`;
   }
   return true;
 });

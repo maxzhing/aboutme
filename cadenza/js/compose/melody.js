@@ -61,7 +61,17 @@ function cost(from, to, prev, ctx) {
      * neighbouring, which both mean stepwise on the way in. */
     c += leap <= 2 ? 0.4 : 3.5;
   }
-  if (!scaleTones.includes(pcOf(to))) c += 6;     // outside the key
+  if (!scaleTones.includes(pcOf(to))) {
+    /* A note outside the key is not forbidden, it is expensive — and it earns
+     * its place by leaning onto a chord note a semitone away.  That is what an
+     * accented chromatic neighbour is, and a line that never risks one has no
+     * chromaticism in it at all. */
+    const leansOnChord = chordTones.some((pc) => {
+      const d = Math.abs(((to - pc) % 12 + 18) % 12 - 6);
+      return d === 5;
+    });
+    c += ctx.chromatic && leansOnChord && !strong ? 1.6 : 6;
+  }
 
   /* Stay in the middle of the voice unless heading for the climax. */
   c += Math.abs(to - centre) * pull;
@@ -213,6 +223,7 @@ export function melody(chords, opts) {
              * a shape that only nudges cannot lift a line ten semitones inside
              * four bars, and the arrival is the whole point of the phrase. */
             pull: ph === climaxPhrase ? 0.6 : 0.2,
+            chromatic: complexity === 'complex' || complexity === 'elaborate',
           });
           /* The top note is reached once.  Without this the contour simply
            * parks the tune on its ceiling and leaves it there. */
@@ -261,6 +272,128 @@ export function melody(chords, opts) {
     if (ph === 0) motifIntervals = phraseIntervals;
   }
   return notes;
+}
+
+
+/* -------------------------------------------------------------- ornament */
+
+const STEP_UP = (scaleTones, midi) => {
+  for (let m = midi + 1; m <= midi + 3; m++) if (scaleTones.includes(pcOf(m))) return m;
+  return midi + 2;
+};
+const STEP_DOWN = (scaleTones, midi) => {
+  for (let m = midi - 1; m >= midi - 3; m--) if (scaleTones.includes(pcOf(m))) return m;
+  return midi - 2;
+};
+
+/**
+ * Write the ornaments out.
+ *
+ * In this repertoire the decoration is not an editorial sign over the note —
+ * it is the notes themselves, and it is most of what the right hand is doing.
+ * A long note becomes an appoggiatura leaning on the beat and resolving off
+ * it, or a turn round its own pitch, or a run filling the step to the next
+ * note.  All of it is written out at half the note's value or less, so the
+ * beat is never disturbed: the figure occupies the note's own time and
+ * nothing after it moves.
+ *
+ * Only long notes are decorated, and never the last note of the piece, which
+ * has to arrive plainly.
+ */
+export function ornament(notes, opts) {
+  const { scaleTones, chordAt, r, amount = 0.35, minLength = 1, floor = 0.25 } = opts;
+  const out = [];
+  notes.forEach((n, i) => {
+    const last = i === notes.length - 1;
+    const room = n.beats >= minLength;
+    if (last || !room || r() > amount) { out.push(n); return; }
+    /* Decoration divides the note's own time, so the note has to have enough
+     * of it — and the division has to land on the grid.  A dotted note cut
+     * into four gives three-eighths of a beat each, which is not a value at
+     * all: the engraver has to write it as a tie between two smaller ones, and
+     * then the ornament that was meant to decorate the line is a thicket.  So
+     * only notes whose halves and quarters are themselves plain values are
+     * decorated, and the rest are left alone. */
+    const plain = (x) => [0.25, 0.5, 1, 2, 4].some((v) => Math.abs(x - v) < 1e-9);
+    const smallest = n.beats / 4;
+    if (!plain(smallest) || smallest < floor) {
+      /* Only the two-part figures will fit, and only if they are plain too. */
+      if (!plain(n.beats / 2) || n.beats / 2 < floor) { out.push(n); return; }
+      const from = r() < 0.65 ? STEP_UP(scaleTones, n.midi) : STEP_DOWN(scaleTones, n.midi);
+      out.push({ midi: from, beat: n.beat, beats: n.beats / 2, ornament: 'appoggiatura' });
+      out.push({ midi: n.midi, beat: n.beat + n.beats / 2, beats: n.beats / 2 });
+      return;
+    }
+
+    const tones = chordAt(n.beat) || scaleTones;
+    const next = notes[i + 1];
+    const half = n.beats / 2;
+    const quarter = n.beats / 4;
+    const kind = r();
+
+    if (kind < 0.34) {
+      /* Appoggiatura: the decoration takes the beat and the note it belongs to
+       * arrives late, which is what makes it expressive rather than merely
+       * decorative. */
+      const from = r() < 0.65 ? STEP_UP(scaleTones, n.midi) : STEP_DOWN(scaleTones, n.midi);
+      out.push({ midi: from, beat: n.beat, beats: half, ornament: 'appoggiatura' });
+      out.push({ midi: n.midi, beat: n.beat + half, beats: half });
+      return;
+    }
+    if (kind < 0.62) {
+      /* A turn about the note. */
+      const up = STEP_UP(scaleTones, n.midi);
+      const down = STEP_DOWN(scaleTones, n.midi);
+      out.push({ midi: n.midi, beat: n.beat, beats: quarter, ornament: 'turn' });
+      out.push({ midi: up, beat: n.beat + quarter, beats: quarter });
+      out.push({ midi: n.midi, beat: n.beat + quarter * 2, beats: quarter });
+      out.push({ midi: down, beat: n.beat + quarter * 3, beats: quarter });
+      return;
+    }
+    if (kind < 0.82 && next && Math.abs(next.midi - n.midi) >= 3
+      && Math.abs(next.midi - n.midi) <= 12) {
+      /* Fill the gap to the next note, stepwise, in the note's own time — the
+       * filigree that joins one part of a phrase to the next. */
+      const dir = Math.sign(next.midi - n.midi);
+      const run = [n.midi];
+      let m = n.midi;
+      while (run.length < 4) {
+        m = dir > 0 ? STEP_UP(scaleTones, m) : STEP_DOWN(scaleTones, m);
+        if ((dir > 0 && m >= next.midi) || (dir < 0 && m <= next.midi)) break;
+        run.push(m);
+      }
+      const each = n.beats / Math.max(1, run.length);
+      if (each < floor || !plain(each)) { out.push(n); return; }
+      run.forEach((midi, k) => out.push({
+        midi, beat: n.beat + k * each, beats: each, ornament: k ? 'run' : undefined,
+      }));
+      return;
+    }
+    /* A neighbour and back: the smallest decoration there is. */
+    const nb = r() < 0.5 ? STEP_UP(scaleTones, n.midi) : STEP_DOWN(scaleTones, n.midi);
+    out.push({ midi: n.midi, beat: n.beat, beats: half });
+    out.push({ midi: nb, beat: n.beat + half, beats: half, ornament: 'neighbour' });
+  });
+  return out;
+}
+
+/**
+ * One line that implies two.
+ *
+ * A single melodic line can carry two voices by alternating between registers
+ * — the ear separates them and hears a duet where the hand plays a line.  It
+ * is a favourite device of keyboard writing and it costs nothing but the
+ * decision to leap regularly instead of avoiding leaps.
+ */
+export function compound(notes, opts) {
+  const { scaleTones, drop = 12, r, amount = 0.3 } = opts;
+  return notes.map((n, i) => {
+    if (i === 0 || i === notes.length - 1) return n;
+    if (i % 2 === 0 || r() > amount) return n;
+    let low = n.midi - drop;
+    while (low > 20 && !scaleTones.includes(pcOf(low))) low--;
+    return { ...n, midi: low, compound: true };
+  });
 }
 
 /**

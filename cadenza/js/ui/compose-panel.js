@@ -189,7 +189,8 @@ export class ComposePanel {
         <div class="cp-summary">
           <b>${esc(d.key)}</b> · <b>${esc(d.character)}</b> ·
           <b>${d.bars}</b> bars · <b>${d.tempo}</b> bpm · <b>${esc(d.timeSig)}</b> ·
-          ${esc(d.texture)} · ${esc(d.complexity)}
+          ${esc(d.texture)} · ${esc(d.complexity)}${d.dynamics
+    ? ` · <b>${esc(d.dynamics)}</b>` : ''}
         </div>
 
         <div class="cp-ab">
@@ -208,7 +209,13 @@ export class ComposePanel {
         <p class="cp-note">Four-bar phrases: each asks or answers, and only the last one
           closes fully. The tune states an idea in the first phrase and refers back to it —
           repeated, sequenced, turned upside down — so the piece has something to remember.
-          It saves its highest note for one phrase near the end.</p>
+          It saves its highest note for one phrase near the end, and the dynamics are shaped
+          to arrive there with it.</p>
+        <p class="cp-note">Roman numerals with a slash are secondary dominants — the music
+          leaning on another note as though it were the tonic for a moment. <b>♭II</b> is a
+          Neapolitan, <b>+6</b> an augmented sixth, and a flat before a numeral means the
+          chord was borrowed from the parallel minor. Notes outside the key belong to these
+          chords rather than to mistakes.</p>
 
         <div class="cp-go">
           <button class="btn primary" data-do="use">Put it on the page</button>

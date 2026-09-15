@@ -179,6 +179,45 @@ export function layOut(style, voicing, beatsPerBar, opts = {}) {
       break;
     }
 
+    case 'wide': {
+      /* The left hand of a nocturne or a ballade: a low bass note, then the
+       * chord climbing away above it across two octaves and settling back.
+       * The hand is open and moving the whole time, which is what keeps the
+       * texture alive under a slow tune — a block chord under the same melody
+       * sounds like an accompaniment, this sounds like the piece. */
+      const step = 0.5;
+      const count = Math.round(beatsPerBar / step);
+      /* Each note lasts exactly its own step.  Letting them overlap to sound
+       * more sustained seems harmless and is not: a note eight tenths of a
+       * beat long starting every half beat is a duration no notation can
+       * express, and the engraver has to write it as a tie between values
+       * nobody can read.  Sustain belongs to the pedal and the instrument,
+       * not to the written length. */
+      const spread = [bass];
+      for (const m of chord) spread.push(m);
+      for (const m of chord) if (m + 12 <= 84) spread.push(m + 12);
+      const span = Math.max(2, spread.length);
+      for (let i = 0; i < count; i++) {
+        const k = i % (span * 2 - 2);
+        const m = spread[k < span ? k : span * 2 - 2 - k];
+        add(m === undefined ? bass : m, i * step, step);
+      }
+      break;
+    }
+
+    case 'filigree': {
+      /* Faster and lighter: the same idea in semiquavers, high enough to
+       * shimmer rather than to support. */
+      const step = 0.25;
+      const count = Math.round(beatsPerBar / step);
+      const line = [bass, ...chord, ...chord.map((m) => m + 12).filter((m) => m <= 88)];
+      for (let i = 0; i < count; i++) {
+        const k = i % Math.max(1, line.length);
+        add(line[k] === undefined ? bass : line[k], i * step, step);
+      }
+      break;
+    }
+
     case 'sustained':
     default:
       for (const m of voicing) add(m, 0, beatsPerBar);
@@ -193,6 +232,8 @@ export function layOut(style, voicing, beatsPerBar, opts = {}) {
 }
 
 export const TEXTURES = {
+  wide: 'Wide broken chords',
+  filigree: 'Running figuration',
   block: 'Block chords',
   chorale: 'Four-part chorale',
   waltz: 'Waltz accompaniment',
