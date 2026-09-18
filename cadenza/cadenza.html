@@ -2002,6 +2002,8 @@ class Cadenza {
       const part = this.score.parts[this.cursor.partIndex];
       this.el.hint.innerHTML =
         `<b>Note input</b> — type <kbd>A</kbd>–<kbd>G</kbd>, click the staff, or play your MIDI keyboard. ` +
+        `<b>Hold <kbd>Shift</kbd> to stack another note on the one you just wrote</b> — that is how ` +
+        `a chord is built, and playing one on a MIDI keyboard does it by itself. ` +
         `<kbd>1</kbd>–<kbd>7</kbd> note value · <kbd>0</kbd> rest · <kbd>Esc</kbd> to stop. ` +
         `Writing into <b>${part ? part.name : ''}</b>, bar ${this.cursor.measure + 1}, voice ${this.cursor.voice + 1}.`;
       return;
@@ -2009,7 +2011,8 @@ class Cadenza {
     if (this.selection.size) {
       this.el.hint.innerHTML =
         `<b>${this.selection.size} selected</b> — change the note value with <kbd>1</kbd>–<kbd>7</kbd>, ` +
-        `move pitch with <kbd>&uarr;</kbd><kbd>&darr;</kbd>, add marks from the palette above, <kbd>Delete</kbd> to clear.`;
+        `move pitch with <kbd>&uarr;</kbd><kbd>&darr;</kbd>, <kbd>Shift</kbd>+<kbd>A</kbd>–<kbd>G</kbd> ` +
+        `to add a note to the chord, marks from the palette above, <kbd>Delete</kbd> to clear.`;
       return;
     }
     this.el.hint.innerHTML =
@@ -2389,12 +2392,19 @@ class Cadenza {
       this.history.touch(loc.partIndex, loc.measure);
       const fifths = Model.writtenFifths(this.score, loc.part, loc.measure);
       const alter = Theory.keyAlterations(fifths)[step];
-      const ref = Theory.diatonic(loc.event.notes[0].pitch);
+      /* Retuning a note goes to the nearest pitch of that name, up or down.
+       * Adding one to a chord goes *above* the chord: a player naming the
+       * notes of a chord names them upwards, and a G asked for over a C is
+       * the fifth above it rather than the fourth below. */
+      const tops = loc.event.notes.map((n) => Theory.diatonic(n.pitch));
+      const ref = chord ? Math.max(...tops) : Theory.diatonic(loc.event.notes[0].pitch);
       let best = null;
       for (let o = -1; o <= 9; o++) {
         const dia = o * 7 + step;
+        if (chord && dia <= ref) continue;
         if (best === null || Math.abs(dia - ref) < Math.abs(best - ref)) best = dia;
       }
+      if (best === null) continue;
       const base = Theory.fromDiatonic(best);
       const p = Theory.pitch(base.step, base.octave, alter);
       if (chord) {
@@ -4766,6 +4776,48 @@ function spliceSpan(voice, ts, start, length, newEvents) {
  * `cursor` is { partIndex, staff, measure, voice, tick }.
  * Returns the new cursor position.
  */
+/**
+ * The note a chord note should join.
+ *
+ * Writing a note moves the cursor past it, which is what makes a tune easy to
+ * type — and what made chords impossible to type.  Asking for a chord note
+ * looked for something starting *at* the cursor, found the empty space after
+ * the note just written, and wrote a second note there instead: typing C, then
+ * E and G as chord notes, gave three separate crotchets rather than one triad.
+ *
+ * So the note the cursor has just passed counts as well.  That is the one
+ * every notation program adds to, and it is the only one the gesture can
+ * sensibly mean: nothing starts where the cursor is, or the first test would
+ * have found it.  The note has to end exactly where the cursor stands — a
+ * note two beats back with a rest after it is not "the note being written" —
+ * and it may be the last note of the bar before, because writing the last
+ * note of a bar leaves the cursor at the start of the next one.
+ */
+function chordTarget(app, cursor) {
+  const { score } = app;
+  const here = getVoice(score, cursor.partIndex, cursor.measure, cursor.voice);
+  for (const span of voiceSpans(here)) {
+    if (span.start === cursor.tick && span.event.type === 'note') {
+      return { event: span.event, measure: cursor.measure };
+    }
+  }
+  const ending = (voice, measure, at) => {
+    for (const span of voiceSpans(voice)) {
+      if (span.end === at && span.start < at && span.event.type === 'note') {
+        return { event: span.event, measure };
+      }
+    }
+    return null;
+  };
+  if (cursor.tick > 0) return ending(here, cursor.measure, cursor.tick);
+  if (cursor.measure > 0) {
+    const back = cursor.measure - 1;
+    const before = getVoice(score, cursor.partIndex, back, cursor.voice);
+    return ending(before, back, measureTicks(timeSigAt(score, back)));
+  }
+  return null;
+}
+
 function enterNote(app, cursor, p, { chord = false, duration, dots = 0, tuplet = null, tie = false } = {}) {
   const { score, history } = app;
   const part = score.parts[cursor.partIndex];
@@ -4780,14 +4832,18 @@ function enterNote(app, cursor, p, { chord = false, duration, dots = 0, tuplet =
   history.touch(cursor.partIndex, cursor.measure);
 
   if (chord) {
-    const idx = indexAtTick(voice, cursor.tick);
-    const target = idx >= 0 ? voice[idx] : null;
-    if (target && target.type === 'note' && tickAt(voice, idx) === cursor.tick) {
-      if (!target.notes.some((n) => toMidi(n.pitch) === toMidi(p))) {
-        target.notes.push({ pitch: p, tie: null, accidental: 'auto', head: 'normal', parenthesized: false });
-        target.notes.sort((a, b) => toMidi(a.pitch) - toMidi(b.pitch));
+    const target = chordTarget(app, cursor);
+    if (target) {
+      history.touch(cursor.partIndex, target.measure);
+      if (!target.event.notes.some((n) => toMidi(n.pitch) === toMidi(p))) {
+        target.event.notes.push({
+          pitch: p, tie: null, accidental: 'auto', head: 'normal', parenthesized: false,
+        });
+        target.event.notes.sort((a, b) => toMidi(a.pitch) - toMidi(b.pitch));
       }
       history.commit();
+      /* The cursor does not move: the chord is still being built, and the next
+       * chord note has to find the same note again. */
       return cursor;
     }
   }
@@ -8688,6 +8744,16 @@ __exp.bracePath = bracePath;
 
 const CENT = 1 / 1200;
 
+/* How wide an instrument stands in front of the listener, for the ones whose
+ * pitch and position are the same thing: a keyboard, or a set of tuned bars.
+ * Zero — the default for everything absent here — means the part's own pan
+ * decides, which is right for anything a player holds. */
+const SPREAD = {
+  piano: 0.5, harpsichord: 0.45, celesta: 0.4, organ: 0.24,
+  vibraphone: 0.48, marimba: 0.52, glockenspiel: 0.45, bell: 0.36,
+  mallet: 0.48, harp: 0.42,
+};
+
 /* ------------------------------------------------------------- wavetables */
 
 /** Build a PeriodicWave from a list of harmonic amplitudes. */
@@ -8747,6 +8813,7 @@ class SynthEngine {
     this.ready = false;
     this.waves = {};
     this.channels = new Map();
+    this.placed = new Map();
     this.active = new Set();
     this.maxVoices = 64;
     this.noiseBuffer = null;
@@ -8774,13 +8841,21 @@ class SynthEngine {
     this.master = ctx.createGain();
     this.master.gain.value = this.masterVolume;
 
-    /* A gentle limiter keeps a full orchestra from clipping. */
+    /* A limiter, not a compressor.
+     *
+     * At a threshold of −14 dB and a ratio above three this was working on
+     * every note of every piece, not just the loud ones: it took the span
+     * between a soft note and a loud one from about eight decibels to four,
+     * and it moved on the attack of each chord, which is the pumping that
+     * makes a mix sound squeezed.  Sitting it just under full scale with a
+     * steep ratio leaves the music alone and only stops an orchestra
+     * clipping, which is the job it was there to do. */
     this.comp = ctx.createDynamicsCompressor();
-    this.comp.threshold.value = -14;
-    this.comp.knee.value = 22;
-    this.comp.ratio.value = 3.2;
-    this.comp.attack.value = 0.006;
-    this.comp.release.value = 0.22;
+    this.comp.threshold.value = -3;
+    this.comp.knee.value = 5;
+    this.comp.ratio.value = 14;
+    this.comp.attack.value = 0.003;
+    this.comp.release.value = 0.18;
 
     this.dry = ctx.createGain();
     this.dry.gain.value = 1;
@@ -8810,30 +8885,93 @@ class SynthEngine {
       this.waves[k + 'Bright'] = waveFromHarmonics(ctx,
         amps.map((a, i) => a * Math.pow(i + 1, 0.55)));
     }
+    /* The hammer's own spectrum.
+     *
+     * The shared `Bright` twins lift the upper partials enough for a bowed or
+     * blown instrument leaning into a note, but a piano hit hard does
+     * something far more drastic: the felt compresses, the contact time
+     * shortens, and partials six to twelve come up to within fifteen decibels
+     * of the fundamental.  Measured before this, the difference in brightness
+     * between a note at velocity 25 and one at 120 was a ratio of 1.18 — which
+     * is to say the instrument played the same colour however it was struck,
+     * and that is most of what makes a synthesised piano sound like a toy. */
+    for (const k of ['pianoBass', 'pianoMid', 'pianoTreble']) {
+      this.waves[k + 'Hard'] = waveFromHarmonics(ctx,
+        SPECTRA[k].map((a, i) => a * Math.pow(i + 1, 1.4)));
+    }
     this.waves.pianoAttack = waveFromHarmonics(ctx, decayHarmonics(24, 0.75));
     this.noiseBuffer = this.makeNoise(2.0);
     this.ready = true;
     return ctx;
   }
 
-  /** Exponentially decaying noise makes a serviceable concert-hall tail. */
+  /**
+   * A room, rather than a wash of noise.
+   *
+   * The old tail was white noise on an exponential fade, and it measured the
+   * way it sounded: 3.4 seconds of decay at 250 Hz and 3.8 at 6 kHz — the top
+   * of the spectrum ringing on as long as the bottom.  No room does that.  Air
+   * absorbs high frequencies and soft surfaces absorb them faster still, so a
+   * hall that holds a bass note for two seconds lets a cymbal go in well under
+   * one, and a tail that keeps its treble is the single most recognisable
+   * sound of a cheap digital reverb.
+   *
+   * Three things make this a room instead.  The noise runs through a lowpass
+   * that closes as the tail proceeds, which is what air absorption is and
+   * which costs one multiply a sample.  The early reflections are a real
+   * pattern of discrete arrivals — a handful of surfaces at plausible
+   * distances, different for each ear — rather than five identical taps.  And
+   * the density builds: a moment after the note there are a few reflections,
+   * a moment later there are thousands, and starting at full density is what
+   * makes a reverb sound like it was switched on.
+   */
   makeImpulse(seconds, decay, ctx = this.ctx) {
     const rate = ctx.sampleRate;
     const len = Math.floor(rate * seconds);
     const buf = ctx.createBuffer(2, len, rate);
+    /* `decay` stays the caller's knob: bigger means a drier, shorter room. */
+    const rt = Math.max(0.35, seconds / Math.max(0.6, decay * 0.78));
+    const fall = Math.log(1000) / rt;                 // to −60 dB in rt seconds
+    /* How fast the room loses its top.  A tail whose treble lasts a third as
+     * long as its bass is about right for a hall with an audience in it. */
+    const airTime = rt * 0.15;
+
     for (let ch = 0; ch < 2; ch++) {
       const d = buf.getChannelData(ch);
+      let lp = 0;
+      let peak = 0;
       for (let i = 0; i < len; i++) {
-        const t = i / len;
-        /* Slight pre-delay and a sparse early-reflection pattern. */
-        let s = (Math.random() * 2 - 1) * Math.pow(1 - t, decay);
-        if (i < rate * 0.012) s *= i / (rate * 0.012);
-        d[i] = s;
+        const t = i / rate;
+        const white = Math.random() * 2 - 1;
+        /* The lowpass closes from open to muffled as the tail proceeds. */
+        const cutoff = 400 + 11000 * Math.exp(-t / airTime);
+        const a = Math.exp((-2 * Math.PI * cutoff) / rate);
+        lp = (1 - a) * white + a * lp;
+        /* Density: sparse at first, filling in over the first eighty
+         * milliseconds, which is roughly how long a real room takes. */
+        const density = Math.min(1, t / 0.08);
+        let v = lp * Math.exp(-t * fall) * (0.35 + 0.65 * density);
+        /* A little quiet before the first reflection arrives. */
+        if (t < 0.008) v *= t / 0.008;
+        d[i] = v;
+        const m = Math.abs(v);
+        if (m > peak) peak = m;
       }
-      const early = [0.013, 0.021, 0.029, 0.041, 0.053];
-      for (const e of early) {
-        const idx = Math.floor(e * rate) + (ch ? 37 : 0);
-        if (idx < len) d[idx] += (ch ? -0.34 : 0.4);
+      /* Closing the filter costs level; put it back so `reverb` means the same
+       * amount of room as it did before. */
+      if (peak > 0) { const k = 0.7 / peak; for (let i = 0; i < len; i++) d[i] *= k; }
+
+      /* Surfaces at plausible distances: side walls, ceiling, the back of the
+       * platform.  Each ear hears a different set, which is what gives a room
+       * its width before the tail has even begun. */
+      const early = ch
+        ? [[0.0091, 0.52], [0.0143, -0.41], [0.0197, 0.33], [0.0268, -0.26],
+          [0.0331, 0.21], [0.0419, -0.17], [0.0527, 0.13], [0.0668, -0.1]]
+        : [[0.0074, 0.58], [0.0128, -0.38], [0.0211, 0.31], [0.0284, -0.24],
+          [0.0352, 0.19], [0.0437, -0.15], [0.0561, 0.12], [0.0702, -0.09]];
+      for (const [at, g] of early) {
+        const idx = Math.floor(at * rate);
+        if (idx < len) d[idx] += g;
       }
     }
     return buf;
@@ -8903,8 +9041,8 @@ class SynthEngine {
       duration = 0.5, channel = 'default', detune = 0, articulation = null,
     } = opts;
     if (this.active.size > this.maxVoices) this.cull();
-    const out = this.channel(channel).input;
     const fn = PRESETS[preset] || PRESETS.piano;
+    const out = this.place(this.channel(channel).input, preset, midi);
     const v = Math.max(0.02, Math.min(1, velocity / 127));
     /* Seeded from the note itself, so a passage plays the same way twice while
      * still differing from note to note within it. */
@@ -8923,6 +9061,69 @@ class SynthEngine {
         Math.max(0, (handle.endTime - this.ctx.currentTime) * 1000) + 300);
     }
     return handle;
+  }
+
+  /**
+   * Where in the stereo picture a note sits.
+   *
+   * A note used to go straight into its part's channel, and a part has one
+   * pan for all of it, so a solo piano came out of the exact centre of the
+   * speakers: measured on a big chord, the two channels were 0.99 alike,
+   * which is to say mono.  That is most of why it sounded like a synthesiser
+   * in a box rather than an instrument in a room — a real piano is two metres
+   * of soundboard, and the bottom of it does not arrive from the same place
+   * as the top.
+   *
+   * So a note on a keyboard instrument is panned by its pitch, low to the
+   * left and high to the right, which is the instrument heard from the
+   * player's seat and the way every stereo piano recording is made.  Not too
+   * far: past about half width the low notes start to sound like a separate
+   * instrument from the high ones.  Everything else keeps its part's own
+   * position, because a violinist does not move about the platform between
+   * notes.
+   */
+  place(input, preset, midi) {
+    const spread = SPREAD[preset];
+    if (!spread || !this.ctx.createChannelMerger) return input;
+    const key = preset + ':' + midi;
+    const held = this.placed.get(key);
+    if (held) return held;
+    const ctx = this.ctx;
+
+    /* Level alone does not put a sound anywhere.
+     *
+     * Turning a note down in one speaker and up in the other leaves both
+     * speakers carrying the same waveform, and two channels carrying the same
+     * waveform are one channel: panning the whole keyboard this way moved the
+     * measured correlation of a chord from 0.975 to 0.962, which is to say it
+     * did nothing.  What actually places a sound is that it reaches one ear
+     * before the other.  The bass end of a grand is well over a metre from the
+     * treble end, so the two paths differ by a few milliseconds, and it is
+     * that difference — not the level — the ear uses.
+     *
+     * So each note is given both: the level difference that says how far to
+     * the side it is, and the arrival difference that makes the two channels
+     * genuinely different signals.  Under three milliseconds, which is inside
+     * the window where the ear hears one sound in a place rather than two
+     * sounds one after the other. */
+    const node = ctx.createGain();
+    const merger = ctx.createChannelMerger(2);
+    const across = Math.max(-1, Math.min(1, (midi - 60) / 30)) * spread;
+    const angle = ((across + 1) * Math.PI) / 4;
+    const left = ctx.createGain();
+    const right = ctx.createGain();
+    left.gain.value = Math.cos(angle);
+    right.gain.value = Math.sin(angle);
+    const lag = Math.abs(across) * 0.0018;
+    const dl = ctx.createDelay(0.02);
+    const dr = ctx.createDelay(0.02);
+    dl.delayTime.value = across > 0 ? lag : 0;
+    dr.delayTime.value = across < 0 ? lag : 0;
+    node.connect(left).connect(dl).connect(merger, 0, 0);
+    node.connect(right).connect(dr).connect(merger, 0, 1);
+    merger.connect(input);
+    this.placed.set(key, node);
+    return node;
   }
 
   cull() {
@@ -8983,6 +9184,29 @@ function human(seed) {
   };
 }
 
+/**
+ * How loud a note is for how hard it was played.
+ *
+ * Every voice here used to map velocity to level as `0.25 + v * 0.85` or some
+ * near relative: a straight line from a quarter of full scale to full.  That
+ * is about five decibels between the softest note and the loudest, and after
+ * the limiter had taken its share the measured difference between a note at
+ * velocity 25 and one at 120 was **four decibels**.  A piano spans nearer
+ * forty.  This is why dynamic marks did nothing audible: the marks were being
+ * applied, the synthesiser simply could not express them.
+ *
+ * Loudness against playing effort is a power law, not a line.  The exponent
+ * sets the span: across the velocities music actually uses, `v ** 2.1` gives
+ * about twenty-eight decibels, which is a real piano's working range, and
+ * `v ** 1.7` about twenty-three, which suits a bowed or blown instrument
+ * where the player has less room between nothing and everything.
+ *
+ * Full velocity still comes out at full level, so nothing gets louder — the
+ * quiet end simply becomes quiet, which is what makes the loud end mean
+ * something.
+ */
+const loudness = (v, curve = 2.1) => Math.pow(Math.max(0, Math.min(1, v)), curve);
+
 function adsr(param, ctx, t, { a, d, s, r, peak = 1, dur }) {
   param.cancelScheduledValues(t);
   param.setValueAtTime(0.0001, t);
@@ -9033,16 +9257,19 @@ PRESETS.piano = (eng, { freq, midi, v, time, dur, out, h }) => {
   const ctx = eng.ctx;
   const dev = h || { attack: 1, bright: 1, level: 1, vibDepth: 1 };
   const wave = midi < 48 ? eng.waves.pianoBass : midi < 76 ? eng.waves.pianoMid : eng.waves.pianoTreble;
-  const hard = eng.waves[(midi < 48 ? 'pianoBass' : midi < 76 ? 'pianoMid' : 'pianoTreble') + 'Bright'];
+  const hard = eng.waves[(midi < 48 ? 'pianoBass' : midi < 76 ? 'pianoMid' : 'pianoTreble') + 'Hard'];
 
   const amp = ctx.createGain();
   amp.gain.value = 0;
   const tone = ctx.createBiquadFilter();
   tone.type = 'lowpass';
   /* Brightness follows the register and, far more, how hard the key was hit. */
-  const bright = (900 + v * v * 9000 + Math.max(0, midi - 40) * 60) * dev.bright;
+  const bright = (520 + Math.pow(v, 1.9) * 12500 + Math.max(0, midi - 40) * 48) * dev.bright;
   tone.frequency.setValueAtTime(Math.min(16000, bright), time);
-  tone.frequency.exponentialRampToValueAtTime(Math.max(380, bright * 0.18), time + 0.6);
+  tone.frequency.exponentialRampToValueAtTime(Math.max(340, bright * 0.16), time + 0.7);
+  /* And on darkening for as long as the note lasts, because a string never
+   * stops losing its top. */
+  tone.frequency.exponentialRampToValueAtTime(Math.max(260, bright * 0.05), time + 4);
   tone.Q.value = 0.5;
 
   const nodes = [];
@@ -9050,7 +9277,11 @@ PRESETS.piano = (eng, { freq, midi, v, time, dur, out, h }) => {
    * as on the instrument itself.  Each is tuned and damped a shade
    * differently; that difference is the shimmer and the double decay. */
   const unisons = midi < 33 ? [0] : midi < 45 ? [-1.4, 1.7] : [-2.1, 0.4, 2.3];
-  const felt = Math.min(0.85, v * v * 1.05);
+  /* How hard the hammer struck, and so how much of its own bright spectrum
+   * comes with the note.  It reaches nearly all of it at full force and is
+   * almost absent under the fingers, which is the difference between a
+   * pianissimo and a fortissimo that no amount of level ever gives. */
+  const felt = Math.min(0.92, Math.pow(v, 1.5));
   unisons.forEach((cents, i) => {
     const o = ctx.createOscillator();
     o.setPeriodicWave(wave);
@@ -9062,16 +9293,20 @@ PRESETS.piano = (eng, { freq, midi, v, time, dur, out, h }) => {
     o.start(time);
     nodes.push(o);
 
-    /* The hard-hammer layer, which only appears when the key is struck hard. */
-    if (hard && felt > 0.05 && i === 0) {
+    /* The hard-hammer layer, which grows with how hard the key was struck. */
+    if (hard && felt > 0.02 && i < 2) {
       const ob = ctx.createOscillator();
       ob.setPeriodicWave(hard);
       ob.frequency.value = freq;
       ob.detune.value = cents;
       const gb = ctx.createGain();
-      gb.gain.setValueAtTime(felt * 0.5, time);
-      /* The edge is on the attack; it leaves before the tone does. */
-      gb.gain.exponentialRampToValueAtTime(Math.max(0.0002, felt * 0.05), time + 0.35);
+      gb.gain.setValueAtTime((felt * 0.8) / Math.min(2, unisons.length), time);
+      /* The edge is on the attack and leaves well before the tone does: the
+       * top partials of a struck string die in a fraction of a second while
+       * the fundamental rings on, and a note that keeps its brightness all
+       * the way down sounds like an organ pipe rather than a piano. */
+      gb.gain.exponentialRampToValueAtTime(Math.max(0.0002, felt * 0.05), time + 0.45);
+      gb.gain.exponentialRampToValueAtTime(0.0002, time + 1.8);
       ob.connect(gb).connect(tone);
       ob.start(time);
       nodes.push(ob);
@@ -9131,7 +9366,7 @@ PRESETS.piano = (eng, { freq, midi, v, time, dur, out, h }) => {
   /* Bass strings ring for a very long time, the top of the keyboard hardly at
    * all, and every note falls quickly at first and slowly afterwards. */
   const bodyDecay = midi < 40 ? 20 : midi < 52 ? 13 : midi < 72 ? 7 : 2.8;
-  const peak = 0.34 * (0.24 + v * 0.9) * dev.level;
+  const peak = 0.39 * loudness(v) * dev.level;
   amp.gain.setValueAtTime(0.0001, time);
   amp.gain.linearRampToValueAtTime(peak, time + 0.005 * dev.attack);
   amp.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * 0.55), time + 0.18);
@@ -9247,7 +9482,7 @@ function sustained(spec) {
       nf.frequency.value = spec.noise.freq;
       nf.Q.value = spec.noise.q || 0.8;
       const ng = ctx.createGain();
-      const bite = spec.noise.level * (0.4 + v * 1.4) * (legato ? 0.45 : 1);
+      const bite = spec.noise.level * 1.8 * loudness(v, 1.7) * (legato ? 0.45 : 1);
       ng.gain.setValueAtTime(0, time);
       ng.gain.linearRampToValueAtTime(bite * 2.4, time + spec.a * 0.6 * dev.attack);
       ng.gain.exponentialRampToValueAtTime(Math.max(0.00005, bite * 0.55), time + spec.a * 3 + 0.08);
@@ -9285,7 +9520,7 @@ function sustained(spec) {
     /* A note that continues from the one before does not start again from
      * nothing: the bow is already moving, the breath already going. */
     if (legato) a = Math.min(a, Math.max(0.012, a * 0.45));
-    const peak = spec.gain * (0.22 + v * 0.9) * (accent ? 1.18 : 1) * dev.level;
+    const peak = spec.gain * 1.12 * loudness(v, 1.7) * (accent ? 1.18 : 1) * dev.level;
     const sus = spec.s === undefined ? 0.82 : spec.s;
     const rel = staccato ? 0.09 : spec.r;
 
@@ -9421,24 +9656,39 @@ function brass(spec) {
     const filt = ctx.createBiquadFilter();
     filt.type = 'lowpass';
     filt.Q.value = 1.6;
-    const peakCut = Math.min(11000, freq * (5 + v * 9) + 700);
+    const peakCut = Math.min(12000, freq * (4 + Math.pow(v, 1.4) * 16) + 700);
     filt.frequency.setValueAtTime(freq * 2.2 + 250, time);
     filt.frequency.linearRampToValueAtTime(peakCut, time + 0.055);
     filt.frequency.exponentialRampToValueAtTime(Math.max(500, peakCut * 0.62), time + 0.35);
 
     const nodes = [];
+    /* Brass is the family where loud and bright are the same word.
+     *
+     * A trumpet at fortissimo is not a trumpet at mezzo-piano turned up: the
+     * air column goes non-linear and pours energy into the upper partials
+     * until the sound is almost all edge.  Opening a filter over a spectrum
+     * that has nothing up there does not reach it — measured before this, a
+     * trumpet at velocity 120 was 1.08 times as bright as one at 25, which is
+     * to say it had one colour and played it at two volumes.  So the brighter
+     * spectrum is mixed in as the player leans on the note, the way the
+     * strings and winds already do. */
+    const bright = eng.waves[spec.wave + 'Bright'];
+    const blaze = Math.min(0.88, Math.pow(v, 1.4));
     for (const cents of spec.unison === 2 ? [-4, 4] : [0]) {
-      const o = ctx.createOscillator();
-      o.setPeriodicWave(eng.waves[spec.wave]);
-      /* A small scoop into pitch: brass players rarely arrive dead centre. */
-      o.frequency.setValueAtTime(freq * 0.988, time);
-      o.frequency.linearRampToValueAtTime(freq, time + 0.045);
-      o.detune.value = cents;
-      const g = ctx.createGain();
-      g.gain.value = spec.unison === 2 ? 0.5 : 1;
-      o.connect(g).connect(filt);
-      o.start(time);
-      nodes.push(o);
+      for (const [wave, level] of [[eng.waves[spec.wave], 1 - blaze * 0.75], [bright, blaze]]) {
+        if (!wave || level <= 0.001) continue;
+        const o = ctx.createOscillator();
+        o.setPeriodicWave(wave);
+        /* A small scoop into pitch: brass players rarely arrive dead centre. */
+        o.frequency.setValueAtTime(freq * 0.988, time);
+        o.frequency.linearRampToValueAtTime(freq, time + 0.045);
+        o.detune.value = cents;
+        const g = ctx.createGain();
+        g.gain.value = level * (spec.unison === 2 ? 0.5 : 1);
+        o.connect(g).connect(filt);
+        o.start(time);
+        nodes.push(o);
+      }
     }
     const lfo = ctx.createOscillator();
     lfo.frequency.value = 4.8;
@@ -9454,7 +9704,7 @@ function brass(spec) {
     amp.connect(out);
     const accent = articulation === 'accent' || articulation === 'marcato';
     const a = articulation === 'staccato' ? 0.014 : spec.a;
-    const peak = spec.gain * (0.2 + v * 0.95) * (accent ? 1.2 : 1);
+    const peak = spec.gain * 1.15 * loudness(v, 1.7) * (accent ? 1.2 : 1);
     amp.gain.setValueAtTime(0.0001, time);
     amp.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * 1.12), time + a);
     amp.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * 0.86), time + a + 0.12);
@@ -9488,7 +9738,12 @@ PRESETS.pluck = (eng, { freq, v, time, dur, out }) => {
   const amp = ctx.createGain();
   const filt = ctx.createBiquadFilter();
   filt.type = 'lowpass';
-  filt.frequency.setValueAtTime(Math.min(12000, freq * 12 + 1800 + v * 3000), time);
+  /* Pluck harder and the string is released from a sharper corner, which puts
+   * far more into the upper partials — the same note played softly is round
+   * and played hard is bright, and a filter that moves by a third of an octave
+   * across the whole dynamic range does not say so. */
+  filt.frequency.setValueAtTime(
+    Math.min(13000, freq * (5 + Math.pow(v, 1.3) * 18) + 900), time);
   filt.frequency.exponentialRampToValueAtTime(Math.max(400, freq * 3), time + 0.6);
   const o = ctx.createOscillator();
   o.setPeriodicWave(eng.waves.pluck);
@@ -9502,7 +9757,7 @@ PRESETS.pluck = (eng, { freq, v, time, dur, out }) => {
   n.connect(ng).connect(amp);
   filt.connect(amp);
   amp.connect(out);
-  const peak = 0.3 * (0.25 + v * 0.85);
+  const peak = 0.33 * loudness(v, 1.9);
   amp.gain.setValueAtTime(0.0001, time);
   amp.gain.linearRampToValueAtTime(peak, time + 0.005);
   amp.gain.exponentialRampToValueAtTime(0.0003, time + Math.min(6, Math.max(1.0, dur + 1.2)));
@@ -9517,13 +9772,19 @@ function struck(spec) {
     const ctx = eng.ctx;
     const amp = ctx.createGain();
     const nodes = [];
+    /* A bar or a string struck softly rings on its fundamental; struck hard it
+     * rings on everything.  Scaling only the level and not the balance made a
+     * hard stroke *darker* than a soft one, because the fundamental grew and
+     * the modes above it did not. */
+    const excited = 0.12 + 0.88 * Math.pow(v, 1.1);
     spec.partials.forEach(([ratio, level, decay]) => {
       const o = ctx.createOscillator();
       o.type = 'sine';
       o.frequency.value = freq * ratio;
       const g = ctx.createGain();
       g.gain.setValueAtTime(0.0001, time);
-      g.gain.linearRampToValueAtTime(level * (0.25 + v * 0.85) * spec.gain, time + 0.004);
+      g.gain.linearRampToValueAtTime(
+        level * (ratio > 1 ? excited : 1) * 1.1 * loudness(v, 2) * spec.gain, time + 0.004);
       g.gain.exponentialRampToValueAtTime(0.00012, time + decay * spec.decay);
       o.connect(g).connect(amp);
       o.start(time);
@@ -9535,7 +9796,14 @@ function struck(spec) {
       nf.type = 'bandpass';
       nf.frequency.value = freq * 3;
       const ng = ctx.createGain();
-      ng.gain.setValueAtTime(0.1 * v, time);
+      /* The stick noise has to follow the same curve as the note it belongs
+       * to.  It did not: the tone went as the square of the velocity while
+       * the click went straight up with it, so a quiet stroke was almost all
+       * click and a loud one almost none — which measured, correctly, as a
+       * mallet that got *darker* the harder it was hit, 0.6 times the
+       * brightness at full force.  The click is part of the note, not a
+       * separate instrument. */
+      ng.gain.setValueAtTime(0.12 * loudness(v, 2), time);
       ng.gain.exponentialRampToValueAtTime(0.0002, time + 0.04);
       n.connect(nf).connect(ng).connect(amp);
       nodes.push(n);
@@ -9567,7 +9835,7 @@ PRESETS.timpani = (eng, { freq, v, time, dur, out }) => {
     o.frequency.exponentialRampToValueAtTime(freq * ratio, time + 0.08);
     const g = ctx.createGain();
     g.gain.setValueAtTime(0.0001, time);
-    g.gain.linearRampToValueAtTime(level * (0.3 + v * 0.8) * 0.42, time + 0.008);
+    g.gain.linearRampToValueAtTime(level * 1.1 * loudness(v, 1.9) * 0.42, time + 0.008);
     g.gain.exponentialRampToValueAtTime(0.00012, time + dec * Math.min(2.2, 0.6 + dur));
     o.connect(g).connect(amp);
     o.start(time);
@@ -9601,7 +9869,7 @@ PRESETS.drums = (eng, { midi, v, time, out }) => {
     o.frequency.setValueAtTime(kit.tone.f0, time);
     o.frequency.exponentialRampToValueAtTime(kit.tone.f1, time + kit.tone.sweep);
     const g = ctx.createGain();
-    g.gain.setValueAtTime(kit.tone.level * (0.3 + v * 0.8), time);
+    g.gain.setValueAtTime(kit.tone.level * 1.1 * loudness(v, 1.9), time);
     g.gain.exponentialRampToValueAtTime(0.0002, time + kit.tone.decay);
     o.connect(g).connect(amp);
     o.start(time);
@@ -9614,7 +9882,7 @@ PRESETS.drums = (eng, { midi, v, time, out }) => {
     nf.frequency.value = kit.noise.freq;
     nf.Q.value = kit.noise.q || 1;
     const ng = ctx.createGain();
-    ng.gain.setValueAtTime(kit.noise.level * (0.3 + v * 0.8), time);
+    ng.gain.setValueAtTime(kit.noise.level * 1.1 * loudness(v, 1.9), time);
     ng.gain.exponentialRampToValueAtTime(0.0002, time + kit.noise.decay);
     n.connect(nf).connect(ng).connect(amp);
     nodes.push(n);
@@ -22683,7 +22951,8 @@ const SHORTCUT_HELP = [
     ['1 … 7', 'Note value: 64th, 32nd, 16th, 8th, quarter, half, whole'],
     ['.', 'Dotted note'],
     ['0', 'Insert a rest'],
-    ['Shift + A–G', 'Add the pitch to the chord'],
+    ['Shift + A–G', 'Stack the pitch on the note just written, making a chord'],
+    ['Shift + click', 'Add the pitch you clicked to the chord already there'],
     ['T', 'Tie to the next note'],
     ['S', 'Slur over the selection'],
     ['Ctrl + 3', 'Triplet'],

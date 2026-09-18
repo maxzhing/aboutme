@@ -120,6 +120,48 @@ export function spliceSpan(voice, ts, start, length, newEvents) {
  * `cursor` is { partIndex, staff, measure, voice, tick }.
  * Returns the new cursor position.
  */
+/**
+ * The note a chord note should join.
+ *
+ * Writing a note moves the cursor past it, which is what makes a tune easy to
+ * type — and what made chords impossible to type.  Asking for a chord note
+ * looked for something starting *at* the cursor, found the empty space after
+ * the note just written, and wrote a second note there instead: typing C, then
+ * E and G as chord notes, gave three separate crotchets rather than one triad.
+ *
+ * So the note the cursor has just passed counts as well.  That is the one
+ * every notation program adds to, and it is the only one the gesture can
+ * sensibly mean: nothing starts where the cursor is, or the first test would
+ * have found it.  The note has to end exactly where the cursor stands — a
+ * note two beats back with a rest after it is not "the note being written" —
+ * and it may be the last note of the bar before, because writing the last
+ * note of a bar leaves the cursor at the start of the next one.
+ */
+function chordTarget(app, cursor) {
+  const { score } = app;
+  const here = getVoice(score, cursor.partIndex, cursor.measure, cursor.voice);
+  for (const span of voiceSpans(here)) {
+    if (span.start === cursor.tick && span.event.type === 'note') {
+      return { event: span.event, measure: cursor.measure };
+    }
+  }
+  const ending = (voice, measure, at) => {
+    for (const span of voiceSpans(voice)) {
+      if (span.end === at && span.start < at && span.event.type === 'note') {
+        return { event: span.event, measure };
+      }
+    }
+    return null;
+  };
+  if (cursor.tick > 0) return ending(here, cursor.measure, cursor.tick);
+  if (cursor.measure > 0) {
+    const back = cursor.measure - 1;
+    const before = getVoice(score, cursor.partIndex, back, cursor.voice);
+    return ending(before, back, measureTicks(timeSigAt(score, back)));
+  }
+  return null;
+}
+
 export function enterNote(app, cursor, p, { chord = false, duration, dots = 0, tuplet = null, tie = false } = {}) {
   const { score, history } = app;
   const part = score.parts[cursor.partIndex];
@@ -134,14 +176,18 @@ export function enterNote(app, cursor, p, { chord = false, duration, dots = 0, t
   history.touch(cursor.partIndex, cursor.measure);
 
   if (chord) {
-    const idx = indexAtTick(voice, cursor.tick);
-    const target = idx >= 0 ? voice[idx] : null;
-    if (target && target.type === 'note' && tickAt(voice, idx) === cursor.tick) {
-      if (!target.notes.some((n) => toMidi(n.pitch) === toMidi(p))) {
-        target.notes.push({ pitch: p, tie: null, accidental: 'auto', head: 'normal', parenthesized: false });
-        target.notes.sort((a, b) => toMidi(a.pitch) - toMidi(b.pitch));
+    const target = chordTarget(app, cursor);
+    if (target) {
+      history.touch(cursor.partIndex, target.measure);
+      if (!target.event.notes.some((n) => toMidi(n.pitch) === toMidi(p))) {
+        target.event.notes.push({
+          pitch: p, tie: null, accidental: 'auto', head: 'normal', parenthesized: false,
+        });
+        target.event.notes.sort((a, b) => toMidi(a.pitch) - toMidi(b.pitch));
       }
       history.commit();
+      /* The cursor does not move: the chord is still being built, and the next
+       * chord note has to find the same note again. */
       return cursor;
     }
   }

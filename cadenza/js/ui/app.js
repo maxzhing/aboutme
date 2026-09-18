@@ -1199,6 +1199,8 @@ export class Cadenza {
       const part = this.score.parts[this.cursor.partIndex];
       this.el.hint.innerHTML =
         `<b>Note input</b> — type <kbd>A</kbd>–<kbd>G</kbd>, click the staff, or play your MIDI keyboard. ` +
+        `<b>Hold <kbd>Shift</kbd> to stack another note on the one you just wrote</b> — that is how ` +
+        `a chord is built, and playing one on a MIDI keyboard does it by itself. ` +
         `<kbd>1</kbd>–<kbd>7</kbd> note value · <kbd>0</kbd> rest · <kbd>Esc</kbd> to stop. ` +
         `Writing into <b>${part ? part.name : ''}</b>, bar ${this.cursor.measure + 1}, voice ${this.cursor.voice + 1}.`;
       return;
@@ -1206,7 +1208,8 @@ export class Cadenza {
     if (this.selection.size) {
       this.el.hint.innerHTML =
         `<b>${this.selection.size} selected</b> — change the note value with <kbd>1</kbd>–<kbd>7</kbd>, ` +
-        `move pitch with <kbd>&uarr;</kbd><kbd>&darr;</kbd>, add marks from the palette above, <kbd>Delete</kbd> to clear.`;
+        `move pitch with <kbd>&uarr;</kbd><kbd>&darr;</kbd>, <kbd>Shift</kbd>+<kbd>A</kbd>–<kbd>G</kbd> ` +
+        `to add a note to the chord, marks from the palette above, <kbd>Delete</kbd> to clear.`;
       return;
     }
     this.el.hint.innerHTML =
@@ -1586,12 +1589,19 @@ export class Cadenza {
       this.history.touch(loc.partIndex, loc.measure);
       const fifths = Model.writtenFifths(this.score, loc.part, loc.measure);
       const alter = Theory.keyAlterations(fifths)[step];
-      const ref = Theory.diatonic(loc.event.notes[0].pitch);
+      /* Retuning a note goes to the nearest pitch of that name, up or down.
+       * Adding one to a chord goes *above* the chord: a player naming the
+       * notes of a chord names them upwards, and a G asked for over a C is
+       * the fifth above it rather than the fourth below. */
+      const tops = loc.event.notes.map((n) => Theory.diatonic(n.pitch));
+      const ref = chord ? Math.max(...tops) : Theory.diatonic(loc.event.notes[0].pitch);
       let best = null;
       for (let o = -1; o <= 9; o++) {
         const dia = o * 7 + step;
+        if (chord && dia <= ref) continue;
         if (best === null || Math.abs(dia - ref) < Math.abs(best - ref)) best = dia;
       }
+      if (best === null) continue;
       const base = Theory.fromDiatonic(best);
       const p = Theory.pitch(base.step, base.octave, alter);
       if (chord) {

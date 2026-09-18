@@ -444,6 +444,59 @@ function playbackOf(app) {
     ['bass', 'tenor']);
 }
 
+
+/* ------------------------------------------------------------ chords */
+
+/* Writing a note moves the cursor past it, which is what makes a tune quick
+ * to type.  Building a chord means going back to the note just written, and
+ * that is the whole of what these check: the gesture has to land on the note
+ * the writer means, and never on one they have already moved on from. */
+{
+  const notesOf = (app, m, v) => M.getVoice(app.score, 0, m, v)
+    .filter((e) => e.type === 'note')
+    .map((e) => e.notes.map((n) => T.toMidi(n.pitch)).join('+'));
+  const write = (app, pitches) => {
+    let cur = { partIndex: 0, staff: 0, measure: 0, voice: 0, tick: 0 };
+    for (const spec of pitches) {
+      const chord = spec.startsWith('+');
+      cur = E.enterNote(app, cur, P(chord ? spec.slice(1) : spec), { chord, duration: 'quarter' });
+    }
+    return cur;
+  };
+
+  let app = score();
+  write(app, ['C4', '+E4', '+G4']);
+  check('three pitches stacked on one note are one chord, not three notes',
+    notesOf(app, 0, 0), ['60+64+67']);
+
+  app = score();
+  write(app, ['C4', '+E4', 'D4']);
+  check('a plain note after a chord starts its own event',
+    notesOf(app, 0, 0), ['60+64', '62']);
+
+  app = score();
+  write(app, ['C4', '+C4', '+E4']);
+  check('a pitch already in the chord is not written twice',
+    notesOf(app, 0, 0), ['60+64']);
+
+  app = score();
+  write(app, ['C4', 'D4', 'E4', 'F4', '+A4']);
+  check('the last note of a bar can still be built into a chord',
+    notesOf(app, 0, 0), ['60', '62', '64', '65+69']);
+
+  app = score();
+  let cur = write(app, ['C4']);
+  cur = E.enterRest(app, cur, { duration: 'quarter' });
+  E.enterNote(app, cur, P('E4'), { chord: true, duration: 'quarter' });
+  check('a chord note does not reach back over a rest',
+    notesOf(app, 0, 0), ['60', '64']);
+
+  app = score();
+  cur = write(app, ['C4', '+E4', '+G4']);
+  check('building a chord leaves the cursor where it was',
+    [cur.measure, cur.tick], [0, R.durationTicks('quarter')]);
+}
+
 /* ---------------------------------------------------------------- report */
 
 const total = pass + failures.length;
