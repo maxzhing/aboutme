@@ -3,11 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { Button } from '@/components/ui/primitives';
 import { useAppStore } from '@/store/useAppStore';
-import { COLLEGES } from '@/data/colleges';
-import { MAJORS } from '@/data/majors';
-import { AP_COURSES, AP_UNIT_COUNT } from '@/data/ap';
-import { ALL_QUESTIONS } from '@/data/questions';
-import { OPPORTUNITIES } from '@/data/opportunities';
 
 /* ==========================================================================
    Landing page — section 2
@@ -37,7 +32,7 @@ const FEATURES: { icon: IconName; title: string; body: string }[] = [
   {
     icon: 'layers',
     title: 'AP unit explorer',
-    body: `Every AP course broken into its units, with concepts, vocabulary, skills and practice. ${AP_UNIT_COUNT} units across ${AP_COURSES.length} courses.`,
+    body: 'Every AP course broken into its units, with concepts, vocabulary, skills and practice — so studying has somewhere specific to start.',
   },
   {
     icon: 'target',
@@ -118,12 +113,54 @@ function useReveal() {
   }, []);
 }
 
+interface CatalogCounts {
+  colleges: number;
+  majors: number;
+  apCourses: number;
+  apUnits: number;
+  questions: number;
+  opportunities: number;
+}
+
+/**
+ * Real counts, read from the catalog rather than hardcoded — but fetched after
+ * first paint, so a visitor reading the landing page never downloads it.
+ */
+function useCatalogCounts(): CatalogCounts | undefined {
+  const [counts, setCounts] = useState<CatalogCounts | undefined>(undefined);
+  useEffect(() => {
+    let alive = true;
+    void Promise.all([
+      import('@/data/colleges'),
+      import('@/data/majors'),
+      import('@/data/ap'),
+      import('@/data/questions'),
+      import('@/data/opportunities'),
+    ]).then(([colleges, majors, ap, questions, opportunities]) => {
+      if (!alive) return;
+      setCounts({
+        colleges: colleges.COLLEGES.length,
+        majors: majors.MAJORS.filter((m) => m.id !== 'undecided').length,
+        apCourses: ap.AP_COURSES.length,
+        apUnits: ap.AP_UNIT_COUNT,
+        questions: questions.ALL_QUESTIONS.length,
+        opportunities: opportunities.OPPORTUNITIES.length,
+      });
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return counts;
+}
+
 export function Landing() {
   const [step, setStep] = useState(0);
   const headerRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
   const loadDemoAccount = useAppStore((s) => s.loadDemoAccount);
   const [loadingDemo, setLoadingDemo] = useState(false);
+  const counts = useCatalogCounts();
   useReveal();
 
   // Advance the journey visual, pausing for anyone who prefers reduced motion.
@@ -298,9 +335,14 @@ export function Landing() {
             <p className="eyebrow">What is inside</p>
             <h2 className="lp-h2 display mt-3">A counselor, a planner and a tutor — in one place</h2>
             <p className="lp-lead">
-              {COLLEGES.length} colleges, {MAJORS.length} majors, {AP_COURSES.length} AP courses with {AP_UNIT_COUNT} units,{' '}
-              {ALL_QUESTIONS.length} original practice questions and {OPPORTUNITIES.length} opportunities — all wired into one
-              engine.
+              {counts ? (
+                <>
+                  {counts.colleges} colleges, {counts.majors} majors, {counts.apCourses} AP courses with {counts.apUnits} units,{' '}
+                  {counts.questions} original practice questions and {counts.opportunities} opportunities — all wired into one engine.
+                </>
+              ) : (
+                'Colleges, majors, AP courses, original practice questions and opportunities — all wired into one engine.'
+              )}
             </p>
           </div>
           <div className="lp-features">

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/ui/Icon';
-import { globalSearch, SEARCH_ACTIONS } from '@/lib/globalSearch';
+import { ensureSearchIndex, globalSearch, searchIndexReady, SEARCH_ACTIONS } from '@/lib/globalSearch';
 import { highlightRuns } from '@/lib/search';
 import { useEngine } from '@/store/useEngine';
 import { useAppStore } from '@/store/useAppStore';
@@ -24,12 +24,27 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
 
   const looksLikeQuestion = query.trim().length > 12 && /\?$|^(what|how|should|can|where|when|why|who|is|do|does|find|show|tell)\b/i.test(query.trim());
 
+  /* The catalog is a separate chunk; pull it in the moment the palette opens
+     so the first keystroke already has colleges and courses to search. */
+  const [indexReady, setIndexReady] = useState(searchIndexReady());
+  useEffect(() => {
+    if (!open || indexReady) return;
+    let alive = true;
+    void ensureSearchIndex().then(() => {
+      if (alive) setIndexReady(true);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [open, indexReady]);
+
   const results = useMemo(() => {
     if (!query.trim()) {
       return SEARCH_ACTIONS.slice(0, 8).map((item) => ({ item, score: 0, matches: undefined }));
     }
     return globalSearch(query, 24);
-  }, [query]);
+    // indexReady is a dependency because results change once the catalog lands.
+  }, [query, indexReady]);
 
   const grouped = useMemo(() => groupBy(results, (r) => r.item.kind), [results]);
   const flat = useMemo(() => Object.values(grouped).flat(), [grouped]);

@@ -1,7 +1,7 @@
 import type { ChatMessage, LearnedPreference } from '@/domain/types';
 import { COLLEGES, COLLEGE_BY_ID, REGIONS } from '@/data/colleges';
 import { MAJORS, MAJOR_BY_ID } from '@/data/majors';
-import { AP_COURSES, AP_COURSE_BY_ID } from '@/data/ap';
+import { AP_COURSES, AP_COURSE_BY_ID, resolveAPCourse } from '@/data/ap';
 import { CAREER_BY_ID } from '@/data/careers';
 import { countLabel, listJoin, percent, uniq } from '@/lib/format';
 import { daysUntil } from '@/lib/date';
@@ -292,7 +292,9 @@ export function answer(ctx: EngineContext, question: string): CounselorReply {
       if (detected.apCourseId) {
         const course = AP_COURSE_BY_ID.get(detected.apCourseId)!;
         const item = Object.values(plan.byGrade).flat().find((i) => i.courseId === course.id);
-        const offered = !ctx.profile.academics.schoolOffersAP.length || ctx.profile.academics.schoolOffersAP.includes(course.id);
+        const offered =
+          !ctx.profile.academics.schoolOffersAP.length ||
+          ctx.profile.academics.schoolOffersAP.some((o) => resolveAPCourse(o)?.id === course.id);
         if (!item) {
           content = `**${course.name}** does not come out as a priority for you.\n\nIt supports ${listJoin(course.supportsMajors.map((m) => MAJOR_BY_ID.get(m)?.name ?? m))}, and you listed ${
             ctx.majorIds.length ? listJoin(ctx.majorIds.map((m) => MAJOR_BY_ID.get(m)?.name ?? m)) : 'no major yet'

@@ -1,15 +1,20 @@
 import { lazy, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
-import { AppShell } from '@/components/layout/AppShell';
+
 import { ThemeEffect } from '@/components/layout/ThemeEffect';
 import { RouteBoundary } from '@/components/layout/RouteBoundary';
 import { LoadingBlock } from '@/components/ui/primitives';
 
-/* Landing and auth load eagerly — they are the first paint for new visitors. */
+/* Landing and auth load eagerly — they are the first paint for new visitors.
+   Everything behind them is split, so a visitor reading the landing page never
+   downloads the app shell, the onboarding wizard or the catalog. */
 import { Landing } from '@/features/landing/Landing';
 import { AuthPage } from '@/features/auth/AuthPage';
-import { Onboarding } from '@/features/onboarding/Onboarding';
+
+const AppShell = lazy(() => import('@/components/layout/AppShell').then((m) => ({ default: m.AppShell })));
+const Onboarding = lazy(() => import('@/features/onboarding/Onboarding').then((m) => ({ default: m.Onboarding })));
+
 
 /* Everything inside the app is split, so the landing page stays light. */
 const Dashboard = lazy(() => import('@/features/dashboard/Dashboard'));
@@ -76,7 +81,9 @@ export default function App() {
             ) : status === 'anonymous' ? (
               <Navigate to="/signup" replace />
             ) : (
-              <Onboarding />
+              <RouteBoundary>
+                <Onboarding />
+              </RouteBoundary>
             )
           }
         />
@@ -84,7 +91,9 @@ export default function App() {
           path="/app"
           element={
             <RequireAuth>
-              <AppShell />
+              <RouteBoundary>
+                <AppShell />
+              </RouteBoundary>
             </RequireAuth>
           }
         >

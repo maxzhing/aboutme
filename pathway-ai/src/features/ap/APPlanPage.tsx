@@ -6,7 +6,7 @@ import { Badge, Button, Card, Notice } from '@/components/ui/primitives';
 import { ExplainCard, PageHeader, SectionHeader, FeedbackButtons } from '@/components/ui/shared';
 import { AIGuidanceNote } from '@/components/ui/Provenance';
 import { BarChart } from '@/components/charts';
-import { AP_COURSE_BY_ID } from '@/data/ap';
+import { AP_COURSE_BY_ID, resolveAPCourse, resolveAPCourses } from '@/data/ap';
 import { MAJOR_BY_ID } from '@/data/majors';
 import { buildAPPlan } from '@/domain/engine/apPlanner';
 import { printPDF } from '@/lib/export';
@@ -55,9 +55,12 @@ export function APPlanPage() {
 
   const majorNames = ctx.majorIds.map((m) => MAJOR_BY_ID.get(m)?.name ?? m);
 
+  const takingIds = new Set(resolveAPCourses(state.profile.academics.currentCourses).map((c) => c.id));
+
   function addToSchedule(courseId: string) {
     updateProfile((p) => {
-      if (!p.academics.currentCourses.includes(courseId)) p.academics.currentCourses.push(courseId);
+      const already = p.academics.currentCourses.some((c) => resolveAPCourse(c)?.id === courseId);
+      if (!already) p.academics.currentCourses.push(courseId);
     });
     toast(`${AP_COURSE_BY_ID.get(courseId)?.name} added to this year's courses.`, 'ok');
   }
@@ -129,7 +132,7 @@ export function APPlanPage() {
                   {items.map((item) => {
                     const course = AP_COURSE_BY_ID.get(item.courseId);
                     if (!course) return null;
-                    const taking = state.profile.academics.currentCourses.includes(course.id);
+                    const taking = takingIds.has(course.id);
                     return (
                       <Card key={item.courseId} pad="md" hover>
                         <div className="row between g-3 items-start wrap">

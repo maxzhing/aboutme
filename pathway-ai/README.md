@@ -19,7 +19,7 @@ npm install
 npm run dev      # http://localhost:5173
 npm run build    # production bundle in dist/
 npm run preview  # serve the built bundle
-npm run check    # TypeScript, no emit
+npm run typecheck # TypeScript only
 ```
 
 No API keys, no environment variables, no backend. It runs entirely in the browser.

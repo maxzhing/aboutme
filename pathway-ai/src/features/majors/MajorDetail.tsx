@@ -9,7 +9,7 @@ import { BarChart } from '@/components/charts';
 import { MAJOR_BY_ID, MAJORS } from '@/data/majors';
 import { CAREER_BY_ID } from '@/data/careers';
 import { COLLEGE_BY_ID } from '@/data/colleges';
-import { AP_COURSE_BY_ID } from '@/data/ap';
+import { AP_COURSE_BY_ID, resolveAPCourses } from '@/data/ap';
 import { INTEREST_BY_ID } from '@/data/interests';
 import { buildStudentDNA } from '@/domain/engine/dna';
 import { matchColleges } from '@/domain/engine/collegeMatch';
@@ -48,6 +48,7 @@ export function MajorDetail() {
     );
   }
 
+  const takingIds = new Set(resolveAPCourses(state.profile.academics.currentCourses).map((c) => c.id));
   const declared = state.profile.majors.find((m) => m.majorId === major.id);
   const isSaved = state.savedItems.some((s) => s.targetType === 'major' && s.targetId === major.id && s.status !== 'dismissed');
   const match = dna.majorMatches.find((m) => m.majorId === major.id);
@@ -165,7 +166,7 @@ export function MajorDetail() {
                     return (
                       <Link key={id} to={`/app/ap/course/${id}`} className="chip chip-sm">
                         {course?.name ?? id}
-                        {state.profile.academics.currentCourses.includes(id) ? ' ✓' : ''}
+                        {takingIds.has(id) ? ' ✓' : ''}
                       </Link>
                     );
                   })}

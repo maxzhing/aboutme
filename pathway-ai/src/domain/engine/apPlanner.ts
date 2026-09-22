@@ -1,5 +1,5 @@
 import type { APPlan, APPlanItem, GradeLevel } from '@/domain/types';
-import { AP_COURSES, AP_COURSE_BY_ID } from '@/data/ap';
+import { AP_COURSES, AP_COURSE_BY_ID, resolveAPCourse } from '@/data/ap';
 import { MAJOR_BY_ID } from '@/data/majors';
 import { listJoin, uniq } from '@/lib/format';
 import { nowISO } from '@/lib/date';
@@ -42,13 +42,11 @@ function hasTaken(ctx: EngineContext, pattern: RegExp): boolean {
 function alreadyTakingOrTaken(ctx: EngineContext, courseId: string): boolean {
   const course = AP_COURSE_BY_ID.get(courseId);
   if (!course) return false;
-  const name = course.name.toLowerCase();
-  const short = name.replace(/^ap /, '');
-  const all = [...ctx.profile.academics.currentCourses, ...ctx.profile.academics.previousCourses].map((c) =>
-    c.toLowerCase(),
-  );
-  if (all.some((c) => c.includes(short))) return true;
-  return ctx.profile.scores.some((s) => s.kind === 'AP' && s.subject === course.name);
+  // Students write "AP US History", not "ap-united-states-history", so match on
+  // the resolved course rather than on substring luck.
+  const entered = [...ctx.profile.academics.currentCourses, ...ctx.profile.academics.previousCourses];
+  if (entered.some((c) => resolveAPCourse(c)?.id === courseId)) return true;
+  return ctx.profile.scores.some((s) => s.kind === 'AP' && resolveAPCourse(s.subject)?.id === courseId);
 }
 
 function readinessFor(ctx: EngineContext, courseId: string): { readiness: APPlanItem['readiness']; note: string } {
@@ -80,7 +78,7 @@ function readinessFor(ctx: EngineContext, courseId: string): { readiness: APPlan
 function offersCourse(ctx: EngineContext, courseId: string): boolean {
   const offered = ctx.profile.academics.schoolOffersAP;
   // If the student never told us what their school offers, do not filter anything out.
-  return offered.length === 0 || offered.includes(courseId);
+  return offered.length === 0 || offered.some((o) => resolveAPCourse(o)?.id === courseId);
 }
 
 export function buildAPPlan(ctx: EngineContext): APPlan {

@@ -7,7 +7,7 @@ import type {
   StudyPlanBlock,
 } from '@/domain/types';
 import { COLLEGE_BY_ID } from '@/data/colleges';
-import { AP_COURSE_BY_ID } from '@/data/ap';
+import { AP_COURSE_BY_ID, resolveAPCourse } from '@/data/ap';
 import { MAJOR_BY_ID } from '@/data/majors';
 import { addDays, daysUntil, nextOccurrenceOfMonth, startOfWeek, todayISO } from '@/lib/date';
 import { clamp, countLabel, listJoin, sum, uniq } from '@/lib/format';
@@ -488,21 +488,7 @@ export function buildStudyPlan(ctx: EngineContext, weeklyMinutes?: number): Stud
 }
 
 /** Matches a loosely typed course name against the AP catalog. */
-export function findCourseByLooseName(name?: string) {
-  if (!name) return undefined;
-  const normalise = (s: string) =>
-    s
-      .toLowerCase()
-      .replace(/\bap\b/g, '')
-      .replace(/\bunited states\b/g, 'us')
-      .replace(/\bmodern\b/g, '')
-      .replace(/[^a-z0-9]/g, '');
-  const target = normalise(name);
-  return Array.from(AP_COURSE_BY_ID.values()).find((c) => {
-    const candidate = normalise(c.name);
-    return candidate === target || candidate.startsWith(target) || target.startsWith(candidate);
-  });
-}
+export const findCourseByLooseName = resolveAPCourse;
 
 function focusFor(scope: string, ctx: EngineContext): string {
   if (scope === 'SAT') {

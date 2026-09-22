@@ -6,7 +6,7 @@ import { Badge, Button, Card, Notice } from '@/components/ui/primitives';
 import { DataRow, PageHeader, SectionHeader } from '@/components/ui/shared';
 import { ProvenanceFooter, SourceList } from '@/components/ui/Provenance';
 import { ProgressRing } from '@/components/charts';
-import { AP_COURSE_BY_ID } from '@/data/ap';
+import { AP_COURSE_BY_ID, resolveAPCourse } from '@/data/ap';
 import { MAJOR_BY_ID } from '@/data/majors';
 import { SRC } from '@/data/provenance';
 import { questionsForCourse } from '@/data/questions';
@@ -40,8 +40,8 @@ export function APCoursePage() {
     );
   }
 
-  const taking = state.profile.academics.currentCourses.includes(course.id);
-  const taken = state.profile.academics.previousCourses.includes(course.id);
+  const taking = state.profile.academics.currentCourses.some((c) => resolveAPCourse(c)?.id === course.id);
+  const taken = state.profile.academics.previousCourses.some((c) => resolveAPCourse(c)?.id === course.id);
   const questions = questionsForCourse(course.id);
   const progress = course.units.map((u) => state.apUnitProgress[`${course.id}:${u.id}`] ?? 0);
   const avgProgress = progress.length ? Math.round(progress.reduce((a, b) => a + b, 0) / progress.length) : 0;
@@ -50,7 +50,7 @@ export function APCoursePage() {
   function toggleTaking() {
     updateProfile((p) => {
       p.academics.currentCourses = taking
-        ? p.academics.currentCourses.filter((c) => c !== course!.id)
+        ? p.academics.currentCourses.filter((c) => resolveAPCourse(c)?.id !== course!.id)
         : [...p.academics.currentCourses, course!.id];
     });
     toast(taking ? 'Removed from this year’s courses.' : `${course!.name} added to this year’s courses.`, taking ? 'default' : 'ok');

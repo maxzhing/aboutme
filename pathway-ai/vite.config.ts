@@ -21,6 +21,11 @@ export default defineConfig({
             if (id.includes('react')) return 'react';
             return 'vendor';
           }
+          // The catalog is split by area: opening the college explorer should
+          // not also download every AP unit and practice question.
+          if (id.includes('/src/data/colleges')) return 'catalog-colleges';
+          if (id.includes('/src/data/ap/')) return 'catalog-ap';
+          if (id.includes('/src/data/questions/')) return 'catalog-questions';
           if (id.includes('/src/data/')) return 'catalog';
         },
       },

@@ -6,7 +6,7 @@ import { Badge, Button, Card, SearchInput, Tabs } from '@/components/ui/primitiv
 import { NavCard, PageHeader, SectionHeader } from '@/components/ui/shared';
 import { DemoDataBanner } from '@/components/ui/Provenance';
 import { ProgressRing } from '@/components/charts';
-import { AP_COURSES, AP_COURSE_BY_ID, AP_FAMILIES, AP_UNIT_COUNT } from '@/data/ap';
+import { AP_COURSES, AP_COURSE_BY_ID, AP_FAMILIES, AP_UNIT_COUNT, resolveAPCourse, resolveAPCourses } from '@/data/ap';
 import { MAJOR_BY_ID } from '@/data/majors';
 import { buildAPPlan } from '@/domain/engine/apPlanner';
 import { apStats } from '@/domain/engine/practice';
@@ -28,8 +28,9 @@ export function APHome() {
   const plan = useMemo(() => buildAPPlan(ctx), [ctx]);
   const stats = useMemo(() => apStats(ctx), [ctx]);
 
-  const enrolled = state.profile.academics.currentCourses.filter((c) => AP_COURSE_BY_ID.has(c));
-  const previous = state.profile.academics.previousCourses.filter((c) => AP_COURSE_BY_ID.has(c));
+  // Students type course names, not catalog ids, so resolve both.
+  const enrolled = resolveAPCourses(state.profile.academics.currentCourses);
+  const previous = resolveAPCourses(state.profile.academics.previousCourses);
 
   const relevantIds = useMemo(() => {
     const ids = new Set<string>();
@@ -97,13 +98,12 @@ export function APHome() {
         <div className="col g-4 mt-4">
           {enrolled.length ? (
             <div className="grid-fit">
-              {enrolled.map((id) => {
-                const course = AP_COURSE_BY_ID.get(id)!;
+              {enrolled.map((course) => {
                 const progressEntries = course.units.map((u) => unitProgress[`${course.id}:${u.id}`] ?? 0);
                 const avg = progressEntries.length ? Math.round(progressEntries.reduce((a, b) => a + b, 0) / progressEntries.length) : 0;
                 const courseStats = apStats(ctx, course.id);
                 return (
-                  <Card key={id} pad="md" hover>
+                  <Card key={course.id} pad="md" hover>
                     <div className="row between g-3 items-start">
                       <div style={{ minWidth: 0 }}>
                         <Link to={`/app/ap/course/${course.id}`} className="t-sm w-600" style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -145,9 +145,9 @@ export function APHome() {
             <Card pad="md">
               <p className="t-2xs eyebrow">Already completed</p>
               <div className="row g-2 mt-2 wrap">
-                {previous.map((id) => (
-                  <Link key={id} to={`/app/ap/course/${id}`} className="chip chip-sm">
-                    {AP_COURSE_BY_ID.get(id)?.name ?? id}
+                {previous.map((course) => (
+                  <Link key={course.id} to={`/app/ap/course/${course.id}`} className="chip chip-sm">
+                    {course.name}
                   </Link>
                 ))}
               </div>
@@ -208,9 +208,11 @@ export function APHome() {
 
           <div className="grid-fit">
             {browse.map((c) => {
-              const isEnrolled = enrolled.includes(c.id);
+              const isEnrolled = enrolled.some((e) => e.id === c.id);
               const isRelevant = relevantIds.has(c.id);
-              const offered = state.profile.academics.schoolOffersAP.length === 0 || state.profile.academics.schoolOffersAP.includes(c.id);
+              const offered =
+                state.profile.academics.schoolOffersAP.length === 0 ||
+                state.profile.academics.schoolOffersAP.some((o) => resolveAPCourse(o)?.id === c.id);
               return (
                 <Link key={c.id} to={`/app/ap/course/${c.id}`} className="card card-pad card-hover card-link">
                   <div className="row between g-2 items-start">
