@@ -1,0 +1,33 @@
+/* ==========================================================================
+   Pathway AI — print / PDF export
+   ========================================================================== */
+@media print {
+  :root {
+    --bg: #fff;
+    --surface: #fff;
+    --surface-2: #fff;
+    --surface-3: #fff;
+    --surface-inset: #f4f4f2;
+    --text: #111;
+    --text-muted: #333;
+    --text-subtle: #555;
+    --border: #d4d4d0;
+    --border-strong: #b0b0ab;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
+  }
+  @page { margin: 14mm; }
+  body { background: #fff; font-size: 10.5pt; }
+  .sidebar, .mobile-nav, .topbar, .toast-stack, .cmdk-overlay, .no-print, .sidebar-scrim { display: none !important; }
+  .main { margin-left: 0 !important; }
+  .page { padding: 0 !important; max-width: none !important; }
+  .card { break-inside: avoid; box-shadow: none !important; border: 1px solid #d4d4d0 !important; }
+  .print-only { display: revert !important; }
+  a { color: #111 !important; text-decoration: none; }
+  a[href^='http']::after { content: ' (' attr(href) ')'; font-size: 8pt; color: #666; }
+  h1, h2, h3 { break-after: avoid; }
+  .rise, .rise-sm, .fade, .pop, .stagger > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+.print-only { display: none; }
