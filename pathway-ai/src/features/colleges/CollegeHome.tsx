@@ -59,7 +59,7 @@ export function CollegeHome() {
 
       <div className="grid-fit-lg">
         <NavCard to="/app/colleges/match" icon="compass" title="Find my colleges" description="Personalised matching across academic, personal, opportunity and financial fit — each explained separately." />
-        <NavCard to="/app/colleges/compare" icon="grid" title="Compare colleges" description="Side-by-side across every dimension, with no single overall score." meta={<Badge>{countLabel(state.collegeList.length, 'saved')}</Badge>} />
+        <NavCard to="/app/colleges/compare" icon="grid" title="Compare colleges" description="Side-by-side across every dimension, with no single overall score." meta={<Badge>{state.collegeList.length} saved</Badge>} />
         <NavCard to="/app/colleges/map" icon="map" title="Fit map" description="Plot colleges on two dimensions you choose — cost against selectivity, size against fit." />
         <NavCard to="/app/colleges/cost" icon="wallet" title="Financial planning" description="Cost, aid, net price and what your stated budget actually reaches." />
       </div>

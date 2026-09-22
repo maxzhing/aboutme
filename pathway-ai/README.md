@@ -20,7 +20,16 @@ npm run dev      # http://localhost:5173
 npm run build    # production bundle in dist/
 npm run preview  # serve the built bundle
 npm run typecheck # TypeScript only
+
+npm run build:single   # one self-contained file: dist-single/pathway-ai.html
 ```
+
+`build:single` inlines the entire application — every route, the whole catalog,
+all styles — into a single HTML document that runs by double-clicking it, with
+no server and no network. It switches to hash routing automatically when opened
+over `file://`, since there is no server to route against. Webfonts are the one
+thing it still fetches, and the font stack falls back to system faces when
+they are unavailable, so it works fully offline.
 
 No API keys, no environment variables, no backend. It runs entirely in the browser.
 
