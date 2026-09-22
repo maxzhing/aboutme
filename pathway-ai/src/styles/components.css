@@ -1092,3 +1092,82 @@
 .list-row:hover { background: var(--surface-2); border-color: var(--border); }
 .list-row:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
 .list-row[aria-pressed='true'] { background: var(--accent-soft); border-color: var(--accent); }
+
+/* --- Practice runner ---------------------------------------------------- */
+.stimulus {
+  padding: var(--s-4);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+}
+.stimulus-passage { font-family: var(--font-display, var(--font-sans)); line-height: 1.7; }
+.stimulus-data, .stimulus-graph { font-family: var(--font-mono); font-size: var(--fs-xs); }
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  transition: border-color var(--dur-2) var(--ease-out), background var(--dur-2) var(--ease-out);
+}
+.choice:hover { border-color: var(--text-faint); background: var(--surface-2); }
+.choice:focus-within { box-shadow: var(--shadow-focus); }
+.choice input { margin-top: 0.2rem; accent-color: var(--accent); }
+.choice.is-chosen { border-color: var(--accent); background: var(--accent-soft); }
+.choice.is-correct { border-color: var(--ok); background: var(--ok-soft); }
+.choice.is-wrong { border-color: var(--danger); background: var(--danger-soft); }
+.choice-key {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  background: var(--surface-inset);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 650;
+}
+.choice.is-correct .choice-key { background: var(--ok); color: var(--surface); }
+.choice.is-wrong .choice-key { background: var(--danger); color: var(--surface); }
+
+.step-num {
+  flex: none;
+  width: 1.35rem;
+  height: 1.35rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-inset);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 650;
+}
+.explain-open {
+  padding: var(--s-4);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--ai-soft-border);
+  background: var(--ai-soft);
+}
+
+/* Unit row with an inline coverage slider. */
+.unit-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.unit-row:hover { border-color: var(--text-faint); }
+.unit-row input[type='range'] { accent-color: var(--accent); }
+@media (max-width: 560px) {
+  .unit-row { flex-direction: column; align-items: stretch; }
+}
