@@ -1206,3 +1206,18 @@
 @media (max-width: 560px) {
   .cal-cell { min-height: 46px; }
 }
+
+/* --- Stage board -------------------------------------------------------- */
+.board { display: grid; gap: var(--s-3); grid-template-columns: repeat(6, minmax(0, 1fr)); align-items: start; }
+.board-col { padding: var(--s-3); border-radius: var(--r-lg); background: var(--surface-2); border: 1px solid var(--border); }
+@media (max-width: 1100px) { .board { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Essay drafting surface — comfortable measure and line height. */
+.essay-area {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  line-height: 1.75;
+  min-height: 420px;
+  resize: vertical;
+}
