@@ -10,7 +10,7 @@ import { AP_COURSE_BY_ID, resolveAPCourse, resolveAPCourses } from '@/data/ap';
 import { MAJOR_BY_ID } from '@/data/majors';
 import { buildAPPlan } from '@/domain/engine/apPlanner';
 import { printPDF } from '@/lib/export';
-import { countLabel } from '@/lib/format';
+import { countLabel, listJoin } from '@/lib/format';
 import { Icon } from '@/components/ui/Icon';
 import type { APPlanItem } from '@/domain/types';
 
@@ -50,7 +50,7 @@ export function APPlanPage() {
     label: `Grade ${g}`,
     value: plan.loadByGrade[g] ?? 0,
     tone: (plan.loadByGrade[g] ?? 0) > 11 ? 'var(--warn)' : 'var(--accent)',
-    note: `${countLabel(plan.byGrade[g]?.length ?? 0, 'course')}`,
+    note: countLabel(plan.plannedByGrade[g] ?? 0, 'course'),
   }));
 
   const majorNames = ctx.majorIds.map((m) => MAJOR_BY_ID.get(m)?.name ?? m);
@@ -72,7 +72,7 @@ export function APPlanPage() {
         title="Your AP plan"
         description={
           majorNames.length
-            ? `Built around ${majorNames.join(' and ')}, the courses your school offers, and the workload you said you could carry.`
+            ? `Built around ${listJoin(majorNames)}, the courses your school offers, and the workload you said you could carry.`
             : 'Built to keep your options open, since you have not named a direction yet. Naming one will sharpen this considerably.'
         }
         back={{ to: '/app/ap', label: 'AP Center' }}
@@ -117,14 +117,20 @@ export function APPlanPage() {
         {grades.map((grade) => {
           const items = plan.byGrade[grade] ?? [];
           const load = plan.loadByGrade[grade] ?? 0;
+          const planned = plan.plannedByGrade[grade] ?? 0;
+          const alternatives = items.length - planned;
           return (
             <section key={grade}>
               <SectionHeader
                 title={`Grade ${grade}`}
                 description={
-                  items.length
-                    ? `${countLabel(items.length, 'course')} · workload ${load}${load > 11 ? ' — above what you said you could carry' : ''}`
-                    : 'Nothing strongly indicated for this year.'
+                  planned
+                    ? `${countLabel(planned, 'course')} planned · workload ${load}${
+                        load > 11 ? ' — above what you said you could carry' : ''
+                      }${alternatives > 0 ? `, plus ${countLabel(alternatives, 'alternative')} if you have room` : ''}`
+                    : items.length
+                      ? `Nothing fits inside your workload for this year, but ${countLabel(items.length, 'option')} would be worth it if something else comes off your plate.`
+                      : 'Nothing strongly indicated for this year.'
                 }
               />
               {items.length ? (

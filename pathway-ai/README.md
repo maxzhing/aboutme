@@ -106,6 +106,9 @@ shows every rule the app has inferred, in plain language, each one switchable an
 Counselor conversations, individual practice attempts and private notes are never shared, even
 when parent sharing is on.
 
+See [`docs/DATA-POLICY.md`](docs/DATA-POLICY.md) for the full contract behind the
+five provenance kinds and what "verified" would actually require.
+
 ---
 
 ## Architecture

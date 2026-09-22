@@ -976,6 +976,8 @@ export interface APPlan {
   byGrade: Record<number, APPlanItem[]>;
   /** Total workload per grade, so the plan stays realistic. */
   loadByGrade: Record<number, number>;
+  /** Courses actually planned per grade, excluding listed alternatives. */
+  plannedByGrade: Record<number, number>;
   notes: string[];
   warnings: string[];
 }

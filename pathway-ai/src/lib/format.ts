@@ -61,8 +61,11 @@ export function listJoin(items: string[], conj = 'and'): string {
   const clean = items.filter(Boolean);
   if (!clean.length) return '';
   if (clean.length === 1) return clean[0];
-  if (clean.length === 2) return `${clean[0]} ${conj} ${clean[1]}`;
-  return `${clean.slice(0, -1).join(', ')}, ${conj} ${clean[clean.length - 1]}`;
+  // Some catalog names contain the conjunction ("Geometry and Trigonometry"),
+  // and "A and B and C" is unreadable — fall back to a comma in that case.
+  const collides = clean.some((i) => new RegExp(`\\b${conj}\\b`, 'i').test(i));
+  if (clean.length === 2) return collides ? `${clean[0]}, ${clean[1]}` : `${clean[0]} ${conj} ${clean[1]}`;
+  return `${clean.slice(0, -1).join(', ')}, ${collides ? '' : `${conj} `}${clean[clean.length - 1]}`;
 }
 
 export function titleCase(s: string): string {

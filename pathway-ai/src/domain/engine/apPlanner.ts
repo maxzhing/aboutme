@@ -12,6 +12,14 @@ import { explanation } from './explain';
    workload are checked explicitly, and the plan says what it would require.
    ========================================================================== */
 
+/**
+ * Hard caps on what a single year's plan will propose. The workload ceiling
+ * usually bites first; these stop a light-workload year from turning into a
+ * list of every AP the school offers.
+ */
+const MAX_COURSES_PER_GRADE = 5;
+const MAX_ALTERNATIVES_PER_GRADE = 2;
+
 const WORKLOAD_CEILING: Record<string, number> = { light: 7, balanced: 11, heavy: 15 };
 
 /** Rough prerequisite chains we can check from course names the student typed. */
@@ -84,6 +92,7 @@ function offersCourse(ctx: EngineContext, courseId: string): boolean {
 export function buildAPPlan(ctx: EngineContext): APPlan {
   const byGrade: Record<number, APPlanItem[]> = {};
   const loadByGrade: Record<number, number> = {};
+  const plannedByGrade: Record<number, number> = {};
   const notes: string[] = [];
   const warnings: string[] = [];
 
@@ -120,6 +129,10 @@ export function buildAPPlan(ctx: EngineContext): APPlan {
   for (const grade of gradesAhead) {
     const items: APPlanItem[] = [];
     let load = 0;
+    // Courses actually in the plan, kept separate from the handful of
+    // alternatives listed after the workload ceiling is reached.
+    let plannedCount = 0;
+    let alternativeCount = 0;
 
     const candidates = AP_COURSES.filter((course) => {
       if (placed.has(course.id)) return false;
@@ -155,6 +168,12 @@ export function buildAPPlan(ctx: EngineContext): APPlan {
       else tier = 'not-necessary';
 
       if (tier === 'not-necessary' && !c.isRecommended && !c.isUseful) continue;
+      // Once the year is full, show a couple of alternatives and stop. A list
+      // of eight AP courses for one year is not a plan, it is noise.
+      if (tier === 'optional' || tier === 'not-necessary') {
+        if (alternativeCount >= MAX_ALTERNATIVES_PER_GRADE) continue;
+        alternativeCount += 1;
+      }
 
       const majorNames = ctx.majorIds
         .filter((m) => MAJOR_BY_ID.get(m)?.recommendedAP.includes(c.course.id) || MAJOR_BY_ID.get(m)?.usefulAP.includes(c.course.id))
@@ -199,13 +218,15 @@ export function buildAPPlan(ctx: EngineContext): APPlan {
 
       if (tier === 'recommended' || tier === 'useful') {
         load += c.course.workload;
+        plannedCount += 1;
         placed.add(c.course.id);
       }
-      if (items.length >= 8) break;
+      if (plannedCount >= MAX_COURSES_PER_GRADE) break;
     }
 
     byGrade[grade] = items;
     loadByGrade[grade] = load;
+    plannedByGrade[grade] = plannedCount;
 
     if (load > ceiling) {
       warnings.push(`Grade ${grade} is above the workload you said you could carry. Drop one course rather than stretching.`);
@@ -232,5 +253,5 @@ export function buildAPPlan(ctx: EngineContext): APPlan {
     'Taking fewer AP courses and doing well in them is read more favourably than taking many and struggling. This plan caps each year at what you said you could carry.',
   );
 
-  return { id: `apPlan-${ctx.profile.id}`, generatedAt: nowISO(), byGrade, loadByGrade, notes, warnings };
+  return { id: `apPlan-${ctx.profile.id}`, generatedAt: nowISO(), byGrade, loadByGrade, plannedByGrade, notes, warnings };
 }
