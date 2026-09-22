@@ -3,7 +3,9 @@ import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
-  base: './',
+  // Absolute, because client-side routing means a lazy chunk requested from
+  // /app/path must resolve to /assets/…, not /app/assets/….
+  base: '/',
   plugins: [react()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },

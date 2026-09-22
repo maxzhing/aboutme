@@ -196,6 +196,31 @@ export function BarChart({
 
 /* ---------------------------------------------------------------- Radar chart */
 
+/** Breaks a label onto at most two lines at a word boundary. */
+function wrapLabel(label: string, max: number): string[] {
+  if (label.length <= max) return [label];
+  const words = label.split(' ');
+  if (words.length === 1) return [`${label.slice(0, max - 1)}\u2026`];
+  const lines: string[] = [];
+  let current = '';
+  for (const word of words) {
+    if (!current) current = word;
+    else if (`${current} ${word}`.length <= max) current = `${current} ${word}`;
+    else {
+      lines.push(current);
+      current = word;
+    }
+    if (lines.length === 1 && current.length > max) {
+      current = `${current.slice(0, max - 1)}\u2026`;
+      break;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.slice(0, 2);
+}
+
+const LABEL_PAD = 46;
+
 export function RadarChart({
   axes,
   size = 240,
@@ -224,7 +249,14 @@ export function RadarChart({
 
   return (
     <figure className="col items-center">
-      <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} role="img" aria-labelledby={id}>
+      <svg
+        viewBox={`${-LABEL_PAD} 0 ${size + LABEL_PAD * 2} ${size}`}
+        width="100%"
+        height={size}
+        style={{ maxWidth: size + LABEL_PAD * 2 }}
+        role="img"
+        aria-labelledby={id}
+      >
         <title id={id}>{ariaLabel}</title>
         {[0.25, 0.5, 0.75, 1].map((scale) => (
           <polygon
@@ -260,8 +292,10 @@ export function RadarChart({
         ))}
         {points.map((p, i) => {
           const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
-          const lx = center + Math.cos(angle) * (radius + 20);
-          const ly = center + Math.sin(angle) * (radius + 20);
+          const lx = center + Math.cos(angle) * (radius + 18);
+          const ly = center + Math.sin(angle) * (radius + 18);
+          // Two short lines read better than one truncated one at this size.
+          const lines = wrapLabel(p.label, 14);
           return (
             <text
               key={i}
@@ -272,7 +306,11 @@ export function RadarChart({
               fontSize="9.5"
               fill="var(--text-subtle)"
             >
-              {p.label.length > 16 ? `${p.label.slice(0, 15)}…` : p.label}
+              {lines.map((line, li) => (
+                <tspan key={line} x={lx} dy={li === 0 ? (lines.length > 1 ? '-0.4em' : '0') : '1.1em'}>
+                  {line}
+                </tspan>
+              ))}
             </text>
           );
         })}

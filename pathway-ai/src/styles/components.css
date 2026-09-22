@@ -1203,6 +1203,8 @@
 .cal-num { font-family: var(--font-mono); font-size: var(--fs-2xs); font-weight: 600; }
 .cal-dots { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; }
 .cal-dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+/* Legend swatch — always paired with a text label, never carrying meaning alone. */
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
 @media (max-width: 560px) {
   .cal-cell { min-height: 46px; }
 }
@@ -1221,3 +1223,26 @@
   min-height: 420px;
   resize: vertical;
 }
+
+/* --- Settings navigation ------------------------------------------------ */
+.settings-nav {
+  display: flex;
+  gap: var(--s-1);
+  flex-wrap: wrap;
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--border);
+}
+.settings-tab {
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-sm);
+  font-weight: 550;
+  color: var(--text-subtle);
+  text-decoration: none;
+  transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
+}
+.settings-tab:hover { background: var(--surface-2); color: var(--text); }
+.settings-tab.is-active { background: var(--accent-soft); color: var(--accent); }
+.settings-tab:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+.danger-card { border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); }

@@ -140,8 +140,8 @@
   background: var(--border);
 }
 .lp-step.is-passed:not(:last-child) .lp-step-marker::after { background: var(--ok-soft-border); }
-.lp-step-title { font-size: var(--fs-sm); font-weight: 600; }
-.lp-step-body { font-size: var(--fs-xs); color: var(--text-subtle); line-height: var(--lh-normal); margin-top: 2px; min-height: 2.4em; }
+.lp-step-title { display: block; font-size: var(--fs-sm); font-weight: 600; }
+.lp-step-body { display: block; font-size: var(--fs-xs); color: var(--text-subtle); line-height: var(--lh-normal); margin-top: 2px; min-height: 2.4em; }
 
 /* --- Section scaffolding ------------------------------------------------ */
 .lp-section { padding: clamp(3.5rem, 8vw, 6rem) 0; }

@@ -72,7 +72,14 @@ export function StudentDNAPage() {
                         {s.band.replace('-', ' ')}
                       </Badge>
                     </div>
-                    <ProgressRing value={s.score} size={48} stroke={5} ariaLabel={`${s.subject}: ${s.score} of 100`} />
+                    <ProgressRing
+                      value={s.score}
+                      size={52}
+                      stroke={5}
+                      label={String(Math.round(s.score))}
+                      tone={s.score >= 75 ? 'var(--ok)' : s.score >= 50 ? 'var(--accent)' : 'var(--warn)'}
+                      ariaLabel={`${s.subject}: ${s.score} of 100`}
+                    />
                   </div>
                   {s.evidence.length ? (
                     <div className="mt-3">

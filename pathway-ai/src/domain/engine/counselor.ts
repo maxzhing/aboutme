@@ -6,7 +6,7 @@ import { CAREER_BY_ID } from '@/data/careers';
 import { countLabel, listJoin, percent, uniq } from '@/lib/format';
 import { daysUntil } from '@/lib/date';
 import type { EngineContext } from './context';
-import { matchColleges } from './collegeMatch';
+import { matchColleges, matchForCollege } from './collegeMatch';
 import { buildAPPlan } from './apPlanner';
 import { findOpportunities, findScholarships } from './opportunities';
 import { findBlindSpots, deadlineIntelligence, summerPaths } from './planning';
@@ -30,6 +30,7 @@ export interface CounselorReply {
 }
 
 type Intent =
+  | 'admission-chance'
   | 'colleges'
   | 'ap-course'
   | 'activities'
@@ -154,14 +155,22 @@ function detect(text: string, ctx: EngineContext): Detected {
   const major = MAJORS.find((m) => m.id !== 'undecided' && q.includes(m.name.toLowerCase()));
   const career = Array.from(CAREER_BY_ID.values()).find((c) => q.includes(c.name.toLowerCase()));
 
+  /* Asking about odds of admission. Answered honestly and never estimated. */
+  const asksChances = /(chance|chances|odds|likelihood|probability|will i (get|be) (in|into|accepted|admitted)|can i get (in|into)|do i have a shot|am i good enough|would i get in|likely to (get|be) (in|accepted|admitted)|reach school for me|safety for me|match for me|predict my)/i.test(q);
+  if (asksChances) return { intent: 'admission-chance', collegeId: college?.id };
+
   if (/^(hi|hey|hello|yo)\b/.test(q) || q === 'hi' || q === 'hello') return { intent: 'greeting' };
   if (/what can you do|how do you work|what are you|help me with/.test(q)) return { intent: 'capability' };
   if (/what am i missing|blind spot|what should i work on|weakness(es)? in my (profile|application)|what'?s missing/.test(q)) return { intent: 'missing' };
   if (/summer/.test(q)) return { intent: 'summer' };
   if (/deadline|due|when (do|does|should) i (apply|submit|register)/.test(q)) return { intent: 'deadlines' };
   if (/essay|personal statement|write about|supplement/.test(q)) return { intent: 'essay' };
-  if (/scholarship|financial aid|afford|cost|net price|tuition|money|fafsa|loan|pay(ing)? for/.test(q)) return { intent: 'money' };
+  if (/scholarship|financial aid|afford|cost|net price|tuition|money|fafsa|loan|pay(ing)? for/.test(q)) return { intent: 'money', collegeId: college?.id };
   if (/\bsat\b|\bact\b|test score|standardi[sz]ed|digital sat/.test(q)) return { intent: 'sat' };
+  // Practice-performance questions are SAT questions unless they name an AP course.
+  if (/practice (result|score|question|attempt)|my (weak|weakness|weaknesses|weak areas?|error|mistake)|what (am|are) i getting wrong|where do i keep|accuracy/.test(q)) {
+    return { intent: apCourse ? 'ap-course' : 'sat', apCourseId: apCourse?.id };
+  }
   if (/should i take|ap plan|which ap|what ap|course load|schedule next year/.test(q) || (apCourse && /take|should|worth/.test(q))) {
     return { intent: 'ap-course', apCourseId: apCourse?.id };
   }
@@ -452,14 +461,89 @@ export function answer(ctx: EngineContext, question: string): CounselorReply {
       break;
     }
 
+    /* ------------------------------------------------------------------
+       The one question this app refuses to answer. It is refused with
+       something useful rather than a bare "I can't", and the refusal comes
+       first so it cannot be skimmed past.
+       ------------------------------------------------------------------ */
+    case 'admission-chance': {
+      const college = detected.collegeId ? COLLEGE_BY_ID.get(detected.collegeId) : undefined;
+      const name = college ? college.shortName ?? college.name : 'a given college';
+      const match = detected.collegeId ? matchForCollege(ctx, detected.collegeId) : undefined;
+
+      const preparation: string[] = [];
+      if (match?.academicContext.gpaNote) preparation.push(match.academicContext.gpaNote);
+      if (match?.academicContext.testNote) preparation.push(match.academicContext.testNote);
+      if (college?.acceptanceRate !== undefined) {
+        preparation.push(
+          `${name} admitted about ${Math.round(college.acceptanceRate)}% of everyone who applied. That is a fact about the applicant pool, not about you.`,
+        );
+      }
+
+      content = `**I cannot tell you that, and I am not going to estimate it.**
+
+Nobody can. Admission decisions turn on an application nobody has read yet — your essays, what your teachers say about you, your context, and what that college happens to need in the year you apply. Two students with identical numbers get different answers all the time, and that is not a flaw in the process being hidden from you.
+
+Any tool that gives you a percentage for ${name} is making it up. If you have seen one, it was working from test scores and GPA, which are the parts of an application that explain the least.
+
+**What I can tell you instead**${
+        preparation.length ? `\n\n${preparation.map((p) => `- ${p}`).join('\n')}` : '\n\nAdd your GPA and any test scores and I can tell you how your preparation compares to students this college has admitted before.'
+      }
+
+${
+        match
+          ? `Across the four fit dimensions, ${name} reads as **${match.overallBand}** overall for you: ${match.dimensions
+              .map((d) => `${d.label.toLowerCase()} ${d.band}`)
+              .join(', ')}. ${match.concerns.length ? `Worth knowing: ${match.concerns[0]}` : ''}`
+          : ''
+      }
+
+**What actually moves the needle**
+
+1. Apply somewhere you would genuinely be happy, several times over. A list where every outcome is survivable is the only real protection.
+2. Write an essay that sounds like you. It is the one part of the application nobody else can supply.
+3. Go deep on one or two things rather than wide on six. It reads as real because it is.
+4. Get the financial side right early. More students are stopped by cost than by admission.
+
+_Fit is not probability. Everywhere in this app, a fit band describes how well a college matches what you have told me — never your likelihood of getting in._`;
+
+      links = [
+        detected.collegeId ? { label: `Open ${name}`, route: `/app/colleges/${detected.collegeId}` } : { label: 'Your matches', route: '/app/colleges/match' },
+        { label: 'What am I missing?', route: '/app/path/blind-spots' },
+      ];
+      suggestions = [
+        detected.collegeId ? `What is ${name} actually strong in?` : 'What colleges fit me?',
+        'What am I missing?',
+        'How do I build a balanced list?',
+      ];
+      break;
+    }
+
     case 'money': {
       const scholarships = findScholarships(ctx).slice(0, 3);
       const matches = matchColleges(ctx, { limit: 30 });
+      const askedAbout = detected.collegeId ? COLLEGE_BY_ID.get(detected.collegeId) : undefined;
       const affordable = matches.filter((m) => {
         const c = COLLEGE_BY_ID.get(m.collegeId);
         return ctx.constraints.maxCostPerYear && (c?.avgNetPrice ?? Infinity) <= ctx.constraints.maxCostPerYear;
       });
-      content = `${
+      const collegeLine = askedAbout
+        ? `**${askedAbout.shortName ?? askedAbout.name}** publishes an average net price of ${
+            askedAbout.avgNetPrice !== undefined ? `$${askedAbout.avgNetPrice.toLocaleString()}` : 'no figure we hold'
+          }${
+            ctx.constraints.maxCostPerYear && askedAbout.avgNetPrice !== undefined
+              ? askedAbout.avgNetPrice <= ctx.constraints.maxCostPerYear
+                ? `, which is inside the $${ctx.constraints.maxCostPerYear.toLocaleString()} budget you set`
+                : `, which is $${(askedAbout.avgNetPrice - ctx.constraints.maxCostPerYear).toLocaleString()} above the budget you set`
+              : ''
+          }. ${askedAbout.meetsFullNeed ? 'It states that it meets full demonstrated need, so your figure could be far lower than that average.' : ''}${
+            askedAbout.netPriceCalculatorUrl
+              ? ' Run its net price calculator before you decide anything — that is the only number that applies to your family.'
+              : ' We do not hold a verified calculator link for it; find one on its financial aid site rather than trusting this average.'
+          }\n\n`
+        : '';
+
+      content = `${collegeLine}${
         ctx.constraints.maxCostPerYear
           ? `You set a budget of about $${ctx.constraints.maxCostPerYear.toLocaleString()} a year. ${affordable.length} colleges in this catalog have an average net price at or below it.`
           : 'You have not set a budget. That is the single most useful thing you could add — cost decides more outcomes than fit does.'
@@ -469,6 +553,7 @@ export function answer(ctx: EngineContext, question: string): CounselorReply {
           : ''
       }\n\n_Amounts and deadlines here are demo data. Confirm everything with the sponsor._`;
       links = [
+        ...(askedAbout ? [{ label: `Open ${askedAbout.shortName ?? askedAbout.name}`, route: `/app/colleges/${askedAbout.id}` }] : []),
         { label: 'Financial planning', route: '/app/colleges/cost' },
         { label: 'Find scholarships', route: '/app/scholarships' },
       ];
