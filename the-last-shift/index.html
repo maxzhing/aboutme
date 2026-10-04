@@ -501,7 +501,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       </div>
     </aside>
   </div>
-  <div class="title-foot">Build 6 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
+  <div class="title-foot">Build 7 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
 </div>
 
 <!-- briefing -->
@@ -616,7 +616,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">A free matchmaking service (PeerJS) introduces the browsers; the game then runs directly between you, or through PeerJS's relay on strict networks. No accounts, nothing stored. · Build 6 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
+    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 7 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
   </div>
 </div>
 
@@ -4294,7 +4294,7 @@ const Monster = {
   },
   netUpdate(dt) {
     this.roarCD -= dt;
-    const b = this.net.buf, rt = performance.now() - 110;
+    const b = this.net.buf, rt = performance.now() - NET_DELAY;
     if (b.length) {
       let a = b[b.length - 1], c = a;
       for (let i = b.length - 1; i > 0; i--) if (b[i - 1].t <= rt) { a = b[i - 1]; c = b[i]; break; }
@@ -6755,19 +6755,145 @@ const Cine = {
 /* ------------------------------------------------------------------ */
 /* Online co-op (up to 4 guards)                                       */
 /* The host gets a 4-letter room code + invite link; friends open the  */
-/* link (or type the code) and press Join. PeerJS's free public server */
-/* introduces the browsers, then the game runs directly between them   */
-/* (PeerJS's relay servers step in on strict networks).                */
+/* link (or type the code) and press Join. Everything travels through  */
+/* free public relay servers (MQTT over secure WebSockets), so it works */
+/* between any two internet connections — different Wi-Fi, different  */
+/* cities — with nothing to set up. The host opens the room on every   */
+/* relay it can reach and a friend uses the first one where it shows   */
+/* up; if a relay drops, both sides reconnect (through another relay   */
+/* if need be) and carry on. Important messages are numbered and sent  */
+/* again until the other side confirms them, so nothing goes missing.  */
 /* The host runs the Warden and the world; everyone runs their own     */
-/* guard and sends its position ~15 times a second.                    */
+/* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 2, BUILD = 6, MAX_GUARDS = 4, ROOM_PREFIX = 'last-shift-room-', CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const PEERJS_URLS = ['https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js', 'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js'];
+const NET_PROTO = 3, BUILD = 7, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
+const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
+const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
+const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.';
 const GUARD_COLORS = [0xffc65a, 0x5ac8ff, 0xff7aa8, 0x8dff7a];
 const cleanName = s => String(s || '').replace(/[^\w .'-]/g, '').trim().slice(0, 16);
 const cleanCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
 const codeFrom = s => { const m = /room=([A-Za-z0-9]{4})/.exec(String(s || '')); return cleanCode(m ? m[1] : s); }; // a code, or a whole invite link
 const OLD_CODE = s => /LS1[ZP]/.test(String(s || ''));
+const rid = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join('');
+
+/* ---- a tiny MQTT 3.1.1 client over WebSocket: connect, subscribe, publish, stay alive ---- */
+const TXE = new TextEncoder(), TXD = new TextDecoder();
+const mqStr = s => { const b = TXE.encode(s), o = new Uint8Array(b.length + 2); o[0] = b.length >> 8; o[1] = b.length & 255; o.set(b, 2); return o; };
+function mqPack(head, parts) { // fixed header + remaining length + the parts
+  let n = 0; for (const p of parts) n += p.length;
+  const h = [head]; let x = n;
+  do { h.push((x % 128) | (x >= 128 ? 128 : 0)); x = Math.floor(x / 128); } while (x > 0);
+  const out = new Uint8Array(h.length + n); out.set(h); let o = h.length;
+  for (const p of parts) { out.set(p, o); o += p.length; }
+  return out;
+}
+class Relay {
+  constructor(url) {
+    this.url = url; this.name = url.replace(/^wss?:\/\//, '').replace(/[:/].*$/, '');
+    this.ws = null; this.ok = false; this.up = false; this.closed = false; this.connecting = false; this.will = null; this.abort = null; this.connack = null;
+    this.pid = 0; this.subs = new Map(); this.onmsg = null; this.onlost = null; this.finder = null; this.buf = null;
+    this.heard = 0; this.said = 0; this.pinged = 0; this.retryIn = 0; this.retryTimer = 0;
+  }
+  connect(will) { // resolves once the server has let us in
+    if (will !== undefined) this.will = will;
+    return new Promise((res, rej) => {
+      if (this.closed) { rej(new Error('closed')); return; }
+      let ws = null, done = false, timer = 0;
+      const end = err => {
+        if (done) return; done = true; clearTimeout(timer); this.abort = null; this.connecting = false;
+        if (!err) { this.ok = true; this.heard = this.said = performance.now(); res(this); return; }
+        if (this.ws === ws) this.ws = null;
+        try { if (ws) ws.close(); } catch (e) { }
+        rej(err);
+      };
+      this.connecting = true; this.ok = false; this.buf = null;
+      this.abort = () => end(new Error('closed'));
+      this.connack = rc => end(rc ? new Error('refused (' + rc + ')') : null);
+      timer = setTimeout(() => end(new Error('timeout')), 9000);
+      try { ws = this.ws = new WebSocket(this.url, 'mqtt'); } catch (e) { end(e); return; }
+      ws.binaryType = 'arraybuffer';
+      ws.onopen = () => { // CONNECT: clean session, keep-alive 30 s, and a "will" the server publishes if we vanish
+        const w = this.will;
+        this.send(mqPack(0x10, [mqStr('MQTT'), [4, w ? 0x26 : 0x02, 0, 30], mqStr('ls' + rid(14))].concat(w ? [mqStr(w.t), mqStr(w.p)] : [])));
+      };
+      ws.onmessage = e => { if (this.ws === ws && e.data instanceof ArrayBuffer) this.data(new Uint8Array(e.data)); };
+      ws.onerror = () => { };
+      ws.onclose = () => {
+        if (this.ws !== ws) return;
+        this.ws = null;
+        if (!done) { end(new Error('closed')); return; }
+        if (this.ok) { this.ok = false; this.up = false; if (!this.closed && this.onlost) this.onlost(this); }
+      };
+    });
+  }
+  data(c) { // packets can be split across (or share) WebSocket frames
+    this.heard = performance.now();
+    let b = c;
+    if (this.buf) { b = new Uint8Array(this.buf.length + c.length); b.set(this.buf); b.set(c, this.buf.length); }
+    let i = 0;
+    while (b.length - i >= 2) {
+      let len = 0, mul = 1, j = i + 1, whole = false;
+      while (j < b.length && j < i + 5) { const x = b[j++]; len += (x & 127) * mul; mul *= 128; if (x < 128) { whole = true; break; } }
+      if (!whole) { if (j >= i + 5) { this.drop(); return; } break; } // a broken length — or the rest is still on its way
+      if (b.length < j + len) break;
+      const ws = this.ws;
+      try { this.packet(b[i], b.subarray(j, j + len)); } catch (e) { if (DEBUG) console.warn('relay', e); }
+      if (this.ws !== ws) return;
+      i = j + len;
+    }
+    this.buf = i < b.length ? b.slice(i) : null;
+  }
+  packet(h, p) {
+    const type = h >> 4;
+    if (type === 2) { if (this.connack) this.connack(p[1] | 0); } // CONNACK
+    else if (type === 3) { // PUBLISH
+      const tl = (p[0] << 8) | p[1], topic = TXD.decode(p.subarray(2, 2 + tl)), q = (h >> 1) & 3; let o = 2 + tl;
+      if (q) { this.send(Uint8Array.of(q === 1 ? 0x40 : 0x50, 2, p[o], p[o + 1])); o += 2; } // (we only ask for QoS 0)
+      const text = TXD.decode(p.subarray(o));
+      if (this.finder) this.finder(topic, text);
+      if (this.onmsg) this.onmsg(topic, text);
+    }
+    else if (type === 6) this.send(Uint8Array.of(0x70, 2, p[0], p[1])); // PUBREL -> PUBCOMP
+    else if (type === 9) { const id = (p[0] << 8) | p[1], f = this.subs.get(id); if (f) { this.subs.delete(id); f(p[2] !== 0x80); } } // SUBACK
+  }
+  sub(topic) {
+    return new Promise((res, rej) => {
+      if (!this.ok) { rej(new Error('offline')); return; }
+      const id = this.pid = this.pid % 65535 + 1;
+      const t = setTimeout(() => { if (this.subs.delete(id)) rej(new Error('no answer')); }, 8000);
+      this.subs.set(id, ok => { clearTimeout(t); if (ok) res(this); else rej(new Error('refused')); });
+      this.send(mqPack(0x82, [[id >> 8, id & 255], mqStr(topic), [0]]));
+    });
+  }
+  pub(topic, text, retain, droppable) { // QoS 0; droppable messages are skipped while the line is backed up
+    const ws = this.ws;
+    if (!this.ok || !ws || (droppable && ws.bufferedAmount > 48000)) return false;
+    return this.send(mqPack(retain ? 0x31 : 0x30, [mqStr(topic), TXE.encode(text)]));
+  }
+  send(u8) { const ws = this.ws; if (!ws || ws.readyState !== 1) return false; try { ws.send(u8); this.said = performance.now(); return true; } catch (e) { return false; } }
+  tick(now, frozen) { // keep the line alive, and notice a server that stopped answering
+    if (!this.ok) return;
+    if (frozen) { this.heard = now; return; }
+    if (now - this.heard > 16000) { this.drop(); return; }
+    if ((now - this.heard > 5000 && now - this.pinged > 5000) || now - this.said > 20000) { this.pinged = now; this.send(Uint8Array.of(0xC0, 0)); }
+  }
+  drop() { // the connection is dead: let go of it
+    const ws = this.ws, was = this.ok; this.ws = null; this.ok = false; this.up = false; this.buf = null;
+    try { if (ws) ws.close(); } catch (e) { }
+    if (was && !this.closed && this.onlost) this.onlost(this);
+  }
+  close() { // goodbye, after anything already queued
+    this.closed = true; this.onlost = null; this.onmsg = null; this.finder = null;
+    clearTimeout(this.retryTimer);
+    if (this.abort) this.abort();
+    const ws = this.ws; this.ws = null; this.ok = false; this.up = false;
+    if (!ws) return;
+    if (ws.readyState === 1) { try { ws.send(Uint8Array.of(0xE0, 0)); } catch (e) { } setTimeout(() => { try { ws.close(); } catch (e) { } }, 250); }
+    else try { ws.close(); } catch (e) { }
+  }
+}
 
 /* ---- the guard model used for other players (and for you, on CCTV) ---- */
 function colorBox(w, h, d, x, y, z, hex) {
@@ -6877,7 +7003,7 @@ class RemotePlayer {
     }
   }
   update(dt) {
-    const b = this.buf, rt = performance.now() - 110;
+    const b = this.buf, rt = performance.now() - NET_DELAY;
     if (b.length) {
       let a = b[b.length - 1], c = a;
       for (let i = b.length - 1; i > 0; i--) if (b[i - 1].t <= rt) { a = b[i - 1]; c = b[i]; break; }
@@ -6906,8 +7032,11 @@ class RemotePlayer {
 const Net = {
   role: 'solo', myId: 0, myName: 'Guard', sessionDiff: null, inGame: false,
   remotes: new Map(),   // everyone else on the shift: id -> RemotePlayer
-  peers: new Map(),     // host: id -> connection; client: 0 -> the host
-  peer: null, code: '', lib: null, // PeerJS: our registration with the matchmaking server, the room code
+  peers: new Map(),     // links: host: id -> each friend; client: 0 -> the host
+  byCid: new Map(),     // host: the same links, by connection id
+  goneCids: new Set(),  // host: friends we had to let go of
+  relays: [], relay: null, // relay servers: the host keeps the room open on all it can reach; a friend uses one
+  code: '', cid: '', hid: '', epoch: 0, tok: null, welcomed: false, recovering: false, hiccup: false, joinAt: 0, nextTry: 0, goneAt: 0,
   nextId: 1, sendT: 0, kaT: 0, snapSeq: 0, lastSeq: 0, lastPing: 0, pings: [], lights: [], self: null, teamT: 0, busy: false,
   get active() { return this.role !== 'solo'; },
   get isHost() { return this.role === 'host'; },
@@ -6929,103 +7058,202 @@ const Net = {
     if (this.isClient) return this.nameOf(Monster.targetId);
     const t = Monster.target; return !t || t === player ? this.myName : t.name;
   },
-  /* ---- connections (PeerJS) ---- */
-  loadLib() { // fetched only when someone opens Multiplayer
-    if (window.Peer) return Promise.resolve();
-    if (!this.lib) this.lib = new Promise((res, rej) => {
-      let i = 0;
-      const next = () => {
-        if (i >= PEERJS_URLS.length) { this.lib = null; rej(new Error('Could not load the online library. Check your internet connection (or an ad blocker) and try again.')); return; }
-        const sc = document.createElement('script'); sc.src = PEERJS_URLS[i++]; sc.async = true;
-        sc.onload = () => (window.Peer ? res() : next()); sc.onerror = () => { sc.remove(); next(); };
-        document.head.appendChild(sc);
-      };
-      next();
-    });
-    return this.lib;
-  },
-  server() { // PeerJS's free cloud server by default; ?peer=host:port uses your own PeerServer instead
-    const m = /[?&]peer=([\w.-]+):(\d+)/.exec(location.search);
-    return m ? { host: m[1], port: +m[2], path: '/', secure: false, key: 'peerjs' } : {};
-  },
-  register(id) { // a fixed id is a room; none gets a random guest id
-    return new Promise((res, rej) => {
-      const p = id ? new window.Peer(id, this.server()) : new window.Peer(this.server());
-      let done = false;
-      const end = (ok, e) => { if (done) return; done = true; clearTimeout(t); if (ok) res(p); else { try { p.destroy(); } catch (x) { } rej(e); } };
-      const t = setTimeout(() => end(false, { type: 'timeout' }), 15000);
-      p.on('open', () => end(true));
-      p.on('error', e => end(false, e));
-    });
-  },
-  why(e) {
-    switch (e && e.type) {
-      case 'peer-unavailable': return 'No game with that code is open. Check the code, make sure the host is still on the Multiplayer screen — and that you both have the newest version (the title screen says Build ' + BUILD + '; if not, refresh the page with Cmd+Shift+R).';
-      case 'browser-incompatible': return 'This browser can\'t play online (no WebRTC). Try Chrome, Edge, Firefox or Safari.';
-      case 'webrtc': return 'The connection failed. Very strict networks (some school or office Wi-Fi) block games like this — try another network or a phone hotspot.';
-      case 'network': case 'server-error': case 'socket-error': case 'socket-closed': case 'timeout': return 'Can\'t reach the matchmaking server. Check your internet connection and try again.';
-    }
-    return 'Connection problem' + (e && e.message ? ' (' + e.message + ')' : '') + '. Please try again.';
-  },
+  /* ---- connections ---- */
+  relayUrls() { const o = window.__LS_RELAYS; return (Array.isArray(o) && o.length ? o : RELAYS).slice(); },
+  T() { return TOPIC(this.code); },
   async host() {
-    await this.loadLib();
     this.leave();
-    this.role = 'host'; this.myId = 0; this.nextId = 1; this.myName = cleanName(settings.playerName) || 'Guard 1';
-    let peer = null, code = '';
-    for (let i = 0; i < 6 && !peer && this.isHost; i++) {
-      code = Array.from({ length: 4 }, () => CODE_ABC[(Math.random() * CODE_ABC.length) | 0]).join('');
-      try { peer = await this.register(ROOM_PREFIX + code); } catch (e) { if (e.type !== 'unavailable-id') { if (this.isHost) this.role = 'solo'; throw new Error(this.why(e)); } }
+    const tok = this.tok = {};
+    this.role = 'host'; this.myId = 0; this.nextId = 1; this.hid = rid(8); this.myName = cleanName(settings.playerName) || 'Guard 1';
+    for (let tries = 0; tries < 4; tries++) {
+      const code = Array.from({ length: 4 }, () => CODE_ABC[(Math.random() * CODE_ABC.length) | 0]).join('');
+      const list = this.relayUrls().map(u => new Relay(u)), quit = () => list.forEach(r => r.close());
+      for (const r of list) { r.pending = r.connect({ t: TOPIC(code) + 'p', p: '' }); r.pending.catch(() => { }); } // if we vanish, the relay takes the room down
+      let first = null;
+      try { first = await Promise.any(list.map(r => r.pending)); } catch (e) { }
+      if (this.tok !== tok) { quit(); return ''; }
+      if (!first) { quit(); this.role = 'solo'; this.tok = null; throw new Error(NO_NET); }
+      const taken = await this.peek(first, TOPIC(code) + 'p');
+      if (this.tok !== tok) { quit(); return ''; }
+      if (taken) { quit(); continue; } // someone already has that code: pick another
+      this.code = code; this.relays = list;
+      for (const r of list) r.onlost = () => this.relayLost(r);
+      await this.relayUp(first);
+      for (const r of list) if (r !== first) r.pending.then(() => this.relayUp(r), () => this.relayLost(r));
+      return this.isHost ? code : '';
     }
-    if (!this.isHost) { if (peer) peer.destroy(); return ''; } // left while the room was being made
-    if (!peer) { this.role = 'solo'; throw new Error('Could not create a room. Please try again.'); }
-    this.peer = peer; this.code = code;
-    peer.on('connection', c => this.incoming(c));
-    peer.on('disconnected', () => setTimeout(() => { if (this.peer === peer && !peer.destroyed) try { peer.reconnect(); } catch (e) { } }, 2000)); // stay findable
-    return code;
+    this.role = 'solo'; this.tok = null;
+    throw new Error('Could not create a room. Please try again.');
   },
-  incoming(conn) { // host: a friend is knocking
-    if (!this.isHost) { try { conn.close(); } catch (e) { } return; }
-    if (this.inGame || this.peers.size + 1 >= MAX_GUARDS) {
-      const why = this.inGame ? 'started' : 'full';
-      conn.on('open', () => { try { conn.send(JSON.stringify({ k: 'bye', why })); } catch (e) { } setTimeout(() => { try { conn.close(); } catch (e) { } }, 800); });
-      return;
-    }
-    const p = this.wrap(conn, this.nextId++); this.peers.set(p.id, p); this.lobbyUpdate();
+  peek(r, topic) { // is a room with this code already open on this relay?
+    return new Promise(res => {
+      let t = 0;
+      const done = v => { clearTimeout(t); r.finder = null; res(v); };
+      r.finder = (tp, s) => { if (tp === topic && s) done(true); };
+      r.sub(topic).then(() => { t = setTimeout(() => done(false), 1000); }, () => done(false));
+    });
+  },
+  async relayUp(r) { // host: open the room on this relay
+    if (!this.isHost || this.relays.indexOf(r) < 0) return;
+    r.onmsg = (t, s) => this.onRelayMsg(r, t, s);
+    try { await r.sub(this.T() + 'h'); } catch (e) { if (r.ok) r.drop(); else this.relayLost(r); return; }
+    if (!this.isHost || this.relays.indexOf(r) < 0) return;
+    r.retryIn = 0; r.up = true; this.presence(r); this.lobbyUpdate();
+  },
+  presence(r) { if (r.ok) r.pub(this.T() + 'p', JSON.stringify({ v: NET_PROTO, b: BUILD, h: this.hid, n: this.myName, g: this.inGame ? 1 : 0 }), true); },
+  relayLost(r) {
+    if (this.isClient) { if (r === this.relay) this.recover('relay'); return; }
+    if (!this.isHost || this.relays.indexOf(r) < 0 || r.retryTimer || r.closed) return;
+    r.up = false; this.lobbyUpdate();
+    r.retryIn = Math.min(30000, (r.retryIn || 750) * 2); // try again: 1.5 s, 3 s, 6 s … 30 s
+    r.retryTimer = setTimeout(() => {
+      r.retryTimer = 0;
+      if (this.isHost && this.relays.indexOf(r) >= 0 && !r.ok && !r.connecting) r.connect().then(() => this.relayUp(r), () => this.relayLost(r));
+    }, r.retryIn);
   },
   async join(raw) {
-    if (OLD_CODE(raw)) throw new Error('That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.');
+    if (OLD_CODE(raw)) throw new Error(OLD_MSG);
     const code = codeFrom(raw);
     if (code.length !== 4) throw new Error('Type the 4-letter room code from the host — or just open their invite link.');
-    await this.loadLib();
     this.leave();
-    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code;
-    let peer;
-    try { peer = await this.register(); } catch (e) { if (this.isClient) this.role = 'solo'; throw new Error(this.why(e)); }
-    if (!this.isClient) { peer.destroy(); return; }
-    this.peer = peer;
-    peer.on('error', e => { const h = this.host0(); if (this.peer === peer && this.isClient && !(h && h.open)) this.lost(this.why(e)); });
-    this.peers.set(0, this.wrap(peer.connect(ROOM_PREFIX + code, { reliable: true, serialization: 'raw' }), 0));
-  },
-  wrap(conn, id) {
-    const p = { id, conn, name: '', open: false, lastHeard: performance.now(), connecting: performance.now(), remote: null, dropped: false };
-    conn.on('open', () => this.onOpen(p));
-    conn.on('data', d => this.onRaw(p, d));
-    conn.on('close', () => this.dropPeer(p, 'closed'));
-    conn.on('error', e => { if (!p.open && this.isClient && !p.dropped) this.lost(this.why(e)); else this.dropPeer(p, 'failed'); });
-    return p;
-  },
-  closePeer(p) { try { p.conn.close(); } catch (e) { } },
-  onOpen(peer) {
-    if (peer.dropped) return;
-    peer.open = true; peer.lastHeard = performance.now();
-    if (this.isClient) this.sendRel(peer, { k: 'hello', v: NET_PROTO, name: this.myName });
+    const tok = this.tok = {};
+    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code; this.cid = rid(10); this.epoch = 0;
+    let hit;
+    try { hit = await this.findRoom(); } catch (e) { if (this.tok !== tok) return; this.leave(); throw e; }
+    if (this.tok !== tok) { hit.relay.close(); return; }
+    const p = hit.pres, why = p.v !== NET_PROTO ? 'The host has a different version of the game (Build ' + (p.b | 0) + ' — you have Build ' + BUILD + '). Both of you refresh the page (Cmd+Shift+R / Ctrl+Shift+R) and try again.'
+      : p.g ? 'That game has already started — ask the host to invite you to the next one.' : '';
+    if (why) { hit.relay.close(); this.leave(); throw new Error(why); }
+    this.hid = String(p.h);
+    try { await this.useRelay(hit.relay); } catch (e) { hit.relay.close(); if (this.tok === tok) { this.leave(); throw new Error(NO_NET); } return; }
+    if (this.tok !== tok) return;
+    const h = this.link(0); this.peers.set(0, h); this.joinAt = performance.now();
+    this.rel(h, { k: 'hello', v: NET_PROTO, b: BUILD, name: this.myName });
     this.lobbyUpdate();
   },
+  findRoom(exclude) { // client: ask every relay at once; the first one that has the room wins
+    const T = this.T(), cur = this.relay && this.relay.ok ? this.relay : null, hid = this.hid;
+    const list = this.relayUrls().filter(u => u !== exclude).map(u => (cur && cur.url === u ? cur : new Relay(u)));
+    return new Promise((res, rej) => {
+      let left = list.length, reached = 0, done = false, timer = 0;
+      const finish = (err, hit) => {
+        if (done) return; done = true; clearTimeout(timer);
+        for (const r of list) { r.finder = null; if (r !== cur && (!hit || r !== hit.relay)) r.close(); }
+        if (err) rej(err); else res(hit);
+      };
+      const nothing = () => finish(new Error(!reached ? NO_NET : 'No room with the code ' + this.code + ' is open right now. Check the code, and make sure the host still has the Multiplayer screen open. (You both need Build ' + BUILD + ' — it says on the title screen. If not, refresh with Cmd+Shift+R.)'));
+      const settle = () => { if (--left <= 0) nothing(); };
+      timer = setTimeout(nothing, 15000);
+      if (!list.length) { nothing(); return; }
+      for (const r of list) {
+        r.finder = (t, s) => {
+          if (done || t !== T + 'p' || !s) return;
+          let p = null; try { p = JSON.parse(s); } catch (e) { }
+          if (p && p.h && (!hid || p.h === hid)) finish(null, { relay: r, pres: p });
+        };
+        (r.ok ? Promise.resolve() : r.connect(null))
+          .then(() => { reached++; return r.sub(T + 'p'); })
+          .then(() => setTimeout(settle, 2500), settle); // the relay hands over the room's notice straight after subscribing
+      }
+    });
+  },
+  async useRelay(r) { // client: talk to the host through this relay
+    const T = this.T(), old = this.relay;
+    r.onmsg = (t, s) => this.onRelayMsg(r, t, s);
+    r.onlost = () => this.relayLost(r);
+    await Promise.all([r.sub(T + 'a'), r.sub(T + 'c/' + this.cid)]);
+    this.relay = r; this.relays = [r]; this.epoch++; this.goneAt = 0;
+    if (old && old !== r) old.close();
+  },
+  recover(why) { // client: the line to the host broke or went quiet — find the host again, on any relay
+    if (!this.isClient || this.recovering) return;
+    const tok = this.tok, cur = this.relay;
+    this.recovering = true; this.lobbyUpdate();
+    if (DEBUG) console.log('net: reconnecting (' + why + ')');
+    if (this.inGame && this.welcomed && Game.inWorld() && !this.hiccup) { this.hiccup = true; UI.msg('Connection hiccup — reconnecting…', 'warn', 3); }
+    const exclude = why === 'nowelcome' && cur && this.relayUrls().length > 1 ? cur.url : null; // that relay isn't delivering: try the others
+    let found = null;
+    this.findRoom(exclude).then(hit => { found = hit.relay; return this.tok === tok ? this.useRelay(found) : found.close(); }).then(() => {
+      if (this.tok !== tok) return;
+      this.recovering = false; this.nextTry = performance.now() + 4000;
+      const h = this.host0();
+      if (h) { h.since = performance.now(); this.resendNow(h); this.raw(h, { k: 'ka', A: h.si }); } // tell the host where we are now, and re-send what it hasn't confirmed
+      this.lobbyUpdate();
+    }, () => {
+      if (found && found !== this.relay) found.close();
+      if (this.tok !== tok) return;
+      this.recovering = false; this.nextTry = performance.now() + 1500; this.lobbyUpdate();
+    });
+  },
+  watch(now) { // client: keep an eye on the line to the host
+    const h = this.host0(); if (!h || h.dropped) return;
+    const quiet = now - h.heard;
+    if (this.welcomed ? quiet > 25000 : now - this.joinAt > 24000) {
+      this.lost(this.welcomed ? 'Lost connection to the host — they may have closed the game or lost their internet.' : 'Found the room, but the host isn\'t answering. Ask them to make a new room and send you the new code.');
+      return;
+    }
+    if (this.recovering || now < this.nextTry) return;
+    if (this.goneAt && now - this.goneAt > 2500) { this.goneAt = 0; this.recover('gone'); } // the host vanished from this relay
+    else if (!this.relay || !this.relay.ok) this.recover('relay');
+    else if (this.welcomed ? quiet > 7000 : now - h.since > 7000) { h.since = now; this.recover(this.welcomed ? 'quiet' : 'nowelcome'); }
+  },
+  onRelayMsg(r, t, s) {
+    const T = this.T();
+    if (!this.code || t.indexOf(T) !== 0 || s.length > 60000) return;
+    const sub = t.slice(T.length);
+    if (this.isHost) {
+      if (sub !== 'h') return;
+      const bar = s.indexOf('|'), head = bar > 0 && bar < 30 ? s.slice(0, bar).split('.') : null, cid = head && head[0];
+      if (!cid || !/^[a-z0-9]{6,16}$/.test(cid)) return;
+      let m; try { m = JSON.parse(s.slice(bar + 1)); } catch (e) { return; }
+      if (!m || typeof m.k !== 'string') return;
+      let peer = this.byCid.get(cid);
+      if (!peer) {
+        if (m.k === 'hello') peer = this.seat(cid, r, m);
+        else if (m.k === 'ka' && this.goneCids.has(cid)) this.tell(r, cid, { k: 'bye', why: 'gone' }); // someone we already let go of
+        if (!peer) return;
+      }
+      const ep = +head[1] || 0;
+      if (ep >= peer.epoch) { const moved = ep > peer.epoch; peer.epoch = ep; peer.relay = r; if (moved) this.resendNow(peer); } // answer them on the relay they use now
+      this.recv(peer, m);
+    } else if (this.isClient) {
+      if (sub === 'p') { // the room's notice: empty means the host dropped off this relay
+        if (!s) { if (!this.goneAt) this.goneAt = performance.now(); }
+        else if (s.indexOf(this.hid) >= 0) this.goneAt = 0;
+        return;
+      }
+      if (r !== this.relay || (sub !== 'a' && sub !== 'c/' + this.cid)) return;
+      let m; try { m = JSON.parse(s); } catch (e) { return; }
+      const h = this.host0(); if (h && m && typeof m.k === 'string') this.recv(h, m);
+    }
+  },
+  seat(cid, r, m) { // host: someone new says hello
+    const why = m.v !== NET_PROTO ? 'version' : this.inGame ? 'started' : this.peers.size + 1 >= MAX_GUARDS ? 'full' : '';
+    if (why) { this.tell(r, cid, { k: 'bye', why }); return null; }
+    const p = this.link(this.nextId++); p.cid = cid; p.relay = r;
+    this.peers.set(p.id, p); this.byCid.set(cid, p);
+    return p;
+  },
+  tell(r, cid, m) { r.pub(this.T() + 'c/' + cid, JSON.stringify(m)); },
+  resendNow(peer) { for (const o of peer.out) { o[2] = 0; o[3] = 1200; } },
+  link(id) { const now = performance.now(); return { id, cid: '', relay: null, epoch: 0, name: '', remote: null, dropped: false, heard: now, since: now, so: 0, out: [], si: 0, early: new Map(), ackDue: false }; },
+  recv(peer, m) { // everything from a link comes through here
+    if (peer.dropped) return;
+    peer.heard = performance.now();
+    if (typeof m.A === 'number') while (peer.out.length && peer.out[0][0] <= m.A) peer.out.shift(); // confirmed: stop re-sending
+    if (this.hiccup && this.isClient) { this.hiccup = false; if (this.inGame && Game.inWorld()) UI.msg('Reconnected.', 'good', 2); }
+    if (m.r === undefined) { this.handle(peer, m); return; }
+    const n = m.r | 0; peer.ackDue = true; // numbered: each one exactly once, in order
+    if (n <= peer.si) return; // had it already
+    if (n !== peer.si + 1) { if (n - peer.si < 2000) peer.early.set(n, m); return; } // one before it is missing: keep this until the re-send fills the gap
+    peer.si = n; this.handle(peer, m);
+    for (let x; !peer.dropped && (x = peer.early.get(peer.si + 1));) { peer.early.delete(++peer.si); this.handle(peer, x); }
+  },
+  handle(peer, m) { try { if (this.isHost) this.onHostMsg(peer, m); else if (this.isClient) this.onClientMsg(m); } catch (e) { if (DEBUG) console.warn('net', e); } },
   dropPeer(peer, why, quiet) {
     if (peer.dropped) return; peer.dropped = true;
-    this.closePeer(peer);
     if (this.isClient) { this.lost(why === 'timeout' ? 'Lost connection to the host.' : 'The connection to the host was closed.'); return; }
-    this.peers.delete(peer.id);
+    this.peers.delete(peer.id); this.byCid.delete(peer.cid); this.goneCids.add(peer.cid);
     const r = peer.remote;
     if (r) {
       this.remotes.delete(peer.id); r.dispose();
@@ -7042,51 +7270,61 @@ const Net = {
     UI.prev = ['screen-title']; UI.show('screen-mp'); this.openLobby(); this.lobbyStatus(text, 'err');
   },
   leave() {
-    if (!this.active && !this.peers.size && !this.peer) return;
-    for (const p of this.peers.values()) { p.dropped = true; if (p.open) this.sendRel(p, { k: 'bye' }); setTimeout(() => this.closePeer(p), 250); } // let the goodbye go out first
-    this.peers.clear();
-    if (this.peer) { const pr = this.peer; this.peer = null; setTimeout(() => { try { pr.destroy(); } catch (e) { } }, 300); }
+    const had = this.active || this.peers.size || this.relays.length || this.relay;
+    this.tok = null;
+    if (!had) return;
+    for (const p of this.peers.values()) { if (!p.dropped) this.raw(p, { k: 'bye' }); p.dropped = true; } // let the goodbye go out first
+    if (this.isHost && this.code) for (const r of this.relays) if (r.up) r.pub(this.T() + 'p', '', true); // take the room down
+    for (const r of this.relays) r.close();
+    if (this.relay) this.relay.close();
+    this.peers.clear(); this.byCid.clear(); this.goneCids.clear(); this.relays = []; this.relay = null;
     for (const r of this.remotes.values()) r.dispose();
     this.remotes.clear();
-    this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.myId = 0; this.code = '';
+    this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.myId = 0; this.code = ''; this.hid = '';
+    this.welcomed = false; this.recovering = false; this.hiccup = false; this.goneAt = 0;
     this.lights.forEach(l => { l.visible = false; l.intensity = 0; });
     this.pings.forEach(p => { scene.remove(p.spr); p.spr.material.map.dispose(); p.spr.material.dispose(); }); this.pings.length = 0;
     const team = $('team'); if (team) team.innerHTML = '';
   },
   /* ---- messages ---- */
-  sendRel(peer, m) { if (peer && peer.open) try { peer.conn.send(JSON.stringify(m)); } catch (e) { } },
-  sendUnrel(peer, m) { this.sendRel(peer, m); },
+  xmit(peer, s, droppable) {
+    if (this.isHost) { if (peer.relay) peer.relay.pub(this.T() + 'c/' + peer.cid, s, false, droppable); }
+    else if (this.relay) this.relay.pub(this.T() + 'h', this.cid + '.' + this.epoch + '|' + s, false, droppable);
+  },
+  rel(peer, m) { // numbered and re-sent until the other side confirms it
+    if (!peer || peer.dropped) return;
+    const n = ++peer.so, s = '{"r":' + n + ',' + JSON.stringify(m).slice(1);
+    peer.out.push([n, s, performance.now(), 1200]); // number, text, last sent, wait before sending again
+    if (peer.out.length > 600) { this.dropPeer(peer, 'timeout'); return; }
+    this.xmit(peer, s);
+  },
+  raw(peer, m) { if (peer && !peer.dropped) this.xmit(peer, JSON.stringify(m), true); }, // fire and forget (positions, keep-alives)
   host0() { return this.peers.get(0); },
-  sendTo(id, m) { if (this.isHost) this.sendRel(this.peers.get(id), m); },
-  broadcast(m, exceptId) { if (!this.isHost) return; const s = JSON.stringify(m); for (const p of this.peers.values()) if (p.id !== exceptId && p.open && p.remote) try { p.conn.send(s); } catch (e) { } },
-  broadcastUnrel(m) { this.broadcast(m); },
-  request(a, i) { this.sendRel(this.host0(), { k: 'req', a, i }); },
-  sendNoise(pos, r) { if (this.inGame) this.sendRel(this.host0(), { k: 'n', x: +pos.x.toFixed(2), z: +pos.z.toFixed(2), r: +r.toFixed(1) }); },
+  sendTo(id, m) { if (this.isHost) this.rel(this.peers.get(id), m); },
+  broadcast(m, exceptId) { if (this.isHost) for (const p of this.peers.values()) if (p.id !== exceptId && p.remote) this.rel(p, m); },
+  broadcastUnrel(m) { // snapshots: once per relay that has friends on it
+    if (!this.isHost) return;
+    const s = JSON.stringify(m), done = new Set();
+    for (const p of this.peers.values()) if (p.remote && p.relay && !done.has(p.relay)) { done.add(p.relay); p.relay.pub(this.T() + 'a', s, false, true); }
+  },
+  request(a, i) { this.rel(this.host0(), { k: 'req', a, i }); },
+  sendNoise(pos, r) { if (this.inGame) this.raw(this.host0(), { k: 'n', x: +pos.x.toFixed(2), z: +pos.z.toFixed(2), r: +r.toFixed(1) }); },
   announce(text, type, exceptId) { if (Game.inWorld()) UI.msg(text, type, 4); this.broadcast({ k: 'msg', t: text, y: type, d: 4 }, exceptId); },
   reportDeath() {
-    if (this.isClient) this.sendRel(this.host0(), { k: 'dead' });
+    if (this.isClient) this.rel(this.host0(), { k: 'dead' });
     else this.broadcast({ k: 'msg', t: this.myName + ' was caught by the Warden!', y: 'warn', d: 4 });
   },
-  reportRespawn() { if (this.isClient) this.sendRel(this.host0(), { k: 'resp' }); else this.broadcast({ k: 'msg', t: this.myName + ' is back at Desk B.', y: '', d: 3 }); },
-  onRaw(peer, data) {
-    if (peer.dropped || typeof data !== 'string' || data.length > 60000) return;
-    let m; try { m = JSON.parse(data); } catch (e) { return; }
-    if (!m || typeof m.k !== 'string') return;
-    peer.lastHeard = performance.now();
-    try { if (this.isHost) this.onHostMsg(peer, m); else if (this.isClient) this.onClientMsg(m); } catch (e) { if (DEBUG) console.warn('net', e); }
-  },
+  reportRespawn() { if (this.isClient) this.rel(this.host0(), { k: 'resp' }); else this.broadcast({ k: 'msg', t: this.myName + ' is back at Desk B.', y: '', d: 3 }); },
   onHostMsg(peer, m) {
     const r = peer.remote, now = performance.now();
     switch (m.k) {
       case 'hello': {
         if (r) return;
-        if (m.v !== NET_PROTO) { this.sendRel(peer, { k: 'bye', why: 'version' }); setTimeout(() => this.dropPeer(peer, 'left', true), 300); return; }
-        if (this.inGame) { this.sendRel(peer, { k: 'bye', why: 'started' }); setTimeout(() => this.dropPeer(peer, 'left', true), 300); return; }
         let name = cleanName(m.name) || 'Guard ' + (peer.id + 1);
         const taken = new Set([this.myName].concat([...this.remotes.values()].map(x => x.name)));
         for (let k = 2; taken.has(name); k++) name = (cleanName(m.name) || 'Guard').slice(0, 13) + ' ' + k;
         peer.name = name; peer.remote = new RemotePlayer(peer.id, name); this.remotes.set(peer.id, peer.remote);
-        this.sendRel(peer, { k: 'welcome', id: peer.id, diff: settings.difficulty });
+        this.rel(peer, { k: 'welcome', id: peer.id, diff: settings.difficulty });
         this.sendRoster(); this.lobbyUpdate(); Sound.ui();
         break;
       }
@@ -7102,7 +7340,7 @@ const Net = {
   onClientMsg(m) {
     const now = performance.now();
     switch (m.k) {
-      case 'welcome': this.myId = m.id | 0; this.sessionDiff = DIFF[m.diff] ? m.diff : 'normal'; this.lobbyUpdate(); break;
+      case 'welcome': this.myId = m.id | 0; this.welcomed = true; this.sessionDiff = DIFF[m.diff] ? m.diff : 'normal'; this.lobbyUpdate(); break;
       case 'roster': this.applyRoster(m.l); this.lobbyUpdate(); break;
       case 'start': this.sessionDiff = DIFF[m.diff] ? m.diff : 'normal'; this.applyRoster(m.l); UI.closeNote(true); Game.newGame(); break;
       case 's': if (this.inGame) this.applySnap(m, now); break;
@@ -7111,7 +7349,10 @@ const Net = {
       case 'hit': if (this.inGame && Game.state !== 'dead' && Game.state !== 'won') { if (m.fo) player.forceOut(); Game.playerHit(+m.dmg || 0); } break;
       case 'charge': if (this.inGame) { if (m.r) Goals.unlock('lure'); Cine.trigger('charge', { d: +m.d || 20, kind: m.r ? 'radio' : 'player' }); } break;
       case 'ping': if (this.inGame) this.showPing(+m.x || 0, +m.y || 1, +m.z || 0, m.by | 0); break;
-      case 'bye': this.lost(m.why === 'started' ? 'That game has already started — ask the host to invite you to the next one.' : m.why === 'version' ? 'You and the host have different versions of the game. Both of you refresh the page (Cmd+Shift+R / Ctrl+Shift+R) and try again.' : 'The host ended the session.'); break;
+      case 'bye': this.lost(m.why === 'started' ? 'That game has already started — ask the host to invite you to the next one.'
+        : m.why === 'version' ? 'You and the host have different versions of the game. Both of you refresh the page (Cmd+Shift+R / Ctrl+Shift+R) and try again.'
+        : m.why === 'full' ? 'That room is full — 4 guards at most.'
+        : m.why === 'gone' ? 'Lost connection to the host.' : 'The host ended the session.'); break;
     }
   },
   roster() { const l = [[0, this.myName]]; for (const r of this.remotes.values()) l.push([r.id, r.name]); return l; },
@@ -7129,7 +7370,7 @@ const Net = {
   /* ---- the running game ---- */
   startGame() { // host
     if (!this.isHost) return;
-    for (const peer of [...this.peers.values()]) if (!peer.open || !peer.remote) this.dropPeer(peer, 'left', true);
+    for (const peer of [...this.peers.values()]) if (!peer.remote) this.dropPeer(peer, 'left', true);
     this.sessionDiff = settings.difficulty;
     this.broadcast({ k: 'start', diff: this.sessionDiff, l: this.roster() });
     UI.closeNote(true);
@@ -7137,6 +7378,7 @@ const Net = {
   },
   onGameStart() {
     this.inGame = true; this.snapSeq = 0; this.lastSeq = 0; this.sendT = 0;
+    if (this.isHost) for (const r of this.relays) if (r.up) this.presence(r); // the room's notice now says "already started"
     this.pings.forEach(p => { scene.remove(p.spr); }); this.pings.length = 0;
     for (const r of this.remotes.values()) r.resetForGame(MP_SPAWNS[r.id % MP_SPAWNS.length]);
     // teammates' flashlights become part of the lighting: compile those shaders now, not mid-game
@@ -7178,22 +7420,22 @@ const Net = {
   },
   update(dt) { // every frame while a session exists (lobby or game)
     const now = performance.now(), frozen = now - (this.tickAt || now) > 2500; this.tickAt = now;
+    for (const r of this.relays) r.tick(now, frozen);
+    this.kaT -= dt; const ka = this.kaT <= 0; if (ka) this.kaT = 2;
     for (const peer of [...this.peers.values()]) {
-      if (frozen) { peer.lastHeard = Math.max(peer.lastHeard, now - 4000); peer.connecting = Math.max(peer.connecting, now - 4000); continue; } // WE were frozen (loading shaders, a hidden tab): don't blame them
-      if (peer.open && now - peer.lastHeard > 20000) this.dropPeer(peer, 'timeout');
-      else if (!peer.open && now - peer.connecting > 30000) {
-        if (this.isClient) this.lost('Could not connect to the host. One of your networks may block online games (some school, office or hotel Wi-Fi) — try another network or a phone hotspot.');
-        else { this.dropPeer(peer, 'failed', true); this.lobbyStatus('A friend could not connect — one of your networks may block online games. They can try again, or from another network.', 'err'); }
-      }
+      if (frozen) { peer.heard = Math.max(peer.heard, now - 4000); peer.since = Math.max(peer.since, now - 4000); continue; } // WE were frozen (loading shaders, a hidden tab): don't blame them
+      if (this.isHost && now - peer.heard > 20000) { this.dropPeer(peer, 'timeout'); continue; }
+      let budget = 40;
+      for (const o of peer.out) if (now - o[2] > o[3]) { o[2] = now; o[3] = Math.min(5000, o[3] * 1.5); this.xmit(peer, o[1]); if (--budget <= 0) break; } // not confirmed yet: send it again (less often each time)
+      if (peer.ackDue || ka) { peer.ackDue = false; this.raw(peer, { k: 'ka', A: peer.si }); }
     }
-    if (!this.active) return;
-    this.kaT -= dt;
-    if (this.kaT <= 0) { this.kaT = 2; if (this.isHost) this.broadcast({ k: 'ka' }); else this.sendRel(this.host0(), { k: 'ka' }); }
+    if (frozen) { this.joinAt = Math.max(this.joinAt, now - 4000); if (this.goneAt) this.goneAt = now; }
+    else if (this.isClient) this.watch(now);
     if (!this.inGame || !Game.inWorld()) return;
     this.sendT -= dt;
     if (this.sendT <= 0) {
-      this.sendT = 1 / 15;
-      if (this.isClient) { if (this.myId >= 0) this.sendUnrel(this.host0(), { k: 'p', s: this.myState() }); }
+      this.sendT = 1 / 12;
+      if (this.isClient) { if (this.welcomed) this.raw(this.host0(), { k: 'p', s: this.myState() }); }
       else this.broadcastUnrel(this.snapshot());
     }
     const n = performance.now();
@@ -7235,7 +7477,7 @@ const Net = {
     y = Math.max(0.35, y);
     const m = { k: 'ping', x: +x.toFixed(2), y: +y.toFixed(2), z: +z.toFixed(2), by: this.myId };
     this.showPing(x, y, z, this.myId);
-    if (this.isHost) this.broadcast(m); else this.sendRel(this.host0(), m);
+    if (this.isHost) this.broadcast(m); else this.rel(this.host0(), m);
   },
   showPing(x, y, z, by) {
     const name = this.nameOf(by), col = '#' + new T.Color(GUARD_COLORS[Math.max(0, by) % GUARD_COLORS.length]).getHexString();
@@ -7290,20 +7532,18 @@ const Net = {
   /* ---- lobby screen ---- */
   inviteLink() { // ?v= makes friends' browsers fetch the newest version instead of an old cached copy
     if (!/^https?:$/.test(location.protocol) || !this.code) return '';
-    const own = /[?&](peer=[\w.-]+:\d+)/.exec(location.search);
-    return location.origin + location.pathname + '?v=' + BUILD + (own ? '&' + own[1] : '') + '#room=' + this.code;
+    return location.origin + location.pathname + '?v=' + BUILD + '#room=' + this.code;
   },
   openLobby() { $('mp-name').value = settings.playerName || ''; if (!this.active) this.lobbyStatus(''); this.lobbyUpdate(); },
   lobbyStatus(text, kind) { const e = $('mp-status'); e.textContent = text || ''; e.className = 'mp-status' + (kind ? ' ' + kind : ''); },
   lobbyUpdate() {
     const list = $('mp-players'); if (!list) return;
-    const rows = [], ready = [...this.peers.values()].filter(p => p.remote).length;
+    const rows = [], ready = [...this.peers.values()].filter(p => p.remote).length, up = this.relays.filter(r => r.up).length;
     if (this.isHost) {
       rows.push([this.myName + ' (you, host)', 'ready']);
       for (const p of this.peers.values()) rows.push([p.remote ? p.remote.name : 'Joining…', p.remote ? 'connected' : 'waiting']);
     } else if (this.isClient) {
-      const h = this.host0();
-      rows.push([this.myName + ' (you)', h && h.open && this.myId >= 0 ? 'connected' : 'waiting']);
+      rows.push([this.myName + ' (you)', this.welcomed ? 'connected' : 'waiting']);
       for (const r of this.remotes.values()) rows.push([r.name + (r.id === 0 ? ' (host)' : ''), 'connected']);
     }
     list.innerHTML = '';
@@ -7311,12 +7551,13 @@ const Net = {
     $('mp-choose').hidden = this.active; $('mp-lobby').hidden = !this.active; $('mp-hostbox').hidden = !(this.isHost && this.code);
     if (this.isHost) { const link = this.inviteLink(); $('mp-room').textContent = this.code || '····'; $('mp-link').value = link; $('mp-link').hidden = !link; $('btn-mp-copylink').hidden = !link; }
     $('btn-mp-start').hidden = !this.isHost; $('btn-mp-start').disabled = ready === 0;
-    $('mp-diff-note').textContent = 'Difficulty: ' + (this.isClient ? (this.sessionDiff || '…') : settings.difficulty).toUpperCase() + (this.isHost ? ' (change it in Settings)' : ' (set by the host)');
+    const via = this.isHost ? (up ? ' · online through ' + up + ' relay server' + (up > 1 ? 's' : '') : '') : this.relay && this.welcomed ? ' · online through ' + this.relay.name : '';
+    $('mp-diff-note').textContent = 'Difficulty: ' + (this.isClient ? (this.sessionDiff || '…') : settings.difficulty).toUpperCase() + (this.isHost ? ' (change it in Settings)' : ' (set by the host)') + via;
     if (this.isClient) {
-      const h = this.host0();
-      this.lobbyStatus(h && h.open && this.myId >= 0 ? 'Connected! Waiting for the host to start the game…' : 'Joining room ' + this.code + '…', h && h.open && this.myId >= 0 ? 'ok' : '');
+      this.lobbyStatus(this.recovering ? 'Reconnecting to the host…' : this.welcomed ? 'Connected! Waiting for the host to start the game…' : 'Joining room ' + this.code + '…', this.welcomed && !this.recovering ? 'ok' : '');
     } else if (this.isHost && this.code) {
-      this.lobbyStatus(ready ? ready + ' guard' + (ready > 1 ? 's' : '') + ' joined. Press Start when everyone is in.' : 'Room ready! Send the invite link (or the code) to up to 3 friends. Keep this screen open.', 'ok');
+      if (!up) this.lobbyStatus('Lost the connection to the online servers — reconnecting… (keep this screen open)', 'err');
+      else this.lobbyStatus(ready ? ready + ' guard' + (ready > 1 ? 's' : '') + ' joined. Press Start when everyone is in.' : 'Room ready! Send the invite link (or the code) to up to 3 friends — they can be anywhere. Keep this screen open.', 'ok');
     }
   },
   bindLobby() {
@@ -7328,7 +7569,7 @@ const Net = {
     nameIn.addEventListener('input', saveName);
     [nameIn, codeIn, $('mp-link')].forEach(el => el.addEventListener('keydown', e => e.stopPropagation()));
     codeIn.addEventListener('input', () => {
-      if (OLD_CODE(codeIn.value)) { codeIn.value = ''; this.lobbyStatus('That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.', 'err'); return; }
+      if (OLD_CODE(codeIn.value)) { codeIn.value = ''; this.lobbyStatus(OLD_MSG, 'err'); return; }
       const v = codeFrom(codeIn.value); if (codeIn.value !== v) codeIn.value = v;
     });
     codeIn.addEventListener('keyup', e => { if (e.key === 'Enter') $('btn-mp-join').click(); });
@@ -7338,8 +7579,8 @@ const Net = {
       if (!ok) { const t = $('mp-link'), v = t.value; t.value = text; try { t.focus(); t.select(); ok = document.execCommand('copy'); } catch (e) { } t.value = v; }
       this.lobbyStatus(ok ? what + ' copied — paste it to your friends (Discord, iMessage…).' : 'Copy this and send it: ' + text, ok ? 'ok' : '');
     };
-    $('btn-mp-host').addEventListener('click', e => busy(e.currentTarget, async () => { Sound.ui(); saveName(); this.lobbyStatus('Creating a room…'); await this.host(); }));
-    $('btn-mp-join').addEventListener('click', e => busy(e.currentTarget, async () => { Sound.ui(); saveName(); this.lobbyStatus('Joining room ' + cleanCode(codeIn.value) + '…'); await this.join(codeIn.value); }));
+    $('btn-mp-host').addEventListener('click', e => busy(e.currentTarget, async () => { Sound.ui(); saveName(); this.lobbyStatus('Connecting to the online servers…'); await this.host(); }));
+    $('btn-mp-join').addEventListener('click', e => busy(e.currentTarget, async () => { Sound.ui(); saveName(); this.lobbyStatus('Looking for room ' + cleanCode(codeFrom(codeIn.value)) + '…'); await this.join(codeIn.value); }));
     $('btn-mp-back').addEventListener('click', () => { Sound.ui(); this.leave(); UI.back(); });
     $('btn-mp-copylink').addEventListener('click', () => copy(this.inviteLink(), 'Invite link'));
     $('btn-mp-copycode').addEventListener('click', () => copy(this.code, 'Room code'));
@@ -7779,21 +8020,29 @@ function frame(now) {
 }
 requestAnimationFrame(frame);
 // Browsers stop animation frames in hidden tabs. Online, keep the session (and, for the host, the world) ticking
-// on a slow timer so a minimised window doesn't freeze or drop everyone else.
+// on a slow timer so a minimised window doesn't freeze or drop everyone else. The timer runs in a tiny worker:
+// after a few minutes in the background, browsers slow the page's own timers to once a minute; a worker's aren't.
 let hiddenT = performance.now();
-setInterval(() => {
+const hiddenTick = () => {
   const now = performance.now(), el = Math.min((now - hiddenT) / 1000, 1); hiddenT = now;
   if (!document.hidden || !Net.active) return;
   try {
     if (Net.inGame && Game.inWorld() && Game.state !== 'dead' && Game.state !== 'won') { for (let t = el; t > 0.001; t -= 0.05) Game.update(Math.min(0.05, t)); }
     Net.update(el);
   } catch (e) { Game.onError(e); }
-}, 250);
+};
+(() => {
+  let fallback = 0; const plain = () => { if (!fallback) fallback = setInterval(hiddenTick, 250); };
+  try {
+    const w = new Worker(URL.createObjectURL(new Blob(['setInterval(function () { postMessage(0); }, 250);'], { type: 'text/javascript' })));
+    w.onmessage = hiddenTick; w.onerror = e => { if (e && e.preventDefault) e.preventDefault(); w.terminate(); plain(); };
+  } catch (e) { plain(); }
+})();
 
 if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
-    Hints, Cine, Net, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt,
+    Hints, Cine, Net, Relay, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
