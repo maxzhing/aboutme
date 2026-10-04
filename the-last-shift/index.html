@@ -252,6 +252,13 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 #hint-tag .ht-arrow{position:absolute;left:-9px;top:-7px;width:0;height:0;border-left:16px solid #ffd23a;border-top:7px solid transparent;border-bottom:7px solid transparent;display:none;filter:drop-shadow(0 0 4px #000)}
 #hint-tag.off .ht-arrow{display:block}
 #hint-tag.off .ht-label{top:16px}
+/* ---------- stun meter (fighting back) ---------- */
+#stun{position:absolute;right:22px;top:74px;width:150px;display:none;font-size:9.5px;letter-spacing:.26em;color:#d9c9a3;text-align:right}
+#stun.show{display:block}
+#stun i{display:block;height:3px;margin-top:5px;background:rgba(255,255,255,.12)}
+#stun b{display:block;height:100%;width:0;background:#d9a34a}
+#stun.stunned{color:#9fe0a0}
+#stun.stunned b{background:#7fd08a}
 /* ---------- team (online) ---------- */
 #team{position:absolute;left:22px;top:214px;width:230px;font-size:10px;letter-spacing:.2em;color:#cfc9bb}
 #team .tm{display:grid;grid-template-columns:10px 1fr auto;grid-template-rows:auto 3px;column-gap:8px;row-gap:3px;align-items:center;padding:5px 9px;margin-bottom:4px;background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,0))}
@@ -277,11 +284,13 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 .cctv-alert{position:absolute;right:0;bottom:0;color:#ff5a4a;animation:blink .8s steps(2) infinite}
 .cctv-ui .pv-c{width:22px;height:22px}
 #cine-static{position:absolute;inset:0;opacity:0;background-size:200px 200px}
-#cine-static.cut,#pip-static.cut{animation:pvcut .5s steps(6) forwards}
+#cine-static,#pip-static{will-change:opacity}
 #cine-flash{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,30,20,0) 25%,rgba(190,0,0,.6) 100%);opacity:0}
 #cine-sub{position:absolute;left:0;right:0;bottom:14vh;text-align:center;font-size:clamp(16px,1.6vw,22px);letter-spacing:.08em;color:#efe8d8;text-shadow:0 2px 6px #000;opacity:0;transition:opacity .6s}
 #cine-sub.show{opacity:1}
-#cine-skip{position:absolute;right:3vw;bottom:3vh;font-family:var(--mono);font-size:11px;letter-spacing:.25em;color:rgba(220,214,200,.65);display:none;z-index:3}
+#cine-skip{position:absolute;right:3vw;bottom:3vh;font-family:var(--mono);font-size:11px;letter-spacing:.25em;color:rgba(220,214,200,.65);display:none;z-index:3;text-align:right}
+#cine-skip i{display:block;height:2px;margin-top:6px;background:rgba(255,255,255,.15)}
+#cine-skip b{display:block;height:100%;width:0;background:var(--amber)}
 #cine.skippable #cine-skip{display:block}
 #hud.cine>*:not(#messages){visibility:hidden}
 #pip{position:fixed;z-index:6;display:none;pointer-events:none;border:1px solid rgba(228,236,228,.45);box-shadow:0 0 0 1px rgba(0,0,0,.7),0 12px 40px rgba(0,0,0,.6);overflow:hidden}
@@ -356,6 +365,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   <div id="center-title"></div>
   <div id="lock-hint"></div>
   <div id="team"></div>
+  <div id="stun"><span id="stun-label">STAGGER</span><i><b id="stun-bar"></b></i></div>
   <div id="hint-tag"><span class="ht-arrow"></span><span class="ht-label"></span></div>
 </div>
 
@@ -366,7 +376,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   <div id="cine-flash"></div>
   <div id="cine-static"></div>
   <div id="cine-sub"></div>
-  <div id="cine-skip">E · SKIP</div>
+  <div id="cine-skip">HOLD SPACE TO SKIP<i><b id="cine-skip-bar"></b></i></div>
 </div>
 <div id="pip"><div class="pip-fx"></div><div class="pip-ui"><span class="pv-rec"><i></i>LIVE</span><span id="pip-time"></span><span id="pip-cam"></span><span id="pip-alert"></span></div><div id="pip-static"></div></div>
 
@@ -428,6 +438,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <span class="key">R</span><span>Battery / crank</span>
           <span><span class="key">Ctrl</span> / <span class="key">C</span></span><span>Crouch</span>
           <span class="key">M</span><span>Minimap</span>
+          <span><span class="key">Click</span> / <span class="key">V</span></span><span>Punch (stuns it)</span>
           <span class="key">H</span><span>Hint (yellow marker)</span>
           <span class="key">G</span><span>Ping (co-op)</span>
           <span><span class="key">P</span> / <span class="key">Esc</span></span><span>Pause</span>
@@ -499,8 +510,9 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <span class="key">E</span><span>Interact: doors, items, notes, switches, lockers</span>
           <span class="key">M</span><span>Toggle minimap (shows explored areas)</span>
           <span class="key">H</span><span>Hint — highlights the next thing you need in yellow (it also happens on its own when you're stuck; turn it off in Settings)</span>
+          <span><span class="key">Click</span> / <span class="key">V</span></span><span>Punch. It barely hurts the Warden, but a few hits — or one as it lunges — stun it for a few seconds. Then run.</span>
           <span class="key">G</span><span>Co-op: mark a spot for your team</span>
-          <span><span class="key">E</span> / <span class="key">Space</span></span><span>Skip a camera cutscene</span>
+          <span><span class="key">Hold Space</span></span><span>Skip a camera cutscene</span>
           <span><span class="key">P</span> / <span class="key">Esc</span></span><span>Pause and release the mouse</span>
         </div>
       </div>
@@ -512,6 +524,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li>Its eyes give it away: <span style="color:#cfe6ff">pale</span> when wandering, <span style="color:#f0b45a">amber</span> when investigating, <span style="color:#ff5a4a">red</span> when hunting.</li>
           <li>Break line of sight, close doors behind you and hide in lockers. It only finds you in a locker if it watched you get in.</li>
           <li>Maintenance vents are too small for it — crouch to crawl through.</li>
+          <li>Cornered? Fight. Punches won't kill it, but they stagger it, and a stun buys you a few seconds. It shrugs off a second stun for a while — and comes back angrier.</li>
           <li>The heartbeat, flickering lights and the threat eye (top right) tell you when it is close.</li>
           <li>Read every note. They contain the codes, routes and secrets you need to get out.</li>
           <li>Co-op (up to 4): one player hosts, friends join with a code. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
@@ -534,7 +547,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     </div>
     <div id="mp-hostbox" hidden>
       <ol class="mp-steps">
-        <li>Copy this <b>invite code</b> and send it to a friend.<textarea id="mp-invite" readonly placeholder="Creating code…"></textarea><button class="btn small" id="btn-mp-copyinv">Copy invite</button></li>
+        <li>Copy this <b>invite code</b> (or the invite link) and send it to a friend.<textarea id="mp-invite" readonly placeholder="Creating code…"></textarea><button class="btn small" id="btn-mp-copyinv">Copy invite</button> <button class="btn small" id="btn-mp-copylink" hidden>Copy invite link</button></li>
         <li>Paste the <b>reply code</b> they send back, then press Connect.<textarea id="mp-reply-in" placeholder="Paste the reply code here…"></textarea><button class="btn small primary" id="btn-mp-accept">Connect</button> <button class="btn small" id="btn-mp-another">Invite another player</button></li>
       </ol>
     </div>
@@ -666,10 +679,11 @@ const settings = Object.assign({}, DEFAULTS);
 function saveSettings() { try { localStorage.setItem('lastshift.settings.v1', JSON.stringify(settings)); } catch (e) { } }
 
 // hearing: multiplier on every noise radius; charge: speed factor when it sprints toward a sound
+// stagger: how much one punch builds toward a stun; stun: seconds it reels; immune: seconds before it can be stunned again
 const DIFF = {
-  easy:   { patrol: 1.3,  investigate: 2.3, hunt: 3.9,  sight: 0.75, hearing: 1.0,  charge: 0.9,  damage: 34,  search: 14, memory: 1.8, aware: 0.75, drain: 1 / 210, regen: 4,   hintDelay: 40, pressure: 150 },
-  normal: { patrol: 1.5,  investigate: 2.7, hunt: 4.6,  sight: 1.0,  hearing: 1.45, charge: 1.0,  damage: 55,  search: 20, memory: 2.6, aware: 1.0,  drain: 1 / 160, regen: 2.5, hintDelay: 60, pressure: 100 },
-  hard:   { patrol: 1.75, investigate: 3.1, hunt: 5.05, sight: 1.25, hearing: 1.85, charge: 1.0,  damage: 100, search: 28, memory: 3.4, aware: 1.35, drain: 1 / 125, regen: 1.5, hintDelay: 90, pressure: 70 },
+  easy:   { patrol: 1.3,  investigate: 2.3, hunt: 3.9,  sight: 0.75, hearing: 1.0,  charge: 0.9,  damage: 34,  search: 14, memory: 1.8, aware: 0.75, drain: 1 / 210, regen: 4,   hintDelay: 40, pressure: 150, stagger: 0.5,  stun: 4.4, immune: 14, parry: 1 },
+  normal: { patrol: 1.5,  investigate: 2.7, hunt: 4.6,  sight: 1.0,  hearing: 1.45, charge: 1.0,  damage: 55,  search: 20, memory: 2.6, aware: 1.0,  drain: 1 / 160, regen: 2.5, hintDelay: 60, pressure: 100, stagger: 0.38, stun: 3.5, immune: 20, parry: 1 },
+  hard:   { patrol: 1.75, investigate: 3.1, hunt: 5.05, sight: 1.25, hearing: 1.85, charge: 1.0,  damage: 100, search: 28, memory: 3.4, aware: 1.35, drain: 1 / 125, regen: 1.5, hintDelay: 90, pressure: 70,  stagger: 0.27, stun: 2.7, immune: 28, parry: 0.75 },
 };
 // in an online session everyone plays the host's difficulty
 const diff = () => DIFF[Net.sessionDiff || settings.difficulty] || DIFF.normal;
@@ -1138,7 +1152,7 @@ maxAniso = Math.max(1, Math.min(4, renderer.capabilities.getMaxAnisotropy() || 1
 renderer.setClearColor(0x020203, 1);
 renderer.toneMapping = T.LinearToneMapping;
 renderer.toneMappingExposure = settings.brightness;
-renderer.shadowMap.type = T.PCFShadowMap;
+renderer.shadowMap.type = T.PCFSoftShadowMap;
 renderer.shadowMap.autoUpdate = true;
 const scene = new T.Scene();
 const FOG_BASE = 0.072;
@@ -1631,7 +1645,7 @@ class Door {
     if (this.t === this.target) this.fast = false;
     this.place();
   }
-  reset() { this.t = 0; this.target = 0; this.fast = false; this.unlocked = this.type === 'normal'; this.place(); this.updateLeds(); }
+  reset() { this.t = 0; this.target = 0; this.fast = false; this.lastUse = -10; this.evAt = 0; this.unlocked = this.type === 'normal'; this.place(); this.updateLeds(); }
 }
 for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
   const c = grid[z][x];
@@ -1722,10 +1736,10 @@ const instEm = new T.InstancedMesh(fixGeoEm, fixMatEm, emFx.length);
 /* ------------------------------------------------------------------ */
 const hemi = new T.HemisphereLight(0x2a3440, 0x0d0b09, 0.5);
 scene.add(hemi);
-const flash = new T.SpotLight(0xfff0d8, 0, 24, 0.44, 0.55, 1.4);
-flash.shadow.camera.near = 0.15; flash.shadow.camera.far = 24; flash.shadow.bias = -0.0006; flash.shadow.normalBias = 0.02;
+const flash = new T.SpotLight(0xfff0d8, 0, 24, 0.5, 0.8, 1.5); // soft-edged beam
+flash.shadow.camera.near = 0.1; flash.shadow.camera.far = 24; flash.shadow.bias = -0.0008; flash.shadow.normalBias = 0.035;
 scene.add(flash); scene.add(flash.target);
-const flashFill = new T.PointLight(0xffe8c8, 0, 3.2, 2); // soft spill close to the player
+const flashFill = new T.PointLight(0xffe2c0, 0, 4.5, 2); // light bouncing back from wherever the beam lands
 scene.add(flashFill);
 const pool = [];
 const MAX_POOL = 7;
@@ -2900,6 +2914,42 @@ const Sound = (function () {
       noise(out, st, 0.09, 'bandpass', 600 * rand(0.85, 1.1), 1.2, 0.6, 0.002); tone(out, st, 'sine', 90, 52, 0.08, 0.5, 0.002);
     }
   });
+  /* ---- fighting back ---- */
+  S.whoosh = safe(function () { // a fist cutting the air
+    const t = ctx.currentTime, out = dest(null, 0.05); out.gain.value = 0.55;
+    const n = noise(out, t, 0.2, 'bandpass', 700, 1.4, 0.55, 0.02, pink); n.f.frequency.exponentialRampToValueAtTime(2400, t + 0.16);
+    noise(out, t + 0.02, 0.1, 'highpass', 3500, 0.7, 0.12, 0.01);
+  });
+  S.punchHit = safe(function (pos) { // knuckles on something big and wrong
+    const t = ctx.currentTime, out = dest(pos || null, 0.25); out.gain.value = 1.25;
+    tone(out, t, 'sine', 120, 45, 0.18, 1, 0.001);
+    noise(out, t, 0.09, 'lowpass', 900, 1, 0.9, 0.001, brown);
+    noise(out, t + 0.005, 0.05, 'bandpass', 2600, 2, 0.45, 0.001);  // crack
+    tone(out, t + 0.01, 'triangle', 300, 160, 0.08, 0.25, 0.001);
+  });
+  S.thud = safe(function (pos, isMetal) { // punching a wall (or a steel door)
+    const t = ctx.currentTime, out = dest(pos || null, isMetal ? 0.6 : 0.2); out.gain.value = isMetal ? 1.0 : 0.8;
+    if (isMetal) metal(out, t, 150, 0.9, 0.5);
+    tone(out, t, 'sine', 90, 40, 0.14, 0.9, 0.001); noise(out, t, 0.06, 'lowpass', 700, 1, 0.7, 0.001, brown);
+  });
+  S.monsterHurt = safe(function () {
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 0.8; out.connect(monIn);
+    const ws = ctx.createWaveShaper(); ws.curve = distCurve; const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1100; bp.Q.value = 1.4;
+    const g = ctx.createGain(); env(g.gain, t, 0.02, 0.5, 0.5); ws.connect(bp); bp.connect(g); g.connect(out);
+    for (const f of [180, 268, 355]) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(f * 1.4, t); o.frequency.exponentialRampToValueAtTime(f * 0.7, t + 0.5); o.connect(ws); o.start(t); o.stop(t + 0.55); }
+    noise(out, t, 0.3, 'bandpass', 2000, 1, 0.25, 0.01);
+  });
+  S.monsterStun = safe(function () { // a long, wavering howl as it reels
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 0.9; out.connect(monIn);
+    const ws = ctx.createWaveShaper(); ws.curve = distCurve; const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1800;
+    const g = ctx.createGain(); env(g.gain, t, 0.05, 0.55, 2.2); ws.connect(lp); lp.connect(g); g.connect(out);
+    for (const f of [140, 211, 96]) {
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(f * 1.6, t); o.frequency.exponentialRampToValueAtTime(f * 0.6, t + 2.2);
+      const vib = ctx.createOscillator(); vib.frequency.value = 6 + Math.random() * 3; const vg = ctx.createGain(); vg.gain.value = f * 0.12; vib.connect(vg); vg.connect(o.frequency); vib.start(t); vib.stop(t + 2.3);
+      o.connect(ws); o.start(t); o.stop(t + 2.3);
+    }
+    tone(out, t, 'sine', 70, 35, 0.6, 0.9, 0.003);
+  });
   S.setAlarm = function (on) { S.alarmOn = !!on; };
   S.setHum = function (on) { S.humOn = !!on; };
   return S;
@@ -3114,6 +3164,7 @@ const Monster = {
   roarCD: 0, breathT: 2, clickT: 6, stepPhase: 0, lastStepSign: 1, perceiveT: 0, duck: 0, lean: 0,
   eyeColor: new T.Color(0xdff2ff), seenHide: null, visited: [], huntCount: 0, scriptedGoal: null,
   target: null, nearest: null, nearestD: 99, cine: null, targetId: -1, net: { buf: [] },
+  stagger: 0, stunImmune: 0, rageUntil: 0, kb: new T.Vector3(), netStagger: 0, netImmune: 0,
   init() {
     this.model = buildWarden(false); this.P = this.model.userData.P; scene.add(this.model);
     this.reset();
@@ -3126,6 +3177,7 @@ const Monster = {
     this.invStrength = 0; this.invTime = -99; this.pauseT = 0; this.attackT = 0; this.bashDoor = null; this.stuckT = 0; this.stuckCount = 0;
     this.roarCD = 0; this.seenHide = null; this.visited.length = 0; this.huntCount = 0; this.scriptedGoal = null; this.duck = 0;
     this.charging = false; this.target = null; this.nearest = null; this.nearestD = 99; this.cine = null; this.targetId = -1; this.net.buf.length = 0;
+    this.stagger = 0; this.stunImmune = 0; this.rageUntil = 0; this.kb.set(0, 0, 0); this.netStagger = 0; this.netImmune = 0;
     this.eyeColor.set(0xdff2ff); if (this.P) this.P.glowMat.opacity = 0.9;
     this.model.visible = true; this.model.position.copy(this.pos); this.model.rotation.set(0, this.yaw, 0);
   },
@@ -3149,7 +3201,7 @@ const Monster = {
       case 'PATROL': return d.patrol * boost;
       case 'INVESTIGATE': return (this.charging ? d.hunt * d.charge : d.investigate) * boost;
       case 'SEARCH': return (d.patrol + d.investigate) * 0.5 * boost;
-      case 'HUNT': return d.hunt * (this.seeing ? 1 : 0.94) * boost;
+      case 'HUNT': return d.hunt * (this.seeing ? 1 : 0.94) * boost * (Game.time < this.rageUntil ? 1.12 : 1); // furious after being stunned
       case 'SCRIPT': return d.hunt * 1.05;
       default: return 0;
     }
@@ -3213,6 +3265,43 @@ const Monster = {
     const charge = isPlayer || kind === 'event' || strength > 0.55; // a guard's noise always sets it running
     if (this.investigate(tgt, strength, charge)) { Sound.screech(); Game.onMonsterCharge(pos, actor || null, d, kind); }
   },
+  knockback(dt) {
+    if (this.kb.x * this.kb.x + this.kb.z * this.kb.z < 1e-4) return;
+    moveBody(this.pos, this.kb.x * dt, this.kb.z * dt, MONSTER_R, 'monster', false);
+    this.kb.multiplyScalar(Math.exp(-dt * 7));
+  },
+  // a guard punched it. It barely hurts — but enough hits (or one at the right moment) stun it.
+  // returns 0 ignored, 1 shrugged off, 2 flinched, 3 stunned, 4 stunned mid-lunge
+  punched(actor) {
+    if (!this.active || this.state === 'SCRIPT' || Game.endingLock || !actor) return 0;
+    if (this.cine && (this.cine.pose === 'stunned' || this.cine.pose === 'wake')) { this.push(actor, 1.2); return 1; }
+    const now = Game.time, d = diff();
+    this.target = actor; this.lastKnown.copy(actor.pos); this.lastSeen = now; this.lastContact = now; this.awareness = 1.2; this.seenHide = null;
+    const lunging = this.state === 'ATTACK' && !this.attackHit && this.attackT < 0.44;
+    if (now < this.stunImmune) { // still shaking off the last stun: it barely reacts
+      this.push(actor, 1.3);
+      if (!this.cine || this.cine.pose !== 'hit') this.playPose('hit', 0.26);
+      return 1;
+    }
+    this.stagger += lunging ? d.parry : d.stagger;
+    if (this.stagger >= 0.999) { this.stun(actor); return lunging ? 4 : 3; }
+    this.push(actor, 2.0);
+    this.playPose('hit', 0.42);
+    if (this.state !== 'HUNT') { this.state = 'HUNT'; this.stateT = 0; this.charging = false; } // no cutscene: you started this fight
+    this.attackT = 0; this.attackHit = false; this.path = null; this.hasGoal = false; this.repathT = 0;
+    Sound.monsterHurt();
+    return 2;
+  },
+  stun(actor) {
+    const d = diff();
+    this.stagger = 0; this.stunImmune = Game.time + d.stun + d.immune; this.rageUntil = Game.time + d.stun + 7;
+    this.push(actor, 3.4);
+    this.state = 'HUNT'; this.stateT = 0; this.charging = false; this.attackT = 0; this.attackHit = false; this.path = null; this.hasGoal = false; this.repathT = 0;
+    this.playPose('stunned', d.stun);
+    Sound.monsterStun();
+  },
+  push(actor, speed) { const dx = this.pos.x - actor.pos.x, dz = this.pos.z - actor.pos.z, l = Math.hypot(dx, dz) || 1; this.kb.set(dx / l * speed, 0, dz / l * speed); },
+  stunLeft() { return this.cine && this.cine.pose === 'stunned' ? Math.max(0, this.cine.dur - this.cine.t) : 0; },
   lure(pos) { if (this.active && !this.cine && (this.state === 'PATROL' || this.state === 'LOST')) this.investigate(new T.Vector3(pos.x, 0, pos.z), 0.4, false); },
   visibilityOf(a) {
     if (a.dead || Game.endingLock) return 0;
@@ -3306,6 +3395,8 @@ const Monster = {
   nearestActor() { let b = null, bd = Infinity; for (const a of actors()) { const d = a.pos.distanceTo(this.pos); if (d < bd) { bd = d; b = a; } } return b; },
   update(dt) {
     this.roarCD -= dt;
+    this.stagger = Math.max(0, this.stagger - dt * 0.06);
+    this.knockback(dt);
     if (this.cine) { this.cine.t += dt; this.vel.set(0, 0, 0); this.speed = 0; this.animate(dt, 0); if (this.cine.t >= this.cine.dur) { this.cine = null; this.P.glowMat.opacity = 0.9; } return; }
     if (!this.active) { this.animate(dt, 0); return; }
     this.stateT += dt;
@@ -3504,7 +3595,7 @@ const Monster = {
     if (this.cine) this.applyPose(dt);
     // apply transform
     this.model.position.set(this.pos.x, 0, this.pos.z);
-    this.model.rotation.set(0, this.yaw, 0);
+    this.model.rotation.set(0, this.yaw, this.cine && this.cine.pose === 'stunned' ? this.model.rotation.z : 0);
   },
   // cutscene poses layered over the procedural animation
   applyPose(dt) {
@@ -3535,6 +3626,25 @@ const Monster = {
         A.el.rotation.x = lerp(A.el.rotation.x, C.pose === 'scream' ? -0.3 : -0.95, r);
       }
       P.chest.scale.y = 1 + Math.sin(C.t * 18) * 0.05 * r;
+    } else if (C.pose === 'hit') { // a fist to the head: it recoils, head snapped aside
+      const r = Math.sin(Math.min(1, k * 1.15) * Math.PI);
+      P.spine.rotation.x = lerp(P.spine.rotation.x, 0.05, r * 0.8);
+      P.neck.rotation.x = lerp(P.neck.rotation.x, -0.75, r);
+      P.head.rotation.set(P.head.rotation.x - 0.35 * r, P.head.rotation.y + 0.9 * r, P.head.rotation.z - 0.4 * r);
+      P.jaw.rotation.x = 0.5 * r;
+      for (const A of P.arms) { A.up.rotation.x = lerp(A.up.rotation.x, -0.5, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * 0.75, r); A.el.rotation.x = lerp(A.el.rotation.x, -0.2, r); }
+    } else if (C.pose === 'stunned') { // reeling: hunched over, clutching its head, swaying, eyes guttering
+      const r = smooth(0, 0.18, k) * (1 - smooth(0.86, 1, k)), sw = Math.sin(C.t * 3.1);
+      P.hips.position.y = lerp(P.hips.position.y, 1.06, r);
+      P.spine.rotation.x = lerp(P.spine.rotation.x, 0.95 + sw * 0.08, r);
+      P.neck.rotation.x = lerp(P.neck.rotation.x, 0.25, r);
+      P.head.rotation.set(lerp(P.head.rotation.x, 0.3, r), lerp(P.head.rotation.y, sw * 0.5, r), lerp(P.head.rotation.z, 0.5 * Math.sin(C.t * 1.7), r));
+      for (const L of P.legs) { L.hp.rotation.x = lerp(L.hp.rotation.x, -0.55, r); L.kn.rotation.x = lerp(L.kn.rotation.x, 0.95, r); L.an.rotation.x = lerp(L.an.rotation.x, -0.35, r); }
+      for (const A of P.arms) { A.up.rotation.x = lerp(A.up.rotation.x, -2.05, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * 0.42, r); A.el.rotation.x = lerp(A.el.rotation.x, -1.55, r); }
+      P.jaw.rotation.x = 0.35 + Math.sin(C.t * 6) * 0.1;
+      const lit = Math.random() < 0.25 ? 0.15 : 0.55; // the eyes stutter
+      P.eyeMat.color.copy(this.eyeColor).multiplyScalar(lit); P.glowMat.opacity = 0.9 * lit;
+      this.model.rotation.z = sw * 0.06 * r;
     } else if (C.pose === 'stare') { // stops dead, leans in and studies something (a locker, a camera)
       const r = smooth(0, 0.25, k) * (1 - smooth(0.85, 1, k));
       P.spine.rotation.x = lerp(P.spine.rotation.x, 0.62, r);
@@ -3552,6 +3662,7 @@ const Monster = {
     if (this.net.buf.length > 30) this.net.buf.shift();
     const wasCharging = this.charging, prev = this.state;
     this.active = !!m.a; this.attackT = +m.at || 0; this.seeing = !!m.sg; this.targetId = m.ti === undefined ? -1 : m.ti | 0; this.charging = !!m.ch;
+    this.netStagger = clamp(+m.sk || 0, 0, 1); this.netImmune = Math.max(0, +m.im || 0);
     const st = typeof m.st === 'string' ? m.st : 'DORMANT';
     if (st !== prev) {
       this.state = st;
@@ -3828,12 +3939,15 @@ document.addEventListener('mousemove', e => {
 });
 canvasEl.addEventListener('mousedown', e => {
   Input.mouseDown = true;
-  if (Game.state === 'playing' && !Input.locked) Input.requestLock();
+  if (Game.state === 'playing') {
+    if (Input.locked) { if (e.button === 0 || e.button === 2) Combat.punch(); } // click to punch
+    else { if (Input.dragLook && e.button === 2) Combat.punch(); Input.requestLock(); }
+  }
   e.preventDefault();
 });
 window.addEventListener('mouseup', () => { Input.mouseDown = false; });
 canvasEl.addEventListener('contextmenu', e => e.preventDefault());
-const GAME_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'KeyF', 'KeyE', 'KeyR', 'KeyM', 'KeyP', 'KeyC', 'KeyH', 'KeyG', 'Enter', 'Tab'];
+const GAME_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'KeyF', 'KeyE', 'KeyR', 'KeyM', 'KeyP', 'KeyC', 'KeyH', 'KeyG', 'KeyV', 'KeyQ', 'Enter', 'Tab'];
 window.addEventListener('keydown', e => {
   Sound.resume();
   const code = e.code;
@@ -3841,11 +3955,7 @@ window.addEventListener('keydown', e => {
   if (e.repeat) { if (Game.state === 'playing') Input.keys[code] = true; return; }
   if (Game.state === 'playing') {
     Input.keys[code] = true;
-    if (Cine.blocking()) {
-      if (code === 'KeyE' || code === 'Space' || code === 'Enter') Cine.skip();
-      else if (code === 'KeyP' || code === 'Escape') Game.pause();
-      return;
-    }
+    if (Cine.blocking()) { if (code === 'KeyP' || code === 'Escape') Game.pause(); return; } // hold Space to skip (see Cine)
     if (Game.controlLock) { if (code === 'KeyP' || code === 'Escape') Game.pause(); else if (code === 'KeyM') UI.toggleMap(); return; }
     switch (code) {
       case 'KeyF': player.toggleFlash(); break;
@@ -3855,6 +3965,7 @@ window.addEventListener('keydown', e => {
       case 'KeyC': player.crouchToggle = !player.crouchToggle; break;
       case 'KeyH': Hints.request(); break;
       case 'KeyG': Net.ping(); break;
+      case 'KeyV': case 'KeyQ': Combat.punch(); break;
       case 'KeyP': case 'Escape': Game.pause(); break;
     }
   } else if (Game.state === 'reading') {
@@ -4044,6 +4155,14 @@ const UI = {
     this.set('noise-txt', 'text', p.cranking ? 'CRANKING' : p.noiseLevel < 0.05 ? 'SILENT' : p.noiseLevel < 0.2 ? 'QUIET' : p.noiseLevel < 0.6 ? 'AUDIBLE' : 'LOUD');
     for (const c of ['yellow', 'blue', 'red']) this.set('card-' + c[0], 'class', Game.cards[c] ? 'got' : '');
     Net.teamHud();
+    // the Warden's stagger: fills as you land punches, then counts down while it is stunned
+    const stunL = Monster.stunLeft(), stg = Net.isClient ? Monster.netStagger : Monster.stagger;
+    const showStun = Monster.active && (stunL > 0 || (stg > 0.03 && Monster.pos.distanceTo(p.pos) < 10));
+    this.set('stun', 'class', showStun ? (stunL > 0 ? 'show stunned' : 'show') : '');
+    if (showStun) {
+      this.set('stun-label', 'text', stunL > 0 ? 'STUNNED · ' + stunL.toFixed(1) + 's' : 'STAGGER');
+      $('stun-bar').style.width = (stunL > 0 ? stunL / diff().stun : clamp(stg, 0, 1)) * 100 + '%';
+    }
     const labels = ['UNSEEN', 'NEARBY', 'SUSPICIOUS', 'HUNTED'];
     const th = $('threat');
     if (this.hudCache.th !== threatLevel + threatSub) {
@@ -4350,6 +4469,17 @@ const Game = {
         break;
       }
       case 'cine': Cine.trigger(String(ev.id), ev); break;
+      case 'punch': {
+        const r = ev.r | 0;
+        if (!mine) Sound.punchHit(_v3c.set(Monster.pos.x, 1.6, Monster.pos.z));
+        if (r >= 3) {
+          this.stats.stuns = (this.stats.stuns || 0) + 1;
+          UI.center('STUNNED', mine ? (r === 4 ? 'You caught it mid-lunge — RUN!' : 'It\'s reeling — RUN!') : who + ' stunned it — RUN!', 2.2);
+          if (!mine) Sound.sting(false);
+        } else if (mine && r === 1 && !this.flags.resistTold) { this.flags.resistTold = true; UI.msg('It shrugs that off — it won\'t be stunned again so soon.', 'warn', 3); }
+        else if (mine && r === 2 && !this.flags.punchTold) { this.flags.punchTold = true; UI.msg('It barely felt that. Keep hitting to stun it — or hit it as it lunges.', '', 3.5); }
+        break;
+      }
       case 'end': this.startEnding(); break;
       case 'over': if (this.state !== 'dead' && this.state !== 'won') { UI.closeNote(true); this.showGameOver(); } break;
     }
@@ -4379,7 +4509,7 @@ const Game = {
     for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) grid[z][x].explored = false;
     Monster.reset(); if (Phantom.model) Phantom.model.visible = false; Phantom.active = false;
     player.reset();
-    Cine.reset(); Hints.reset();
+    Cine.reset(); Hints.reset(); Combat.reset(); Arms.reset();
     Sound.setAlarm(false); Sound.setHum(false);
     UI.clearMsgs(); UI.setLockerView(false); UI.hudCache = {}; UI.closeNote(true);
     $('fx-damage').style.opacity = 0; $('fx-threat').style.opacity = 0; $('fx-white').style.opacity = 0;
@@ -4436,6 +4566,7 @@ const Game = {
     $('go-stats').innerHTML = '';
     const rows = [['Survived', fmtTime(this.time)], ['Keycards', CARD_COLORS.filter(c => this.cards[c]).length + ' / 3'], ['Notes found', this.notesRead.size + ' / ' + NOTE_ORDER.length], ['Times spotted', this.stats.spotted], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]];
     if (Net.active) rows.unshift(['Guards', crew().length + ' on shift']);
+    if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
     rows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; $('go-stats').appendChild(s); $('go-stats').appendChild(v); });
     $('go-title').textContent = Net.active ? 'Nobody made it' : 'You didn\'t make it';
     $('go-sub').textContent = pick(Net.active ? ['The Warden found every one of you', 'The whole shift is over', 'Lights out, Sublevel 6'] : ['The Warden found you', 'Your shift is over', 'It never misses anything in the dark', 'Lights out']);
@@ -4448,6 +4579,7 @@ const Game = {
     $('win-stats').innerHTML = '';
     const rows = [['Time', fmtTime(this.time)], ['Notes found', this.notesRead.size + ' / ' + NOTE_ORDER.length], ['Times spotted', this.stats.spotted], ['Damage taken', this.stats.damage], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]];
     if (Net.active) rows.unshift(['Guards escaped', crew().length + '']);
+    if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
     rows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; $('win-stats').appendChild(s); $('win-stats').appendChild(v); });
     $('epilogue').textContent = this.notesRead.has('badge')
       ? 'The lift climbs for a long time. Somewhere below, the lights flicker back on, and a tall shape walks the west corridor, checking every door — the way Elias Crane did for twenty-two years. Lily turned seven on Thursday. He is still waiting for his shift to end.'
@@ -4475,7 +4607,7 @@ const Game = {
   interact() {
     if (player.hideAnim || player.dead) return;
     if (player.hidden) { player.toggleHide(player.locker); return; }
-    if (this.target) this.target.use();
+    if (this.target) { Combat.reachT = 0; this.target.use(); }
   },
   // pickups (the host hands each item to exactly one guard)
   takeItem(def, by = player) {
@@ -4498,7 +4630,7 @@ const Game = {
   },
   useDoor(d, by = player) {
     if (Net.isClient) { Net.request('door', doors.indexOf(d)); return; }
-    if (this.time - d.lastUse < 0.3) return; d.lastUse = this.time;
+    if (Math.abs(this.time - d.lastUse) < 0.3) return; d.lastUse = this.time; // (abs: never lock a door out if the clock was reset)
     const p = new T.Vector3(d.cx, 1.2, d.cz);
     if (d.type === 'exit') { if (!this.exitOpen) this.tell(by, 'The blast door is sealed. The authorization panel is to its right.', 'warn', 3.6, 'locked'); return; }
     if (d.locked()) {
@@ -4646,7 +4778,14 @@ const Game = {
       case 'terminal': this.useTerminal(r); break;
       case 'exit': this.useExitPanel(r); break;
       case 'radio': { const rd = world.radios[i]; if (rd) this.useRadio(rd, r); break; }
+      case 'punch': if (Math.hypot(r.pos.x - Monster.pos.x, r.pos.z - Monster.pos.z) < 3.1) this.punchMonster(r); break; // generous: positions are ~0.1 s old
     }
+  },
+  // a punch landed on the Warden (the host decides what it does to it)
+  punchMonster(by = player) {
+    if (Net.isClient) { Net.request('punch', 0); return; }
+    const r = Monster.punched(by);
+    if (r) this.emit({ k: 'punch', r, by: this.idOf(by) });
   },
 
   /* ---------- the Warden and you ---------- */
@@ -4661,7 +4800,7 @@ const Game = {
     if (Net.active && this.state === 'reading') UI.closeNote(true); // online the world doesn't wait while you read
     dmg = dmg || diff().damage;
     player.health -= dmg; player.regenDelay = 9; this.stats.damage += dmg;
-    Sound.scream(); Sound.hurt(); this.shake(1.3);
+    Sound.scream(); Sound.hurt(); this.shake(1.3); Arms.hurt = 1;
     $('fx-damage').style.opacity = 1;
     const dx = player.pos.x - Monster.pos.x, dz = player.pos.z - Monster.pos.z, d = Math.hypot(dx, dz) || 1;
     if (player.health <= 0) { this.die(); return; }
@@ -4739,6 +4878,7 @@ const Game = {
       }
     }
     p.update(dt);
+    Combat.update(dt);
     doors.forEach(d => d.update(dt));
     if (client) { if (this.downloading) { this.termDrawT -= dt; if (this.termDrawT <= 0) { this.termDrawT = 0.12; Screens.drawTerminal(); } } }
     else this.updateTerminal(dt);
@@ -4985,6 +5125,16 @@ const Game = {
       else if (this.state !== 'dead') this.respawn();
     }
   },
+  // how far the view ray travels before it hits a wall, a closed door, the floor or the ceiling
+  aimDist(ex, ey, ez, f) {
+    for (let d = 0.2; d < 22; d += 0.2) {
+      const x = ex + f.x * d, y = ey + f.y * d, z = ez + f.z * d;
+      if (y <= 0.02) return d;
+      const c = cellOf(x, z);
+      if (c.kind === 'wall' || c.kind === 'window' || y >= c.h || (c.door && c.door.t < 0.6)) return d;
+    }
+    return 22;
+  },
   threat() {
     if (!Monster.active) return [0, 'NO CONTACT', 0];
     const d = Monster.pos.distanceTo(player.pos), s = Monster.state, mine = Monster.huntsLocal();
@@ -4994,6 +5144,7 @@ const Game = {
     if ((s === 'HUNT' || s === 'ATTACK' || s === 'SCRIPT') && mine) { lvl = 3; sub = Monster.seesLocal() ? 'IT SEES YOU' : 'IT IS HUNTING YOU'; k = Math.max(k, 0.8 + (d < 8 ? 0.2 : 0)); }
     else if (s === 'HUNT' || s === 'ATTACK') { lvl = Math.max(lvl, 2); sub = 'HUNTING ' + Net.huntedName().toUpperCase(); k = Math.max(k, d < 15 ? 0.6 : 0.3); }
     if (player.hidden && lvl >= 1 && !(s === 'HUNT' && mine)) sub = 'STAY STILL';
+    if (Monster.stunLeft() > 0) { lvl = Math.min(lvl, 2); sub = 'STUNNED — RUN'; k = Math.min(k, 0.5); }
     return [lvl, sub, k];
   },
   render(dt) {
@@ -5006,31 +5157,42 @@ const Game = {
     const sh = (this.shakeAmt + nearShake) * 0.022;
     camera.position.set(p.pos.x, p.eyeY + p.bob, p.pos.z);
     camera.rotation.set(p.pitch + rand(-sh, sh), p.yaw + rand(-sh, sh), p.roll + rand(-sh, sh) * 0.5);
-    let fov = settings.fov + (p.sprinting ? 5 : 0) - (lvl === 3 ? 3 : 0);
+    Combat.camKick(camera);
+    let fov = settings.fov + (p.sprinting ? 5 : 0) - (lvl === 3 ? 3 : 0) - Math.max(0, Combat.ext()) * 1.5;
     const cineFov = Cine.applyCamera(dt, fov); // cutscenes can take the camera
     if (cineFov !== null) fov = cineFov;
     if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = Cine.snapFov ? fov : damp(camera.fov, fov, 6, dt); camera.updateProjectionMatrix(); }
-    // flashlight, held at the player's eye (the camera may be a CCTV camera right now)
+    // flashlight: held in the left hand, the beam converges on whatever you are looking at
+    // (the camera may be a CCTV camera right now, so everything is placed from the player's eye)
     const on = p.flashOn();
     const fwd = p.forward(_v3a);
-    p.beamDir.lerp(fwd, 1 - Math.exp(-dt * 18)).normalize();
+    p.beamDir.lerp(fwd, 1 - Math.exp(-dt * 16)).normalize();
     const ex = p.pos.x, ey = p.eyeY + p.bob, ez = p.pos.z;
-    const rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
-    flash.position.set(ex + rx * 0.14, ey - 0.12, ez + rz * 0.14);
-    flash.target.position.copy(flash.position).addScaledVector(p.beamDir, 10);
+    const aimD = this.aimDist(ex, ey, ez, p.beamDir);
+    Arms.update(dt);
+    Arms.handPos(_v3c);                                   // the torch in your left hand
+    if (aimD < 1.05) _v3c.lerp(_v3b.set(ex, ey - 0.12, ez), clamp((1.05 - aimD) / 0.75, 0, 0.9)); // nose to a wall: keep the bulb on this side of it
+    flash.position.copy(_v3c);
+    flash.target.position.set(ex + p.beamDir.x * aimD, ey + p.beamDir.y * aimD, ez + p.beamDir.z * aimD);
+    const near = clamp((aimD - 0.5) / 3.2, 0, 1);        // close surfaces would blow out: ease off like an eye adapting
     let fi = 0;
     if (on) {
-      fi = 1.9 * (p.battery < 0.2 ? lerp(0.35, 1, p.battery / 0.2) : 1) * (0.97 + Math.random() * 0.03);
+      fi = 2.05 * lerp(0.38, 1, near) * (p.battery < 0.2 ? lerp(0.35, 1, p.battery / 0.2) : 1) * (0.985 + Math.random() * 0.015);
       if (p.battery < 0.12 && Math.random() < 0.08) fi *= rand(0, 0.4);
       if (Monster.active && md < 11 && Math.random() < (1 - md / 11) * 0.5) fi *= rand(0.05, 0.6);
       if (this.dip > 0.3 && Math.random() < 0.3) fi *= 0.5;
     }
     flash.intensity = fi;
+    flash.distance = renderer.shadowMap.enabled ? 24 : Math.min(24, aimD + 5); // no shadows on Low: don't let it shine through walls
     if (Cine.cctvOn()) { flashFill.position.copy(camera.position); flashFill.distance = 24; flashFill.decay = 1; flashFill.intensity = 2.6; } // the camera's infrared lamp
-    else { flashFill.position.set(ex, ey, ez).addScaledVector(fwd, 0.8); flashFill.distance = 3.2; flashFill.decay = 2; flashFill.intensity = fi * 0.18; }
+    else { // a soft bounce from where the beam lands, so the room around the spot isn't pitch black
+      const bd = Math.max(0.4, aimD * 0.78);
+      flashFill.position.set(ex + p.beamDir.x * bd, ey + p.beamDir.y * bd, ez + p.beamDir.z * bd);
+      flashFill.distance = 3.2 + aimD * 0.35; flashFill.decay = 2; flashFill.intensity = fi * lerp(0.1, 0.26, near);
+    }
     renderer.shadowMap.autoUpdate = fi > 0;
     if (fi > 0) renderer.shadowMap.needsUpdate = true;
-    updateDust(fi, flash.position, p.beamDir);
+    updateDust(fi, flash.position, _v3b.copy(flash.target.position).sub(flash.position).normalize());
     // beacons spin
     world.beacons.forEach(b => { b.rotation.y += dt * 5.5; });
     Net.renderRemotes(dt);
@@ -5051,6 +5213,7 @@ const Game = {
     UI.mapT -= dt; if (UI.mapT <= 0 && UI.mapVisible) { UI.mapT = 0.2; UI.drawMap(); }
     Hints.render();
     renderer.render(scene, camera);
+    Arms.render();
     Cine.renderPip();
   },
   onError(e) {
@@ -5628,19 +5791,20 @@ const SCENES = {
   },
 };
 const Cine = {
-  cur: null, t: 0, dtReal: 1 / 60, queue: [], pip: null, cd: {}, el: null, snapFov: false, pr: { x: 0, y: 84, w: 320, h: 180 }, clockT: 0,
+  cur: null, t: 0, dtReal: 1 / 60, queue: [], pip: null, cd: {}, el: null, snapFov: false, pr: { x: 0, y: 84, w: 320, h: 180 }, clockT: 0, skipHold: 0, cuts: [],
   init() {
     const q = id => $(id);
     this.el = { root: q('cine'), cctv: q('cctv'), cam: q('cctv-cam'), time: q('cctv-time'), alert: q('cctv-alert'), stat: q('cine-static'), flash: q('cine-flash'), sub: q('cine-sub'),
-      pip: q('pip'), pipCam: q('pip-cam'), pipAlert: q('pip-alert'), pipStat: q('pip-static'), pipTime: q('pip-time') };
+      pip: q('pip'), pipCam: q('pip-cam'), pipAlert: q('pip-alert'), pipStat: q('pip-static'), pipTime: q('pip-time'), skipBar: q('cine-skip-bar') };
     try { const url = 'url(' + UI.title.noise.toDataURL() + ')'; document.querySelectorAll('#cine-static, #pip-static, .cctv-noise').forEach(e => { e.style.backgroundImage = url; }); } catch (e) { }
     this.layoutPip();
   },
   reset() {
-    this.cur = null; this.queue.length = 0; this.cd = {}; this.t = 0;
+    this.cur = null; this.queue.length = 0; this.cd = {}; this.t = 0; this.skipHold = 0;
     this.stopPip();
     if (!this.el) return;
     this.overlay(false); this.letter(false); this.sub(''); this.el.root.classList.remove('skippable');
+    this.cuts.forEach(el => { el.style.opacity = '0'; }); this.cuts.length = 0;
     this.el.flash.style.transition = 'none'; this.el.flash.style.opacity = '0';
     $('hud').classList.remove('cine'); Net.selfAvatar(false);
   },
@@ -5663,21 +5827,23 @@ const Cine = {
     if (def.always) def.always(sc);
     if (def.pip) return this.startPip(sc);
     if (this.cur) {
-      if (def.full && this.cur.def.full) { if (this.queue.length < 3) this.queue.push(sc); return true; }
-      if ((def.prio || 0) < (this.cur.def.prio || 0)) return false;
-      this.finish(false);
+      // never cut a scene short: queue the new one (only death and the ending interrupt)
+      if ((def.prio || 0) >= 9 && (this.cur.def.prio || 0) < 9) { this.finish(false, true); this.begin(sc); return true; }
+      if (this.cur.id === id || this.queue.some(q => q.id === id)) return true;
+      if (this.queue.length < 3) { sc.queuedAt = Game.time; this.queue.push(sc); }
+      return true;
     }
     this.begin(sc);
     return true;
   },
   begin(sc) {
-    this.cur = sc; this.t = 0;
+    this.cur = sc; this.t = 0; this.skipHold = 0;
     const d = sc.def;
     if (d.full) { $('hud').classList.add('cine'); this.el.root.classList.toggle('skippable', !!d.skip); this.stopPip(); }
     if (d.letter) this.letter(true);
     if (d.start) d.start(sc);
   },
-  finish(skipped) {
+  finish(skipped, noQueue) {
     const sc = this.cur; if (!sc) return;
     this.cur = null;
     const d = sc.def;
@@ -5686,13 +5852,29 @@ const Cine = {
     if (d.letter) this.letter(false);
     this.sub('');
     if (d.end) d.end(sc, skipped);
-    if (!this.cur && this.queue.length) this.begin(this.queue.shift());
+    if (noQueue) { this.queue.length = 0; return; }
+    // the next queued scene, if it still makes sense (in-world beats go stale quickly; camera feeds don't)
+    while (!this.cur && this.queue.length) {
+      const n = this.queue.shift();
+      if (!n.def.full && Game.time - (n.queuedAt || 0) > 2.5) continue;
+      if (n.def.when && !n.def.when(n.o)) continue;
+      this.begin(n);
+    }
   },
   skip() { if (this.cur && this.cur.def.skip && this.t > 0.35) { Sound.staticCut(0.7); this.cut(this.el.stat); this.finish(true); } },
   update(dt) {
     this.dtReal = dt;
+    if (this.cuts.length) this.fadeCuts();
     const sc = this.cur;
     if (sc) { this.t += dt; sc.t = this.t; if (sc.def.tick) sc.def.tick(sc, this.t, dt); if (this.cur === sc && this.t >= sc.def.dur) this.finish(false); }
+    // skipping needs a deliberate hold (so mashing E at a door never skips a scene)
+    const cs = this.cur;
+    if (cs && cs.def.skip) {
+      const held = !!(Input.keys.Space || Input.keys.Enter);
+      this.skipHold = held ? this.skipHold + dt : Math.max(0, this.skipHold - dt * 3);
+      this.el.skipBar.style.width = Math.min(100, this.skipHold / 0.7 * 100).toFixed(0) + '%';
+      if (this.skipHold >= 0.7 && this.t > 0.35) { this.skipHold = 0; this.skip(); }
+    } else this.skipHold = 0;
     const P = this.pip;
     if (P) { P.t += dt; if (P.def.tick) P.def.tick(P, P.t, dt); if (P.t >= P.def.dur || !Monster.active) this.stopPip(); }
     this.clockT -= dt;
@@ -5720,7 +5902,17 @@ const Cine = {
   overlay(on, label, alert) { const e = this.el; e.cctv.classList.toggle('on', !!on); if (on) { e.cam.textContent = label || ''; e.alert.textContent = alert || ''; e.time.textContent = clockText(); } },
   letter(on) { this.el.root.classList.toggle('letter', !!on); },
   sub(text) { const e = this.el.sub; if (e.textContent !== text) e.textContent = text; e.classList.toggle('show', !!text); },
-  cut(el) { el.classList.remove('cut'); void el.offsetWidth; el.classList.add('cut'); },
+  // a burst of static, faded by the clock (not a CSS animation, so it can never hang on a slow frame)
+  cut(el) { el._cutAt = performance.now(); el.style.opacity = '1'; if (this.cuts.indexOf(el) < 0) this.cuts.push(el); },
+  fadeCuts() {
+    const now = performance.now();
+    for (let i = this.cuts.length - 1; i >= 0; i--) {
+      const el = this.cuts[i], k = (now - el._cutAt) / 520;
+      if (k >= 1) { el.style.opacity = '0'; this.cuts.splice(i, 1); continue; }
+      el.style.opacity = (k < 0.35 ? 1 - k * 0.43 : k < 0.7 ? 0.85 - (k - 0.35) * 1.3 : 0.4 * (1 - k) / 0.3).toFixed(2);
+      el.style.backgroundPosition = ((Math.random() * 200) | 0) + 'px ' + ((Math.random() * 200) | 0) + 'px';
+    }
+  },
   redFlash(k) { const f = this.el.flash; f.style.transition = 'none'; f.style.opacity = String(k); void f.offsetWidth; f.style.transition = 'opacity .9s'; f.style.opacity = '0'; },
   /* ---- picture-in-picture camera ---- */
   startPip(sc) {
@@ -5828,9 +6020,9 @@ function buildGuard(color, name) {
   const limb = (w, h, d, x, y, hex) => { const piv = new T.Group(); piv.position.set(x, y, 0); const m = new T.Mesh(mergeColored([colorBox(w, h, d, 0, -h / 2, 0, hex)]), guardMat); piv.add(m); g.add(piv); return piv; };
   const armL = limb(0.11, 0.6, 0.12, -0.27, 1.46, NAVY), armR = limb(0.11, 0.6, 0.12, 0.27, 1.46, NAVY);
   const legL = limb(0.15, 0.82, 0.16, -0.1, 0.8, 0x161d28), legR = limb(0.15, 0.82, 0.16, 0.1, 0.8, 0x161d28);
-  const torch = new T.Mesh(GEO.cyl8, MAT.dark); torch.scale.set(0.05, 0.2, 0.05); torch.rotation.x = Math.PI / 2; torch.position.set(0, -0.58, -0.08); armR.add(torch);
+  const torch = new T.Mesh(GEO.cyl8, MAT.dark); torch.scale.set(0.05, 0.2, 0.05); torch.rotation.x = Math.PI / 2; torch.position.set(0, -0.58, -0.08); armL.add(torch); // light in the left hand
   const lens = new T.Sprite(new T.SpriteMaterial({ map: TX.glow, color: 0xfff0c8, transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending }));
-  lens.scale.set(0.5, 0.5, 1); lens.position.set(0, -0.6, -0.2); armR.add(lens);
+  lens.scale.set(0.5, 0.5, 1); lens.position.set(0, -0.6, -0.2); armL.add(lens);
   let tag = null;
   if (name) {
     const c = makeCanvas(256, 64), x = c.getContext('2d');
@@ -5846,7 +6038,7 @@ function buildGuard(color, name) {
   return g;
 }
 // pose a guard model: walking, crouching, hiding (not visible), down (lying on the floor)
-function poseGuard(g, pos, yaw, speed, crouch, dead, flashOn, dt) {
+function poseGuard(g, pos, yaw, speed, crouch, dead, flashOn, dt, punching) {
   const U = g.userData;
   g.position.set(pos.x, 0, pos.z);
   if (dead) { g.rotation.set(-Math.PI / 2, yaw, 0, 'YXZ'); g.position.y = 0.16; g.scale.set(1, 1, 1); U.lens.material.opacity = 0; if (U.tag) U.tag.position.y = 0.9; return; }
@@ -5854,7 +6046,9 @@ function poseGuard(g, pos, yaw, speed, crouch, dead, flashOn, dt) {
   g.scale.set(1, crouch ? 0.64 : 1, 1);
   U.phase += dt * speed * 2.6;
   const amp = clamp(speed / 3, 0, 1) * 0.55, s = Math.sin(U.phase) * amp;
-  U.legL.rotation.x = s; U.legR.rotation.x = -s; U.armL.rotation.x = -s * 0.8; U.armR.rotation.x = flashOn ? -1.25 : s * 0.8;
+  U.legL.rotation.x = s; U.legR.rotation.x = -s; U.armL.rotation.x = flashOn ? -1.25 : -s * 0.8;
+  U.punch = damp(U.punch || 0, punching ? 1 : 0, punching ? 30 : 9, dt);  // a teammate throwing a punch
+  U.armR.rotation.x = lerp(s * 0.8, -1.6, U.punch); U.armR.rotation.z = -0.15 * U.punch;
   U.lens.material.opacity = flashOn ? 0.85 : 0;
 }
 
@@ -5889,7 +6083,7 @@ class RemotePlayer {
     this.buf.push({ t: now, x: clamp(x, 0, W * CELL), z: clamp(z, 0, H * CELL), yw: +a[4] || 0 }); if (this.buf.length > 20) this.buf.shift();
     this.eyeY = clamp(+a[3] || EYE_STAND, 0.3, 2.2); this.pitch = clamp(+a[5] || 0, -1.6, 1.6);
     const f = a[6] | 0, wasHidden = this.hidden;
-    this.crouching = !!(f & 1); this.sprinting = !!(f & 2); this.flash = !!(f & 4); this.hidden = !!(f & 8); this.dead = !!(f & 16); this.inVent = !!(f & 32); this.cineLock = !!(f & 64);
+    this.crouching = !!(f & 1); this.sprinting = !!(f & 2); this.flash = !!(f & 4); this.hidden = !!(f & 8); this.dead = !!(f & 16); this.inVent = !!(f & 32); this.cineLock = !!(f & 64); this.punching = !!(f & 128);
     this.hp = clamp(a[7] | 0, 0, 100);
     const lk = a[8] | 0; this.locker = this.hidden && lk >= 0 && lk < hideLockers.length ? hideLockers[lk] : null;
     this.last = [this.id, +x.toFixed(2), +z.toFixed(2), +this.eyeY.toFixed(2), +(+a[4] || 0).toFixed(3), +this.pitch.toFixed(3), f, this.hp, lk];
@@ -5917,7 +6111,7 @@ class RemotePlayer {
     }
     if (this.avatar) {
       this.avatar.visible = !this.hidden;
-      poseGuard(this.avatar, this.pos, this.yaw, this.speed, this.crouching || this.inVent, this.dead, this.flashOn(), dt);
+      poseGuard(this.avatar, this.pos, this.yaw, this.speed, this.crouching || this.inVent, this.dead, this.flashOn(), dt, this.punching);
       // name tags show when you can see them (or they are right next to you)
       const tg = this.avatar.userData.tag;
       if (tg) { this.tagT -= dt; if (this.tagT <= 0) { this.tagT = 0.25; const d = Math.hypot(this.pos.x - camera.position.x, this.pos.z - camera.position.z); tg.visible = d < 5 || (d < 30 && losClear(camera.position.x, camera.position.z, this.pos.x, this.pos.z)); } }
@@ -6165,7 +6359,7 @@ const Net = {
   },
   myFlags() {
     const p = player;
-    return (p.crouching ? 1 : 0) | (p.sprinting ? 2 : 0) | (p.flashOn() ? 4 : 0) | (p.hidden ? 8 : 0) | (p.dead ? 16 : 0) | (p.inVent ? 32 : 0) | (Cine.locks() || Game.endingLock ? 64 : 0);
+    return (p.crouching ? 1 : 0) | (p.sprinting ? 2 : 0) | (p.flashOn() ? 4 : 0) | (p.hidden ? 8 : 0) | (p.dead ? 16 : 0) | (p.inVent ? 32 : 0) | (Cine.locks() || Game.endingLock ? 64 : 0) | (Combat.t >= 0 ? 128 : 0);
   },
   myState() {
     const p = player, lk = p.hidden && p.locker ? hideLockers.indexOf(p.locker) : -1;
@@ -6174,6 +6368,7 @@ const Net = {
   snapshot() {
     const M = Monster, c = M.cine;
     const m = { x: +M.pos.x.toFixed(2), z: +M.pos.z.toFixed(2), yw: +M.yaw.toFixed(3), st: M.state, a: M.active ? 1 : 0, at: +M.attackT.toFixed(2), sg: M.seeing ? 1 : 0, ch: M.charging ? 1 : 0,
+      sk: +M.stagger.toFixed(2), im: +Math.max(0, M.stunImmune - Game.time).toFixed(1),
       ti: M.target ? (M.target === player ? 0 : M.target.id) : -1 };
     if (c) { m.po = c.pose; m.pt = +c.t.toFixed(2); m.pd = c.dur; m.pl = c.look ? 1 : 0; }
     const p = [this.myState()];
@@ -6196,8 +6391,8 @@ const Net = {
   update(dt) { // every frame while a session exists (lobby or game)
     const now = performance.now();
     for (const peer of [...this.peers.values()]) {
-      if (peer.open && now - peer.lastHeard > 10000) this.dropPeer(peer, 'timeout');
-      else if (!peer.open && peer.connecting && now - peer.connecting > 30000) { if (this.isClient) this.lost('Could not connect to the host. Both of you need to be online; some strict networks (corporate, school, some mobile hotspots) block direct connections.'); else this.dropPeer(peer, 'failed', true), this.lobbyStatus('A friend could not connect. Some strict networks block direct connections — try again, or from another network.', 'err'); }
+      if (peer.open && now - peer.lastHeard > 15000) this.dropPeer(peer, 'timeout');
+      else if (!peer.open && peer.connecting && now - peer.connecting > (this.isClient ? 600000 : 45000)) { if (this.isClient) this.lost('Could not connect to the host. Both of you need to be online; some strict networks (corporate, school, some mobile hotspots) block direct connections.'); else this.dropPeer(peer, 'failed', true), this.lobbyStatus('A friend could not connect. Some strict networks block direct connections — try again, or from another network.', 'err'); }
     }
     if (!this.active) return;
     this.kaT -= dt;
@@ -6222,7 +6417,7 @@ const Net = {
       const c = cand[i];
       if (!l.visible || !c) { l.intensity = 0; return; }
       const r = c[1], cp = Math.cos(r.pitch), rx = Math.cos(r.yaw), rz = -Math.sin(r.yaw);
-      l.position.set(r.pos.x + rx * 0.2, r.eyeY - 0.15, r.pos.z + rz * 0.2);
+      l.position.set(r.pos.x - rx * 0.2, r.eyeY - 0.15, r.pos.z - rz * 0.2);
       l.target.position.set(l.position.x - Math.sin(r.yaw) * cp * 10, l.position.y + Math.sin(r.pitch) * 10, l.position.z - Math.cos(r.yaw) * cp * 10);
       l.intensity = 1.7;
     });
@@ -6287,6 +6482,16 @@ const Net = {
       let k = 0; for (const r of this.remotes.values()) { if (!r.inGame) continue; el.children[k++].querySelector('b').textContent = r.name; }
     }
   },
+  // a friend opened an invite link: jump to the join screen with the code filled in
+  checkInviteLink() {
+    const m = /[#&]join=([A-Za-z0-9_-]+)/.exec(location.hash || '');
+    if (!m) return false;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
+    UI.prev = ['screen-title']; UI.show('screen-mp'); this.openLobby();
+    $('mp-choose').hidden = true; $('mp-joinbox').hidden = false; $('mp-invite-in').value = m[1];
+    this.lobbyStatus('Invite loaded! Type your name, press Create reply, and send the reply code back to the host.', 'ok');
+    return true;
+  },
   /* ---- lobby screen ---- */
   openLobby() {
     $('mp-name').value = settings.playerName || '';
@@ -6331,11 +6536,11 @@ const Net = {
     nameIn.addEventListener('input', () => { settings.playerName = cleanName(nameIn.value); saveSettings(); });
     nameIn.addEventListener('keydown', e => e.stopPropagation());
     ['mp-reply-in', 'mp-invite-in', 'mp-invite', 'mp-reply'].forEach(id => $(id).addEventListener('keydown', e => e.stopPropagation()));
-    const copy = async id => {
+    const copy = async (id, text) => {
       const t = $(id); if (!t.value) return;
       let ok = false;
-      try { await navigator.clipboard.writeText(t.value); ok = true; } catch (e) { }
-      if (!ok) { try { t.focus(); t.select(); ok = document.execCommand('copy'); } catch (e) { } }
+      try { await navigator.clipboard.writeText(text || t.value); ok = true; } catch (e) { }
+      if (!ok && !text) { try { t.focus(); t.select(); ok = document.execCommand('copy'); } catch (e) { } }
       this.lobbyStatus(ok ? 'Copied! Paste it into a chat with your friend.' : 'Select the code and copy it (Ctrl/Cmd + C).', ok ? 'ok' : '');
     };
     $('btn-mp-host').addEventListener('click', e => busy(e.currentTarget, async () => {
@@ -6343,11 +6548,13 @@ const Net = {
       $('mp-choose').hidden = true; $('mp-hostbox').hidden = false;
       this.lobbyStatus('Creating an invite code… (a few seconds)');
       $('mp-invite').value = await this.host();
-      this.lobbyStatus('Send the invite code to a friend, then paste their reply code below.');
+      $('btn-mp-copylink').hidden = !/^https?:$/.test(location.protocol); // links only make sense on a website
+      this.lobbyStatus('Send the invite code (or link) to a friend, then paste their reply code below.');
     }));
     $('btn-mp-join').addEventListener('click', () => { Sound.ui(); this.leave(); $('mp-choose').hidden = true; $('mp-joinbox').hidden = false; this.lobbyStatus('Paste the invite code from the host.'); });
     $('btn-mp-back').addEventListener('click', () => { Sound.ui(); this.leave(); UI.back(); });
     $('btn-mp-copyinv').addEventListener('click', () => copy('mp-invite'));
+    $('btn-mp-copylink').addEventListener('click', () => copy('mp-invite', location.origin + location.pathname + '#join=' + $('mp-invite').value));
     $('btn-mp-copyrep').addEventListener('click', () => copy('mp-reply'));
     $('btn-mp-accept').addEventListener('click', e => busy(e.currentTarget, async () => {
       Sound.ui();
@@ -6358,6 +6565,7 @@ const Net = {
     $('btn-mp-another').addEventListener('click', e => busy(e.currentTarget, async () => {
       Sound.ui(); this.lobbyStatus('Creating a new invite code…');
       $('mp-invite').value = await this.newInvite();
+      $('mp-reply-in').value = '';
       this.lobbyStatus('New invite ready: send it to the next friend and paste their reply below.');
     }));
     $('btn-mp-mkreply').addEventListener('click', e => busy(e.currentTarget, async () => {
@@ -6372,6 +6580,178 @@ const Net = {
 };
 
 /* ------------------------------------------------------------------ */
+/* First-person arms & fighting back                                   */
+/* The flashlight is in your left hand, your right fist is free.       */
+/* The arms are drawn in their own pass so they never clip into walls. */
+/* ------------------------------------------------------------------ */
+const vmScene = new T.Scene();
+const vmCam = new T.PerspectiveCamera(72, 1, 0.01, 3);
+const vmHemi = new T.HemisphereLight(0x9aa8bc, 0x2a2218, 0.3); vmScene.add(vmHemi);
+const vmKey = new T.PointLight(0xffe2c0, 0, 2.6, 2); vmKey.position.set(0.02, 0.06, -0.8); vmScene.add(vmKey);
+const vmMat = new T.MeshPhongMaterial({ vertexColors: true, shininess: 16, specular: 0x161616 });
+const _av = new T.Vector3();
+// one arm in view space, Roblox-style: a square block (sleeve) ending in a block hand.
+// The elbow pivot is at the group origin; the hand ends ~0.5 m forward (-z).
+function buildVmArm(side, torch) {
+  const SLEEVE = 0x2c4170, CUFF = 0x223358, SKIN = 0xe0ab84, DARK = 0x1d2025, METAL = 0x868b93, LENS = 0xfff4c2;
+  const W = 0.12; // square cross-section
+  const list = [
+    colorBox(W, W, 0.36, 0, 0, -0.18, SLEEVE),                  // sleeve
+    colorBox(W + 0.01, W + 0.01, 0.028, 0, 0, -0.36, CUFF),     // cuff
+    colorBox(W, W, 0.14, 0, 0, -0.444, SKIN),                   // hand
+  ];
+  // a chunky block flashlight sticking out of the left hand
+  if (torch) list.push(colorBox(0.046, 0.046, 0.17, 0, 0.004, -0.58, DARK), colorBox(0.072, 0.072, 0.05, 0, 0.004, -0.686, METAL), colorBox(0.056, 0.056, 0.006, 0, 0.004, -0.712, LENS));
+  const g = new T.Group();
+  g.add(new T.Mesh(mergeColored(list), vmMat));
+  vmScene.add(g);
+  return g;
+}
+const Arms = {
+  R: null, L: null, Lbare: null, glow: null, visible: false, lastYaw: 0, lastPitch: 0, swayX: 0, swayY: 0, sprintK: 0, guardK: 0, hurt: 0, kick: 0, showK: 0, holdT: 0,
+  init() {
+    this.R = buildVmArm(1, false); this.L = buildVmArm(-1, true); this.Lbare = buildVmArm(-1, false);
+    this.Lref = new T.Object3D(); vmScene.add(this.Lref); // where the torch is held, even while the hands are lowered
+    this.glow = new T.Sprite(new T.SpriteMaterial({ map: TX.glow, color: 0xfff0d0, transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending }));
+    this.glow.scale.set(0.13, 0.13, 1); this.glow.position.set(0, 0.004, -0.72); this.L.add(this.glow);
+  },
+  reset() { this.hurt = 0; this.kick = 0; this.swayX = this.swayY = 0; this.showK = 0; this.holdT = 0; this.lastYaw = player.yaw; this.lastPitch = player.pitch; },
+  impact() { this.kick = 1; },
+  show() { const p = player; return !(p.hidden || p.hideAnim || p.dead || Cine.blocking() || Game.controlLock); },
+  set(g, px, py, pz, rx, ry, rz) { g.position.set(px, py, pz); g.rotation.set(rx, ry, rz); },
+  update(dt) {
+    const p = player, C = Combat;
+    // the hands only come up when you use them: punching, grabbing something, swapping a battery, cranking
+    const acting = C.t >= 0 || C.reachT >= 0 || p.swapT > 0 || p.cranking;
+    if (acting) this.holdT = 0.3; else this.holdT -= dt;
+    this.showK = this.holdT > 0 ? Math.min(1, this.showK + dt * 11) : Math.max(0, this.showK - dt * 4.5);
+    const raise = 1 - this.showK * this.showK * (3 - 2 * this.showK); // 0 = up, 1 = lowered out of view
+    this.visible = this.show() && this.showK > 0.001;
+    // arms lag a little behind the mouse, bob with your steps, pump when you sprint, rise when it is close
+    const dyaw = angleDiff(this.lastYaw, p.yaw), dpit = p.pitch - this.lastPitch; this.lastYaw = p.yaw; this.lastPitch = p.pitch;
+    this.swayX = damp(this.swayX + clamp(dyaw, -0.25, 0.25) * 0.55, 0, 10, dt);
+    this.swayY = damp(this.swayY + clamp(dpit, -0.25, 0.25) * 0.55, 0, 10, dt);
+    const bobA = settings.headBob ? 1 : 0.35, mv = clamp(Math.hypot(p.vel.x, p.vel.z) / 2.75, 0, 1.6), ph = p.bobPhase;
+    const bx = Math.sin(ph) * 0.011 * mv * bobA, by = -Math.abs(Math.cos(ph)) * 0.013 * mv * bobA + Math.sin(Game.time * 1.7) * 0.003;
+    this.sprintK = damp(this.sprintK, p.sprinting ? 1 : 0, 6, dt);
+    const pump = Math.sin(ph) * 0.055 * this.sprintK;
+    const near = Monster.active && !p.hidden && Monster.pos.distanceTo(p.pos) < 6 && Monster.stunLeft() <= 0;
+    this.guardK = damp(this.guardK, near ? 1 : 0, 5, dt);
+    this.hurt = Math.max(0, this.hurt - dt * 2.4); this.kick = Math.max(0, this.kick - dt * 6);
+    const cr = p.crouching ? -0.025 : 0, sx = -this.swayX * 0.35, sy = this.swayY * 0.25;
+    const swap = p.swapT > 0 ? Math.sin(Math.PI * clamp(1 - p.swapT / 1.4, 0, 1)) : 0;
+    const reach = C.reachT >= 0 ? Math.sin(Math.PI * clamp(C.reachT / 0.35, 0, 1)) : 0;
+    const e = C.ext(), ext = Math.max(0, e), wind = Math.max(0, -e) / 0.3;
+    // right arm (or left, for a left jab when you have no light)
+    let r = [0.29 + bx + sx, -0.31 + by + cr + pump + sy, 0.07, 0.17 + this.swayY * 0.3, 0.3 + this.swayX * 0.3, 0.04];
+    let l = [-0.29 + bx + sx, -0.31 + by + cr - pump + sy, 0.07, 0.15 + this.swayY * 0.3, -0.27 + this.swayX * 0.3, -0.04];
+    const g = this.guardK * (1 - ext);
+    r[0] -= 0.03 * g; r[1] += 0.045 * g; r[2] -= 0.03 * g; r[3] += 0.12 * g;
+    if (!p.hasFlash) { l[0] += 0.03 * g; l[1] += 0.045 * g; l[2] -= 0.03 * g; l[3] += 0.12 * g; }
+    const P = C.hand > 0 ? r : l, s = C.hand > 0 ? 1 : -1;
+    if (C.kind === 0) { P[0] -= 0.1 * s * ext; P[1] += 0.08 * ext; P[2] -= 0.3 * ext; P[3] -= 0.12 * ext; P[4] += 0.06 * s * ext; P[5] -= 0.5 * s * ext; } // jab: straight at the crosshair
+    else { P[0] -= 0.06 * s * ext; P[1] += 0.12 * ext; P[2] -= 0.16 * ext; P[3] -= 0.05 * ext; P[4] += 0.62 * s * ext; P[5] -= 1.0 * s * ext; } // hook: curls in from the side
+    P[0] += 0.03 * s * wind; P[1] -= 0.02 * wind; P[2] += 0.08 * wind; P[3] += 0.15 * wind; P[4] += 0.2 * s * wind; P[5] += 0.2 * s * wind;
+    P[2] += 0.05 * this.kick; P[3] += 0.25 * this.kick; // knuckles meeting something solid
+    const O = C.hand > 0 ? l : r; O[2] += 0.04 * ext; O[1] -= 0.02 * ext; // the other arm pulls back
+    // swapping a battery: torch down, right hand to it; cranking: little circles
+    l[0] += 0.08 * swap; l[1] -= 0.1 * swap; l[3] += 0.6 * swap; l[4] += 0.3 * swap;
+    r[0] -= 0.2 * swap; r[1] -= 0.05 * swap; r[3] += 0.3 * swap; r[4] -= 0.5 * swap;
+    if (p.cranking) { const a = Game.time * 11; r[0] += -0.13 + Math.cos(a) * 0.035; r[1] += -0.06 + Math.sin(a) * 0.035; r[2] += 0.03; l[0] += 0.05; l[1] -= 0.04; }
+    r[0] -= 0.09 * reach; r[1] += 0.07 * reach; r[2] -= 0.14 * reach; r[3] -= 0.3 * reach;
+    this.set(this.Lref, ...l); // the beam keeps coming from the raised-hand position
+    for (const A of [r, l]) { A[1] -= 0.07 * this.hurt + 0.36 * raise; A[2] += 0.1 * raise; A[3] += 0.4 * this.hurt + 0.5 * raise; }
+    this.set(this.R, ...r);
+    this.set(this.L, ...l); this.set(this.Lbare, ...l);
+    this.R.visible = this.visible; this.L.visible = this.visible && p.hasFlash; this.Lbare.visible = this.visible && !p.hasFlash;
+    this.glow.material.opacity = p.flashOn() ? 0.55 + Math.random() * 0.05 : 0;
+    vmScene.updateMatrixWorld();
+  },
+  // world position of the torch head (where the beam starts), from the player's eye — not the camera
+  handPos(out) {
+    const p = player;
+    if (p.hasFlash) this.Lref.localToWorld(_av.set(0, 0.004, -0.71)); else _av.set(-0.16, -0.2, -0.5);
+    const cy = Math.cos(p.yaw), sy = Math.sin(p.yaw), cp = Math.cos(p.pitch), sp = Math.sin(p.pitch);
+    const ey = p.eyeY + p.bob;
+    // right = (cos y, 0, -sin y); up = (sin y sin p, cos p, cos y sin p); forward = (-sin y cos p, sin p, -cos y cos p)
+    return out.set(
+      p.pos.x + cy * _av.x + sy * sp * _av.y - sy * cp * -_av.z,
+      ey + cp * _av.y + sp * -_av.z,
+      p.pos.z - sy * _av.x + cy * sp * _av.y - cy * cp * -_av.z);
+  },
+  render() {
+    if (!this.visible || !this.R) return;
+    if (vmCam.fov !== camera.fov || vmCam.aspect !== camera.aspect) { vmCam.fov = camera.fov; vmCam.aspect = camera.aspect; vmCam.updateProjectionMatrix(); }
+    // light the hands like the room around you, plus the glow bouncing back from the beam
+    vmHemi.intensity = 0.14 + player.lit * 0.55 + (Game.power ? 0.05 : 0);
+    vmKey.intensity = flash.intensity * 0.3 + flashFill.intensity * 0.6;
+    const ac = renderer.autoClear, su = renderer.shadowMap.autoUpdate;
+    renderer.autoClear = false; renderer.shadowMap.autoUpdate = false;
+    renderer.clearDepth();
+    renderer.render(vmScene, vmCam);
+    renderer.autoClear = ac; renderer.shadowMap.autoUpdate = su;
+  },
+};
+const Combat = {
+  cd: 0, t: -1, kind: 0, hand: 1, hitDone: false, hitStop: 0, reachT: -1, lastAt: -9, landed: 0,
+  reset() { this.cd = 0; this.t = -1; this.hitStop = 0; this.reachT = -1; this.lastAt = -9; },
+  // fist extension over the punch: wind-up (negative), strike, hold, recover
+  ext() { const t = this.t; return t < 0 ? 0 : t < 0.06 ? -0.3 * smooth(0, 0.06, t) : t < 0.13 ? lerp(-0.3, 1, smooth(0.06, 0.13, t)) : t < 0.18 ? 1 : 1 - smooth(0.18, 0.44, t); },
+  can() { const p = player; return Game.state === 'playing' && !p.dead && !p.hidden && !p.hideAnim && !Game.controlLock && !Cine.locks() && p.swapT <= 0 && !p.cranking; },
+  punch() {
+    if (!this.can() || this.cd > 0) return false;
+    const p = player;
+    if (p.stamina < 0.08) { UI.msg('Too winded to swing.', 'warn', 1.4); return false; }
+    p.stamina = Math.max(0, p.stamina - 0.13); p.staminaDelay = 0.9;
+    this.kind = Game.time - this.lastAt < 0.9 ? 1 - this.kind : 0; this.lastAt = Game.time;
+    this.hand = p.hasFlash ? 1 : (this.kind ? -1 : 1); // no light: alternate fists
+    this.cd = 0.5; this.t = 0; this.hitDone = false;
+    Sound.whoosh();
+    Game.noise(p.pos, 3, 'player');
+    return true;
+  },
+  update(dt) {
+    this.cd -= dt;
+    if (this.reachT >= 0) { this.reachT += dt; if (this.reachT > 0.35) this.reachT = -1; }
+    // the first time it comes for you up close: you can fight back
+    if (!Game.flags.fightTold && Monster.active && Monster.huntsLocal() && !player.dead && !player.hidden && Monster.pos.distanceTo(player.pos) < 8) {
+      Game.flags.fightTold = true; UI.msg('Cornered? CLICK (or V) to punch. It barely hurts it — but a few hits will stun it long enough to run.', 'hint', 6);
+    }
+    if (this.hitStop > 0) { this.hitStop -= dt; return; } // a tiny freeze on impact sells the hit
+    if (this.t < 0) return;
+    this.t += dt;
+    if (!this.hitDone && this.t >= 0.12) { this.hitDone = true; this.resolve(); }
+    if (this.t > 0.44) this.t = -1;
+  },
+  resolve() {
+    const p = player, f = p.forward(_v3a), fl = Math.hypot(f.x, f.z) || 1;
+    if (Monster.active) {
+      const dx = Monster.pos.x - p.pos.x, dz = Monster.pos.z - p.pos.z, d = Math.hypot(dx, dz);
+      const cosA = d > 0.01 ? (dx * f.x + dz * f.z) / (d * fl) : 1;
+      if (d < 2.25 && cosA > 0.5 && p.pitch > -0.9 && losClear(p.pos.x, p.pos.z, Monster.pos.x, Monster.pos.z)) { // it is big: anything within arm's reach of its body
+        this.hitStop = 0.075; Game.shake(0.32); Arms.impact(); this.landed++;
+        Sound.punchHit(null);
+        Game.punchMonster(player);
+        return;
+      }
+    }
+    const ad = Game.aimDist(p.pos.x, p.eyeY - 0.2, p.pos.z, f);
+    if (ad < 0.95) { // knuckles on concrete or a steel door
+      const c = cellOf(p.pos.x + f.x * ad, p.pos.z + f.z * ad), isMetal = c.kind === 'door';
+      this.hitStop = 0.05; Game.shake(0.12); Arms.impact(); Sound.thud(null, isMetal);
+      Game.noise(p.pos, isMetal ? 9 : 5, 'player');
+    }
+  },
+  // a nudge for the camera: a small lunge into the punch
+  camKick(cam) {
+    const e = Math.max(0, this.ext()); if (e <= 0) return;
+    const p = player;
+    cam.position.x += -Math.sin(p.yaw) * 0.055 * e; cam.position.z += -Math.cos(p.yaw) * 0.055 * e;
+    cam.rotation.z += (this.kind ? 0.035 : 0.018) * e * this.hand;
+  },
+};
+
+/* ------------------------------------------------------------------ */
 /* Boot                                                                */
 /* ------------------------------------------------------------------ */
 Monster.init();
@@ -6380,18 +6760,20 @@ UI.initTitle();
 Hints.init();
 Cine.init();
 Net.init();
+Arms.init();
 bindSettingsUI();
 bindMenus();
 applySettings();
 Game.resetWorld();
 // warm up shaders so the first frame of gameplay doesn't hitch (incl. hint highlights and the guard model seen on CCTV)
 Net.selfAvatar(true); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = true;
-try { camera.position.set(SPAWN.x, EYE_STAND, SPAWN.z); camera.rotation.set(0, SPAWN.yaw, 0); renderer.compile(scene, camera); } catch (e) { }
+try { camera.position.set(SPAWN.x, EYE_STAND, SPAWN.z); camera.rotation.set(0, SPAWN.yaw, 0); renderer.compile(scene, camera); Arms.R.visible = true; renderer.compile(vmScene, vmCam); } catch (e) { }
 Net.selfAvatar(false); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = false;
 Game.state = 'title';
 Preview.init();
 Preview.attach();
 UI.show('screen-title');
+Net.checkInviteLink();
 window.__LS_running = true;
 let lastT = performance.now(), fpsAcc = 0, fpsN = 0;
 function frame(now) {
@@ -6424,7 +6806,7 @@ setInterval(() => {
 if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
-    Hints, Cine, Net, hideLockers, interactables, crew,
+    Hints, Cine, Net, hideLockers, interactables, crew, Combat, Arms,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
