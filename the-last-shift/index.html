@@ -254,6 +254,28 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 #hint-tag.off .ht-arrow{display:block}
 #hint-tag.off .ht-label{top:16px}
 /* ---------- stun meter (fighting back) ---------- */
+#shift{position:absolute;left:50%;top:12px;transform:translateX(-50%);text-align:center;padding:8px 26px 10px;background:radial-gradient(ellipse at center,rgba(0,0,0,.6),rgba(0,0,0,0) 72%);pointer-events:none;white-space:nowrap}
+#shift-clock{font-size:27px;letter-spacing:.14em;color:#e8e0cc;font-variant-numeric:tabular-nums;text-shadow:0 0 14px rgba(0,0,0,.9)}
+#shift-clock small{font-size:12px;letter-spacing:.2em;margin-left:7px;color:#a49c88}
+#shift-goal{font-size:9.5px;letter-spacing:.3em;color:var(--amber);margin-top:3px}
+#shift-bar{position:relative;width:210px;height:3px;margin:8px auto 0;background:rgba(255,255,255,.13)}
+#shift-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5d4a24,var(--amber));transition:width .6s}
+#shift-bar b{position:absolute;top:-2px;width:1px;height:7px;background:rgba(255,255,255,.4)}
+#shift.late #shift-clock{color:#ffd28a}
+#shift.surge #shift-goal{color:#ff574d;animation:blink .6s steps(2) infinite}
+#shift.dawn #shift-clock{color:#fff1c9;text-shadow:0 0 22px rgba(255,214,130,.9)}
+#shift.dawn #shift-goal{color:#a6ff94;font-size:12px;letter-spacing:.24em;animation:blink 1s steps(2) infinite}
+#shift.dawn #shift-bar i{background:#a6ff94}
+#mission{font-size:15px;letter-spacing:.06em;color:#fff;margin:-2px 0 2px}
+#mission-sub{font-size:10.5px;letter-spacing:.08em;color:#a49c88;margin-bottom:10px}
+#objectives.dawn #mission{color:#a6ff94;font-size:16px}
+#objectives.dawn .opt-h,#objectives.dawn #obj-list{display:none}
+#breath{position:absolute;left:50%;top:calc(50% + 70px);width:220px;margin-left:-110px;display:none;font-size:9.5px;letter-spacing:.3em;color:#cbd6e0;text-align:center}
+#breath.show{display:block}
+#breath i{display:block;height:3px;margin-top:6px;background:rgba(255,255,255,.12)}
+#breath b{display:block;height:100%;width:0;background:#9ab7cc}
+#breath.high{color:#ff8a7a}#breath.high b{background:#ff574d}
+@media (max-width:1000px){#shift{left:auto;right:16px;top:70px;transform:none;padding:6px 8px}#shift-clock{font-size:20px}#shift-bar{width:150px;margin-right:0}}
 #stun{position:absolute;right:22px;top:74px;width:150px;display:none;font-size:9.5px;letter-spacing:.26em;color:#d9c9a3;text-align:right}
 #stun.show{display:block}
 #stun i{display:block;height:3px;margin-top:5px;background:rgba(255,255,255,.12)}
@@ -396,7 +418,9 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   <div id="crosshair"></div>
   <div id="prompt"></div>
   <div id="progress"><i></i></div>
-  <div id="objectives"><h5>OBJECTIVES</h5><ul id="obj-list"></ul><h5 class="bonus-h">BONUS</h5><ul id="bonus-list"></ul></div>
+  <div id="shift"><div id="shift-clock">02:00<small>AM</small></div><div id="shift-goal">SURVIVE UNTIL 6:00 AM</div><div id="shift-bar"><i></i><b style="left:25%"></b><b style="left:50%"></b><b style="left:75%"></b></div></div>
+  <div id="objectives"><h5>MISSION</h5><div id="mission">Survive until 6:00 AM</div><div id="mission-sub"></div><h5 class="opt-h">ESCAPE EARLY · OPTIONAL</h5><ul id="obj-list"></ul><h5 class="bonus-h">BONUS</h5><ul id="bonus-list"></ul></div>
+  <div id="breath"><span>HOLD YOUR NERVE</span><i><b id="breath-bar"></b></i></div>
   <div id="tape-sub"><b id="tape-spk"></b><span id="tape-txt"></span></div>
   <div id="threat" data-level="0">
     <div id="threat-label">UNSEEN<small>NO CONTACT</small></div>
@@ -460,7 +484,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   <div class="title-grad"></div>
   <div class="title-wrap">
     <div class="title-main">
-      <div class="title-meta">Site Kestrel &nbsp;·&nbsp; Sublevel 6 &nbsp;·&nbsp; 02:17 AM</div>
+      <div class="title-meta">Site Kestrel &nbsp;·&nbsp; Sublevel 6 &nbsp;·&nbsp; 02:00 AM &nbsp;·&nbsp; Survive until dawn</div>
       <h1 class="title-name">THE <b>LAST</b><br>SHIFT</h1>
       <div class="title-sub">“Your shift ended. Something else just began.”</div>
       <nav class="menu">
@@ -480,7 +504,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <div class="pv-ui"><span class="pv-rec"><i></i>REC</span><span class="pv-time" id="pv-time">02:17:00</span><span class="pv-cam" id="pv-cam"></span><b class="pv-c pv-tl"></b><b class="pv-c pv-tr"></b><b class="pv-c pv-bl"></b><b class="pv-c pv-br"></b></div>
         </div>
         <div class="pv-caption"><b id="pv-title"></b><span id="pv-text"></span></div>
-        <div class="pv-foot"><div class="pv-dots" id="pv-dots"></div><span class="pv-feat">16 rooms · 6 voice logs · 14 achievements · co-op</span></div>
+        <div class="pv-foot"><div class="pv-dots" id="pv-dots"></div><span class="pv-feat">survive until 6:00 AM · 16 rooms · 15 achievements · co-op</span></div>
       </section>
       <div class="controls-card">
         <h3>Controls</h3>
@@ -501,21 +525,22 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       </div>
     </aside>
   </div>
-  <div class="title-foot">Build 7 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
+  <div class="title-foot">Build 8 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
 </div>
 
 <!-- briefing -->
 <div id="screen-briefing" class="screen shade">
   <div class="panel">
-    <div class="kicker">Night shift · 02:17 AM</div>
-    <div class="h1">Sublevel 6</div>
-    <p class="p">You are the night guard at Site Kestrel, a research facility buried under the mountain. You fell asleep at the desk. The lights are failing, the lift to the surface is locked down — and something has left its cell.</p>
-    <p class="p">Find the three department keycards, restore main power, download the containment breach report and reach the surface lift. Stay quiet. Stay out of its light.</p>
-    <div class="kicker" style="margin-top:18px">Difficulty</div>
+    <div class="kicker">Night shift · Site Kestrel, Sublevel 6 · 02:00 AM</div>
+    <div class="h1">Survive until 6:00 AM</div>
+    <p class="p">You are the night guard, buried under the mountain. Something tall and pale has broken out of its cell, the facility is in lockdown, and the surface lift stays sealed until the <b>day shift arrives at 6:00 AM</b>.</p>
+    <p class="p"><b>Your mission: stay alive until dawn — then make it onto the lift.</b> Every hour it gets worse. It crawls. It hears everything. At 4:00 the power goes, and in the last hour it can follow you into the vents. Lockers only buy you time.</p>
+    <p class="p">Want out sooner? Find the three keycards, restore main power and upload the breach report, and you can open the lift yourself.</p>
+    <div class="kicker" style="margin-top:18px">Difficulty · how long the night lasts</div>
     <div class="diffs" id="diffs">
-      <button class="diff" data-diff="easy"><b>EASY</b><span>Slower, half-deaf hunter. You can take three hits.</span></button>
-      <button class="diff" data-diff="normal"><b>NORMAL</b><span>The intended experience. Two hits and you're done.</span></button>
-      <button class="diff" data-diff="hard"><b>HARD</b><span>Fast, sharp-eared and relentless. One touch is fatal.</span></button>
+      <button class="diff" data-diff="easy"><b>EASY</b><span>A 9-minute night. Slower, half-deaf hunter. Three hits.</span></button>
+      <button class="diff" data-diff="normal"><b>NORMAL</b><span>A 12-minute night. The intended experience. Two hits.</span></button>
+      <button class="diff" data-diff="hard"><b>HARD</b><span>A 15-minute night. Fast, sharp-eared, relentless. One touch.</span></button>
     </div>
     <div class="row">
       <button class="btn primary" id="btn-start">Start Game</button>
@@ -574,16 +599,17 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div>
         <h4>Surviving the Warden</h4>
         <ul class="tips">
+          <li><b>The mission: survive until 6:00 AM</b> (the clock is at the top of the screen), then get onto the surface lift when the day shift opens it. Every hour it gets faster and sharper-eared; at 4:00 a power surge blacks everything out; in the last hour it can crawl into the vents. Or open the lift early: three keycards, main power and the breach report.</li>
           <li>It hunts by sound and sight — and it has sharp ears. Walking near it is enough; when it hears you it <b>runs</b> to the sound. Crouch close to it, and hide the moment it starts running.</li>
           <li>Your flashlight makes you visible from far away — and shining it at the Warden enrages it.</li>
           <li>Its eyes give it away: <span style="color:#cfe6ff">pale</span> when wandering, <span style="color:#f0b45a">amber</span> when investigating, <span style="color:#ff5a4a">red</span> when hunting.</li>
-          <li>Break line of sight, close doors behind you and hide in lockers. It only finds you in a locker if it watched you get in.</li>
-          <li>Maintenance vents are too small for it — crouch to crawl through.</li>
+          <li>Break line of sight, close doors behind you and hide in lockers. It only finds you in a locker if it watched you get in — but you can only hold your nerve so long in there, and late at night it starts tearing lockers open.</li>
+          <li>Crouch to crawl through the maintenance vents. Until 5:00 they are too small for it.</li>
           <li>Cornered? Fight. Punches won't kill it, but they stagger it, and a stun buys you a few seconds. It shrugs off a second stun for a while — and comes back angrier.</li>
           <li>The heartbeat, flickering lights and the threat eye (top right) tell you when it is close.</li>
           <li>Sometimes it just <b>watches</b> you from the dark. Hold its gaze and it backs off — walk toward it, or put your light on it, and it charges.</li>
           <li>Read every note. They contain the codes, routes and secrets you need to get out.</li>
-          <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and <b>14 achievements</b> are saved under Goals.</li>
+          <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and <b>15 achievements</b> are saved under Goals.</li>
           <li>Co-op (up to 4): one player hosts and sends the invite link (or the 4-letter room code); friends open it and press Join. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
         </ul>
       </div>
@@ -616,7 +642,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 7 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
+    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 8 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
   </div>
 </div>
 
@@ -667,8 +693,8 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 <!-- victory -->
 <div id="screen-victory" class="screen">
   <div class="win-wrap">
-    <div class="go-title">You survived the last shift</div>
-    <div class="go-sub">Surface lift · 03:00 AM</div>
+    <div class="go-title" id="win-title">You survived the night</div>
+    <div class="go-sub" id="win-sub">Surface lift · 06:00 AM</div>
     <p class="epilogue" id="epilogue"></p>
     <div class="rank"><b id="rank-letter">B</b><div><span id="rank-score">0 pts</span><small id="rank-best"></small></div></div>
     <div class="win-cols"><div class="stats" id="win-score"></div><div class="stats" id="win-stats"></div></div>
@@ -1129,20 +1155,26 @@ function genSimple(kind) {
       c = makeCanvas(128, 32); g = c.getContext('2d'); hazardBand(g, 0, 0, 128, 32, 1, 0.8);
       break;
     }
-    case 'skin': {
+    case 'pale': case 'paleBlood': { // the Warden's skin: bloodless and faintly veined (and, on its hands, other people's blood)
       c = makeCanvas(256, 256); g = c.getContext('2d');
       const n = fbm(256, 256, 5, 4, rng);
-      paintNoise(g, 256, 256, n, (v, x, y, o) => { const k = (v - 0.5) * 70; o[0] = 128 + k; o[1] = 124 + k * 0.9; o[2] = 118 + k * 0.85; });
-      g.strokeStyle = 'rgba(60,30,40,.35)'; g.lineWidth = 1.2;
-      for (let i = 0; i < 26; i++) { let x = rng() * 256, y = rng() * 256; g.beginPath(); g.moveTo(x, y); for (let k = 0; k < 8; k++) { x += (rng() - 0.5) * 30; y += rng() * 20; g.lineTo(x, y); } g.stroke(); }
-      for (let i = 0; i < 14; i++) { const x = rng() * 256, y = rng() * 256, r = 6 + rng() * 22; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(40,20,20,.45)'); gr.addColorStop(1, 'rgba(40,20,20,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); }
-      break;
-    }
-    case 'ribs': {
-      c = makeCanvas(256, 256); g = c.getContext('2d');
-      const n = fbm(256, 256, 4, 4, rng);
-      paintNoise(g, 256, 256, n, (v, x, y, o) => { const rib = Math.max(0, Math.sin(y * 0.16)) ** 3; const k = (v - 0.5) * 50 - (1 - rib) * 50; o[0] = 132 + k; o[1] = 126 + k; o[2] = 120 + k; });
-      g.fillStyle = 'rgba(30,15,15,.5)'; g.fillRect(122, 0, 12, 256);
+      paintNoise(g, 256, 256, n, (v, x, y, o) => { const k = (v - 0.5) * 38; o[0] = 214 + k; o[1] = 202 + k * 0.95; o[2] = 205 + k * 0.92; });
+      for (let i = 0; i < 20; i++) { const x = rng() * 256, y = rng() * 256, r = 10 + rng() * 36; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(146,98,120,.24)'); gr.addColorStop(1, 'rgba(146,98,120,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); }
+      const vein = (x, y, a, len, w, depth) => {
+        g.lineWidth = w; g.beginPath(); g.moveTo(x, y);
+        for (let i = 0; i < len; i++) {
+          a += (rng() - 0.5) * 0.7; x += Math.cos(a) * 4; y += Math.sin(a) * 4; g.lineTo(x, y);
+          if (depth < 2 && rng() < 0.09) { g.stroke(); vein(x, y, a + (rng() < 0.5 ? 0.9 : -0.9), Math.max(3, len * 0.5), w * 0.7, depth + 1); g.lineWidth = w; g.beginPath(); g.moveTo(x, y); }
+        }
+        g.stroke();
+      };
+      g.lineCap = 'round';
+      g.strokeStyle = 'rgba(92,80,152,.42)'; for (let i = 0; i < 18; i++) vein(rng() * 256, rng() * 256, rng() * TAU, 10 + rng() * 24, 0.8 + rng() * 1.0, 0);
+      g.strokeStyle = 'rgba(150,64,86,.28)'; for (let i = 0; i < 12; i++) vein(rng() * 256, rng() * 256, rng() * TAU, 6 + rng() * 14, 0.6, 1);
+      if (kind === 'paleBlood') { // the canvas bottom ends up at the fingertips
+        for (let i = 0; i < 30; i++) { const x = rng() * 256, y = 70 + rng() * 186, r = 8 + rng() * 30; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(122,10,12,.78)'); gr.addColorStop(0.6, 'rgba(112,12,14,.36)'); gr.addColorStop(1, 'rgba(112,12,14,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); }
+        const gr = g.createLinearGradient(0, 140, 0, 256); gr.addColorStop(0, 'rgba(110,8,10,0)'); gr.addColorStop(1, 'rgba(96,6,8,.88)'); g.fillStyle = gr; g.fillRect(0, 140, 256, 116);
+      }
       break;
     }
     case 'glow': {
@@ -1242,7 +1274,7 @@ const TX = {
   flConcrete: mkTex(genFloor('concrete')), flVinyl: mkTex(genFloor('vinyl')), flPlate: mkTex(genFloor('plate')), flLab: mkTex(genFloor('lab')),
   ceTile: mkTex(genCeiling('tile')), ceConcrete: mkTex(genCeiling('concrete')),
 };
-['crate', 'box', 'barrel', 'rack', 'paper', 'note', 'blood', 'drip', 'claw', 'grate', 'hazard', 'skin', 'ribs', 'glow', 'whiteboard', 'vending', 'console']
+['crate', 'box', 'barrel', 'rack', 'paper', 'note', 'blood', 'drip', 'claw', 'grate', 'hazard', 'pale', 'paleBlood', 'glow', 'whiteboard', 'vending', 'console']
   .forEach(k => { TX[k] = mkTex(genSimple(k), k !== 'glow'); });
 const bumpMats = [];
 function phong(o, bump) {
@@ -1363,6 +1395,7 @@ function mergeGeos(list) {
   out.setAttribute('position', new T.BufferAttribute(pos, 3));
   out.setAttribute('normal', new T.BufferAttribute(nor, 3));
   out.setAttribute('uv', new T.BufferAttribute(uv, 2));
+  if (list.every(g => g.attributes.color)) { const col = new Float32Array(vc * 3); let o = 0; for (const g of list) { col.set(g.attributes.color.array, o); o += g.attributes.color.array.length; } out.setAttribute('color', new T.BufferAttribute(col, 3)); }
   out.setIndex(new T.BufferAttribute(idx, 1));
   out.computeBoundingSphere();
   return out;
@@ -1442,7 +1475,7 @@ function gatherBoxes(px, pz, r, who, crouched) {
     const c = cellAt(x, z);
     const x0 = x * CELL, z0 = z * CELL;
     let solid = c.kind === 'wall' || c.kind === 'window';
-    if (c.kind === 'vent' && (who === 'monster' || !crouched)) solid = true;
+    if (c.kind === 'vent' && (who === 'monster' ? !Night.ventsOpen : !crouched)) solid = true;
     if (c.kind === 'lift' && who === 'monster' && Game.endingLock) solid = true;
     if (solid) { _boxes.push({ minX: x0, minZ: z0, maxX: x0 + CELL, maxZ: z0 + CELL }); continue; }
     if (c.door) { const db = c.door.blockBox(); if (db) _boxes.push(db); }
@@ -3259,6 +3292,28 @@ const Sound = (function () {
     noise(out, t, 0.12, 'lowpass', 320, 1, 0.6, 0.002, brown);
     if (Math.random() < 0.4) noise(out, t + 0.03, 0.03, 'highpass', 2500, 1, 0.25, 0.001);
   });
+  S.hourBell = safe(function (h) { // the facility PA marks the hour: a chime, and a deep clock bell for each hour gone
+    const t = ctx.currentTime, out = dest(null, 0.5); out.gain.value = 0.85;
+    [880, 698, 523].forEach((f, i) => tone(out, t + i * 0.32, 'sine', f, f, 1.1, 0.22, 0.01));
+    for (let i = 0; i < Math.max(1, h); i++) { const st = t + 1.2 + i * 1.1; tone(out, st, 'sine', 98, 96, 2.6, 0.5, 0.005); tone(out, st, 'sine', 196, 194, 1.8, 0.18, 0.005); metal(out, st, 220, 1.6, 0.18); }
+  });
+  S.dawn = safe(function () { // the day shift: a long rising chord, the lift motors, a klaxon far above
+    const t = ctx.currentTime, out = dest(null, 0.6); out.gain.value = 0.9;
+    for (const f of [261.6, 329.6, 392, 523.3]) tone(out, t, 'sawtooth', f * 0.5, f, 3.2, 0.07, 0.8);
+    tone(out, t, 'sine', 55, 82, 4, 0.5, 1.2);
+    noise(out, t + 0.4, 3.5, 'lowpass', 300, 1, 0.35, 1.5, brown);
+  });
+  S.gasp = safe(function () { // bursting out of a locker: a ragged gasp and a cough
+    const t = ctx.currentTime, out = dest(null, 0.1); out.gain.value = 1.1;
+    noise(out, t, 0.55, 'bandpass', 1300, 1.4, 0.7, 0.05, pink);
+    noise(out, t + 0.6, 0.18, 'bandpass', 600, 2, 0.6, 0.01, brown); noise(out, t + 0.86, 0.16, 'bandpass', 560, 2, 0.5, 0.01, brown);
+  });
+  S.crawlM = safe(function (fast) { // a bare palm slapping the floor, knuckles clicking
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = fast ? 0.95 : 0.62; out.connect(monIn);
+    noise(out, t, 0.05, 'bandpass', rand(700, 1100), 1.4, 0.8, 0.001);
+    tone(out, t, 'sine', rand(90, 120), 50, 0.08, 0.5, 0.002);
+    if (Math.random() < 0.5) noise(out, t + rand(0.02, 0.05), 0.012, 'bandpass', rand(2200, 3400), 2.5, 0.45, 0.001);
+  });
   S.scream = safe(function () {
     const t = ctx.currentTime, out = dest(null, 0.4); out.gain.value = 1.5;
     const ws = ctx.createWaveShaper(); ws.curve = distCurve; const g = ctx.createGain(); env(g.gain, t, 0.02, 0.7, 1.1); ws.connect(g); g.connect(out);
@@ -3446,111 +3501,188 @@ const Sound = (function () {
 
 /* ------------------------------------------------------------------ */
 /* THE WARDEN — procedural model                                       */
+/* A starved, bloodless giant: pale veined skin stretched over ribs    */
+/* and hip bones, arms that hang past its knees, blank white eyes and  */
+/* a jaw that hangs open down to its chest.                            */
 /* ------------------------------------------------------------------ */
+const WARDEN_HIP = 1.27;
+// an organic segment turned on a lathe: [radius, y] pairs from bottom to top (the seam faces backwards);
+// rows > 0 resamples the profile that finely (for carving ribs into it)
+function lathe(prof, segs = 12, rows = 0) {
+  let pts = prof;
+  if (rows) {
+    pts = [];
+    for (let i = 0; i <= rows; i++) {
+      const t = i / rows * (prof.length - 1), j = Math.min(prof.length - 2, Math.floor(t)), f = t - j;
+      pts.push([lerp(prof[j][0], prof[j + 1][0], f), lerp(prof[j][1], prof[j + 1][1], f)]);
+    }
+  }
+  return new T.LatheGeometry(pts.map(([r, y]) => new T.Vector2(Math.max(0.0005, r), y)), segs, Math.PI, TAU);
+}
+// carve a lathed shape: fn(y, front, side) -> how far to push the surface out; depth flattens it front-to-back.
+// Carved-in places are also shaded darker (vertex colours), so the ribs read even in flat light.
+function sculpt(geo, depth, fn) {
+  const p = geo.attributes.position, col = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), y = p.getY(i), z = p.getZ(i), r = Math.hypot(x, z);
+    const m = r > 1e-4 ? fn(y, z / r, x / r) : 1;
+    p.setXYZ(i, x * m, y, z * m * depth);
+    const c = clamp(1 + (m - 1) * 3.2, 0.55, 1.08); col[i * 3] = c; col[i * 3 + 1] = c * 0.985; col[i * 3 + 2] = c * 0.99;
+  }
+  geo.setAttribute('color', new T.BufferAttribute(col, 3));
+  geo.computeVertexNormals();
+  return geo;
+}
+const SPH = new T.SphereGeometry(0.5, 18, 13); // smoother than the props' spheres: this one gets looked at up close
+const _bump = (x, y, z, cx, cy, cz, r) => Math.exp(-((x - cx) ** 2 + (y - cy) ** 2 + (z - cz) ** 2) / (r * r));
+// reshape a unit sphere (radius 0.5) vertex by vertex: fn(x, y, z) -> [x, y, z]
+function sculptSphere(ws, hs, fn) {
+  const g = new T.SphereGeometry(0.5, ws, hs), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) { const v = fn(p.getX(i), p.getY(i), p.getZ(i)); p.setXYZ(i, v[0], v[1], v[2]); }
+  g.computeVertexNormals();
+  return g;
+}
+let _skullGeo = null, _jawGeo = null;
+function wardenSkull() { // 20 cm wide, 27 tall: a long egg of a skull, the face carved in
+  return _skullGeo || (_skullGeo = sculptSphere(30, 24, (x, y, z) => {
+    const mx = Math.abs(x);
+    let m = 1 + 0.09 * _bump(x, y, z, 0, 0.2, -0.12, 0.32)            // the swollen back of the skull
+      - 0.16 * _bump(mx, y, z, 0.21, -0.12, 0.42, 0.12)                // deep eye sockets
+      + 0.05 * _bump(mx, y, z, 0.2, 0.0, 0.46, 0.12)                   // brow
+      + 0.07 * _bump(mx, y, z, 0.3, -0.24, 0.35, 0.11)                 // cheekbones
+      - 0.12 * _bump(mx, y, z, 0.26, -0.38, 0.28, 0.13)                // hollow cheeks
+      - 0.07 * _bump(mx, y, z, 0.46, 0.02, 0.12, 0.15);                // sunken temples
+    if (z > 0.2) m -= (z - 0.2) * 0.22;                                // a flat face
+    let X = x * m, Y = y * m, Z = z * m;
+    if (Y < -0.18) X *= 1 - (-0.18 - Y) * 0.55;                        // narrowing to the jaw
+    return [X * 0.205, Y * 0.27, Z * 0.235];
+  }));
+}
+function wardenJaw() { // the lower face, stretched long: wide under the cheekbones, narrow at the chin, flat where the mouth is
+  return _jawGeo || (_jawGeo = sculptSphere(22, 26, (x, y, z) => {
+    const w = lerp(1.12, 0.66, clamp(0.5 - y, 0, 1)), f = z > 0 ? 0.86 : 1.05, sag = Math.exp(-((y + 0.1) ** 2) * 8) * 0.06; // cheeks sag either side
+    return [x * (w + sag) * 0.2, y * 0.48, z * f * 0.13];
+  }));
+}
+// open-mouth amount (P.jawK, 0..1) -> the hanging jaw stretches longer and wider
+function wardenFace(P) {
+  const k = clamp(P.jawK, 0, 1.2);
+  P.jaw.rotation.x = -0.1 * k; P.jaw.scale.set(1 + k * 0.12, 0.9 + k * 0.32, 1);
+}
 function buildWarden(phantom) {
-  const skin = new T.MeshPhongMaterial({ map: TX.skin, color: 0x6c6d66, shininess: 12, specular: 0x141414 });
-  const ribs = new T.MeshPhongMaterial({ map: TX.ribs, color: 0x707069, shininess: 10, specular: 0x121212 });
-  const dark = new T.MeshPhongMaterial({ color: 0x0c0c0e, shininess: 6 });
-  const cloth = new T.MeshPhongMaterial({ color: 0x1d2226, side: T.DoubleSide, shininess: 3 });
-  const gore = new T.MeshPhongMaterial({ color: 0x3c0806, shininess: 70, specular: 0x5a2020 });   // wet, dark blood
-  const teeth = new T.MeshPhongMaterial({ color: 0xcfc6a8, shininess: 45, specular: 0x333333 });
-  const bone = new T.MeshPhongMaterial({ color: 0x8d8670, shininess: 20 });
-  const eyeMat = new T.MeshBasicMaterial({ color: 0xdff2ff, fog: false });
-  const glowMat = new T.SpriteMaterial({ map: TX.glow, color: 0xcfe8ff, transparent: true, opacity: 0.9, depthWrite: false, blending: T.AdditiveBlending, fog: false });
-  const P = {};
-  const mk = (geo, mat, parent, px, py, pz, sx, sy, sz, rx = 0, ry = 0, rz = 0) => {
+  const skin = new T.MeshPhongMaterial({ map: TX.pale, color: 0xe6dcdd, shininess: 24, specular: 0x2c2426 });
+  const bloody = new T.MeshPhongMaterial({ map: TX.paleBlood, color: 0xe6dcdd, shininess: 40, specular: 0x3a2224 });
+  const torso = new T.MeshPhongMaterial({ map: TX.pale, color: 0xe6dcdd, shininess: 24, specular: 0x2c2426, vertexColors: true });
+  const bruise = new T.MeshPhongMaterial({ color: 0x5e3f4a, shininess: 8 });
+  const hollow = new T.MeshBasicMaterial({ color: 0x050203 });                  // the inside of its mouth: nothing but dark
+  const lips = new T.MeshPhongMaterial({ color: 0x9c6468, shininess: 50, specular: 0x402222 });
+  const tongue = new T.MeshPhongMaterial({ color: 0x7c2c36, shininess: 70, specular: 0x552a2a });
+  const teeth = new T.MeshPhongMaterial({ color: 0xd8cfb8, shininess: 45, specular: 0x333333 });
+  const eyeMat = new T.MeshBasicMaterial({ color: 0xeef6ff, fog: false });
+  const glowMat = new T.SpriteMaterial({ map: TX.glow, color: 0xdcecff, transparent: true, opacity: 0.9, depthWrite: false, blending: T.AdditiveBlending, fog: false });
+  const P = { jawK: 0.2 };
+  const mk = (geo, mat, parent, px, py, pz, sx = 1, sy = 1, sz = 1, rx = 0, ry = 0, rz = 0) => {
     const m = new T.Mesh(geo, mat); m.position.set(px, py, pz); m.scale.set(sx, sy, sz); m.rotation.set(rx, ry, rz); m.castShadow = !phantom; parent.add(m); return m;
   };
   const grp = (parent, x, y, z) => { const g = new T.Group(); g.position.set(x, y, z); parent.add(g); return g; };
   const root = new T.Group();
   P.body = grp(root, 0, 0, 0);
-  P.hips = grp(P.body, 0, 1.36, 0);
-  mk(GEO.sphere, skin, P.hips, 0, 0, 0, 0.3, 0.2, 0.21);
-  mk(GEO.box, cloth, P.hips, 0, -0.05, 0, 0.34, 0.15, 0.24);
-  P.spine = grp(P.hips, 0, 0.04, 0);
-  mk(GEO.taper, skin, P.spine, 0, 0.22, 0, 0.2, 0.46, 0.13, 0, 0, 0);
-  for (let i = 0; i < 3; i++) mk(GEO.cone, bone, P.spine, 0, 0.08 + i * 0.12, -0.075, 0.024, 0.09 + i * 0.02, 0.024, -1.2);
-  P.chest = grp(P.spine, 0, 0.42, 0);
-  // emaciated ribcage: broad at the shoulders, pinched at the waist, flat front-to-back
-  mk(GEO.taper, ribs, P.chest, 0, 0.17, 0.0, 0.46, 0.6, 0.26);
-  mk(GEO.box, skin, P.chest, 0, 0.2, 0.12, 0.035, 0.42, 0.03);                 // sternum ridge
-  for (const s of [-1, 1]) mk(GEO.cyl8, skin, P.chest, s * 0.13, 0.44, 0.06, 0.03, 0.27, 0.03, 0, 0, s * 1.3); // clavicles
-  for (let i = 0; i < 7; i++) mk(GEO.sphere, skin, P.chest, 0, -0.08 + i * 0.075, -0.13, 0.055, 0.045, 0.06); // vertebrae
-  for (const s of [-1, 1]) mk(GEO.sphere, skin, P.chest, s * 0.14, 0.33, -0.08, 0.14, 0.11, 0.12); // shoulder blades
-  for (let i = 0; i < 6; i++) mk(GEO.cone, bone, P.chest, 0, -0.04 + i * 0.085, -0.165, 0.03, 0.12 + (i % 2) * 0.06, 0.03, -1.1); // spines through the skin
-  for (const [x, y, h] of [[-0.06, 0.4, 0.14], [0.0, 0.37, 0.2], [0.055, 0.41, 0.12]]) mk(GEO.box, gore, P.chest, x, y, 0.133, 0.02, h, 0.006); // blood down the chest
-  for (let i = 0; i < 3; i++) { const sh = grp(P.chest, (i - 1) * 0.15, 0.48, -0.12); const r = mk(GEO.plane, cloth, sh, 0, -0.36, -0.04, 0.2, 0.75, 1, 0.25, Math.PI, (i - 1) * 0.15); r.castShadow = false; } // tattered shroud
-  P.neck = grp(P.chest, 0, 0.42, 0.05);
-  mk(GEO.cyl8, skin, P.neck, 0, 0.13, 0, 0.09, 0.28, 0.09);
-  mk(GEO.torus, MAT.metalDark, P.neck, 0, 0.07, 0, 0.26, 0.26, 0.9, Math.PI / 2, 0, 0); // containment collar
-  P.led = mk(GEO.sphere, new T.MeshBasicMaterial({ color: 0xff2010, fog: false }), P.neck, 0, 0.07, 0.125, 0.03, 0.03, 0.03);
-  P.head = grp(P.neck, 0, 0.27, 0.01);
-  mk(GEO.sphere, skin, P.head, 0, 0.14, 0.0, 0.25, 0.36, 0.31);                // skull
-  mk(GEO.sphere, skin, P.head, 0, 0.28, -0.05, 0.21, 0.2, 0.28);               // swollen cranium
-  mk(GEO.sphere, dark, P.head, 0, 0.13, 0.11, 0.18, 0.18, 0.13);               // sunken face
-  for (const s of [-1, 1]) mk(GEO.sphere, dark, P.head, s * 0.075, 0.06, 0.1, 0.07, 0.09, 0.08); // hollow cheeks
-  // no lips: wet gums and a ring of needle teeth that never quite close
-  mk(GEO.box, gore, P.head, 0, 0.035, 0.125, 0.13, 0.03, 0.05);
-  for (let i = 0; i < 9; i++) { const a = (i - 4) / 4 * 0.95; mk(GEO.cone, teeth, P.head, Math.sin(a) * 0.066, 0.004, 0.118 + Math.cos(a) * 0.036, 0.011, 0.055 + (i % 2) * 0.022, 0.011, Math.PI); }
-  for (const s of [-1, 1]) mk(GEO.box, gore, P.head, s * 0.072, 0.028, 0.098, 0.055, 0.012, 0.012, 0, s * 0.75, s * -0.3); // cheeks torn to the ears
-  P.jaw = grp(P.head, 0, 0.02, 0.03);
-  mk(GEO.sphere, skin, P.jaw, 0, -0.06, 0.06, 0.15, 0.09, 0.25);                // long lower jaw
-  mk(GEO.sphere, gore, P.jaw, 0, -0.028, 0.06, 0.12, 0.05, 0.2);               // the inside of its mouth
-  for (let i = 0; i < 9; i++) { const a = (i - 4) / 4 * 0.95; mk(GEO.cone, teeth, P.jaw, Math.sin(a) * 0.058, -0.012, 0.075 + Math.cos(a) * 0.082, 0.011, 0.05 + ((i + 1) % 2) * 0.022, 0.011); }
-  mk(GEO.sphere, gore, P.jaw, 0, -0.098, 0.112, 0.075, 0.04, 0.07);            // blood on the chin
+  P.hips = grp(P.body, 0, WARDEN_HIP, 0);
+  // pelvis: the hip bones stand out like a belt under the skin, dipping into a V at the front
+  mk(sculpt(lathe([[0.001, -0.1], [0.06, -0.096], [0.104, -0.07], [0.126, -0.02], [0.128, 0.035], [0.116, 0.07], [0.11, 0.08]], 18, 16), 0.74, (y, f, sd) => {
+    const ry = 0.045 - Math.max(0, f) * 0.06, ridge = Math.exp(-((y - ry) ** 2) * 1400) * smooth(0.25, 0.95, Math.abs(sd) + Math.max(0, f) * 0.35);
+    const groin = smooth(0.3, 0.9, f) * (1 - smooth(-0.06, 0.0, y)) * 0.08;
+    return 1 + ridge * 0.18 - groin;
+  }), torso, P.hips, 0, 0, 0);
+  P.spine = grp(P.hips, 0, 0.05, 0);
+  // the stomach: pinched to nothing and caved in under the ribs
+  mk(sculpt(lathe([[0.112, 0], [0.1, 0.06], [0.091, 0.14], [0.093, 0.22], [0.106, 0.29], [0.128, 0.345], [0.14, 0.375]], 18, 18), 0.72, (y, f) => {
+    const cave = smooth(0.1, 0.85, f) * smooth(0.05, 0.19, y) * (1 - smooth(0.27, 0.36, y));
+    return 1 - cave * 0.17;
+  }), torso, P.spine, 0, 0, 0);
+  mk(GEO.sphere, bruise, P.spine, 0, 0.11, 0.064, 0.012, 0.016, 0.01); // navel
+  P.chest = grp(P.spine, 0, 0.36, 0);
+  // the ribcage: every rib shows, sloping down toward the front, with a hollow down the breastbone
+  mk(sculpt(lathe([[0.001, -0.025], [0.12, -0.02], [0.157, 0.02], [0.175, 0.09], [0.186, 0.18], [0.184, 0.27], [0.172, 0.35], [0.15, 0.41], [0.11, 0.45], [0.06, 0.47], [0.001, 0.48]], 24, 46), 0.66, (y, f, sd) => {
+    const show = smooth(-0.6, 0.15, f), ph = (y + 0.04 * (f + 1)) * 46;
+    const rib = (Math.pow(Math.max(0, Math.sin(ph)), 2) - 0.3) * smooth(0.0, 0.05, y) * (1 - smooth(0.33, 0.39, y));
+    const stern = Math.exp(-sd * sd * 70) * smooth(0.3, 0.9, f) * smooth(0.1, 0.16, y) * (1 - smooth(0.38, 0.44, y));
+    const clav = Math.exp(-((y - 0.425 + Math.abs(sd) * 0.02) ** 2) * 2500) * smooth(0.2, 0.7, f) * smooth(0.12, 0.35, Math.abs(sd)); // collarbones
+    return 1 + rib * show * 0.1 - stern * 0.06 + clav * 0.07;
+  }), torso, P.chest, 0, 0, 0);
+  for (const s of [-1, 1]) mk(SPH, skin, P.chest, s * 0.12, 0.436, -0.03, 0.15, 0.05, 0.1, 0, 0, s * -0.3); // the slope from neck to shoulder
+  for (let i = 0; i < 6; i++) mk(GEO.sphere, skin, P.chest, 0, 0.04 + i * 0.07, -0.118, 0.035, 0.04, 0.035); // knuckled spine
+  P.neck = grp(P.chest, 0, 0.455, 0.015);
+  mk(lathe([[0.058, 0], [0.047, 0.05], [0.04, 0.11], [0.044, 0.175], [0.001, 0.2]], 12), skin, P.neck, 0, 0, 0);
+  P.head = grp(P.neck, 0, 0.17, 0.01);
+  // a long bald skull: one smooth sculpted shape with sunken sockets, sharp cheekbones and hollow cheeks
+  mk(wardenSkull(), skin, P.head, 0, 0.12, 0.0);
+  for (const s of [-1, 1]) {
+    mk(SPH, bruise, P.head, s * 0.043, 0.082, 0.096, 0.058, 0.05, 0.03);      // dark rings in the sockets
+    mk(SPH, hollow, P.head, s * 0.043, 0.082, 0.1, 0.04, 0.034, 0.024);
+    mk(SPH, skin, P.head, s * 0.106, 0.075, -0.004, 0.018, 0.064, 0.042, 0, s * 0.3, 0); // small flat ears
+  }
+  mk(SPH, skin, P.head, 0, 0.046, 0.112, 0.022, 0.052, 0.026, -0.25);       // a thin nose
+  mk(SPH, skin, P.head, 0, 0.018, 0.12, 0.03, 0.022, 0.024);
   P.eyes = [];
   const eye = (x, y, z, k, g) => {
-    const e = mk(GEO.sphere, eyeMat, P.head, x, y, z, 0.034 * k, 0.024 * k, 0.02 * k); e.castShadow = false;
-    const sp = new T.Sprite(glowMat); sp.position.set(x, y, z + 0.015); sp.scale.set(g, g, 1); P.head.add(sp);
+    const e = mk(SPH, eyeMat, P.head, x, y, z, 0.03 * k, 0.025 * k, 0.018 * k); e.castShadow = false;
+    const sp = new T.Sprite(glowMat); sp.position.set(x, y, z + 0.012); sp.scale.set(g, g, 1); P.head.add(sp);
     P.eyes.push(e, sp);
   };
-  for (const s of [-1, 1]) eye(s * 0.055, 0.15, 0.165, 1.15, 0.22);
-  eye(-0.032, 0.225, 0.134, 0.55, 0.1); eye(0.036, 0.238, 0.125, 0.5, 0.09); eye(0.004, 0.275, 0.106, 0.42, 0.08); // the implants they gave it
-  for (let i = 0; i < 4; i++) mk(GEO.box, MAT.metal, P.head, -0.066 + i * 0.044, 0.19 + (i % 2) * 0.018, 0.142, 0.007, 0.032, 0.006, 0, 0, 0.45); // surgical staples
+  for (const s of [-1, 1]) eye(s * 0.043, 0.082, 0.106, 1, 0.1);
   P.eyeMat = eyeMat; P.glowMat = glowMat;
+  // the jaw: it hangs open, the face stretched down around a mouth longer than its head
+  P.jaw = grp(P.head, 0, 0.0, 0.03);
+  mk(wardenJaw(), skin, P.jaw, 0, -0.17, 0.018);
+  P.mouth = mk(SPH, hollow, P.jaw, 0, -0.17, 0.062, 0.078, 0.35, 0.05);
+  mk(GEO.torus, lips, P.jaw, 0, -0.17, 0.078, 0.09, 0.37, 0.08);
+  mk(SPH, lips, P.jaw, 0, -0.343, 0.08, 0.07, 0.03, 0.04);               // lower lip
+  mk(SPH, tongue, P.jaw, 0, -0.316, 0.07, 0.048, 0.028, 0.045);
+  for (let i = 0; i < 5; i++) mk(GEO.cone, teeth, P.jaw, -0.022 + i * 0.011, -0.325, 0.084, 0.009, 0.022, 0.009);
+  // arms: they hang past its knees; big hands, long fingers, caked in blood
   P.arms = [];
   for (const s of [-1, 1]) {
-    const sh = grp(P.chest, s * 0.28, 0.34, 0);
-    mk(GEO.sphere, skin, sh, 0, 0, 0, 0.13, 0.12, 0.13);
+    const sh = grp(P.chest, s * 0.2, 0.405, -0.01);
+    mk(SPH, skin, sh, 0, 0, 0, 0.095, 0.09, 0.1);
     const up = grp(sh, 0, 0, 0);
-    mk(GEO.cyl8, skin, up, 0, -0.31, 0, 0.062, 0.64, 0.062);
-    mk(GEO.sphere, skin, up, 0, -0.62, 0, 0.085, 0.085, 0.085);
-    mk(GEO.cone, dark, up, 0, -0.62, -0.07, 0.03, 0.11, 0.03, -Math.PI / 2); // elbow spur
-    const el = grp(up, 0, -0.62, 0);
-    mk(GEO.cyl8, skin, el, 0, -0.3, 0, 0.048, 0.62, 0.048);
-    const wr = grp(el, 0, -0.61, 0);
-    mk(GEO.box, skin, wr, 0, -0.07, 0, 0.09, 0.15, 0.04);
-    const fg = grp(wr, 0, -0.14, 0), fingers = [fg];
-    for (let f = 0; f < 4; f++) {
-      const fx = -0.033 + f * 0.022, sp = (f - 1.5) * 0.06;
-      mk(GEO.box, skin, fg, fx, -0.16, 0, 0.017, 0.33, 0.017, 0, 0, sp);
-      mk(GEO.cone, gore, fg, fx + sp * 0.33, -0.33, 0, 0.02, 0.04, 0.02, Math.PI);
-      mk(GEO.cone, dark, fg, fx + sp * 0.4, -0.4, 0, 0.019, 0.13, 0.019, Math.PI);
-    }
-    mk(GEO.box, gore, wr, 0, -0.1, 0.021, 0.07, 0.09, 0.004);
+    mk(lathe([[0.001, -0.66], [0.034, -0.655], [0.043, -0.62], [0.033, -0.5], [0.032, -0.3], [0.04, -0.1], [0.05, -0.02], [0.001, 0.012]], 10), skin, up, 0, 0, 0);
+    mk(SPH, skin, up, 0, -0.64, -0.012, 0.066, 0.078, 0.066);
+    const el = grp(up, 0, -0.64, 0);
+    mk(lathe([[0.001, -0.67], [0.023, -0.665], [0.027, -0.63], [0.029, -0.45], [0.037, -0.2], [0.039, -0.05], [0.001, 0]], 10), skin, el, 0, 0, 0);
+    mk(lathe([[0.001, -0.67], [0.024, -0.665], [0.028, -0.6], [0.03, -0.48], [0.001, -0.46]], 10), bloody, el, 0, 0, 0); // blood up the wrists
+    const wr = grp(el, 0, -0.66, 0);
+    mk(SPH, bloody, wr, 0, 0, 0, 0.056, 0.048, 0.046);
+    mk(GEO.box, bloody, wr, 0, -0.066, 0, 0.1, 0.13, 0.03);
+    mk(GEO.box, bloody, wr, -s * 0.052, -0.06, 0.012, 0.018, 0.1, 0.02, 0.2, 0, s * 0.55); // thumb
+    const fg = grp(wr, 0, -0.128, 0), fingers = [fg];
+    [0.17, 0.195, 0.185, 0.155].forEach((L, f) => {
+      const fx = -0.036 + f * 0.024, sp = (f - 1.5) * 0.065;
+      mk(GEO.box, bloody, fg, fx + Math.sin(sp) * L * 0.5, -L / 2, 0, 0.017, L, 0.017, 0, 0, sp);
+      mk(GEO.sphere, bloody, fg, fx + Math.sin(sp) * L * 0.45, -L * 0.45, 0.002, 0.024, 0.026, 0.024); // knuckle
+    });
     P.arms.push({ s, sh, up, el, wr, fingers });
   }
+  // legs: long and thin, knobbly scabbed knees, long bare feet
   P.legs = [];
   for (const s of [-1, 1]) {
-    const hp = grp(P.hips, s * 0.13, -0.05, 0);
-    mk(GEO.cyl8, skin, hp, 0, -0.32, 0, 0.1, 0.66, 0.1);
-    const kn = grp(hp, 0, -0.64, 0);
-    mk(GEO.sphere, skin, kn, 0, 0, 0.01, 0.1, 0.1, 0.1);
-    mk(GEO.cyl8, skin, kn, 0, -0.31, 0, 0.075, 0.62, 0.075);
-    const an = grp(kn, 0, -0.62, 0);
-    mk(GEO.box, skin, an, 0, -0.03, 0.08, 0.1, 0.06, 0.28);
-    for (let t = 0; t < 3; t++) mk(GEO.cone, dark, an, -0.03 + t * 0.03, -0.04, 0.24, 0.015, 0.06, 0.015, Math.PI / 2);
+    const hp = grp(P.hips, s * 0.095, -0.03, 0);
+    mk(lathe([[0.001, -0.61], [0.04, -0.6], [0.045, -0.55], [0.049, -0.35], [0.061, -0.12], [0.07, -0.02], [0.001, 0.02]], 12), skin, hp, 0, 0, 0);
+    const kn = grp(hp, 0, -0.6, 0);
+    mk(SPH, skin, kn, 0, 0, 0.01, 0.088, 0.094, 0.088);
+    mk(SPH, bruise, kn, 0, 0.004, 0.04, 0.06, 0.062, 0.03);
+    mk(lathe([[0.001, -0.6], [0.027, -0.59], [0.03, -0.55], [0.034, -0.35], [0.045, -0.12], [0.046, -0.03], [0.001, 0]], 12), skin, kn, 0, 0, 0);
+    const an = grp(kn, 0, -0.58, 0);
+    mk(SPH, skin, an, 0, 0, 0, 0.06, 0.058, 0.06);
+    mk(SPH, skin, an, 0, -0.038, 0.06, 0.074, 0.05, 0.22);                // a long, bony foot
+    mk(SPH, skin, an, 0, -0.034, -0.025, 0.064, 0.058, 0.074);            // heel
+    for (let t = 0; t < 5; t++) mk(SPH, skin, an, -0.03 + t * 0.015, -0.05, 0.18, 0.016, 0.02, 0.06 - Math.abs(t - 1.5) * 0.008); // toes
     P.legs.push({ s, hp, kn, an });
   }
   P.rags = [];
-  for (let i = 0; i < 5; i++) {
-    const a = (i / 5) * TAU;
-    const pv = grp(P.hips, Math.sin(a) * 0.2, -0.08, Math.cos(a) * 0.15);
-    const r = mk(GEO.plane, cloth, pv, 0, -0.28, 0, 0.13, 0.56, 1, 0, a, 0); r.castShadow = false;
-    P.rags.push(pv);
-  }
-  const shoulderRag = grp(P.chest, -0.22, 0.38, 0.1); mk(GEO.plane, cloth, shoulderRag, 0, -0.25, 0, 0.18, 0.5, 1, 0, 0.3, 0); P.rags.push(shoulderRag);
+  P.faceAt = new T.Vector3(0, 0.0, 0.13); // where the jumpscare centres the camera (between the eyes and the mouth)
   root.userData.P = P;
+  wardenFace(P);
   mergeChildMeshes(root);
   return root;
 }
@@ -3580,6 +3712,7 @@ const NAV = { g: new Float32Array(W * H), came: new Int32Array(W * H), state: ne
 function monsterPassable(x, z) {
   const c = cellAt(x, z);
   if (c.kind === 'floor') return !c.navBlocked;
+  if (c.kind === 'vent') return Night.ventsOpen; // in the last hour it squeezes into the vents
   if (c.kind === 'door') return c.door.monsterCanPass();
   return false;
 }
@@ -3668,9 +3801,40 @@ function looksAt(a, x, y, z, cosT) {
   const cp = Math.cos(a.pitch), fx = -Math.sin(a.yaw) * cp, fy = Math.sin(a.pitch), fz = -Math.cos(a.yaw) * cp;
   return (dx * fx + dy * fy + dz * fz) / d > cosT;
 }
+// two-bone IK: point a limb rooted at S (world) so that its end reaches W, the joint bending toward the pole.
+// Writes the upper bone's rotation (in its parent's frame, given as parentQ) to q and returns the joint bend.
+// knee: the joint bends the other way (a knee folds backwards, an elbow forwards).
+const _ik = { D: new T.Vector3(), m: new T.Vector3(), u: new T.Vector3(), f: new T.Vector3(), E: new T.Vector3(), X: new T.Vector3(), Y: new T.Vector3(), Z: new T.Vector3(), M: new T.Matrix4(), qi: new T.Quaternion() };
+function solveLimb(S, W, a, b, pole, parentQ, q, knee) {
+  const I = _ik, D = I.D.subVectors(W, S);
+  let d = D.length(); if (d < 1e-5) { D.set(0, -1, 0); d = 1e-5; } else D.divideScalar(d);
+  d = clamp(d, Math.abs(a - b) + 0.02, a + b - 0.003);
+  const cosA = clamp((a * a + d * d - b * b) / (2 * a * d), -1, 1), sinA = Math.sqrt(1 - cosA * cosA);
+  const m = I.m.copy(pole).addScaledVector(D, -pole.dot(D)); if (m.lengthSq() < 1e-8) m.set(0, 0, 1); m.normalize();
+  const u = I.u.copy(D).multiplyScalar(cosA).addScaledVector(m, sinA);
+  const E = I.E.copy(S).addScaledVector(u, a), f = I.f.copy(S).addScaledVector(D, d).sub(E).normalize();
+  const bend = Math.acos(clamp(u.dot(f), -1, 1));
+  I.qi.copy(parentQ).invert();
+  const Z = I.Z.copy(f).addScaledVector(u, -f.dot(u)); if (Z.lengthSq() < 1e-8) Z.copy(m); Z.normalize();
+  const Y = I.Y.copy(u).negate().applyQuaternion(I.qi); Z.applyQuaternion(I.qi); if (knee) Z.negate();
+  Z.addScaledVector(Y, -Z.dot(Y)).normalize();
+  I.M.makeBasis(I.X.crossVectors(Y, Z), Y, Z); q.setFromRotationMatrix(I.M);
+  return bend;
+}
+// turn an end joint (wrist, ankle) about its own X axis so it points along dir (world), blended by k
+const _ae = { q: new T.Quaternion(), v: new T.Vector3() };
+function aimEnd(joint, dir, k) {
+  joint.parent.getWorldQuaternion(_ae.q).invert();
+  const v = _ae.v.copy(dir).normalize().applyQuaternion(_ae.q);
+  joint.rotation.set(lerp(joint.rotation.x, Math.atan2(-v.z, -v.y), k), 0, 0);
+}
+const _cw = { f: new T.Vector3(), s: new T.Vector3(), t: new T.Vector3(), S: new T.Vector3(), u: new T.Vector3(), d: new T.Vector3(), pole: new T.Vector3(), q: new T.Quaternion(), pq: new T.Quaternion() };
+// crawl gaits: metres per cycle, share of the cycle each limb is planted, step height, limb phase offsets (left hand, right hand, left foot, right foot), body pose and where the hands/feet go
+const CRAWL_CREEP = { len: 1.0, duty: 0.72, lift: 0.13, off: [0.25, 0.75, 0, 0.5], hip: 0.72, lean: 1.42, hx: 0.6, hz: 0.86, fx: 0.32, fz: -0.3 };
+const CRAWL_GALLOP = { len: 2.4, duty: 0.42, lift: 0.28, off: [0.5, 0.62, 0, 0.1], hip: 0.8, lean: 1.34, hx: 0.56, hz: 0.98, fx: 0.3, fz: -0.34 };
 const Monster = {
   active: false, state: 'DORMANT', stateT: 0, model: null, P: null,
-  crawlK: 0, watchT: 0, creepT: 0, lostT: 0, retreatUntil: 0, chatterT: 5, whisperT: 3, stalkFrom: null,
+  crawlK: 0, ventK: 0, crawlPh: 0, crawlMode: false, watchT: 0, creepT: 0, lostT: 0, retreatUntil: 0, chatterT: 5, whisperT: 3, stalkFrom: null,
   pos: new T.Vector3(), vel: new T.Vector3(), yaw: 0, speed: 0,
   path: null, pathI: 0, goal: new T.Vector3(), hasGoal: false, repathT: 0, onArrive: null,
   awareness: 0, seeing: false, los: false, lastKnown: new T.Vector3(), lastSeen: -99, lastContact: 0, closeT: 0,
@@ -3694,7 +3858,7 @@ const Monster = {
     this.roarCD = 0; this.seenHide = null; this.visited.length = 0; this.huntCount = 0; this.scriptedGoal = null; this.duck = 0;
     this.charging = false; this.target = null; this.nearest = null; this.nearestD = 99; this.cine = null; this.targetId = -1; this.net.buf.length = 0;
     this.stagger = 0; this.stunImmune = 0; this.rageUntil = 0; this.kb.set(0, 0, 0); this.netStagger = 0; this.netImmune = 0;
-    this.crawlK = 0; this.watchT = 0; this.creepT = 0; this.lostT = 0; this.retreatUntil = 0; this.chatterT = rand(4, 8); this.whisperT = 3; this.stalkFrom = null;
+    this.crawlK = 0; this.ventK = 0; this.crawlMode = false; this.watchT = 0; this.creepT = 0; this.lostT = 0; this.retreatUntil = 0; this.chatterT = rand(4, 8); this.whisperT = 3; this.stalkFrom = null;
     this.eyeColor.set(0xdff2ff); if (this.P) this.P.glowMat.opacity = 0.9;
     this.model.visible = true; this.model.position.copy(this.pos); this.model.rotation.set(0, this.yaw, 0);
   },
@@ -3709,10 +3873,16 @@ const Monster = {
       if (this.roarCD <= 0) { Sound.roar(1); this.roarCD = 9; }
       Game.onHuntStart(this.target);
     }
+    if (s === 'HUNT' || s === 'ATTACK' || s === 'LOST' || s === 'SCRIPT') this.crawlMode = false; // (it hunts on all fours anyway, from a distance)
     if (s === 'LOST') { this.path = null; this.hasGoal = false; this.pauseT = 3.2; Sound.growl(); }
     if (s === 'SEARCH') { this.searchUntil = Game.time + diff().search * (Game.alarm ? 1.3 : 1); }
   },
   speedFor() {
+    const base = this.baseSpeed(), c = cellOf(this.pos.x, this.pos.z);
+    const creep = this.crawlMode && !(this.state === 'HUNT' || this.charging) ? 0.8 : 1;
+    return base * creep * (c.kind === 'vent' ? 0.62 : 1) * Night.speedMul();
+  },
+  baseSpeed() {
     const d = diff(), boost = Game.alarm ? 1.12 : 1;
     switch (this.state) {
       case 'PATROL': return (Game.time < this.retreatUntil ? d.investigate * 1.1 : d.patrol) * boost;
@@ -3750,7 +3920,7 @@ const Monster = {
     const wasCharging = this.charging && this.state === 'INVESTIGATE';
     this.invStrength = strength; this.invTime = Game.time;
     this.setState('INVESTIGATE');
-    this.charging = !!charge;
+    this.charging = !!charge; this.crawlMode = !charge && Math.random() < 0.4;
     this.searchCenter.copy(pos);
     this.goTo(pos.x, pos.z, () => { this.charging = false; this.pauseT = rand(1.1, 2.0); this.headTimer = 0; this.setState('SEARCH'); });
     return this.charging && !wasCharging;
@@ -3759,7 +3929,7 @@ const Monster = {
     if (!this.active || this.state === 'ATTACK' || this.state === 'SCRIPT' || this.cine || !src) return;
     const pos = new T.Vector3(src.x, 0, src.z);
     const d = Math.hypot(pos.x - this.pos.x, pos.z - this.pos.z);
-    let eff = radius * diff().hearing;
+    let eff = radius * diff().hearing * Night.hearMul();
     if (!losClear(this.pos.x, this.pos.z, pos.x, pos.z)) eff *= 0.65;
     if (d > eff) return;
     const strength = 1 - d / eff, isPlayer = kind === 'player';
@@ -3838,7 +4008,7 @@ const Monster = {
     if (a.crouching && !beam) range *= 0.6;
     if (a.sprinting) range *= 1.2;
     if (a.inVent) range = Math.min(range, 2.2);
-    range *= diff().sight;
+    range *= diff().sight * Night.sightMul();
     const fov = this.state === 'HUNT' || this.charging ? -0.2 : 0.42;
     const inFov = cosA > fov || d < 2.4 || (beam && d < 14);
     if (!inFov || d > range) return 0;
@@ -3902,6 +4072,7 @@ const Monster = {
     this.visited.push(best[0] * 100 + best[1]); if (this.visited.length > 6) this.visited.shift();
     const ok = this.goTo(cc(best[0]) + rand(-0.4, 0.4), cc(best[1]) + rand(-0.4, 0.4), () => { this.pauseT = rand(1.2, 4.0); this.headTimer = 0; });
     if (!ok) this.pauseT = 1;
+    this.crawlMode = Math.random() < Night.crawlChance(); // some walks it makes upright, some on all fours
   },
   chooseSearchPoint() {
     const cx0 = Math.floor(this.searchCenter.x / CELL), cz0 = Math.floor(this.searchCenter.z / CELL);
@@ -3909,7 +4080,7 @@ const Monster = {
       const x = cx0 + randi(-4, 4), z = cz0 + randi(-4, 4);
       if (!monsterPassable(x, z) || cellAt(x, z).kind === 'door') continue;
       if (Math.hypot(cc(x) - this.pos.x, cc(z) - this.pos.z) < 2.5) continue;
-      if (this.goTo(cc(x) + rand(-0.5, 0.5), cc(z) + rand(-0.5, 0.5), () => { this.pauseT = rand(1.0, 2.2); this.headTimer = 0; })) return;
+      if (this.goTo(cc(x) + rand(-0.5, 0.5), cc(z) + rand(-0.5, 0.5), () => { this.pauseT = rand(1.0, 2.2); this.headTimer = 0; })) { this.crawlMode = Math.random() < 0.5; return; }
     }
     this.pauseT = 1.5;
   },
@@ -4007,7 +4178,7 @@ const Monster = {
           if (this.creepT <= 0 && !this.hasGoal) { // and creeps closer while nobody is looking
             this.creepT = rand(2.5, 4.5);
             const step = Math.min(3, d - 7.2);
-            if (step > 0.8) this.goTo(this.pos.x + (tg.pos.x - this.pos.x) / d * step, this.pos.z + (tg.pos.z - this.pos.z) / d * step, null);
+            if (step > 0.8) { this.crawlMode = true; this.goTo(this.pos.x + (tg.pos.x - this.pos.x) / d * step, this.pos.z + (tg.pos.z - this.pos.z) / d * step, null); } // it creeps closer on all fours
           }
         }
         wantMove = this.hasGoal;
@@ -4092,6 +4263,7 @@ const Monster = {
     this.pos.set(x, 0, z); this.yaw = Math.atan2(tg.pos.x - x, tg.pos.z - z); this.model.position.set(x, 0, z);
     this.target = tg; this.state = 'STALK'; this.stateT = 0; this.charging = false;
     this.watchT = 0; this.lostT = 0; this.creepT = rand(2.5, 4); this.awareness = 0.4; this.whisperT = rand(0.5, 1.2); this.chatterT = rand(2, 4);
+    this.crawlMode = Math.random() < 0.5; // sometimes it watches you standing, sometimes from the floor
   },
   endStalk(stared, by) {
     const tg = this.target;
@@ -4129,38 +4301,46 @@ const Monster = {
   animate(dt, sp) {
     const P = this.P, run = sp > 3.0;
     // duck under door frames
-    const c = cellOf(this.pos.x, this.pos.z);
+    const c = cellOf(this.pos.x, this.pos.z), inVent = c.kind === 'vent';
     let nearDoor = c.kind === 'door';
     if (!nearDoor) for (const [ox, oz] of [[0.9, 0], [-0.9, 0], [0, 0.9], [0, -0.9]]) if (cellOf(this.pos.x + ox, this.pos.z + oz).kind === 'door') nearDoor = true;
     this.duck = damp(this.duck, nearDoor ? 1 : 0, 6, dt);
-    this.stepPhase += dt * sp * (run ? 2.0 : 2.7);
-    const ph = this.stepPhase, amp = clamp(sp / 2.2, 0, 1) * (run ? 0.85 : 0.55);
-    const sgn = Math.sin(ph) >= 0 ? 1 : -1;
-    if (sgn !== this.lastStepSign && sp > 0.4) { this.lastStepSign = sgn; Sound.stepM(run); if (run && this.pos.distanceTo(player.pos) < 12) Game.shake(0.04); }
     const attack = this.state === 'ATTACK' ? this.attackT : -1;
     const hunt = this.state === 'HUNT' || attack >= 0 || this.charging;
     const stalk = this.state === 'STALK';
+    // on all fours: chasing (it rears up to strike), creeping when the host says so, and always inside a vent
+    const tg = Net.isClient ? (this.targetId === Net.myId ? player : Net.remotes.get(this.targetId) || player) : this.target || player;
+    const dl = Math.hypot(tg.pos.x - this.pos.x, tg.pos.z - this.pos.z);
+    const crawlWant = !this.cine && attack < 0 && (inVent || (hunt && sp > 2.2 && dl > 3.3) || this.crawlMode);
+    this.crawlK = damp(this.crawlK, crawlWant ? 1 : 0, crawlWant ? 5 : 6, dt);
+    this.ventK = damp(this.ventK, inVent ? 1 : 0, 6, dt);
+    const crawling = this.crawlK > 0.5;
+    this.stepPhase += dt * sp * (run ? 2.0 : 2.7) * (crawling ? 0 : 1);
+    const ph = this.stepPhase, amp = clamp(sp / 2.2, 0, 1) * (run ? 0.85 : 0.55);
+    const sgn = Math.sin(ph) >= 0 ? 1 : -1;
+    if (!crawling && sgn !== this.lastStepSign && sp > 0.4) { this.lastStepSign = sgn; Sound.stepM(run); if (run && this.pos.distanceTo(player.pos) < 12) Game.shake(0.04); }
     const targetLean = (hunt ? 0.55 : stalk ? 0.46 : 0.32) + this.duck * 0.55 + (run ? 0.15 : 0);
     this.lean = damp(this.lean, targetLean, 5, dt);
-    P.spine.rotation.x = this.lean;
-    P.hips.position.y = 1.36 - this.duck * 0.22 - Math.abs(Math.sin(ph)) * 0.05 * amp - (hunt ? 0.06 : 0);
+    P.spine.rotation.set(this.lean, 0, 0);
+    P.hips.position.y = WARDEN_HIP - this.duck * 0.22 - Math.abs(Math.sin(ph)) * 0.05 * amp - (hunt ? 0.06 : 0);
     P.neck.rotation.x = -this.lean * 0.85 - 0.05;
     for (const L of P.legs) {
       const s = L.s, swing = Math.sin(ph + (s > 0 ? 0 : Math.PI)) * amp;
-      L.hp.rotation.x = -swing - this.duck * 0.35 - (hunt ? 0.12 : 0);
+      L.hp.rotation.set(-swing - this.duck * 0.35 - (hunt ? 0.12 : 0), 0, 0);
       L.kn.rotation.x = Math.max(0, Math.sin(ph + (s > 0 ? 0 : Math.PI) - 1.3)) * amp * 1.5 + this.duck * 0.55 + (hunt ? 0.2 : 0);
       L.an.rotation.x = -L.kn.rotation.x * 0.3 + L.hp.rotation.x * -0.2;
     }
     for (const A of P.arms) {
-      const s = A.s, swing = Math.sin(ph + (s > 0 ? Math.PI : 0)) * amp * 0.8;
-      let ux = swing - 0.1 - (hunt ? 0.35 : 0), uz = s * (0.12 + (hunt ? 0.2 : 0)), ex = -0.25 - (hunt ? 0.4 : 0);
+      const s = A.s, swing = Math.sin(ph + (s > 0 ? Math.PI : 0)) * amp * 0.7;
+      let ux = swing - 0.06 - (hunt ? 0.35 : 0), uz = s * (0.1 + (hunt ? 0.22 : 0)), ex = -0.18 - (hunt ? 0.4 : 0);
       if (attack >= 0) {
         const up = attack < 0.42 ? smooth(0, 0.42, attack) : 1 - smooth(0.42, 0.8, attack);
         ux = -2.4 * up + (attack >= 0.42 && attack < 0.7 ? -0.6 : 0); uz = s * (0.35 + up * 0.3); ex = -0.6 * up;
       }
-      A.up.rotation.x = damp(A.up.rotation.x, ux, 12, dt); A.up.rotation.z = damp(A.up.rotation.z, uz, 10, dt);
+      A.up.rotation.set(damp(A.up.rotation.x, ux, 12, dt), 0, damp(A.up.rotation.z, uz, 10, dt));
       A.el.rotation.x = damp(A.el.rotation.x, ex, 10, dt);
-      const curl = 0.25 + Math.sin(Game.time * 3 + s) * 0.08 + (attack >= 0 ? -0.2 : 0);
+      A.wr.rotation.x = damp(A.wr.rotation.x, 0, 8, dt);
+      const curl = 0.22 + Math.sin(Game.time * 3 + s) * 0.08 + (attack >= 0 ? -0.2 : 0);
       for (const f of A.fingers) f.rotation.x = curl;
     }
     // watching you: arms hang long and still, fingers flexing
@@ -4168,26 +4348,7 @@ const Monster = {
       A.up.rotation.x = damp(A.up.rotation.x, 0.08, 4, dt); A.up.rotation.z = damp(A.up.rotation.z, A.s * 0.07, 4, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.1, 4, dt);
       for (const f of A.fingers) f.rotation.x = 0.1 + Math.max(0, Math.sin(Game.time * 6.5 + A.s * 2)) * 0.55;
     }
-    // hunting from far away it drops down and sprints on all fours, then rears up to strike
-    const dl = Math.hypot(player.pos.x - this.pos.x, player.pos.z - this.pos.z);
-    const crawlWant = hunt && attack < 0 && run && this.duck < 0.35 && dl > 4.2 && !this.cine;
-    this.crawlK = damp(this.crawlK, crawlWant ? 1 : 0, crawlWant ? 4 : 6, dt);
-    if (this.crawlK > 0.01) {
-      const k = this.crawlK;
-      P.hips.position.y = lerp(P.hips.position.y, 1.02 + Math.abs(Math.sin(ph)) * 0.07, k);
-      P.spine.rotation.x = lerp(P.spine.rotation.x, 1.08, k);
-      P.neck.rotation.x = lerp(P.neck.rotation.x, -1.05, k);
-      for (const A of P.arms) {
-        const sw = Math.abs(Math.sin(ph + (A.s > 0 ? 0 : Math.PI / 2)));
-        A.up.rotation.x = lerp(A.up.rotation.x, -1.75 - sw * 0.5, k); A.up.rotation.z = lerp(A.up.rotation.z, A.s * 0.32, k);
-        A.el.rotation.x = lerp(A.el.rotation.x, -0.25 - sw * 0.35, k);
-        for (const f of A.fingers) f.rotation.x = lerp(f.rotation.x, -0.15, k);
-      }
-      for (const Lg of P.legs) {
-        const sw = Math.sin(ph + (Lg.s > 0 ? 0 : Math.PI)) * 0.75;
-        Lg.hp.rotation.x = lerp(Lg.hp.rotation.x, -0.5 - sw, k); Lg.kn.rotation.x = lerp(Lg.kn.rotation.x, 0.85 + Math.max(0, sw) * 0.7, k); Lg.an.rotation.x = lerp(Lg.an.rotation.x, -0.3, k);
-      }
-    }
+    if (this.crawlK > 0.01) this.crawl(dt, sp, hunt);
     // head: look around, twitch (sometimes violently, with a crack), jaw
     this.twitchT -= dt;
     if (this.twitchT <= 0) {
@@ -4199,20 +4360,68 @@ const Monster = {
     this.twitch.multiplyScalar(Math.exp(-dt * (this.twitch.lengthSq() > 0.5 ? 6 : 9)));
     const lookY = (this.state === 'HUNT' || attack >= 0) ? 0 : this.headTarget;
     this.headYaw = damp(this.headYaw, (this.speed > 0.3 && this.state === 'PATROL') ? lookY * 0.3 : lookY, 3, dt);
-    P.head.rotation.set(this.twitch.x + (hunt ? 0.12 : 0) - this.crawlK * 0.22, this.headYaw + this.twitch.y, this.twitch.z * (hunt ? 0.4 : 1) + (hunt ? 0.08 : 0.24) + (this.state === 'LOST' ? 0.2 : 0) + (stalk ? 0.42 + Math.sin(Game.time * 0.6) * 0.16 : 0));
-    const jawOpen = attack >= 0 ? (attack < 0.6 ? 0.95 : 0.3) : stalk ? 0.1 + Math.max(0, Math.sin(Game.time * 1.3)) * 0.2 : (hunt ? 0.3 + Math.sin(Game.time * 9) * 0.08 : 0.07);
-    P.jaw.rotation.x = damp(P.jaw.rotation.x, jawOpen, 10, dt);
+    const ck = this.crawlK;
+    P.head.rotation.set(this.twitch.x * (1 - ck * 0.5) + (hunt ? 0.12 : 0) - ck * 0.62, (this.headYaw + this.twitch.y) * (1 - ck * 0.6), this.twitch.z * (hunt ? 0.4 : 1) + (hunt ? 0.08 : 0.24) * (1 - ck) + (this.state === 'LOST' ? 0.2 : 0) + (stalk ? 0.42 + Math.sin(Game.time * 0.6) * 0.16 : 0) + ck * Math.sin(Game.time * 1.7) * 0.25);
+    const jawOpen = attack >= 0 ? (attack < 0.6 ? 1.1 : 0.55) : stalk ? 0.3 + Math.max(0, Math.sin(Game.time * 1.3)) * 0.25 : hunt ? 0.75 + Math.sin(Game.time * 9) * 0.1 : 0.22 + Math.max(0, Math.sin(Game.time * 0.9)) * 0.1 + ck * 0.3;
+    P.jawK = damp(P.jawK, jawOpen, 10, dt);
     P.chest.scale.set(1, 1 + Math.sin(Game.time * (hunt ? 4 : 1.6)) * 0.025, 1);
-    for (let i = 0; i < P.rags.length; i++) { const r = P.rags[i]; r.rotation.x = Math.sin(Game.time * 2 + i) * 0.12 + (sp * 0.06); r.rotation.z = Math.cos(Game.time * 1.7 + i * 2) * 0.1; }
     // eyes reflect state: pale wandering, amber suspicious, red hunting
-    const tc = this.state === 'HUNT' || this.state === 'ATTACK' || this.state === 'SCRIPT' || this.charging ? 0xff2a1a : (this.state === 'INVESTIGATE' || this.state === 'SEARCH') ? 0xffa83a : stalk ? 0xf4fcff : 0xcfe8ff;
+    const tc = this.state === 'HUNT' || this.state === 'ATTACK' || this.state === 'SCRIPT' || this.charging ? 0xff2a1a : (this.state === 'INVESTIGATE' || this.state === 'SEARCH') ? 0xffa83a : 0xeef6ff;
     _tmpCol.set(tc); this.eyeColor.lerp(_tmpCol, 1 - Math.exp(-dt * 4));
     P.eyeMat.color.copy(this.eyeColor); P.glowMat.color.copy(this.eyeColor);
-    P.led.visible = (Game.time * 1.3) % 1 < 0.15;
     if (this.cine) this.applyPose(dt);
+    wardenFace(P);
     // apply transform
     this.model.position.set(this.pos.x, 0, this.pos.z);
     this.model.rotation.set(0, this.yaw, this.cine && this.cine.pose === 'stunned' ? this.model.rotation.z : 0);
+  },
+  // on all fours: hands and feet are planted on the floor and stepped (two-bone IK), the elbows jut up like a spider's
+  crawl(dt, sp, hunt) {
+    const P = this.P, k = this.crawlK, vk = this.ventK, gallop = hunt && sp > 3.2;
+    const G = gallop ? CRAWL_GALLOP : CRAWL_CREEP;
+    this.crawlPh = (this.crawlPh + dt * sp / G.len) % 1;
+    const ph = this.crawlPh, T2 = ph * TAU;
+    // body: low and long, the spine rolling with each step
+    P.hips.position.y = lerp(P.hips.position.y, lerp(G.hip, 0.5, vk) + (gallop ? Math.abs(Math.sin(T2)) * 0.08 : Math.sin(T2 * 2) * 0.025), k);
+    P.spine.rotation.set(lerp(P.spine.rotation.x, lerp(G.lean, 1.5, vk) + (gallop ? Math.sin(T2) * 0.12 : 0), k), Math.sin(T2) * 0.14 * k, Math.sin(T2 + 1) * 0.05 * k);
+    P.neck.rotation.x = lerp(P.neck.rotation.x, lerp(-1.2, -1.36, vk), k);
+    this.model.position.set(this.pos.x, 0, this.pos.z); this.model.rotation.set(0, this.yaw, 0);
+    this.model.updateMatrixWorld(true);
+    const stride = G.duty * G.len;
+    const limb = (j, front) => { // where this hand/foot should be (model space), and whether it is on the floor
+      const f = (ph + G.off[j]) % 1;
+      let z, y = 0, down = true;
+      if (f < G.duty) z = stride * (0.5 - f / G.duty);
+      else { const t = smooth(0, 1, (f - G.duty) / (1 - G.duty)); z = stride * (t - 0.5); y = Math.sin(t * Math.PI) * lerp(G.lift, 0.05, vk); down = false; }
+      return { z: z + (front ? G.hz : G.fz), y, down };
+    };
+    const fwd = _cw.f.set(Math.sin(this.yaw), 0, Math.cos(this.yaw)), side = _cw.s.set(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
+    let slap = false;
+    P.chest.getWorldQuaternion(_cw.pq);
+    P.arms.forEach((A, i) => {
+      const L = limb(i, true), s = A.s, w = lerp(G.hx, 0.32, vk);
+      _cw.t.set(s * w, 0.075 + L.y, L.z).applyMatrix4(this.model.matrixWorld);
+      A.sh.getWorldPosition(_cw.S);
+      _cw.pole.copy(side).multiplyScalar(s * 0.8).addScaledVector(fwd, -0.3).add(_cw.u.set(0, lerp(1.1, 0.15, vk), 0)); // elbows up and out
+      const bend = solveLimb(_cw.S, _cw.t, 0.64, 0.68, _cw.pole, _cw.pq, _cw.q, false);
+      A.up.quaternion.slerp(_cw.q, k); A.el.rotation.x = lerp(A.el.rotation.x, -bend, k);
+      A.el.updateMatrixWorld(true);
+      aimEnd(A.wr, _cw.d.copy(fwd).addScaledVector(side, s * 0.25).add(_cw.u.set(0, L.down ? -0.15 : -1.1, 0)), k);
+      for (const fg of A.fingers) fg.rotation.x = lerp(fg.rotation.x, L.down ? -0.1 : 0.7, k);
+      if (L.down !== A.down) { A.down = L.down; if (L.down && sp > 0.4) slap = true; }
+    });
+    P.hips.getWorldQuaternion(_cw.pq);
+    P.legs.forEach((Lg, i) => {
+      const L = limb(i + 2, false), s = Lg.s;
+      _cw.t.set(s * G.fx, 0.07 + L.y, L.z).applyMatrix4(this.model.matrixWorld);
+      Lg.hp.getWorldPosition(_cw.S);
+      _cw.pole.copy(fwd).addScaledVector(side, s * 0.45).add(_cw.u.set(0, -0.5, 0));
+      const bend = solveLimb(_cw.S, _cw.t, 0.6, 0.58, _cw.pole, _cw.pq, _cw.q, true);
+      Lg.hp.quaternion.slerp(_cw.q, k); Lg.kn.rotation.x = lerp(Lg.kn.rotation.x, bend, k);
+      Lg.kn.updateMatrixWorld(true);
+      aimEnd(Lg.an, _cw.d.set(0, -1, 0).addScaledVector(fwd, L.down ? 0.1 : 0.9), k);
+    });
+    if (slap) { Sound.crawlM(gallop); if (gallop && this.pos.distanceTo(player.pos) < 10) Game.shake(0.03); }
   },
   // cutscene poses layered over the procedural animation
   applyPose(dt) {
@@ -4220,7 +4429,7 @@ const Monster = {
     const toCam = clamp(angleDiff(this.yaw, Math.atan2(camera.position.x - this.pos.x, camera.position.z - this.pos.z)), -1.3, 1.3);
     if (C.pose === 'wake') {
       const rise = smooth(0.22, 0.68, k);
-      P.hips.position.y = lerp(0.6, 1.36, rise);
+      P.hips.position.y = lerp(0.6, WARDEN_HIP, rise);
       P.spine.rotation.x = lerp(1.3, 0.32, rise);
       P.neck.rotation.x = lerp(0.7, -0.27, rise);
       for (const L of P.legs) { L.hp.rotation.x = lerp(-1.55, 0, rise); L.kn.rotation.x = lerp(2.45, 0, rise); L.an.rotation.x = lerp(-0.85, 0, rise); }
@@ -4229,14 +4438,14 @@ const Monster = {
       P.eyeMat.color.copy(this.eyeColor).multiplyScalar(lit); P.glowMat.opacity = 0.9 * lit;
       const snap = smooth(0.7, 0.76, k);
       P.head.rotation.y = toCam * snap; P.head.rotation.z = 0.35 * (1 - snap) + 0.1;
-      P.jaw.rotation.x = k > 0.74 ? 0.75 : 0.04;
+      P.jawK = k > 0.74 ? 1.0 : 0.15;
     } else if (C.pose === 'roar' || C.pose === 'scream' || C.pose === 'flinch') {
       const r = C.pose === 'flinch' ? Math.sin(Math.min(1, k * 1.2) * Math.PI) : smooth(0.08, 0.3, k) * (1 - smooth(0.82, 1, k));
       const back = C.pose === 'scream' ? -0.95 : C.pose === 'flinch' ? 0.35 : -0.6;
       P.spine.rotation.x = lerp(P.spine.rotation.x, C.pose === 'flinch' ? 0.75 : -0.05, r);
       P.neck.rotation.x = lerp(P.neck.rotation.x, back, r);
       P.head.rotation.y = lerp(P.head.rotation.y, C.pose === 'flinch' ? toCam : 0, r);
-      P.jaw.rotation.x = (C.pose === 'flinch' ? 0.3 : 0.8) * r;
+      P.jawK = lerp(P.jawK, C.pose === 'flinch' ? 0.5 : 1.15, r);
       for (const A of P.arms) {
         const lift = C.pose === 'scream' ? -2.5 : C.pose === 'flinch' ? -0.9 : -0.55;
         A.up.rotation.x = lerp(A.up.rotation.x, lift, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * (C.pose === 'scream' ? 0.5 : 1.0), r);
@@ -4248,7 +4457,7 @@ const Monster = {
       P.spine.rotation.x = lerp(P.spine.rotation.x, 0.05, r * 0.8);
       P.neck.rotation.x = lerp(P.neck.rotation.x, -0.75, r);
       P.head.rotation.set(P.head.rotation.x - 0.35 * r, P.head.rotation.y + 0.9 * r, P.head.rotation.z - 0.4 * r);
-      P.jaw.rotation.x = 0.5 * r;
+      P.jawK = lerp(P.jawK, 0.8, r);
       for (const A of P.arms) { A.up.rotation.x = lerp(A.up.rotation.x, -0.5, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * 0.75, r); A.el.rotation.x = lerp(A.el.rotation.x, -0.2, r); }
     } else if (C.pose === 'stunned') { // reeling: hunched over, clutching its head, swaying, eyes guttering
       const r = smooth(0, 0.18, k) * (1 - smooth(0.86, 1, k)), sw = Math.sin(C.t * 3.1);
@@ -4257,8 +4466,8 @@ const Monster = {
       P.neck.rotation.x = lerp(P.neck.rotation.x, 0.25, r);
       P.head.rotation.set(lerp(P.head.rotation.x, 0.3, r), lerp(P.head.rotation.y, sw * 0.5, r), lerp(P.head.rotation.z, 0.5 * Math.sin(C.t * 1.7), r));
       for (const L of P.legs) { L.hp.rotation.x = lerp(L.hp.rotation.x, -0.55, r); L.kn.rotation.x = lerp(L.kn.rotation.x, 0.95, r); L.an.rotation.x = lerp(L.an.rotation.x, -0.35, r); }
-      for (const A of P.arms) { A.up.rotation.x = lerp(A.up.rotation.x, -2.05, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * 0.42, r); A.el.rotation.x = lerp(A.el.rotation.x, -1.55, r); }
-      P.jaw.rotation.x = 0.35 + Math.sin(C.t * 6) * 0.1;
+      for (const A of P.arms) { A.up.rotation.x = lerp(A.up.rotation.x, -1.5, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * 0.55, r); A.el.rotation.x = lerp(A.el.rotation.x, -2.45, r); for (const f of A.fingers) f.rotation.x = 0.9; } // long arms folded, hands over its head
+      P.jawK = 0.5 + Math.sin(C.t * 6) * 0.12;
       const lit = Math.random() < 0.25 ? 0.15 : 0.55; // the eyes stutter
       P.eyeMat.color.copy(this.eyeColor).multiplyScalar(lit); P.glowMat.opacity = 0.9 * lit;
       this.model.rotation.z = sw * 0.06 * r;
@@ -4267,7 +4476,7 @@ const Monster = {
       P.spine.rotation.x = lerp(P.spine.rotation.x, 0.62, r);
       P.neck.rotation.x = lerp(P.neck.rotation.x, -0.55, r);
       P.head.rotation.set(lerp(P.head.rotation.x, 0.1, r), lerp(P.head.rotation.y, C.look ? toCam * 0.4 : 0, r), lerp(P.head.rotation.z, 0.42 + Math.sin(C.t * 0.9) * 0.18, r));
-      P.jaw.rotation.x = 0.12 + Math.max(0, Math.sin(C.t * 2.3)) * 0.12;
+      P.jawK = 0.3 + Math.max(0, Math.sin(C.t * 2.3)) * 0.2;
       for (const A of P.arms) { A.up.rotation.x = lerp(A.up.rotation.x, -0.35, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * 0.16, r); A.el.rotation.x = lerp(A.el.rotation.x, -0.7, r); }
       P.chest.scale.y = 1 + Math.sin(C.t * 2.4) * 0.04; // slow, heavy breaths
     }
@@ -4279,7 +4488,7 @@ const Monster = {
     if (this.net.buf.length > 30) this.net.buf.shift();
     const wasCharging = this.charging, prev = this.state;
     this.active = !!m.a; this.attackT = +m.at || 0; this.seeing = !!m.sg; this.targetId = m.ti === undefined ? -1 : m.ti | 0; this.charging = !!m.ch;
-    this.netStagger = clamp(+m.sk || 0, 0, 1); this.netImmune = Math.max(0, +m.im || 0);
+    this.netStagger = clamp(+m.sk || 0, 0, 1); this.netImmune = Math.max(0, +m.im || 0); this.crawlMode = !!m.cr;
     const st = typeof m.st === 'string' ? m.st : 'DORMANT';
     if (st !== prev) {
       this.state = st;
@@ -4334,7 +4543,7 @@ const player = {
     this.pos.set(SPAWN.x, 0, SPAWN.z); this.vel.set(0, 0, 0); this.yaw = SPAWN.yaw; this.pitch = -0.08; this.eyeY = EYE_STAND;
     this.crouching = false; this.crouchToggle = false; this.sprinting = false; this.stamina = 1; this.exhausted = false; this.staminaDelay = 0;
     this.health = 100; this.dead = false; this.hasFlash = false; this.flashState = false; this.battery = 1; this.spares = 1; this.swapT = 0; this.crankT = 0; this.cranking = false;
-    this.hidden = false; this.locker = null; this.hideAnim = null; this.inVent = false; this.lit = 0; this.noiseLevel = 0; this.stepDist = 0; this.bobPhase = 0; this.bob = 0; this.roll = 0;
+    this.hidden = false; this.locker = null; this.hideAnim = null; this.inVent = false; this.panic = 0; this.lit = 0; this.noiseLevel = 0; this.stepDist = 0; this.bobPhase = 0; this.bob = 0; this.roll = 0;
     this.invulnUntil = 0; this.regenDelay = 0; this.breathT = 0; this.fearT = 0; this.lowWarned = false;
     this.beamDir.set(-1, 0, 0);
     for (const L of hideLockers) { L.open = 0; L.target = 0; L.pivot.rotation.y = L.pivot.userData.baseRy !== undefined ? L.pivot.userData.baseRy : L.pivot.rotation.y; L.door.visible = true; }
@@ -4462,6 +4671,11 @@ const player = {
     if (this.exhausted || this.stamina < 0.25) { this.breathT -= dt; if (this.breathT <= 0) { this.breathT = 1.25; Sound.breath(1 - this.stamina); Game.noise(this.pos, 2.5, 'player'); } }
     // ragged, frightened breathing when the Warden is close
     const md = Monster.active ? Monster.pos.distanceTo(this.pos) : 99;
+    // hiding buys time, not safety: your nerve runs out (fast, with it right outside), and you burst out gasping
+    if (this.hidden) {
+      this.panic = Math.min(1, (this.panic || 0) + dt / (md < 7 ? 20 : Night.hideFor()));
+      if (this.panic >= 1) { this.panic = 0.6; this.forceOut(); Sound.gasp(); Game.noise(this.pos, 16, 'player'); UI.msg('You can\'t take it any more — you burst out of the locker, gasping!', 'warn', 4); }
+    } else this.panic = Math.max(0, (this.panic || 0) - dt / 9);
     if (md < 10) { this.fearT -= dt; if (this.fearT <= 0) { this.fearT = this.hidden ? 3.4 : rand(1.9, 2.6); Sound.breath(this.hidden ? 0.15 : 0.35 + (1 - md / 10) * 0.4); } }
     // health regeneration
     this.regenDelay -= dt;
@@ -4492,7 +4706,7 @@ const player = {
   // online games: come back at Desk B after being caught
   respawn(spot) {
     this.pos.set(spot[0], 0, spot[1]); this.vel.set(0, 0, 0); this.yaw = SPAWN.yaw; this.pitch = -0.05; this.eyeY = EYE_STAND;
-    this.dead = false; this.health = 100; this.hidden = false; this.locker = null; this.hideAnim = null; this.crouchToggle = false;
+    this.dead = false; this.health = 100; this.hidden = false; this.locker = null; this.hideAnim = null; this.crouchToggle = false; this.panic = 0;
     this.stamina = 1; this.exhausted = false; this.regenDelay = 0; this.flashState = false; this.battery = Math.max(this.battery, 0.4);
     this.invulnUntil = Game.time + 4;
     UI.setLockerView(false);
@@ -4838,7 +5052,10 @@ const UI = {
     else if (Game.exitOpening) prog = clamp(doorAt(35, 21).t / 0.82, 0, 1);
     $('progress').style.display = prog >= 0 ? 'block' : 'none';
     if (prog >= 0) $('progress').firstElementChild.style.width = (prog * 100) + '%';
-    this.objectivesDom(); this.bonusDom();
+    this.objectivesDom(); this.bonusDom(); Night.hud();
+    const pn = p.panic || 0;
+    this.set('breath', 'class', p.hidden && pn > 0.02 ? 'show' + (pn > 0.75 ? ' high' : '') : '');
+    if (p.hidden) $('breath-bar').style.width = Math.round(pn * 100) + '%';
     if (settings.showFps) this.set('fps', 'text', Math.round(Game.fps) + ' FPS · ' + settings.quality.toUpperCase());
   },
   /* ---- minimap ---- */
@@ -5141,6 +5358,7 @@ const Game = {
         break;
       case 'camboot': case 'campr': case 'cams': this.goalEvent(ev, mine, who); break;
       case 'end': this.startEnding(); break;
+      case 'hour': Night.onHour(ev.h | 0); break;
       case 'over': if (this.state !== 'dead' && this.state !== 'won') { UI.closeNote(true); this.showGameOver(); } break;
     }
   },
@@ -5171,7 +5389,7 @@ const Game = {
     for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) grid[z][x].explored = false;
     Monster.reset(); if (Phantom.model) Phantom.model.visible = false; Phantom.active = false;
     player.reset();
-    Cine.reset(); Hints.reset(); Combat.reset(); Arms.reset();
+    Cine.reset(); Hints.reset(); Combat.reset(); Arms.reset(); Night.reset();
     Sound.setAlarm(false); Sound.setHum(false);
     UI.clearMsgs(); UI.setLockerView(false); UI.hudCache = {}; UI.closeNote(true);
     $('fx-damage').style.opacity = 0; $('fx-threat').style.opacity = 0; $('fx-white').style.opacity = 0;
@@ -5196,8 +5414,8 @@ const Game = {
       player.hasFlash = true; player.flashState = false; // every guard carries a light online
       flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true;
       Net.onGameStart();
-      UI.center('02:17 AM', 'Site Kestrel · Sublevel 6 · ' + crew().length + ' guards on shift', 3.4);
-    } else UI.center('02:17 AM', 'Site Kestrel · Sublevel 6', 3.4);
+      UI.center('02:00 AM', 'SURVIVE UNTIL 6:00 AM · ' + crew().length + ' guards on shift', 4.2);
+    } else UI.center('02:00 AM', 'SURVIVE UNTIL 6:00 AM', 4.2);
   },
   // restart button: online only the host can restart (for everyone)
   restart() { if (Net.isClient) return; if (Net.isHost) Net.startGame(); else this.newGame(); },
@@ -5226,7 +5444,7 @@ const Game = {
   showGameOver() {
     this.state = 'dead'; Input.exitLock(); UI.hud(false); Cine.reset();
     $('go-stats').innerHTML = '';
-    const rows = [['Survived', fmtTime(this.time)], ['Keycards', CARD_COLORS.filter(c => this.cards[c]).length + ' / 3'], ['Notes found', this.notesRead.size + ' / ' + NOTE_ORDER.length], ['Times spotted', this.stats.spotted], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]];
+    const rows = [['Survived until', Night.clock() + ' AM'], ['Dawn was', Night.leftText() + ' away'], ['Keycards', CARD_COLORS.filter(c => this.cards[c]).length + ' / 3'], ['Notes found', this.notesRead.size + ' / ' + NOTE_ORDER.length], ['Times spotted', this.stats.spotted], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]];
     if (Net.active) rows.unshift(['Guards', crew().length + ' on shift']);
     if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
     rows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; $('go-stats').appendChild(s); $('go-stats').appendChild(v); });
@@ -5239,7 +5457,9 @@ const Game = {
   showVictory() {
     this.state = 'won'; Input.exitLock(); UI.hud(false); Cine.reset();
     $('win-stats').innerHTML = '';
-    const rows = [['Time', fmtTime(this.time)], ['Notes found', this.notesRead.size + ' / ' + NOTE_ORDER.length], ['Times spotted', this.stats.spotted], ['Damage taken', this.stats.damage], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]];
+    $('win-title').textContent = Night.dawn ? (Net.active ? 'You survived the night — together' : 'You survived the night') : 'You got out early';
+    $('win-sub').textContent = Night.dawn ? 'Surface lift · 06:00 AM · the day shift' : 'Surface lift · ' + Night.clock() + ' AM · ' + Night.leftText() + ' before dawn';
+    const rows = [['Shift ended', Night.clock() + ' AM'], ['Time', fmtTime(this.time)], ['Notes found', this.notesRead.size + ' / ' + NOTE_ORDER.length], ['Times spotted', this.stats.spotted], ['Damage taken', this.stats.damage], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]];
     if (Net.active) rows.unshift(['Guards escaped', crew().length + '']);
     if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
     rows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; $('win-stats').appendChild(s); $('win-stats').appendChild(v); });
@@ -5547,10 +5767,11 @@ const Game = {
       p.pitch = lerp(-0.75, -0.06, smooth(0.4, 3.0, this.introT));
       if (this.introT >= 3.2) {
         this.controlLock = false; this.introT = -1;
-        if (Net.active) { UI.msg('Stay together. Find the keycards, restore power and get everyone to the lift.', 'story', 5); setTimeout(() => { if (Game.state === 'playing') UI.msg('[G] marks a spot for your team. [H] shows a hint.', '', 4.5); }, 3000); }
+        if (Net.active) { UI.msg('Stay alive until the day shift opens the lift at 6:00 AM — or find the keycards and get out sooner. Stay together.', 'story', 6); setTimeout(() => { if (Game.state === 'playing') UI.msg('[G] marks a spot for your team. [H] shows a hint.', '', 4.5); }, 3600); }
         else {
-          UI.msg('You fell asleep at the desk. The power is failing.', 'story', 4.5);
-          setTimeout(() => { if (Game.state === 'playing' && !player.hasFlash) UI.msg('Find a light. There was a flashlight on the desk.', '', 4.5); }, 2600);
+          UI.msg('You fell asleep at the desk. Something is loose down here — and the lift stays locked until 6:00 AM.', 'story', 5.5);
+          setTimeout(() => { if (Game.state === 'playing') UI.msg('Survive until the day shift arrives. Or find a way out sooner.', 'story', 4.5); }, 3200);
+          setTimeout(() => { if (Game.state === 'playing' && !player.hasFlash) UI.msg('Find a light. There was a flashlight on the desk.', '', 4.5); }, 7200);
         }
       }
     }
@@ -5561,6 +5782,7 @@ const Game = {
     else this.updateTerminal(dt);
     this.updateRadios(dt);
     this.scripts(dt);
+    if (!this.ending) Night.update(dt);
     if (client) Monster.netUpdate(dt); else Monster.update(dt);
     Net.updateRemotes(dt);
     this.updateLights(dt);
@@ -5614,8 +5836,8 @@ const Game = {
       if (Monster.active && !Monster.cine && Monster.state !== 'HUNT' && Monster.state !== 'ATTACK') { Monster.playPose('scream', 2.6); this.emit({ k: 'cine', id: 'lightsOn' }); }
     }
     // director: after a long quiet spell it drifts toward the guards
-    if (host && Monster.active && Monster.state === 'PATROL' && this.time - Monster.lastContact > diff().pressure && this.time > this.lureT) {
-      this.lureT = this.time + 40;
+    if (host && Monster.active && Monster.state === 'PATROL' && this.time - Monster.lastContact > diff().pressure * Night.pressureMul() && this.time > this.lureT) {
+      this.lureT = this.time + 40 * Night.pressureMul();
       const alive = crew().filter(a => !a.dead && !a.hidden), tg = alive.length ? pick(alive) : null;
       if (tg) {
         const a = rand(0, TAU), r = rand(5, 9), x = tg.pos.x + Math.cos(a) * r, z = tg.pos.z + Math.sin(a) * r, c = cellOf(x, z);
@@ -5625,7 +5847,7 @@ const Game = {
     // later on it stalks you: it is simply there, at the edge of the light, watching
     if (host && Monster.active && (F.sighted || Monster.huntCount > 0) && !this.exitOpening && !this.ending) {
       this.stalkT -= dt;
-      if (this.stalkT <= 0) this.stalkT = this.tryStalk() ? rand(45, 80) : rand(5, 9);
+      if (this.stalkT <= 0) this.stalkT = this.tryStalk() ? rand(45, 80) * Night.pressureMul() : rand(5, 9);
     }
     // it stops right outside the locker you are hiding in, and listens
     if (host && Monster.active && !Monster.cine && this.time > this.stareCD && (Monster.state === 'PATROL' || Monster.state === 'SEARCH' || Monster.state === 'INVESTIGATE')) {
@@ -5635,11 +5857,17 @@ const Game = {
         if (Math.hypot(Monster.pos.x - a.locker.out.x, Monster.pos.z - a.locker.out.z) < 2.0) {
           this.stareCD = this.time + 38;
           Monster.yaw = Math.atan2(a.locker.pos.x - Monster.pos.x, a.locker.pos.z - Monster.pos.z); Monster.vel.set(0, 0, 0);
-          Monster.playPose('stare', 3.8); break;
+          Monster.playPose('stare', 3.8);
+          if (Night.danger() >= 3 || Night.surge) F.rip = { a, L: a.locker, at: this.time + 3.6 }; // late at night it doesn't just listen
+          break;
         }
       }
     }
     if (p.hidden && Monster.cine && Monster.cine.pose === 'stare' && Monster.pos.distanceTo(p.pos) < 3.6) Cine.trigger('locker');
+    if (host && F.rip && this.time >= F.rip.at) { // …it tears the locker open
+      const { a, L } = F.rip; F.rip = null;
+      if (a.hidden && a.locker === L && !a.dead && Monster.active) { Monster.seenHide = { actor: a, locker: L }; Monster.target = a; Monster.lastKnown.copy(a.pos); Monster.lastSeen = this.time; Monster.awareness = 1.2; Monster.setState('HUNT'); Monster.path = null; Monster.repathT = 0; }
+    }
     // first sighting: every guard gets their own
     if (Monster.active && !F.sighted && !p.dead && !Cine.cur) {
       const d = Monster.pos.distanceTo(p.pos);
@@ -5763,6 +5991,7 @@ const Game = {
         if (f.type === 'emerg' && this.power && f.mode !== 'beacon') b *= 0.5;
         if (mActive) { const dm = Math.abs(f.pos.x - mp.x) + Math.abs(f.pos.z - mp.z); if (dm < 10) { const k = 1 - dm / 10; if (Math.random() < k * 0.55) b *= rand(0, 0.45); } }
         if (this.dip > 0.05) b *= 1 - this.dip * (Math.random() < 0.3 ? 1 : 0.75);
+        if (Night.surge) b *= f.mode === 'beacon' ? 0.5 : 0; // the 04:00 surge: black
       }
       f.b = b > f.b ? b : damp(f.b, b, 18, dt);
       if (f.inst) {
@@ -5793,7 +6022,7 @@ const Game = {
       for (const f of want) { const l = free.pop(); if (!l) break; l.userData.fix = f; l.position.set(f.pos.x, f.pos.y - 0.3, f.pos.z); l.color.copy(f.color); l.distance = f.range; }
     }
     for (let i = 0; i < MAX_POOL; i++) { const l = pool[i], f = l.userData.fix; l.intensity = (i < n && f) ? f.intensity * f.b : 0; }
-    hemi.intensity = damp(hemi.intensity, this.power ? 0.62 : 0.5, 1.5, dt);
+    hemi.intensity = damp(hemi.intensity, Night.surge ? 0.3 : this.power ? 0.62 : 0.5, 1.5, dt);
     scene.fog.density = damp(scene.fog.density, this.power ? FOG_BASE * 0.85 : FOG_BASE, 1, dt);
   },
   updateEnding(dt) {
@@ -6065,21 +6294,21 @@ function resizeRenderer() {
 /* ------------------------------------------------------------------ */
 const PREVIEW_FOV = 56;
 const PREVIEW_SHOTS = [
-  { cam: 'CAM 09 · Desk B', title: '02:17 AM', text: 'You wake at your post. The lights are dying and the surface lift is in lockdown.',
+  { cam: 'CAM 09 · Desk B', title: '02:00 AM — survive until 6:00', text: 'You wake at your post. Something is loose, and the surface lift stays locked until the day shift arrives at dawn.',
     power: false, flash: 1.7, from: [7.2, 1.72, 52.8], to: [4.9, 1.58, 51.2], at: [2.3, 1.55, 48.7], at2: [2.3, 1.35, 49.4] },
-  { cam: 'CAM 02 · Storage', title: 'Find the keycards', text: 'Three department cards are hidden across Sublevel 6. The notes tell you where — and how.',
+  { cam: 'CAM 02 · Storage', title: 'Or get out early', text: 'Three department cards are hidden across Sublevel 6. Find them, and the notes tell you how to open the lift yourself.',
     power: false, flash: 1.6, from: [14.2, 1.4, 9.9], to: [14.7, 1.2, 10.45], at: [15.45, 0.8, 10.95], at2: [15.45, 0.78, 11.2] },
   { cam: 'CAM 04 · Generator Hall', title: 'Restore main power', text: 'Throw the breakers in the right order. Get it wrong and the whole level hears it.',
     power: true, flash: 0, from: [26.0, 1.7, 23.4], to: [26.3, 1.6, 31.6], at: [22.3, 1.5, 26.6], at2: [22.3, 1.4, 30.6] },
   { cam: 'CAM 05 · Containment', title: 'Cell W is empty', text: 'The glass broke from the inside. Upload the breach report to lift the lockdown.',
     power: true, flash: 0, from: [46.8, 1.9, 13.3], to: [56.0, 1.75, 13.1], at: [51.5, 1.1, 8.6], at2: [52.5, 1.2, 8.6] },
-  { cam: 'CAM 03 · West Corridor', title: 'The Warden', text: 'It hears every footstep — and it runs. Hide in lockers, crawl through vents, keep your light low.',
+  { cam: 'CAM 03 · West Corridor', title: 'The Warden', text: 'It hears every footstep — and it crawls after you, fast. Every hour of the night it gets worse.',
     power: false, flash: 1.2, warden: true, from: [19, 1.55, 36.5], to: [19, 1.62, 30.9], at: [19, 1.85, 27], at2: [19, 2.05, 27] },
   { cam: 'CAM 12 · Morgue', title: 'The East Wing', text: 'A morgue, an archive maze, the staff quarters and Camera Control. Six voice logs tell you who the Warden was.',
     power: true, flash: 0, from: [87.6, 1.75, 12.6], to: [89.6, 1.7, 11.4], at: [97, 1.0, 5.5], at2: [100, 1.1, 4.5] },
   { cam: 'CAM 07 · East Corridor', title: 'It watches you', text: 'Sometimes it just stands there in the dark. Hold its gaze and it backs off. Walk toward it — or light it up — and it comes.',
     power: false, flash: 0.9, warden: [83, 20, 0, 'STALK'], from: [83, 1.6, 34], to: [83, 1.62, 31.5], at: [83, 1.3, 23], at2: [83, 1.6, 21] },
-  { cam: 'CAM 01 · Lift Lobby', title: 'The way out', text: 'Three keys, main power and one report open the surface lift. Reach it alive.',
+  { cam: 'CAM 01 · Lift Lobby', title: '06:00 AM', text: 'When the day shift opens the surface lift, it knows the night is over. Run for it.',
     power: true, flash: 0, from: [70.2, 1.7, 46.2], to: [67.4, 1.6, 50.2], at: [66, 2.1, 54.2], at2: [66, 1.55, 54.6] },
 ];
 const Preview = {
@@ -6214,8 +6443,10 @@ const Hints = {
     const label = kind === 'card' ? CARD_INFO[color].name : kind === 'flashlight' ? 'Flashlight' : 'Battery';
     return { pos: this.posOf(it.mesh), label, key: kind + (color || ''), done: () => it.taken };
   },
+  liftTarget() { return { pos: new T.Vector3(66, 1.3, 55), label: 'Surface lift', key: 'lift', tip: Net.active ? 'Everyone into the surface lift!' : 'Get into the surface lift!', done: () => Game.ending }; },
   primary() {
     const c = Game.cards;
+    if (Night.dawn) return this.liftTarget();
     if (!player.hasFlash) return this.itemTarget('flashlight');
     if (!c.yellow) return this.itemTarget('card', 'yellow');
     if (!Game.power) {
@@ -6284,7 +6515,7 @@ const Hints = {
         }
         // when needed: somewhere to hide while it hunts you
         this.hideT -= dt;
-        if (Monster.huntsLocal() && !player.hidden && this.hideT <= 0 && Monster.pos.distanceTo(player.pos) > 5) {
+        if (Monster.huntsLocal() && !player.hidden && !Night.dawn && this.hideT <= 0 && Monster.pos.distanceTo(player.pos) > 5) {
           const L = this.locker(); if (L) { this.hideT = 30; this.pulse(L, 4.5, 'Hide! There\'s a locker close by.'); }
         }
       }
@@ -6391,7 +6622,7 @@ function camLabel(p) {
   const c = cellOf(p.x, p.z), room = c.room && ROOM_NAMES[c.room] ? ROOM_NAMES[c.room] : 'Corridor';
   return 'CAM ' + String(strHash(room) % 14 + 1).padStart(2, '0') + ' · ' + room.toUpperCase();
 }
-function clockText() { const tm = 2 * 3600 + 17 * 60 + Math.floor(Game.time); return '0' + Math.floor(tm / 3600) % 10 + ':' + String(Math.floor(tm / 60) % 60).padStart(2, '0') + ':' + String(tm % 60).padStart(2, '0'); }
+function clockText() { const tm = Math.floor(Night.minutes() * 60); return '0' + Math.floor(tm / 3600) % 10 + ':' + String(Math.floor(tm / 60) % 60).padStart(2, '0') + ':' + String(tm % 60).padStart(2, '0'); }
 function lookAtWarden(k) {
   if (k <= 0) return;
   lookQuat(camera.position, _cv.set(Monster.pos.x, 2.1, Monster.pos.z), _cq);
@@ -6425,13 +6656,13 @@ const Scare = {
     this.face.copy(sc.eye).addScaledVector(sc.dir, d); this.face.y += 0.02;
     P.hips.position.y = 1.2; P.spine.rotation.x = 0.72; P.neck.rotation.x = -0.6;
     P.head.rotation.set(-0.2 + rand(-jit, jit) * 4, rand(-jit, jit) * 4, 0.28 + Math.sin(t * 23) * 0.08);
-    P.jaw.rotation.x = 0.62 + Math.sin(t * 31) * 0.06;
+    P.jawK = 1.05 + Math.sin(t * 31) * 0.08;
     for (const A of P.arms) { A.up.rotation.x = -1.95 + Math.sin(t * 17 + A.s) * 0.08; A.up.rotation.z = A.s * 0.95; A.el.rotation.x = -0.75; for (const f of A.fingers) f.rotation.x = -0.35; }
     for (const L of P.legs) { L.hp.rotation.x = -0.3; L.kn.rotation.x = 0.6; L.an.rotation.x = 0; }
-    P.eyeMat.color.setHex(0xff2a1a); P.glowMat.color.setHex(0xff2a1a); P.glowMat.opacity = 1; P.led.visible = true;
+    P.eyeMat.color.setHex(0xff2a1a); P.glowMat.color.setHex(0xff2a1a); P.glowMat.opacity = 1; wardenFace(P);
     // face the camera, then slide the whole body so its eyes land exactly on that point
     M.visible = true; M.rotation.set(0, Math.atan2(-sc.dir.x, -sc.dir.z), 0); M.position.set(0, 0, 0); M.updateMatrixWorld(true);
-    P.head.localToWorld(this._e.set(0, 0.15, 0.17));
+    P.head.localToWorld(this._e.copy(P.faceAt));
     M.position.copy(this.face).sub(this._e); M.updateMatrixWorld(true);
   },
 };
@@ -6766,7 +6997,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 3, BUILD = 7, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 4, BUILD = 8, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -7398,13 +7629,14 @@ const Net = {
   snapshot() {
     const M = Monster, c = M.cine;
     const m = { x: +M.pos.x.toFixed(2), z: +M.pos.z.toFixed(2), yw: +M.yaw.toFixed(3), st: M.state, a: M.active ? 1 : 0, at: +M.attackT.toFixed(2), sg: M.seeing ? 1 : 0, ch: M.charging ? 1 : 0,
-      sk: +M.stagger.toFixed(2), im: +Math.max(0, M.stunImmune - Game.time).toFixed(1),
+      sk: +M.stagger.toFixed(2), im: +Math.max(0, M.stunImmune - Game.time).toFixed(1), cr: M.crawlMode ? 1 : 0,
       ti: M.target ? (M.target === player ? 0 : M.target.id) : -1 };
     if (c) { m.po = c.pose; m.pt = +c.t.toFixed(2); m.pd = c.dur; m.pl = c.look ? 1 : 0; }
     const p = [this.myState()];
     for (const r of this.remotes.values()) if (r.inGame && r.last) p.push(r.last);
     const s = { k: 's', q: ++this.snapSeq, m, p, lp: +Game.logsProgress.toFixed(3), dl: Game.downloading ? 1 : 0 };
     if (this.snapSeq % 30 === 0) s.dr = doors.map(d => (d.target > 0.5 ? 1 : 0) | (d.unlocked ? 2 : 0));
+    if (this.snapSeq % 12 === 0) s.nt = +Night.t.toFixed(1);
     return s;
   },
   applySnap(s, now) { // client
@@ -7412,6 +7644,7 @@ const Net = {
     Monster.netPush(s.m, now);
     if (Array.isArray(s.p)) for (const a of s.p) { const id = a[0] | 0; if (id === this.myId) continue; const r = this.remotes.get(id); if (r) r.applyState(a, now); }
     Game.logsProgress = clamp(+s.lp || 0, 0, 1); Game.downloading = !!s.dl && !Game.logs;
+    if (s.nt !== undefined && !Night.dawn && Math.abs(Night.t - s.nt) > 1) Night.t = clamp(+s.nt || 0, 0, Night.len);
     if (Array.isArray(s.dr)) s.dr.forEach((v, i) => {
       const d = doors[i]; if (!d || (d.evAt && now - d.evAt < 2500)) return; // a fresher door event wins
       const tg = v & 1 ? 1 : 0, un = !!(v & 2) || d.type === 'normal';
@@ -7770,7 +8003,8 @@ const ACH = [
   { id: 'hard', name: 'Graveyard Shift', desc: 'Escape on Hard.' },
   { id: 'ghost', name: 'Ghost', desc: 'Escape without the Warden ever hunting you.' },
   { id: 'untouched', name: 'Not a Scratch', desc: 'Escape without taking any damage.' },
-  { id: 'speed', name: 'Overtime? No Thanks', desc: 'Escape in under 12 minutes.' },
+  { id: 'dawn', name: 'Night Owl', desc: 'Survive the whole night and make it onto the lift at 6:00 AM.' },
+  { id: 'early', name: 'Early Bird', desc: 'Get out before 5:00 AM.' },
   { id: 'brawler', name: 'Brawler', desc: 'Stun the Warden 3 times in one shift.' },
   { id: 'counter', name: 'Counterpunch', desc: 'Stun it with a punch as it lunges at you.' },
   { id: 'tapes', name: 'Archivist', desc: 'Find all 6 voice logs.' },
@@ -7822,8 +8056,8 @@ const Goals = {
   score() {
     const G = Game, s = G.stats, diffKey = Net.sessionDiff || settings.difficulty;
     const rows = [
-      ['Escaped', 1000],
-      ['Time bonus', Math.max(0, Math.round(1200 - G.time))],
+      Night.dawn ? ['Survived the night', 1500] : ['Escaped early', 1000],
+      ['Before dawn', Night.dawn ? 0 : Math.round(Night.left() * 8)],
       ['Voice logs ×' + G.tapes.size, G.tapes.size * 150],
       ['Cameras rebooted', G.cams ? 300 : 0],
       ['Documents ×' + G.notesRead.size, G.notesRead.size * 40],
@@ -7831,7 +8065,7 @@ const Goals = {
       ['Stared it down ×' + (s.stares || 0), (s.stares || 0) * 150],
       ['Times hunted ×' + (s.spotted || 0), -(s.spotted || 0) * 60],
       ['Damage taken', -Math.round((s.damage || 0) * 4)],
-    ].filter(r => r[1] !== 0 || r[0] === 'Escaped');
+    ].filter((r, i) => r[1] !== 0 || i === 0);
     const mult = { easy: 0.8, normal: 1, hard: 1.5 }[diffKey] || 1;
     const raw = rows.reduce((a, r) => a + r[1], 0), total = Math.max(0, Math.round(raw * mult));
     const rank = RANKS.find(r => total >= r[1])[0];
@@ -7846,7 +8080,7 @@ const Goals = {
     if (d === 'hard') this.unlock('hard');
     if (!(G.stats.spotted > 0)) this.unlock('ghost');
     if (!(G.stats.damage > 0)) this.unlock('untouched');
-    if (G.time < 720) this.unlock('speed');
+    if (Night.dawn) this.unlock('dawn'); else if (Night.minutes() < 300) this.unlock('early');
     if (Net.active && crew().length > 1) this.unlock('coop');
   },
   buildScreen() {
@@ -7978,6 +8212,118 @@ Object.assign(Screens, {
 });
 
 /* ------------------------------------------------------------------ */
+/* THE MISSION: survive the night shift                                */
+/* The clock runs from 02:00 to 06:00 AM. Every hour the Warden gets   */
+/* worse; at 04:00 a power surge blacks the facility out; in the last  */
+/* hour it squeezes into the vents. At 06:00 the day shift opens the   */
+/* surface lift — get on it. (Keycards, main power and the breach      */
+/* report still unlock the lift early, for those who want out sooner.) */
+/* ------------------------------------------------------------------ */
+const NIGHT_LEN = { easy: 540, normal: 720, hard: 900 }; // real seconds from 02:00 to 06:00
+const HOUR_FX = {
+  speed: [1, 1.05, 1.1, 1.16], hear: [1, 1.1, 1.2, 1.32], sight: [1, 1.05, 1.1, 1.16],
+  crawl: [0.25, 0.4, 0.55, 0.72], pressure: [1, 0.8, 0.65, 0.5], hide: [40, 36, 31, 26],
+};
+const HOUR_TEXT = [
+  null,
+  ['03:00 AM', 'It is getting restless. It crawls more — and it hears more.'],
+  ['04:00 AM', 'POWER SURGE — every light in the facility is going out.'],
+  ['05:00 AM', 'THE LAST HOUR — it can squeeze into the vents now.'],
+];
+const LIFT_POS = new T.Vector3(66, 0, 55.2);
+const Night = {
+  t: 0, len: 720, hour: 0, dawn: false, dawnT: 0, surgeUntil: 0, said: {}, huntT: 0,
+  get ventsOpen() { return this.hour >= 3; },
+  get surge() { return Game.time < this.surgeUntil; },
+  danger() { return Math.min(3, this.hour); },
+  speedMul() { return HOUR_FX.speed[this.danger()] * (this.surge ? 1.08 : 1); },
+  hearMul() { return HOUR_FX.hear[this.danger()]; },
+  sightMul() { return HOUR_FX.sight[this.danger()]; },
+  crawlChance() { return this.surge ? 1 : HOUR_FX.crawl[this.danger()] + (Game.power ? 0 : 0.1); },
+  pressureMul() { return HOUR_FX.pressure[this.danger()]; },
+  hideFor() { return HOUR_FX.hide[this.danger()]; }, // how long you can stay in a locker before your nerve goes
+  reset() {
+    this.len = NIGHT_LEN[Net.sessionDiff || settings.difficulty] || 720;
+    this.t = 0; this.hour = 0; this.dawn = false; this.dawnT = 0; this.surgeUntil = 0; this.said = {}; this.huntT = 0;
+    UI.hudCache.shift = null;
+  },
+  minutes() { return this.dawn ? 360 : 120 + clamp(this.t / this.len, 0, 1) * 240; }, // the clock, in minutes after midnight
+  clock(m = this.minutes()) { const h = Math.floor(m / 60), mm = Math.floor(m % 60); return '0' + h + ':' + String(mm).padStart(2, '0'); },
+  left() { return Math.max(0, 360 - this.minutes()); }, // minutes until dawn
+  leftText() { const l = Math.ceil(this.left()), h = Math.floor(l / 60), m = l % 60; return (h ? h + 'h ' : '') + m + 'm'; },
+  update(dt) {
+    if (this.dawn) { this.dawnT += dt; if (!Net.isClient) this.lastRun(dt); if (!Hints.active && !Game.ending) Hints.pulse(Hints.liftTarget(), 12); return; }
+    this.t += dt;
+    if (!Net.isClient) { // the host keeps the time for everyone
+      const h = Math.min(4, Math.floor(this.t / (this.len / 4) + 1e-6));
+      if (h > this.hour) Game.emit({ k: 'hour', h });
+    }
+    const m = this.minutes();
+    if (m >= 330 && !this.said.half) { this.said.half = 1; UI.msg('05:30 — half an hour until the day shift. Hold on.', 'story', 4.5); }
+    if (m >= 350 && !this.said.ten) { this.said.ten = 1; UI.msg('05:50 — ten minutes to dawn. Get close to the surface lift.', 'warn', 5); Sound.hourBell(0); }
+    if (this.surgeUntil && !this.surge && !this.said.surgeEnd) { this.said.surgeEnd = 1; UI.msg('The emergency lights stutter back on.', 'story', 3.5); Game.dip = 0.6; }
+  },
+  // a new hour (every peer, from the host's event)
+  onHour(h) {
+    if (h <= this.hour || this.dawn) return;
+    this.hour = h; this.t = Math.max(this.t, h * this.len / 4);
+    if (h >= 4) { this.startDawn(); return; }
+    const [title, sub] = HOUR_TEXT[h];
+    UI.center(title, sub, 4.6); Sound.hourBell(h);
+    if (h === 2) { // the power surge: everything goes dark for a while, and it loves the dark
+      this.surgeUntil = Game.time + 24; this.said.surgeEnd = 0;
+      Sound.trip(TRIP_POS); spawnSparks(new T.Vector3(player.pos.x, 3, player.pos.z), 6); Game.dip = 1; Game.shake(0.4);
+      if (!Net.isClient && Monster.active && Monster.state !== 'HUNT' && Monster.state !== 'ATTACK') { Monster.cine = null; Monster.playPose('scream', 2.2); }
+    }
+    if (h === 3 && !Net.isClient && Monster.active) Sound.roar(0.8);
+  },
+  // 06:00: the day shift takes over — every lock released, power on, the blast door to the lift rising
+  startDawn() {
+    if (this.dawn) return;
+    this.dawn = true; this.dawnT = 0; this.hour = 4; this.t = this.len; this.surgeUntil = 0;
+    doors.forEach(d => { if (d.type !== 'exit' && d.locked()) { d.unlocked = true; d.updateLeds(); } });
+    if (!Game.power) Game.restorePower();
+    if (!Game.exitOpening && !Game.exitOpen) {
+      const d = doorAt(35, 21); d.unlocked = true; d.open(); d.updateLeds(); Game.exitOpening = true;
+      world.exitPanel.slots.forEach(s => { s.material = MAT.ledGreen; }); world.exitPanel.scr.material = MAT.ledGreen; world.liftCall.material = MAT.ledGreen;
+      Sound.door(new T.Vector3(71, 1.5, 43), true, true);
+    }
+    Game.alarm = true; Game.alarmT = 1e9; Sound.setAlarm(true);
+    UI.center('06:00 AM', 'THE DAY SHIFT IS HERE — GET TO THE SURFACE LIFT!', 5.5);
+    Sound.dawn(); Game.shake(0.5); Hints.progress(); Hints.pulse(Hints.liftTarget(), 12);
+    if (!Net.isClient && Monster.active) { Monster.cine = null; Monster.playPose('stunned', 5); } // the floodlights blind it… for a moment
+  },
+  // host: at dawn it stops wandering and comes for whoever is nearest — the last run
+  lastRun(dt) {
+    const M = Monster;
+    if (!M.active || M.cine || Game.ending || M.state === 'ATTACK' || M.state === 'SCRIPT') return;
+    this.huntT -= dt;
+    if (this.huntT > 0 && M.state === 'HUNT') return;
+    this.huntT = 3;
+    const tg = M.nearestActor(); if (!tg || tg.hidden) return;
+    M.target = tg; M.lastKnown.copy(tg.pos); M.lastSeen = Game.time; M.awareness = 1.2;
+    if (M.state !== 'HUNT') { M.setState('HUNT'); M.path = null; M.repathT = 0; }
+  },
+  // the clock at the top of the screen
+  hud() {
+    const el = $('shift'); if (!el) return;
+    const m = this.minutes(), cls = this.dawn ? 'dawn' : this.surge ? 'surge' : m >= 330 ? 'late' : '';
+    const goal = this.dawn ? 'GET TO THE LIFT · ' + Math.round(Math.hypot(player.pos.x - LIFT_POS.x, player.pos.z - LIFT_POS.z)) + ' M'
+      : this.surge ? 'POWER SURGE · SURVIVE UNTIL 6:00 AM' : 'SURVIVE UNTIL 6:00 AM · ' + this.leftText() + ' LEFT';
+    const key = this.clock(m) + cls + goal;
+    if (UI.hudCache.shift === key) return;
+    UI.hudCache.shift = key;
+    el.className = cls;
+    $('shift-clock').firstChild.textContent = this.clock(m);
+    $('shift-goal').textContent = goal;
+    $('shift-bar').firstElementChild.style.width = clamp((m - 120) / 240, 0, 1) * 100 + '%';
+    $('mission').textContent = this.dawn ? 'GET TO THE SURFACE LIFT!' : 'Survive until 6:00 AM';
+    $('mission-sub').textContent = this.dawn ? 'It has seen the light. RUN.' : this.leftText() + ' until the day shift opens the lift';
+    $('objectives').classList.toggle('dawn', this.dawn);
+  },
+};
+
+/* ------------------------------------------------------------------ */
 /* Boot                                                                */
 /* ------------------------------------------------------------------ */
 Monster.init();
@@ -8042,7 +8388,7 @@ const hiddenTick = () => {
 if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
-    Hints, Cine, Net, Relay, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt,
+    Hints, Cine, Net, Relay, Night, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
