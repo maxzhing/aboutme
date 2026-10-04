@@ -501,7 +501,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       </div>
     </aside>
   </div>
-  <div class="title-foot">Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
+  <div class="title-foot">Build 6 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
 </div>
 
 <!-- briefing -->
@@ -602,7 +602,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <p class="p">Play the whole game together. One guard hosts and sends the invite link — friends open it and press <b>Join</b>. Up to 4 players, nothing to install.</p>
       <div class="row"><button class="btn primary" id="btn-mp-host">Host a game</button><button class="btn" id="btn-mp-back">Back</button></div>
       <div class="mp-or">or join a friend's room</div>
-      <div class="mp-joinrow"><input id="mp-code" size="5" maxlength="4" placeholder="CODE" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn primary" id="btn-mp-join">Join</button></div>
+      <div class="mp-joinrow"><input id="mp-code" size="5" placeholder="CODE" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn primary" id="btn-mp-join">Join</button></div>
     </div>
     <div id="mp-hostbox" hidden>
       <div class="kicker">Your room code</div>
@@ -616,7 +616,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">A free matchmaking service (PeerJS) introduces the browsers; the game then runs directly between you, or through PeerJS's relay on strict networks. No accounts, nothing stored.</p>
+    <p class="mp-note" style="margin-top:16px">A free matchmaking service (PeerJS) introduces the browsers; the game then runs directly between you, or through PeerJS's relay on strict networks. No accounts, nothing stored. · Build 6 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
   </div>
 </div>
 
@@ -4564,6 +4564,7 @@ canvasEl.addEventListener('mousedown', e => {
   e.preventDefault();
 });
 window.addEventListener('mouseup', () => { Input.mouseDown = false; });
+window.addEventListener('pointerdown', () => Sound.resume(), true); // browsers only start sound after a click
 canvasEl.addEventListener('contextmenu', e => e.preventDefault());
 const GAME_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'KeyF', 'KeyE', 'KeyR', 'KeyM', 'KeyP', 'KeyC', 'KeyH', 'KeyG', 'KeyV', 'KeyQ', 'Enter', 'Tab'];
 window.addEventListener('keydown', e => {
@@ -6760,11 +6761,13 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~15 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 2, MAX_GUARDS = 4, ROOM_PREFIX = 'last-shift-room-', CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 2, BUILD = 6, MAX_GUARDS = 4, ROOM_PREFIX = 'last-shift-room-', CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const PEERJS_URLS = ['https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js', 'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js'];
 const GUARD_COLORS = [0xffc65a, 0x5ac8ff, 0xff7aa8, 0x8dff7a];
 const cleanName = s => String(s || '').replace(/[^\w .'-]/g, '').trim().slice(0, 16);
 const cleanCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+const codeFrom = s => { const m = /room=([A-Za-z0-9]{4})/.exec(String(s || '')); return cleanCode(m ? m[1] : s); }; // a code, or a whole invite link
+const OLD_CODE = s => /LS1[ZP]/.test(String(s || ''));
 
 /* ---- the guard model used for other players (and for you, on CCTV) ---- */
 function colorBox(w, h, d, x, y, z, hex) {
@@ -6916,6 +6919,7 @@ const Net = {
       scene.add(l); scene.add(l.target); this.lights.push(l);
     }
     window.addEventListener('pagehide', () => { try { this.leave(); } catch (e) { } });
+    window.addEventListener('hashchange', () => { if (!this.inGame && !Game.inWorld()) this.checkInviteLink(); }); // a link pasted into this same tab doesn't reload the page
   },
   nameOf(id) {
     if (id === undefined || id === this.myId) return this.myName;
@@ -6956,7 +6960,7 @@ const Net = {
   },
   why(e) {
     switch (e && e.type) {
-      case 'peer-unavailable': return 'No game with that code is open. Check the code — and the host has to keep the Multiplayer screen open.';
+      case 'peer-unavailable': return 'No game with that code is open. Check the code, make sure the host is still on the Multiplayer screen — and that you both have the newest version (the title screen says Build ' + BUILD + '; if not, refresh the page with Cmd+Shift+R).';
       case 'browser-incompatible': return 'This browser can\'t play online (no WebRTC). Try Chrome, Edge, Firefox or Safari.';
       case 'webrtc': return 'The connection failed. Very strict networks (some school or office Wi-Fi) block games like this — try another network or a phone hotspot.';
       case 'network': case 'server-error': case 'socket-error': case 'socket-closed': case 'timeout': return 'Can\'t reach the matchmaking server. Check your internet connection and try again.';
@@ -6989,7 +6993,8 @@ const Net = {
     const p = this.wrap(conn, this.nextId++); this.peers.set(p.id, p); this.lobbyUpdate();
   },
   async join(raw) {
-    const code = cleanCode(raw);
+    if (OLD_CODE(raw)) throw new Error('That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.');
+    const code = codeFrom(raw);
     if (code.length !== 4) throw new Error('Type the 4-letter room code from the host — or just open their invite link.');
     await this.loadLib();
     this.leave();
@@ -7106,7 +7111,7 @@ const Net = {
       case 'hit': if (this.inGame && Game.state !== 'dead' && Game.state !== 'won') { if (m.fo) player.forceOut(); Game.playerHit(+m.dmg || 0); } break;
       case 'charge': if (this.inGame) { if (m.r) Goals.unlock('lure'); Cine.trigger('charge', { d: +m.d || 20, kind: m.r ? 'radio' : 'player' }); } break;
       case 'ping': if (this.inGame) this.showPing(+m.x || 0, +m.y || 1, +m.z || 0, m.by | 0); break;
-      case 'bye': this.lost(m.why === 'started' ? 'That game has already started — ask the host to invite you to the next one.' : m.why === 'version' ? 'The host is running a different version of the game.' : 'The host ended the session.'); break;
+      case 'bye': this.lost(m.why === 'started' ? 'That game has already started — ask the host to invite you to the next one.' : m.why === 'version' ? 'You and the host have different versions of the game. Both of you refresh the page (Cmd+Shift+R / Ctrl+Shift+R) and try again.' : 'The host ended the session.'); break;
     }
   },
   roster() { const l = [[0, this.myName]]; for (const r of this.remotes.values()) l.push([r.id, r.name]); return l; },
@@ -7274,14 +7279,20 @@ const Net = {
     const m = /[#&]room=([A-Za-z0-9]{4})/.exec(location.hash || '');
     if (!m) return false;
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
+    const code = cleanCode(m[1]);
+    if (this.inGame || (this.active && this.code === code)) return true; // already in it
     UI.prev = ['screen-title']; UI.show('screen-mp'); this.openLobby();
-    $('mp-code').value = cleanCode(m[1]);
-    this.lobbyStatus('You were invited to room ' + cleanCode(m[1]) + '. Type your name and press Join.', 'ok');
-    setTimeout(() => { try { $('btn-mp-join').focus(); } catch (e) { } }, 60);
+    $('mp-code').value = code;
+    this.lobbyStatus('Joining room ' + code + '…', 'ok');
+    setTimeout(() => $('btn-mp-join').click(), 30); // straight in, no extra click
     return true;
   },
   /* ---- lobby screen ---- */
-  inviteLink() { return /^https?:$/.test(location.protocol) && this.code ? location.origin + location.pathname + '#room=' + this.code : ''; },
+  inviteLink() { // ?v= makes friends' browsers fetch the newest version instead of an old cached copy
+    if (!/^https?:$/.test(location.protocol) || !this.code) return '';
+    const own = /[?&](peer=[\w.-]+:\d+)/.exec(location.search);
+    return location.origin + location.pathname + '?v=' + BUILD + (own ? '&' + own[1] : '') + '#room=' + this.code;
+  },
   openLobby() { $('mp-name').value = settings.playerName || ''; if (!this.active) this.lobbyStatus(''); this.lobbyUpdate(); },
   lobbyStatus(text, kind) { const e = $('mp-status'); e.textContent = text || ''; e.className = 'mp-status' + (kind ? ' ' + kind : ''); },
   lobbyUpdate() {
@@ -7316,7 +7327,10 @@ const Net = {
     const nameIn = $('mp-name'), codeIn = $('mp-code'), saveName = () => { settings.playerName = cleanName(nameIn.value); saveSettings(); };
     nameIn.addEventListener('input', saveName);
     [nameIn, codeIn, $('mp-link')].forEach(el => el.addEventListener('keydown', e => e.stopPropagation()));
-    codeIn.addEventListener('input', () => { const v = cleanCode(codeIn.value); if (codeIn.value !== v) codeIn.value = v; });
+    codeIn.addEventListener('input', () => {
+      if (OLD_CODE(codeIn.value)) { codeIn.value = ''; this.lobbyStatus('That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.', 'err'); return; }
+      const v = codeFrom(codeIn.value); if (codeIn.value !== v) codeIn.value = v;
+    });
     codeIn.addEventListener('keyup', e => { if (e.key === 'Enter') $('btn-mp-join').click(); });
     const copy = async (text, what) => {
       let ok = false;
