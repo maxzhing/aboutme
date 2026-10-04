@@ -21,6 +21,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #view{position:fixed;inset:0;width:100vw;height:100vh;display:block;background:#000;z-index:0;outline:none}
 
 /* ---------- generic screens ---------- */
+[hidden]{display:none !important}
 .screen{position:fixed;inset:0;display:none;z-index:20;align-items:center;justify-content:center;flex-direction:column}
 .screen.active{display:flex}
 .shade{background:radial-gradient(ellipse at center,rgba(6,6,7,.78) 0%,rgba(0,0,0,.94) 75%)}
@@ -216,7 +217,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 #threat[data-level="3"] #threat-label{color:#ff574d;animation:blink .6s steps(2) infinite}
 #minimap-wrap{position:absolute;right:20px;bottom:20px;padding:8px;background:rgba(0,0,0,.6);border:1px solid var(--line)}
 #minimap-wrap.hidden{display:none}
-#minimap{display:block;width:240px;height:174px;image-rendering:pixelated}
+#minimap{display:block;width:270px;height:145px;image-rendering:pixelated}
 #minimap-label{font-size:9px;letter-spacing:.3em;color:#77726a;margin-top:5px;display:flex;justify-content:space-between}
 #messages{position:absolute;left:50%;bottom:13vh;transform:translateX(-50%);width:min(760px,80vw);display:flex;flex-direction:column;align-items:center;gap:6px}
 .msg{font-family:var(--sans);font-size:16px;letter-spacing:.03em;color:#ece6d8;text-align:center;text-shadow:0 1px 3px #000,0 0 14px #000;opacity:0;transition:opacity .5s;background:rgba(0,0,0,.35);padding:5px 14px}
@@ -293,6 +294,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 #cine-skip b{display:block;height:100%;width:0;background:var(--amber)}
 #cine.skippable #cine-skip{display:block}
 #hud.cine>*:not(#messages){visibility:hidden}
+#hud.scare{visibility:hidden}
 #pip{position:fixed;z-index:6;display:none;pointer-events:none;border:1px solid rgba(228,236,228,.45);box-shadow:0 0 0 1px rgba(0,0,0,.7),0 12px 40px rgba(0,0,0,.6);overflow:hidden}
 #pip.on{display:block}
 .pip-fx{position:absolute;inset:0;-webkit-backdrop-filter:grayscale(1) contrast(1.5) brightness(1.35);backdrop-filter:grayscale(1) contrast(1.5) brightness(1.35)}
@@ -308,6 +310,12 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 .mp-panel input{flex:1;font-family:var(--mono);font-size:13px;letter-spacing:.08em}
 .mp-panel textarea{display:block;width:100%;height:64px;margin:8px 0;resize:none;font-family:var(--mono);font-size:10.5px;line-height:1.35;word-break:break-all}
 .mp-panel input:focus,.mp-panel textarea:focus{border-color:var(--amber)}
+.mp-or{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#77726a;margin:18px 0 8px}
+.mp-joinrow{display:flex;gap:10px;align-items:stretch}
+.mp-panel #mp-code{flex:0 0 172px;width:172px;min-width:0;font-size:24px;letter-spacing:.42em;text-transform:uppercase;text-align:center;padding:8px 6px 8px 14px}
+.mp-room{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:2px 0 8px}
+#mp-room{font-family:var(--mono);font-size:46px;letter-spacing:.3em;color:#ffd27a;text-shadow:0 0 18px rgba(255,190,90,.35);user-select:all;-webkit-user-select:all}
+.mp-panel #mp-link{display:block;width:100%;font-size:11.5px;color:#a49e91}
 .mp-steps{margin:4px 0 0 18px;color:#bdb7aa;font-size:14px;line-height:1.5}
 .mp-steps li{margin-bottom:12px}
 .btn.small{padding:7px 14px;font-size:11px}
@@ -322,6 +330,50 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 @media (max-height:740px){.pv-feat{display:none}.title-side{width:min(430px,34vw);gap:9px}.pv-caption{min-height:44px}.pv-caption span{font-size:12px}.controls-card{padding:10px 14px}.ctl.two{gap:4px 10px;font-size:11.5px}}
 @media (max-height:620px){.title-side{width:min(360px,30vw)}.pv-caption span{display:none}.pv-caption{min-height:0}}
 @media (max-width:860px){.title-wrap{flex-direction:column;align-items:flex-start;justify-content:flex-end}.title-side{display:none}.howto-cols{grid-template-columns:1fr}.diffs{grid-template-columns:1fr}.set-grid{grid-template-columns:1fr}}
+/* ---------- goals: bonus list, voice logs, achievements, rank ---------- */
+#objectives .bonus-h{margin:9px 0 3px;color:#b8913f;font-size:9px}
+#bonus-list{list-style:none;font-size:11px;letter-spacing:.04em;line-height:1.7;color:#a39d8f}
+#bonus-list li{display:flex;gap:8px;align-items:baseline}
+#bonus-list li::before{content:"\2606";flex:0 0 10px;color:#8d7a4c;font-size:10px}
+#bonus-list li.done{color:#d9b25a}
+#bonus-list li.done::before{content:"\2605";color:#e8c060}
+#bonus-list li.flash{animation:objflash 1.2s ease}
+#tape-sub{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);width:max-content;max-width:min(760px,86vw);padding:9px 16px 10px;background:rgba(0,0,0,.68);border-left:2px solid #b8402e;opacity:0;transition:opacity .3s}
+#tape-sub.show{opacity:1}
+#tape-sub b{display:block;font-weight:400;font-size:10px;letter-spacing:.28em;color:#e07a62;margin-bottom:3px}
+#tape-sub span{display:block;font-family:"Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.5;color:#efe9dc;min-height:1.5em}
+#ach-toast{position:fixed;left:50%;top:16px;transform:translate(-50%,-160%);z-index:80;display:flex;gap:12px;align-items:center;padding:10px 20px 10px 14px;background:linear-gradient(90deg,rgba(44,32,10,.96),rgba(14,12,8,.96));border:1px solid rgba(217,178,90,.55);box-shadow:0 8px 30px rgba(0,0,0,.6);font-family:var(--mono);transition:transform .45s cubic-bezier(.2,.9,.3,1.2);pointer-events:none;max-width:92vw}
+#ach-toast.show{transform:translate(-50%,0)}
+#ach-toast i{font-style:normal;font-size:26px;color:#f0c860;text-shadow:0 0 12px rgba(240,200,96,.6)}
+#ach-toast small{display:block;font-size:9px;letter-spacing:.3em;color:#b8913f}
+#ach-toast b{display:block;font-weight:400;font-size:15px;color:#fff3d8;letter-spacing:.06em}
+#ach-toast span{display:block;font-size:11px;color:#b9b2a2}
+.goals-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 16px}
+.ach{display:grid;grid-template-columns:22px 1fr;gap:0 8px;padding:9px 12px;border:1px solid var(--line);background:rgba(255,255,255,.015);font-family:var(--mono);opacity:.5}
+.ach.got{opacity:1;border-color:rgba(217,178,90,.5);background:rgba(217,178,90,.06)}
+.ach i{grid-row:span 2;font-style:normal;font-size:18px;color:#8d887c;align-self:center}
+.ach.got i{color:#f0c860}
+.ach b{font-weight:400;font-size:13px;color:#ece6d8}
+.ach span{font-size:11px;color:#9a9486;line-height:1.4}
+.goals-best{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-family:var(--mono);font-size:12px;margin:6px 0 4px}
+.goals-best div{border:1px solid var(--line);padding:8px 10px;display:flex;flex-direction:column;gap:3px}
+.goals-best span{font-size:10px;letter-spacing:.24em;color:#8d887c}
+.goals-best b{font-weight:400;color:#e8e2d4}
+.goals-count{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:#d9b25a;margin-bottom:4px}
+.win-wrap{max-height:100vh;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:24px 16px;width:100%}
+.win-wrap .go-sub{margin:10px 0 16px}
+.win-wrap .epilogue{margin-bottom:16px}
+.rank{display:flex;align-items:center;gap:18px;justify-content:center;margin:0 auto 16px}
+.rank b{font-size:58px;font-weight:200;width:84px;height:84px;line-height:82px;text-align:center;border:2px solid currentColor;color:#cfc9bb}
+.rank b.r-S{color:#f0c860;text-shadow:0 0 18px rgba(240,200,96,.6)}.rank b.r-A{color:#a9e0b0}.rank b.r-B{color:#9fc0d8}.rank b.r-D{color:#c98a80}
+.rank div{font-family:var(--mono);display:flex;flex-direction:column;gap:4px}
+.rank span{font-size:22px;color:#ece6d8;letter-spacing:.08em}
+.rank small{font-size:11px;letter-spacing:.2em;color:#d9b25a}
+.win-cols{display:flex;gap:16px 56px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.win-cols .stats{margin:0}
+#win-ach{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;font-family:var(--mono);font-size:12px;color:#f0c860;margin:6px auto 16px;max-width:620px}
+.journal-list button.tape{color:#e8b4a6}
+@media (max-width:860px){.goals-list{grid-template-columns:1fr}.goals-best{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -337,13 +389,15 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 <div id="fx-fade" class="fx"></div>
 <div id="fx-white" class="fx"></div>
 <div id="toast"></div>
+<div id="ach-toast"><i>&#9733;</i><div><small>ACHIEVEMENT UNLOCKED</small><b id="ach-name"></b><span id="ach-desc"></span></div></div>
 
 <!-- HUD -->
 <div id="hud">
   <div id="crosshair"></div>
   <div id="prompt"></div>
   <div id="progress"><i></i></div>
-  <div id="objectives"><h5>OBJECTIVES</h5><ul id="obj-list"></ul></div>
+  <div id="objectives"><h5>OBJECTIVES</h5><ul id="obj-list"></ul><h5 class="bonus-h">BONUS</h5><ul id="bonus-list"></ul></div>
+  <div id="tape-sub"><b id="tape-spk"></b><span id="tape-txt"></span></div>
   <div id="threat" data-level="0">
     <div id="threat-label">UNSEEN<small>NO CONTACT</small></div>
     <svg viewBox="0 0 44 26" aria-hidden="true">
@@ -359,7 +413,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div class="stat"><div class="stat-top"><span>NOISE</span><span id="noise-txt">SILENT</span></div><div class="bar" id="bar-noise"><i style="width:0"></i></div></div>
     <div id="cards"><span id="card-y" title="Maintenance card"></span><span id="card-b" title="Research card"></span><span id="card-r" title="Director card"></span></div>
   </div>
-  <div id="minimap-wrap"><canvas id="minimap" width="240" height="174"></canvas><div id="minimap-label"><span id="map-room">SUBLEVEL 6</span><span>[M]</span></div></div>
+  <div id="minimap-wrap"><canvas id="minimap" width="270" height="145"></canvas><div id="minimap-label"><span id="map-room">SUBLEVEL 6</span><span>[M]</span></div></div>
   <div id="messages"></div>
   <div id="fps"></div>
   <div id="center-title"></div>
@@ -413,6 +467,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
         <button class="mbtn" id="btn-new">New Game</button>
         <button class="mbtn" id="btn-mp">Co-op (Online)</button>
         <button class="mbtn" id="btn-settings">Settings</button>
+        <button class="mbtn" id="btn-goals">Goals</button>
         <button class="mbtn" id="btn-howto">How to Play</button>
       </nav>
     </div>
@@ -425,7 +480,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <div class="pv-ui"><span class="pv-rec"><i></i>REC</span><span class="pv-time" id="pv-time">02:17:00</span><span class="pv-cam" id="pv-cam"></span><b class="pv-c pv-tl"></b><b class="pv-c pv-tr"></b><b class="pv-c pv-bl"></b><b class="pv-c pv-br"></b></div>
         </div>
         <div class="pv-caption"><b id="pv-title"></b><span id="pv-text"></span></div>
-        <div class="pv-foot"><div class="pv-dots" id="pv-dots"></div><span class="pv-feat">12 rooms · 3 keycards · 1 hunter · co-op</span></div>
+        <div class="pv-foot"><div class="pv-dots" id="pv-dots"></div><span class="pv-feat">16 rooms · 6 voice logs · 14 achievements · co-op</span></div>
       </section>
       <div class="controls-card">
         <h3>Controls</h3>
@@ -526,8 +581,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li>Maintenance vents are too small for it — crouch to crawl through.</li>
           <li>Cornered? Fight. Punches won't kill it, but they stagger it, and a stun buys you a few seconds. It shrugs off a second stun for a while — and comes back angrier.</li>
           <li>The heartbeat, flickering lights and the threat eye (top right) tell you when it is close.</li>
+          <li>Sometimes it just <b>watches</b> you from the dark. Hold its gaze and it backs off — walk toward it, or put your light on it, and it charges.</li>
           <li>Read every note. They contain the codes, routes and secrets you need to get out.</li>
-          <li>Co-op (up to 4): one player hosts, friends join with a code. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
+          <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and <b>14 achievements</b> are saved under Goals.</li>
+          <li>Co-op (up to 4): one player hosts and sends the invite link (or the 4-letter room code); friends open it and press Join. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
         </ul>
       </div>
     </div>
@@ -542,20 +599,15 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div class="h1">Multiplayer</div>
     <div class="mp-name"><label for="mp-name">Your name</label><input id="mp-name" maxlength="16" placeholder="Guard" autocomplete="off" spellcheck="false"></div>
     <div id="mp-choose">
-      <p class="p">Play the whole game together, peer-to-peer — no accounts, no servers. One player hosts and swaps a short code with each friend (paste it into any chat: Discord, iMessage, email).</p>
-      <div class="row"><button class="btn primary" id="btn-mp-host">Host a game</button><button class="btn" id="btn-mp-join">Join a game</button><button class="btn" id="btn-mp-back">Back</button></div>
+      <p class="p">Play the whole game together. One guard hosts and sends the invite link — friends open it and press <b>Join</b>. Up to 4 players, nothing to install.</p>
+      <div class="row"><button class="btn primary" id="btn-mp-host">Host a game</button><button class="btn" id="btn-mp-back">Back</button></div>
+      <div class="mp-or">or join a friend's room</div>
+      <div class="mp-joinrow"><input id="mp-code" size="5" maxlength="4" placeholder="CODE" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn primary" id="btn-mp-join">Join</button></div>
     </div>
     <div id="mp-hostbox" hidden>
-      <ol class="mp-steps">
-        <li>Copy this <b>invite code</b> (or the invite link) and send it to a friend.<textarea id="mp-invite" readonly placeholder="Creating code…"></textarea><button class="btn small" id="btn-mp-copyinv">Copy invite</button> <button class="btn small" id="btn-mp-copylink" hidden>Copy invite link</button></li>
-        <li>Paste the <b>reply code</b> they send back, then press Connect.<textarea id="mp-reply-in" placeholder="Paste the reply code here…"></textarea><button class="btn small primary" id="btn-mp-accept">Connect</button> <button class="btn small" id="btn-mp-another">Invite another player</button></li>
-      </ol>
-    </div>
-    <div id="mp-joinbox" hidden>
-      <ol class="mp-steps">
-        <li>Paste the host's <b>invite code</b>, then press Create reply.<textarea id="mp-invite-in" placeholder="Paste the invite code here…"></textarea><button class="btn small primary" id="btn-mp-mkreply">Create reply</button></li>
-        <li>Send this <b>reply code</b> back to the host. You'll connect automatically.<textarea id="mp-reply" readonly></textarea><button class="btn small" id="btn-mp-copyrep">Copy reply</button></li>
-      </ol>
+      <div class="kicker">Your room code</div>
+      <div class="mp-room"><span id="mp-room">····</span><span class="mp-copy"><button class="btn small primary" id="btn-mp-copylink">Copy invite link</button> <button class="btn small" id="btn-mp-copycode">Copy code</button></span></div>
+      <input id="mp-link" readonly aria-label="Invite link">
     </div>
     <div id="mp-status" class="mp-status"></div>
     <div id="mp-lobby" hidden>
@@ -564,7 +616,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">Uses free public STUN servers (Google, Cloudflare) so browsers can find each other. Works on most home networks; very strict networks may block direct connections.</p>
+    <p class="mp-note" style="margin-top:16px">A free matchmaking service (PeerJS) introduces the browsers; the game then runs directly between you, or through PeerJS's relay on strict networks. No accounts, nothing stored.</p>
   </div>
 </div>
 
@@ -614,11 +666,28 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 
 <!-- victory -->
 <div id="screen-victory" class="screen">
-  <div class="go-title">You survived the last shift</div>
-  <div class="go-sub">Surface lift · 03:00 AM</div>
-  <p class="epilogue" id="epilogue"></p>
-  <div class="stats" id="win-stats"></div>
-  <div class="row" style="justify-content:center"><button class="btn primary" id="btn-win-again">Play Again</button><button class="btn" id="btn-win-quit">Quit to Title</button></div>
+  <div class="win-wrap">
+    <div class="go-title">You survived the last shift</div>
+    <div class="go-sub">Surface lift · 03:00 AM</div>
+    <p class="epilogue" id="epilogue"></p>
+    <div class="rank"><b id="rank-letter">B</b><div><span id="rank-score">0 pts</span><small id="rank-best"></small></div></div>
+    <div class="win-cols"><div class="stats" id="win-score"></div><div class="stats" id="win-stats"></div></div>
+    <div id="win-ach"></div>
+    <div class="row" style="justify-content:center"><button class="btn primary" id="btn-win-again">Play Again</button><button class="btn" id="btn-win-quit">Quit to Title</button></div>
+  </div>
+</div>
+
+<!-- goals -->
+<div id="screen-goals" class="screen shade">
+  <div class="panel" style="max-width:min(860px,94vw)">
+    <div class="kicker">Shift records · saved in this browser</div>
+    <div class="h1">Goals</div>
+    <div class="goals-count" id="goals-count"></div>
+    <div class="goals-list" id="goals-list"></div>
+    <div class="kicker" style="margin-top:6px">Best shift</div>
+    <div class="goals-best" id="goals-best"></div>
+    <div class="row"><button class="btn primary" id="btn-goals-back">Back</button></div>
+  </div>
 </div>
 <script>
 /* =====================================================================
@@ -700,46 +769,49 @@ const qual = () => QUALITY[settings.quality] || QUALITY.medium;
 /*  P powered door  X exit  v vent  w window  E lift                   */
 /*  rooms: s security k lockers t storage b break c containment        */
 /*  o observation p generator l lab r server f office m medical e lobby*/
+/*  g morgue a archives d staff quarters h camera control (east wing)  */
 /* ------------------------------------------------------------------ */
 const MAP = [
-'########################################',
-'#ttttttt#############cccccccccc#ooooooo#',
-'#ttttttt#.#bbbbbbb###ccccccccccwooooooo#',
-'#tttttttD.#bbbbbbb###ccccccccccwooooooo#',
-'#ttttttt#.Dbbbbbbb###cccccccccc#ooooooo#',
-'#ttttttt#.#bbbbbbb###ccccccccccDooooooo#',
-'#ttttttt#.#bbbbbbb###cccccccccc#ooooooo#',
-'####v####.####D##########B##############',
-'####v####......................#########',
-'####v####.####Y#####.#########.#########',
-'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr#',
-'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr#',
-'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr#',
-'#kkkkkkkD.#pppppppp#.#lllllllP.#rrrrrrr#',
-'#kkkkkkk#.#ppppppppY.#lllllll#.Drrrrrrr#',
-'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr#',
-'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr#',
-'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr#',
-'###v#####.#pppppppp#.#lllllll#.#rrrrrrr#',
-'###v#####.##########.#########.#########',
-'###v#####..............................#',
-'###v#####.####D#######D############X####',
-'#sssssss#.#ffffffff#mmmmmm#eeeeeeeeeeee#',
-'#sssssss#.#ffffffff#mmmmmm#eeeeeeeeeeee#',
-'#sssssssD.#ffffffff#mmmmmm#eeeeeeeeeeee#',
-'#sssssss###ffffffff#mmmmmm#eeeeeeeeeeee#',
-'#sssssss###ffffffff#mmmmmm#eeeeeeeeeeee#',
-'#sssssss###ffffffff#mmmmmm######EE######',
-'########################################',
+'######################################################',
+'#ttttttt#############cccccccccc#ooooooo####gggggggggg#',
+'#ttttttt#.#bbbbbbb###ccccccccccwooooooo##.#gggggggggg#',
+'#tttttttD.#bbbbbbb###ccccccccccwooooooo##.#gggggggggg#',
+'#ttttttt#.Dbbbbbbb###cccccccccc#ooooooo##.Dgggggggggg#',
+'#ttttttt#.#bbbbbbb###ccccccccccDooooooo##.#gggggggggg#',
+'#ttttttt#.#bbbbbbb###cccccccccc#ooooooo##.#gggggggggg#',
+'####v####.####D##########B###############.############',
+'####v####......................##########.#aaaaaaaaaa#',
+'####v####.####Y#####.#########.##########.#aaaaaaaaaa#',
+'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr##.Daaaaaaaaaa#',
+'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr##.#aaaaaaaaaa#',
+'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr##.#aaaaaaaaaa#',
+'#kkkkkkkD.#pppppppp#.#lllllllP.#rrrrrrr##.Daaaaaaaaaa#',
+'#kkkkkkk#.#ppppppppY.#lllllll#.Drrrrrrr##.#aaaaaaaaaa#',
+'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr##.#aaaaaaaaaa#',
+'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrrvv.############',
+'#kkkkkkk#.#pppppppp#.#lllllll#.#rrrrrrr##.#dddddddddd#',
+'###v#####.#pppppppp#.#lllllll#.#rrrrrrr##.Ddddddddddd#',
+'###v#####.##########.#########.##########.#dddddddddd#',
+'###v#####..............................D..#dddddddddd#',
+'###v#####.####D#######D############X#####.#dddddddddd#',
+'#sssssss#.#ffffffff#mmmmmm#eeeeeeeeeeee##.#dddddddddd#',
+'#sssssss#.#ffffffff#mmmmmm#eeeeeeeeeeee##.############',
+'#sssssssD.#ffffffff#mmmmmm#eeeeeeeeeeee##.#hhhhhhhhhh#',
+'#sssssss###ffffffff#mmmmmm#eeeeeeeeeeee##.Dhhhhhhhhhh#',
+'#sssssss###ffffffff#mmmmmm#eeeeeeeeeeee##.#hhhhhhhhhh#',
+'#sssssss###ffffffff#mmmmmm######EE#########hhhhhhhhhh#',
+'######################################################',
 ];
 const CELL = 2, WALL_H = 3.2, DOOR_H = 2.45, VENT_H = 1.15, LIFT_H = 2.8, SILL_H = 1.0, WIN_TOP = 2.25;
 const EYE_STAND = 1.62, EYE_CROUCH = 0.92, PLAYER_R = 0.3, MONSTER_R = 0.4;
 const H = MAP.length, W = MAP[0].length;
+const MAP_S = 5; // minimap pixels per cell
 const ROOMDEF = {
   '.': ['corridor', 'Corridor'], s: ['security', 'Security Office'], k: ['locker', 'Locker Room'], t: ['storage', 'Storage'],
   b: ['break', 'Break Room'], c: ['containment', 'Containment'], o: ['observation', 'Observation'], p: ['power', 'Generator Hall'],
   l: ['lab', 'Laboratory 2'], r: ['server', 'Server Room'], f: ['office', 'Administration'], m: ['medical', 'Medical Bay'],
   e: ['lobby', 'Lift Lobby'], E: ['lift', 'Surface Lift'],
+  g: ['morgue', 'Morgue'], a: ['archives', 'Archives'], d: ['dorm', 'Staff Quarters'], h: ['camctl', 'Camera Control'],
 };
 const ROOM_NAMES = {}; Object.keys(ROOMDEF).forEach(k => { ROOM_NAMES[ROOMDEF[k][0]] = ROOMDEF[k][1]; });
 const grid = [];
@@ -1457,16 +1529,19 @@ function wallKey(c) {
   if (c.kind === 'door') return 'frame';
   if (c.kind === 'vent') return 'metal';
   return { corridor: 'corridor', storage: 'corridor', security: 'plaster', office: 'plaster', break: 'plaster', locker: 'plaster',
-    lab: 'tile', medical: 'tile', lobby: 'tile', lift: 'metal', power: 'metal', server: 'metal', containment: 'metal', observation: 'metal' }[c.room] || 'corridor';
+    lab: 'tile', medical: 'tile', lobby: 'tile', lift: 'metal', power: 'metal', server: 'metal', containment: 'metal', observation: 'metal',
+    morgue: 'tile', archives: 'plaster', dorm: 'plaster', camctl: 'metal' }[c.room] || 'corridor';
 }
 function floorKey(c) {
   if (c.kind === 'door') return 'plate';
   if (c.kind === 'vent') return 'plate';
   return { corridor: 'concrete', storage: 'concrete', security: 'vinyl', office: 'vinyl', break: 'vinyl', locker: 'vinyl',
-    lab: 'lab', medical: 'lab', lobby: 'lab', lift: 'plate', power: 'plate', server: 'plate', containment: 'plate', observation: 'plate' }[c.room] || 'concrete';
+    lab: 'lab', medical: 'lab', lobby: 'lab', lift: 'plate', power: 'plate', server: 'plate', containment: 'plate', observation: 'plate',
+    morgue: 'lab', archives: 'vinyl', dorm: 'vinyl', camctl: 'plate' }[c.room] || 'concrete';
 }
 function ceilKey(c) {
-  return { security: 'tile', office: 'tile', break: 'tile', locker: 'tile', lab: 'tile', medical: 'tile', lobby: 'tile', observation: 'tile', server: 'tile' }[c.room] || 'concrete';
+  return { security: 'tile', office: 'tile', break: 'tile', locker: 'tile', lab: 'tile', medical: 'tile', lobby: 'tile', observation: 'tile', server: 'tile',
+    archives: 'tile', dorm: 'tile', camctl: 'tile' }[c.room] || 'concrete';
 }
 (function buildLevel() {
   const wb = {}, fb = {}, cb = {};
@@ -1693,6 +1768,7 @@ const EMERG_SPOTS = {
   security: [[15.85, 2.62, 51.2]], locker: [[15.85, 2.62, 30]], storage: [[15.85, 2.62, 10]], break: [[22.15, 2.62, 11.5]],
   containment: [[42.15, 2.62, 8], [61.85, 2.62, 3]], observation: [[77.85, 2.62, 8]], power: [[22.15, 2.62, 33.5], [37.85, 2.62, 24]],
   lab: [[57.85, 2.62, 31]], server: [[64.15, 2.62, 24]], office: [[37.85, 2.62, 49]], medical: [[40.15, 2.62, 50]], lobby: [[54.15, 2.62, 48], [77.85, 2.62, 48]],
+  morgue: [[105.85, 2.62, 8]], archives: [[105.85, 2.62, 18], [105.85, 2.62, 30]], dorm: [[105.85, 2.62, 40]], camctl: [[105.85, 2.62, 52]],
 };
 for (const id in rooms) {
   const R = rooms[id];
@@ -2499,7 +2575,341 @@ const world = { monitors: [], wallScreens: [], breakers: [], lever: null, termin
     g.position.set(x + n[0] * 0.25 + (isZ ? 1.6 : 0), 0.4, z + n[1] * 0.25 + (isZ ? 0 : 1.6)); g.rotation.set(isZ ? -0.3 * n[1] : 0, isZ ? 0 : Math.PI / 2, isZ ? 0 : 0.3 * n[0]); scene.add(g);
     sign(['MAINT. VENT'], x + (isZ ? -1.55 : 0), 0.9, z + (isZ ? 0 : -1.55), facing, 0.5, 0.14, { bg: '#c9a227', fg: '#111', size: 60 });
   };
-  ventMouth(9, 14, 'N'); ventMouth(9, 20, 'S'); ventMouth(7, 36, 'N'); ventMouth(7, 44, 'S');
+  ventMouth(9, 14, 'N'); ventMouth(9, 20, 'S'); ventMouth(7, 36, 'N'); ventMouth(7, 44, 'S'); ventMouth(78, 33, 'W'); ventMouth(82, 33, 'E');
+})();
+
+/* ------------------------------------------------------------------ */
+/* Voice logs (tapes): optional collectibles that tell the story       */
+/* ------------------------------------------------------------------ */
+const TAPES = {
+  t1: { label: 'Dr. Vey — Lantern, week 2', who: 'DR. H. VEY', pitch: 1.18, lines: [
+    'Project Lantern, week two. Doctor Vey recording.',
+    'Elias is cooperative. Cheerful, even. He asks about his daughter every morning.',
+    'The ocular implants took. He can read an eye chart in total darkness.',
+    'He says light hurts him now. "Like needles," he says.',
+    '…He asked me not to tell Lily what we\'re doing to him.'] },
+  t2: { label: 'R. Ortiz — in the vents', who: 'R. ORTIZ', pitch: 1.12, lines: [
+    'Dee, it\'s Rosa. If you find this, I\'m in the vents behind Storage.',
+    'It walked right past my locker. It didn\'t even look.',
+    'If you don\'t move, it doesn\'t see you. It hears everything else.',
+    'Don\'t run unless you have to. It comes at you like a train.',
+    '…It\'s breathing outside the grate. Oh God. It\'s right—'] },
+  t3: { label: 'The Director — request denied', who: 'THE DIRECTOR', pitch: 0.82, lines: [
+    'For the file. Crane, Elias. Re: Doctor Vey\'s request to terminate.',
+    'Denied. He is the best guard this site has ever had.',
+    'He never sleeps. He never leaves his post. He never misses anything in the dark.',
+    'If he wanders, lock the doors and let him finish his rounds.',
+    'He\'ll stop when his shift ends.'] },
+  t4: { label: 'P. Doyle — breakers', who: 'P. DOYLE', pitch: 0.92, lines: [
+    'Pete Doyle, maintenance. Note to self, since nobody ever fixes the labels:',
+    'Breaker B. Then A. Then C. THEN the main lever. Wrong order and the panel goes bang.',
+    '…Something just walked in here with me. It\'s standing at the lever.',
+    'It\'s pulling it down. It\'s turning the lights OFF—',
+    'Why does it want it dark?'] },
+  t5: { label: 'Coroner — drawer 13', who: 'DR. ADEBAYO, CORONER', pitch: 1.0, lines: [
+    'Coroner\'s log, oh-two-hundred. They brought Doctor Vey down. I won\'t describe it.',
+    'Drawer thirteen has been knocking all night. It\'s empty. I checked it twice.',
+    'The temperature in here keeps dropping. I can see my breath.',
+    'There\'s someone standing in the doorway. Very tall. Not moving.',
+    'It\'s wearing a security badge.'] },
+  t6: { label: 'E. Crane — for Lily', who: 'ELIAS CRANE', pitch: 0.86, lines: [
+    'Hey, Lily-bug. It\'s Daddy.',
+    'I have to go away for a while. A special job. It\'s going to pay for your treatment.',
+    'When I come back I\'ll be strong. I won\'t ever get tired. I\'ll keep you safe every night.',
+    'Happy birthday, sweetheart. Seven! Don\'t open your presents without me.',
+    'I\'ll be home when my shift ends. I promise.'] },
+};
+const TAPE_ORDER = ['t1', 't2', 't3', 't4', 't5', 't6'];
+NOTES.camctl = { title: 'Sticky note on the CCTV console', body:
+`SYSTEM CRASHED AGAIN (third time this week)
+
+To reboot: main power has to be ON.
+Start the master reset and DON'T walk away from
+the console until it finishes. About ten seconds.
+
+The boot tone is LOUD. Wake-the-dead loud.
+
+Once it's up, the wall map tracks movement on
+every camera on the level. Including HIM.
+                                              — J.` };
+NOTE_ORDER.splice(NOTE_ORDER.indexOf('wall') + 1, 0, 'camctl');
+
+let tapeLabelMat = null;
+function tapeItem(id, x, y, z, rotY = 0) {
+  if (!tapeLabelMat) {
+    const c = makeCanvas(64, 32), g = c.getContext('2d');
+    g.fillStyle = '#e4ddc8'; g.fillRect(0, 0, 64, 32); g.fillStyle = '#b8402e'; g.fillRect(0, 0, 64, 7);
+    g.fillStyle = '#222'; g.font = 'bold 11px monospace'; g.fillText('VOICE LOG', 4, 20); g.fillRect(4, 25, 56, 1);
+    tapeLabelMat = phong({ map: mkTex(c, false), emissive: 0x1c1a14 });
+  }
+  const g = new T.Group(); g.position.set(x, y, z); g.rotation.y = rotY; scene.add(g);
+  const body = new T.Mesh(GEO.box, MAT.plastic); body.scale.set(0.15, 0.04, 0.09); body.position.y = 0.02; g.add(body);
+  const lab = new T.Mesh(GEO.plane, tapeLabelMat); lab.rotation.x = -Math.PI / 2; lab.scale.set(0.1, 0.05, 1); lab.position.set(-0.012, 0.041, 0); g.add(lab);
+  const spk = new T.Mesh(GEO.cyl8, MAT.metalDark); spk.scale.set(0.028, 0.006, 0.028); spk.position.set(0.05, 0.041, 0.012); g.add(spk);
+  const led = new T.Mesh(GEO.box, new T.MeshBasicMaterial({ color: 0xff2a1a })); led.scale.set(0.012, 0.01, 0.012); led.position.set(0.05, 0.044, -0.028); g.add(led);
+  const hb = hitBox(x, y + 0.08, z, 0.4, 0.22, 0.4);
+  const def = addInteract([hb], { kind: 'tape', tape: id, prompt: () => 'Take tape: ' + TAPES[id].label, use: () => Game.takeTape(def) });
+  def.visual = g; def.led = led; addItem('tape', g, def);
+  world.tapes.push(def);
+  return def;
+}
+
+// Camera Control wall: "offline" until the system is rebooted, then a live map of the level
+const camCanvas = makeCanvas(256, 128), camCtx = camCanvas.getContext('2d');
+const camTex = mkTex(camCanvas, false); camTex.minFilter = T.LinearFilter; camTex.generateMipmaps = false;
+MAT.camWall = new T.MeshBasicMaterial({ map: camTex, color: 0xbac6c2 });
+world.camScreens = []; world.tapes = [];
+
+/* ------------------------------------------------------------------ */
+/* East wing: Morgue, Archives, Staff Quarters, Camera Control         */
+/* ------------------------------------------------------------------ */
+(function eastWing() {
+  const corpse = phong({ color: 0x8b8f84, shininess: 14 });
+  const bag = phong({ color: 0x101113, shininess: 70, specular: 0x4a4a4a });
+  const sheet = phong({ color: 0x6d7270, shininess: 4 });
+  const lamp = (x, z, h = 2.4) => { // hanging surgical / reading lamp
+    addStatic(GEO.cyl6, MAT.metalDark, x, (WALL_H + h) / 2, z, 0.035, WALL_H - h, 0.035, 0, 0, 0, false);
+    addStatic(GEO.cyl, MAT.metal, x, h, z, 0.6, 0.1, 0.6); addStatic(GEO.cyl, MAT.white, x, h - 0.055, z, 0.48, 0.012, 0.48, 0, 0, 0, false);
+  };
+  const gurney = (x, z, rot, body, w = 0.66) => {
+    const ry = RY(rot);
+    part(GEO.box, MAT.metal, x, z, ry, 0, 0.78, 0, w, 0.05, 1.95);
+    for (const sx of [-w / 2 + 0.03, w / 2 - 0.03]) for (const sz of [-0.88, 0.88]) { part(GEO.cyl6, MAT.metalDark, x, z, ry, sx, 0.42, sz, 0.03, 0.7, 0.03); part(GEO.cyl8, MAT.dark, x, z, ry, sx, 0.06, sz, 0.1, 0.05, 0.1, Math.PI / 2); }
+    part(GEO.box, MAT.mattress, x, z, ry, 0, 0.84, 0, w - 0.06, 0.07, 1.85);
+    if (body === 'bag') part(GEO.sphere, bag, x, z, ry, 0, 0.94, 0.05, w - 0.16, 0.2, 1.75);
+    else if (body) { part(GEO.sphere, sheet, x, z, ry, 0, 0.93, 0.08, w - 0.18, 0.2, 1.6); part(GEO.sphere, sheet, x, z, ry, 0, 0.96, -0.72, 0.22, 0.18, 0.26); }
+    foot(x, z, ry, w + 0.04, 2.0, { navPad: 0.2 });
+  };
+
+  /* ---------------- EAST CORRIDOR ---------------- */
+  sign(['EAST WING →', 'MORGUE · ARCHIVES · QUARTERS · CAMERAS'], 75.4, 2.2, 40, 'S', 1.6, 0.36, { band: '#4a3a6a' });
+  sign(['↑ MORGUE · ARCHIVES', '↓ STAFF QUARTERS · CAMERA CONTROL'], 84, 2.2, 41, 'W', 1.6, 0.36);
+  sign(['MORGUE'], 84, 2.15, 6.9, 'W', 0.9, 0.24, { band: '#56656c' });
+  sign(['ARCHIVES'], 84, 2.15, 24, 'W', 0.9, 0.24, { band: '#6a5a3a' });
+  sign(['STAFF QUARTERS'], 84, 2.15, 34.9, 'W', 1.1, 0.24, { band: '#3a5a4a' });
+  sign(['CAMERA CONTROL'], 84, 2.15, 48.9, 'W', 1.1, 0.24, { band: '#7d1f1a' });
+  sign(['← VENT TO SERVER ROOM'], 82, 1.5, 31.0, 'E', 1.0, 0.2);
+  hideLocker(83, 4.32, 0); hideLocker(83, 53.68, 2);
+  gurney(82.33, 13.6, 0, 'sheet', 0.56); // pushed against the wall: leaves room to pass
+  addStatic(GEO.box, MAT.fabric, 82.63, 0.62, 14.3, 0.06, 0.28, 0.08, 0, 0, 0.2); // a hand under the sheet
+  fireExt(82.18, 0.9, 29.6); fireExt(83.82, 0.9, 44.4);
+  addStatic(GEO.cyl8, MAT.yellow, 83.62, 0.22, 18.6, 0.4, 0.44, 0.4); addStatic(GEO.cyl6, MAT.wood, 83.7, 0.8, 18.55, 0.03, 1.2, 0.03, 0, 0.2, -0.25);
+  addCollider(83.4, 18.38, 83.84, 18.82, { navPad: 0 });
+  bloodTrail(83.3, 10.8, 83.0, 17.5, 6); bloodTrail(82.8, 27.2, 83.4, 31.5, 4); decal(MAT.blood, 83.1, 0, 9.6, 0.4, 1.2, 0.9, true);
+  wallDecal(MAT.claw, 82, 1.45, 25.2, 'E', 1.2, 0.7); wallDecal(MAT.claw, 84, 1.3, 46.5, 'W', 1.2, 0.7); wallDecal(MAT.drip, 82, 2.0, 38.6, 'E', 0.7, 1.3);
+  puddle(83, 33.6, 1.3, 1.0); puddle(83.2, 48.2, 1, 1.3); papers(83, 43.5, 4, 0.6); papers(83.2, 21.4, 3, 0.5);
+  // a ceiling panel hanging down, wires dangling
+  addStatic(GEO.box, MAT.metalDark, 83.1, 2.72, 38.2, 0.62, 0.025, 0.62, 0.3, 0.75, 0.15); addStatic(GEO.cyl6, MAT.dark, 83.5, 2.8, 37.9, 0.015, 0.8, 0.015, 0, 0.2, 0.3, false);
+  debris(83.3, 38.6, 5, 0.5);
+  sign(['DEAD END'], 83, 2.45, 54, 'N', 0.7, 0.2, { bg: '#c9a227', fg: '#111', border: 'rgba(0,0,0,.6)' });
+
+  /* ---------------- MORGUE ---------------- */
+  // cold-storage drawer bank along the north wall (3 x 16); three drawers hang open
+  addStatic(GEO.box, MAT.metal, 97, 1.2, 2.45, 16.2, 2.4, 0.9);
+  addStatic(GEO.box, MAT.metalDark, 97, 2.44, 2.5, 16.3, 0.08, 1.0);
+  const OPEN = { '4,0': 'body', '9,1': 'empty', '13,0': 'torn' };
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 3; j++) {
+    const x = 89.5 + i, y = 0.42 + j * 0.78;
+    if (OPEN[i + ',' + j]) { addStatic(GEO.box, MAT.dark, x, y, 2.885, 0.84, 0.64, 0.04, 0, 0, 0, false); continue; }
+    addStatic(GEO.box, MAT.white, x, y, 2.915, 0.86, 0.66, 0.03);
+    addStatic(GEO.box, MAT.metalDark, x + 0.31, y, 2.94, 0.05, 0.22, 0.04, 0, 0, 0, false);
+    addStatic(GEO.box, MAT.paper, x - 0.16, y + 0.2, 2.933, 0.16, 0.07, 0.006, 0, 0, 0, false);
+  }
+  addCollider(88.9, 2, 105.1, 2.95, { navPad: 0.1 });
+  // drawer 4: a body under a sheet on the pulled-out tray
+  addStatic(GEO.box, MAT.metal, 93.5, 0.2, 3.85, 0.8, 0.04, 1.9); for (const s of [-1, 1]) addStatic(GEO.box, MAT.metal, 93.5 + s * 0.39, 0.25, 3.85, 0.03, 0.08, 1.9);
+  addStatic(GEO.sphere, sheet, 93.5, 0.3, 3.95, 0.5, 0.2, 1.6); addStatic(GEO.sphere, sheet, 93.5, 0.33, 3.1, 0.22, 0.18, 0.26);
+  addStatic(GEO.box, MAT.paper, 93.58, 0.34, 4.79, 0.05, 0.08, 0.005, 0, 0, 0.3, false); // toe tag
+  addCollider(93.08, 2.9, 93.92, 4.82, { navPad: 0.1 });
+  // drawer 9 (chest height): empty tray, smeared; its door hangs open
+  addStatic(GEO.box, MAT.metal, 98.5, 0.98, 3.6, 0.8, 0.04, 1.4);
+  addStatic(GEO.plane, MAT.blood, 98.5, 1.002, 3.7, 0.6, 1.0, 1, 0.2, -Math.PI / 2, 0, false);
+  addStatic(GEO.box, MAT.white, 98.07, 1.2, 3.36, 0.03, 0.66, 0.86);
+  addCollider(98.08, 2.9, 98.92, 4.32, { navPad: 0.05 });
+  // drawer 13: torn open from the inside — the door lies on the floor
+  addStatic(GEO.box, MAT.white, 101.7, 0.03, 4.4, 0.86, 0.03, 0.66, 0.5, 0, 0.06); addStatic(GEO.box, MAT.metalDark, 101.85, 0.06, 4.2, 0.05, 0.03, 0.22, 0.5);
+  wallDecal(MAT.claw, 102.5, 1.05, 2.9, 'S', 1.3, 0.9, 0.04); wallDecal(MAT.drip, 102.5, 0.5, 2.9, 'S', 0.55, 0.6, 0.045);
+  sign(['13'], 102.25, 0.86, 2.9, 'S', 0.14, 0.08, { bg: '#d8d2c0', fg: '#111', size: 90, border: 'rgba(0,0,0,0)' });
+  bloodTrail(102.3, 5.2, 88.4, 9.3, 12);
+  // autopsy tables under surgical lamps
+  const autopsy = (x, z, kind) => {
+    addStatic(GEO.box, MAT.metal, x, 0.86, z, 0.82, 0.06, 2.2);
+    for (const s of [-1, 1]) { addStatic(GEO.box, MAT.metal, x + s * 0.4, 0.92, z, 0.03, 0.08, 2.2); addStatic(GEO.box, MAT.metal, x, 0.92, z + s * 1.09, 0.82, 0.08, 0.03); }
+    addStatic(GEO.cyl8, MAT.metalDark, x, 0.42, z + 0.3, 0.26, 0.84, 0.26); addStatic(GEO.box, MAT.metalDark, x, 0.03, z + 0.3, 0.7, 0.06, 0.9);
+    addStatic(GEO.cyl8, MAT.dark, x, 0.892, z + 0.95, 0.1, 0.01, 0.1, 0, 0, 0, false);
+    lamp(x, z);
+    addCollider(x - 0.42, z - 1.12, x + 0.42, z + 1.12, { navPad: 0.2 });
+    if (kind === 'body') {
+      addStatic(GEO.sphere, sheet, x, 0.98, z + 0.1, 0.52, 0.22, 1.7); addStatic(GEO.sphere, sheet, x, 1.02, z - 0.78, 0.24, 0.2, 0.28);
+      for (const s of [-1, 1]) { addStatic(GEO.sphere, sheet, x + s * 0.08, 1.02, z + 0.95, 0.1, 0.16, 0.12); addStatic(GEO.box, sheet, x + s * 0.43, 0.8, z + 0.1, 0.02, 0.24, 1.6); }
+      addStatic(GEO.box, corpse, x + 0.47, 0.7, z + 0.05, 0.07, 0.34, 0.08, 0, 0, 0.12); addStatic(GEO.box, corpse, x + 0.49, 0.5, z + 0.05, 0.08, 0.1, 0.1, 0, 0, 0.12);
+      addStatic(GEO.plane, MAT.blood, x, 1.092, z - 0.25, 0.32, 0.42, 1, 0.4, -Math.PI / 2, 0, false);
+      addStatic(GEO.box, MAT.paper, x + 0.09, 0.98, z + 1.1, 0.06, 0.1, 0.005, 0, 0, 0, false);
+    } else if (kind === 'empty') {
+      addStatic(GEO.plane, MAT.blood, x, 0.894, z - 0.1, 0.7, 1.7, 1, 0.1, -Math.PI / 2, 0, false);
+      for (const sz of [-0.5, 0.2, 0.8]) addStatic(GEO.box, MAT.fabric, x - 0.43, 0.74, z + sz, 0.02, 0.32, 0.05, 0, 0, -0.15);
+      decal(MAT.blood, x + 0.2, 0, z + 0.5, 1.2, 1.6, 1.3, true);
+    } else if (kind === 'bag') {
+      addStatic(GEO.sphere, bag, x, 0.97, z + 0.05, 0.56, 0.22, 1.9); addStatic(GEO.box, MAT.metal, x + 0.05, 1.08, z - 0.15, 0.012, 0.01, 1.3, 0, 0, 0, false);
+    }
+  };
+  autopsy(91, 9, 'body'); autopsy(97, 9, 'empty'); autopsy(103, 9, 'bag');
+  // instrument trolley tucked beside table 1
+  addStatic(GEO.box, MAT.metal, 92.05, 0.86, 9.55, 0.42, 0.03, 0.7); addStatic(GEO.box, MAT.metal, 92.05, 0.36, 9.55, 0.42, 0.03, 0.7);
+  for (const sx of [-0.18, 0.18]) for (const sz of [-0.31, 0.31]) addStatic(GEO.cyl6, MAT.metalDark, 92.05 + sx, 0.44, 9.55 + sz, 0.025, 0.88, 0.025);
+  for (let i = 0; i < 6; i++) addStatic(GEO.box, MAT.metal, 92.05 + sr(-0.12, 0.12), 0.882, 9.55 + sr(-0.25, 0.25), 0.02, 0.012, sr(0.12, 0.22), sr(-0.4, 0.4), 0, 0, false);
+  addCollider(91.82, 9.18, 92.28, 9.92, { navPad: 0 });
+  // sinks + scale along the south wall
+  addStatic(GEO.box, MAT.metal, 93.5, 0.45, 13.67, 4.8, 0.9, 0.62); addStatic(GEO.box, MAT.metalDark, 93.5, 0.915, 13.67, 4.86, 0.03, 0.66);
+  for (const sx of [92.3, 94.7]) { addStatic(GEO.box, MAT.dark, sx, 0.92, 13.62, 0.9, 0.012, 0.46, 0, 0, 0, false); addStatic(GEO.cyl6, MAT.metal, sx, 1.12, 13.9, 0.035, 0.4, 0.035); addStatic(GEO.cyl6, MAT.metal, sx, 1.3, 13.8, 0.03, 0.22, 0.03, 0, Math.PI / 2); }
+  addCollider(91.1, 13.34, 95.9, 14, { navPad: 0.1 });
+  addStatic(GEO.cyl6, MAT.metal, 95.4, 2.55, 13.55, 0.02, 1.3, 0.02, 0, 0, 0, false); addStatic(GEO.cyl, MAT.white, 95.4, 1.95, 13.55, 0.28, 0.28, 0.05, 0, Math.PI / 2); addStatic(GEO.cyl, MAT.metal, 95.4, 1.55, 13.55, 0.46, 0.04, 0.46);
+  // coroner's desk (tape) and a gurney with a body bag by the door
+  desk(105.55, 12.2, 3, 1.6); chair(104.4, 12.1, Math.PI / 2); monitor(105.62, 0.765, 12.75, -Math.PI / 2);
+  gurney(88.6, 12.95, 1, 'bag');
+  hideLocker(105.7, 5.1, 3);
+  puddle(95.2, 11.4, 1.3, 0.9); decal(MAT.blood, 98.6, 0, 5.2, 2, 1.0, 0.8, true);
+  wallDecal(MAT.drip, 86, 2.0, 4.6, 'E', 0.7, 1.4); wallDecal(MAT.claw, 106, 1.6, 7.4, 'W', 1.3, 0.8);
+  sign(['MORGUE', 'COLD STORAGE · KEEP DRAWERS CLOSED'], 97, 2.75, 2, 'S', 1.7, 0.4, { band: '#56656c' });
+
+  /* ---------------- ARCHIVES ---------------- */
+  // double-sided stacks, 2.3 m tall, in three rows with offset gaps: a maze to lose it in
+  const BINDERS = [MAT.green, MAT.fabricRed, MAT.fabric, MAT.beige, MAT.wood];
+  const stack = (x, z) => {
+    for (const sx of [-0.97, 0.97]) addStatic(GEO.box, MAT.metalDark, x + sx, 1.15, z, 0.06, 2.3, 1.2);
+    addStatic(GEO.box, MAT.metalDark, x, 1.15, z, 1.9, 2.3, 0.04);
+    for (let i = 0; i < 5; i++) addStatic(GEO.box, MAT.metal, x, 0.08 + i * 0.54, z, 1.94, 0.03, 1.18);
+    for (const side of [-1, 1]) for (let i = 0; i < 4; i++) {
+      const y = 0.095 + i * 0.54; let cx = x - 0.9;
+      while (cx < x + 0.78) {
+        const k = srand();
+        if (k < 0.12) { cx += 0.18; continue; }
+        if (k < 0.7) { const w = Math.min(sr(0.26, 0.42), x + 0.92 - cx), h = sr(0.24, 0.38); if (w < 0.12) break; addStatic(GEO.box, MAT.box, cx + w / 2, y + h / 2, z + side * sr(0.27, 0.32), w - 0.02, h, 0.48); cx += w; }
+        else { const n = 3 + (srand() * 4 | 0), m = BINDERS[srand() * BINDERS.length | 0]; for (let b = 0; b < n && cx < x + 0.86; b++) { addStatic(GEO.box, m, cx + 0.03, y + 0.16, z + side * 0.36, 0.055, 0.3, 0.34, 0, 0, b === n - 1 ? 0.25 : 0); cx += 0.06; } cx += 0.04; }
+      }
+    }
+    addCollider(x - 1.0, z - 0.6, x + 1.0, z + 0.6, { opaque: true, navPad: 0.25 });
+  };
+  [89, 91, 93, 97, 99, 101].forEach(x => stack(x, 19));
+  [89, 91, 93, 95, 97, 101, 103].forEach(x => stack(x, 23));
+  [91, 93, 97, 99, 101, 103].forEach(x => stack(x, 29));
+  // reading area between the middle and south rows
+  const longTable = (x, z, len) => {
+    addStatic(GEO.box, MAT.wood, x, 0.74, z, len, 0.05, 1.0);
+    for (const s of [-1, 1]) addStatic(GEO.box, MAT.wood, x + s * (len / 2 - 0.1), 0.36, z, 0.08, 0.72, 0.9);
+    addCollider(x - len / 2, z - 0.5, x + len / 2, z + 0.5, { navPad: 0.2 });
+  };
+  longTable(95, 25, 4.8); longTable(102, 25, 2.8);
+  for (const x of [93.6, 95.0, 96.4]) chair(x, 26.0, Math.PI); chair(101.4, 26.1, Math.PI + 0.3); chair(103.0, 26.4, 2.1, true);
+  for (const x of [93.6, 101.6]) { addStatic(GEO.box, MAT.metalDark, x, 0.78, 24.75, 0.16, 0.03, 0.12); addStatic(GEO.cyl6, MAT.metal, x, 0.95, 24.75, 0.02, 0.32, 0.02); addStatic(GEO.cyl, MAT.green, x, 1.12, 24.82, 0.36, 0.12, 0.18, 0, 0, Math.PI / 2); }
+  addStatic(GEO.box, MAT.beige, 102.7, 0.98, 24.85, 0.5, 0.42, 0.5); addStatic(GEO.box, MAT.dark, 102.7, 1.04, 25.105, 0.36, 0.26, 0.01, 0, 0, 0, false); // microfiche reader
+  addStatic(GEO.box, MAT.paper, 94.4, 0.772, 25.1, 0.42, 0.012, 0.3, 0.2, 0, 0, false); papers(96.8, 25.0, 3, 0.4, 0.768);
+  // card catalogue between the doors, cabinets on the north and south walls
+  addStatic(GEO.box, MAT.wood, 86.31, 0.63, 24, 0.62, 1.26, 1.8);
+  for (let r = 0; r < 6; r++) for (let c = 0; c < 4; c++) addStatic(GEO.box, MAT.yellow, 86.625, 0.18 + r * 0.19, 23.33 + c * 0.45, 0.012, 0.02, 0.07, 0, 0, 0, false);
+  addCollider(86, 23.1, 86.62, 24.9, { navPad: 0.1 });
+  for (const x of [88.3, 88.85, 92.2, 92.75, 96.5, 99.9, 100.45]) cabinet(x, 16.35, 0);
+  for (const x of [93, 93.55, 97.5, 98.05, 102.4]) cabinet(x, 31.65, 2);
+  hideLocker(105.7, 17.1, 3); hideLocker(87.3, 31.7, 2);
+  for (let i = 0; i < 5; i++) addStatic(GEO.box, MAT.box, 99.4 + i * 0.42 + sr(-0.05, 0.05), 0.17 + (i === 2 ? 0.32 : 0), 31.58 + sr(-0.06, 0.06), 0.38, 0.32, 0.46, sr(-0.3, 0.3));
+  addCollider(99.15, 31.25, 101.4, 31.9, { navPad: 0 });
+  papers(100, 30.8, 8, 1.0); papers(91, 21.2, 5, 0.9); papers(104.6, 20.2, 4, 0.7);
+  decal(MAT.blood, 99.4, 0, 21.3, 0.6, 1.4, 1.0, true); bloodTrail(99.2, 21.4, 99.5, 26.6, 6);
+  wallDecal(MAT.claw, 106, 1.5, 25.0, 'W', 1.3, 0.8);
+  sign(['ARCHIVES', 'RECORDS · PERSONNEL FILES'], 86, 2.25, 24, 'E', 1.4, 0.36, { band: '#6a5a3a' });
+  sign(['QUIET PLEASE'], 106, 2.3, 22, 'W', 0.9, 0.24, { bg: '#2b2f2c', fg: '#c9b06a', border: 'rgba(0,0,0,0)' });
+
+  /* ---------------- STAFF QUARTERS ---------------- */
+  const bunk = (x, z, rot, opt = {}) => {
+    const ry = RY(rot);
+    for (const sx of [-0.46, 0.46]) for (const sz of [-0.98, 0.98]) part(GEO.box, MAT.metalDark, x, z, ry, sx, 0.95, sz, 0.05, 1.9, 0.05);
+    [0.42, 1.48].forEach((y, lvl) => {
+      part(GEO.box, MAT.metal, x, z, ry, 0, y, 0, 0.95, 0.05, 2.0);
+      if (opt.torn && lvl === 1) { part(GEO.box, MAT.mattress, x, z, ry, -0.2, y + 0.09, 0, 0.42, 0.13, 1.9); part(GEO.box, MAT.mattress, x, z, ry, 0.24, y + 0.06, 0.1, 0.36, 0.08, 1.7, 0, 0.2); part(GEO.box, MAT.white, x, z, ry, 0.02, y + 0.1, 0.3, 0.12, 0.06, 0.5); return; }
+      part(GEO.box, MAT.mattress, x, z, ry, 0, y + 0.09, 0, 0.86, 0.13, 1.9);
+      part(GEO.box, MAT.white, x, z, ry, 0, y + 0.19, -0.74, 0.55, 0.08, 0.3);
+      if (!(opt.body && lvl === 0)) part(GEO.box, lvl ? MAT.green : MAT.fabric, x, z, ry, 0, y + 0.165, 0.35, 0.88, 0.04, 1.1);
+    });
+    for (let i = 0; i < 4; i++) part(GEO.box, MAT.metalDark, x, z, ry, 0.46, 0.75 + i * 0.25, 0.98, 0.04, 0.03, 0.06);
+    if (opt.body) {
+      part(GEO.sphere, sheet, x, z, ry, 0, 0.62, 0.1, 0.5, 0.2, 1.6); part(GEO.sphere, sheet, x, z, ry, 0, 0.66, -0.66, 0.22, 0.18, 0.26);
+      part(GEO.box, corpse, x, z, ry, 0.47, 0.36, 0.2, 0.07, 0.3, 0.08, 0, 0.1);
+      const [bx, bz] = L(x, z, ry, 0.75, 0.2); decal(MAT.blood, bx, 0, bz, 0.5, 1.1, 0.9, true);
+    }
+    foot(x, z, ry, 0.95, 2.0, { navPad: 0.2 });
+  };
+  [91, 95, 99, 103].forEach(x => bunk(x, 35.05, 0, { torn: x === 95, crane: x === 103 }));
+  [91, 95, 99, 103].forEach(x => bunk(x, 44.95, 2, { body: x === 95 }));
+  for (const x of [93, 97, 101]) { addStatic(GEO.box, MAT.wood, x, 0.28, 34.3, 0.45, 0.56, 0.42); addCollider(x - 0.24, 34, x + 0.24, 34.52, { navPad: 0 }); }
+  addStatic(GEO.box, MAT.wood, 105.1, 0.28, 34.3, 0.45, 0.56, 0.42); addCollider(104.86, 34, 105.34, 34.52, { navPad: 0 });
+  // Crane's bunk: name plate, a photo and his daughter's drawing
+  sign(['E. CRANE'], 103, 1.12, 36.03, 'S', 0.34, 0.09, { bg: '#d8d2c0', fg: '#222', size: 64, border: 'rgba(0,0,0,.4)' });
+  {
+    const c = makeCanvas(128, 96), g = c.getContext('2d');
+    g.fillStyle = '#ebe5d4'; g.fillRect(0, 0, 128, 96); g.lineWidth = 3; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.strokeStyle = '#e0a020'; g.beginPath(); g.arc(110, 16, 9, 0, TAU); g.stroke();
+    g.strokeStyle = '#c04040'; g.strokeRect(10, 50, 32, 28); g.beginPath(); g.moveTo(6, 50); g.lineTo(26, 33); g.lineTo(46, 50); g.stroke();
+    const fig = (fx, fy, s, col) => { g.strokeStyle = col; g.beginPath(); g.arc(fx, fy, 5 * s, 0, TAU); g.moveTo(fx, fy + 5 * s); g.lineTo(fx, fy + 20 * s); g.moveTo(fx - 9 * s, fy + 10 * s); g.lineTo(fx + 9 * s, fy + 10 * s); g.moveTo(fx, fy + 20 * s); g.lineTo(fx - 6 * s, fy + 30 * s); g.moveTo(fx, fy + 20 * s); g.lineTo(fx + 6 * s, fy + 30 * s); g.stroke(); };
+    fig(70, 34, 1.3, '#2a4a8a'); fig(96, 52, 0.8, '#b0306a');
+    g.fillStyle = '#2a4a8a'; g.font = 'bold 12px "Comic Sans MS", cursive, sans-serif'; g.fillText('DADDY', 52, 92); g.fillStyle = '#b0306a'; g.fillText('+ LILY', 86, 92);
+    g.fillStyle = '#c03040'; g.beginPath(); g.moveTo(84, 40); g.bezierCurveTo(78, 33, 88, 30, 84, 37); g.bezierCurveTo(80, 30, 90, 33, 84, 40); g.fill();
+    wallPlane(phong({ map: mkTex(c, false), emissive: 0x161410 }), 103, 2.3, 34, 'S', 0.62, 0.46, 0.012);
+  }
+  addStatic(GEO.box, MAT.dark, 105.12, 0.66, 34.3, 0.16, 0.2, 0.03, 0.4); // photo frame on the nightstand
+  // mess tables, couch and an old TV, kitchenette with a radio
+  table(93, 41); table(97, 41);
+  chair(92, 41.2, Math.PI / 2); chair(93.1, 42.2, Math.PI); chair(96.1, 40.6, 1.4); chair(98.2, 42.1, 2.6, true);
+  for (let i = 0; i < 9; i++) addStatic(GEO.plane, MAT.paper, 96.8 + sr(-0.35, 0.35), 0.768 + i * 0.001, 41 + sr(-0.35, 0.35), 0.06, 0.09, 1, sr(0, TAU), -Math.PI / 2, 0, false);
+  addStatic(GEO.cyl8, MAT.white, 93.4, 0.81, 40.7, 0.08, 0.1, 0.08);
+  addStatic(GEO.box, MAT.fabricRed, 101, 0.42, 40.2, 0.8, 0.45, 2.4); addStatic(GEO.box, MAT.fabricRed, 100.7, 0.75, 40.2, 0.2, 0.6, 2.4);
+  for (const s of [-1, 1]) addStatic(GEO.box, MAT.fabricRed, 101, 0.6, 40.2 + s * 1.12, 0.8, 0.3, 0.18);
+  addCollider(100.6, 39.0, 101.4, 41.4, { navPad: 0.15 });
+  addStatic(GEO.box, MAT.wood, 105.65, 0.3, 40, 0.6, 0.6, 1.6); addCollider(105.35, 39.2, 106, 40.8, { navPad: 0.1 });
+  addStatic(GEO.box, MAT.beige, 105.68, 0.84, 40, 0.48, 0.46, 0.6); addStatic(GEO.box, MAT.dark, 105.435, 0.7, 40.22, 0.01, 0.04, 0.04, 0, 0, 0, false);
+  world.tv = wallPlane(MAT.screenOff, 105.44, 0.86, 40, 'W', 0.4, 0.32, 0.002);
+  addStatic(GEO.box, MAT.white, 105.6, 0.9, 37.4, 0.8, 1.8, 0.8); addStatic(GEO.box, MAT.metalDark, 105.19, 1.2, 37.1, 0.03, 0.5, 0.04);
+  addStatic(GEO.box, MAT.white, 105.67, 0.45, 35.9, 0.66, 0.9, 1.8); addStatic(GEO.box, MAT.deskTop, 105.67, 0.915, 35.9, 0.7, 0.03, 1.84);
+  addStatic(GEO.box, MAT.metal, 105.7, 1.07, 35.4, 0.4, 0.28, 0.5); addStatic(GEO.box, MAT.dark, 105.495, 1.08, 35.4, 0.3, 0.2, 0.01, Math.PI / 2, 0, 0, false);
+  addCollider(105.2, 34.95, 106, 37.8, { navPad: 0.4 });
+  world.radios.push(radioItem(105.6, 0.93, 36.4, -Math.PI / 2));
+  lockerBank(86.3, 41, 1, 4); hideLocker(86.35, 44.8, 1);
+  for (let i = 0; i < 2; i++) addStatic(GEO.box, MAT.dark, 88.6 + i * 0.22, 0.1, 39.4 + i * 0.1, 0.12, 0.2, 0.3, sr(-0.4, 0.4)); // boots
+  addStatic(GEO.sphere, MAT.green, 99.6, 0.2, 38.1, 0.8, 0.35, 0.45, 0.6); addCollider(99.25, 37.85, 99.95, 38.35, { navPad: 0 }); // duffel bag
+  decal(MAT.blood, 89.2, 0, 37.6, 1.0, 1.4, 1.0, true); bloodTrail(88.8, 37.4, 94.2, 43.3, 7);
+  wallDecal(MAT.drip, 106, 2.1, 43.6, 'W', 0.7, 1.3);
+  sign(['STAFF QUARTERS', 'NIGHT SHIFT · QUIET HOURS'], 86, 2.3, 41, 'E', 1.4, 0.36, { band: '#3a5a4a' });
+
+  /* ---------------- CAMERA CONTROL ---------------- */
+  // wall of CCTV screens; the big one becomes a live map after a reboot
+  addStatic(GEO.box, MAT.dark, 105.9, 1.85, 52, 0.2, 2.2, 6.8);
+  for (const [z, y] of [[49.45, 2.36], [49.45, 1.52], [54.55, 2.36], [54.55, 1.52]]) world.camScreens.push(wallPlane(MAT.screenOff, 105.8, y, z, 'W', 1.5, 0.74, 0.004));
+  world.camWall = wallPlane(MAT.screenOff, 105.8, 1.94, 52, 'W', 3.4, 1.62, 0.004);
+  addCollider(105.75, 48.6, 106, 55.4, { navPad: 0 });
+  const cmon = consoleDesk(103, 52, 3, 4.0, 3);
+  cmon.forEach(m => world.camScreens.push(m));
+  chair(101.7, 51.2, Math.PI / 2); chair(101.8, 53.4, 1.1, true);
+  world.camLed = new T.Mesh(GEO.box, MAT.ledRed); world.camLed.scale.set(0.08, 0.05, 0.08); world.camLed.position.set(102.62, 1.0, 50.5); scene.add(world.camLed);
+  {
+    const b = new T.Mesh(GEO.cyl8, MAT.red); b.scale.set(0.14, 0.05, 0.14); b.position.set(102.6, 0.99, 53.5); scene.add(b);
+    const hb = hitBox(102.8, 1.1, 52, 1.0, 0.8, 4.2);
+    world.camDef = addInteract([hb, b].concat(cmon), { kind: 'cams', prompt: () => Game.camsPrompt(), use: () => Game.useCams() });
+  }
+  for (const x of [93, 95, 97]) rack(x, 48.55, 0);
+  for (let i = 0; i < 3; i++) addStatic(GEO.cyl6, MAT.dark, 99 + i * 0.12, 0.03, 50.3 + i * 0.25, 0.05, 6.5, 0.05, 1.2 + i * 0.1, Math.PI / 2, 0, false);
+  desk(88.6, 55.55, 2, 1.6); chair(88.7, 54.4, 0); monitor(89.0, 0.765, 55.6, Math.PI);
+  noteItem('camctl', 102.6, 0.72, 51.3, -Math.PI / 2, { wall: true });
+  hideLocker(97, 55.7, 2);
+  papers(91.5, 52.5, 6, 1.0); decal(MAT.blood, 99.5, 0, 53.6, 0.3, 1.2, 0.9, true); wallDecal(MAT.claw, 86, 1.5, 53.2, 'E', 1.2, 0.7);
+  sign(['CAMERA CONTROL', 'SECURITY DIVISION · CCTV'], 86, 2.3, 54.2, 'E', 1.4, 0.36, { band: '#7d1f1a' });
+  sign(['SYSTEM OFFLINE', 'REBOOT AT MASTER CONSOLE'], 98.5, 2.45, 48, 'S', 1.3, 0.34, { bg: '#c9a227', fg: '#111', border: 'rgba(0,0,0,.6)' });
+
+  /* ---------------- tapes ---------------- */
+  tapeItem('t1', 49.95, 0.765, 55.35, 0.3);
+  tapeItem('t2', 7.0, 0.465, 25.75, 1.4);
+  tapeItem('t3', 96.2, 0.765, 25.15, -0.2);
+  tapeItem('t4', 27.0, 0.765, 20.55, 0.6);
+  tapeItem('t5', 105.45, 0.765, 11.7, -1.2);
+  tapeItem('t6', 93.25, 0.765, 41.25, 0.9);
 })();
 
 /* ------------------------------------------------------------------ */
@@ -2950,6 +3360,85 @@ const Sound = (function () {
     }
     tone(out, t, 'sine', 70, 35, 0.6, 0.9, 0.003);
   });
+  /* ---- a scarier Warden ---- */
+  S.chatter = safe(function () { // teeth chattering, fast and wet
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 0.55; out.connect(monIn);
+    const n = randi(10, 18), rate = rand(0.035, 0.05);
+    for (let i = 0; i < n; i++) { const st = t + i * rate * rand(0.85, 1.15); noise(out, st, 0.012, 'bandpass', rand(2600, 3800), 3, rand(0.25, 0.5), 0.001); tone(out, st, 'square', rand(700, 900), 400, 0.01, 0.08, 0.001); }
+    noise(out, t, n * rate, 'lowpass', 500, 1, 0.12, 0.05, brown);
+  });
+  S.whisperM = safe(function () { // breathy, half-formed words from the dark
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 0.75; out.connect(monIn);
+    let st = t;
+    for (let i = randi(4, 8); i > 0; i--) {
+      const d = rand(0.12, 0.3), a = noise(out, st, d, 'bandpass', rand(1200, 2600), 5, rand(0.35, 0.6), 0.03, pink);
+      a.f.frequency.exponentialRampToValueAtTime(rand(800, 3200), st + d);
+      if (Math.random() < 0.4) noise(out, st + d * 0.6, 0.12, 'highpass', 4500, 1, 0.3, 0.01);
+      st += d + rand(0.03, 0.14);
+    }
+  });
+  S.crack = safe(function () { // bones snapping into a new position
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 0.75; out.connect(monIn);
+    for (let i = randi(2, 4); i > 0; i--) { const st = t + i * rand(0.03, 0.07); noise(out, st, 0.02, 'bandpass', rand(1800, 3200), 2, 0.8, 0.001); tone(out, st, 'triangle', rand(300, 500), 120, 0.03, 0.4, 0.001); }
+  });
+  S.jumpscare = safe(function () { // right in your face: a shriek, an impact, a sub drop
+    const t = ctx.currentTime, out = dest(null, 0.35); out.gain.value = 1.9;
+    const ws = ctx.createWaveShaper(); ws.curve = distCurve; const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 0.9;
+    const g = ctx.createGain(); env(g.gain, t, 0.008, 0.8, 1.15); ws.connect(bp); bp.connect(g); g.connect(out);
+    for (const [f, d] of [[310, 0], [466, 14], [622, -12], [233, 7], [930, 5]]) {
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.detune.value = d;
+      o.frequency.setValueAtTime(f * 1.3, t); o.frequency.exponentialRampToValueAtTime(f * 1.9, t + 0.12); o.frequency.exponentialRampToValueAtTime(f * 0.5, t + 1.15);
+      const vib = ctx.createOscillator(); vib.frequency.value = 35 + Math.random() * 10; const vg = ctx.createGain(); vg.gain.value = f * 0.1; vib.connect(vg); vg.connect(o.frequency); vib.start(t); vib.stop(t + 1.25);
+      o.connect(ws); o.start(t); o.stop(t + 1.25);
+    }
+    bp.frequency.setValueAtTime(1500, t); bp.frequency.exponentialRampToValueAtTime(3200, t + 0.15); bp.frequency.exponentialRampToValueAtTime(700, t + 1.15);
+    noise(out, t, 0.5, 'highpass', 900, 0.5, 1.0, 0.002);
+    noise(out, t, 0.35, 'lowpass', 600, 1, 1.0, 0.001, brown);
+    tone(out, t, 'sine', 90, 25, 0.9, 1.2, 0.002);
+    metal(out, t + 0.01, 210, 1.2, 0.6);
+  });
+  /* ---- goals ---- */
+  // a muffled voice on an old dictaphone, synced to the subtitles: sched = [[start, dur], ...] in seconds
+  S.tape = function (sched, pitch) {
+    const none = { stop() { } };
+    if (!S.ok || !ctx) return none;
+    try {
+      const t0 = ctx.currentTime + 0.05, end = sched.length ? sched[sched.length - 1][0] + sched[sched.length - 1][1] + 0.6 : 1;
+      const out = dest(null, 0.06); out.gain.value = 0.34;
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400; const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 300;
+      lp.connect(hp); hp.connect(out);
+      const hiss = noise(out, t0, end, 'highpass', 3800, 0.7, 0.05, 0.15);
+      const src = ctx.createOscillator(); src.type = 'sawtooth'; src.frequency.value = 118 * pitch;
+      const f1 = ctx.createBiquadFilter(); f1.type = 'bandpass'; f1.Q.value = 5; const f2 = ctx.createBiquadFilter(); f2.type = 'bandpass'; f2.Q.value = 7;
+      const vg = ctx.createGain(); vg.gain.value = 0;
+      src.connect(f1); src.connect(f2); f1.connect(vg); f2.connect(vg); vg.connect(lp);
+      const V = [[730, 1090], [270, 2290], [570, 840], [530, 1840], [300, 870], [660, 1720], [440, 1020]];
+      for (const [st, dur] of sched) {
+        let t = t0 + st; const stop = t0 + st + dur;
+        src.frequency.setValueAtTime(118 * pitch * rand(1.05, 1.15), t); src.frequency.linearRampToValueAtTime(118 * pitch * 0.88, stop);
+        while (t < stop - 0.08) {
+          const d = rand(0.09, 0.2), v = V[(Math.random() * V.length) | 0];
+          f1.frequency.setTargetAtTime(v[0] * pitch, t, 0.02); f2.frequency.setTargetAtTime(v[1] * pitch, t, 0.02);
+          vg.gain.setTargetAtTime(rand(0.5, 0.9), t, 0.015); vg.gain.setTargetAtTime(0.02, t + d * 0.75, 0.02);
+          t += d + (Math.random() < 0.22 ? rand(0.06, 0.16) : 0.012);
+        }
+        vg.gain.setTargetAtTime(0, stop, 0.03);
+      }
+      src.start(t0); src.stop(t0 + end);
+      noise(out, t0 - 0.05, 0.05, 'bandpass', 1500, 2, 0.5, 0.001); // the play button
+      return { stop() { try { const n = ctx.currentTime; out.gain.setTargetAtTime(0, n, 0.04); src.stop(n + 0.25); hiss.src.stop(n + 0.25); } catch (e) { } } };
+    } catch (e) { return none; }
+  };
+  S.bootTone = safe(function (pos, k) { // the camera system rebooting: loud, and it carries
+    const t = ctx.currentTime, out = dest(pos, 0.5, true); out.gain.value = 1.0;
+    tone(out, t, 'square', 880 + k * 440, 880 + k * 440, 0.18, 0.32, 0.004); tone(out, t + 0.22, 'square', 660 + k * 330, 660 + k * 330, 0.2, 0.32, 0.004);
+  });
+  S.camsOnline = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.3); out.gain.value = 0.8; [523, 659, 784, 1047].forEach((f, i) => tone(out, t + i * 0.1, 'square', f, f, 0.16, 0.22, 0.004)); });
+  S.achievement = safe(function () {
+    const t = ctx.currentTime, out = dest(null, 0, false, uiBus); out.gain.value = 0.32;
+    [784, 988, 1175, 1568].forEach((f, i) => tone(out, t + i * 0.085, 'sine', f, f, 0.55, 0.35, 0.004));
+    tone(out, t, 'triangle', 392, 392, 0.9, 0.12, 0.01);
+  });
   S.setAlarm = function (on) { S.alarmOn = !!on; };
   S.setHum = function (on) { S.humOn = !!on; };
   return S;
@@ -2963,6 +3452,9 @@ function buildWarden(phantom) {
   const ribs = new T.MeshPhongMaterial({ map: TX.ribs, color: 0x707069, shininess: 10, specular: 0x121212 });
   const dark = new T.MeshPhongMaterial({ color: 0x0c0c0e, shininess: 6 });
   const cloth = new T.MeshPhongMaterial({ color: 0x1d2226, side: T.DoubleSide, shininess: 3 });
+  const gore = new T.MeshPhongMaterial({ color: 0x3c0806, shininess: 70, specular: 0x5a2020 });   // wet, dark blood
+  const teeth = new T.MeshPhongMaterial({ color: 0xcfc6a8, shininess: 45, specular: 0x333333 });
+  const bone = new T.MeshPhongMaterial({ color: 0x8d8670, shininess: 20 });
   const eyeMat = new T.MeshBasicMaterial({ color: 0xdff2ff, fog: false });
   const glowMat = new T.SpriteMaterial({ map: TX.glow, color: 0xcfe8ff, transparent: true, opacity: 0.9, depthWrite: false, blending: T.AdditiveBlending, fog: false });
   const P = {};
@@ -2977,6 +3469,7 @@ function buildWarden(phantom) {
   mk(GEO.box, cloth, P.hips, 0, -0.05, 0, 0.34, 0.15, 0.24);
   P.spine = grp(P.hips, 0, 0.04, 0);
   mk(GEO.taper, skin, P.spine, 0, 0.22, 0, 0.2, 0.46, 0.13, 0, 0, 0);
+  for (let i = 0; i < 3; i++) mk(GEO.cone, bone, P.spine, 0, 0.08 + i * 0.12, -0.075, 0.024, 0.09 + i * 0.02, 0.024, -1.2);
   P.chest = grp(P.spine, 0, 0.42, 0);
   // emaciated ribcage: broad at the shoulders, pinched at the waist, flat front-to-back
   mk(GEO.taper, ribs, P.chest, 0, 0.17, 0.0, 0.46, 0.6, 0.26);
@@ -2984,24 +3477,36 @@ function buildWarden(phantom) {
   for (const s of [-1, 1]) mk(GEO.cyl8, skin, P.chest, s * 0.13, 0.44, 0.06, 0.03, 0.27, 0.03, 0, 0, s * 1.3); // clavicles
   for (let i = 0; i < 7; i++) mk(GEO.sphere, skin, P.chest, 0, -0.08 + i * 0.075, -0.13, 0.055, 0.045, 0.06); // vertebrae
   for (const s of [-1, 1]) mk(GEO.sphere, skin, P.chest, s * 0.14, 0.33, -0.08, 0.14, 0.11, 0.12); // shoulder blades
+  for (let i = 0; i < 6; i++) mk(GEO.cone, bone, P.chest, 0, -0.04 + i * 0.085, -0.165, 0.03, 0.12 + (i % 2) * 0.06, 0.03, -1.1); // spines through the skin
+  for (const [x, y, h] of [[-0.06, 0.4, 0.14], [0.0, 0.37, 0.2], [0.055, 0.41, 0.12]]) mk(GEO.box, gore, P.chest, x, y, 0.133, 0.02, h, 0.006); // blood down the chest
   for (let i = 0; i < 3; i++) { const sh = grp(P.chest, (i - 1) * 0.15, 0.48, -0.12); const r = mk(GEO.plane, cloth, sh, 0, -0.36, -0.04, 0.2, 0.75, 1, 0.25, Math.PI, (i - 1) * 0.15); r.castShadow = false; } // tattered shroud
   P.neck = grp(P.chest, 0, 0.42, 0.05);
   mk(GEO.cyl8, skin, P.neck, 0, 0.13, 0, 0.09, 0.28, 0.09);
   mk(GEO.torus, MAT.metalDark, P.neck, 0, 0.07, 0, 0.26, 0.26, 0.9, Math.PI / 2, 0, 0); // containment collar
   P.led = mk(GEO.sphere, new T.MeshBasicMaterial({ color: 0xff2010, fog: false }), P.neck, 0, 0.07, 0.125, 0.03, 0.03, 0.03);
   P.head = grp(P.neck, 0, 0.27, 0.01);
-  mk(GEO.sphere, skin, P.head, 0, 0.13, 0.0, 0.25, 0.38, 0.31);
-  mk(GEO.sphere, skin, P.head, 0, 0.27, -0.04, 0.2, 0.18, 0.26);
-  mk(GEO.sphere, dark, P.head, 0, 0.1, 0.11, 0.17, 0.22, 0.13);
-  P.jaw = grp(P.head, 0, 0.0, 0.04);
-  mk(GEO.sphere, skin, P.jaw, 0, -0.04, 0.05, 0.16, 0.11, 0.2);
-  for (let i = 0; i < 6; i++) mk(GEO.cone, MAT.white, P.jaw, -0.05 + i * 0.02, 0.01, 0.13, 0.012, 0.04, 0.012, Math.PI);
+  mk(GEO.sphere, skin, P.head, 0, 0.14, 0.0, 0.25, 0.36, 0.31);                // skull
+  mk(GEO.sphere, skin, P.head, 0, 0.28, -0.05, 0.21, 0.2, 0.28);               // swollen cranium
+  mk(GEO.sphere, dark, P.head, 0, 0.13, 0.11, 0.18, 0.18, 0.13);               // sunken face
+  for (const s of [-1, 1]) mk(GEO.sphere, dark, P.head, s * 0.075, 0.06, 0.1, 0.07, 0.09, 0.08); // hollow cheeks
+  // no lips: wet gums and a ring of needle teeth that never quite close
+  mk(GEO.box, gore, P.head, 0, 0.035, 0.125, 0.13, 0.03, 0.05);
+  for (let i = 0; i < 9; i++) { const a = (i - 4) / 4 * 0.95; mk(GEO.cone, teeth, P.head, Math.sin(a) * 0.066, 0.004, 0.118 + Math.cos(a) * 0.036, 0.011, 0.055 + (i % 2) * 0.022, 0.011, Math.PI); }
+  for (const s of [-1, 1]) mk(GEO.box, gore, P.head, s * 0.072, 0.028, 0.098, 0.055, 0.012, 0.012, 0, s * 0.75, s * -0.3); // cheeks torn to the ears
+  P.jaw = grp(P.head, 0, 0.02, 0.03);
+  mk(GEO.sphere, skin, P.jaw, 0, -0.06, 0.06, 0.15, 0.09, 0.25);                // long lower jaw
+  mk(GEO.sphere, gore, P.jaw, 0, -0.028, 0.06, 0.12, 0.05, 0.2);               // the inside of its mouth
+  for (let i = 0; i < 9; i++) { const a = (i - 4) / 4 * 0.95; mk(GEO.cone, teeth, P.jaw, Math.sin(a) * 0.058, -0.012, 0.075 + Math.cos(a) * 0.082, 0.011, 0.05 + ((i + 1) % 2) * 0.022, 0.011); }
+  mk(GEO.sphere, gore, P.jaw, 0, -0.098, 0.112, 0.075, 0.04, 0.07);            // blood on the chin
   P.eyes = [];
-  for (const s of [-1, 1]) {
-    const e = mk(GEO.sphere, eyeMat, P.head, s * 0.052, 0.14, 0.165, 0.034, 0.024, 0.02); e.castShadow = false;
-    const sp = new T.Sprite(glowMat); sp.position.set(s * 0.052, 0.14, 0.18); sp.scale.set(0.2, 0.2, 1); P.head.add(sp);
+  const eye = (x, y, z, k, g) => {
+    const e = mk(GEO.sphere, eyeMat, P.head, x, y, z, 0.034 * k, 0.024 * k, 0.02 * k); e.castShadow = false;
+    const sp = new T.Sprite(glowMat); sp.position.set(x, y, z + 0.015); sp.scale.set(g, g, 1); P.head.add(sp);
     P.eyes.push(e, sp);
-  }
+  };
+  for (const s of [-1, 1]) eye(s * 0.055, 0.15, 0.165, 1.15, 0.22);
+  eye(-0.032, 0.225, 0.134, 0.55, 0.1); eye(0.036, 0.238, 0.125, 0.5, 0.09); eye(0.004, 0.275, 0.106, 0.42, 0.08); // the implants they gave it
+  for (let i = 0; i < 4; i++) mk(GEO.box, MAT.metal, P.head, -0.066 + i * 0.044, 0.19 + (i % 2) * 0.018, 0.142, 0.007, 0.032, 0.006, 0, 0, 0.45); // surgical staples
   P.eyeMat = eyeMat; P.glowMat = glowMat;
   P.arms = [];
   for (const s of [-1, 1]) {
@@ -3017,10 +3522,12 @@ function buildWarden(phantom) {
     mk(GEO.box, skin, wr, 0, -0.07, 0, 0.09, 0.15, 0.04);
     const fg = grp(wr, 0, -0.14, 0), fingers = [fg];
     for (let f = 0; f < 4; f++) {
-      const fx = -0.033 + f * 0.022;
-      mk(GEO.box, skin, fg, fx, -0.13, 0, 0.017, 0.27, 0.017, 0, 0, (f - 1.5) * 0.06);
-      mk(GEO.cone, dark, fg, fx + (f - 1.5) * 0.016, -0.29, 0, 0.018, 0.06, 0.018, Math.PI);
+      const fx = -0.033 + f * 0.022, sp = (f - 1.5) * 0.06;
+      mk(GEO.box, skin, fg, fx, -0.16, 0, 0.017, 0.33, 0.017, 0, 0, sp);
+      mk(GEO.cone, gore, fg, fx + sp * 0.33, -0.33, 0, 0.02, 0.04, 0.02, Math.PI);
+      mk(GEO.cone, dark, fg, fx + sp * 0.4, -0.4, 0, 0.019, 0.13, 0.019, Math.PI);
     }
+    mk(GEO.box, gore, wr, 0, -0.1, 0.021, 0.07, 0.09, 0.004);
     P.arms.push({ s, sh, up, el, wr, fingers });
   }
   P.legs = [];
@@ -3144,7 +3651,8 @@ function segmentClear(ax, az, bx, bz) {
 /* THE WARDEN — behaviour                                              */
 /* ------------------------------------------------------------------ */
 const PATROL_CELLS = [[9, 3], [9, 8], [9, 14], [9, 20], [9, 23], [14, 8], [20, 8], [25, 8], [30, 8], [20, 14], [20, 20], [14, 20], [25, 20], [30, 14], [30, 20], [37, 20],
-  [4, 3], [14, 4], [5, 14], [5, 25], [14, 25], [22, 24], [36, 14], [14, 15], [25, 14], [26, 12], [35, 3], [33, 24]];
+  [4, 3], [14, 4], [5, 14], [5, 25], [14, 25], [22, 24], [36, 14], [14, 15], [25, 14], [26, 12], [35, 3], [33, 24],
+  [41, 3], [41, 12], [41, 20], [41, 25], [47, 5], [46, 10], [49, 13], [48, 19], [49, 25], [44, 15]]; // + east wing
 const SPAWN_CELL = [38, 17];
 // Everyone the Warden can perceive and hunt: the local player, plus remote players when hosting
 function actors() {
@@ -3153,8 +3661,16 @@ function actors() {
   if (Net.role === 'host') for (const r of Net.remotes.values()) if (r.inGame && !r.dead) out.push(r);
   return out;
 }
+// is this guard looking at a point? (cosT = cosine of the allowed angle off the centre of view)
+function looksAt(a, x, y, z, cosT) {
+  const dx = x - a.pos.x, dy = y - (a.eyeY || EYE_STAND), dz = z - a.pos.z, d = Math.hypot(dx, dy, dz);
+  if (d < 0.01) return true;
+  const cp = Math.cos(a.pitch), fx = -Math.sin(a.yaw) * cp, fy = Math.sin(a.pitch), fz = -Math.cos(a.yaw) * cp;
+  return (dx * fx + dy * fy + dz * fz) / d > cosT;
+}
 const Monster = {
   active: false, state: 'DORMANT', stateT: 0, model: null, P: null,
+  crawlK: 0, watchT: 0, creepT: 0, lostT: 0, retreatUntil: 0, chatterT: 5, whisperT: 3, stalkFrom: null,
   pos: new T.Vector3(), vel: new T.Vector3(), yaw: 0, speed: 0,
   path: null, pathI: 0, goal: new T.Vector3(), hasGoal: false, repathT: 0, onArrive: null,
   awareness: 0, seeing: false, los: false, lastKnown: new T.Vector3(), lastSeen: -99, lastContact: 0, closeT: 0,
@@ -3178,6 +3694,7 @@ const Monster = {
     this.roarCD = 0; this.seenHide = null; this.visited.length = 0; this.huntCount = 0; this.scriptedGoal = null; this.duck = 0;
     this.charging = false; this.target = null; this.nearest = null; this.nearestD = 99; this.cine = null; this.targetId = -1; this.net.buf.length = 0;
     this.stagger = 0; this.stunImmune = 0; this.rageUntil = 0; this.kb.set(0, 0, 0); this.netStagger = 0; this.netImmune = 0;
+    this.crawlK = 0; this.watchT = 0; this.creepT = 0; this.lostT = 0; this.retreatUntil = 0; this.chatterT = rand(4, 8); this.whisperT = 3; this.stalkFrom = null;
     this.eyeColor.set(0xdff2ff); if (this.P) this.P.glowMat.opacity = 0.9;
     this.model.visible = true; this.model.position.copy(this.pos); this.model.rotation.set(0, this.yaw, 0);
   },
@@ -3198,7 +3715,8 @@ const Monster = {
   speedFor() {
     const d = diff(), boost = Game.alarm ? 1.12 : 1;
     switch (this.state) {
-      case 'PATROL': return d.patrol * boost;
+      case 'PATROL': return (Game.time < this.retreatUntil ? d.investigate * 1.1 : d.patrol) * boost;
+      case 'STALK': return 0.95;
       case 'INVESTIGATE': return (this.charging ? d.hunt * d.charge : d.investigate) * boost;
       case 'SEARCH': return (d.patrol + d.investigate) * 0.5 * boost;
       case 'HUNT': return d.hunt * (this.seeing ? 1 : 0.94) * boost * (Game.time < this.rageUntil ? 1.12 : 1); // furious after being stunned
@@ -3246,6 +3764,7 @@ const Monster = {
     if (d > eff) return;
     const strength = 1 - d / eff, isPlayer = kind === 'player';
     if (isPlayer) this.lastContact = Game.time;
+    if (this.state === 'STALK') { if (isPlayer && strength > 0.45) this.stalkCharge(actor || player, 'noise'); return; }
     if (this.state === 'HUNT') {
       if (!this.seeing && isPlayer) { if (actor) this.target = actor; this.lastKnown.copy(pos); this.lastSeen = Math.max(this.lastSeen, Game.time - diff().memory * 0.5); }
       return;
@@ -3351,6 +3870,8 @@ const Monster = {
     }
     if (nearD < 14) this.closeT += step; else this.closeT = Math.max(0, this.closeT - step * 2);
     if (this.state === 'SCRIPT' || this.state === 'ATTACK') return;
+    if (this.state === 'STALK') { this.awareness = Math.min(this.awareness, 0.6); return; }
+    if (Game.time < this.retreatUntil) { this.awareness = Math.min(this.awareness, 0.3); return; }
     if (this.awareness >= 1 && this.state !== 'HUNT') { this.setState('HUNT'); this.path = null; this.repathT = 0; }
     else if (this.seeing && this.awareness > 0.32 && (this.state === 'PATROL' || this.state === 'LOST' || this.state === 'SEARCH')) {
       if (this.investigate(bestA.pos.clone(), 0.9, true)) Sound.screech(); // glimpsed you: it runs at you
@@ -3464,6 +3985,34 @@ const Monster = {
         }
         break;
       }
+      case 'STALK': { // it watches from the dark. Hold its gaze and it backs off; come closer or light it up and it comes for you
+        const tg = this.target && !this.target.dead ? this.target : null;
+        if (!tg || tg.hidden || tg.inVent || Game.endingLock) { this.endStalk(false); break; }
+        const d = this.pos.distanceTo(tg.pos);
+        faceTarget = tg.pos;
+        const vis = losClear(this.pos.x, this.pos.z, tg.pos.x, tg.pos.z);
+        this.lostT = vis ? 0 : this.lostT + dt;
+        if (this.lostT > 7 || this.stateT > 45) { this.endStalk(false); break; }
+        if (d < 6.5) { this.stalkCharge(tg, 'close'); break; }
+        if (vis && d < 20 && tg.beamOn(this.pos, 2.0)) { this.stalkCharge(tg, 'light'); break; }
+        let watcher = null;
+        for (const a of actors()) if (a.pos.distanceTo(this.pos) < 24 && looksAt(a, this.pos.x, 2.0, this.pos.z, 0.94) && losClear(a.pos.x, a.pos.z, this.pos.x, this.pos.z)) { watcher = a; break; }
+        if (watcher) {
+          this.watchT += dt; this.creepT = Math.max(this.creepT, 2.2);
+          if (this.hasGoal) { this.path = null; this.hasGoal = false; } // it freezes the moment you look at it
+          if (this.watchT > 1.8) { this.endStalk(true, watcher); break; }
+        } else {
+          this.watchT = Math.max(0, this.watchT - dt * 0.6);
+          this.creepT -= dt;
+          if (this.creepT <= 0 && !this.hasGoal) { // and creeps closer while nobody is looking
+            this.creepT = rand(2.5, 4.5);
+            const step = Math.min(3, d - 7.2);
+            if (step > 0.8) this.goTo(this.pos.x + (tg.pos.x - this.pos.x) / d * step, this.pos.z + (tg.pos.z - this.pos.z) / d * step, null);
+          }
+        }
+        wantMove = this.hasGoal;
+        break;
+      }
       case 'SCRIPT':
         wantMove = this.hasGoal;
         if (!this.hasGoal && this.scriptedGoal) faceTarget = this.scriptedGoal;
@@ -3529,11 +4078,48 @@ const Monster = {
     this.voice(dt);
     this.animate(dt, this.speed);
   },
-  voice(dt) { // breathing, clicks and growls, driven by state (runs on every peer)
-    this.breathT -= dt; this.clickT -= dt;
-    const hunt = this.state === 'HUNT' || this.charging;
-    if (this.breathT <= 0) { this.breathT = hunt ? rand(1.3, 1.9) : rand(2.8, 4.0); if (!hunt || Math.random() < 0.5) Sound.breathM(hunt ? 1.2 : 0.8); }
-    if (this.clickT <= 0) { this.clickT = rand(5, 10); if (this.state === 'SEARCH' || this.state === 'INVESTIGATE' || this.state === 'LOST') Sound.clicks(); else if (Math.random() < 0.3) Sound.growl(); }
+  voice(dt) { // breathing, clicks, chattering teeth and whispers, driven by state (runs on every peer)
+    this.breathT -= dt; this.clickT -= dt; this.chatterT -= dt;
+    const hunt = this.state === 'HUNT' || this.charging, stalk = this.state === 'STALK';
+    if (this.breathT <= 0) { this.breathT = hunt ? rand(1.3, 1.9) : rand(2.8, 4.0); if (!hunt || Math.random() < 0.5) Sound.breathM(hunt ? 1.2 : stalk ? 0.6 : 0.8); }
+    if (this.clickT <= 0) { this.clickT = rand(5, 10); if (this.state === 'SEARCH' || this.state === 'INVESTIGATE' || this.state === 'LOST') Sound.clicks(); else if (!stalk && Math.random() < 0.3) Sound.growl(); }
+    if (this.chatterT <= 0) { this.chatterT = rand(5, 11); if (stalk || this.state === 'SEARCH' || this.state === 'LOST' || (this.state === 'INVESTIGATE' && !this.charging)) Sound.chatter(); }
+    if (stalk) { this.whisperT -= dt; if (this.whisperT <= 0) { this.whisperT = rand(3.5, 6.5); Sound.whisperM(); } }
+  },
+  // the director puts it at the edge of a guard's vision to watch them (host / solo)
+  startStalk(tg, x, z) {
+    this.cine = null; this.path = null; this.hasGoal = false; this.vel.set(0, 0, 0); this.kb.set(0, 0, 0); this.bashDoor = null;
+    this.pos.set(x, 0, z); this.yaw = Math.atan2(tg.pos.x - x, tg.pos.z - z); this.model.position.set(x, 0, z);
+    this.target = tg; this.state = 'STALK'; this.stateT = 0; this.charging = false;
+    this.watchT = 0; this.lostT = 0; this.creepT = rand(2.5, 4); this.awareness = 0.4; this.whisperT = rand(0.5, 1.2); this.chatterT = rand(2, 4);
+  },
+  endStalk(stared, by) {
+    const tg = this.target;
+    this.watchT = 0; this.awareness = 0; this.path = null; this.hasGoal = false; this.target = null;
+    this.state = 'PATROL'; this.stateT = 0; this.pauseT = 0;
+    if (stared) { // it backs off into the dark, quickly, away from whoever stared it down
+      this.retreatUntil = Game.time + 7;
+      const away = this.farPointFrom((by || tg || player).pos);
+      if (away) this.goTo(away[0], away[1], () => { this.pauseT = rand(2, 4); });
+      Sound.growl();
+    }
+    Game.onStalkEnd(!!stared, by || tg, stared ? 'stare' : 'gone');
+  },
+  stalkCharge(tg, why) {
+    this.target = tg; this.lastKnown.copy(tg.pos); this.lastSeen = Game.time; this.lastContact = Game.time; this.awareness = 1.2;
+    this.watchT = 0; this.path = null; this.hasGoal = false; this.repathT = 0;
+    this.state = 'PATROL'; this.setState('HUNT'); Sound.screech();
+    Game.onStalkEnd(false, tg, why);
+  },
+  farPointFrom(pos) {
+    let best = null, bd = -1;
+    for (let i = 0; i < 10; i++) {
+      const pc = PATROL_CELLS[(Math.random() * PATROL_CELLS.length) | 0], [cx, cz] = nearestFreeCell(pc[0], pc[1]);
+      if (!monsterPassable(cx, cz)) continue;
+      const d = Math.hypot(cc(cx) - pos.x, cc(cz) - pos.z);
+      if (d > bd) { bd = d; best = [cc(cx), cc(cz)]; }
+    }
+    return best;
   },
   lookAround(dt) {
     this.headTimer -= dt;
@@ -3553,7 +4139,8 @@ const Monster = {
     if (sgn !== this.lastStepSign && sp > 0.4) { this.lastStepSign = sgn; Sound.stepM(run); if (run && this.pos.distanceTo(player.pos) < 12) Game.shake(0.04); }
     const attack = this.state === 'ATTACK' ? this.attackT : -1;
     const hunt = this.state === 'HUNT' || attack >= 0 || this.charging;
-    const targetLean = (hunt ? 0.55 : 0.32) + this.duck * 0.55 + (run ? 0.15 : 0);
+    const stalk = this.state === 'STALK';
+    const targetLean = (hunt ? 0.55 : stalk ? 0.46 : 0.32) + this.duck * 0.55 + (run ? 0.15 : 0);
     this.lean = damp(this.lean, targetLean, 5, dt);
     P.spine.rotation.x = this.lean;
     P.hips.position.y = 1.36 - this.duck * 0.22 - Math.abs(Math.sin(ph)) * 0.05 * amp - (hunt ? 0.06 : 0);
@@ -3576,19 +4163,49 @@ const Monster = {
       const curl = 0.25 + Math.sin(Game.time * 3 + s) * 0.08 + (attack >= 0 ? -0.2 : 0);
       for (const f of A.fingers) f.rotation.x = curl;
     }
-    // head: look around, twitch, jaw
+    // watching you: arms hang long and still, fingers flexing
+    if (stalk) for (const A of P.arms) {
+      A.up.rotation.x = damp(A.up.rotation.x, 0.08, 4, dt); A.up.rotation.z = damp(A.up.rotation.z, A.s * 0.07, 4, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.1, 4, dt);
+      for (const f of A.fingers) f.rotation.x = 0.1 + Math.max(0, Math.sin(Game.time * 6.5 + A.s * 2)) * 0.55;
+    }
+    // hunting from far away it drops down and sprints on all fours, then rears up to strike
+    const dl = Math.hypot(player.pos.x - this.pos.x, player.pos.z - this.pos.z);
+    const crawlWant = hunt && attack < 0 && run && this.duck < 0.35 && dl > 4.2 && !this.cine;
+    this.crawlK = damp(this.crawlK, crawlWant ? 1 : 0, crawlWant ? 4 : 6, dt);
+    if (this.crawlK > 0.01) {
+      const k = this.crawlK;
+      P.hips.position.y = lerp(P.hips.position.y, 1.02 + Math.abs(Math.sin(ph)) * 0.07, k);
+      P.spine.rotation.x = lerp(P.spine.rotation.x, 1.08, k);
+      P.neck.rotation.x = lerp(P.neck.rotation.x, -1.05, k);
+      for (const A of P.arms) {
+        const sw = Math.abs(Math.sin(ph + (A.s > 0 ? 0 : Math.PI / 2)));
+        A.up.rotation.x = lerp(A.up.rotation.x, -1.75 - sw * 0.5, k); A.up.rotation.z = lerp(A.up.rotation.z, A.s * 0.32, k);
+        A.el.rotation.x = lerp(A.el.rotation.x, -0.25 - sw * 0.35, k);
+        for (const f of A.fingers) f.rotation.x = lerp(f.rotation.x, -0.15, k);
+      }
+      for (const Lg of P.legs) {
+        const sw = Math.sin(ph + (Lg.s > 0 ? 0 : Math.PI)) * 0.75;
+        Lg.hp.rotation.x = lerp(Lg.hp.rotation.x, -0.5 - sw, k); Lg.kn.rotation.x = lerp(Lg.kn.rotation.x, 0.85 + Math.max(0, sw) * 0.7, k); Lg.an.rotation.x = lerp(Lg.an.rotation.x, -0.3, k);
+      }
+    }
+    // head: look around, twitch (sometimes violently, with a crack), jaw
     this.twitchT -= dt;
-    if (this.twitchT <= 0) { this.twitchT = rand(0.6, 3.5); this.twitch.set(rand(-0.35, 0.35), rand(-0.6, 0.6), rand(-0.5, 0.5)); }
-    this.twitch.multiplyScalar(Math.exp(-dt * 9));
+    if (this.twitchT <= 0) {
+      const hard = Math.random() < (stalk || this.state === 'SEARCH' || this.state === 'LOST' ? 0.35 : 0.16), a = hard ? 1.0 : 0.35;
+      this.twitchT = rand(0.25, 2.0);
+      this.twitch.set(rand(-a, a), rand(-0.6, 0.6) * (hard ? 2 : 1), rand(-0.5, 0.5) * (hard ? 2.2 : 1));
+      if (hard && this.active && dl < 16) Sound.crack();
+    }
+    this.twitch.multiplyScalar(Math.exp(-dt * (this.twitch.lengthSq() > 0.5 ? 6 : 9)));
     const lookY = (this.state === 'HUNT' || attack >= 0) ? 0 : this.headTarget;
     this.headYaw = damp(this.headYaw, (this.speed > 0.3 && this.state === 'PATROL') ? lookY * 0.3 : lookY, 3, dt);
-    P.head.rotation.set(this.twitch.x + (hunt ? 0.12 : 0), this.headYaw + this.twitch.y, this.twitch.z * (hunt ? 0.4 : 1) + (hunt ? 0.08 : 0.24) + (this.state === 'LOST' ? 0.2 : 0));
-    const jawOpen = attack >= 0 ? (attack < 0.6 ? 0.55 : 0.2) : (hunt ? 0.18 + Math.sin(Game.time * 9) * 0.05 : 0.04);
+    P.head.rotation.set(this.twitch.x + (hunt ? 0.12 : 0) - this.crawlK * 0.22, this.headYaw + this.twitch.y, this.twitch.z * (hunt ? 0.4 : 1) + (hunt ? 0.08 : 0.24) + (this.state === 'LOST' ? 0.2 : 0) + (stalk ? 0.42 + Math.sin(Game.time * 0.6) * 0.16 : 0));
+    const jawOpen = attack >= 0 ? (attack < 0.6 ? 0.95 : 0.3) : stalk ? 0.1 + Math.max(0, Math.sin(Game.time * 1.3)) * 0.2 : (hunt ? 0.3 + Math.sin(Game.time * 9) * 0.08 : 0.07);
     P.jaw.rotation.x = damp(P.jaw.rotation.x, jawOpen, 10, dt);
     P.chest.scale.set(1, 1 + Math.sin(Game.time * (hunt ? 4 : 1.6)) * 0.025, 1);
     for (let i = 0; i < P.rags.length; i++) { const r = P.rags[i]; r.rotation.x = Math.sin(Game.time * 2 + i) * 0.12 + (sp * 0.06); r.rotation.z = Math.cos(Game.time * 1.7 + i * 2) * 0.1; }
     // eyes reflect state: pale wandering, amber suspicious, red hunting
-    const tc = this.state === 'HUNT' || this.state === 'ATTACK' || this.state === 'SCRIPT' || this.charging ? 0xff2a1a : (this.state === 'INVESTIGATE' || this.state === 'SEARCH') ? 0xffa83a : 0xcfe8ff;
+    const tc = this.state === 'HUNT' || this.state === 'ATTACK' || this.state === 'SCRIPT' || this.charging ? 0xff2a1a : (this.state === 'INVESTIGATE' || this.state === 'SEARCH') ? 0xffa83a : stalk ? 0xf4fcff : 0xcfe8ff;
     _tmpCol.set(tc); this.eyeColor.lerp(_tmpCol, 1 - Math.exp(-dt * 4));
     P.eyeMat.color.copy(this.eyeColor); P.glowMat.color.copy(this.eyeColor);
     P.led.visible = (Game.time * 1.3) % 1 < 0.15;
@@ -3838,7 +4455,8 @@ const player = {
     if (!locked) moveBody(this.pos, this.vel.x * dt, this.vel.z * dt, PLAYER_R, 'player', crouch);
     const hs = Math.hypot(this.vel.x, this.vel.z);
     // stamina
-    if (this.sprinting && hs > 3) { this.stamina = Math.max(0, this.stamina - dt / 5.6); this.staminaDelay = 0.8; if (this.stamina <= 0) { this.exhausted = true; UI.msg('You\'re out of breath.', 'warn'); } }
+    if (this.sprinting && hs > 3) { this.stamina = Math.max(0, this.stamina - dt / (Monster.huntsLocal() ? 8.8 : 5.6)); // adrenaline: you run longer while it hunts you
+      this.staminaDelay = 0.8; if (this.stamina <= 0) { this.exhausted = true; UI.msg('You\'re out of breath.', 'warn'); } }
     else { this.staminaDelay -= dt; if (this.staminaDelay <= 0) this.stamina = Math.min(1, this.stamina + dt / (moving ? 5.5 : 3.8)); }
     if (this.exhausted && this.stamina > 0.35) this.exhausted = false;
     if (this.exhausted || this.stamina < 0.25) { this.breathT -= dt; if (this.breathT <= 0) { this.breathT = 1.25; Sound.breath(1 - this.stamina); Game.noise(this.pos, 2.5, 'player'); } }
@@ -4039,6 +4657,8 @@ const Screens = {
     this.t -= dt; this.feedT -= dt; this.scare = Math.max(0, this.scare - dt);
     if (!Game.power) { if (this.t <= 0) { this.t = 0.09; this.drawStatic(); } }
     else if (this.feedT <= 0) { this.feedT = 0.12; if (Math.random() < 0.03) this.cam = (this.cam + 1) % 4; this.drawFeed(); }
+    this.camT -= dt;
+    if (Game.power && this.camT <= 0 && Math.hypot(player.pos.x - 100, player.pos.z - 52) < 20) { this.camT = 0.25; this.drawCamWall(); }
   },
 };
 
@@ -4056,7 +4676,7 @@ const UI = {
   hideAll() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); this.current = null; },
   goto(id) { if (this.current) this.prev.push(this.current); this.show(id); Sound.ui(); },
   back() {
-    if (['screen-settings', 'screen-howto', 'screen-journal', 'screen-briefing', 'screen-mp'].indexOf(this.current) < 0) return;
+    if (['screen-settings', 'screen-howto', 'screen-journal', 'screen-briefing', 'screen-mp', 'screen-goals'].indexOf(this.current) < 0) return;
     if (this.current === 'screen-mp' && Net.active && !Net.inGame) Net.leave(); // backing out of the lobby closes it
     const p = this.prev.pop() || (Game.state === 'paused' ? 'screen-pause' : 'screen-title');
     this.show(p); Sound.ui();
@@ -4099,7 +4719,18 @@ const UI = {
     this.journalMode = !!fromJournal;
     if (!fromJournal) { Game.state = 'reading'; Input.keys = {}; }
     Sound.paper();
-    if (!Game.notesRead.has(id) && NOTE_ORDER.indexOf(id) >= 0) { Game.notesRead.add(id); if (!fromJournal) UI.msg('Note added to your journal (P → Notes).', '', 2.6); }
+    if (!Game.notesRead.has(id) && NOTE_ORDER.indexOf(id) >= 0) {
+      Game.notesRead.add(id); if (!fromJournal) UI.msg('Note added to your journal (P → Notes).', '', 2.6);
+      if (NOTE_ORDER.every(n => Game.notesRead.has(n))) Goals.unlock('notes');
+    }
+    if (!fromJournal) { Game.stopTape(); if (NAME_NOTES.indexOf(id) >= 0) Game.learnName(); }
+  },
+  readTape(id) { // a voice log's transcript, from the journal
+    const tp = TAPES[id]; if (!tp) return;
+    $('paper').classList.remove('terminal');
+    $('note-title').textContent = 'Voice log — ' + tp.label;
+    $('note-body').textContent = tp.who + '\n\n' + tp.lines.map(l => '“' + l + '”').join('\n\n');
+    $('note-reader').classList.add('active'); this.journalMode = true; Sound.paper();
   },
   closeNote(silent) {
     if (!$('note-reader').classList.contains('active')) return;
@@ -4110,13 +4741,15 @@ const UI = {
   },
   buildJournal() {
     const list = $('journal-list'); list.innerHTML = '';
-    const read = NOTE_ORDER.filter(id => Game.notesRead.has(id));
-    if (!read.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'No documents found yet.'; list.appendChild(e); return; }
+    const read = NOTE_ORDER.filter(id => Game.notesRead.has(id)), tapes = TAPE_ORDER.filter(id => Game.tapes.has(id));
+    if (!read.length && !tapes.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'No documents found yet.'; list.appendChild(e); return; }
     read.forEach(id => { const b = document.createElement('button'); b.textContent = NOTES[id].title; b.addEventListener('click', () => { Sound.ui(); UI.readNote(id, true); }); list.appendChild(b); });
+    tapes.forEach(id => { const b = document.createElement('button'); b.className = 'tape'; b.textContent = '▶ Voice log — ' + TAPES[id].label; b.addEventListener('click', () => { Sound.ui(); UI.readTape(id); }); list.appendChild(b); });
   },
   updatePause() {
     $('pause-obj').innerHTML = '';
     Game.objectives().forEach(o => { const d = document.createElement('div'); d.textContent = (o.done ? '✓ ' : '· ') + o.text; d.style.color = o.done ? '#6f8f6a' : '#bdb7aa'; $('pause-obj').appendChild(d); });
+    Goals.bonus().forEach(o => { const d = document.createElement('div'); d.textContent = (o.done ? '★ ' : '☆ ') + o.text; d.style.color = o.done ? '#d9b25a' : '#8f8a7e'; d.style.fontSize = '12px'; $('pause-obj').appendChild(d); });
     const t = document.createElement('div'); t.style.marginTop = '8px'; t.style.color = '#77726a'; t.textContent = 'Time ' + fmtTime(Game.time) + ' · Notes ' + Game.notesRead.size + '/' + NOTE_ORDER.length + ' · ' + (Net.sessionDiff || settings.difficulty).toUpperCase();
     $('pause-obj').appendChild(t);
     if (Net.active) { const o = document.createElement('div'); o.style.cssText = 'margin-top:8px;color:#d9a34a'; o.textContent = 'Online co-op — the shift goes on while you are paused.'; $('pause-obj').appendChild(o); }
@@ -4137,6 +4770,14 @@ const UI = {
       list.appendChild(li);
     });
     Game.flashObj = null;
+  },
+  bonusDom() {
+    const list = $('bonus-list'), b = Goals.bonus(), key = b.map(o => o.text + o.done).join('|');
+    if (key === this.hudCache.bonus) return;
+    const prev = this.hudCache.bonusDone || {}; this.hudCache.bonus = key; list.innerHTML = '';
+    const done = {};
+    b.forEach(o => { const li = document.createElement('li'); li.textContent = o.text; if (o.done) { li.classList.add('done'); done[o.id] = 1; if (!prev[o.id] && this.hudCache.bonusDone) li.classList.add('flash'); } list.appendChild(li); });
+    this.hudCache.bonusDone = done;
   },
   set(id, prop, val) { const k = id + prop; if (this.hudCache[k] === val) return; this.hudCache[k] = val; const el = $(id); if (prop === 'text') el.textContent = val; else if (prop === 'width') el.style.width = val; else if (prop === 'class') el.className = val; else el.setAttribute(prop, val); },
   updateHud(dt, threatLevel, threatSub) {
@@ -4196,12 +4837,12 @@ const UI = {
     else if (Game.exitOpening) prog = clamp(doorAt(35, 21).t / 0.82, 0, 1);
     $('progress').style.display = prog >= 0 ? 'block' : 'none';
     if (prog >= 0) $('progress').firstElementChild.style.width = (prog * 100) + '%';
-    this.objectivesDom();
+    this.objectivesDom(); this.bonusDom();
     if (settings.showFps) this.set('fps', 'text', Math.round(Game.fps) + ' FPS · ' + settings.quality.toUpperCase());
   },
   /* ---- minimap ---- */
   drawMap() {
-    const cv = $('minimap'), g = cv.getContext('2d'), s = 6;
+    const cv = $('minimap'), g = cv.getContext('2d'), s = MAP_S;
     g.fillStyle = '#060607'; g.fillRect(0, 0, cv.width, cv.height);
     for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
       const c = grid[z][x];
@@ -4228,6 +4869,11 @@ const UI = {
     g.save(); g.translate(px, pz); g.rotate(-player.yaw + Math.PI);
     g.fillStyle = '#ffd27a'; g.beginPath(); g.moveTo(0, 6); g.lineTo(4, -4); g.lineTo(0, -2); g.lineTo(-4, -4); g.closePath(); g.fill();
     g.restore();
+    if (Game.cams && Monster.active) {
+      const mx = Monster.pos.x / CELL * s, mz = Monster.pos.z / CELL * s, r = 3 + (Date.now() / 110 % 7);
+      g.fillStyle = '#ff3020'; g.beginPath(); g.arc(mx, mz, 3.2, 0, TAU); g.fill();
+      g.strokeStyle = 'rgba(255,48,32,' + (1 - r / 10).toFixed(2) + ')'; g.lineWidth = 1.5; g.beginPath(); g.arc(mx, mz, r, 0, TAU); g.stroke();
+    }
     Hints.drawMap(g, s); Net.drawMap(g, s);
     const c = cellOf(player.pos.x, player.pos.z);
     const rn = c.room && ROOM_NAMES[c.room] ? ROOM_NAMES[c.room] : (c.kind === 'vent' ? 'Maintenance vent' : 'Sublevel 6');
@@ -4409,6 +5055,13 @@ const Game = {
           UI.msg((mine ? 'Picked up: ' : who + ' found the ') + CARD_INFO[def.color].name + ' (' + n + '/3)', 'good', 4);
           if (n === 3) this.completeObjective('cards', 'All three keycards collected');
           else this.flashObj = 'cards';
+        } else if (it.kind === 'tape') {
+          this.tapes.add(def.tape);
+          const n = this.tapes.size, N = TAPE_ORDER.length;
+          if (mine) { Sound.pickup(); this.playTape(def.tape); UI.msg('Voice log ' + n + '/' + N + ' — added to your journal (P → Notes).', 'good', 4); }
+          else UI.msg(who + ' found a voice log (' + n + '/' + N + ').', 'good', 3.5);
+          if (def.tape === 't6' && mine) this.learnName();
+          if (n >= N) Goals.unlock('tapes');
         }
         Hints.progress();
         break;
@@ -4474,12 +5127,18 @@ const Game = {
         if (!mine) Sound.punchHit(_v3c.set(Monster.pos.x, 1.6, Monster.pos.z));
         if (r >= 3) {
           this.stats.stuns = (this.stats.stuns || 0) + 1;
+          if (mine) { this.stats.myStuns = (this.stats.myStuns || 0) + 1; if (this.stats.myStuns >= 3) Goals.unlock('brawler'); if (r === 4) Goals.unlock('counter'); }
           UI.center('STUNNED', mine ? (r === 4 ? 'You caught it mid-lunge — RUN!' : 'It\'s reeling — RUN!') : who + ' stunned it — RUN!', 2.2);
           if (!mine) Sound.sting(false);
         } else if (mine && r === 1 && !this.flags.resistTold) { this.flags.resistTold = true; UI.msg('It shrugs that off — it won\'t be stunned again so soon.', 'warn', 3); }
         else if (mine && r === 2 && !this.flags.punchTold) { this.flags.punchTold = true; UI.msg('It barely felt that. Keep hitting to stun it — or hit it as it lunges.', '', 3.5); }
         break;
       }
+      case 'stare':
+        if (mine) { this.stats.stares = (this.stats.stares || 0) + 1; UI.msg('You held its gaze. It slinks back into the dark…', 'story', 4); Goals.unlock('stare'); }
+        else UI.msg(who + ' stared it down. It backed off.', 'story', 3.5);
+        break;
+      case 'camboot': case 'campr': case 'cams': this.goalEvent(ev, mine, who); break;
       case 'end': this.startEnding(); break;
       case 'over': if (this.state !== 'dead' && this.state !== 'won') { UI.closeNote(true); this.showGameOver(); } break;
     }
@@ -4492,7 +5151,7 @@ const Game = {
     this.cards = { yellow: false, blue: false, red: false };
     this.breakerSeq = []; this.notesRead = new Set(); this.stats = { spotted: 0, damage: 0 }; this.flags = {}; this.shakeAmt = 0; this.dip = 0; this.eventT = rand(18, 26);
     this.deathT = 0; this.endT = 0; this.introT = 0; this.alarmT = 0; this.termBeep = 0; this.afterNote = null; this.awayWarned = false;
-    this.respawnAt = 0; this.wipeT = 0; this.liftMsgT = 0; this.fakeT = rand(50, 80); this.popT = 0; this.lureT = 0; this.glimpseT = rand(60, 90); this.stareCD = 0;
+    this.respawnAt = 0; this.wipeT = 0; this.liftMsgT = 0; this.fakeT = rand(50, 80); this.popT = 0; this.lureT = 0; this.glimpseT = rand(60, 90); this.stareCD = 0; this.stalkT = rand(35, 55);
     doors.forEach(d => d.reset());
     items.forEach(it => { it.taken = false; it.mesh.visible = true; it.def.enabled = true; if (it.def.glow) it.def.glow.visible = true; });
     world.breakers.forEach(b => { b.on = false; b.piv.rotation.z = -0.6; b.led.material = MAT.ledRed; });
@@ -4503,6 +5162,8 @@ const Game = {
     world.monitors.forEach(m => { m.material = MAT.screen; }); world.wallScreens.forEach(m => { m.material = MAT.screen; });
     if (world.vending) world.vending.material = MAT.vending;
     world.terminal.material = MAT.screenOff;
+    world.camScreens.forEach(m => { m.material = MAT.screenOff; }); world.camWall.material = MAT.screenOff; world.camLed.material = MAT.ledRed; world.tv.material = MAT.screenOff;
+    this.stopTape(); this.tapes = new Set(); this.cams = false; this.camBoot = 0; this.camBooting = false; this.camBy = -1; this.camBeepT = 0; this.camAwayT = 0; Goals.runGot = [];
     world.exitPanel.slots.forEach(s => { s.material = MAT.ledOff; }); world.exitPanel.scr.material = MAT.screenOff;
     world.liftDoors.forEach(d => { d.mesh.position.x = 66 + d.side * 3.0; }); world.liftCall.material = MAT.ledOff;
     hemi.intensity = 0.5; scene.fog.density = FOG_BASE;
@@ -4541,7 +5202,7 @@ const Game = {
   restart() { if (Net.isClient) return; if (Net.isHost) Net.startGame(); else this.newGame(); },
   pause() {
     if (this.state !== 'playing') return;
-    this.state = 'paused'; Input.keys = {}; if (!Net.active) Sound.setMode('paused'); Input.exitLock();
+    this.state = 'paused'; Input.keys = {}; if (!Net.active) { Sound.setMode('paused'); this.stopTape(); } Input.exitLock();
     UI.prev = []; UI.show('screen-pause'); UI.updatePause(); UI.lockHint(false);
   },
   resume() {
@@ -4581,6 +5242,16 @@ const Game = {
     if (Net.active) rows.unshift(['Guards escaped', crew().length + '']);
     if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
     rows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; $('win-stats').appendChild(s); $('win-stats').appendChild(v); });
+    // the shift's score and rank
+    const sc = Goals.score();
+    $('rank-letter').textContent = sc.rank; $('rank-letter').className = 'r-' + sc.rank;
+    $('rank-score').textContent = sc.total + ' pts';
+    $('rank-best').textContent = sc.isBest ? 'NEW BEST ON ' + sc.diff.toUpperCase() : 'BEST ON ' + sc.diff.toUpperCase() + ': ' + Goals.data.best[sc.diff].score;
+    const ws = $('win-score'); ws.innerHTML = '';
+    const srows = sc.rows.map(r => [r[0], (r[1] > 0 ? '+' : '') + r[1]]); if (sc.mult !== 1) srows.push(['Difficulty', '×' + sc.mult]);
+    srows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; ws.appendChild(s); ws.appendChild(v); });
+    const wa = $('win-ach'); wa.innerHTML = '';
+    (Goals.runGot || []).forEach(x => { const d = document.createElement('span'); d.textContent = '★ ' + x.name; wa.appendChild(d); });
     $('epilogue').textContent = this.notesRead.has('badge')
       ? 'The lift climbs for a long time. Somewhere below, the lights flicker back on, and a tall shape walks the west corridor, checking every door — the way Elias Crane did for twenty-two years. Lily turned seven on Thursday. He is still waiting for his shift to end.'
       : 'The lift climbs for a long time. Somewhere below, the lights flicker back on, and a tall shape walks the west corridor, checking every door. Its shift never ends.';
@@ -4683,6 +5354,8 @@ const Game = {
       if (!this.power || this.state === 'title') return;
       Sound.setHum(true);
       world.monitors.forEach(m => { m.material = MAT.feed; }); world.wallScreens.forEach(m => { m.material = MAT.feed; });
+      world.camScreens.forEach(m => { m.material = MAT.feed; }); world.camWall.material = MAT.camWall; world.tv.material = MAT.feed;
+      if (!this.cams && !this.camBooting) world.camLed.material = MAT.ledAmber;
       if (world.vending) world.vending.material = MAT.vendLit;
       world.terminal.material = MAT.term; Screens.drawTerminal();
       world.exitPanel.scr.material = MAT.ledAmber;
@@ -4778,6 +5451,7 @@ const Game = {
       case 'terminal': this.useTerminal(r); break;
       case 'exit': this.useExitPanel(r); break;
       case 'radio': { const rd = world.radios[i]; if (rd) this.useRadio(rd, r); break; }
+      case 'cams': this.useCams(r); break;
       case 'punch': if (Math.hypot(r.pos.x - Monster.pos.x, r.pos.z - Monster.pos.z) < 3.1) this.punchMonster(r); break; // generous: positions are ~0.1 s old
     }
   },
@@ -4808,13 +5482,14 @@ const Game = {
     player.pitch = clamp(player.pitch + 0.25, -1.4, 1.4);
     player.invulnUntil = this.time + 2.6; player.stamina = 1; player.exhausted = false;
     UI.msg(player.health > 35 ? 'It cut you. RUN!' : 'You can barely stand. One more and it\'s over.', 'warn', 3);
+    Cine.play('hurt');
   },
   die() {
     player.dead = true; player.health = 0; this.controlLock = true; this.deathT = 0;
     player.flashState = false; player.crouchToggle = false;
     Input.keys = {}; this.flags.deathFade = false; this.flags.respawnShown = 0;
     if (Net.active) { this.respawnAt = this.time + 14; Net.reportDeath(); }
-    Cine.play('death');
+    Cine.play('jumpscare');
   },
   respawn() { // online: back at Desk B
     player.respawn(MP_SPAWNS[Net.myId % MP_SPAWNS.length]);
@@ -4838,12 +5513,13 @@ const Game = {
   onMonsterCharge(pos, actor, d, kind) { // it heard something and is sprinting toward it
     if (actor && actor !== player) { Net.sendTo(actor.id, { k: 'charge', d: Math.round(d) }); return; }
     if (actor === player) Cine.trigger('charge', { d, kind: 'player' });
-    else if (kind === 'radio') { Cine.trigger('charge', { d, kind }); if (Net.isHost) Net.broadcast({ k: 'charge', d: Math.round(d), r: 1 }); }
+    else if (kind === 'radio') { Goals.unlock('lure'); Cine.trigger('charge', { d, kind }); if (Net.isHost) Net.broadcast({ k: 'charge', d: Math.round(d), r: 1 }); }
   },
   startEnding() {
     if (this.ending) return;
     this.ending = true; this.endingLock = true; this.controlLock = true; this.endT = 0;
     this.completeObjective('escape', Net.active ? 'The whole shift made it to the lift' : 'You made it to the lift');
+    this.stopTape(); Goals.onEscape();
     player.flashState = player.flashState && player.battery > 0;
     Sound.door(new T.Vector3(66, 1.4, 54), false, true);
     if (!Net.isClient && Monster.active) {
@@ -4889,6 +5565,8 @@ const Game = {
     this.updateLights(dt);
     updateSparks(dt);
     Screens.update(dt);
+    this.updateTape(dt);
+    if (!client) this.updateCams(dt);
     Hints.update(dt);
     this.tension(dt);
     if (this.alarmT > 0) { this.alarmT -= dt; if (this.alarmT <= 0) Sound.setAlarm(false); }
@@ -4942,6 +5620,11 @@ const Game = {
         const a = rand(0, TAU), r = rand(5, 9), x = tg.pos.x + Math.cos(a) * r, z = tg.pos.z + Math.sin(a) * r, c = cellOf(x, z);
         Monster.lure(c.kind === 'floor' && !c.navBlocked ? { x, z } : tg.pos);
       }
+    }
+    // later on it stalks you: it is simply there, at the edge of the light, watching
+    if (host && Monster.active && (F.sighted || Monster.huntCount > 0) && !this.exitOpening && !this.ending) {
+      this.stalkT -= dt;
+      if (this.stalkT <= 0) this.stalkT = this.tryStalk() ? rand(45, 80) : rand(5, 9);
     }
     // it stops right outside the locker you are hiding in, and listens
     if (host && Monster.active && !Monster.cine && this.time > this.stareCD && (Monster.state === 'PATROL' || Monster.state === 'SEARCH' || Monster.state === 'INVESTIGATE')) {
@@ -5008,6 +5691,32 @@ const Game = {
       }
     }
   },
+  tryStalk() { // host / solo: put the Warden 10-16 m from a guard, somewhere nobody is looking
+    const M = Monster;
+    if (M.state !== 'PATROL' || M.cine || Cine.cur || this.time - M.lastContact < 25 || this.time < M.retreatUntil) return false;
+    const cands = actors().filter(a => !a.hidden && !a.inVent && !inLift(a) && cellOf(a.pos.x, a.pos.z).kind !== 'vent');
+    if (!cands.length) return false;
+    // nobody may see it vanish from where it is now
+    if (cands.some(a => a.pos.distanceTo(M.pos) < 28 && losClear(a.pos.x, a.pos.z, M.pos.x, M.pos.z))) return false;
+    const tg = pick(cands), tx = Math.floor(tg.pos.x / CELL), tz = Math.floor(tg.pos.z / CELL);
+    let best = null, bs = -1;
+    for (let dz = -8; dz <= 8; dz++) for (let dx = -8; dx <= 8; dx++) {
+      const x = tx + dx, z = tz + dz;
+      if (!monsterPassable(x, z) || cellAt(x, z).kind !== 'floor') continue;
+      const wx = cc(x), wz = cc(z), d = Math.hypot(wx - tg.pos.x, wz - tg.pos.z);
+      if (d < 10 || d > 16 || !losClear(tg.pos.x, tg.pos.z, wx, wz)) continue;
+      if (cands.some(a => looksAt(a, wx, 1.8, wz, 0.45) && losClear(a.pos.x, a.pos.z, wx, wz))) continue; // someone would see it appear
+      const score = (looksAt(tg, wx, 1.8, wz, -0.3) ? 0.5 : 1) * (cellAt(x, z).room === 'corridor' ? 1.25 : 1) * rand(0.8, 1.2);
+      if (score > bs) { bs = score; best = [wx, wz]; }
+    }
+    if (!best) return false;
+    M.startStalk(tg, best[0], best[1]);
+    return true;
+  },
+  onStalkEnd(stared, a) { // host / solo
+    this.stalkT = rand(45, 80);
+    if (stared && a) this.emit({ k: 'stare', by: this.idOf(a) });
+  },
   tryPhantom() {
     const p = player, c = cellOf(p.pos.x, p.pos.z);
     if (c.room !== 'corridor') return;
@@ -5021,7 +5730,7 @@ const Game = {
     Phantom.model.visible = true; Phantom.active = true; Phantom.t = 0;
   },
   ambientEvent() {
-    const p = player, r = Math.random(), far = (min, max) => { const a = rand(0, TAU), d = rand(min, max); return new T.Vector3(clamp(p.pos.x + Math.cos(a) * d, 4, 76), 2, clamp(p.pos.z + Math.sin(a) * d, 4, 54)); };
+    const p = player, r = Math.random(), far = (min, max) => { const a = rand(0, TAU), d = rand(min, max); return new T.Vector3(clamp(p.pos.x + Math.cos(a) * d, 4, W * CELL - 4), 2, clamp(p.pos.z + Math.sin(a) * d, 4, H * CELL - 4)); };
     if (r < 0.22) Sound.metalHit(far(14, 30), rand(0.8, 1.3));
     else if (r < 0.38) Sound.pipeGroan(far(5, 14));
     else if (r < 0.5) { for (let i = 0; i < 3; i++) setTimeout(() => Sound.drip(far(3, 8)), i * rand(400, 900)); }
@@ -5143,6 +5852,7 @@ const Game = {
     if ((s === 'INVESTIGATE' || s === 'SEARCH') && d < 25) { lvl = 2; sub = Monster.charging ? 'IT IS RUNNING' : 'IT HEARD SOMETHING'; k = Math.max(k, (Monster.charging ? 0.6 : 0.45) * clamp(1 - d / 30, 0.3, 1)); }
     if ((s === 'HUNT' || s === 'ATTACK' || s === 'SCRIPT') && mine) { lvl = 3; sub = Monster.seesLocal() ? 'IT SEES YOU' : 'IT IS HUNTING YOU'; k = Math.max(k, 0.8 + (d < 8 ? 0.2 : 0)); }
     else if (s === 'HUNT' || s === 'ATTACK') { lvl = Math.max(lvl, 2); sub = 'HUNTING ' + Net.huntedName().toUpperCase(); k = Math.max(k, d < 15 ? 0.6 : 0.3); }
+    if (s === 'STALK' && (Net.isClient ? Monster.targetId === Net.myId : Monster.target === player)) { lvl = 2; sub = 'SOMETHING IS WATCHING YOU'; k = Math.max(k, 0.55); }
     if (player.hidden && lvl >= 1 && !(s === 'HUNT' && mine)) sub = 'STAY STILL';
     if (Monster.stunLeft() > 0) { lvl = Math.min(lvl, 2); sub = 'STUNNED — RUN'; k = Math.min(k, 0.5); }
     return [lvl, sub, k];
@@ -5190,6 +5900,7 @@ const Game = {
       flashFill.position.set(ex + p.beamDir.x * bd, ey + p.beamDir.y * bd, ez + p.beamDir.z * bd);
       flashFill.distance = 3.2 + aimD * 0.35; flashFill.decay = 2; flashFill.intensity = fi * lerp(0.1, 0.26, near);
     }
+    if (Cine.cur && Cine.cur.def.light) Cine.cur.def.light(Cine.cur, Cine.t);
     renderer.shadowMap.autoUpdate = fi > 0;
     if (fi > 0) renderer.shadowMap.needsUpdate = true;
     updateDust(fi, flash.position, _v3b.copy(flash.target.position).sub(flash.position).normalize());
@@ -5289,6 +6000,8 @@ function bindMenus() {
   on('btn-new', () => { UI.goto('screen-briefing'); syncDiffCards(); });
   on('btn-settings', () => UI.goto('screen-settings'));
   on('btn-howto', () => UI.goto('screen-howto'));
+  on('btn-goals', () => { Goals.buildScreen(); UI.goto('screen-goals'); });
+  on('btn-goals-back', () => UI.back());
   on('btn-mp', () => { UI.goto('screen-mp'); Net.openLobby(); });
   on('btn-brief-back', () => UI.back());
   on('btn-set-back', () => UI.back());
@@ -5361,6 +6074,10 @@ const PREVIEW_SHOTS = [
     power: true, flash: 0, from: [46.8, 1.9, 13.3], to: [56.0, 1.75, 13.1], at: [51.5, 1.1, 8.6], at2: [52.5, 1.2, 8.6] },
   { cam: 'CAM 03 · West Corridor', title: 'The Warden', text: 'It hears every footstep — and it runs. Hide in lockers, crawl through vents, keep your light low.',
     power: false, flash: 1.2, warden: true, from: [19, 1.55, 36.5], to: [19, 1.62, 30.9], at: [19, 1.85, 27], at2: [19, 2.05, 27] },
+  { cam: 'CAM 12 · Morgue', title: 'The East Wing', text: 'A morgue, an archive maze, the staff quarters and Camera Control. Six voice logs tell you who the Warden was.',
+    power: true, flash: 0, from: [87.6, 1.75, 12.6], to: [89.6, 1.7, 11.4], at: [97, 1.0, 5.5], at2: [100, 1.1, 4.5] },
+  { cam: 'CAM 07 · East Corridor', title: 'It watches you', text: 'Sometimes it just stands there in the dark. Hold its gaze and it backs off. Walk toward it — or light it up — and it comes.',
+    power: false, flash: 0.9, warden: [83, 20, 0, 'STALK'], from: [83, 1.6, 34], to: [83, 1.62, 31.5], at: [83, 1.3, 23], at2: [83, 1.6, 21] },
   { cam: 'CAM 01 · Lift Lobby', title: 'The way out', text: 'Three keys, main power and one report open the surface lift. Reach it alive.',
     power: true, flash: 0, from: [70.2, 1.7, 46.2], to: [67.4, 1.6, 50.2], at: [66, 2.1, 54.2], at2: [66, 1.55, 54.6] },
 ];
@@ -5405,7 +6122,7 @@ const Preview = {
     hemi.intensity = s.power ? 0.62 : 0.5; scene.fog.density = s.power ? FOG_BASE * 0.85 : FOG_BASE;
     // the Warden only appears in its own shot
     Monster.reset();
-    if (s.warden) { Monster.pos.set(19, 0, 27); Monster.yaw = 0; Monster.state = 'PATROL'; }
+    if (s.warden) { const w = s.warden === true ? [19, 27, 0, 'PATROL'] : s.warden; Monster.pos.set(w[0], 0, w[1]); Monster.yaw = w[2]; Monster.state = w[3]; }
     $('pv-cam').textContent = s.cam; $('pv-title').textContent = s.title; $('pv-text').textContent = s.text;
     $('pv-count').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(PREVIEW_SHOTS.length).padStart(2, '0');
     $('pv-dots').querySelectorAll('button').forEach((b, k) => b.classList.toggle('on', k === i));
@@ -5432,7 +6149,7 @@ const Preview = {
     world.beacons.forEach(b => { b.rotation.y += step * 5.5; });
     let fi = s.flash ? s.flash * (0.96 + Math.random() * 0.04) : 0;
     if (s.warden) {
-      if (this.t > this.dur * 0.6 && Monster.state !== 'HUNT') { Monster.state = 'HUNT'; Game.dip = 1; } // it notices the camera
+      if (s.warden === true && this.t > this.dur * 0.6 && Monster.state !== 'HUNT') { Monster.state = 'HUNT'; Game.dip = 1; } // it notices the camera
       if (Monster.state === 'HUNT' && Math.random() < 0.3) fi *= rand(0.05, 0.6);
       Monster.animate(step, 0);
     }
@@ -5688,6 +6405,35 @@ function cctvCam(sc, t) {
   Cine.snapFov = true;
   return lerp(sc.fov0, sc.fov1, smooth(0, 1, (t - (sc.t0 || 0)) / (sc.cdur || sc.def.dur)));
 }
+// the face that gets you: a second Warden, posed and placed right in front of the camera when you are caught
+const Scare = {
+  model: null, face: new T.Vector3(), _e: new T.Vector3(),
+  get() {
+    if (!this.model) {
+      this.model = buildWarden(true); this.model.visible = false; this.model.traverse(o => { o.frustumCulled = false; }); scene.add(this.model);
+      this.model.userData.P.eyes.forEach(o => { if (o.isSprite) o.scale.multiplyScalar(0.42); }); // glows sized for a face this close
+    }
+    return this.model;
+  },
+  hide() { if (this.model) this.model.visible = false; },
+  pose(sc, t) {
+    const M = this.get(), P = M.userData.P;
+    // a lunge from arm's length to right in your face, then it shakes there
+    const k = smooth(0, 0.17, t), jit = t > 0.28 ? 0.035 : 0.012;
+    const d = lerp(sc.reach, 0.6, k) + Math.sin(t * 38) * 0.02 * k + (t > 0.28 && Math.random() < 0.18 ? rand(-0.05, 0.05) : 0);
+    this.face.copy(sc.eye).addScaledVector(sc.dir, d); this.face.y += 0.02;
+    P.hips.position.y = 1.2; P.spine.rotation.x = 0.72; P.neck.rotation.x = -0.6;
+    P.head.rotation.set(-0.2 + rand(-jit, jit) * 4, rand(-jit, jit) * 4, 0.28 + Math.sin(t * 23) * 0.08);
+    P.jaw.rotation.x = 0.62 + Math.sin(t * 31) * 0.06;
+    for (const A of P.arms) { A.up.rotation.x = -1.95 + Math.sin(t * 17 + A.s) * 0.08; A.up.rotation.z = A.s * 0.95; A.el.rotation.x = -0.75; for (const f of A.fingers) f.rotation.x = -0.35; }
+    for (const L of P.legs) { L.hp.rotation.x = -0.3; L.kn.rotation.x = 0.6; L.an.rotation.x = 0; }
+    P.eyeMat.color.setHex(0xff2a1a); P.glowMat.color.setHex(0xff2a1a); P.glowMat.opacity = 1; P.led.visible = true;
+    // face the camera, then slide the whole body so its eyes land exactly on that point
+    M.visible = true; M.rotation.set(0, Math.atan2(-sc.dir.x, -sc.dir.z), 0); M.position.set(0, 0, 0); M.updateMatrixWorld(true);
+    P.head.localToWorld(this._e.set(0, 0.15, 0.17));
+    M.position.copy(this.face).sub(this._e); M.updateMatrixWorld(true);
+  },
+};
 const SCENES = {
   // the Warden wakes: the server-room camera catches it getting up
   wake: {
@@ -5766,6 +6512,40 @@ const SCENES = {
     start() { Sound.sting(false); if (!Game.flags.stareTold) { Game.flags.stareTold = true; UI.msg('Don\'t move. Don\'t breathe.', 'story', 3.5); } },
   },
   death: { prio: 9, dur: 2.6, letter: true, start() { Cine.redFlash(1); } },
+  // caught: it is suddenly right in your face
+  jumpscare: {
+    prio: 9, dur: 1.35, lock: true,
+    start(sc) {
+      Scare.get();
+      sc.eye = new T.Vector3(player.pos.x, player.eyeY, player.pos.z);
+      const dx = Monster.pos.x - sc.eye.x, dz = Monster.pos.z - sc.eye.z, dm = Math.hypot(dx, dz);
+      sc.dir = dm > 0.3 && dm < 7 ? new T.Vector3(dx / dm, 0, dz / dm) : player.forward(new T.Vector3()).setY(0).normalize();
+      sc.reach = clamp(dm - 0.3, 0.9, 1.6);
+      Monster.model.visible = false; Arms.hurt = 0; $('hud').classList.add('scare');
+      Sound.jumpscare(); Cine.redFlash(0.7); Game.shake(1.5); $('fx-damage').style.opacity = 1;
+    },
+    tick(sc, t) {
+      if (t > 0.4 && !sc.c1) { sc.c1 = 1; Cine.cut(Cine.el.stat); Sound.staticCut(0.6); }
+      if (t > 0.78 && !sc.c2) { sc.c2 = 1; Cine.cut(Cine.el.stat); Cine.redFlash(0.5); }
+      if (t > 1.05 && !sc.black) { sc.black = 1; const f = $('fx-fade'); f.style.transition = 'none'; f.style.opacity = 1; Scare.hide(); Game.flags.deathFade = true; }
+    },
+    cam(sc, t, fov) {
+      camera.position.copy(sc.eye);
+      if (!sc.black) Scare.pose(sc, t);
+      lookQuat(camera.position, _cv.copy(Scare.face).setY(Scare.face.y - 0.07), camera.quaternion);
+      Cine.snapFov = true;
+      return fov - 6 - 8 * smooth(0, 0.2, t);
+    },
+    light(sc) { flashFill.position.copy(camera.position).addScaledVector(sc.dir, 0.12); flashFill.distance = 4; flashFill.decay = 1; flashFill.intensity = sc.black ? 0 : 1.7 + Math.random() * 0.7; },
+    end() { Scare.hide(); Monster.model.visible = true; $('hud').classList.remove('scare'); },
+  },
+  // it cut you: the view whips to its face for a heartbeat
+  hurt: {
+    prio: 5, dur: 0.6,
+    slow: t => t < 0.22 ? 0.35 : lerp(0.35, 1, Math.min(1, (t - 0.22) / 0.38)),
+    start() { Cine.redFlash(0.55); },
+    cam(sc, t, fov) { const k = smooth(0, 0.06, t) * (1 - smooth(0.3, 0.6, t)); lookAtWarden(k * 0.8); return fov - 14 * k; },
+  },
   // the lift: then one last look at the lobby it is standing in
   ending: {
     prio: 9, dur: 10.4, letter: true,
@@ -5807,6 +6587,7 @@ const Cine = {
     this.cuts.forEach(el => { el.style.opacity = '0'; }); this.cuts.length = 0;
     this.el.flash.style.transition = 'none'; this.el.flash.style.opacity = '0';
     $('hud').classList.remove('cine'); Net.selfAvatar(false);
+    Scare.hide(); if (Monster.model) Monster.model.visible = true; $('hud').classList.remove('scare');
   },
   blocking() { return !!(this.cur && this.cur.def.full); },
   cctvOn() { return !!(this.cur && this.cur.cctv); },
@@ -5972,19 +6753,18 @@ const Cine = {
 
 /* ------------------------------------------------------------------ */
 /* Online co-op (up to 4 guards)                                       */
-/* Peer-to-peer WebRTC data channels. There is no game server: the     */
-/* host and each friend swap a short invite / reply code (any chat     */
-/* works). Public STUN servers help the two browsers find each other.  */
+/* The host gets a 4-letter room code + invite link; friends open the  */
+/* link (or type the code) and press Join. PeerJS's free public server */
+/* introduces the browsers, then the game runs directly between them   */
+/* (PeerJS's relay servers step in on strict networks).                */
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~15 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 1, MAX_GUARDS = 4;
-const ICE_SERVERS = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }, { urls: 'stun:stun.cloudflare.com:3478' }];
+const NET_PROTO = 2, MAX_GUARDS = 4, ROOM_PREFIX = 'last-shift-room-', CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const PEERJS_URLS = ['https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js', 'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js'];
 const GUARD_COLORS = [0xffc65a, 0x5ac8ff, 0xff7aa8, 0x8dff7a];
 const cleanName = s => String(s || '').replace(/[^\w .'-]/g, '').trim().slice(0, 16);
-const b64u = bytes => { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
-const unb64u = str => { const s = atob(str.replace(/-/g, '+').replace(/_/g, '/')); const b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; };
-const streamBytes = (bytes, ts) => new Response(new Blob([bytes]).stream().pipeThrough(ts)).arrayBuffer().then(b => new Uint8Array(b));
+const cleanCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
 
 /* ---- the guard model used for other players (and for you, on CCTV) ---- */
 function colorBox(w, h, d, x, y, z, hex) {
@@ -6124,7 +6904,7 @@ const Net = {
   role: 'solo', myId: 0, myName: 'Guard', sessionDiff: null, inGame: false,
   remotes: new Map(),   // everyone else on the shift: id -> RemotePlayer
   peers: new Map(),     // host: id -> connection; client: 0 -> the host
-  pending: null,        // host: the connection waiting for a reply code
+  peer: null, code: '', lib: null, // PeerJS: our registration with the matchmaking server, the room code
   nextId: 1, sendT: 0, kaT: 0, snapSeq: 0, lastSeq: 0, lastPing: 0, pings: [], lights: [], self: null, teamT: 0, busy: false,
   get active() { return this.role !== 'solo'; },
   get isHost() { return this.role === 'host'; },
@@ -6145,88 +6925,93 @@ const Net = {
     if (this.isClient) return this.nameOf(Monster.targetId);
     const t = Monster.target; return !t || t === player ? this.myName : t.name;
   },
-  /* ---- connections ---- */
-  createPeer(id) {
-    const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-    const rel = pc.createDataChannel('rel', { negotiated: true, id: 0, ordered: true });
-    const unrel = pc.createDataChannel('unrel', { negotiated: true, id: 1, ordered: false, maxRetransmits: 0 });
-    const peer = { id, pc, rel, unrel, name: '', open: false, lastHeard: performance.now(), connecting: 0, remote: null, dropped: false };
-    rel.onopen = () => this.onOpen(peer);
-    rel.onclose = () => { if (peer.open) this.dropPeer(peer, 'closed'); };
-    rel.onmessage = e => this.onRaw(peer, e.data);
-    unrel.onmessage = e => this.onRaw(peer, e.data);
-    pc.onconnectionstatechange = () => { const s = pc.connectionState; if (s === 'failed') this.dropPeer(peer, 'failed'); };
-    return peer;
+  /* ---- connections (PeerJS) ---- */
+  loadLib() { // fetched only when someone opens Multiplayer
+    if (window.Peer) return Promise.resolve();
+    if (!this.lib) this.lib = new Promise((res, rej) => {
+      let i = 0;
+      const next = () => {
+        if (i >= PEERJS_URLS.length) { this.lib = null; rej(new Error('Could not load the online library. Check your internet connection (or an ad blocker) and try again.')); return; }
+        const sc = document.createElement('script'); sc.src = PEERJS_URLS[i++]; sc.async = true;
+        sc.onload = () => (window.Peer ? res() : next()); sc.onerror = () => { sc.remove(); next(); };
+        document.head.appendChild(sc);
+      };
+      next();
+    });
+    return this.lib;
   },
-  waitIce(pc) { // gather candidates (with a time limit) so the code contains everything needed
-    return new Promise(res => {
-      let done = false, n = 0; const fin = () => { if (!done) { done = true; res(); } };
-      if (pc.iceGatheringState === 'complete') return fin();
-      pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') fin(); });
-      pc.addEventListener('icecandidate', e => { if (!e.candidate) fin(); else if (++n === 1) setTimeout(fin, 2500); });
-      setTimeout(fin, 6000);
+  server() { // PeerJS's free cloud server by default; ?peer=host:port uses your own PeerServer instead
+    const m = /[?&]peer=([\w.-]+):(\d+)/.exec(location.search);
+    return m ? { host: m[1], port: +m[2], path: '/', secure: false, key: 'peerjs' } : {};
+  },
+  register(id) { // a fixed id is a room; none gets a random guest id
+    return new Promise((res, rej) => {
+      const p = id ? new window.Peer(id, this.server()) : new window.Peer(this.server());
+      let done = false;
+      const end = (ok, e) => { if (done) return; done = true; clearTimeout(t); if (ok) res(p); else { try { p.destroy(); } catch (x) { } rej(e); } };
+      const t = setTimeout(() => end(false, { type: 'timeout' }), 15000);
+      p.on('open', () => end(true));
+      p.on('error', e => end(false, e));
     });
   },
-  async pack(desc) {
-    const bytes = new TextEncoder().encode(JSON.stringify({ v: NET_PROTO, t: desc.type, s: desc.sdp }));
-    if (window.CompressionStream) { try { return 'LS1Z' + b64u(await streamBytes(bytes, new CompressionStream('deflate'))); } catch (e) { } }
-    return 'LS1P' + b64u(bytes);
-  },
-  async unpack(code) {
-    code = String(code || '').replace(/\s+/g, '');
-    const kind = code.slice(0, 4);
-    if (kind !== 'LS1Z' && kind !== 'LS1P') throw new Error('That doesn\'t look like a Last Shift code. Copy the whole code and try again.');
-    let bytes;
-    try { bytes = unb64u(code.slice(4)); } catch (e) { throw new Error('The code is damaged — copy the whole code and try again.'); }
-    if (kind === 'LS1Z') {
-      if (!window.DecompressionStream) throw new Error('This browser can\'t read compressed codes. Please update it.');
-      try { bytes = await streamBytes(bytes, new DecompressionStream('deflate')); } catch (e) { throw new Error('The code is incomplete — copy the whole code and try again.'); }
+  why(e) {
+    switch (e && e.type) {
+      case 'peer-unavailable': return 'No game with that code is open. Check the code — and the host has to keep the Multiplayer screen open.';
+      case 'browser-incompatible': return 'This browser can\'t play online (no WebRTC). Try Chrome, Edge, Firefox or Safari.';
+      case 'webrtc': return 'The connection failed. Very strict networks (some school or office Wi-Fi) block games like this — try another network or a phone hotspot.';
+      case 'network': case 'server-error': case 'socket-error': case 'socket-closed': case 'timeout': return 'Can\'t reach the matchmaking server. Check your internet connection and try again.';
     }
-    let o; try { o = JSON.parse(new TextDecoder().decode(bytes)); } catch (e) { throw new Error('The code is damaged — copy the whole code and try again.'); }
-    if (!o || o.v !== NET_PROTO || typeof o.s !== 'string' || (o.t !== 'offer' && o.t !== 'answer')) throw new Error('This code is from a different version of the game.');
-    return { type: o.t, sdp: o.s };
+    return 'Connection problem' + (e && e.message ? ' (' + e.message + ')' : '') + '. Please try again.';
   },
   async host() {
-    if (!window.RTCPeerConnection) throw new Error('This browser does not support peer-to-peer connections (WebRTC).');
+    await this.loadLib();
     this.leave();
     this.role = 'host'; this.myId = 0; this.nextId = 1; this.myName = cleanName(settings.playerName) || 'Guard 1';
-    this.lobbyUpdate();
-    return this.newInvite();
+    let peer = null, code = '';
+    for (let i = 0; i < 6 && !peer && this.isHost; i++) {
+      code = Array.from({ length: 4 }, () => CODE_ABC[(Math.random() * CODE_ABC.length) | 0]).join('');
+      try { peer = await this.register(ROOM_PREFIX + code); } catch (e) { if (e.type !== 'unavailable-id') { if (this.isHost) this.role = 'solo'; throw new Error(this.why(e)); } }
+    }
+    if (!this.isHost) { if (peer) peer.destroy(); return ''; } // left while the room was being made
+    if (!peer) { this.role = 'solo'; throw new Error('Could not create a room. Please try again.'); }
+    this.peer = peer; this.code = code;
+    peer.on('connection', c => this.incoming(c));
+    peer.on('disconnected', () => setTimeout(() => { if (this.peer === peer && !peer.destroyed) try { peer.reconnect(); } catch (e) { } }, 2000)); // stay findable
+    return code;
   },
-  async newInvite() {
-    if (!this.isHost) return '';
-    if (this.peers.size + 1 >= MAX_GUARDS) throw new Error('The shift is full (' + MAX_GUARDS + ' guards).');
-    if (this.pending) this.closePeer(this.pending);
-    const peer = this.createPeer(this.nextId++); this.pending = peer;
-    await peer.pc.setLocalDescription(await peer.pc.createOffer());
-    await this.waitIce(peer.pc);
-    if (this.pending !== peer) return '';
-    return this.pack(peer.pc.localDescription);
+  incoming(conn) { // host: a friend is knocking
+    if (!this.isHost) { try { conn.close(); } catch (e) { } return; }
+    if (this.inGame || this.peers.size + 1 >= MAX_GUARDS) {
+      const why = this.inGame ? 'started' : 'full';
+      conn.on('open', () => { try { conn.send(JSON.stringify({ k: 'bye', why })); } catch (e) { } setTimeout(() => { try { conn.close(); } catch (e) { } }, 800); });
+      return;
+    }
+    const p = this.wrap(conn, this.nextId++); this.peers.set(p.id, p); this.lobbyUpdate();
   },
-  async acceptReply(code) {
-    const peer = this.pending;
-    if (!this.isHost || !peer) throw new Error('Create an invite first.');
-    const desc = await this.unpack(code);
-    if (desc.type !== 'answer') throw new Error('That is an invite code. Paste the REPLY code your friend sent back.');
-    await peer.pc.setRemoteDescription(desc);
-    this.pending = null; this.peers.set(peer.id, peer); peer.connecting = performance.now();
-    this.lobbyUpdate();
-  },
-  async join(code) {
-    if (!window.RTCPeerConnection) throw new Error('This browser does not support peer-to-peer connections (WebRTC).');
-    const desc = await this.unpack(code);
-    if (desc.type !== 'offer') throw new Error('That is a reply code. Paste the INVITE code from the host.');
+  async join(raw) {
+    const code = cleanCode(raw);
+    if (code.length !== 4) throw new Error('Type the 4-letter room code from the host — or just open their invite link.');
+    await this.loadLib();
     this.leave();
-    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard';
-    const peer = this.createPeer(0); this.peers.set(0, peer); peer.connecting = performance.now();
-    await peer.pc.setRemoteDescription(desc);
-    await peer.pc.setLocalDescription(await peer.pc.createAnswer());
-    await this.waitIce(peer.pc);
-    this.lobbyUpdate();
-    return this.pack(peer.pc.localDescription);
+    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code;
+    let peer;
+    try { peer = await this.register(); } catch (e) { if (this.isClient) this.role = 'solo'; throw new Error(this.why(e)); }
+    if (!this.isClient) { peer.destroy(); return; }
+    this.peer = peer;
+    peer.on('error', e => { const h = this.host0(); if (this.peer === peer && this.isClient && !(h && h.open)) this.lost(this.why(e)); });
+    this.peers.set(0, this.wrap(peer.connect(ROOM_PREFIX + code, { reliable: true, serialization: 'raw' }), 0));
   },
-  closePeer(peer) { try { peer.rel.close(); } catch (e) { } try { peer.unrel.close(); } catch (e) { } try { peer.pc.close(); } catch (e) { } },
+  wrap(conn, id) {
+    const p = { id, conn, name: '', open: false, lastHeard: performance.now(), connecting: performance.now(), remote: null, dropped: false };
+    conn.on('open', () => this.onOpen(p));
+    conn.on('data', d => this.onRaw(p, d));
+    conn.on('close', () => this.dropPeer(p, 'closed'));
+    conn.on('error', e => { if (!p.open && this.isClient && !p.dropped) this.lost(this.why(e)); else this.dropPeer(p, 'failed'); });
+    return p;
+  },
+  closePeer(p) { try { p.conn.close(); } catch (e) { } },
   onOpen(peer) {
+    if (peer.dropped) return;
     peer.open = true; peer.lastHeard = performance.now();
     if (this.isClient) this.sendRel(peer, { k: 'hello', v: NET_PROTO, name: this.myName });
     this.lobbyUpdate();
@@ -6235,7 +7020,6 @@ const Net = {
     if (peer.dropped) return; peer.dropped = true;
     this.closePeer(peer);
     if (this.isClient) { this.lost(why === 'timeout' ? 'Lost connection to the host.' : 'The connection to the host was closed.'); return; }
-    if (this.pending === peer) this.pending = null;
     this.peers.delete(peer.id);
     const r = peer.remote;
     if (r) {
@@ -6250,27 +7034,27 @@ const Net = {
     const wasInGame = this.inGame;
     this.leave();
     if (wasInGame || Game.inWorld()) Game.quitToTitle();
-    UI.prev = ['screen-title']; UI.show('screen-mp'); this.lobbyReset(); this.lobbyStatus(text, 'err');
+    UI.prev = ['screen-title']; UI.show('screen-mp'); this.openLobby(); this.lobbyStatus(text, 'err');
   },
   leave() {
-    if (!this.active && !this.peers.size && !this.pending) return;
-    for (const peer of this.peers.values()) { peer.dropped = true; try { if (peer.open) this.sendRel(peer, { k: 'bye' }); } catch (e) { } this.closePeer(peer); }
-    if (this.pending) { this.pending.dropped = true; this.closePeer(this.pending); }
-    this.peers.clear(); this.pending = null;
+    if (!this.active && !this.peers.size && !this.peer) return;
+    for (const p of this.peers.values()) { p.dropped = true; if (p.open) this.sendRel(p, { k: 'bye' }); setTimeout(() => this.closePeer(p), 250); } // let the goodbye go out first
+    this.peers.clear();
+    if (this.peer) { const pr = this.peer; this.peer = null; setTimeout(() => { try { pr.destroy(); } catch (e) { } }, 300); }
     for (const r of this.remotes.values()) r.dispose();
     this.remotes.clear();
-    this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.myId = 0;
+    this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.myId = 0; this.code = '';
     this.lights.forEach(l => { l.visible = false; l.intensity = 0; });
     this.pings.forEach(p => { scene.remove(p.spr); p.spr.material.map.dispose(); p.spr.material.dispose(); }); this.pings.length = 0;
     const team = $('team'); if (team) team.innerHTML = '';
   },
   /* ---- messages ---- */
-  sendRel(peer, m) { if (peer && peer.open && peer.rel.readyState === 'open') try { peer.rel.send(JSON.stringify(m)); } catch (e) { } },
-  sendUnrel(peer, m) { if (peer && peer.open && peer.unrel.readyState === 'open') try { peer.unrel.send(JSON.stringify(m)); } catch (e) { } },
+  sendRel(peer, m) { if (peer && peer.open) try { peer.conn.send(JSON.stringify(m)); } catch (e) { } },
+  sendUnrel(peer, m) { this.sendRel(peer, m); },
   host0() { return this.peers.get(0); },
   sendTo(id, m) { if (this.isHost) this.sendRel(this.peers.get(id), m); },
-  broadcast(m, exceptId) { if (!this.isHost) return; const s = JSON.stringify(m); for (const p of this.peers.values()) if (p.id !== exceptId && p.open && p.remote && p.rel.readyState === 'open') try { p.rel.send(s); } catch (e) { } },
-  broadcastUnrel(m) { const s = JSON.stringify(m); for (const p of this.peers.values()) if (p.open && p.remote && p.unrel.readyState === 'open') try { p.unrel.send(s); } catch (e) { } },
+  broadcast(m, exceptId) { if (!this.isHost) return; const s = JSON.stringify(m); for (const p of this.peers.values()) if (p.id !== exceptId && p.open && p.remote) try { p.conn.send(s); } catch (e) { } },
+  broadcastUnrel(m) { this.broadcast(m); },
   request(a, i) { this.sendRel(this.host0(), { k: 'req', a, i }); },
   sendNoise(pos, r) { if (this.inGame) this.sendRel(this.host0(), { k: 'n', x: +pos.x.toFixed(2), z: +pos.z.toFixed(2), r: +r.toFixed(1) }); },
   announce(text, type, exceptId) { if (Game.inWorld()) UI.msg(text, type, 4); this.broadcast({ k: 'msg', t: text, y: type, d: 4 }, exceptId); },
@@ -6320,7 +7104,7 @@ const Net = {
       case 'ev': if (this.inGame && Game.inWorld()) Game.applyEvent(m.e); break;
       case 'msg': if (Game.inWorld()) { if (m.t) UI.msg(String(m.t).slice(0, 200), MSG_TYPES.has(m.y) ? m.y : '', clamp(+m.d || 3.6, 1, 8)); Game.sfx(m.s); } break;
       case 'hit': if (this.inGame && Game.state !== 'dead' && Game.state !== 'won') { if (m.fo) player.forceOut(); Game.playerHit(+m.dmg || 0); } break;
-      case 'charge': if (this.inGame) Cine.trigger('charge', { d: +m.d || 20, kind: m.r ? 'radio' : 'player' }); break;
+      case 'charge': if (this.inGame) { if (m.r) Goals.unlock('lure'); Cine.trigger('charge', { d: +m.d || 20, kind: m.r ? 'radio' : 'player' }); } break;
       case 'ping': if (this.inGame) this.showPing(+m.x || 0, +m.y || 1, +m.z || 0, m.by | 0); break;
       case 'bye': this.lost(m.why === 'started' ? 'That game has already started — ask the host to invite you to the next one.' : m.why === 'version' ? 'The host is running a different version of the game.' : 'The host ended the session.'); break;
     }
@@ -6340,7 +7124,6 @@ const Net = {
   /* ---- the running game ---- */
   startGame() { // host
     if (!this.isHost) return;
-    if (this.pending) { this.pending.dropped = true; this.closePeer(this.pending); this.pending = null; }
     for (const peer of [...this.peers.values()]) if (!peer.open || !peer.remote) this.dropPeer(peer, 'left', true);
     this.sessionDiff = settings.difficulty;
     this.broadcast({ k: 'start', diff: this.sessionDiff, l: this.roster() });
@@ -6389,10 +7172,14 @@ const Net = {
     });
   },
   update(dt) { // every frame while a session exists (lobby or game)
-    const now = performance.now();
+    const now = performance.now(), frozen = now - (this.tickAt || now) > 2500; this.tickAt = now;
     for (const peer of [...this.peers.values()]) {
-      if (peer.open && now - peer.lastHeard > 15000) this.dropPeer(peer, 'timeout');
-      else if (!peer.open && peer.connecting && now - peer.connecting > (this.isClient ? 600000 : 45000)) { if (this.isClient) this.lost('Could not connect to the host. Both of you need to be online; some strict networks (corporate, school, some mobile hotspots) block direct connections.'); else this.dropPeer(peer, 'failed', true), this.lobbyStatus('A friend could not connect. Some strict networks block direct connections — try again, or from another network.', 'err'); }
+      if (frozen) { peer.lastHeard = Math.max(peer.lastHeard, now - 4000); peer.connecting = Math.max(peer.connecting, now - 4000); continue; } // WE were frozen (loading shaders, a hidden tab): don't blame them
+      if (peer.open && now - peer.lastHeard > 20000) this.dropPeer(peer, 'timeout');
+      else if (!peer.open && now - peer.connecting > 30000) {
+        if (this.isClient) this.lost('Could not connect to the host. One of your networks may block online games (some school, office or hotel Wi-Fi) — try another network or a phone hotspot.');
+        else { this.dropPeer(peer, 'failed', true); this.lobbyStatus('A friend could not connect — one of your networks may block online games. They can try again, or from another network.', 'err'); }
+      }
     }
     if (!this.active) return;
     this.kaT -= dt;
@@ -6482,100 +7269,68 @@ const Net = {
       let k = 0; for (const r of this.remotes.values()) { if (!r.inGame) continue; el.children[k++].querySelector('b').textContent = r.name; }
     }
   },
-  // a friend opened an invite link: jump to the join screen with the code filled in
+  // a friend opened an invite link (…#room=CODE): straight to Join
   checkInviteLink() {
-    const m = /[#&]join=([A-Za-z0-9_-]+)/.exec(location.hash || '');
+    const m = /[#&]room=([A-Za-z0-9]{4})/.exec(location.hash || '');
     if (!m) return false;
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
     UI.prev = ['screen-title']; UI.show('screen-mp'); this.openLobby();
-    $('mp-choose').hidden = true; $('mp-joinbox').hidden = false; $('mp-invite-in').value = m[1];
-    this.lobbyStatus('Invite loaded! Type your name, press Create reply, and send the reply code back to the host.', 'ok');
+    $('mp-code').value = cleanCode(m[1]);
+    this.lobbyStatus('You were invited to room ' + cleanCode(m[1]) + '. Type your name and press Join.', 'ok');
+    setTimeout(() => { try { $('btn-mp-join').focus(); } catch (e) { } }, 60);
     return true;
   },
   /* ---- lobby screen ---- */
-  openLobby() {
-    $('mp-name').value = settings.playerName || '';
-    if (!this.active) this.lobbyReset();
-    this.lobbyUpdate();
-  },
-  lobbyReset() {
-    $('mp-choose').hidden = false; $('mp-hostbox').hidden = true; $('mp-joinbox').hidden = true; $('mp-lobby').hidden = true;
-    $('mp-invite').value = ''; $('mp-reply-in').value = ''; $('mp-invite-in').value = ''; $('mp-reply').value = '';
-    this.lobbyStatus('');
-  },
+  inviteLink() { return /^https?:$/.test(location.protocol) && this.code ? location.origin + location.pathname + '#room=' + this.code : ''; },
+  openLobby() { $('mp-name').value = settings.playerName || ''; if (!this.active) this.lobbyStatus(''); this.lobbyUpdate(); },
   lobbyStatus(text, kind) { const e = $('mp-status'); e.textContent = text || ''; e.className = 'mp-status' + (kind ? ' ' + kind : ''); },
   lobbyUpdate() {
     const list = $('mp-players'); if (!list) return;
-    const rows = [];
+    const rows = [], ready = [...this.peers.values()].filter(p => p.remote).length;
     if (this.isHost) {
       rows.push([this.myName + ' (you, host)', 'ready']);
-      for (const p of this.peers.values()) rows.push([p.remote ? p.remote.name : 'Connecting…', p.remote ? 'connected' : 'waiting']);
+      for (const p of this.peers.values()) rows.push([p.remote ? p.remote.name : 'Joining…', p.remote ? 'connected' : 'waiting']);
     } else if (this.isClient) {
-      const h = this.host0(), ok = h && h.open;
-      rows.push([this.myName + ' (you)', ok && this.myId >= 0 ? 'connected' : 'waiting']);
+      const h = this.host0();
+      rows.push([this.myName + ' (you)', h && h.open && this.myId >= 0 ? 'connected' : 'waiting']);
       for (const r of this.remotes.values()) rows.push([r.name + (r.id === 0 ? ' (host)' : ''), 'connected']);
     }
     list.innerHTML = '';
-    rows.forEach(([n, s]) => { const li = document.createElement('li'); li.textContent = n; const sp = document.createElement('span'); sp.textContent = s; sp.className = s; li.appendChild(sp); list.appendChild(li); });
-    $('mp-lobby').hidden = !this.active;
-    const ready = [...this.peers.values()].filter(p => p.remote).length;
-    $('btn-mp-start').hidden = !this.isHost;
-    $('btn-mp-start').disabled = ready === 0;
+    rows.forEach(([n, st]) => { const li = document.createElement('li'); li.textContent = n; const sp = document.createElement('span'); sp.textContent = st; sp.className = st; li.appendChild(sp); list.appendChild(li); });
+    $('mp-choose').hidden = this.active; $('mp-lobby').hidden = !this.active; $('mp-hostbox').hidden = !(this.isHost && this.code);
+    if (this.isHost) { const link = this.inviteLink(); $('mp-room').textContent = this.code || '····'; $('mp-link').value = link; $('mp-link').hidden = !link; $('btn-mp-copylink').hidden = !link; }
+    $('btn-mp-start').hidden = !this.isHost; $('btn-mp-start').disabled = ready === 0;
     $('mp-diff-note').textContent = 'Difficulty: ' + (this.isClient ? (this.sessionDiff || '…') : settings.difficulty).toUpperCase() + (this.isHost ? ' (change it in Settings)' : ' (set by the host)');
     if (this.isClient) {
       const h = this.host0();
-      if (h && h.open && this.myId >= 0) this.lobbyStatus('Connected! Waiting for the host to start the game…', 'ok');
-    } else if (this.isHost && ready > 0 && !this.pending) this.lobbyStatus(ready + ' guard' + (ready > 1 ? 's' : '') + ' connected. Start when everyone is in — or invite another.', 'ok');
+      this.lobbyStatus(h && h.open && this.myId >= 0 ? 'Connected! Waiting for the host to start the game…' : 'Joining room ' + this.code + '…', h && h.open && this.myId >= 0 ? 'ok' : '');
+    } else if (this.isHost && this.code) {
+      this.lobbyStatus(ready ? ready + ' guard' + (ready > 1 ? 's' : '') + ' joined. Press Start when everyone is in.' : 'Room ready! Send the invite link (or the code) to up to 3 friends. Keep this screen open.', 'ok');
+    }
   },
   bindLobby() {
     const busy = async (btn, fn) => {
       if (this.busy) return; this.busy = true; btn.disabled = true;
-      try { await fn(); } catch (e) { this.lobbyStatus(e && e.message ? e.message : String(e), 'err'); } finally { this.busy = false; btn.disabled = false; this.lobbyUpdate(); }
+      try { await fn(); } catch (e) { this.lobbyStatus(e && e.message ? e.message : String(e), 'err'); } finally { this.busy = false; btn.disabled = false; if (this.active) this.lobbyUpdate(); }
     };
-    const nameIn = $('mp-name');
-    nameIn.addEventListener('input', () => { settings.playerName = cleanName(nameIn.value); saveSettings(); });
-    nameIn.addEventListener('keydown', e => e.stopPropagation());
-    ['mp-reply-in', 'mp-invite-in', 'mp-invite', 'mp-reply'].forEach(id => $(id).addEventListener('keydown', e => e.stopPropagation()));
-    const copy = async (id, text) => {
-      const t = $(id); if (!t.value) return;
+    const nameIn = $('mp-name'), codeIn = $('mp-code'), saveName = () => { settings.playerName = cleanName(nameIn.value); saveSettings(); };
+    nameIn.addEventListener('input', saveName);
+    [nameIn, codeIn, $('mp-link')].forEach(el => el.addEventListener('keydown', e => e.stopPropagation()));
+    codeIn.addEventListener('input', () => { const v = cleanCode(codeIn.value); if (codeIn.value !== v) codeIn.value = v; });
+    codeIn.addEventListener('keyup', e => { if (e.key === 'Enter') $('btn-mp-join').click(); });
+    const copy = async (text, what) => {
       let ok = false;
-      try { await navigator.clipboard.writeText(text || t.value); ok = true; } catch (e) { }
-      if (!ok && !text) { try { t.focus(); t.select(); ok = document.execCommand('copy'); } catch (e) { } }
-      this.lobbyStatus(ok ? 'Copied! Paste it into a chat with your friend.' : 'Select the code and copy it (Ctrl/Cmd + C).', ok ? 'ok' : '');
+      try { await navigator.clipboard.writeText(text); ok = true; } catch (e) { }
+      if (!ok) { const t = $('mp-link'), v = t.value; t.value = text; try { t.focus(); t.select(); ok = document.execCommand('copy'); } catch (e) { } t.value = v; }
+      this.lobbyStatus(ok ? what + ' copied — paste it to your friends (Discord, iMessage…).' : 'Copy this and send it: ' + text, ok ? 'ok' : '');
     };
-    $('btn-mp-host').addEventListener('click', e => busy(e.currentTarget, async () => {
-      Sound.ui(); settings.playerName = cleanName(nameIn.value); saveSettings();
-      $('mp-choose').hidden = true; $('mp-hostbox').hidden = false;
-      this.lobbyStatus('Creating an invite code… (a few seconds)');
-      $('mp-invite').value = await this.host();
-      $('btn-mp-copylink').hidden = !/^https?:$/.test(location.protocol); // links only make sense on a website
-      this.lobbyStatus('Send the invite code (or link) to a friend, then paste their reply code below.');
-    }));
-    $('btn-mp-join').addEventListener('click', () => { Sound.ui(); this.leave(); $('mp-choose').hidden = true; $('mp-joinbox').hidden = false; this.lobbyStatus('Paste the invite code from the host.'); });
+    $('btn-mp-host').addEventListener('click', e => busy(e.currentTarget, async () => { Sound.ui(); saveName(); this.lobbyStatus('Creating a room…'); await this.host(); }));
+    $('btn-mp-join').addEventListener('click', e => busy(e.currentTarget, async () => { Sound.ui(); saveName(); this.lobbyStatus('Joining room ' + cleanCode(codeIn.value) + '…'); await this.join(codeIn.value); }));
     $('btn-mp-back').addEventListener('click', () => { Sound.ui(); this.leave(); UI.back(); });
-    $('btn-mp-copyinv').addEventListener('click', () => copy('mp-invite'));
-    $('btn-mp-copylink').addEventListener('click', () => copy('mp-invite', location.origin + location.pathname + '#join=' + $('mp-invite').value));
-    $('btn-mp-copyrep').addEventListener('click', () => copy('mp-reply'));
-    $('btn-mp-accept').addEventListener('click', e => busy(e.currentTarget, async () => {
-      Sound.ui();
-      await this.acceptReply($('mp-reply-in').value);
-      $('mp-reply-in').value = '';
-      this.lobbyStatus('Connecting… (this can take up to half a minute)');
-    }));
-    $('btn-mp-another').addEventListener('click', e => busy(e.currentTarget, async () => {
-      Sound.ui(); this.lobbyStatus('Creating a new invite code…');
-      $('mp-invite').value = await this.newInvite();
-      $('mp-reply-in').value = '';
-      this.lobbyStatus('New invite ready: send it to the next friend and paste their reply below.');
-    }));
-    $('btn-mp-mkreply').addEventListener('click', e => busy(e.currentTarget, async () => {
-      Sound.ui(); settings.playerName = cleanName(nameIn.value); saveSettings();
-      this.lobbyStatus('Creating your reply code… (a few seconds)');
-      $('mp-reply').value = await this.join($('mp-invite-in').value);
-      this.lobbyStatus('Send this reply code back to the host. You will connect automatically.');
-    }));
+    $('btn-mp-copylink').addEventListener('click', () => copy(this.inviteLink(), 'Invite link'));
+    $('btn-mp-copycode').addEventListener('click', () => copy(this.code, 'Room code'));
     $('btn-mp-start').addEventListener('click', () => { if (this.isHost) { Sound.ui(); this.startGame(); } });
-    $('btn-mp-leave').addEventListener('click', () => { Sound.ui(); this.leave(); this.lobbyReset(); this.lobbyUpdate(); });
+    $('btn-mp-leave').addEventListener('click', () => { Sound.ui(); this.leave(); this.lobbyStatus(''); this.lobbyUpdate(); });
   },
 };
 
@@ -6680,7 +7435,7 @@ const Arms = {
       p.pos.z - sy * _av.x + cy * sp * _av.y - cy * cp * -_av.z);
   },
   render() {
-    if (!this.visible || !this.R) return;
+    if (!this.visible || !this.R || (Cine.cur && Cine.cur.id === 'jumpscare')) return;
     if (vmCam.fov !== camera.fov || vmCam.aspect !== camera.aspect) { vmCam.fov = camera.fov; vmCam.aspect = camera.aspect; vmCam.updateProjectionMatrix(); }
     // light the hands like the room around you, plus the glow bouncing back from the beam
     vmHemi.intensity = 0.14 + player.lit * 0.55 + (Game.power ? 0.05 : 0);
@@ -6752,6 +7507,222 @@ const Combat = {
 };
 
 /* ------------------------------------------------------------------ */
+/* Goals: bonus objectives, voice logs, the camera system,             */
+/* achievements (saved in this browser) and the end-of-shift rank      */
+/* ------------------------------------------------------------------ */
+const ACH = [
+  { id: 'escape', name: 'Clocked Out', desc: 'Escape Site Kestrel.' },
+  { id: 'hard', name: 'Graveyard Shift', desc: 'Escape on Hard.' },
+  { id: 'ghost', name: 'Ghost', desc: 'Escape without the Warden ever hunting you.' },
+  { id: 'untouched', name: 'Not a Scratch', desc: 'Escape without taking any damage.' },
+  { id: 'speed', name: 'Overtime? No Thanks', desc: 'Escape in under 12 minutes.' },
+  { id: 'brawler', name: 'Brawler', desc: 'Stun the Warden 3 times in one shift.' },
+  { id: 'counter', name: 'Counterpunch', desc: 'Stun it with a punch as it lunges at you.' },
+  { id: 'tapes', name: 'Archivist', desc: 'Find all 6 voice logs.' },
+  { id: 'cams', name: 'Eyes Everywhere', desc: 'Reboot the camera system in Camera Control.' },
+  { id: 'notes', name: 'Paper Trail', desc: 'Read every document in a single shift.' },
+  { id: 'lure', name: 'Bait and Switch', desc: 'Lure the Warden away with a radio.' },
+  { id: 'stare', name: 'Staring Contest', desc: 'Hold its gaze while it stalks you until it backs off.' },
+  { id: 'coop', name: 'Buddy System', desc: 'Escape together in online co-op.' },
+  { id: 'name', name: 'Who Was He?', desc: 'Learn the Warden\'s real name.' },
+];
+const RANKS = [['S', 3300], ['A', 2600], ['B', 1900], ['C', 1200], ['D', -1e9]];
+const CAM_POS = new T.Vector3(102.2, 1.1, 52);
+const NAME_NOTES = ['medical', 'memo', 'badge'];
+const Goals = {
+  KEY: 'lastshift.goals.v1', data: { got: {}, best: {} }, toastQ: [], toastT: null,
+  load() {
+    try { const d = JSON.parse(localStorage.getItem(this.KEY) || 'null'); if (d && typeof d === 'object') this.data = { got: d.got && typeof d.got === 'object' ? d.got : {}, best: d.best && typeof d.best === 'object' ? d.best : {} }; } catch (e) { }
+  },
+  save() { try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch (e) { } },
+  has(id) { return !!this.data.got[id]; },
+  count() { return ACH.filter(a => this.has(a.id)).length; },
+  unlock(id) {
+    const a = ACH.find(x => x.id === id);
+    if (!a || this.has(id)) return false;
+    this.data.got[id] = Date.now(); this.save();
+    (this.runGot || (this.runGot = [])).push(a);
+    this.toastQ.push(a); if (!this.toastT) this.nextToast();
+    return true;
+  },
+  nextToast() {
+    const a = this.toastQ.shift(), el = $('ach-toast');
+    if (!a) { this.toastT = null; el.classList.remove('show'); return; }
+    $('ach-name').textContent = a.name; $('ach-desc').textContent = a.desc;
+    el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+    Sound.achievement();
+    this.toastT = setTimeout(() => { el.classList.remove('show'); this.toastT = setTimeout(() => this.nextToast(), 450); }, 3600);
+  },
+  // the bonus list under the objectives (per shift)
+  bonus() {
+    const G = Game, nT = G.tapes.size, st = G.stats.myStuns || 0;
+    return [
+      { id: 'b-tapes', text: 'Voice logs (' + nT + '/' + TAPE_ORDER.length + ')', done: nT >= TAPE_ORDER.length },
+      { id: 'b-cams', text: G.cams ? 'Cameras online: it shows on your map' : G.camBooting ? 'Cameras rebooting… ' + Math.floor(G.camBoot * 100) + '%' : 'Reboot the cameras (Camera Control)', done: G.cams },
+      { id: 'b-stun', text: 'Stun the Warden (' + Math.min(3, st) + '/3)', done: st >= 3 },
+      { id: 'b-name', text: G.flags.knowName ? 'Its name was Elias Crane' : 'Learn the Warden\'s real name', done: !!G.flags.knowName },
+    ];
+  },
+  // end of shift: a score and a rank (best per difficulty is kept)
+  score() {
+    const G = Game, s = G.stats, diffKey = Net.sessionDiff || settings.difficulty;
+    const rows = [
+      ['Escaped', 1000],
+      ['Time bonus', Math.max(0, Math.round(1200 - G.time))],
+      ['Voice logs ×' + G.tapes.size, G.tapes.size * 150],
+      ['Cameras rebooted', G.cams ? 300 : 0],
+      ['Documents ×' + G.notesRead.size, G.notesRead.size * 40],
+      ['Stuns ×' + (s.myStuns || 0), (s.myStuns || 0) * 120],
+      ['Stared it down ×' + (s.stares || 0), (s.stares || 0) * 150],
+      ['Times hunted ×' + (s.spotted || 0), -(s.spotted || 0) * 60],
+      ['Damage taken', -Math.round((s.damage || 0) * 4)],
+    ].filter(r => r[1] !== 0 || r[0] === 'Escaped');
+    const mult = { easy: 0.8, normal: 1, hard: 1.5 }[diffKey] || 1;
+    const raw = rows.reduce((a, r) => a + r[1], 0), total = Math.max(0, Math.round(raw * mult));
+    const rank = RANKS.find(r => total >= r[1])[0];
+    const prev = this.data.best[diffKey], isBest = !prev || total > prev.score;
+    if (isBest) { this.data.best[diffKey] = { score: total, rank, time: Math.round(G.time) }; this.save(); }
+    return { rows, mult, total, rank, isBest, diff: diffKey };
+  },
+  // achievements earned by escaping (called on every peer as the lift leaves)
+  onEscape() {
+    const G = Game, d = Net.sessionDiff || settings.difficulty;
+    this.unlock('escape');
+    if (d === 'hard') this.unlock('hard');
+    if (!(G.stats.spotted > 0)) this.unlock('ghost');
+    if (!(G.stats.damage > 0)) this.unlock('untouched');
+    if (G.time < 720) this.unlock('speed');
+    if (Net.active && crew().length > 1) this.unlock('coop');
+  },
+  buildScreen() {
+    const list = $('goals-list'); list.innerHTML = '';
+    for (const a of ACH) {
+      const got = this.has(a.id), el = document.createElement('div');
+      el.className = 'ach' + (got ? ' got' : '');
+      const i = document.createElement('i'); i.textContent = got ? '★' : '·';
+      const b = document.createElement('b'); b.textContent = a.name;
+      const sp = document.createElement('span'); sp.textContent = a.desc;
+      el.appendChild(i); el.appendChild(b); el.appendChild(sp); list.appendChild(el);
+    }
+    $('goals-count').textContent = this.count() + ' / ' + ACH.length + ' unlocked';
+    const best = $('goals-best'); best.innerHTML = '';
+    for (const d of ['easy', 'normal', 'hard']) {
+      const r = this.data.best[d], el = document.createElement('div');
+      el.innerHTML = '<span></span><b></b>';
+      el.firstChild.textContent = d.toUpperCase();
+      el.lastChild.textContent = r ? r.rank + ' · ' + r.score + ' pts · ' + fmtTime(r.time) : '—';
+      best.appendChild(el);
+    }
+  },
+};
+
+/* ---------- voice logs, the camera system and learning its name ---------- */
+Object.assign(Game, {
+  tapes: new Set(), tape: null, cams: false, camBoot: 0, camBooting: false, camBy: -1, camBeepT: 0, camAwayT: 0,
+  takeTape(def) { this.takeItem(def); },
+  // play a voice log: subtitles on screen, a muffled voice under them
+  playTape(id) {
+    const T0 = TAPES[id]; if (!T0) return;
+    this.stopTape();
+    const sched = []; let t = 0.7;
+    for (const line of T0.lines) { const d = clamp(0.9 + line.length * 0.052, 2.2, 6.4); sched.push([t, d]); t += d + 0.5; }
+    this.tape = { id, t: 0, sched, end: t + 0.3, i: -1, h: Sound.tape(sched, T0.pitch || 1) };
+    $('tape-spk').textContent = '▶ ' + T0.who; $('tape-txt').textContent = ''; $('tape-sub').classList.add('show');
+  },
+  stopTape() {
+    if (!this.tape) return;
+    try { this.tape.h.stop(); } catch (e) { }
+    this.tape = null; $('tape-sub').classList.remove('show');
+  },
+  updateTape(dt) {
+    const tp = this.tape; if (!tp) return;
+    tp.t += dt;
+    let i = -1; for (let k = 0; k < tp.sched.length; k++) if (tp.t >= tp.sched[k][0] - 0.05) i = k;
+    if (i !== tp.i) { tp.i = i; $('tape-txt').textContent = i >= 0 ? TAPES[tp.id].lines[i] : ''; }
+    if (tp.t >= tp.end) this.stopTape();
+  },
+  learnName() {
+    if (this.flags.knowName) return;
+    this.flags.knowName = true;
+    Goals.unlock('name');
+    setTimeout(() => { if (Game.inWorld()) UI.msg('The Warden was Elias Crane — Head of Security, twenty-two years on the night shift.', 'story', 5.5); }, 600);
+  },
+  camsPrompt() {
+    if (this.cams) return 'Camera system: ONLINE — tracking movement';
+    if (!this.power) return 'Camera system — no power';
+    if (this.camBooting) return 'Rebooting… ' + Math.floor(this.camBoot * 100) + '% (stay close)';
+    return 'Reboot the camera system (LOUD)';
+  },
+  useCams(by = player) {
+    if (this.cams) { if (by === player) UI.msg('The wall map is tracking it. Its position shows on your minimap.', '', 3.5); return; }
+    if (Net.isClient) { Net.request('cams', 0); return; }
+    if (!this.power) { this.tell(by, 'The console is dead. The cameras need main power.', 'warn', 3.6, 'locked'); return; }
+    if (this.camBooting) { this.tell(by, 'Rebooting… stay close to the console.'); return; }
+    this.emit({ k: 'camboot', by: this.idOf(by), p: Math.round(this.camBoot * 100) });
+  },
+  updateCams(dt) { // host / solo: the reboot only runs while someone stands at the console
+    if (!this.camBooting || this.cams) return;
+    const near = crew().some(a => !a.dead && Math.hypot(a.pos.x - CAM_POS.x, a.pos.z - CAM_POS.z) < 3.8);
+    if (near) this.camBoot = Math.min(1, this.camBoot + dt / 10);
+    this.camBeepT -= dt;
+    if (this.camBeepT <= 0) { this.camBeepT = 1.4; this.emit({ k: 'campr', p: Math.round(this.camBoot * 100), n: near ? 1 : 0 }); if (near) this.noise(CAM_POS, 17, 'event'); }
+    if (this.camBoot >= 1) this.emit({ k: 'cams' });
+  },
+  goalEvent(ev, mine, who) { // goal-related world events (from Game.applyEvent)
+    switch (ev.k) {
+      case 'camboot':
+        this.camBooting = true; this.camBoot = clamp((+ev.p || 0) / 100, 0, 1); this.camBeepT = 0; this.camBy = ev.by === undefined ? Net.myId : ev.by;
+        world.camLed.material = MAT.ledAmber; Sound.beep(true);
+        UI.msg(mine ? 'Rebooting the cameras. Stay at the console — and it is LOUD.' : who + ' is rebooting the cameras in Camera Control.', 'story', 4.5);
+        break;
+      case 'campr':
+        this.camBoot = clamp((+ev.p || 0) / 100, 0, 1);
+        Sound.bootTone(CAM_POS, this.camBoot);
+        if (!ev.n && this.camBy === Net.myId) { this.camAwayT -= 1.4; if (this.camAwayT <= 0) { this.camAwayT = 8; UI.msg('The reboot stalls without someone at the console.', 'warn', 3); } }
+        break;
+      case 'cams':
+        if (this.cams) break;
+        this.cams = true; this.camBooting = false; this.camBoot = 1;
+        world.camLed.material = MAT.ledGreen; Sound.camsOnline(CAM_POS);
+        UI.msg('CAMERAS ONLINE — the Warden now shows on your minimap.', 'good', 5);
+        UI.center('CAMERAS ONLINE', 'Its position now shows on your minimap', 2.8);
+        Goals.unlock('cams');
+        break;
+    }
+  },
+});
+// Camera Control's big screen: offline / booting / a live tracking map of the level
+Object.assign(Screens, {
+  camT: 0,
+  drawCamWall() {
+    const g = camCtx, w = 256, h = 128, G = Game;
+    g.fillStyle = '#04080a'; g.fillRect(0, 0, w, h);
+    if (!G.cams) {
+      g.fillStyle = '#0a1a3a'; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#d8e0ff'; g.font = 'bold 15px monospace'; g.textAlign = 'center';
+      g.fillText(G.camBooting ? 'SYSTEM REBOOT' : 'CCTV OFFLINE', w / 2, 46);
+      g.font = '10px monospace';
+      if (G.camBooting) {
+        g.strokeStyle = '#d8e0ff'; g.strokeRect(38, 62, 180, 12); g.fillRect(40, 64, 176 * G.camBoot, 8);
+        g.fillText(Math.floor(G.camBoot * 100) + '%  —  DO NOT LEAVE CONSOLE', w / 2, 92);
+      } else g.fillText('REBOOT AT MASTER CONSOLE', w / 2, 70);
+      g.textAlign = 'left';
+    } else {
+      const s = 4, ox = Math.round((w - W * s) / 2), oy = 10;
+      for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
+        const c = grid[z][x]; if (!isWalkKind(c)) continue;
+        g.fillStyle = c.kind === 'door' ? '#2c5a46' : c.room === 'corridor' ? '#173a2c' : '#1f4a38'; g.fillRect(ox + x * s, oy + z * s, s, s);
+      }
+      for (const a of crew()) { if (a.dead) continue; g.fillStyle = '#7dffa8'; g.fillRect(ox + a.pos.x / CELL * s - 1.5, oy + a.pos.z / CELL * s - 1.5, 3, 3); }
+      if (Monster.active && (Date.now() / 300 | 0) % 2) { const mx = ox + Monster.pos.x / CELL * s, mz = oy + Monster.pos.z / CELL * s; g.fillStyle = '#ff3020'; g.beginPath(); g.arc(mx, mz, 3.2, 0, TAU); g.fill(); g.strokeStyle = 'rgba(255,48,32,.5)'; g.beginPath(); g.arc(mx, mz, 7, 0, TAU); g.stroke(); }
+      g.fillStyle = '#9fe0b8'; g.font = '8px monospace'; g.fillText('SUBLEVEL 6 · MOTION TRACKING', 6, h - 4); g.fillStyle = '#ff6a5a'; g.fillText('● SUBJECT W', w - 66, h - 4);
+    }
+    for (let y = 0; y < h; y += 3) { g.fillStyle = 'rgba(0,0,0,.22)'; g.fillRect(0, y, w, 1); }
+    camTex.needsUpdate = true;
+  },
+});
+
+/* ------------------------------------------------------------------ */
 /* Boot                                                                */
 /* ------------------------------------------------------------------ */
 Monster.init();
@@ -6764,6 +7735,8 @@ Arms.init();
 bindSettingsUI();
 bindMenus();
 applySettings();
+Goals.load();
+Scare.get(); // the jumpscare's Warden, built up front so getting caught never hitches
 Game.resetWorld();
 // warm up shaders so the first frame of gameplay doesn't hitch (incl. hint highlights and the guard model seen on CCTV)
 Net.selfAvatar(true); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = true;
@@ -6806,7 +7779,7 @@ setInterval(() => {
 if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
-    Hints, Cine, Net, hideLockers, interactables, crew, Combat, Arms,
+    Hints, Cine, Net, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
