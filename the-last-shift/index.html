@@ -55,17 +55,50 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- title ---------- */
 #screen-title{background:#000;align-items:stretch;justify-content:stretch}
 #title-bg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.title-grad{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.86) 0%,rgba(0,0,0,.45) 45%,rgba(0,0,0,.1) 100%);pointer-events:none}
+.title-grad{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.8) 0%,rgba(0,0,0,.4) 42%,rgba(0,0,0,.15) 100%);pointer-events:none}
 .title-wrap{position:relative;display:flex;justify-content:space-between;align-items:flex-end;width:100%;height:100%;padding:7vh 6vw 6vh;gap:40px}
-.title-main{max-width:640px}
+.title-main{max-width:640px;min-width:0}
 .title-meta{font-family:var(--mono);font-size:11px;letter-spacing:.36em;color:var(--amber);text-transform:uppercase;opacity:.85}
-.title-name{font-size:clamp(46px,7.4vw,104px);font-weight:200;letter-spacing:.14em;line-height:.95;margin:22px 0 18px;color:#ece6d8;text-shadow:0 0 30px rgba(255,220,170,.08);animation:tflick 7s infinite}
+.title-name{font-size:clamp(42px,6.2vw,96px);font-weight:200;letter-spacing:.14em;line-height:.95;margin:22px 0 18px;color:#ece6d8;text-shadow:0 0 30px rgba(255,220,170,.08);animation:tflick 7s infinite}
 .title-name b{font-weight:700;color:#fff}
 @keyframes tflick{0%,100%{opacity:1}91%{opacity:1}91.6%{opacity:.35}92.2%{opacity:1}93%{opacity:.6}93.5%{opacity:1}}
 .title-sub{font-style:italic;font-size:clamp(15px,1.5vw,19px);color:#a9a395;letter-spacing:.04em}
 .title-foot{position:absolute;left:6vw;bottom:2.4vh;font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:#6c675d;text-transform:uppercase}
-.controls-card{background:rgba(6,6,7,.72);border:1px solid var(--line);padding:18px 22px;min-width:270px;backdrop-filter:blur(2px)}
-.controls-card h3{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.32em;color:var(--amber);margin-bottom:12px;text-transform:uppercase}
+.controls-card{background:rgba(6,6,7,.72);border:1px solid var(--line);padding:14px 16px 13px;backdrop-filter:blur(2px)}
+.controls-card h3{font-family:var(--mono);font-weight:400;font-size:10.5px;letter-spacing:.32em;color:var(--amber);margin-bottom:10px;text-transform:uppercase}
+.ctl.two{grid-template-columns:auto 1fr auto 1fr;gap:6px 12px;font-size:12px}
+/* main-menu live preview (the game's own renderer, CCTV style) */
+.title-side{position:relative;flex:0 0 auto;width:min(500px,38vw);display:flex;flex-direction:column;gap:12px}
+.preview{background:rgba(6,6,7,.74);border:1px solid var(--line);padding:11px 12px 10px;backdrop-filter:blur(2px)}
+.pv-head{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+.pv-head span:last-child{color:#6f6b62;letter-spacing:.16em}
+.pv-screen{position:relative;width:100%;aspect-ratio:16/9;background:#020203;overflow:hidden;border:1px solid rgba(220,214,200,.16);cursor:pointer}
+.pv-screen::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.26) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7) 100%)}
+.pv-roll{position:absolute;left:0;right:0;height:16%;top:-20%;z-index:3;pointer-events:none;background:linear-gradient(transparent,rgba(255,255,255,.05),transparent);animation:pvroll 7s linear infinite}
+@keyframes pvroll{to{top:115%}}
+.pv-static{position:absolute;inset:0;z-index:4;opacity:0;pointer-events:none;background-size:150px 150px}
+.pv-static.cut{animation:pvcut .55s steps(7) forwards}
+@keyframes pvcut{0%{opacity:1;background-position:0 0}35%{opacity:.85;background-position:44px -30px}70%{opacity:.4;background-position:-50px 22px}100%{opacity:0;background-position:12px 64px}}
+.pv-ui{position:absolute;inset:9px 11px;z-index:5;pointer-events:none;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:rgba(228,236,228,.88);text-shadow:0 0 4px #000,0 0 2px #000}
+.pv-rec{position:absolute;left:4px;top:3px;display:flex;align-items:center;gap:6px}
+.pv-rec i{width:7px;height:7px;border-radius:50%;background:#e2342c;box-shadow:0 0 6px #e2342c;animation:blink 1s steps(2) infinite}
+.pv-time{position:absolute;right:4px;top:3px}
+.pv-cam{position:absolute;left:4px;bottom:3px;text-transform:uppercase}
+.pv-c{position:absolute;width:12px;height:12px;border:1px solid rgba(228,236,228,.55)}
+.pv-tl{left:-3px;top:-3px;border-right:0;border-bottom:0}.pv-tr{right:-3px;top:-3px;border-left:0;border-bottom:0}
+.pv-bl{left:-3px;bottom:-3px;border-right:0;border-top:0}.pv-br{right:-3px;bottom:-3px;border-left:0;border-top:0}
+#view.in-preview{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.pv-caption{margin-top:9px;min-height:50px}
+.pv-caption b{display:block;font-weight:300;font-size:16px;letter-spacing:.17em;text-transform:uppercase;color:#ece6d8;margin-bottom:3px}
+.pv-caption span{display:block;font-size:12.5px;line-height:1.5;color:#a9a395}
+.pv-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 10px;margin-top:6px}
+.pv-dots{display:flex;gap:4px}
+.pv-dots button{position:relative;width:24px;height:14px;padding:0}
+.pv-dots button::before{content:"";position:absolute;left:2px;right:2px;top:6px;height:3px;background:#3b3934;transition:background .2s}
+.pv-dots button:hover::before,.pv-dots button:focus-visible::before{background:#8a7a5a}
+.pv-dots button.on::before{background:var(--amber)}
+.pv-dots button:focus-visible{outline:none}
+.pv-feat{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:#6f6b62;text-transform:uppercase;white-space:nowrap}
 .ctl{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;align-items:center;font-size:13px;color:#bdb7aa}
 .key{display:inline-block;min-width:24px;padding:3px 7px;border:1px solid var(--line2);border-bottom-width:2px;border-radius:3px;font-family:var(--mono);font-size:11px;color:#e8e2d4;text-align:center;background:rgba(255,255,255,.04);white-space:nowrap}
 
@@ -212,7 +245,9 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   repeating-linear-gradient(180deg,rgba(4,4,4,.97) 0 26px,rgba(4,4,4,.97) 26px 30px,transparent 30px 44px)}
 #fx-locker::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 25%,rgba(0,0,0,.85) 85%)}
 #toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:70;font-family:var(--mono);font-size:12px;color:#f0b2ac;background:rgba(30,0,0,.85);border:1px solid rgba(200,48,42,.4);padding:8px 14px;display:none;max-width:80vw}
-@media (max-width:860px){.title-wrap{flex-direction:column;align-items:flex-start;justify-content:flex-end}.controls-card{display:none}.howto-cols{grid-template-columns:1fr}.diffs{grid-template-columns:1fr}.set-grid{grid-template-columns:1fr}}
+@media (max-height:740px){.pv-feat{display:none}.title-side{width:min(430px,34vw);gap:9px}.pv-caption{min-height:44px}.pv-caption span{font-size:12px}.controls-card{padding:10px 14px}.ctl.two{gap:4px 10px;font-size:11.5px}}
+@media (max-height:620px){.title-side{width:min(360px,30vw)}.pv-caption span{display:none}.pv-caption{min-height:0}}
+@media (max-width:860px){.title-wrap{flex-direction:column;align-items:flex-start;justify-content:flex-end}.title-side{display:none}.howto-cols{grid-template-columns:1fr}.diffs{grid-template-columns:1fr}.set-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -292,20 +327,32 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
         <button class="mbtn" id="btn-howto">How to Play</button>
       </nav>
     </div>
-    <div class="controls-card">
-      <h3>Controls</h3>
-      <div class="ctl">
-        <span><span class="key">W</span> <span class="key">A</span> <span class="key">S</span> <span class="key">D</span></span><span>Move</span>
-        <span class="key">Mouse</span><span>Look around</span>
-        <span class="key">Shift</span><span>Sprint (loud)</span>
-        <span><span class="key">Ctrl</span> / <span class="key">C</span></span><span>Crouch (hold / toggle)</span>
-        <span class="key">F</span><span>Flashlight on / off</span>
-        <span class="key">E</span><span>Interact · hide · read</span>
-        <span class="key">R</span><span>Swap battery / crank light</span>
-        <span class="key">M</span><span>Toggle minimap</span>
-        <span><span class="key">P</span> / <span class="key">Esc</span></span><span>Pause · release mouse</span>
+    <aside class="title-side">
+      <section class="preview" aria-label="Preview of the game">
+        <div class="pv-head"><span>Preview · What's inside</span><span id="pv-count">01 / 06</span></div>
+        <div class="pv-screen" id="pv-screen" title="Click for the next shot">
+          <div class="pv-roll"></div>
+          <div class="pv-static" id="pv-static"></div>
+          <div class="pv-ui"><span class="pv-rec"><i></i>REC</span><span class="pv-time" id="pv-time">02:17:00</span><span class="pv-cam" id="pv-cam"></span><b class="pv-c pv-tl"></b><b class="pv-c pv-tr"></b><b class="pv-c pv-bl"></b><b class="pv-c pv-br"></b></div>
+        </div>
+        <div class="pv-caption"><b id="pv-title"></b><span id="pv-text"></span></div>
+        <div class="pv-foot"><div class="pv-dots" id="pv-dots"></div><span class="pv-feat">12 rooms · 3 keycards · 1 hunter</span></div>
+      </section>
+      <div class="controls-card">
+        <h3>Controls</h3>
+        <div class="ctl two">
+          <span class="key">W A S D</span><span>Move</span>
+          <span class="key">F</span><span>Flashlight</span>
+          <span class="key">Mouse</span><span>Look</span>
+          <span class="key">E</span><span>Interact · hide · read</span>
+          <span class="key">Shift</span><span>Sprint (loud)</span>
+          <span class="key">R</span><span>Battery / crank</span>
+          <span><span class="key">Ctrl</span> / <span class="key">C</span></span><span>Crouch</span>
+          <span class="key">M</span><span>Minimap</span>
+          <span><span class="key">P</span> / <span class="key">Esc</span></span><span>Pause</span>
+        </div>
       </div>
-    </div>
+    </aside>
   </div>
   <div class="title-foot">Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
 </div>
@@ -3562,6 +3609,7 @@ const UI = {
   show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
     this.current = id;
+    if (id === 'screen-title') Preview.onShow();
     const first = document.querySelector('#' + id + ' button'); if (first && id !== 'screen-title') setTimeout(() => { try { first.focus({ preventScroll: true }); } catch (e) { } }, 30);
   },
   hideAll() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); this.current = null; },
@@ -3755,16 +3803,16 @@ const UI = {
     g.fillStyle = '#020203';
     const base = h * 0.78;
     g.fillRect(0, base, w, h - base);
-    const blocks = [[0.52, 0.12, 0.1], [0.6, 0.07, 0.16], [0.66, 0.16, 0.06], [0.74, 0.1, 0.12], [0.84, 0.06, 0.2], [0.9, 0.12, 0.08], [0.45, 0.05, 0.05]];
+    const blocks = [[0.02, 0.09, 0.07], [0.1, 0.05, 0.12], [0.16, 0.1, 0.05], [0.27, 0.08, 0.11], [0.34, 0.05, 0.17], [0.4, 0.11, 0.07], [0.52, 0.06, 0.05], [0.59, 0.14, 0.09], [0.75, 0.08, 0.12], [0.86, 0.13, 0.06]];
     for (const [bx, bw, bh] of blocks) g.fillRect(bx * w, base - bh * h, bw * w, bh * h + 1);
-    g.fillRect(0.705 * w, base - 0.42 * h, 0.012 * w, 0.42 * h); // tower
-    g.fillRect(0.69 * w, base - 0.34 * h, 0.042 * w, 0.02 * h);
-    g.fillRect(0.78 * w, base - 0.3 * h, 0.022 * w, 0.2 * h); // stack
-    g.fillRect(0.62 * w, base - 0.21 * h, 0.2 * w, 0.006 * h); // pipe
+    g.fillRect(0.37 * w, base - 0.42 * h, 0.012 * w, 0.42 * h); // tower
+    g.fillRect(0.355 * w, base - 0.34 * h, 0.042 * w, 0.02 * h);
+    g.fillRect(0.46 * w, base - 0.3 * h, 0.022 * w, 0.22 * h); // stack
+    g.fillRect(0.3 * w, base - 0.21 * h, 0.2 * w, 0.006 * h); // pipe
     g.strokeStyle = '#020203'; g.lineWidth = Math.max(1, w / 500);
-    for (let x = 0; x < w * 0.5; x += w / 60) { g.beginPath(); g.moveTo(x, base); g.lineTo(x, base - h * 0.045); g.stroke(); }
-    g.beginPath(); g.moveTo(0, base - h * 0.04); g.lineTo(w * 0.5, base - h * 0.04); g.stroke();
-    g.fillRect(0.3 * w, base - 0.2 * h, 0.004 * w, 0.2 * h); g.fillRect(0.3 * w, base - 0.2 * h, 0.03 * w, 0.004 * h); // lamp post
+    for (let x = w * 0.5; x < w; x += w / 60) { g.beginPath(); g.moveTo(x, base); g.lineTo(x, base - h * 0.045); g.stroke(); }
+    g.beginPath(); g.moveTo(w * 0.5, base - h * 0.04); g.lineTo(w, base - h * 0.04); g.stroke();
+    g.fillRect(0.13 * w, base - 0.2 * h, 0.004 * w, 0.2 * h); g.fillRect(0.13 * w, base - 0.2 * h, 0.03 * w, 0.004 * h); // lamp post
     T2.sil = s;
   },
   drawTitle(time) {
@@ -3781,14 +3829,14 @@ const UI = {
     g.drawImage(T2.sil, 0, 0);
     // flickering sodium lamp
     const fl = Math.random() < 0.06 ? 0.2 : 0.85 + Math.sin(time * 17) * 0.05;
-    const lx = 0.315 * w, ly = h * 0.78 - 0.2 * h;
+    const lx = 0.145 * w, ly = h * 0.78 - 0.2 * h;
     const cone = g.createRadialGradient(lx, ly, 0, lx, ly + h * 0.2, h * 0.3); cone.addColorStop(0, `rgba(255,170,80,${0.32 * fl})`); cone.addColorStop(1, 'rgba(255,170,80,0)');
     g.fillStyle = cone; g.beginPath(); g.moveTo(lx, ly); g.lineTo(lx - h * 0.18, h * 0.8); g.lineTo(lx + h * 0.18, h * 0.8); g.closePath(); g.fill();
     g.fillStyle = `rgba(255,190,110,${fl})`; g.fillRect(lx - 2, ly - 1, 5, 3);
     // tower beacon
-    if ((time % 2.2) < 0.25) { g.fillStyle = 'rgba(255,40,30,.95)'; g.fillRect(0.705 * w + 1, h * 0.78 - 0.42 * h - 3, 4, 4); const bg = g.createRadialGradient(0.711 * w, h * 0.36, 0, 0.711 * w, h * 0.36, 30); bg.addColorStop(0, 'rgba(255,40,30,.35)'); bg.addColorStop(1, 'rgba(255,40,30,0)'); g.fillStyle = bg; g.fillRect(0.711 * w - 30, h * 0.36 - 30, 60, 60); }
+    if ((time % 2.2) < 0.25) { g.fillStyle = 'rgba(255,40,30,.95)'; g.fillRect(0.37 * w + 1, h * 0.78 - 0.42 * h - 3, 4, 4); const bg = g.createRadialGradient(0.376 * w, h * 0.36, 0, 0.376 * w, h * 0.36, 30); bg.addColorStop(0, 'rgba(255,40,30,.35)'); bg.addColorStop(1, 'rgba(255,40,30,0)'); g.fillStyle = bg; g.fillRect(0.376 * w - 30, h * 0.36 - 30, 60, 60); }
     // a pair of eyes, very rarely, between the buildings
-    if ((time % 23) > 21.6 && (time % 23) < 22.4) { g.fillStyle = 'rgba(255,60,40,.8)'; g.fillRect(0.585 * w, h * 0.735, 2, 1); g.fillRect(0.585 * w + 5, h * 0.735, 2, 1); }
+    if ((time % 23) > 21.6 && (time % 23) < 22.4) { g.fillStyle = 'rgba(255,60,40,.8)'; g.fillRect(0.512 * w, h * 0.735, 2, 1); g.fillRect(0.512 * w + 5, h * 0.735, 2, 1); }
     // static
     g.globalAlpha = 0.07; const ox = Math.random() * 128, oy = Math.random() * 128;
     for (let y = -oy; y < h; y += 128) for (let x = -ox; x < w; x += 128) g.drawImage(T2.noise, x, y);
@@ -3876,6 +3924,7 @@ const Game = {
     flash.intensity = 0; flashFill.intensity = 0;
   },
   newGame() {
+    Preview.detach();
     Sound.init(); Sound.setMode('game');
     this.resetWorld();
     UI.hideAll(); UI.prev = []; UI.hud(true);
@@ -3901,8 +3950,9 @@ const Game = {
     Sound.ui();
   },
   quitToTitle() {
-    Input.exitLock(); this.state = 'title'; UI.hud(false); UI.closeNote(true); UI.prev = []; UI.show('screen-title'); Sound.setMode('title');
-    Sound.setAlarm(false);
+    Input.exitLock(); this.state = 'title'; UI.hud(false); UI.closeNote(true); UI.prev = [];
+    this.resetWorld(); Preview.attach();
+    UI.show('screen-title'); Sound.setMode('title'); Sound.setAlarm(false);
   },
   showGameOver() {
     this.state = 'dead'; Input.exitLock(); UI.hud(false);
@@ -4384,18 +4434,7 @@ const Game = {
     flash.intensity = fi; flashFill.intensity = fi * 0.18;
     renderer.shadowMap.autoUpdate = fi > 0;
     if (fi > 0) renderer.shadowMap.needsUpdate = true;
-    // dust follows the camera (wrapped), lit only by the beam
-    dustMat.uniforms.uLightPos.value.copy(flash.position); dustMat.uniforms.uLightDir.value.copy(p.beamDir);
-    dustMat.uniforms.uOn.value = fi > 0 ? Math.min(1, fi / 1.9) : 0; dustMat.uniforms.uTime.value = this.time;
-    dustMat.uniforms.uScale.value = renderer.getPixelRatio() * innerHeight * 0.5;
-    let moved = false; const cx = camera.position.x, cz = camera.position.z;
-    const cnt = dustGeo.drawRange.count === Infinity ? DUST_MAX : Math.min(DUST_MAX, dustGeo.drawRange.count);
-    for (let i = 0; i < cnt; i++) {
-      const j = i * 3;
-      if (dustPos[j] - cx > DUST_BOX) { dustPos[j] -= DUST_BOX * 2; moved = true; } else if (cx - dustPos[j] > DUST_BOX) { dustPos[j] += DUST_BOX * 2; moved = true; }
-      if (dustPos[j + 2] - cz > DUST_BOX) { dustPos[j + 2] -= DUST_BOX * 2; moved = true; } else if (cz - dustPos[j + 2] > DUST_BOX) { dustPos[j + 2] += DUST_BOX * 2; moved = true; }
-    }
-    if (moved) dustGeo.attributes.position.needsUpdate = true;
+    updateDust(fi, flash.position, p.beamDir);
     // beacons spin
     world.beacons.forEach(b => { b.rotation.y += dt * 5.5; });
     // overlays
@@ -4424,10 +4463,9 @@ const Game = {
 let lastQuality = null;
 function applySettings() {
   const q = qual();
-  renderer.setPixelRatio(Math.min(q.pixelRatio, Math.max(1, window.devicePixelRatio || 1)));
-  renderer.setSize(innerWidth, innerHeight, false);
   renderer.toneMappingExposure = settings.brightness;
-  camera.far = q.far; camera.fov = settings.fov; camera.aspect = innerWidth / Math.max(1, innerHeight); camera.updateProjectionMatrix();
+  camera.far = q.far; camera.fov = Preview.attached ? PREVIEW_FOV : settings.fov;
+  resizeRenderer();
   if (lastQuality !== settings.quality) {
     lastQuality = settings.quality;
     renderer.shadowMap.enabled = q.shadows;
@@ -4506,6 +4544,139 @@ function bindMenus() {
   canvasEl.addEventListener('webglcontextlost', e => { e.preventDefault(); if (Game.state === 'playing') Game.pause(); window.__LS_showError('Graphics context lost', 'The browser reset the GPU context (often caused by low memory or a driver reset).', ['Reload the page to continue (progress is not saved).', 'Try a lower graphics quality in Settings.']); }, false);
 }
 
+
+/* ------------------------------------------------------------------ */
+/* Shared helpers                                                      */
+/* ------------------------------------------------------------------ */
+// Dust motes wrap around the camera and are lit only inside the flashlight beam
+function updateDust(fi, lightPos, lightDir) {
+  const u = dustMat.uniforms;
+  u.uLightPos.value.copy(lightPos); u.uLightDir.value.copy(lightDir);
+  u.uOn.value = fi > 0 ? Math.min(1, fi / 1.9) : 0; u.uTime.value = Game.time;
+  u.uScale.value = renderer.domElement.height * 0.5;
+  let moved = false; const cx = camera.position.x, cz = camera.position.z;
+  const cnt = dustGeo.drawRange.count === Infinity ? DUST_MAX : Math.min(DUST_MAX, dustGeo.drawRange.count);
+  for (let i = 0; i < cnt; i++) {
+    const j = i * 3;
+    if (dustPos[j] - cx > DUST_BOX) { dustPos[j] -= DUST_BOX * 2; moved = true; } else if (cx - dustPos[j] > DUST_BOX) { dustPos[j] += DUST_BOX * 2; moved = true; }
+    if (dustPos[j + 2] - cz > DUST_BOX) { dustPos[j + 2] -= DUST_BOX * 2; moved = true; } else if (cz - dustPos[j + 2] > DUST_BOX) { dustPos[j + 2] += DUST_BOX * 2; moved = true; }
+  }
+  if (moved) dustGeo.attributes.position.needsUpdate = true;
+}
+// The renderer draws full screen in game, or into the main-menu preview panel on the title screen
+function resizeRenderer() {
+  const q = qual();
+  renderer.setPixelRatio(Math.min(q.pixelRatio, Math.max(1, window.devicePixelRatio || 1)));
+  let w = innerWidth, h = innerHeight;
+  if (Preview.attached) {
+    const r = Preview.screen.getBoundingClientRect();
+    if (r.width < 4 || r.height < 4) return; // title hidden behind another menu: resize when it is shown again
+    w = Math.round(r.width); h = Math.round(r.height);
+  }
+  renderer.setSize(w, h, false);
+  camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix();
+}
+
+/* ------------------------------------------------------------------ */
+/* Main-menu preview: the real level rendered live as a CCTV feed      */
+/* ------------------------------------------------------------------ */
+const PREVIEW_FOV = 56;
+const PREVIEW_SHOTS = [
+  { cam: 'CAM 09 · Desk B', title: '02:17 AM', text: 'You wake at your post. The lights are dying and the surface lift is in lockdown.',
+    power: false, flash: 1.7, from: [7.2, 1.72, 52.8], to: [4.9, 1.58, 51.2], at: [2.3, 1.55, 48.7], at2: [2.3, 1.35, 49.4] },
+  { cam: 'CAM 02 · Storage', title: 'Find the keycards', text: 'Three department cards are hidden across Sublevel 6. The notes tell you where — and how.',
+    power: false, flash: 1.6, from: [14.2, 1.4, 9.9], to: [14.7, 1.2, 10.45], at: [15.45, 0.8, 10.95], at2: [15.45, 0.78, 11.2] },
+  { cam: 'CAM 04 · Generator Hall', title: 'Restore main power', text: 'Throw the breakers in the right order. Get it wrong and the whole level hears it.',
+    power: true, flash: 0, from: [26.0, 1.7, 23.4], to: [26.3, 1.6, 31.6], at: [22.3, 1.5, 26.6], at2: [22.3, 1.4, 30.6] },
+  { cam: 'CAM 05 · Containment', title: 'Cell W is empty', text: 'The glass broke from the inside. Upload the breach report to lift the lockdown.',
+    power: true, flash: 0, from: [46.8, 1.9, 13.3], to: [56.0, 1.75, 13.1], at: [51.5, 1.1, 8.6], at2: [52.5, 1.2, 8.6] },
+  { cam: 'CAM 03 · West Corridor', title: 'The Warden', text: 'It hunts by sound and sight. Hide in lockers, crawl through vents, keep your light low.',
+    power: false, flash: 1.2, warden: true, from: [19, 1.55, 36.5], to: [19, 1.62, 30.9], at: [19, 1.85, 27], at2: [19, 2.05, 27] },
+  { cam: 'CAM 01 · Lift Lobby', title: 'The way out', text: 'Three keys, main power and one report open the surface lift. Reach it alive.',
+    power: true, flash: 0, from: [70.2, 1.7, 46.2], to: [67.4, 1.6, 50.2], at: [66, 2.1, 54.2], at2: [66, 1.55, 54.6] },
+];
+const Preview = {
+  attached: false, shot: 0, t: 0, dur: 6.5, acc: 0, screen: null, secs: -1, started: performance.now(),
+  _a: new T.Vector3(), _b: new T.Vector3(), _look: new T.Vector3(),
+  init() {
+    this.screen = $('pv-screen');
+    try { $('pv-static').style.backgroundImage = 'url(' + UI.title.noise.toDataURL() + ')'; } catch (e) { }
+    const dots = $('pv-dots');
+    PREVIEW_SHOTS.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.setAttribute('aria-label', 'Preview ' + (i + 1) + ': ' + s.title);
+      b.addEventListener('click', e => { e.stopPropagation(); this.go(i); Sound.ui(); });
+      dots.appendChild(b);
+    });
+    this.screen.addEventListener('click', () => { this.go((this.shot + 1) % PREVIEW_SHOTS.length); Sound.ui(); });
+  },
+  attach() { // move the game canvas into the menu panel
+    if (this.attached) return;
+    this.attached = true;
+    canvasEl.classList.add('in-preview');
+    this.screen.insertBefore(canvasEl, this.screen.firstChild);
+    this.go(0);
+  },
+  detach() { // give the canvas back to the full-screen game
+    if (!this.attached) return;
+    this.attached = false;
+    canvasEl.classList.remove('in-preview');
+    document.body.insertBefore(canvasEl, document.body.firstChild);
+    Monster.reset(); flash.intensity = 0; flashFill.intensity = 0;
+    camera.fov = settings.fov;
+    resizeRenderer();
+  },
+  onShow() { if (this.attached) { resizeRenderer(); this.acc = 1; } },
+  go(i) {
+    const s = PREVIEW_SHOTS[i];
+    this.shot = i; this.t = 0; this.acc = 1;
+    // lighting for this shot: emergency lights only, or main power on
+    Game.power = s.power; Game.dip = 0;
+    fixtures.forEach(f => { if (f.type === 'main') { f.powerOnAt = -100; f.on = s.power && f.mode !== 'dead'; } f.b = f.on ? 1 : 0; });
+    hemi.intensity = s.power ? 0.62 : 0.5; scene.fog.density = s.power ? FOG_BASE * 0.85 : FOG_BASE;
+    // the Warden only appears in its own shot
+    Monster.reset();
+    if (s.warden) { Monster.pos.set(19, 0, 27); Monster.yaw = 0; Monster.state = 'PATROL'; }
+    $('pv-cam').textContent = s.cam; $('pv-title').textContent = s.title; $('pv-text').textContent = s.text;
+    $('pv-count').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(PREVIEW_SHOTS.length).padStart(2, '0');
+    $('pv-dots').querySelectorAll('button').forEach((b, k) => b.classList.toggle('on', k === i));
+    const st = $('pv-static'); st.classList.remove('cut'); void st.offsetWidth; st.classList.add('cut'); // restart the static burst
+  },
+  update(dt) {
+    if (!this.attached) return;
+    this.t += dt;
+    if (this.t >= this.dur) this.go((this.shot + 1) % PREVIEW_SHOTS.length);
+    const secs = Math.floor((performance.now() - this.started) / 1000);
+    if (secs !== this.secs) {
+      this.secs = secs; const tt = 2 * 3600 + 17 * 60 + secs;
+      $('pv-time').textContent = '0' + Math.floor(tt / 3600) % 10 + ':' + String(Math.floor(tt / 60) % 60).padStart(2, '0') + ':' + String(tt % 60).padStart(2, '0');
+    }
+    this.acc += dt;
+    if (this.acc < 1 / 30) return; // the feed runs at ~30 fps to keep the menu light
+    const step = Math.min(this.acc, 0.1); this.acc = 0;
+    const s = PREVIEW_SHOTS[this.shot], k = smooth(0, 1, this.t / this.dur);
+    camera.position.lerpVectors(this._a.fromArray(s.from), this._b.fromArray(s.to), k);
+    camera.lookAt(this._look.lerpVectors(this._a.fromArray(s.at), this._b.fromArray(s.at2), k));
+    if (camera.fov !== PREVIEW_FOV) { camera.fov = PREVIEW_FOV; camera.updateProjectionMatrix(); }
+    Game.time += step;
+    Game.updateLights(step); Screens.update(step);
+    world.beacons.forEach(b => { b.rotation.y += step * 5.5; });
+    let fi = s.flash ? s.flash * (0.96 + Math.random() * 0.04) : 0;
+    if (s.warden) {
+      if (this.t > this.dur * 0.6 && Monster.state !== 'HUNT') { Monster.state = 'HUNT'; Game.dip = 1; } // it notices the camera
+      if (Monster.state === 'HUNT' && Math.random() < 0.3) fi *= rand(0.05, 0.6);
+      Monster.animate(step, 0);
+    }
+    const fwd = camera.getWorldDirection(_v3a);
+    flash.position.set(camera.position.x, camera.position.y - 0.12, camera.position.z);
+    flash.target.position.copy(flash.position).addScaledVector(fwd, 10);
+    flash.intensity = fi; flashFill.intensity = fi * 0.18; flashFill.position.copy(camera.position).addScaledVector(fwd, 0.8);
+    renderer.shadowMap.autoUpdate = fi > 0; if (fi > 0) renderer.shadowMap.needsUpdate = true;
+    updateDust(fi, flash.position, fwd);
+    renderer.render(scene, camera);
+  },
+};
+
 /* ------------------------------------------------------------------ */
 /* Boot                                                                */
 /* ------------------------------------------------------------------ */
@@ -4519,6 +4690,8 @@ Game.resetWorld();
 // warm up shaders so the first frame of gameplay doesn't hitch
 try { camera.position.set(SPAWN.x, EYE_STAND, SPAWN.z); camera.rotation.set(0, SPAWN.yaw, 0); renderer.compile(scene, camera); } catch (e) { }
 Game.state = 'title';
+Preview.init();
+Preview.attach();
 UI.show('screen-title');
 window.__LS_running = true;
 let lastT = performance.now(), fpsAcc = 0, fpsN = 0;
@@ -4530,14 +4703,14 @@ function frame(now) {
   fpsAcc += dt; fpsN++; if (fpsAcc > 0.5) { Game.fps = fpsN / fpsAcc; fpsAcc = 0; fpsN = 0; }
   try {
     if (Game.state === 'playing') { Game.update(dt); Game.render(dt); }
-    else if (Game.state === 'title') UI.drawTitle(now / 1000);
+    else if (Game.state === 'title' && UI.current === 'screen-title') { UI.drawTitle(now / 1000); Preview.update(dt); }
   } catch (e) { Game.onError(e); }
 }
 requestAnimationFrame(frame);
 
 if (DEBUG) {
   window.LS = {
-    Game, Monster, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
+    Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && Game.state === 'playing'; i++) Game.update(dt); },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
