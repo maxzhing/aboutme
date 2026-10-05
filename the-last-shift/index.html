@@ -610,6 +610,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li>Crouch to crawl through the maintenance vents. Until 5:00 they are too small for it.</li>
           <li>Cornered? Fight. Punches won't kill it, but they stagger it, and a stun buys you a few seconds. It shrugs off a second stun for a while — and comes back angrier.</li>
           <li>The heartbeat, flickering lights and the threat eye (top right) tell you when it is close.</li>
+          <li><b>Look up.</b> In the long hallways it often climbs the wall and crawls along the ceiling, and it drops down on whoever is underneath. And it is cunning: a crash or a screech from one direction can be bait while it circles round to come at you from another.</li>
           <li>Sometimes it just <b>watches</b> you from the dark. Hold its gaze and it backs off — walk toward it, or put your light on it, and it charges.</li>
           <li><b>The Sleepwalker</b> comes out of the Morgue at about 2:30. It is slow and it <b>never hunts you</b> — it just drifts from room to room humming a lullaby, and the lights dim around it. But near it you hallucinate: the room warps, you hear things that aren't there, the clock lies, and you see the Warden where it isn't (look straight at it and it vanishes). Never let it drift into you: it shrieks, your light dies — and the Warden hears.</li>
           <li>On <b>Hard</b> the Warden breaks through locked iron security doors. Only the blast door to the lift holds.</li>
@@ -4479,7 +4480,7 @@ const Monster = {
     if (!corr || this.cine || this.bashDoor || this.state === 'ATTACK' || this.state === 'SCRIPT' || this.state === 'LOST' || Game.endingLock) want = false;
     else if (this.state === 'STALK') want = this.ceilWant; // it watches from wherever it is
     else if (want) { // up there: it lets go before a doorway, at the end of the hall — or right on top of its prey
-      if (this.corridorAhead() < 1.7 || ((this.state === 'HUNT' || this.state === 'FLANK') && dT < 3.6)) want = false;
+      if (this.corridorAhead() < 1.7 + this.speed * 0.45 || ((this.state === 'HUNT' || this.state === 'FLANK') && dT < 3.6)) want = false; // (sooner the faster it goes)
     } else if (this.ceilGo && Game.time > this.ceilCD && this.speed > 0.3 && this.corridorAhead() >= 3.5 && !(this.state === 'HUNT' && dT < 8)) want = true;
     if (want !== this.ceilWant) {
       this.ceilWant = want;
@@ -4543,7 +4544,8 @@ const Monster = {
     if (c.h > 2) this.ceilH = damp(this.ceilH, c.h, 4, dt);
     const up = this.ceil > 0.5; if (up !== this.wasUp) { this.wasUp = up; if (!up && this.active && dl < 9) { Sound.ceilDrop(); Game.shake(0.3); } }
     // on all fours: chasing (it rears up to strike), creeping when the host says so, inside a vent, on the ceiling
-    const crawlWant = !this.cine && attack < 0 && !this.bashDoor && this.slamT >= 0.95 && (inVent || this.ceil > 0.01 || this.ceilWant || (hunt && sp > 2.2 && dl > 3.3 && this.huntCrawl) || this.crawlMode);
+    // (hunting, the creep doesn't count: it gallops if it chose to, and always rears up to strike)
+    const crawlWant = !this.cine && attack < 0 && !this.bashDoor && this.slamT >= 0.95 && (inVent || this.ceil > 0.01 || this.ceilWant || (hunt && sp > 2.2 && dl > 3.3 && this.huntCrawl) || (this.crawlMode && !hunt));
     this.crawlK = damp(this.crawlK, crawlWant ? 1 : 0, crawlWant ? 5 : 6, dt);
     this.ventK = damp(this.ventK, inVent ? 1 : 0, 6, dt);
     const targetLean = (hunt ? 0.55 : stalk ? 0.46 : 0.32) + this.duck * 0.55 + (run ? 0.15 : 0);
@@ -5684,7 +5686,7 @@ const Game = {
       case 'dhit': { // it slams into an iron door; the door buckles
         const d = doors[ev.i | 0]; if (!d) break;
         const p = new T.Vector3(d.cx, 1.4, d.cz), dist = Math.hypot(d.cx - player.pos.x, d.cz - player.pos.z);
-        d.shake = 1; Monster.slamT = 0; Sound.ironHit(p); spawnSparks(p, 5); this.shake(Math.max(0, 1 - dist / 16) * 0.6);
+        d.shake = 1; Monster.slamT = 0.3; Sound.ironHit(p); // (straight into the strike, in time with the bang) spawnSparks(p, 5); this.shake(Math.max(0, 1 - dist / 16) * 0.6);
         if (!this.flags.ironHeard && dist < 30) { this.flags.ironHeard = true; UI.msg('Something is slamming into a security door…', 'warn', 3.5); }
         break;
       }
@@ -5692,7 +5694,7 @@ const Game = {
         const d = doors[ev.i | 0]; if (!d) break;
         const p = new T.Vector3(d.cx, 1.4, d.cz), dist = Math.hypot(d.cx - player.pos.x, d.cz - player.pos.z);
         d.broken = true; d.unlocked = true; d.target = 1; d.fast = true; d.shake = 1.4; d.evAt = performance.now(); d.updateLeds(); d.place();
-        Monster.slamT = 0; Sound.ironBreak(p); spawnSparks(p, 18); this.shake(Math.max(0, 1 - dist / 18) * 1.0);
+        Monster.slamT = 0.3; Sound.ironBreak(p); spawnSparks(p, 18); this.shake(Math.max(0, 1 - dist / 18) * 1.0);
         if (!this.flags.ironTold) { this.flags.ironTold = true; UI.msg('It tore straight through an iron security door. Nowhere is locked to it now.', 'warn', 5); }
         break;
       }
@@ -6999,7 +7001,7 @@ function lookAtWarden(k) {
 // full-screen CCTV: a fixed camera that slowly pans with the Warden and digitally zooms in
 function cctvCam(sc, t) {
   if (!sc.camPos) return null;
-  sc.look.lerp(_cv2.set(Monster.pos.x, sc.lookY, Monster.pos.z), 1 - Math.exp(-Cine.dtReal * 2.5));
+  sc.look.lerp(_cv2.set(Monster.pos.x, Monster.ceil > 0.3 ? Monster.eyeH() - 0.3 : sc.lookY, Monster.pos.z), 1 - Math.exp(-Cine.dtReal * 2.5)); // (it may be up on the ceiling)
   camera.position.copy(sc.camPos);
   lookQuat(camera.position, sc.look, camera.quaternion);
   Cine.snapFov = true;
@@ -7333,7 +7335,7 @@ const Cine = {
         if (s2) { P.camPos = s2; P.look.set(m.x, 1.6, m.z); this.el.pipCam.textContent = camLabel(m); this.cut(this.el.pipStat); }
       }
     }
-    P.look.lerp(_cv2.set(m.x, 1.6, m.z), 1 - Math.exp(-this.dtReal * 4));
+    P.look.lerp(_cv2.set(m.x, P.def.subj || Monster.ceil < 0.3 ? 1.6 : Monster.eyeH() - 0.3, m.z), 1 - Math.exp(-this.dtReal * 4));
     pipCam.position.copy(P.camPos); lookQuat(P.camPos, P.look, pipCam.quaternion);
     const r = this.pr;
     if (Math.abs(pipCam.aspect - r.w / r.h) > 0.001) { pipCam.aspect = r.w / r.h; pipCam.updateProjectionMatrix(); }
@@ -9240,12 +9242,12 @@ const Dream = {
     else Sound.musicBox(at(rand(-3, 3), rand(2, 4), 1.4), 440 * Math.pow(2, (pick([64, 68, 69, 71]) - 69) / 12)); // the lullaby, in your ear
   },
   spawnPhantom(kind) {
-    const p = player, f = p.forward(_v3d), base = Math.atan2(f.x, f.z);
+    const p = player, f = p.forward(_v3d), base = Math.atan2(f.x, f.z), fx = Math.sin(base), fz = Math.cos(base);
     let best = null;
-    for (let i = 0; i < 24 && !best; i++) {
-      const ang = kind === 'behind' ? Math.PI + rand(-0.35, 0.35) : kind === 'rush' ? rand(-0.35, 0.35) : rand(-0.75, 0.75);
-      const dist = kind === 'behind' ? rand(1.9, 2.6) : kind === 'rush' ? rand(11, 16) : rand(8, 17);
-      const x = p.pos.x + Math.sin(base + ang) * dist, z = p.pos.z + Math.cos(base + ang) * dist, c = cellOf(x, z);
+    for (let i = 0; i < 40 && !best; i++) { // somewhere along the way you are looking (or right behind you), a little to one side
+      const dist = kind === 'behind' ? -rand(1.9, 2.6) : kind === 'rush' ? rand(10, 16) : rand(7, 17);
+      const side = kind === 'behind' ? rand(-0.6, 0.6) : (kind === 'rush' ? rand(-1.2, 1.2) : rand(-0.45, 0.45) * Math.abs(dist)) * (i < 20 ? 1 : 0.3);
+      const x = p.pos.x + fx * dist + fz * side, z = p.pos.z + fz * dist - fx * side, c = cellOf(x, z);
       if (c.kind !== 'floor' || c.navBlocked || !losClear(p.pos.x, p.pos.z, x, z)) continue;
       if ([[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]].some(([ox, oz]) => { const n = cellOf(x + ox, z + oz); return n.kind === 'wall' || n.kind === 'window'; })) continue;
       best = [x, z];
@@ -9289,7 +9291,7 @@ const Dream = {
   },
   endPhantom(sting, close) {
     if (!this.ph) return;
-    this.ph = null;
+    this.ph = null; this.phT = Math.max(this.phT, rand(3, 6)); // (a breath before the next one)
     if (Phantom.model) Phantom.model.visible = false;
     if (Phantom.mode === 'dream') Phantom.active = false;
     if (sting) {
@@ -9335,9 +9337,9 @@ Goals.load();
 Scare.get(); // the jumpscare's Warden, built up front so getting caught never hitches
 Game.resetWorld();
 // warm up shaders so the first frame of gameplay doesn't hitch (incl. hint highlights and the guard model seen on CCTV)
-Net.selfAvatar(true); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = true;
-try { camera.position.set(SPAWN.x, EYE_STAND, SPAWN.z); camera.rotation.set(0, SPAWN.yaw, 0); renderer.compile(scene, camera); Arms.R.visible = true; renderer.compile(vmScene, vmCam); } catch (e) { }
-Net.selfAvatar(false); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = false;
+Net.selfAvatar(true); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = true; Sleeper.model.visible = Phantom.model.visible = true; // (and both monsters' look, and the dream's lens)
+try { camera.position.set(SPAWN.x, EYE_STAND, SPAWN.z); camera.rotation.set(0, SPAWN.yaw, 0); renderer.compile(scene, camera); Arms.R.visible = true; renderer.compile(vmScene, vmCam); if (DreamFX.ok()) renderer.compile(DreamFX.scene, DreamFX.cam); } catch (e) { }
+Net.selfAvatar(false); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = false; Sleeper.model.visible = Phantom.model.visible = false;
 Game.state = 'title';
 Preview.init();
 Preview.attach();
