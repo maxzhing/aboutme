@@ -110,6 +110,42 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .diff span{font-size:12.5px;color:#a49e91;line-height:1.5}
 .diff:hover{border-color:#8a7a5a}
 .diff.sel{border-color:var(--amber);background:rgba(217,163,74,.09)}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 4px}
+#screen-briefing .p{font-size:14px;line-height:1.55;margin-bottom:10px}
+#screen-briefing .kicker{margin-top:12px!important}
+#screen-briefing .diff{padding:11px 14px}
+.mode{border:1px solid var(--line2);padding:14px;text-align:left;background:rgba(255,255,255,.02);transition:border-color .15s,background .15s;display:flex;flex-direction:column;gap:6px}
+.mode b{font-family:var(--mono);letter-spacing:.22em;font-size:13px;font-weight:600}
+.mode span{font-size:12.5px;color:#a49e91;line-height:1.5}
+.mode em{font-style:normal;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--amber);margin-top:auto}
+.mode:hover{border-color:#8a7a5a}
+.mode.sel{border-color:var(--amber);background:rgba(217,163,74,.09)}
+.mode .new{display:inline-block;font-size:9px;letter-spacing:.2em;color:#111;background:var(--amber);padding:1px 5px;margin-left:8px;vertical-align:2px}
+.daily{display:flex;gap:9px;align-items:center;font-size:12.5px;color:#cfc8b8;margin:6px 0 2px;cursor:pointer;user-select:none}
+.daily input{accent-color:#d9a34a;width:15px;height:15px}
+.daily[hidden]{display:none}
+.mp-modes{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px}
+.mp-modes button{font-family:var(--mono);font-size:11px;letter-spacing:.14em;padding:7px 11px;border:1px solid var(--line2);color:#cfc8b8;background:rgba(255,255,255,.03)}
+.mp-modes button.sel{border-color:var(--amber);color:#fff;background:rgba(217,163,74,.12)}
+#objectives.m-photos .bonus-h,#objectives.m-photos #bonus-list,#objectives.m-endless .bonus-h,#objectives.m-endless #bonus-list{display:none}
+#objectives.m-endless #obj-list li{color:#f0a19a}
+#objectives.m-endless #obj-list li::before{border-color:#b8463c;background:rgba(184,70,60,.35)}
+#photo-pop{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-4deg) scale(.6);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;filter:drop-shadow(0 12px 30px rgba(0,0,0,.85))}
+#photo-pop.show{opacity:1;transform:translate(-50%,-50%) rotate(-3deg) scale(1)}
+#photo-pop img{display:block;width:clamp(200px,24vw,300px);height:auto}
+#photo-n{position:absolute;right:-14px;top:-14px;background:var(--amber);color:#111;font-family:var(--mono);font-size:13px;letter-spacing:.12em;padding:4px 9px;transform:rotate(6deg)}
+#curse-pick{position:absolute;left:50%;bottom:27vh;transform:translateX(-50%);width:min(720px,92vw);opacity:0;pointer-events:none;transition:opacity .3s}
+#curse-pick.show{opacity:1}
+#cp-title{text-align:center;font-family:var(--mono);font-size:12px;letter-spacing:.34em;color:#ff8a7a;margin-bottom:10px;text-shadow:0 0 12px #000}
+.cp-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cp-card{background:rgba(20,6,6,.82);border:1px solid #7a2a24;padding:12px 14px 13px;position:relative}
+.cp-card[hidden]{display:none}
+.cp-card .k{position:absolute;right:10px;top:9px;font-family:var(--mono);font-size:11px;color:#111;background:#e8c060;padding:1px 7px}
+.cp-card h4{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.18em;color:#ffb3a8;margin:0 0 6px;text-transform:uppercase}
+.cp-card p{font-size:12.5px;line-height:1.45;color:#d8cfc0;margin:0}
+#cp-time{height:3px;background:rgba(255,255,255,.12);margin-top:10px}
+#cp-bar{height:100%;width:100%;background:#d9a34a}
+@media (max-width:860px){.modes{grid-template-columns:1fr}.cp-cards{grid-template-columns:1fr}}
 
 /* ---------- settings ---------- */
 .set-grid{display:grid;grid-template-columns:200px 1fr;gap:14px 22px;align-items:center;min-width:min(560px,80vw)}
@@ -380,6 +416,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 .ach b{font-weight:400;font-size:13px;color:#ece6d8}
 .ach span{font-size:11px;color:#9a9486;line-height:1.4}
 .goals-best{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-family:var(--mono);font-size:12px;margin:6px 0 4px}
+.goals-best .gb-h{grid-column:1/-1;border:0;padding:6px 0 0;font-size:10px;letter-spacing:.3em;color:var(--amber)}
 .goals-best div{border:1px solid var(--line);padding:8px 10px;display:flex;flex-direction:column;gap:3px}
 .goals-best span{font-size:10px;letter-spacing:.24em;color:#8d887c}
 .goals-best b{font-weight:400;color:#e8e2d4}
@@ -447,6 +484,8 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   <div id="team"></div>
   <div id="stun"><span id="stun-label">STAGGER</span><i><b id="stun-bar"></b></i></div>
   <div id="hint-tag"><span class="ht-arrow"></span><span class="ht-label"></span></div>
+  <div id="photo-pop"><img id="photo-img" alt=""><span id="photo-n"></span></div>
+  <div id="curse-pick"><div id="cp-title">CHOOSE A CURSE</div><div class="cp-cards"><div class="cp-card"><span class="k">1</span><h4></h4><p></p></div><div class="cp-card"><span class="k">2</span><h4></h4><p></p></div></div><div id="cp-time"><div id="cp-bar"></div></div></div>
 </div>
 
 <!-- cutscenes: letterbox, CCTV feed, subtitles; live camera inset -->
@@ -506,7 +545,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <div class="pv-ui"><span class="pv-rec"><i></i>REC</span><span class="pv-time" id="pv-time">02:17:00</span><span class="pv-cam" id="pv-cam"></span><b class="pv-c pv-tl"></b><b class="pv-c pv-tr"></b><b class="pv-c pv-bl"></b><b class="pv-c pv-br"></b></div>
         </div>
         <div class="pv-caption"><b id="pv-title"></b><span id="pv-text"></span></div>
-        <div class="pv-foot"><div class="pv-dots" id="pv-dots"></div><span class="pv-feat">survive until 6:00 AM · two monsters · 16 rooms · 16 achievements · co-op</span></div>
+        <div class="pv-foot"><div class="pv-dots" id="pv-dots"></div><span class="pv-feat">3 modes · two monsters · 16 rooms · 20 achievements · co-op</span></div>
       </section>
       <div class="controls-card">
         <h3>Controls</h3>
@@ -527,19 +566,36 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       </div>
     </aside>
   </div>
-  <div class="title-foot">Build 9 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
+  <div class="title-foot">Build 10 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
 </div>
 
 <!-- briefing -->
 <div id="screen-briefing" class="screen shade">
   <div class="panel">
     <div class="kicker">Night shift · Site Kestrel, Sublevel 6 · 02:00 AM</div>
-    <div class="h1">Survive until 6:00 AM</div>
+    <div class="h1" id="brief-h1">Survive until 6:00 AM</div>
+    <div id="brief-night">
     <p class="p">You are the night guard, buried under the mountain. Something tall and pale has broken out of its cell, the facility is in lockdown, and the surface lift stays sealed until the <b>day shift arrives at 6:00 AM</b>.</p>
     <p class="p"><b>Your mission: stay alive until dawn — then make it onto the lift.</b> Every hour it gets worse. It crawls. It hears everything. At 4:00 the power goes, and in the last hour it can follow you into the vents. Lockers only buy you time.</p>
     <p class="p">It is not alone. A little after 2:30 something else gets up out of the Morgue — slow, humming a lullaby. <b>It never chases you</b>, but stay away from it: near it you start to hallucinate, and you can't trust anything you see or hear.</p>
     <p class="p">Want out sooner? Find the three keycards, restore main power and upload the breach report, and you can open the lift yourself.</p>
-    <div class="kicker" style="margin-top:18px">Difficulty · how long the night lasts</div>
+    </div>
+    <div id="brief-photos" hidden>
+    <p class="p">Someone has been taking pictures down here. <b>Eight Polaroids</b> are pinned to walls around Sublevel 6 — <b>somewhere different every time you play</b>. You start with a flashlight, and the Warden is already awake.</p>
+    <p class="p"><b>Find all eight, then get to the surface lift.</b> Every photo you take makes it worse: faster, sharper-eared, and at four the power fails. The Sleepwalker comes out after the second. The clock is running — beat your best time.</p>
+    </div>
+    <div id="brief-endless" hidden>
+    <p class="p">The day shift is never coming. There is no lift, no keycard, no way out — only the night, and <b>how long you can last in it</b>.</p>
+    <p class="p">Every hour (about a minute and a half) you get a spare battery — and you must <b>choose one of two curses</b>. They stack: a faster Warden, sharper ears, brownouts, open vents, phantoms everywhere… Every run is different. Beat your longest night.</p>
+    </div>
+    <div class="kicker" style="margin-top:18px">Mode</div>
+    <div class="modes" id="modes">
+      <button class="mode" data-mode="night"><b>THE NIGHT SHIFT</b><span>Survive until 6:00 AM — or find a way out sooner.</span><em data-best="night"></em></button>
+      <button class="mode" data-mode="photos"><b>THE POLAROIDS<i class="new">NEW</i></b><span>Find 8 photos hidden somewhere new every run. Each one makes it worse. Then run.</span><em data-best="photos"></em></button>
+      <button class="mode" data-mode="endless"><b>ENDLESS NIGHT<i class="new">NEW</i></b><span>Dawn never comes. Every hour, pick a curse. How long can you last?</span><em data-best="endless"></em></button>
+    </div>
+    <label class="daily" id="daily-row" hidden><input type="checkbox" id="daily"> Daily photos — today's layout, the same for everyone. Race your friends.</label>
+    <div class="kicker" style="margin-top:18px" id="diff-kicker">Difficulty · how long the night lasts</div>
     <div class="diffs" id="diffs">
       <button class="diff" data-diff="easy"><b>EASY</b><span>A 9-minute night. Slower, half-deaf hunter. Three hits.</span></button>
       <button class="diff" data-diff="normal"><b>NORMAL</b><span>A 12-minute night. The intended experience. Two hits.</span></button>
@@ -602,7 +658,8 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div>
         <h4>Surviving the Warden</h4>
         <ul class="tips">
-          <li><b>The mission: survive until 6:00 AM</b> (the clock is at the top of the screen), then get onto the surface lift when the day shift opens it. Every hour it gets faster and sharper-eared; at 4:00 a power surge blacks everything out; in the last hour it can crawl into the vents. Or open the lift early: three keycards, main power and the breach report.</li>
+          <li><b>Three modes</b> (pick one when you press New Game): <b>The Night Shift</b> — survive until 6:00 AM; <b>The Polaroids</b> — find 8 photos hidden somewhere new every run, each one making it worse, then race to the lift (there is a Daily layout to compete on); <b>Endless Night</b> — no dawn, a new curse every hour (press <b>1</b> or <b>2</b> to choose), survive as long as you can.</li>
+          <li><b>The Night Shift: survive until 6:00 AM</b> (the clock is at the top of the screen), then get onto the surface lift when the day shift opens it. Every hour it gets faster and sharper-eared; at 4:00 a power surge blacks everything out; in the last hour it can crawl into the vents. Or open the lift early: three keycards, main power and the breach report.</li>
           <li>It hunts by sound and sight — and it has sharp ears. Walking near it is enough; when it hears you it <b>runs</b> to the sound. Crouch close to it, and hide the moment it starts running.</li>
           <li>Your flashlight makes you visible from far away — and shining it at the Warden enrages it.</li>
           <li>Its eyes give it away: <span style="color:#cfe6ff">pale</span> when wandering, <span style="color:#f0b45a">amber</span> when investigating, <span style="color:#ff5a4a">red</span> when hunting.</li>
@@ -615,7 +672,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li><b>The Sleepwalker</b> comes out of the Morgue at about 2:30. It is slow and it <b>never hunts you</b> — it just drifts from room to room humming a lullaby, and the lights dim around it. But near it you hallucinate: the room warps, you hear things that aren't there, the clock lies, and you see the Warden where it isn't (look straight at it and it vanishes). Never let it drift into you: it shrieks, your light dies — and the Warden hears.</li>
           <li>On <b>Hard</b> the Warden breaks through locked iron security doors. Only the blast door to the lift holds.</li>
           <li>Read every note. They contain the codes, routes and secrets you need to get out.</li>
-          <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and <b>16 achievements</b> are saved under Goals.</li>
+          <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and <b>20 achievements</b> are saved under Goals, with your best times for every mode.</li>
           <li>Co-op (up to 4): one player hosts and sends the invite link (or the 4-letter room code); friends open it and press Join. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
         </ul>
       </div>
@@ -645,10 +702,11 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div id="mp-lobby" hidden>
       <div class="kicker" style="margin-top:14px">Guards on shift</div>
       <ul id="mp-players"></ul>
+      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-daily="1">DAILY PHOTOS</button></div>
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 9 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
+    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 10 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
   </div>
 </div>
 
@@ -716,7 +774,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div class="h1">Goals</div>
     <div class="goals-count" id="goals-count"></div>
     <div class="goals-list" id="goals-list"></div>
-    <div class="kicker" style="margin-top:6px">Best shift</div>
+    <div class="kicker" style="margin-top:6px">Best runs</div>
     <div class="goals-best" id="goals-best"></div>
     <div class="row"><button class="btn primary" id="btn-goals-back">Back</button></div>
   </div>
@@ -761,7 +819,7 @@ const fmtTime = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60)
 /* Settings (persisted, validated)                                     */
 /* ------------------------------------------------------------------ */
 const DEFAULTS = { sensitivity: 1, invertY: false, fov: 72, volume: 0.8, muted: false, difficulty: 'normal',
-  quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '' };
+  quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '', mode: 'night', daily: false };
 const settings = Object.assign({}, DEFAULTS);
 (function loadSettings() {
   try {
@@ -772,7 +830,8 @@ const settings = Object.assign({}, DEFAULTS);
     const bool = k => { if (typeof o[k] === 'boolean') settings[k] = o[k]; };
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8);
-    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints');
+    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily');
+    oneOf('mode', ['night', 'photos', 'endless']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard']); oneOf('quality', ['low', 'medium', 'high']);
   } catch (e) { /* storage blocked or corrupt: keep defaults */ }
@@ -1651,7 +1710,7 @@ for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
 /* ------------------------------------------------------------------ */
 const doors = [];
 const DOOR_TYPES = { D: 'normal', Y: 'yellow', B: 'blue', P: 'power', X: 'exit' };
-const wardenBreaksDoors = () => (Net.sessionDiff || settings.difficulty) === 'hard';
+const wardenBreaksDoors = () => (Net.sessionDiff || settings.difficulty) === 'hard' || Endless.has('iron'); // Hard, or the Iron Will curse
 const doorMats = {};
 ['normal', 'yellow', 'blue', 'power', 'exit'].forEach(t => { const tx = mkTex(genDoor(t), false); doorMats[t] = phong({ map: tx, shininess: 35, specular: 0x333333 }); });
 class Door {
@@ -3387,6 +3446,12 @@ const Sound = (function () {
     noise(out, t, 0.75, 'highpass', 1400, 0.5, 0.8, 0.002);
     tone(out, t, 'sine', 80, 28, 0.6, 1, 0.002);
   });
+  S.shutter = safe(function (pos) { // an instant camera: the flash charging, the click, the photo whirring out
+    const t = ctx.currentTime, out = dest(pos, 0.25); out.gain.value = 0.9;
+    tone(out, t, 'sine', 2400, 5200, 0.35, 0.05, 0.25);
+    noise(out, t + 0.36, 0.03, 'highpass', 2500, 1, 0.9, 0.001); tone(out, t + 0.36, 'square', 1600, 900, 0.03, 0.25, 0.001);
+    noise(out, t + 0.42, 0.55, 'bandpass', 900, 2, 0.35, 0.05);
+  });
   S.dreamTick = safe(function () { const t = ctx.currentTime, out = dest(null, 0.1); out.gain.value = 0.45; noise(out, t, 0.06, 'highpass', 2500, 0.7, 0.6, 0.001); tone(out, t, 'sine', 70, 40, 0.1, 0.6, 0.002); });
   S.drawer = safe(function (pos) { // a morgue drawer rolling open, then slamming against its stop
     const t = ctx.currentTime, out = dest(pos, 0.8); out.gain.value = 1.3;
@@ -5014,7 +5079,7 @@ const player = {
         const metal = c.kind === 'door' || c.kind === 'vent' || ['power', 'server', 'containment', 'observation', 'lift'].indexOf(c.room) >= 0;
         const intensity = crouch ? 0.15 : this.sprinting ? 1 : 0.45;
         Sound.footstep(metal ? 'metal' : 'concrete', intensity);
-        const radius = (crouch ? 1.6 : this.sprinting ? 20 : 7) * (metal ? 1.25 : 1);
+        const radius = (crouch ? 1.6 : this.sprinting ? 20 : 7) * (metal ? 1.25 : 1) * (Endless.has('heavy') ? 1.4 : 1);
         Game.noise(this.pos, radius, 'player');
       }
     } else { this.bobPhase = damp(this.bobPhase, Math.round(this.bobPhase / Math.PI) * Math.PI, 6, dt); }
@@ -5048,7 +5113,7 @@ const player = {
       if (this.crankT <= 0) { this.crankT = 0.45; this.battery = Math.min(1, this.battery + 0.03); Sound.crank(); Game.noise(this.pos, 9, 'player'); }
     } else this.crankT = 0;
     if (this.flashOn()) {
-      this.battery = Math.max(0, this.battery - diff().drain * dt);
+      this.battery = Math.max(0, this.battery - diff().drain * dt * (Endless.has('hungry') ? 2 : 1));
       if (this.battery < 0.15 && !this.lowWarned) { this.lowWarned = true; UI.msg(this.spares ? 'Battery low. [R] to swap.' : 'Battery low. Find batteries or crank with [R].', 'warn'); }
       if (this.battery <= 0) { this.flashState = false; UI.msg('The flashlight dies.', 'warn'); Sound.click(); }
     }
@@ -5123,6 +5188,8 @@ window.addEventListener('keydown', e => {
       case 'KeyG': Net.ping(); break;
       case 'KeyV': case 'KeyQ': Combat.punch(); break;
       case 'KeyP': case 'Escape': Game.pause(); break;
+      case 'Digit1': case 'Numpad1': Endless.pick(0); break; // Endless Night: choosing a curse
+      case 'Digit2': case 'Numpad2': Endless.pick(1); break;
     }
   } else if (Game.state === 'reading') {
     if (code === 'KeyE' || code === 'Escape' || code === 'Space' || code === 'Enter') { e.preventDefault(); UI.closeNote(); }
@@ -5526,13 +5593,14 @@ const _v3c = new T.Vector3();
 // everyone on this shift: the local player plus remote players (alive or not)
 function crew() { const out = [player]; for (const r of Net.remotes.values()) if (r.inGame) out.push(r); return out; }
 const Game = {
-  state: 'loading', time: 0, fps: 60, power: false, alarm: false, logs: false, logsProgress: 0, downloading: false,
+  state: 'loading', mode: 'night', time: 0, fps: 60, power: false, alarm: false, logs: false, logsProgress: 0, downloading: false,
   exitOpen: false, exitOpening: false, ending: false, endingLock: false, controlLock: false, target: null,
   cards: { yellow: false, blue: false, red: false },
   breakerSeq: [], notesRead: new Set(), stats: { spotted: 0, damage: 0 }, flags: {}, shakeAmt: 0, dip: 0, eventT: 20,
   deathT: 0, endT: 0, introT: 0, poolT: 0, exploreT: 0, flashObj: null, afterNote: null, errors: 0, alarmT: 0, termBeep: 0, awayWarned: false,
   respawnAt: 0, wipeT: 0, liftMsgT: 0, fakeT: 60, popT: 0, lureT: 0, glimpseT: 80, stareCD: 0, termDrawT: 0,
   objectives() {
+    if (this.mode !== 'night') return Modes.objectives();
     const c = this.cards, n = (c.yellow ? 1 : 0) + (c.blue ? 1 : 0) + (c.red ? 1 : 0);
     return [
       { id: 'flash', text: 'Find a flashlight', done: player.hasFlash },
@@ -5699,6 +5767,14 @@ const Game = {
         break;
       }
       case 'decoy': Sound.decoy(new T.Vector3(+ev.x || 0, 1.3, +ev.z || 0), ev.v | 0); break;
+      case 'wq': // the quick modes: it is already awake
+        if (!Net.isClient) Monster.activate();
+        Sound.roar(0.55); UI.msg('Somewhere in the dark, something wakes up.', 'story', 4);
+        break;
+      case 'photo': Photos.apply(ev); break;
+      case 'ehour': Endless.onHour(ev.h | 0); break;
+      case 'curse': Endless.apply(String(ev.id)); break;
+      case 'brown': Endless.brownout(); break;
       case 'sleeper': { // 02:30: the second subject rises out of the morgue floor
         Sleeper.emerge(); Cine.trigger('sleeper');
         Sound.drawer(new T.Vector3(Sleeper.pos.x, 1, Sleeper.pos.z)); Game.dip = Math.max(Game.dip, 0.5);
@@ -5710,7 +5786,7 @@ const Game = {
         Sleeper.shriekT = 1.8; Sound.sleeperShriek(new T.Vector3(Sleeper.pos.x, 1.9, Sleeper.pos.z));
         if (mine) Dream.nightmare(); else UI.msg(who + ' walked into the Sleepwalker. That scream carried…', 'warn', 3.5);
         break;
-      case 'over': if (this.state !== 'dead' && this.state !== 'won') { UI.closeNote(true); this.showGameOver(); } break;
+      case 'over': if (this.state !== 'dead' && this.state !== 'won') { if (ev.t) this.flags.lastAlive = +ev.t; UI.closeNote(true); this.showGameOver(); } break;
     }
   },
 
@@ -5738,7 +5814,7 @@ const Game = {
     world.liftDoors.forEach(d => { d.mesh.position.x = 66 + d.side * 3.0; }); world.liftCall.material = MAT.ledOff;
     hemi.intensity = 0.5; scene.fog.density = FOG_BASE;
     for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) grid[z][x].explored = false;
-    Monster.reset(); Dream.reset(); Sleeper.reset(); if (Phantom.model) Phantom.model.visible = false; Phantom.active = false; Phantom.mode = '';
+    Monster.reset(); Dream.reset(); Sleeper.reset(); Modes.reset(); if (Phantom.model) Phantom.model.visible = false; Phantom.active = false; Phantom.mode = '';
     player.reset();
     Cine.reset(); Hints.reset(); Combat.reset(); Arms.reset(); Night.reset();
     Sound.setAlarm(false); Sound.setHum(false);
@@ -5750,6 +5826,7 @@ const Game = {
   newGame() {
     Preview.detach();
     Sound.init(); Sound.setMode('game');
+    this.mode = (Net.active && Net.sessionMode) || settings.mode || 'night'; if (!MODES[this.mode]) this.mode = 'night';
     this.resetWorld();
     UI.hideAll(); UI.prev = []; UI.hud(true);
     this.state = 'playing';
@@ -5765,8 +5842,11 @@ const Game = {
       player.hasFlash = true; player.flashState = false; // every guard carries a light online
       flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true;
       Net.onGameStart();
-      UI.center('02:00 AM', 'SURVIVE UNTIL 6:00 AM · ' + crew().length + ' guards on shift', 4.2);
-    } else UI.center('02:00 AM', 'SURVIVE UNTIL 6:00 AM', 4.2);
+    }
+    Modes.start();
+    if (this.mode !== 'night') Modes.intro();
+    else if (Net.active) UI.center('02:00 AM', 'SURVIVE UNTIL 6:00 AM · ' + crew().length + ' guards on shift', 4.2);
+    else UI.center('02:00 AM', 'SURVIVE UNTIL 6:00 AM', 4.2);
   },
   // restart button: online only the host can restart (for everyone)
   restart() { if (Net.isClient) return; if (Net.isHost) Net.startGame(); else this.newGame(); },
@@ -5793,9 +5873,12 @@ const Game = {
     b.textContent = Net.isClient ? 'Waiting for the host…' : Net.isHost ? label + ' (everyone)' : label;
   },
   showGameOver() {
+    if (this.mode === 'endless') { this.showResult('endless'); return; } // in Endless Night, getting caught is how it ends
     this.state = 'dead'; Input.exitLock(); UI.hud(false); Cine.reset();
     $('go-stats').innerHTML = '';
-    const rows = [['Survived until', Night.clock() + ' AM'], ['Dawn was', Night.leftText() + ' away'], ['Keycards', CARD_COLORS.filter(c => this.cards[c]).length + ' / 3'], ['Notes found', this.notesRead.size + ' / ' + NOTE_ORDER.length], ['Times spotted', this.stats.spotted], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]];
+    const rows = this.mode === 'photos'
+      ? [['Photos found', Photos.got + ' / ' + PHOTO_N], ['Time', fmtClock(this.flags.lastAlive || this.flags.diedAt || this.time)], ['Layout', Photos.daily ? 'Today\'s photos' : 'Run #' + (Photos.seed % 100000)], ['Times spotted', this.stats.spotted], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]]
+      : [['Survived until', Night.clock() + ' AM'], ['Dawn was', Night.leftText() + ' away'], ['Keycards', CARD_COLORS.filter(c => this.cards[c]).length + ' / 3'], ['Notes found', this.notesRead.size + ' / ' + NOTE_ORDER.length], ['Times spotted', this.stats.spotted], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]];
     if (Net.active) rows.unshift(['Guards', crew().length + ' on shift']);
     if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
     rows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; $('go-stats').appendChild(s); $('go-stats').appendChild(v); });
@@ -5806,6 +5889,7 @@ const Game = {
     $('fx-fade').style.transition = 'opacity .8s'; $('fx-fade').style.opacity = 0;
   },
   showVictory() {
+    if (this.mode === 'photos') { this.showResult('photos'); return; }
     this.state = 'won'; Input.exitLock(); UI.hud(false); Cine.reset();
     $('win-stats').innerHTML = '';
     $('win-title').textContent = Night.dawn ? (Net.active ? 'You survived the night — together' : 'You survived the night') : 'You got out early';
@@ -5830,6 +5914,44 @@ const Game = {
     this.endButtons('btn-win-again', 'Play Again');
     UI.show('screen-victory');
     $('fx-white').style.transition = 'opacity .6s'; $('fx-white').style.opacity = 0;
+    Sound.setAlarm(false);
+  },
+
+  // the end of a Polaroids or Endless Night run: your time is the score, against your best
+  showResult(m) {
+    this.state = m === 'endless' ? 'dead' : 'won'; Input.exitLock(); UI.hud(false); Cine.reset(); Endless.hideOffer();
+    const t = m === 'endless' ? (this.flags.lastAlive || this.flags.diedAt || this.time) : this.time, team = Net.active && crew().length > 1;
+    const dn = (Net.sessionDiff || settings.difficulty).toUpperCase(), nc = Endless.curses.length;
+    const rec = Modes.record(m, t, m === 'endless' ? { hours: Endless.hour + 1, curses: nc } : { photos: Photos.got });
+    if (m === 'photos') {
+      $('win-title').textContent = team ? 'You all got out' : 'You got out';
+      $('win-sub').textContent = 'The Polaroids · all ' + PHOTO_N + ' photos · ' + fmtClock(t) + (Photos.daily ? ' · today\'s photos' : '');
+    } else {
+      $('win-title').textContent = team ? 'The night took all of you' : 'The night took you';
+      $('win-sub').textContent = 'Endless Night · you lasted ' + fmtClock(t) + ' · hour ' + (Endless.hour + 1) + ' · ' + nc + ' curse' + (nc === 1 ? '' : 's');
+    }
+    const rows = m === 'photos'
+      ? [['Time', fmtClock(t)], ['Photos', Photos.got + ' / ' + PHOTO_N], ['Times spotted', this.stats.spotted], ['Damage taken', this.stats.damage], ['Difficulty', dn]]
+      : [['Survived', fmtClock(t)], ['Hours', Endless.hour + 1], ['Curses', nc], ['Times spotted', this.stats.spotted], ['Difficulty', dn]];
+    if (Net.active) rows.unshift(['Guards', crew().length + '']);
+    if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
+    const put = (el, list) => { el.innerHTML = ''; list.forEach(([a, b]) => { const sp = document.createElement('span'); sp.textContent = a; const v = document.createElement('b'); v.textContent = b; el.appendChild(sp); el.appendChild(v); }); };
+    put($('win-stats'), rows);
+    put($('win-score'), m === 'photos' ? Photos.list.map(P => [PHOTO_ART[P.art].cap, P.taken ? '✓' : '—']) : (nc ? Endless.curses.map(id => [CURSE_BY[id].name, 'hour ' + (Endless.curses.indexOf(id) + 2)]) : [['No curses', '—']]));
+    $('rank-letter').textContent = rec.rank; $('rank-letter').className = 'r-' + rec.rank;
+    $('rank-score').textContent = fmtClock(t);
+    let best = rec.isBest ? 'NEW BEST ON ' + dn : 'BEST ON ' + dn + ': ' + fmtClock(rec.prev.time);
+    if (rec.daily) best += ' · ' + (rec.daily.isBest ? 'TODAY\'S BEST' : 'TODAY\'S BEST: ' + fmtClock(rec.daily.prev.time));
+    $('rank-best').textContent = best;
+    const wa = $('win-ach'); wa.innerHTML = '';
+    (Goals.runGot || []).forEach(x => { const d = document.createElement('span'); d.textContent = '★ ' + x.name; wa.appendChild(d); });
+    $('epilogue').textContent = m === 'photos'
+      ? 'You never look at the photos again. You don\'t have to: they are there every time you close your eyes.'
+      : 'Down on Sublevel 6 the clock on the wall reads 3:33. It has read 3:33 for a very long time.';
+    this.endButtons('btn-win-again', m === 'photos' ? 'Play Again' : 'Try Again');
+    UI.show('screen-victory');
+    $('fx-white').style.transition = 'opacity .6s'; $('fx-white').style.opacity = 0;
+    $('fx-fade').style.transition = 'opacity .8s'; $('fx-fade').style.opacity = 0;
     Sound.setAlarm(false);
   },
 
@@ -5858,6 +5980,15 @@ const Game = {
     if (Net.isClient) { Net.request('take', items.indexOf(def.item)); return; }
     this.emit({ k: 'take', i: items.indexOf(def.item), by: this.idOf(by) });
     if (def.kind === 'card') this.noise(by.pos, 2, 'player', by);
+  },
+  takePhoto(i, by = player) {
+    const P = Photos.list[i]; if (!P || P.taken || this.mode !== 'photos') return;
+    if (Net.isClient) { Net.request('photo', i); return; }
+    this.emit({ k: 'photo', i, by: this.idOf(by) });
+    const n = Photos.got;
+    this.noise(by.pos, 9 + n * 1.5, 'player', by); // the flash and the whir carry
+    if (n >= 2 && !this.flags.sleeperOut) { this.flags.sleeperOut = true; this.emit({ k: 'sleeper' }); }
+    if (n === 7 && Monster.active && (Monster.state === 'PATROL' || Monster.state === 'SEARCH' || Monster.state === 'LOST')) Monster.investigate(by.pos.clone(), 0.8, true);
   },
   takeFlashlight(def) { this.takeItem(def); },
   takeBattery(def) { this.takeItem(def); },
@@ -6020,6 +6151,7 @@ const Game = {
     switch (a) {
       case 'door': { const d = doors[i]; if (d) this.useDoor(d, r); break; }
       case 'take': { const it = items[i]; if (it) this.takeItem(it.def, r); break; }
+      case 'photo': { const P = Photos.list[i]; if (P && Math.hypot(P.x - r.pos.x, P.z - r.pos.z) < 4.5) this.takePhoto(i, r); break; } // (their position here is a moment old)
       case 'breaker': { const b = world.breakers[i]; if (b) this.flipBreaker(b, r); break; }
       case 'lever': this.pullLever(r); break;
       case 'terminal': this.useTerminal(r); break;
@@ -6062,7 +6194,8 @@ const Game = {
     player.dead = true; player.health = 0; this.controlLock = true; this.deathT = 0;
     player.flashState = false; player.crouchToggle = false;
     Input.keys = {}; this.flags.deathFade = false; this.flags.respawnShown = 0;
-    if (Net.active) { this.respawnAt = this.time + 14; Net.reportDeath(); }
+    this.flags.diedAt = this.time;
+    if (Net.active) { this.respawnAt = this.time + (this.mode === 'endless' ? 1e9 : 14); Net.reportDeath(); }
     Cine.play('jumpscare');
   },
   respawn() { // online: back at Desk B
@@ -6120,7 +6253,12 @@ const Game = {
       p.pitch = lerp(-0.75, -0.06, smooth(0.4, 3.0, this.introT));
       if (this.introT >= 3.2) {
         this.controlLock = false; this.introT = -1;
-        if (Net.active) { UI.msg('Stay alive until the day shift opens the lift at 6:00 AM — or find the keycards and get out sooner. Stay together.', 'story', 6); setTimeout(() => { if (Game.state === 'playing') UI.msg('[G] marks a spot for your team. [H] shows a hint.', '', 4.5); }, 3600); }
+        if (Net.active) {
+          UI.msg(this.mode === 'photos' ? 'Find all eight photos together — they count for the whole team — then everyone into the lift.'
+            : this.mode === 'endless' ? 'The night never ends. Stay alive as long as you can — a caught guard is out for good.'
+            : 'Stay alive until the day shift opens the lift at 6:00 AM — or find the keycards and get out sooner. Stay together.', 'story', 6);
+          setTimeout(() => { if (Game.state === 'playing') UI.msg('[G] marks a spot for your team. [H] shows a hint.', '', 4.5); }, 3600);
+        } else if (this.mode !== 'night') Modes.introMsgs();
         else {
           UI.msg('You fell asleep at the desk. Something is loose down here — and the lift stays locked until 6:00 AM.', 'story', 5.5);
           setTimeout(() => { if (Game.state === 'playing') UI.msg('Survive until the day shift arrives. Or find a way out sooner.', 'story', 4.5); }, 3200);
@@ -6159,7 +6297,7 @@ const Game = {
     if (p.dead) this.updateDeath(dt);
     // online: the shift is over when every guard is down at once
     if (Net.isHost && this.state !== 'dead' && this.state !== 'won') {
-      if (crew().every(a => a.dead)) { this.wipeT += dt; if (this.wipeT > 2.4) { this.wipeT = -999; this.emit({ k: 'over' }); } }
+      if (crew().every(a => a.dead)) { this.wipeT += dt; if (this.wipeT > 2.4) { this.wipeT = -999; this.emit({ k: 'over', t: +(this.time - 2.4).toFixed(1) }); } }
       else if (this.wipeT > 0) this.wipeT = 0;
     }
     // explored cells for the minimap
@@ -6179,13 +6317,14 @@ const Game = {
   scripts(dt) {
     const F = this.flags, p = player, host = !Net.isClient;
     // the Warden wakes up (the host decides; every guard watches it happen on CCTV)
+    if (host && !F.awakeQueued && !Monster.active && F.quickWake) { F.awakeQueued = true; F.awakeAt = this.time + 5; F.wokeAt = F.awakeAt; }
     if (host && !F.awakeQueued && !Monster.active) {
       const leftOffice = crew().some(a => cellOf(a.pos.x, a.pos.z).room !== 'security');
       if ((p.hasFlash && (leftOffice || this.time - (F.flashAt || 0) > 30)) || this.time > 70) { F.awakeQueued = true; F.awakeAt = this.time + rand(5, 9); F.wokeAt = F.awakeAt; }
     }
-    if (host && F.awakeQueued && !F.woke && this.time >= F.awakeAt) { F.woke = true; this.emit({ k: 'cine', id: 'wake' }); }
+    if (host && F.awakeQueued && !F.woke && this.time >= F.awakeAt) { F.woke = true; this.emit(F.quickWake ? { k: 'wq' } : { k: 'cine', id: 'wake' }); }
     // a little later, the second one comes out (not in the middle of a chase, if it can help it)
-    if (host && F.woke && !F.sleeperOut && !this.ending && !Night.dawn && Night.t >= Night.len * 0.125 && this.time - (F.wokeAt || 0) > 20
+    if (host && this.mode === 'night' && F.woke && !F.sleeperOut && !this.ending && !Night.dawn && Night.t >= Night.len * 0.125 && this.time - (F.wokeAt || 0) > 20
       && ((Monster.state !== 'HUNT' && Monster.state !== 'ATTACK') || Night.t >= Night.len * 0.2)) { F.sleeperOut = true; this.emit({ k: 'sleeper' }); }
     // it screams when the lights come back on
     if (host && F.lightsCineAt && this.time >= F.lightsCineAt) {
@@ -6204,7 +6343,7 @@ const Game = {
     // later on it stalks you: it is simply there, at the edge of the light, watching
     if (host && Monster.active && (F.sighted || Monster.huntCount > 0) && !this.exitOpening && !this.ending) {
       this.stalkT -= dt;
-      if (this.stalkT <= 0) this.stalkT = this.tryStalk() ? rand(45, 80) * Night.pressureMul() : rand(5, 9);
+      if (this.stalkT <= 0) this.stalkT = (this.tryStalk() ? rand(45, 80) * Night.pressureMul() : rand(5, 9)) * (Endless.has('watcher') ? 0.4 : 1);
     }
     // the fake-out: a noise from one direction… while it circles round to come at you from the side
     if (host && Monster.active && !Monster.cine && (F.sighted || Monster.huntCount > 0) && !this.exitOpening && !this.ending && !Night.dawn
@@ -6306,7 +6445,7 @@ const Game = {
     return true;
   },
   onStalkEnd(stared, a) { // host / solo
-    this.stalkT = rand(45, 80);
+    this.stalkT = rand(45, 80) * (Endless.has('watcher') ? 0.4 : 1);
     if (stared && a) this.emit({ k: 'stare', by: this.idOf(a) });
   },
   tryPhantom() {
@@ -6425,7 +6564,8 @@ const Game = {
     if (this.deathT > 3.2 && this.flags.deathFade !== 2) { this.flags.deathFade = 2; player.eyeY = 0.35; $('fx-fade').style.transition = 'opacity 1.5s'; $('fx-fade').style.opacity = 0.55; }
     if (this.deathT > 2.4) {
       const left = Math.ceil(this.respawnAt - this.time);
-      if (left > 0) { if (this.flags.respawnShown !== left) { this.flags.respawnShown = left; UI.center('YOU WERE CAUGHT', 'Back at Desk B in ' + left + 's — your team can still make it', 1.5); } }
+      if (this.mode === 'endless') { if (this.flags.respawnShown !== -1) { this.flags.respawnShown = -1; UI.center('YOU WERE CAUGHT', 'You\'re out — watch your team hold on', 4); } }
+      else if (left > 0) { if (this.flags.respawnShown !== left) { this.flags.respawnShown = left; UI.center('YOU WERE CAUGHT', 'Back at Desk B in ' + left + 's — your team can still make it', 1.5); } }
       else if (this.state !== 'dead') this.respawn();
     }
   },
@@ -6594,7 +6734,22 @@ function bindSettingsUI() {
     d1(); drawMute(); d2(); d3(); d4(); d5(); d6(); d7(); syncDiffCards(); Sound.ui();
   });
 }
-function syncDiffCards() { document.querySelectorAll('#diffs .diff').forEach(b => b.classList.toggle('sel', b.dataset.diff === settings.difficulty)); }
+function syncDiffCards() { document.querySelectorAll('#diffs .diff').forEach(b => b.classList.toggle('sel', b.dataset.diff === settings.difficulty)); syncModeCards(); }
+// the briefing: which mode, what it is, and your best at it
+const DIFF_TEXT = {
+  night: { easy: 'A 9-minute night. Slower, half-deaf hunter. Three hits.', normal: 'A 12-minute night. The intended experience. Two hits.', hard: 'A 15-minute night. Fast, sharp-eared, relentless. One touch. It smashes through iron doors.' },
+  other: { easy: 'Slower, half-deaf hunter. Three hits.', normal: 'The intended experience. Two hits.', hard: 'Fast, sharp-eared, relentless. One touch. It smashes through iron doors.' },
+};
+function syncModeCards() {
+  const m = MODES[settings.mode] ? settings.mode : 'night';
+  document.querySelectorAll('#modes .mode').forEach(b => { b.classList.toggle('sel', b.dataset.mode === m); const em = b.querySelector('em'); if (em) em.textContent = Modes.cardBest(b.dataset.mode); });
+  $('brief-h1').textContent = m === 'photos' ? 'The Polaroids' : m === 'endless' ? 'Endless Night' : 'Survive until 6:00 AM';
+  ['night', 'photos', 'endless'].forEach(k => { $('brief-' + k).hidden = k !== m; });
+  $('daily-row').hidden = m !== 'photos'; $('daily').checked = !!settings.daily;
+  $('diff-kicker').textContent = m === 'night' ? 'Difficulty · how long the night lasts' : 'Difficulty';
+  const tx = DIFF_TEXT[m === 'night' ? 'night' : 'other'];
+  document.querySelectorAll('#diffs .diff').forEach(b => { b.querySelector('span').textContent = tx[b.dataset.diff]; });
+}
 function bindMenus() {
   const on = (id, fn) => $(id).addEventListener('click', e => { e.preventDefault(); Sound.init(); Sound.resume(); fn(); });
   on('btn-new', () => { UI.goto('screen-briefing'); syncDiffCards(); });
@@ -6607,6 +6762,8 @@ function bindMenus() {
   on('btn-set-back', () => UI.back());
   on('btn-howto-back', () => UI.back());
   on('btn-start', () => Game.newGame());
+  document.querySelectorAll('#modes .mode').forEach(b => b.addEventListener('click', () => { settings.mode = b.dataset.mode; saveSettings(); syncModeCards(); Sound.ui(); }));
+  $('daily').addEventListener('change', e => { settings.daily = !!e.target.checked; saveSettings(); Sound.ui(); });
   document.querySelectorAll('#diffs .diff').forEach(b => b.addEventListener('click', () => { settings.difficulty = b.dataset.diff; saveSettings(); syncDiffCards(); Sound.ui(); const s = $('set-diff'); s.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.v === settings.difficulty)); }));
   on('btn-resume', () => Game.resume());
   on('btn-journal', () => { UI.buildJournal(); UI.goto('screen-journal'); });
@@ -6815,6 +6972,8 @@ const Hints = {
   },
   liftTarget() { return { pos: new T.Vector3(66, 1.3, 55), label: 'Surface lift', key: 'lift', tip: Net.active ? 'Everyone into the surface lift!' : 'Get into the surface lift!', done: () => Game.ending }; },
   primary() {
+    if (Game.mode === 'photos') return Photos.hintTarget();
+    if (Game.mode === 'endless') return null; // nothing to find — only to survive
     const c = Game.cards;
     if (Night.dawn) return this.liftTarget();
     if (!player.hasFlash) return this.itemTarget('flashlight');
@@ -6864,7 +7023,7 @@ const Hints = {
     this.cd = 20; this.stuckT = 0;
     this.pulse(tg, 10, tg.urgent ? 'Hint: hide in the locker — it can\'t find you if it didn\'t see you get in.' : undefined);
   },
-  progressKey() { const c = Game.cards; return [player.hasFlash, c.yellow, c.blue, c.red, Game.power, Game.breakerSeq.length, Game.notesRead.has('workorder'), Game.logs, Game.downloading, Game.exitOpening].join(); },
+  progressKey() { const c = Game.cards; return [Photos.got, player.hasFlash, c.yellow, c.blue, c.red, Game.power, Game.breakerSeq.length, Game.notesRead.has('workorder'), Game.logs, Game.downloading, Game.exitOpening].join(); },
   update(dt) {
     this.cd = Math.max(0, this.cd - dt);
     const A = this.active;
@@ -7369,7 +7528,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 5, BUILD = 9, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 6, BUILD = 10, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -7633,7 +7792,7 @@ class RemotePlayer {
 }
 
 const Net = {
-  role: 'solo', myId: 0, myName: 'Guard', sessionDiff: null, inGame: false,
+  role: 'solo', myId: 0, myName: 'Guard', sessionDiff: null, sessionMode: null, sessionDaily: false, sessionSeed: 0, inGame: false,
   remotes: new Map(),   // everyone else on the shift: id -> RemotePlayer
   peers: new Map(),     // links: host: id -> each friend; client: 0 -> the host
   byCid: new Map(),     // host: the same links, by connection id
@@ -7883,7 +8042,7 @@ const Net = {
     this.peers.clear(); this.byCid.clear(); this.goneCids.clear(); this.relays = []; this.relay = null;
     for (const r of this.remotes.values()) r.dispose();
     this.remotes.clear();
-    this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.myId = 0; this.code = ''; this.hid = '';
+    this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.sessionMode = null; this.sessionDaily = false; this.myId = 0; this.code = ''; this.hid = '';
     this.welcomed = false; this.recovering = false; this.hiccup = false; this.goneAt = 0;
     this.lights.forEach(l => { l.visible = false; l.intensity = 0; });
     this.pings.forEach(p => { scene.remove(p.spr); p.spr.material.map.dispose(); p.spr.material.dispose(); }); this.pings.length = 0;
@@ -7927,7 +8086,7 @@ const Net = {
         const taken = new Set([this.myName].concat([...this.remotes.values()].map(x => x.name)));
         for (let k = 2; taken.has(name); k++) name = (cleanName(m.name) || 'Guard').slice(0, 13) + ' ' + k;
         peer.name = name; peer.remote = new RemotePlayer(peer.id, name); this.remotes.set(peer.id, peer.remote);
-        this.rel(peer, { k: 'welcome', id: peer.id, diff: settings.difficulty });
+        this.rel(peer, { k: 'welcome', id: peer.id, diff: settings.difficulty, mode: settings.mode, daily: settings.daily ? 1 : 0 });
         this.sendRoster(); this.lobbyUpdate(); Sound.ui();
         break;
       }
@@ -7943,9 +8102,10 @@ const Net = {
   onClientMsg(m) {
     const now = performance.now();
     switch (m.k) {
-      case 'welcome': this.myId = m.id | 0; this.welcomed = true; this.sessionDiff = DIFF[m.diff] ? m.diff : 'normal'; this.lobbyUpdate(); break;
+      case 'welcome': this.myId = m.id | 0; this.welcomed = true; this.applyCfg(m); this.lobbyUpdate(); break;
+      case 'cfg': this.applyCfg(m); this.lobbyUpdate(); break;
       case 'roster': this.applyRoster(m.l); this.lobbyUpdate(); break;
-      case 'start': this.sessionDiff = DIFF[m.diff] ? m.diff : 'normal'; this.applyRoster(m.l); UI.closeNote(true); Game.newGame(); break;
+      case 'start': this.applyCfg(m); this.sessionSeed = (+m.seed || 0) >>> 0; this.applyRoster(m.l); UI.closeNote(true); Game.newGame(); break;
       case 's': if (this.inGame) this.applySnap(m, now); break;
       case 'ev': if (this.inGame && Game.inWorld()) Game.applyEvent(m.e); break;
       case 'msg': if (Game.inWorld()) { if (m.t) UI.msg(String(m.t).slice(0, 200), MSG_TYPES.has(m.y) ? m.y : '', clamp(+m.d || 3.6, 1, 8)); Game.sfx(m.s); } break;
@@ -7958,6 +8118,8 @@ const Net = {
         : m.why === 'gone' ? 'Lost connection to the host.' : 'The host ended the session.'); break;
     }
   },
+  applyCfg(m) { this.sessionDiff = DIFF[m.diff] ? m.diff : 'normal'; this.sessionMode = MODES[m.mode] ? m.mode : 'night'; this.sessionDaily = !!m.daily; },
+  sendCfg() { if (this.isHost) this.broadcast({ k: 'cfg', diff: settings.difficulty, mode: settings.mode, daily: settings.daily ? 1 : 0 }); }, // the host changed the mode in the lobby
   roster() { const l = [[0, this.myName]]; for (const r of this.remotes.values()) l.push([r.id, r.name]); return l; },
   sendRoster() { this.broadcast({ k: 'roster', l: this.roster() }); },
   applyRoster(l) { // client: the list of other guards
@@ -7974,8 +8136,9 @@ const Net = {
   startGame() { // host
     if (!this.isHost) return;
     for (const peer of [...this.peers.values()]) if (!peer.remote) this.dropPeer(peer, 'left', true);
-    this.sessionDiff = settings.difficulty;
-    this.broadcast({ k: 'start', diff: this.sessionDiff, l: this.roster() });
+    this.sessionDiff = settings.difficulty; this.sessionMode = settings.mode; this.sessionDaily = !!settings.daily;
+    this.sessionSeed = this.sessionDaily ? dailySeed() : (Math.random() * 4294967296) >>> 0; // everyone gets the same photos
+    this.broadcast({ k: 'start', diff: this.sessionDiff, mode: this.sessionMode, daily: this.sessionDaily ? 1 : 0, seed: this.sessionSeed, l: this.roster() });
     UI.closeNote(true);
     Game.newGame();
   },
@@ -8160,7 +8323,10 @@ const Net = {
     if (this.isHost) { const link = this.inviteLink(); $('mp-room').textContent = this.code || '····'; $('mp-link').value = link; $('mp-link').hidden = !link; $('btn-mp-copylink').hidden = !link; }
     $('btn-mp-start').hidden = !this.isHost; $('btn-mp-start').disabled = ready === 0;
     const via = this.isHost ? (up ? ' · online through ' + up + ' relay server' + (up > 1 ? 's' : '') : '') : this.relay && this.welcomed ? ' · online through ' + this.relay.name : '';
-    $('mp-diff-note').textContent = 'Difficulty: ' + (this.isClient ? (this.sessionDiff || '…') : settings.difficulty).toUpperCase() + (this.isHost ? ' (change it in Settings)' : ' (set by the host)') + via;
+    const mode = this.isClient ? this.sessionMode : settings.mode, daily = this.isClient ? this.sessionDaily : settings.daily;
+    $('mp-diff-note').textContent = 'Mode: ' + (MODES[mode] ? MODES[mode].tag + (mode === 'photos' && daily ? ' (DAILY)' : '') : '…') + ' · Difficulty: ' + (this.isClient ? (this.sessionDiff || '…') : settings.difficulty).toUpperCase() + (this.isHost ? ' (difficulty in Settings)' : ' (set by the host)') + via;
+    const mm = $('mp-modes'); mm.hidden = !this.isHost;
+    mm.querySelectorAll('button').forEach(b => { b.classList.toggle('sel', b.dataset.daily ? !!settings.daily : b.dataset.mode === settings.mode); if (b.dataset.daily) b.hidden = settings.mode !== 'photos'; });
     if (this.isClient) {
       this.lobbyStatus(this.recovering ? 'Reconnecting to the host…' : this.welcomed ? 'Connected! Waiting for the host to start the game…' : 'Joining room ' + this.code + '…', this.welcomed && !this.recovering ? 'ok' : '');
     } else if (this.isHost && this.code) {
@@ -8193,6 +8359,11 @@ const Net = {
     $('btn-mp-copylink').addEventListener('click', () => copy(this.inviteLink(), 'Invite link'));
     $('btn-mp-copycode').addEventListener('click', () => copy(this.code, 'Room code'));
     $('btn-mp-start').addEventListener('click', () => { if (this.isHost) { Sound.ui(); this.startGame(); } });
+    $('mp-modes').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      if (!this.isHost) return;
+      if (b.dataset.daily) settings.daily = !settings.daily; else settings.mode = b.dataset.mode;
+      saveSettings(); Sound.ui(); this.sendCfg(); this.lobbyUpdate();
+    }));
     $('btn-mp-leave').addEventListener('click', () => { Sound.ui(); this.leave(); this.lobbyStatus(''); this.lobbyUpdate(); });
   },
 };
@@ -8390,6 +8561,10 @@ const ACH = [
   { id: 'coop', name: 'Buddy System', desc: 'Escape together in online co-op.' },
   { id: 'name', name: 'Who Was He?', desc: 'Learn the Warden\'s real name.' },
   { id: 'lucid', name: 'Lucid Dreamer', desc: 'Stand right beside the Sleepwalker for three seconds without letting it touch you.' },
+  { id: 'shutter', name: 'Shutterbug', desc: 'The Polaroids: find all eight photos and escape.' },
+  { id: 'quick', name: 'Point and Shoot', desc: 'The Polaroids: escape in under six minutes.' },
+  { id: 'insomniac', name: 'Insomniac', desc: 'Endless Night: survive for ten minutes.' },
+  { id: 'cursed', name: 'Bad Luck', desc: 'Endless Night: stay alive with six curses on you.' },
 ];
 const RANKS = [['S', 3300], ['A', 2600], ['B', 1900], ['C', 1200], ['D', -1e9]];
 const CAM_POS = new T.Vector3(102.2, 1.1, 52);
@@ -8457,7 +8632,8 @@ const Goals = {
     if (d === 'hard') this.unlock('hard');
     if (!(G.stats.spotted > 0)) this.unlock('ghost');
     if (!(G.stats.damage > 0)) this.unlock('untouched');
-    if (Night.dawn) this.unlock('dawn'); else if (Night.minutes() < 300) this.unlock('early');
+    if (G.mode === 'photos') { this.unlock('shutter'); if (G.time < 360) this.unlock('quick'); }
+    else if (Night.dawn) this.unlock('dawn'); else if (Night.minutes() < 300) this.unlock('early');
     if (Net.active && crew().length > 1) this.unlock('coop');
   },
   buildScreen() {
@@ -8472,12 +8648,15 @@ const Goals = {
     }
     $('goals-count').textContent = this.count() + ' / ' + ACH.length + ' unlocked';
     const best = $('goals-best'); best.innerHTML = '';
-    for (const d of ['easy', 'normal', 'hard']) {
-      const r = this.data.best[d], el = document.createElement('div');
-      el.innerHTML = '<span></span><b></b>';
-      el.firstChild.textContent = d.toUpperCase();
-      el.lastChild.textContent = r ? r.rank + ' · ' + r.score + ' pts · ' + fmtTime(r.time) : '—';
-      best.appendChild(el);
+    for (const m of ['night', 'photos', 'endless']) {
+      const h = document.createElement('div'); h.className = 'gb-h'; h.textContent = MODES[m].tag + (m === 'photos' ? ' · fastest' : m === 'endless' ? ' · longest' : ''); best.appendChild(h);
+      for (const d of ['easy', 'normal', 'hard']) {
+        const r = m === 'night' ? this.data.best[d] : this.data.best[m + '-' + d], el = document.createElement('div');
+        el.innerHTML = '<span></span><b></b>';
+        el.firstChild.textContent = d.toUpperCase();
+        el.lastChild.textContent = !r ? '—' : m === 'night' ? r.rank + ' · ' + r.score + ' pts · ' + fmtTime(r.time) : r.rank + ' · ' + fmtClock(r.time) + (r.curses ? ' · ' + r.curses + ' curses' : '');
+        best.appendChild(el);
+      }
     }
   },
 };
@@ -8610,15 +8789,16 @@ const HOUR_TEXT = [
 const LIFT_POS = new T.Vector3(66, 0, 55.2);
 const Night = {
   t: 0, len: 720, hour: 0, dawn: false, dawnT: 0, surgeUntil: 0, said: {}, huntT: 0,
-  get ventsOpen() { return this.hour >= 3; },
+  get ventsOpen() { return this.hour >= 3 || (Game.mode === 'photos' && Photos.got >= 6) || Endless.has('vents'); },
   get surge() { return Game.time < this.surgeUntil; },
-  danger() { return Math.min(3, this.hour); },
-  speedMul() { return HOUR_FX.speed[this.danger()] * (this.surge ? 1.08 : 1); },
-  hearMul() { return HOUR_FX.hear[this.danger()]; },
-  sightMul() { return HOUR_FX.sight[this.danger()]; },
+  // how bad it has got: the hour in the night shift, the photos taken in the Polaroids, the hours in Endless Night
+  danger() { return Game.mode === 'photos' ? Photos.danger() : Game.mode === 'endless' ? Endless.danger() : Math.min(3, this.hour); },
+  speedMul() { return HOUR_FX.speed[this.danger()] * (this.surge ? 1.08 : 1) * (Endless.has('legs') ? 1.12 : 1) * Endless.ramp(); },
+  hearMul() { return HOUR_FX.hear[this.danger()] * (Endless.has('ears') ? 1.33 : 1); },
+  sightMul() { return HOUR_FX.sight[this.danger()] * (Endless.has('eyes') ? 1.3 : 1); },
   crawlChance() { return this.surge ? 1 : HOUR_FX.crawl[this.danger()] + (Game.power ? 0 : 0.1); },
   pressureMul() { return HOUR_FX.pressure[this.danger()]; },
-  hideFor() { return HOUR_FX.hide[this.danger()]; }, // how long you can stay in a locker before your nerve goes
+  hideFor() { return HOUR_FX.hide[this.danger()] * (Endless.has('nerve') ? 0.5 : 1); }, // how long you can stay in a locker before your nerve goes
   reset() {
     this.len = NIGHT_LEN[Net.sessionDiff || settings.difficulty] || 720;
     this.t = 0; this.hour = 0; this.dawn = false; this.dawnT = 0; this.surgeUntil = 0; this.said = {}; this.huntT = 0;
@@ -8629,6 +8809,12 @@ const Night = {
   left() { return Math.max(0, 360 - this.minutes()); }, // minutes until dawn
   leftText() { const l = Math.ceil(this.left()), h = Math.floor(l / 60), m = l % 60; return (h ? h + 'h ' : '') + m + 'm'; },
   update(dt) {
+    if (Game.mode !== 'night') { // the other modes keep their own time
+      this.t += dt;
+      if (Game.mode === 'photos') Photos.update(dt); else Endless.update(dt);
+      if (this.surgeUntil && !this.surge && !this.said.surgeEnd) { this.said.surgeEnd = 1; UI.msg('The emergency lights stutter back on.', 'story', 3.5); Game.dip = 0.6; }
+      return;
+    }
     if (this.dawn) { this.dawnT += dt; if (!Net.isClient) this.lastRun(dt); if (!Hints.active && !Game.ending) Hints.pulse(Hints.liftTarget(), 12); return; }
     this.t += dt;
     if (!Net.isClient) { // the host keeps the time for everyone
@@ -8684,6 +8870,7 @@ const Night = {
   },
   // the clock at the top of the screen
   hud() {
+    if (Game.mode !== 'night') { Modes.hud(); return; }
     const el = $('shift'); if (!el) return;
     const m = this.minutes(), cls = this.dawn ? 'dawn' : this.surge ? 'surge' : m >= 330 ? 'late' : '';
     const goal = this.dawn ? 'GET TO THE LIFT · ' + Math.round(Math.hypot(player.pos.x - LIFT_POS.x, player.pos.z - LIFT_POS.z)) + ' M'
@@ -8693,7 +8880,7 @@ const Night = {
     if (UI.hudCache.shift === key) return;
     UI.hudCache.shift = key;
     el.className = cls;
-    $('shift-clock').firstChild.textContent = shown;
+    $('shift-clock').firstChild.textContent = shown; $('shift-clock').querySelector('small').textContent = 'AM';
     $('shift-goal').textContent = goal;
     $('shift-bar').firstElementChild.style.width = clamp((m - 120) / 240, 0, 1) * 100 + '%';
     $('mission').textContent = this.dawn ? 'GET TO THE SURFACE LIFT!' : 'Survive until 6:00 AM';
@@ -8912,7 +9099,7 @@ const Sleeper = {
   },
   // (every peer) at dawn it sinks back down into the floor and is gone
   sink() { if (this.active && this.state !== 'SINK') { this.state = 'SINK'; this.stateT = 0; this.path = null; } },
-  speedFor() { return { easy: 0.68, normal: 0.78, hard: 0.88 }[Net.sessionDiff || settings.difficulty] || 0.78; }, // the Warden ambles at twice this
+  speedFor() { return ({ easy: 0.68, normal: 0.78, hard: 0.88 }[Net.sessionDiff || settings.difficulty] || 0.78) * (Endless.has('restless') ? 2 : 1); }, // the Warden ambles at twice this
   // somewhere to drift to: often a room near one of the guards (it is drawn to the living), never straight at anyone
   pickGoal() {
     const alive = actors().filter(a => !a.inVent);
@@ -9185,9 +9372,10 @@ const Dream = {
     if (S.active && S.state !== 'SINK' && !p.dead && !Game.ending) {
       const d = Math.hypot(S.pos.x - p.pos.x, S.pos.z - p.pos.z);
       this.near = d;
-      target = smooth(15, 3.2, d) * (losClear(p.pos.x, p.pos.z, S.pos.x, S.pos.z) ? 1 : 0.6) * (1 + S.stir * 0.3);
+      target = smooth(Endless.has('restless') ? 22 : 15, 3.2, d) * (losClear(p.pos.x, p.pos.z, S.pos.x, S.pos.z) ? 1 : 0.6) * (1 + S.stir * 0.3);
       if (S.state === 'EMERGE') target *= smooth(0, 4, S.stateT);
     }
+    if (Endless.has('dream') && !p.dead) target = Math.max(target, 0.42); // the Paranoia curse: you never quite wake up
     target = Math.min(1, target);
     this.k = target > this.k ? damp(this.k, target, 1.4, dt) : Math.max(target, this.k - dt * 0.06); // it comes on fast and lingers after it has passed
     if (this.k < 0.002) this.k = 0;
@@ -9319,11 +9507,443 @@ const Dream = {
 };
 
 /* ------------------------------------------------------------------ */
+/* GAME MODES                                                          */
+/*  night   - THE NIGHT SHIFT: survive until 6:00 AM (or get out early) */
+/*  photos  - THE POLAROIDS: eight photos are pinned around Sublevel 6, */
+/*            somewhere different every run. Every one you take makes   */
+/*            it worse. Find them all, then run for the lift. Timed.    */
+/*  endless - ENDLESS NIGHT: dawn never comes. Every hour you choose a  */
+/*            curse, and they stack. How long can you last?            */
+/* ------------------------------------------------------------------ */
+const MODES = {
+  night: { name: 'The Night Shift', tag: 'NIGHT SHIFT' },
+  photos: { name: 'The Polaroids', tag: 'POLAROIDS' },
+  endless: { name: 'Endless Night', tag: 'ENDLESS NIGHT' },
+};
+const PHOTO_N = 8;
+const dailySeed = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
+const fmtClock = s => { s = Math.max(0, Math.floor(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+
+/* ---- the photos: eight flash-lit snapshots, each worse than the last ---- */
+function poly(g, pts) { g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]); g.closePath(); g.fill(); }
+// a pale, too-thin figure: (x, feet y, height, arms out 0..1)
+function paleFigure(g, x, y, h, spread = 0, col = 'rgba(226,216,212,.9)') {
+  g.strokeStyle = col; g.fillStyle = col; g.lineCap = 'round';
+  const hy = y - h, sh = hy + h * 0.16;
+  g.beginPath(); g.ellipse(x, hy + h * 0.06, h * 0.045, h * 0.065, 0, 0, TAU); g.fill();
+  g.lineWidth = Math.max(1, h * 0.05); g.beginPath(); g.moveTo(x, sh - h * 0.02); g.lineTo(x, y - h * 0.48); g.stroke();
+  g.lineWidth = Math.max(0.8, h * 0.028);
+  for (const s of [-1, 1]) {
+    g.beginPath(); g.moveTo(x, sh); g.lineTo(x + s * h * (0.09 + spread * 0.25), sh + h * (0.3 - spread * 0.2)); g.lineTo(x + s * h * (0.12 + spread * 0.42), y - h * (0.18 + spread * 0.25)); g.stroke(); // arms to its knees
+    g.beginPath(); g.moveTo(x, y - h * 0.48); g.lineTo(x + s * h * 0.07, y - h * 0.24); g.lineTo(x + s * h * 0.06, y); g.stroke();
+  }
+}
+const PHOTO_ART = [
+  { cap: 'west hall, 3:12 AM', draw(g) { // a corridor — and at the very end of it, something standing
+    const vx = 70, vy = 64;
+    g.fillStyle = '#2b2c28'; poly(g, [[0, 140], [140, 140], [vx + 9, vy + 9], [vx - 9, vy + 9]]);
+    g.fillStyle = '#3a3b35'; poly(g, [[0, 0], [0, 140], [vx - 9, vy + 9], [vx - 9, vy - 13]]);
+    g.fillStyle = '#33342f'; poly(g, [[140, 0], [140, 140], [vx + 9, vy + 9], [vx + 9, vy - 13]]);
+    g.fillStyle = '#161714'; poly(g, [[0, 0], [140, 0], [vx + 9, vy - 13], [vx - 9, vy - 13]]);
+    g.strokeStyle = 'rgba(200,140,40,.5)'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, 96); g.lineTo(vx - 9, vy + 1); g.moveTo(140, 96); g.lineTo(vx + 9, vy + 1); g.stroke();
+    g.fillStyle = '#080808'; g.fillRect(vx - 9, vy - 13, 18, 22);
+    paleFigure(g, vx + 1, vy + 8, 20, 0.05);
+  } },
+  { cap: 'it smiled', draw(g) { // too close: the face, and the mouth that doesn't stop
+    g.fillStyle = '#0b0a0a'; g.fillRect(0, 0, 140, 140);
+    const fg = g.createRadialGradient(70, 52, 6, 70, 60, 70); fg.addColorStop(0, '#e4d8d2'); fg.addColorStop(1, '#6d6460');
+    g.fillStyle = fg; g.beginPath(); g.ellipse(70, 62, 44, 70, 0, 0, TAU); g.fill();
+    g.fillStyle = '#120a0c'; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(70 + s * 18, 40, 10, 8, 0, 0, TAU); g.fill(); }
+    g.fillStyle = '#f4f8ff'; for (const s of [-1, 1]) { g.beginPath(); g.arc(70 + s * 18, 40, 1.8, 0, TAU); g.fill(); }
+    g.fillStyle = '#050304'; g.beginPath(); g.ellipse(70, 100, 15, 44, 0, 0, TAU); g.fill();
+    g.strokeStyle = '#8a4a4c'; g.lineWidth = 3; g.beginPath(); g.ellipse(70, 100, 16, 45, 0, 0, TAU); g.stroke();
+  } },
+  { cap: 'DON\'T LOOK UP', draw(g) { // the ceiling tiles — and it, spread across them, looking down
+    g.fillStyle = '#26261f'; g.fillRect(0, 0, 140, 140);
+    g.strokeStyle = 'rgba(0,0,0,.6)'; g.lineWidth = 2;
+    for (let i = -3; i <= 3; i++) { g.beginPath(); g.moveTo(70 + i * 12, 70); g.lineTo(70 + i * 70, 140); g.moveTo(70 + i * 12, 70); g.lineTo(70 + i * 70, 0); g.stroke(); }
+    for (let r = 10; r < 90; r *= 1.45) { g.strokeRect(70 - r, 70 - r * 0.8, r * 2, r * 1.6); }
+    g.strokeStyle = 'rgba(232,222,216,.92)'; g.lineWidth = 3; g.lineCap = 'round';
+    for (const [a, b] of [[-2.4, -1.6], [-0.8, -1.3], [2.5, 1.5], [0.7, 1.2]]) { g.beginPath(); g.moveTo(70, 72); g.lineTo(70 + Math.cos(a) * 30, 72 + Math.sin(a) * 30); g.lineTo(70 + Math.cos(b) * 58, 72 + Math.sin(b) * 52); g.stroke(); }
+    g.fillStyle = 'rgba(232,222,216,.95)'; g.beginPath(); g.ellipse(70, 72, 12, 20, 0, 0, TAU); g.fill();
+    g.beginPath(); g.arc(70, 54, 8, 0, TAU); g.fill();
+    g.fillStyle = '#0c0606'; g.beginPath(); g.ellipse(70, 59, 3, 6, 0, 0, TAU); g.fill();
+    g.fillStyle = '#ff3a2a'; g.fillRect(66, 51, 2, 2); g.fillRect(72, 51, 2, 2);
+  } },
+  { cap: 'ward 6, bed 2', draw(g) { // a bed, a sheet, a stain — and a shadow on the wall too tall for anyone in this room
+    g.fillStyle = '#3d3f3a'; g.fillRect(0, 0, 140, 140); g.fillStyle = '#2a2b27'; g.fillRect(0, 92, 140, 48);
+    g.fillStyle = 'rgba(0,0,0,.75)'; poly(g, [[96, 10], [106, 10], [112, 34], [118, 92], [84, 92], [90, 34]]); g.beginPath(); g.ellipse(101, 14, 6, 9, 0, 0, TAU); g.fill();
+    g.fillStyle = '#9a9c94'; g.fillRect(14, 70, 82, 24); g.fillStyle = '#6a6c66'; g.fillRect(14, 94, 4, 22); g.fillRect(92, 94, 4, 22);
+    g.fillStyle = '#d6d6cc'; g.beginPath(); g.moveTo(16, 72); g.quadraticCurveTo(40, 52, 64, 64); g.quadraticCurveTo(84, 58, 94, 72); g.fill();
+    const st = g.createRadialGradient(54, 74, 2, 54, 74, 26); st.addColorStop(0, 'rgba(90,6,8,.95)'); st.addColorStop(1, 'rgba(90,6,8,0)'); g.fillStyle = st; g.fillRect(20, 50, 70, 50);
+  } },
+  { cap: 'it wants out', draw(g) { // a steel door, smeared with hands
+    g.fillStyle = '#5a5e62'; g.fillRect(0, 0, 140, 140); g.fillStyle = 'rgba(0,0,0,.35)'; for (let y = 10; y < 140; y += 14) g.fillRect(0, y, 140, 2);
+    g.fillStyle = '#c8a033'; g.fillRect(0, 62, 140, 9);
+    const hand = (x, y, s, r) => { g.save(); g.translate(x, y); g.rotate(r); g.fillStyle = 'rgba(110,6,8,.9)'; g.beginPath(); g.ellipse(0, 0, 9 * s, 11 * s, 0, 0, TAU); g.fill();
+      for (let f = 0; f < 4; f++) { g.fillRect((-7 + f * 4.5) * s, -26 * s, 3 * s, 17 * s); } g.fillRect(8 * s, -6 * s, 9 * s, 3 * s); g.fillRect(-2 * s, 8 * s, 3 * s, 30 * s); g.restore(); };
+    hand(40, 46, 1.1, -0.2); hand(92, 34, 1.0, 0.25); hand(70, 100, 1.2, 0.05);
+  } },
+  { cap: 'Lily, age 6', draw(g) { // a child's drawing. Daddy, and the tall one who stands behind him
+    g.fillStyle = '#ecebe2'; g.fillRect(0, 0, 140, 140);
+    g.lineWidth = 2; g.lineCap = 'round';
+    g.strokeStyle = '#e0a020'; g.beginPath(); g.arc(118, 22, 10, 0, TAU); g.stroke();
+    g.strokeStyle = '#c03030'; g.strokeRect(12, 68, 34, 30); g.beginPath(); g.moveTo(8, 68); g.lineTo(29, 50); g.lineTo(50, 68); g.stroke();
+    g.strokeStyle = '#2a50a0'; g.beginPath(); g.arc(74, 70, 6, 0, TAU); g.moveTo(74, 76); g.lineTo(74, 98); g.moveTo(64, 84); g.lineTo(84, 84); g.moveTo(74, 98); g.lineTo(68, 112); g.moveTo(74, 98); g.lineTo(80, 112); g.stroke();
+    g.strokeStyle = '#111'; g.lineWidth = 3; for (let i = 0; i < 26; i++) { g.beginPath(); g.moveTo(98 + (i % 5) * 2, 30 + i * 3.2); g.lineTo(108 - (i % 3) * 2, 34 + i * 3.2); g.stroke(); }
+    g.beginPath(); g.moveTo(98, 50); g.lineTo(84, 92); g.moveTo(110, 50); g.lineTo(124, 96); g.stroke();
+    g.fillStyle = '#c03030'; g.font = 'bold 12px "Comic Sans MS", cursive'; g.fillText('DADDY', 56, 128); g.fillStyle = '#2a50a0'; g.fillText('COME HOME', 30, 18);
+  } },
+  { cap: 'she sleeps', draw(g) { // a doorway at the end of a dark room, and her
+    g.fillStyle = '#151615'; g.fillRect(0, 0, 140, 140);
+    g.fillStyle = '#4a4c48'; g.fillRect(44, 20, 52, 110); g.fillStyle = '#0a0a0a'; g.fillRect(50, 26, 40, 104);
+    g.fillStyle = '#c9cdc4'; poly(g, [[62, 56], [78, 56], [84, 128], [56, 128]]);
+    g.fillStyle = '#d9d2c0'; g.beginPath(); g.ellipse(70, 46, 7, 9, 0.4, 0, TAU); g.fill();
+    g.fillStyle = '#050505'; poly(g, [[60, 38], [80, 38], [84, 84], [74, 92], [66, 92], [56, 84]]);
+    g.fillStyle = 'rgba(200,190,170,.85)'; g.fillRect(62, 45, 16, 4);
+  } },
+  { cap: 'IT SEES YOU', draw(g) { // nothing but dark. And two eyes in it
+    g.fillStyle = '#050505'; g.fillRect(0, 0, 140, 140);
+    const glow = (x, y) => { const gr = g.createRadialGradient(x, y, 0, x, y, 9); gr.addColorStop(0, 'rgba(255,250,240,1)'); gr.addColorStop(0.3, 'rgba(220,235,255,.7)'); gr.addColorStop(1, 'rgba(200,220,255,0)'); g.fillStyle = gr; g.fillRect(x - 10, y - 10, 20, 20); };
+    glow(58, 60); glow(82, 58);
+    g.strokeStyle = 'rgba(230,220,200,.55)'; g.lineWidth = 1.5; g.font = '15px "Courier New", monospace'; g.strokeText('IT SEES YOU', 20, 118);
+  } },
+];
+function genPolaroid(i) {
+  const c = makeCanvas(160, 192), g = c.getContext('2d'), rng = mulberry32(strHash('photo' + i)), art = PHOTO_ART[i];
+  g.fillStyle = '#ecebe4'; g.fillRect(0, 0, 160, 192);
+  g.fillStyle = 'rgba(120,110,80,.18)'; for (let k = 0; k < 6; k++) g.fillRect(rng() * 160, rng() * 192, 20 + rng() * 40, 1.5); // wear
+  g.save(); g.translate(10, 10); g.beginPath(); g.rect(0, 0, 140, 140); g.clip();
+  art.draw(g);
+  const fl = g.createRadialGradient(70, 62, 4, 70, 70, 100); fl.addColorStop(0, 'rgba(255,255,240,.16)'); fl.addColorStop(0.55, 'rgba(0,0,0,0)'); fl.addColorStop(1, 'rgba(0,0,0,.6)'); // the flash, and the dark around it
+  g.fillStyle = fl; g.fillRect(0, 0, 140, 140);
+  for (let k = 0; k < 900; k++) { g.fillStyle = rng() < 0.5 ? 'rgba(0,0,0,.25)' : 'rgba(255,255,255,.12)'; g.fillRect(rng() * 140, rng() * 140, 1, 1); } // grain
+  g.restore();
+  g.fillStyle = 'rgba(210,190,120,.55)'; g.fillRect(58, 0, 44, 9); // a strip of tape
+  g.fillStyle = '#2a2a3a'; g.font = 'italic 14px "Comic Sans MS", "Segoe Print", cursive'; g.textAlign = 'center'; g.fillText(art.cap, 80, 176);
+  return c;
+}
+// the camera's whir and click
+const Photos = {
+  list: [], tex: [], urls: [], got: 0, seed: 0, daily: false, start: 0, done: false, spots: null, popT: null, last: -1,
+  init() {
+    const geo = new T.PlaneGeometry(0.17, 0.204);
+    for (let i = 0; i < PHOTO_N; i++) {
+      const cv = genPolaroid(i), tex = mkTex(cv, false); this.tex.push(tex); this.urls.push(cv.toDataURL());
+      const mesh = new T.Mesh(geo, new T.MeshPhongMaterial({ map: tex, emissive: 0x262626, emissiveMap: tex, shininess: 40, specular: 0x333333 }));
+      mesh.visible = false; scene.add(mesh);
+      const glint = new T.Sprite(new T.SpriteMaterial({ map: TX.glow, color: 0xfff6e0, transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending }));
+      glint.visible = false; scene.add(glint);
+      const hit = hitBox(0, -10, 0, 0.34, 0.4, 0.22);
+      const P = { i, mesh, glint, hit, art: i, taken: false, x: 0, y: 0, z: 0, gT: rand(1, 4) };
+      P.def = addInteract(hit, { kind: 'photo', enabled: false, prompt: () => 'Take the photo', use: () => Game.takePhoto(P.i) });
+      this.list.push(P);
+    }
+  },
+  // every wall you could pin a photo to, in rooms you can reach without a keycard (and not where you start)
+  spotList() {
+    if (this.spots) return this.spots;
+    const start = cellOf(SPAWN.x, SPAWN.z), seen = new Set([start.z * W + start.x]), q = [start], out = [];
+    const walkable = c => (c.kind === 'floor' && c.room !== 'lobby' && c.room !== 'lift') || (c.kind === 'door' && c.door.type === 'normal');
+    for (let k = 0; k < q.length; k++) {
+      const c = q[k];
+      for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const n = cellAt(c.x + dx, c.z + dz), key = n.z * W + n.x; if (n === WALL_CELL || seen.has(key) || !walkable(n)) continue; seen.add(key); q.push(n); }
+    }
+    const crowded = (x, z) => {
+      for (let cz = Math.floor(z / CELL) - 1; cz <= Math.floor(z / CELL) + 1; cz++) for (let cx = Math.floor(x / CELL) - 1; cx <= Math.floor(x / CELL) + 1; cx++) {
+        const arr = buckets[cz] && buckets[cz][cx]; if (!arr) continue;
+        for (const b of arr) { const qx = clamp(x, b.minX, b.maxX), qz = clamp(z, b.minZ, b.maxZ); if (Math.hypot(x - qx, z - qz) < 0.5) return true; }
+      }
+      return false;
+    };
+    for (const c of q) {
+      if (c.kind !== 'floor' || c.navBlocked || c.room === 'security') continue;
+      for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        if (cellAt(c.x + dx, c.z + dz).kind !== 'wall') continue;
+        for (const off of [-0.45, 0.45]) {
+          const x = cc(c.x) + dx * (CELL / 2 - 0.014) + dz * off, z = cc(c.z) + dz * (CELL / 2 - 0.014) + dx * off;
+          if (crowded(x - dx * 0.25, z - dz * 0.25)) continue;
+          out.push({ x, z, ry: Math.atan2(-dx, -dz), room: c.room, nx: -dx, nz: -dz });
+        }
+      }
+    }
+    return (this.spots = out);
+  },
+  reset() {
+    this.got = 0; this.done = false; this.last = -1;
+    for (const P of this.list) { P.taken = false; P.mesh.visible = false; P.glint.visible = false; P.def.enabled = false; P.hit.position.set(0, -10, 0); P.hit.updateMatrixWorld(true); }
+    const el = $('photo-pop'); if (el) el.classList.remove('show');
+  },
+  // this run's layout: eight places, well apart, never more than two in one room
+  layout(seed) {
+    this.seed = seed >>> 0;
+    const rng = mulberry32(this.seed), pool = this.spotList().slice();
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    let picked = [];
+    for (const gap of [13, 9, 5, 0]) {
+      picked = []; const per = {};
+      for (const s of pool) {
+        if (picked.length >= PHOTO_N) break;
+        if ((per[s.room] || 0) >= (s.room === 'corridor' ? 3 : 2) && gap > 0) continue;
+        if (picked.some(u => Math.hypot(u.x - s.x, u.z - s.z) < gap)) continue;
+        picked.push(s); per[s.room] = (per[s.room] || 0) + 1;
+      }
+      if (picked.length >= PHOTO_N) break;
+    }
+    const arts = [0, 1, 2, 3, 4, 5, 6, 7]; for (let i = 7; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [arts[i], arts[j]] = [arts[j], arts[i]]; }
+    this.list.forEach((P, i) => {
+      const s = picked[i % picked.length], y = 1.28 + rng() * 0.32;
+      P.x = s.x; P.y = y; P.z = s.z; P.art = arts[i]; P.taken = false;
+      P.mesh.material.map = P.mesh.material.emissiveMap = this.tex[arts[i]];
+      P.mesh.position.set(s.x, y, s.z); P.mesh.rotation.set(0, s.ry, (rng() - 0.5) * 0.3); P.mesh.visible = true;
+      P.glint.position.set(s.x + s.nx * 0.05, y + 0.08, s.z + s.nz * 0.05); P.glint.visible = false;
+      P.hit.position.set(s.x + s.nx * 0.08, y, s.z + s.nz * 0.08); P.hit.rotation.set(0, s.ry, 0); P.hit.updateMatrixWorld(true);
+      P.def.enabled = true;
+    });
+  },
+  danger() { return [0, 0, 1, 1, 2, 2, 3, 3, 3][this.got] || 0; },
+  // (every peer) someone took photo i
+  apply(ev) {
+    const P = this.list[ev.i | 0]; if (!P || P.taken) return;
+    P.taken = true; P.mesh.visible = false; P.glint.visible = false; P.def.enabled = false;
+    this.got++; this.last = P.art;
+    const mine = ev.by === undefined || ev.by === Net.myId, n = this.got;
+    Sound.shutter(new T.Vector3(P.x, P.y, P.z));
+    if (mine) { this.popup(P); Game.dip = Math.max(Game.dip, 0.4); } else UI.msg(Net.nameOf(ev.by) + ' found a photo.', 'good', 3);
+    Game.flashObj = 'photos'; Hints.progress();
+    const say = ['', 'Somewhere below, something heard the shutter.', 'Something else is awake down here now.', 'It is getting faster.', 'The power is failing.', 'It can hear your heartbeat.', 'It fits in the vents now.', 'One left. It knows what you are doing.', ''];
+    if (n < PHOTO_N) UI.center(n + ' / ' + PHOTO_N, say[n], 3.2);
+    if (n === 4) { Night.surgeUntil = Game.time + 20; Night.said.surgeEnd = 0; Sound.trip(new T.Vector3(player.pos.x, 3, player.pos.z)); Game.dip = 1; Game.shake(0.4); }
+    if (n === 6) Sound.roar(0.8);
+    if (n >= PHOTO_N) this.allFound();
+  },
+  // all eight: the lift opens, and it comes for you
+  allFound() {
+    this.done = true;
+    if (!Game.exitOpening && !Game.exitOpen) {
+      const d = doorAt(35, 21); d.unlocked = true; d.open(); d.updateLeds(); Game.exitOpening = true;
+      world.exitPanel.slots.forEach(s => { s.material = MAT.ledGreen; }); world.exitPanel.scr.material = MAT.ledGreen; world.liftCall.material = MAT.ledGreen;
+      Sound.door(new T.Vector3(71, 1.5, 43), true, true);
+    }
+    doors.forEach(d => { if (d.type !== 'exit' && d.locked()) { d.unlocked = true; d.updateLeds(); } });
+    Game.alarm = true; Game.alarmT = 1e9; Sound.setAlarm(true);
+    UI.center(PHOTO_N + ' / ' + PHOTO_N, 'THE LIFT IS OPEN — RUN!', 4.5);
+    Sound.sting(true); Game.shake(0.6); Hints.pulse(Hints.liftTarget(), 12);
+    if (!Net.isClient && Monster.active) { Monster.cine = null; Monster.playPose('roar', 1.6); }
+  },
+  popup(P) {
+    const el = $('photo-pop'); if (!el) return;
+    $('photo-img').src = this.urls[P.art]; $('photo-n').textContent = this.got + ' / ' + PHOTO_N;
+    el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+    clearTimeout(this.popT); this.popT = setTimeout(() => el.classList.remove('show'), 2300);
+    const w = $('fx-white'); w.style.transition = 'none'; w.style.opacity = 0.55; void w.offsetWidth; w.style.transition = 'opacity .7s'; w.style.opacity = 0;
+  },
+  update(dt) {
+    // the photos catch the light now and then: a glint you can see from down the hall
+    for (const P of this.list) {
+      if (P.taken || !P.mesh.visible) continue;
+      P.gT -= dt;
+      if (P.gT <= 0) { P.gT = rand(2.2, 4.5); P.glint.visible = true; P.glint.userData.t = 0; }
+      if (P.glint.visible) {
+        const t = (P.glint.userData.t += dt), k = t / 0.5;
+        if (k >= 1) P.glint.visible = false; else { const a = Math.sin(k * Math.PI); P.glint.scale.setScalar(0.08 + a * 0.38); P.glint.material.opacity = a * 0.85; }
+      }
+    }
+    if (this.done && !Net.isClient) Night.lastRun(dt); // all eight: it comes for whoever is nearest
+  },
+  hintTarget() {
+    if (this.done) return Hints.liftTarget();
+    let best = null, bd = Infinity;
+    for (const P of this.list) { if (P.taken) continue; const d = Math.hypot(P.x - player.pos.x, P.z - player.pos.z); if (d < bd) { bd = d; best = P; } }
+    return best && { pos: new T.Vector3(best.x, best.y, best.z), label: 'Photo', key: 'photo' + best.i, tip: 'A photo is pinned to a wall in ' + Hints.where(new T.Vector3(best.x, 0, best.z)) + '. Follow the yellow marker.', done: () => best.taken };
+  },
+};
+
+/* ---- Endless Night: the curses ---- */
+const CURSES = [
+  { id: 'hungry', name: 'The Hungry Dark', desc: 'Your flashlight drains twice as fast.' },
+  { id: 'ears', name: 'Bloodhound', desc: 'It hears you from a third further away.' },
+  { id: 'legs', name: 'Long Legs', desc: 'It moves 12% faster.' },
+  { id: 'eyes', name: 'Night Eyes', desc: 'It sees you from 30% further away.' },
+  { id: 'iron', name: 'Iron Will', desc: 'It smashes straight through locked doors.' },
+  { id: 'vents', name: 'Open Vents', desc: 'It can follow you into the vents.' },
+  { id: 'nerve', name: 'No Nerve', desc: 'You can only stay in a locker half as long.' },
+  { id: 'brown', name: 'Brownout', desc: 'Every minute or so, every light goes out.' },
+  { id: 'dream', name: 'Paranoia', desc: 'You never quite wake up: the phantoms follow you everywhere.' },
+  { id: 'restless', name: 'Restless Sleeper', desc: 'The Sleepwalker drifts twice as fast, and its dream reaches further.' },
+  { id: 'heavy', name: 'Heavy Feet', desc: 'Your footsteps carry 40% further.' },
+  { id: 'watcher', name: 'The Watcher', desc: 'It stalks you far more often.' },
+];
+const CURSE_BY = {}; CURSES.forEach(c => { CURSE_BY[c.id] = c; });
+const ENDLESS_HOUR = 100; // seconds per hour
+const Endless = {
+  hour: 0, curses: [], offer: null, offerT: 0, brownT: 60, over: false,
+  has(id) { return Game.mode === 'endless' && this.curses.indexOf(id) >= 0; },
+  danger() { return Math.min(3, Math.floor((this.hour + 1) / 2)); },
+  ramp() { return Game.mode === 'endless' ? 1 + Math.min(0.2, Math.max(0, this.hour - 5) * 0.025) : 1; }, // past the 6th hour it just keeps getting faster
+  survived() { return Game.time; },
+  reset() { this.hour = 0; this.curses = []; this.offer = null; this.offerT = 0; this.brownT = rand(50, 70); this.over = false; this.hideOffer(); },
+  update(dt) {
+    const h = Math.floor(Game.time / ENDLESS_HOUR);
+    if (!Net.isClient && h > this.hour) Game.emit({ k: 'ehour', h });
+    if (this.offer) {
+      this.offerT -= dt; const bar = $('cp-bar'); if (bar) bar.style.width = clamp(this.offerT / 9, 0, 1) * 100 + '%';
+      if (this.offerT <= 0) this.pick((Math.random() * this.offer.length) | 0);
+    }
+    if (!Net.isClient && this.has('brown')) { this.brownT -= dt; if (this.brownT <= 0) { this.brownT = rand(55, 80); Game.emit({ k: 'brown' }); } }
+    if (!player.dead && Game.time >= 600) Goals.unlock('insomniac');
+  },
+  // (every peer) a new hour: a spare battery, and a new curse
+  onHour(h) {
+    if (h <= this.hour) return;
+    this.hour = h;
+    if (player.hasFlash && !player.dead) player.spares++;
+    UI.center('HOUR ' + (h + 1), player.dead ? 'The night goes on without you.' : 'A spare battery rattles out of the dispenser. Something else is coming.', 3.4);
+    Sound.hourBell(Math.min(4, h));
+    if (Net.isClient) return;
+    if (h === 1 && !Game.flags.sleeperOut) { Game.flags.sleeperOut = true; Game.emit({ k: 'sleeper' }); }
+    const left = CURSES.filter(c => this.curses.indexOf(c.id) < 0);
+    if (!left.length) return;
+    const opts = []; while (opts.length < Math.min(2, left.length)) { const c = pick(left); if (opts.indexOf(c.id) < 0) opts.push(c.id); }
+    if (Net.active || player.dead) Game.emit({ k: 'curse', id: pick(opts) }); // online the night picks for you
+    else this.offerChoice(opts);
+  },
+  offerChoice(opts) {
+    this.offer = opts; this.offerT = 9;
+    const box = $('curse-pick'); if (!box) return;
+    $('cp-title').textContent = 'HOUR ' + (this.hour + 1) + ' — CHOOSE A CURSE';
+    const cards = box.querySelectorAll('.cp-card');
+    cards.forEach((el, i) => { const c = CURSE_BY[opts[i]]; el.hidden = !c; if (c) { el.querySelector('h4').textContent = c.name; el.querySelector('p').textContent = c.desc; } });
+    box.classList.add('show'); Sound.sting(false);
+  },
+  hideOffer() { const box = $('curse-pick'); if (box) box.classList.remove('show'); },
+  pick(i) {
+    if (!this.offer) return;
+    const id = this.offer[clamp(i | 0, 0, this.offer.length - 1)]; this.offer = null; this.hideOffer();
+    Sound.click(); Game.emit({ k: 'curse', id });
+  },
+  // (every peer)
+  apply(id) {
+    const c = CURSE_BY[id]; if (!c || this.curses.indexOf(id) >= 0) return;
+    this.curses.push(id);
+    UI.msg('CURSE · ' + c.name.toUpperCase() + ' — ' + c.desc, 'warn', 5.5); Sound.sting(true); Game.shake(0.25);
+    if (id === 'watcher') Game.stalkT = Math.min(Game.stalkT, 10);
+    if (this.curses.length >= 6 && !player.dead) Goals.unlock('cursed');
+    UI.hudCache.obj = null;
+  },
+  brownout() { // (every peer)
+    Night.surgeUntil = Game.time + 12; Night.said.surgeEnd = 0;
+    Sound.trip(new T.Vector3(player.pos.x, 3, player.pos.z)); Game.dip = 1;
+    UI.msg('BROWNOUT — every light in the facility dies.', 'warn', 3);
+  },
+};
+
+/* ---- shared: the HUD, the objectives, the bests ---- */
+const Modes = {
+  init() { Photos.init(); },
+  reset() { Photos.reset(); Endless.reset(); },
+  // called by Game.newGame after the world is reset
+  start() {
+    const m = Game.mode, F = Game.flags;
+    $('objectives').classList.toggle('m-photos', m === 'photos'); $('objectives').classList.toggle('m-endless', m === 'endless');
+    document.querySelector('#objectives .opt-h').textContent = m === 'photos' ? 'THE POLAROIDS' : m === 'endless' ? 'CURSES' : 'ESCAPE EARLY · OPTIONAL';
+    if (m === 'night') return;
+    // the quick modes: you start with a light, and it is already awake
+    player.hasFlash = true; player.flashState = false;
+    flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true;
+    F.quickWake = true;
+    if (m === 'photos') {
+      Photos.daily = Net.active ? !!Net.sessionDaily : !!settings.daily;
+      Photos.layout(Net.active ? Net.sessionSeed : Photos.daily ? dailySeed() : (Math.random() * 4294967296) >>> 0);
+    }
+  },
+  intro() { // the opening card
+    const m = Game.mode, n = Net.active ? ' · ' + crew().length + ' guards' : '';
+    if (m === 'photos') UI.center('THE POLAROIDS', (Photos.daily ? 'TODAY\'S PHOTOS' : 'EIGHT PHOTOS') + ' · FIND THEM ALL, THEN GET TO THE LIFT' + n, 4.4);
+    else if (m === 'endless') UI.center('ENDLESS NIGHT', 'DAWN NEVER COMES · HOW LONG CAN YOU LAST?' + n, 4.4);
+  },
+  introMsgs() {
+    const m = Game.mode;
+    if (m === 'photos') {
+      UI.msg('Eight photos are pinned to walls around Sublevel 6 — somewhere different every time. Each one you take makes it worse.', 'story', 6);
+      setTimeout(() => { if (Game.state === 'playing') UI.msg('The photos glint in the dark. [H] points to the nearest one.', '', 4.5); }, 4200);
+    } else if (m === 'endless') {
+      UI.msg('The day shift is never coming. Every hour you get a spare battery — and a new curse.', 'story', 6);
+      setTimeout(() => { if (Game.state === 'playing') UI.msg('Stay alive. That\'s all. For as long as you can.', '', 4); }, 4200);
+    }
+  },
+  objectives() {
+    if (Game.mode === 'photos') return [
+      { id: 'photos', text: 'Find the photos (' + Photos.got + '/' + PHOTO_N + ')', done: Photos.got >= PHOTO_N },
+      { id: 'escape', text: 'Escape in the surface lift', done: Game.ending },
+    ];
+    const list = Endless.curses.map(id => ({ id, text: CURSE_BY[id].name, done: false }));
+    return list.length ? list : [{ id: 'none', text: 'No curses — yet', done: false }];
+  },
+  hud() {
+    const el = $('shift'); if (!el) return;
+    const m = Game.mode;
+    let clock, goal, cls = '', bar, mission, sub;
+    if (m === 'photos') {
+      clock = fmtClock(Game.time); bar = Photos.got / PHOTO_N;
+      goal = Photos.done ? 'GET TO THE LIFT · ' + Math.round(Math.hypot(player.pos.x - LIFT_POS.x, player.pos.z - LIFT_POS.z)) + ' M' : (Night.surge ? 'POWER FAILURE · ' : '') + 'PHOTOS ' + Photos.got + ' / ' + PHOTO_N;
+      cls = Photos.done ? 'dawn' : Night.surge ? 'surge' : Photos.got >= 6 ? 'late' : '';
+      mission = Photos.done ? 'GET TO THE SURFACE LIFT!' : 'Find all ' + PHOTO_N + ' photos';
+      sub = Photos.done ? 'It knows. RUN.' : (Photos.daily ? 'Today\'s photos · ' : '') + Modes.bestText('photos');
+    } else {
+      const left = ENDLESS_HOUR - Game.time % ENDLESS_HOUR;
+      clock = fmtClock(Game.time); bar = 1 - left / ENDLESS_HOUR;
+      goal = (Night.surge ? 'BROWNOUT · ' : '') + 'HOUR ' + (Endless.hour + 1) + ' · ' + Endless.curses.length + ' CURSE' + (Endless.curses.length === 1 ? '' : 'S');
+      cls = Night.surge ? 'surge' : Endless.hour >= 5 ? 'late' : '';
+      mission = 'Survive as long as you can'; sub = 'Next hour in ' + Math.ceil(left) + 's · ' + Modes.bestText('endless');
+    }
+    const shown = Dream.clockText() || clock, key = shown + cls + goal + mission + sub;
+    if (UI.hudCache.shift === key) return;
+    UI.hudCache.shift = key;
+    el.className = cls;
+    $('shift-clock').firstChild.textContent = shown; $('shift-clock').querySelector('small').textContent = '';
+    $('shift-goal').textContent = goal;
+    $('shift-bar').firstElementChild.style.width = clamp(bar, 0, 1) * 100 + '%';
+    $('mission').textContent = mission; $('mission-sub').textContent = sub;
+    $('objectives').classList.toggle('dawn', false);
+  },
+  /* ---- bests (per mode and difficulty, and per day for the daily photos) ---- */
+  key(m, d) { return m + '-' + (d || Net.sessionDiff || settings.difficulty); },
+  best(m, d) { return Goals.data.best[this.key(m, d)] || null; },
+  bestText(m) { const b = this.best(m); return b ? 'Best ' + fmtClock(b.time) : 'No best time yet'; },
+  rank(m, t) {
+    if (m === 'photos') return t < 330 ? 'S' : t < 480 ? 'A' : t < 660 ? 'B' : t < 900 ? 'C' : 'D';
+    return t >= 900 ? 'S' : t >= 600 ? 'A' : t >= 360 ? 'B' : t >= 180 ? 'C' : 'D';
+  },
+  // record a finished run; returns { rank, time, isBest, prev, daily }
+  record(m, t, extra) {
+    const k = this.key(m), prev = Goals.data.best[k], better = m === 'photos' ? (!prev || t < prev.time) : (!prev || t > prev.time);
+    const rank = this.rank(m, t), out = { rank, time: t, isBest: better, prev, daily: null };
+    if (better) Goals.data.best[k] = Object.assign({ time: Math.floor(t), rank, at: Date.now() }, extra || {});
+    if (m === 'photos' && Photos.daily) {
+      const dk = 'daily-' + dailySeed(), dp = Goals.data.best[dk];
+      out.daily = { isBest: !dp || t < dp.time, prev: dp };
+      if (out.daily.isBest) Goals.data.best[dk] = { time: Math.floor(t), rank };
+    }
+    Goals.save();
+    return out;
+  },
+  // the briefing's mode cards: what each one is, and your best
+  cardBest(m) {
+    if (m === 'night') { const b = Goals.data.best[settings.difficulty]; return b ? 'Best: ' + b.rank + ' · ' + b.score + ' pts' : 'No shift finished yet'; }
+    const b = Goals.data.best[this.key(m, settings.difficulty)];
+    if (m === 'photos') { const d = Goals.data.best['daily-' + dailySeed()]; return (b ? 'Best: ' + b.rank + ' · ' + fmtClock(b.time) : 'No run finished yet') + (d ? ' · Today: ' + fmtClock(d.time) : ''); }
+    return b ? 'Longest: ' + b.rank + ' · ' + fmtClock(b.time) + (b.curses ? ' · ' + b.curses + ' curses' : '') : 'No night survived yet';
+  },
+};
+
+/* ------------------------------------------------------------------ */
 /* Boot                                                                */
 /* ------------------------------------------------------------------ */
 Monster.init();
 Sleeper.init();
 Dream.init();
+Modes.init();
 player.reset();
 UI.initTitle();
 Hints.init();
@@ -9385,7 +10005,7 @@ const hiddenTick = () => {
 if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
-    Hints, Cine, Net, Relay, Night, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom,
+    Hints, Cine, Net, Relay, Night, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom, Photos, Endless, Modes, CURSES, PHOTO_ART,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
