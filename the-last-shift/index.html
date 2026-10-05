@@ -225,6 +225,8 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 .msg.warn{color:#f0a19a}
 .msg.good{color:#b9e0b3}
 .msg.story{font-style:italic;color:#d8cfb8}
+.msg.dream{color:#c9b4ff;font-style:italic;letter-spacing:.12em;text-shadow:0 0 10px #6a3cff,0 1px 3px #000;background:rgba(20,0,40,.35);animation:dreamjit .14s steps(2) infinite}
+@keyframes dreamjit{0%{transform:translate(0,0)}50%{transform:translate(1.5px,-1px)}100%{transform:translate(-1px,1px)}}
 #fps{position:absolute;right:22px;top:76px;font-size:10px;letter-spacing:.2em;color:#6f6b62;display:none}
 #center-title{position:absolute;left:0;right:0;top:38%;text-align:center;font-family:var(--sans);font-weight:200;letter-spacing:.4em;font-size:clamp(22px,3vw,40px);color:#e9e2d2;opacity:0;transition:opacity 1.2s;text-shadow:0 0 20px #000}
 #center-title small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.4em;color:var(--amber);margin-top:14px}
@@ -504,7 +506,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <div class="pv-ui"><span class="pv-rec"><i></i>REC</span><span class="pv-time" id="pv-time">02:17:00</span><span class="pv-cam" id="pv-cam"></span><b class="pv-c pv-tl"></b><b class="pv-c pv-tr"></b><b class="pv-c pv-bl"></b><b class="pv-c pv-br"></b></div>
         </div>
         <div class="pv-caption"><b id="pv-title"></b><span id="pv-text"></span></div>
-        <div class="pv-foot"><div class="pv-dots" id="pv-dots"></div><span class="pv-feat">survive until 6:00 AM · 16 rooms · 15 achievements · co-op</span></div>
+        <div class="pv-foot"><div class="pv-dots" id="pv-dots"></div><span class="pv-feat">survive until 6:00 AM · two monsters · 16 rooms · 16 achievements · co-op</span></div>
       </section>
       <div class="controls-card">
         <h3>Controls</h3>
@@ -525,7 +527,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       </div>
     </aside>
   </div>
-  <div class="title-foot">Build 8 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
+  <div class="title-foot">Build 9 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
 </div>
 
 <!-- briefing -->
@@ -535,12 +537,13 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div class="h1">Survive until 6:00 AM</div>
     <p class="p">You are the night guard, buried under the mountain. Something tall and pale has broken out of its cell, the facility is in lockdown, and the surface lift stays sealed until the <b>day shift arrives at 6:00 AM</b>.</p>
     <p class="p"><b>Your mission: stay alive until dawn — then make it onto the lift.</b> Every hour it gets worse. It crawls. It hears everything. At 4:00 the power goes, and in the last hour it can follow you into the vents. Lockers only buy you time.</p>
+    <p class="p">It is not alone. A little after 2:30 something else gets up out of the Morgue — slow, humming a lullaby. <b>It never chases you</b>, but stay away from it: near it you start to hallucinate, and you can't trust anything you see or hear.</p>
     <p class="p">Want out sooner? Find the three keycards, restore main power and upload the breach report, and you can open the lift yourself.</p>
     <div class="kicker" style="margin-top:18px">Difficulty · how long the night lasts</div>
     <div class="diffs" id="diffs">
       <button class="diff" data-diff="easy"><b>EASY</b><span>A 9-minute night. Slower, half-deaf hunter. Three hits.</span></button>
       <button class="diff" data-diff="normal"><b>NORMAL</b><span>A 12-minute night. The intended experience. Two hits.</span></button>
-      <button class="diff" data-diff="hard"><b>HARD</b><span>A 15-minute night. Fast, sharp-eared, relentless. One touch.</span></button>
+      <button class="diff" data-diff="hard"><b>HARD</b><span>A 15-minute night. Fast, sharp-eared, relentless. One touch. It smashes through iron doors.</span></button>
     </div>
     <div class="row">
       <button class="btn primary" id="btn-start">Start Game</button>
@@ -608,8 +611,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li>Cornered? Fight. Punches won't kill it, but they stagger it, and a stun buys you a few seconds. It shrugs off a second stun for a while — and comes back angrier.</li>
           <li>The heartbeat, flickering lights and the threat eye (top right) tell you when it is close.</li>
           <li>Sometimes it just <b>watches</b> you from the dark. Hold its gaze and it backs off — walk toward it, or put your light on it, and it charges.</li>
+          <li><b>The Sleepwalker</b> comes out of the Morgue at about 2:30. It is slow and it <b>never hunts you</b> — it just drifts from room to room humming a lullaby, and the lights dim around it. But near it you hallucinate: the room warps, you hear things that aren't there, the clock lies, and you see the Warden where it isn't (look straight at it and it vanishes). Never let it drift into you: it shrieks, your light dies — and the Warden hears.</li>
+          <li>On <b>Hard</b> the Warden breaks through locked iron security doors. Only the blast door to the lift holds.</li>
           <li>Read every note. They contain the codes, routes and secrets you need to get out.</li>
-          <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and <b>15 achievements</b> are saved under Goals.</li>
+          <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and <b>16 achievements</b> are saved under Goals.</li>
           <li>Co-op (up to 4): one player hosts and sends the invite link (or the 4-letter room code); friends open it and press Join. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
         </ul>
       </div>
@@ -642,7 +647,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 8 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
+    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 9 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
   </div>
 </div>
 
@@ -1475,14 +1480,15 @@ function gatherBoxes(px, pz, r, who, crouched) {
     const c = cellAt(x, z);
     const x0 = x * CELL, z0 = z * CELL;
     let solid = c.kind === 'wall' || c.kind === 'window';
-    if (c.kind === 'vent' && (who === 'monster' ? !Night.ventsOpen : !crouched)) solid = true;
-    if (c.kind === 'lift' && who === 'monster' && Game.endingLock) solid = true;
+    const mon = who === 'monster' || who === 'ceil'; // 'ceil': the Warden up on the ceiling
+    if (c.kind === 'vent' && (mon ? !Night.ventsOpen : !crouched)) solid = true;
+    if (c.kind === 'lift' && mon && Game.endingLock) solid = true;
     if (solid) { _boxes.push({ minX: x0, minZ: z0, maxX: x0 + CELL, maxZ: z0 + CELL }); continue; }
     if (c.door) { const db = c.door.blockBox(); if (db) _boxes.push(db); }
     const arr = buckets[z] && buckets[z][x];
     if (arr) for (const b of arr) {
       if (b.stamp === boxStamp) continue; b.stamp = boxStamp;
-      if (who === 'monster' && !b.monster) continue;
+      if (who === 'ceil' || (who === 'monster' && !b.monster)) continue; // (nothing on the floor is in the way up there)
       if (b.dyn && !b.dyn()) continue;
       _boxes.push(b);
     }
@@ -1644,6 +1650,7 @@ for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
 /* ------------------------------------------------------------------ */
 const doors = [];
 const DOOR_TYPES = { D: 'normal', Y: 'yellow', B: 'blue', P: 'power', X: 'exit' };
+const wardenBreaksDoors = () => (Net.sessionDiff || settings.difficulty) === 'hard';
 const doorMats = {};
 ['normal', 'yellow', 'blue', 'power', 'exit'].forEach(t => { const tx = mkTex(genDoor(t), false); doorMats[t] = phong({ map: tx, shininess: 35, specular: 0x333333 }); });
 class Door {
@@ -1714,7 +1721,7 @@ class Door {
     if (this.type === 'blue') return !Game.power || !this.unlocked;
     return !this.unlocked; // yellow
   }
-  monsterCanPass() { return !this.locked(); }
+  monsterCanPass() { return !this.locked() || this.broken || (this.type !== 'exit' && wardenBreaksDoors()); } // on Hard it smashes through the iron security doors
   open() { if (this.locked()) return false; this.target = 1; return true; }
   close() { this.target = 0; }
   isOpen() { return this.target > 0.5; }
@@ -1730,18 +1737,20 @@ class Door {
       const p = this.panels[0].mesh;
       p.position.set(this.cx, DOOR_H / 2 + t * (DOOR_H - 0.15), this.cz);
     } else {
-      const e = t * t * (3 - 2 * t);
+      const e = t * t * (3 - 2 * t), sh = this.shake ? Math.sin(performance.now() * 0.07) * 0.06 * this.shake : 0; // buckling under its blows
       for (const pn of this.panels) {
-        const off = pn.side * (CELL / 4 + e * (CELL / 2 - 0.02));
-        pn.mesh.position.set(this.axis === 'z' ? this.cx + off : this.cx, DOOR_H / 2, this.axis === 'z' ? this.cz : this.cz + off);
+        const off = pn.side * (CELL / 4 + e * (CELL / 2 - 0.02)) + (this.broken ? pn.side * 0.12 : 0);
+        pn.mesh.position.set(this.axis === 'z' ? this.cx + off : this.cx + sh, DOOR_H / 2 - (this.broken ? 0.08 : 0), this.axis === 'z' ? this.cz + sh : this.cz + off);
+        pn.mesh.rotation.z = this.broken ? pn.side * 0.14 : 0; // torn half off its runners
       }
     }
   }
   updateLeds() {
-    const m = this.locked() ? ((this.type === 'power' || this.type === 'blue') && !Game.power ? MAT.ledAmber : MAT.ledRed) : MAT.ledGreen;
+    const m = this.broken ? MAT.ledOff : this.locked() ? ((this.type === 'power' || this.type === 'blue') && !Game.power ? MAT.ledAmber : MAT.ledRed) : MAT.ledGreen;
     for (const l of this.leds) if (l.material !== m) l.material = m;
   }
   update(dt) {
+    if (this.shake > 0) { this.shake = Math.max(0, this.shake - dt * 2.6); this.place(); }
     if (this.t === this.target) return;
     // don't crush bodies: refuse to close while someone stands in the doorway
     if (this.target < this.t && this.t > 0.3) {
@@ -1753,7 +1762,7 @@ class Door {
     if (this.t === this.target) this.fast = false;
     this.place();
   }
-  reset() { this.t = 0; this.target = 0; this.fast = false; this.lastUse = -10; this.evAt = 0; this.unlocked = this.type === 'normal'; this.place(); this.updateLeds(); }
+  reset() { this.t = 0; this.target = 0; this.fast = false; this.lastUse = -10; this.evAt = 0; this.unlocked = this.type === 'normal'; this.broken = false; this.shake = 0; this.place(); this.updateLeds(); }
 }
 for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
   const c = grid[z][x];
@@ -3020,7 +3029,7 @@ scene.add(dust);
 const Sound = (function () {
   const S = { ctx: null, ok: false, paused: false, hb: 0, threat: 0, alarmOn: false, humOn: false, stalkT: 0, chaseOn: false, chaseNext: 0, chaseStep: 0 };
   let ctx, master, comp, gameBus, uiBus, ambBus, sfx, revIn, rev, white, brown, pink, distCurve;
-  let monIn, monFilter, monGain, monPanner, droneGain, droneFilter, highGain, humGain, alarmGain, alarmOsc, ventGain;
+  let monIn, monFilter, monGain, monPanner, droneGain, droneFilter, highGain, humGain, alarmGain, alarmOsc, ventGain, dreamGain;
 
   function noiseBuf(kind, sec) {
     const len = Math.floor(ctx.sampleRate * sec), b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
@@ -3136,6 +3145,11 @@ const Sound = (function () {
     for (const f of [49, 51.9, 73.4]) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(droneFilter); o.start(t); }
     highGain = ctx.createGain(); highGain.gain.value = 0; highGain.connect(gameBus);
     for (const f of [1244, 1318.5]) { const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f; const tr = ctx.createOscillator(); tr.frequency.value = 5 + Math.random() * 2; const tg = ctx.createGain(); tg.gain.value = 9; tr.connect(tg); tg.connect(o.frequency); tr.start(t); o.connect(highGain); o.start(t); }
+    // the dream: a slow, detuned pad and a ringing in the ears (silent until you are near the Sleepwalker)
+    dreamGain = ctx.createGain(); dreamGain.gain.value = 0; dreamGain.connect(gameBus);
+    const dlp = ctx.createBiquadFilter(); dlp.type = 'lowpass'; dlp.frequency.value = 900; dlp.connect(dreamGain);
+    for (const f of [110, 164.8, 220.6, 262.4]) { const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f; const tr = ctx.createOscillator(); tr.frequency.value = 0.12 + Math.random() * 0.2; const tg = ctx.createGain(); tg.gain.value = f * 0.012; tr.connect(tg); tg.connect(o.frequency); tr.start(t); o.connect(dlp); o.start(t); }
+    const ring = ctx.createOscillator(); ring.type = 'sine'; ring.frequency.value = 4300; const rg = ctx.createGain(); rg.gain.value = 0.06; ring.connect(rg); rg.connect(dreamGain); ring.start(t);
     // alarm (silent until logs are uploaded)
     alarmOsc = ctx.createOscillator(); alarmOsc.type = 'square'; alarmOsc.frequency.value = 620;
     const af = ctx.createBiquadFilter(); af.type = 'lowpass'; af.frequency.value = 1500;
@@ -3165,6 +3179,7 @@ const Sound = (function () {
     humGain.gain.setTargetAtTime(S.humOn ? 0.03 : 0, t, 1.5);
     if (S.alarmOn) { const ph = (t * 0.9) % 2; alarmOsc.frequency.setTargetAtTime(ph < 1 ? 620 : 830, t, 0.04); alarmGain.gain.setTargetAtTime(0.05, t, 0.3); }
     else alarmGain.gain.setTargetAtTime(0, t, 0.5);
+    dreamGain.gain.setTargetAtTime((ex.dream || 0) * 0.07, t, 0.5);
     // heartbeat
     S.hb -= dt;
     if (threat > 0.08 && S.hb <= 0) { heartbeat(threat); S.hb = lerp(1.15, 0.34, threat); }
@@ -3292,6 +3307,91 @@ const Sound = (function () {
     noise(out, t, 0.12, 'lowpass', 320, 1, 0.6, 0.002, brown);
     if (Math.random() < 0.4) noise(out, t + 0.03, 0.03, 'highpass', 2500, 1, 0.25, 0.001);
   });
+  S.ironHit = safe(function (pos) { // a shoulder into an iron door: a deep clang and a groan of bending steel
+    const t = ctx.currentTime, out = dest(pos, 0.5, true); out.gain.value = 1.7;
+    metal(out, t, 62, 2.6, 1); metal(out, t + 0.01, 131, 1.4, 0.5);
+    tone(out, t, 'sine', 52, 26, 0.7, 1, 0.002); noise(out, t, 0.35, 'lowpass', 700, 1, 1, 0.002, brown);
+    tone(out, t + 0.12, 'sawtooth', 180, 120, 0.9, 0.08, 0.2);
+  });
+  S.ironBreak = safe(function (pos) { // the door gives: steel tearing, then a crash
+    const t = ctx.currentTime, out = dest(pos, 0.5, true); out.gain.value = 1.8;
+    const o = tone(out, t, 'sawtooth', 420, 90, 0.9, 0.22, 0.05); noise(out, t, 0.9, 'bandpass', 2200, 1.2, 0.5, 0.05);
+    metal(out, t + 0.5, 70, 3, 1); noise(out, t + 0.5, 0.7, 'lowpass', 1200, 1, 1, 0.003, brown); tone(out, t + 0.5, 'sine', 48, 24, 0.9, 1, 0.002);
+  });
+  S.decoy = safe(function (pos, kind) { // the fake-out: it sounds like it's over there
+    const t = ctx.currentTime, out = dest(pos, 0.35, true); out.gain.value = 1.5;
+    if (kind === 1) { // heavy, fast steps, going away
+      for (let i = 0; i < 7; i++) { const st = t + i * 0.24; tone(out, st, 'sine', 60, 30, 0.22, 1 - i * 0.1, 0.003); noise(out, st, 0.12, 'lowpass', 320, 1, 0.7 - i * 0.07, 0.002, brown); }
+    } else if (kind === 2) { // something heavy knocked over
+      metal(out, t, 85, 2.4, 1); metal(out, t + 0.35, 120, 1.2, 0.5); noise(out, t, 0.6, 'lowpass', 1500, 1, 0.8, 0.003, brown);
+    } else { // its screech
+      const ws = ctx.createWaveShaper(); ws.curve = distCurve; const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 1.4;
+      const g = ctx.createGain(); env(g.gain, t, 0.05, 0.6, 1.2); ws.connect(bp); bp.connect(g); g.connect(out);
+      for (const [f, d] of [[560, 0], [840, 9], [1120, -11]]) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.detune.value = d; o.frequency.setValueAtTime(f * 0.8, t); o.frequency.exponentialRampToValueAtTime(f * 1.45, t + 0.15); o.frequency.exponentialRampToValueAtTime(f * 0.6, t + 1.2); o.connect(ws); o.start(t); o.stop(t + 1.3); }
+      tone(out, t, 'sine', 55, 30, 1.2, 0.7, 0.01);
+    }
+  });
+  S.ceilDrop = safe(function () { // it lets go of the ceiling and lands
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 1.2; out.connect(monIn);
+    tone(out, t, 'sine', 64, 28, 0.45, 1, 0.003); noise(out, t, 0.3, 'lowpass', 600, 1, 1, 0.002, brown); noise(out, t, 0.05, 'bandpass', 2600, 2, 0.6, 0.001);
+  });
+  S.scrape = safe(function () { // claws on the ceiling tiles
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 0.42; out.connect(monIn);
+    const n = noise(out, t, 0.32, 'bandpass', rand(2500, 3800), 4, 0.6, 0.05); n.f.frequency.exponentialRampToValueAtTime(rand(1500, 2200), t + 0.3);
+  });
+  /* ---- the Sleepwalker ---- */
+  S.musicBox = safe(function (pos, f) { // a music box with a bent comb: a bright pluck, a ringing overtone, slightly sour
+    const t = ctx.currentTime, out = dest(pos, 0.55, true); out.gain.value = 0.5;
+    tone(out, t, 'sine', f, f * 0.996, 2.0, 0.5, 0.003);
+    tone(out, t, 'sine', f * 2.01, f * 2.0, 0.9, 0.17, 0.002);
+    tone(out, t, 'triangle', f * 4.2, f * 4.15, 0.22, 0.05, 0.001);
+    noise(out, t, 0.02, 'highpass', 5000, 1, 0.07, 0.001);
+  });
+  S.hum = safe(function (pos, f, dur) { // a voice humming along, an octave down, breathy
+    const t = ctx.currentTime, out = dest(pos, 0.5, true); out.gain.value = 0.34;
+    const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t);
+    const vib = ctx.createOscillator(); vib.frequency.value = 5.2; const vg = ctx.createGain(); vg.gain.value = f * 0.012; vib.connect(vg); vg.connect(o.frequency);
+    const b1 = ctx.createBiquadFilter(); b1.type = 'bandpass'; b1.frequency.value = 480; b1.Q.value = 3;
+    const b2 = ctx.createBiquadFilter(); b2.type = 'bandpass'; b2.frequency.value = 1050; b2.Q.value = 6;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.42, t + Math.min(0.25, dur * 0.4)); g.gain.linearRampToValueAtTime(0.0001, t + dur * 0.98);
+    o.connect(b1); o.connect(b2); b1.connect(g); b2.connect(g); g.connect(out);
+    o.start(t); vib.start(t); o.stop(t + dur + 0.05); vib.stop(t + dur + 0.05);
+    noise(out, t, dur, 'bandpass', 1500, 1, 0.05, Math.min(0.3, dur * 0.3), pink);
+  });
+  S.crackAt = safe(function (pos) { // bones popping, somewhere in particular
+    const t = ctx.currentTime, out = dest(pos, 0.3, true); out.gain.value = 0.7;
+    for (let i = randi(2, 4); i > 0; i--) { const st = t + i * rand(0.03, 0.07); noise(out, st, 0.02, 'bandpass', rand(1800, 3200), 2, 0.8, 0.001); tone(out, st, 'triangle', rand(300, 500), 120, 0.03, 0.4, 0.001); }
+  });
+  S.sleeperShriek = safe(function (pos) { // walked into: a long, high, broken wail
+    const t = ctx.currentTime, out = dest(pos, 0.6, true); out.gain.value = 1.6;
+    const ws = ctx.createWaveShaper(); ws.curve = distCurve; const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1900; bp.Q.value = 1.2;
+    const g = ctx.createGain(); env(g.gain, t, 0.04, 0.7, 1.6); ws.connect(bp); bp.connect(g); g.connect(out);
+    for (const [f, d] of [[620, 0], [930, 12], [1240, -9], [470, 6]]) {
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.detune.value = d;
+      o.frequency.setValueAtTime(f * 0.7, t); o.frequency.exponentialRampToValueAtTime(f * 1.3, t + 0.25); o.frequency.exponentialRampToValueAtTime(f * 0.8, t + 1.6);
+      const vib = ctx.createOscillator(); vib.frequency.value = 7 + Math.random() * 4; const vg = ctx.createGain(); vg.gain.value = f * 0.05; vib.connect(vg); vg.connect(o.frequency); vib.start(t); vib.stop(t + 1.7);
+      o.connect(ws); o.start(t); o.stop(t + 1.7);
+    }
+    noise(out, t, 1.4, 'bandpass', 3200, 0.8, 0.4, 0.05);
+  });
+  S.fakeScare = safe(function () { // a hallucination lunging into your face: a shriek, a burst of static — and nothing there
+    const t = ctx.currentTime, out = dest(null, 0.4); out.gain.value = 1.2;
+    const ws = ctx.createWaveShaper(); ws.curve = distCurve; const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1700; bp.Q.value = 0.9;
+    const g = ctx.createGain(); env(g.gain, t, 0.006, 0.8, 0.7); ws.connect(bp); bp.connect(g); g.connect(out);
+    for (const [f, d] of [[330, 0], [495, 14], [660, -12], [990, 5]]) {
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.detune.value = d;
+      o.frequency.setValueAtTime(f * 1.3, t); o.frequency.exponentialRampToValueAtTime(f * 1.9, t + 0.1); o.frequency.exponentialRampToValueAtTime(f * 0.5, t + 0.7);
+      o.connect(ws); o.start(t); o.stop(t + 0.75);
+    }
+    noise(out, t, 0.75, 'highpass', 1400, 0.5, 0.8, 0.002);
+    tone(out, t, 'sine', 80, 28, 0.6, 1, 0.002);
+  });
+  S.dreamTick = safe(function () { const t = ctx.currentTime, out = dest(null, 0.1); out.gain.value = 0.45; noise(out, t, 0.06, 'highpass', 2500, 0.7, 0.6, 0.001); tone(out, t, 'sine', 70, 40, 0.1, 0.6, 0.002); });
+  S.drawer = safe(function (pos) { // a morgue drawer rolling open, then slamming against its stop
+    const t = ctx.currentTime, out = dest(pos, 0.8); out.gain.value = 1.3;
+    const n = noise(out, t, 0.9, 'bandpass', 500, 3, 0.5, 0.1, pink); n.f.frequency.exponentialRampToValueAtTime(900, t + 0.9);
+    metal(out, t + 0.95, 110, 1.6, 0.8); tone(out, t + 0.95, 'sine', 60, 30, 0.5, 0.8, 0.003);
+  });
   S.hourBell = safe(function (h) { // the facility PA marks the hour: a chime, and a deep clock bell for each hour gone
     const t = ctx.currentTime, out = dest(null, 0.5); out.gain.value = 0.85;
     [880, 698, 523].forEach((f, i) => tone(out, t + i * 0.32, 'sine', f, f, 1.1, 0.22, 0.01));
@@ -3308,8 +3408,8 @@ const Sound = (function () {
     noise(out, t, 0.55, 'bandpass', 1300, 1.4, 0.7, 0.05, pink);
     noise(out, t + 0.6, 0.18, 'bandpass', 600, 2, 0.6, 0.01, brown); noise(out, t + 0.86, 0.16, 'bandpass', 560, 2, 0.5, 0.01, brown);
   });
-  S.crawlM = safe(function (fast) { // a bare palm slapping the floor, knuckles clicking
-    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = fast ? 0.95 : 0.62; out.connect(monIn);
+  S.crawlM = safe(function (fast, quiet) { // a bare palm slapping the floor, knuckles clicking
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = (fast ? 0.95 : 0.62) * (quiet ? 0.35 : 1); out.connect(monIn);
     noise(out, t, 0.05, 'bandpass', rand(700, 1100), 1.4, 0.8, 0.001);
     tone(out, t, 'sine', rand(90, 120), 50, 0.08, 0.5, 0.002);
     if (Math.random() < 0.5) noise(out, t + rand(0.02, 0.05), 0.012, 'bandpass', rand(2200, 3400), 2.5, 0.45, 0.001);
@@ -3533,7 +3633,7 @@ function sculpt(geo, depth, fn) {
   geo.computeVertexNormals();
   return geo;
 }
-const SPH = new T.SphereGeometry(0.5, 18, 13); // smoother than the props' spheres: this one gets looked at up close
+const SPH = new T.SphereGeometry(0.5, 24, 18); // smoother than the props' spheres: this one gets looked at up close
 const _bump = (x, y, z, cx, cy, cz, r) => Math.exp(-((x - cx) ** 2 + (y - cy) ** 2 + (z - cz) ** 2) / (r * r));
 // reshape a unit sphere (radius 0.5) vertex by vertex: fn(x, y, z) -> [x, y, z]
 function sculptSphere(ws, hs, fn) {
@@ -3684,6 +3784,8 @@ function buildWarden(phantom) {
   root.userData.P = P;
   wardenFace(P);
   mergeChildMeshes(root);
+  P.neckMesh = P.neck.children.find(o => o.isMesh) || null;
+  for (const A of P.arms) A.elMeshes = A.el.children.filter(o => o.isMesh);
   return root;
 }
 // Merge sibling meshes that share a material into one mesh (fewer draw calls; animation groups are kept)
@@ -3719,8 +3821,8 @@ function monsterPassable(x, z) {
 function heapPush(h, item, f) { h.push([f, item]); let i = h.length - 1; while (i > 0) { const p = (i - 1) >> 1; if (h[p][0] <= h[i][0]) break; [h[p], h[i]] = [h[i], h[p]]; i = p; } }
 function heapPop(h) { const top = h[0], last = h.pop(); if (h.length) { h[0] = last; let i = 0; for (;;) { const l = i * 2 + 1, r = l + 1; let m = i; if (l < h.length && h[l][0] < h[m][0]) m = l; if (r < h.length && h[r][0] < h[m][0]) m = r; if (m === i) break; [h[m], h[i]] = [h[i], h[m]]; i = m; } } return top; }
 const DIR8 = [[1, 0, 1], [-1, 0, 1], [0, 1, 1], [0, -1, 1], [1, 1, 1.414], [1, -1, 1.414], [-1, 1, 1.414], [-1, -1, 1.414]];
-function astar(sx, sz, gx, gz) {
-  if (!monsterPassable(gx, gz)) return null;
+function astar(sx, sz, gx, gz, pass = monsterPassable) {
+  if (!pass(gx, gz)) return null;
   const { g, came, state } = NAV; state.fill(0); const h = NAV.heap; h.length = 0;
   const si = sz * W + sx, gi = gz * W + gx;
   g[si] = 0; came[si] = -1; state[si] = 1; heapPush(h, si, 0);
@@ -3733,8 +3835,8 @@ function astar(sx, sz, gx, gz) {
     const cx = cur % W, cz = (cur / W) | 0;
     for (const [dx, dz, cost] of DIR8) {
       const nx = cx + dx, nz = cz + dz;
-      if (!monsterPassable(nx, nz)) continue;
-      if (dx && dz && (!monsterPassable(cx + dx, cz) || !monsterPassable(cx, cz + dz))) continue;
+      if (!pass(nx, nz)) continue;
+      if (dx && dz && (!pass(cx + dx, cz) || !pass(cx, cz + dz))) continue;
       if (dx && dz && (cellAt(nx, nz).kind === 'door' || cellAt(cx, cz).kind === 'door')) continue; // enter doors straight
       const ni = nz * W + nx;
       if (state[ni] === 2) continue;
@@ -3828,8 +3930,10 @@ function aimEnd(joint, dir, k) {
   const v = _ae.v.copy(dir).normalize().applyQuaternion(_ae.q);
   joint.rotation.set(lerp(joint.rotation.x, Math.atan2(-v.z, -v.y), k), 0, 0);
 }
-const _cw = { f: new T.Vector3(), s: new T.Vector3(), t: new T.Vector3(), S: new T.Vector3(), u: new T.Vector3(), d: new T.Vector3(), pole: new T.Vector3(), q: new T.Quaternion(), pq: new T.Quaternion() };
+const _cw = { mq: new T.Quaternion(), f: new T.Vector3(), s: new T.Vector3(), t: new T.Vector3(), S: new T.Vector3(), u: new T.Vector3(), d: new T.Vector3(), pole: new T.Vector3(), q: new T.Quaternion(), pq: new T.Quaternion() };
 // crawl gaits: metres per cycle, share of the cycle each limb is planted, step height, limb phase offsets (left hand, right hand, left foot, right foot), body pose and where the hands/feet go
+// a marionette's jerk: yanked up sharply, then sagging back (0..1)
+function jerk(t, rate) { const x = (t * rate) % 1; return x < 0.08 ? x / 0.08 : Math.pow(1 - (x - 0.08) / 0.92, 2); }
 const CRAWL_CREEP = { len: 1.0, duty: 0.72, lift: 0.13, off: [0.25, 0.75, 0, 0.5], hip: 0.72, lean: 1.42, hx: 0.6, hz: 0.86, fx: 0.32, fz: -0.3 };
 const CRAWL_GALLOP = { len: 2.4, duty: 0.42, lift: 0.28, off: [0.5, 0.62, 0, 0.1], hip: 0.8, lean: 1.34, hx: 0.56, hz: 0.98, fx: 0.3, fz: -0.34 };
 const Monster = {
@@ -3845,6 +3949,8 @@ const Monster = {
   eyeColor: new T.Color(0xdff2ff), seenHide: null, visited: [], huntCount: 0, scriptedGoal: null,
   target: null, nearest: null, nearestD: 99, cine: null, targetId: -1, net: { buf: [] },
   stagger: 0, stunImmune: 0, rageUntil: 0, kb: new T.Vector3(), netStagger: 0, netImmune: 0,
+  ceil: 0, ceilWant: false, ceilH: WALL_H, ceilLat: 0.9, ceilSide: 1, ceilGo: false, ceilCD: 0, inCorr: false, sway: 0, wasUp: false,
+  slamT: 1, gait: 0, huntCrawl: true, distortK: 0, glitchT: 2, glitch: null, walkPh: 0, yawVel: 0, bashHits: 0, bashIron: false, flankAt: null, decoy2: null,
   init() {
     this.model = buildWarden(false); this.P = this.model.userData.P; scene.add(this.model);
     this.reset();
@@ -3860,13 +3966,15 @@ const Monster = {
     this.stagger = 0; this.stunImmune = 0; this.rageUntil = 0; this.kb.set(0, 0, 0); this.netStagger = 0; this.netImmune = 0;
     this.crawlK = 0; this.ventK = 0; this.crawlMode = false; this.watchT = 0; this.creepT = 0; this.lostT = 0; this.retreatUntil = 0; this.chatterT = rand(4, 8); this.whisperT = 3; this.stalkFrom = null;
     this.eyeColor.set(0xdff2ff); if (this.P) this.P.glowMat.opacity = 0.9;
+    this.ceil = 0; this.ceilWant = false; this.ceilH = WALL_H; this.ceilLat = 0.9; this.ceilSide = 1; this.ceilGo = false; this.ceilCD = 0; this.inCorr = false; this.sway = 0; this.wasUp = false;
+    this.slamT = 1; this.gait = 0; this.huntCrawl = true; this.distortK = 0; this.glitchT = 2; this.glitch = null; this.walkPh = 0; this.yawVel = 0; this.bashHits = 0; this.bashIron = false; this.flankAt = null; this.decoy2 = null;
     this.model.visible = true; this.model.position.copy(this.pos); this.model.rotation.set(0, this.yaw, 0);
   },
   activate() { if (this.active) return; this.active = true; this.cine = null; this.P.glowMat.opacity = 0.9; this.setState('PATROL'); this.pauseT = 1.2; },
   setState(s) {
     if (this.state === s) return;
     const prev = this.state;
-    this.state = s; this.stateT = 0;
+    this.state = s; this.stateT = 0; this.pathFresh = true;
     if (s !== 'INVESTIGATE') this.charging = false;
     if (s === 'HUNT' && prev !== 'ATTACK') {
       this.huntCount++; Game.stats.spotted++;
@@ -3874,13 +3982,16 @@ const Monster = {
       Game.onHuntStart(this.target);
     }
     if (s === 'HUNT' || s === 'ATTACK' || s === 'LOST' || s === 'SCRIPT') this.crawlMode = false; // (it hunts on all fours anyway, from a distance)
+    // each time it comes for someone, its limbs go wrong in a different way as it closes in
+    if ((s === 'HUNT' || s === 'INVESTIGATE' || s === 'STALK' || s === 'FLANK') && prev !== 'ATTACK' && prev !== 'HUNT') { this.gait = Math.random() < 0.85 ? randi(1, 4) : 0; this.huntCrawl = Math.random() < 0.45; } // and it runs at you on all fours — or upright, all wrong
+    else if (s === 'PATROL') this.gait = Math.random() < 0.3 ? randi(1, 4) : 0;
     if (s === 'LOST') { this.path = null; this.hasGoal = false; this.pauseT = 3.2; Sound.growl(); }
     if (s === 'SEARCH') { this.searchUntil = Game.time + diff().search * (Game.alarm ? 1.3 : 1); }
   },
   speedFor() {
     const base = this.baseSpeed(), c = cellOf(this.pos.x, this.pos.z);
-    const creep = this.crawlMode && !(this.state === 'HUNT' || this.charging) ? 0.8 : 1;
-    return base * creep * (c.kind === 'vent' ? 0.62 : 1) * Night.speedMul();
+    const creep = this.crawlMode && !(this.state === 'HUNT' || this.charging || this.state === 'FLANK') ? 0.8 : 1;
+    return base * creep * (c.kind === 'vent' ? 0.62 : 1) * (this.ceil > 0.5 ? 0.92 : 1) * Night.speedMul();
   },
   baseSpeed() {
     const d = diff(), boost = Game.alarm ? 1.12 : 1;
@@ -3891,6 +4002,7 @@ const Monster = {
       case 'SEARCH': return (d.patrol + d.investigate) * 0.5 * boost;
       case 'HUNT': return d.hunt * (this.seeing ? 1 : 0.94) * boost * (Game.time < this.rageUntil ? 1.12 : 1); // furious after being stunned
       case 'SCRIPT': return d.hunt * 1.05;
+      case 'FLANK': return d.hunt * 0.8; // circling round to come at you from the side, fast and silent
       default: return 0;
     }
   },
@@ -3935,6 +4047,11 @@ const Monster = {
     const strength = 1 - d / eff, isPlayer = kind === 'player';
     if (isPlayer) this.lastContact = Game.time;
     if (this.state === 'STALK') { if (isPlayer && strength > 0.45) this.stalkCharge(actor || player, 'noise'); return; }
+    if (this.state === 'FLANK') {
+      if (isPlayer && strength > 0.6) { this.target = actor || player; this.lastKnown.copy(pos); this.lastSeen = Game.time; this.awareness = 1; this.setState('HUNT'); this.path = null; this.repathT = 0; }
+      else if (isPlayer && actor === this.target) this.lastKnown.copy(pos);
+      return;
+    }
     if (this.state === 'HUNT') {
       if (!this.seeing && isPlayer) { if (actor) this.target = actor; this.lastKnown.copy(pos); this.lastSeen = Math.max(this.lastSeen, Game.time - diff().memory * 0.5); }
       return;
@@ -4000,7 +4117,7 @@ const Monster = {
     if (a.hidden) return (this.seenHide && this.seenHide.actor === a && this.seenHide.locker === a.locker) ? 1 : 0;
     const face = this.yaw + this.headYaw, fx = Math.sin(face), fz = Math.cos(face);
     const cosA = d > 0.01 ? (dx * fx + dz * fz) / d : 1;
-    const beam = a.beamOn(this.pos, 1.7);
+    const beam = a.beamOn(this.pos, this.eyeH() - 0.4);
     let range = 7;
     if (a.flashOn()) range = 18;
     if (beam) range = 30;
@@ -4034,13 +4151,14 @@ const Monster = {
       this.awareness = Math.min(1.2, this.awareness + best * 2.3 * diff().aware * step);
       this.lastContact = Game.time;
       if (this.awareness > 0.25) { this.lastKnown.copy(bestA.pos); this.lastSeen = Game.time; }
-      if (!wasSeeing && this.state !== 'HUNT' && this.state !== 'ATTACK') Sound.clicks();
+      if (!wasSeeing && this.state !== 'HUNT' && this.state !== 'ATTACK' && this.state !== 'FLANK') Sound.clicks();
     } else {
       this.awareness = Math.max(0, this.awareness - step * (this.state === 'HUNT' ? 0.1 : 0.2));
     }
     if (nearD < 14) this.closeT += step; else this.closeT = Math.max(0, this.closeT - step * 2);
     if (this.state === 'SCRIPT' || this.state === 'ATTACK') return;
     if (this.state === 'STALK') { this.awareness = Math.min(this.awareness, 0.6); return; }
+    if (this.state === 'FLANK') { if (this.seeing && this.awareness > 0.2) { this.lastSeen = Game.time; this.setState('HUNT'); this.path = null; this.repathT = 0; } return; } // it was sneaking up on you — now it runs
     if (Game.time < this.retreatUntil) { this.awareness = Math.min(this.awareness, 0.3); return; }
     if (this.awareness >= 1 && this.state !== 'HUNT') { this.setState('HUNT'); this.path = null; this.repathT = 0; }
     else if (this.seeing && this.awareness > 0.32 && (this.state === 'PATROL' || this.state === 'LOST' || this.state === 'SEARCH')) {
@@ -4135,7 +4253,7 @@ const Monster = {
         if (knows && d < 4) faceTarget = tg.pos;
         const attackRange = tg.hidden ? 1.25 : 1.55;
         const canHit = tg.hidden ? sawHide : (this.seeing || d < 1.2);
-        if (d < attackRange && canHit && !tg.invuln()) { this.setState('ATTACK'); this.attackT = 0; this.attackHit = false; }
+        if (d < attackRange && canHit && !tg.invuln() && this.ceil < 0.2) { this.setState('ATTACK'); this.attackT = 0; this.attackHit = false; } // (it has to drop off the ceiling first)
         if (!knows && this.stateT > 30) this.setState('SEARCH');
         break;
       }
@@ -4165,9 +4283,9 @@ const Monster = {
         this.lostT = vis ? 0 : this.lostT + dt;
         if (this.lostT > 7 || this.stateT > 45) { this.endStalk(false); break; }
         if (d < 6.5) { this.stalkCharge(tg, 'close'); break; }
-        if (vis && d < 20 && tg.beamOn(this.pos, 2.0)) { this.stalkCharge(tg, 'light'); break; }
+        if (vis && d < 20 && tg.beamOn(this.pos, this.eyeH() - 0.25)) { this.stalkCharge(tg, 'light'); break; }
         let watcher = null;
-        for (const a of actors()) if (a.pos.distanceTo(this.pos) < 24 && looksAt(a, this.pos.x, 2.0, this.pos.z, 0.94) && losClear(a.pos.x, a.pos.z, this.pos.x, this.pos.z)) { watcher = a; break; }
+        for (const a of actors()) if (a.pos.distanceTo(this.pos) < 24 && looksAt(a, this.pos.x, this.eyeH() - 0.2, this.pos.z, 0.94) && losClear(a.pos.x, a.pos.z, this.pos.x, this.pos.z)) { watcher = a; break; }
         if (watcher) {
           this.watchT += dt; this.creepT = Math.max(this.creepT, 2.2);
           if (this.hasGoal) { this.path = null; this.hasGoal = false; } // it freezes the moment you look at it
@@ -4188,13 +4306,33 @@ const Monster = {
         wantMove = this.hasGoal;
         if (!this.hasGoal && this.scriptedGoal) faceTarget = this.scriptedGoal;
         break;
+      case 'FLANK': { // the fake-out: it made a noise over there, and now it is coming round the side, silent
+        if (this.decoy2 && now >= this.decoy2.at) { Game.emit({ k: 'decoy', x: this.decoy2.x, z: this.decoy2.z, v: 1 }); this.decoy2 = null; } // …and it sounds like it's running off that way
+        if (this.stateT > 24) { this.searchCenter.copy(this.lastKnown); this.setState('SEARCH'); break; }
+        if (!this.hasGoal) {
+          if (this.pauseT > 0) { this.pauseT -= dt; this.lookAround(dt); }
+          else { this.searchCenter.copy(this.target && !this.target.dead ? this.target.pos : this.lastKnown); this.setState('SEARCH'); this.crawlMode = true; }
+          break;
+        }
+        wantMove = true;
+        break;
+      }
     }
-    // door bashing
+    if (this.state !== 'FLANK') this.decoy2 = null;
+    this.updateCeil();
+    // door bashing (on Hard, a locked iron door takes a few slams — then it tears it open)
     if (this.bashDoor) {
       this.bashT -= dt; wantMove = false; faceTarget = new T.Vector3(this.bashDoor.cx, 0, this.bashDoor.cz);
       if (this.bashT <= 0) {
-        const bd = this.bashDoor; bd.target = 1; bd.fast = true; this.bashDoor = null;
-        Game.syncDoor(bd, true, false); // bang + shake play on every peer
+        const bd = this.bashDoor;
+        if (this.bashIron && bd.locked() && !bd.broken) {
+          this.bashHits--;
+          if (this.bashHits > 0) { this.bashT = 0.95; Game.emit({ k: 'dhit', i: doors.indexOf(bd) }); }
+          else { this.bashDoor = null; Game.emit({ k: 'dbreak', i: doors.indexOf(bd) }); }
+        } else {
+          bd.target = 1; bd.fast = true; this.bashDoor = null;
+          Game.syncDoor(bd, true, false); // bang + shake play on every peer
+        }
       }
     }
     // movement along path
@@ -4216,14 +4354,16 @@ const Monster = {
           const c = cellOf(this.path[k][0], this.path[k][1]);
           if (c.door && c.door.t < 0.75 && c.door.target < 0.5 && Math.hypot(c.door.cx - this.pos.x, c.door.cz - this.pos.z) < 1.9) {
             if (!c.door.monsterCanPass()) { this.path = null; this.hasGoal = false; break; }
-            this.bashDoor = c.door; this.bashT = this.state === 'HUNT' || this.charging ? 0.35 : 0.7; this.vel.multiplyScalar(0.2); break;
+            const fast = this.state === 'HUNT' || this.charging;
+            this.bashDoor = c.door; this.bashIron = c.door.locked() && !c.door.broken; this.bashHits = this.bashIron ? (fast ? 3 : 4) : 1;
+            this.bashT = this.bashIron ? 0.75 : fast ? 0.35 : 0.7; this.vel.multiplyScalar(0.2); break;
           }
         }
       }
     }
     if (!wantMove || desired === 0) { this.vel.x = damp(this.vel.x, 0, 8, dt); this.vel.z = damp(this.vel.z, 0, 8, dt); }
     const before = this.pos.clone();
-    moveBody(this.pos, this.vel.x * dt, this.vel.z * dt, MONSTER_R, 'monster', false);
+    moveBody(this.pos, this.vel.x * dt, this.vel.z * dt, MONSTER_R, this.ceil > 0.5 ? 'ceil' : 'monster', false); // (up on the ceiling nothing on the floor is in its way)
     if (Game.endingLock && this.pos.z > 53.3) this.pos.z = 53.3;
     const moved = Math.hypot(this.pos.x - before.x, this.pos.z - before.z);
     this.speed = dt > 0 ? moved / dt : 0;
@@ -4244,13 +4384,16 @@ const Monster = {
     let tyaw = this.yaw;
     if (faceTarget) tyaw = Math.atan2(faceTarget.x - this.pos.x, faceTarget.z - this.pos.z);
     else if (this.speed > 0.2) tyaw = Math.atan2(this.vel.x, this.vel.z);
-    const turn = (this.state === 'HUNT' || this.state === 'ATTACK' || this.charging ? 7 : 3.2) * dt;
-    this.yaw += clamp(angleDiff(this.yaw, tyaw), -turn, turn);
+    // turning: eased in and out, never snapping round
+    const maxTurn = this.state === 'HUNT' || this.state === 'ATTACK' || this.charging ? 7 : 3.2;
+    this.yawVel = damp(this.yawVel, clamp(angleDiff(this.yaw, tyaw) * 6, -maxTurn, maxTurn), 10, dt);
+    this.yaw += this.yawVel * dt;
     this.voice(dt);
     this.animate(dt, this.speed);
   },
   voice(dt) { // breathing, clicks, chattering teeth and whispers, driven by state (runs on every peer)
     this.breathT -= dt; this.clickT -= dt; this.chatterT -= dt;
+    if (this.state === 'FLANK') return; // not a sound while it circles round
     const hunt = this.state === 'HUNT' || this.charging, stalk = this.state === 'STALK';
     if (this.breathT <= 0) { this.breathT = hunt ? rand(1.3, 1.9) : rand(2.8, 4.0); if (!hunt || Math.random() < 0.5) Sound.breathM(hunt ? 1.2 : stalk ? 0.6 : 0.8); }
     if (this.clickT <= 0) { this.clickT = rand(5, 10); if (this.state === 'SEARCH' || this.state === 'INVESTIGATE' || this.state === 'LOST') Sound.clicks(); else if (!stalk && Math.random() < 0.3) Sound.growl(); }
@@ -4264,6 +4407,9 @@ const Monster = {
     this.target = tg; this.state = 'STALK'; this.stateT = 0; this.charging = false;
     this.watchT = 0; this.lostT = 0; this.creepT = rand(2.5, 4); this.awareness = 0.4; this.whisperT = rand(0.5, 1.2); this.chatterT = rand(2, 4);
     this.crawlMode = Math.random() < 0.5; // sometimes it watches you standing, sometimes from the floor
+    const c = cellOf(x, z); // — and sometimes from the ceiling, upside down
+    this.ceilWant = c.room === 'corridor' && Math.random() < 0.35;
+    if (this.ceilWant) { const [side, lat] = this.wallSide(); this.ceilSide = side; this.ceilLat = lat; this.ceil = 1; this.crawlMode = true; } else this.ceil = 0;
   },
   endStalk(stared, by) {
     const tg = this.target;
@@ -4297,9 +4443,91 @@ const Monster = {
     this.headTimer -= dt;
     if (this.headTimer <= 0) { this.headTarget = rand(-1.1, 1.1); this.headTimer = rand(0.7, 1.8); if (Math.random() < 0.35) this.yaw += rand(-1.2, 1.2); }
   },
+  /* ---- up on the ceiling (host decides; snapshots carry it to everyone) ---- */
+  // how far it can keep going along the hallway ahead before a doorway, a room or the end of its path
+  corridorAhead() {
+    const P = this.path;
+    if (!P || !this.hasGoal) return 0;
+    let x = this.pos.x, z = this.pos.z, run = 0;
+    for (let i = this.pathI; i < P.length && run < 9; i++) {
+      const tx = P[i][0], tz = P[i][1], seg = Math.hypot(tx - x, tz - z), n = Math.max(1, Math.ceil(seg / 0.5));
+      for (let k = 1; k <= n; k++) {
+        const c = cellOf(lerp(x, tx, k / n), lerp(z, tz, k / n));
+        if (c.kind !== 'floor' || c.room !== 'corridor') return run + seg * (k - 1) / n;
+      }
+      run += seg; x = tx; z = tz;
+    }
+    return Math.min(run, 9);
+  },
+  // the nearer wall, to the left or right, and how far it is
+  wallSide() {
+    const lx = Math.cos(this.yaw), lz = -Math.sin(this.yaw);
+    const far = s => { for (let d = 0.2; d < 2.2; d += 0.1) { const c = cellOf(this.pos.x + lx * s * d, this.pos.z + lz * s * d); if (c.kind === 'wall' || c.kind === 'window' || c.kind === 'door') return d; } return 2.2; };
+    const L = far(1), R = far(-1), side = Math.abs(L - R) < 0.15 ? (Math.random() < 0.5 ? 1 : -1) : L < R ? 1 : -1;
+    return [side, clamp((side > 0 ? L : R) - 0.06, 0.3, 1.6)];
+  },
+  updateCeil() {
+    const c = cellOf(this.pos.x, this.pos.z), corr = c.kind === 'floor' && c.room === 'corridor';
+    // stepping into a hallway (or setting off along one): does it go up the wall this time?
+    if (corr && (!this.inCorr || this.pathFresh)) {
+      const chance = this.state === 'FLANK' ? 0.8 : this.state === 'HUNT' ? 0.35 : this.charging ? 0.15 : 0.5 + Night.danger() * 0.1;
+      this.ceilGo = Math.random() < chance;
+    }
+    this.inCorr = corr; this.pathFresh = false;
+    let want = this.ceilWant;
+    const tg = this.target, dT = tg ? Math.hypot(tg.pos.x - this.pos.x, tg.pos.z - this.pos.z) : 99;
+    if (!corr || this.cine || this.bashDoor || this.state === 'ATTACK' || this.state === 'SCRIPT' || this.state === 'LOST' || Game.endingLock) want = false;
+    else if (this.state === 'STALK') want = this.ceilWant; // it watches from wherever it is
+    else if (want) { // up there: it lets go before a doorway, at the end of the hall — or right on top of its prey
+      if (this.corridorAhead() < 1.7 || ((this.state === 'HUNT' || this.state === 'FLANK') && dT < 3.6)) want = false;
+    } else if (this.ceilGo && Game.time > this.ceilCD && this.speed > 0.3 && this.corridorAhead() >= 3.5 && !(this.state === 'HUNT' && dT < 8)) want = true;
+    if (want !== this.ceilWant) {
+      this.ceilWant = want;
+      if (want) { const [side, lat] = this.wallSide(); this.ceilSide = side; this.ceilLat = lat; this.crawlMode = true; }
+      else this.ceilCD = Game.time + 2.5;
+    }
+  },
+  /* ---- the fake-out (host): a noise over there — then it comes at you from the side ---- */
+  fakeOut() {
+    if (this.cine || Game.time < this.retreatUntil) return false;
+    const cands = actors().filter(a => !a.hidden && !a.inVent && !inLift(a) && cellOf(a.pos.x, a.pos.z).kind === 'floor');
+    if (!cands.length) return false;
+    const tg = pick(cands), d = Math.hypot(tg.pos.x - this.pos.x, tg.pos.z - this.pos.z);
+    if (d < 12 || d > 34) return false;
+    if (cands.some(a => a.pos.distanceTo(this.pos) < 26 && losClear(a.pos.x, a.pos.z, this.pos.x, this.pos.z))) return false; // nobody may be watching it
+    const ax = (this.pos.x - tg.pos.x) / d, az = (this.pos.z - tg.pos.z) / d; // from the guard toward it
+    const at = (ang, r) => [tg.pos.x + (ax * Math.cos(ang) - az * Math.sin(ang)) * r, tg.pos.z + (ax * Math.sin(ang) + az * Math.cos(ang)) * r];
+    for (let i = 0; i < 16; i++) {
+      const ang = (Math.random() < 0.5 ? 1 : -1) * rand(1.1, 1.9), [fx, fz] = at(ang, rand(4, 7)), fc = cellOf(fx, fz); // it will come from off to one side…
+      if (fc.kind !== 'floor' || fc.navBlocked) continue;
+      let decoy = null;
+      for (let j = 0; j < 10 && !decoy; j++) { const [x, z] = at(ang + Math.PI + rand(-0.6, 0.6), rand(8, 13)), c = cellOf(x, z); if (c.kind === 'floor') decoy = [x, z]; } // …after a noise from the other
+      if (!decoy) continue;
+      this.target = tg; this.lastKnown.copy(tg.pos); this.awareness = 0.5; this.charging = false;
+      if (!this.goTo(fx, fz, () => { this.pauseT = rand(0.8, 1.6); this.headTimer = 0; }) || !this.path || this.path.length > 40) { this.path = null; this.hasGoal = false; continue; }
+      this.flankAt = new T.Vector3(fx, 0, fz);
+      const keep = this.path, keepI = this.pathI, keepGoal = this.goal.clone(), cb = this.onArrive;
+      this.setState('FLANK'); this.crawlMode = true; this.pathFresh = true;
+      this.path = keep; this.pathI = keepI; this.goal.copy(keepGoal); this.hasGoal = true; this.onArrive = cb;
+      const v = Math.random() < 0.6 ? 0 : 2;
+      Game.emit({ k: 'decoy', x: +decoy[0].toFixed(1), z: +decoy[1].toFixed(1), v });
+      this.decoy2 = Math.random() < 0.6 ? { at: Game.time + rand(2.5, 4), x: +decoy[0].toFixed(1), z: +decoy[1].toFixed(1) } : null;
+      return true;
+    }
+    return false;
+  },
   playPose(pose, dur, look) { this.cine = { pose, t: 0, dur, look: !!look }; },
+  // how high its eyes are (standing, on all fours, up on the ceiling): for being seen and stared at
+  eyeH() { return lerp(lerp(2.25, 1.15, this.crawlK), this.ceilH - 0.55, smooth(0, 1, this.ceil)); },
+  // the root of the model: on the floor, or rolled over onto the ceiling (up the wall in between)
+  placeRoot() {
+    const ce = this.ceil, lat = Math.sin(Math.PI * ce) * this.ceilLat * this.ceilSide, h = this.ceilH * (1 - Math.cos(Math.PI * ce)) * 0.5;
+    this.model.position.set(this.pos.x + Math.cos(this.yaw) * lat, h, this.pos.z - Math.sin(this.yaw) * lat);
+    this.model.rotation.set(0, this.yaw, this.ceilSide * Math.PI * ce + this.sway);
+  },
   animate(dt, sp) {
-    const P = this.P, run = sp > 3.0;
+    const P = this.P, run = sp > 3.0, t = Game.time;
+    this.sway = 0;
     // duck under door frames
     const c = cellOf(this.pos.x, this.pos.z), inVent = c.kind === 'vent';
     let nearDoor = c.kind === 'door';
@@ -4308,46 +4536,46 @@ const Monster = {
     const attack = this.state === 'ATTACK' ? this.attackT : -1;
     const hunt = this.state === 'HUNT' || attack >= 0 || this.charging;
     const stalk = this.state === 'STALK';
-    // on all fours: chasing (it rears up to strike), creeping when the host says so, and always inside a vent
     const tg = Net.isClient ? (this.targetId === Net.myId ? player : Net.remotes.get(this.targetId) || player) : this.target || player;
     const dl = Math.hypot(tg.pos.x - this.pos.x, tg.pos.z - this.pos.z);
-    const crawlWant = !this.cine && attack < 0 && (inVent || (hunt && sp > 2.2 && dl > 3.3) || this.crawlMode);
+    // up on the ceiling along the hallways (the host decides, everyone sees it), always on all fours up there
+    this.ceil = damp(this.ceil, this.ceilWant ? 1 : 0, this.ceilWant ? 2.6 : 4.5, dt); if (this.ceil < 0.002) this.ceil = 0;
+    if (c.h > 2) this.ceilH = damp(this.ceilH, c.h, 4, dt);
+    const up = this.ceil > 0.5; if (up !== this.wasUp) { this.wasUp = up; if (!up && this.active && dl < 9) { Sound.ceilDrop(); Game.shake(0.3); } }
+    // on all fours: chasing (it rears up to strike), creeping when the host says so, inside a vent, on the ceiling
+    const crawlWant = !this.cine && attack < 0 && !this.bashDoor && this.slamT >= 0.95 && (inVent || this.ceil > 0.01 || this.ceilWant || (hunt && sp > 2.2 && dl > 3.3 && this.huntCrawl) || this.crawlMode);
     this.crawlK = damp(this.crawlK, crawlWant ? 1 : 0, crawlWant ? 5 : 6, dt);
     this.ventK = damp(this.ventK, inVent ? 1 : 0, 6, dt);
-    const crawling = this.crawlK > 0.5;
-    this.stepPhase += dt * sp * (run ? 2.0 : 2.7) * (crawling ? 0 : 1);
-    const ph = this.stepPhase, amp = clamp(sp / 2.2, 0, 1) * (run ? 0.85 : 0.55);
-    const sgn = Math.sin(ph) >= 0 ? 1 : -1;
-    if (!crawling && sgn !== this.lastStepSign && sp > 0.4) { this.lastStepSign = sgn; Sound.stepM(run); if (run && this.pos.distanceTo(player.pos) < 12) Game.shake(0.04); }
     const targetLean = (hunt ? 0.55 : stalk ? 0.46 : 0.32) + this.duck * 0.55 + (run ? 0.15 : 0);
     this.lean = damp(this.lean, targetLean, 5, dt);
     P.spine.rotation.set(this.lean, 0, 0);
-    P.hips.position.y = WARDEN_HIP - this.duck * 0.22 - Math.abs(Math.sin(ph)) * 0.05 * amp - (hunt ? 0.06 : 0);
-    P.neck.rotation.x = -this.lean * 0.85 - 0.05;
-    for (const L of P.legs) {
-      const s = L.s, swing = Math.sin(ph + (s > 0 ? 0 : Math.PI)) * amp;
-      L.hp.rotation.set(-swing - this.duck * 0.35 - (hunt ? 0.12 : 0), 0, 0);
-      L.kn.rotation.x = Math.max(0, Math.sin(ph + (s > 0 ? 0 : Math.PI) - 1.3)) * amp * 1.5 + this.duck * 0.55 + (hunt ? 0.2 : 0);
-      L.an.rotation.x = -L.kn.rotation.x * 0.3 + L.hp.rotation.x * -0.2;
-    }
+    P.hips.position.y = WARDEN_HIP - this.duck * 0.22 - (hunt ? 0.06 : 0); P.hips.rotation.set(0, 0, 0);
+    P.neck.rotation.set(-this.lean * 0.85 - 0.05, 0, 0);
+    if (P.neckMesh) { P.neckMesh.scale.y = damp(P.neckMesh.scale.y, 1, 6, dt); P.head.position.y = 0.17 * P.neckMesh.scale.y; }
+    for (const L of P.legs) { L.hp.rotation.set(-this.duck * 0.35 - (hunt ? 0.12 : 0), 0, 0); L.kn.rotation.x = this.duck * 0.55 + (hunt ? 0.2 : 0); L.an.rotation.x = -L.kn.rotation.x * 0.3; }
+    // arms: the base pose lives in its own numbers, so the distortions below can never pile up from frame to frame
+    const mk = clamp(sp / 0.6, 0, 1), swingPh = this.walkPh * TAU;
     for (const A of P.arms) {
-      const s = A.s, swing = Math.sin(ph + (s > 0 ? Math.PI : 0)) * amp * 0.7;
-      let ux = swing - 0.06 - (hunt ? 0.35 : 0), uz = s * (0.1 + (hunt ? 0.22 : 0)), ex = -0.18 - (hunt ? 0.4 : 0);
+      const s = A.s, swing = Math.sin(swingPh + (s > 0 ? 0 : Math.PI)) * mk * (run ? 0.55 : 0.34);
+      let ux = swing - 0.06 - (hunt ? 0.35 : 0), uz = s * (0.1 + (hunt ? 0.22 : 0)), ex = -0.16 - Math.max(0, -swing) * 0.6 - (hunt ? 0.4 : 0), lag = 6;
       if (attack >= 0) {
-        const up = attack < 0.42 ? smooth(0, 0.42, attack) : 1 - smooth(0.42, 0.8, attack);
-        ux = -2.4 * up + (attack >= 0.42 && attack < 0.7 ? -0.6 : 0); uz = s * (0.35 + up * 0.3); ex = -0.6 * up;
-      }
-      A.up.rotation.set(damp(A.up.rotation.x, ux, 12, dt), 0, damp(A.up.rotation.z, uz, 10, dt));
-      A.el.rotation.x = damp(A.el.rotation.x, ex, 10, dt);
-      A.wr.rotation.x = damp(A.wr.rotation.x, 0, 8, dt);
-      const curl = 0.22 + Math.sin(Game.time * 3 + s) * 0.08 + (attack >= 0 ? -0.2 : 0);
+        const lift = attack < 0.42 ? smooth(0, 0.42, attack) : 1 - smooth(0.42, 0.8, attack);
+        ux = -2.4 * lift + (attack >= 0.42 && attack < 0.7 ? -0.6 : 0); uz = s * (0.35 + lift * 0.3); ex = -0.6 * lift; lag = 14;
+      } else if (stalk) { ux = 0.08; uz = s * 0.07; ex = -0.1; lag = 4; }
+      A.bux = damp(A.bux || 0, ux, lag, dt); A.buz = damp(A.buz || 0, uz, lag, dt); A.bex = damp(A.bex || 0, ex, lag, dt); // the arms trail behind the body a little
+      A.up.rotation.set(A.bux, 0, A.buz); A.el.rotation.set(A.bex, 0, 0); A.wr.rotation.set(0, 0, 0);
+      const curl = stalk ? 0.1 + Math.max(0, Math.sin(t * 6.5 + s * 2)) * 0.55 : 0.22 + Math.sin(t * 3 + s) * 0.08 + (attack >= 0 ? -0.2 : 0);
       for (const f of A.fingers) f.rotation.x = curl;
     }
-    // watching you: arms hang long and still, fingers flexing
-    if (stalk) for (const A of P.arms) {
-      A.up.rotation.x = damp(A.up.rotation.x, 0.08, 4, dt); A.up.rotation.z = damp(A.up.rotation.z, A.s * 0.07, 4, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.1, 4, dt);
-      for (const f of A.fingers) f.rotation.x = 0.1 + Math.max(0, Math.sin(Game.time * 6.5 + A.s * 2)) * 0.55;
+    // slamming into a door: wind up, strike
+    if (this.slamT < 0.95) {
+      this.slamT += dt;
+      const w1 = smooth(0, 0.35, this.slamT) * (1 - smooth(0.35, 0.5, this.slamT)), w2 = smooth(0.35, 0.48, this.slamT) * (1 - smooth(0.6, 0.95, this.slamT));
+      for (const A of P.arms) { A.up.rotation.x += -2.3 * w1 - 1.35 * w2; A.el.rotation.x += -0.9 * w1 + 0.25 * w2; A.up.rotation.z += A.s * 0.3 * w1; }
+      P.spine.rotation.x += -0.3 * w1 + 0.5 * w2;
     }
+    const walkW = this.cine ? 0 : 1 - this.crawlK;
+    if (walkW > 0.01) this.walk(dt, sp, hunt, walkW);
     if (this.crawlK > 0.01) this.crawl(dt, sp, hunt);
     // head: look around, twitch (sometimes violently, with a crack), jaw
     this.twitchT -= dt;
@@ -4361,67 +4589,159 @@ const Monster = {
     const lookY = (this.state === 'HUNT' || attack >= 0) ? 0 : this.headTarget;
     this.headYaw = damp(this.headYaw, (this.speed > 0.3 && this.state === 'PATROL') ? lookY * 0.3 : lookY, 3, dt);
     const ck = this.crawlK;
-    P.head.rotation.set(this.twitch.x * (1 - ck * 0.5) + (hunt ? 0.12 : 0) - ck * 0.62, (this.headYaw + this.twitch.y) * (1 - ck * 0.6), this.twitch.z * (hunt ? 0.4 : 1) + (hunt ? 0.08 : 0.24) * (1 - ck) + (this.state === 'LOST' ? 0.2 : 0) + (stalk ? 0.42 + Math.sin(Game.time * 0.6) * 0.16 : 0) + ck * Math.sin(Game.time * 1.7) * 0.25);
-    const jawOpen = attack >= 0 ? (attack < 0.6 ? 1.1 : 0.55) : stalk ? 0.3 + Math.max(0, Math.sin(Game.time * 1.3)) * 0.25 : hunt ? 0.75 + Math.sin(Game.time * 9) * 0.1 : 0.22 + Math.max(0, Math.sin(Game.time * 0.9)) * 0.1 + ck * 0.3;
+    P.head.rotation.set(this.twitch.x * (1 - ck * 0.5) + (hunt ? 0.12 : 0) - ck * 0.62, (this.headYaw + this.twitch.y) * (1 - ck * 0.6), this.twitch.z * (hunt ? 0.4 : 1) + (hunt ? 0.08 : 0.24) * (1 - ck) + (this.state === 'LOST' ? 0.2 : 0) + (stalk ? 0.42 + Math.sin(t * 0.6) * 0.16 : 0) + ck * Math.sin(t * 1.7) * 0.25);
+    this.distort(dt, dl);
+    const jawOpen = attack >= 0 ? (attack < 0.6 ? 1.1 : 0.55) : stalk ? 0.3 + Math.max(0, Math.sin(t * 1.3)) * 0.25 : hunt ? 0.75 + Math.sin(t * 9) * 0.1 : 0.22 + Math.max(0, Math.sin(t * 0.9)) * 0.1 + ck * 0.3;
     P.jawK = damp(P.jawK, jawOpen, 10, dt);
-    P.chest.scale.set(1, 1 + Math.sin(Game.time * (hunt ? 4 : 1.6)) * 0.025, 1);
+    P.chest.scale.set(1, 1 + Math.sin(t * (hunt ? 4 : 1.6)) * 0.025, 1);
     // eyes reflect state: pale wandering, amber suspicious, red hunting
     const tc = this.state === 'HUNT' || this.state === 'ATTACK' || this.state === 'SCRIPT' || this.charging ? 0xff2a1a : (this.state === 'INVESTIGATE' || this.state === 'SEARCH') ? 0xffa83a : 0xeef6ff;
     _tmpCol.set(tc); this.eyeColor.lerp(_tmpCol, 1 - Math.exp(-dt * 4));
     P.eyeMat.color.copy(this.eyeColor); P.glowMat.color.copy(this.eyeColor);
     if (this.cine) this.applyPose(dt);
     wardenFace(P);
-    // apply transform
-    this.model.position.set(this.pos.x, 0, this.pos.z);
-    this.model.rotation.set(0, this.yaw, this.cine && this.cine.pose === 'stunned' ? this.model.rotation.z : 0);
+    this.placeRoot();
+    this.lookDown(tg, dl);
   },
-  // on all fours: hands and feet are planted on the floor and stepped (two-bone IK), the elbows jut up like a spider's
+  // upright: a stalking walk with planted feet (two-bone IK), the hips dipping and swinging with every step
+  walk(dt, sp, hunt, w) {
+    const P = this.P, run = sp > 3, mk = clamp(sp / 0.5, 0, 1);
+    const len = clamp(0.95 + sp * 0.3, 1.05, 2.7), duty = run ? 0.48 : 0.6, stride = duty * len;
+    this.walkPh = (this.walkPh + dt * sp / len) % 1;
+    const ph = this.walkPh, T2 = ph * TAU, broken = this.gait === 1 ? smooth(0.3, 0.8, this.distortK) : 0;
+    P.hips.position.y -= ((0.035 + Math.cos(T2 * 2) * 0.03) * mk + broken * 0.16) * w;
+    P.hips.rotation.y = Math.sin(T2) * 0.16 * mk * w;
+    P.spine.rotation.y += -Math.sin(T2) * 0.22 * mk * w; P.spine.rotation.z += Math.cos(T2) * 0.05 * mk * w;
+    P.neck.rotation.y += Math.sin(T2) * 0.1 * mk * w; // the head steadies itself against the sway
+    this.placeRoot(); this.model.updateMatrixWorld(true);
+    const MW = this.model.matrixWorld, MQ = this.model.getWorldQuaternion(_cw.mq);
+    P.hips.getWorldQuaternion(_cw.pq);
+    let landed = false;
+    P.legs.forEach((Lg, i) => {
+      const f = (ph + (i ? 0.5 : 0)) % 1, s = Lg.s;
+      let z, y = 0, down = true;
+      if (f < duty) z = stride * (0.5 - f / duty);
+      else { const q = smooth(0, 1, (f - duty) / (1 - duty)); z = stride * (q - 0.5); y = Math.sin(q * Math.PI) * (run ? 0.22 : 0.13); down = false; }
+      _cw.t.set(s * 0.115, 0.06 + y * mk, z * mk + 0.03).applyMatrix4(MW);
+      Lg.hp.getWorldPosition(_cw.S);
+      _cw.pole.set(s * 0.12, 0, lerp(1, -1, broken)).applyQuaternion(MQ); // knees forward — or, its broken walk, backward
+      const bend = solveLimb(_cw.S, _cw.t, 0.6, 0.58, _cw.pole, _cw.pq, _cw.q, true);
+      Lg.hp.quaternion.slerp(_cw.q, w); Lg.kn.rotation.x = lerp(Lg.kn.rotation.x, bend, w);
+      Lg.kn.updateMatrixWorld(true);
+      aimEnd(Lg.an, _cw.d.set(0, -1, down ? 0.05 : 0.5).applyQuaternion(MQ), w);
+      if (down !== Lg.down) { Lg.down = down; if (down && sp > 0.4) landed = true; }
+    });
+    if (landed && w > 0.5) { Sound.stepM(run); if (run && this.pos.distanceTo(player.pos) < 12) Game.shake(0.04); }
+  },
+  // as it closes in, its limbs go wrong — a different way each time (the host picks the style, everyone sees it)
+  distort(dt, dl) {
+    const P = this.P, t = Game.time, g = this.gait;
+    const want = g && !this.cine && this.active && this.state !== 'ATTACK' ? smooth(19, 6, dl) * (1 - this.crawlK) : 0;
+    this.distortK = damp(this.distortK, want, 2.5, dt);
+    const k = this.distortK;
+    if (k > 0.01) {
+      if (g === 1) { // broken: knees bend backwards (see walk), elbows snap the wrong way, shoulders hitched up, head lolled over
+        for (const A of P.arms) { A.el.rotation.x += 0.85 * k; A.up.rotation.z += A.s * 0.32 * k; A.up.rotation.y += A.s * 0.55 * k; }
+        P.head.rotation.z += 1.0 * k; P.neck.rotation.z += 0.3 * k;
+      } else if (g === 2) { // marionette: yanked upright on strings, limbs dangling and jerking
+        const j1 = jerk(t, 1.6), j2 = jerk(t + 0.43, 2.1);
+        P.hips.position.y += 0.08 * k * j1; P.spine.rotation.x -= 0.3 * k * j2;
+        for (const A of P.arms) {
+          const j = A.s > 0 ? j1 : j2;
+          A.up.rotation.x = lerp(A.up.rotation.x, -0.3 - 1.6 * j, 0.85 * k); A.up.rotation.z += A.s * 0.45 * k;
+          A.el.rotation.x = lerp(A.el.rotation.x, 0.25 * j, k); A.wr.rotation.x += 1.0 * k;
+          for (const f of A.fingers) f.rotation.x = lerp(f.rotation.x, 1.2, k);
+        }
+        P.head.rotation.x += (0.55 + 0.35 * Math.sin(t * 1.1)) * k; P.head.rotation.z += Math.sin(t * 0.8) * 0.6 * k;
+      } else if (g === 3) { // stretched: its forearms and neck draw out long, reaching for you
+        const st = 1 + 0.6 * k * (0.8 + 0.2 * Math.sin(t * 2.2));
+        for (const A of P.arms) {
+          for (const m of A.elMeshes) m.scale.y = st; A.wr.position.y = -0.66 * st;
+          A.up.rotation.x = lerp(A.up.rotation.x, -1.2, 0.8 * k); A.up.rotation.z += A.s * 0.2 * k; A.el.rotation.x = lerp(A.el.rotation.x, -0.05, k);
+          for (const f of A.fingers) f.rotation.x = lerp(f.rotation.x, -0.4, k);
+        }
+        if (P.neckMesh) { P.neckMesh.scale.y = 1 + 0.7 * k; P.head.position.y = 0.17 * P.neckMesh.scale.y; } P.head.rotation.x -= 0.3 * k;
+      } else if (g === 4) { // twisted: the head turned upside down, the arms wrung backwards, the torso wringing
+        P.head.rotation.z += Math.PI * k + Math.sin(t * 2.3) * 0.12 * k;
+        for (const A of P.arms) { A.up.rotation.y += A.s * 1.6 * k; A.el.rotation.x += 0.55 * k; A.up.rotation.x -= 0.3 * k; }
+        P.spine.rotation.y += Math.sin(t * 1.3) * 0.5 * k;
+      }
+    }
+    if (g !== 3 || k < 0.01) for (const A of P.arms) { let sy = 1; for (const m of A.elMeshes) { m.scale.y = damp(m.scale.y, 1, 6, dt); sy = m.scale.y; } A.wr.position.y = -0.66 * sy; }
+    // bones snapping: now and then a limb jerks into an impossible angle for a heartbeat, with a crack
+    this.glitchT -= dt;
+    if (this.glitchT <= 0) {
+      this.glitchT = rand(0.7, 3.2) / (0.35 + k * 1.6);
+      if (this.active && dl < 22 && !this.cine) {
+        const parts = [[P.head, 'z'], [P.head, 'x'], [P.neck, 'y'], [P.arms[0].up, 'y'], [P.arms[1].up, 'y'], [P.arms[0].el, 'x'], [P.arms[1].el, 'x'], [P.spine, 'y']];
+        const [o, ax] = parts[(Math.random() * parts.length) | 0];
+        this.glitch = { o, ax, amt: rand(0.7, 1.5) * (Math.random() < 0.5 ? -1 : 1), t: 0, dur: rand(0.1, 0.2) };
+        if (dl < 16) Sound.crack();
+      }
+    }
+    const G = this.glitch;
+    if (G) { G.t += dt; G.o.rotation[G.ax] += G.amt * Math.sin(Math.PI * clamp(G.t / G.dur, 0, 1)); if (G.t >= G.dur) this.glitch = null; }
+  },
+  // up on the ceiling, close to its prey, its head turns the right way up to watch them
+  lookDown(tg, dl) {
+    const k = smooth(0.45, 1, this.ceil) * smooth(9, 3.5, dl) * (this.cine ? 0 : 1);
+    if (k < 0.01) return;
+    const H = this.P.head;
+    _cw.q.copy(H.quaternion);
+    this.model.updateMatrixWorld(true);
+    H.lookAt(_cw.t.set(tg.pos.x, tg.eyeY || EYE_STAND, tg.pos.z));
+    _cw.pq.copy(H.quaternion); H.quaternion.copy(_cw.q).slerp(_cw.pq, k);
+  },
+  // on all fours: hands and feet planted (two-bone IK), elbows jutting up like a spider's — on the floor or the ceiling
   crawl(dt, sp, hunt) {
-    const P = this.P, k = this.crawlK, vk = this.ventK, gallop = hunt && sp > 3.2;
+    const P = this.P, k = this.crawlK, vk = this.ventK, gallop = hunt && sp > 3.2, sneak = this.state === 'FLANK';
     const G = gallop ? CRAWL_GALLOP : CRAWL_CREEP;
     this.crawlPh = (this.crawlPh + dt * sp / G.len) % 1;
     const ph = this.crawlPh, T2 = ph * TAU;
     // body: low and long, the spine rolling with each step
     P.hips.position.y = lerp(P.hips.position.y, lerp(G.hip, 0.5, vk) + (gallop ? Math.abs(Math.sin(T2)) * 0.08 : Math.sin(T2 * 2) * 0.025), k);
-    P.spine.rotation.set(lerp(P.spine.rotation.x, lerp(G.lean, 1.5, vk) + (gallop ? Math.sin(T2) * 0.12 : 0), k), Math.sin(T2) * 0.14 * k, Math.sin(T2 + 1) * 0.05 * k);
+    P.spine.rotation.set(lerp(P.spine.rotation.x, lerp(G.lean, 1.5, vk) + (gallop ? Math.sin(T2) * 0.12 : 0), k), lerp(P.spine.rotation.y, Math.sin(T2) * 0.14, k), lerp(P.spine.rotation.z, Math.sin(T2 + 1) * 0.05, k));
+    P.hips.rotation.set(0, lerp(P.hips.rotation.y, 0, k), 0);
     P.neck.rotation.x = lerp(P.neck.rotation.x, lerp(-1.2, -1.36, vk), k);
-    this.model.position.set(this.pos.x, 0, this.pos.z); this.model.rotation.set(0, this.yaw, 0);
-    this.model.updateMatrixWorld(true);
+    this.placeRoot(); this.model.updateMatrixWorld(true);
+    const MW = this.model.matrixWorld, MQ = this.model.getWorldQuaternion(_cw.mq);
     const stride = G.duty * G.len;
-    const limb = (j, front) => { // where this hand/foot should be (model space), and whether it is on the floor
+    const limb = (j, front) => { // where this hand/foot goes (model space), and whether it is planted
       const f = (ph + G.off[j]) % 1;
       let z, y = 0, down = true;
       if (f < G.duty) z = stride * (0.5 - f / G.duty);
-      else { const t = smooth(0, 1, (f - G.duty) / (1 - G.duty)); z = stride * (t - 0.5); y = Math.sin(t * Math.PI) * lerp(G.lift, 0.05, vk); down = false; }
+      else { const q = smooth(0, 1, (f - G.duty) / (1 - G.duty)); z = stride * (q - 0.5); y = Math.sin(q * Math.PI) * lerp(G.lift, 0.05, vk); down = false; }
       return { z: z + (front ? G.hz : G.fz), y, down };
     };
-    const fwd = _cw.f.set(Math.sin(this.yaw), 0, Math.cos(this.yaw)), side = _cw.s.set(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
     let slap = false;
     P.chest.getWorldQuaternion(_cw.pq);
     P.arms.forEach((A, i) => {
       const L = limb(i, true), s = A.s, w = lerp(G.hx, 0.32, vk);
-      _cw.t.set(s * w, 0.075 + L.y, L.z).applyMatrix4(this.model.matrixWorld);
+      _cw.t.set(s * w, 0.075 + L.y, L.z).applyMatrix4(MW);
       A.sh.getWorldPosition(_cw.S);
-      _cw.pole.copy(side).multiplyScalar(s * 0.8).addScaledVector(fwd, -0.3).add(_cw.u.set(0, lerp(1.1, 0.15, vk), 0)); // elbows up and out
+      _cw.pole.set(s * 0.8, lerp(1.1, 0.15, vk), -0.3).applyQuaternion(MQ); // elbows up and out
       const bend = solveLimb(_cw.S, _cw.t, 0.64, 0.68, _cw.pole, _cw.pq, _cw.q, false);
       A.up.quaternion.slerp(_cw.q, k); A.el.rotation.x = lerp(A.el.rotation.x, -bend, k);
       A.el.updateMatrixWorld(true);
-      aimEnd(A.wr, _cw.d.copy(fwd).addScaledVector(side, s * 0.25).add(_cw.u.set(0, L.down ? -0.15 : -1.1, 0)), k);
+      aimEnd(A.wr, _cw.d.set(s * 0.25, L.down ? -0.15 : -1.1, 1).applyQuaternion(MQ), k);
       for (const fg of A.fingers) fg.rotation.x = lerp(fg.rotation.x, L.down ? -0.1 : 0.7, k);
       if (L.down !== A.down) { A.down = L.down; if (L.down && sp > 0.4) slap = true; }
     });
     P.hips.getWorldQuaternion(_cw.pq);
     P.legs.forEach((Lg, i) => {
       const L = limb(i + 2, false), s = Lg.s;
-      _cw.t.set(s * G.fx, 0.07 + L.y, L.z).applyMatrix4(this.model.matrixWorld);
+      _cw.t.set(s * G.fx, 0.07 + L.y, L.z).applyMatrix4(MW);
       Lg.hp.getWorldPosition(_cw.S);
-      _cw.pole.copy(fwd).addScaledVector(side, s * 0.45).add(_cw.u.set(0, -0.5, 0));
+      _cw.pole.set(s * 0.45, -0.5, 1).applyQuaternion(MQ);
       const bend = solveLimb(_cw.S, _cw.t, 0.6, 0.58, _cw.pole, _cw.pq, _cw.q, true);
       Lg.hp.quaternion.slerp(_cw.q, k); Lg.kn.rotation.x = lerp(Lg.kn.rotation.x, bend, k);
       Lg.kn.updateMatrixWorld(true);
-      aimEnd(Lg.an, _cw.d.set(0, -1, 0).addScaledVector(fwd, L.down ? 0.1 : 0.9), k);
+      aimEnd(Lg.an, _cw.d.set(0, -1, L.down ? 0.1 : 0.9).applyQuaternion(MQ), k);
     });
-    if (slap) { Sound.crawlM(gallop); if (gallop && this.pos.distanceTo(player.pos) < 10) Game.shake(0.03); }
+    if (slap) {
+      if (this.ceil > 0.5) { if (Math.random() < 0.4) Sound.scrape(); }
+      else { Sound.crawlM(gallop, sneak); if (gallop && this.pos.distanceTo(player.pos) < 10) Game.shake(0.03); }
+    }
   },
   // cutscene poses layered over the procedural animation
   applyPose(dt) {
@@ -4470,7 +4790,7 @@ const Monster = {
       P.jawK = 0.5 + Math.sin(C.t * 6) * 0.12;
       const lit = Math.random() < 0.25 ? 0.15 : 0.55; // the eyes stutter
       P.eyeMat.color.copy(this.eyeColor).multiplyScalar(lit); P.glowMat.opacity = 0.9 * lit;
-      this.model.rotation.z = sw * 0.06 * r;
+      this.sway = sw * 0.06 * r;
     } else if (C.pose === 'stare') { // stops dead, leans in and studies something (a locker, a camera)
       const r = smooth(0, 0.25, k) * (1 - smooth(0.85, 1, k));
       P.spine.rotation.x = lerp(P.spine.rotation.x, 0.62, r);
@@ -4489,6 +4809,7 @@ const Monster = {
     const wasCharging = this.charging, prev = this.state;
     this.active = !!m.a; this.attackT = +m.at || 0; this.seeing = !!m.sg; this.targetId = m.ti === undefined ? -1 : m.ti | 0; this.charging = !!m.ch;
     this.netStagger = clamp(+m.sk || 0, 0, 1); this.netImmune = Math.max(0, +m.im || 0); this.crawlMode = !!m.cr;
+    this.ceilWant = !!m.ce; this.ceilSide = m.cs < 0 ? -1 : 1; this.ceilLat = clamp(+m.cl || 0.9, 0.3, 1.6); this.gait = clamp(m.gs | 0, 0, 4); this.huntCrawl = m.hc !== 0;
     const st = typeof m.st === 'string' ? m.st : 'DORMANT';
     if (st !== prev) {
       this.state = st;
@@ -4544,11 +4865,11 @@ const player = {
     this.crouching = false; this.crouchToggle = false; this.sprinting = false; this.stamina = 1; this.exhausted = false; this.staminaDelay = 0;
     this.health = 100; this.dead = false; this.hasFlash = false; this.flashState = false; this.battery = 1; this.spares = 1; this.swapT = 0; this.crankT = 0; this.cranking = false;
     this.hidden = false; this.locker = null; this.hideAnim = null; this.inVent = false; this.panic = 0; this.lit = 0; this.noiseLevel = 0; this.stepDist = 0; this.bobPhase = 0; this.bob = 0; this.roll = 0;
-    this.invulnUntil = 0; this.regenDelay = 0; this.breathT = 0; this.fearT = 0; this.lowWarned = false;
+    this.invulnUntil = 0; this.regenDelay = 0; this.breathT = 0; this.fearT = 0; this.lowWarned = false; this.outUntil = 0;
     this.beamDir.set(-1, 0, 0);
     for (const L of hideLockers) { L.open = 0; L.target = 0; L.pivot.rotation.y = L.pivot.userData.baseRy !== undefined ? L.pivot.userData.baseRy : L.pivot.rotation.y; L.door.visible = true; }
   },
-  flashOn() { return this.hasFlash && this.flashState && this.battery > 0 && this.swapT <= 0 && !this.hidden && !this.cranking && !this.dead; },
+  flashOn() { return this.hasFlash && this.flashState && this.battery > 0 && this.swapT <= 0 && !this.hidden && !this.cranking && !this.dead && !(Game.time < this.outUntil); },
   invuln() { return Game.time < this.invulnUntil || Game.endingLock || this.dead || Cine.locks(); },
   forward(out) { return out.set(-Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), -Math.cos(this.yaw) * Math.cos(this.pitch)); },
   // does the flashlight beam hit a point (x,z) at height h?
@@ -5092,6 +5413,7 @@ const UI = {
       g.fillStyle = '#ff3020'; g.beginPath(); g.arc(mx, mz, 3.2, 0, TAU); g.fill();
       g.strokeStyle = 'rgba(255,48,32,' + (1 - r / 10).toFixed(2) + ')'; g.lineWidth = 1.5; g.beginPath(); g.arc(mx, mz, r, 0, TAU); g.stroke();
     }
+    if (Game.cams && Sleeper.active) { g.fillStyle = '#a58cff'; g.beginPath(); g.arc(Sleeper.pos.x / CELL * s, Sleeper.pos.z / CELL * s, 2.8, 0, TAU); g.fill(); }
     Hints.drawMap(g, s); Net.drawMap(g, s);
     const c = cellOf(player.pos.x, player.pos.z);
     const rn = c.room && ROOM_NAMES[c.room] ? ROOM_NAMES[c.room] : (c.kind === 'vent' ? 'Maintenance vent' : 'Sublevel 6');
@@ -5196,7 +5518,7 @@ const _center = new T.Vector2(0, 0);
 const GEN_POS = new T.Vector3(30, 1, 29), TERM_POS = new T.Vector3(71, 1, 3.3), TRIP_POS = new T.Vector3(22.4, 1.6, 27.2);
 const MP_SPAWNS = [[4.05, 49.0], [5.7, 47.2], [5.7, 50.8], [7.2, 49.0]];
 const CARD_COLORS = ['yellow', 'blue', 'red'];
-const MSG_TYPES = new Set(['', 'warn', 'good', 'story', 'hint']);
+const MSG_TYPES = new Set(['', 'warn', 'good', 'story', 'hint', 'dream']);
 const inLift = a => cellOf(a.pos.x, a.pos.z).kind === 'lift';
 const _v3c = new T.Vector3();
 // everyone on this shift: the local player plus remote players (alive or not)
@@ -5359,6 +5681,33 @@ const Game = {
       case 'camboot': case 'campr': case 'cams': this.goalEvent(ev, mine, who); break;
       case 'end': this.startEnding(); break;
       case 'hour': Night.onHour(ev.h | 0); break;
+      case 'dhit': { // it slams into an iron door; the door buckles
+        const d = doors[ev.i | 0]; if (!d) break;
+        const p = new T.Vector3(d.cx, 1.4, d.cz), dist = Math.hypot(d.cx - player.pos.x, d.cz - player.pos.z);
+        d.shake = 1; Monster.slamT = 0; Sound.ironHit(p); spawnSparks(p, 5); this.shake(Math.max(0, 1 - dist / 16) * 0.6);
+        if (!this.flags.ironHeard && dist < 30) { this.flags.ironHeard = true; UI.msg('Something is slamming into a security door…', 'warn', 3.5); }
+        break;
+      }
+      case 'dbreak': { // …and tears it open
+        const d = doors[ev.i | 0]; if (!d) break;
+        const p = new T.Vector3(d.cx, 1.4, d.cz), dist = Math.hypot(d.cx - player.pos.x, d.cz - player.pos.z);
+        d.broken = true; d.unlocked = true; d.target = 1; d.fast = true; d.shake = 1.4; d.evAt = performance.now(); d.updateLeds(); d.place();
+        Monster.slamT = 0; Sound.ironBreak(p); spawnSparks(p, 18); this.shake(Math.max(0, 1 - dist / 18) * 1.0);
+        if (!this.flags.ironTold) { this.flags.ironTold = true; UI.msg('It tore straight through an iron security door. Nowhere is locked to it now.', 'warn', 5); }
+        break;
+      }
+      case 'decoy': Sound.decoy(new T.Vector3(+ev.x || 0, 1.3, +ev.z || 0), ev.v | 0); break;
+      case 'sleeper': { // 02:30: the second subject rises out of the morgue floor
+        Sleeper.emerge(); Cine.trigger('sleeper');
+        Sound.drawer(new T.Vector3(Sleeper.pos.x, 1, Sleeper.pos.z)); Game.dip = Math.max(Game.dip, 0.5);
+        UI.msg('02:30 — the Morgue camera just caught something rising up out of the floor.', 'story', 5);
+        setTimeout(() => { if (Game.state === 'playing' || Net.inGame) UI.msg('It won\'t chase you. But if you hear a lullaby, keep away from it — near it, you can\'t trust your own eyes.', 'warn', 6.5); }, 5200);
+        break;
+      }
+      case 'nm': // someone walked into the Sleepwalker: it shrieks
+        Sleeper.shriekT = 1.8; Sound.sleeperShriek(new T.Vector3(Sleeper.pos.x, 1.9, Sleeper.pos.z));
+        if (mine) Dream.nightmare(); else UI.msg(who + ' walked into the Sleepwalker. That scream carried…', 'warn', 3.5);
+        break;
       case 'over': if (this.state !== 'dead' && this.state !== 'won') { UI.closeNote(true); this.showGameOver(); } break;
     }
   },
@@ -5370,7 +5719,7 @@ const Game = {
     this.cards = { yellow: false, blue: false, red: false };
     this.breakerSeq = []; this.notesRead = new Set(); this.stats = { spotted: 0, damage: 0 }; this.flags = {}; this.shakeAmt = 0; this.dip = 0; this.eventT = rand(18, 26);
     this.deathT = 0; this.endT = 0; this.introT = 0; this.alarmT = 0; this.termBeep = 0; this.afterNote = null; this.awayWarned = false;
-    this.respawnAt = 0; this.wipeT = 0; this.liftMsgT = 0; this.fakeT = rand(50, 80); this.popT = 0; this.lureT = 0; this.glimpseT = rand(60, 90); this.stareCD = 0; this.stalkT = rand(35, 55);
+    this.respawnAt = 0; this.wipeT = 0; this.liftMsgT = 0; this.fakeT = rand(50, 80); this.popT = 0; this.lureT = 0; this.glimpseT = rand(60, 90); this.stareCD = 0; this.stalkT = rand(35, 55); this.fakeOutT = rand(80, 120);
     doors.forEach(d => d.reset());
     items.forEach(it => { it.taken = false; it.mesh.visible = true; it.def.enabled = true; if (it.def.glow) it.def.glow.visible = true; });
     world.breakers.forEach(b => { b.on = false; b.piv.rotation.z = -0.6; b.led.material = MAT.ledRed; });
@@ -5387,7 +5736,7 @@ const Game = {
     world.liftDoors.forEach(d => { d.mesh.position.x = 66 + d.side * 3.0; }); world.liftCall.material = MAT.ledOff;
     hemi.intensity = 0.5; scene.fog.density = FOG_BASE;
     for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) grid[z][x].explored = false;
-    Monster.reset(); if (Phantom.model) Phantom.model.visible = false; Phantom.active = false;
+    Monster.reset(); Dream.reset(); Sleeper.reset(); if (Phantom.model) Phantom.model.visible = false; Phantom.active = false; Phantom.mode = '';
     player.reset();
     Cine.reset(); Hints.reset(); Combat.reset(); Arms.reset(); Night.reset();
     Sound.setAlarm(false); Sound.setHum(false);
@@ -5513,6 +5862,7 @@ const Game = {
   takeCard(def) { this.takeItem(def); },
   doorPrompt(d) {
     if (d.type === 'exit') return this.exitOpen ? 'Blast door open' : 'Surface lift — sealed (use the panel)';
+    if (d.broken) return 'Wrecked door';
     if (d.locked()) {
       if (d.type === 'yellow') return this.cards.yellow ? 'Unlock (Maintenance card)' : 'Locked — Maintenance card required';
       if (d.type === 'blue') return !this.power ? 'Door offline — no power' : this.cards.blue ? 'Unlock (Research card)' : 'Locked — Research card required';
@@ -5524,6 +5874,7 @@ const Game = {
     if (Net.isClient) { Net.request('door', doors.indexOf(d)); return; }
     if (Math.abs(this.time - d.lastUse) < 0.3) return; d.lastUse = this.time; // (abs: never lock a door out if the clock was reset)
     const p = new T.Vector3(d.cx, 1.2, d.cz);
+    if (d.broken) { this.tell(by, 'The door is wrecked — it won\'t close any more.', 'warn', 3); return; }
     if (d.type === 'exit') { if (!this.exitOpen) this.tell(by, 'The blast door is sealed. The authorization panel is to its right.', 'warn', 3.6, 'locked'); return; }
     if (d.locked()) {
       if (d.type === 'yellow') {
@@ -5783,7 +6134,8 @@ const Game = {
     this.updateRadios(dt);
     this.scripts(dt);
     if (!this.ending) Night.update(dt);
-    if (client) Monster.netUpdate(dt); else Monster.update(dt);
+    if (client) { Monster.netUpdate(dt); Sleeper.netUpdate(dt); } else { Monster.update(dt); Sleeper.update(dt); }
+    Dream.update(dt);
     Net.updateRemotes(dt);
     this.updateLights(dt);
     updateSparks(dt);
@@ -5827,9 +6179,12 @@ const Game = {
     // the Warden wakes up (the host decides; every guard watches it happen on CCTV)
     if (host && !F.awakeQueued && !Monster.active) {
       const leftOffice = crew().some(a => cellOf(a.pos.x, a.pos.z).room !== 'security');
-      if ((p.hasFlash && (leftOffice || this.time - (F.flashAt || 0) > 30)) || this.time > 70) { F.awakeQueued = true; F.awakeAt = this.time + rand(5, 9); }
+      if ((p.hasFlash && (leftOffice || this.time - (F.flashAt || 0) > 30)) || this.time > 70) { F.awakeQueued = true; F.awakeAt = this.time + rand(5, 9); F.wokeAt = F.awakeAt; }
     }
     if (host && F.awakeQueued && !F.woke && this.time >= F.awakeAt) { F.woke = true; this.emit({ k: 'cine', id: 'wake' }); }
+    // a little later, the second one comes out (not in the middle of a chase, if it can help it)
+    if (host && F.woke && !F.sleeperOut && !this.ending && !Night.dawn && Night.t >= Night.len * 0.125 && this.time - (F.wokeAt || 0) > 20
+      && ((Monster.state !== 'HUNT' && Monster.state !== 'ATTACK') || Night.t >= Night.len * 0.2)) { F.sleeperOut = true; this.emit({ k: 'sleeper' }); }
     // it screams when the lights come back on
     if (host && F.lightsCineAt && this.time >= F.lightsCineAt) {
       F.lightsCineAt = 0;
@@ -5848,6 +6203,12 @@ const Game = {
     if (host && Monster.active && (F.sighted || Monster.huntCount > 0) && !this.exitOpening && !this.ending) {
       this.stalkT -= dt;
       if (this.stalkT <= 0) this.stalkT = this.tryStalk() ? rand(45, 80) * Night.pressureMul() : rand(5, 9);
+    }
+    // the fake-out: a noise from one direction… while it circles round to come at you from the side
+    if (host && Monster.active && !Monster.cine && (F.sighted || Monster.huntCount > 0) && !this.exitOpening && !this.ending && !Night.dawn
+      && (Monster.state === 'PATROL' || Monster.state === 'SEARCH' || Monster.state === 'LOST')) {
+      this.fakeOutT -= dt;
+      if (this.fakeOutT <= 0) this.fakeOutT = Monster.fakeOut() ? rand(70, 110) * Night.pressureMul() : rand(10, 20);
     }
     // it stops right outside the locker you are hiding in, and listens
     if (host && Monster.active && !Monster.cine && this.time > this.stareCD && (Monster.state === 'PATROL' || Monster.state === 'SEARCH' || Monster.state === 'INVESTIGATE')) {
@@ -5879,9 +6240,9 @@ const Game = {
     // phantom scare (once, mid-game, only when the real Warden is far away)
     if (!F.phantomDone && Monster.active && (this.cards.yellow || this.cards.blue) && !p.hidden && Monster.pos.distanceTo(p.pos) > 30 && Monster.state !== 'HUNT') {
       F.phantomT = (F.phantomT || 0) - dt;
-      if (F.phantomT <= 0 && !Phantom.active) { F.phantomT = 1.0; this.tryPhantom(); }
+      if (F.phantomT <= 0 && !Phantom.active && !Dream.ph) { F.phantomT = 1.0; this.tryPhantom(); }
     }
-    if (Phantom.active) {
+    if (Phantom.active && Phantom.mode === 'scare') {
       Phantom.t += dt;
       const ph = Phantom.model.position, d = ph.distanceTo(p.pos);
       if (d < 8.5 || Phantom.t > 2.6 || p.beamOn(ph, 1.8)) {
@@ -5954,9 +6315,9 @@ const Game = {
     let n = 0, x = c.x, z = c.z;
     for (let i = 1; i <= 9; i++) { const nc = cellAt(c.x + ax * i, c.z + az * i); if (!(nc.kind === 'floor' && nc.room === 'corridor')) break; n = i; x = nc.x; z = nc.z; }
     if (n < 7) return;
-    if (!Phantom.model) { Phantom.model = buildWarden(true); scene.add(Phantom.model); const P = Phantom.model.userData.P; P.spine.rotation.x = 0.25; P.neck.rotation.x = -0.15; P.head.rotation.z = 0.5; P.arms.forEach(A => { A.up.rotation.z = A.s * 0.08; A.el.rotation.x = -0.1; }); P.eyeMat.color.set(0xffffff); P.glowMat.color.set(0xffffff); }
-    Phantom.model.position.set(cc(x), 0, cc(z)); Phantom.model.rotation.y = Math.atan2(p.pos.x - cc(x), p.pos.z - cc(z));
-    Phantom.model.visible = true; Phantom.active = true; Phantom.t = 0;
+    const M = Dream.phantomModel(); posePhantom(M.userData.P, 'watch', 0);
+    M.position.set(cc(x), 0, cc(z)); M.rotation.set(0, Math.atan2(p.pos.x - cc(x), p.pos.z - cc(z)), 0);
+    M.visible = true; Phantom.active = true; Phantom.mode = 'scare'; Phantom.t = 0;
   },
   ambientEvent() {
     const p = player, r = Math.random(), far = (min, max) => { const a = rand(0, TAU), d = rand(min, max); return new T.Vector3(clamp(p.pos.x + Math.cos(a) * d, 4, W * CELL - 4), 2, clamp(p.pos.z + Math.sin(a) * d, 4, H * CELL - 4)); };
@@ -5970,10 +6331,10 @@ const Game = {
       if (best) spawnSparks(best.pos.clone().add(new T.Vector3(0, -0.1, 0)), 10); else Sound.pipeGroan(far(6, 12));
     }
     else if (r < 0.9) { if (!Monster.active || Monster.pos.distanceTo(p.pos) > 25) Sound.whisper(far(2.5, 5)); }
-    else if (Monster.active && Monster.state !== 'HUNT' && Monster.pos.distanceTo(p.pos) > 20) Sound.growl();
+    else if (Monster.active && Monster.state !== 'HUNT' && Monster.state !== 'FLANK' && Monster.pos.distanceTo(p.pos) > 20) Sound.growl();
   },
   updateLights(dt) {
-    const t = this.time, mActive = Monster.active, mp = Monster.pos;
+    const t = this.time, mActive = Monster.active, mp = Monster.pos, sl = Sleeper.active ? Sleeper.pos : null, DK = Dream.level();
     this.dip = Math.max(0, this.dip - dt * 0.7);
     const em = new T.Color();
     let lit = 0;
@@ -5990,6 +6351,8 @@ const Game = {
         if (f.type === 'main' && t < f.powerOnAt + 0.7) b *= Math.random() < 0.5 ? 0.15 : 1;
         if (f.type === 'emerg' && this.power && f.mode !== 'beacon') b *= 0.5;
         if (mActive) { const dm = Math.abs(f.pos.x - mp.x) + Math.abs(f.pos.z - mp.z); if (dm < 10) { const k = 1 - dm / 10; if (Math.random() < k * 0.55) b *= rand(0, 0.45); } }
+        if (sl) { const ds = Math.abs(f.pos.x - sl.x) + Math.abs(f.pos.z - sl.z); if (ds < 10) { const k = 1 - ds / 10; b *= 1 - k * 0.85 * (0.5 + 0.5 * Math.sin(t * 2.1 + f.pos.x * 0.7)); } } // around the Sleepwalker the lights slowly breathe out
+        if (DK > 0.45 && Math.abs(f.pos.x - player.pos.x) + Math.abs(f.pos.z - player.pos.z) < 8 && Math.random() < (DK - 0.45) * 0.3) b *= rand(0, 0.5);
         if (this.dip > 0.05) b *= 1 - this.dip * (Math.random() < 0.3 ? 1 : 0.75);
         if (Night.surge) b *= f.mode === 'beacon' ? 0.5 : 0; // the 04:00 surge: black
       }
@@ -6045,7 +6408,7 @@ const Game = {
   updateDeath(dt) {
     this.deathT += dt;
     if (this.deathT < 2.6) { // the last thing you see
-      const head = _v3c.set(Monster.pos.x, 2.2, Monster.pos.z);
+      const head = _v3c.set(Monster.pos.x, Monster.eyeH(), Monster.pos.z);
       const dx = head.x - player.pos.x, dz = head.z - player.pos.z;
       const yaw = Math.atan2(-dx, -dz), pitch = Math.atan2(head.y - player.eyeY, Math.hypot(dx, dz));
       player.yaw += angleDiff(player.yaw, yaw) * (1 - Math.exp(-dt * 10));
@@ -6075,7 +6438,7 @@ const Game = {
     return 22;
   },
   threat() {
-    if (!Monster.active) return [0, 'NO CONTACT', 0];
+    if (!Monster.active) { const lie = Dream.lieText(); return lie ? [2, lie, 0.5] : [0, 'NO CONTACT', 0]; }
     const d = Monster.pos.distanceTo(player.pos), s = Monster.state, mine = Monster.huntsLocal();
     let k = clamp(1 - (d - 3) / 18, 0, 1) * 0.6;
     let lvl = d < 18 ? 1 : 0, sub = d < 18 ? 'IT IS CLOSE' : 'NO CONTACT';
@@ -6085,6 +6448,7 @@ const Game = {
     if (s === 'STALK' && (Net.isClient ? Monster.targetId === Net.myId : Monster.target === player)) { lvl = 2; sub = 'SOMETHING IS WATCHING YOU'; k = Math.max(k, 0.55); }
     if (player.hidden && lvl >= 1 && !(s === 'HUNT' && mine)) sub = 'STAY STILL';
     if (Monster.stunLeft() > 0) { lvl = Math.min(lvl, 2); sub = 'STUNNED — RUN'; k = Math.min(k, 0.5); }
+    const lie = Dream.lieText(); if (lie) { lvl = Math.max(lvl, 2); sub = lie; k = Math.max(k, 0.5); } // (it isn't)
     return [lvl, sub, k];
   },
   render(dt) {
@@ -6099,6 +6463,7 @@ const Game = {
     camera.rotation.set(p.pitch + rand(-sh, sh), p.yaw + rand(-sh, sh), p.roll + rand(-sh, sh) * 0.5);
     Combat.camKick(camera);
     let fov = settings.fov + (p.sprinting ? 5 : 0) - (lvl === 3 ? 3 : 0) - Math.max(0, Combat.ext()) * 1.5;
+    fov = Dream.camera(fov); // near the Sleepwalker the view sways and the room swells
     const cineFov = Cine.applyCamera(dt, fov); // cutscenes can take the camera
     if (cineFov !== null) fov = cineFov;
     if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = Cine.snapFov ? fov : damp(camera.fov, fov, 6, dt); camera.updateProjectionMatrix(); }
@@ -6149,12 +6514,15 @@ const Game = {
     const stalk = Monster.active && !Monster.huntsLocal() && md < 22 ? 1 - md / 22 : 0;
     const chase = Monster.active && Monster.huntsLocal() && !p.dead && !this.ending ? 1 : 0;
     const duck = p.hidden && md < 9 ? 1 - md / 9 : 0;
-    Sound.update(dt, live ? threat : 0, lis, Monster.active ? _v3c.set(Monster.pos.x, 2.1, Monster.pos.z) : null, Monster.los, live ? { stalk, chase, duck } : null);
+    Sound.update(dt, live ? threat : 0, lis, Monster.active ? _v3c.set(Monster.pos.x, Monster.eyeH(), Monster.pos.z) : null, Monster.los, live ? { stalk, chase, duck, dream: Dream.level() } : null);
     UI.updateHud(dt, lvl, sub);
     UI.mapT -= dt; if (UI.mapT <= 0 && UI.mapVisible) { UI.mapT = 0.2; UI.drawMap(); }
     Hints.render();
+    const dfx = Dream.fxOn(); // the dream is drawn through a warping lens
+    if (dfx) DreamFX.begin();
     renderer.render(scene, camera);
     Arms.render();
+    if (dfx) DreamFX.end(Dream.level(), Dream);
     Cine.renderPip();
   },
   onError(e) {
@@ -6625,7 +6993,7 @@ function camLabel(p) {
 function clockText() { const tm = Math.floor(Night.minutes() * 60); return '0' + Math.floor(tm / 3600) % 10 + ':' + String(Math.floor(tm / 60) % 60).padStart(2, '0') + ':' + String(tm % 60).padStart(2, '0'); }
 function lookAtWarden(k) {
   if (k <= 0) return;
-  lookQuat(camera.position, _cv.set(Monster.pos.x, 2.1, Monster.pos.z), _cq);
+  lookQuat(camera.position, _cv.set(Monster.pos.x, Monster.eyeH(), Monster.pos.z), _cq);
   camera.quaternion.slerp(_cq, k);
 }
 // full-screen CCTV: a fixed camera that slowly pans with the Warden and digitally zooms in
@@ -6713,6 +7081,8 @@ const SCENES = {
     },
   },
   glimpse: { pip: true, prio: 1, dur: 3.2, alert: '' },
+  // 02:30: the morgue camera catches something rising up out of the floor
+  sleeper: { pip: true, prio: 4, dur: 5.6, alert: 'MOTION DETECTED', subj: () => Sleeper.pos, start() { Sound.sting(false); } },
   lightsOn: {
     pip: true, prio: 3, dur: 3.8, alert: 'POWER RESTORED',
     always() { Sound.roar(1.2); UI.msg('Somewhere in the dark, something screams at the light.', 'story', 4); },
@@ -6889,7 +7259,7 @@ const Cine = {
       if (this.skipHold >= 0.7 && this.t > 0.35) { this.skipHold = 0; this.skip(); }
     } else this.skipHold = 0;
     const P = this.pip;
-    if (P) { P.t += dt; if (P.def.tick) P.def.tick(P, P.t, dt); if (P.t >= P.def.dur || !Monster.active) this.stopPip(); }
+    if (P) { P.t += dt; if (P.def.tick) P.def.tick(P, P.t, dt); if (P.t >= P.def.dur || (!P.def.subj && !Monster.active)) this.stopPip(); }
     this.clockT -= dt;
     if (this.clockT <= 0) { this.clockT = 0.5; const s = clockText(); if (this.el.cctv.classList.contains('on')) this.el.time.textContent = s; if (this.pip) this.el.pipTime.textContent = s; }
   },
@@ -6929,9 +7299,9 @@ const Cine = {
   redFlash(k) { const f = this.el.flash; f.style.transition = 'none'; f.style.opacity = String(k); void f.offsetWidth; f.style.transition = 'opacity .9s'; f.style.opacity = '0'; },
   /* ---- picture-in-picture camera ---- */
   startPip(sc) {
-    if (this.blocking() || !Monster.active) return false;
+    if (this.blocking() || (!sc.def.subj && !Monster.active)) return false;
     if (this.pip && (this.pip.def.prio || 0) > (sc.def.prio || 0)) return false;
-    const m = Monster.pos;
+    const m = sc.def.subj ? sc.def.subj() : Monster.pos;
     const spot = findCamSpot(m, 3.2, 8.5) || findCamSpot(m, 2, 12);
     if (!spot) return false;
     sc.camPos = spot; sc.look = new T.Vector3(m.x, 1.6, m.z); sc.t = 0; sc.recheck = 0.8;
@@ -6953,7 +7323,7 @@ const Cine = {
   renderPip() {
     const P = this.pip;
     if (!P || this.blocking()) return;
-    const m = Monster.pos;
+    const m = P.def.subj ? P.def.subj() : Monster.pos;
     // follow it like a pan-tilt camera; switch cameras when it walks out of view
     P.recheck -= this.dtReal;
     if (P.recheck <= 0) {
@@ -6997,7 +7367,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 4, BUILD = 8, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 5, BUILD = 9, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -7630,6 +8000,7 @@ const Net = {
     const M = Monster, c = M.cine;
     const m = { x: +M.pos.x.toFixed(2), z: +M.pos.z.toFixed(2), yw: +M.yaw.toFixed(3), st: M.state, a: M.active ? 1 : 0, at: +M.attackT.toFixed(2), sg: M.seeing ? 1 : 0, ch: M.charging ? 1 : 0,
       sk: +M.stagger.toFixed(2), im: +Math.max(0, M.stunImmune - Game.time).toFixed(1), cr: M.crawlMode ? 1 : 0,
+      ce: M.ceilWant ? 1 : 0, cs: M.ceilSide, cl: +M.ceilLat.toFixed(2), gs: M.gait, hc: M.huntCrawl ? 1 : 0,
       ti: M.target ? (M.target === player ? 0 : M.target.id) : -1 };
     if (c) { m.po = c.pose; m.pt = +c.t.toFixed(2); m.pd = c.dur; m.pl = c.look ? 1 : 0; }
     const p = [this.myState()];
@@ -7637,11 +8008,13 @@ const Net = {
     const s = { k: 's', q: ++this.snapSeq, m, p, lp: +Game.logsProgress.toFixed(3), dl: Game.downloading ? 1 : 0 };
     if (this.snapSeq % 30 === 0) s.dr = doors.map(d => (d.target > 0.5 ? 1 : 0) | (d.unlocked ? 2 : 0));
     if (this.snapSeq % 12 === 0) s.nt = +Night.t.toFixed(1);
+    if (Sleeper.active) s.w = Sleeper.netState();
     return s;
   },
   applySnap(s, now) { // client
     const q = s.q | 0; if (q && q <= this.lastSeq) return; this.lastSeq = q; // drop late, out-of-order snapshots
     Monster.netPush(s.m, now);
+    if (s.w) Sleeper.netPush(s.w, now);
     if (Array.isArray(s.p)) for (const a of s.p) { const id = a[0] | 0; if (id === this.myId) continue; const r = this.remotes.get(id); if (r) r.applyState(a, now); }
     Game.logsProgress = clamp(+s.lp || 0, 0, 1); Game.downloading = !!s.dl && !Game.logs;
     if (s.nt !== undefined && !Night.dawn && Math.abs(Night.t - s.nt) > 1) Night.t = clamp(+s.nt || 0, 0, Night.len);
@@ -8014,6 +8387,7 @@ const ACH = [
   { id: 'stare', name: 'Staring Contest', desc: 'Hold its gaze while it stalks you until it backs off.' },
   { id: 'coop', name: 'Buddy System', desc: 'Escape together in online co-op.' },
   { id: 'name', name: 'Who Was He?', desc: 'Learn the Warden\'s real name.' },
+  { id: 'lucid', name: 'Lucid Dreamer', desc: 'Stand right beside the Sleepwalker for three seconds without letting it touch you.' },
 ];
 const RANKS = [['S', 3300], ['A', 2600], ['B', 1900], ['C', 1200], ['D', -1e9]];
 const CAM_POS = new T.Vector3(102.2, 1.1, 52);
@@ -8064,6 +8438,7 @@ const Goals = {
       ['Stuns ×' + (s.myStuns || 0), (s.myStuns || 0) * 120],
       ['Stared it down ×' + (s.stares || 0), (s.stares || 0) * 150],
       ['Times hunted ×' + (s.spotted || 0), -(s.spotted || 0) * 60],
+      ['Nightmares ×' + (s.nightmares || 0), -(s.nightmares || 0) * 100],
       ['Damage taken', -Math.round((s.damage || 0) * 4)],
     ].filter((r, i) => r[1] !== 0 || i === 0);
     const mult = { easy: 0.8, normal: 1, hard: 1.5 }[diffKey] || 1;
@@ -8292,6 +8667,7 @@ const Night = {
     UI.center('06:00 AM', 'THE DAY SHIFT IS HERE — GET TO THE SURFACE LIFT!', 5.5);
     Sound.dawn(); Game.shake(0.5); Hints.progress(); Hints.pulse(Hints.liftTarget(), 12);
     if (!Net.isClient && Monster.active) { Monster.cine = null; Monster.playPose('stunned', 5); } // the floodlights blind it… for a moment
+    Sleeper.sink(); // and the Sleepwalker sinks back into the floor
   },
   // host: at dawn it stops wandering and comes for whoever is nearest — the last run
   lastRun(dt) {
@@ -8310,11 +8686,12 @@ const Night = {
     const m = this.minutes(), cls = this.dawn ? 'dawn' : this.surge ? 'surge' : m >= 330 ? 'late' : '';
     const goal = this.dawn ? 'GET TO THE LIFT · ' + Math.round(Math.hypot(player.pos.x - LIFT_POS.x, player.pos.z - LIFT_POS.z)) + ' M'
       : this.surge ? 'POWER SURGE · SURVIVE UNTIL 6:00 AM' : 'SURVIVE UNTIL 6:00 AM · ' + this.leftText() + ' LEFT';
-    const key = this.clock(m) + cls + goal;
+    const shown = Dream.clockText() || this.clock(m); // (the dream lies about the time)
+    const key = shown + cls + goal;
     if (UI.hudCache.shift === key) return;
     UI.hudCache.shift = key;
     el.className = cls;
-    $('shift-clock').firstChild.textContent = this.clock(m);
+    $('shift-clock').firstChild.textContent = shown;
     $('shift-goal').textContent = goal;
     $('shift-bar').firstElementChild.style.width = clamp((m - 120) / 240, 0, 1) * 100 + '%';
     $('mission').textContent = this.dawn ? 'GET TO THE SURFACE LIFT!' : 'Survive until 6:00 AM';
@@ -8324,9 +8701,627 @@ const Night = {
 };
 
 /* ------------------------------------------------------------------ */
+/* THE SLEEPWALKER — the second subject                                */
+/* A gaunt patient in a long, filthy gown, its eyes bound in gauze and */
+/* black hair hanging over its face. It drifts a hand's width above    */
+/* the floor with its toes dragging, humming a broken lullaby. It      */
+/* never wakes and it never hunts you — but anywhere near it you start */
+/* dreaming with your eyes open, and nothing you see or hear is real.  */
+/* ------------------------------------------------------------------ */
+function genGown() {
+  const S = 256, c = makeCanvas(S, S), g = c.getContext('2d'), rng = mulberry32(strHash('gown'));
+  const n = fbm(S, S, 4, 4, rng);
+  paintNoise(g, S, S, n, (v, x, y, o) => { const k = (v - 0.5) * 34; o[0] = 146 + k; o[1] = 156 + k; o[2] = 148 + k * 0.9; });
+  g.fillStyle = 'rgba(64,84,104,.2)'; // a faded hospital print
+  for (let y = 5; y < S; y += 11) for (let x = (Math.floor(y / 11) % 2) * 5.5; x < S; x += 11) { g.beginPath(); g.moveTo(x, y - 2.2); g.lineTo(x + 2.2, y); g.lineTo(x, y + 2.2); g.lineTo(x - 2.2, y); g.closePath(); g.fill(); }
+  // black drool and tears soaked down the front from the collar (u = 0.5 faces forward)
+  for (let i = 0; i < 9; i++) {
+    const x = S * 0.5 + (rng() - 0.5) * 70, w = 3 + rng() * 9, len = 50 + rng() * 120;
+    const gr = g.createLinearGradient(0, 0, 0, len); gr.addColorStop(0, 'rgba(14,8,8,.78)'); gr.addColorStop(1, 'rgba(14,8,8,0)');
+    g.fillStyle = gr; g.fillRect(x, 0, w, len);
+  }
+  // grime and old blood up from the hem
+  const hem = g.createLinearGradient(0, S * 0.62, 0, S); hem.addColorStop(0, 'rgba(46,32,20,0)'); hem.addColorStop(1, 'rgba(46,30,18,.82)');
+  g.fillStyle = hem; g.fillRect(0, 0, S, S);
+  for (let i = 0; i < 22; i++) { const x = rng() * S, y = S * (0.55 + rng() * 0.45), r = 6 + rng() * 22; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(60,14,10,.55)'); gr.addColorStop(1, 'rgba(60,14,10,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); }
+  stains(g, S, S, rng, 10, S * 0.8, 0.2, '30,26,18');
+  return c;
+}
+function genGauze() {
+  const S = 128, c = makeCanvas(S, S), g = c.getContext('2d'), rng = mulberry32(strHash('gauze'));
+  const n = fbm(S, S, 3, 4, rng);
+  paintNoise(g, S, S, n, (v, x, y, o) => { const k = (v - 0.5) * 26; o[0] = 214 + k; o[1] = 204 + k; o[2] = 180 + k * 0.9; });
+  for (let y = 0; y < S; y += 7) { g.fillStyle = 'rgba(90,80,60,.32)'; g.fillRect(0, y, S, 1); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(0, y + 1, S, 1); }
+  g.strokeStyle = 'rgba(120,110,90,.18)'; for (let i = 0; i < 40; i++) { const y = rng() * S; g.beginPath(); g.moveTo(0, y); g.lineTo(S, y + (rng() - 0.5) * 12); g.stroke(); } // the weave
+  for (let i = 0; i < 9; i++) { const x = rng() * S, y = rng() * S, r = 5 + rng() * 18; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(150,110,40,.4)'); gr.addColorStop(1, 'rgba(150,110,40,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); }
+  return c;
+}
+TX.gown = mkTex(genGown()); TX.gauze = mkTex(genGauze());
+// reshape any geometry vertex by vertex: fn(x, y, z) -> [x, y, z]
+function deformGeo(g, fn) {
+  const p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) { const v = fn(p.getX(i), p.getY(i), p.getZ(i)); p.setXYZ(i, v[0], v[1], v[2]); }
+  g.computeVertexNormals();
+  return g;
+}
+// open-mouth amount (P.jawK) -> the jaw hangs and the mouth stretches
+function sleeperFace(P) { const k = clamp(P.jawK, 0, 1.3); P.jaw.rotation.x = -0.12 * k; P.jaw.scale.set(1 + k * 0.08, 0.9 + k * 0.45, 1); }
+function buildSleeper() {
+  const gown = new T.MeshPhongMaterial({ map: TX.gown, color: 0xb2b7ae, shininess: 5, specular: 0x101010, side: T.DoubleSide, vertexColors: true });
+  const sleeve = new T.MeshPhongMaterial({ map: TX.gown, color: 0xa2a79f, shininess: 5, specular: 0x101010, side: T.DoubleSide });
+  const skin = new T.MeshPhongMaterial({ map: TX.pale, color: 0x9aa4ae, shininess: 20, specular: 0x24272b });
+  const gauze = new T.MeshPhongMaterial({ map: TX.gauze, color: 0xe4ddcc, shininess: 4, specular: 0x080808 });
+  const hairM = new T.MeshPhongMaterial({ color: 0x060505, shininess: 40, specular: 0x1c1c1c, side: T.DoubleSide });
+  const wet = new T.MeshPhongMaterial({ color: 0x120405, shininess: 100, specular: 0x704848 });   // what soaks through the gauze
+  const nails = new T.MeshPhongMaterial({ color: 0x1c1515, shininess: 60, specular: 0x333333 });
+  const hollow = new T.MeshBasicMaterial({ color: 0x030102 });
+  const teeth = new T.MeshPhongMaterial({ color: 0xb4aa8e, shininess: 30, specular: 0x222222 });
+  const aura = new T.SpriteMaterial({ map: TX.glow, color: 0x8f70ff, transparent: true, opacity: 0.1, depthWrite: false, blending: T.AdditiveBlending });
+  const eyeGlow = new T.SpriteMaterial({ map: TX.glow, color: 0xbda8ff, transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending, fog: false });
+  const P = { jawK: 0.15, arms: [], legs: [] };
+  const mk = (geo, mat, parent, px, py, pz, sx = 1, sy = 1, sz = 1, rx = 0, ry = 0, rz = 0) => {
+    const m = new T.Mesh(geo, mat); m.position.set(px, py, pz); m.scale.set(sx, sy, sz); m.rotation.set(rx, ry, rz); m.castShadow = true; parent.add(m); return m;
+  };
+  const grp = (parent, x, y, z) => { const g = new T.Group(); g.position.set(x, y, z); parent.add(g); return g; };
+  const root = new T.Group();
+  P.body = grp(root, 0, 0.12, 0);
+  // the gown: long and shapeless, hanging in folds, the hem torn into strips, open down the back
+  const tear = []; for (let i = 0; i < 30; i++) tear.push(srand() < 0.35 ? 0.02 + srand() * 0.05 : 0.07 + srand() * 0.17);
+  const gg = lathe([[0.34, 0], [0.31, 0.12], [0.27, 0.35], [0.23, 0.6], [0.2, 0.82], [0.186, 0.98], [0.19, 1.14], [0.2, 1.27], [0.212, 1.38], [0.205, 1.46], [0.17, 1.52], [0.1, 1.56], [0.055, 1.575]], 30, 44);
+  const gp = gg.attributes.position, gcol = new Float32Array(gp.count * 3);
+  for (let i = 0; i < gp.count; i++) {
+    const x = gp.getX(i), y = gp.getY(i), z = gp.getZ(i), r = Math.hypot(x, z), a = Math.atan2(x, z); // a = 0 faces forward
+    const low = smooth(1.0, 0.1, y);
+    const fold = (Math.sin(a * 7 + Math.sin(a * 3) * 1.4) * 0.07 + Math.sin(a * 13 + 1.3) * 0.025) * low;
+    const cave = z > 0 && r > 1e-4 ? -0.05 * smooth(1.0, 1.2, y) * (1 - smooth(1.3, 1.42, y)) * (z / r) : 0; // the chest caves in
+    const m = r > 1e-4 ? 1 + fold + cave : 1;
+    const strip = Math.floor((a + Math.PI) / TAU * 30) % 30, drop = tear[strip] * smooth(0.32, 0, y);
+    gp.setXYZ(i, x * m, y - drop, z * m * 0.8);
+    const back = Math.abs(a) > 2.75 ? smooth(0.85, 1.0, y) * (1 - smooth(1.45, 1.55, y)) : 0;
+    const c = clamp(1 + fold * 2.4, 0.6, 1.1) * (1 - 0.42 * smooth(0.5, 0, y)) * (1 - 0.55 * back);
+    gcol[i * 3] = c; gcol[i * 3 + 1] = c * 0.97; gcol[i * 3 + 2] = c * 0.94;
+  }
+  gg.setAttribute('color', new T.BufferAttribute(gcol, 3)); gg.computeVertexNormals();
+  mk(gg, gown, P.body, 0, 0.14, 0);
+  for (let i = 0; i < 5; i++) mk(GEO.sphere, skin, P.body, 0, 1.16 + i * 0.075, -0.15 - i * 0.004, 0.03, 0.034, 0.028); // its spine, through the open back
+  P.upper = grp(P.body, 0, 1.58, 0);
+  for (const s of [-1, 1]) mk(SPH, skin, P.upper, s * 0.06, 0.1, 0.05, 0.1, 0.022, 0.03, 0, 0, s * -0.25); // collarbones at the neckline
+  P.neck = grp(P.upper, 0, 0.11, 0.015);
+  mk(lathe([[0.046, -0.02], [0.039, 0.05], [0.034, 0.11], [0.037, 0.165], [0.001, 0.19]], 12), skin, P.neck, 0, 0, 0);
+  P.head = grp(P.neck, 0, 0.16, 0.01);
+  mk(wardenSkull(), skin, P.head, 0, 0.12, 0, 0.96, 0.98, 0.96);
+  // black hair over the crown, and gauze wound round and round over its eyes
+  mk(new T.SphereGeometry(0.5, 24, 8, 0, TAU, 0, Math.PI * 0.42), hairM, P.head, 0, 0.122, -0.006, 0.212, 0.286, 0.248);
+  mk(deformGeo(new T.SphereGeometry(0.5, 30, 10, 0, TAU, Math.PI * 0.34, Math.PI * 0.33), (x, y, z) => {
+    const a = Math.atan2(x, z), m = 1 + 0.045 * Math.abs(Math.sin(y * 38 + a * 0.9)) + 0.02 * Math.sin(a * 5 + y * 9);
+    return [x * m, y, z * m];
+  }), gauze, P.head, 0, 0.12, 0.002, 0.228, 0.29, 0.262);
+  mk(GEO.box, gauze, P.head, -0.075, 0.0, -0.1, 0.032, 0.24, 0.006, 0.28, 0.5, 0.14);         // a loose end, hanging
+  mk(GEO.box, gauze, P.head, -0.084, -0.17, -0.14, 0.028, 0.14, 0.006, 0.55, 0.5, 0.2);
+  P.eyeGlow = eyeGlow;
+  for (const s of [-1, 1]) {
+    mk(SPH, wet, P.head, s * 0.046, 0.084, 0.121, 0.064, 0.05, 0.02);                        // where its eyes are, the gauze is soaked black
+    mk(GEO.box, wet, P.head, s * 0.05, 0.03, 0.115, 0.012, 0.1, 0.006, -0.3, 0, s * 0.06);   // and it weeps it, down its cheeks
+    mk(GEO.box, wet, P.head, s * 0.052, -0.045, 0.098, 0.008, 0.08, 0.005, -0.45, 0, s * 0.1);
+    const gl = new T.Sprite(eyeGlow); gl.position.set(s * 0.045, 0.084, 0.135); gl.scale.set(0.075, 0.075, 1); P.head.add(gl);
+  }
+  // the jaw: thin grey lips over a mouth that opens far too wide
+  P.jaw = grp(P.head, 0, 0.0, 0.03);
+  mk(wardenJaw(), skin, P.jaw, 0, -0.085, 0.008, 0.84, 0.46, 0.9);
+  P.mouth = mk(SPH, hollow, P.jaw, 0, -0.1, 0.05, 0.062, 0.13, 0.03);
+  for (let i = 0; i < 6; i++) mk(GEO.cone, teeth, P.jaw, -0.026 + i * 0.0104, -0.042, 0.058, 0.008, 0.018, 0.008, Math.PI);
+  // hair: a long black curtain from the crown down its back, two locks hanging either side of its face, loose strands over it all
+  P.hair = grp(P.head, 0, 0.12, 0);
+  const curtain = (p0, p1, yBot, rMid, zk) => mk(deformGeo(new T.LatheGeometry([[0.05, 0.145], [0.108, 0.1], [rMid - 0.004, 0.03], [rMid, -0.06], [rMid + 0.003, -0.2], [rMid + 0.012, -0.38], [rMid + 0.02, yBot]].map(([r, y]) => new T.Vector2(r, y)), 18, p0, p1 - p0), (x, y, z) => {
+    const a = Math.atan2(x, z), drop = y < -0.25 ? (0.03 + 0.11 * Math.abs(Math.sin(a * 13.7 + 1.1))) * smooth(-0.25, yBot, y) : 0, w = 1 + 0.035 * Math.sin(a * 9 + y * 6);
+    return [x * w, y - drop, z * w * zk];
+  }), hairM, P.hair, 0, 0, 0);
+  curtain(0.55, TAU - 0.55, -0.64, 0.142, 1.06);
+  curtain(0.14, 0.5, -0.46, 0.142, 1.1); curtain(TAU - 0.5, TAU - 0.14, -0.5, 0.142, 1.1);
+  const strand = (x0, y0, z0, x1, y1, z1, bx, by, bz) => {
+    const a = new T.Vector3(x0, y0, z0), b = new T.Vector3(x1, y1, z1), m = a.clone().lerp(b, 0.3).add(new T.Vector3(bx, by, bz));
+    mk(new T.TubeGeometry(new T.QuadraticBezierCurve3(a, m, b), 7, 0.006, 3, false), hairM, P.hair, 0, 0, 0);
+  };
+  for (let i = 0; i < 10; i++) {
+    const a = Math.PI * (0.4 + 1.2 * i / 9) + (srand() - 0.5) * 0.15, sx = Math.sin(a), sz = Math.cos(a);
+    strand(sx * 0.11, 0.06 + srand() * 0.05, sz * 0.12, sx * (0.15 + srand() * 0.04), -0.4 - srand() * 0.3, sz * (0.16 + srand() * 0.05) - 0.03, sx * 0.05, 0.02, sz * 0.05);
+  }
+  for (let i = 0; i < 6; i++) {
+    const s = i < 3 ? -1 : 1, x = s * (0.03 + (i % 3) / 2 * 0.05);
+    strand(x, 0.11 + srand() * 0.02, 0.11, x * 1.3 + (srand() - 0.5) * 0.03, -0.3 - srand() * 0.2, 0.17 + srand() * 0.03, 0, 0.03, 0.11);
+  }
+  // arms: bone-thin and far too long, hands like spiders, black nails
+  for (const s of [-1, 1]) {
+    const sh = grp(P.upper, s * 0.185, -0.02, -0.01);
+    mk(SPH, skin, sh, 0, 0, 0, 0.075, 0.07, 0.08);
+    const up = grp(sh, 0, 0, 0);
+    mk(lathe([[0.001, -0.42], [0.028, -0.415], [0.034, -0.39], [0.027, -0.28], [0.026, -0.12], [0.034, -0.03], [0.001, 0.01]], 10), skin, up, 0, 0, 0);
+    mk(lathe([[0.062, -0.2], [0.07, -0.12], [0.076, -0.02], [0.06, 0.04], [0.001, 0.06]], 12), sleeve, up, 0, 0, 0); // a short gown sleeve
+    mk(SPH, skin, up, 0, -0.41, -0.005, 0.052, 0.06, 0.052);
+    const el = grp(up, 0, -0.41, 0);
+    mk(lathe([[0.001, -0.43], [0.018, -0.425], [0.021, -0.4], [0.022, -0.28], [0.03, -0.1], [0.031, -0.03], [0.001, 0]], 10), skin, el, 0, 0, 0);
+    const wr = grp(el, 0, -0.42, 0);
+    mk(SPH, skin, wr, 0, 0, 0, 0.042, 0.036, 0.034);
+    mk(SPH, skin, wr, 0, -0.058, 0, 0.074, 0.11, 0.03);
+    mk(GEO.box, skin, wr, -s * 0.035, -0.05, 0.012, 0.014, 0.08, 0.016, 0.2, 0, s * 0.5); // thumb
+    const fingers = [];
+    [0.2, 0.235, 0.225, 0.19].forEach((L, f) => {
+      const fg = grp(wr, -0.027 + f * 0.018, -0.105, 0);
+      mk(GEO.box, skin, fg, 0, -L * 0.5, 0, 0.0125, L, 0.013);
+      mk(GEO.sphere, skin, fg, 0, -L * 0.45, 0.001, 0.016, 0.02, 0.017);
+      mk(GEO.cone, nails, fg, 0, -L - 0.014, 0, 0.012, 0.032, 0.012, Math.PI);
+      fingers.push(fg);
+    });
+    P.arms.push({ s, sh, up, el, wr, fingers });
+  }
+  // under the hem: shins like sticks, and feet that hang toes-down, dragging along the floor
+  for (const s of [-1, 1]) {
+    const hp = grp(P.body, s * 0.09, 0.62, 0);
+    mk(lathe([[0.001, -0.52], [0.024, -0.515], [0.027, -0.48], [0.03, -0.3], [0.04, -0.08], [0.001, 0]], 10), skin, hp, 0, 0, 0);
+    const an = grp(hp, 0, -0.52, 0);
+    mk(SPH, skin, an, 0, 0, 0, 0.044, 0.042, 0.044);
+    mk(SPH, skin, an, 0, -0.07, 0.022, 0.05, 0.16, 0.045, 0.25);
+    P.legs.push({ s, hp, an });
+  }
+  const au = new T.Sprite(aura); au.position.set(0, 1.25, 0); au.scale.set(2.6, 3.2, 1); P.body.add(au); P.aura = aura;
+  root.userData.P = P;
+  sleeperFace(P);
+  mergeChildMeshes(root);
+  root.scale.setScalar(1.06);
+  return root;
+}
+
+/* ---- behaviour: it drifts from room to room. It never chases anyone. ---- */
+const SLEEPER_SPAWN = [47, 3]; // the Morgue
+const SLEEPER_ST = ['DORMANT', 'EMERGE', 'DRIFT', 'LINGER', 'SINK'];
+// a broken music-box waltz in A minor: [midi note, beats]
+const SLEEPER_SONG = [[69, 2], [72, 1], [76, 2], [74, 1], [72, 1], [71, 1], [69, 1], [71, 3], [68, 2], [71, 1], [74, 2], [72, 1], [71, 1], [69, 1], [68, 1], [69, 3],
+  [76, 2], [77, 1], [76, 1], [74, 1], [72, 1], [74, 2], [72, 1], [71, 3], [72, 2], [71, 1], [69, 1], [68, 1], [69, 1], [71, 2], [64, 1], [69, 3]];
+const _v3s = new T.Vector3(), _v3d = new T.Vector3();
+function sleeperPassable(x, z) { // it walks straight through closed doors, locked or not
+  const c = cellAt(x, z);
+  if (c.kind === 'floor') return !c.navBlocked;
+  if (c.kind === 'door') return c.door.type !== 'exit';
+  return false;
+}
+function nearestFreeOf(x, z, pass) {
+  if (pass(x, z)) return [x, z];
+  for (let r = 1; r < 6; r++) for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) if (pass(x + dx, z + dz) && cellAt(x + dx, z + dz).kind === 'floor') return [x + dx, z + dz];
+  return [x, z];
+}
+const Sleeper = {
+  active: false, state: 'DORMANT', stateT: 0, model: null, P: null, pos: new T.Vector3(), vel: new T.Vector3(), yaw: Math.PI, speed: 0,
+  path: null, pathI: 0, lingerT: 0, stir: 0, stirYaw: 0, shriekT: 0, touchCD: new Map(), net: { buf: [] },
+  songT: 1.5, songI: 0, songWarp: 1, twitchT: 2, twitch: new T.Vector3(),
+  init() { this.model = buildSleeper(); this.P = this.model.userData.P; scene.add(this.model); this.reset(); },
+  spawnPoint() { const [x, z] = nearestFreeOf(SLEEPER_SPAWN[0], SLEEPER_SPAWN[1], sleeperPassable); return [cc(x), cc(z)]; },
+  reset() {
+    this.active = false; this.state = 'DORMANT'; this.stateT = 0; this.path = null; this.lingerT = 0; this.stir = 0; this.shriekT = 0;
+    this.touchCD.clear(); this.net.buf.length = 0; this.songT = 1.5; this.songI = 0; this.songWarp = 1; this.speed = 0; this.vel.set(0, 0, 0);
+    const [x, z] = this.spawnPoint(); this.pos.set(x, 0, z); this.yaw = Math.PI;
+    this.model.visible = false; this.place();
+  },
+  // (every peer) it rises up out of the morgue floor
+  emerge() {
+    if (this.active) return;
+    const [x, z] = this.spawnPoint(); this.pos.set(x, 0, z); this.yaw = Math.PI * 1.5;
+    this.active = true; this.state = 'EMERGE'; this.stateT = 0; this.path = null; this.net.buf.length = 0; this.songT = 2.2; this.songI = 0;
+    this.model.visible = true; this.place();
+  },
+  // (every peer) at dawn it sinks back down into the floor and is gone
+  sink() { if (this.active && this.state !== 'SINK') { this.state = 'SINK'; this.stateT = 0; this.path = null; } },
+  speedFor() { return { easy: 0.68, normal: 0.78, hard: 0.88 }[Net.sessionDiff || settings.difficulty] || 0.78; }, // the Warden ambles at twice this
+  // somewhere to drift to: often a room near one of the guards (it is drawn to the living), never straight at anyone
+  pickGoal() {
+    const alive = actors().filter(a => !a.inVent);
+    let goal = null;
+    if (alive.length && Math.random() < 0.55) {
+      const a = pick(alive);
+      for (let i = 0; i < 16 && !goal; i++) {
+        const ang = rand(0, TAU), r = rand(5, 14), cx = Math.floor((a.pos.x + Math.cos(ang) * r) / CELL), cz = Math.floor((a.pos.z + Math.sin(ang) * r) / CELL);
+        if (sleeperPassable(cx, cz) && cellAt(cx, cz).kind === 'floor') goal = [cx, cz];
+      }
+    }
+    for (let i = 0; i < 8 && !goal; i++) { // or just anywhere — but never where someone is standing
+      const pc = pick(PATROL_CELLS), g = nearestFreeOf(pc[0], pc[1], sleeperPassable);
+      if (!alive.some(a => Math.hypot(cc(g[0]) - a.pos.x, cc(g[1]) - a.pos.z) < 5)) goal = g;
+    }
+    if (!goal) { this.lingerT = rand(2, 4); return; }
+    const sx = Math.floor(this.pos.x / CELL), sz = Math.floor(this.pos.z / CELL);
+    if (Math.abs(goal[0] - sx) + Math.abs(goal[1] - sz) < 3) { this.lingerT = rand(2, 4); return; }
+    const p = astar(sx, sz, goal[0], goal[1], sleeperPassable);
+    if (!p || !p.length) { this.lingerT = rand(1.5, 3); return; }
+    const pts = [[this.pos.x, this.pos.z]].concat(p.map(([x, z]) => cellAt(x, z).kind === 'door' ? [cc(x), cc(z)] : [cc(x) + rand(-0.3, 0.3), cc(z) + rand(-0.3, 0.3)]));
+    const out = []; let i = 0;
+    while (i < pts.length - 1) { let j = Math.min(pts.length - 1, i + 5); while (j > i + 1 && !this.segClear(pts[i], pts[j])) j--; out.push(pts[j]); i = j; }
+    this.path = out; this.pathI = 0; this.state = 'DRIFT'; this.stateT = 0;
+  },
+  segClear(a, b) {
+    const d = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.ceil(d / 0.3);
+    for (let i = 1; i < n; i++) {
+      const t = i / n, x = lerp(a[0], b[0], t), z = lerp(a[1], b[1], t);
+      for (const [ox, oz] of [[0, 0], [0.45, 0], [-0.45, 0], [0, 0.45], [0, -0.45]]) { const c = cellOf(x + ox, z + oz); if (c.kind === 'door' || !sleeperPassable(c.x, c.z)) return false; }
+    }
+    return true;
+  },
+  // host / solo
+  update(dt) {
+    if (!this.active) return;
+    this.stateT += dt;
+    let moving = false;
+    switch (this.state) {
+      case 'EMERGE': if (this.stateT > 4.4) { this.state = 'LINGER'; this.stateT = 0; this.lingerT = rand(2, 4); } break;
+      case 'SINK': if (this.stateT > 3.4) { this.active = false; this.model.visible = false; } break;
+      case 'LINGER': this.lingerT -= dt; if (this.lingerT <= 0) this.pickGoal(); break;
+      case 'DRIFT': {
+        const wp = this.path && this.path[this.pathI];
+        if (!wp) { this.state = 'LINGER'; this.stateT = 0; this.lingerT = rand(5, 11); this.path = null; break; }
+        const dx = wp[0] - this.pos.x, dz = wp[1] - this.pos.z, d = Math.hypot(dx, dz);
+        if (d < 0.35) { this.pathI++; break; }
+        const sp = this.speedFor() * (this.pathI === this.path.length - 1 ? clamp(d / 1.5, 0.3, 1) : 1);
+        this.vel.x = damp(this.vel.x, dx / d * sp, 2.5, dt); this.vel.z = damp(this.vel.z, dz / d * sp, 2.5, dt);
+        moving = true;
+        break;
+      }
+    }
+    if (!moving) { this.vel.x = damp(this.vel.x, 0, 3, dt); this.vel.z = damp(this.vel.z, 0, 3, dt); }
+    this.pos.x += this.vel.x * dt; this.pos.z += this.vel.z * dt;
+    this.speed = Math.hypot(this.vel.x, this.vel.z);
+    if (this.speed > 0.15) { const ty = Math.atan2(this.vel.x, this.vel.z); this.yaw += clamp(angleDiff(this.yaw, ty), -1.5 * dt, 1.5 * dt); }
+    // it stirs when a light is on it, or someone is right beside it: the head comes up, a hand reaches
+    let stir = 0;
+    for (const a of actors()) {
+      const d = Math.hypot(a.pos.x - this.pos.x, a.pos.z - this.pos.z);
+      if ((d < 12 && a.beamOn(this.pos, 1.9)) || d < 4) { stir = 1; this.stirYaw = Math.atan2(a.pos.x - this.pos.x, a.pos.z - this.pos.z); break; }
+    }
+    this.stir = damp(this.stir, this.state === 'DRIFT' || this.state === 'LINGER' ? stir : 0, stir ? 1.6 : 0.7, dt);
+    // walking into it: it shrieks, you dream — and the Warden hears the scream
+    if (this.state === 'DRIFT' || this.state === 'LINGER') {
+      for (const a of actors()) {
+        if (a.hidden || a.inVent || Math.hypot(a.pos.x - this.pos.x, a.pos.z - this.pos.z) > 1.1) continue;
+        const id = Game.idOf(a);
+        if (Game.time < (this.touchCD.get(id) || 0)) continue;
+        this.touchCD.set(id, Game.time + 16);
+        Game.emit({ k: 'nm', by: id });
+        Monster.hear({ x: a.pos.x, z: a.pos.z }, 24, 'player', a);
+      }
+    }
+    this.tick(dt);
+  },
+  // every peer: the voice, the song, the body
+  tick(dt) {
+    this.song(dt);
+    this.animate(dt, this.speed);
+  },
+  netState() { return { x: +this.pos.x.toFixed(2), z: +this.pos.z.toFixed(2), yw: +this.yaw.toFixed(2), st: Math.max(0, SLEEPER_ST.indexOf(this.state)), sr: +this.stir.toFixed(2), sy: +this.stirYaw.toFixed(2) }; },
+  netPush(w, now) {
+    if (!w || typeof w !== 'object') return;
+    this.net.buf.push({ t: now, x: +w.x || 0, z: +w.z || 0, yw: +w.yw || 0 });
+    if (this.net.buf.length > 30) this.net.buf.shift();
+    const st = SLEEPER_ST[w.st | 0] || 'DRIFT';
+    if (!this.active) { if (st === 'SINK' || st === 'DORMANT' || Night.dawn) return; this.active = true; this.model.visible = true; } // (missed the event)
+    if (st !== this.state && this.state !== 'SINK') { this.state = st; this.stateT = 0; }
+    this.stir = clamp(+w.sr || 0, 0, 1); this.stirYaw = +w.sy || 0;
+  },
+  netUpdate(dt) {
+    if (!this.active) return;
+    this.stateT += dt;
+    if (this.state === 'SINK' && this.stateT > 3.4) { this.active = false; this.model.visible = false; return; }
+    const b = this.net.buf, rt = performance.now() - NET_DELAY;
+    if (b.length) {
+      let a = b[b.length - 1], c = a;
+      for (let i = b.length - 1; i > 0; i--) if (b[i - 1].t <= rt) { a = b[i - 1]; c = b[i]; break; }
+      const k = c.t > a.t ? clamp((rt - a.t) / (c.t - a.t), 0, 1) : 1;
+      const nx = lerp(a.x, c.x, k), nz = lerp(a.z, c.z, k);
+      this.speed = dt > 0 ? Math.min(3, Math.hypot(nx - this.pos.x, nz - this.pos.z) / dt) : 0;
+      this.pos.set(nx, 0, nz); this.yaw = a.yw + angleDiff(a.yw, c.yw) * k;
+    }
+    this.tick(dt);
+  },
+  // the lullaby: a music box with a bent comb, and a voice humming along under it. You hear it before you see it.
+  song(dt) {
+    if (!this.active || this.state === 'SINK') return;
+    this.songT -= dt;
+    if (this.songT > 0) return;
+    if (this.songI >= SLEEPER_SONG.length) { // the end of the tune: silence, then again — sometimes slower and flatter, as if winding down
+      this.songI = 0; this.songT = rand(2.5, 6); this.songWarp = Math.random() < 0.35 ? rand(0.86, 0.95) : 1; return;
+    }
+    const [note, beats] = SLEEPER_SONG[this.songI++];
+    const slow = this.songWarp < 1 ? 1 + (1 - this.songWarp) * 3 * (this.songI / SLEEPER_SONG.length) : 1, dur = beats * 0.62 * slow;
+    const f = 440 * Math.pow(2, (note - 69) / 12) * this.songWarp * (1 + rand(-0.008, 0.008));
+    const d = Math.hypot(this.pos.x - camera.position.x, this.pos.z - camera.position.z);
+    if (d < 40 && this.shriekT <= 0) {
+      Sound.musicBox(_v3s.set(this.pos.x, 1.4, this.pos.z), f);
+      if (d < 26 && Math.random() < 0.55) Sound.hum(_v3s.set(this.pos.x, 2.0, this.pos.z), f / 2, dur);
+    }
+    this.songT = dur;
+  },
+  place() { this.model.position.set(this.pos.x, 0, this.pos.z); this.model.rotation.set(0, this.yaw, 0); },
+  animate(dt, sp) {
+    const P = this.P, t = Game.time;
+    if (!this.model.visible) return;
+    // rising up out of the floor / sinking back into it
+    const rise = this.state === 'EMERGE' ? smooth(0.2, 4.0, this.stateT) : this.state === 'SINK' ? 1 - smooth(0, 3.2, this.stateT) : 1;
+    P.body.position.y = lerp(-2.3, 0.12 + Math.sin(t * 1.15) * 0.035, rise);
+    // drifting: leaning into it a little, swaying like something hung from a hook
+    const lean = clamp(sp / 0.8, 0, 1);
+    P.body.rotation.set(0.05 + lean * 0.07, 0, Math.sin(t * 0.47) * 0.055 + Math.sin(t * 0.21) * 0.03);
+    this.shriekT = Math.max(0, this.shriekT - dt);
+    const sh = this.shriekT > 0 ? smooth(0, 0.15, 1.8 - this.shriekT) * smooth(0, 0.4, this.shriekT) : 0;
+    const st = this.stir * (1 - sh);
+    // the head: bowed and lolled over, rolling slowly; now and then it snaps to one side with a crack
+    this.twitchT -= dt;
+    if (this.twitchT <= 0) {
+      this.twitchT = rand(1.5, 5); const hard = Math.random() < 0.3;
+      this.twitch.set(rand(-0.4, 0.4), rand(-0.5, 0.5), rand(-0.6, 0.6)).multiplyScalar(hard ? 1.6 : 0.6);
+      if (hard && this.active && Math.hypot(this.pos.x - player.pos.x, this.pos.z - player.pos.z) < 14) Sound.crackAt(_v3s.set(this.pos.x, 2.0, this.pos.z));
+    }
+    this.twitch.multiplyScalar(Math.exp(-dt * 5));
+    const look = clamp(angleDiff(this.yaw, this.stirYaw), -1.2, 1.2) * st;
+    P.neck.rotation.set(0.32 * (1 - st) - 0.1 * st - 0.55 * sh, look * 0.4, 0);
+    P.head.rotation.set(0.28 * (1 - st) + this.twitch.x - 0.5 * sh, look * 0.6 + this.twitch.y, (0.55 + Math.sin(t * 0.33) * 0.22) * (1 - st * 0.7) * (1 - sh) + this.twitch.z);
+    P.hair.rotation.set(-P.head.rotation.x * 0.55 - P.neck.rotation.x * 0.4, 0, -P.head.rotation.z * 0.6); // the hair hangs toward the floor, whatever the head does
+    // arms hang limp and trail a little; stirred, the nearer hand lifts toward you with its fingers spreading
+    for (const A of P.arms) {
+      const reach = st * (A.s * look >= 0 ? 1 : 0.15), open = Math.max(reach, sh);
+      A.up.rotation.set(0.12 + lean * 0.12 + Math.sin(t * 1.1 + A.s) * 0.04 - reach * 1.25 - sh * 0.6, 0, A.s * (0.07 + sh * 1.1));
+      A.el.rotation.set(-0.18 - reach * 0.1 - sh * 0.4, 0, 0);
+      A.wr.rotation.set(reach * 0.3, 0, 0);
+      A.fingers.forEach((f, i) => f.rotation.set(lerp(0.35 + Math.sin(t * 2.3 + i + A.s) * 0.08, -0.25, open), 0, (i - 1.5) * 0.09 * open));
+    }
+    for (const L of P.legs) { L.hp.rotation.set(-lean * 0.12 + Math.sin(t * 1.3 + L.s) * 0.05, 0, 0); L.an.rotation.set(0.15 + lean * 0.25, 0, 0); } // the toes drag
+    P.jawK = damp(P.jawK, sh > 0 ? 1.25 : 0.18 + Math.max(0, Math.sin(t * 0.7)) * 0.12, 8, dt);
+    sleeperFace(P);
+    P.aura.opacity = (0.08 + Math.sin(t * 1.9) * 0.025 + st * 0.06 + sh * 0.2) * rise;
+    P.eyeGlow.opacity = (0.06 + st * 0.35 + sh * 0.6) * rise;
+    this.place();
+    if (sh > 0.2) { this.model.position.x += rand(-0.025, 0.025); this.model.position.z += rand(-0.025, 0.025); }
+  },
+};
+
+/* ------------------------------------------------------------------ */
+/* THE DREAM: hallucinations near the Sleepwalker (each guard has      */
+/* their own). The room breathes and ripples, colours drain, you see   */
+/* double; whispers, footsteps and screams that belong to nothing; the */
+/* Warden standing where it isn't; the clock and the HUD lie to you.   */
+/* ------------------------------------------------------------------ */
+const DREAM_LINES = ['It\'s right behind you.', 'Wake up.', 'You never left the desk.', 'Don\'t turn around.', 'It already found you.', 'Did you lock the door?', 'This isn\'t real. Is it?', 'The lift isn\'t coming.', 'Shh. Go back to sleep.'];
+const DREAM_CLOCK = ['03:33', '--:--', '06:00', '66:66', '02:00', '??:??', '05:59', '00:00'];
+const DREAM_FRAG = [
+  'uniform sampler2D tDiffuse; uniform float uK, uT, uBurst, uTear, uAsp; uniform vec2 uDv;',
+  'varying vec2 vUv;',
+  'float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
+  'void main() {',
+  '  float k = uK; vec2 c = vUv - 0.5;',
+  '  vec2 uv = 0.5 + c * (1.0 - (0.025 + sin(uT * 1.3) * 0.018) * k);',                     // the room breathes in and out
+  '  uv.x += (sin(uv.y * 11.0 + uT * 1.7) * 0.0055 + sin(uv.y * 27.0 - uT * 3.1) * 0.002) * k;', // and the walls ripple like water
+  '  uv.y += sin(uv.x * 8.0 + uT * 1.2) * 0.004 * k;',
+  '  if (uTear > 0.5) { float row = floor(uv.y * 36.0); if (hash(vec2(row, floor(uT * 20.0))) > 0.86) uv.x += (hash(vec2(row, uT)) - 0.5) * 0.12; }',
+  '  vec2 d = uv - 0.5; vec2 ca = d * (0.004 + dot(d, d) * 0.05) * k + vec2(0.004, 0.0) * uBurst;', // colours bleed apart toward the edges
+  '  vec3 col = vec3(texture2D(tDiffuse, uv + ca).r, texture2D(tDiffuse, uv).g, texture2D(tDiffuse, uv - ca).b);',
+  '  vec3 gh = texture2D(tDiffuse, uv + uDv * k).rgb; col = mix(col, max(col, gh), 0.5 * k);',  // double vision
+  '  float l = dot(col, vec3(0.299, 0.587, 0.114));',
+  '  col = mix(col, vec3(l), 0.5 * k); col *= mix(vec3(1.0), vec3(1.04, 0.9, 1.12), k);',      // drained, a sick violet in the shadows
+  '  col += vec3(0.03, 0.0, 0.05) * k * (1.0 - smoothstep(0.0, 0.3, l));',
+  '  float vg = length(c * vec2(uAsp, 1.0) * 0.85);',                                           // the edges close in, pulsing like a heartbeat
+  '  col *= 1.0 - smoothstep(0.25, 0.75, vg + 0.06 * (0.5 + 0.5 * sin(uT * 2.6))) * 0.8 * k;',
+  '  float flick = step(0.45, fract(uT * 9.0)) * step(0.35, uBurst);',                          // the nightmare: the world flashes inside out
+  '  col = mix(col, vec3(1.0) - col.gbr, flick * 0.8); col += vec3(0.25, 0.12, 0.35) * uBurst * 0.4;',
+  '  col += (hash(vUv * 731.0 + fract(uT) * 91.0) - 0.5) * 0.07 * k;',
+  '  gl_FragColor = vec4(col, 1.0);',
+  '}'].join('\n');
+const DreamFX = {
+  rt: null, scene: null, cam: null, mat: null, broken: false, sz: new T.Vector2(),
+  ok() {
+    if (this.broken) return false;
+    if (!this.rt) { try { this.init(); } catch (e) { this.broken = true; if (DEBUG) console.warn('dream fx', e); return false; } }
+    return true;
+  },
+  init() {
+    this.rt = new T.WebGLRenderTarget(4, 4, { minFilter: T.LinearFilter, magFilter: T.LinearFilter, format: T.RGBAFormat, depthBuffer: true, stencilBuffer: false });
+    this.mat = new T.ShaderMaterial({
+      uniforms: { tDiffuse: { value: this.rt.texture }, uK: { value: 0 }, uT: { value: 0 }, uBurst: { value: 0 }, uTear: { value: 0 }, uDv: { value: new T.Vector2() }, uAsp: { value: 1 } },
+      vertexShader: 'varying vec2 vUv;\nvoid main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+      fragmentShader: DREAM_FRAG, depthTest: false, depthWrite: false,
+    });
+    const q = new T.Mesh(new T.PlaneGeometry(2, 2), this.mat); q.frustumCulled = false;
+    this.scene = new T.Scene(); this.scene.add(q); this.cam = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  },
+  begin() {
+    renderer.getDrawingBufferSize(this.sz);
+    if (this.rt.width !== this.sz.x || this.rt.height !== this.sz.y) this.rt.setSize(this.sz.x, this.sz.y);
+    renderer.setRenderTarget(this.rt);
+  },
+  end(k, D) {
+    renderer.setRenderTarget(null);
+    const u = this.mat.uniforms;
+    u.uK.value = k; u.uT.value = D.t; u.uBurst.value = Math.min(1, D.burst); u.uTear.value = D.tear > 0 ? 1 : 0; u.uAsp.value = this.sz.x / Math.max(1, this.sz.y);
+    u.uDv.value.set(Math.cos(D.t * 0.7), Math.sin(D.t * 0.93)).multiplyScalar(0.014);
+    const su = renderer.shadowMap.autoUpdate; renderer.shadowMap.autoUpdate = false;
+    renderer.render(this.scene, this.cam);
+    renderer.shadowMap.autoUpdate = su;
+  },
+};
+// the false Warden: the phantom model, posed (watch: dead still, head cocked; behind: right at your back; rush: arms up, lunging)
+function posePhantom(P, kind, t) {
+  P.hips.position.y = WARDEN_HIP; P.hips.rotation.set(0, 0, 0);
+  for (const L of P.legs) { L.hp.rotation.set(0, 0, 0); L.kn.rotation.set(0, 0, 0); L.an.rotation.set(0, 0, 0); }
+  if (kind === 'rush') {
+    P.hips.position.y = WARDEN_HIP - 0.12;
+    P.spine.rotation.set(0.55, 0, 0); P.neck.rotation.set(-0.5, 0, 0); P.head.rotation.set(-0.1 + Math.sin(t * 31) * 0.05, Math.sin(t * 23) * 0.06, 0.3);
+    P.jawK = 1.15;
+    for (const A of P.arms) { A.up.rotation.set(-1.25 + Math.sin(t * 17 + A.s) * 0.08, 0, A.s * 0.32); A.el.rotation.set(-0.45, 0, 0); A.wr.rotation.set(0.5, 0, 0); for (const f of A.fingers) f.rotation.set(-0.5, 0, 0); }
+    P.legs[0].hp.rotation.x = -0.75; P.legs[0].kn.rotation.x = 0.6; P.legs[1].hp.rotation.x = 0.3; P.legs[1].kn.rotation.x = 0.45; for (const L of P.legs) L.an.rotation.x = -0.15;
+  } else {
+    const near = kind === 'behind';
+    P.spine.rotation.set(near ? 0.45 : 0.3, 0, 0); P.neck.rotation.set(near ? -0.5 : -0.2, 0, 0);
+    P.head.rotation.set(0.05, 0, (near ? 0.35 : 0.62) + Math.sin(t * 0.8) * 0.06);
+    P.jawK = near ? 0.95 : 0.4 + Math.max(0, Math.sin(t * 1.4)) * 0.15;
+    for (const A of P.arms) { A.up.rotation.set(near ? -0.35 : 0.04, 0, A.s * 0.08); A.el.rotation.set(near ? -0.5 : -0.12, 0, 0); A.wr.rotation.set(0, 0, 0); for (const f of A.fingers) f.rotation.set(0.3, 0, 0); }
+  }
+  const col = kind === 'rush' ? 0xff2a1a : 0xeef6ff;
+  P.eyeMat.color.setHex(col); P.glowMat.color.setHex(col); P.glowMat.opacity = 0.9;
+  wardenFace(P);
+}
+const Dream = {
+  k: 0, burst: 0, tear: 0, t: 0, near: 99, whisperT: 3, sfxT: 6, phT: 4, msgT: 10, glT: 3, lieT: 12, clock: null, lie: null, lucidT: 0, ph: null,
+  init() { this.phantomModel(); },
+  phantomModel() { if (!Phantom.model) { Phantom.model = buildWarden(true); Phantom.model.visible = false; scene.add(Phantom.model); } return Phantom.model; },
+  reset() {
+    this.endPhantom(false);
+    this.k = 0; this.burst = 0; this.tear = 0; this.near = 99; this.whisperT = 3; this.sfxT = 6; this.phT = 4; this.msgT = 10; this.glT = 3; this.lieT = 12;
+    this.clock = null; this.lie = null; this.lucidT = 0;
+  },
+  level() { return Math.min(1, this.k + this.burst * 0.8); },
+  clockText() { return this.clock && this.clock.until > this.t ? this.clock.text : null; },
+  lieText() { return this.lie && this.lie.until > this.t && !player.dead ? this.lie.text : null; },
+  update(dt) {
+    this.t += dt;
+    const S = Sleeper, p = player;
+    let target = 0;
+    this.near = 99;
+    if (S.active && S.state !== 'SINK' && !p.dead && !Game.ending) {
+      const d = Math.hypot(S.pos.x - p.pos.x, S.pos.z - p.pos.z);
+      this.near = d;
+      target = smooth(15, 3.2, d) * (losClear(p.pos.x, p.pos.z, S.pos.x, S.pos.z) ? 1 : 0.6) * (1 + S.stir * 0.3);
+      if (S.state === 'EMERGE') target *= smooth(0, 4, S.stateT);
+    }
+    target = Math.min(1, target);
+    this.k = target > this.k ? damp(this.k, target, 1.4, dt) : Math.max(target, this.k - dt * 0.06); // it comes on fast and lingers after it has passed
+    if (this.k < 0.002) this.k = 0;
+    this.burst = Math.max(0, this.burst - dt * 0.5);
+    this.tear = Math.max(0, this.tear - dt);
+    const K = this.level();
+    if (p.dead || Game.ending) { this.endPhantom(false); return; }
+    // the first good look at it
+    if (!Game.flags.sleeperSeen && S.active && S.state !== 'EMERGE' && this.near < 20 && !Cine.cur && !p.hidden && looksAt(p, S.pos.x, 1.6, S.pos.z, 0.8) && losClear(p.pos.x, p.pos.z, S.pos.x, S.pos.z)) {
+      Game.flags.sleeperSeen = true; Sound.sting(false);
+      UI.center('THE SLEEPWALKER', 'It never wakes, and it will never chase you. But near it, nothing you see or hear is real.', 4.2);
+    }
+    // standing right beside it without being touched: an achievement for the brave
+    if (this.near < 3 && !p.hidden) { this.lucidT += dt; if (this.lucidT > 3) Goals.unlock('lucid'); } else if (this.near > 3.5) this.lucidT = Math.max(0, this.lucidT);
+    if (K > 0.22) { // whispers, all around you
+      this.whisperT -= dt;
+      if (this.whisperT <= 0) { this.whisperT = rand(2.2, 5) / (0.4 + K); const a = rand(0, TAU), r = rand(1.2, 3); Sound.whisper(_v3d.set(p.pos.x + Math.cos(a) * r, 1.5, p.pos.z + Math.sin(a) * r)); }
+    }
+    if (K > 0.42) { // sounds that belong to nothing
+      this.sfxT -= dt;
+      if (this.sfxT <= 0) { this.sfxT = rand(5, 11) * (1.3 - K * 0.5); this.fakeSound(); }
+    }
+    if (K > 0.5) { // the picture tears; the clock lies
+      this.glT -= dt;
+      if (this.glT <= 0) { this.glT = rand(2.5, 6) / K; this.tear = rand(0.12, 0.3); if (Math.random() < 0.6) this.clock = { text: pick(DREAM_CLOCK), until: this.t + rand(0.3, 0.8) }; if (Math.random() < 0.35) Sound.glitch(); }
+    }
+    if (K > 0.6) { // and so does everything else
+      this.msgT -= dt;
+      if (this.msgT <= 0) { this.msgT = rand(13, 22); UI.msg(pick(DREAM_LINES), 'dream', 2.8); }
+      this.lieT -= dt;
+      if (this.lieT <= 0) { this.lieT = rand(16, 28); this.lie = { text: pick(['IT IS BEHIND YOU', 'IT SEES YOU', 'IT IS RIGHT HERE']), until: this.t + rand(0.8, 1.6) }; }
+    }
+    // phantoms: the Warden, standing where it isn't
+    this.phT -= dt;
+    if (!this.ph && this.phT <= 0) {
+      this.phT = 0.8;
+      if (K > 0.33 && !p.hidden && !Cine.cur && !Night.dawn && !Phantom.active && (!Monster.active || Monster.pos.distanceTo(p.pos) > 11)) {
+        const kind = K > 0.6 && Math.random() < 0.38 ? 'rush' : Math.random() < 0.3 ? 'behind' : 'watch';
+        if (this.spawnPhantom(kind)) this.phT = rand(5, 10) * lerp(1.5, 0.75, K);
+      }
+    }
+    if (this.ph) this.updatePhantom(dt);
+  },
+  fakeSound() {
+    const p = player, f = p.forward(_v3d), base = Math.atan2(f.x, f.z), r = Math.random();
+    const at = (ang, dist, y) => new T.Vector3(p.pos.x + Math.sin(base + ang) * dist, y, p.pos.z + Math.cos(base + ang) * dist);
+    if (r < 0.3) Sound.fakeSteps(at(Math.PI + rand(-0.5, 0.5), rand(3, 5), 0.1), randi(3, 6)); // steps right behind you
+    else if (r < 0.5) Sound.decoy(at(rand(-2.4, 2.4), rand(7, 14), 1.4), 0);                   // its screech, from somewhere it isn't
+    else if (r < 0.64) Sound.decoy(at(rand(-2.4, 2.4), rand(6, 12), 0.5), 1);                  // something heavy running
+    else if (r < 0.78) Sound.doorBang(at(rand(-2, 2), rand(5, 10), 1.5));
+    else if (r < 0.9) Sound.crackAt(at(Math.PI + rand(-0.6, 0.6), rand(1.5, 2.5), 1.8));       // bones popping, just behind your head
+    else Sound.musicBox(at(rand(-3, 3), rand(2, 4), 1.4), 440 * Math.pow(2, (pick([64, 68, 69, 71]) - 69) / 12)); // the lullaby, in your ear
+  },
+  spawnPhantom(kind) {
+    const p = player, f = p.forward(_v3d), base = Math.atan2(f.x, f.z);
+    let best = null;
+    for (let i = 0; i < 24 && !best; i++) {
+      const ang = kind === 'behind' ? Math.PI + rand(-0.35, 0.35) : kind === 'rush' ? rand(-0.35, 0.35) : rand(-0.75, 0.75);
+      const dist = kind === 'behind' ? rand(1.9, 2.6) : kind === 'rush' ? rand(11, 16) : rand(8, 17);
+      const x = p.pos.x + Math.sin(base + ang) * dist, z = p.pos.z + Math.cos(base + ang) * dist, c = cellOf(x, z);
+      if (c.kind !== 'floor' || c.navBlocked || !losClear(p.pos.x, p.pos.z, x, z)) continue;
+      if ([[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]].some(([ox, oz]) => { const n = cellOf(x + ox, z + oz); return n.kind === 'wall' || n.kind === 'window'; })) continue;
+      best = [x, z];
+    }
+    if (!best) return false;
+    const M = this.phantomModel();
+    this.ph = { kind, t: 0, life: kind === 'behind' ? 5 : kind === 'rush' ? 9 : rand(3.5, 6.5), x: best[0], z: best[1], look: 0, hop: 0.7, seen: -1 };
+    M.position.set(best[0], 0, best[1]); M.rotation.set(0, Math.atan2(p.pos.x - best[0], p.pos.z - best[1]), 0);
+    posePhantom(M.userData.P, kind === 'behind' ? 'behind' : 'watch', 0);
+    M.visible = true; Phantom.active = true; Phantom.mode = 'dream';
+    return true;
+  },
+  updatePhantom(dt) {
+    const ph = this.ph, M = Phantom.model, P = M.userData.P, p = player;
+    ph.t += dt;
+    const dx = ph.x - p.pos.x, dz = ph.z - p.pos.z, d = Math.max(0.01, Math.hypot(dx, dz));
+    M.rotation.y = Math.atan2(-dx, -dz);
+    if (ph.kind === 'watch') {
+      posePhantom(P, 'watch', ph.t);
+      ph.look = looksAt(p, ph.x, 1.9, ph.z, 0.985) ? ph.look + dt : Math.max(0, ph.look - dt * 0.5);
+      if (ph.look > 0.3 || p.beamOn(M.position, 1.8) || d < 5) { this.endPhantom(true); return; } // look straight at it, and it isn't there
+    } else if (ph.kind === 'behind') {
+      posePhantom(P, 'behind', ph.t);
+      if (ph.seen < 0 && looksAt(p, ph.x, 1.9, ph.z, 0.75)) ph.seen = ph.t;
+      if (ph.seen >= 0 && ph.t - ph.seen > 0.14) { this.endPhantom(true, true); return; } // you turn around: it's right there — and gone
+    } else { // rush: it comes at you in jerks, a couple of metres at a time
+      posePhantom(P, ph.t > 0.6 ? 'rush' : 'watch', ph.t);
+      if (ph.t > 0.6) {
+        ph.hop -= dt;
+        if (ph.hop <= 0) {
+          ph.hop = rand(0.14, 0.26);
+          const step = Math.min(d - 1.2, rand(1.3, 2.1));
+          if (step > 0) { ph.x -= dx / d * step; ph.z -= dz / d * step; }
+          Sound.dreamTick(); this.tear = Math.max(this.tear, 0.08);
+        }
+        if (d < 1.9) { this.burstScare(); this.endPhantom(false); return; }
+      }
+    }
+    M.position.set(ph.x, 0, ph.z);
+    if (ph.t > ph.life || p.hidden || Cine.cur) this.endPhantom(false);
+  },
+  endPhantom(sting, close) {
+    if (!this.ph) return;
+    this.ph = null;
+    if (Phantom.model) Phantom.model.visible = false;
+    if (Phantom.mode === 'dream') Phantom.active = false;
+    if (sting) {
+      Sound.sting(!!close); this.tear = 0.35; Game.dip = Math.max(Game.dip, 0.6);
+      if (close) { Game.shake(0.5); this.burst = Math.min(1, this.burst + 0.35); }
+    }
+  },
+  burstScare() { Sound.fakeScare(); this.burst = Math.min(1.2, this.burst + 0.7); this.tear = 0.5; Game.shake(0.9); },
+  // it drifted right through you
+  nightmare() {
+    this.burst = 1.2; this.tear = 0.8; this.k = Math.max(this.k, 0.85); this.lucidT = -6;
+    player.outUntil = Game.time + 2.6; // your light dies
+    Game.shake(1.1); Game.dip = 1;
+    Game.stats.nightmares = (Game.stats.nightmares || 0) + 1;
+    UI.msg('It drifted right through you. Your light dies — and somewhere, something heard that scream.', 'warn', 4.5);
+  },
+  // the view sways and the room swells (called from Game.render; returns the new field of view)
+  camera(fov) {
+    const K = this.level();
+    if (K < 0.001 || Cine.blocking()) return fov;
+    camera.rotation.z += (Math.sin(this.t * 0.63) * 0.055 + Math.sin(this.t * 1.9) * 0.012) * K;
+    return fov + (Math.sin(this.t * 0.9) * 3.5 + 3) * K;
+  },
+  fxOn() { return this.level() > 0.01 && !Cine.blocking() && DreamFX.ok(); },
+};
+
+/* ------------------------------------------------------------------ */
 /* Boot                                                                */
 /* ------------------------------------------------------------------ */
 Monster.init();
+Sleeper.init();
+Dream.init();
 player.reset();
 UI.initTitle();
 Hints.init();
@@ -8388,7 +9383,7 @@ const hiddenTick = () => {
 if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
-    Hints, Cine, Net, Relay, Night, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt,
+    Hints, Cine, Net, Relay, Night, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
