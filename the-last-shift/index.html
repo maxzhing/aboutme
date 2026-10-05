@@ -5867,6 +5867,8 @@ const Game = {
     this.resetWorld(); Preview.attach();
     UI.show('screen-title'); Sound.setMode('title'); Sound.setAlarm(false);
   },
+  // the end screens sit over the last frame drawn: draw it once more without the security-camera inset
+  endFrame() { Cine.reset(); try { renderer.render(scene, camera); } catch (e) { } },
   endButtons(id, label) {
     const b = $(id);
     b.disabled = Net.isClient;
@@ -5874,7 +5876,7 @@ const Game = {
   },
   showGameOver() {
     if (this.mode === 'endless') { this.showResult('endless'); return; } // in Endless Night, getting caught is how it ends
-    this.state = 'dead'; Input.exitLock(); UI.hud(false); Cine.reset();
+    this.state = 'dead'; Input.exitLock(); UI.hud(false); this.endFrame();
     $('go-stats').innerHTML = '';
     const rows = this.mode === 'photos'
       ? [['Photos found', Photos.got + ' / ' + PHOTO_N], ['Time', fmtClock(this.flags.lastAlive || this.flags.diedAt || this.time)], ['Layout', Photos.daily ? 'Today\'s photos' : 'Run #' + (Photos.seed % 100000)], ['Times spotted', this.stats.spotted], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]]
@@ -5890,7 +5892,7 @@ const Game = {
   },
   showVictory() {
     if (this.mode === 'photos') { this.showResult('photos'); return; }
-    this.state = 'won'; Input.exitLock(); UI.hud(false); Cine.reset();
+    this.state = 'won'; Input.exitLock(); UI.hud(false); this.endFrame();
     $('win-stats').innerHTML = '';
     $('win-title').textContent = Night.dawn ? (Net.active ? 'You survived the night — together' : 'You survived the night') : 'You got out early';
     $('win-sub').textContent = Night.dawn ? 'Surface lift · 06:00 AM · the day shift' : 'Surface lift · ' + Night.clock() + ' AM · ' + Night.leftText() + ' before dawn';
@@ -5919,7 +5921,7 @@ const Game = {
 
   // the end of a Polaroids or Endless Night run: your time is the score, against your best
   showResult(m) {
-    this.state = m === 'endless' ? 'dead' : 'won'; Input.exitLock(); UI.hud(false); Cine.reset(); Endless.hideOffer();
+    this.state = m === 'endless' ? 'dead' : 'won'; Input.exitLock(); UI.hud(false); this.endFrame(); Endless.hideOffer();
     const t = m === 'endless' ? (this.flags.lastAlive || this.flags.diedAt || this.time) : this.time, team = Net.active && crew().length > 1;
     const dn = (Net.sessionDiff || settings.difficulty).toUpperCase(), nc = Endless.curses.length;
     const rec = Modes.record(m, t, m === 'endless' ? { hours: Endless.hour + 1, curses: nc } : { photos: Photos.got });
