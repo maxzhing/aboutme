@@ -435,6 +435,57 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 #win-ach{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;font-family:var(--mono);font-size:12px;color:#f0c860;margin:6px auto 16px;max-width:620px}
 .journal-list button.tape{color:#e8b4a6}
 @media (max-width:860px){.goals-list{grid-template-columns:1fr}.goals-best{grid-template-columns:1fr}}
+/* ---------- weapons, the boss fight, holding the locker door ---------- */
+#crosshair.hit{transform:scale(3.2) rotate(45deg);background:#ff4a3a;border-radius:0}
+#wpn{position:absolute;right:20px;bottom:207px;width:288px;display:none;font-family:var(--mono);text-align:right;pointer-events:none}
+#wpn.on{display:block}
+#wpn-name{font-size:13px;letter-spacing:.26em;color:#ece5d4;text-shadow:0 1px 6px #000}
+#wpn-ammo{font-size:10px;letter-spacing:.22em;color:var(--amber);margin-top:3px;min-height:12px}
+#wpn-ammo.empty{color:#ff6a5a}
+#wpn-slots{display:flex;gap:5px;justify-content:flex-end;margin-top:6px}
+#wpn-slots i{font-style:normal;width:21px;height:18px;line-height:18px;text-align:center;font-size:10px;color:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.35)}
+#wpn-slots i.own{color:#d6cfbe;border-color:rgba(255,255,255,.3)}
+#wpn-slots i.cur{color:#111;background:var(--amber);border-color:var(--amber)}
+#boss{position:absolute;left:50%;bottom:4.2vh;transform:translateX(-50%);width:min(620px,64vw);display:none;text-align:center;pointer-events:none}
+#boss.on{display:block}
+#boss-name{font-family:var(--mono);font-size:11px;letter-spacing:.5em;color:#e9dccb;text-shadow:0 0 10px #000;margin-bottom:6px}
+#boss-name small{color:#ff6a50;letter-spacing:.3em;margin-left:10px}
+#boss-bar{position:relative;height:9px;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.22);box-shadow:0 0 18px rgba(0,0,0,.8)}
+#boss-lag{position:absolute;left:0;top:0;bottom:0;width:100%;background:rgba(255,235,200,.55)}
+#boss-hp{position:absolute;left:0;top:0;bottom:0;width:100%;background:linear-gradient(180deg,#d8332a,#7a0f0c)}
+#boss-bar s{position:absolute;top:-3px;bottom:-3px;width:1px;background:rgba(255,255,255,.5)}
+#boss.rage #boss-hp{background:linear-gradient(180deg,#ff5a2a,#a0160c);animation:bossPulse .5s ease-in-out infinite alternate}
+#boss.burn #boss-hp{background:linear-gradient(180deg,#ffb23a,#c2410c)}
+#boss.down #boss-hp{background:#555}
+@keyframes bossPulse{from{filter:brightness(1)}to{filter:brightness(1.45)}}
+#boss-sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.32em;color:#ff8a6a;margin-top:5px;min-height:11px}
+#boss-title{position:fixed;left:0;right:0;top:30%;z-index:40;text-align:center;pointer-events:none;opacity:0}
+#boss-title.show{animation:bossTitle 3.6s ease-out forwards}
+#boss-title .bt-k{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.55em;color:var(--amber)}
+#boss-title h2{margin:10px 0 8px;font-family:var(--sans);font-weight:200;font-size:clamp(34px,6.4vw,84px);letter-spacing:.32em;color:#f2e7d6;text-shadow:0 0 30px rgba(255,60,30,.55),0 0 4px #000}
+#boss-title .bt-s{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.6em;color:#ff7a5a;border-top:1px solid rgba(255,100,70,.6);padding-top:9px}
+@keyframes bossTitle{0%{opacity:0;transform:scale(1.18);letter-spacing:.1em;filter:blur(6px)}12%{opacity:1;transform:scale(1);filter:blur(0)}78%{opacity:1}100%{opacity:0;transform:scale(.98)}}
+#hold{position:absolute;left:50%;top:calc(50% + 108px);transform:translateX(-50%);width:min(560px,82vw);display:none;text-align:center;pointer-events:none}
+#hud.holding #messages{opacity:.12}
+#hud.clean #messages{visibility:hidden}
+@media (max-height:620px){#hold{top:calc(50% + 84px);width:min(440px,54vw)}}
+#hud.holding #prompt{opacity:0}
+#hold.on{display:block}
+#hold-h{font-family:var(--mono);font-size:13px;letter-spacing:.42em;color:#ff7a62;text-shadow:0 0 12px rgba(255,40,20,.6),0 1px 3px #000;margin-bottom:8px}
+#hold-lane{position:relative;height:46px;background:linear-gradient(90deg,rgba(60,0,0,.6),rgba(0,0,0,.55) 30%);border:1px solid rgba(255,90,70,.4);overflow:hidden}
+#hold-zone{position:absolute;left:38px;top:-1px;bottom:-1px;width:36px;border-left:3px solid #ffd27a;border-right:3px solid #ffd27a;background:rgba(255,210,122,.14);box-shadow:0 0 16px rgba(255,200,120,.45)}
+#hold-notes i{position:absolute;left:-7px;top:6px;width:14px;height:32px;background:linear-gradient(180deg,#ff6a50,#8a0f0a);border:1px solid #ffb09a;box-shadow:0 0 10px rgba(255,60,40,.7);will-change:transform}
+#hold-notes i.hit{background:#ffd27a;border-color:#fff2c2;box-shadow:0 0 16px #ffd27a;opacity:.0!important;transition:opacity .35s}
+#hold-notes i.bad{background:#333;border-color:#666;box-shadow:none}
+#hold-foot{display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:#e3d6c2}
+#hold-pips b{display:inline-block;width:16px;height:9px;margin-right:5px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06)}
+#hold-pips b.ok{background:#ffd27a;border-color:#ffd27a}
+#hold-judge{position:absolute;left:0;right:0;top:-34px;font-family:var(--mono);font-size:15px;letter-spacing:.4em;opacity:0}
+#hold-judge.show{animation:holdJudge .55s ease-out}
+#hold-judge.perfect{color:#ffe08a}#hold-judge.good{color:#e9e2d2}#hold-judge.bad,#hold-judge.warn{color:#ff6a5a}
+@keyframes holdJudge{0%{opacity:1;transform:translateY(6px) scale(1.15)}100%{opacity:0;transform:translateY(-8px) scale(1)}}
+#locker-gap{position:absolute;right:13%;top:0;bottom:0;width:0;opacity:0;background:linear-gradient(90deg,rgba(255,240,215,0),rgba(255,236,200,.55) 40%,rgba(255,240,215,0));filter:blur(3px)}
+@media (max-width:1000px){#wpn{bottom:auto;top:132px;right:16px;width:200px}#boss{bottom:2.5vh}}
 </style>
 </head>
 <body>
@@ -443,13 +494,14 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 <!-- full-screen effects -->
 <div id="fx-vignette" class="fx" style="display:none"></div>
 <div id="fx-threat" class="fx"></div>
-<div id="fx-locker" class="fx"></div>
+<div id="fx-locker" class="fx"><i id="locker-gap"></i></div>
 <div id="fx-damage" class="fx"></div>
 <div id="fx-grain" class="fx" style="display:none"></div>
 <div id="fx-scan" class="fx" style="display:none"></div>
 <div id="fx-fade" class="fx"></div>
 <div id="fx-white" class="fx"></div>
 <div id="toast"></div>
+<div id="boss-title"><span class="bt-k" id="bt-k">SUBLEVEL 6</span><h2>THE LAST DANCE</h2><span class="bt-s">THE WARDEN · SUBJECT W</span></div>
 <div id="ach-toast"><i>&#9733;</i><div><small>ACHIEVEMENT UNLOCKED</small><b id="ach-name"></b><span id="ach-desc"></span></div></div>
 
 <!-- HUD -->
@@ -485,6 +537,9 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   <div id="stun"><span id="stun-label">STAGGER</span><i><b id="stun-bar"></b></i></div>
   <div id="hint-tag"><span class="ht-arrow"></span><span class="ht-label"></span></div>
   <div id="photo-pop"><img id="photo-img" alt=""><span id="photo-n"></span></div>
+  <div id="wpn"><div id="wpn-name">FISTS</div><div id="wpn-ammo"></div><div id="wpn-slots"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i></div></div>
+  <div id="boss"><div id="boss-name">THE WARDEN</div><div id="boss-bar"><b id="boss-lag"></b><b id="boss-hp"></b><s style="left:50%"></s></div><div id="boss-sub"></div></div>
+  <div id="hold"><div id="hold-h">HOLD THE DOOR</div><div id="hold-lane"><div id="hold-zone"></div><div id="hold-notes"></div></div><div id="hold-foot"><span id="hold-pips"></span><span>[SPACE] ON EVERY PULL</span></div><div id="hold-judge"></div></div>
   <div id="curse-pick"><div id="cp-title">CHOOSE A CURSE</div><div class="cp-cards"><div class="cp-card"><span class="k">1</span><h4></h4><p></p></div><div class="cp-card"><span class="k">2</span><h4></h4><p></p></div></div><div id="cp-time"><div id="cp-bar"></div></div></div>
 </div>
 
@@ -566,7 +621,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       </div>
     </aside>
   </div>
-  <div class="title-foot">Build 10 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
+  <div class="title-foot">Build 11 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
 </div>
 
 <!-- briefing -->
@@ -649,7 +704,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <span class="key">E</span><span>Interact: doors, items, notes, switches, lockers</span>
           <span class="key">M</span><span>Toggle minimap (shows explored areas)</span>
           <span class="key">H</span><span>Hint — highlights the next thing you need in yellow (it also happens on its own when you're stuck; turn it off in Settings)</span>
-          <span><span class="key">Click</span> / <span class="key">V</span></span><span>Punch. It barely hurts the Warden, but a few hits — or one as it lunges — stun it for a few seconds. Then run.</span>
+          <span class="key">Click</span><span>Attack with the weapon in your hand (no weapon: punch)</span>
+          <span><span class="key">V</span> / <span class="key">Right click</span></span><span>Punch. It barely hurts the Warden, but a few hits — or one as it lunges — stun it for a few seconds.</span>
+          <span><span class="key">1</span>–<span class="key">5</span> / <span class="key">Q</span></span><span>Switch weapons (or the mouse wheel). Press a weapon's number again to put it away</span>
+          <span class="key">Space</span><span>In a locker: hold the door shut when it pulls on it — press on every pull, on the beat</span>
           <span class="key">G</span><span>Co-op: mark a spot for your team</span>
           <span><span class="key">Hold Space</span></span><span>Skip a camera cutscene</span>
           <span><span class="key">P</span> / <span class="key">Esc</span></span><span>Pause and release the mouse</span>
@@ -663,16 +721,18 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li>It hunts by sound and sight — and it has sharp ears. Walking near it is enough; when it hears you it <b>runs</b> to the sound. Crouch close to it, and hide the moment it starts running.</li>
           <li>Your flashlight makes you visible from far away — and shining it at the Warden enrages it.</li>
           <li>Its eyes give it away: <span style="color:#cfe6ff">pale</span> when wandering, <span style="color:#f0b45a">amber</span> when investigating, <span style="color:#ff5a4a">red</span> when hunting.</li>
-          <li>Break line of sight, close doors behind you and hide in lockers. It only finds you in a locker if it watched you get in — but you can only hold your nerve so long in there, and late at night it starts tearing lockers open.</li>
+          <li>Break line of sight, close doors behind you and hide in lockers. It only finds you in a locker if it watched you get in, or stops right outside and decides to try the door — but you can only hold your nerve so long in there.</li>
           <li>Crouch to crawl through the maintenance vents. Until 5:00 they are too small for it.</li>
           <li>Cornered? Fight. Punches won't kill it, but they stagger it, and a stun buys you a few seconds. It shrugs off a second stun for a while — and comes back angrier.</li>
+          <li><b>Weapons.</b> Five are hidden around Sublevel 6: a <b>crowbar</b>, a <b>fire axe</b> behind glass, a <b>shotgun</b> (deafening — everything hears it), a <b>flare gun</b> that sets it on fire and lights up the dark, and <b>molotovs</b> that leave a pool of fire it has to walk through. Face it with one in your hand and <b>the Last Dance</b> begins: it has a health bar now. Hits while it's staggered do extra damage; at half health it gets enraged. In the Night Shift, kill it and the shift is over. In the other modes nothing stays dead — it gets back up.</li>
+          <li><b>Hold the door.</b> If it tries to tear your locker open, press <b>Space</b> every time it pulls — on the beat. Miss too many and it's in.</li>
           <li>The heartbeat, flickering lights and the threat eye (top right) tell you when it is close.</li>
           <li><b>Look up.</b> In the long hallways it often climbs the wall and crawls along the ceiling, and it drops down on whoever is underneath. And it is cunning: a crash or a screech from one direction can be bait while it circles round to come at you from another.</li>
           <li>Sometimes it just <b>watches</b> you from the dark. Hold its gaze and it backs off — walk toward it, or put your light on it, and it charges.</li>
           <li><b>The Sleepwalker</b> comes out of the Morgue at about 2:30. It is slow and it <b>never hunts you</b> — it just drifts from room to room humming a lullaby, and the lights dim around it. But near it you hallucinate: the room warps, you hear things that aren't there, the clock lies, and you see the Warden where it isn't (look straight at it and it vanishes). Never let it drift into you: it shrieks, your light dies — and the Warden hears.</li>
           <li>On <b>Hard</b> the Warden breaks through locked iron security doors. Only the blast door to the lift holds.</li>
           <li>Read every note. They contain the codes, routes and secrets you need to get out.</li>
-          <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and <b>20 achievements</b> are saved under Goals, with your best times for every mode.</li>
+          <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and <b>24 achievements</b> are saved under Goals, with your best times for every mode.</li>
           <li>Co-op (up to 4): one player hosts and sends the invite link (or the 4-letter room code); friends open it and press Join. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
         </ul>
       </div>
@@ -706,7 +766,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 10 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
+    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 11 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
   </div>
 </div>
 
@@ -3248,8 +3308,13 @@ const Sound = (function () {
     // it is somewhere close: a low, slow pulse under everything
     S.stalkT -= dt;
     if ((ex.stalk || 0) > 0.12 && S.stalkT <= 0) { stalkPulse(ex.stalk); S.stalkT = lerp(2.4, 1.15, ex.stalk); }
-    // chase: driving percussion while it hunts you
-    if ((ex.chase || 0) > 0.5) {
+    // the Last Dance: schedule the music a little ahead
+    if (M.lvl > 0) {
+      if (M.next < t - 0.3) { const skip = Math.ceil((t - M.next) / S16); M.next += skip * S16; M.step += skip; } // after a stall, don't machine-gun the backlog
+      while (M.next < t + 0.16) { if (M.next >= t - 0.02) mStep(M.next, M.step, M.lvl); M.next += S16; M.step++; }
+    }
+    // chase: driving percussion while it hunts you (not under the battle music)
+    if ((ex.chase || 0) > 0.5 && M.lvl < 2) {
       if (!S.chaseOn) { S.chaseOn = true; S.chaseNext = t + 0.04; S.chaseStep = 0; }
       if (S.chaseNext < t - 0.3) S.chaseNext = t + 0.02; // after a stall, don't machine-gun the backlog
       while (S.chaseNext < t + 0.12) { chaseHit(S.chaseNext, S.chaseStep++); S.chaseNext += 60 / 150 / 2; }
@@ -3660,6 +3725,186 @@ const Sound = (function () {
     [784, 988, 1175, 1568].forEach((f, i) => tone(out, t + i * 0.085, 'sine', f, f, 0.55, 0.35, 0.004));
     tone(out, t, 'triangle', 392, 392, 0.9, 0.12, 0.01);
   });
+  /* ---------- weapons ---------- */
+  S.swing = safe(function (heavy) { // the air parting
+    const t = ctx.currentTime, out = dest(null, 0.05); out.gain.value = heavy ? 0.8 : 0.6;
+    const n = noise(out, t, heavy ? 0.34 : 0.2, 'bandpass', heavy ? 420 : 700, 1.3, 0.6, heavy ? 0.06 : 0.02, pink); n.f.frequency.exponentialRampToValueAtTime(heavy ? 1600 : 2400, t + (heavy ? 0.3 : 0.17));
+  });
+  S.wpnHit = safe(function (id) { // steel into something that shouldn't still be alive
+    const t = ctx.currentTime, out = dest(null, 0.3); out.gain.value = id === 'axe' ? 1.5 : 1.15;
+    tone(out, t, 'sine', id === 'axe' ? 110 : 150, 40, 0.22, 1, 0.001);
+    noise(out, t, id === 'axe' ? 0.16 : 0.09, 'lowpass', id === 'axe' ? 1200 : 900, 1, 0.9, 0.001, brown);
+    noise(out, t, 0.06, 'bandpass', 2400, 2.2, 0.55, 0.001);
+    if (id === 'crowbar') metal(out, t, 520, 0.35, 0.25);
+    else { noise(out, t + 0.01, 0.12, 'bandpass', 900, 3, 0.6, 0.002); tone(out, t, 'square', 70, 45, 0.12, 0.25, 0.001); } // the chop
+  });
+  S.wpnGet = safe(function (id) {
+    const t = ctx.currentTime, out = dest(null, 0.2); out.gain.value = 0.9;
+    if (id === 'shotgun') { for (const [d, f] of [[0, 1800], [0.14, 1300]]) { noise(out, t + d, 0.05, 'bandpass', f, 3, 0.8, 0.001); metal(out, t + d, 900, 0.12, 0.15); } }
+    else if (id === 'flare') { noise(out, t, 0.04, 'bandpass', 2200, 3, 0.6, 0.001); tone(out, t + 0.08, 'square', 600, 300, 0.05, 0.2, 0.001); }
+    else if (id === 'molotov') { tone(out, t, 'sine', 1900, 1900, 0.25, 0.12, 0.002); tone(out, t + 0.03, 'sine', 2850, 2850, 0.2, 0.06, 0.002); noise(out, t + 0.2, 0.25, 'bandpass', 3200, 1, 0.12, 0.05); }
+    else { metal(out, t, id === 'axe' ? 260 : 420, 0.5, 0.35); tone(out, t, 'sine', 120, 70, 0.2, 0.3, 0.002); }
+  });
+  S.wpnDraw = safe(function (id) { const t = ctx.currentTime, out = dest(null, 0.05); out.gain.value = 0.5; noise(out, t, 0.12, 'bandpass', id === 'shotgun' ? 1400 : 900, 1.2, 0.35, 0.01, pink); if (id === 'shotgun' || id === 'flare') noise(out, t + 0.1, 0.03, 'bandpass', 2400, 3, 0.4, 0.001); });
+  S.dry = safe(function () { const t = ctx.currentTime, out = dest(null, 0.05); out.gain.value = 0.6; noise(out, t, 0.025, 'bandpass', 2600, 4, 0.7, 0.001); tone(out, t, 'square', 900, 600, 0.02, 0.12, 0.001); });
+  S.shotgun = safe(function () { // the loudest thing that has happened down here in years
+    const t = ctx.currentTime, out = dest(null, 1.1); out.gain.value = 1.9;
+    noise(out, t, 0.32, 'lowpass', 2600, 0.7, 1.0, 0.001);
+    noise(out, t, 0.06, 'highpass', 3000, 0.7, 0.8, 0.001);
+    tone(out, t, 'sine', 110, 32, 0.45, 1.0, 0.001);
+    tone(out, t, 'square', 60, 30, 0.15, 0.4, 0.001);
+    noise(out, t + 0.05, 1.4, 'lowpass', 700, 0.6, 0.25, 0.08, brown); // the corridor rings with it
+  });
+  S.pump = safe(function () { const t = ctx.currentTime, out = dest(null, 0.15); out.gain.value = 0.9; for (const [d, f] of [[0, 1500], [0.17, 1100]]) { noise(out, t + d, 0.05, 'bandpass', f, 3, 0.85, 0.001); metal(out, t + d, 700, 0.1, 0.12); } });
+  S.flareShot = safe(function () {
+    const t = ctx.currentTime, out = dest(null, 0.6); out.gain.value = 1.2;
+    tone(out, t, 'sine', 180, 60, 0.18, 0.9, 0.001); noise(out, t, 0.12, 'lowpass', 1800, 0.8, 0.8, 0.001);
+    const f = noise(out, t + 0.05, 1.4, 'bandpass', 3600, 0.8, 0.3, 0.05); f.f.frequency.exponentialRampToValueAtTime(1500, t + 1.4); // the fizz as it flies
+  });
+  S.flareHit = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.4); out.gain.value = 1.1; tone(out, t, 'sine', 140, 50, 0.16, 0.8, 0.001); noise(out, t, 0.8, 'highpass', 2500, 0.7, 0.45, 0.01); });
+  S.flareLand = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.4); out.gain.value = 0.8; metal(out, t, 1200, 0.2, 0.15); noise(out, t, 2.2, 'bandpass', 3000, 0.6, 0.25, 0.05); });
+  S.throwW = safe(function () { const t = ctx.currentTime, out = dest(null, 0.05); out.gain.value = 0.6; const n = noise(out, t, 0.28, 'bandpass', 500, 1.2, 0.5, 0.05, pink); n.f.frequency.exponentialRampToValueAtTime(1800, t + 0.25); });
+  S.glass = safe(function (pos) { // a bottle bursting
+    const t = ctx.currentTime, out = dest(pos, 0.5, true); out.gain.value = 1.3;
+    noise(out, t, 0.12, 'highpass', 2500, 0.7, 0.9, 0.001);
+    for (let i = 0; i < 9; i++) tone(out, t + rand(0, 0.25), 'sine', rand(2500, 6000), rand(2400, 5800), rand(0.05, 0.18), rand(0.05, 0.15), 0.001);
+  });
+  S.fireWhoosh = safe(function (pos) { // fwoomp
+    const t = ctx.currentTime, out = dest(pos, 0.5, true); out.gain.value = 1.4;
+    const n = noise(out, t, 0.9, 'lowpass', 300, 0.8, 0.9, 0.05, brown); n.f.frequency.exponentialRampToValueAtTime(2400, t + 0.35);
+    tone(out, t, 'sine', 70, 40, 0.5, 0.6, 0.02);
+  });
+  S.crackle = safe(function (pos, k = 1) { const t = ctx.currentTime, out = dest(pos, 0.2); out.gain.value = 0.55 * k; for (let i = 0; i < 4; i++) noise(out, t + rand(0, 0.35), 0.012, 'bandpass', rand(1500, 4500), 2, rand(0.3, 0.8), 0.001); noise(out, t, 0.45, 'lowpass', 400, 0.7, 0.18, 0.1, brown); });
+  S.monsterBurn = safe(function (pos) { // it catches fire: a shriek you feel in your teeth
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 1; out.connect(monIn);
+    const ws = ctx.createWaveShaper(); ws.curve = distCurve; const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 1;
+    const g = ctx.createGain(); env(g.gain, t, 0.02, 0.6, 1.3); ws.connect(bp); bp.connect(g); g.connect(out);
+    for (const f of [310, 470, 620]) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 1.8, t + 0.3); o.frequency.exponentialRampToValueAtTime(f * 0.8, t + 1.3); o.connect(ws); o.start(t); o.stop(t + 1.4); }
+    noise(out, t, 1.2, 'highpass', 3000, 0.6, 0.3, 0.05);
+  });
+  S.bodyFall = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.7, true); out.gain.value = 1.8; tone(out, t, 'sine', 80, 28, 0.7, 1, 0.002); noise(out, t, 0.35, 'lowpass', 600, 0.8, 0.9, 0.002, brown); for (let i = 0; i < 4; i++) noise(out, t + 0.04 + i * 0.05, 0.02, 'bandpass', rand(1800, 3000), 3, 0.4, 0.001); });
+  S.wardenDeath = safe(function (pos) { // its last scream, falling away
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 1.2; out.connect(monIn);
+    const ws = ctx.createWaveShaper(); ws.curve = distCurve; const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(3200, t); lp.frequency.exponentialRampToValueAtTime(400, t + 3.2);
+    const g = ctx.createGain(); env(g.gain, t, 0.05, 0.7, 3.1); ws.connect(lp); lp.connect(g); g.connect(out);
+    for (const f of [220, 330, 147, 290]) {
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(f * 1.5, t); o.frequency.exponentialRampToValueAtTime(f * 0.35, t + 3.2);
+      const vib = ctx.createOscillator(); vib.frequency.value = 7 + Math.random() * 5; const vg = ctx.createGain(); vg.gain.value = f * 0.15; vib.connect(vg); vg.connect(o.frequency); vib.start(t); vib.stop(t + 3.3);
+      o.connect(ws); o.start(t); o.stop(t + 3.3);
+    }
+    noise(out, t + 1.8, 1.4, 'lowpass', 500, 1, 0.3, 0.2, brown); // and a rattling breath
+  });
+  /* ---------- the locker door ---------- */
+  S.yank = safe(function (k = 1) { // it wrenches at the door you're holding
+    const t = ctx.currentTime, out = dest(null, 0.3); out.gain.value = 1.2 * k;
+    metal(out, t, 190, 0.5, 0.55); noise(out, t, 0.1, 'lowpass', 1200, 1, 0.8, 0.001, brown);
+    const c = noise(out, t + 0.03, 0.22, 'bandpass', 600, 6, 0.35, 0.01); c.f.frequency.exponentialRampToValueAtTime(1300, t + 0.22); // the hinge
+  });
+  S.doorHold = safe(function (good) { const t = ctx.currentTime, out = dest(null, 0.25); out.gain.value = 1.0; tone(out, t, 'sine', 95, 45, 0.16, 0.9, 0.001); noise(out, t, 0.06, 'lowpass', 800, 1, 0.7, 0.001, brown); if (good) tone(out, t, 'triangle', 880, 880, 0.12, 0.08, 0.002); });
+  S.doorGive = safe(function () { const t = ctx.currentTime, out = dest(null, 0.3); out.gain.value = 1.1; const c = noise(out, t, 0.5, 'bandpass', 380, 7, 0.6, 0.02); c.f.frequency.exponentialRampToValueAtTime(900, t + 0.5); metal(out, t, 130, 0.7, 0.4); tone(out, t, 'sawtooth', 90, 70, 0.4, 0.12, 0.01); });
+  /* ---------- THE LAST DANCE (the battle music: 140 bpm, D minor, all synthesized) ---------- */
+  const BPM = 140, BQ = 60 / BPM, S16 = BQ / 4;
+  const CHD = { Dm: [73.42, 293.66, 349.23, 440.0], Bb: [58.27, 233.08, 293.66, 349.23], C: [65.41, 261.63, 329.63, 392.0], A: [55.0, 220.0, 277.18, 329.63], Gm: [49.0, 196.0, 233.08, 293.66] };
+  const PROG_A = ['Dm', 'Dm', 'Bb', 'Bb', 'C', 'C', 'A', 'A'], PROG_B = ['Dm', 'Bb', 'Gm', 'A', 'Dm', 'Bb', 'C', 'A'];
+  // the theme, once it's enraged: [bar, eighth, frequency, eighths]
+  const THEME = [[0, 0, 587.33, 3], [0, 3, 698.46, 1], [0, 4, 880, 3], [0, 7, 783.99, 1], [1, 0, 698.46, 2], [1, 2, 659.25, 2], [1, 4, 587.33, 4],
+    [2, 0, 466.16, 3], [2, 3, 587.33, 1], [2, 4, 698.46, 3], [2, 7, 659.25, 1], [3, 0, 587.33, 2], [3, 2, 523.25, 2], [3, 4, 554.37, 4],
+    [4, 0, 587.33, 3], [4, 3, 698.46, 1], [4, 4, 880, 2], [4, 6, 1046.5, 2], [5, 0, 932.33, 4], [5, 4, 880, 4],
+    [6, 0, 783.99, 3], [6, 3, 698.46, 1], [6, 4, 659.25, 2], [6, 6, 698.46, 2], [7, 0, 659.25, 2], [7, 2, 554.37, 2], [7, 4, 440, 4]];
+  const M = { lvl: 0, next: 0, step: 0, dropAt: 0, intro: [], bus: null, dly: null };
+  function mbus() {
+    if (!M.bus) {
+      M.bus = ctx.createGain(); M.bus.gain.value = 0; M.bus.connect(gameBus);
+      M.dly = ctx.createDelay(1); M.dly.delayTime.value = BQ * 0.75; const fb = ctx.createGain(); fb.gain.value = 0.32; const dl = ctx.createBiquadFilter(); dl.type = 'lowpass'; dl.frequency.value = 2400;
+      M.dly.connect(dl); dl.connect(fb); fb.connect(M.dly); dl.connect(M.bus);
+      if (DEBUG) { S.mAn = ctx.createAnalyser(); S.mAn.fftSize = 2048; M.bus.connect(S.mAn); } // (tests: is the music making any sound?)
+    }
+    return M.bus;
+  }
+  function mKick(o, t, v) { tone(o, t, 'sine', 165, 42, 0.32, 1.0 * v, 0.002); tone(o, t, 'triangle', 90, 40, 0.16, 0.35 * v, 0.001); noise(o, t, 0.015, 'highpass', 2500, 1, 0.25 * v, 0.001); }
+  function mSnare(o, t, v) { noise(o, t, 0.22, 'bandpass', 1900, 0.8, 0.5 * v, 0.001); tone(o, t, 'triangle', 230, 160, 0.12, 0.35 * v, 0.001); noise(o, t, 0.13, 'highpass', 5000, 1, 0.22 * v, 0.001); }
+  function mHat(o, t, v) { noise(o, t, 0.03, 'highpass', 8000, 1, 0.16 * v, 0.001); }
+  function mCrash(o, t, v = 1) { noise(o, t, 1.8, 'highpass', 5200, 0.6, 0.3 * v, 0.002); noise(o, t, 1.0, 'bandpass', 3200, 0.5, 0.18 * v, 0.002); }
+  function mTom(o, t, f) { tone(o, t, 'sine', f * 1.5, f, 0.28, 0.75, 0.002); noise(o, t, 0.05, 'lowpass', 700, 1, 0.3, 0.001, brown); }
+  function mBass(o, t, f, dur) {
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 5; lp.frequency.setValueAtTime(1500, t); lp.frequency.exponentialRampToValueAtTime(240, t + dur);
+    const g = ctx.createGain(); env(g.gain, t, 0.004, 0.3, dur); lp.connect(g); g.connect(o);
+    for (const [ty, m] of [['sawtooth', 1], ['square', 0.5]]) { const x = ctx.createOscillator(); x.type = ty; x.frequency.value = f * m; x.connect(lp); x.start(t); x.stop(t + dur + 0.05); }
+  }
+  function mString(o, t, f, v) { // staccato strings: two detuned saws
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2800; const g = ctx.createGain(); env(g.gain, t, 0.006, v, S16 * 0.85); lp.connect(g); g.connect(o);
+    for (const d of [-7, 7]) { const x = ctx.createOscillator(); x.type = 'sawtooth'; x.frequency.value = f; x.detune.value = d; x.connect(lp); x.start(t); x.stop(t + S16 + 0.05); }
+  }
+  function mBrass(o, t, ch, v, dur) { // a stab: low saws opening up
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 2; lp.frequency.setValueAtTime(350, t); lp.frequency.exponentialRampToValueAtTime(2300, t + 0.07); lp.frequency.exponentialRampToValueAtTime(600, t + dur);
+    const g = ctx.createGain(); env(g.gain, t, 0.025, v, dur); lp.connect(g); g.connect(o);
+    const sd = ctx.createGain(); sd.gain.value = 0.35; g.connect(sd); sd.connect(revIn);
+    for (const f of [ch[0] * 2, ch[1] * 0.5, ch[2] * 0.5, ch[3] * 0.5, ch[1]]) for (const d of [-9, 9]) { const x = ctx.createOscillator(); x.type = 'sawtooth'; x.frequency.value = f; x.detune.value = d; x.connect(lp); x.start(t); x.stop(t + dur + 0.1); }
+  }
+  function mPad(o, t, ch, dur, v) {
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900; const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + dur * 0.35); g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.2); lp.connect(g); g.connect(o);
+    for (const f of [ch[1] * 0.5, ch[2] * 0.5, ch[3] * 0.5]) { const x = ctx.createOscillator(); x.type = 'triangle'; x.frequency.value = f; x.detune.value = rand(-8, 8); x.connect(lp); x.start(t); x.stop(t + dur + 0.3); }
+  }
+  function mLead(o, t, f, dur) { // the theme: a hard square lead with vibrato, echoing down the halls
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3400; const g = ctx.createGain(); env(g.gain, t, 0.01, 0.16, dur * 0.95); lp.connect(g); g.connect(o);
+    const sd = ctx.createGain(); sd.gain.value = 0.5; g.connect(sd); sd.connect(M.dly);
+    const vib = ctx.createOscillator(); vib.frequency.value = 5.5; const vg = ctx.createGain(); vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(f * 0.012, t + Math.min(0.3, dur)); vib.connect(vg); vib.start(t); vib.stop(t + dur + 0.1);
+    for (const [ty, d] of [['square', 0], ['sawtooth', 6]]) { const x = ctx.createOscillator(); x.type = ty; x.frequency.value = f; x.detune.value = d; vg.connect(x.frequency); x.connect(lp); x.start(t); x.stop(t + dur + 0.1); }
+  }
+  function mStep(t, step, lvl) {
+    const o = mbus(), s = step % 16, bar = Math.floor(step / 16), hot = lvl >= 3;
+    const ch = CHD[(hot ? PROG_B : PROG_A)[bar % 8]];
+    if (lvl >= 2) {
+      if (s === 0 || s === 6 || s === 8 || (s === 14 && bar % 2) || (hot && (s === 10 || s === 3))) mKick(o, t, s === 0 ? 1 : 0.8);
+      if (s === 4 || s === 12) mSnare(o, t, 1);
+      if (hot && s === 15 && bar % 2) mSnare(o, t, 0.55);
+      if (s % 2 === 0 || hot) mHat(o, t, s % 4 === 2 ? 0.55 : 0.32);
+      if (s === 0 && bar % 4 === 0) mCrash(o, t, bar === 0 ? 1.2 : 0.8);
+      if (bar % 8 === 7 && s >= 12) mTom(o, t, 150 - (s - 12) * 20);
+      if (s % 2 === 0) mBass(o, t, ch[0] * (s % 4 === 2 ? 2 : 1), S16 * 1.6);
+    } else if (s === 0) mKick(o, t, 0.55);
+    if (lvl >= 2 || s % 2 === 0) { const pat = [1, 2, 3, 2]; mString(o, t, ch[pat[s % 4]] * (s >= 8 && hot ? 2 : 1), lvl >= 2 ? 0.13 : 0.07); }
+    if (s === 0 && (bar % 2 === 0 || hot) && lvl >= 2) mBrass(o, t, ch, hot ? 0.24 : 0.2, BQ * 1.4);
+    if (s === 0) mPad(o, t, ch, BQ * 4, lvl >= 2 ? 0.05 : 0.09);
+    if (hot && s % 2 === 0) for (const n of THEME) if (n[0] === bar % 8 && n[1] === s / 2) mLead(o, t, n[2], n[3] * S16 * 2);
+  }
+  // 0: off · 1: waiting (strings and a pulse) · 2: the fight · 3: enraged (the theme comes in)
+  S.battle = safe(function (lvl, hard) {
+    const t = ctx.currentTime, o = mbus();
+    if (!lvl) {
+      M.lvl = 0; o.gain.cancelScheduledValues(t); o.gain.setTargetAtTime(0, t, hard ? 0.02 : 0.45);
+      M.intro.forEach(n => { try { n.stop(t + 0.05); } catch (e) { } }); M.intro.length = 0; M.dropAt = 0;
+      return;
+    }
+    const was = M.lvl; M.lvl = lvl;
+    o.gain.cancelScheduledValues(t); o.gain.setTargetAtTime(lvl === 1 ? 0.45 : lvl === 2 ? 0.7 : 0.8, t, 0.4);
+    if (!was) { // the drop: everything at once, on the downbeat
+      const at = Math.max(t + 0.03, M.dropAt && M.dropAt - t < 0.4 ? M.dropAt : 0);
+      M.intro.forEach(n => { try { n.stop(at); } catch (e) { } }); M.intro.length = 0; M.dropAt = 0;
+      M.next = at; M.step = 0;
+      if (lvl >= 2) { const d = dest(null, 0.7); d.gain.value = 1.2; tone(d, at, 'sine', 55, 28, 1.4, 1, 0.003); mCrash(d, at, 1.4); mBrass(d, at, CHD.Dm, 0.35, BQ * 3); }
+    }
+  });
+  S.battleIntro = safe(function () { // the cutscene: a swelling drone, timpani rolling in, a riser into the drop
+    const t = ctx.currentTime, o = mbus(), DROP = 6.2;
+    o.gain.cancelScheduledValues(t); o.gain.setValueAtTime(0.9, t);
+    M.intro.forEach(n => { try { n.stop(t); } catch (e) { } }); M.intro.length = 0;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 4; lp.frequency.setValueAtTime(110, t); lp.frequency.exponentialRampToValueAtTime(1400, t + DROP);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.32, t + 1.2); g.gain.setValueAtTime(0.32, t + DROP - 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + DROP + 0.05);
+    lp.connect(g); g.connect(o);
+    for (const f of [36.71, 73.42, 110.0, 146.83]) for (const d of [-8, 8]) { const x = ctx.createOscillator(); x.type = 'sawtooth'; x.frequency.value = f; x.detune.value = d; x.connect(lp); x.start(t); x.stop(t + DROP + 0.1); M.intro.push(x); }
+    [0, 2.4, 3.6, 4.4, 4.9, 5.25, 5.5, 5.7, 5.84, 5.95, 6.04, 6.11].forEach((d, i) => mTom(o, t + d, 70 + i * 4));
+    const r = noise(o, t + 4.6, DROP - 4.6, 'highpass', 2000, 0.7, 0.4, DROP - 4.65); r.f.frequency.exponentialRampToValueAtTime(9000, t + DROP); M.intro.push(r.src);
+    M.dropAt = t + DROP;
+  });
+  S.musicLevel = function () { if (!S.mAn) return -1; const a = new Float32Array(S.mAn.fftSize); S.mAn.getFloatTimeDomainData(a); let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * a[i]; return Math.sqrt(s / a.length); };
+  S.musicState = function () { return { lvl: M.lvl, step: M.step }; };
+  S.cineHit = safe(function (k = 1) { const t = ctx.currentTime, out = dest(null, 0.8); out.gain.value = 1.2 * k; tone(out, t, 'sine', 60, 30, 1.0, 1, 0.003); noise(out, t, 0.5, 'lowpass', 600, 0.7, 0.6, 0.003, brown); noise(out, t, 0.25, 'highpass', 3000, 0.6, 0.3, 0.003); });
+  S.killHit = safe(function () { // the last note of the Last Dance
+    const t = ctx.currentTime, out = dest(null, 1.0); out.gain.value = 1.3;
+    tone(out, t, 'sine', 55, 26, 2.6, 1, 0.003); mCrash(out, t, 1.6); mBrass(out, t, CHD.Dm, 0.4, 2.8); mTom(out, t, 90); mTom(out, t + 0.12, 70);
+  });
   S.setAlarm = function (on) { S.alarmOn = !!on; };
   S.setHum = function (on) { S.humOn = !!on; };
   return S;
@@ -4017,6 +4262,7 @@ const Monster = {
   stagger: 0, stunImmune: 0, rageUntil: 0, kb: new T.Vector3(), netStagger: 0, netImmune: 0,
   ceil: 0, ceilWant: false, ceilH: WALL_H, ceilLat: 0.9, ceilSide: 1, ceilGo: false, ceilCD: 0, inCorr: false, sway: 0, wasUp: false,
   slamT: 1, gait: 0, huntCrawl: true, distortK: 0, glitchT: 2, glitch: null, walkPh: 0, yawVel: 0, bashHits: 0, bashIron: false, flankAt: null, decoy2: null,
+  hp: 340, maxHp: 340, burnT: 0, burnBy: null, burnAcc: 0, lastHurt: -99, phase: 0, down: 0, downUntil: 0, fall: 0, yank: null, yankCD: new Map(), yankSched: null, killedBy: -1, fireAcc: new Map(),
   init() {
     this.model = buildWarden(false); this.P = this.model.userData.P; scene.add(this.model);
     this.reset();
@@ -4034,6 +4280,7 @@ const Monster = {
     this.eyeColor.set(0xdff2ff); if (this.P) this.P.glowMat.opacity = 0.9;
     this.ceil = 0; this.ceilWant = false; this.ceilH = WALL_H; this.ceilLat = 0.9; this.ceilSide = 1; this.ceilGo = false; this.ceilCD = 0; this.inCorr = false; this.sway = 0; this.wasUp = false;
     this.slamT = 1; this.gait = 0; this.huntCrawl = true; this.distortK = 0; this.glitchT = 2; this.glitch = null; this.walkPh = 0; this.yawVel = 0; this.bashHits = 0; this.bashIron = false; this.flankAt = null; this.decoy2 = null;
+    this.maxHp = this.hp = this.hpFor(); this.burnT = 0; this.burnBy = null; this.burnAcc = 0; this.lastHurt = -99; this.phase = 0; this.down = 0; this.downUntil = 0; this.fall = 0; this.yank = null; this.yankCD.clear(); this.yankSched = null; this.killedBy = -1; this.fireAcc.clear();
     this.model.visible = true; this.model.position.copy(this.pos); this.model.rotation.set(0, this.yaw, 0);
   },
   activate() { if (this.active) return; this.active = true; this.cine = null; this.P.glowMat.opacity = 0.9; this.setState('PATROL'); this.pauseT = 1.2; },
@@ -4145,7 +4392,8 @@ const Monster = {
   // a guard punched it. It barely hurts — but enough hits (or one at the right moment) stun it.
   // returns 0 ignored, 1 shrugged off, 2 flinched, 3 stunned, 4 stunned mid-lunge
   punched(actor) {
-    if (!this.active || this.state === 'SCRIPT' || Game.endingLock || !actor) return 0;
+    if (!this.active || this.down || this.state === 'SCRIPT' || this.state === 'YANK' || Game.endingLock || !actor) return 0;
+    this.hp = Math.max(1, this.hp - 4); this.lastHurt = Game.time; // (fists barely hurt it)
     if (this.cine && (this.cine.pose === 'stunned' || this.cine.pose === 'wake')) { this.push(actor, 1.2); return 1; }
     const now = Game.time, d = diff();
     this.target = actor; this.lastKnown.copy(actor.pos); this.lastSeen = now; this.lastContact = now; this.awareness = 1.2; this.seenHide = null;
@@ -4174,6 +4422,124 @@ const Monster = {
   },
   push(actor, speed) { const dx = this.pos.x - actor.pos.x, dz = this.pos.z - actor.pos.z, l = Math.hypot(dx, dz) || 1; this.kb.set(dx / l * speed, 0, dz / l * speed); },
   stunLeft() { return this.cine && this.cine.pose === 'stunned' ? Math.max(0, this.cine.dur - this.cine.t) : 0; },
+  /* ---- it can be hurt now: weapons (host / solo decides) ---- */
+  hpFor() { const n = typeof crew === 'function' ? crew().length : 1; return Math.round((WARDEN_HP[Net.sessionDiff || settings.difficulty] || WARDEN_HP.normal) * (1 + 0.45 * (n - 1))); },
+  isDown() { return this.down > 0; },
+  hurt(actor, dmg, o = {}) {
+    if (!this.active || this.down || this.state === 'SCRIPT' || Game.endingLock || !(dmg > 0)) return 0;
+    const now = Game.time, stunned = this.stunLeft() > 0, yanking = this.state === 'YANK';
+    if (stunned) dmg *= 1.3; // reeling, it can't protect itself
+    const real = Math.min(dmg, this.hp); // (what it actually lost)
+    this.hp = Math.max(0, this.hp - dmg); this.lastHurt = now;
+    if (actor && o.kind !== 'fire') { this.target = actor; this.lastKnown.copy(actor.pos); this.lastSeen = now; this.lastContact = now; this.awareness = 1.2; if (!actor.hidden) this.seenHide = null; }
+    if (o.burn) {
+      if (this.burnT <= 0 && !o.quiet) { Sound.monsterBurn(this.pos); if (!stunned && !yanking && (!this.cine || this.cine.pose === 'hit')) this.playPose('burn', 0.9); }
+      this.burnT = Math.max(this.burnT, o.burn); this.burnBy = actor || this.burnBy;
+    }
+    if (this.hp <= 0) { this.kill(actor || this.burnBy, real); return dmg; }
+    if (o.quiet) { this.tally(actor, real); this.checkPhase(); return dmg; }
+    if (yanking) this.endYank(true, true); // hurt it while it's at your door: it lets go
+    if (this.ceil > 0.3 && o.kind !== 'fire') { this.ceilWant = false; this.ceilCD = 6; } // knocked down off the ceiling
+    if (o.stg && now >= this.stunImmune && !stunned) { this.stagger += o.stg; if (this.stagger >= 0.999) { this.stun(actor || player); this.afterHurt(actor, dmg, o); return dmg; } }
+    if (o.push && actor) this.push(actor, o.push);
+    if (!stunned && !(this.cine && (this.cine.pose === 'burn' || this.cine.pose === 'roar'))) this.playPose('hit', o.kind === 'shot' ? 0.34 : 0.4);
+    if (!stunned && this.state !== 'HUNT') { this.state = 'HUNT'; this.stateT = 0; this.charging = false; this.path = null; this.hasGoal = false; this.repathT = 0; }
+    if (this.state === 'ATTACK' && dmg >= 15) { this.state = 'HUNT'; this.attackT = 0; this.attackHit = false; } // a big hit knocks it out of its lunge
+    this.afterHurt(actor, dmg, o);
+    return dmg;
+  },
+  afterHurt(actor, dmg, o) {
+    Game.emit({ k: 'wh', by: Game.idOf(actor), d: Math.round(dmg), w: o.kind || '' });
+    this.checkPhase();
+  },
+  checkPhase() {
+    if (this.phase === 0 && this.hp <= this.maxHp * 0.5) { // half dead: it stops holding back
+      this.phase = 1; this.rageUntil = Game.time + 1e6;
+      Game.emit({ k: 'wphase', p: 1 });
+      if (!this.stunLeft() && this.state !== 'YANK') this.playPose('roar', 1.25);
+    }
+  },
+  // fire and burning hurt it a little at a time: add it up per guard, and report it now and then
+  tally(actor, d) {
+    const id = Game.idOf(actor || player), v = (this.fireAcc.get(id) || 0) + d;
+    if (v >= 10) { this.fireAcc.set(id, 0); Game.emit({ k: 'wh', by: id, d: +v.toFixed(1), w: 'fire' }); } else this.fireAcc.set(id, v);
+  },
+  burn(dt) {
+    if (this.burnT <= 0) return;
+    this.burnT -= dt;
+    if (!this.active || this.down) return;
+    this.burnAcc += BURN_DPS * dt;
+    if (this.burnAcc >= 3) { const a = this.burnAcc; this.burnAcc = 0; this.hurt(this.burnBy || player, a, { kind: 'fire', quiet: true }); }
+  },
+  // dead (the Night Shift) — or just down, for a while (nothing stays dead in the other modes)
+  kill(actor, real = 0) {
+    if (this.down) return;
+    const final = Game.mode === 'night';
+    this.down = final ? 2 : 1; this.hp = 0; this.killedBy = Game.idOf(actor || player);
+    this.downUntil = Game.time + (final ? 1e9 : Game.mode === 'photos' ? 40 : 50);
+    this.state = 'DOWN'; this.stateT = 0; this.vel.set(0, 0, 0); this.kb.set(0, 0, 0); this.path = null; this.hasGoal = false; this.onArrive = null;
+    this.attackT = 0; this.ceilWant = false; this.charging = false; this.seenHide = null; this.yank = null; this.stagger = 0;
+    this.playPose('die', 3.6, true);
+    const own = this.fireAcc.get(this.killedBy) || 0; this.fireAcc.delete(this.killedBy);
+    for (const [id, v] of this.fireAcc) if (v > 0) Game.emit({ k: 'wh', by: id, d: +v.toFixed(1), w: 'fire' });
+    this.fireAcc.clear();
+    Game.emit({ k: 'wkill', by: this.killedBy, f: final ? 1 : 0, d: +(real + own).toFixed(1) });
+  },
+  updateDown(dt) {
+    this.burnT = Math.max(0, this.burnT - dt);
+    if (this.cine) {
+      this.cine.t += dt;
+      if (this.cine.t >= this.cine.dur) { const was = this.cine.pose; this.cine = null; if (was === 'rise') { this.finishRise(); return; } }
+    }
+    if (!this.cine) this.playPose('dead', 1e6);
+    this.vel.set(0, 0, 0); this.speed = 0;
+    if (this.down === 1 && Game.time >= this.downUntil && this.cine.pose === 'dead') { this.playPose('rise', 3.4, true); Game.emit({ k: 'wrise' }); }
+    this.animate(dt, 0);
+  },
+  finishRise() {
+    this.down = 0; this.fall = 0; this.hp = Math.round(this.maxHp * 0.7); this.phase = 0; this.stagger = 0; this.stunImmune = Game.time + 12; this.rageUntil = Game.time + 15; this.burnT = 0;
+    const tg = this.nearestActor(); this.target = tg; this.awareness = 1.2;
+    if (tg) { this.lastKnown.copy(tg.pos); this.lastSeen = Game.time; }
+    this.state = 'DOWN'; this.setState(tg ? 'HUNT' : 'SEARCH'); if (!tg) this.searchCenter.copy(this.pos);
+    this.P.glowMat.opacity = 0.9;
+  },
+  /* ---- at your locker door: it pulls, you hold (see Hold) ---- */
+  startYank(a) {
+    const id = Game.idOf(a), seed = (Math.random() * 1e9) | 0, sch = holdSchedule(seed, Net.sessionDiff || settings.difficulty);
+    const L = a.locker;
+    this.yank = { a, L, id, seed, sch, until: Game.time + sch.end + 4 };
+    this.state = 'YANK'; this.stateT = 0; this.vel.set(0, 0, 0); this.path = null; this.hasGoal = false; this.charging = false; this.attackT = 0;
+    this.yaw = Math.atan2(L.pos.x - this.pos.x, L.pos.z - this.pos.z);
+    this.playPose('yank', sch.end + 0.6);
+    Game.emit({ k: 'yank', a: id, s: seed });
+  },
+  updateYank(dt) {
+    const Y = this.yank;
+    if (this.cine) this.cine.t += dt;
+    this.vel.set(0, 0, 0); this.speed = 0;
+    if (!Y || !Y.a || !Y.a.hidden || Y.a.dead || Y.a.locker !== Y.L) { this.endYank(false, true); return; } // out of the locker (or gone): no contest
+    if (Game.time > Y.until) { this.endYank(false); return; } // (no answer from that guard: the door gives)
+    this.animate(dt, 0);
+  },
+  // the result: held (it gives up) or not (it tears the door open)
+  endYank(held, quiet) {
+    const Y = this.yank; this.yank = null; this.cine = null; this.P.glowMat.opacity = 0.9;
+    if (!Y) return;
+    if (held) {
+      this.yankCD.set(Y.id, Game.time + 28); this.seenHide = null; this.awareness = 0.35; this.target = null;
+      const away = this.pos.clone().add(new T.Vector3(this.pos.x - Y.L.pos.x, 0, this.pos.z - Y.L.pos.z).normalize().multiplyScalar(9));
+      this.searchCenter.copy(away); this.state = 'X'; this.setState('SEARCH'); this.retreatUntil = Game.time + 10;
+      if (!quiet) this.playPose('flinch', 0.7);
+      Game.emit({ k: 'held', a: Y.id, q: quiet ? 1 : 0 }); // (quiet: someone hurt it while it was at the door — it let go)
+      Game.stareCD = Game.time + 30;
+    } else if (Y.a && Y.a.hidden && !Y.a.dead && Y.a.locker === Y.L) {
+      this.seenHide = { actor: Y.a, locker: Y.L }; this.target = Y.a;
+      this.state = 'ATTACK'; this.stateT = 0; this.attackT = 0.25; this.attackHit = false;
+      Game.emit({ k: 'ripped', a: Y.id });
+    } else if (Y.a && !Y.a.dead && !Y.a.hidden && Y.a.pos.distanceTo(this.pos) < 6) { // you jumped out: it's right there
+      this.target = Y.a; this.lastKnown.copy(Y.a.pos); this.lastSeen = Game.time; this.awareness = 1.2; this.state = 'X'; this.setState('HUNT');
+    } else { this.state = 'X'; this.setState('SEARCH'); this.searchCenter.copy(this.pos); }
+  },
   lure(pos) { if (this.active && !this.cine && (this.state === 'PATROL' || this.state === 'LOST')) this.investigate(new T.Vector3(pos.x, 0, pos.z), 0.4, false); },
   visibilityOf(a) {
     if (a.dead || Game.endingLock) return 0;
@@ -4273,6 +4639,10 @@ const Monster = {
     this.roarCD -= dt;
     this.stagger = Math.max(0, this.stagger - dt * 0.06);
     this.knockback(dt);
+    if (this.down) { this.updateDown(dt); return; }
+    this.burn(dt); if (this.down) return;
+    if (this.active && this.hp < this.maxHp && Game.time - this.lastHurt > 30 && this.burnT <= 0) this.hp = Math.min(this.maxHp, this.hp + dt * 1.2); // it heals in the dark
+    if (this.state === 'YANK') { this.updateYank(dt); return; }
     if (this.cine) { this.cine.t += dt; this.vel.set(0, 0, 0); this.speed = 0; this.animate(dt, 0); if (this.cine.t >= this.cine.dur) { this.cine = null; this.P.glowMat.opacity = 0.9; } return; }
     if (!this.active) { this.animate(dt, 0); return; }
     this.stateT += dt;
@@ -4319,7 +4689,10 @@ const Monster = {
         if (knows && d < 4) faceTarget = tg.pos;
         const attackRange = tg.hidden ? 1.25 : 1.55;
         const canHit = tg.hidden ? sawHide : (this.seeing || d < 1.2);
-        if (d < attackRange && canHit && !tg.invuln() && this.ceil < 0.2) { this.setState('ATTACK'); this.attackT = 0; this.attackHit = false; } // (it has to drop off the ceiling first)
+        if (d < attackRange && canHit && !tg.invuln() && this.ceil < 0.2) { // (it has to drop off the ceiling first)
+          if (tg.hidden && tg.locker && Game.time >= (this.yankCD.get(Game.idOf(tg)) || 0)) { this.startYank(tg); break; } // the door first: hold it shut (Space, on the beat)
+          this.setState('ATTACK'); this.attackT = 0; this.attackHit = false;
+        }
         if (!knows && this.stateT > 30) this.setState('SEARCH');
         break;
       }
@@ -4589,7 +4962,8 @@ const Monster = {
   placeRoot() {
     const ce = this.ceil, lat = Math.sin(Math.PI * ce) * this.ceilLat * this.ceilSide, h = this.ceilH * (1 - Math.cos(Math.PI * ce)) * 0.5;
     this.model.position.set(this.pos.x + Math.cos(this.yaw) * lat, h, this.pos.z - Math.sin(this.yaw) * lat);
-    this.model.rotation.set(0, this.yaw, this.ceilSide * Math.PI * ce + this.sway);
+    this.model.rotation.set(-this.fall * 1.5, this.yaw, this.ceilSide * Math.PI * ce + this.sway, 'YXZ');
+    if (this.fall > 0) { this.model.position.y += 0.2 * this.fall; this.model.position.x -= Math.sin(this.yaw) * 0.25 * this.fall; this.model.position.z -= Math.cos(this.yaw) * 0.25 * this.fall; } // on its back
   },
   animate(dt, sp) {
     const P = this.P, run = sp > 3.0, t = Game.time;
@@ -4665,7 +5039,7 @@ const Monster = {
     const tc = this.state === 'HUNT' || this.state === 'ATTACK' || this.state === 'SCRIPT' || this.charging ? 0xff2a1a : (this.state === 'INVESTIGATE' || this.state === 'SEARCH') ? 0xffa83a : 0xeef6ff;
     _tmpCol.set(tc); this.eyeColor.lerp(_tmpCol, 1 - Math.exp(-dt * 4));
     P.eyeMat.color.copy(this.eyeColor); P.glowMat.color.copy(this.eyeColor);
-    if (this.cine) this.applyPose(dt);
+    if (this.cine) this.applyPose(dt); else this.fall = 0;
     wardenFace(P);
     this.placeRoot();
     this.lookDown(tg, dl);
@@ -4866,6 +5240,72 @@ const Monster = {
       P.jawK = 0.3 + Math.max(0, Math.sin(C.t * 2.3)) * 0.2;
       for (const A of P.arms) { A.up.rotation.x = lerp(A.up.rotation.x, -0.35, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * 0.16, r); A.el.rotation.x = lerp(A.el.rotation.x, -0.7, r); }
       P.chest.scale.y = 1 + Math.sin(C.t * 2.4) * 0.04; // slow, heavy breaths
+    } else if (C.pose === 'yank') { // both hands on your locker door, wrenching at it on the beat
+      const r = smooth(0, 0.3, C.t) * smooth(0, 0.25, C.dur - C.t), pull = yankPull(this.yankSched, C.t);
+      P.spine.rotation.x = lerp(P.spine.rotation.x, 0.5 - 0.5 * pull, r);
+      P.hips.position.y = lerp(P.hips.position.y, WARDEN_HIP - 0.1 - 0.07 * pull, r);
+      P.neck.rotation.x = lerp(P.neck.rotation.x, -0.5 + 0.25 * pull, r);
+      P.head.rotation.set(lerp(P.head.rotation.x, 0.12, r), lerp(P.head.rotation.y, 0, r), lerp(P.head.rotation.z, 0.3 * Math.sin(C.t * 1.3), r));
+      P.jawK = lerp(P.jawK, 0.4 + 0.7 * pull, r);
+      for (const A of P.arms) { A.up.rotation.x = lerp(A.up.rotation.x, -1.42 + 0.4 * pull, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * (0.14 - 0.06 * pull), r); A.el.rotation.x = lerp(A.el.rotation.x, -0.22 - 0.7 * pull, r); for (const f of A.fingers) f.rotation.x = lerp(f.rotation.x, 1.15, r); }
+      for (const L of P.legs) { L.hp.rotation.x = lerp(L.hp.rotation.x, -0.3 + 0.2 * pull, r); L.kn.rotation.x = lerp(L.kn.rotation.x, 0.5, r); L.an.rotation.x = lerp(L.an.rotation.x, -0.2, r); }
+      this.sway = Math.sin(C.t * 1.7) * 0.03 * r;
+    } else if (C.pose === 'burn') { // on fire: it thrashes, clawing at itself
+      const r = Math.sin(Math.min(1, k * 1.1) * Math.PI), f = C.t * 21;
+      P.spine.rotation.x = lerp(P.spine.rotation.x, 0.15 + Math.sin(f * 0.5) * 0.25, r);
+      P.neck.rotation.x = lerp(P.neck.rotation.x, -0.85, r);
+      P.head.rotation.set(P.head.rotation.x + Math.sin(f) * 0.4 * r, P.head.rotation.y + Math.sin(f * 0.7) * 0.7 * r, P.head.rotation.z + Math.cos(f * 0.9) * 0.4 * r);
+      P.jawK = lerp(P.jawK, 1.15, r);
+      for (const A of P.arms) { A.up.rotation.x = lerp(A.up.rotation.x, -2.1 + Math.sin(f + A.s * 2) * 0.7, r); A.up.rotation.z = lerp(A.up.rotation.z, A.s * (0.6 + Math.sin(f * 1.3) * 0.35), r); A.el.rotation.x = lerp(A.el.rotation.x, -0.9 + Math.sin(f * 1.7 + A.s) * 0.7, r); }
+    } else if (C.pose === 'die' || C.pose === 'dead' || C.pose === 'rise') {
+      let fall, scream, buckle, limp;
+      if (C.pose === 'die') { // a last scream, the knees go, and it topples over backwards
+        scream = smooth(0, 0.07, k) * (1 - smooth(0.26, 0.42, k)); buckle = smooth(0.3, 0.52, k);
+        const u = clamp((k - 0.54) / 0.3, 0, 1); fall = u * u; limp = smooth(0.82, 1, k);
+        if (k >= 0.84 && !C.thud) { C.thud = 1; Sound.bodyFall(this.pos); Game.shake(Math.max(0, 1 - this.pos.distanceTo(camera.position) / 16) * 1.1); for (let i = 0; i < 4; i++) spawnEmber(_cw.t.set(this.pos.x - Math.sin(this.yaw) * rand(0.5, 2), 0.05, this.pos.z - Math.cos(this.yaw) * rand(0.5, 2))); }
+        if (k > 0.05 && !C.scr) { C.scr = 1; Sound.wardenDeath(this.pos); }
+      } else if (C.pose === 'dead') { scream = 0; buckle = 1; fall = 1; limp = 1; }
+      else { // getting up again — the wrong way, all at once, bones cracking
+        const u = smooth(0.15, 0.72, k); fall = 1 - u; buckle = 1 - smooth(0.6, 1, k); limp = 1 - smooth(0.08, 0.35, k); scream = smooth(0.74, 0.84, k) * (1 - smooth(0.94, 1, k));
+        if (k > 0.1 && !C.c1) { C.c1 = 1; Sound.crack(); } if (k > 0.3 && !C.c2) { C.c2 = 1; Sound.crack(); } if (k > 0.5 && !C.c3) { C.c3 = 1; Sound.crack(); }
+        if (k > 0.76 && !C.rr) { C.rr = 1; Sound.roar(1.2); }
+      }
+      this.fall = clamp(fall, 0, 1);
+      const up = 1 - this.fall, f = C.t * 20;
+      P.hips.position.y = lerp(WARDEN_HIP, 0.98, buckle * up);
+      P.spine.rotation.x = lerp(lerp(-0.25, 0.45, buckle), 0.05, limp) + Math.sin(f * 0.6) * 0.08 * scream;
+      P.spine.rotation.y = 0; P.spine.rotation.z = 0.12 * limp;
+      P.neck.rotation.x = lerp(lerp(-0.95, -0.3, buckle), -0.15, limp);
+      P.head.rotation.set(lerp(Math.sin(f) * 0.25 * scream, 0.1, limp), lerp(Math.sin(f * 0.7) * 0.4 * scream, 0.95, limp), lerp(0, -0.25, limp));
+      P.jawK = lerp(lerp(0.5, 1.2, scream), 0.85, limp);
+      for (const A of P.arms) {
+        A.up.rotation.x = lerp(lerp(-0.5, -2.3 + Math.sin(f + A.s) * 0.5, scream), -0.25, limp);
+        A.up.rotation.y = 0; A.up.rotation.z = lerp(A.s * lerp(0.3, 0.75, scream), A.s * 1.25, limp);
+        A.el.rotation.x = lerp(-0.4 - 0.5 * scream, -0.15, limp); A.wr.rotation.set(0, 0, 0);
+        for (const fg of A.fingers) fg.rotation.x = lerp(0.6, 0.25, limp);
+      }
+      for (const L of P.legs) { L.hp.rotation.set(lerp(-0.6 * buckle, -0.08, limp), 0, L.s * 0.12 * limp); L.kn.rotation.x = lerp(1.1 * buckle, 0.25, limp); L.an.rotation.x = lerp(-0.4 * buckle, 0.4, limp); }
+      if (C.pose === 'dead' && this.down) { // a twitch now and then (and the eyes almost out)
+        if (Math.random() < dt * 0.4) { this.twitch.set(rand(-0.6, 0.6), rand(-0.6, 0.6), 0); if (this.down === 1 && this.pos.distanceTo(camera.position) < 14) Sound.crack(); }
+        P.head.rotation.x += this.twitch.x * 0.5; P.arms[0].el.rotation.x += this.twitch.y * 0.4;
+      }
+      const lit = C.pose === 'dead' ? (this.down === 1 ? 0.12 : 0) : C.pose === 'die' ? 1 - smooth(0.8, 1, k) : smooth(0.7, 0.8, k) * (Math.random() < 0.2 ? 0.3 : 1);
+      P.eyeMat.color.copy(this.eyeColor).multiplyScalar(Math.max(0.04, lit)); P.glowMat.opacity = 0.9 * lit;
+    } else if (C.pose === 'dance') { // the Last Dance: it sizes you up, screams at you, and drops to pounce
+      const t = C.t, a = smooth(0, 0.6, t) * (1 - smooth(2.3, 2.7, t)), b = smooth(2.4, 2.75, t) * (1 - smooth(4.3, 4.8, t)), c = smooth(4.5, 5.0, t);
+      P.spine.rotation.x = 0.2 * a - 0.15 * b + 0.95 * c + P.spine.rotation.x * (1 - a - b - c) * 0.2;
+      P.hips.position.y = lerp(WARDEN_HIP, 1.05, c);
+      P.neck.rotation.x = -0.25 * a - 0.95 * b - 0.85 * c;
+      P.head.rotation.set(0.05 * a + 0.1 * c, (toCam * 0.6) * a + toCam * 0.3 * c, (0.5 + Math.sin(t * 0.9) * 0.15) * a + Math.sin(t * 5) * 0.08 * c);
+      P.jawK = 0.25 * a + 1.25 * b + (0.45 + Math.max(0, Math.sin(t * 9)) * 0.25) * c;
+      for (const A of P.arms) {
+        A.up.rotation.x = -0.1 * a - 2.05 * b - 0.95 * c; A.up.rotation.y = A.s * 0.35 * b; A.up.rotation.z = A.s * (0.12 * a + 0.8 * b + 0.32 * c);
+        A.el.rotation.x = -0.25 * a - 0.85 * b - 0.75 * c;
+        for (const f of A.fingers) f.rotation.x = 0.2 + Math.max(0, Math.sin(t * 7 + A.s)) * 0.6 * a - 0.3 * b + 0.8 * c;
+      }
+      for (const L of P.legs) { L.hp.rotation.x = -0.55 * c; L.kn.rotation.x = 0.95 * c; L.an.rotation.x = -0.35 * c; }
+      P.chest.scale.y = 1 + Math.sin(t * 16) * 0.05 * b + Math.sin(t * 3) * 0.03;
+      if (t > 2.45 && !C.r1) { C.r1 = 1; Sound.roar(1.45); Game.shake(0.5); }
     }
   },
   /* ---- online clients: the host runs the AI, peers follow its snapshots ---- */
@@ -4877,6 +5317,8 @@ const Monster = {
     this.active = !!m.a; this.attackT = +m.at || 0; this.seeing = !!m.sg; this.targetId = m.ti === undefined ? -1 : m.ti | 0; this.charging = !!m.ch;
     this.netStagger = clamp(+m.sk || 0, 0, 1); this.netImmune = Math.max(0, +m.im || 0); this.crawlMode = !!m.cr;
     this.ceilWant = !!m.ce; this.ceilSide = m.cs < 0 ? -1 : 1; this.ceilLat = clamp(+m.cl || 0.9, 0.3, 1.6); this.gait = clamp(m.gs | 0, 0, 4); this.huntCrawl = m.hc !== 0;
+    if (m.mh) { this.maxHp = Math.max(1, +m.mh || 1); this.hp = clamp(+m.hp || 0, 0, this.maxHp); }
+    this.burnT = Math.max(0, +m.bn || 0); this.down = clamp(m.dn | 0, 0, 2); this.phase = m.ph | 0;
     const st = typeof m.st === 'string' ? m.st : 'DORMANT';
     if (st !== prev) {
       this.state = st;
@@ -5160,15 +5602,16 @@ document.addEventListener('mousemove', e => {
 canvasEl.addEventListener('mousedown', e => {
   Input.mouseDown = true;
   if (Game.state === 'playing') {
-    if (Input.locked) { if (e.button === 0 || e.button === 2) Combat.punch(); } // click to punch
-    else { if (Input.dragLook && e.button === 2) Combat.punch(); Input.requestLock(); }
+    if (Input.locked) { if (e.button === 0) Weapons.attack(); else if (e.button === 2) Combat.punch(); } // click: your weapon (or your fists); right click: a punch
+    else { if (Input.dragLook && e.button === 2) Weapons.attack(); Input.requestLock(); }
   }
   e.preventDefault();
 });
 window.addEventListener('mouseup', () => { Input.mouseDown = false; });
+canvasEl.addEventListener('wheel', e => { if (Game.state === 'playing' && !Game.controlLock && !Cine.locks() && Math.abs(e.deltaY) > 2) { Weapons.cycle(e.deltaY > 0 ? 1 : -1); e.preventDefault(); } }, { passive: false });
 window.addEventListener('pointerdown', () => Sound.resume(), true); // browsers only start sound after a click
 canvasEl.addEventListener('contextmenu', e => e.preventDefault());
-const GAME_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'KeyF', 'KeyE', 'KeyR', 'KeyM', 'KeyP', 'KeyC', 'KeyH', 'KeyG', 'KeyV', 'KeyQ', 'Enter', 'Tab'];
+const GAME_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'KeyF', 'KeyE', 'KeyR', 'KeyM', 'KeyP', 'KeyC', 'KeyH', 'KeyG', 'KeyV', 'KeyQ', 'Enter', 'Tab', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5'];
 window.addEventListener('keydown', e => {
   Sound.resume();
   const code = e.code;
@@ -5186,10 +5629,15 @@ window.addEventListener('keydown', e => {
       case 'KeyC': player.crouchToggle = !player.crouchToggle; break;
       case 'KeyH': Hints.request(); break;
       case 'KeyG': Net.ping(); break;
-      case 'KeyV': case 'KeyQ': Combat.punch(); break;
+      case 'KeyV': Combat.punch(); break;
+      case 'KeyQ': Weapons.cycle(1); break;
+      case 'Space': Hold.press(); break; // in a locker, holding the door shut
       case 'KeyP': case 'Escape': Game.pause(); break;
-      case 'Digit1': case 'Numpad1': Endless.pick(0); break; // Endless Night: choosing a curse
-      case 'Digit2': case 'Numpad2': Endless.pick(1); break;
+      case 'Digit1': case 'Numpad1': Weapons.slot(1); break; // weapons (and in Endless Night, 1/2 choose a curse while one is on offer)
+      case 'Digit2': case 'Numpad2': Weapons.slot(2); break;
+      case 'Digit3': case 'Numpad3': Weapons.slot(3); break;
+      case 'Digit4': case 'Numpad4': Weapons.slot(4); break;
+      case 'Digit5': case 'Numpad5': Weapons.slot(5); break;
     }
   } else if (Game.state === 'reading') {
     if (code === 'KeyE' || code === 'Escape' || code === 'Space' || code === 'Enter') { e.preventDefault(); UI.closeNote(); }
@@ -5665,6 +6113,12 @@ const Game = {
           UI.msg((mine ? 'Picked up: ' : who + ' found the ') + CARD_INFO[def.color].name + ' (' + n + '/3)', 'good', 4);
           if (n === 3) this.completeObjective('cards', 'All three keycards collected');
           else this.flashObj = 'cards';
+        } else if (it.kind === 'weapon') {
+          if (def.glass) { def.glass.visible = false; Sound.glass(new T.Vector3(def.visual.position.x, 1.4, def.visual.position.z)); }
+          if (mine) Weapons.give(def.wpn);
+          else UI.msg(who + ' picked up the ' + WPN[def.wpn].name + '.', 'good', 3.5);
+        } else if (it.kind === 'ammo') {
+          if (mine) Weapons.addAmmo(def.ammo, def.n);
         } else if (it.kind === 'tape') {
           this.tapes.add(def.tape);
           const n = this.tapes.size, N = TAPE_ORDER.length;
@@ -5786,6 +6240,23 @@ const Game = {
         Sleeper.shriekT = 1.8; Sound.sleeperShriek(new T.Vector3(Sleeper.pos.x, 1.9, Sleeper.pos.z));
         if (mine) Dream.nightmare(); else UI.msg(who + ' walked into the Sleepwalker. That scream carried…', 'warn', 3.5);
         break;
+      // fighting back with weapons
+      case 'wh': Battle.onHurt(ev); break;
+      case 'wphase': Battle.onPhase(); break;
+      case 'wkill': Battle.onKill(ev); break;
+      case 'wrise': Battle.onRise(); break;
+      case 'kwin': Battle.victory(); break;
+      case 'dance': Battle.start(ev); break;
+      case 'fire': Fires.spawn(+ev.x || 0, +ev.z || 0, ev.by); break;
+      case 'proj': if (ev.by !== Net.myId) Proj.spawn(ev.t ? 'molotov' : 'flare', +ev.x || 0, +ev.y || 1, +ev.z || 0, +ev.vx || 0, +ev.vy || 0, +ev.vz || 0, ev.by, !Net.isClient); break;
+      // the locker door: it pulls, you hold
+      case 'yank':
+        Monster.yankSched = holdSchedule(ev.s | 0, Net.sessionDiff || settings.difficulty);
+        if ((ev.a | 0) === Net.myId) Hold.start(ev.s | 0);
+        else UI.msg('It\'s trying to tear open ' + Net.nameOf(ev.a) + '\'s locker!', 'warn', 3);
+        break;
+      case 'held': if ((ev.a | 0) === Net.myId) { if (ev.q) Hold.finish(false, true); } else if (!ev.q) UI.msg(Net.nameOf(ev.a) + ' held the locker shut. It gave up.', 'good', 3.5); Sound.doorBang(new T.Vector3(Monster.pos.x, 1.2, Monster.pos.z)); break;
+      case 'ripped': Sound.doorBang(new T.Vector3(Monster.pos.x, 1.2, Monster.pos.z)); if ((ev.a | 0) === Net.myId) UI.msg('It tore the door open!', 'warn', 2.5); break;
       case 'over': if (this.state !== 'dead' && this.state !== 'won') { if (ev.t) this.flags.lastAlive = +ev.t; UI.closeNote(true); this.showGameOver(); } break;
     }
   },
@@ -5815,7 +6286,7 @@ const Game = {
     hemi.intensity = 0.5; scene.fog.density = FOG_BASE;
     for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) grid[z][x].explored = false;
     Monster.reset(); Dream.reset(); Sleeper.reset(); Modes.reset(); if (Phantom.model) Phantom.model.visible = false; Phantom.active = false; Phantom.mode = '';
-    player.reset();
+    player.reset(); Weapons.reset(); Battle.reset(); Hold.reset(); fxLight.intensity = 0;
     Cine.reset(); Hints.reset(); Combat.reset(); Arms.reset(); Night.reset();
     Sound.setAlarm(false); Sound.setHum(false);
     UI.clearMsgs(); UI.setLockerView(false); UI.hudCache = {}; UI.closeNote(true);
@@ -5844,6 +6315,7 @@ const Game = {
       Net.onGameStart();
     }
     Modes.start();
+    Monster.maxHp = Monster.hp = Monster.hpFor(); // (tougher with more guards)
     if (this.mode !== 'night') Modes.intro();
     else if (Net.active) UI.center('02:00 AM', 'SURVIVE UNTIL 6:00 AM · ' + crew().length + ' guards on shift', 4.2);
     else UI.center('02:00 AM', 'SURVIVE UNTIL 6:00 AM', 4.2);
@@ -5894,9 +6366,12 @@ const Game = {
     if (this.mode === 'photos') { this.showResult('photos'); return; }
     this.state = 'won'; Input.exitLock(); UI.hud(false); this.endFrame();
     $('win-stats').innerHTML = '';
-    $('win-title').textContent = Night.dawn ? (Net.active ? 'You survived the night — together' : 'You survived the night') : 'You got out early';
-    $('win-sub').textContent = Night.dawn ? 'Surface lift · 06:00 AM · the day shift' : 'Surface lift · ' + Night.clock() + ' AM · ' + Night.leftText() + ' before dawn';
+    const killed = !!this.flags.killed;
+    $('win-title').textContent = killed ? (Net.active && crew().length > 1 ? 'You killed it — together' : 'The Warden is dead') : Night.dawn ? (Net.active ? 'You survived the night — together' : 'You survived the night') : 'You got out early';
+    $('win-sub').textContent = killed ? 'The Last Dance · ' + Night.clock() + ' AM · ' + (Monster.killedBy === Net.myId ? 'the killing blow was yours' : Net.active ? Net.nameOf(Monster.killedBy) + ' landed the killing blow' : 'Sublevel 6')
+      : Night.dawn ? 'Surface lift · 06:00 AM · the day shift' : 'Surface lift · ' + Night.clock() + ' AM · ' + Night.leftText() + ' before dawn';
     const rows = [['Shift ended', Night.clock() + ' AM'], ['Time', fmtTime(this.time)], ['Notes found', this.notesRead.size + ' / ' + NOTE_ORDER.length], ['Times spotted', this.stats.spotted], ['Damage taken', this.stats.damage], ['Difficulty', (Net.sessionDiff || settings.difficulty).toUpperCase()]];
+    if (killed || Battle.dealt > 0) rows.splice(2, 0, ['Damage you dealt', Math.round(Battle.dealt)], ['Weapons found', Weapons.count() + ' / 5']);
     if (Net.active) rows.unshift(['Guards escaped', crew().length + '']);
     if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
     rows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; $('win-stats').appendChild(s); $('win-stats').appendChild(v); });
@@ -5910,7 +6385,9 @@ const Game = {
     srows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; ws.appendChild(s); ws.appendChild(v); });
     const wa = $('win-ach'); wa.innerHTML = '';
     (Goals.runGot || []).forEach(x => { const d = document.createElement('span'); d.textContent = '★ ' + x.name; wa.appendChild(d); });
-    $('epilogue').textContent = this.notesRead.has('badge')
+    $('epilogue').textContent = killed
+      ? 'It took everything you had. The lights come back on one corridor at a time, and the lift wakes up on its own. You ride it up with your hands still shaking. Somewhere below, the Sleepwalker hums to itself in the dark — and for the first time in years, nothing walks the west corridor' + (this.notesRead.has('badge') ? '. Elias Crane\'s shift is finally over.' : '.')
+      : this.notesRead.has('badge')
       ? 'The lift climbs for a long time. Somewhere below, the lights flicker back on, and a tall shape walks the west corridor, checking every door — the way Elias Crane did for twenty-two years. Lily turned seven on Thursday. He is still waiting for his shift to end.'
       : 'The lift climbs for a long time. Somewhere below, the lights flicker back on, and a tall shape walks the west corridor, checking every door. Its shift never ends.';
     this.endButtons('btn-win-again', 'Play Again');
@@ -5937,6 +6414,7 @@ const Game = {
       : [['Survived', fmtClock(t)], ['Hours', Endless.hour + 1], ['Curses', nc], ['Times spotted', this.stats.spotted], ['Difficulty', dn]];
     if (Net.active) rows.unshift(['Guards', crew().length + '']);
     if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
+    if (Battle.downs) rows.push(['Times you put it down', Battle.downs]);
     const put = (el, list) => { el.innerHTML = ''; list.forEach(([a, b]) => { const sp = document.createElement('span'); sp.textContent = a; const v = document.createElement('b'); v.textContent = b; el.appendChild(sp); el.appendChild(v); }); };
     put($('win-stats'), rows);
     put($('win-score'), m === 'photos' ? Photos.list.map(P => [PHOTO_ART[P.art].cap, P.taken ? '✓' : '—']) : (nc ? Endless.curses.map(id => [CURSE_BY[id].name, 'hour ' + (Endless.curses.indexOf(id) + 2)]) : [['No curses', '—']]));
@@ -6144,11 +6622,11 @@ const Game = {
     if (!this.logs) { this.tell(by, 'LOCKDOWN 6-B ACTIVE — breach report not filed. (Observation terminal)', 'warn', 4.5, 'beep0'); return; }
     this.tell(by, '', '', 0.1, 'beep1');
     this.emit({ k: 'exit', by: this.idOf(by) });
-    if (Monster.active) { Monster.target = by; Monster.lastKnown.copy(by.pos); Monster.lastSeen = this.time; Monster.awareness = 1; Monster.setState('HUNT'); Monster.path = null; Monster.hasGoal = false; }
+    if (Monster.active && !Monster.down && Monster.state !== 'YANK') { Monster.target = by; Monster.lastKnown.copy(by.pos); Monster.lastSeen = this.time; Monster.awareness = 1; Monster.setState('HUNT'); Monster.path = null; Monster.hasGoal = false; }
     this.noise(by.pos, 300, 'event', by);
   },
   // host: a remote guard asked to do something
-  remoteAction(r, a, i) {
+  remoteAction(r, a, i, x) {
     if (!r || r.dead || !this.inWorld() || this.state === 'dead' || this.state === 'won') return;
     switch (a) {
       case 'door': { const d = doors[i]; if (d) this.useDoor(d, r); break; }
@@ -6161,7 +6639,32 @@ const Game = {
       case 'radio': { const rd = world.radios[i]; if (rd) this.useRadio(rd, r); break; }
       case 'cams': this.useCams(r); break;
       case 'punch': if (Math.hypot(r.pos.x - Monster.pos.x, r.pos.z - Monster.pos.z) < 3.1) this.punchMonster(r); break; // generous: positions are ~0.1 s old
+      case 'wdmg': { // a teammate's weapon connected (checked loosely: their position is a moment old)
+        const w = WPN[WPN_IDS[i]], o = x || {}, d = Math.hypot(r.pos.x - Monster.pos.x, r.pos.z - Monster.pos.z);
+        if (!w || !(d < (w.kind === 'melee' ? w.range + 2.2 : 34))) break;
+        Monster.hurt(r, clamp(+o.d || 0, 0, 90), { kind: o.k === 'shot' ? 'shot' : 'melee', stg: clamp(+o.s || 0, 0, 1), push: clamp(+o.p || 0, 0, 7) });
+        break;
+      }
+      case 'proj': { // a flare or a bottle: the host's copy is the real one
+        const o = x || {}; if (!isFinite(+o.x) || !isFinite(+o.z)) break;
+        const e = { k: 'proj', t: i ? 1 : 0, x: +o.x, y: clamp(+o.y || 1, 0.2, 3), z: +o.z, vx: clamp(+o.vx || 0, -40, 40), vy: clamp(+o.vy || 0, -40, 40), vz: clamp(+o.vz || 0, -40, 40), by: r.id };
+        Net.broadcast({ k: 'ev', e }, r.id);
+        Proj.spawn(e.t ? 'molotov' : 'flare', e.x, e.y, e.z, e.vx, e.vy, e.vz, r.id, true);
+        break;
+      }
+      case 'hold': this.holdResult(r, !!i); break;
+      case 'nm': if (Sleeper.active && Math.hypot(r.pos.x - Sleeper.pos.x, r.pos.z - Sleeper.pos.z) < 4.5) this.struckSleeper(r); break;
     }
+  },
+  // host: the guard in the locker held the door (or didn't)
+  holdResult(a, ok) { const Y = Monster.yank; if (Y && Y.a === a) Monster.endYank(ok); },
+  // host: someone hit the Sleepwalker. You can't hurt a dream; it just screams.
+  struckSleeper(a) {
+    const id = this.idOf(a);
+    if (this.time < (Sleeper.touchCD.get(id) || 0)) return;
+    Sleeper.touchCD.set(id, this.time + 16);
+    this.emit({ k: 'nm', by: id });
+    Monster.hear({ x: a.pos.x, z: a.pos.z }, 24, 'player', a);
   },
   // a punch landed on the Warden (the host decides what it does to it)
   punchMonster(by = player) {
@@ -6231,8 +6734,8 @@ const Game = {
     this.stopTape(); Goals.onEscape();
     player.flashState = player.flashState && player.battery > 0;
     Sound.door(new T.Vector3(66, 1.4, 54), false, true);
-    if (!Net.isClient && Monster.active) {
-      Monster.cine = null;
+    if (!Net.isClient && Monster.active && !Monster.down) {
+      Monster.cine = null; Monster.yank = null;
       Monster.state = 'SCRIPT'; Monster.stateT = 0;
       Monster.scriptedGoal = new T.Vector3(66, 0, 52.4);
       if (Monster.pos.distanceTo(player.pos) < 40) Monster.goTo(66, 52.6, null);
@@ -6269,7 +6772,7 @@ const Game = {
       }
     }
     p.update(dt);
-    Combat.update(dt);
+    Combat.update(dt); Weapons.update(dt); Hold.update(dt);
     doors.forEach(d => d.update(dt));
     if (client) { if (this.downloading) { this.termDrawT -= dt; if (this.termDrawT <= 0) { this.termDrawT = 0.12; Screens.drawTerminal(); } } }
     else this.updateTerminal(dt);
@@ -6277,6 +6780,7 @@ const Game = {
     this.scripts(dt);
     if (!this.ending) Night.update(dt);
     if (client) { Monster.netUpdate(dt); Sleeper.netUpdate(dt); } else { Monster.update(dt); Sleeper.update(dt); }
+    Battle.update(dt);
     Dream.update(dt);
     Net.updateRemotes(dt);
     this.updateLights(dt);
@@ -6362,7 +6866,7 @@ const Game = {
           this.stareCD = this.time + 38;
           Monster.yaw = Math.atan2(a.locker.pos.x - Monster.pos.x, a.locker.pos.z - Monster.pos.z); Monster.vel.set(0, 0, 0);
           Monster.playPose('stare', 3.8);
-          if (Night.danger() >= 3 || Night.surge) F.rip = { a, L: a.locker, at: this.time + 3.6 }; // late at night it doesn't just listen
+          if (Night.danger() >= 3 || Night.surge || Math.random() < [0.45, 0.6, 0.8][Night.danger()]) F.rip = { a, L: a.locker, at: this.time + 3.6 }; // more often than not, it doesn't just listen
           break;
         }
       }
@@ -6582,6 +7086,7 @@ const Game = {
     return 22;
   },
   threat() {
+    if (Monster.down) return [0, Monster.down === 2 ? 'IT IS DEAD' : 'IT IS DOWN — FOR NOW', 0];
     if (!Monster.active) { const lie = Dream.lieText(); return lie ? [2, lie, 0.5] : [0, 'NO CONTACT', 0]; }
     const d = Monster.pos.distanceTo(player.pos), s = Monster.state, mine = Monster.huntsLocal();
     let k = clamp(1 - (d - 3) / 18, 0, 1) * 0.6;
@@ -6605,7 +7110,7 @@ const Game = {
     const sh = (this.shakeAmt + nearShake) * 0.022;
     camera.position.set(p.pos.x, p.eyeY + p.bob, p.pos.z);
     camera.rotation.set(p.pitch + rand(-sh, sh), p.yaw + rand(-sh, sh), p.roll + rand(-sh, sh) * 0.5);
-    Combat.camKick(camera);
+    Combat.camKick(camera); Weapons.camKick(camera);
     let fov = settings.fov + (p.sprinting ? 5 : 0) - (lvl === 3 ? 3 : 0) - Math.max(0, Combat.ext()) * 1.5;
     fov = Dream.camera(fov); // near the Sleepwalker the view sways and the room swells
     const cineFov = Cine.applyCamera(dt, fov); // cutscenes can take the camera
@@ -6659,7 +7164,7 @@ const Game = {
     const chase = Monster.active && Monster.huntsLocal() && !p.dead && !this.ending ? 1 : 0;
     const duck = p.hidden && md < 9 ? 1 - md / 9 : 0;
     Sound.update(dt, live ? threat : 0, lis, Monster.active ? _v3c.set(Monster.pos.x, Monster.eyeH(), Monster.pos.z) : null, Monster.los, live ? { stalk, chase, duck, dream: Dream.level() } : null);
-    UI.updateHud(dt, lvl, sub);
+    UI.updateHud(dt, lvl, sub); Weapons.hud(); Battle.hud(dt); Weapons.updateLight();
     UI.mapT -= dt; if (UI.mapT <= 0 && UI.mapVisible) { UI.mapT = 0.2; UI.drawMap(); }
     Hints.render();
     const dfx = Dream.fxOn(); // the dream is drawn through a warping lens
@@ -7319,7 +7824,7 @@ const SCENES = {
       if (t > 3.8 && !sc.s2) { sc.s2 = 1; Cine.sub(Net.active ? 'Surface lift — ascending. ' + crew().length + ' guards aboard.' : 'Surface lift — ascending. Level 0 in four minutes.'); }
       if (t > 6.0 && !sc.s3) { sc.s3 = 1; Cine.sub(''); }
       if (t > 7.0 && !sc.cctv) {
-        if (!Net.isClient && Monster.active) {
+        if (!Net.isClient && Monster.active && !Monster.down) {
           if (Math.hypot(Monster.pos.x - 66, Monster.pos.z - 52.4) > 6) Monster.pos.set(66, 0, 51.4);
           Monster.yaw = Math.atan2(74.2 - Monster.pos.x, 45.2 - Monster.pos.z); Monster.vel.set(0, 0, 0); Monster.hasGoal = false; Monster.path = null;
           Monster.playPose('stare', 3.6, true);
@@ -7351,7 +7856,7 @@ const Cine = {
     this.overlay(false); this.letter(false); this.sub(''); this.el.root.classList.remove('skippable');
     this.cuts.forEach(el => { el.style.opacity = '0'; }); this.cuts.length = 0;
     this.el.flash.style.transition = 'none'; this.el.flash.style.opacity = '0';
-    $('hud').classList.remove('cine'); Net.selfAvatar(false);
+    $('hud').classList.remove('cine', 'clean'); Net.selfAvatar(false);
     Scare.hide(); if (Monster.model) Monster.model.visible = true; $('hud').classList.remove('scare');
   },
   blocking() { return !!(this.cur && this.cur.def.full); },
@@ -7375,6 +7880,7 @@ const Cine = {
     if (this.cur) {
       // never cut a scene short: queue the new one (only death and the ending interrupt)
       if ((def.prio || 0) >= 9 && (this.cur.def.prio || 0) < 9) { this.finish(false, true); this.begin(sc); return true; }
+      if (def.interrupt && (this.cur.def.prio || 0) < (def.prio || 0)) { this.finish(false, true); this.begin(sc); return true; } // (the big moments don't wait)
       if (this.cur.id === id || this.queue.some(q => q.id === id)) return true;
       if (this.queue.length < 3) { sc.queuedAt = Game.time; this.queue.push(sc); }
       return true;
@@ -7386,6 +7892,7 @@ const Cine = {
     this.cur = sc; this.t = 0; this.skipHold = 0;
     const d = sc.def;
     if (d.full) { $('hud').classList.add('cine'); this.el.root.classList.toggle('skippable', !!d.skip); this.stopPip(); }
+    $('hud').classList.toggle('clean', !!d.clean); // (a cinematic: no messages over it)
     if (d.letter) this.letter(true);
     if (d.start) d.start(sc);
   },
@@ -7394,6 +7901,7 @@ const Cine = {
     this.cur = null;
     const d = sc.def;
     if (d.full || sc.cctv) { $('hud').classList.remove('cine'); this.overlay(false); Net.selfAvatar(false); Game.poolT = 0; }
+    $('hud').classList.remove('clean');
     this.el.root.classList.remove('skippable');
     if (d.letter) this.letter(false);
     this.sub('');
@@ -7530,7 +8038,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 6, BUILD = 10, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 7, BUILD = 11, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -7711,18 +8219,38 @@ function buildGuard(color, name) {
   return g;
 }
 // pose a guard model: walking, crouching, hiding (not visible), down (lying on the floor)
-function poseGuard(g, pos, yaw, speed, crouch, dead, flashOn, dt, punching) {
+function poseGuard(g, pos, yaw, speed, crouch, dead, flashOn, dt, punching, wpn, raise) {
   const U = g.userData;
   g.position.set(pos.x, 0, pos.z);
+  guardWeapon(g, dead ? null : wpn);
   if (dead) { g.rotation.set(-Math.PI / 2, yaw, 0, 'YXZ'); g.position.y = 0.16; g.scale.set(1, 1, 1); U.lens.material.opacity = 0; if (U.tag) U.tag.position.y = 0.9; return; }
   g.rotation.set(0, yaw, 0, 'YXZ'); if (U.tag) U.tag.position.y = crouch ? 1.55 : 2.12;
   g.scale.set(1, crouch ? 0.64 : 1, 1);
   U.phase += dt * speed * 2.6;
   const amp = clamp(speed / 3, 0, 1) * 0.55, s = Math.sin(U.phase) * amp;
-  U.legL.rotation.x = s; U.legR.rotation.x = -s; U.armL.rotation.x = flashOn ? -1.25 : -s * 0.8;
+  // (positive x swings an arm forward and up)
+  U.legL.rotation.x = s; U.legR.rotation.x = -s; U.armL.rotation.x = flashOn ? 1.25 : -s * 0.8;
   U.punch = damp(U.punch || 0, punching ? 1 : 0, punching ? 30 : 9, dt);  // a teammate throwing a punch
-  U.armR.rotation.x = lerp(s * 0.8, -1.6, U.punch); U.armR.rotation.z = -0.15 * U.punch;
+  U.armR.rotation.x = lerp(s * 0.8, 1.6, U.punch); U.armR.rotation.z = -0.15 * U.punch;
+  if (wpn) { // armed: the weapon held out, ready (raised all the way for the Last Dance)
+    const gun = wpn === 'shotgun' || wpn === 'flare', ready = lerp(0.45 + s * 0.25, gun ? 1.45 : 2.0, raise || 0);
+    U.armR.rotation.x = gun ? ready + 0.15 * U.punch : lerp(ready, 0.5, U.punch); U.armR.rotation.z = -0.1; // (a swing chops down from up high)
+  }
   U.lens.material.opacity = flashOn ? 0.85 : 0;
+}
+// the weapon in a guard model's right hand
+function guardWeapon(g, wpn) {
+  const U = g.userData; wpn = wpn || null;
+  if (U.wpnId === wpn) return;
+  U.wpnId = wpn; U.wpnG = U.wpnG || {};
+  for (const k in U.wpnG) U.wpnG[k].visible = false;
+  if (!wpn || !WPN[wpn]) return;
+  if (!U.wpnG[wpn]) {
+    const h = new T.Group(); addWeaponMeshes(h, wpn, guardMat);
+    h.position.set(0, -0.58, -0.02); h.rotation.x = wpn === 'shotgun' || wpn === 'flare' ? -1.45 : wpn === 'molotov' ? -0.45 : 0; // guns level when raised, an axe up over the head
+    U.armR.add(h); U.wpnG[wpn] = h;
+  }
+  U.wpnG[wpn].visible = true;
 }
 
 class RemotePlayer {
@@ -7730,7 +8258,7 @@ class RemotePlayer {
     this.id = id; this.name = name; this.color = GUARD_COLORS[id % GUARD_COLORS.length];
     this.pos = new T.Vector3(SPAWN.x, 0, SPAWN.z); this.yaw = SPAWN.yaw; this.pitch = 0; this.eyeY = EYE_STAND;
     this.inGame = false; this.dead = false; this.hidden = false; this.locker = null; this.crouching = false; this.sprinting = false; this.inVent = false; this.flash = false; this.cineLock = false;
-    this.hp = 100; this.lit = 0; this._lit = 0; this.invulnUntil = 0; this.buf = []; this.last = null; this.avatar = null; this.speed = 0; this.stepDist = 0; this.tagT = 0;
+    this.hp = 100; this.lit = 0; this._lit = 0; this.invulnUntil = 0; this.buf = []; this.last = null; this.avatar = null; this.speed = 0; this.stepDist = 0; this.tagT = 0; this.wpn = 0;
   }
   flashOn() { return this.flash && !this.hidden && !this.dead; }
   beamOn(p, h) { // same test as the local player's flashlight
@@ -7743,7 +8271,7 @@ class RemotePlayer {
   }
   invuln() { return Game.time < this.invulnUntil || this.dead || this.cineLock || Game.endingLock; }
   resetForGame(spot) {
-    this.inGame = true; this.dead = false; this.hidden = false; this.locker = null; this.flash = false; this.hp = 100; this.invulnUntil = 0;
+    this.inGame = true; this.dead = false; this.hidden = false; this.locker = null; this.flash = false; this.hp = 100; this.invulnUntil = 0; this.wpn = 0;
     this.buf.length = 0; this.last = null; this.pos.set(spot[0], 0, spot[1]); this.yaw = SPAWN.yaw;
     if (!this.avatar) this.avatar = buildGuard(this.color, this.name);
     this.avatar.visible = true;
@@ -7757,9 +8285,10 @@ class RemotePlayer {
     this.eyeY = clamp(+a[3] || EYE_STAND, 0.3, 2.2); this.pitch = clamp(+a[5] || 0, -1.6, 1.6);
     const f = a[6] | 0, wasHidden = this.hidden;
     this.crouching = !!(f & 1); this.sprinting = !!(f & 2); this.flash = !!(f & 4); this.hidden = !!(f & 8); this.dead = !!(f & 16); this.inVent = !!(f & 32); this.cineLock = !!(f & 64); this.punching = !!(f & 128);
+    this.wpn = clamp(a[9] | 0, 0, WPN_IDS.length);
     this.hp = clamp(a[7] | 0, 0, 100);
     const lk = a[8] | 0; this.locker = this.hidden && lk >= 0 && lk < hideLockers.length ? hideLockers[lk] : null;
-    this.last = [this.id, +x.toFixed(2), +z.toFixed(2), +this.eyeY.toFixed(2), +(+a[4] || 0).toFixed(3), +this.pitch.toFixed(3), f, this.hp, lk];
+    this.last = [this.id, +x.toFixed(2), +z.toFixed(2), +this.eyeY.toFixed(2), +(+a[4] || 0).toFixed(3), +this.pitch.toFixed(3), f, this.hp, lk, this.wpn];
     // host: did the Warden watch this guard climb into a locker?
     if (Net.isHost && this.hidden && !wasHidden && this.locker && Monster.active) {
       const d = Monster.pos.distanceTo(this.pos);
@@ -7784,7 +8313,7 @@ class RemotePlayer {
     }
     if (this.avatar) {
       this.avatar.visible = !this.hidden;
-      poseGuard(this.avatar, this.pos, this.yaw, this.speed, this.crouching || this.inVent, this.dead, this.flashOn(), dt, this.punching);
+      poseGuard(this.avatar, this.pos, this.yaw, this.speed, this.crouching || this.inVent, this.dead, this.flashOn(), dt, this.punching, WPN_IDS[this.wpn - 1], Battle.by === this.id ? Battle.raise : 0);
       // name tags show when you can see them (or they are right next to you)
       const tg = this.avatar.userData.tag;
       if (tg) { this.tagT -= dt; if (this.tagT <= 0) { this.tagT = 0.25; const d = Math.hypot(this.pos.x - camera.position.x, this.pos.z - camera.position.z); tg.visible = d < 5 || (d < 30 && losClear(camera.position.x, camera.position.z, this.pos.x, this.pos.z)); } }
@@ -8071,7 +8600,7 @@ const Net = {
     const s = JSON.stringify(m), done = new Set();
     for (const p of this.peers.values()) if (p.remote && p.relay && !done.has(p.relay)) { done.add(p.relay); p.relay.pub(this.T() + 'a', s, false, true); }
   },
-  request(a, i) { this.rel(this.host0(), { k: 'req', a, i }); },
+  request(a, i, x) { const m = { k: 'req', a, i }; if (x) m.x = x; this.rel(this.host0(), m); },
   sendNoise(pos, r) { if (this.inGame) this.raw(this.host0(), { k: 'n', x: +pos.x.toFixed(2), z: +pos.z.toFixed(2), r: +r.toFixed(1) }); },
   announce(text, type, exceptId) { if (Game.inWorld()) UI.msg(text, type, 4); this.broadcast({ k: 'msg', t: text, y: type, d: 4 }, exceptId); },
   reportDeath() {
@@ -8094,7 +8623,7 @@ const Net = {
       }
       case 'p': if (r) r.applyState(m.s, now); break;
       case 'n': if (r && this.inGame && !r.dead) Monster.hear({ x: +m.x || 0, z: +m.z || 0 }, clamp(+m.r || 0, 0, 40), 'player', r); break;
-      case 'req': if (r && this.inGame) Game.remoteAction(r, String(m.a), m.i | 0); break;
+      case 'req': if (r && this.inGame) Game.remoteAction(r, String(m.a), m.i | 0, m.x && typeof m.x === 'object' ? m.x : null); break;
       case 'dead': if (r && this.inGame) { r.dead = true; this.announce(r.name + ' was caught by the Warden!', 'warn', peer.id); } break;
       case 'resp': if (r && this.inGame) { r.dead = false; r.invulnUntil = Game.time + 4; this.announce(r.name + ' is back at Desk B.', '', peer.id); } break;
       case 'ping': if (r && this.inGame) { const x = +m.x || 0, y = +m.y || 1, z = +m.z || 0; this.showPing(x, y, z, peer.id); this.broadcast({ k: 'ping', x, y, z, by: peer.id }, peer.id); } break;
@@ -8157,18 +8686,19 @@ const Net = {
   },
   myFlags() {
     const p = player;
-    return (p.crouching ? 1 : 0) | (p.sprinting ? 2 : 0) | (p.flashOn() ? 4 : 0) | (p.hidden ? 8 : 0) | (p.dead ? 16 : 0) | (p.inVent ? 32 : 0) | (Cine.locks() || Game.endingLock ? 64 : 0) | (Combat.t >= 0 ? 128 : 0);
+    return (p.crouching ? 1 : 0) | (p.sprinting ? 2 : 0) | (p.flashOn() ? 4 : 0) | (p.hidden ? 8 : 0) | (p.dead ? 16 : 0) | (p.inVent ? 32 : 0) | (Cine.locks() || Game.endingLock ? 64 : 0) | (Combat.t >= 0 || Weapons.t >= 0 ? 128 : 0);
   },
   myState() {
     const p = player, lk = p.hidden && p.locker ? hideLockers.indexOf(p.locker) : -1;
-    return [this.myId, +p.pos.x.toFixed(2), +p.pos.z.toFixed(2), +p.eyeY.toFixed(2), +p.yaw.toFixed(3), +p.pitch.toFixed(3), this.myFlags(), Math.max(0, Math.round(p.health)), lk];
+    return [this.myId, +p.pos.x.toFixed(2), +p.pos.z.toFixed(2), +p.eyeY.toFixed(2), +p.yaw.toFixed(3), +p.pitch.toFixed(3), this.myFlags(), Math.max(0, Math.round(p.health)), lk, Weapons.cur ? WPN_IDS.indexOf(Weapons.cur) + 1 : 0];
   },
   snapshot() {
     const M = Monster, c = M.cine;
     const m = { x: +M.pos.x.toFixed(2), z: +M.pos.z.toFixed(2), yw: +M.yaw.toFixed(3), st: M.state, a: M.active ? 1 : 0, at: +M.attackT.toFixed(2), sg: M.seeing ? 1 : 0, ch: M.charging ? 1 : 0,
       sk: +M.stagger.toFixed(2), im: +Math.max(0, M.stunImmune - Game.time).toFixed(1), cr: M.crawlMode ? 1 : 0,
       ce: M.ceilWant ? 1 : 0, cs: M.ceilSide, cl: +M.ceilLat.toFixed(2), gs: M.gait, hc: M.huntCrawl ? 1 : 0,
-      ti: M.target ? (M.target === player ? 0 : M.target.id) : -1 };
+      ti: M.target ? (M.target === player ? 0 : M.target.id) : -1,
+      hp: Math.round(M.hp), mh: M.maxHp, bn: +Math.max(0, M.burnT).toFixed(1), dn: M.down, ph: M.phase };
     if (c) { m.po = c.pose; m.pt = +c.t.toFixed(2); m.pd = c.dur; m.pl = c.look ? 1 : 0; }
     const p = [this.myState()];
     for (const r of this.remotes.values()) if (r.inGame && r.last) p.push(r.last);
@@ -8234,7 +8764,7 @@ const Net = {
     if (!this.self) this.self = buildGuard(GUARD_COLORS[Math.max(0, this.myId) % GUARD_COLORS.length], '');
     const p = player;
     this.self.visible = !p.hidden;
-    poseGuard(this.self, p.pos, p.yaw, Math.hypot(p.vel.x, p.vel.z), p.crouching, p.dead, p.flashOn(), 0.016);
+    poseGuard(this.self, p.pos, p.yaw, Math.hypot(p.vel.x, p.vel.z), p.crouching, p.dead, p.flashOn(), 0.016, Weapons.t >= 0 || Combat.t >= 0, Weapons.cur, Battle.by === this.myId ? Battle.raise : 0);
   },
   /* ---- pings (G): mark a spot for the team ---- */
   ping() {
@@ -8413,7 +8943,7 @@ const Arms = {
   update(dt) {
     const p = player, C = Combat;
     // the hands only come up when you use them: punching, grabbing something, swapping a battery, cranking
-    const acting = C.t >= 0 || C.reachT >= 0 || p.swapT > 0 || p.cranking;
+    const acting = C.t >= 0 || C.reachT >= 0 || p.swapT > 0 || p.cranking || !!Weapons.cur; // (a weapon stays up, ready)
     if (acting) this.holdT = 0.3; else this.holdT -= dt;
     this.showK = this.holdT > 0 ? Math.min(1, this.showK + dt * 11) : Math.max(0, this.showK - dt * 4.5);
     const raise = 1 - this.showK * this.showK * (3 - 2 * this.showK); // 0 = up, 1 = lowered out of view
@@ -8450,11 +8980,12 @@ const Arms = {
     r[0] -= 0.2 * swap; r[1] -= 0.05 * swap; r[3] += 0.3 * swap; r[4] -= 0.5 * swap;
     if (p.cranking) { const a = Game.time * 11; r[0] += -0.13 + Math.cos(a) * 0.035; r[1] += -0.06 + Math.sin(a) * 0.035; r[2] += 0.03; l[0] += 0.05; l[1] -= 0.04; }
     r[0] -= 0.09 * reach; r[1] += 0.07 * reach; r[2] -= 0.14 * reach; r[3] -= 0.3 * reach;
+    const twoHands = Weapons.pose(r, l, dt); // a weapon puts your hands where it needs them
     this.set(this.Lref, ...l); // the beam keeps coming from the raised-hand position
     for (const A of [r, l]) { A[1] -= 0.07 * this.hurt + 0.36 * raise; A[2] += 0.1 * raise; A[3] += 0.4 * this.hurt + 0.5 * raise; }
     this.set(this.R, ...r);
     this.set(this.L, ...l); this.set(this.Lbare, ...l);
-    this.R.visible = this.visible; this.L.visible = this.visible && p.hasFlash; this.Lbare.visible = this.visible && !p.hasFlash;
+    this.R.visible = this.visible; this.L.visible = this.visible && p.hasFlash && (!Weapons.cur || twoHands || C.t >= 0 || p.swapT > 0 || p.cranking); this.Lbare.visible = this.visible && !p.hasFlash && (!Weapons.cur || twoHands);
     this.glow.material.opacity = p.flashOn() ? 0.55 + Math.random() * 0.05 : 0;
     vmScene.updateMatrixWorld();
   },
@@ -8505,7 +9036,7 @@ const Combat = {
     this.cd -= dt;
     if (this.reachT >= 0) { this.reachT += dt; if (this.reachT > 0.35) this.reachT = -1; }
     // the first time it comes for you up close: you can fight back
-    if (!Game.flags.fightTold && Monster.active && Monster.huntsLocal() && !player.dead && !player.hidden && Monster.pos.distanceTo(player.pos) < 8) {
+    if (!Game.flags.fightTold && !Weapons.cur && Monster.active && Monster.huntsLocal() && !player.dead && !player.hidden && Monster.pos.distanceTo(player.pos) < 8) {
       Game.flags.fightTold = true; UI.msg('Cornered? CLICK (or V) to punch. It barely hurts it — but a few hits will stun it long enough to run.', 'hint', 6);
     }
     if (this.hitStop > 0) { this.hitStop -= dt; return; } // a tiny freeze on impact sells the hit
@@ -8567,6 +9098,10 @@ const ACH = [
   { id: 'quick', name: 'Point and Shoot', desc: 'The Polaroids: escape in under six minutes.' },
   { id: 'insomniac', name: 'Insomniac', desc: 'Endless Night: survive for ten minutes.' },
   { id: 'cursed', name: 'Bad Luck', desc: 'Endless Night: stay alive with six curses on you.' },
+  { id: 'lastdance', name: 'The Last Dance', desc: 'Bring the Warden down.' },
+  { id: 'arsenal', name: 'Armed to the Teeth', desc: 'Find all five weapons in one shift.' },
+  { id: 'holddoor', name: 'Hold the Door', desc: 'Keep the Warden out of your locker.' },
+  { id: 'irongrip', name: 'Iron Grip', desc: 'Hold the locker door shut without missing a single pull.' },
 ];
 const RANKS = [['S', 3300], ['A', 2600], ['B', 1900], ['C', 1200], ['D', -1e9]];
 const CAM_POS = new T.Vector3(102.2, 1.1, 52);
@@ -8603,14 +9138,16 @@ const Goals = {
       { id: 'b-cams', text: G.cams ? 'Cameras online: it shows on your map' : G.camBooting ? 'Cameras rebooting… ' + Math.floor(G.camBoot * 100) + '%' : 'Reboot the cameras (Camera Control)', done: G.cams },
       { id: 'b-stun', text: 'Stun the Warden (' + Math.min(3, st) + '/3)', done: st >= 3 },
       { id: 'b-name', text: G.flags.knowName ? 'Its name was Elias Crane' : 'Learn the Warden\'s real name', done: !!G.flags.knowName },
+      { id: 'b-wpn', text: G.flags.killed ? 'The Warden is dead' : 'Weapons (' + Weapons.count() + '/5) — or kill it', done: !!G.flags.killed },
     ];
   },
   // end of shift: a score and a rank (best per difficulty is kept)
   score() {
     const G = Game, s = G.stats, diffKey = Net.sessionDiff || settings.difficulty;
     const rows = [
-      Night.dawn ? ['Survived the night', 1500] : ['Escaped early', 1000],
+      G.flags.killed ? ['Killed the Warden', 1800] : Night.dawn ? ['Survived the night', 1500] : ['Escaped early', 1000],
       ['Before dawn', Night.dawn ? 0 : Math.round(Night.left() * 8)],
+      ['Damage dealt', Math.round(Battle.dealt * 1.5)],
       ['Voice logs ×' + G.tapes.size, G.tapes.size * 150],
       ['Cameras rebooted', G.cams ? 300 : 0],
       ['Documents ×' + G.notesRead.size, G.notesRead.size * 40],
@@ -8838,7 +9375,7 @@ const Night = {
     if (h === 2) { // the power surge: everything goes dark for a while, and it loves the dark
       this.surgeUntil = Game.time + 24; this.said.surgeEnd = 0;
       Sound.trip(TRIP_POS); spawnSparks(new T.Vector3(player.pos.x, 3, player.pos.z), 6); Game.dip = 1; Game.shake(0.4);
-      if (!Net.isClient && Monster.active && Monster.state !== 'HUNT' && Monster.state !== 'ATTACK') { Monster.cine = null; Monster.playPose('scream', 2.2); }
+      if (!Net.isClient && Monster.active && !Monster.down && Monster.state !== 'HUNT' && Monster.state !== 'ATTACK' && Monster.state !== 'YANK') { Monster.cine = null; Monster.playPose('scream', 2.2); }
     }
     if (h === 3 && !Net.isClient && Monster.active) Sound.roar(0.8);
   },
@@ -8856,13 +9393,13 @@ const Night = {
     Game.alarm = true; Game.alarmT = 1e9; Sound.setAlarm(true);
     UI.center('06:00 AM', 'THE DAY SHIFT IS HERE — GET TO THE SURFACE LIFT!', 5.5);
     Sound.dawn(); Game.shake(0.5); Hints.progress(); Hints.pulse(Hints.liftTarget(), 12);
-    if (!Net.isClient && Monster.active) { Monster.cine = null; Monster.playPose('stunned', 5); } // the floodlights blind it… for a moment
+    if (!Net.isClient && Monster.active && !Monster.down) { if (Monster.state === 'YANK') Monster.endYank(true, true); Monster.cine = null; Monster.playPose('stunned', 5); } // the floodlights blind it… for a moment
     Sleeper.sink(); // and the Sleepwalker sinks back into the floor
   },
   // host: at dawn it stops wandering and comes for whoever is nearest — the last run
   lastRun(dt) {
     const M = Monster;
-    if (!M.active || M.cine || Game.ending || M.state === 'ATTACK' || M.state === 'SCRIPT') return;
+    if (!M.active || M.down || M.cine || Game.ending || M.state === 'ATTACK' || M.state === 'SCRIPT' || M.state === 'YANK') return;
     this.huntT -= dt;
     if (this.huntT > 0 && M.state === 'HUNT') return;
     this.huntT = 3;
@@ -9731,7 +10268,7 @@ const Photos = {
     Game.alarm = true; Game.alarmT = 1e9; Sound.setAlarm(true);
     UI.center(PHOTO_N + ' / ' + PHOTO_N, 'THE LIFT IS OPEN — RUN!', 4.5);
     Sound.sting(true); Game.shake(0.6); Hints.pulse(Hints.liftTarget(), 12);
-    if (!Net.isClient && Monster.active) { Monster.cine = null; Monster.playPose('roar', 1.6); }
+    if (!Net.isClient && Monster.active && !Monster.down && Monster.state !== 'YANK') { Monster.cine = null; Monster.playPose('roar', 1.6); }
   },
   popup(P) {
     const el = $('photo-pop'); if (!el) return;
@@ -9940,6 +10477,1011 @@ const Modes = {
 };
 
 /* ------------------------------------------------------------------ */
+/* WEAPONS: five ways to fight back                                    */
+/*  1 crowbar · 2 fire axe · 3 shotgun · 4 flare gun · 5 molotovs      */
+/* Pickups are shared (the first guard to grab one has it). The host   */
+/* (or a solo game) decides what a hit does to the Warden.             */
+/* ------------------------------------------------------------------ */
+const WPN = {
+  crowbar: { slot: 1, name: 'Crowbar', kind: 'melee', dmg: 18, stg: 0.3, range: 2.45, dur: 0.5, hitAt: 0.16, stam: 0.08, noise: 4, push: 1.8, tip: 'Fast and light. Keep swinging.' },
+  axe: { slot: 2, name: 'Fire Axe', kind: 'melee', dmg: 44, stg: 0.6, range: 2.6, dur: 0.95, hitAt: 0.42, stam: 0.2, noise: 6, push: 3.2, tip: 'Slow, heavy, brutal. Two clean hits stagger it.' },
+  shotgun: { slot: 3, name: 'Shotgun', kind: 'gun', ammo: 'shells', start: 5, pellets: 8, dmg: 9, spread: 0.06, dur: 1.0, noise: 38, push: 5.5, stg: 0.45, tip: 'Devastating up close. Everything down here will hear it.' },
+  flare: { slot: 4, name: 'Flare Gun', kind: 'proj', ammo: 'flares', start: 3, dmg: 20, burn: 6, dur: 1.4, noise: 10, speed: 30, grav: 3.2, tip: 'Sets it on fire, and lights up the dark.' },
+  molotov: { slot: 5, name: 'Molotov', kind: 'throw', ammo: 'molotov', start: 3, dmg: 12, burn: 4, dur: 1.1, noise: 8, speed: 12.5, grav: 9.8, tip: 'A pool of fire. Make it walk through.' },
+};
+const WPN_IDS = ['crowbar', 'axe', 'shotgun', 'flare', 'molotov'];
+const AMMO_LABEL = { shells: 'SHELLS', flares: 'FLARES', molotov: 'BOTTLES' };
+const WARDEN_HP = { easy: 260, normal: 340, hard: 460 };
+const BURN_DPS = 9, FIRE_DPS = 18, FIRE_LIFE = 9, FIRE_R = 2.0;
+const _wv1 = new T.Vector3(), _wv2 = new T.Vector3(), _wv3 = new T.Vector3();
+const wpnPickups = []; // (weapons and their rounds, in the world)
+const VM_BASE = [0.29, -0.31, 0.07, 0.17, 0.3, 0.04];
+const VM_POSE = {
+  crowbar: { arm: [0.329, -0.326, 0.016, 0.208, 0.206, 0.218], g: [0.331, -0.202, 0.018] },
+  axe: { arm: [0.32, -0.3, 0.06, 0.266, 0.307, 0.09], g: [0.258, -0.474, 0.047] },
+  shotgun: { arm: [0.222, -0.27, 0.024, -0.054, 0.033, -0.075], g: [0.003, 0.017, 0.162] },
+  flare: { arm: [0.23, -0.262, -0.032, 0.058, 0.057, 0.218], g: [0.329, -0.02, -0.165] },
+  molotov: { arm: [0.351, -0.31, 0.007, 0.248, 0.07, 0.206], g: [0.216, 0.493, 0.323] },
+};
+const VM_LEFT_SG = [-0.06, -0.39, -0.448, 0.1, -0.6, 0.2]; // the left hand on the pump
+
+/* ---- the models: chunky blocks, like everything you hold ---- */
+// (weapon space: the grip at the origin, pointing down -z, +y up)
+function wbox(w, h, d, x, y, z, hex, rx = 0, ry = 0, rz = 0) {
+  const g = colorBox(w, h, d, 0, 0, 0, hex);
+  if (rx) g.rotateX(rx); if (ry) g.rotateY(ry); if (rz) g.rotateZ(rz);
+  g.translate(x, y, z);
+  return g;
+}
+const WGEO = (() => {
+  const RED = 0x9a1d18, STEEL = 0xc4c9ce, DARK = 0x1b1c1f, WOOD = 0x8a5c33, GUN = 0x2d3036, BLACK = 0x121315, ORANGE = 0xe86a1e, GREEN = 0x2e5c2a, RAG = 0xdcd2b2;
+  return {
+    crowbar: mergeColored([
+      wbox(0.03, 0.03, 0.66, 0, 0, -0.2, RED),
+      wbox(0.036, 0.036, 0.13, 0, 0, 0.03, DARK),
+      wbox(0.03, 0.03, 0.12, 0, 0.045, -0.565, RED, -0.65),
+      wbox(0.03, 0.03, 0.09, 0, 0.1, -0.54, RED, 0.85),
+      wbox(0.038, 0.012, 0.05, 0, 0.125, -0.5, STEEL, 0.85),
+      wbox(0.042, 0.012, 0.05, 0, -0.008, 0.155, STEEL, 0.25),
+    ]),
+    axe: mergeColored([
+      wbox(0.04, 0.04, 0.84, 0, 0, -0.28, WOOD),
+      wbox(0.046, 0.046, 0.17, 0, 0, 0.06, DARK),
+      wbox(0.032, 0.22, 0.13, 0, 0.05, -0.65, RED),
+      wbox(0.024, 0.05, 0.17, 0, 0.185, -0.65, STEEL),
+      wbox(0.028, 0.1, 0.045, 0, -0.1, -0.65, RED),
+      wbox(0.02, 0.05, 0.022, 0, -0.165, -0.65, STEEL),
+    ]),
+    shotgun: mergeColored([
+      wbox(0.052, 0.09, 0.28, 0, -0.05, 0.21, WOOD),
+      wbox(0.042, 0.06, 0.09, 0, -0.03, 0.05, WOOD),
+      wbox(0.058, 0.078, 0.24, 0, 0.0, -0.1, GUN),
+      wbox(0.036, 0.036, 0.58, 0, 0.03, -0.5, BLACK),
+      wbox(0.03, 0.03, 0.46, 0, -0.01, -0.44, BLACK),
+      wbox(0.012, 0.034, 0.06, 0, -0.06, -0.02, GUN),
+      wbox(0.008, 0.01, 0.008, 0, 0.052, -0.78, 0xdadada),
+    ]),
+    shotgunVM: mergeColored([ // (in your hands: the stock is at your shoulder, out of sight)
+      wbox(0.042, 0.06, 0.09, 0, -0.03, 0.05, WOOD),
+      wbox(0.058, 0.078, 0.24, 0, 0.0, -0.1, GUN),
+      wbox(0.036, 0.036, 0.58, 0, 0.03, -0.5, BLACK),
+      wbox(0.03, 0.03, 0.46, 0, -0.01, -0.44, BLACK),
+      wbox(0.012, 0.034, 0.06, 0, -0.06, -0.02, GUN),
+      wbox(0.008, 0.01, 0.008, 0, 0.052, -0.78, 0xdadada),
+    ]),
+    pump: mergeColored([wbox(0.054, 0.052, 0.17, 0, -0.012, -0.42, WOOD)]),
+    flare: mergeColored([
+      wbox(0.046, 0.12, 0.062, 0, -0.075, 0.035, ORANGE, -0.25),
+      wbox(0.066, 0.066, 0.25, 0, 0.0, -0.08, ORANGE),
+      wbox(0.074, 0.074, 0.026, 0, 0.0, -0.21, DARK),
+      wbox(0.02, 0.032, 0.036, 0, 0.042, 0.055, DARK),
+      wbox(0.012, 0.032, 0.018, 0, -0.045, -0.005, DARK),
+    ]),
+    molotov: mergeColored([
+      wbox(0.076, 0.17, 0.076, 0, 0, 0, GREEN),
+      wbox(0.08, 0.07, 0.08, 0, -0.012, 0, 0xc9b27a),
+      wbox(0.032, 0.08, 0.032, 0, 0.122, 0, GREEN),
+      wbox(0.042, 0.07, 0.042, 0, 0.182, 0, RAG),
+    ]),
+    shells: mergeColored([
+      wbox(0.15, 0.062, 0.09, 0, 0.031, 0, 0x7a1612),
+      wbox(0.152, 0.03, 0.092, 0, 0.034, 0, 0xd6b23a),
+      wbox(0.02, 0.02, 0.07, 0.11, 0.01, 0.02, 0xb02a20, 0, 0.5), wbox(0.022, 0.022, 0.018, 0.124, 0.011, -0.006, 0xc8a24a, 0, 0.5),
+      wbox(0.02, 0.02, 0.07, -0.1, 0.01, 0.075, 0xb02a20, 0, 1.4), wbox(0.022, 0.022, 0.018, -0.068, 0.011, 0.081, 0xc8a24a, 0, 1.4),
+    ]),
+    flares: mergeColored([
+      wbox(0.24, 0.08, 0.13, 0, 0.04, 0, 0xd8561a),
+      wbox(0.242, 0.012, 0.132, 0, 0.074, 0, 0x2a2a2a),
+      wbox(0.1, 0.04, 0.002, 0.03, 0.04, 0.066, 0xf0e8d0),
+    ]),
+  };
+})();
+// a flame: a teardrop, white-hot at the root
+const TX_FLAME = (() => {
+  const c = makeCanvas(64, 128), g = c.getContext('2d');
+  const gr = g.createRadialGradient(32, 96, 2, 32, 82, 48);
+  gr.addColorStop(0, 'rgba(255,250,225,1)'); gr.addColorStop(0.22, 'rgba(255,214,110,0.95)'); gr.addColorStop(0.55, 'rgba(255,118,32,0.72)'); gr.addColorStop(1, 'rgba(150,26,0,0)');
+  g.fillStyle = gr;
+  g.beginPath(); g.moveTo(32, 4); g.bezierCurveTo(50, 46, 60, 78, 55, 100); g.bezierCurveTo(49, 124, 15, 124, 9, 100); g.bezierCurveTo(4, 78, 14, 46, 32, 4); g.fill();
+  return mkTex(c, false);
+})();
+const TX_SCORCH = (() => {
+  const c = makeCanvas(128, 128), g = c.getContext('2d');
+  for (let i = 0; i < 9; i++) {
+    const x = 64 + rand(-14, 14), y = 64 + rand(-14, 14), r = rand(30, 58), gr = g.createRadialGradient(x, y, 2, x, y, r);
+    gr.addColorStop(0, 'rgba(8,6,5,0.5)'); gr.addColorStop(0.6, 'rgba(14,10,8,0.28)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  }
+  return mkTex(c, false);
+})();
+const flameMat = () => new T.SpriteMaterial({ map: TX_FLAME, color: 0xffffff, transparent: true, opacity: 0.9, depthWrite: false, blending: T.AdditiveBlending });
+const scorchMat = new T.MeshBasicMaterial({ map: TX_SCORCH, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+// the one light every fire, flare and muzzle flash shares (always in the scene, so no shader rebuilds)
+const fxLight = new T.PointLight(0xff8a3a, 0, 11, 2); fxLight.castShadow = false; scene.add(fxLight);
+const fxGlowMat = col => new T.SpriteMaterial({ map: TX.glow, color: col, transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending });
+
+/* ---- pickups in the world ---- */
+function addWeaponMeshes(g, id, mat, vm) {
+  const m = new T.Mesh(vm && WGEO[id + 'VM'] ? WGEO[id + 'VM'] : WGEO[id], mat); g.add(m);
+  if (id === 'shotgun') { const pm = new T.Mesh(WGEO.pump, mat); g.add(pm); g.userData.pump = pm; }
+  return m;
+}
+function weaponPickup(id, x, y, z, rx, ry, rz, o = {}) {
+  const g = new T.Group(); g.position.set(x, y, z); g.rotation.set(rx, ry, rz, 'YXZ'); scene.add(g);
+  if (id === 'molotov') { // a few bottles stood together
+    [[0, 0, 0], [0.11, 0, 0.04], [0.04, 0, 0.11]].forEach(([bx, by, bz]) => { const m = new T.Mesh(WGEO.molotov, guardMat); m.position.set(bx, by, bz); m.rotation.y = bx * 9; g.add(m); });
+  } else addWeaponMeshes(g, id, guardMat);
+  g.traverse(m => { m.castShadow = true; });
+  const glint = new T.Sprite(fxGlowMat(0xfff2d8)); glint.visible = false; glint.position.set(x + (o.gx || 0), y + (o.gy || 0.07), z + (o.gz || 0)); scene.add(glint);
+  const hb = hitBox(x, y + (o.hy || 0.1), z, o.hw || 0.75, o.hh || 0.32, o.hd || 0.75);
+  const def = addInteract([hb], { kind: 'weapon', wpn: id, prompt: () => o.prompt || 'Take the ' + WPN[id].name, use: () => Game.takeItem(def) });
+  def.visual = g; def.glint = glint; def.gT = rand(1, 4); def.glass = o.glass || null;
+  addItem('weapon', g, def);
+  wpnPickups.push(def);
+  return def;
+}
+function ammoPickup(kind, n, x, y, z, ry) {
+  const g = new T.Group(); g.position.set(x, y, z); g.rotation.y = ry; scene.add(g);
+  const m = new T.Mesh(WGEO[kind], guardMat); m.castShadow = true; g.add(m);
+  const glint = new T.Sprite(fxGlowMat(0xfff2d8)); glint.visible = false; glint.position.set(x, y + 0.08, z); scene.add(glint);
+  const hb = hitBox(x, y + 0.08, z, 0.5, 0.25, 0.5);
+  const def = addInteract([hb], { kind: 'ammo', ammo: kind === 'shells' ? 'shells' : 'flares', n, prompt: () => 'Take ' + (kind === 'shells' ? 'shotgun shells' : 'signal flares') + ' (' + n + ')', use: () => Game.takeItem(def) });
+  def.visual = g; def.glint = glint; def.gT = rand(1, 4);
+  addItem('ammo', g, def);
+  wpnPickups.push(def);
+  return def;
+}
+// 1. the crowbar: dropped on the storage floor, by the workbench
+weaponPickup('crowbar', 13.6, 0.018, 10.3, 0, 0.55, Math.PI / 2);
+// 2. the fire axe: behind glass in a red case on the Generator Hall's east wall
+const axeGlass = (() => {
+  addStatic(GEO.box, MAT.red, 37.93, 1.45, 24, 0.1, 1.16, 0.56);
+  addStatic(GEO.box, MAT.dark, 37.87, 1.45, 24, 0.02, 1.02, 0.42);
+  sign(['FIRE AXE', 'IN EMERGENCY BREAK GLASS'], 37.97, 2.25, 24, 'W', 0.62, 0.22, { bg: '#b8231c', fg: '#fff', border: 'rgba(0,0,0,.5)' });
+  const gl = new T.Mesh(GEO.plane, MAT.glass); gl.position.set(37.76, 1.45, 24); gl.rotation.y = -Math.PI / 2; gl.scale.set(0.46, 1.06, 1); scene.add(gl);
+  return gl;
+})();
+weaponPickup('axe', 37.82, 1.28, 24.02, Math.PI / 2, 0, 0, { glass: axeGlass, hy: 0.15, hw: 0.6, hh: 1.0, hd: 0.7, gy: 0.5, gx: -0.06, prompt: 'Break the glass — take the Fire Axe' });
+// 3. the shotgun: on the containment team's rack, just inside the door
+(() => {
+  for (const hx of [45.75, 46.75]) { addStatic(GEO.box, MAT.metalDark, hx, 1.3, 13.93, 0.06, 0.16, 0.12); addStatic(GEO.box, MAT.metalDark, hx, 1.24, 13.87, 0.06, 0.04, 0.1); }
+  addStatic(GEO.box, MAT.metalDark, 46.25, 1.32, 13.98, 1.5, 0.5, 0.03);
+  sign(['CONTAINMENT RESPONSE', 'AUTHORIZED PERSONNEL ONLY'], 46.25, 1.85, 13.98, 'N', 1.15, 0.28, { band: '#a01d18' });
+})();
+weaponPickup('shotgun', 46.25, 1.29, 13.86, 0, -Math.PI / 2, 0, { hy: 0, hw: 1.0, hh: 0.4, hd: 0.5 });
+// 4. the flare gun: on the security desk in Camera Control
+weaponPickup('flare', 88.15, 0.8, 55.45, 0, 1.9, Math.PI / 2);
+// 5. molotovs: someone's stash on the Break Room table
+weaponPickup('molotov', 30.45, 0.85, 9.85, 0, 0.3, 0, { hy: 0, gy: 0.16 });
+// and the rounds for them: shells in the Security Office (for a gun you don't have yet), flares in the Medical Bay
+ammoPickup('shells', 4, 2.62, 0.765, 52.15, 0.5);
+ammoPickup('flares', 3, 51.6, 0.6, 54.9, 0.9);
+flushStatic();
+
+/* ---- the Warden's body, for hit tests ---- */
+function wardenBody(out) { // [cx, cz, lo, hi, r]
+  const M = Monster, mp = M.model.position;
+  if (M.ceil > 0.5) return out.set(mp.x, mp.z, M.ceilH - 1.35, M.ceilH + 0.1, 0.5);
+  if (M.fall > 0.4) return out.set(mp.x, mp.z, 0, 0.6, 0.9);
+  return out.set(mp.x, mp.z, 0.15, M.eyeH() + 0.32 - M.crawlK * 0.2, M.crawlK > 0.5 ? 0.62 : 0.46);
+}
+const _wb = { set(a, b, c, d, e) { this.x = a; this.z = b; this.lo = c; this.hi = d; this.r = e; return this; } };
+// how far along a ray does it hit the Warden's body? (-1: it doesn't)
+function wardenRay(ox, oy, oz, d, maxD) {
+  if (!Monster.active) return -1;
+  const B = wardenBody(_wb), px = ox - B.x, pz = oz - B.z;
+  const a = d.x * d.x + d.z * d.z, b = 2 * (px * d.x + pz * d.z), c = px * px + pz * pz - B.r * B.r;
+  if (a < 1e-6) return -1;
+  const disc = b * b - 4 * a * c; if (disc < 0) return -1;
+  const sq = Math.sqrt(disc);
+  for (const t of [(-b - sq) / (2 * a), (-b + sq) / (2 * a)]) {
+    if (t < 0 || t > maxD) continue;
+    const y = oy + d.y * t; if (y >= B.lo && y <= B.hi) return t;
+  }
+  return -1;
+}
+function insideWarden(x, y, z, pad) {
+  if (!Monster.active) return false;
+  const B = wardenBody(_wb);
+  return Math.hypot(x - B.x, z - B.z) < B.r + pad && y > B.lo - pad && y < B.hi + pad;
+}
+function spreadDir(f, s, out) {
+  out.copy(f); out.x += rand(-s, s); out.y += rand(-s, s) * 0.8; out.z += rand(-s, s);
+  return out.normalize();
+}
+
+/* ---- blood: dark, almost black ---- */
+const bloodMat = new T.SpriteMaterial({ map: TX.glow, color: 0x3a0606, transparent: true, opacity: 0.95, depthWrite: false });
+const blood = [];
+for (let i = 0; i < 26; i++) { const s = new T.Sprite(bloodMat); s.scale.set(0.09, 0.09, 1); s.visible = false; s.userData = { v: new T.Vector3(), life: 0 }; scene.add(s); blood.push(s); }
+function spawnBlood(p, n, dir) {
+  let k = 0;
+  for (const s of blood) {
+    if (s.visible) continue;
+    s.visible = true; s.position.copy(p); const u = s.userData;
+    u.v.set(rand(-1.6, 1.6) + (dir ? dir.x * 2.2 : 0), rand(0, 2.2), rand(-1.6, 1.6) + (dir ? dir.z * 2.2 : 0)); u.life = rand(0.4, 0.9);
+    s.scale.setScalar(rand(0.06, 0.13));
+    if (++k >= n) break;
+  }
+}
+function updateBlood(dt) {
+  for (const s of blood) { if (!s.visible) continue; const u = s.userData; u.life -= dt; if (u.life <= 0 || s.position.y < 0.02) { s.visible = false; continue; } u.v.y -= 9.8 * dt; s.position.addScaledVector(u.v, dt); }
+}
+
+/* ---- flying things: flares and bottles ---- */
+const Proj = {
+  list: [],
+  reset() { this.list.forEach(p => this.drop(p)); this.list.length = 0; },
+  drop(p) { // (and free its sprites' materials)
+    scene.remove(p.g); p.g.traverse(o => { if (o.isSprite) o.material.dispose(); });
+    p.trail.forEach(s => { scene.remove(s); s.material.dispose(); }); p.trail.length = 0;
+  },
+  // a guard fired one (locally); online the host makes it real for everyone
+  launch(type, o, v) {
+    const by = Net.myId;
+    if (Net.isClient) Net.request('proj', type === 'flare' ? 0 : 1, { x: +o.x.toFixed(2), y: +o.y.toFixed(2), z: +o.z.toFixed(2), vx: +v.x.toFixed(2), vy: +v.y.toFixed(2), vz: +v.z.toFixed(2) });
+    else if (Net.isHost) Net.broadcast({ k: 'ev', e: { k: 'proj', t: type === 'flare' ? 0 : 1, x: +o.x.toFixed(2), y: +o.y.toFixed(2), z: +o.z.toFixed(2), vx: +v.x.toFixed(2), vy: +v.y.toFixed(2), vz: +v.z.toFixed(2), by } });
+    this.spawn(type, o.x, o.y, o.z, v.x, v.y, v.z, by, !Net.isClient);
+  },
+  spawn(type, x, y, z, vx, vy, vz, by, auth) {
+    const g = new T.Group(); g.position.set(x, y, z); scene.add(g);
+    const p = { type, g, pos: g.position, vel: new T.Vector3(vx, vy, vz), by, auth, t: 0, state: 'fly', life: 0, trail: [], spin: rand(-12, 12) };
+    if (type === 'flare') {
+      p.glow = new T.Sprite(fxGlowMat(0xff3a22)); p.glow.material.opacity = 1; p.glow.scale.set(0.7, 0.7, 1); g.add(p.glow);
+      p.core = new T.Sprite(fxGlowMat(0xffe0d0)); p.core.material.opacity = 1; p.core.scale.set(0.16, 0.16, 1); g.add(p.core);
+      for (let i = 0; i < 6; i++) { const s = new T.Sprite(fxGlowMat(0xff5030)); s.scale.setScalar(0.3 - i * 0.035); scene.add(s); s.position.set(x, y, z); p.trail.push(s); }
+    } else {
+      p.bottle = new T.Mesh(WGEO.molotov, guardMat); g.add(p.bottle);
+      p.fl = new T.Sprite(flameMat()); p.fl.scale.set(0.12, 0.22, 1); p.fl.position.y = 0.26; p.bottle.add(p.fl);
+    }
+    this.list.push(p);
+    return p;
+  },
+  update(dt) {
+    for (let i = this.list.length - 1; i >= 0; i--) {
+      const p = this.list[i]; p.t += dt;
+      if (p.state === 'fly') this.fly(p, dt);
+      else { // a flare burning on the floor
+        p.life -= dt;
+        const k = Math.min(1, p.life / 3), fl = 0.75 + Math.random() * 0.25;
+        p.glow.material.opacity = k * fl; p.glow.scale.setScalar((0.9 + Math.random() * 0.25) * Math.max(0.3, k));
+        p.core.material.opacity = k;
+        if (Math.random() < dt * 3) spawnEmber(p.pos);
+        if (p.life <= 0) { this.drop(p); this.list.splice(i, 1); }
+      }
+      if (p.trail.length) { // a smoky red streak behind a flying flare
+        for (let j = p.trail.length - 1; j > 0; j--) p.trail[j].position.lerp(p.trail[j - 1].position, Math.min(1, dt * 22));
+        p.trail[0].position.lerp(p.pos, Math.min(1, dt * 30));
+        p.trail.forEach((s, j) => { s.material.opacity = p.state === 'fly' ? 0.55 - j * 0.08 : Math.max(0, s.material.opacity - dt * 2); });
+      }
+    }
+  },
+  fly(p, dt) {
+    const w = WPN[p.type], sp = p.vel.length(), n = Math.max(1, Math.ceil(sp * dt / 0.18)), h = dt / n;
+    for (let s = 0; s < n; s++) {
+      p.vel.y -= w.grav * h;
+      const nx = p.pos.x + p.vel.x * h, ny = p.pos.y + p.vel.y * h, nz = p.pos.z + p.vel.z * h;
+      if (Monster.active && !Monster.isDown() && insideWarden(nx, ny, nz, p.type === 'flare' ? 0.12 : 0.18)) { p.pos.set(nx, ny, nz); this.impact(p, 'warden'); return; }
+      const c = cellOf(nx, nz);
+      if (c.kind === 'wall' || c.kind === 'window' || (c.door && c.door.t < 0.6) || (c.kind !== 'wall' && ny >= c.h - 0.04)) {
+        if (p.type === 'flare' && ny >= c.h - 0.04 && c.kind !== 'wall' && c.kind !== 'window' && !(c.door && c.door.t < 0.6)) { p.vel.y = -Math.abs(p.vel.y) * 0.4; p.vel.x *= 0.7; p.vel.z *= 0.7; continue; } // off the ceiling
+        this.impact(p, 'wall'); return;
+      }
+      if (ny <= 0.05) { p.pos.set(nx, 0.05, nz); this.impact(p, 'floor'); return; }
+      p.pos.set(nx, ny, nz);
+    }
+    if (p.bottle) { p.bottle.rotation.x += p.spin * dt; p.bottle.rotation.z += p.spin * 0.4 * dt; p.fl.material.rotation = -p.bottle.rotation.x; }
+    if (p.glow) { p.glow.material.opacity = 0.85 + Math.random() * 0.15; p.glow.scale.setScalar(0.62 + Math.random() * 0.18); }
+    if (p.t > 6) this.impact(p, 'floor');
+  },
+  impact(p, what) {
+    const w = WPN[p.type], by = p.by, actor = actorById(by);
+    if (p.type === 'flare') {
+      if (what === 'warden') {
+        Sound.flareHit(p.pos);
+        if (p.auth && actor) Monster.hurt(actor, w.dmg, { kind: 'flare', burn: w.burn, stg: 0.25, push: 1.4 });
+        this.drop(p); this.list.splice(this.list.indexOf(p), 1);
+        return;
+      }
+      // it lands and keeps burning: a red light in the dark for a while
+      if (what === 'wall') { const d = Math.hypot(p.vel.x, p.vel.z) || 1; p.pos.x -= p.vel.x / d * 0.3; p.pos.z -= p.vel.z / d * 0.3; }
+      p.pos.y = 0.06; p.state = 'lying'; p.life = 22; p.glow.scale.setScalar(0.9);
+      Sound.flareLand(p.pos);
+      return;
+    }
+    // a bottle: glass, then fire
+    const d = Math.hypot(p.vel.x, p.vel.z) || 1;
+    if (what === 'wall') { p.pos.x -= p.vel.x / d * 0.45; p.pos.z -= p.vel.z / d * 0.45; }
+    Sound.glass(p.pos);
+    if (p.auth) {
+      if (what === 'warden' && actor) Monster.hurt(actor, w.dmg, { kind: 'fire', burn: w.burn, stg: 0.15, push: 0.8 });
+      const fx = what === 'warden' ? Monster.pos.x : p.pos.x, fz = what === 'warden' ? Monster.pos.z : p.pos.z;
+      Game.emit({ k: 'fire', x: +fx.toFixed(2), z: +fz.toFixed(2), by });
+      Game.noise(p.pos, 14, 'event');
+    }
+    this.drop(p); this.list.splice(this.list.indexOf(p), 1);
+  },
+  // the light the flares give off (the closest burning one)
+  lights(cands) { for (const p of this.list) if (p.type === 'flare') cands.push([p.pos, 0xff3a22, p.state === 'fly' ? 2.6 : 2.4 * Math.min(1, p.life / 3) * (0.8 + Math.random() * 0.2), 12]); },
+};
+function actorById(id) { if (id === Net.myId || id === undefined) return player; return Net.remotes.get(id) || null; }
+
+/* ---- embers ---- */
+const emberMat = new T.SpriteMaterial({ map: TX.glow, color: 0xffa040, transparent: true, depthWrite: false, blending: T.AdditiveBlending });
+const embers = [];
+for (let i = 0; i < 30; i++) { const s = new T.Sprite(emberMat); s.scale.set(0.05, 0.05, 1); s.visible = false; s.userData = { v: new T.Vector3(), life: 0 }; scene.add(s); embers.push(s); }
+function spawnEmber(p) {
+  for (const s of embers) { if (s.visible) continue; s.visible = true; s.position.set(p.x + rand(-0.3, 0.3), p.y + 0.1, p.z + rand(-0.3, 0.3)); s.userData.v.set(rand(-0.3, 0.3), rand(0.8, 1.8), rand(-0.3, 0.3)); s.userData.life = rand(0.6, 1.3); return; }
+}
+function updateEmbers(dt) {
+  for (const s of embers) { if (!s.visible) continue; const u = s.userData; u.life -= dt; if (u.life <= 0) { s.visible = false; continue; } s.position.addScaledVector(u.v, dt); u.v.x += rand(-2, 2) * dt; s.material.opacity = Math.min(1, u.life * 2); }
+}
+
+/* ---- fire on the floor ---- */
+const Fires = {
+  list: [], scorches: [],
+  reset() { this.list.forEach(f => this.drop(f)); this.list.length = 0; this.scorches.forEach(m => scene.remove(m)); this.scorches.length = 0; },
+  drop(f) { f.fl.forEach(s => { scene.remove(s); s.material.dispose(); }); },
+  spawn(x, z, by) {
+    // keep it out of the walls
+    for (const [ox, oz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const c = cellOf(x + ox * 0.6, z + oz * 0.6); if (c.kind === 'wall' || c.kind === 'window') { x -= ox * 0.4; z -= oz * 0.4; } }
+    const f = { x, z, by, t: 0, life: FIRE_LIFE, fl: [], tick: 0, crk: 0, pos: new T.Vector3(x, 0.4, z) };
+    for (let i = 0; i < 11; i++) {
+      const s = new T.Sprite(flameMat()); const a = rand(0, TAU), r = Math.sqrt(Math.random()) * FIRE_R * 0.78;
+      s.userData = { x: x + Math.cos(a) * r, z: z + Math.sin(a) * r, k: rand(0.55, 1.15) * (1 - r / FIRE_R * 0.45), ph: rand(0, TAU), sp: rand(9, 15) };
+      scene.add(s); f.fl.push(s);
+    }
+    const m = new T.Mesh(GEO.plane, scorchMat); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.012, z); m.scale.set(FIRE_R * 2.4, FIRE_R * 2.4, 1); scene.add(m); this.scorches.push(m);
+    if (this.scorches.length > 8) scene.remove(this.scorches.shift());
+    this.list.push(f);
+    Sound.fireWhoosh(f.pos);
+    return f;
+  },
+  update(dt) {
+    const host = !Net.isClient;
+    for (let i = this.list.length - 1; i >= 0; i--) {
+      const f = this.list[i]; f.t += dt; f.life -= dt;
+      const env = Math.min(1, f.t / 0.35) * Math.min(1, f.life / 1.6);
+      for (const s of f.fl) {
+        const u = s.userData, k = u.k * env * (0.8 + 0.2 * Math.sin(f.t * u.sp + u.ph) + rand(-0.06, 0.06));
+        s.scale.set(0.55 * k, 1.05 * k, 1); s.position.set(u.x, 0.5 * k, u.z); s.material.opacity = 0.85 * env;
+      }
+      if (Math.random() < dt * 6 * env) spawnEmber(f.pos);
+      f.crk -= dt; if (f.crk <= 0) { f.crk = rand(0.25, 0.5); if (Math.hypot(f.x - player.pos.x, f.z - player.pos.z) < 22) Sound.crackle(f.pos, env); }
+      // it burns whatever stands in it
+      f.tick -= dt;
+      if (f.tick <= 0) {
+        f.tick = 0.1;
+        if (host && Monster.active && !Monster.isDown() && Math.hypot(Monster.pos.x - f.x, Monster.pos.z - f.z) < FIRE_R + 0.35 && Monster.ceil < 0.5) {
+          const a = actorById(f.by) || player; Monster.hurt(a, FIRE_DPS * 0.1, { kind: 'fire', burn: 3, quiet: true });
+        }
+        if (!player.dead && !player.hidden && Math.hypot(player.pos.x - f.x, player.pos.z - f.z) < FIRE_R * 0.8 && player.health > 15) {
+          player.health = Math.max(15, player.health - 8 * 0.1); player.regenDelay = Math.max(player.regenDelay, 3);
+          if (!f.warned) { f.warned = true; UI.msg('You\'re standing in the fire!', 'warn', 2); Sound.hurt(); }
+          $('fx-damage').style.opacity = Math.max(+$('fx-damage').style.opacity || 0, 0.35);
+        }
+      }
+      if (f.life <= 0) { this.drop(f); this.list.splice(i, 1); }
+    }
+  },
+  lights(cands) { for (const f of this.list) cands.push([f.pos, 0xff7a2a, 3.0 * Math.min(1, f.t / 0.35) * Math.min(1, f.life / 1.6) * (0.85 + Math.random() * 0.15), 12]); },
+};
+
+/* ---- the guard's own arsenal (each guard has their own) ---- */
+const Weapons = {
+  has: {}, ammo: { shells: 0, flares: 0, molotov: 0 }, cur: null, t: -1, cd: 0, drawT: 0, hitDone: false, kick: 0, flashT: 0, pumpT: -1, thrown: false,
+  pickups: wpnPickups, vm: {}, holder: null, muzzle: null, rag: null, hudKey: '', side: 1, landed: 0, found: 0, burnFx: [],
+  init() {
+    // first-person models live on the right arm
+    this.holder = new T.Group(); this.holder.position.set(0, 0.0, -0.44); Arms.R.add(this.holder);
+    for (const id of WPN_IDS) {
+      const g = new T.Group(); addWeaponMeshes(g, id, vmMat, true); g.visible = false; this.holder.add(g); this.vm[id] = g;
+    }
+    this.muzzle = new T.Sprite(new T.SpriteMaterial({ map: TX.glow, color: 0xffd090, transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending }));
+    this.muzzle.scale.set(0.5, 0.5, 1); vmScene.add(this.muzzle);
+    this.rag = new T.Sprite(new T.SpriteMaterial({ map: TX_FLAME, transparent: true, opacity: 0.9, depthWrite: false, blending: T.AdditiveBlending }));
+    this.rag.scale.set(0.035, 0.07, 1); this.rag.position.set(0, 0.235, 0); this.vm.molotov.add(this.rag);
+    // the Warden burning: flames on its shoulders, arms, head and back
+    const P = Monster.P, at = [[P.chest, 0, 0.25, 0.05, 1.3], [P.chest, 0.18, 0.5, 0, 1], [P.chest, -0.18, 0.5, 0, 1], [P.head, 0, 0.12, 0, 0.8], [P.arms[0].up, 0, -0.3, 0, 0.9], [P.arms[1].up, 0, -0.3, 0, 0.9], [P.arms[0].el, 0, -0.35, 0, 0.8], [P.arms[1].el, 0, -0.35, 0, 0.8], [P.hips, 0, 0.1, 0, 1.1], [P.legs[0].kn, 0, -0.2, 0, 0.8]];
+    for (const [bone, x, y, z, k] of at) { const s = new T.Sprite(flameMat()); s.position.set(x, y, z); s.userData.k = k; s.userData.ph = rand(0, TAU); s.visible = false; bone.add(s); this.burnFx.push(s); }
+  },
+  reset() {
+    this.has = {}; this.ammo = { shells: 0, flares: 0, molotov: 0 }; this.cur = null; this.t = -1; this.cd = 0; this.drawT = 0; this.kick = 0; this.flashT = 0; this.pumpT = -1; this.thrown = false; this.landed = 0; this.found = 0;
+    for (const d of this.pickups) { d.glint.visible = false; if (d.glass) d.glass.visible = true; }
+    for (const id of WPN_IDS) this.vm[id].visible = false;
+    this.hudKey = ''; $('wpn').classList.remove('on');
+    Proj.reset(); Fires.reset();
+  },
+  armed() { return !!this.cur; },
+  count() { return WPN_IDS.filter(id => this.has[id]).length; },
+  // picked one up
+  give(id) {
+    if (!WPN[id]) return;
+    const w = WPN[id], first = !this.found;
+    if (!this.has[id]) { this.has[id] = true; this.found++; }
+    if (w.ammo) this.ammo[w.ammo] += w.start;
+    this.select(id, true);
+    Sound.pickup(); Sound.wpnGet(id);
+    UI.center(w.name.toUpperCase(), w.tip, 3.2);
+    UI.msg(first ? 'CLICK to attack · [' + w.slot + '] or [Q] / mouse wheel to switch · [V] to punch' : w.name + ' — [' + w.slot + ']' + (w.ammo ? ' · ' + this.ammo[w.ammo] + ' ' + AMMO_LABEL[w.ammo].toLowerCase() : ''), 'good', 5);
+    if (this.count() >= WPN_IDS.length) Goals.unlock('arsenal');
+    $('wpn').classList.add('on');
+  },
+  addAmmo(kind, n) {
+    this.ammo[kind] += n; Sound.pickup();
+    const gun = kind === 'shells' ? 'shotgun' : 'flare';
+    UI.msg((kind === 'shells' ? 'Shotgun shells' : 'Signal flares') + ' (' + this.ammo[kind] + ')' + (this.has[gun] ? '' : ' — for a gun you haven\'t found yet.'), 'good', 4);
+    $('wpn').classList.add('on');
+  },
+  select(id, quiet) {
+    if (id && !this.has[id]) return;
+    if (id === this.cur) return;
+    this.cur = id; this.drawT = id ? 0.38 : 0; this.t = -1; this.pumpT = -1; this.thrown = false;
+    if (!quiet && id) Sound.wpnDraw(id);
+  },
+  slot(n) {
+    if (Endless.offer && n <= 2) { Endless.pick(n - 1); return; } // Endless Night: 1 and 2 choose a curse while one is on offer
+    const id = WPN_IDS[n - 1]; if (!id) return;
+    if (!this.has[id]) { if (this.found) UI.msg('You haven\'t found the ' + WPN[id].name.toLowerCase() + ' yet.', '', 2); return; }
+    this.select(this.cur === id ? null : id);
+  },
+  cycle(dir) {
+    const own = WPN_IDS.filter(id => this.has[id]); if (!own.length) return;
+    let i = own.indexOf(this.cur);
+    i = i < 0 ? (dir > 0 ? 0 : own.length - 1) : (i + dir + own.length) % own.length;
+    this.select(own[i]);
+  },
+  can() { return Combat.can() && this.drawT <= 0 && !Hold.on; },
+  // CLICK
+  attack() {
+    if (!this.cur) return Combat.punch();
+    if (!this.can() || this.cd > 0 || this.t >= 0) return false;
+    const w = WPN[this.cur], p = player;
+    if (w.kind === 'melee') {
+      if (p.stamina < 0.06) { UI.msg('Too winded to swing.', 'warn', 1.4); return false; }
+      p.stamina = Math.max(0, p.stamina - w.stam); p.staminaDelay = 0.9;
+      this.t = 0; this.cd = w.dur; this.hitDone = false; this.side = -this.side;
+      Sound.swing(this.cur === 'axe'); Game.noise(p.pos, w.noise, 'player');
+      return true;
+    }
+    if (this.ammo[w.ammo] <= 0) { Sound.dry(); UI.msg(w.ammo === 'molotov' ? 'No more bottles.' : 'Out of ' + AMMO_LABEL[w.ammo].toLowerCase() + '.', 'warn', 1.6); this.cd = 0.4; return false; }
+    this.t = 0; this.cd = w.dur; this.thrown = false;
+    if (w.kind === 'gun') this.fireShotgun();
+    else if (w.kind === 'proj') this.fireFlare();
+    // (a bottle leaves the hand a moment into the throw)
+    return true;
+  },
+  eye(out) { return out.set(player.pos.x, player.eyeY + player.bob, player.pos.z); },
+  // where a shot leaves from, in the world (a little right of and below your eye)
+  muzzleAt(out, fwdK) {
+    const p = player, f = p.forward(_wv2), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
+    return this.eye(out).add(_wv3.set(rx * 0.16 + f.x * fwdK, -0.14 + f.y * fwdK, rz * 0.16 + f.z * fwdK));
+  },
+  fireShotgun() {
+    const w = WPN.shotgun, p = player;
+    this.ammo.shells--; this.kick = 1; this.flashT = 0.07; this.pumpT = 0.32;
+    Sound.shotgun(); Game.shake(0.5); p.pitch = clamp(p.pitch + 0.045, -1.45, 1.45);
+    Game.noise(p.pos, w.noise, 'player');
+    const e = this.eye(_wv1), f = p.forward(new T.Vector3()), d = new T.Vector3();
+    let hits = 0, hd = 0, sparks = 0;
+    for (let i = 0; i < w.pellets; i++) {
+      spreadDir(f, w.spread, d);
+      const wd = Game.aimDist(e.x, e.y, e.z, d), t = wardenRay(e.x, e.y, e.z, d, 30);
+      if (t >= 0 && t < wd) { hits++; hd = t; }
+      else if (sparks < 3 && wd < 21) { sparks++; spawnImpact(_wv3.set(e.x + d.x * (wd - 0.05), e.y + d.y * (wd - 0.05), e.z + d.z * (wd - 0.05))); }
+    }
+    if (hits) {
+      const fall = hd < 4 ? 1 : Math.max(0.3, 1 - (hd - 4) / 16), frac = hits / w.pellets;
+      this.hitWarden(w.dmg * hits * fall, { kind: 'shot', stg: w.stg * frac, push: w.push * frac * fall }, _wv3.set(e.x + f.x * hd, e.y + f.y * hd, e.z + f.z * hd));
+    }
+  },
+  fireFlare() {
+    const w = WPN.flare, p = player;
+    this.ammo.flares--; this.kick = 0.7; this.flashT = 0.05;
+    Sound.flareShot(); Game.noise(p.pos, w.noise, 'player');
+    const f = p.forward(new T.Vector3()), o = this.muzzleAt(new T.Vector3(), 0.35);
+    Proj.launch('flare', o, f.multiplyScalar(w.speed).add(_wv1.set(0, 1.0, 0)));
+  },
+  throwBottle() {
+    const w = WPN.molotov, p = player;
+    this.ammo.molotov--; Sound.throwW(); Game.noise(p.pos, w.noise, 'player');
+    const f = p.forward(new T.Vector3()), o = this.muzzleAt(new T.Vector3(), 0.3); o.y += 0.12;
+    Proj.launch('molotov', o, f.multiplyScalar(w.speed).add(_wv1.set(0, 2.6, 0)).add(_wv2.set(p.vel.x * 0.5, 0, p.vel.z * 0.5)));
+  },
+  // the swing connects (or doesn't)
+  resolveMelee() {
+    const w = WPN[this.cur], p = player, f = p.forward(_wv1), e = this.eye(_wv2);
+    if (Monster.active && !Monster.isDown()) {
+      const B = wardenBody(_wb), dx = B.x - p.pos.x, dz = B.z - p.pos.z, d = Math.hypot(dx, dz), fl = Math.hypot(f.x, f.z) || 1;
+      const cosA = d > 0.01 ? (dx * f.x + dz * f.z) / (d * fl) : 1;
+      const yAt = e.y + f.y / fl * Math.max(0, d - B.r * 0.6);
+      if (d < w.range + B.r * 0.4 && cosA > 0.42 && yAt > B.lo - 0.55 && yAt < B.hi + 0.6 && losClear(p.pos.x, p.pos.z, B.x, B.z)) {
+        Combat.hitStop = this.cur === 'axe' ? 0.11 : 0.07; Game.shake(this.cur === 'axe' ? 0.55 : 0.3); Arms.impact();
+        Sound.wpnHit(this.cur);
+        this.hitWarden(w.dmg, { kind: 'melee', stg: w.stg, push: w.push }, _wv3.set(B.x - dx / (d || 1) * B.r, clamp(yAt, B.lo + 0.3, B.hi - 0.2), B.z - dz / (d || 1) * B.r));
+        return;
+      }
+    }
+    // you can't hurt something that's dreaming. It just screams.
+    if (Sleeper.active && Math.hypot(Sleeper.pos.x - p.pos.x, Sleeper.pos.z - p.pos.z) < w.range + 0.4 && looksAt(p, Sleeper.pos.x, 1.4, Sleeper.pos.z, 0.6)) {
+      Arms.impact(); Sound.thud(null, false);
+      if (Net.isClient) Net.request('nm', 0); else Game.struckSleeper(player);
+      return;
+    }
+    const ad = Game.aimDist(e.x, e.y - 0.1, e.z, f);
+    if (ad < w.range * 0.75) {
+      const c = cellOf(e.x + f.x * ad, e.z + f.z * ad), metal = c.kind === 'door';
+      Combat.hitStop = 0.05; Game.shake(0.15); Arms.impact(); Sound.thud(null, true);
+      spawnImpact(_wv3.set(e.x + f.x * (ad - 0.06), e.y - 0.1 + f.y * (ad - 0.06), e.z + f.z * (ad - 0.06)));
+      Game.noise(p.pos, metal ? 11 : 7, 'player');
+    }
+  },
+  hitWarden(dmg, o, at) {
+    this.landed++;
+    spawnBlood(at, o.kind === 'shot' ? 10 : 6, player.forward(_wv1));
+    $('crosshair').classList.add('hit'); clearTimeout(this.xhT); this.xhT = setTimeout(() => $('crosshair').classList.remove('hit'), 140);
+    if (Net.isClient) { Net.request('wdmg', WPN_IDS.indexOf(this.cur), { d: +dmg.toFixed(1), s: +(o.stg || 0).toFixed(2), p: +(o.push || 0).toFixed(2), k: o.kind }); return; }
+    Monster.hurt(player, dmg, o);
+  },
+  update(dt) {
+    this.cd -= dt; this.drawT = Math.max(0, this.drawT - dt); this.kick = Math.max(0, this.kick - dt * 5); this.flashT -= dt;
+    if (player.dead || player.hidden) this.t = -1;
+    if (this.t >= 0 && this.cur && !(Combat.hitStop > 0)) { // (a tiny freeze on impact)
+      const w = WPN[this.cur];
+      this.t += dt;
+      if (w.kind === 'melee' && !this.hitDone && this.t >= w.hitAt) { this.hitDone = true; this.resolveMelee(); }
+      if (w.kind === 'throw' && !this.thrown && this.t >= 0.3) { this.thrown = true; this.throwBottle(); }
+      if (this.pumpT >= 0 && this.t >= this.pumpT) { this.pumpT = -1; Sound.pump(); }
+      if (this.t >= w.dur) this.t = -1;
+    }
+    Proj.update(dt); Fires.update(dt); updateBlood(dt); updateEmbers(dt);
+    this.glints(dt);
+    this.burnVisuals(dt);
+  },
+  glints(dt) { // the pickups catch your light now and then
+    for (const d of this.pickups) {
+      if (!d.enabled) { d.glint.visible = false; continue; }
+      d.gT -= dt;
+      if (d.gT <= 0) { d.gT = rand(2.2, 5); d.glint.visible = true; d.glint.userData.t = 0; }
+      if (d.glint.visible) {
+        const t = (d.glint.userData.t += dt), k = t / 0.55;
+        if (k >= 1) d.glint.visible = false; else { const a = Math.sin(k * Math.PI); d.glint.scale.setScalar(0.08 + a * 0.42); d.glint.material.opacity = a * 0.8; }
+      }
+    }
+  },
+  burnVisuals(dt) {
+    const on = Monster.burnT > 0 && Monster.model.visible;
+    for (const s of this.burnFx) {
+      s.visible = on; if (!on) continue;
+      const u = s.userData, k = u.k * Math.min(1, Monster.burnT / 1.2) * (0.75 + 0.25 * Math.sin(Game.time * 14 + u.ph) + rand(-0.08, 0.08));
+      s.scale.set(0.5 * k, 0.9 * k, 1); s.material.opacity = 0.9;
+    }
+    if (on && Math.random() < dt * 8) spawnEmber(_wv1.set(Monster.model.position.x, Monster.ceil > 0.5 ? Monster.ceilH - 0.5 : 1.3, Monster.model.position.z));
+  },
+  // the closest fire, flare or flash gets the light
+  updateLight() {
+    if (Cine.cur && Cine.cur.fx) return; // (a cutscene is lighting the shot)
+    const cands = [];
+    if (this.flashT > 0) cands.push([this.muzzleAt(_wv1, 0.5).clone(), 0xffd8a0, 5, 9]);
+    Fires.lights(cands); Proj.lights(cands);
+    if (Monster.burnT > 0 && Monster.model.visible) cands.push([new T.Vector3(Monster.model.position.x, Monster.ceil > 0.5 ? Monster.ceilH - 0.6 : 1.5, Monster.model.position.z), 0xff8a3a, 2.4, 10]);
+    let best = null, bs = -1;
+    for (const c of cands) { const d = c[0].distanceTo(camera.position), s = c[2] / (1 + d * 0.15); if (d < 30 && s > bs) { bs = s; best = c; } }
+    if (!best) { fxLight.intensity = 0; return; }
+    fxLight.position.copy(best[0]); fxLight.color.setHex(best[1]); fxLight.intensity = best[2]; fxLight.distance = best[3];
+  },
+  /* ---- the arms: where the weapon puts your hands ---- */
+  // (each pose places the weapon on screen; the arms' sway and bob ride on top of it)
+  pose(r, l, dt) {
+    const id = this.cur;
+    for (const k of WPN_IDS) this.vm[k].visible = k === id;
+    this.muzzle.material.opacity = 0;
+    if (!id) return false;
+    const w = WPN[id], t = this.t, draw = this.drawT > 0 ? smooth(0, 0.38, 0.38 - this.drawT) : 1, g = this.vm[id], H = this.holder, A = VM_POSE[id];
+    for (let i = 0; i < 6; i++) r[i] = A.arm[i] + (r[i] - VM_BASE[i]) * (i < 3 ? 1 : 0.6);
+    g.rotation.set(A.g[0], A.g[1], A.g[2]); H.position.set(0, 0, -0.44); H.rotation.set(0, 0, 0);
+    if (id === 'crowbar' || id === 'axe') {
+      const s = this.side;
+      if (t >= 0) { // wind up over the shoulder, then a hard diagonal chop across the screen
+        const hit = w.hitAt, wind = smooth(0, hit * 0.7, t) * (1 - smooth(hit * 0.7, hit, t)), strike = smooth(hit * 0.65, hit + 0.05, t) * (1 - smooth(hit + 0.12, w.dur, t));
+        r[1] += 0.06 * wind; r[2] += 0.06 * wind; r[3] += 0.35 * wind; r[4] -= 0.2 * wind * s; g.rotation.x += 0.4 * wind;
+        r[0] -= 0.17 * strike; r[1] -= 0.06 * strike; r[2] -= 0.12 * strike; r[3] -= 0.7 * strike; r[4] += 0.5 * strike * s; r[5] += 0.55 * strike * s; g.rotation.x -= 1.1 * strike;
+      }
+    } else if (id === 'shotgun') {
+      for (let i = 0; i < 6; i++) l[i] = VM_LEFT_SG[i] + (r[i] - A.arm[i]) * (i < 3 ? 1 : 0.6);
+      const k = this.kick; r[2] += 0.1 * k; r[3] += 0.2 * k; l[2] += 0.1 * k; l[3] += 0.2 * k;
+      // rack it: the pump (and your left hand) slide back and forward
+      const pt = t >= 0 ? clamp((t - 0.32) / 0.42, 0, 1) : 0, pump = Math.sin(pt * Math.PI);
+      if (g.userData.pump) g.userData.pump.position.z = 0.09 * pump;
+      l[2] += 0.08 * pump;
+      if (this.flashT > 0) { this.muzzle.material.opacity = 1; this.muzzle.material.color.setHex(0xffd090); this.muzzle.position.copy(this.vmPoint(g, 0, 0.03, -0.86)); this.muzzle.material.rotation = rand(0, TAU); this.muzzle.scale.setScalar(rand(0.5, 0.75)); }
+    } else if (id === 'flare') {
+      const k = this.kick; r[2] += 0.08 * k; r[3] += 0.3 * k;
+      const rl = t >= 0 ? smooth(0.35, 0.6, t) * (1 - smooth(1.0, 1.35, t)) : 0; // break it open, a fresh flare in
+      r[3] -= 0.5 * rl; r[1] -= 0.04 * rl;
+      if (this.flashT > 0) { this.muzzle.material.opacity = 1; this.muzzle.material.color.setHex(0xff6040); this.muzzle.position.copy(this.vmPoint(g, 0, 0, -0.26)); this.muzzle.scale.setScalar(0.45); }
+    } else if (id === 'molotov') {
+      const wind = t >= 0 ? smooth(0, 0.26, t) * (1 - smooth(0.26, 0.34, t)) : 0, thr = t >= 0 ? smooth(0.26, 0.36, t) * (1 - smooth(0.5, 0.95, t)) : 0;
+      r[1] += 0.08 * wind; r[2] += 0.2 * wind; r[3] += 0.6 * wind; r[2] -= 0.34 * thr; r[3] -= 0.8 * thr; r[1] -= 0.05 * thr;
+      const gone = t >= 0 && this.thrown && t < 0.85;
+      g.visible = !gone && (this.ammo.molotov > 0 || (t >= 0 && !this.thrown));
+      if (t >= 0.85 && this.ammo.molotov > 0) r[1] -= 0.25 * (1 - smooth(0.85, w.dur, t)); // the next bottle comes up
+      this.rag.material.opacity = 0.7 + Math.random() * 0.3; this.rag.scale.set(0.032 + Math.random() * 0.01, 0.065 + Math.random() * 0.025, 1);
+    }
+    r[1] -= 0.32 * (1 - draw); r[3] += 0.5 * (1 - draw);
+    if (id === 'shotgun') l[1] -= 0.32 * (1 - draw);
+    return id === 'shotgun'; // two hands on it
+  },
+  // a point on the held weapon, in the arms' own space (for the muzzle flash)
+  vmPoint(g, x, y, z) { Arms.R.updateMatrixWorld(true); return g.localToWorld(_wv3.set(x, y, z)); },
+  // recoil and the swing pull the view a little
+  camKick(cam) {
+    if (this.kick > 0 && (this.cur === 'shotgun' || this.cur === 'flare')) cam.rotation.x += (this.cur === 'shotgun' ? 0.05 : 0.03) * this.kick;
+    if (this.t >= 0 && this.cur && WPN[this.cur].kind === 'melee') { const w = WPN[this.cur], e = Math.sin(Math.PI * clamp((this.t - w.hitAt + 0.1) / 0.24, 0, 1)); cam.rotation.z += (this.cur === 'axe' ? 0.045 : 0.025) * e * this.side; cam.rotation.x -= 0.02 * e; }
+  },
+  /* ---- the HUD strip above the map ---- */
+  hud() {
+    const id = this.cur, w = id ? WPN[id] : null;
+    const key = (id || '-') + '|' + WPN_IDS.map(k => this.has[k] ? 1 : 0).join('') + '|' + this.ammo.shells + ',' + this.ammo.flares + ',' + this.ammo.molotov;
+    if (key === this.hudKey) return;
+    this.hudKey = key;
+    $('wpn-name').textContent = w ? w.name.toUpperCase() : 'FISTS';
+    $('wpn-ammo').textContent = w && w.ammo ? this.ammo[w.ammo] + ' ' + AMMO_LABEL[w.ammo] : w ? '' : '[1-5] / [Q] WEAPONS';
+    $('wpn-ammo').classList.toggle('empty', !!(w && w.ammo && this.ammo[w.ammo] <= 0));
+    document.querySelectorAll('#wpn-slots i').forEach((el, i) => { const k = WPN_IDS[i]; el.className = (this.has[k] ? 'own' : '') + (k === id ? ' cur' : ''); });
+  },
+};
+// a puff of dust and sparks where a pellet or a swing meets the wall
+function spawnImpact(p) {
+  let k = 0;
+  for (const s of sparks) { if (s.visible) continue; s.visible = true; s.position.copy(p); s.userData.v.set(rand(-1.2, 1.2), rand(-0.3, 1.4), rand(-1.2, 1.2)); s.userData.life = rand(0.15, 0.35); if (++k >= 3) break; }
+}
+
+/* ------------------------------------------------------------------ */
+/* THE LAST DANCE: an armed guard faces it, and the fight is on        */
+/* HOLD THE DOOR: it tries your locker — Space, on every pull          */
+/* ------------------------------------------------------------------ */
+// when it pulls on the door (seconds from the first touch); everyone builds the same list from the seed
+function holdSchedule(seed, d) {
+  const rng = mulberry32(seed >>> 0), n = d === 'easy' ? 6 : d === 'hard' ? 10 : 8, beats = [];
+  let t = 1.7; // a moment to brace yourself
+  for (let i = 0; i < n; i++) {
+    beats.push(+t.toFixed(3));
+    const prog = n > 1 ? i / (n - 1) : 1;
+    let gap = lerp(d === 'easy' ? 1.0 : 0.9, d === 'hard' ? 0.46 : d === 'easy' ? 0.64 : 0.52, prog) * (0.92 + rng() * 0.16);
+    if (d !== 'easy' && i >= 3 && i < n - 2 && rng() < 0.3) gap = 0.32; // a double yank
+    t += gap;
+  }
+  return { beats, end: t + 0.35 };
+}
+// how hard it is pulling right now (0..1), for its arms and the door
+function yankPull(sch, t) {
+  if (!sch) return 0.5 + 0.5 * Math.sin(t * 6);
+  let m = 0;
+  for (const b of sch.beats) { const x = t - b; if (x > -0.07 && x < 0.34) m = Math.max(m, x < 0 ? (x + 0.07) / 0.07 : 1 - x / 0.34); }
+  return m;
+}
+const Hold = {
+  on: false, vis: false, sch: null, t: 0, i: 0, yi: 0, misses: 0, allowed: 2, win: 0.13, strain: 0, perfect: 0, hits: 0, done: false, notes: [], hideT: 0, gap: 0, jolt: 0,
+  reset() { this.on = false; this.vis = false; this.done = false; this.notes = []; $('hold').classList.remove('on'); $('hud').classList.remove('holding'); $('hold-notes').innerHTML = ''; this.gap = 0; this.jolt = 0; this.applyFx(); },
+  start(seed) {
+    if (!player.hidden || player.dead) return;
+    const dn = Net.sessionDiff || settings.difficulty;
+    this.sch = holdSchedule(seed, dn); this.on = true; this.vis = true; this.done = false; this.t = 0; this.i = 0; this.yi = 0; this.misses = 0; this.strain = 0; this.perfect = 0; this.hits = 0; this.gap = 0; this.jolt = 0;
+    this.allowed = dn === 'easy' ? 3 : dn === 'hard' ? 1 : 2; this.win = dn === 'easy' ? 0.17 : dn === 'hard' ? 0.1 : 0.13;
+    const box = $('hold-notes'); box.innerHTML = ''; this.notes = this.sch.beats.map(() => { const el = document.createElement('i'); box.appendChild(el); return el; });
+    this.pips();
+    $('hold-judge').textContent = ''; $('hold-judge').className = '';
+    $('hold').classList.add('on'); $('hud').classList.add('holding');
+    $('hold-h').textContent = Game.flags.holdTold ? 'HOLD THE DOOR' : 'IT\'S AT YOUR DOOR — HOLD IT SHUT'; Game.flags.holdTold = true;
+    Sound.sting(true); Sound.yank(0.6);
+  },
+  pips() { const el = $('hold-pips'); let h = ''; for (let k = 0; k <= this.allowed; k++) h += '<b class="' + (k < this.allowed + 1 - this.misses ? 'ok' : '') + '"></b>'; el.innerHTML = h; },
+  // SPACE
+  press() {
+    if (!this.on || this.done) return;
+    const b = this.sch.beats, j = this.i;
+    if (j >= b.length) return;
+    const dt = this.t - b[j];
+    if (Math.abs(dt) <= this.win) { this.judge(j, Math.abs(dt) <= 0.055 ? 'PERFECT' : 'HOLD!', true); return; }
+    if (dt < 0 && -dt < 0.3) { this.judge(j, 'TOO EARLY', false); return; } // jumped the gun on this one
+    this.strain++; this.say('STEADY…', 'warn'); // mashing: every third stray press costs you
+    if (this.strain >= 3) { this.strain = 0; this.miss(); }
+  },
+  judge(j, text, ok) {
+    this.i = j + 1;
+    const el = this.notes[j]; if (el) el.className = ok ? 'hit' : 'bad';
+    if (ok) { this.hits++; if (text === 'PERFECT') this.perfect++; Sound.doorHold(text === 'PERFECT'); Game.shake(0.1); this.gap = Math.max(0, this.gap - 0.15); }
+    else this.miss();
+    this.say(text, ok ? (text === 'PERFECT' ? 'perfect' : 'good') : 'bad');
+  },
+  miss() {
+    this.misses++; this.gap = Math.min(1, this.gap + 0.42); Sound.doorGive(); Game.shake(0.35); Game.dip = Math.max(Game.dip, 0.3);
+    this.pips();
+    if (this.misses > this.allowed) this.finish(false);
+  },
+  say(text, cls) { const el = $('hold-judge'); el.textContent = text; el.className = ''; void el.offsetWidth; el.className = 'show ' + cls; },
+  update(dt) {
+    if (this.vis && this.done) { this.hideT -= dt; if (this.hideT <= 0) { this.vis = false; $('hold').classList.remove('on'); $('hud').classList.remove('holding'); } }
+    if (!this.on) { if (this.gap > 0 || this.jolt > 0) { this.gap = Math.max(0, this.gap - dt * 2); this.jolt = Math.max(0, this.jolt - dt * 6); this.applyFx(); } return; }
+    if (!player.hidden || player.dead) { this.finish(false, true); return; }
+    this.t += dt;
+    const b = this.sch.beats;
+    while (this.yi < b.length && this.t >= b[this.yi]) { this.yi++; Sound.yank(1); this.jolt = 1; } // it pulls on the beat, hit or miss
+    while (!this.done && this.i < b.length && this.t > b[this.i] + this.win) { const el = this.notes[this.i]; if (el) el.className = 'bad'; this.i++; this.say('MISS', 'bad'); this.miss(); }
+    if (!this.done && this.i >= b.length) this.finish(true);
+    this.jolt = Math.max(0, this.jolt - dt * 6);
+    this.draw(); this.applyFx();
+  },
+  draw() {
+    const lane = $('hold-lane'), w = lane.clientWidth || 520, zone = 56, pps = 300;
+    this.notes.forEach((el, j) => {
+      const x = zone + (this.sch.beats[j] - this.t) * pps;
+      el.style.transform = 'translateX(' + x.toFixed(1) + 'px)';
+      el.style.opacity = x > w + 20 ? 0 : x < zone - 60 ? Math.max(0, 1 - (zone - 60 - x) / 40) : 1;
+    });
+  },
+  applyFx() { // inside the locker: the door gives a little, and the light cuts in
+    const g = $('locker-gap'); if (!g) return;
+    g.style.width = (this.gap * 7 + this.jolt * 2.2).toFixed(2) + 'vw'; g.style.opacity = (Math.min(1, this.gap * 1.2 + this.jolt * 0.5)).toFixed(2);
+    $('fx-locker').style.transform = this.jolt > 0.01 ? 'translateX(' + (this.jolt * -9).toFixed(1) + 'px)' : '';
+  },
+  finish(ok, silent) {
+    if (this.done) return;
+    this.done = true; this.on = false; this.hideT = ok ? 1.2 : 0.6;
+    if (silent) { this.vis = false; $('hold').classList.remove('on'); $('hud').classList.remove('holding'); return; }
+    if (ok) {
+      this.say(this.misses ? 'IT LET GO' : 'IRON GRIP', 'perfect');
+      Sound.doorHold(true); Goals.unlock('holddoor'); if (!this.misses) Goals.unlock('irongrip');
+      setTimeout(() => { if (Game.state === 'playing' && player.hidden) UI.center('IT LET GO', 'Breathe. Quietly.', 2.6); }, 500);
+    } else { this.say('IT\'S IN', 'bad'); }
+    if (Net.isClient) Net.request('hold', ok ? 1 : 0); else Game.holdResult(player, ok);
+  },
+};
+
+/* ---- a voice: the guard says it out loud (the browser's speech, if it has any) ---- */
+const Voice = {
+  v: null,
+  init() {
+    try {
+      if (!window.speechSynthesis) return;
+      const pick = () => {
+        const vs = speechSynthesis.getVoices() || []; if (!vs.length) return;
+        const en = vs.filter(v => /^en/i.test(v.lang));
+        for (const n of ['Daniel', 'Google UK English Male', 'Microsoft Guy', 'Microsoft Ryan', 'Microsoft Davis', 'Microsoft David', 'Alex', 'Aaron', 'Arthur', 'Fred', 'Rishi', 'Male']) { const v = en.find(x => x.name.indexOf(n) >= 0); if (v) { this.v = v; return; } }
+        this.v = en[0] || vs[0];
+      };
+      pick();
+      if (speechSynthesis.addEventListener) speechSynthesis.addEventListener('voiceschanged', pick); else speechSynthesis.onvoiceschanged = pick;
+    } catch (e) { }
+  },
+  say(text) {
+    try {
+      if (!window.speechSynthesis || settings.muted || settings.volume <= 0.01) return;
+      const u = new SpeechSynthesisUtterance(text);
+      if (this.v) u.voice = this.v;
+      u.rate = 0.9; u.pitch = 0.6; u.volume = clamp(settings.volume, 0, 1);
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    } catch (e) { }
+  },
+  stop() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) { } },
+};
+
+/* ---- the fight ---- */
+const Battle = {
+  on: false, phase: 0, downs: 0, music: 0, hurtAt: -99, lag: 1, lagT: 0, by: -1, wpn: 0, dealt: 0, killAt: 0, won: false, dropped: false, dropAt: -99, raise: 0,
+  reset() {
+    this.on = false; this.phase = 0; this.downs = 0; this.music = 0; this.hurtAt = -99; this.lag = 1; this.lagT = 0; this.by = -1; this.wpn = 0; this.dealt = 0; this.killAt = 0; this.won = false; this.dropped = false; this.raise = 0;
+    Sound.battle(0, true); Voice.stop();
+    $('boss').classList.remove('on', 'rage', 'down'); $('boss-title').classList.remove('show');
+  },
+  // host: an armed guard looks it in the eye — the Last Dance (once a shift)
+  check() {
+    const F = Game.flags, M = Monster;
+    if (F.danced || !M.active || M.down || M.cine || M.state === 'ATTACK' || M.state === 'YANK' || M.state === 'SCRIPT' || M.ceil > 0.3 || Game.ending || Game.endingLock || Cine.cur || Game.state !== 'playing' && !Net.inGame) return;
+    for (const a of actors()) {
+      if (!(a === player ? Weapons.armed() : a.wpn > 0) || a.hidden || a.inVent || a.dead) continue;
+      const d = Math.hypot(a.pos.x - M.pos.x, a.pos.z - M.pos.z);
+      if (d > 17 || d < 3.4 || !losClear(a.pos.x, a.pos.z, M.pos.x, M.pos.z)) continue;
+      if (!(looksAt(a, M.pos.x, M.eyeH() - 0.4, M.pos.z, 0.8) || (M.seeing && M.target === a && d < 12))) continue;
+      F.danced = true;
+      M.target = a; M.yaw = Math.atan2(a.pos.x - M.pos.x, a.pos.z - M.pos.z); M.vel.set(0, 0, 0); M.path = null; M.hasGoal = false; M.charging = false; M.attackT = 0;
+      M.playPose('dance', 8.6, true);
+      Game.emit({ k: 'dance', by: Game.idOf(a), w: a === player ? WPN_IDS.indexOf(Weapons.cur) + 1 : a.wpn });
+      return;
+    }
+  },
+  start(ev) { // every peer: the cutscene
+    Game.flags.danced = true; this.by = ev.by | 0; this.wpn = ev.w | 0; this.dropped = false;
+    Cine.play('lastdance', { by: this.by, w: this.wpn });
+  },
+  // the music drops, the title comes up
+  drop() {
+    if (this.dropped) return; this.dropped = true; this.dropAt = Game.time;
+    Sound.battle(2); this.music = 2;
+    const el = $('boss-title'); $('bt-k').textContent = (Game.mode === 'night' ? Night.clock() + ' AM' : MODES[Game.mode].name.toUpperCase()) + ' · SUBLEVEL 6';
+    el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+    clearTimeout(this.titleT); this.titleT = setTimeout(() => el.classList.remove('show'), 3600);
+    this.engage();
+  },
+  engage() { this.on = true; $('boss').classList.add('on'); $('boss').classList.toggle('rage', Monster.phase > 0); },
+  update(dt) {
+    if (!Net.isClient) {
+      this.check();
+      if (this.killAt && !this.won && Game.time > this.killAt + 9) { this.won = true; Game.emit({ k: 'kwin' }); } // (in case the scene never finished)
+    }
+    // the music follows the fight
+    let lvl = this.music;
+    if (this.on && this.dropped) {
+      if (!Monster.active || Monster.down || Game.state === 'dead' || Game.state === 'won') lvl = 0;
+      else { const hot = Monster.state === 'HUNT' || Monster.state === 'ATTACK' || Monster.state === 'YANK' || Game.time - this.hurtAt < 12 || Game.time - this.dropAt < 10; lvl = hot ? (Monster.phase ? 3 : 2) : 1; }
+    }
+    if (lvl !== this.music) { this.music = lvl; Sound.battle(lvl); }
+    this.raise = damp(this.raise, Cine.cur && Cine.cur.id === 'lastdance' ? 1 : 0, 5, dt);
+  },
+  hud(dt) {
+    const el = $('boss');
+    if (!this.on && Monster.hp < Monster.maxHp && Monster.active && !Monster.down && Game.time - this.hurtAt < 8) this.engage(); // you started it without the speech
+    if (!this.on) return;
+    const k = Monster.maxHp > 0 ? clamp(Monster.hp / Monster.maxHp, 0, 1) : 0;
+    this.lagT -= dt; if (this.lagT <= 0) this.lag = damp(this.lag, k, 3, dt); if (this.lag < k) this.lag = k;
+    $('boss-hp').style.width = (k * 100).toFixed(2) + '%'; $('boss-lag').style.width = (this.lag * 100).toFixed(2) + '%';
+    el.classList.toggle('down', !!Monster.down); el.classList.toggle('burn', Monster.burnT > 0);
+    const sub = Monster.down === 2 ? 'DEAD' : Monster.down ? 'DOWN — FOR NOW' : Monster.stunLeft() > 0 ? 'STAGGERED — HIT IT' : Monster.burnT > 0 ? 'BURNING' : Monster.phase ? 'ENRAGED' : '';
+    if ($('boss-sub').textContent !== sub) $('boss-sub').textContent = sub;
+  },
+  onHurt(ev) { // every peer: it took a hit
+    this.hurtAt = Game.time; this.lagT = 0.45;
+    if (ev.by === Net.myId) this.dealt += +ev.d || 0;
+    if (ev.w !== 'fire') Sound.monsterHurt();
+    if (ev.by !== Net.myId && ev.w !== 'fire') spawnBlood(_wv1.set(Monster.model.position.x, Monster.ceil > 0.5 ? Monster.ceilH - 0.6 : 1.5, Monster.model.position.z), 5);
+    if (!this.on && ev.w !== 'fist') this.engage();
+  },
+  onPhase() {
+    this.phase = 1; $('boss').classList.add('rage');
+    UI.msg('It\'s enraged — faster, and it won\'t back off now.', 'warn', 3.5); Sound.sting(true); Game.shake(0.4);
+  },
+  onKill(ev) { // every peer
+    const final = !!ev.f;
+    Monster.killedBy = ev.by | 0;
+    if ((ev.by | 0) === Net.myId) this.dealt += +ev.d || 0; // (the killing blow)
+    if (final) this.killAt = Game.time; // (the shift ends after the scene; in the other modes it just lies there a while)
+    this.downs++;
+    Sound.battle(0); this.music = 0; Sound.killHit();
+    Goals.unlock('lastdance');
+    if (final) { Game.flags.killed = true; Game.endingLock = true; }
+    Cine.play('wardenDeath', { by: ev.by | 0, f: final ? 1 : 0 });
+  },
+  onRise() {
+    this.on = true; $('boss').classList.add('on'); $('boss').classList.remove('rage', 'down');
+    UI.center('IT\'S GETTING BACK UP', 'Nothing stays dead down here', 3);
+    Sound.sting(true); this.hurtAt = Game.time;
+  },
+  victory() { // the Night Shift: it's dead, the shift is over
+    if (Game.state === 'won' || Game.state === 'dead') return;
+    this.won = true; Game.flags.killed = true;
+    UI.closeNote(true); Game.showVictory();
+  },
+};
+
+/* ---- the cutscenes ---- */
+// a camera spot near (x, z): open floor, away from the walls, with a clear view of the target
+function camSpotNear(cands, tx, tz) {
+  for (const [x, z] of cands) {
+    const c = cellOf(x, z);
+    if (!(c.kind === 'floor' || c.kind === 'door' || c.kind === 'lift')) continue;
+    let ok = true;
+    for (const [ox, oz] of [[0.32, 0], [-0.32, 0], [0, 0.32], [0, -0.32]]) { const n = cellOf(x + ox, z + oz); if (n.kind === 'wall' || n.kind === 'window' || (n.door && n.door.t < 0.6)) { ok = false; break; } }
+    if (ok && losClear(x, z, tx, tz)) return [x, z];
+  }
+  return null;
+}
+SCENES.lastdance = {
+  full: true, lock: true, skip: true, letter: true, prio: 7, dur: 8.4, interrupt: true, clean: true,
+  start(sc) {
+    const a = actorById(sc.o.by) || player; sc.a = a; sc.mine = a === player;
+    const ax = a.pos.x, az = a.pos.z, mx = Monster.pos.x, mz = Monster.pos.z;
+    let ux = mx - ax, uz = mz - az; const d = Math.hypot(ux, uz) || 1; ux /= d; uz /= d;
+    const px = -uz, pz = ux; sc.u = [ux, uz];
+    const near = (bx, bz, list, tx, tz) => camSpotNear(list.map(([f, s]) => [bx + ux * f + px * s, bz + uz * f + pz * s]), tx, tz);
+    sc.s1 = near(ax, az, [[-2.2, 0.6], [-2.2, -0.6], [-1.9, 0.55], [-1.9, -0.55], [-1.6, 0.5], [-1.6, -0.5], [-1.2, 0.4], [-1.2, -0.4], [-0.9, 0.3], [-0.6, 0]], mx, mz) || [ax - ux * 0.3, az - uz * 0.3];
+    sc.s2 = near(mx, mz, [[-2.3, 0.45], [-2.3, -0.45], [-2.0, 0], [-1.6, 0.3]], mx, mz) || [mx - ux * 1.8, mz - uz * 1.8];
+    sc.s3 = near(mx, mz, [[1.5, 0.75], [1.5, -0.75], [1.2, 0.5], [1.2, -0.5], [0.9, 0.6], [0.9, -0.6]], ax, az);
+    if (sc.mine) { player.yaw = Math.atan2(-ux, -uz); player.pitch = 0.04; }
+    Sound.battleIntro(); Voice.stop();
+  },
+  tick(sc, t) {
+    if (t > 0.5 && !sc.v) {
+      sc.v = 1; const line = 'Let\'s finally end this madness.';
+      Cine.sub(sc.mine ? '“' + line + '”' : Net.nameOf(sc.o.by) + ':  “' + line + '”');
+      Voice.say(line);
+    }
+    if (t > 2.4 && !sc.c2) { sc.c2 = 1; Cine.sub(''); Sound.cineHit(0.8); }
+    if (t > 4.6 && !sc.c3) { sc.c3 = 1; Sound.cineHit(0.5); }
+    if (t > 6.2 && !sc.c4) { sc.c4 = 1; Cine.letter(false); Battle.drop(); }
+  },
+  cam(sc, t, fov) {
+    const a = sc.a, M = Monster, mx = M.pos.x, mz = M.pos.z;
+    if (sc.mine && t < 6.2) Net.selfAvatar(true);
+    if (t < 2.4) { // over the guard's shoulder: it is down the hall, waiting
+      const k = smooth(0, 2.4, t);
+      camera.position.set(lerp(sc.s1[0], lerp(sc.s1[0], a.pos.x, 0.3), k), 1.98 - 0.12 * k, lerp(sc.s1[1], lerp(sc.s1[1], a.pos.z, 0.3), k));
+      lookQuat(camera.position, _cv.set(lerp(a.pos.x, mx, 0.45), 1.45, lerp(a.pos.z, mz, 0.45)), camera.quaternion);
+      Cine.snapFov = true; return 54 - 8 * k;
+    }
+    if (t < 4.6) { // low, in its face, as it screams
+      const k = smooth(2.4, 4.6, t);
+      camera.position.set(lerp(sc.s2[0], mx, 0.12 * k), 0.78 + 0.1 * k, lerp(sc.s2[1], mz, 0.12 * k));
+      lookQuat(camera.position, _cv.set(mx, M.eyeH() + 0.05, mz), camera.quaternion);
+      Cine.snapFov = true; return 46 - 6 * k;
+    }
+    if (t < 6.2 && sc.s3) { // over its shoulder: the guard, weapon up
+      const k = smooth(4.6, 6.2, t);
+      camera.position.set(sc.s3[0], 2.55 - 0.15 * k, sc.s3[1]);
+      lookQuat(camera.position, _cv.set(lerp(mx, a.pos.x, 0.75), 1.35, lerp(mz, a.pos.z, 0.75)), camera.quaternion);
+      Cine.snapFov = true; return 48 - 6 * k;
+    }
+    if (t < 6.2) { // (no room behind it) — a slow push in on it instead
+      const k = smooth(4.6, 6.2, t);
+      camera.position.set(lerp(sc.s2[0], mx, 0.25 + 0.1 * k), 1.5, lerp(sc.s2[1], mz, 0.25 + 0.1 * k));
+      lookQuat(camera.position, _cv.set(mx, M.eyeH(), mz), camera.quaternion);
+      Cine.snapFov = true; return 44;
+    }
+    return null; // back in your own eyes
+  },
+  light(sc, t) { // a warm key light on the guard (it's dark down here)
+    const a = sc.a;
+    if (t < 2.4) { fxLight.position.set(lerp(camera.position.x, a.pos.x, 0.45), 2.4, lerp(camera.position.z, a.pos.z, 0.45)); fxLight.color.setHex(0xffc890); fxLight.intensity = 1.5; fxLight.distance = 5; }
+    else if (t < 4.6) { fxLight.position.set(lerp(camera.position.x, Monster.pos.x, 0.5), 1.0, lerp(camera.position.z, Monster.pos.z, 0.5)); fxLight.color.setHex(0xff6a50); fxLight.intensity = 1.6; fxLight.distance = 5; }
+    else if (t < 6.2) { fxLight.position.set(lerp(a.pos.x, camera.position.x, 0.25), 2.3, lerp(a.pos.z, camera.position.z, 0.25)); fxLight.color.setHex(0xffc890); fxLight.intensity = 1.8; fxLight.distance = 6; }
+    else { sc.fx = false; return; }
+    sc.fx = true;
+  },
+  end(sc, skipped) {
+    Cine.cd.spotted = Game.time + 25; Cine.cd.sighting = Game.time + 25; Game.flags.roarPoseAt = Game.time; // (no snap-zoom, no second roar: you know it's coming)
+    Battle.drop();
+    if (!Net.isClient && Monster.cine && Monster.cine.pose === 'dance') { Monster.cine = null; Monster.P.glowMat.opacity = 0.9; Monster.state = 'X'; Monster.setState('HUNT'); Monster.repathT = 0; }
+    player.invulnUntil = Math.max(player.invulnUntil, Game.time + 0.8);
+    if (!Game.flags.fightTold2) { Game.flags.fightTold2 = true; setTimeout(() => { if (Game.state === 'playing') UI.msg('Kill it. CLICK to attack · [1-5] / [Q] switch weapons · hits while it\'s staggered do extra damage.', 'hint', 6); }, 600); }
+  },
+};
+SCENES.wardenDeath = {
+  full: true, prio: 8, dur: 7.0, lock: true, letter: true, interrupt: true, clean: true,
+  slow: t => t < 0.25 ? lerp(1, 0.32, t / 0.25) : t < 2.0 ? 0.32 : lerp(0.32, 1, Math.min(1, (t - 2.0) / 0.9)),
+  start(sc) {
+    const M = Monster, a = actorById(sc.o.by | 0) || player, ref = a.pos;
+    sc.mine = (sc.o.by | 0) === Net.myId;
+    sc.c = new T.Vector3(M.pos.x, 0, M.pos.z);
+    // stand back on the side of the guard who did it, a little off the line, up high
+    let ux = ref.x - M.pos.x, uz = ref.z - M.pos.z; const d = Math.hypot(ux, uz) || 1; ux /= d; uz /= d;
+    const px = -uz, pz = ux, list = [];
+    for (const f of [3.6, 3.1, 2.6, 2.2, 1.8]) for (const s of [0.7, -0.7, 0.4, -0.4, 0]) list.push([M.pos.x + ux * f + px * s, M.pos.z + uz * f + pz * s]);
+    for (const f of [3.0, 2.2, 1.6]) for (let k = 0; k < 12; k++) list.push([M.pos.x + Math.cos(k / 12 * TAU) * f, M.pos.z + Math.sin(k / 12 * TAU) * f]); // (or anywhere it can be seen from)
+    sc.cam = camSpotNear(list, M.pos.x, M.pos.z) || [ref.x, ref.z];
+    Game.dip = 1; Cine.redFlash(0.6);
+  },
+  tick(sc, t) {
+    if (t > 4.9 && !sc.l) {
+      sc.l = 1; const line = sc.o.f ? 'It\'s over.' : 'Stay down.';
+      Cine.sub(sc.mine || !Net.active ? '“' + line + '”' : Net.nameOf(sc.o.by) + ':  “' + line + '”');
+      if (sc.mine || !Net.active) Voice.say(line);
+    }
+  },
+  cam(sc, t, fov) {
+    const M = Monster, k = smooth(0, 6, t);
+    camera.position.set(lerp(sc.cam[0], sc.c.x, 0.18 * k), 1.75 + 0.5 * smooth(1.5, 5, t), lerp(sc.cam[1], sc.c.z, 0.18 * k));
+    const ly = lerp(M.eyeH() - 0.2, 0.45, smooth(1.4, 3.6, t));
+    lookQuat(camera.position, _cv.set(M.model.position.x - Math.sin(M.yaw) * 0.6 * M.fall, ly, M.model.position.z - Math.cos(M.yaw) * 0.6 * M.fall), camera.quaternion);
+    Cine.snapFov = true; return 52 - 6 * smooth(0, 6, t);
+  },
+  light(sc, t) { fxLight.position.set(lerp(camera.position.x, sc.c.x, 0.5), 2.6, lerp(camera.position.z, sc.c.z, 0.5)); fxLight.color.setHex(0xffb080); fxLight.intensity = 1.4; fxLight.distance = 7; sc.fx = true; },
+  end(sc) {
+    if (sc.o.f) { if (!Net.isClient && !Battle.won) { Battle.won = true; Game.emit({ k: 'kwin' }); } }
+    else setTimeout(() => { if (Game.state === 'playing') UI.msg('It\'s down. Nothing stays dead down here — keep moving.', 'warn', 5); }, 300);
+  },
+};
+
+/* ------------------------------------------------------------------ */
 /* Boot                                                                */
 /* ------------------------------------------------------------------ */
 Monster.init();
@@ -9952,6 +11494,8 @@ Hints.init();
 Cine.init();
 Net.init();
 Arms.init();
+Weapons.init();
+Voice.init();
 bindSettingsUI();
 bindMenus();
 applySettings();
@@ -9959,9 +11503,9 @@ Goals.load();
 Scare.get(); // the jumpscare's Warden, built up front so getting caught never hitches
 Game.resetWorld();
 // warm up shaders so the first frame of gameplay doesn't hitch (incl. hint highlights and the guard model seen on CCTV)
-Net.selfAvatar(true); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = true; Sleeper.model.visible = Phantom.model.visible = true; // (and both monsters' look, and the dream's lens)
-try { camera.position.set(SPAWN.x, EYE_STAND, SPAWN.z); camera.rotation.set(0, SPAWN.yaw, 0); renderer.compile(scene, camera); Arms.R.visible = true; renderer.compile(vmScene, vmCam); if (DreamFX.ok()) renderer.compile(DreamFX.scene, DreamFX.cam); } catch (e) { }
-Net.selfAvatar(false); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = false; Sleeper.model.visible = Phantom.model.visible = false;
+Net.selfAvatar(true); guardWeapon(Net.self, 'shotgun'); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = true; fxLight.intensity = 1; Weapons.burnFx.forEach(s => { s.visible = true; }); Sleeper.model.visible = Phantom.model.visible = true; // (and both monsters' look, and the dream's lens)
+try { camera.position.set(SPAWN.x, EYE_STAND, SPAWN.z); camera.rotation.set(0, SPAWN.yaw, 0); renderer.compile(scene, camera); Arms.R.visible = true; for (const id of WPN_IDS) Weapons.vm[id].visible = true; Weapons.muzzle.material.opacity = 1; renderer.compile(vmScene, vmCam); for (const id of WPN_IDS) Weapons.vm[id].visible = false; Weapons.muzzle.material.opacity = 0; if (DreamFX.ok()) renderer.compile(DreamFX.scene, DreamFX.cam); } catch (e) { }
+Net.selfAvatar(false); guardWeapon(Net.self, null); fxLight.intensity = 0; Weapons.burnFx.forEach(s => { s.visible = false; }); Hints.halo.visible = Hints.marker.visible = Hints.column.visible = false; Sleeper.model.visible = Phantom.model.visible = false;
 Game.state = 'title';
 Preview.init();
 Preview.attach();
@@ -10007,7 +11551,7 @@ const hiddenTick = () => {
 if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
-    Hints, Cine, Net, Relay, Night, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom, Photos, Endless, Modes, CURSES, PHOTO_ART,
+    Hints, Cine, Net, Relay, Night, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom, Photos, Endless, Modes, CURSES, PHOTO_ART, Weapons, WPN, WPN_IDS, Battle, Hold, Proj, Fires, Voice, holdSchedule, fxLight, SCENES,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
