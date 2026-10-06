@@ -621,7 +621,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       </div>
     </aside>
   </div>
-  <div class="title-foot">Build 11 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
+  <div class="title-foot">Build 12 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
 </div>
 
 <!-- briefing -->
@@ -721,11 +721,11 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li>It hunts by sound and sight — and it has sharp ears. Walking near it is enough; when it hears you it <b>runs</b> to the sound. Crouch close to it, and hide the moment it starts running.</li>
           <li>Your flashlight makes you visible from far away — and shining it at the Warden enrages it.</li>
           <li>Its eyes give it away: <span style="color:#cfe6ff">pale</span> when wandering, <span style="color:#f0b45a">amber</span> when investigating, <span style="color:#ff5a4a">red</span> when hunting.</li>
-          <li>Break line of sight, close doors behind you and hide in lockers. It only finds you in a locker if it watched you get in, or stops right outside and decides to try the door — but you can only hold your nerve so long in there.</li>
+          <li>Break line of sight, close doors behind you and hide in lockers. It comes for your locker if it watched you get in, if it lost you right next to it, or if it stops outside and decides to try the door — then you have to hold the door shut. And you can only hold your nerve so long in there.</li>
           <li>Crouch to crawl through the maintenance vents. Until 5:00 they are too small for it.</li>
           <li>Cornered? Fight. Punches won't kill it, but they stagger it, and a stun buys you a few seconds. It shrugs off a second stun for a while — and comes back angrier.</li>
-          <li><b>Weapons.</b> Five are hidden around Sublevel 6: a <b>crowbar</b>, a <b>fire axe</b> behind glass, a <b>shotgun</b> (deafening — everything hears it), a <b>flare gun</b> that sets it on fire and lights up the dark, and <b>molotovs</b> that leave a pool of fire it has to walk through. Face it with one in your hand and <b>the Last Dance</b> begins: it has a health bar now. Hits while it's staggered do extra damage; at half health it gets enraged. In the Night Shift, kill it and the shift is over. In the other modes nothing stays dead — it gets back up.</li>
-          <li><b>Hold the door.</b> If it tries to tear your locker open, press <b>Space</b> every time it pulls — on the beat. Miss too many and it's in.</li>
+          <li><b>Weapons.</b> There's a <b>crowbar</b> on the security desk where you wake up. The other four glow orange where they lie and are <b>marked orange on your map</b>: a <b>fire axe</b> behind glass (Generator Hall), a <b>shotgun</b> (Containment — deafening, everything hears it), a <b>flare gun</b> (Camera Control) that sets it on fire and lights up the dark, and <b>molotovs</b> (Break Room) that leave a pool of fire it has to walk through. The bonus list under your objectives names the closest one you can reach, and <b>H</b> mentions it too. Face it with a real weapon in your hand (not the crowbar) and <b>the Last Dance</b> begins: it has a health bar now. Hits while it's staggered do extra damage; at half health it gets enraged. In the Night Shift, kill it and the shift is over. In the other modes nothing stays dead — it gets back up.</li>
+          <li><b>Hold the door.</b> When it grabs your locker door, a strip of notes slides in: press <b>Space</b> every time a pull reaches the bar — on the beat. Mashing doesn't help. Miss too many and it's in. While it's at your door your nerve holds.</li>
           <li>The heartbeat, flickering lights and the threat eye (top right) tell you when it is close.</li>
           <li><b>Look up.</b> In the long hallways it often climbs the wall and crawls along the ceiling, and it drops down on whoever is underneath. And it is cunning: a crash or a screech from one direction can be bait while it circles round to come at you from another.</li>
           <li>Sometimes it just <b>watches</b> you from the dark. Hold its gaze and it backs off — walk toward it, or put your light on it, and it charges.</li>
@@ -766,7 +766,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 11 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
+    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 12 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
   </div>
 </div>
 
@@ -1864,6 +1864,7 @@ class Door {
         pn.mesh.rotation.z = this.broken ? pn.side * 0.14 : 0; // torn half off its runners
       }
     }
+    for (const pn of this.panels) pn.mesh.updateMatrixWorld(); // (what you aim at follows the door right away, not at the next frame drawn)
   }
   updateLeds() {
     const m = this.broken ? MAT.ledOff : this.locked() ? ((this.type === 'power' || this.type === 'blue') && !Game.power ? MAT.ledAmber : MAT.ledRed) : MAT.ledGreen;
@@ -4262,7 +4263,7 @@ const Monster = {
   stagger: 0, stunImmune: 0, rageUntil: 0, kb: new T.Vector3(), netStagger: 0, netImmune: 0,
   ceil: 0, ceilWant: false, ceilH: WALL_H, ceilLat: 0.9, ceilSide: 1, ceilGo: false, ceilCD: 0, inCorr: false, sway: 0, wasUp: false,
   slamT: 1, gait: 0, huntCrawl: true, distortK: 0, glitchT: 2, glitch: null, walkPh: 0, yawVel: 0, bashHits: 0, bashIron: false, flankAt: null, decoy2: null,
-  hp: 340, maxHp: 340, burnT: 0, burnBy: null, burnAcc: 0, lastHurt: -99, phase: 0, down: 0, downUntil: 0, fall: 0, yank: null, yankCD: new Map(), yankSched: null, killedBy: -1, fireAcc: new Map(),
+  hp: 340, maxHp: 340, burnT: 0, burnBy: null, burnAcc: 0, lastHurt: -99, phase: 0, down: 0, downUntil: 0, fall: 0, yank: null, yankCD: new Map(), yankSched: null, killedBy: -1, fireAcc: new Map(), hideRoll: null,
   init() {
     this.model = buildWarden(false); this.P = this.model.userData.P; scene.add(this.model);
     this.reset();
@@ -4280,7 +4281,7 @@ const Monster = {
     this.eyeColor.set(0xdff2ff); if (this.P) this.P.glowMat.opacity = 0.9;
     this.ceil = 0; this.ceilWant = false; this.ceilH = WALL_H; this.ceilLat = 0.9; this.ceilSide = 1; this.ceilGo = false; this.ceilCD = 0; this.inCorr = false; this.sway = 0; this.wasUp = false;
     this.slamT = 1; this.gait = 0; this.huntCrawl = true; this.distortK = 0; this.glitchT = 2; this.glitch = null; this.walkPh = 0; this.yawVel = 0; this.bashHits = 0; this.bashIron = false; this.flankAt = null; this.decoy2 = null;
-    this.maxHp = this.hp = this.hpFor(); this.burnT = 0; this.burnBy = null; this.burnAcc = 0; this.lastHurt = -99; this.phase = 0; this.down = 0; this.downUntil = 0; this.fall = 0; this.yank = null; this.yankCD.clear(); this.yankSched = null; this.killedBy = -1; this.fireAcc.clear();
+    this.maxHp = this.hp = this.hpFor(); this.burnT = 0; this.burnBy = null; this.burnAcc = 0; this.lastHurt = -99; this.phase = 0; this.down = 0; this.downUntil = 0; this.fall = 0; this.yank = null; this.yankCD.clear(); this.yankSched = null; this.killedBy = -1; this.fireAcc.clear(); this.hideRoll = null;
     this.model.visible = true; this.model.position.copy(this.pos); this.model.rotation.set(0, this.yaw, 0);
   },
   activate() { if (this.active) return; this.active = true; this.cine = null; this.P.glowMat.opacity = 0.9; this.setState('PATROL'); this.pauseT = 1.2; },
@@ -4423,6 +4424,8 @@ const Monster = {
   push(actor, speed) { const dx = this.pos.x - actor.pos.x, dz = this.pos.z - actor.pos.z, l = Math.hypot(dx, dz) || 1; this.kb.set(dx / l * speed, 0, dz / l * speed); },
   stunLeft() { return this.cine && this.cine.pose === 'stunned' ? Math.max(0, this.cine.dur - this.cine.t) : 0; },
   /* ---- it can be hurt now: weapons (host / solo decides) ---- */
+  // how likely it is to go for the locker you hid in, when it lost you right there (d: how far from where it last saw you)
+  checkChance(d) { const base = { easy: 0.6, normal: 0.8, hard: 0.95 }[Net.sessionDiff || settings.difficulty] || 0.8; return base * clamp(1.15 - d / 12, 0.35, 1); },
   hpFor() { const n = typeof crew === 'function' ? crew().length : 1; return Math.round((WARDEN_HP[Net.sessionDiff || settings.difficulty] || WARDEN_HP.normal) * (1 + 0.45 * (n - 1))); },
   isDown() { return this.down > 0; },
   hurt(actor, dmg, o = {}) {
@@ -4638,6 +4641,7 @@ const Monster = {
   update(dt) {
     this.roarCD -= dt;
     this.stagger = Math.max(0, this.stagger - dt * 0.06);
+    if (this.hideRoll && (!this.hideRoll.a.hidden || this.hideRoll.a.locker !== this.hideRoll.L)) this.hideRoll = null; // (out of that locker: a new hide, a new roll)
     this.knockback(dt);
     if (this.down) { this.updateDown(dt); return; }
     this.burn(dt); if (this.down) return;
@@ -4676,8 +4680,14 @@ const Monster = {
         this.target = tg;
         const d = this.pos.distanceTo(tg.pos);
         const knows = this.seeing || (now - this.lastSeen) < diff().memory;
-        const sawHide = !!(this.seenHide && this.seenHide.actor === tg && tg.hidden && tg.locker === this.seenHide.locker);
-        const dest = knows ? (tg.hidden ? (sawHide ? tg.locker.out : this.lastKnown) : tg.pos) : this.lastKnown;
+        let sawHide = !!(this.seenHide && this.seenHide.actor === tg && tg.hidden && tg.locker === this.seenHide.locker);
+        if (!sawHide && tg.hidden && tg.locker && !(this.hideRoll && this.hideRoll.a === tg && this.hideRoll.L === tg.locker)
+          && (Math.hypot(this.pos.x - this.lastKnown.x, this.pos.z - this.lastKnown.z) < 2.6 || !knows)) { // (it got to where it lost you)
+          this.hideRoll = { a: tg, L: tg.locker };
+          const Ld = Math.hypot(tg.locker.out.x - this.lastKnown.x, tg.locker.out.z - this.lastKnown.z);
+          if (Ld < 10 && Math.random() < this.checkChance(Ld)) { this.seenHide = { actor: tg, locker: tg.locker }; sawHide = true; this.lastSeen = now; this.awareness = 1.2; this.path = null; this.hasGoal = false; this.repathT = 0; }
+        }
+        const dest = knows || sawHide ? (tg.hidden ? (sawHide ? tg.locker.out : this.lastKnown) : tg.pos) : this.lastKnown;
         if (knows && !tg.hidden) this.lastKnown.copy(tg.pos);
         this.repathT -= dt;
         if (this.repathT <= 0 || !this.hasGoal) {
@@ -4689,7 +4699,8 @@ const Monster = {
         if (knows && d < 4) faceTarget = tg.pos;
         const attackRange = tg.hidden ? 1.25 : 1.55;
         const canHit = tg.hidden ? sawHide : (this.seeing || d < 1.2);
-        if (d < attackRange && canHit && !tg.invuln() && this.ceil < 0.2) { // (it has to drop off the ceiling first)
+        const atDoor = tg.hidden && tg.locker && Math.hypot(this.pos.x - tg.locker.out.x, this.pos.z - tg.locker.out.z) < 1.3; // (wherever it came from, it's at the door: it doesn't have to stand exactly on the spot)
+        if ((d < attackRange || atDoor) && canHit && !tg.invuln() && this.ceil < 0.2) { // (it has to drop off the ceiling first)
           if (tg.hidden && tg.locker && Game.time >= (this.yankCD.get(Game.idOf(tg)) || 0)) { this.startYank(tg); break; } // the door first: hold it shut (Space, on the beat)
           this.setState('ATTACK'); this.attackT = 0; this.attackHit = false;
         }
@@ -5440,7 +5451,10 @@ const player = {
       this.pos.x = lerp(A.fx, L.pos.x, e); this.pos.z = lerp(A.fz, L.pos.z, e);
       this.eyeY = lerp(A.fy, 1.55, e);
       this.yaw = A.fyaw + angleDiff(A.fyaw, L.yaw) * e; this.pitch = lerp(A.fpitch, 0, e);
-      if (k >= 1) { this.hidden = true; this.locker = L; this.hideAnim = null; L.door.visible = false; L.target = 0; UI.setLockerView(true); UI.msg('Hidden. Stay still. [E] to leave.', 'story'); }
+      if (k >= 1) {
+        this.hidden = true; this.locker = L; this.hideAnim = null; L.door.visible = false; L.target = 0; UI.setLockerView(true); UI.msg('Hidden. Stay still. [E] to leave.', 'story');
+        if (!Game.flags.holdTip) { Game.flags.holdTip = true; setTimeout(() => { if (Game.state === 'playing' && player.hidden && !Hold.on) UI.msg('If it tries to open the locker, press SPACE every time it pulls on the door — on the beat.', 'hint', 6.5); }, 1500); }
+      }
     } else {
       if (A.t < dt * 1.5) UI.setLockerView(false);
       this.pos.x = lerp(L.pos.x, L.out.x, e); this.pos.z = lerp(L.pos.z, L.out.z, e);
@@ -5503,8 +5517,10 @@ const player = {
     const md = Monster.active ? Monster.pos.distanceTo(this.pos) : 99;
     // hiding buys time, not safety: your nerve runs out (fast, with it right outside), and you burst out gasping
     if (this.hidden) {
-      this.panic = Math.min(1, (this.panic || 0) + dt / (md < 7 ? 20 : Night.hideFor()));
-      if (this.panic >= 1) { this.panic = 0.6; this.forceOut(); Sound.gasp(); Game.noise(this.pos, 16, 'player'); UI.msg('You can\'t take it any more — you burst out of the locker, gasping!', 'warn', 4); }
+      const pinned = Hold.on || Monster.state === 'YANK' || !!(Monster.seenHide && Monster.seenHide.actor === this); // (it's coming for this door: you hold on)
+      const frozen = Monster.active && Monster.state === 'HUNT' && md < 12; // (it's hunting right out there: you don't dare move)
+      if (!pinned) this.panic = Math.min(frozen ? 0.95 : 1, (this.panic || 0) + dt / (md < 7 ? 20 : Night.hideFor()));
+      if (this.panic >= 1 && !pinned) { this.panic = 0.6; this.forceOut(); Sound.gasp(); Game.noise(this.pos, 16, 'player'); UI.msg('You can\'t take it any more — you burst out of the locker, gasping!', 'warn', 4); }
     } else this.panic = Math.max(0, (this.panic || 0) - dt / 9);
     if (md < 10) { this.fearT -= dt; if (this.fearT <= 0) { this.fearT = this.hidden ? 3.4 : rand(1.9, 2.6); Sound.breath(this.hidden ? 0.15 : 0.35 + (1 - md / 10) * 0.4); } }
     // health regeneration
@@ -5587,7 +5603,7 @@ const Input = {
 };
 document.addEventListener('pointerlockchange', () => {
   Input.locked = document.pointerLockElement === canvasEl;
-  if (Input.locked) { UI.lockHint(false); Input.dragLook = false; return; }
+  if (Input.locked) { UI.lockHint(false); Input.dragLook = false; Input.lockAt = performance.now(); return; }
   if (Input.expectUnlock) { Input.expectUnlock = false; return; }
   if (Game.state === 'reading') { UI.closeNote(true); Game.pause(); }
   else if (Game.state === 'playing') Game.pause();
@@ -5596,6 +5612,7 @@ document.addEventListener('pointerlockerror', () => Input.onLockFail());
 document.addEventListener('mousemove', e => {
   if (Game.state !== 'playing') return;
   if (!(Input.locked || (Input.dragLook && Input.mouseDown))) return;
+  if (Input.locked && performance.now() - (Input.lockAt || 0) < 120) return; // (browsers can report one huge bogus jump as the pointer locks: don't snap the view)
   const dx = clamp(e.movementX || 0, -160, 160), dy = clamp(e.movementY || 0, -160, 160);
   player.look(dx, dy);
 });
@@ -5931,7 +5948,7 @@ const UI = {
       g.strokeStyle = 'rgba(255,48,32,' + (1 - r / 10).toFixed(2) + ')'; g.lineWidth = 1.5; g.beginPath(); g.arc(mx, mz, r, 0, TAU); g.stroke();
     }
     if (Game.cams && Sleeper.active) { g.fillStyle = '#a58cff'; g.beginPath(); g.arc(Sleeper.pos.x / CELL * s, Sleeper.pos.z / CELL * s, 2.8, 0, TAU); g.fill(); }
-    Hints.drawMap(g, s); Net.drawMap(g, s);
+    Weapons.drawMap(g, s); Hints.drawMap(g, s); Net.drawMap(g, s);
     const c = cellOf(player.pos.x, player.pos.z);
     const rn = c.room && ROOM_NAMES[c.room] ? ROOM_NAMES[c.room] : (c.kind === 'vent' ? 'Maintenance vent' : 'Sublevel 6');
     this.set('map-room', 'text', rn.toUpperCase());
@@ -6100,7 +6117,8 @@ const Game = {
           this.completeObjective('flash', 'Find a flashlight');
           UI.msg('[F] toggles the light. It drains the battery — and it can be seen.', '', 5);
           this.flags.flashAt = this.time;
-          setTimeout(() => { if (Game.state === 'playing' && settings.hints) UI.msg('Stuck? Press H for a hint.', 'hint', 4); }, 5500);
+          setTimeout(() => { const c = Weapons.pickups.find(d => d.wpn === 'crowbar'); if (Game.state === 'playing' && c && c.enabled) UI.msg('There\'s a crowbar on the desk too. Take it — [E].', 'story', 4.5); }, 2200);
+          setTimeout(() => { if (Game.state === 'playing' && settings.hints) UI.msg('Stuck? Press H for a hint.', 'hint', 4); }, 6500);
         } else if (it.kind === 'battery') {
           if (!mine) break;
           player.spares++; Sound.pickup();
@@ -6763,6 +6781,7 @@ const Game = {
             : this.mode === 'endless' ? 'The night never ends. Stay alive as long as you can — a caught guard is out for good.'
             : 'Stay alive until the day shift opens the lift at 6:00 AM — or find the keycards and get out sooner. Stay together.', 'story', 6);
           setTimeout(() => { if (Game.state === 'playing') UI.msg('[G] marks a spot for your team. [H] shows a hint.', '', 4.5); }, 3600);
+          setTimeout(() => { if (Game.state === 'playing' && !Weapons.count()) UI.msg('There\'s a crowbar on the desk. The other weapons are marked orange on your map.', 'story', 5); }, 8600);
         } else if (this.mode !== 'night') Modes.introMsgs();
         else {
           UI.msg('You fell asleep at the desk. Something is loose down here — and the lift stays locked until 6:00 AM.', 'story', 5.5);
@@ -7512,6 +7531,10 @@ const Hints = {
     for (const L of hideLockers) { const d = Math.hypot(L.out.x - player.pos.x, L.out.z - player.pos.z); if (d < bd) { bd = d; best = L; } }
     return best && { pos: new T.Vector3(best.pos.x, 1.15, best.pos.z), label: 'Hide', key: 'locker', urgent: true, done: () => player.hidden || !Monster.huntsLocal() };
   },
+  weapon() { // the closest weapon still out there
+    const d = Weapons.nearest(); if (!d) return null;
+    return { pos: d.visual.position.clone(), label: WPN[d.wpn].name, key: 'wpn' + d.wpn, tip: 'The ' + WPN[d.wpn].name + ' — ' + d.room + '. Follow the yellow marker (all the weapons are orange on your map).', done: () => !d.enabled };
+  },
   describe(tg) { return 'Hint: ' + (tg.tip || tg.label + ' — ' + this.where(tg.pos) + '. Follow the yellow marker.'); },
   pulse(tg, dur, msg) {
     if (!tg) return false;
@@ -7525,10 +7548,11 @@ const Hints = {
     if (player.dead || Game.controlLock) return;
     if (this.cd > 0) { UI.msg('Next hint in ' + Math.ceil(this.cd) + 's.', '', 2); return; }
     const hunted = Monster.huntsLocal() && !player.hidden;
-    const tg = (hunted && this.locker()) || this.primary();
+    const tg = (hunted && this.locker()) || this.primary() || (Weapons.count() < 5 && this.weapon()); // (nothing to do but survive: the nearest weapon)
     if (!tg) { UI.msg('No hint right now.', '', 2); return; }
     this.cd = 20; this.stuckT = 0;
-    this.pulse(tg, 10, tg.urgent ? 'Hint: hide in the locker — it can\'t find you if it didn\'t see you get in.' : undefined);
+    const wpn = !tg.urgent && tg.key.indexOf('wpn') !== 0 && Weapons.count() < 5 && Weapons.nearest() ? ' Nearest weapon: ' + Weapons.nextLabel() + ' (orange on your map).' : '';
+    this.pulse(tg, 10, tg.urgent ? 'Hint: hide in the locker — it can\'t find you if it didn\'t see you get in.' : this.describe(tg) + wpn);
   },
   progressKey() { const c = Game.cards; return [Photos.got, player.hasFlash, c.yellow, c.blue, c.red, Game.power, Game.breakerSeq.length, Game.notesRead.has('workorder'), Game.logs, Game.downloading, Game.exitOpening].join(); },
   update(dt) {
@@ -8038,7 +8062,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 7, BUILD = 11, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 8, BUILD = 12, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -9138,7 +9162,7 @@ const Goals = {
       { id: 'b-cams', text: G.cams ? 'Cameras online: it shows on your map' : G.camBooting ? 'Cameras rebooting… ' + Math.floor(G.camBoot * 100) + '%' : 'Reboot the cameras (Camera Control)', done: G.cams },
       { id: 'b-stun', text: 'Stun the Warden (' + Math.min(3, st) + '/3)', done: st >= 3 },
       { id: 'b-name', text: G.flags.knowName ? 'Its name was Elias Crane' : 'Learn the Warden\'s real name', done: !!G.flags.knowName },
-      { id: 'b-wpn', text: G.flags.killed ? 'The Warden is dead' : 'Weapons (' + Weapons.count() + '/5) — or kill it', done: !!G.flags.killed },
+      { id: 'b-wpn', text: G.flags.killed ? 'The Warden is dead' : Weapons.count() >= 5 ? 'All five weapons — now kill it' : 'Weapons ' + Weapons.count() + '/5 · next: ' + Weapons.nextLabel(), done: !!G.flags.killed },
     ];
   },
   // end of shift: a score and a rank (best per difficulty is kept)
@@ -10613,9 +10637,10 @@ function weaponPickup(id, x, y, z, rx, ry, rz, o = {}) {
   } else addWeaponMeshes(g, id, guardMat);
   g.traverse(m => { m.castShadow = true; });
   const glint = new T.Sprite(fxGlowMat(0xfff2d8)); glint.visible = false; glint.position.set(x + (o.gx || 0), y + (o.gy || 0.07), z + (o.gz || 0)); scene.add(glint);
+  const glow = new T.Sprite(fxGlowMat(0xffa040)); glow.scale.setScalar(o.gs || 0.75); glow.position.copy(glint.position); scene.add(glow);
   const hb = hitBox(x, y + (o.hy || 0.1), z, o.hw || 0.75, o.hh || 0.32, o.hd || 0.75);
   const def = addInteract([hb], { kind: 'weapon', wpn: id, prompt: () => o.prompt || 'Take the ' + WPN[id].name, use: () => Game.takeItem(def) });
-  def.visual = g; def.glint = glint; def.gT = rand(1, 4); def.glass = o.glass || null;
+  def.visual = g; def.glint = glint; def.glow = glow; def.gT = rand(1, 4); def.glass = o.glass || null; def.room = o.room || '';
   addItem('weapon', g, def);
   wpnPickups.push(def);
   return def;
@@ -10624,15 +10649,16 @@ function ammoPickup(kind, n, x, y, z, ry) {
   const g = new T.Group(); g.position.set(x, y, z); g.rotation.y = ry; scene.add(g);
   const m = new T.Mesh(WGEO[kind], guardMat); m.castShadow = true; g.add(m);
   const glint = new T.Sprite(fxGlowMat(0xfff2d8)); glint.visible = false; glint.position.set(x, y + 0.08, z); scene.add(glint);
+  const glow = new T.Sprite(fxGlowMat(0xffa040)); glow.scale.setScalar(0.5); glow.position.copy(glint.position); scene.add(glow);
   const hb = hitBox(x, y + 0.08, z, 0.5, 0.25, 0.5);
   const def = addInteract([hb], { kind: 'ammo', ammo: kind === 'shells' ? 'shells' : 'flares', n, prompt: () => 'Take ' + (kind === 'shells' ? 'shotgun shells' : 'signal flares') + ' (' + n + ')', use: () => Game.takeItem(def) });
-  def.visual = g; def.glint = glint; def.gT = rand(1, 4);
+  def.visual = g; def.glint = glint; def.glow = glow; def.gT = rand(1, 4);
   addItem('ammo', g, def);
   wpnPickups.push(def);
   return def;
 }
-// 1. the crowbar: dropped on the storage floor, by the workbench
-weaponPickup('crowbar', 13.6, 0.018, 10.3, 0, 0.55, Math.PI / 2);
+// 1. the crowbar: on the security desk, right where you wake up (the other four are out there)
+weaponPickup('crowbar', 2.86, 0.781, 49.75, 0, 0.06, Math.PI / 2, { hy: 0.06, hw: 0.5, hh: 0.24, hd: 0.8, gy: 0.04, gz: -0.3, gs: 0.6, room: 'Security Office' });
 // 2. the fire axe: behind glass in a red case on the Generator Hall's east wall
 const axeGlass = (() => {
   addStatic(GEO.box, MAT.red, 37.93, 1.45, 24, 0.1, 1.16, 0.56);
@@ -10641,18 +10667,18 @@ const axeGlass = (() => {
   const gl = new T.Mesh(GEO.plane, MAT.glass); gl.position.set(37.76, 1.45, 24); gl.rotation.y = -Math.PI / 2; gl.scale.set(0.46, 1.06, 1); scene.add(gl);
   return gl;
 })();
-weaponPickup('axe', 37.82, 1.28, 24.02, Math.PI / 2, 0, 0, { glass: axeGlass, hy: 0.15, hw: 0.6, hh: 1.0, hd: 0.7, gy: 0.5, gx: -0.06, prompt: 'Break the glass — take the Fire Axe' });
+weaponPickup('axe', 37.82, 1.28, 24.02, Math.PI / 2, 0, 0, { glass: axeGlass, hy: 0.15, hw: 0.6, hh: 1.0, hd: 0.7, gy: 0.5, gx: -0.06, gs: 1.1, prompt: 'Break the glass — take the Fire Axe', room: 'Generator Hall' });
 // 3. the shotgun: on the containment team's rack, just inside the door
 (() => {
   for (const hx of [45.75, 46.75]) { addStatic(GEO.box, MAT.metalDark, hx, 1.3, 13.93, 0.06, 0.16, 0.12); addStatic(GEO.box, MAT.metalDark, hx, 1.24, 13.87, 0.06, 0.04, 0.1); }
   addStatic(GEO.box, MAT.metalDark, 46.25, 1.32, 13.98, 1.5, 0.5, 0.03);
   sign(['CONTAINMENT RESPONSE', 'AUTHORIZED PERSONNEL ONLY'], 46.25, 1.85, 13.98, 'N', 1.15, 0.28, { band: '#a01d18' });
 })();
-weaponPickup('shotgun', 46.25, 1.29, 13.86, 0, -Math.PI / 2, 0, { hy: 0, hw: 1.0, hh: 0.4, hd: 0.5 });
+weaponPickup('shotgun', 46.25, 1.29, 13.86, 0, -Math.PI / 2, 0, { hy: 0, hw: 1.0, hh: 0.4, hd: 0.5, gs: 1.0, room: 'Containment' });
 // 4. the flare gun: on the security desk in Camera Control
-weaponPickup('flare', 88.15, 0.8, 55.45, 0, 1.9, Math.PI / 2);
+weaponPickup('flare', 88.15, 0.8, 55.45, 0, 1.9, Math.PI / 2, { room: 'Camera Control' });
 // 5. molotovs: someone's stash on the Break Room table
-weaponPickup('molotov', 30.45, 0.85, 9.85, 0, 0.3, 0, { hy: 0, gy: 0.16 });
+weaponPickup('molotov', 30.45, 0.85, 9.85, 0, 0.3, 0, { hy: 0, gy: 0.16, room: 'Break Room' });
 // and the rounds for them: shells in the Security Office (for a gun you don't have yet), flares in the Medical Bay
 ammoPickup('shells', 4, 2.62, 0.765, 52.15, 0.5);
 ammoPickup('flares', 3, 51.6, 0.6, 54.9, 0.9);
@@ -10889,7 +10915,7 @@ const Weapons = {
     this.has = {}; this.ammo = { shells: 0, flares: 0, molotov: 0 }; this.cur = null; this.t = -1; this.cd = 0; this.drawT = 0; this.kick = 0; this.flashT = 0; this.pumpT = -1; this.thrown = false; this.landed = 0; this.found = 0;
     for (const d of this.pickups) { d.glint.visible = false; if (d.glass) d.glass.visible = true; }
     for (const id of WPN_IDS) this.vm[id].visible = false;
-    this.hudKey = ''; $('wpn').classList.remove('on');
+    this.hudKey = ''; $('wpn').classList.remove('on'); this.reach = null;
     Proj.reset(); Fires.reset();
   },
   armed() { return !!this.cur; },
@@ -10905,6 +10931,7 @@ const Weapons = {
     UI.center(w.name.toUpperCase(), w.tip, 3.2);
     UI.msg(first ? 'CLICK to attack · [' + w.slot + '] or [Q] / mouse wheel to switch · [V] to punch' : w.name + ' — [' + w.slot + ']' + (w.ammo ? ' · ' + this.ammo[w.ammo] + ' ' + AMMO_LABEL[w.ammo].toLowerCase() : ''), 'good', 5);
     if (this.count() >= WPN_IDS.length) Goals.unlock('arsenal');
+    if (id === 'crowbar' && first) setTimeout(() => { if (Game.state === 'playing') UI.msg('It won\'t kill it on its own — but it\'ll make it flinch. The real weapons are marked orange on your map.', 'story', 6); }, 3400);
     $('wpn').classList.add('on');
   },
   addAmmo(kind, n) {
@@ -10960,9 +10987,10 @@ const Weapons = {
   fireShotgun() {
     const w = WPN.shotgun, p = player;
     this.ammo.shells--; this.kick = 1; this.flashT = 0.07; this.pumpT = 0.32;
-    Sound.shotgun(); Game.shake(0.5); p.pitch = clamp(p.pitch + 0.045, -1.45, 1.45);
+    Sound.shotgun(); Game.shake(0.5);
     Game.noise(p.pos, w.noise, 'player');
     const e = this.eye(_wv1), f = p.forward(new T.Vector3()), d = new T.Vector3();
+    p.pitch = clamp(p.pitch + 0.045, -1.45, 1.45); // (the kick comes after the shot: the pellets go where you aimed)
     let hits = 0, hd = 0, sparks = 0;
     for (let i = 0; i < w.pellets; i++) {
       spreadDir(f, w.spread, d);
@@ -11038,8 +11066,10 @@ const Weapons = {
     this.glints(dt);
     this.burnVisuals(dt);
   },
-  glints(dt) { // the pickups catch your light now and then
+  glints(dt) { // the pickups catch your light now and then — and glow softly, so you can spot them across a dark room
+    const ph = Game.time * 2.2;
     for (const d of this.pickups) {
+      if (d.glow) { d.glow.visible = d.enabled; if (d.enabled) d.glow.material.opacity = 0.32 + 0.16 * Math.sin(ph + d.gT * 3); }
       if (!d.enabled) { d.glint.visible = false; continue; }
       d.gT -= dt;
       if (d.gT <= 0) { d.gT = rand(2.2, 5); d.glint.visible = true; d.glint.userData.t = 0; }
@@ -11119,6 +11149,48 @@ const Weapons = {
     if (this.kick > 0 && (this.cur === 'shotgun' || this.cur === 'flare')) cam.rotation.x += (this.cur === 'shotgun' ? 0.05 : 0.03) * this.kick;
     if (this.t >= 0 && this.cur && WPN[this.cur].kind === 'melee') { const w = WPN[this.cur], e = Math.sin(Math.PI * clamp((this.t - w.hitAt + 0.1) / 0.24, 0, 1)); cam.rotation.z += (this.cur === 'axe' ? 0.045 : 0.025) * e * this.side; cam.rotation.x -= 0.02 * e; }
   },
+  // where you can get to right now (through doors you can open with what you carry)
+  reach: null, reachT: 0,
+  canReach(x, z) {
+    if (!this.reach || Math.abs(Game.time - this.reachT) > 1.5) {
+      this.reachT = Game.time; const seen = new Uint8Array(W * H), q = [];
+      const open = c => { if (!isWalkKind(c)) return false; const d = c.door; if (!d || !d.locked()) return true; return d.type === 'yellow' ? !!Game.cards.yellow : d.type === 'blue' ? !!(Game.cards.blue && Game.power) : false; };
+      const sx = Math.floor(player.pos.x / CELL), sz = Math.floor(player.pos.z / CELL);
+      if (sx >= 0 && sz >= 0 && sx < W && sz < H) { seen[sz * W + sx] = 1; q.push(sx, sz); }
+      while (q.length) {
+        const z = q.pop(), x = q.pop();
+        for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= W || nz >= H || seen[nz * W + nx] || !open(cellAt(nx, nz))) continue; seen[nz * W + nx] = 1; q.push(nx, nz); }
+      }
+      this.reach = seen;
+    }
+    const cx = Math.floor(x / CELL), cz = Math.floor(z / CELL);
+    for (const [dx, dz] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx, nz = cz + dz; if (nx >= 0 && nz >= 0 && nx < W && nz < H && this.reach[nz * W + nx]) return true; }
+    return false;
+  },
+  // the closest weapon still out there that you can get to (else the closest, locked away)
+  nearest() {
+    let best = null, bd = 1e9, any = null, ad = 1e9;
+    for (const d of this.pickups) {
+      if (d.kind !== 'weapon' || !d.enabled) continue;
+      const p = d.visual.position, dd = Math.hypot(p.x - player.pos.x, p.z - player.pos.z);
+      if (dd < ad) { ad = dd; any = d; }
+      if (dd < bd && this.canReach(p.x, p.z)) { bd = dd; best = d; }
+    }
+    return best || any;
+  },
+  nextLabel() { const n = this.nearest(); if (!n) return '—'; const p = n.visual.position; return WPN[n.wpn].name + ', ' + n.room + (this.canReach(p.x, p.z) ? '' : ' (locked)'); },
+  // every weapon (and box of rounds) still out there, marked on the map in orange
+  drawMap(g, s) {
+    const pulse = 0.88 + 0.12 * Math.sin(Date.now() / 260);
+    for (const d of this.pickups) {
+      if (!d.enabled) continue;
+      const p = d.visual.position, x = p.x / CELL * s, z = p.z / CELL * s;
+      if (d.kind === 'weapon') {
+        g.fillStyle = 'rgba(0,0,0,.75)'; g.beginPath(); g.moveTo(x, z - 5.5); g.lineTo(x + 5.5, z); g.lineTo(x, z + 5.5); g.lineTo(x - 5.5, z); g.closePath(); g.fill();
+        g.fillStyle = 'rgba(255,150,50,' + pulse.toFixed(2) + ')'; g.beginPath(); g.moveTo(x, z - 4); g.lineTo(x + 4, z); g.lineTo(x, z + 4); g.lineTo(x - 4, z); g.closePath(); g.fill();
+      } else { g.fillStyle = 'rgba(255,170,80,.8)'; g.fillRect(x - 1.5, z - 1.5, 3, 3); }
+    }
+  },
   /* ---- the HUD strip above the map ---- */
   hud() {
     const id = this.cur, w = id ? WPN[id] : null;
@@ -11162,8 +11234,8 @@ function yankPull(sch, t) {
   return m;
 }
 const Hold = {
-  on: false, vis: false, sch: null, t: 0, i: 0, yi: 0, misses: 0, allowed: 2, win: 0.13, strain: 0, perfect: 0, hits: 0, done: false, notes: [], hideT: 0, gap: 0, jolt: 0,
-  reset() { this.on = false; this.vis = false; this.done = false; this.notes = []; $('hold').classList.remove('on'); $('hud').classList.remove('holding'); $('hold-notes').innerHTML = ''; this.gap = 0; this.jolt = 0; this.applyFx(); },
+  on: false, vis: false, sch: null, t: 0, i: 0, yi: 0, misses: 0, allowed: 2, win: 0.13, strain: 0, perfect: 0, hits: 0, done: false, notes: [], hideT: 0, gap: 0, jolt: 0, idleT: 0,
+  reset() { this.on = false; this.vis = false; this.done = false; this.notes = []; this.idleT = 0; $('hold').classList.remove('on'); $('hud').classList.remove('holding'); $('hold-notes').innerHTML = ''; this.gap = 0; this.jolt = 0; this.applyFx(); },
   start(seed) {
     if (!player.hidden || player.dead) return;
     const dn = Net.sessionDiff || settings.difficulty;
@@ -11179,7 +11251,11 @@ const Hold = {
   pips() { const el = $('hold-pips'); let h = ''; for (let k = 0; k <= this.allowed; k++) h += '<b class="' + (k < this.allowed + 1 - this.misses ? 'ok' : '') + '"></b>'; el.innerHTML = h; },
   // SPACE
   press() {
-    if (!this.on || this.done) return;
+    if (!this.on) { // (nothing pulling on it yet)
+      if (player.hidden && !this.vis && Game.time > this.idleT) { this.idleT = Game.time + 6; UI.msg('You brace the door. Nothing is pulling on it — yet.', '', 2.4); }
+      return;
+    }
+    if (this.done) return;
     const b = this.sch.beats, j = this.i;
     if (j >= b.length) return;
     const dt = this.t - b[j];
@@ -11233,6 +11309,7 @@ const Hold = {
     if (ok) {
       this.say(this.misses ? 'IT LET GO' : 'IRON GRIP', 'perfect');
       Sound.doorHold(true); Goals.unlock('holddoor'); if (!this.misses) Goals.unlock('irongrip');
+      player.panic = Math.max(0, (player.panic || 0) - 0.35); // (relief)
       setTimeout(() => { if (Game.state === 'playing' && player.hidden) UI.center('IT LET GO', 'Breathe. Quietly.', 2.6); }, 500);
     } else { this.say('IT\'S IN', 'bad'); }
     if (Net.isClient) Net.request('hold', ok ? 1 : 0); else Game.holdResult(player, ok);
@@ -11280,7 +11357,8 @@ const Battle = {
     const F = Game.flags, M = Monster;
     if (F.danced || !M.active || M.down || M.cine || M.state === 'ATTACK' || M.state === 'YANK' || M.state === 'SCRIPT' || M.ceil > 0.3 || Game.ending || Game.endingLock || Cine.cur || Game.state !== 'playing' && !Net.inGame) return;
     for (const a of actors()) {
-      if (!(a === player ? Weapons.armed() : a.wpn > 0) || a.hidden || a.inVent || a.dead) continue;
+      const w = a === player ? Weapons.cur : WPN_IDS[(a.wpn | 0) - 1];
+      if (!w || w === 'crowbar' || a.hidden || a.inVent || a.dead) continue; // (the crowbar only buys you time: the Last Dance starts with a real weapon in your hands)
       const d = Math.hypot(a.pos.x - M.pos.x, a.pos.z - M.pos.z);
       if (d > 17 || d < 3.4 || !losClear(a.pos.x, a.pos.z, M.pos.x, M.pos.z)) continue;
       if (!(looksAt(a, M.pos.x, M.eyeH() - 0.4, M.pos.z, 0.8) || (M.seeing && M.target === a && d < 12))) continue;
