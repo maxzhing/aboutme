@@ -165,6 +165,19 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 .seg button+button{border-left:1px solid var(--line2)}
 .seg button.on{background:var(--amber);color:#111}
 .tog{padding:7px 14px;border:1px solid var(--line2);font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:#a49e91;min-width:76px}
+/* settings: controls */
+.set-sec{margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+.set-sec .kicker{margin-bottom:4px}
+.keys-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 26px;margin-top:12px}
+.krow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.krow span{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:#bdb7aa;text-transform:uppercase}
+.kbtn{min-width:76px;padding:6px 10px;border:1px solid var(--line2);font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:#ece6d8;background:rgba(255,255,255,.03);text-align:center;flex:none}
+.kbtn:hover,.kbtn:focus-visible{border-color:var(--amber);color:#fff;outline:none}
+.kbtn.listen{border-color:var(--amber);color:#111;background:var(--amber);animation:klisten 1s ease-in-out infinite}
+.kbtn.moved{border-color:#6fd59b;color:#c8f2d8}
+@keyframes klisten{50%{opacity:.62}}
+.keys-note{min-height:18px;margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#e3b25c}
+@media (max-width:860px){.keys-grid{grid-template-columns:1fr}}
 .tog.on{border-color:var(--amber);color:var(--amber)}
 
 /* ---------- how to play ---------- */
@@ -751,13 +764,13 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div class="stat"><div class="stat-top"><span>NOISE</span><span id="noise-txt">SILENT</span></div><div class="bar" id="bar-noise"><i style="width:0"></i></div></div>
     <div id="cards"><span id="card-y" title="Maintenance card"></span><span id="card-b" title="Research card"></span><span id="card-r" title="Director card"></span></div>
   </div>
-  <div id="minimap-wrap"><canvas id="minimap" width="270" height="145"></canvas><div id="minimap-label"><span id="map-room">SUBLEVEL 6</span><span>[M]</span></div></div>
+  <div id="minimap-wrap"><canvas id="minimap" width="270" height="145"></canvas><div id="minimap-label"><span id="map-room">SUBLEVEL 6</span><span>[<span data-key="map">M</span>]</span></div></div>
   <div id="messages"></div>
   <div id="fps"></div>
   <div id="center-title"></div>
   <div id="lock-hint"></div>
   <div id="team"></div>
-  <div id="abil" class="ready"><div id="ab-ring"><svg viewBox="0 0 52 52" aria-hidden="true"><circle class="bg" cx="26" cy="26" r="21"/><circle id="ab-arc" cx="26" cy="26" r="21"/></svg><img id="ab-ico" alt=""><b id="ab-cdn"></b></div><div id="ab-txt"><span id="ab-char"></span><span class="abh"><b id="ab-name"></b><kbd id="ab-key">F</kbd></span><span id="ab-st"></span></div></div>
+  <div id="abil" class="ready"><div id="ab-ring"><svg viewBox="0 0 52 52" aria-hidden="true"><circle class="bg" cx="26" cy="26" r="21"/><circle id="ab-arc" cx="26" cy="26" r="21"/></svg><img id="ab-ico" alt=""><b id="ab-cdn"></b></div><div id="ab-txt"><span id="ab-char"></span><span class="abh"><b id="ab-name"></b><kbd id="ab-key" data-key="ability">F</kbd></span><span id="ab-st"></span></div></div>
   <div id="parry-pop">PARRY!</div>
   <div id="pulse-layer"></div><div id="pulse-it"></div>
   <div id="stun"><span id="stun-label">STAGGER</span><i><b id="stun-bar"></b></i></div>
@@ -765,7 +778,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   <div id="photo-pop"><img id="photo-img" alt=""><span id="photo-n"></span></div>
   <div id="wpn"><div id="wpn-name">FISTS</div><div id="wpn-ammo"></div><div id="wpn-slots"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i></div></div>
   <div id="boss"><div id="boss-name">THE WARDEN</div><div id="boss-bar"><b id="boss-lag"></b><b id="boss-hp"></b><s style="left:50%"></s></div><div id="boss-sub"></div></div>
-  <div id="hold"><div id="hold-h">HOLD THE DOOR</div><div id="hold-lane"><div id="hold-zone"></div><div id="hold-notes"></div></div><div id="hold-foot"><span id="hold-pips"></span><span>[SPACE] ON EVERY PULL</span></div><div id="hold-judge"></div></div>
+  <div id="hold"><div id="hold-h">HOLD THE DOOR</div><div id="hold-lane"><div id="hold-zone"></div><div id="hold-notes"></div></div><div id="hold-foot"><span id="hold-pips"></span><span>[<span data-key="hold" data-key-up>SPACE</span>] ON EVERY PULL</span></div><div id="hold-judge"></div></div>
   <div id="curse-pick"><div id="cp-title">CHOOSE A CURSE</div><div class="cp-cards"><div class="cp-card"><span class="k">1</span><h4></h4><p></p></div><div class="cp-card"><span class="k">2</span><h4></h4><p></p></div></div><div id="cp-time"><div id="cp-bar"></div></div></div>
 </div>
 
@@ -776,9 +789,9 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   <div id="cine-flash"></div>
   <div id="cine-static"></div>
   <div id="cine-sub"></div>
-  <div id="cine-skip">HOLD SPACE TO SKIP<i><b id="cine-skip-bar"></b></i></div>
+  <div id="cine-skip">HOLD <span data-key="hold" data-key-up>SPACE</span> TO SKIP<i><b id="cine-skip-bar"></b></i></div>
 </div>
-<div id="fr"><div id="fr-k">THE WARDEN</div><div id="fr-q">FIGHT<i>or</i>RUN</div><div id="fr-opts"><button id="fr-fight" type="button"><b>FIGHT</b><span>[E] or CLICK</span><small id="fr-wpn">The Last Dance</small></button><button id="fr-run" type="button"><b>RUN</b><span>[SPACE] or [SHIFT]</span><small>Live to face it another time</small></button></div><div id="fr-time"><i id="fr-bar"></i></div></div>
+<div id="fr"><div id="fr-k">THE WARDEN</div><div id="fr-q">FIGHT<i>or</i>RUN</div><div id="fr-opts"><button id="fr-fight" type="button"><b>FIGHT</b><span>[<span data-key="interact" data-key-up>E</span>] or CLICK</span><small id="fr-wpn">The Last Dance</small></button><button id="fr-run" type="button"><b>RUN</b><span>[<span data-key="hold" data-key-up>SPACE</span>] or [<span data-key="sprint" data-key-up>SHIFT</span>]</span><small>Live to face it another time</small></button></div><div id="fr-time"><i id="fr-bar"></i></div></div>
 <div id="pip"><div class="pip-fx"></div><div class="pip-ui"><span class="pv-rec"><i></i>LIVE</span><span id="pip-time"></span><span id="pip-cam"></span><span id="pip-alert"></span></div><div id="pip-static"></div></div>
 
 <!-- loading -->
@@ -839,24 +852,24 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="controls-card">
         <h3>Controls</h3>
         <div class="ctl two">
-          <span class="key">W A S D</span><span>Move</span>
-          <span class="key">T</span><span>Flashlight</span>
-          <span class="key">F</span><span>Character ability</span>
+          <span class="key" data-key="forward,left,back,right">W A S D</span><span>Move</span>
+          <span class="key" data-key="flashlight">T</span><span>Flashlight</span>
+          <span class="key" data-key="ability">F</span><span>Character ability</span>
           <span class="key">Mouse</span><span>Look</span>
-          <span class="key">E</span><span>Interact · hide · read</span>
-          <span class="key">Shift</span><span>Sprint (loud)</span>
-          <span class="key">R</span><span>Battery / crank</span>
-          <span><span class="key">Ctrl</span> / <span class="key">C</span></span><span>Crouch</span>
-          <span class="key">M</span><span>Minimap</span>
-          <span><span class="key">Click</span> / <span class="key">V</span></span><span>Punch (stuns it)</span>
-          <span class="key">H</span><span>Hint (yellow marker)</span>
-          <span class="key">G</span><span>Ping (co-op)</span>
-          <span><span class="key">P</span> / <span class="key">Esc</span></span><span>Pause</span>
+          <span class="key" data-key="interact">E</span><span>Interact · hide · read</span>
+          <span class="key" data-key="sprint">Shift</span><span>Sprint (loud)</span>
+          <span class="key" data-key="reload">R</span><span>Battery / crank</span>
+          <span><span class="key" data-key="crouch">Ctrl</span> / <span class="key" data-key="crouchToggle">C</span></span><span>Crouch</span>
+          <span class="key" data-key="map">M</span><span>Minimap</span>
+          <span><span class="key">Click</span> / <span class="key" data-key="punch">V</span></span><span>Punch (stuns it)</span>
+          <span class="key" data-key="hint">H</span><span>Hint (yellow marker)</span>
+          <span class="key" data-key="ping">G</span><span>Ping (co-op)</span>
+          <span><span class="key" data-key="pause">P</span> / <span class="key">Esc</span></span><span>Pause</span>
         </div>
       </div>
     </aside>
   </div>
-  <div class="title-foot">Build 13 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
+  <div class="title-foot">Build 14 &nbsp;·&nbsp; Headphones recommended &nbsp;·&nbsp; Procedurally generated audio &amp; visuals</div>
 </div>
 
 <!-- briefing -->
@@ -934,7 +947,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <label>Show FPS</label><div class="set-ctl"><button class="tog" id="set-fps"></button></div>
       <label>Item hints</label><div class="set-ctl"><button class="tog" id="set-hints"></button><span class="mp-note">yellow highlights when you're stuck</span></div>
     </div>
-    <div class="row"><button class="btn primary" id="btn-set-back">Done</button><button class="btn" id="btn-set-reset">Reset to defaults</button></div>
+    <div class="set-sec"><div class="kicker">Controls</div><div class="mp-note">Click a key, then press the one you want. If another action already uses it, the two swap places. Esc cancels.</div></div>
+    <div class="keys-grid" id="keys-grid"></div>
+    <div class="keys-note" id="keys-note" aria-live="polite"></div>
+    <div class="row"><button class="btn primary" id="btn-set-back">Done</button><button class="btn" id="btn-keys-reset">Reset controls</button><button class="btn" id="btn-set-reset">Reset to defaults</button></div>
   </div>
 </div>
 
@@ -947,29 +963,30 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div>
         <h4>Controls</h4>
         <div class="ctl">
-          <span><span class="key">W A S D</span></span><span>Move (arrow keys also work)</span>
+          <span><span class="key" data-key="forward,left,back,right">W A S D</span></span><span>Move (arrow keys also work)</span>
           <span class="key">Mouse</span><span>Look — click START to capture the mouse</span>
-          <span class="key">Shift</span><span>Sprint — fast, drains stamina, very loud</span>
-          <span><span class="key">Ctrl</span> / <span class="key">C</span></span><span>Crouch — hold Ctrl or toggle with C. Quiet, needed for vents. (On Windows/Linux prefer C: Ctrl+W closes the tab)</span>
-          <span class="key">T</span><span>Flashlight — limited battery</span>
-          <span class="key">F</span><span>Your character's ability (see Characters). Each has a cooldown, shown bottom-left</span>
-          <span class="key">R</span><span>Swap in a spare battery; with no spares, hold to crank (noisy)</span>
-          <span class="key">E</span><span>Interact: doors, items, notes, switches, lockers</span>
-          <span class="key">M</span><span>Toggle minimap (shows explored areas)</span>
-          <span class="key">H</span><span>Hint — highlights the next thing you need in yellow (it also happens on its own when you're stuck; turn it off in Settings)</span>
+          <span class="key" data-key="sprint">Shift</span><span>Sprint — fast, drains stamina, very loud</span>
+          <span><span class="key" data-key="crouch">Ctrl</span> / <span class="key" data-key="crouchToggle">C</span></span><span>Crouch — hold <span data-key="crouch">Ctrl</span> or toggle with <span data-key="crouchToggle">C</span>. Quiet, needed for vents. (Careful with Ctrl: Ctrl+W closes a browser tab)</span>
+          <span class="key" data-key="flashlight">T</span><span>Flashlight — limited battery</span>
+          <span class="key" data-key="ability">F</span><span>Your character's ability (see Characters). Each has a cooldown, shown bottom-left</span>
+          <span class="key" data-key="reload">R</span><span>Swap in a spare battery; with no spares, hold to crank (noisy)</span>
+          <span class="key" data-key="interact">E</span><span>Interact: doors, items, notes, switches, lockers</span>
+          <span class="key" data-key="map">M</span><span>Toggle minimap (shows explored areas)</span>
+          <span class="key" data-key="hint">H</span><span>Hint — highlights the next thing you need in yellow (it also happens on its own when you're stuck; turn it off in Settings)</span>
           <span class="key">Click</span><span>Attack with the weapon in your hand (no weapon: punch)</span>
-          <span><span class="key">V</span> / <span class="key">Right click</span></span><span>Punch. It barely hurts the Warden, but a few hits — or one as it lunges — stun it for a few seconds.</span>
-          <span><span class="key">1</span>–<span class="key">5</span> / <span class="key">Q</span></span><span>Switch weapons (or the mouse wheel). Press a weapon's number again to put it away</span>
-          <span class="key">Space</span><span>In a locker: hold the door shut when it pulls on it — press on every pull, on the beat</span>
-          <span class="key">G</span><span>Co-op: mark a spot for your team</span>
-          <span><span class="key">Hold Space</span></span><span>Skip a camera cutscene</span>
-          <span><span class="key">P</span> / <span class="key">Esc</span></span><span>Pause and release the mouse</span>
+          <span><span class="key" data-key="punch">V</span> / <span class="key">Right click</span></span><span>Punch. It barely hurts the Warden, but a few hits — or one as it lunges — stun it for a few seconds.</span>
+          <span><span class="key">1</span>–<span class="key">5</span> / <span class="key" data-key="nextWeapon">Q</span></span><span>Switch weapons (or the mouse wheel). Press a weapon's number again to put it away</span>
+          <span class="key" data-key="hold">Space</span><span>In a locker: hold the door shut when it pulls on it — press on every pull, on the beat</span>
+          <span class="key" data-key="ping">G</span><span>Co-op: mark a spot for your team</span>
+          <span><span class="key">Hold <span data-key="hold">Space</span></span></span><span>Skip a camera cutscene</span>
+          <span><span class="key" data-key="pause">P</span> / <span class="key">Esc</span></span><span>Pause and release the mouse</span>
+          <span class="key">Settings</span><span>Every key above can be changed: Settings → Controls</span>
         </div>
       </div>
       <div>
         <h4>Surviving the Warden</h4>
         <ul class="tips">
-          <li><b>Characters.</b> Everyone starts as the <b>Night Guard</b>. <b>Character Roll</b> (title screen) spins for one of 12 characters — your first spin is free, after that each costs 100 coins, earned only by playing: escaping, staying alive, achievements. The odds are on the roll screen (Common 50% · Rare 30% · Epic 15% · Legendary 5%); a duplicate gives coins back. Every character has an ability on <b>F</b>, real strengths and real weaknesses — Bob parries anything with perfect timing but dies in one hit (or the moment he runs out of breath), the Medic heals teammates, the Scout sees through walls, the Commander rallies the team. Equip one under <b>Characters</b>; online, everyone can bring someone different. The flashlight is on <b>T</b>.</li>
+          <li><b>Characters.</b> Everyone starts as the <b>Night Guard</b>. <b>Character Roll</b> (title screen) spins for one of 12 characters — your first spin is free, after that each costs 100 coins, earned only by playing: escaping, staying alive, achievements. The odds are on the roll screen (Common 50% · Rare 30% · Epic 15% · Legendary 5%); a duplicate gives coins back. Every character has an ability on <b data-key="ability">F</b>, real strengths and real weaknesses — Bob parries anything with perfect timing but dies in one hit (or the moment he runs out of breath), the Medic heals teammates, the Scout sees through walls, the Commander rallies the team. Equip one under <b>Characters</b>; online, everyone can bring someone different. The flashlight is on <b data-key="flashlight">T</b>.</li>
           <li><b>The deeper floors</b> (New Game → Deeper): <b>Sublevel 7, the Gallery</b> — a museum of mannequins where one of them only moves while nobody looks at it: keep it in your light, find three fuses, power the freight lift. <b>Sublevel 8, the Blackout</b> — a power station gone dark, where the Shade lives between the lights: torch beams, flares and fire burn it, lamps keep it out, and it puts the lamps out to reach you. Restart three turbines, throw the main breaker, call the Surface Express — and survive the dark until it comes.</li>
           <li><b>Three modes</b> (pick one when you press New Game): <b>The Night Shift</b> — survive until 6:00 AM; <b>The Polaroids</b> — find 8 photos hidden somewhere new every run, each one making it worse, then race to the lift (there is a Daily layout to compete on); <b>Endless Night</b> — no dawn, a new curse every hour (press <b>1</b> or <b>2</b> to choose), survive as long as you can.</li>
           <li><b>The Night Shift: survive until 6:00 AM</b> (the clock is at the top of the screen), then get onto the surface lift when the day shift opens it. Every hour it gets faster and sharper-eared; at 4:00 a power surge blacks everything out; in the last hour it can crawl into the vents. Or open the lift early: three keycards, main power and the breach report.</li>
@@ -979,8 +996,8 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li>Break line of sight, close doors behind you and hide in lockers. It comes for your locker if it watched you get in, if it lost you right next to it, or if it stops outside and decides to try the door — then you have to hold the door shut. And you can only hold your nerve so long in there.</li>
           <li>Crouch to crawl through the maintenance vents. Until 5:00 they are too small for it.</li>
           <li>Cornered? Fight. Punches won't kill it, but they stagger it, and a stun buys you a few seconds. It shrugs off a second stun for a while — and comes back angrier.</li>
-          <li><b>Weapons.</b> There's a <b>crowbar</b> on the security desk where you wake up. The other four glow orange where they lie and are <b>marked orange on your map</b>: a <b>fire axe</b> behind glass (Generator Hall), a <b>shotgun</b> (Containment — deafening, everything hears it), a <b>flare gun</b> (Camera Control) that sets it on fire and lights up the dark, and <b>molotovs</b> (Break Room) that leave a pool of fire it has to walk through. The bonus list under your objectives names the closest one you can reach, and <b>H</b> mentions it too. Face it with any weapon in your hand — even the crowbar — and time all but stops: <b>FIGHT or RUN?</b> Press <b>E</b> (or click) to fight and <b>the Last Dance</b> begins: it has a health bar now. Press <b>Space</b> or <b>Shift</b> to run, and the night goes on as normal — you'll get the choice again the next time you face it. Hits while it's staggered do extra damage; at half health it gets enraged. In the Night Shift, kill it and the shift is over. In the other modes nothing stays dead — it gets back up.</li>
-          <li><b>Hold the door.</b> When it grabs your locker door, a strip of notes slides in: press <b>Space</b> every time a pull reaches the bar — on the beat. Mashing doesn't help. Miss too many and it's in. While it's at your door your nerve holds.</li>
+          <li><b>Weapons.</b> There's a <b>crowbar</b> on the security desk where you wake up. The other four glow orange where they lie and are <b>marked orange on your map</b>: a <b>fire axe</b> behind glass (Generator Hall), a <b>shotgun</b> (Containment — deafening, everything hears it), a <b>flare gun</b> (Camera Control) that sets it on fire and lights up the dark, and <b>molotovs</b> (Break Room) that leave a pool of fire it has to walk through. The bonus list under your objectives names the closest one you can reach, and <b data-key="hint">H</b> mentions it too. Face it with any weapon in your hand — even the crowbar — and time all but stops: <b>FIGHT or RUN?</b> Press <b data-key="interact">E</b> (or click) to fight and <b>the Last Dance</b> begins: it has a health bar now. Press <b data-key="hold">Space</b> or <b data-key="sprint">Shift</b> to run, and the night goes on as normal — you'll get the choice again the next time you face it. Hits while it's staggered do extra damage; at half health it gets enraged. In the Night Shift, kill it and the shift is over. In the other modes nothing stays dead — it gets back up.</li>
+          <li><b>Hold the door.</b> When it grabs your locker door, a strip of notes slides in: press <b data-key="hold">Space</b> every time a pull reaches the bar — on the beat. Mashing doesn't help. Miss too many and it's in. While it's at your door your nerve holds.</li>
           <li>The heartbeat, flickering lights and the threat eye (top right) tell you when it is close.</li>
           <li><b>Look up.</b> In the long hallways it often climbs the wall and crawls along the ceiling, and it drops down on whoever is underneath. And it is cunning: a crash or a screech from one direction can be bait while it circles round to come at you from another.</li>
           <li>Sometimes it just <b>watches</b> you from the dark. Hold its gaze and it backs off — walk toward it, or put your light on it, and it charges.</li>
@@ -1054,7 +1071,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 13 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
+    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 14 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
   </div>
 </div>
 
@@ -1090,7 +1107,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
   <div class="paper" id="paper">
     <h2 id="note-title"></h2>
     <pre id="note-body"></pre>
-    <div class="note-hint"><span>[E] or [Esc] to close</span><button id="btn-note-close">Close</button></div>
+    <div class="note-hint"><span>[<span data-key="interact">E</span>] or [Esc] to close</span><button id="btn-note-close">Close</button></div>
   </div>
 </div>
 
@@ -1185,6 +1202,80 @@ const settings = Object.assign({}, DEFAULTS);
   } catch (e) { /* storage blocked or corrupt: keep defaults */ }
 })();
 function saveSettings() { try { localStorage.setItem('lastshift.settings.v1', JSON.stringify(settings)); } catch (e) { } }
+
+/* ------------------------------------------------------------------ */
+/* Controls: every action is on a key you can change (Settings).       */
+/* Give an action a key another one uses and the two swap places.      */
+/* Fixed extras that always work: the arrow keys move (unless you put  */
+/* something else on one), Esc pauses, 1-5 pick weapons (unless taken),*/
+/* click attacks, right click punches, Enter fights or closes a note.  */
+/* ------------------------------------------------------------------ */
+const KEY_ACTIONS = [ // [action, what it does, default key]
+  ['forward', 'Move forward', 'KeyW'], ['back', 'Move back', 'KeyS'], ['left', 'Move left', 'KeyA'], ['right', 'Move right', 'KeyD'],
+  ['sprint', 'Sprint', 'ShiftLeft'], ['crouch', 'Crouch (hold)', 'ControlLeft'], ['crouchToggle', 'Crouch (toggle)', 'KeyC'],
+  ['interact', 'Interact · hide · read', 'KeyE'], ['flashlight', 'Flashlight', 'KeyT'], ['ability', 'Character ability', 'KeyF'],
+  ['reload', 'Battery / crank', 'KeyR'], ['punch', 'Punch', 'KeyV'], ['nextWeapon', 'Next weapon', 'KeyQ'],
+  ['hold', 'Hold the door · skip a scene', 'Space'], ['map', 'Minimap', 'KeyM'], ['hint', 'Hint', 'KeyH'], ['ping', 'Ping (co-op)', 'KeyG'], ['pause', 'Pause', 'KeyP'],
+];
+const KEY_TWIN = { ShiftLeft: 'ShiftRight', ShiftRight: 'ShiftLeft', ControlLeft: 'ControlRight', ControlRight: 'ControlLeft', AltLeft: 'AltRight', AltRight: 'AltLeft' }; // (either Shift is Shift)
+const KEY_FIXED = { forward: ['ArrowUp'], back: ['ArrowDown'], left: ['ArrowLeft'], right: ['ArrowRight'] };
+const KEY_RESERVED = ['Escape', 'Tab', 'MetaLeft', 'MetaRight', 'OSLeft', 'OSRight', 'ContextMenu', 'F1', 'F3', 'F5', 'F6', 'F11', 'F12'];
+const KEY_NAMES = { Space: 'Space', ShiftLeft: 'Shift', ShiftRight: 'Shift', ControlLeft: 'Ctrl', ControlRight: 'Ctrl', AltLeft: 'Alt', AltRight: 'Alt', ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→',
+  Backquote: '`', Minus: '-', Equal: '=', BracketLeft: '[', BracketRight: ']', Backslash: '\\', IntlBackslash: '\\', Semicolon: ';', Quote: "'", Comma: ',', Period: '.', Slash: '/',
+  Enter: 'Enter', NumpadEnter: 'Num Enter', Backspace: 'Backspace', CapsLock: 'Caps', Insert: 'Ins', Delete: 'Del', Home: 'Home', End: 'End', PageUp: 'PgUp', PageDown: 'PgDn',
+  NumpadAdd: 'Num +', NumpadSubtract: 'Num -', NumpadMultiply: 'Num *', NumpadDivide: 'Num /', NumpadDecimal: 'Num .' };
+const escHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const KEYS_KEY = 'lastshift.keys.v1';
+const Keys = {
+  map: {}, rev: {}, layout: null,
+  defaults() { const m = {}; for (const [a, , k] of KEY_ACTIONS) m[a] = k; return m; },
+  valid(code) { return typeof code === 'string' && /^[A-Za-z][A-Za-z0-9]{1,24}$/.test(code) && KEY_RESERVED.indexOf(code) < 0; },
+  // what's saved, made safe: unknown actions and nonsense dropped, every action keeps exactly one key, no key does two things
+  load() {
+    this.map = this.defaults();
+    try { const o = JSON.parse(localStorage.getItem(KEYS_KEY) || 'null'); if (o && typeof o === 'object' && !Array.isArray(o)) for (const [a] of KEY_ACTIONS) if (this.valid(o[a])) this.assign(a, o[a]); } catch (e) { }
+    this.index();
+    try { if (navigator.keyboard && navigator.keyboard.getLayoutMap) navigator.keyboard.getLayoutMap().then(m => { this.layout = m; this.paint(); }).catch(() => { }); } catch (e) { }
+  },
+  save() { try { const d = this.defaults(), o = {}; for (const a in this.map) if (this.map[a] !== d[a]) o[a] = this.map[a]; localStorage.setItem(KEYS_KEY, JSON.stringify(o)); } catch (e) { } },
+  index() { this.rev = {}; for (const a in this.map) { const k = this.map[a]; this.rev[k] = a; if (KEY_TWIN[k] && !this.rev[KEY_TWIN[k]]) this.rev[KEY_TWIN[k]] = a; } for (const a in this.map) this.rev[this.map[a]] = a; },
+  // put action a on key code; whatever had that key gets a's old one (they swap). Returns the action that moved, if any.
+  assign(a, code) {
+    if (!this.map[a] || !this.valid(code)) return null;
+    const old = this.map[a]; if (old === code) return null;
+    let other = null;
+    for (const b in this.map) if (b !== a && (this.map[b] === code || KEY_TWIN[this.map[b]] === code)) { other = b; break; }
+    this.map[a] = code; if (other) this.map[other] = old;
+    return other;
+  },
+  set(a, code) { const other = this.assign(a, code); this.index(); this.save(); this.paint(); return other; },
+  reset() { this.map = this.defaults(); this.index(); this.save(); this.paint(); },
+  actionOf(code) { return this.rev[code] || null; },
+  is(code, a) { return this.rev[code] === a; },
+  // held right now? (the arrow keys move too, unless one of them is on another action)
+  down(a) {
+    const K = Input.keys, k = this.map[a];
+    if (K[k] || (KEY_TWIN[k] && K[KEY_TWIN[k]] && this.rev[KEY_TWIN[k]] === a)) return true;
+    const fx = KEY_FIXED[a]; if (fx) for (const c of fx) if (K[c] && !this.rev[c]) return true;
+    return false;
+  },
+  name(code) {
+    if (!code) return '—';
+    if (/^(Key[A-Z]|Digit\d|Backquote|Minus|Equal|BracketLeft|BracketRight|Backslash|IntlBackslash|Semicolon|Quote|Comma|Period|Slash)$/.test(code) && this.layout) { const ch = this.layout.get(code); if (typeof ch === 'string' && ch.length === 1 && ch.trim()) return ch.toUpperCase(); } // (what is printed on YOUR keyboard)
+    if (/^Key[A-Z]$/.test(code)) return code.slice(3);
+    if (/^Digit\d$/.test(code)) return code.slice(5);
+    if (/^Numpad\d$/.test(code)) return 'Num ' + code.slice(6);
+    return KEY_NAMES[code] || code.replace(/(Left|Right)$/, '');
+  },
+  label(a) { return this.name(this.map[a]); },
+  b(a) { return '[' + this.label(a) + ']'; }, // "[F]" in a message
+  // every key name written in the page: <span data-key="flashlight">, data-key="forward,left,back,right" for a group
+  paint() {
+    if (typeof document === 'undefined') return;
+    document.querySelectorAll('[data-key]').forEach(el => { const t = el.dataset.key.split(',').map(a => this.label(a.trim())).join(el.dataset.keySep || ' '); el.textContent = el.hasAttribute('data-key-up') ? t.toUpperCase() : t; });
+  },
+};
+Keys.load();
 
 // hearing: multiplier on every noise radius; charge: speed factor when it sprints toward a sound
 // stagger: how much one punch builds toward a stun; stun: seconds it reels; immune: seconds before it can be stunned again
@@ -4897,6 +4988,79 @@ function segmentClear(ax, az, bx, bz) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Reach. Their arms are long: over a desk, or a step into a vent      */
+/* mouth, they get you. And they can only be hurt by someone they      */
+/* could get to: from deep in a vent, or wedged somewhere no body can  */
+/* follow, a hit does nothing (no free kills from a hidey-hole).       */
+/* ------------------------------------------------------------------ */
+const WARDEN_REACH = 2.75; // (longer than any swing you have — the axe is 2.6)
+const REACH_MEMO = new Map(), _reachV = new T.Vector3();
+// can it (walking where pass() says, with a body of radius r, arms of length reach) get its hands on actor a?
+// → { ok, open, x, z, cx, cz, fine }: open = they stand where it can walk; else it walks to the cell (cx, cz), then squeezes along `fine`
+//   (a 25 cm route its body really fits through: the nav grid is 2 m and too coarse for an aisle between a desk and a rack)
+//   to (x, z), and reaches over or in
+const RF_S = 0.25, RF_G = 18, RF_N = RF_G * 2 + 1, RF_PREV = new Int32Array(RF_N * RF_N), RF_Q = new Int32Array(RF_N * RF_N), RF_DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+// every grid cell it can walk to from where it is (memoised a moment: the doors and the light change slowly)
+const NAV_REACH = new Map();
+function navReach(key, from, pass) {
+  const sx = clamp(Math.floor(from.x / CELL), 0, W - 1), sz = clamp(Math.floor(from.z / CELL), 0, H - 1), now = Game.time, m = NAV_REACH.get(key);
+  if (m && m.s === sz * W + sx && now >= m.t && now - m.t < 1) return m.r;
+  const r = new Uint8Array(W * H), q = [sz * W + sx]; r[q[0]] = 1;
+  for (let k = 0; k < q.length; k++) {
+    const cur = q[k], cx = cur % W, cz = (cur / W) | 0;
+    for (const [dx, dz] of DIR8) { const nx = cx + dx, nz = cz + dz, ni = nz * W + nx; if (nx < 0 || nz < 0 || nx >= W || nz >= H || r[ni] || !pass(nx, nz)) continue; r[ni] = 1; q.push(ni); }
+  }
+  if (NAV_REACH.size > 16) NAV_REACH.clear();
+  NAV_REACH.set(key, { s: sz * W + sx, t: now, r });
+  return r;
+}
+// can it (walking where pass() says, with a body of radius r, arms of length reach) get its hands on actor a?
+// → { ok, open, x, z, cx, cz, fine }: open = it can walk right up to them; else it walks to the cell (cx, cz), then squeezes along `fine`
+//   (a 25 cm route its body really fits through — the 2 m nav grid is too coarse for an aisle between a desk and a rack)
+//   to (x, z), and reaches over or in
+function reachFor(key, from, a, pass, r, reach) {
+  const now = Game.time, k = key + '|' + Game.idOf(a), ax = a.pos.x, az = a.pos.z, m = REACH_MEMO.get(k);
+  if (m && now >= m.t && now - m.t < 0.4 && Math.abs(m.ax - ax) + Math.abs(m.az - az) < 0.3) return m;
+  const nav = navReach(key, from, pass), tx = Math.floor(ax / CELL), tz = Math.floor(az / CELL), lv = cellOf(ax, az).lvl;
+  let spot = null;
+  if (pass(tx, tz) && nav[tz * W + tx]) spot = { x: ax, z: az, cx: cc(tx), cz: cc(tz), open: true, fine: null };
+  else {
+    // a fine flood of where its body fits, out from the cells it can walk to around them
+    const ox = Math.round(ax / RF_S) * RF_S - RF_G * RF_S, oz = Math.round(az / RF_S) * RF_S - RF_G * RF_S;
+    const fits = (x, z) => { const c = cellOf(x, z); if (c.kind === 'wall' || c.kind === 'window' || (c.kind === 'vent' && !pass(c.x, c.z)) || c.lvl !== lv) return false; return !bodyOverlaps(x, z, r, 'monster', false); };
+    RF_PREV.fill(-1); let qn = 0;
+    for (let j = 0; j < RF_N; j++) for (let i = 0; i < RF_N; i++) { // (seeds: points standing in a cell it can walk to)
+      const x = ox + i * RF_S, z = oz + j * RF_S, c = cellOf(x, z);
+      if (c.kind === 'door' || !nav[c.z * W + c.x] || !pass(c.x, c.z) || !fits(x, z)) continue;
+      RF_PREV[j * RF_N + i] = -2; RF_Q[qn++] = j * RF_N + i;
+    }
+    let best = -1, bd = 1e9;
+    for (let h = 0; h < qn; h++) {
+      const id = RF_Q[h], i = id % RF_N, j = (id / RF_N) | 0, x = ox + i * RF_S, z = oz + j * RF_S, d = Math.hypot(ax - x, az - z);
+      if (d <= reach && d < bd - 0.05 && losClear(x, z, ax, az, true)) { bd = d; best = id; } // (walls stop an arm; a desk doesn't)
+      for (const [di, dj] of RF_DIRS) { // into the furniture, as far as its body squeezes
+        const ni = i + di, nj = j + dj; if (ni < 0 || nj < 0 || ni >= RF_N || nj >= RF_N) continue;
+        const nid = nj * RF_N + ni; if (RF_PREV[nid] !== -1) continue;
+        if (!fits(ox + ni * RF_S, oz + nj * RF_S)) { RF_PREV[nid] = -3; continue; }
+        RF_PREV[nid] = id; RF_Q[qn++] = nid;
+      }
+    }
+    if (best >= 0) {
+      const fine = []; let id = best;
+      while (id >= 0 && RF_PREV[id] !== -2) { fine.push([ox + (id % RF_N) * RF_S, oz + ((id / RF_N) | 0) * RF_S]); id = RF_PREV[id]; }
+      const sx0 = ox + (id % RF_N) * RF_S, sz0 = oz + ((id / RF_N) | 0) * RF_S, sc = cellOf(sx0, sz0);
+      fine.push([sx0, sz0]); fine.reverse();
+      const end = fine[fine.length - 1];
+      spot = { x: end[0], z: end[1], cx: cc(sc.x), cz: cc(sc.z), open: false, fine: fine.filter((p, n) => n === fine.length - 1 || n % 3 === 0) }; // (every 75 cm is enough to steer by)
+    }
+  }
+  const out = { t: now, ax, az, ok: !!spot, open: !!(spot && spot.open), x: spot ? spot.x : ax, z: spot ? spot.z : az, cx: spot ? spot.cx : ax, cz: spot ? spot.cz : az, fine: spot ? spot.fine : null };
+  REACH_MEMO.set(k, out);
+  if (REACH_MEMO.size > 64) REACH_MEMO.clear();
+  return out;
+}
+
+/* ------------------------------------------------------------------ */
 /* THE WARDEN — behaviour                                              */
 /* ------------------------------------------------------------------ */
 const PATROL_CELLS = [[9, 3], [9, 8], [9, 14], [9, 20], [9, 23], [14, 8], [20, 8], [25, 8], [30, 8], [20, 14], [20, 20], [14, 20], [25, 20], [30, 14], [30, 20], [37, 20],
@@ -4952,7 +5116,7 @@ const CRAWL_CREEP = { len: 1.0, duty: 0.72, lift: 0.13, off: [0.25, 0.75, 0, 0.5
 const CRAWL_GALLOP = { len: 2.4, duty: 0.42, lift: 0.28, off: [0.5, 0.62, 0, 0.1], hip: 0.8, lean: 1.34, hx: 0.56, hz: 0.98, fx: 0.3, fz: -0.34 };
 const Monster = {
   active: false, state: 'DORMANT', stateT: 0, model: null, P: null,
-  crawlK: 0, ventK: 0, crawlPh: 0, crawlMode: false, watchT: 0, creepT: 0, lostT: 0, retreatUntil: 0, chatterT: 5, whisperT: 3, stalkFrom: null,
+  crawlK: 0, ventK: 0, crawlPh: 0, crawlMode: false, watchT: 0, creepT: 0, lostT: 0, retreatUntil: 0, waitFor: null, waitUntil: 0, waitCheckT: 0, reachAtk: false, denyTold: new Set(), chatterT: 5, whisperT: 3, stalkFrom: null,
   pos: new T.Vector3(), vel: new T.Vector3(), yaw: 0, speed: 0,
   path: null, pathI: 0, goal: new T.Vector3(), hasGoal: false, repathT: 0, onArrive: null,
   awareness: 0, seeing: false, los: false, lastKnown: new T.Vector3(), lastSeen: -99, lastContact: 0, closeT: 0,
@@ -4979,7 +5143,7 @@ const Monster = {
     this.roarCD = 0; this.seenHide = null; this.visited.length = 0; this.huntCount = 0; this.scriptedGoal = null; this.duck = 0;
     this.charging = false; this.target = null; this.nearest = null; this.nearestD = 99; this.cine = null; this.targetId = -1; this.net.buf.length = 0;
     this.stagger = 0; this.stunImmune = 0; this.rageUntil = 0; this.kb.set(0, 0, 0); this.netStagger = 0; this.netImmune = 0;
-    this.crawlK = 0; this.ventK = 0; this.crawlMode = false; this.watchT = 0; this.creepT = 0; this.lostT = 0; this.retreatUntil = 0; this.chatterT = rand(4, 8); this.whisperT = 3; this.stalkFrom = null;
+    this.crawlK = 0; this.ventK = 0; this.crawlMode = false; this.watchT = 0; this.creepT = 0; this.lostT = 0; this.retreatUntil = 0; this.waitFor = null; this.waitUntil = 0; this.waitCheckT = 0; this.reachAtk = false; this.denyTold = new Set(); this.squeeze = null; this.squeezePath = null; REACH_MEMO.clear(); NAV_REACH.clear(); this.chatterT = rand(4, 8); this.whisperT = 3; this.stalkFrom = null;
     this.eyeColor.set(0xdff2ff); if (this.P) this.P.glowMat.opacity = 0.9;
     this.ceil = 0; this.ceilWant = false; this.ceilH = WALL_H; this.ceilLat = 0.9; this.ceilSide = 1; this.ceilGo = false; this.ceilCD = 0; this.inCorr = false; this.sway = 0; this.wasUp = false;
     this.slamT = 1; this.gait = 0; this.huntCrawl = true; this.distortK = 0; this.glitchT = 2; this.glitch = null; this.walkPh = 0; this.yawVel = 0; this.bashHits = 0; this.bashIron = false; this.flankAt = null; this.decoy2 = null;
@@ -5019,6 +5183,7 @@ const Monster = {
       case 'HUNT': return d.hunt * (this.seeing ? 1 : 0.94) * boost * (Game.time < this.rageUntil ? 1.12 : 1); // furious after being stunned
       case 'SCRIPT': return d.hunt * 1.05;
       case 'FLANK': return d.hunt * 0.8; // circling round to come at you from the side, fast and silent
+      case 'WAIT': return d.investigate * 1.15 * boost; // (ducking out of your line of fire)
       default: return 0;
     }
   },
@@ -5096,6 +5261,7 @@ const Monster = {
   // returns 0 ignored, 1 shrugged off, 2 flinched, 3 stunned, 4 stunned mid-lunge
   punched(actor) {
     if (!this.active || this.down || this.state === 'SCRIPT' || this.state === 'YANK' || Game.endingLock || !actor) return 0;
+    if (!actor.hidden && !this.reachOf(actor).ok) { this.waitOut(actor, true); return 0; } // (a fist from where it can't get to you: nothing)
     this.hp = Math.max(1, this.hp - 4); this.lastHurt = Game.time; // (fists barely hurt it)
     if (this.cine && (this.cine.pose === 'stunned' || this.cine.pose === 'wake')) { this.push(actor, 1.2); return 1; }
     const now = Game.time, d = diff();
@@ -5168,6 +5334,8 @@ const Monster = {
   isDown() { return this.down > 0; },
   hurt(actor, dmg, o = {}) {
     if (!this.active || this.down || this.state === 'SCRIPT' || Game.endingLock || !(dmg > 0)) return 0;
+    // from somewhere it can't get to (deep in a vent, wedged where no body follows): it doesn't take it — it gets out of your line of fire and waits for you
+    if (actor && !o.dot && !actor.hidden && !this.reachOf(actor).ok) { this.waitOut(actor, true); return 0; }
     const now = Game.time, stunned = this.stunLeft() > 0, yanking = this.state === 'YANK';
     if (stunned) dmg *= 1.3; // reeling, it can't protect itself
     const real = Math.min(dmg, this.hp); // (what it actually lost)
@@ -5210,7 +5378,7 @@ const Monster = {
     this.burnT -= dt;
     if (!this.active || this.down) return;
     this.burnAcc += BURN_DPS * dt;
-    if (this.burnAcc >= 3) { const a = this.burnAcc; this.burnAcc = 0; this.hurt(this.burnBy || player, a, { kind: 'fire', quiet: true }); }
+    if (this.burnAcc >= 3) { const a = this.burnAcc; this.burnAcc = 0; this.hurt(this.burnBy || player, a, { kind: 'fire', quiet: true, dot: true }); }
   },
   // dead (the Night Shift) — or just down, for a while (nothing stays dead in the other modes)
   kill(actor, real = 0) {
@@ -5332,6 +5500,7 @@ const Monster = {
     if (nearD < 14) this.closeT += step; else this.closeT = Math.max(0, this.closeT - step * 2);
     if (this.state === 'SCRIPT' || this.state === 'ATTACK') return;
     if (this.state === 'STALK') { this.awareness = Math.min(this.awareness, 0.6); return; }
+    if (this.state === 'WAIT') return;
     if (this.state === 'FLANK') { if (this.seeing && this.awareness > 0.2) { this.lastSeen = Game.time; this.setState('HUNT'); this.path = null; this.repathT = 0; } return; } // it was sneaking up on you — now it runs
     if (Game.time < this.retreatUntil) { this.awareness = Math.min(this.awareness, 0.3); return; }
     if (this.awareness >= 1 && this.state !== 'HUNT') { this.setState('HUNT'); this.path = null; this.repathT = 0; }
@@ -5426,24 +5595,58 @@ const Monster = {
           const Ld = Math.hypot(tg.locker.out.x - this.lastKnown.x, tg.locker.out.z - this.lastKnown.z);
           if (Ld < 10 && Math.random() < this.checkChance(Ld)) { this.seenHide = { actor: tg, locker: tg.locker }; sawHide = true; this.lastSeen = now; this.awareness = 1.2; this.path = null; this.hasGoal = false; this.repathT = 0; }
         }
-        const dest = knows || sawHide ? (tg.hidden ? (sawHide ? tg.locker.out : this.lastKnown) : tg.pos) : this.lastKnown;
+        let dest = knows || sawHide ? (tg.hidden ? (sawHide ? tg.locker.out : this.lastKnown) : tg.pos) : this.lastKnown;
         if (knows && !tg.hidden) this.lastKnown.copy(tg.pos);
+        // somewhere it can't walk (behind a desk, just inside a vent): it gets as close as its body goes and reaches for them.
+        // Nowhere it can reach at all: it won't stand out in the open for them — it waits, out of sight, for them to come out
+        let rs = null;
+        if (knows && !tg.hidden && !monsterPassable(Math.floor(tg.pos.x / CELL), Math.floor(tg.pos.z / CELL))) {
+          const R = this.reachOf(tg);
+          if (R.ok) { rs = R; dest = _reachV.set(R.cx, 0, R.cz); }
+          else if (this.stateT > 0.6) { this.waitOut(tg, false); break; }
+        }
         this.repathT -= dt;
-        if (this.repathT <= 0 || !this.hasGoal) {
+        let squeezing = false, atReach = false;
+        if (rs) { // the last steps: along the gap its body fits through (the 2 m grid can't see it), as far as the furniture lets it
+          const same = this.squeeze && Math.hypot(this.squeeze.x - rs.x, this.squeeze.z - rs.z) < 0.6;
+          atReach = Math.hypot(this.pos.x - rs.x, this.pos.z - rs.z) < 0.6;
+          if (atReach) { squeezing = true; this.path = null; this.hasGoal = false; this.squeeze = { x: rs.x, z: rs.z }; }
+          else if (same && this.hasGoal && this.path === this.squeezePath) squeezing = true;
+          else if (Math.hypot(this.pos.x - rs.cx, this.pos.z - rs.cz) < 1.2 || (same && !monsterPassable(Math.floor(this.pos.x / CELL), Math.floor(this.pos.z / CELL)))) {
+            const pts = (rs.fine || [[rs.x, rs.z]]).map(p => [p[0], p[1]]);
+            let k0 = 0, kd = 1e9; pts.forEach((p, n) => { const dd = Math.hypot(p[0] - this.pos.x, p[1] - this.pos.z); if (dd < kd) { kd = dd; k0 = n; } }); // (from wherever along it it already is)
+            this.path = pts; this.pathI = k0; this.hasGoal = true; this.onArrive = null; this.squeeze = { x: rs.x, z: rs.z }; this.squeezePath = pts; squeezing = true;
+          }
+        } else this.squeeze = null;
+        if (squeezing) this.repathT = 0.3;
+        else if (this.repathT <= 0 || !this.hasGoal) {
           this.repathT = knows ? 0.3 : 1.2;
           const ok = this.goTo(dest.x, dest.z, knows ? null : () => { this.searchCenter.copy(this.lastKnown); this.setState('SEARCH'); this.pauseT = rand(1.2, 2.2); });
           if (!ok && !knows) { this.searchCenter.copy(this.lastKnown); this.setState('SEARCH'); }
         }
-        wantMove = true;
+        wantMove = !atReach;
         if (knows && d < 4) faceTarget = tg.pos;
-        const attackRange = tg.hidden ? 1.25 : 1.55;
-        const canHit = tg.hidden ? sawHide : (this.seeing || d < 1.2);
+        const attackRange = tg.hidden ? 1.25 : rs ? WARDEN_REACH : 1.55;
+        const canHit = tg.hidden ? sawHide : rs ? (this.seeing || d < WARDEN_REACH) && losClear(this.pos.x, this.pos.z, tg.pos.x, tg.pos.z, true) : (this.seeing || d < 1.2);
         const atDoor = tg.hidden && tg.locker && Math.hypot(this.pos.x - tg.locker.out.x, this.pos.z - tg.locker.out.z) < 1.3; // (wherever it came from, it's at the door: it doesn't have to stand exactly on the spot)
         if ((d < attackRange || atDoor) && canHit && !tg.invuln() && this.ceil < 0.2) { // (it has to drop off the ceiling first)
           if (tg.hidden && tg.locker && Game.time >= (this.yankCD.get(Game.idOf(tg)) || 0)) { this.startYank(tg); break; } // the door first: hold it shut (Space, on the beat)
-          this.setState('ATTACK'); this.attackT = 0; this.attackHit = false;
+          this.setState('ATTACK'); this.attackT = 0; this.attackHit = false; this.reachAtk = !!rs;
         }
         if (!knows && this.stateT > 30) this.setState('SEARCH');
+        break;
+      }
+      case 'WAIT': { // it can't get to you where you are: out of your sight (and your line of fire), it waits for you to come out
+        const tg = this.waitFor;
+        if (!tg || tg.dead || now > this.waitUntil) { this.waitFor = null; this.searchCenter.copy(this.lastKnown); this.setState('SEARCH'); this.searchUntil = now + 12; break; }
+        if (this.hasGoal) wantMove = true; else this.lookAround(dt);
+        if (now - this.waitCheckT > 0.35) {
+          this.waitCheckT = now;
+          let go = null;
+          if (this.seeing && this.target && this.target !== tg && !this.target.dead && this.reachOf(this.target).ok) go = this.target; // (someone else, somewhere it CAN get to)
+          else if (this.reachOf(tg).ok && (this.seeing || Math.hypot(tg.pos.x - this.pos.x, tg.pos.z - this.pos.z) < 14)) go = tg; // you came out
+          if (go) { this.waitFor = null; this.target = go; this.lastKnown.copy(go.pos); this.lastSeen = now; this.lastContact = now; this.awareness = 1.2; this.path = null; this.hasGoal = false; this.repathT = 0; this.setState('HUNT'); Sound.screech(); }
+        }
         break;
       }
       case 'ATTACK': {
@@ -5455,7 +5658,7 @@ const Monster = {
           this.attackHit = true;
           const sawHide = !!(this.seenHide && this.seenHide.actor === tg && tg.hidden);
           const d = this.pos.distanceTo(tg.pos);
-          if ((d < 2.5 || sawHide) && !tg.invuln()) Game.hitActor(tg, sawHide);
+          if ((d < (this.reachAtk ? WARDEN_REACH + 0.35 : 2.5) || sawHide) && !tg.invuln()) Game.hitActor(tg, sawHide);
         }
         if (this.attackT > 1.6 && !(tg === player && player.dead)) {
           this.seenHide = null; this.searchCenter.copy(tg.pos); this.path = null; this.hasGoal = false;
@@ -5617,6 +5820,31 @@ const Monster = {
     this.watchT = 0; this.path = null; this.hasGoal = false; this.repathT = 0;
     this.state = 'PATROL'; this.setState('HUNT'); Sound.screech();
     Game.onStalkEnd(false, tg, why);
+  },
+  // can it get its hands on a? (see reachFor)
+  reachOf(a) { return reachFor('W', this.pos, a, monsterPassable, MONSTER_R, WARDEN_REACH); },
+  // it can't get to a where they are: out of their sight and line of fire, it waits for them to come out
+  waitOut(a, hurt) {
+    const now = Game.time, id = Game.idOf(a);
+    if (hurt && !this.denyTold.has(id)) { this.denyTold.add(id); Game.tell(a, 'It jerks back out of your line of fire. From there you can\'t hurt it — it can\'t get to you, so you can\'t get to it. It will wait for you to come out.', 'warn', 6.5); }
+    if (this.state === 'WAIT' && this.waitFor === a) return;
+    this.waitFor = a; this.waitUntil = now + rand(12, 18); this.waitCheckT = now; this.lastKnown.copy(a.pos);
+    this.charging = false;
+    this.state = 'X'; this.setState('WAIT');
+    const spot = this.coverFrom(a.pos);
+    if (spot) this.goTo(spot[0], spot[1], () => { this.pauseT = 0; }); else { this.path = null; this.hasGoal = false; }
+    if (hurt) Sound.growl();
+  },
+  // the nearest place it can stand that can't be seen (or shot) from pos — close enough to pounce when they come out
+  coverFrom(pos) {
+    const sx = clamp(Math.floor(this.pos.x / CELL), 0, W - 1), sz = clamp(Math.floor(this.pos.z / CELL), 0, H - 1);
+    const seen = new Set([sz * W + sx]), q = [[sx, sz]];
+    for (let k = 0; k < q.length && k < 500; k++) {
+      const [x, z] = q[k], px = cc(x), pz = cc(z), d = Math.hypot(px - pos.x, pz - pos.z);
+      if (k > 0 && d > 4.5 && d < 22 && cellAt(x, z).kind !== 'door' && !losClear(pos.x, pos.z, px, pz)) return [px, pz];
+      for (let i = 0; i < 4; i++) { const nx = x + DIR8[i][0], nz = z + DIR8[i][1], ni = nz * W + nx; if (nx < 0 || nz < 0 || nx >= W || nz >= H || seen.has(ni) || !monsterPassable(nx, nz)) continue; seen.add(ni); q.push([nx, nz]); }
+    }
+    return this.farPointFrom(pos);
   },
   farPointFrom(pos) {
     let best = null, bd = -1;
@@ -6145,7 +6373,7 @@ const player = {
   toggleFlash() {
     if (!this.hasFlash) { UI.msg('You don\'t have a light source.', 'warn'); return; }
     if (this.hidden) return;
-    if (this.battery <= 0) { UI.msg(this.spares > 0 ? 'The battery is dead. Press R to swap in a spare.' : 'The battery is dead. Hold R to crank the dynamo.', 'warn'); Sound.click(); return; }
+    if (this.battery <= 0) { UI.msg(this.spares > 0 ? 'The battery is dead. Press ' + Keys.label('reload') + ' to swap in a spare.' : 'The battery is dead. Hold ' + Keys.label('reload') + ' to crank the dynamo.', 'warn'); Sound.click(); return; }
     this.flashState = !this.flashState; Sound.click();
     Game.noise(this.pos, 1.2, 'player');
   },
@@ -6191,8 +6419,8 @@ const player = {
       this.eyeY = lerp(A.fy, 1.55, e);
       this.yaw = A.fyaw + angleDiff(A.fyaw, L.yaw) * e; this.pitch = lerp(A.fpitch, 0, e);
       if (k >= 1) {
-        this.hidden = true; this.locker = L; this.hideAnim = null; L.door.visible = false; L.target = 0; UI.setLockerView(true); UI.msg('Hidden. Stay still. [E] to leave.', 'story');
-        if (!Game.flags.holdTip) { Game.flags.holdTip = true; setTimeout(() => { if (Game.state === 'playing' && player.hidden && !Hold.on) UI.msg('If it tries to open the locker, press SPACE every time it pulls on the door — on the beat.', 'hint', 6.5); }, 1500); }
+        this.hidden = true; this.locker = L; this.hideAnim = null; L.door.visible = false; L.target = 0; UI.setLockerView(true); UI.msg('Hidden. Stay still. ' + Keys.b('interact') + ' to leave.', 'story');
+        if (!Game.flags.holdTip) { Game.flags.holdTip = true; setTimeout(() => { if (Game.state === 'playing' && player.hidden && !Hold.on) UI.msg('If it tries to open the locker, press ' + Keys.label('hold').toUpperCase() + ' every time it pulls on the door — on the beat.', 'hint', 6.5); }, 1500); }
       }
     } else {
       if (A.t < dt * 1.5) UI.setLockerView(false);
@@ -6212,7 +6440,6 @@ const player = {
     } else this.pitch = clamp(this.pitch, -1.45, 1.45);
   },
   update(dt) {
-    const k = Input.keys;
     // lockers animate in all cases
     for (const L of hideLockers) {
       L.open = damp(L.open, L.target, 10, dt);
@@ -6223,18 +6450,18 @@ const player = {
     const locked = Game.controlLock || this.hidden || Cine.locks();
     let f = 0, s = 0;
     if (!locked) {
-      f = (k.KeyW || k.ArrowUp ? 1 : 0) - (k.KeyS || k.ArrowDown ? 1 : 0);
-      s = (k.KeyD || k.ArrowRight ? 1 : 0) - (k.KeyA || k.ArrowLeft ? 1 : 0);
+      f = (Keys.down('forward') ? 1 : 0) - (Keys.down('back') ? 1 : 0);
+      s = (Keys.down('right') ? 1 : 0) - (Keys.down('left') ? 1 : 0);
     }
     // crouch (forced inside vents)
-    const wantCrouch = !!(k.ControlLeft || k.ControlRight || this.crouchToggle);
+    const wantCrouch = !!(Keys.down('crouch') || this.crouchToggle);
     const c = cellOf(this.pos.x, this.pos.z);
     this.inVent = c.kind === 'vent';
     let crouch = wantCrouch;
     if (!crouch && this.crouching && bodyOverlaps(this.pos.x, this.pos.z, PLAYER_R, 'player', false)) crouch = true; // no headroom
     this.crouching = crouch;
     const moving = (f !== 0 || s !== 0);
-    const wantSprint = !!(k.ShiftLeft || k.ShiftRight) && f > 0 && !crouch && moving && !this.exhausted && this.stamina > 0;
+    const wantSprint = Keys.down('sprint') && f > 0 && !crouch && moving && !this.exhausted && this.stamina > 0;
     this.sprinting = wantSprint;
     let speed = crouch ? 1.45 : wantSprint ? 5.3 : 2.75;
     if (this.health < this.maxHp * 0.35 && this.maxHp > 1) speed *= 0.88;
@@ -6303,8 +6530,8 @@ const player = {
       this.swapT -= dt * Chars.workMul(); // (an Engineer in Overdrive is quicker at everything)
       if (this.swapT <= 0) { this.battery = 1; this.spares = Math.max(0, this.spares - 1); this.lowWarned = false; UI.msg('Fresh battery in.', 'good'); if (!this.flashState) this.flashState = true; }
     }
-    // dynamo crank (hold R with no spares)
-    const holdR = !!Input.keys.KeyR && !this.hidden && !this.dead && !Game.controlLock;
+    // dynamo crank (hold the battery key with no spares)
+    const holdR = Keys.down('reload') && !this.hidden && !this.dead && !Game.controlLock;
     this.cranking = holdR && this.spares === 0 && this.battery < 1 && this.swapT <= 0;
     if (this.cranking) {
       this.crankT -= dt;
@@ -6312,7 +6539,7 @@ const player = {
     } else this.crankT = 0;
     if (this.flashOn()) {
       this.battery = Math.max(0, this.battery - diff().drain * dt * (Endless.has('hungry') ? 2 : 1) * Chars.batteryMul());
-      if (this.battery < 0.15 && !this.lowWarned) { this.lowWarned = true; UI.msg(this.spares ? 'Battery low. [R] to swap.' : 'Battery low. Find batteries or crank with [R].', 'warn'); }
+      if (this.battery < 0.15 && !this.lowWarned) { this.lowWarned = true; UI.msg(this.spares ? 'Battery low. ' + Keys.b('reload') + ' to swap.' : 'Battery low. Find batteries or crank with ' + Keys.b('reload') + '.', 'warn'); }
       if (this.battery <= 0) { this.flashState = false; UI.msg('The flashlight dies.', 'warn'); Sound.click(); }
     }
   },
@@ -6368,35 +6595,39 @@ window.addEventListener('mouseup', () => { Input.mouseDown = false; });
 canvasEl.addEventListener('wheel', e => { if (Game.state === 'playing' && !Game.controlLock && !Cine.locks() && Math.abs(e.deltaY) > 2) { Weapons.cycle(e.deltaY > 0 ? 1 : -1); e.preventDefault(); } }, { passive: false });
 window.addEventListener('pointerdown', () => Sound.resume(), true); // browsers only start sound after a click
 canvasEl.addEventListener('contextmenu', e => e.preventDefault());
-const GAME_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'KeyF', 'KeyT', 'KeyE', 'KeyR', 'KeyM', 'KeyP', 'KeyC', 'KeyH', 'KeyG', 'KeyV', 'KeyQ', 'Enter', 'Tab', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5'];
+const GAME_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Escape']; // (and every key you've put an action on)
 window.addEventListener('keydown', e => {
   Sound.resume();
-  const code = e.code;
-  if (Game.state === 'playing' && (GAME_KEYS.indexOf(code) >= 0 || e.ctrlKey)) e.preventDefault();
+  const code = e.code, act = Keys.actionOf(code);
+  if (Game.state === 'playing' && (act || GAME_KEYS.indexOf(code) >= 0 || e.ctrlKey)) e.preventDefault();
   if (e.repeat) { if (Game.state === 'playing') Input.keys[code] = true; return; }
   if (Game.state === 'playing') {
     Input.keys[code] = true;
     if (Battle.choice && !Battle.choice.done) { // FIGHT or RUN?
-      if (code === 'KeyE' || code === 'Enter' || code === 'NumpadEnter') Battle.choose(true);
-      else if (code === 'Space' || code === 'ShiftLeft' || code === 'ShiftRight') Battle.choose(false);
-      else if (code === 'KeyP' || code === 'Escape') Game.pause();
+      if (act === 'interact' || code === 'Enter' || code === 'NumpadEnter') Battle.choose(true);
+      else if (act === 'hold' || act === 'sprint') Battle.choose(false);
+      else if (act === 'pause' || code === 'Escape') Game.pause();
       return;
     }
-    if (Cine.blocking()) { if (code === 'KeyP' || code === 'Escape') Game.pause(); return; } // hold Space to skip (see Cine)
-    if (Game.controlLock) { if (code === 'KeyP' || code === 'Escape') Game.pause(); else if (code === 'KeyM') UI.toggleMap(); return; }
+    if (Cine.blocking()) { if (act === 'pause' || code === 'Escape') Game.pause(); return; } // hold the door key to skip (see Cine)
+    if (Game.controlLock) { if (act === 'pause' || code === 'Escape') Game.pause(); else if (act === 'map') UI.toggleMap(); return; }
+    switch (act) {
+      case 'flashlight': player.toggleFlash(); return;
+      case 'ability': Chars.use(); return; // your character's ability
+      case 'interact': Game.interact(); return;
+      case 'reload': player.reloadPressed(); return;
+      case 'map': UI.toggleMap(); return;
+      case 'crouchToggle': player.crouchToggle = !player.crouchToggle; return;
+      case 'hint': Hints.request(); return;
+      case 'ping': Net.ping(); return;
+      case 'punch': Combat.punch(); return;
+      case 'nextWeapon': Weapons.cycle(1); return;
+      case 'hold': Hold.press(); return; // in a locker, holding the door shut
+      case 'pause': Game.pause(); return;
+    }
+    if (act) return; // (moving, sprinting, crouching: held, read every frame)
     switch (code) {
-      case 'KeyT': player.toggleFlash(); break;
-      case 'KeyF': Chars.use(); break; // your character's ability
-      case 'KeyE': Game.interact(); break;
-      case 'KeyR': player.reloadPressed(); break;
-      case 'KeyM': UI.toggleMap(); break;
-      case 'KeyC': player.crouchToggle = !player.crouchToggle; break;
-      case 'KeyH': Hints.request(); break;
-      case 'KeyG': Net.ping(); break;
-      case 'KeyV': Combat.punch(); break;
-      case 'KeyQ': Weapons.cycle(1); break;
-      case 'Space': Hold.press(); break; // in a locker, holding the door shut
-      case 'KeyP': case 'Escape': Game.pause(); break;
+      case 'Escape': Game.pause(); break;
       case 'Digit1': case 'Numpad1': Weapons.slot(1); break; // weapons (and in Endless Night, 1/2 choose a curse while one is on offer)
       case 'Digit2': case 'Numpad2': Weapons.slot(2); break;
       case 'Digit3': case 'Numpad3': Weapons.slot(3); break;
@@ -6404,10 +6635,10 @@ window.addEventListener('keydown', e => {
       case 'Digit5': case 'Numpad5': Weapons.slot(5); break;
     }
   } else if (Game.state === 'reading') {
-    if (code === 'KeyE' || code === 'Escape' || code === 'Space' || code === 'Enter') { e.preventDefault(); UI.closeNote(); }
+    if (act === 'interact' || code === 'Escape' || code === 'Space' || code === 'Enter') { e.preventDefault(); UI.closeNote(); }
   } else if (Game.state === 'paused') {
-    if ($('note-reader').classList.contains('active')) { if (code === 'Escape' || code === 'KeyE' || code === 'Enter') { e.preventDefault(); UI.closeNote(); } return; }
-    if (code === 'KeyP') { e.preventDefault(); if (UI.current === 'screen-pause') Game.resume(); }
+    if ($('note-reader').classList.contains('active')) { if (code === 'Escape' || act === 'interact' || code === 'Enter') { e.preventDefault(); UI.closeNote(); } return; }
+    if (act === 'pause') { e.preventDefault(); if (UI.current === 'screen-pause') Game.resume(); }
     else if (code === 'Escape') { e.preventDefault(); UI.back(); }
   } else if (code === 'Escape') { UI.back(); }
 });
@@ -6466,7 +6697,7 @@ const Screens = {
       g.fillText('UPLOADING BREACH REPORT', 12, 64);
       g.strokeStyle = '#7fe08a'; g.strokeRect(12, 74, 230, 14); g.fillRect(14, 76, 226 * Game.logsProgress, 10);
       g.fillText(Math.floor(Game.logsProgress * 100) + '%  — DO NOT LEAVE TERMINAL', 12, 106);
-    } else { g.fillText('BREACH REPORT: PENDING', 12, 64); g.fillText('> PRESS [E] TO UPLOAD', 12, 84); }
+    } else { g.fillText('BREACH REPORT: PENDING', 12, 64); g.fillText('> PRESS ' + Keys.b('interact').toUpperCase() + ' TO UPLOAD', 12, 84); }
     for (let y = 0; y < h; y += 3) { g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(0, y, w, 1); }
     termTex.needsUpdate = true;
   },
@@ -6639,12 +6870,12 @@ const UI = {
     if (t && !p.hidden && !Game.controlLock) {
       const text = t.prompt();
       const lockedStyle = /locked|offline|no power|required|dead|won't|sealed/i.test(text);
-      const html = '<span class="key">E</span>' + text.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      const html = '<span class="key">' + escHtml(Keys.label('interact')) + '</span>' + text.replace(/&/g, '&amp;').replace(/</g, '&lt;');
       if (this.hudCache.prompt !== html) { this.hudCache.prompt = html; $('prompt').innerHTML = html; }
       this.set('prompt', 'class', 'show' + (lockedStyle ? ' locked' : ''));
       this.set('crosshair', 'class', 'hot');
     } else if (p.hidden) {
-      const html = '<span class="key">E</span>Leave locker';
+      const html = '<span class="key">' + escHtml(Keys.label('interact')) + '</span>Leave locker';
       if (this.hudCache.prompt !== html) { this.hudCache.prompt = html; $('prompt').innerHTML = html; }
       this.set('prompt', 'class', 'show'); this.set('crosshair', 'class', '');
     } else { this.set('prompt', 'class', ''); this.set('crosshair', 'class', ''); }
@@ -6874,14 +7105,14 @@ const Game = {
           player.hasFlash = true; player.flashState = true; player.battery = 1;
           Sound.pickup(); Sound.click();
           this.completeObjective('flash', 'Find a flashlight');
-          UI.msg('[T] toggles the light. It drains the battery — and it can be seen.', '', 5);
+          UI.msg(Keys.b('flashlight') + ' toggles the light. It drains the battery — and it can be seen.', '', 5);
           this.flags.flashAt = this.time;
-          setTimeout(() => { const c = Weapons.pickups.find(d => d.wpn === 'crowbar'); if (Game.state === 'playing' && c && c.enabled) UI.msg('There\'s a crowbar on the desk too. Take it — [E].', 'story', 4.5); }, 2200);
-          setTimeout(() => { if (Game.state === 'playing' && settings.hints) UI.msg('Stuck? Press H for a hint.', 'hint', 4); }, 6500);
+          setTimeout(() => { const c = Weapons.pickups.find(d => d.wpn === 'crowbar'); if (Game.state === 'playing' && c && c.enabled) UI.msg('There\'s a crowbar on the desk too. Take it — ' + Keys.b('interact') + '.', 'story', 4.5); }, 2200);
+          setTimeout(() => { if (Game.state === 'playing' && settings.hints) UI.msg('Stuck? Press ' + Keys.label('hint') + ' for a hint.', 'hint', 4); }, 6500);
         } else if (it.kind === 'battery') {
           if (!mine) break;
           player.spares++; Sound.pickup();
-          UI.msg('Battery (' + player.spares + ' spare' + (player.spares === 1 ? '' : 's') + '). [R] to swap.', 'good');
+          UI.msg('Battery (' + player.spares + ' spare' + (player.spares === 1 ? '' : 's') + '). ' + Keys.b('reload') + ' to swap.', 'good');
           if (!player.hasFlash) UI.msg('Batteries… for a flashlight you don\'t have yet.', 'story');
         } else if (it.kind === 'card') {
           this.cards[def.color] = true;
@@ -7557,7 +7788,7 @@ const Game = {
           UI.msg(this.mode === 'photos' ? 'Find all eight photos together — they count for the whole team — then everyone into the lift.'
             : this.mode === 'endless' ? 'The night never ends. Stay alive as long as you can — a caught guard is out for good.'
             : 'Stay alive until the day shift opens the lift at 6:00 AM — or find the keycards and get out sooner. Stay together.', 'story', 6);
-          setTimeout(() => { if (Game.state === 'playing') UI.msg('[G] marks a spot for your team. [H] shows a hint.', '', 4.5); }, 3600);
+          setTimeout(() => { if (Game.state === 'playing') UI.msg(Keys.b('ping') + ' marks a spot for your team. ' + Keys.b('hint') + ' shows a hint.', '', 4.5); }, 3600);
           setTimeout(() => { if (Game.state === 'playing' && !Weapons.count()) UI.msg('There\'s a crowbar on the desk. The other weapons are marked orange on your map.', 'story', 5); }, 8600);
         } else if (this.mode !== 'night') Modes.introMsgs();
         else {
@@ -7899,6 +8130,7 @@ const Game = {
     if ((s === 'HUNT' || s === 'ATTACK' || s === 'SCRIPT') && mine) { lvl = 3; sub = Monster.seesLocal() ? 'IT SEES YOU' : 'IT IS HUNTING YOU'; k = Math.max(k, 0.8 + (d < 8 ? 0.2 : 0)); }
     else if (s === 'HUNT' || s === 'ATTACK') { lvl = Math.max(lvl, 2); sub = 'HUNTING ' + Net.huntedName().toUpperCase(); k = Math.max(k, d < 15 ? 0.6 : 0.3); }
     if (s === 'STALK' && (Net.isClient ? Monster.targetId === Net.myId : Monster.target === player)) { lvl = 2; sub = 'SOMETHING IS WATCHING YOU'; k = Math.max(k, 0.55); }
+    if (s === 'WAIT' && d < 26) { lvl = Math.max(lvl, 2); sub = 'IT IS WAITING FOR YOU TO COME OUT'; k = Math.max(k, 0.5); }
     if (player.hidden && lvl >= 1 && !(s === 'HUNT' && mine)) sub = 'STAY STILL';
     if (Monster.stunLeft() > 0) { lvl = Math.min(lvl, 2); sub = 'STUNNED — RUN'; k = Math.min(k, 0.5); }
     const lie = Dream.lieText(); if (lie) { lvl = Math.max(lvl, 2); sub = lie; k = Math.max(k, 0.5); } // (it isn't)
@@ -8046,9 +8278,49 @@ function bindSettingsUI() {
   $('btn-set-reset').addEventListener('click', () => {
     Object.assign(settings, DEFAULTS); saveSettings(); applySettings();
     ['set-sens', 'set-fov', 'set-vol', 'set-bright'].forEach(id => { const key = { 'set-sens': 'sensitivity', 'set-fov': 'fov', 'set-vol': 'volume', 'set-bright': 'brightness' }[id]; $(id).value = settings[key]; $(id).dispatchEvent(new Event('input')); });
-    d1(); drawMute(); d2(); d3(); d4(); d5(); d6(); d7(); syncDiffCards(); Sound.ui();
+    d1(); drawMute(); d2(); d3(); d4(); d5(); d6(); d7(); syncDiffCards();
+    KeysUI.stop(); Keys.reset(); KeysUI.draw(); KeysUI.refresh(); Sound.ui();
   });
 }
+// Settings → Controls: click an action's key, press the new one (a key in use swaps places)
+const KeysUI = {
+  cur: null,
+  label(a) { const r = KEY_ACTIONS.find(x => x[0] === a); return r ? r[1] : a; },
+  draw(moved) {
+    const grid = $('keys-grid'); if (!grid) return;
+    grid.innerHTML = '';
+    for (const [a, label] of KEY_ACTIONS) {
+      const row = document.createElement('div'); row.className = 'krow';
+      const sp = document.createElement('span'); sp.textContent = label;
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'kbtn' + (a === moved ? ' moved' : ''); b.dataset.act = a; b.textContent = Keys.label(a);
+      b.addEventListener('click', () => this.listen(a, b));
+      row.appendChild(sp); row.appendChild(b); grid.appendChild(row);
+    }
+  },
+  listen(a, b) { this.stop(); this.cur = { a, b }; b.classList.add('listen'); b.textContent = 'Press a key…'; $('keys-note').textContent = ''; Sound.ui(); },
+  stop() { const c = this.cur; if (!c) return; this.cur = null; c.b.classList.remove('listen'); c.b.textContent = Keys.label(c.a); },
+  refresh() { Keys.paint(); if (typeof CharUI !== 'undefined' && CharUI.refresh) CharUI.refresh(); },
+  // (capture phase: while it's listening, the key goes here and nowhere else)
+  onKey(e) {
+    const c = this.cur; if (!c) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (UI.current !== 'screen-settings') { this.stop(); return; }
+    if (e.repeat) return;
+    const note = $('keys-note');
+    if (e.code === 'Escape') { this.stop(); note.textContent = 'Cancelled — nothing changed.'; return; }
+    if (!Keys.valid(e.code)) { note.textContent = (Keys.name(e.code) || e.key) + ' can\'t be used — the browser keeps that one. Try another key.'; Sound.abDeny(); return; }
+    this.cur = null;
+    const other = Keys.set(c.a, e.code);
+    note.textContent = this.label(c.a) + ' → ' + Keys.label(c.a) + (other ? ' · swapped: ' + this.label(other) + ' is now on ' + Keys.label(other) : '');
+    this.draw(other); this.refresh(); Sound.ui();
+  },
+  init() {
+    window.addEventListener('keydown', e => this.onKey(e), true);
+    document.addEventListener('mousedown', e => { if (this.cur && e.target !== this.cur.b) this.stop(); }, true); // (a click anywhere else: never mind)
+    $('btn-keys-reset').addEventListener('click', () => { this.stop(); Keys.reset(); this.draw(); this.refresh(); $('keys-note').textContent = 'Controls are back to the defaults.'; Sound.ui(); });
+    this.draw(); Keys.paint();
+  },
+};
 function syncDiffCards() { document.querySelectorAll('#diffs .diff').forEach(b => b.classList.toggle('sel', b.dataset.diff === settings.difficulty)); syncModeCards(); }
 // the briefing: which mode, what it is, and your best at it
 const DIFF_TEXT = {
@@ -8744,7 +9016,7 @@ const Cine = {
     // skipping needs a deliberate hold (so mashing E at a door never skips a scene)
     const cs = this.cur;
     if (cs && cs.def.skip) {
-      const held = !!(Input.keys.Space || Input.keys.Enter);
+      const held = !!(Keys.down('hold') || Input.keys.Enter);
       this.skipHold = held ? this.skipHold + dt : Math.max(0, this.skipHold - dt * 3);
       this.el.skipBar.style.width = Math.min(100, this.skipHold / 0.7 * 100).toFixed(0) + '%';
       if (this.skipHold >= 0.7 && this.t > 0.35) { this.skipHold = 0; this.skip(); }
@@ -8858,7 +9130,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 10, BUILD = 13, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 10, BUILD = 14, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -9128,6 +9400,7 @@ class RemotePlayer {
   }
   invuln() { return Game.time < this.invulnUntil || this.dead || this.cineLock || Game.endingLock; }
   resetForGame(spot) {
+    if (this.nextChar) { this.setChar(this.nextChar); this.nextChar = null; } // (who they picked between games)
     this.inGame = true; this.dead = false; this.hidden = false; this.locker = null; this.flash = false; this.hp = 100; this.invulnUntil = 0; this.wpn = 0;
     this.buf.length = 0; this.last = null; this.pos.set(spot[0], 0, spot[1]); this.yaw = SPAWN.yaw;
     this.maxHp = CHARS[this.charId] ? CHARS[this.charId].hp : 100; this.hp = this.maxHp; this.stam = 1; this.abCd = 0; this.abAct = 0; this.buffs = 0; this.abAt = undefined; this.guardAt = undefined;
@@ -9488,7 +9761,7 @@ const Net = {
         break;
       }
       case 'p': if (r) r.applyState(m.s, now); break;
-      case 'char': if (r && !this.inGame) { r.setChar(Chars.byIdx(m.c)); this.sendRoster(); this.lobbyUpdate(); } break; // (they picked someone else in the lobby)
+      case 'char': if (r && !this.inGame) { r.setChar(Chars.byIdx(m.c)); this.sendRoster(); this.lobbyUpdate(); } else if (r) r.nextChar = Chars.byIdx(m.c); break; // (they picked someone else: in the lobby, now — mid-game, from the next start)
       case 'n': if (r && this.inGame && !r.dead) Game.hearAt({ x: +m.x || 0, z: +m.z || 0 }, clamp(+m.d || 0, 0, 40), 'player', r); break;
       case 'req': if (r && this.inGame) Game.remoteAction(r, String(m.a), m.i | 0, m.x && typeof m.x === 'object' ? m.x : null); break;
       case 'dead': if (r && this.inGame) { r.dead = true; this.announce(r.name + ' was caught by the Warden!', 'warn', peer.id); } break;
@@ -9519,7 +9792,7 @@ const Net = {
   },
   applyCfg(m) { this.sessionDiff = DIFF[m.diff] ? m.diff : 'normal'; this.sessionMode = MODES[m.mode] ? m.mode : 'night'; this.sessionDaily = !!m.daily; },
   sendCfg() { if (this.isHost) this.broadcast({ k: 'cfg', diff: settings.difficulty, mode: settings.mode, daily: settings.daily ? 1 : 0 }); }, // the host changed the mode in the lobby
-  roster() { const l = [[0, this.myName, Chars.idx()]]; for (const r of this.remotes.values()) l.push([r.id, r.name, Chars.idx(r.charId)]); return l; },
+  roster() { const l = [[0, this.myName, Chars.idx()]]; for (const r of this.remotes.values()) l.push([r.id, r.name, Chars.idx(r.nextChar || r.charId)]); return l; },
   // (lobby) I picked someone else: tell everyone
   sendChar() { if (this.isHost) { this.sendRoster(); this.lobbyUpdate(); } else if (this.isClient && this.welcomed) { this.rel(this.host0(), { k: 'char', c: Chars.idx() }); this.lobbyUpdate(); } },
   sendRoster() { this.broadcast({ k: 'roster', l: this.roster() }); },
@@ -9642,7 +9915,7 @@ const Net = {
   },
   /* ---- pings (G): mark a spot for the team ---- */
   ping() {
-    if (!this.inGame) { UI.msg('[G] marks a spot for your team in online co-op.', '', 2.5); return; }
+    if (!this.inGame) { UI.msg(Keys.b('ping') + ' marks a spot for your team in online co-op.', '', 2.5); return; }
     if (player.dead || performance.now() - this.lastPing < 1500) return;
     this.lastPing = performance.now();
     const f = player.forward(_v3a); let x = player.pos.x, y = player.eyeY, z = player.pos.z;
@@ -11305,7 +11578,7 @@ const Modes = {
     const m = Game.mode;
     if (m === 'photos') {
       UI.msg('Eight photos are pinned to walls around Sublevel 6 — somewhere different every time. Each one you take makes it worse.', 'story', 6);
-      setTimeout(() => { if (Game.state === 'playing') UI.msg('The photos glint in the dark. [H] points to the nearest one.', '', 4.5); }, 4200);
+      setTimeout(() => { if (Game.state === 'playing') UI.msg('The photos glint in the dark. ' + Keys.b('hint') + ' points to the nearest one.', '', 4.5); }, 4200);
     } else if (m === 'endless') {
       UI.msg('The day shift is never coming. Every hour you get a spare battery — and a new curse.', 'story', 6);
       setTimeout(() => { if (Game.state === 'playing') UI.msg('Stay alive. That\'s all. For as long as you can.', '', 4); }, 4200);
@@ -11821,7 +12094,7 @@ const Weapons = {
     this.select(id, true);
     Sound.pickup(); Sound.wpnGet(id);
     UI.center(w.name.toUpperCase(), w.tip, 3.2);
-    UI.msg(first ? 'CLICK to attack · [' + w.slot + '] or [Q] / mouse wheel to switch · [V] to punch' : w.name + ' — [' + w.slot + ']' + (w.ammo ? ' · ' + this.ammo[w.ammo] + ' ' + AMMO_LABEL[w.ammo].toLowerCase() : ''), 'good', 5);
+    UI.msg(first ? 'CLICK to attack · [' + w.slot + '] or ' + Keys.b('nextWeapon') + ' / mouse wheel to switch · ' + Keys.b('punch') + ' to punch' : w.name + ' — [' + w.slot + ']' + (w.ammo ? ' · ' + this.ammo[w.ammo] + ' ' + AMMO_LABEL[w.ammo].toLowerCase() : ''), 'good', 5);
     if (this.count() >= WPN_IDS.length) Goals.unlock('arsenal');
     if (id === 'crowbar' && first && !LVL) setTimeout(() => { if (Game.state === 'playing') UI.msg('It won\'t kill it on its own — but it\'ll make it flinch. The real weapons are marked orange on your map.', 'story', 6); }, 3400);
     $('wpn').classList.add('on');
@@ -12091,11 +12364,11 @@ const Weapons = {
   /* ---- the HUD strip above the map ---- */
   hud() {
     const id = this.cur, w = id ? WPN[id] : null;
-    const key = (id || '-') + '|' + WPN_IDS.map(k => this.has[k] ? 1 : 0).join('') + '|' + this.ammo.shells + ',' + this.ammo.flares + ',' + this.ammo.molotov;
+    const key = (id || '-') + '|' + Keys.label('nextWeapon') + '|' + WPN_IDS.map(k => this.has[k] ? 1 : 0).join('') + '|' + this.ammo.shells + ',' + this.ammo.flares + ',' + this.ammo.molotov;
     if (key === this.hudKey) return;
     this.hudKey = key;
     $('wpn-name').textContent = w ? w.name.toUpperCase() : 'FISTS';
-    $('wpn-ammo').textContent = w && w.ammo ? this.ammo[w.ammo] + ' ' + AMMO_LABEL[w.ammo] : w ? '' : '[1-5] / [Q] WEAPONS';
+    $('wpn-ammo').textContent = w && w.ammo ? this.ammo[w.ammo] + ' ' + AMMO_LABEL[w.ammo] : w ? '' : '[1-5] / ' + Keys.b('nextWeapon') + ' WEAPONS';
     $('wpn-ammo').classList.toggle('empty', !!(w && w.ammo && this.ammo[w.ammo] <= 0));
     document.querySelectorAll('#wpn-slots i').forEach((el, i) => { const k = WPN_IDS[i]; el.className = (this.has[k] ? 'own' : '') + (k === id ? ' cur' : ''); });
   },
@@ -12471,7 +12744,7 @@ SCENES.lastdance = {
     Battle.drop();
     if (!Net.isClient && Monster.cine && Monster.cine.pose === 'dance') { Monster.cine = null; Monster.P.glowMat.opacity = 0.9; Monster.state = 'X'; Monster.setState('HUNT'); Monster.repathT = 0; }
     player.invulnUntil = Math.max(player.invulnUntil, Game.time + 0.8);
-    if (!Game.flags.fightTold2) { Game.flags.fightTold2 = true; setTimeout(() => { if (Game.state === 'playing') UI.msg('Kill it. CLICK to attack · [1-5] / [Q] switch weapons · hits while it\'s staggered do extra damage.', 'hint', 6); }, 600); }
+    if (!Game.flags.fightTold2) { Game.flags.fightTold2 = true; setTimeout(() => { if (Game.state === 'playing') UI.msg('Kill it. CLICK to attack · [1-5] / ' + Keys.b('nextWeapon') + ' switch weapons · hits while it\'s staggered do extra damage.', 'hint', 6); }, 600); }
   },
 };
 // FIGHT or RUN: the world all but stops (alone; online it keeps going) while you decide
@@ -13206,17 +13479,18 @@ const MANN_HP = { easy: 110, normal: 150, hard: 200 };
 const MANN_STUN = { crowbar: 1.8, axe: 3.6, shotgun: 4.4, flare: 1.2, molotov: 0.6 };
 const MANN_SPAWN = [11, 97.4];                   // a greeter by the reception's north door
 const _mv = new T.Vector3(), _mv2 = new T.Vector3();
+const MANN_REACH = 2.3; // (its arms reach over a display case — further than a fist, a little short of an axe)
 function mannPassable(x, z) {
   const c = cellAt(x, z);
   if (c.lvl !== 1) return false;
   if (c.kind === 'floor') return !c.navBlocked;
   if (c.kind === 'door') return !c.door.locked();
-  if (c.kind === 'lift') return c.room === 'freight' && Gallery.liftOpen();
+  if (c.kind === 'lift') return c.room === 'g_lift' || (c.room === 'freight' && Gallery.liftOpen()); // (it squeezes through the jammed doors of the lift you came down in: no safe room)
   return false;
 }
 const Mannequin = {
   active: false, state: 'DORMANT', pos: new T.Vector3(), yaw: 0, pose: 'stand', headYaw: 0, headRoll: 0, model: null, P: null,
-  hp: 150, maxHp: 150, stunT: 0, burnT: 0, burnBy: null, moving: false, seenNow: false, seenBy: null, gen: 1, dead: false,
+  hp: 150, maxHp: 150, stunT: 0, burnT: 0, burnBy: null, moving: false, seenNow: false, seenBy: null, gen: 1, dead: false, denyTold: new Set(),
   path: null, pathI: 0, repathT: 0, target: null, atkCD: 0, runT: 0, runA: false, movedSince: 0, blinkT: 6, blinkUntil: new Map(), litT: 0, litFx: false,
   wakeAt: 0, deadAt: 0, still: true, flicker: 0.35, stepT: 0, fireAcc: new Map(), sightTold: false, net: { x: 0, z: 0, yaw: 0, at: 0, has: false }, melt: 0, shards: [],
   init() {
@@ -13231,7 +13505,7 @@ const Mannequin = {
     this.reset();
   },
   reset() {
-    this.active = false; this.state = 'DORMANT'; this.dead = false; this.gen = 1; this.maxHp = this.hp = MANN_HP[Net.sessionDiff || settings.difficulty] || 150;
+    this.active = false; this.state = 'DORMANT'; this.dead = false; this.gen = 1; this.denyTold = new Set(); this.maxHp = this.hp = MANN_HP[Net.sessionDiff || settings.difficulty] || 150;
     this.stunT = 0; this.burnT = 0; this.burnBy = null; this.moving = false; this.seenNow = false; this.seenBy = null; this.path = null; this.target = null; this.atkCD = 0;
     this.movedSince = 0; this.blinkT = rand(5, 8); this.blinkUntil.clear(); this.wakeAt = 0; this.deadAt = 0; this.fireAcc.clear(); this.sightTold = false; this.melt = 0; this.lure = null;
     this.pos.set(MANN_SPAWN[0], 0, MANN_SPAWN[1]); this.yaw = 0; this.pose = 'stand'; this.headYaw = 0; this.headRoll = 0;
@@ -13293,6 +13567,10 @@ const Mannequin = {
   },
   hurt(actor, dmg, o = {}) {
     if (!this.active || this.dead || !(dmg > 0)) return 0;
+    if (actor && !o.dot && !actor.hidden && !this.reachOf(actor).ok) { // from somewhere it can't get to: it doesn't even crack
+      const id = Game.idOf(actor); if (!this.denyTold.has(id)) { this.denyTold.add(id); Game.tell(actor, 'It doesn\'t even crack. From there it can\'t get to you — so you can\'t hurt it. Come out and face it.', 'warn', 6); }
+      return 0;
+    }
     const fire = o.kind === 'fire' || o.kind === 'flare';
     this.hp = Math.max(0, this.hp - dmg);
     if (o.burn) { if (this.burnT <= 0) Game.emit({ k: 'gburn' }); this.burnT = Math.max(this.burnT, o.burn); this.burnBy = actor || this.burnBy; }
@@ -13318,9 +13596,13 @@ const Mannequin = {
   repath() {
     const T0 = this.target; if (!T0) { this.path = null; return; }
     const sx = Math.floor(this.pos.x / CELL), sz = Math.floor(this.pos.z / CELL), tx = Math.floor(T0.pos.x / CELL), tz = Math.floor(T0.pos.z / CELL);
-    const [gx2, gz2] = nearestFreeOf(tx, tz, mannPassable);
+    // behind a case or a bench: to the cell it reaches from, then along the gap its body fits through
+    let R = null; if (!T0.decoy && !mannPassable(tx, tz)) { R = this.reachOf(T0); if (!R.ok || R.open) R = null; }
+    const [gx2, gz2] = R ? [Math.floor(R.cx / CELL), Math.floor(R.cz / CELL)] : nearestFreeOf(tx, tz, mannPassable);
     const p = astar(sx, sz, gx2, gz2, mannPassable);
-    this.path = p && p.length ? p.map(([x, z]) => [cc(x), cc(z), cellAt(x, z).door]) : null; this.pathI = 0;
+    this.path = p && p.length ? p.map(([x, z]) => [cc(x), cc(z), cellAt(x, z).door]) : R ? [] : null; this.pathI = 0;
+    if (R && this.path) for (const q of (R.fine || [[R.x, R.z]])) this.path.push([q[0], q[1], null]);
+    if (this.path && this.path.length) { let kd = 1e9; this.path.forEach((q, n) => { const d = Math.hypot(q[0] - this.pos.x, q[1] - this.pos.z); if (d < kd) { kd = d; this.pathI = n; } }); } // (from wherever along it it already is)
   },
   /* ---- the characters' abilities (host / solo) ---- */
   // a parry, a burst of light: it can't move for a moment, even if nobody is looking
@@ -13332,6 +13614,7 @@ const Mannequin = {
     return true;
   },
   forget(a) { if (this.target === a) this.target = null; },
+  reachOf(a) { return reachFor('M', this.pos, a, mannPassable, 0.32, MANN_REACH); },
   // a noise-maker: while nobody is looking, it goes there instead
   decoy(pos) {
     if (!this.active || this.dead) return false;
@@ -13345,7 +13628,7 @@ const Mannequin = {
     const G = Gallery;
     if (this.state === 'SCRIPT' || Game.ending || Cine.locks()) { this.moving = false; this.tick(dt); return; } // (it waits out the cutscenes, like everyone else)
     this.atkCD = Math.max(0, this.atkCD - dt);
-    if (this.burnT > 0) { this.burnT -= dt; if (this.active && !this.dead) this.hurt(this.burnBy || player, BURN_DPS * dt, { kind: 'fire', quiet: true }); }
+    if (this.burnT > 0) { this.burnT -= dt; if (this.active && !this.dead) this.hurt(this.burnBy || player, BURN_DPS * dt, { kind: 'fire', quiet: true, dot: true }); }
     if (this.dead) {
       if (this.gen === 1 && Game.time - this.deadAt > 9 && !G.wakeSent) G.wakeNext();
       this.tick(dt); return;
@@ -13400,9 +13683,10 @@ const Mannequin = {
     this.repathT -= dt;
     if (!this.path || this.repathT <= 0) { this.repathT = 0.6; this.repath(); }
     const sp = this.speed(), d0 = Math.hypot(T0.pos.x - this.pos.x, T0.pos.z - this.pos.z);
-    if (d0 < 1.3) { if (!T0.decoy) this.attack(T0); return; }
+    const off = !T0.decoy && !mannPassable(Math.floor(T0.pos.x / CELL), Math.floor(T0.pos.z / CELL)); // (behind a case, a bench: it reaches over)
+    if (d0 < 1.3 || (off && d0 < MANN_REACH && losClear(this.pos.x, this.pos.z, T0.pos.x, T0.pos.z, true))) { if (!T0.decoy) this.attack(T0); return; }
     let gx2 = T0.pos.x, gz2 = T0.pos.z;
-    if (this.path && d0 > 2.2) {
+    if (this.path && (d0 > 2.2 || off)) {
       let wp = this.path[this.pathI];
       while (wp && Math.hypot(wp[0] - this.pos.x, wp[1] - this.pos.z) < 0.45 && this.pathI < this.path.length - 1) wp = this.path[++this.pathI];
       if (wp) { gx2 = wp[0]; gz2 = wp[1]; const dr = wp[2]; if (dr && !dr.isOpen() && Math.hypot(dr.cx - this.pos.x, dr.cz - this.pos.z) < 1.9 && !dr.locked()) { dr.open(); Game.syncDoor(dr, false, true); } }
@@ -13542,7 +13826,7 @@ const Gallery = {
   introMsgs() {
     UI.msg('The service lift drops, jolts — and stops dead. Somewhere above you a cable snaps. It isn\'t going anywhere now.', 'story', 6);
     setTimeout(() => { if (Game.state === 'playing' && LVL === 1) UI.msg('Sublevel 7 — the Mimicry wing. The old freight lift still goes up. It needs power: three fuses.', 'story', 6); }, 4200);
-    setTimeout(() => { if (Game.state === 'playing' && LVL === 1) UI.msg('Keep your light on anything that looks like a person. [H] if you get lost.', '', 5); }, 9800);
+    setTimeout(() => { if (Game.state === 'playing' && LVL === 1) UI.msg('Keep your light on anything that looks like a person. ' + Keys.b('hint') + ' if you get lost.', '', 5); }, 9800);
   },
   fovH() { return Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect) + 0.1; },
   damage() { return diff().damage; },
@@ -14336,6 +14620,7 @@ function buildShade() {
 }
 const _sv = new T.Vector3(), _sv2 = new T.Vector3();
 // can it move through this cell? (walkable, and dark: lamps, flares and fire are walls to it; doors aren't — it slides under them)
+const SHADE_REACH = 2.2; // (over a desk or a crate, in the dark: those arms)
 function shadePassable(x, z) {
   const c = cellAt(x, z);
   if (c.lvl !== 2 || !(c.kind === 'floor' || c.kind === 'door' || c.kind === 'lift') || (c.kind === 'floor' && c.navBlocked)) return false;
@@ -14484,11 +14769,16 @@ const Shade = {
       const T0 = this.target, dT = T0 ? Math.hypot(T0.pos.x - this.pos.x, T0.pos.z - this.pos.z) : 99;
       if (this.lure && (this.lure.decoy || !T0 || dT > 10)) { gx = this.lure.pos.x; gz = this.lure.pos.z; if (Math.hypot(gx - this.pos.x, gz - this.pos.z) < 1.4) this.lure = null; }
       else if (T0) { gx = T0.pos.x; gz = T0.pos.z; chase = true; }
+      // behind a desk, a crate, in the dark: it gets as close as it can and reaches over
+      let rs = null;
+      if (chase && Blackout.lightAt(Math.floor(T0.pos.x / CELL), Math.floor(T0.pos.z / CELL)) < 2 && cellOf(T0.pos.x, T0.pos.z).kind === 'floor' && !shadePassable(Math.floor(T0.pos.x / CELL), Math.floor(T0.pos.z / CELL))) {
+        const R = reachFor('S', this.pos, T0, shadePassable, 0.42, SHADE_REACH); if (R.ok) { rs = R; gx = R.cx; gz = R.cz; }
+      }
       // the attack: close, and in the dark
-      if (chase && dT < 1.45 && this.atkCD <= 0 && Blackout.lightAt(Math.floor(T0.pos.x / CELL), Math.floor(T0.pos.z / CELL)) < 2 && !T0.beamOn(_sv.set(this.pos.x, 0, this.pos.z), 1.5)) { this.attack(T0); this.tick(dt); return; }
-      if (gx !== undefined) { this.repathT -= dt; if (!this.path || this.repathT <= 0) { this.repathT = 0.5; this.repath(gx, gz); } }
+      if (chase && (dT < 1.45 || (rs && dT < SHADE_REACH && losClear(this.pos.x, this.pos.z, T0.pos.x, T0.pos.z, true))) && this.atkCD <= 0 && Blackout.lightAt(Math.floor(T0.pos.x / CELL), Math.floor(T0.pos.z / CELL)) < 2 && !T0.beamOn(_sv.set(this.pos.x, 0, this.pos.z), 1.5)) { this.attack(T0); this.tick(dt); return; }
+      if (gx !== undefined) { this.repathT -= dt; if (!this.path || this.repathT <= 0) { this.repathT = 0.5; this.repath(gx, gz); if (rs && this.path) { for (const q of (rs.fine || [[rs.x, rs.z]])) this.path.push([q[0], q[1]]); let kd = 1e9; this.path.forEach((q, n) => { const d = Math.hypot(q[0] - this.pos.x, q[1] - this.pos.z); if (d < kd) { kd = d; this.pathI = n; } }); } } } // (and the last steps, through the gap, straight at you)
       // waiting where the light ends: it puts the light out
-      const blocked = chase && dT < 16 && (!this.path || Math.hypot(this.path[this.path.length - 1][0] - gx, this.path[this.path.length - 1][1] - gz) > 2.2);
+      const blocked = chase && !rs && dT < 16 && (!this.path || Math.hypot(this.path[this.path.length - 1][0] - gx, this.path[this.path.length - 1][1] - gz) > 2.2);
       if (blocked) {
         this.state = 'LURK'; this.eatT -= dt;
         if (this.eatT <= 0) { this.eatT = (Blackout.dark ? 3 : rand(6, 9)) * ((Net.sessionDiff || settings.difficulty) === 'hard' ? 0.7 : 1); this.eatLightNear(T0); }
@@ -14641,7 +14931,7 @@ const Blackout = {
   introMsgs() {
     UI.msg('The lift drops past the Gallery and keeps going — then the cable snaps. Sublevel 8: the power station. And no power.', 'story', 6.5);
     setTimeout(() => { if (Game.state === 'playing' && LVL === 2) UI.msg('The Surface Express goes all the way up. It needs the turbines running — three of them — and the main breaker.', 'story', 6); }, 4600);
-    setTimeout(() => { if (Game.state === 'playing' && LVL === 2) UI.msg('Keep your torch on. Whatever is down here doesn\'t like the light. [T] torch · [R] battery · [H] hint', '', 6); }, 10500);
+    setTimeout(() => { if (Game.state === 'playing' && LVL === 2) UI.msg('Keep your torch on. Whatever is down here doesn\'t like the light. ' + Keys.b('flashlight') + ' torch · ' + Keys.b('reload') + ' battery · ' + Keys.b('hint') + ' hint', '', 6); }, 10500);
   },
   /* ---- lights: who has power, and where it is lit ---- */
   turbsOn() { return this.turbs.filter(t => t.on).length; },
@@ -15173,7 +15463,7 @@ const Chars = {
   equip(id) {
     if (!CHARS[id] || !this.owns(id)) return false;
     this.data.equipped = id; this.save();
-    if (Net.active && !Net.inGame) Net.sendChar(); // (in the lobby: everyone sees who you are)
+    if (Net.active && (!Net.inGame || Net.isClient)) Net.sendChar(); // (in the lobby: everyone sees who you are; mid-game, the host learns who you'll be next time)
     return true;
   },
   equipped() { return this.data && CHARS[this.data.equipped] ? this.data.equipped : 'guard'; },
@@ -15262,7 +15552,7 @@ const Chars = {
   use() {
     const p = player, A = this.ab();
     if (Game.state !== 'playing' || p.dead || Game.controlLock || Cine.locks() || Game.ending || Game.endingLock || p.hideAnim) return false; // (never while you're down, or in a cutscene)
-    if (!A) { UI.msg('The Night Guard has no special ability. Roll for a character on the title screen — [F] uses their ability.', '', 4); Sound.abDeny(); return false; }
+    if (!A) { UI.msg('The Night Guard has no special ability. Roll for a character on the title screen — ' + Keys.b('ability') + ' uses their ability.', '', 4); Sound.abDeny(); return false; }
     const bf = BUFF_OF[A.id];
     if (A.dur && this.has(bf)) return false; // (already running)
     if (this.cd > 0) { UI.msg(A.name + ' is recharging — ' + Math.ceil(this.cd) + 's', '', 1.6); Sound.abDeny(); this.deny(); return false; }
@@ -15353,6 +15643,7 @@ const Chars = {
   // a remote guard used their ability
   remote(r, i, x) {
     if (!r || !x || typeof x !== 'object' || typeof x.a !== 'string') return;
+    if (Number.isInteger(i) && CHAR_IDS[i] && CHAR_IDS[i] !== r.charId && r.setChar) r.setChar(CHAR_IDS[i]); // (they know who they are: a request can beat their first update after a restart)
     const id = this.charOf(r), C = CHARS[id], now = Game.time;
     if (x.a === 'parry') { // their GUARD caught a hit on their screen
       if (id !== 'bob' || r.dead) return;
@@ -15935,7 +16226,7 @@ const CharUI = {
     $('tc-pic').src = CharArt.portrait(C.id, 96);
     $('tc-name').textContent = C.name + ' · ' + C.title;
     $('tc-rar').textContent = R ? R.name : 'DEFAULT'; $('tc-rar').style.color = R ? R.col : '#8d887c';
-    $('tc-ab').textContent = C.ab ? ABIL[C.ab].name + ' [F]' : 'no ability';
+    $('tc-ab').textContent = C.ab ? ABIL[C.ab].name + ' ' + Keys.b('ability') : 'no ability';
     $('free-tag').hidden = !(D.freeSpins > 0);
     $('tc-coins').textContent = D.coins;
     const sb = $('btn-spin'), can = Chars.canSpin();
@@ -15958,7 +16249,7 @@ const CharUI = {
       const top = mkEl('div', 'cc-top'); top.appendChild(mkEl('b', '', C.name)); top.appendChild(mkEl('em', '', C.rarity ? RARITY[C.rarity].name : 'DEFAULT')); card.appendChild(top);
       card.appendChild(mkEl('div', 'cc-title', C.title));
       const st = mkEl('div', 'cc-stats'); st.appendChild(mkEl('span', '', 'HP ' + C.hp)); st.appendChild(mkEl('span', '', 'STA ' + C.stam)); card.appendChild(st);
-      card.appendChild(mkEl('div', 'cc-ab', A ? A.name + ' [F] · ' + A.cd + 's' : 'No ability'));
+      card.appendChild(mkEl('div', 'cc-ab', A ? A.name + ' ' + Keys.b('ability') + ' · ' + A.cd + 's' : 'No ability'));
       const ft = mkEl('div', 'cc-foot'); ft.appendChild(mkEl('span', 'cc-own', eq ? 'EQUIPPED' : own ? 'OWNED' : 'LOCKED'));
       const b = mkEl('button', 'cc-eq', eq ? '✓' : own ? 'EQUIP' : '🔒'); b.type = 'button'; b.disabled = !own || eq; b.title = own ? (eq ? 'Equipped' : 'Equip ' + C.name) : 'Locked — roll to unlock';
       b.addEventListener('click', e => { e.stopPropagation(); this.equip(id); });
@@ -15990,7 +16281,7 @@ const CharUI = {
       h.appendChild(mkEl('b', '', A.name)); h.appendChild(mkEl('kbd', '', 'F'));
       h.appendChild(mkEl('em', '', (A.dur ? A.dur + 's · ' : '') + 'cooldown ' + A.cd + 's')); ab.appendChild(h);
       ab.appendChild(mkEl('p', '', A.desc));
-    } else ab.appendChild(mkEl('p', '', 'The Night Guard has no special ability. Roll for a character — each one brings an ability on [F].'));
+    } else ab.appendChild(mkEl('p', '', 'The Night Guard has no special ability. Roll for a character — each one brings an ability on ' + Keys.b('ability') + '.'));
     d.appendChild(ab);
     const sw = mkEl('div', 'ds-sw');
     const s1 = mkEl('div', 'ds-s'); s1.appendChild(mkEl('b', '', 'STRENGTH')); s1.appendChild(mkEl('p', '', C.strength)); sw.appendChild(s1);
@@ -16052,7 +16343,7 @@ const CharUI = {
     rv.hidden = false; rv.className = 'reveal r-' + res.rar + (res.dupe ? ' dupe' : ' new'); rv.style.setProperty('--rc', R.col); rv.style.setProperty('--cc', C.col);
     $('rv-pic').src = CharArt.portrait(res.id, 200);
     $('rv-rar').textContent = R.name; $('rv-name').textContent = C.name; $('rv-title').textContent = '“' + C.title + '”';
-    $('rv-ab').textContent = A.name + ' [F] — ' + C.role;
+    $('rv-ab').textContent = A.name + ' ' + Keys.b('ability') + ' — ' + C.role;
     $('rv-stamp').textContent = res.dupe ? 'DUPLICATE' : 'NEW HIRE';
     $('rv-sub').textContent = res.dupe ? 'You already have ' + C.name + ' — you keep them, and get +' + res.comp + ' coins back.' : C.name + ' joins your roster.' + (res.free ? ' (That was your free spin.)' : '');
     const eq = Chars.equipped() === res.id;
@@ -16082,6 +16373,7 @@ Arms.init();
 Weapons.init();
 Voice.init();
 bindSettingsUI();
+KeysUI.init(); // (Settings → Controls; every key name in the page painted from your bindings)
 bindMenus();
 applySettings();
 Goals.load();
@@ -16137,7 +16429,7 @@ const hiddenTick = () => {
 if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
-    Level, Foe, LEVELS, lvlAt, get LVL() { return LVL; }, Gallery, GAL, Mannequin, Blackout, Shade, BL, TURB, Chars, CHARS, ABIL, RARITY, ECON, CHAR_IDS, ROLL_IDS, BUFF_BITS, CharUI, CharArt, fixturesOf(lv) { return fixtures.filter(f => f.lvl === lv); },
+    Level, Foe, LEVELS, lvlAt, get LVL() { return LVL; }, Gallery, GAL, Mannequin, Blackout, Shade, BL, TURB, Chars, CHARS, ABIL, RARITY, ECON, CHAR_IDS, ROLL_IDS, BUFF_BITS, CharUI, CharArt, Keys, KeysUI, KEY_ACTIONS, reachFor, WARDEN_REACH, MANN_REACH, SHADE_REACH, mannPassable, shadePassable, bodyOverlaps, fixturesOf(lv) { return fixtures.filter(f => f.lvl === lv); },
     Hints, Cine, Net, Relay, Night, hideLockers, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom, Photos, Endless, Modes, CURSES, PHOTO_ART, Weapons, WPN, WPN_IDS, Battle, Hold, Proj, Fires, Voice, holdSchedule, fxLight, SCENES,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
