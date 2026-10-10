@@ -19661,8 +19661,8 @@ const CR = {
       if (c.door && !c.door.broken && c.door.t < 0.8) Horde.smashDoor(c.door);
       const ox = m.pos.x, oz = m.pos.z; moveBody(m.pos, C.dx * st, C.dz * st, 0.6, 'monster'); const moved = Math.hypot(m.pos.x - ox, m.pos.z - oz); C.run += moved;
       let slam = false;
-      for (const a of crew().concat(Powers.fakeList())) { if (C.hit.has(a) || a.dead || a.downed || a.hidden) continue; if (Math.hypot(a.pos.x - m.pos.x, a.pos.z - m.pos.z) < 1.45) { C.hit.add(a); slam = slam || !a.fake; if (!(a.invuln && a.invuln())) { Health.hit(a, 'charge', m, m.pos); Horde.ev({ e: 'x', i: m.id, kd: ATK_IDS.indexOf('charge'), h: 1 }); } } }
-      if (slam) { m.chargeCD = Game.time + rand(5, 8); return false; } // (it slams into you and stops there: it doesn't run on through you)
+      for (const a of crew().concat(Powers.fakeList())) { if (C.hit.has(a) || a.dead || a.downed || a.hidden) continue; if (Math.hypot(a.pos.x - m.pos.x, a.pos.z - m.pos.z) < 1.45) { C.hit.add(a); slam = slam || (!a.fake && Math.abs((a.pos.x - m.pos.x) * C.dz - (a.pos.z - m.pos.z) * C.dx) < 0.85); if (!(a.invuln && a.invuln())) { Health.hit(a, 'charge', m, m.pos); Horde.ev({ e: 'x', i: m.id, kd: ATK_IDS.indexOf('charge'), h: 1 }); } } }
+      if (slam) { m.chargeCD = Game.time + rand(5, 8); return false; } // (square in its path: it slams into you and stops there, it doesn't run on through you; step aside and it only clips you on the way past)
       if (moved < st * 0.45 && C.t > 0.12) { m.stunT = 2.6; m.atk = null; m.state = 'STUN'; m.chargeCD = Game.time + rand(5, 8); Horde.ev({ e: 'C', i: m.id }); Game.noise(m.pos, 22, 'event'); return 'end'; } // (it hit the wall — and the wall won)
       if (C.run > 18 || C.t > 2.2) { m.chargeCD = Game.time + rand(5, 8); if (!C.hit.size && A.a) Threat.whiff(m.key, A.a, m.pos); return false; }
       return true;
