@@ -18957,6 +18957,7 @@ const ORG = (() => {
     const nSpan = Math.max(1, V3.length - 1), nRing = nSpan * sub + 1;
     const radAt = t => { // per control point radii, interpolated smoothly
       if (!Array.isArray(rad)) return [rad, rad];
+      if (rad.length === 1) return Array.isArray(rad[0]) ? [rad[0][0], rad[0][1]] : [rad[0], rad[0]]; // (one radius for the whole length: a band, a cuff)
       const f = t * (rad.length - 1), i = Math.min(rad.length - 2, Math.floor(f)), k = fade(f - i);
       const a = Array.isArray(rad[i]) ? rad[i] : [rad[i], rad[i]], b = Array.isArray(rad[i + 1]) ? rad[i + 1] : [rad[i + 1], rad[i + 1]];
       return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
@@ -23226,7 +23227,7 @@ const CHAR_LOOK = { // skin, uniform, hair
   tarnished: ['#b89878', '#3a3428', '#8a8070'], glitch: ['#9cb8b0', '#101418', '#2dffd0'], demo: ['#a8785a', '#3a3020', '#2a1a10'],
   sportsman: ['#c8906a', '#c83a2a', '#2a1a10'], hybrid: ['#b89a88', '#26322a', '#161616'], scientist: ['#d8b498', '#dfe2e4', '#5a4030'],
   robot: ['#9aa2aa', '#3a4048', '#3a4048'], builder: ['#b07a58', '#d8901a', '#3a2a1a'], hacker: ['#c8a488', '#0e1612', '#121212'],
-  aether: ['#eadcf2', '#170f34', '#f2eaff'], nyx: ['#d6cad8', '#0b0918', '#24163e'],
+  aether: ['#c9b6e0', '#170f34', '#f2eaff'], nyx: ['#d6cad8', '#0b0918', '#24163e'],
 };
 const CharArt = {
   cache: {},
