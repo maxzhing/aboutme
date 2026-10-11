@@ -135,6 +135,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .mode.lv8{border-color:rgba(120,170,220,.35);background:linear-gradient(160deg,rgba(90,140,200,.08),rgba(255,255,255,.01))}
 .mode.lv9{border-color:rgba(140,220,120,.35);background:linear-gradient(160deg,rgba(110,200,90,.08),rgba(255,255,255,.01))}
 .mode.lv10{border-color:rgba(230,120,90,.38);background:linear-gradient(160deg,rgba(210,90,60,.09),rgba(255,255,255,.01))}
+.modes.four{grid-template-columns:repeat(4,1fr)}
+@media (max-width:1060px){.modes.four{grid-template-columns:repeat(2,1fr)}}
+.mode.watch{border-color:rgba(120,220,150,.4);background:linear-gradient(160deg,rgba(90,200,120,.09),rgba(255,255,255,.01))}
+.mode.watch.sel{border-color:#7ee0a0;background:rgba(90,200,120,.12)}
 .mode .new{display:inline-block;font-size:9px;letter-spacing:.2em;color:#111;background:var(--amber);padding:1px 5px;margin-left:8px;vertical-align:2px}
 .daily{display:flex;gap:9px;align-items:center;font-size:12.5px;color:#cfc8b8;margin:6px 0 2px;cursor:pointer;user-select:none}
 .daily input{accent-color:#d9a34a;width:15px;height:15px}
@@ -1092,16 +1096,22 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p"><b>The Visitor</b> lives down here too. Something very tall and white that came in through a hole in the roof. It is slow and almost silent — <b>listen for the claw it drags</b>. It ducks to get through the corridors and <b>cannot fit in a vent</b>, but it can <b>skewer you through a locker door</b>: hide in the vents, not the lockers. Two hard hits stun it for five seconds.</p>
     <p class="p"><b>Your mission:</b> charge the <b>three survey pylons</b> (stay with each one — it's loud) to break the seals on the Heart, then <b>kill the Mother</b>: her arms come down where the red rings are — get out of them — and her three glowing <b>sacs</b> are the only thing that hurts her. Then the caves come down. <b>Run</b> for the old mine elevator before the collapse buries you.</p>
     </div>
+    <div id="brief-watch" hidden>
+    <p class="p">Tonight you don't leave the security office. From <b>midnight to 6:00 AM</b> you keep watch from Desk B: <b>ten cameras</b> (<span data-key="map"></span>, then <b>1–0</b> or the map to switch), <b>one door</b> (the red switch on the desk, or <span data-key="interact"></span> at the door) and <b>one vent</b> in the north wall.</p>
+    <p class="p"><b>The Warden</b> walks room to room toward your door — you'll see it pass the West Hall or the South Hall. Shut the door before it gets there and it slams it and leaves; leave it open and it comes in. Later (2 AM on Normal) <b>the Mannequin</b> sets off from Medical: it only moves when <b>nobody is watching it</b> — on a camera, or through the open doorway with your own eyes. After that (3 AM on Normal) <b>the brood</b> crawls down the vent: hold your flashlight (<span data-key="flashlight"></span>) on the grate until it backs off.</p>
+    <p class="p">Every camera you watch and every second the door is shut <b>drains the power</b>. At 0% the lights die, the cameras go dark, the door slides open and won't close — and something starts to hum outside it. Make the power last until six. Online, the power and the door are shared: split the jobs.</p>
+    </div>
     <div id="brief-endless" hidden>
     <p class="p">The day shift is never coming. There is no lift, no keycard, no way out — only the night, and <b>how long you can last in it</b>.</p>
     <p class="p">Every hour (about a minute and a half) you get a spare battery — and you must <b>choose one of two curses</b>. They stack: a faster Warden, sharper ears, brownouts, open vents, phantoms everywhere… Every run is different. Beat your longest night.</p>
     </div>
     <div id="modes">
     <div class="kicker" style="margin-top:18px">Sublevel 6 · the Warden</div>
-    <div class="modes">
+    <div class="modes four">
       <button class="mode" data-mode="night"><b>THE NIGHT SHIFT</b><span>Survive until 6:00 AM — or find a way out sooner.</span><em data-best="night"></em></button>
       <button class="mode" data-mode="photos"><b>THE POLAROIDS</b><span>Find 8 photos hidden somewhere new every run. Each one makes it worse. Then run.</span><em data-best="photos"></em></button>
       <button class="mode" data-mode="endless"><b>ENDLESS NIGHT</b><span>Dawn never comes. Every hour, pick a curse. How long can you last?</span><em data-best="endless"></em></button>
+      <button class="mode watch" data-mode="watch"><b>THE WATCH<i class="new">NEW</i></b><span>Midnight to 6 AM without leaving Desk B. Ten cameras, one door, one vent — and the power runs out.</span><em data-best="watch"></em></button>
     </div>
     <div class="kicker" style="margin-top:14px">Deeper · new floors, new monsters</div>
     <div class="modes deep" id="modes-deep">
@@ -1201,7 +1211,8 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li><b>THE INFESTANT (online co-op only).</b> Play with friends and, after a while, something else comes in with you: it wears one of your team — their face, their kit, their name over its head, a light in its hand — and it goes for whoever is <b>alone</b>. Up close it comes apart and strikes, then runs, and comes back later as someone else. Tells: its light lights nothing, its feet make no sound, and when it thinks nobody is watching its head goes over too far. <b>Hold your flashlight on it</b> and it burns, shrieks and flees; hit it and it flees; burn it enough and it's gone for the floor. Stay together and it only watches.</li>
           <li><b>Build 18's new hires.</b> <b>KAIROS, THE LAST SECOND</b> (ULTIMATE): <b>REWIND</b> takes him back to where he stood four seconds ago, with any health he lost since (it never takes health away); <b>CHRONO HALT</b> on <b data-key="ultimate">X</b> stops every monster on the floor for 6 s — then TIME DEBT, 8 s of taking 50% more damage. <b>PYRO</b> (Special): <b>INFERNO</b>, a 7.5 m jet of fire that burns, drives back and leaves the floor alight; fireproof — no fire, molotov or napalm hurts him — but his tanks make him slower and louder. <b>TRAPPER</b> (Special): <b>BEAR TRAP</b>, up to three on the floor; the first monster to step in one is clamped for 3.5 s and hurt, the team hears it, and he sees every monster through the walls for 4 s.</li>
           <li><b>The deeper floors</b> (New Game → Deeper): <b>Sublevel 7, the Gallery</b> — a museum of mannequins where one of them only moves while nobody looks at it: keep it in your light, find three fuses, power the freight lift. <b>Sublevel 8, the Blackout</b> — a power station gone dark, where the Shade lives between the lights: torch beams, flares and fire burn it, lamps keep it out, and it puts the lamps out to reach you. Restart three turbines, throw the main breaker, call the Surface Express — and survive the dark until it comes. <b>Sublevel 9, the Hive</b> — a bio-lab that grew a brood: crawler packs that flank you, screamer pods that call the rest, mimics among the supplies, spitters, and the Butcher (knock it down and keep hitting it while it's down: it gets up weaker, and the third time it stays down). Find three cultures, run the sequencer, burn three nests, reroute the power and hold the Lobby until the Quarantine Lift comes. <b>Sublevel 10, the Root</b> — the mine under everything: charge three pylons (one is missing its power cell), kill the Mother by bursting her three sacs while her arms come down in the red rings, then outrun the collapse to the old mine elevator — a different way out is buried every time.</li>
-          <li><b>Three modes</b> (pick one when you press New Game): <b>The Night Shift</b> — survive until 6:00 AM; <b>The Polaroids</b> — find 8 photos hidden somewhere new every run, each one making it worse, then race to the lift (there is a Daily layout to compete on); <b>Endless Night</b> — no dawn, a new curse every hour (press <b>1</b> or <b>2</b> to choose), survive as long as you can.</li>
+          <li><b>Four modes on Sublevel 6</b> (pick one when you press New Game): <b>The Night Shift</b> — survive until 6:00 AM; <b>The Polaroids</b> — find 8 photos hidden somewhere new every run, each one making it worse, then race to the lift (there is a Daily layout to compete on); <b>Endless Night</b> — no dawn, a new curse every hour (press <b>1</b> or <b>2</b> to choose), survive as long as you can; <b>The Watch</b> (Build 19) — midnight to 6 AM without leaving Desk B.</li>
+          <li><b>The Watch:</b> <span data-key="map"></span> opens the cameras (<b>1–0</b>, the arrow keys or the map to switch; <span data-key="map"></span> again to look up). The red switch on the desk opens and shuts the door. <b>The Warden</b> shows up on CAM 05 or CAM 06 before your door — shut it in time and it slams it and goes. <b>The Mannequin</b> only moves while nobody watches it (a camera, or your own eyes through the doorway): check CAM 10 before you open the door. <b>The brood</b> comes down the vent: hold your light on the grate. Cameras and a shut door burn power; at 0% everything goes dark and the door won't hold.</li>
           <li><b>The Night Shift: survive until 6:00 AM</b> (the clock is at the top of the screen), then get onto the surface lift when the day shift opens it. Every hour it gets faster and sharper-eared; at 4:00 a power surge blacks everything out; in the last hour it can crawl into the vents. Or open the lift early: three keycards, main power and the breach report.</li>
           <li>It hunts by sound and sight — and it has sharp ears. Walking near it is enough; when it hears you it <b>runs</b> to the sound. Crouch close to it, and hide the moment it starts running.</li>
           <li>Your flashlight makes you visible from far away — and shining it at the Warden enrages it.</li>
@@ -1280,7 +1291,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div id="mp-lobby" hidden>
       <div class="kicker" style="margin-top:14px">Guards on shift</div>
       <ul id="mp-players"></ul>
-      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
+      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
@@ -1421,7 +1432,7 @@ const settings = Object.assign({}, DEFAULTS);
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8);
     bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily');
-    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root']);
+    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
   } catch (e) { /* storage blocked or corrupt: keep defaults */ }
@@ -1548,7 +1559,8 @@ const ATTACK = {
   sweep:  { k: 0.7,  wind: 1.05, rec: 0.8,  range: 9,    name: 'sweep' },             // …across one side of her chamber
   skewer: { k: 1.25, wind: 0.6,  rec: 1.6,  range: 3.3,  name: 'claw' },              // the Visitor's claw (through a locker door, too)
   sstab:  { k: 2.2,  wind: 0.9,  rec: 2.0,  range: 2.2,  name: 'skewered' },          // …straight through the locker you are hiding in
-  skin:   { k: 0.6,  wind: 0.8,  rec: 1.2,  range: 2.6,  name: 'strike' },           // (Build 18) THE INFESTANT, coming apart: 21 on Normal (last: the list order goes over the network)
+  skin:   { k: 0.6,  wind: 0.8,  rec: 1.2,  range: 2.6,  name: 'strike' },           // (Build 18) THE INFESTANT, coming apart: 21 on Normal
+  wvent:  { k: 0.6,  wind: 0,    rec: 0,    range: 3.0,  name: 'bite' },             // (Build 19) THE WATCH: the brood, dropping out of the vent (last: the list order goes over the network)
 };
 const dkey = () => (typeof Net !== 'undefined' && Net.sessionDiff) || settings.difficulty;
 const hitDmg = kind => Math.max(1, Math.round(diff().damage * ((ATTACK[kind] || ATTACK.swipe).k)));
@@ -8454,6 +8466,7 @@ const Game = {
   },
   showGameOver() {
     if (this.mode === 'endless') { this.showResult('endless'); return; } // in Endless Night, getting caught is how it ends
+    if (this.mode === 'watch') { Watch.result(false); return; }
     if (LVL) { Level.result(false); return; }
     this.state = 'dead'; Input.exitLock(); UI.hud(false); this.endFrame();
     $('go-stats').innerHTML = '';
@@ -8899,6 +8912,7 @@ const Game = {
         this.controlLock = false; this.introT = -1;
         if (Net.active) {
           UI.msg(this.mode === 'photos' ? 'Find all eight photos together — they count for the whole team — then everyone into the lift.'
+            : this.mode === 'watch' ? 'THE WATCH: Desk B until 6:00 AM. Split it up — one on the cameras (' + Keys.b('map') + '), one on the door, one on the vent. The power is shared.'
             : this.mode === 'endless' ? 'The night never ends. Stay alive as long as you can — a caught guard is out for good.'
             : 'Stay alive until the day shift opens the lift at 6:00 AM — or find the keycards and get out sooner. Stay together.', 'story', 6);
           setTimeout(() => { if (Game.state === 'playing') UI.msg(Keys.b('ping') + ' marks a spot for your team. ' + Keys.b('hint') + ' shows a hint.', '', 4.5); }, 3600);
@@ -8965,6 +8979,7 @@ const Game = {
   scripts(dt) {
     const F = this.flags, p = player, host = !Net.isClient;
     if (LVL) { this.eventT -= dt; if (this.eventT <= 0) { this.eventT = rand(15, 34); this.ambientEvent(); } return; } // (the other floors have their own monsters, and their own director)
+    if (this.mode === 'watch') { this.eventT -= dt; if (this.eventT <= 0) { this.eventT = rand(18, 34); if (Math.random() < 0.5) Sound.pipeGroan(_v3c.set(rand(4, 30), 2, rand(4, 42))); else Sound.drip(_v3c.set(rand(3, 15), 2.5, rand(45, 55))); } return; } // (THE WATCH runs its own monsters)
     // the Warden wakes up (the host decides; every guard watches it happen on CCTV)
     if (host && !F.awakeQueued && !Monster.active && F.quickWake) { F.awakeQueued = true; F.awakeAt = this.time + 5; F.wokeAt = F.awakeAt; }
     if (host && !F.awakeQueued && !Monster.active) {
@@ -9134,6 +9149,7 @@ const Game = {
       if (f.lvl !== LVL) continue; // (the other floors are dark — and hidden)
       let b = 0;
       if (LM) LM.fixOn(f, t);
+      else if (this.mode === 'watch' && Watch.on) Watch.fixOn(f, t);
       else if (f.type === 'main') f.on = this.power && f.mode !== 'dead' && t >= f.powerOnAt;
       if (f.on) {
         b = 1;
@@ -9449,15 +9465,16 @@ const DIFF_TEXT = (() => {
     root: { easy: 'The Mother is slower and softer; the collapse gives you longer.' + hit('easy'), normal: 'The intended experience.' + hit('normal'), hard: 'More arms at once, more young, a shorter collapse.' + hit('hard'), nightmare: 'She never stops. The caves come down fast.' + hit('nightmare') },
     blackout: { easy: 'It is slower and burns sooner. Turbines restart quicker. The Express takes 35 seconds.' + hit('easy'), normal: 'The intended experience. The Express takes 45 seconds.' + hit('normal'), hard: 'It is fast, tough, and eats the lights quicker. The Express takes 55 seconds.' + hit('hard'), nightmare: 'It eats the lights almost as fast as you light them — and spits darkness at you in them. The Express takes a minute.' + hit('nightmare') },
     gallery: { easy: 'It moves slower and breaks sooner. The lift takes 35 seconds.' + hit('easy'), normal: 'The intended experience. The lift takes 45 seconds.' + hit('normal'), hard: 'Fast and tough. Your torch stutters more. The lift takes 55 seconds.' + hit('hard'), nightmare: 'Faster than you, hard to break, and it strikes the moment you look away. The lift takes a full minute.' + hit('nightmare') },
+    watch: { easy: 'A 6-minute night. Slow to move, long at the door. The Mannequin from 3 AM, the vent from 4 AM. The power lasts longer.' + hit('easy'), normal: 'A 7-minute night. The intended experience: the Mannequin from 2 AM, the vent from 3 AM.' + hit('normal'), hard: 'A 7½-minute night. Faster, shorter at the door; the Mannequin from 1 AM, the vent from 2 AM. The power drains faster.' + hit('hard'), nightmare: 'An 8-minute night. Everything from 1 AM, and it barely waits at the door.' + hit('nightmare') },
     other: { easy: 'A slower, half-deaf hunter with long, readable attacks.' + hit('easy'), normal: 'The intended experience.' + hit('normal'), hard: 'Fast, sharp-eared, quick to strike. It smashes through iron doors.' + hit('hard'), nightmare: 'It sees further, hears everything, barely warns you and throws what it can\'t reach. Almost no healing.' + hit('nightmare') },
   };
 })();
 function syncModeCards() {
   const m = MODES[settings.mode] ? settings.mode : 'night';
   document.querySelectorAll('#modes .mode').forEach(b => { b.classList.toggle('sel', b.dataset.mode === m); const em = b.querySelector('em'); if (em) em.textContent = Modes.cardBest(b.dataset.mode); });
-  $('brief-h1').textContent = { photos: 'The Polaroids', endless: 'Endless Night', gallery: 'Get out of the Gallery', blackout: 'Bring the lights back', hive: 'Burn the brood', root: 'Kill the Mother' }[m] || 'Survive until 6:00 AM';
-  $('brief-kicker').textContent = { gallery: 'Site Kestrel · Sublevel 7 · the Mimicry wing', blackout: 'Site Kestrel · Sublevel 8 · the power station', hive: 'Site Kestrel · Sublevel 9 · Lantern Bio-Containment', root: 'Site Kestrel · Sublevel 10 · the old mine' }[m] || 'Night shift · Site Kestrel, Sublevel 6 · 02:00 AM';
-  ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root'].forEach(k => { const el = $('brief-' + k); if (el) el.hidden = k !== m; });
+  $('brief-h1').textContent = { watch: 'Keep watch until 6:00 AM', photos: 'The Polaroids', endless: 'Endless Night', gallery: 'Get out of the Gallery', blackout: 'Bring the lights back', hive: 'Burn the brood', root: 'Kill the Mother' }[m] || 'Survive until 6:00 AM';
+  $('brief-kicker').textContent = { watch: 'Night watch · Site Kestrel, Sublevel 6 · Desk B · 12:00 AM', gallery: 'Site Kestrel · Sublevel 7 · the Mimicry wing', blackout: 'Site Kestrel · Sublevel 8 · the power station', hive: 'Site Kestrel · Sublevel 9 · Lantern Bio-Containment', root: 'Site Kestrel · Sublevel 10 · the old mine' }[m] || 'Night shift · Site Kestrel, Sublevel 6 · 02:00 AM';
+  ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch'].forEach(k => { const el = $('brief-' + k); if (el) el.hidden = k !== m; });
   $('daily-row').hidden = m !== 'photos'; $('daily').checked = !!settings.daily;
   $('diff-kicker').textContent = m === 'night' ? 'Difficulty · how long the night lasts' : 'Difficulty';
   const tx = DIFF_TEXT[DIFF_TEXT[m] ? m : m === 'night' ? 'night' : 'other'];
@@ -10253,7 +10270,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 14, BUILD = 18, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 15, BUILD = 19, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -11447,6 +11464,11 @@ const ACH = [
   { id: 'mythic', name: 'One in Twenty', desc: 'Roll a Mythic character.' },
   { id: 'ultimate', name: 'One in Ten Thousand', desc: 'Roll an ULTIMATE character (AETHER or NYX).' },
   { id: 'medic2', name: 'Not Today', desc: 'Get a downed teammate back on their feet.' },
+  // Build 19: THE WATCH
+  { id: 'wt_dawn', name: 'Night Watchman', desc: 'The Watch: keep watch until 6:00 AM.' },
+  { id: 'wt_saver', name: 'Power Saver', desc: 'The Watch: make it to 6:00 AM with 30% power or more.' },
+  { id: 'wt_dark', name: 'Lights Out', desc: 'The Watch: make it to 6:00 AM after the power ran out.' },
+  { id: 'wt_nm', name: 'Nightmare Watch', desc: 'The Watch: make it to 6:00 AM on Nightmare.' },
 ];
 const RANKS = [['S', 3300], ['A', 2600], ['B', 1900], ['C', 1200], ['D', -1e9]];
 const CAM_POS = new T.Vector3(102.2, 1.1, 52);
@@ -11699,7 +11721,7 @@ const Night = {
     if (Game.mode !== 'night') { // the other modes keep their own time
       this.t += dt;
       if (LVL) { Level.mod().update(dt); return; }
-      if (Game.mode === 'photos') Photos.update(dt); else Endless.update(dt);
+      if (Game.mode === 'photos') Photos.update(dt); else if (Game.mode === 'watch') Watch.update(dt); else Endless.update(dt);
       if (this.surgeUntil && !this.surge && !this.said.surgeEnd) { this.said.surgeEnd = 1; UI.msg('The emergency lights stutter back on.', 'story', 3.5); Game.dip = 0.6; }
       return;
     }
@@ -12417,6 +12439,7 @@ const MODES = {
   blackout: { name: 'The Blackout', tag: 'SUBLEVEL 8 · THE BLACKOUT' },
   hive: { name: 'The Hive', tag: 'SUBLEVEL 9 · THE HIVE' },
   root: { name: 'The Root', tag: 'SUBLEVEL 10 · THE ROOT' },
+  watch: { name: 'The Watch', tag: 'THE WATCH' }, // (Build 19: Sublevel 6 from the desk — cameras, a door, a vent, the power)
 };
 const FASTEST = new Set(['photos', 'gallery', 'blackout', 'hive', 'root']); // (the modes where a lower time is better)
 const PHOTO_N = 8;
@@ -12740,13 +12763,14 @@ const Endless = {
 /* ---- shared: the HUD, the objectives, the bests ---- */
 const Modes = {
   init() { Photos.init(); },
-  reset() { Photos.reset(); Endless.reset(); },
+  reset() { Photos.reset(); Endless.reset(); Watch.reset(); },
   // called by Game.newGame after the world is reset
   start() {
     const m = Game.mode, F = Game.flags;
     $('objectives').classList.toggle('m-photos', m === 'photos'); $('objectives').classList.toggle('m-endless', m === 'endless');
-    document.querySelector('#objectives .opt-h').textContent = LVL ? Level.mod().optHead : m === 'photos' ? 'THE POLAROIDS' : m === 'endless' ? 'CURSES' : 'ESCAPE EARLY · OPTIONAL';
+    document.querySelector('#objectives .opt-h').textContent = LVL ? Level.mod().optHead : m === 'photos' ? 'THE POLAROIDS' : m === 'endless' ? 'CURSES' : m === 'watch' ? 'DESK B' : 'ESCAPE EARLY · OPTIONAL';
     if (m === 'night') return;
+    if (m === 'watch') { F.awakeQueued = F.woke = true; Watch.start(); return; } // (the Warden is up and about — just not the one you know)
     if (LVL) { F.awakeQueued = F.woke = true; Level.mod().start(); return; } // (no Warden down here: something else)
     // the quick modes: you start with a light, and it is already awake
     player.hasFlash = true; player.flashState = false;
@@ -12760,13 +12784,15 @@ const Modes = {
   intro() { // the opening card
     if (LVL) { Level.mod().intro(); return; }
     const m = Game.mode, n = Net.active ? ' · ' + crew().length + ' guards' : '';
-    if (m === 'photos') UI.center('THE POLAROIDS', (Photos.daily ? 'TODAY\'S PHOTOS' : 'EIGHT PHOTOS') + ' · FIND THEM ALL, THEN GET TO THE LIFT' + n, 4.4);
+    if (m === 'watch') Watch.intro();
+    else if (m === 'photos') UI.center('THE POLAROIDS', (Photos.daily ? 'TODAY\'S PHOTOS' : 'EIGHT PHOTOS') + ' · FIND THEM ALL, THEN GET TO THE LIFT' + n, 4.4);
     else if (m === 'endless') UI.center('ENDLESS NIGHT', 'DAWN NEVER COMES · HOW LONG CAN YOU LAST?' + n, 4.4);
   },
   introMsgs() {
     if (LVL) { Level.mod().introMsgs(); return; }
     const m = Game.mode;
-    if (m === 'photos') {
+    if (m === 'watch') Watch.introMsgs();
+    else if (m === 'photos') {
       UI.msg('Eight photos are pinned to walls around Sublevel 6 — somewhere different every time. Each one you take makes it worse.', 'story', 6);
       setTimeout(() => { if (Game.state === 'playing') UI.msg('The photos glint in the dark. ' + Keys.b('hint') + ' points to the nearest one.', '', 4.5); }, 4200);
     } else if (m === 'endless') {
@@ -12776,6 +12802,13 @@ const Modes = {
   },
   objectives() {
     if (LVL) return Level.mod().objectives();
+    if (Game.mode === 'watch') { const d = Watch.door(), open = !d || d.isOpen(); return [
+      { id: 'w-dawn', text: 'Keep watch until 6:00 AM (' + Watch.clock() + ' AM)', done: false },
+      { id: 'w-pow', text: Watch.dark ? 'Power: 0% — hold on' : 'Power: ' + Math.ceil(Watch.pw) + '%', done: false },
+      { id: 'w-door', text: Watch.dark ? 'Door: stuck open' : 'Door: ' + (open ? 'open' : 'SHUT') + ' — the red switch on the desk', done: !open },
+      { id: 'w-cams', text: 'Cameras: ' + Keys.b('map') + ' · 1-0 to switch', done: false },
+      { id: 'w-vent', text: 'The vent: your light (' + Keys.b('flashlight') + ') on the grate', done: false },
+    ]; }
     if (Game.mode === 'photos') return [
       { id: 'photos', text: 'Find the photos (' + Photos.got + '/' + PHOTO_N + ')', done: Photos.got >= PHOTO_N },
       { id: 'escape', text: 'Escape in the surface lift', done: Game.ending },
@@ -12788,7 +12821,12 @@ const Modes = {
     const m = Game.mode;
     let clock, goal, cls = '', bar, mission, sub;
     if (LVL) ({ clock, goal, cls, bar, mission, sub } = Level.mod().hud());
-    else if (m === 'photos') {
+    else if (m === 'watch') {
+      clock = Watch.clock(); bar = Watch.minutes() / 360;
+      goal = Watch.dark ? 'POWER 0% · HOLD ON UNTIL 6:00 AM' : 'THE WATCH · POWER ' + Math.ceil(Watch.pw) + '%';
+      cls = Watch.dark ? 'surge' : Watch.hour >= 5 ? 'late' : '';
+      mission = 'Keep watch until 6:00 AM'; sub = 'Desk B · ' + Watch.cardBest(Net.sessionDiff || settings.difficulty);
+    } else if (m === 'photos') {
       clock = fmtClock(Game.time); bar = Photos.got / PHOTO_N;
       goal = Photos.done ? 'GET TO THE LIFT · ' + Math.round(Math.hypot(player.pos.x - LIFT_POS.x, player.pos.z - LIFT_POS.z)) + ' M' : (Night.surge ? 'POWER FAILURE · ' : '') + 'PHOTOS ' + Photos.got + ' / ' + PHOTO_N;
       cls = Photos.done ? 'dawn' : Night.surge ? 'surge' : Photos.got >= 6 ? 'late' : '';
@@ -12805,7 +12843,7 @@ const Modes = {
     if (UI.hudCache.shift === key) return;
     UI.hudCache.shift = key;
     el.className = cls;
-    $('shift-clock').firstChild.textContent = shown; $('shift-clock').querySelector('small').textContent = '';
+    $('shift-clock').firstChild.textContent = shown; $('shift-clock').querySelector('small').textContent = m === 'watch' ? 'AM' : '';
     $('shift-goal').textContent = goal;
     $('shift-bar').firstElementChild.style.width = clamp(bar, 0, 1) * 100 + '%';
     $('mission').textContent = mission; $('mission-sub').textContent = sub;
@@ -12838,6 +12876,7 @@ const Modes = {
   },
   // the briefing's mode cards: what each one is, and your best
   cardBest(m) {
+    if (m === 'watch') return Watch.cardBest(settings.difficulty);
     if (m === 'night') { const b = Goals.data.best[settings.difficulty]; return b ? 'Best: ' + b.rank + ' · ' + b.score + ' pts' : 'No shift finished yet'; }
     const b = Goals.data.best[this.key(m, settings.difficulty)];
     if (m === 'photos') { const d = Goals.data.best['daily-' + dailySeed()]; return (b ? 'Best: ' + b.rank + ' · ' + fmtClock(b.time) : 'No run finished yet') + (d ? ' · Today: ' + fmtClock(d.time) : ''); }
@@ -16932,7 +16971,7 @@ const isCode = c => typeof c === 'string' && Object.prototype.hasOwnProperty.cal
 const codeKey = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 32);
 const ECON = {
   startCoins: 100, freeSpins: 1, spinCost: 100, maxCoins: 9999999, maxFree: 99, // (maxFree: free spins you can bank — codes give more than one)
-  win: { night: 120, photos: 100, gallery: 140, blackout: 160, hive: 190, root: 230 }, // getting out
+  win: { night: 120, photos: 100, gallery: 140, blackout: 160, hive: 190, root: 230, watch: 150 }, // getting out
   killK: 5,                    // killing the floor's monster (the Warden, the Mannequin, the Shade for good, the Butcher for good, the Visitor): every coin of the run ×5
   lose: 15,                    // a run that ended with you caught
   perMinute: 6, maxMinutes: 15, // for every minute you stayed alive (Endless Night: up to 30)
@@ -24821,6 +24860,627 @@ const Polish = {
   const r0 = Roster17.reset; Roster17.reset = function () { r0.call(this); Polish.reset(); };
 }
 
+/* ================================================================== */
+/* Build 19: THE WATCH — Sublevel 6, from the desk                      */
+/*  You don't leave Desk B tonight. Midnight to 6:00 AM in the          */
+/*  security office: ten cameras, one door, one vent, one battery bank. */
+/*  · THE WARDEN walks the halls toward your door. Shut it in time and  */
+/*    it slams it and goes away; leave it open and it comes in.         */
+/*  · THE MANNEQUIN (2 AM on Normal) moves only when nobody watches it —*/
+/*    on a camera, or with their own eyes through the doorway.          */
+/*  · THE BROOD (3 AM on Normal) crawls down the vent. Hold your light   */
+/*    on the grate and it backs off; don't, and it drops in and bites.  */
+/*  · Every camera you watch and every second the door is shut costs    */
+/*    power. At 0% the lights die, the door won't hold, and something   */
+/*    starts to hum outside it.                                         */
+/*  The host runs every monster and the power; each guard has their     */
+/*  own monitor (the host is told which camera, and checks it).        */
+/* ================================================================== */
+const WATCH_HOUR = { easy: 60, normal: 70, hard: 75, nightmare: 80 }; // seconds per hour, 12 AM to 6 AM
+const WATCH_DIFF = {
+  //            Warden: move chance (+ per hour), seconds it waits at the door · Mannequin: unwatched seconds a step, from which hour, lunge window
+  //            Brood: from which hour, move chance, seconds at the grate · power drain multiplier
+  easy:      { wMove: 0.20, wInc: 0.07, wDoor: 9.5, mStep: 18, mFrom: 3, mLunge: 3.5, mGive: 10, bFrom: 4, bMove: 0.28, bWin: 8.0, drain: 0.85 },
+  normal:    { wMove: 0.28, wInc: 0.09, wDoor: 7.5, mStep: 15, mFrom: 2, mLunge: 2.5, mGive: 12, bFrom: 3, bMove: 0.34, bWin: 6.5, drain: 1.0 },
+  hard:      { wMove: 0.36, wInc: 0.10, wDoor: 6.5, mStep: 13, mFrom: 1, mLunge: 2.0, mGive: 12, bFrom: 2, bMove: 0.40, bWin: 5.5, drain: 1.03 },
+  nightmare: { wMove: 0.42, wInc: 0.09, wDoor: 5.5, mStep: 11, mFrom: 1, mLunge: 1.5, mGive: 11, bFrom: 1, bMove: 0.46, bWin: 4.5, drain: 1.0 },
+};
+const WATCH_DRAIN = { base: 0.09, cam: 0.10, door: 0.26, bang: 1.0 }; // % per second (a bang: % at once)
+// the ten cameras: [x, y, z] on the ceiling (the vent's is down in the duct), and where it points
+const WT_CAMS = [
+  { id: 'C', name: 'CONTAINMENT', pos: [43.4, 2.72, 3.0], look: [52, 1.0, 9] },
+  { id: 'N', name: 'NORTH HALL', pos: [19.6, 2.35, 17.2], look: [44, 1.1, 17] },
+  { id: 'G', name: 'GENERATOR HALL', pos: [23.2, 2.72, 21.2], look: [31, 0.9, 30] },
+  { id: 'L', name: 'LAB 2', pos: [56.8, 2.72, 21.2], look: [50, 0.9, 30] },
+  { id: 'W', name: 'WEST HALL', pos: [19, 2.35, 19.6], look: [19, 0.9, 36] },
+  { id: 'S', name: 'SOUTH HALL', pos: [44.5, 2.3, 41], look: [24, 1.0, 41] },
+  { id: 'M', name: 'MEDICAL', pos: [51.2, 2.72, 44.8], look: [43.5, 0.9, 51] },
+  { id: 'K', name: 'LOCKER ROOM', pos: [13.6, 2.5, 26.5], look: [6.5, 0.4, 34.5] },
+  { id: 'V', name: 'VENT 3 · DESK B', pos: [7, 0.95, 43.75], look: [7, 0.45, 36.5] },
+  { id: 'D', name: 'DESK B · DOOR', pos: [19, 2.66, 42.6], look: [18.4, 1.1, 49] },
+];
+const WT_CAM_OF = {}; WT_CAMS.forEach((c, i) => { WT_CAM_OF[c.id] = i; });
+// where each of them stands, and which camera sees it there
+const WT_W = { // the Warden: its rooms, its neighbours, its distance from your door
+  C: { at: [52, 8.5], cam: 'C', next: ['N'], d: 3, pose: 'hunch' },
+  N: { at: [30, 17], cam: 'N', next: ['C', 'W', 'G', 'L'], d: 2, pose: 'stand' },
+  G: { at: [31, 29.5], cam: 'G', next: ['N', 'S'], d: 2, pose: 'stalk' },
+  L: { at: [50, 29.5], cam: 'L', next: ['N', 'S'], d: 2, pose: 'hunch' },
+  W: { at: [19, 29], cam: 'W', next: ['N', 'D'], d: 1, pose: 'stalk' },
+  S: { at: [31, 41], cam: 'S', next: ['G', 'L', 'D'], d: 1, pose: 'stand' },
+  D: { at: [18.9, 48.3], cam: 'D', next: [], d: 0, pose: 'door' },
+};
+const WT_W_IDS = Object.keys(WT_W);
+const WT_M = [{ at: [43.5, 51], cam: 'M', pose: 'stand' }, { at: [39.5, 41.3], cam: 'S', pose: 'reach' }, { at: [34.5, 40.7], cam: 'S', pose: 'lunge' }, { at: [19.3, 49.6], cam: 'D', pose: 'claw' }]; // the Mannequin: Medical, down the south hall, your door
+const WT_B = [{ at: [7, 33.6], cam: 'K' }, { at: [7, 38.6], cam: 'V' }, { at: [7, 42.75], cam: 'V' }]; // the Brood: the locker room, the vent, the grate
+const WT_GRATE = new T.Vector3(7, 0, 44.12); // the vent's mouth in the office wall
+const WT_DOOR_SPOT = new T.Vector3(17, 0, 49);
+const wtd = () => WATCH_DIFF[Net.sessionDiff || settings.difficulty] || WATCH_DIFF.normal;
+const _wt1 = new T.Vector3(), _wt2 = new T.Vector3(), _wtq = new T.Quaternion();
+
+const Watch = {
+  on: false, built: false,
+  // host (and mirrored on every peer from its events)
+  t: 0, hour: 0, pw: 100, use: 1, dark: false, songOn: false, over: false,
+  w: { node: 'C', doorT: 0, moveT: 6 },
+  m: { node: -1, unT: 0, giveT: 0, lungeT: 0 },
+  b: { node: -1, moveT: 6, winT: 0, burn: 0 },
+  // this guard's monitor
+  cam: -1, lastCam: 9, camT: 0, staticT: 0,
+  stats: { bangs: 0, shut: 0, burns: 0, bites: 0, cams: 0, killer: '' },
+  hourLen() { return WATCH_HOUR[Net.sessionDiff || settings.difficulty] || 70; },
+  door() { return doorAt(8, 24); },
+  doorShut() { const d = this.door(); return !!d && !d.isOpen() && d.t < 0.2; },
+  feed() { return this.on && this.cam >= 0 && Game.state === 'playing' && !player.dead; },
+  clock() { const m = Math.min(360, this.t / this.hourLen() * 60), h = Math.floor(m / 60), mm = Math.floor(m % 60); return (h === 0 ? 12 : h) + ':' + String(mm).padStart(2, '0'); },
+  minutes() { return Math.min(360, this.t / this.hourLen() * 60); },
+
+  /* ---------------- the world: models, grate, desk controls, walls you can't leave through ---------------- */
+  build() {
+    if (this.built) return; this.built = true;
+    const W = buildWarden(true); W.visible = false; W.traverse(o => { o.frustumCulled = false; }); scene.add(W); this.wm = W; this.wP = W.userData.P;
+    const M = buildMannequin(true); M.visible = false; scene.add(M); this.mm = M; this.mP = M.userData.P;
+    const B = CR_BUILD.c(); B.g.visible = false; B.g.scale.setScalar(0.92); scene.add(B.g); this.bm = B;
+    // its eyes in the dark of the duct
+    const eye = () => { const s = new T.Sprite(new T.SpriteMaterial({ map: TX.glow, color: 0xffd0a0, transparent: true, opacity: 0.85, depthWrite: false, blending: T.AdditiveBlending, fog: false })); s.scale.set(0.12, 0.12, 1); return s; };
+    this.bEyes = [eye(), eye()]; this.bEyes.forEach(s => { s.visible = false; scene.add(s); });
+    // a grate over the office's vent mouth (tonight it's back on)
+    const g = new T.Mesh(GEO.plane, MAT.grate); g.scale.set(1.86, VENT_H - 0.04, 1); g.position.set(7, (VENT_H - 0.04) / 2, 44.08); g.visible = false; scene.add(g); this.grate = g;
+    // the desk: a door switch and the camera monitors
+    const box = new T.Mesh(GEO.box, MAT.metalDark); box.scale.set(0.26, 0.1, 0.2); box.position.set(3.05, 0.81, 50.75); box.visible = false; scene.add(box);
+    const btn = new T.Mesh(GEO.cyl, new T.MeshBasicMaterial({ color: 0xc8261a })); btn.scale.set(0.11, 0.05, 0.11); btn.position.set(3.05, 0.88, 50.75); btn.visible = false; scene.add(btn);
+    this.btnBox = box; this.btn = btn;
+    const hb = hitBox(3.05, 0.85, 50.75, 0.5, 0.35, 0.45);
+    this.doorBtn = addInteract([hb, btn], { kind: 'wdoor', enabled: false, prompt: () => this.doorPrompt(), use: () => this.pressDoor() });
+    // the desk's monitors: tonight they're the cameras
+    const md = world.monitorDef, mp0 = md.prompt, mu0 = md.use;
+    md.prompt = () => Watch.on ? (Watch.dark ? 'The monitors are dead — no power' : 'Watch the cameras ' + Keys.b('map')) : mp0();
+    md.use = () => Watch.on ? Watch.openMon() : mu0();
+    // the three wall screens over the desk: live, slow pictures of the door and the two halls (a few frames a second)
+    this.feeds = [9, 4, 5].map(ci => {
+      const rt = new T.WebGLRenderTarget(256, 148, { minFilter: T.LinearFilter, magFilter: T.LinearFilter, format: T.RGBAFormat, depthBuffer: true, stencilBuffer: false });
+      return { ci, rt, mat: new T.MeshBasicMaterial({ map: rt.texture, color: 0xb8dcc0 }) };
+    });
+    this.fcam = new T.PerspectiveCamera(62, 256 / 148, 0.05, 60); this.feedI = 0; this.feedT = 0;
+    // tonight you don't leave the office: not through the door, not up the vent
+    addCollider(18.02, 47.9, 18.5, 50.1, { nav: false, monster: false, dyn: () => this.on });
+    addCollider(5.9, 43.45, 8.1, 44.02, { nav: false, monster: false, dyn: () => this.on });
+    this.buildUi();
+  },
+  buildUi() {
+    const st = document.createElement('style');
+    st.textContent = `
+#wt-mon{position:fixed;inset:0;z-index:40;display:none;overflow:hidden;cursor:default;-webkit-backdrop-filter:grayscale(1) contrast(1.5) brightness(1.35);backdrop-filter:grayscale(1) contrast(1.5) brightness(1.35)}
+#wt-mon.on{display:block}
+#wt-mon::before{content:"";position:absolute;inset:0;background:rgba(80,255,140,.08);pointer-events:none}
+#wt-mon::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.32) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.8) 100%)}
+#wt-mon .cctv-noise{opacity:.16;pointer-events:none}
+#wt-stat{position:absolute;inset:0;background:#777;opacity:0;pointer-events:none;mix-blend-mode:screen}
+#wt-mon .ui{position:absolute;inset:4vh 3vw;z-index:2;font-family:var(--mono);font-size:14px;letter-spacing:.2em;color:rgba(228,238,228,.94);text-shadow:0 0 4px #000;pointer-events:none}
+#wt-mon .rec{position:absolute;left:0;top:0}#wt-mon .rec i{display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff3a2a;margin-right:8px;animation:blink 1s steps(2) infinite}
+#wt-mon .tm{position:absolute;right:0;top:0;text-align:right}
+#wt-mon .cam{position:absolute;left:0;bottom:0;font-size:16px}
+#wt-mon .pw{position:absolute;left:0;bottom:28px;font-size:12px;color:#d9a34a}
+#wt-mon .lost{position:absolute;left:0;right:0;top:44%;text-align:center;font-size:22px;color:#fff;opacity:0}
+#wt-mon .help{position:absolute;right:0;top:24px;font-size:11px;color:rgba(228,238,228,.6);letter-spacing:.14em}
+#wt-map{position:absolute;right:3vw;bottom:4vh;z-index:3;width:250px;height:226px;background:rgba(10,14,12,.72);border:1px solid rgba(160,220,170,.35);pointer-events:auto}
+#wt-map canvas{position:absolute;left:5px;top:5px;opacity:.85}
+#wt-map button{position:absolute;transform:translate(-50%,-50%);font:600 10px var(--mono);letter-spacing:.06em;padding:3px 4px;background:rgba(20,30,24,.9);color:#cfe8d2;border:1px solid rgba(160,220,170,.5);cursor:pointer;line-height:1}
+#wt-map button.sel{background:#d9a34a;color:#111;border-color:#ffd07a}
+#wt-map .you{position:absolute;transform:translate(-50%,-50%);font:600 9px var(--mono);color:#ff7a5a;letter-spacing:.1em;pointer-events:none}
+#wt-hud{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:12;display:none;font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:#e8e2d6;text-shadow:0 0 6px #000;text-align:center;pointer-events:none}
+#wt-hud.on{display:block}
+#wt-hud b{color:#d9a34a;font-weight:600}#wt-hud.low b{color:#ff5a3a}#wt-hud.out b{color:#ff3a2a;animation:blink .8s steps(2) infinite}
+#wt-hud .bars{display:inline-block;margin-left:10px}#wt-hud .bars i{display:inline-block;width:8px;height:12px;margin-right:3px;background:rgba(255,255,255,.15);vertical-align:-1px}#wt-hud .bars i.on{background:#9ad07a}#wt-hud .bars i.on.hot{background:#e0603a}
+#wt-hud small{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.16em;color:#a49e91}
+#hud.wt-hide{visibility:hidden}
+#objectives.m-watch .bonus-h,#objectives.m-watch #bonus-list{display:none}
+body.wt-on #minimap-wrap{display:none}`;
+    document.head.appendChild(st);
+    const el = document.createElement('div'); el.id = 'wt-mon';
+    el.innerHTML = '<div class="cctv-noise"></div><div id="wt-stat"></div><div class="ui"><span class="rec"><i></i>REC</span><span class="tm" id="wt-tm"></span><span class="help" id="wt-help"></span><span class="pw" id="wt-pw"></span><span class="cam" id="wt-cam"></span><div class="lost" id="wt-lost">SIGNAL LOST</div></div><div id="wt-map"><canvas width="240" height="216"></canvas></div>';
+    document.body.appendChild(el); this.el = el;
+    try { el.querySelector('.cctv-noise').style.backgroundImage = 'url(' + UI.title.noise.toDataURL() + ')'; el.querySelector('.cctv-noise').style.backgroundSize = '160px 160px'; } catch (e) { }
+    // the map: Sublevel 6's west half, and a button for each camera
+    const map = el.querySelector('#wt-map'), cv = map.querySelector('canvas'), g = cv.getContext('2d'), S = 7.2, X0 = 0, Z0 = 0;
+    for (let z = 0; z < 30; z++) for (let x = 0; x < 33; x++) {
+      const c = cellAt(x, z); if (!c || c === WALL_CELL) continue;
+      const k = c.kind; if (k === 'wall' || k === 'window') continue;
+      g.fillStyle = k === 'vent' ? 'rgba(120,180,140,.45)' : k === 'door' ? 'rgba(220,200,150,.6)' : c.room === 'security' ? 'rgba(255,140,110,.35)' : 'rgba(170,210,180,.28)';
+      g.fillRect((x - X0) * S, (z - Z0) * S, S - 0.6, S - 0.6);
+    }
+    const at = (x, z) => [5 + x / CELL * S, 5 + z / CELL * S];
+    this.mapBtns = WT_CAMS.map((c, i) => {
+      const b = document.createElement('button'), spot = c.id === 'V' ? [7, 40] : c.id === 'D' ? [19, 45.5] : [(c.pos[0] + c.look[0]) / 2, (c.pos[2] + c.look[2]) / 2], p = at(spot[0], spot[1]);
+      b.textContent = String((i + 1) % 10) + '·' + c.id; b.title = 'CAM ' + String(i + 1).padStart(2, '0') + ' · ' + c.name;
+      b.style.left = p[0] + 'px'; b.style.top = p[1] + 'px';
+      b.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); Sound.resume(); this.switchCam(i); });
+      map.appendChild(b); return b;
+    });
+    const you = document.createElement('span'); you.className = 'you'; you.textContent = 'YOU'; const yp = at(8, 50); you.style.left = yp[0] + 'px'; you.style.top = yp[1] + 'px'; map.appendChild(you);
+    el.addEventListener('mousedown', e => { e.preventDefault(); });
+    const hud = document.createElement('div'); hud.id = 'wt-hud'; hud.innerHTML = 'POWER <b id="wt-p">100%</b><span class="bars" id="wt-bars"><i></i><i></i><i></i><i></i></span><small id="wt-sub"></small>';
+    document.body.appendChild(hud); this.hudEl = hud;
+  },
+
+  /* ---------------- a run ---------------- */
+  reset() {
+    this.on = false; this.t = 0; this.hour = 0; this.pw = 100; this.use = 1; this.dark = false; this.songOn = false; this.over = false;
+    this.w = { node: 'C', doorT: 0, moveT: 8 }; this.m = { node: -1, unT: 0, giveT: 0, lungeT: 0 }; this.b = { node: -1, moveT: 8, winT: 0, burn: 0 };
+    this.cam = -1; this.lastCam = 9; this.camT = 0; this.staticT = 0; this.sendT = 0; this.songT = 0; this.darkT = 0; this.ambT = 6; this.grateT = 0; this.songI = 0; this.songNT = 0; this.inT = -1;
+    this.stats = { bangs: 0, shut: 0, burns: 0, bites: 0, cams: 0, killer: '', darkAt: -1 };
+    if (this.built) {
+      this.wm.visible = false; this.mm.visible = false; this.bm.g.visible = false; this.bEyes.forEach(s => { s.visible = false; }); this.grate.visible = false; this.btnBox.visible = false; this.btn.visible = false;
+      this.doorBtn.enabled = false; this.showMon(false); this.hudEl.classList.remove('on');
+    }
+    for (const r of Net.remotes.values()) r.wcam = -1;
+    $('objectives').classList.remove('m-watch'); document.body.classList.remove('wt-on');
+    this.screens(false);
+  },
+  start() { // Modes.start: a new watch begins (every peer)
+    this.build(); this.reset(); this.on = true;
+    player.hasFlash = true; player.flashState = false; player.spares = Math.max(player.spares || 0, 2);
+    flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true;
+    this.grate.visible = true; this.btnBox.visible = true; this.btn.visible = true; this.doorBtn.enabled = true;
+    const d = this.door(); if (d) { d.unlocked = true; d.target = 1; d.t = 1; d.place(); d.updateLeds(); } // (the night starts with the door open)
+    Monster.pos.set(52, 0, 8.5); if (Monster.model) Monster.model.visible = false;
+    this.placeAll(); this.hudEl.classList.add('on');
+    $('objectives').classList.add('m-watch'); document.body.classList.add('wt-on');
+    this.screens(true);
+  },
+  // the wall screens: tonight's feeds, or the night's usual static
+  screens(on) {
+    if (!this.feeds) return;
+    world.wallScreens.forEach((m, i) => { m.material = on ? (this.dark ? MAT.screenOff : this.feeds[i % 3].mat) : MAT.screen; });
+    world.monitors.forEach((m, i) => { if (m.isMesh) m.material = on ? (this.dark ? MAT.screenOff : this.feeds[(i + 1) % 3].mat) : MAT.screen; });
+  },
+  drawFeed(dt) { // one of the three, every third of a second, while you sit where you can see them
+    this.feedT -= dt;
+    if (this.feedT > 0 || this.dark || this.cam >= 0 || player.pos.x > 10 || Game.state !== 'playing') return;
+    this.feedT = 0.34;
+    const F = this.feeds[this.feedI = (this.feedI + 1) % 3], c = WT_CAMS[F.ci], cam = this.fcam;
+    cam.position.set(c.pos[0], c.pos[1], c.pos[2]); lookQuat(cam.position, _wt1.set(c.look[0], c.look[1], c.look[2]), cam.quaternion); cam.layers.mask = camera.layers.mask; cam.updateMatrixWorld();
+    const fp = flashFill.position.clone(), fi = flashFill.intensity, fd = flashFill.distance, fde = flashFill.decay, fl = flash.intensity;
+    flashFill.position.copy(cam.position); flashFill.intensity = 2.6; flashFill.distance = 24; flashFill.decay = 1; flash.intensity = 0; // (its own infrared lamp, not your torch)
+    try { renderer.setRenderTarget(F.rt); renderer.render(scene, cam); } catch (e) { } finally { renderer.setRenderTarget(null); flashFill.position.copy(fp); flashFill.intensity = fi; flashFill.distance = fd; flashFill.decay = fde; flash.intensity = fl; }
+  },
+  intro() { UI.center('THE WATCH', '12:00 AM · DESK B · KEEP WATCH UNTIL 6:00 AM' + (Net.active ? ' · ' + crew().length + ' guards' : ''), 4.4); },
+  introMsgs() {
+    UI.msg('You don\'t leave Desk B tonight. ' + Keys.b('map') + ' — the cameras. The red switch on the desk (or ' + Keys.b('interact') + ' at the door) — the door.', 'story', 7);
+    setTimeout(() => { if (Game.state === 'playing' && this.on) UI.msg('Every camera you watch and every second that door is shut costs power. At 0% the lights go — and so does the door.', 'story', 6.5); }, 5200);
+    setTimeout(() => { if (Game.state === 'playing' && this.on) UI.msg('Hear something in the vent? Hold your flashlight (' + Keys.b('flashlight') + ') on the grate.', 'warn', 5.5); }, 12500);
+  },
+
+  /* ---------------- the host: the clock, the power, the three of them ---------------- */
+  update(dt) {
+    if (!this.on) return;
+    if (Monster.model && Monster.model.visible) Monster.model.visible = false; // (the real one sleeps elsewhere tonight)
+    this.local(dt);
+    if (this.over || Game.state === 'won' || Game.state === 'dead') return;
+    this.t += dt; // (a client keeps its own clock between the host's hours)
+    if (Net.isClient) return;
+    const L = this.hourLen(), h = Math.min(6, Math.floor(this.t / L + 1e-6));
+    if (h > this.hour) { if (h >= 6) { this.over = true; Game.emit({ k: 'wtwin', p: Math.round(this.pw * 10) }); return; } Game.emit({ k: 'wthour', h }); }
+    this.power(dt);
+    if (this.dark) { this.darkRun(dt); return; }
+    if (Game.time < (Powers.haltUntil || 0)) return; // (CHRONO HALT: out there, nothing moves)
+    this.warden(dt); this.mannequin(dt); this.brood(dt);
+  },
+  viewers() { let n = this.cam >= 0 ? 1 : 0; for (const r of Net.remotes.values()) if (!r.dead && r.wcam >= 0) n++; return n; },
+  power(dt) {
+    const shut = this.doorShut() || (this.door() && this.door().target < 0.5);
+    const v = Math.min(2, this.viewers());
+    this.use = 1 + v + (shut ? 1 : 0);
+    if (!this.dark) {
+      this.pw = Math.max(0, this.pw - (WATCH_DRAIN.base + v * WATCH_DRAIN.cam + (shut ? WATCH_DRAIN.door : 0)) * wtd().drain * dt);
+      if (shut) this.stats.shut += dt;
+      if (this.pw <= 0) { Game.emit({ k: 'wtdark' }); return; }
+    }
+    this.sendT -= dt;
+    if (this.sendT <= 0) { this.sendT = 0.5; Game.emit({ k: 'wtp', p: Math.round(this.pw * 10), u: this.use }); }
+  },
+  // THE WARDEN: room to room toward your door
+  warden(dt) {
+    const W = this.w, D = wtd();
+    if (W.node === 'D') {
+      W.doorT -= dt;
+      if (W.doorT > 0) return;
+      if (this.doorShut()) { // it slams the door, and goes somewhere else to think about it
+        this.pw = Math.max(0, this.pw - WATCH_DRAIN.bang);
+        const back = WT_W_IDS.filter(k => WT_W[k].d >= 2); W.node = pick(back); W.moveT = rand(7, 11);
+        Game.emit({ k: 'wtbang' }); Game.emit({ k: 'wtw', n: W.node });
+      } else this.getIn('w', -1);
+      return;
+    }
+    W.moveT -= dt;
+    if (W.moveT > 0) return;
+    W.moveT = rand(4.3, 5.7);
+    if (Math.random() > D.wMove + D.wInc * this.hour) return;
+    const opts = WT_W[W.node].next, d0 = WT_W[W.node].d, closer = opts.filter(k => WT_W[k].d < d0);
+    let nx = closer.length && Math.random() < 0.78 ? pick(closer) : pick(opts);
+    if (nx === 'D' && this.m.node === 3) nx = pick(opts.filter(k => k !== 'D')) || W.node; // (one at your door at a time)
+    if (!nx || nx === W.node) return;
+    W.node = nx; if (nx === 'D') W.doorT = D.wDoor * rand(0.85, 1.15);
+    Game.emit({ k: 'wtw', n: nx });
+  },
+  // THE MANNEQUIN: only while nobody watches it
+  mannSeen() {
+    const M = this.m; if (M.node < 0) return false;
+    const ci = WT_CAM_OF[WT_M[M.node].cam];
+    if (this.cam === ci && !player.dead) return true;
+    for (const r of Net.remotes.values()) if (!r.dead && r.wcam === ci) return true;
+    const p = WT_M[M.node].at;
+    for (const a of crew()) if (!a.dead && !a.downed && this.eyesOn(a, p[0], 1.4, p[1])) return true;
+    return false;
+  },
+  eyesOn(a, x, y, z) { // their own eyes (not the monitor): in front of them, near enough, nothing in the way
+    if (a === player ? this.cam >= 0 : a.wcam >= 0) return false;
+    const ey = a === player ? player.eyeY : (a.eyeY || 1.6), dx = x - a.pos.x, dy = y - ey, dz = z - a.pos.z, d = Math.hypot(dx, dy, dz);
+    if (d > 24 || d < 0.01) return false;
+    const yaw = a.yaw || 0, pitch = a.pitch || 0, cp = Math.cos(pitch), fx = -Math.sin(yaw) * cp, fy = Math.sin(pitch), fz = -Math.cos(yaw) * cp;
+    if ((dx * fx + dy * fy + dz * fz) / d < Math.cos(0.62)) return false;
+    return losClear(a.pos.x, a.pos.z, x, z);
+  },
+  mannequin(dt) {
+    const M = this.m, D = wtd();
+    if (M.node < 0) { if (this.hour >= D.mFrom) { M.node = 0; M.unT = -6; Game.emit({ k: 'wtm', n: 0 }); } return; }
+    const seen = this.mannSeen();
+    if (M.node === 3) { // at your door
+      if (this.doorShut()) { M.lungeT = Math.max(M.lungeT, 1.2); if (!seen) { M.giveT -= dt; if (M.giveT <= 0) { M.node = 0; M.unT = -4; Game.emit({ k: 'wtm', n: 0 }); } } return; }
+      if (seen) { M.lungeT = Math.max(M.lungeT, 1.2); return; }
+      M.lungeT -= dt; if (M.lungeT <= 0) { const tg = this.nearest(WT_DOOR_SPOT); this.getIn('m', tg ? Game.idOf(tg) : -1); }
+      return;
+    }
+    if (seen) return;
+    M.unT += dt;
+    if (M.unT < D.mStep) return;
+    M.unT = 0;
+    if (M.node === 2 && this.w.node === 'D') return; // (it waits its turn)
+    M.node++; if (M.node === 3) { M.giveT = D.mGive; M.lungeT = D.mLunge; }
+    Game.emit({ k: 'wtm', n: M.node });
+  },
+  // THE BROOD: down the vent
+  brood(dt) {
+    const B = this.b, D = wtd();
+    if (B.node < 0) { if (this.hour >= D.bFrom) { B.node = 0; B.moveT = rand(6, 10); Game.emit({ k: 'wtb', n: 0 }); } return; }
+    if (B.node === 2) {
+      B.winT -= dt;
+      const lit = crew().some(a => !a.dead && !a.downed && a.beamOn && (a.beamOn(WT_GRATE, 0.55) || a.beamOn(WT_GRATE, 0.9)));
+      if (lit) { B.burn += dt; if (B.burn >= 1.2) { this.stats.burns++; B.node = 0; B.moveT = rand(8, 12); B.burn = 0; Game.emit({ k: 'wtbr' }); Game.emit({ k: 'wtb', n: 0 }); return; } }
+      if (B.winT <= 0) { // it drops in, bites whoever's nearest, and is gone again
+        const tg = this.nearest(WT_GRATE);
+        B.node = 0; B.moveT = rand(10, 14); B.burn = 0;
+        Monster.pos.set(7, 0, 45);
+        if (tg) { this.stats.bites++; Health.hit(tg, 'wvent', { pos: _wt1.set(7, 0, 45) }, _wt2.set(7, 0, 45)); }
+        Game.emit({ k: 'wtbite', t: tg ? Game.idOf(tg) : -1 }); Game.emit({ k: 'wtb', n: 0 });
+      }
+      return;
+    }
+    B.moveT -= dt;
+    if (B.moveT > 0) return;
+    B.moveT = rand(3.4, 4.8);
+    if (Math.random() > D.bMove + 0.06 * this.hour) return;
+    B.node++; if (B.node === 2) { B.winT = D.bWin; B.burn = 0; }
+    Game.emit({ k: 'wtb', n: B.node });
+  },
+  nearest(p) { let best = null, bd = 1e9; for (const a of crew()) { if (a.dead || a.downed) continue; const d = Math.hypot(a.pos.x - p.x, a.pos.z - p.z); if (d < bd) { bd = d; best = a; } } return best; },
+  getIn(who, tid) { if (this.inT >= 0) return; this.inT = 0; Game.emit({ k: 'wtin', w: who, t: tid }); },
+  // 0%: the lights go, the door gives, and the Warden comes to stand in it
+  darkRun(dt) {
+    if (!this.songOn) { this.darkT -= dt; if (this.darkT <= 0) { this.songOn = true; this.songT = rand(10, 17); Game.emit({ k: 'wtw', n: 'D' }); Game.emit({ k: 'wtsong' }); } return; }
+    this.songT -= dt; if (this.songT <= 0) this.getIn('w', -1);
+  },
+
+  /* ---------------- every peer: the events ---------------- */
+  event(ev, mine, who) {
+    switch (ev.k) {
+      case 'wtp': if (Net.isClient) { this.pw = clamp((ev.p | 0) / 10, 0, 100); this.use = clamp(ev.u | 0, 1, 4); } break; // (the host keeps its own exact count)
+      case 'wthour': {
+        const h = clamp(ev.h | 0, 0, 5); if (h <= this.hour && Net.isClient) break; this.hour = h; if (Net.isClient) this.t = Math.max(this.t, h * this.hourLen());
+        const D = wtd(), news = [h === D.mFrom ? 'Something in Medical has started to move.' : '', h === D.bFrom ? 'Listen to the vent.' : ''].filter(Boolean).join(' ');
+        UI.center(h + ':00 AM', news || ['', 'Keep your eyes open.', 'Keep your eyes open.', 'Halfway.', 'It\'s getting impatient.', 'One more hour.'][h] || '', 3.2); Sound.hourBell(Math.min(4, h));
+        break;
+      }
+      case 'wtw': { const n = String(ev.n); if (!WT_W[n]) break; const was = this.w.node; this.w.node = n; this.moved(WT_W[was] && WT_W[was].cam, WT_W[n].cam);
+        if (n === 'D') { Sound.crack(); if (!this.dark) setTimeout(() => { if (this.w.node === 'D') Sound.metalHit(_wt1.set(19, 1.5, 48), 0.5); }, 600); }
+        else if (WT_W[n].d === 1) Sound.metalHit(_wt1.set(WT_W[n].at[0], 1.5, WT_W[n].at[1]), 0.7);
+        this.placeAll(); break; }
+      case 'wtm': { const n = clamp(ev.n | 0, -1, 3), was = this.m.node; this.m.node = n; if (n >= 0) { this.moved(was >= 0 ? WT_M[was].cam : null, WT_M[n].cam); const a = WT_M[n].at; Sound.plasticStep(_wt1.set(a[0], 1, a[1]), n === 3 ? 1.2 : 0.8); if (n === 3) Sound.plasticSnap(_wt1.set(a[0], 1.5, a[1])); } this.placeAll(); break; }
+      case 'wtb': { const n = clamp(ev.n | 0, -1, 2), was = this.b.node; this.b.node = n; if (n >= 0) { this.moved(was >= 0 ? WT_B[was].cam : null, WT_B[n].cam); if (n >= 1) Sound.ventRattle(_wt1.set(7, 0.6, n === 2 ? 43.5 : 39)); if (n === 2) Sound.crawlSkitter(_wt1.set(7, 0.5, 43.2)); } this.placeAll(); break; }
+      case 'wtbang': { this.stats.bangs++; const d = this.door(); if (d) { d.shake = 0.6; Sound.doorBang(_wt1.set(d.cx, 1.5, d.cz)); } Game.shake(Math.max(0, 1 - Math.hypot(17 - player.pos.x, 49 - player.pos.z) / 16) * 0.6); UI.msg('Something slams into the door — then walks away.', 'warn', 3); break; }
+      case 'wtbr': { Sound.crawlShriek(_wt1.set(7, 0.6, 42.5), 1); UI.msg('It shrieks in the light and scrabbles back up the vent.', 'good', 3); break; }
+      case 'wtbite': {
+        Sound.ventBurst(_wt1.set(7, 0.6, 44)); Sound.crawlBite(_wt1.set(7, 0.6, 45)); Monster.pos.set(7, 0, 45);
+        if ((ev.t | 0) === Net.myId) { Cine.redFlash(0.6); Game.shake(0.8); UI.msg('It dropped out of the vent and bit you — then it was gone again. Light the grate!', 'warn', 4); }
+        else UI.msg('Something dropped out of the vent and bit ' + Net.nameOf(ev.t | 0) + '!', 'warn', 3.5);
+        break;
+      }
+      case 'wtdark': this.goDark(); break;
+      case 'wtsong': this.songOn = true; this.songI = 0; this.songNT = 0.6; this.w.node = 'D'; this.placeAll(); break;
+      case 'wtin': this.caught(String(ev.w), ev.t | 0); break;
+      case 'wtwin': this.pw = clamp((ev.p | 0) / 10, 0, 100); this.over = true; this.result(true); break;
+      default: return false;
+    }
+    return true;
+  },
+  // a camera's picture breaks up when something moves on it
+  moved(fromCam, toCam) {
+    const a = fromCam ? WT_CAM_OF[fromCam] : -1, b = toCam ? WT_CAM_OF[toCam] : -1;
+    if (this.cam >= 0 && (this.cam === a || this.cam === b)) { this.staticT = 1.1; Sound.staticCut(0.7); }
+  },
+  goDark() {
+    if (this.dark) return;
+    this.dark = true; this.stats.darkAt = this.t; this.pw = 0; this.darkT = rand(8, 14); this.songOn = false;
+    this.closeMon(); this.m.node = -1; this.b.node = -1; this.placeAll(); this.screens(true);
+    Sound.trip(_wt1.set(6, 2.8, 50)); Sound.brownout(); Game.dip = 1; Game.shake(0.4);
+    const d = this.door(); if (d && !Net.isClient) { d.unlocked = true; d.fast = true; d.open(); Game.syncDoor(d, false, true); }
+    UI.center('POWER 0%', 'THE LIGHTS · THE DOOR · THE CAMERAS — ALL GONE', 4); UI.msg('The door slides open on its own and stays open. Something hums out in the hall…', 'warn', 6);
+  },
+  caught(w, tid) { // it got in
+    this.closeMon();
+    if (w === 'm') { // the Mannequin: it takes the one nearest the door, and is back in Medical before anyone sees it go
+      this.m.node = 0; this.placeAll();
+      if (tid === Net.myId && !player.dead) { this.stats.killer = 'THE MANNEQUIN'; Monster.pos.set(17.5, 0, 49); Sound.mannScare(); Cine.redFlash(1); Game.die('death'); }
+      else if (tid >= 0) UI.msg('The Mannequin took ' + Net.nameOf(tid) + '. Nobody saw it move.', 'warn', 4.5);
+      if (!Net.isClient) this.inT = -1;
+      return;
+    }
+    // the Warden: the shift is over for everyone in here
+    this.stats.killer = 'THE WARDEN'; this.wm.visible = false; Monster.pos.set(16.6, 0, 49);
+    if (!player.dead) Game.die();
+  },
+
+  /* ---------------- every peer: what's where (models are only scenery: the host decides) ---------------- */
+  placeAll() {
+    if (!this.built) return;
+    const W = WT_W[this.w.node];
+    this.wm.visible = this.on && !!W && !(this.dark && !this.songOn) && this.inT < 0;
+    if (W) { this.wm.position.set(W.at[0], 0, W.at[1]); const c = WT_CAMS[WT_CAM_OF[W.cam]]; this.wm.rotation.set(0, W.cam === 'D' ? -Math.PI / 2 + 0.25 : Math.atan2(c.pos[0] - W.at[0], c.pos[2] - W.at[1]) + rand(-0.5, 0.5), 0); }
+    const M = this.m.node >= 0 ? WT_M[this.m.node] : null;
+    this.mm.visible = this.on && !!M;
+    if (M) { this.mm.position.set(M.at[0], 0, M.at[1]); const tx = this.m.node === 3 ? 6 : WT_CAMS[WT_CAM_OF[M.cam]].pos[0], tz = this.m.node === 3 ? 49 : WT_CAMS[WT_CAM_OF[M.cam]].pos[2]; this.mm.rotation.set(0, Math.atan2(tx - M.at[0], tz - M.at[1]), 0); poseMann(this.mP, M.pose, rand(-0.6, 0.6), rand(-0.3, 0.3)); }
+    const B = this.b.node >= 0 ? WT_B[this.b.node] : null;
+    this.bm.g.visible = this.on && !!B;
+    if (B) { this.bm.g.position.set(B.at[0], this.b.node === 0 ? 0 : 0.02, B.at[1]); this.bm.g.rotation.set(0, this.b.node === 0 ? rand(-0.8, 0.8) : 0, 0); }
+    this.bEyes.forEach((s, i) => { s.visible = this.on && this.b.node === 2; s.position.set(7 + (i ? 0.09 : -0.09), 0.42, 43.4); });
+  },
+  // the Warden's stillness: a pose, a slow twitch, its head turning to the lens
+  poseWarden(t, dt) {
+    const P = this.wP, W = WT_W[this.w.node]; if (!P || !W || !this.wm.visible) return;
+    const pose = this.songOn ? 'door' : W.pose, lean = pose === 'hunch' ? 0.78 : pose === 'stalk' ? 0.5 : pose === 'door' ? 0.36 : 0.3;
+    P.spine.rotation.set(lean, 0, 0); P.hips.position.y = WARDEN_HIP - (pose === 'hunch' ? 0.12 : 0); P.hips.rotation.set(0, 0, 0);
+    P.neck.rotation.set(-lean * 0.85 - 0.05 + (pose === 'hunch' ? -0.25 : 0), 0, 0);
+    for (const L of P.legs) { L.hp.rotation.set(pose === 'hunch' ? -0.3 : -0.04, 0, 0); L.kn.rotation.x = pose === 'hunch' ? 0.45 : 0.08; L.an.rotation.x = -L.kn.rotation.x * 0.3; }
+    for (const A of P.arms) {
+      const s = A.s; let ux = 0.04, uz = s * 0.09, ex = -0.2;
+      if (pose === 'door' && s > 0) { ux = -2.55; uz = s * 0.42; ex = -0.5; } // (a hand up on the frame)
+      else if (pose === 'stalk') { ux = 0.1; uz = s * 0.06; ex = -0.12; }
+      else if (pose === 'hunch') { ux = -0.25; uz = s * 0.16; ex = -0.35; }
+      A.up.rotation.set(ux + Math.sin(t * 0.9 + s) * 0.02, 0, uz); A.el.rotation.set(ex, 0, 0); A.wr.rotation.set(0, 0, 0);
+      for (const f of A.fingers) f.rotation.x = 0.25 + Math.max(0, Math.sin(t * 3.1 + s * 2)) * 0.35;
+    }
+    // it knows when it's being watched
+    const watched = this.cam >= 0 && WT_CAMS[this.cam].id === W.cam;
+    this.stareK = damp(this.stareK || 0, watched ? 1 : 0, watched ? 0.7 : 2, dt);
+    if (Math.random() < 0.012) this.tw = [rand(-0.5, 0.5), rand(-0.5, 0.5), rand(-0.6, 0.6)];
+    const tw = this.tw || [0, 0, 0];
+    P.head.rotation.set(tw[0] * 0.4 - this.stareK * 0.25, tw[1] * (1 - this.stareK) + this.stareK * Math.sin(t * 0.3) * 0.08, tw[2] * 0.5 + 0.25 * this.stareK);
+    P.jawK = 0.2 + this.stareK * 0.55 + (this.songOn ? 0.4 : 0); wardenFace(P);
+    if (P.glowMat) P.glowMat.opacity = this.songOn ? 1 : 0.55 + this.stareK * 0.45;
+  },
+
+  /* ---------------- this guard ---------------- */
+  local(dt) {
+    const p = player;
+    this.poseWarden(Game.time, dt);
+    // the Brood: it shifts in the duct, its eyes catch your light
+    if (this.b.node >= 0 && this.bm.g.visible) { const P = this.bm.P; if (P && P.body) P.body.rotation.z = Math.sin(Game.time * 7) * 0.05; }
+    if (this.b.node === 2) { this.grateT -= dt; if (this.grateT <= 0) { this.grateT = rand(0.9, 2.2); Sound[Math.random() < 0.5 ? 'crawlSkitter' : 'ventRattle'](_wt1.set(7, 0.5, 43.4)); } }
+    // the music box, in the doorway
+    if (this.songOn) { this.songNT -= dt; if (this.songNT <= 0) { if (this.songI >= SLEEPER_SONG.length) this.songI = 0; const [note, beats] = SLEEPER_SONG[this.songI++]; const f = 440 * Math.pow(2, (note - 69) / 12); Sound.musicBox(_wt1.set(18.6, 1.6, 48.4), f); if (Math.random() < 0.5) Sound.hum(_wt1.set(18.6, 2.0, 48.4), f / 2, beats * 0.62); this.songNT = beats * 0.62; } }
+    // the Mannequin creaks now and then where it stands
+    this.ambT -= dt;
+    if (this.ambT <= 0) { this.ambT = rand(7, 14); if (this.m.node >= 1) { const a = WT_M[this.m.node].at; Sound.plasticStep(_wt1.set(a[0], 1, a[1]), 0.5); } else if (WT_W[this.w.node] && WT_W[this.w.node].d === 1 && !this.dark) Sound.pipeGroan(_wt1.set(WT_W[this.w.node].at[0], 2, WT_W[this.w.node].at[1])); }
+    // tonight your post is the desk: anyone who ends up outside the office is put back (an ability, a glitch in the floor)
+    if (!p.dead && !p.downed && Game.state === 'playing') { const c = cellOf(p.pos.x, p.pos.z); if (c.room !== 'security' && !(c.door && c.door === this.door())) { const sp = Level.spawn(Net.myId); p.pos.set(sp[0], 0, sp[1]); UI.msg('Your post is Desk B. You don\'t leave it tonight.', 'warn', 3); } }
+    if (this.cam >= 0 && (p.dead || p.downed || this.dark || Game.state !== 'playing' && Game.state !== 'paused')) this.closeMon();
+    if (this.cam >= 0) this.stats.cams += dt;
+    this.staticT = Math.max(0, this.staticT - dt);
+    this.drawHud();
+  },
+  doorPrompt() { if (this.dark) return 'The door switch is dead — no power'; const d = this.door(); return d && d.isOpen() ? 'SHUT the office door' : 'OPEN the office door'; },
+  pressDoor() {
+    const d = this.door(); if (!d) return;
+    if (this.dark) { UI.msg('Nothing. The switch is dead.', 'warn', 2.5); Sound.locked(_wt1.set(3, 0.9, 50.7)); return; }
+    this.btn.position.y = 0.865; setTimeout(() => { if (this.btn) this.btn.position.y = 0.88; }, 160); Sound.click();
+    Game.useDoor(d);
+  },
+  // the monitor
+  toggleMon() { if (this.cam >= 0) this.closeMon(true); else this.openMon(); },
+  openMon() {
+    if (!this.on || this.cam >= 0 || player.dead || player.downed || Game.state !== 'playing') return;
+    if (this.dark) { UI.msg('The monitors are dead. No power.', 'warn', 2.5); return; }
+    if (Cine.blocking()) return;
+    this.cam = this.lastCam; this.staticT = 0.5; Sound.cctv(); Sound.staticCut(0.5);
+    Input.exitLock(); Input.keys = {}; this.showMon(true); Game.poolT = 0; Net.selfAvatar(true);
+    this.tell();
+  },
+  closeMon(relock) {
+    if (this.cam < 0) return;
+    this.lastCam = this.cam; this.cam = -1; this.showMon(false); Sound.click(); Game.poolT = 0; Net.selfAvatar(false);
+    if (relock && Game.state === 'playing' && !Input.dragLook) Input.requestLock();
+    this.tell();
+  },
+  switchCam(i) {
+    if (this.cam < 0 || i === this.cam || !(i >= 0 && i < WT_CAMS.length)) return;
+    this.cam = i; this.staticT = 0.35; Sound.staticCut(0.4); Game.poolT = 0; this.tell();
+  },
+  tell() { if (Net.isClient) Net.request('wcam', this.cam); },
+  showMon(on) {
+    if (!this.el) return;
+    this.el.classList.toggle('on', !!on); $('hud').classList.toggle('wt-hide', !!on); if (this.hudEl) this.hudEl.style.visibility = on ? 'hidden' : '';
+  },
+  // the camera's view (Cine.applyCamera asks)
+  camView() {
+    const c = WT_CAMS[this.cam], t = Game.time;
+    camera.position.set(c.pos[0], c.pos[1], c.pos[2]);
+    const dx = c.look[0] - c.pos[0], dz = c.look[2] - c.pos[2], a = Math.sin(t * 0.33 + this.cam) * (c.id === 'V' ? 0.06 : 0.2), ca = Math.cos(a), sa = Math.sin(a);
+    _wt1.set(c.pos[0] + dx * ca - dz * sa, c.look[1], c.pos[2] + dx * sa + dz * ca); // (it pans, slowly, the way they do)
+    lookQuat(camera.position, _wt1, camera.quaternion);
+    Cine.snapFov = true;
+    return c.id === 'V' ? 70 : 64;
+  },
+  drawHud() {
+    if (!this.hudEl) return;
+    const pw = Math.ceil(this.pw), key = pw + '|' + this.use + '|' + this.dark + '|' + (this.door() && this.door().isOpen()) + '|' + this.cam;
+    if (this.cam >= 0) {
+      const c = WT_CAMS[this.cam], k2 = key + c.id + this.clock();
+      if (this.monKey !== k2) {
+        this.monKey = k2;
+        $('wt-cam').textContent = 'CAM ' + String(this.cam + 1).padStart(2, '0') + ' · ' + c.name; $('wt-tm').textContent = this.clock() + ' AM';
+        $('wt-pw').textContent = 'POWER ' + pw + '% · USAGE ' + '▮'.repeat(this.use) + '▯'.repeat(4 - this.use);
+        $('wt-help').textContent = '1-0 / ← → SWITCH · ' + Keys.label('map') + ' CLOSE';
+        this.mapBtns.forEach((b, i) => b.classList.toggle('sel', i === this.cam));
+      }
+      const st = $('wt-stat'), lost = $('wt-lost'), k = this.staticT > 0 ? Math.min(1, this.staticT / 0.6) : 0;
+      st.style.opacity = (0.06 + k * 0.85).toFixed(2); lost.style.opacity = this.staticT > 0.5 ? '1' : '0';
+    }
+    if (this.hudKey === key) return;
+    this.hudKey = key;
+    $('wt-p').textContent = pw + '%';
+    this.hudEl.classList.toggle('low', pw <= 20 && !this.dark); this.hudEl.classList.toggle('out', this.dark);
+    $('wt-bars').querySelectorAll('i').forEach((el, i) => { el.classList.toggle('on', i < this.use); el.classList.toggle('hot', i < this.use && this.use >= 3); });
+    const d = this.door();
+    $('wt-sub').textContent = this.dark ? 'NO POWER · HOLD ON UNTIL 6:00 AM' : 'DOOR ' + (d && d.isOpen() ? 'OPEN' : 'SHUT') + ' · ' + Keys.label('map') + ' CAMERAS · ' + Keys.label('flashlight') + ' THE VENT';
+    UI.hudCache.obj = null;
+  },
+  fixOn(f, t) { // the office's lights run off the battery tonight; everything else is dark (the cameras see in infrared)
+    if (f.type !== 'main') return;
+    f.on = f.room === 'security' ? !this.dark && f.mode !== 'dead' : false;
+  },
+
+  /* ---------------- the end ---------------- */
+  result(won) {
+    if (Game.state === 'won' || (Game.state === 'dead' && !won)) return;
+    this.closeMon(); this.over = true;
+    const G = Game, dn = (Net.sessionDiff || settings.difficulty), DN = dn.toUpperCase(), team = Net.active && crew().length > 1;
+    const survived = won ? 6 * this.hourLen() : this.t, reached = won ? '6:00 AM' : this.clock() + ' AM', pw = Math.round(this.pw);
+    G.state = won ? 'won' : 'dead'; Input.exitLock(); UI.hud(false); G.endFrame(); this.hudEl.classList.remove('on');
+    const rank = !won ? (this.minutes() >= 240 ? 'C' : 'D') : pw >= 30 ? 'S' : pw >= 15 ? 'A' : pw >= 5 ? 'B' : 'C';
+    // best: getting through beats getting further; through with more power beats through with less
+    const bk = 'watch-' + dn, prev = Goals.data.best[bk], score = won ? 1000 + pw : this.minutes() / 360 * 999;
+    const isBest = !prev || score > (prev.score || 0);
+    if (isBest) Goals.data.best[bk] = { score, rank, won: won ? 1 : 0, power: won ? pw : 0, reached, time: Math.floor(survived), at: Date.now() };
+    if (won) { Goals.unlock('wt_dawn'); if (pw >= 30) Goals.unlock('wt_saver'); if (this.stats.darkAt >= 0) Goals.unlock('wt_dark'); if (dn === 'nightmare') Goals.unlock('wt_nm'); }
+    Goals.save();
+    const rows = [['Reached', reached], ['Power left', won ? pw + '%' : this.dark ? '0%' : pw + '%'], ['Door slammed', this.stats.bangs + (this.stats.bangs === 1 ? ' time' : ' times')], ['Driven out of the vent', this.stats.burns], ['Bitten', this.stats.bites], ['Time on the cameras', fmtClock(this.stats.cams)], ['Difficulty', DN]];
+    if (team) rows.unshift(['Guards', crew().length + '']);
+    if (!won && this.stats.killer) rows.unshift(['It was', this.stats.killer]);
+    rows.push(...Chars.payout(won));
+    const put = (el, list) => { el.innerHTML = ''; list.forEach(([a, b]) => { const sp = document.createElement('span'); sp.textContent = a; const v = document.createElement('b'); v.textContent = b; el.appendChild(sp); el.appendChild(v); }); };
+    if (won) {
+      $('win-title').textContent = team ? 'You kept watch — together' : 'You kept watch';
+      $('win-sub').textContent = 'The Watch · 6:00 AM · ' + pw + '% power left' + (this.stats.darkAt >= 0 ? ' · in the dark' : '');
+      put($('win-stats'), rows);
+      put($('win-score'), [['6:00 AM', '✓'], ['Power ≥ 30%', pw >= 30 ? '✓' : '—'], ['Never in the dark', this.stats.darkAt < 0 ? '✓' : '—']]);
+      $('rank-letter').textContent = rank; $('rank-letter').className = 'r-' + rank; $('rank-score').textContent = pw + '% POWER';
+      $('rank-best').textContent = isBest ? 'NEW BEST ON ' + DN : 'BEST ON ' + DN + ': ' + (prev.won ? prev.rank + ' · ' + prev.power + '%' : prev.reached);
+      const wa = $('win-ach'); wa.innerHTML = ''; (Goals.runGot || []).forEach(x => { const d = document.createElement('span'); d.textContent = '★ ' + x.name; wa.appendChild(d); });
+      $('epilogue').textContent = 'The day shift finds the door open and the coffee cold. On the monitor in front of you, CAM 01 shows Containment: something tall is standing in the middle of it, very still, looking up at the camera. Nobody asks you how the night was.';
+      G.endButtons('btn-win-again', 'Play Again');
+      UI.show('screen-victory');
+      $('fx-white').style.transition = 'opacity .6s'; $('fx-white').style.opacity = 0; $('fx-fade').style.transition = 'opacity .8s'; $('fx-fade').style.opacity = 0;
+      Sound.dawn(); Sound.setAlarm(false);
+    } else {
+      $('go-stats').innerHTML = ''; put($('go-stats'), rows);
+      $('go-title').textContent = team ? 'Nobody kept watch' : 'You didn\'t make it to 6';
+      $('go-sub').textContent = this.stats.killer === 'THE MANNEQUIN' ? 'Nobody was watching it' : this.stats.darkAt >= 0 ? 'The power ran out at ' + this.clockAt(this.stats.darkAt) + ' AM' : 'The door was open';
+      G.endButtons('btn-go-restart', 'Restart');
+      UI.show('screen-gameover');
+      $('fx-fade').style.transition = 'opacity .8s'; $('fx-fade').style.opacity = 0;
+    }
+  },
+  clockAt(t) { const m = Math.min(360, t / this.hourLen() * 60), h = Math.floor(m / 60); return (h === 0 ? 12 : h) + ':' + String(Math.floor(m % 60)).padStart(2, '0'); },
+  cardBest(d) {
+    const b = Goals.data.best['watch-' + d];
+    return b ? (b.won ? 'Best: ' + b.rank + ' · 6:00 AM · ' + b.power + '% power' : 'Furthest: ' + b.reached) : 'No night kept yet';
+  },
+  hint() { // [H]: what a guard who's done this before would tell you
+    const tips = [
+      'Close the door only when it\'s outside: a shut door eats power fast.',
+      'The Warden always comes past CAM 05 (West Hall) or CAM 06 (South Hall) before your door.',
+      'The Mannequin can\'t move while anyone watches it — on a camera, or through the open doorway.',
+      'Check CAM 10 before you open the door. Something may be standing right outside.',
+      'When you hear the vent, turn and hold your light on the grate. It hates it.',
+      'Every guard on the monitors costs power. In co-op, take turns.',
+    ];
+    this.tipI = ((this.tipI || 0) + 1) % tips.length; UI.msg(tips[this.tipI], 'hint', 5);
+  },
+};
+
+/* ---- the hooks ---- */
+{
+  // the camera feed takes the view (unless a cutscene already has it), and the infrared lamp lights it
+  const ac0 = Cine.applyCamera; Cine.applyCamera = function (dt, fov) { const r = ac0.apply(this, arguments); if (r !== null && r !== undefined) return r; return Watch.feed() ? Watch.camView() : r; };
+  const co0 = Cine.cctvOn; Cine.cctvOn = function () { return co0.call(this) || Watch.feed(); };
+  const ar0 = Arms.render; Arms.render = function () { if (Watch.feed()) return; return ar0.apply(this, arguments); };
+  const gr0 = Game.render; Game.render = function (dt) { if (Watch.on && Watch.feeds) Watch.drawFeed(dt); return gr0.apply(this, arguments); };
+  // the events, and a guard telling the host which camera they're on
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) { if (ev && typeof ev.k === 'string' && ev.k.indexOf('wt') === 0 && Game.mode === 'watch') { const mine = ev.by === undefined || ev.by === Net.myId; if (Watch.event(ev, mine, Net.nameOf(ev.by))) return; } return ae0.apply(this, arguments); };
+  const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i) { if (a === 'wcam') { if (r && Game.mode === 'watch' && Watch.on) r.wcam = Number.isInteger(i) && i >= 0 && i < WT_CAMS.length && !Watch.dark && !r.dead ? i : -1; return; } return ra0.apply(this, arguments); };
+  // the office door: a switch on the desk or a hand on it, but no power, no door
+  const ud0 = Game.useDoor; Game.useDoor = function (d, by) {
+    if (Game.mode === 'watch' && Watch.on && d === Watch.door()) { if (Watch.dark) { if (!Net.isClient) Game.tell(by || player, 'The door motor is dead. It won\'t close.', 'warn', 3); return; } if (!Net.isClient) d.fast = true; }
+    return ud0.apply(this, arguments);
+  };
+  // the movement keys do nothing while you're on the monitors
+  const MOVE = new Set(['forward', 'back', 'left', 'right', 'sprint', 'crouch']);
+  const kd0 = Keys.down; Keys.down = function (a) { if (Watch.cam >= 0 && MOVE.has(a)) return false; return kd0.call(this, a); };
+  // other monsters stay away tonight
+  const ia0 = Infestant.allowed; Infestant.allowed = function () { return Game.mode !== 'watch' && ia0.call(this); };
+  const tl0 = Trader.tooLate; Trader.tooLate = function () { return Game.mode === 'watch' || tl0.call(this); };
+  const hr0 = Hints.request; Hints.request = function () { if (Game.mode === 'watch' && Watch.on) { Watch.hint(); return; } return hr0.apply(this, arguments); };
+  const hp0 = Hints.primary; Hints.primary = function () { return Game.mode === 'watch' ? null : hp0.apply(this, arguments); };
+  // the bite out of the vent: the death that goes with it isn't the Warden's face
+  const gp0 = Game.pause; Game.pause = function () { if (Watch.cam >= 0) Watch.closeMon(false); return gp0.apply(this, arguments); };
+  const di0 = Game.die; Game.die = function (scene) { if (Game.mode === 'watch' && !scene && Watch.on && Watch.stats.killer !== 'THE WARDEN') { Watch.stats.killer = Watch.stats.killer || 'THE BROOD'; scene = 'death'; } return di0.call(this, scene); };
+  // the monitor's keys (before the game's own: on the monitors, 1-0 are cameras, not weapons)
+  window.addEventListener('keydown', e => {
+    if (Game.state !== 'playing' || Game.mode !== 'watch' || !Watch.on || e.ctrlKey || e.metaKey) return;
+    const act = Keys.actionOf(e.code);
+    if (act === 'map') { e.preventDefault(); e.stopImmediatePropagation(); if (!e.repeat && !Cine.blocking() && !Game.controlLock) Watch.toggleMon(); return; }
+    if (Watch.cam < 0) return;
+    if (act === 'pause' || e.code === 'Escape') { Watch.closeMon(false); return; } // (and the game pauses)
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (e.repeat) return;
+    const m = /^(Digit|Numpad)(\d)$/.exec(e.code);
+    if (m) { Watch.switchCam((+m[2] + 9) % 10); return; }
+    if (act === 'left' || e.code === 'ArrowLeft') Watch.switchCam((Watch.cam + WT_CAMS.length - 1) % WT_CAMS.length);
+    else if (act === 'right' || e.code === 'ArrowRight') Watch.switchCam((Watch.cam + 1) % WT_CAMS.length);
+    else if (act === 'interact' || act === 'hold') Watch.closeMon(true);
+  }, true);
+}
+
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
 /* (every picture is drawn here, on a canvas: no image files)          */
@@ -25480,7 +26140,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish }); // (Build 18) // (Build 18: the sculpted people)
+  Object.assign(window.LS, { People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN }); // (Build 18) // (Build 18: the sculpted people)
 }
 };
 </script>
