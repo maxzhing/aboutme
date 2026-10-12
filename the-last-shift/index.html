@@ -25840,6 +25840,12 @@ const Hunt = {
     for (const r of Net.remotes.values()) if (r._hw) { scene.remove(r._hw); r._hw = null; }
     this.snapT = 0; this.lastSnap = null;
     document.body.classList.remove('hunt-on');
+    if (this.blindT !== undefined) { const f = $('fx-white'); if (f) f.style.opacity = 0; }
+    this.hudRedraw();
+  },
+  hudRedraw() { // (the ability panels only redraw their name and icon when the character changes: a hunt doesn't change it, so make them)
+    for (const id of ['abil', 'ult']) { const e = typeof $ === 'function' && $(id); if (e) delete e.dataset.c; }
+    if (typeof UI !== 'undefined' && UI.hudCache) { UI.hudCache.ab = null; UI.hudCache.ult = null; }
   },
   start() {
     this.build(); this.reset(); this.on = true; this.runId = (this.runId || 0) + 1;
@@ -25848,7 +25854,7 @@ const Hunt = {
     p.hasFlash = false; p.flashState = false; p.maxHp = 100; p.health = 100; Chars.lastHp = 100; p.stamina = 1;
     flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true;
     this.off = interactables.filter(d => d.enabled && d.kind !== 'locker'); this.off.forEach(d => { d.enabled = false; });
-    Chars.cd = 0; Chars.ucd = ABIL.pounce.first; UI.hudCache.ab = null; UI.hudCache.ult = null;
+    Chars.cd = 0; Chars.ucd = ABIL.pounce.first; this.hudRedraw();
     // the real Warden sleeps tonight: you're it
     Monster.pos.set(52, 0, 8.5); if (Monster.model) Monster.model.visible = false;
     for (const d of doors) if (cellOf(d.cx, d.cz).lvl === 0 && d.type !== 'exit') d.unlocked = true; // (the night shift has the keys)
@@ -26304,7 +26310,7 @@ const Hunt = {
 
 /* ---- the hooks ---- */
 {
-  const cur0 = Chars.cur; Chars.cur = function () { return Hunt.on ? HUNT_CHAR : cur0.call(this); };
+  const cur0 = Chars.cur; Chars.cur = function () { return Hunt.on && !Hunt.over && Game.mode === 'hunt' ? HUNT_CHAR : cur0.call(this); };
   const sm0 = Chars.speedMul; Chars.speedMul = function () { const m = sm0.apply(this, arguments); return Hunt.on ? m * (Hunt.blindT > 0 ? 0.35 : 1) : m; };
   Chars.use_screech = function (A) { this.cd = A.cd; Hunt.screech(); };
   Chars.use_pounce = function (U) {
@@ -26348,6 +26354,8 @@ const Hunt = {
     }
     return ra0.apply(this, arguments);
   };
+  const ng0 = Game.newGame; Game.newGame = function () { if (Hunt.on) Hunt.reset(); return ng0.apply(this, arguments); };
+  const qt0 = Game.quitToTitle; Game.quitToTitle = function () { if (Hunt.on) Hunt.reset(); return qt0.apply(this, arguments); };
   const ia0 = Infestant.allowed; Infestant.allowed = function () { return Game.mode !== 'hunt' && ia0.call(this); };
   const tl0 = Trader.tooLate; Trader.tooLate = function () { return Game.mode === 'hunt' || tl0.call(this); };
   const hr0 = Hints.request; Hints.request = function () { if (Hunt.on) { Hunt.hint(); return; } return hr0.apply(this, arguments); };
