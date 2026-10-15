@@ -140,6 +140,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @media (max-width:1260px){.modes.five{grid-template-columns:repeat(3,1fr)}}
 .mode.hunt{border-color:rgba(230,90,70,.45);background:linear-gradient(160deg,rgba(200,50,40,.12),rgba(255,255,255,.01))}
 .mode.hunt.sel{border-color:#ff6a50;background:rgba(200,50,40,.16)}
+.mode.camo{border-color:rgba(255,170,90,.5);background:linear-gradient(160deg,rgba(208,106,30,.14),rgba(47,127,122,.1) 60%,rgba(255,255,255,.01))}
+.mode.camo.sel{border-color:#ffb26a;background:rgba(208,106,30,.18)}
+.modes.six{grid-template-columns:repeat(3,1fr)}
 #hunt-marks{position:fixed;inset:0;pointer-events:none;z-index:6}
 #hunt-marks i{position:absolute;display:none;width:26px;height:26px;margin:-13px 0 0 -13px;border:2px solid rgba(255,60,40,.85);border-radius:50%;box-shadow:0 0 12px rgba(255,40,30,.7);animation:huntPing 1s ease-out infinite}
 #hunt-marks i.rv{border-color:#ff9a80}
@@ -1138,18 +1141,24 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p">Click to <b>swipe</b>: a guard in reach is caught. <span data-key="ability"></span> <b>SCREECH</b>: you hear every one of them for 6 seconds, through the walls, and the ones close to you freeze. <span data-key="ultimate"></span> <b>POUNCE</b>: a long leap. The guards hide in <b>lockers</b> — a heartbeat means one is close; <span data-key="interact"></span> tears the door open. They run when they see you, and their <b>flashlights blind you</b> if you come at them from the front.</p>
     <p class="p">If <b>half of them</b> get out, the hunt is lost. Catch them all — or keep them inside until 6:00 AM. <b>Online</b>, everyone is a Warden and you hunt together: there are more guards for more of you, and the host decides every catch.</p>
     </div>
+    <div id="brief-camo" hidden>
+    <p class="p">Sublevel 6 is half-way through a renovation: <b>the lights are on</b> and there's paint everywhere — murals, tarps, panels, rugs, a colour to every room. You are a chunky little <b>paint mech</b>, factory orange. You have <b>25 seconds</b> (Normal) before the Warden wakes up in Containment.</p>
+    <p class="p"><span data-key="ability"></span> <b>samples</b> the colour of whatever you face; <span data-key="nextWeapon"></span> <b>sprays</b> it all over you. <b>[B]</b> opens the <b>paint shop</b>: a colour picker, mixing, six patterns, paint each part on its own, a live preview you can turn round — and a reading of how well you'd blend in where you stand. <b>[Shift]</b> swaps to an over-the-shoulder camera (run with <b>Space</b> in this mode).</p>
+    <p class="p">The Warden doesn't see <i>you</i> — it sees what doesn't match what's <b>behind</b> you, from where it stands: colour, light, open space, and above all <b>movement</b>. Freeze against a wall your colour and it can walk right past. But it hears you, it smells anyone who stays in one place too long, and up close nothing fools it. Throw the <b>breakers</b> (hold <span data-key="interact"></span> — loud), then get to the <b>Surface Lift</b>. <b>Online</b>, a caught mech is caged in Containment until a teammate frees them; the team wins if half of you get out.</p>
+    </div>
     <div id="brief-endless" hidden>
     <p class="p">The day shift is never coming. There is no lift, no keycard, no way out — only the night, and <b>how long you can last in it</b>.</p>
     <p class="p">Every hour (about a minute and a half) you get a spare battery — and you must <b>choose one of two curses</b>. They stack: a faster Warden, sharper ears, brownouts, open vents, phantoms everywhere… Every run is different. Beat your longest night.</p>
     </div>
     <div id="modes">
     <div class="kicker" style="margin-top:18px">Sublevel 6 · the Warden</div>
-    <div class="modes four five">
+    <div class="modes four five six">
       <button class="mode" data-mode="night"><b>THE NIGHT SHIFT</b><span>Survive until 6:00 AM — or find a way out sooner.</span><em data-best="night"></em></button>
       <button class="mode" data-mode="photos"><b>THE POLAROIDS</b><span>Find 8 photos hidden somewhere new every run. Each one makes it worse. Then run.</span><em data-best="photos"></em></button>
       <button class="mode" data-mode="endless"><b>ENDLESS NIGHT</b><span>Dawn never comes. Every hour, pick a curse. How long can you last?</span><em data-best="endless"></em></button>
       <button class="mode watch" data-mode="watch"><b>THE WATCH</b><span>Midnight to 6 AM without leaving Desk B. Ten cameras, one door, one vent — and the power runs out.</span><em data-best="watch"></em></button>
       <button class="mode hunt" data-mode="hunt"><b>THE HUNT<i class="new">NEW</i></b><span>Play as the Warden. The night shift is pulling fuses to open the blast door — catch them before they reach the lift. Solo or online, together.</span><em data-best="hunt"></em></button>
+      <button class="mode camo" data-mode="camo"><b>MECHA CAMO<i class="new">NEW</i></b><span>You're a little paint mech. Sample the walls, paint yourself to match, freeze — and get to the lift while the Warden looks for anything that doesn't belong. Solo or online.</span><em data-best="camo"></em></button>
     </div>
     <div class="kicker" style="margin-top:14px">Deeper · new floors, new monsters</div>
     <div class="modes deep" id="modes-deep">
@@ -1251,6 +1260,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li><b>The deeper floors</b> (New Game → Deeper): <b>Sublevel 7, the Gallery</b> — a museum of mannequins where one of them only moves while nobody looks at it: keep it in your light, find three fuses, power the freight lift. <b>Sublevel 8, the Blackout</b> — a power station gone dark, where the Shade lives between the lights: torch beams, flares and fire burn it, lamps keep it out, and it puts the lamps out to reach you. Restart three turbines, throw the main breaker, call the Surface Express — and survive the dark until it comes. <b>Sublevel 9, the Hive</b> — a bio-lab that grew a brood: crawler packs that flank you, screamer pods that call the rest, mimics among the supplies, spitters, and the Butcher (knock it down and keep hitting it while it's down: it gets up weaker, and the third time it stays down). Find three cultures, run the sequencer, burn three nests, reroute the power and hold the Lobby until the Quarantine Lift comes. <b>Sublevel 10, the Root</b> — the mine under everything: charge three pylons (one is missing its power cell), kill the Mother by bursting her three sacs while her arms come down in the red rings, then outrun the collapse to the old mine elevator — a different way out is buried every time.</li>
           <li><b>Five modes on Sublevel 6</b> (pick one when you press New Game): <b>The Night Shift</b> — survive until 6:00 AM; <b>The Polaroids</b> — find 8 photos hidden somewhere new every run, each one making it worse, then race to the lift (there is a Daily layout to compete on); <b>Endless Night</b> — no dawn, a new curse every hour (press <b>1</b> or <b>2</b> to choose), survive as long as you can; <b>The Watch</b> (Build 19) — midnight to 6 AM without leaving Desk B; <b>The Hunt</b> (Build 20, solo or online) — you are the Warden.</li>
            <li><b>The Hunt:</b> you play the monster. Click to <b>swipe</b> (a guard in reach is caught), <span data-key="ability"></span> <b>SCREECH</b> (you hear every guard for 6 s, through the walls; the ones close by freeze), <span data-key="ultimate"></span> <b>POUNCE</b> (a long leap that ends in a swipe), <span data-key="interact"></span> on a locker tears it open. Red marks show the guards you hear. The guards pull fuses; enough of them and the blast door opens and they run for the surface lift. Their flashlights blind you if they see you coming. If half of them get out, the hunt is lost; if they're still inside at 6 AM, you win.</li>
+          <li><b>Mecha Camo:</b> <span data-key="ability"></span> samples the wall (or floor, or furniture) you face; <span data-key="nextWeapon"></span> sprays that colour all over you; <b>[B]</b> opens the paint shop (drag to turn the camera round your mech, click a surface to sample it, <b>Space</b> to spray, <b>[B]</b>/<b>Esc</b> to close). <b>[Shift]</b> toggles the over-the-shoulder camera (or <b>[L]</b>); run with <b>Space</b>. The CAMO meter grades how well you blend in where you stand (from 8 directions, against what's behind you, lit as it's lit): <b>EXCELLENT</b>, <b>GOOD</b> or <b>POOR</b>; the two squares are you and your background as an eye sees them. Hold <span data-key="interact"></span> at a breaker panel to throw it; <span data-key="ultimate"></span> lobs a paint can to pull the Warden away. Stay put too long and it smells you.</li>
           <li><b>The Watch:</b> <span data-key="map"></span> opens the cameras (<b>1–0</b>, the arrow keys or the map to switch; <span data-key="map"></span> again to look up). The red switch on the desk opens and shuts the door. <b>The Warden</b> shows up on CAM 05 or CAM 06 before your door — shut it in time and it slams it and goes. <b>The Mannequin</b> only moves while nobody watches it (a camera, or your own eyes through the doorway): check CAM 10 before you open the door. <b>The brood</b> comes down the vent: hold your light on the grate. Cameras and a shut door burn power; at 0% everything goes dark and the door won't hold.</li>
           <li><b>The Night Shift: survive until 6:00 AM</b> (the clock is at the top of the screen), then get onto the surface lift when the day shift opens it. Every hour it gets faster and sharper-eared; at 4:00 a power surge blacks everything out; in the last hour it can crawl into the vents. Or open the lift early: three keycards, main power and the breach report.</li>
           <li>It hunts by sound and sight — and it has sharp ears. Walking near it is enough; when it hears you it <b>runs</b> to the sound. Crouch close to it, and hide the moment it starts running.</li>
@@ -1330,7 +1340,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div id="mp-lobby" hidden>
       <div class="kicker" style="margin-top:14px">Guards on shift</div>
       <ul id="mp-players"></ul>
-      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
+      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
@@ -1471,7 +1481,7 @@ const settings = Object.assign({}, DEFAULTS);
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8);
     bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily');
-    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt']);
+    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
   } catch (e) { /* storage blocked or corrupt: keep defaults */ }
@@ -2600,12 +2610,14 @@ const GEO = {
 };
 // Static batching: props with the same material merge into one mesh (few draw calls)
 const staticBatches = new Map();
+const staticBoxes = []; // (Build 21) [x0, y0, z0, x1, y1, z1, material] for every solid prop on Sublevel 6
 const _m4 = new T.Matrix4(), _q = new T.Quaternion(), _e = new T.Euler(), _v = new T.Vector3(), _s = new T.Vector3();
 function addStatic(geo, mat, x, y, z, sx = 1, sy = 1, sz = 1, ry = 0, rx = 0, rz = 0, shadow = true) {
   _e.set(rx, ry, rz, 'YXZ'); _q.setFromEuler(_e); _v.set(x, y, z); _s.set(sx, sy, sz);
   _m4.compose(_v, _q, _s);
   const g = geo.clone(); g.applyMatrix4(_m4);
   const lv = lvlAt(z), key = mat.uuid + (shadow ? 's' : 'n') + lv;
+  if (lv === 0 && !mat.transparent) { g.computeBoundingBox(); const bb = g.boundingBox; staticBoxes.push([bb.min.x, bb.min.y, bb.min.z, bb.max.x, bb.max.y, bb.max.z, mat]); } // (Build 21: what each prop on Sublevel 6 is made of, and where — the camouflage reads it)
   let b = staticBatches.get(key);
   if (!b) { b = { mat, geos: [], shadow, lv }; staticBatches.set(key, b); }
   b.geos.push(g);
@@ -9197,7 +9209,7 @@ const Game = {
       else if (f.type === 'main') f.on = this.power && f.mode !== 'dead' && t >= f.powerOnAt;
       if (f.on) {
         b = 1;
-        if (f.mode === 'flicker') { f.next -= dt; if (f.next <= 0) { f.burst = rand(0.15, 1.3); f.next = rand(2.5, 9); } if (f.burst > 0) { f.burst -= dt; b = Math.random() < 0.5 ? rand(0, 0.25) : 1; } }
+        if (f.mode === 'flicker' && this.mode !== 'watch') { f.next -= dt; if (f.next <= 0) { f.burst = rand(0.15, 1.3); f.next = rand(2.5, 9); } if (f.burst > 0) { f.burst -= dt; b = Math.random() < 0.5 ? rand(0, 0.25) : 1; } }
         else if (f.mode === 'beacon') b = 0.15 + 0.85 * Math.pow(Math.max(0, Math.sin(t * 5.5 + f.pos.x)), 6);
         if (f.pop > 0) { f.pop -= dt; b *= Math.random() < 0.75 ? 0 : 0.35; } // a bulb blown by the Warden
         if (f.type === 'main' && t < f.powerOnAt + 0.7) b *= Math.random() < 0.5 ? 0.15 : 1;
@@ -9509,6 +9521,7 @@ const DIFF_TEXT = (() => {
     root: { easy: 'The Mother is slower and softer; the collapse gives you longer.' + hit('easy'), normal: 'The intended experience.' + hit('normal'), hard: 'More arms at once, more young, a shorter collapse.' + hit('hard'), nightmare: 'She never stops. The caves come down fast.' + hit('nightmare') },
     blackout: { easy: 'It is slower and burns sooner. Turbines restart quicker. The Express takes 35 seconds.' + hit('easy'), normal: 'The intended experience. The Express takes 45 seconds.' + hit('normal'), hard: 'It is fast, tough, and eats the lights quicker. The Express takes 55 seconds.' + hit('hard'), nightmare: 'It eats the lights almost as fast as you light them — and spits darkness at you in them. The Express takes a minute.' + hit('nightmare') },
     gallery: { easy: 'It moves slower and breaks sooner. The lift takes 35 seconds.' + hit('easy'), normal: 'The intended experience. The lift takes 45 seconds.' + hit('normal'), hard: 'Fast and tough. Your torch stutters more. The lift takes 55 seconds.' + hit('hard'), nightmare: 'Faster than you, hard to break, and it strikes the moment you look away. The lift takes a full minute.' + hit('nightmare') },
+    camo: { easy: 'Ten minutes on the clock, 30 s to paint up, three breakers. It sees less far, smells you late and rests longer after a catch.', normal: 'Nine minutes, 25 s to paint up, four breakers. The intended experience.', hard: 'Eight minutes, 20 s to paint up. It sees further, moves faster, smells you sooner and rests less.', nightmare: 'Seven and a half minutes, 15 s to paint up, five breakers. Sharp eyes, a quick nose, barely a pause after a catch.' },
     hunt: { easy: 'A 5-minute night, three guards, slow and short-sighted; their flashlights rarely. Six fuses open the door.', normal: 'A 6-minute night, four guards. The intended experience. Six fuses open the door.', hard: 'A 6½-minute night, four guards who see further, run faster and flash you more often. Five fuses open the door.', nightmare: 'A 7-minute night, five sharp-eyed guards and a flashlight every few seconds. Five fuses open the door.' },
     watch: { easy: 'A 6-minute night. Slow to move, long at the door. The Mannequin from 3 AM, the vent from 4 AM. The power lasts longer.' + hit('easy'), normal: 'A 7-minute night. The intended experience: the Mannequin from 2 AM, the vent from 3 AM.' + hit('normal'), hard: 'A 7½-minute night. Faster, shorter at the door; the Mannequin from 1 AM, the vent from 2 AM. The power drains faster.' + hit('hard'), nightmare: 'An 8-minute night. Everything from 1 AM, and it barely waits at the door.' + hit('nightmare') },
     other: { easy: 'A slower, half-deaf hunter with long, readable attacks.' + hit('easy'), normal: 'The intended experience.' + hit('normal'), hard: 'Fast, sharp-eared, quick to strike. It smashes through iron doors.' + hit('hard'), nightmare: 'It sees further, hears everything, barely warns you and throws what it can\'t reach. Almost no healing.' + hit('nightmare') },
@@ -9517,9 +9530,9 @@ const DIFF_TEXT = (() => {
 function syncModeCards() {
   const m = MODES[settings.mode] ? settings.mode : 'night';
   document.querySelectorAll('#modes .mode').forEach(b => { b.classList.toggle('sel', b.dataset.mode === m); const em = b.querySelector('em'); if (em) em.textContent = Modes.cardBest(b.dataset.mode); });
-  $('brief-h1').textContent = { hunt: 'You are the Warden', watch: 'Keep watch until 6:00 AM', photos: 'The Polaroids', endless: 'Endless Night', gallery: 'Get out of the Gallery', blackout: 'Bring the lights back', hive: 'Burn the brood', root: 'Kill the Mother' }[m] || 'Survive until 6:00 AM';
-  $('brief-kicker').textContent = { hunt: 'The other side · Site Kestrel, Sublevel 6 · Containment · 12:00 AM', watch: 'Night watch · Site Kestrel, Sublevel 6 · Desk B · 12:00 AM', gallery: 'Site Kestrel · Sublevel 7 · the Mimicry wing', blackout: 'Site Kestrel · Sublevel 8 · the power station', hive: 'Site Kestrel · Sublevel 9 · Lantern Bio-Containment', root: 'Site Kestrel · Sublevel 10 · the old mine' }[m] || 'Night shift · Site Kestrel, Sublevel 6 · 02:00 AM';
-  ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt'].forEach(k => { const el = $('brief-' + k); if (el) el.hidden = k !== m; });
+  $('brief-h1').textContent = { camo: 'Paint yourself into the walls', hunt: 'You are the Warden', watch: 'Keep watch until 6:00 AM', photos: 'The Polaroids', endless: 'Endless Night', gallery: 'Get out of the Gallery', blackout: 'Bring the lights back', hive: 'Burn the brood', root: 'Kill the Mother' }[m] || 'Survive until 6:00 AM';
+  $('brief-kicker').textContent = { camo: 'Mecha Camo · Site Kestrel, Sublevel 6 · the renovation · lights on', hunt: 'The other side · Site Kestrel, Sublevel 6 · Containment · 12:00 AM', watch: 'Night watch · Site Kestrel, Sublevel 6 · Desk B · 12:00 AM', gallery: 'Site Kestrel · Sublevel 7 · the Mimicry wing', blackout: 'Site Kestrel · Sublevel 8 · the power station', hive: 'Site Kestrel · Sublevel 9 · Lantern Bio-Containment', root: 'Site Kestrel · Sublevel 10 · the old mine' }[m] || 'Night shift · Site Kestrel, Sublevel 6 · 02:00 AM';
+  ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo'].forEach(k => { const el = $('brief-' + k); if (el) el.hidden = k !== m; });
   $('daily-row').hidden = m !== 'photos'; $('daily').checked = !!settings.daily;
   $('diff-kicker').textContent = m === 'night' ? 'Difficulty · how long the night lasts' : 'Difficulty';
   const tx = DIFF_TEXT[DIFF_TEXT[m] ? m : m === 'night' ? 'night' : 'other'];
@@ -10315,7 +10328,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 16, BUILD = 20, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 17, BUILD = 21, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -11524,6 +11537,10 @@ const ACH = [
   { id: 'hunt_win', name: 'Apex', desc: 'The Hunt: stop the night shift getting out.' },
   { id: 'hunt_all', name: 'Nobody Leaves', desc: 'The Hunt: catch every guard.' },
   { id: 'hunt_nm', name: 'Nightmare Fuel', desc: 'The Hunt: win on Nightmare.' },
+  { id: 'camo_win', name: 'Chameleon', desc: 'Mecha Camo: get out in the Surface Lift.' },
+  { id: 'camo_ghost', name: 'Wallpaper', desc: 'Mecha Camo: get out without the Warden ever hunting you.' },
+  { id: 'camo_rescue', name: 'Paint It Back', desc: 'Mecha Camo: free a teammate from a cage.' },
+  { id: 'camo_nm', name: 'Invisible Ink', desc: 'Mecha Camo: win on Nightmare.' },
 ];
 const RANKS = [['S', 3300], ['A', 2600], ['B', 1900], ['C', 1200], ['D', -1e9]];
 const CAM_POS = new T.Vector3(102.2, 1.1, 52);
@@ -11776,7 +11793,7 @@ const Night = {
     if (Game.mode !== 'night') { // the other modes keep their own time
       this.t += dt;
       if (LVL) { Level.mod().update(dt); return; }
-      if (Game.mode === 'photos') Photos.update(dt); else if (Game.mode === 'watch') Watch.update(dt); else if (Game.mode === 'hunt') Hunt.update(dt); else Endless.update(dt);
+      if (Game.mode === 'photos') Photos.update(dt); else if (Game.mode === 'watch') Watch.update(dt); else if (Game.mode === 'hunt') Hunt.update(dt); else if (Game.mode === 'camo') Camo.update(dt); else Endless.update(dt);
       if (this.surgeUntil && !this.surge && !this.said.surgeEnd) { this.said.surgeEnd = 1; UI.msg('The emergency lights stutter back on.', 'story', 3.5); Game.dip = 0.6; }
       return;
     }
@@ -12496,6 +12513,7 @@ const MODES = {
   root: { name: 'The Root', tag: 'SUBLEVEL 10 · THE ROOT' },
   watch: { name: 'The Watch', tag: 'THE WATCH' }, // (Build 19: Sublevel 6 from the desk — cameras, a door, a vent, the power)
   hunt: { name: 'The Hunt', tag: 'THE HUNT' }, // (Build 20: you are the Warden)
+  camo: { name: 'Mecha Camo', tag: 'MECHA CAMO' }, // (Build 21: paint yourself into the walls)
 };
 const FASTEST = new Set(['photos', 'gallery', 'blackout', 'hive', 'root']); // (the modes where a lower time is better)
 const PHOTO_N = 8;
@@ -17029,7 +17047,7 @@ const codeKey = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').sli
 const ECON = {
   multiCost: 50000, multiN: 5, // (Build 20: the 5× SPIN — bought once for 50,000 coins, yours forever; each one costs exactly five spins)
   startCoins: 100, freeSpins: 1, spinCost: 100, maxCoins: 9999999, maxFree: 99, // (maxFree: free spins you can bank — codes give more than one)
-  win: { night: 120, photos: 100, gallery: 140, blackout: 160, hive: 190, root: 230, watch: 150, hunt: 150 }, // getting out
+  win: { night: 120, photos: 100, gallery: 140, blackout: 160, hive: 190, root: 230, watch: 150, hunt: 150, camo: 170 }, // getting out
   killK: 5,                    // killing the floor's monster (the Warden, the Mannequin, the Shade for good, the Butcher for good, the Visitor): every coin of the run ×5
   lose: 15,                    // a run that ended with you caught
   perMinute: 6, maxMinutes: 15, // for every minute you stayed alive (Endless Night: up to 30)
@@ -25853,7 +25871,7 @@ const Hunt = {
     // you: no light, no hands to hold anything, nothing in the world to pick up
     p.hasFlash = false; p.flashState = false; p.maxHp = 100; p.health = 100; Chars.lastHp = 100; p.stamina = 1;
     flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true;
-    this.off = interactables.filter(d => d.enabled && d.kind !== 'locker'); this.off.forEach(d => { d.enabled = false; });
+    this.off = interactables.filter(d => d.enabled && d.kind !== 'locker' && d.kind !== 'door'); this.off.forEach(d => { d.enabled = false; });
     Chars.cd = 0; Chars.ucd = ABIL.pounce.first; this.hudRedraw();
     // the real Warden sleeps tonight: you're it
     Monster.pos.set(52, 0, 8.5); if (Monster.model) Monster.model.visible = false;
@@ -26378,6 +26396,1480 @@ const Hunt = {
     const key = shown + cls + goal + mission + sub; if (UI.hudCache.shift === key) return; UI.hudCache.shift = key;
     el.className = cls; $('shift-clock').firstChild.textContent = shown; $('shift-clock').querySelector('small').textContent = 'AM';
     $('shift-goal').textContent = goal; $('shift-bar').firstElementChild.style.width = clamp(Hunt.minutes() / 360, 0, 1) * 100 + '%';
+    $('mission').textContent = mission; $('mission-sub').textContent = sub; $('objectives').classList.toggle('dawn', false);
+  };
+}
+
+/* ================================================================== */
+/* Build 21: MECHA CAMO — paint yourself into the walls (part 1)      */
+/*  The colour science (sRGB -> CIE Lab, CIEDE2000), what Sublevel 6   */
+/*  is made of (every wall, floor, ceiling and prop — and the paint    */
+/*  the renovation crew left everywhere), how the light falls on it,   */
+/*  and the chunky little paint mechs you play.                        */
+/*  How well you hide is measured, not guessed: from the Warden's eye, */
+/*  through you, to whatever is behind you — its real colour, lit the  */
+/*  way it is lit, seen through the same fog — compared with your      */
+/*  paint, lit the way you are lit (CIEDE2000, a perceptual distance). */
+/* ================================================================== */
+const CM_PARTS = ['head', 'body', 'arms', 'legs'];
+const CM_PART_NAMES = { head: 'HEAD', body: 'BODY', arms: 'ARMS', legs: 'LEGS' };
+const CM_PATS = ['SOLID', 'STRIPES', 'CHECKS', 'SPOTS', 'FADE', 'BLOTCH'];
+const CM_ACC = [
+  { id: 'none', name: 'NONE' }, { id: 'antenna', name: 'ANTENNA' },
+  { id: 'visor', name: 'VISOR', ach: 'camo_win', how: 'Escape in Mecha Camo' }, { id: 'crest', name: 'CREST', ach: 'camo_ghost', how: 'Escape without ever being hunted' },
+  { id: 'tank', name: 'PAINT TANK', ach: 'camo_rescue', how: 'Free a teammate from a cage' }, { id: 'crown', name: 'CROWN', ach: 'camo_nm', how: 'Win Mecha Camo on Nightmare' },
+];
+const CM_SWATCH = [0xf2f0ea, 0xb9bcbc, 0x7c8084, 0x3e4246, 0x141516, 0xc8b89a, 0x6b4a2f, 0x5b6b2f, 0x2d5a3a, 0x9fc9b5, 0x2f7f7a, 0x1f3460, 0x2f5fb3, 0x8a78b8, 0x6e1f24, 0xb3372b, 0xc9a227, 0xd06a1e, 0xd9a3a8, 0xb0457a];
+// a fresh mech comes out of the factory safety orange: you have to paint before you can hide
+const cmDefPaint = () => ({ head: [0xd06a1e, 0x141516, 0], body: [0xd06a1e, 0x141516, 0], arms: [0xd06a1e, 0x141516, 0], legs: [0x3e4246, 0x141516, 0], acc: 'antenna' });
+const cmClonePaint = P => ({ head: P.head.slice(), body: P.body.slice(), arms: P.arms.slice(), legs: P.legs.slice(), acc: P.acc });
+// a paint job from the network, made safe (anything wrong: that part keeps what it had)
+function cmCleanPaint(x, prev) {
+  const P = cmClonePaint(prev || cmDefPaint());
+  if (!x || typeof x !== 'object') return P;
+  const col = v => Number.isInteger(v) && v >= 0 && v <= 0xffffff;
+  for (const k of CM_PARTS) { const a = x[k]; if (Array.isArray(a) && a.length === 3 && col(a[0]) && col(a[1]) && Number.isInteger(a[2]) && a[2] >= 0 && a[2] < CM_PATS.length) P[k] = [a[0], a[1], a[2]]; }
+  if (typeof x.acc === 'string' && CM_ACC.some(o => o.id === x.acc)) P.acc = x.acc;
+  return P;
+}
+
+/* ---- colour: sRGB <-> CIE Lab (D65), CIEDE2000 ---- */
+const CamoColor = {
+  lin(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); },
+  enc(c) { c = c < 0 ? 0 : c > 1 ? 1 : c; return c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055; },
+  rgb(h, o) { o = o || [0, 0, 0]; o[0] = ((h >> 16) & 255) / 255; o[1] = ((h >> 8) & 255) / 255; o[2] = (h & 255) / 255; return o; },
+  hex(r, g, b) { const q = v => Math.round(clamp(v, 0, 1) * 255); return (q(r) << 16) | (q(g) << 8) | q(b); },
+  css(h) { return '#' + ((h >>> 0) & 0xffffff).toString(16).padStart(6, '0'); },
+  // display r, g, b (0..1) -> L*, a*, b*
+  lab(r, g, b, o) {
+    const R = this.lin(clamp(r, 0, 1)), G = this.lin(clamp(g, 0, 1)), B = this.lin(clamp(b, 0, 1));
+    const X = (R * 0.4124564 + G * 0.3575761 + B * 0.1804375) / 0.95047, Y = R * 0.2126729 + G * 0.7151522 + B * 0.0721750, Z = (R * 0.0193339 + G * 0.1191920 + B * 0.9503041) / 1.08883;
+    const f = t => t > 216 / 24389 ? Math.cbrt(t) : (24389 / 27 * t + 16) / 116;
+    const fx = f(X), fy = f(Y), fz = f(Z);
+    o = o || [0, 0, 0]; o[0] = 116 * fy - 16; o[1] = 500 * (fx - fy); o[2] = 200 * (fy - fz); return o;
+  },
+  // CIEDE2000 (Sharma, Wu & Dalal 2005)
+  de(A, B) {
+    const D = Math.PI / 180, L1 = A[0], a1 = A[1], b1 = A[2], L2 = B[0], a2 = B[1], b2 = B[2];
+    const C1 = Math.hypot(a1, b1), C2 = Math.hypot(a2, b2), Cb = (C1 + C2) / 2, Cb7 = Math.pow(Cb, 7);
+    const G = 0.5 * (1 - Math.sqrt(Cb7 / (Cb7 + 6103515625)));
+    const a1p = (1 + G) * a1, a2p = (1 + G) * a2, C1p = Math.hypot(a1p, b1), C2p = Math.hypot(a2p, b2);
+    const hue = (b, a) => (b === 0 && a === 0) ? 0 : (Math.atan2(b, a) / D + 360) % 360;
+    const h1p = hue(b1, a1p), h2p = hue(b2, a2p);
+    const dLp = L2 - L1, dCp = C2p - C1p;
+    let dhp = 0; if (C1p * C2p !== 0) { dhp = h2p - h1p; if (dhp > 180) dhp -= 360; else if (dhp < -180) dhp += 360; }
+    const dHp = 2 * Math.sqrt(C1p * C2p) * Math.sin(dhp * D / 2);
+    const Lbp = (L1 + L2) / 2, Cbp = (C1p + C2p) / 2;
+    let hbp; if (C1p * C2p === 0) hbp = h1p + h2p; else if (Math.abs(h1p - h2p) <= 180) hbp = (h1p + h2p) / 2; else hbp = (h1p + h2p + (h1p + h2p < 360 ? 360 : -360)) / 2;
+    const Tt = 1 - 0.17 * Math.cos((hbp - 30) * D) + 0.24 * Math.cos(2 * hbp * D) + 0.32 * Math.cos((3 * hbp + 6) * D) - 0.20 * Math.cos((4 * hbp - 63) * D);
+    const dTh = 30 * Math.exp(-Math.pow((hbp - 275) / 25, 2)), Cbp7 = Math.pow(Cbp, 7), Rc = 2 * Math.sqrt(Cbp7 / (Cbp7 + 6103515625));
+    const Sl = 1 + 0.015 * Math.pow(Lbp - 50, 2) / Math.sqrt(20 + Math.pow(Lbp - 50, 2)), Sc = 1 + 0.045 * Cbp, Sh = 1 + 0.015 * Cbp * Tt, Rt = -Math.sin(2 * dTh * D) * Rc;
+    return Math.sqrt(Math.pow(dLp / Sl, 2) + Math.pow(dCp / Sc, 2) + Math.pow(dHp / Sh, 2) + Rt * (dCp / Sc) * (dHp / Sh));
+  },
+  // two paints mixed (as light mixes: in linear light), k of the second
+  mix(a, b, k) { const A = this.rgb(a), B = this.rgb(b), m = i => this.enc(this.lin(A[i]) * (1 - k) + this.lin(B[i]) * k); return this.hex(m(0), m(1), m(2)); },
+  hsv(h, s, v) { const f = n => { const k = (n + h * 6) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)); }; return this.hex(f(5), f(3), f(1)); },
+  toHsv(hx) { const [r, g, b] = this.rgb(hx), mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let h = 0; if (d) { if (mx === r) h = ((g - b) / d + 6) % 6; else if (mx === g) h = (b - r) / d + 2; else h = (r - g) / d + 4; h /= 6; } return [h, mx ? d / mx : 0, mx]; },
+};
+
+/* ---- patterns: drawn on a canvas, and measured from the canvas they were drawn on ---- */
+function cmDrawPat(cv, c1, c2, p) {
+  const g = cv.getContext('2d'), N = cv.width, A = CamoColor.css(c1), B = CamoColor.css(c2);
+  g.fillStyle = A; g.fillRect(0, 0, N, N);
+  g.fillStyle = B;
+  if (p === 1) { for (let i = 0; i < 4; i++) g.fillRect(0, i * N / 4, N, N / 8); }
+  else if (p === 2) { const s = N / 4; for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) if ((x + y) & 1) g.fillRect(x * s, y * s, s, s); }
+  else if (p === 3) { const R = mulberry32(0x5907); for (let i = 0; i < 9; i++) { const x = R() * N, y = R() * N, r = N * (0.055 + R() * 0.05); for (const ox of [-N, 0, N]) for (const oy of [-N, 0, N]) { g.beginPath(); g.arc(x + ox, y + oy, r, 0, TAU); g.fill(); } } }
+  else if (p === 4) { const gr = g.createLinearGradient(0, 0, 0, N); gr.addColorStop(0, A); gr.addColorStop(1, B); g.fillStyle = gr; g.fillRect(0, 0, N, N); }
+  else if (p === 5) { const R = mulberry32(0xb10c); for (let i = 0; i < 7; i++) { const x = R() * N, y = R() * N, rx = N * (0.12 + R() * 0.12), ry = N * (0.07 + R() * 0.08), a = R() * Math.PI; for (const ox of [-N, 0, N]) for (const oy of [-N, 0, N]) { g.beginPath(); g.ellipse(x + ox, y + oy, rx, ry, a, 0, TAU); g.fill(); } } }
+}
+const _cmL = [0, 0, 0], _cmL2 = [0, 0, 0];
+
+/* ---- what Sublevel 6 is made of ---- */
+const CamoWorld = {
+  built: false, cells: null, mstat: new Map(), pstat: new Map(), fx: [], dress: [], dressOn: false,
+  // a surface, measured once: its mean colour (as you'd see it from a few metres: averaged in linear light) and how busy its texture is (the spread of its lightness)
+  measure(img, tint) {
+    const cv = this.mcv || (this.mcv = makeCanvas(16, 16)), g = cv.getContext('2d', { willReadFrequently: true });
+    g.clearRect(0, 0, 16, 16); g.drawImage(img, 0, 0, 16, 16);
+    const d = g.getImageData(0, 0, 16, 16).data, tr = tint ? tint.r : 1, tg = tint ? tint.g : 1, tb = tint ? tint.b : 1;
+    let lr = 0, lg = 0, lb = 0, s = 0, s2 = 0, n = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      const r = d[i] / 255 * tr, gg = d[i + 1] / 255 * tg, b = d[i + 2] / 255 * tb;
+      lr += CamoColor.lin(r); lg += CamoColor.lin(gg); lb += CamoColor.lin(b);
+      const L = CamoColor.lab(r, gg, b, _cmL)[0]; s += L; s2 += L * L; n++;
+    }
+    return { r: CamoColor.enc(lr / n), g: CamoColor.enc(lg / n), b: CamoColor.enc(lb / n), con: Math.sqrt(Math.max(0, s2 / n - (s / n) * (s / n))) };
+  },
+  stat(mat) {
+    if (!mat) return this.GREY;
+    let s = this.mstat.get(mat.uuid); if (s) return s;
+    const c = mat.color || { r: 1, g: 1, b: 1 }, img = mat.map && mat.map.image;
+    s = { r: c.r, g: c.g, b: c.b, con: 0 };
+    if (img && (img.width || 0) > 0) { try { s = this.measure(img, c); } catch (e) { } }
+    this.mstat.set(mat.uuid, s); return s;
+  },
+  GREY: { r: 0.4, g: 0.4, b: 0.4, con: 0 },
+  // a painted part: measured from the very canvas it's drawn on
+  paintStat(pp) {
+    const key = pp[0] + '|' + pp[1] + '|' + pp[2]; let s = this.pstat.get(key); if (s) return s;
+    const cv = this.pcv || (this.pcv = makeCanvas(64, 64)); cmDrawPat(cv, pp[0], pp[1], pp[2]);
+    s = this.measure(cv, null); if (this.pstat.size > 400) this.pstat.clear(); this.pstat.set(key, s); return s;
+  },
+  // the body's colour as seen: the chest, with the arms swinging in front of it
+  bodyStat(P) {
+    const a = this.paintStat(P.body), b = this.paintStat(P.arms), m = (x, y) => CamoColor.enc(CamoColor.lin(x) * 0.7 + CamoColor.lin(y) * 0.3);
+    return { r: m(a.r, b.r), g: m(a.g, b.g), b: m(a.b, b.b), con: a.con * 0.7 + b.con * 0.3 + Math.min(12, CamoColor.de(CamoColor.lab(a.r, a.g, a.b, _cmL), CamoColor.lab(b.r, b.g, b.b, _cmL2)) * 0.25) };
+  },
+  build() {
+    if (this.built) return; this.built = true;
+    this.cells = new Array(W * LEVEL_ROWS);
+    for (const s of staticBoxes) this.add({ x0: s[0], y0: s[1], z0: s[2], x1: s[3], y1: s[4], z1: s[5], st: this.stat(s[6]), kind: 'prop' });
+    this.fx = fixtures.filter(f => f.lvl === 0);
+    this.doorSt = this.stat(MAT.metal);
+  },
+  add(b) {
+    const cx0 = Math.max(0, Math.floor(b.x0 / CELL)), cx1 = Math.min(W - 1, Math.floor((b.x1 - 1e-4) / CELL)), cz0 = Math.max(0, Math.floor(b.z0 / CELL)), cz1 = Math.min(LEVEL_ROWS - 1, Math.floor((b.z1 - 1e-4) / CELL));
+    for (let z = cz0; z <= cz1; z++) for (let x = cx0; x <= cx1; x++) { const k = z * W + x; (this.cells[k] || (this.cells[k] = [])).push(b); }
+  },
+  // walk a ray from o along unit d through the cells; the first wall, floor, ceiling, door or prop between tmin and tmax.
+  // out: { t, x, y, z, st, kind, room }
+  ray(ox, oy, oz, dx, dy, dz, tmin, tmax, out) {
+    let cx = Math.floor(ox / CELL), cz = Math.floor(oz / CELL);
+    const sx = dx > 0 ? 1 : -1, sz = dz > 0 ? 1 : -1, adx = Math.abs(dx), adz = Math.abs(dz);
+    const tdx = adx > 1e-9 ? CELL / adx : Infinity, tdz = adz > 1e-9 ? CELL / adz : Infinity;
+    let tmx = adx > 1e-9 ? (sx > 0 ? (cx + 1) * CELL - ox : ox - cx * CELL) / adx : Infinity;
+    let tmz = adz > 1e-9 ? (sz > 0 ? (cz + 1) * CELL - oz : oz - cz * CELL) / adz : Infinity;
+    let tIn = 0, prev = null;
+    for (let i = 0; i < 160; i++) {
+      const c = cellAt(cx, cz), tOut = Math.min(tmx, tmz, tmax), yIn = oy + dy * tIn;
+      // a solid cell (a wall; a closed door; the wall above a vent's mouth; a window's frame): the face we came in through
+      let solid = c.kind === 'wall' || cz >= LEVEL_ROWS;
+      if (!solid && c.kind === 'window') solid = yIn < SILL_H || yIn > WIN_TOP;
+      if (!solid && c.door && c.door.t < 0.55) solid = true;
+      if (!solid && prev && isWalkKind(c) && yIn > c.h) solid = true;
+      if (solid) {
+        if (!prev) return null; // (we started inside it)
+        if (tIn < tmin || tIn > tmax) return null;
+        out.t = tIn; out.x = ox + dx * tIn; out.y = yIn; out.z = oz + dz * tIn; out.kind = c.door ? 'door' : 'wall'; out.room = prev.room;
+        out.st = c.door && !(c.kind === 'wall') ? this.doorSt : this.stat(MAT.wall[c.kind === 'window' ? 'metal' : wallKey(prev)]);
+        return out;
+      }
+      const t0 = Math.max(tIn, tmin);
+      if (t0 <= tOut && isWalkKind(c)) {
+        let best = Infinity, st = null, kind = '';
+        if (dy < -1e-6) { const tf = -oy / dy; if (tf >= t0 && tf <= tOut) { best = tf; st = this.stat(MAT.floor[floorKey(c)]); kind = 'floor'; } }
+        else if (dy > 1e-6) { const tc = (c.h - oy) / dy; if (tc >= t0 && tc <= tOut) { best = tc; st = this.stat(MAT.ceil[ceilKey(c)]); kind = 'ceiling'; } }
+        const bx = cz < LEVEL_ROWS ? this.cells[cz * W + cx] : null;
+        if (bx) for (const b of bx) {
+          if (b.off) continue;
+          let lo = t0, hi = Math.min(tOut, best);
+          if (Math.abs(dx) < 1e-9) { if (ox < b.x0 || ox > b.x1) continue; } else { let a = (b.x0 - ox) / dx, e = (b.x1 - ox) / dx; if (a > e) { const q = a; a = e; e = q; } if (a > lo) lo = a; if (e < hi) hi = e; if (lo > hi) continue; }
+          if (Math.abs(dy) < 1e-9) { if (oy < b.y0 || oy > b.y1) continue; } else { let a = (b.y0 - oy) / dy, e = (b.y1 - oy) / dy; if (a > e) { const q = a; a = e; e = q; } if (a > lo) lo = a; if (e < hi) hi = e; if (lo > hi) continue; }
+          if (Math.abs(dz) < 1e-9) { if (oz < b.z0 || oz > b.z1) continue; } else { let a = (b.z0 - oz) / dz, e = (b.z1 - oz) / dz; if (a > e) { const q = a; a = e; e = q; } if (a > lo) lo = a; if (e < hi) hi = e; if (lo > hi) continue; }
+          if (lo < best) { best = lo; st = b.st; kind = b.kind; }
+        }
+        if (st) { out.t = best; out.x = ox + dx * best; out.y = oy + dy * best; out.z = oz + dz * best; out.st = st; out.kind = kind; out.room = c.room; return out; }
+      }
+      if (tOut >= tmax) return null;
+      prev = c;
+      if (tmx < tmz) { tIn = tmx; tmx += tdx; cx += sx; } else { tIn = tmz; tmz += tdz; cz += sz; }
+    }
+    return null;
+  },
+  // how much light falls here (the room's lamps as they are right now — flickering, blown, near the Warden — and the sky light)
+  light(x, z) {
+    let L = 0.14 + (typeof hemi !== 'undefined' ? hemi.intensity : 0.5) * 0.3;
+    for (const f of this.fx) {
+      if (!(f.b > 0.02)) continue;
+      const dx = f.pos.x - x, dz = f.pos.z - z, d2 = dx * dx + dz * dz; if (d2 > 49) continue;
+      const k = 1 - Math.sqrt(d2) / 7; L += f.b * k * k * (f.type === 'main' ? 1.2 : 0.3);
+    }
+    return Math.min(1.45, L) * (renderer.toneMappingExposure || 1);
+  },
+  // a surface's colour as an eye d metres away sees it, in light L, through the fog
+  seen(st, L, d, o) {
+    const fd = scene.fog ? scene.fog.density : 0.06, k = 1 - Math.exp(-(fd * d) * (fd * d)), F = 0.016;
+    o[0] = st.r * L * (1 - k) + F * k; o[1] = st.g * L * (1 - k) + F * k; o[2] = st.b * L * (1 - k) + F * k; return o;
+  },
+  // the paint the renovation crew left: murals, tarps, half-height panels and rugs, a colour scheme to every room.
+  // (built once, the same on every screen: the layout is fixed, so you learn the floor)
+  DRESS: {
+    t: [[0x5b6b2f, 0x9c8b5a, 5], [0x9c8b5a, 0x5b6b2f, 1]], b: [[0xc9a227, 0xb3372b, 0], [0xb3372b, 0xf2f0ea, 2]], o: [[0x2f7f7a, 0x1f3460, 0], [0x3e4246, 0x2f7f7a, 1]],
+    g: [[0x9fc9b5, 0xd8dcd6, 1], [0xd8dcd6, 0x9fc9b5, 2]], a: [[0x6e1f24, 0x6b4a2f, 0], [0x6b4a2f, 0x3a2418, 1]], d: [[0x8a78b8, 0xe2d6b8, 3], [0xe2d6b8, 0x8a78b8, 0]],
+    h: [[0x1f3460, 0x39a6c4, 0], [0x1f3460, 0x39a6c4, 1]], k: [[0x2f5fb3, 0xf2f0ea, 1], [0x2f5fb3, 0x1f3460, 0]], p: [[0xd8b11a, 0x1a1a1a, 1], [0xd06a1e, 0x3e4246, 0]],
+    l: [[0xe6e9ea, 0x39a6c4, 4], [0xe6e9ea, 0x9fb8c0, 2]], r: [[0x2d5a3a, 0x141516, 0], [0x141516, 0x2d5a3a, 2]], f: [[0xb0457a, 0xc8b89a, 0], [0xc8b89a, 0xb0457a, 3]],
+    m: [[0xd9a3a8, 0xf2f0ea, 0], [0xf2f0ea, 0xd9a3a8, 1]], s: [[0x4f6272, 0x2b3640, 0], [0x2b3640, 0x4f6272, 1]], e: [[0xc0642a, 0xe2d6b8, 0], [0xe2d6b8, 0xc0642a, 4]],
+    c: [[0x7a2a26, 0x141516, 1], [0x3e4246, 0x7a2a26, 0]], '.': [[0xc9a227, 0x141516, 1], [0x2f7f7a, 0x9fc9b5, 0]],
+  },
+  buildDress() {
+    if (this.dressBuilt) return; this.dressBuilt = true; this.build();
+    const R = mulberry32(0xca30), mats = new Map(), geos = new Map(), panels = [];
+    const matOf = (c1, c2, p) => { const k = c1 + '|' + c2 + '|' + p; let m = mats.get(k); if (m) return m; const cv = makeCanvas(64, 64); cmDrawPat(cv, c1, c2, p); const tex = mkTex(cv, true); m = new T.MeshPhongMaterial({ map: tex, shininess: 6, specular: 0x111111 }); mats.set(k, m); geos.set(m, []); return m; };
+    const box = (m, x0, y0, z0, x1, y1, z1, rep) => {
+      const g = new T.BoxGeometry(x1 - x0, y1 - y0, z1 - z0); g.translate((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+      if (rep) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * rep[0], uv.getY(i) * rep[1]); }
+      geos.get(m).push(g); const b = { x0, y0, z0, x1, y1, z1, st: this.stat(m), kind: 'paint', off: true }; panels.push(b); this.add(b);
+    };
+    const DIRS = [[0, -1, 'N'], [0, 1, 'S'], [-1, 0, 'W'], [1, 0, 'E']];
+    for (let z = 1; z < LEVEL_ROWS - 1; z++) for (let x = 1; x < W - 1; x++) {
+      const c = grid[z][x]; if (c.kind !== 'floor' || !c.room) continue;
+      const ch = MAP[z][x], scheme = this.DRESS[ch]; if (!scheme) continue;
+      const corr = ch === '.';
+      for (const [ox, oz] of DIRS) {
+        const n = cellAt(x + ox, z + oz); if (n.kind !== 'wall') continue;
+        if (R() > (corr ? 0.16 : 0.5)) continue;
+        const [c1, c2, p] = scheme[R() < 0.62 ? 0 : 1], m = matOf(c1, c2, p), half = R() < 0.3, top = half ? 1.1 : Math.min(c.h - 0.25, 2.55), th = 0.035, inset = 0.02;
+        const x0 = x * CELL, z0 = z * CELL, x1 = x0 + CELL, z1 = z0 + CELL, w0 = 0.04;
+        if (ox === -1) box(m, x0 + inset, 0.02, z0 + w0, x0 + inset + th, top, z1 - w0, [1, top / 2]);
+        else if (ox === 1) box(m, x1 - inset - th, 0.02, z0 + w0, x1 - inset, top, z1 - w0, [1, top / 2]);
+        else if (oz === -1) box(m, x0 + w0, 0.02, z0 + inset, x1 - w0, top, z0 + inset + th, [1, top / 2]);
+        else box(m, x0 + w0, 0.02, z1 - inset - th, x1 - w0, top, z1 - inset, [1, top / 2]);
+      }
+    }
+    // rugs: one or two to a room, where there's floor all round
+    for (const ch of Object.keys(this.DRESS)) {
+      if (ch === '.') continue;
+      const cs = Hunt.inner(ch); if (!cs.length) continue;
+      const nR = cs.length > 30 ? 2 : 1;
+      for (let i = 0; i < nR; i++) {
+        const [x, z] = cs[Math.floor(R() * cs.length)], [c1, c2, p] = this.DRESS[ch][R() < 0.5 ? 1 : 0], m = matOf(c1, c2, p === 0 ? 1 : p), s = R() < 0.5 ? 1.5 : 1.15;
+        box(m, cc(x) - s, 0.011, cc(z) - s, cc(x) + s, 0.019, cc(z) + s, [s, s]);
+      }
+    }
+    this.dressMeshes = [];
+    for (const [m, list] of geos) { if (!list.length) continue; const mesh = new T.Mesh(mergeGeos(list), m); list.forEach(g => g.dispose()); mesh.receiveShadow = true; mesh.matrixAutoUpdate = false; mesh.updateMatrix(); mesh.visible = false; mesh.userData.lvl = 0; scene.add(mesh); this.dressMeshes.push(mesh); }
+    this.dress = panels;
+  },
+  showDress(on) {
+    if (on) this.buildDress();
+    if (!this.dressBuilt) return;
+    this.dressOn = on; for (const b of this.dress) b.off = !on; for (const m of this.dressMeshes) m.visible = on;
+  },
+};
+const _cmH1 = {}, _cmH2 = {}, _cmC1 = [0, 0, 0], _cmC2 = [0, 0, 0], _cmA = [0, 0, 0], _cmB = [0, 0, 0];
+// where on a mech an eye looks: its head, its chest (with the arms), its legs — and how much of the mech each is
+const CM_SAMPLE = [{ y: 1.02, w: 0.22, part: 'head' }, { y: 0.74, w: 0.45, part: 'body' }, { y: 0.27, w: 0.33, part: 'legs' }];
+/* How a mech at (ax, az) looks from an eye at o: per part — hidden behind something, or seen against what is behind it.
+   out: { vis (0..1 of the mech in view), de (CIEDE2000 + pattern), sil (0..1: open space behind it), dist, me, bg (hex: as seen) } */
+CamoWorld.look = function (ox, oy, oz, ax, az, crouch, P, out) {
+  const hs = crouch ? 0.64 : 1, Lp = this.light(ax, az);
+  let vis = 0, de = 0, sil = 0, dsum = 0, mr = 0, mg = 0, mb = 0, br = 0, bg = 0, bb = 0;
+  for (const s of CM_SAMPLE) {
+    const py = s.y * hs, dx = ax - ox, dy = py - oy, dz = az - oz, d = Math.hypot(dx, dy, dz); if (d < 0.05) continue;
+    const ux = dx / d, uy = dy / d, uz = dz / d;
+    if (d > 0.5 && this.ray(ox, oy, oz, ux, uy, uz, 0.05, d - 0.24, _cmH1)) continue; // (a desk, a doorframe, a crate in front of this part: it isn't seen)
+    vis += s.w; dsum += d * s.w;
+    const h = this.ray(ox, oy, oz, ux, uy, uz, d + 0.24, d + 45, _cmH2);
+    const ps = s.part === 'body' ? this.bodyStat(P) : this.paintStat(P[s.part]);
+    const pc = this.seen(ps, Lp, d, _cmC1);
+    let bc, gap, con = 0;
+    if (h) { bc = this.seen(h.st, this.light(h.x, h.z), h.t, _cmC2); gap = h.t - d; con = h.st.con; } else { bc = this.seen(this.GREY, 0, 99, _cmC2); gap = 45; }
+    const e = CamoColor.de(CamoColor.lab(pc[0], pc[1], pc[2], _cmA), CamoColor.lab(bc[0], bc[1], bc[2], _cmB)) + Math.abs(ps.con - con) * 0.35;
+    de += e * s.w; sil += clamp((gap - 1.2) / 6, 0, 1) * s.w;
+    mr += pc[0] * s.w; mg += pc[1] * s.w; mb += pc[2] * s.w; br += bc[0] * s.w; bg += bc[1] * s.w; bb += bc[2] * s.w;
+  }
+  out.vis = vis; out.light = Lp;
+  if (vis > 0) { out.de = de / vis; out.sil = sil / vis; out.dist = dsum / vis; out.me = CamoColor.hex(mr / vis, mg / vis, mb / vis); out.bg = CamoColor.hex(br / vis, bg / vis, bb / vis); }
+  else { out.de = 0; out.sil = 0; out.dist = Math.hypot(ax - ox, az - oz); out.me = out.bg = 0; }
+  return out;
+};
+/* how much the mech stands out (0: nothing to see … 3+: a beacon), from a look and how it's moving.
+   mv: 0 still (and settled), 1 just stopped / shuffling, 2 crouch-walking, 3 walking, 4 running; sp: a sudden lurch; paint: spraying */
+CamoWorld.conspic = function (L, mv, crouch, spike, paint) {
+  if (L.vis <= 0) return 0;
+  const deEff = L.de * 14 / (14 + Math.max(0, L.dist - 4)); // (the further off, the less a small difference shows)
+  const C = 1 - Math.exp(-Math.max(0, deEff - 2.5) / 11); // (under ~2.5 ΔE00 an eye can't tell them apart)
+  const lightK = 0.75 + 0.25 * clamp(L.light, 0, 1); // (the dark already shrinks the difference in Lab: this is only the last of it)
+  const motion = [0.85, 1.15, 1.7, 2.4, 3.6][mv] * (spike ? 1.4 : 1) * (paint ? 1.5 : 1);
+  const floor = mv >= 2 ? 0.12 : mv === 1 ? 0.04 : 0;
+  return clamp(((C + 0.32 * L.sil) * lightK + floor) * motion * (crouch ? 0.72 : 1) * clamp(L.vis / 0.8, 0, 1), 0, 3.5);
+};
+CamoWorld.grade = k => k < 0.16 ? 'EXCELLENT' : k < 0.42 ? 'GOOD' : 'POOR';
+
+/* ---- the mech: a chunky little paint robot. One per guard. ---- */
+const CMG = {
+  sph: new T.SphereGeometry(1, 18, 12), cyl: new T.CylinderGeometry(1, 1, 1, 16, 1, true), box: new T.BoxGeometry(1, 1, 1),
+  can: new T.CylinderGeometry(0.032, 0.032, 0.12, 12), cone: new T.ConeGeometry(1, 1, 12), ring: new T.TorusGeometry(1, 0.22, 8, 18),
+};
+function cmCapsule(r, len, mat) { // a limb hanging down from its joint: rounded at both ends
+  const g = new T.Group();
+  const c = new T.Mesh(CMG.cyl, mat); c.scale.set(r, len, r); c.position.y = -len / 2; g.add(c);
+  const a = new T.Mesh(CMG.sph, mat); a.scale.setScalar(r); g.add(a);
+  const b = new T.Mesh(CMG.sph, mat); b.scale.setScalar(r); b.position.y = -len; g.add(b);
+  g.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
+  return g;
+}
+function buildMech(P) {
+  const g = new T.Group(), U = g.userData; U.mats = {}; U.cvs = {}; U.key = {};
+  for (const k of CM_PARTS) { const cv = makeCanvas(64, 64), tex = mkTex(cv, true); tex.anisotropy = 1; U.cvs[k] = cv; U.mats[k] = new T.MeshPhongMaterial({ map: tex, shininess: 22, specular: 0x1c1c1c }); }
+  const M = U.mats, eyeM = new T.MeshPhongMaterial({ color: 0x0c0c0c, shininess: 80, specular: 0x555555 });
+  U.eyeM = eyeM;
+  const hips = new T.Group(); hips.position.y = 0.5; g.add(hips); U.hips = hips;
+  const pel = new T.Mesh(CMG.sph, M.body); pel.scale.set(0.16, 0.12, 0.13); hips.add(pel);
+  const torso = new T.Group(); hips.add(torso); U.torso = torso;
+  const chest = cmCapsule(0.175, 0.3, M.body); chest.position.y = 0.41; torso.add(chest);
+  const neck = new T.Group(); neck.position.y = 0.52; torso.add(neck); U.neck = neck;
+  const head = new T.Mesh(CMG.sph, M.head); head.scale.set(0.17, 0.158, 0.165); head.castShadow = true; neck.add(head); U.head = head;
+  for (const sd of [-1, 1]) { const e = new T.Mesh(CMG.sph, eyeM); e.scale.set(0.03, 0.036, 0.016); e.position.set(sd * 0.06, 0.02, -0.152); neck.add(e); }
+  U.acc = new T.Group(); neck.add(U.acc);
+  U.arms = [-1, 1].map(sd => {
+    const sh = new T.Group(); sh.position.set(sd * 0.245, 0.37, 0); torso.add(sh);
+    sh.add(cmCapsule(0.068, 0.19, M.arms));
+    const el = new T.Group(); el.position.y = -0.2; sh.add(el);
+    el.add(cmCapsule(0.064, 0.17, M.arms));
+    const hand = new T.Mesh(CMG.sph, M.arms); hand.scale.setScalar(0.078); hand.position.y = -0.2; el.add(hand);
+    return { sh, el, hand };
+  });
+  // the spray can, in the right hand
+  const can = new T.Group(); const body = new T.Mesh(CMG.can, new T.MeshPhongMaterial({ color: 0xb8bcc0, shininess: 70, specular: 0x666666 })); can.add(body);
+  const cap = new T.Mesh(CMG.sph, new T.MeshPhongMaterial({ color: 0xd03020 })); cap.scale.setScalar(0.03); cap.position.y = 0.07; can.add(cap);
+  can.position.set(0, -0.24, -0.03); can.rotation.x = -1.2; can.visible = false; U.arms[1].el.add(can); U.can = can;
+  U.legs = [-1, 1].map(sd => {
+    const hp = new T.Group(); hp.position.set(sd * 0.095, -0.02, 0); hips.add(hp);
+    hp.add(cmCapsule(0.088, 0.2, M.legs));
+    const kn = new T.Group(); kn.position.y = -0.22; hp.add(kn);
+    kn.add(cmCapsule(0.082, 0.18, M.legs));
+    const foot = new T.Mesh(CMG.sph, M.legs); foot.scale.set(0.09, 0.055, 0.13); foot.position.set(0, -0.215, -0.035); foot.castShadow = true; kn.add(foot);
+    return { hp, kn };
+  });
+  U.ph = 0; U.cr = 0; U.pk = 0; U.ck = 0; U.lean = 0; U.spd = 0;
+  paintMech(g, P);
+  return g;
+}
+// put a paint job on a mech (only the parts that changed are redrawn)
+function paintMech(g, P) {
+  const U = g.userData;
+  for (const k of CM_PARTS) {
+    const pp = P[k], key = pp.join('|'); if (U.key[k] === key) continue; U.key[k] = key;
+    cmDrawPat(U.cvs[k], pp[0], pp[1], pp[2]); U.mats[k].map.needsUpdate = true;
+  }
+  const hc = CamoColor.rgb(P.head[0]); U.eyeM.color.setRGB(hc[0] * 0.22, hc[1] * 0.22, hc[2] * 0.22); // (the eyes: the head's paint, in shadow)
+  if (U.accId !== P.acc) { U.accId = P.acc; cmAccessory(g, P.acc); }
+}
+function cmAccessory(g, id) {
+  const U = g.userData, A = U.acc; while (A.children.length) A.remove(A.children[0]);
+  const H = U.mats.head, B = U.mats.body, add = (geo, m, sx, sy, sz, x, y, z, rx) => { const o = new T.Mesh(geo, m); o.scale.set(sx, sy, sz); o.position.set(x, y, z); if (rx) o.rotation.x = rx; o.castShadow = true; A.add(o); return o; };
+  if (id === 'antenna') { add(CMG.cyl, H, 0.008, 0.16, 0.008, 0.06, 0.22, 0.02); add(CMG.sph, H, 0.03, 0.03, 0.03, 0.06, 0.3, 0.02); }
+  else if (id === 'visor') add(CMG.box, H, 0.25, 0.06, 0.06, 0, 0.035, -0.14);
+  else if (id === 'crest') add(CMG.box, H, 0.03, 0.12, 0.26, 0, 0.17, 0.02);
+  else if (id === 'tank') { const t = add(CMG.cyl, B, 0.08, 0.26, 0.08, 0, -0.32, 0.25); const c1 = add(CMG.sph, B, 0.08, 0.05, 0.08, 0, -0.19, 0.25); const c2 = add(CMG.sph, B, 0.08, 0.05, 0.08, 0, -0.45, 0.25); [t, c1, c2].forEach(o => { o.userData.tank = 1; }); }
+  else if (id === 'crown') { const r = add(CMG.ring, H, 0.11, 0.11, 0.11, 0, 0.15, 0); r.rotation.x = Math.PI / 2; for (let i = 0; i < 5; i++) { const a = i / 5 * TAU; add(CMG.cone, H, 0.025, 0.07, 0.025, Math.cos(a) * 0.11, 0.2, Math.sin(a) * 0.11); } }
+}
+/* pose a mech. s: { x, z, yaw, spd, crouch, paint (spraying), caught, still } */
+function poseMech(g, s, dt) {
+  const U = g.userData, t = Game.time;
+  g.position.set(s.x, 0, s.z); g.rotation.set(0, s.yaw, 0);
+  U.spd = damp(U.spd, s.spd, 10, dt);
+  const run = clamp((U.spd - 3) / 2, 0, 1), walk = clamp(U.spd / 2.4, 0, 1);
+  U.ph += dt * (U.spd > 0.15 ? 2.6 + U.spd * 1.25 : 0);
+  U.cr = damp(U.cr, s.crouch ? 1 : 0, 10, dt); U.pk = damp(U.pk, s.paint ? 1 : 0, 12, dt); U.ck = damp(U.ck, s.caught ? 1 : 0, 6, dt);
+  U.lean = damp(U.lean, run * 0.28 + U.cr * 0.18, 8, dt);
+  const sw = Math.sin(U.ph), amp = walk * (0.55 + run * 0.35), cr = U.cr, ck = U.ck;
+  const breathe = Math.sin(t * 2.1 + s.x) * 0.012 * (1 - walk);
+  U.hips.position.y = 0.5 - cr * 0.2 - ck * 0.3 + Math.abs(Math.cos(U.ph)) * 0.035 * walk + breathe * 0.5;
+  U.torso.rotation.set(-U.lean - ck * 0.35, Math.sin(U.ph) * 0.08 * walk, 0);
+  U.torso.scale.set(1, 1 + breathe, 1);
+  // (joints: +x swings a hanging limb forward — the mech faces -z)
+  U.neck.rotation.set(U.lean * 0.6 - ck * 0.55 - (s.still ? 0.04 : 0), 0, Math.sin(t * 0.7 + s.z) * 0.03 * (1 - walk));
+  U.legs.forEach((L, i) => {
+    const sd = i ? 1 : -1, ph = sw * sd;
+    if (ck > 0.5) { L.hp.rotation.set(1.45, 0, sd * 0.22); L.kn.rotation.x = -0.25; return; } // (slumped on the floor of a cage)
+    L.hp.rotation.set(ph * amp + cr * 1.05 + U.lean * 0.5, 0, sd * 0.04);
+    L.kn.rotation.x = -(Math.max(0, Math.cos(U.ph + (sd > 0 ? 0 : Math.PI))) * 0.95 * walk + cr * 1.9);
+  });
+  U.arms.forEach((A, i) => {
+    const sd = i ? 1 : -1;
+    if (i === 1 && U.pk > 0.02) { // spraying: arm up and out in front, can shaking
+      const k = U.pk; A.sh.rotation.set(1.3 * k - sw * amp * sd * (1 - k), Math.sin(t * 9) * 0.12 * k, 0.12 * k); A.el.rotation.x = 0.3 * k; return;
+    }
+    if (ck > 0.5) { A.sh.rotation.set(0.35, 0, sd * 0.3); A.el.rotation.x = 0.5; return; }
+    const tight = s.still ? 0.04 : 0.12; // (holding still: arms in against the body)
+    A.sh.rotation.set(-sw * amp * sd * 0.9 + run * 0.25 + cr * 0.3, 0, sd * (tight + run * 0.1));
+    A.el.rotation.x = 0.25 + run * 0.95 + cr * 0.35;
+  });
+  U.can.visible = U.pk > 0.25;
+}
+
+/* ================================================================== */
+/* Build 21: MECHA CAMO (part 2) — the mode                           */
+/*  Sublevel 6, lights on. You are a paint mech. Paint yourself to     */
+/*  match the walls, throw the breakers to power the surface lift,     */
+/*  and get out — while the Warden looks for anything that doesn't     */
+/*  belong. It sees colour (CIEDE2000 against what's behind you),      */
+/*  movement and open space; it hears you; it smells anyone who stays  */
+/*  in one place too long. It never sees through walls.                */
+/*  Online: the host runs the Warden, the breakers, the cages and the  */
+/*  clock; everyone's paint is checked by the host and sent to all.    */
+/* ================================================================== */
+const CAMO_DIFF = {
+  easy: { len: 600, prep: 30, need: 3, work: 2.5, rescue: 2.8, sniff: 70, scent: 45, recover: 6, range: 20, speed: 0.96 },
+  normal: { len: 540, prep: 25, need: 4, work: 3.0, rescue: 3.0, sniff: 55, scent: 35, recover: 5, range: 24, speed: 1 },
+  hard: { len: 480, prep: 20, need: 4, work: 3.5, rescue: 3.4, sniff: 46, scent: 28, recover: 4, range: 27, speed: 1.04 },
+  nightmare: { len: 450, prep: 15, need: 5, work: 4.0, rescue: 3.8, sniff: 38, scent: 22, recover: 3, range: 30, speed: 1.08 },
+};
+const CAMO_ROOMS = 'tbogakprdfmhl', CAMO_START = 's', CAMO_CAGE = 'c';
+const CAMO_KEY = 'lastshift.camo.v1';
+Object.assign(ABIL, {
+  sample: { id: 'sample', name: 'SAMPLE', icon: 'eye', cd: 0.6, desc: 'SAMPLE: read the colour of whatever you face (within 7 m) into your paint. [Q] then sprays it all over you; [B] opens the paint shop.' },
+  clatter: { id: 'clatter', name: 'CLATTER', icon: 'speaker', ult: true, cd: 22, first: 10, stam: 0, desc: 'CLATTER: lob an empty paint can up to 14 m. Where it lands it rattles — and the Warden goes to look.' },
+});
+const CAMO_CHAR = Object.assign({}, CHARS.guard, { id: 'guard', name: 'PAINT MECH', title: 'MECHA CAMO', col: '#d06a1e', ab: 'sample', ult: 'clatter', hp: 100, stam: 100, speed: 1, dmg: 0, regen: 1, rarity: null });
+const _cq1 = new T.Vector3(), _cq2 = new T.Vector3(), _cqLook = {}, _cqHit = {};
+
+const Camo = {
+  on: false, over: false, built: false, phase: 'prep', t: 0, huntT: 0,
+  D() { return CAMO_DIFF[Net.sessionDiff || settings.difficulty] || CAMO_DIFF.normal; },
+  host() { return !Net.isClient; },
+  me() { return Game.idOf(player); },
+  team() { return crew(); },
+  // in a cage, or out: the Warden has nothing to do with them
+  held(a) { const id = Game.idOf(a); return this.caught.has(id) || this.out.has(id); },
+  paintOf(a) { return this.paints.get(Game.idOf(a)) || this.defPaint; },
+  /* ---- saved: your last paint job and the accessory you wear (its own key: nothing else is touched) ---- */
+  load() {
+    let o = null; try { o = JSON.parse(localStorage.getItem(CAMO_KEY) || 'null'); } catch (e) { }
+    const P = cmCleanPaint(o && o.last, cmDefPaint());
+    if (!this.accOk(P.acc)) P.acc = 'antenna';
+    return P;
+  },
+  save(P) { try { localStorage.setItem(CAMO_KEY, JSON.stringify({ v: 1, last: P })); } catch (e) { } },
+  accOk(id) { const A = CM_ACC.find(o => o.id === id); return !!A && (!A.ach || !!(Goals.data.got && Goals.data.got[A.ach])); },
+  /* ---- built once ---- */
+  build() {
+    if (this.built) return; this.built = true;
+    CamoWorld.build();
+    const st = document.createElement('style'); st.id = 'camo-css'; st.textContent = CAMO_CSS; document.head.appendChild(st);
+    const hud = document.createElement('div'); hud.id = 'camo-hud';
+    hud.innerHTML = '<div class="cm-row"><span class="cm-lbl">CAMO</span><b id="cm-grade">—</b><span class="cm-bar"><i id="cm-bar"></i></span><span class="cm-sw" title="you, as seen"><i id="cm-me"></i></span><span class="cm-sw" title="behind you, as seen"><i id="cm-bg"></i></span></div><small id="cm-sub"></small><div id="cm-eye">IT\'S LOOKING YOUR WAY</div>';
+    document.body.appendChild(hud); this.hudEl = hud;
+    const tm = document.createElement('div'); tm.id = 'camo-team'; document.body.appendChild(tm); this.teamEl = tm;
+    const wn = document.createElement('div'); wn.id = 'camo-warn'; document.body.appendChild(wn); this.warnEl = wn;
+    const mk = document.createElement('div'); mk.id = 'camo-marks'; document.body.appendChild(mk); this.markEl = mk;
+    this.buildMenu();
+    // the breakers, the cages, the can you throw
+    this.panelMat = new T.MeshPhongMaterial({ color: 0x8a8e92, shininess: 40, specular: 0x333333 });
+    this.leverMat = new T.MeshPhongMaterial({ color: 0x1a1a1a, shininess: 30 });
+    this.ledOff = new T.MeshBasicMaterial({ color: 0xff3020 }); this.ledOn = new T.MeshBasicMaterial({ color: 0x40ff70 });
+    this.barMat = new T.MeshPhongMaterial({ color: 0x2c2f33, shininess: 60, specular: 0x555555 });
+    this.canMat = new T.MeshPhongMaterial({ color: 0xc8ccd0, shininess: 70, specular: 0x777777 });
+    this.can = new T.Mesh(CMG.can, this.canMat); this.can.scale.setScalar(1.6); this.can.visible = false; scene.add(this.can);
+    // first-person: your own chunky painted arms
+    this.vm = new T.Group(); this.vm.visible = false; vmScene.add(this.vm);
+    // the paint mist: a puff of colour from the can, every spray, on every screen
+    const N = 160, g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(new Float32Array(N * 3), 3)); g.setAttribute('color', new T.BufferAttribute(new Float32Array(N * 3), 3)); g.setDrawRange(0, 0);
+    this.mist = new T.Points(g, new T.PointsMaterial({ size: 0.055, vertexColors: true, transparent: true, opacity: 0.8, depthWrite: false })); this.mist.frustumCulled = false; this.mist.visible = false; scene.add(this.mist); this.mistN = N; this.mistP = [];
+  },
+  /* ---- a round ---- */
+  reset() {
+    if (this.menu) this.closeMenu(true);
+    for (const f of this.figs.values()) { scene.remove(f); }
+    this.figs.clear();
+    if (this.myFig) { scene.remove(this.myFig); this.myFig = null; }
+    for (const b of this.breakers) { scene.remove(b.g); if (b.glow) scene.remove(b.glow); }
+    for (const c of this.cages) scene.remove(c.g);
+    this.breakers = []; this.cages = []; this.swept = []; this.caught.clear(); this.out.clear(); this.works.clear(); this.paints.clear(); this.flights = [];
+    this.on = false; this.over = false; this.phase = 'prep'; this.t = 0; this.huntT = 0; this.got = 0; this.need = 0; this.open = false; this.released = false;
+    this.myWork = null; this.sprayT = 0; this.sprayDur = 0; this.tp = false; this.tpK = 0; this.camD = 2.5; this.hudT = 0; this.snapT = 0; this.sniffT = 30; this.said = {};
+    Monster.stareT = 0; this.stats = { caught: 0, freed: 0, sprays: 0, samples: 0, hunted: 0, bestK: 9, sumK: 0, nK: 0 }; this.huntedMe = false; this.freedBy = false; this.endT = 0;
+    if (this.off) { this.off.forEach(d => { d.enabled = true; }); this.off = null; }
+    this.mistP = []; if (this.mist) { this.mist.visible = false; this.mist.geometry.setDrawRange(0, 0); }
+    if (this.built) { this.hudEl.classList.remove('on'); this.teamEl.classList.remove('on'); this.teamEl.innerHTML = ''; this.warnEl.className = ''; this.markEl.innerHTML = ''; this.vm.visible = false; this.can.visible = false; }
+    for (const r of Net.remotes.values()) { r._cm = null; r._cmk = null; }
+    player._cm = null; player._cmk = null;
+    CamoWorld.showDress(false);
+    document.body.classList.remove('camo-on');
+    this.hudRedraw();
+  },
+  hudRedraw() { for (const id of ['abil', 'ult']) { const e = $(id); if (e) delete e.dataset.c; } if (UI.hudCache) { UI.hudCache.ab = null; UI.hudCache.ult = null; } },
+  start() {
+    this.build(); this.reset(); this.on = true; this.runId = (this.runId || 0) + 1;
+    const D = this.D(), p = player, rnd = Net.active ? mulberry32((Net.sessionSeed ^ 0xca3f) >>> 0) : Math.random;
+    this.nTeam = Math.max(1, this.team().length);
+    // the floor, lit, freshly painted; every door but the blast door open to anyone
+    Game.power = true; Sound.setHum && Sound.setHum(true);
+    fixtures.forEach(f => { if (f.type === 'main' && f.lvl === 0) { f.powerOnAt = Game.time + 0.6 + Math.hypot(f.pos.x - 8, f.pos.z - 48) / 22 + Math.random() * 0.4; f.on = f.mode !== 'dead'; } });
+    CamoWorld.showDress(true);
+    for (const d of doors) if (cellOf(d.cx, d.cz).lvl === 0 && d.type !== 'exit') d.unlocked = true;
+    const X = Hunt.exitDoor(); if (X) { X.unlocked = false; X.target = 0; X.t = 0; X.place && X.place(); }
+    // nothing to pick up, nowhere to hide but in plain sight
+    this.off = interactables.filter(d => d.enabled && d.kind !== 'door'); this.off.forEach(d => { d.enabled = false; });
+    p.hasFlash = false; p.flashState = false; p.maxHp = 100; p.health = 100; Chars.lastHp = 100; p.stamina = 1;
+    flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true;
+    Chars.cd = 0; Chars.ucd = ABIL.clatter.first; this.hudRedraw();
+    // you: in the Security Office, in your last paint job
+    const sc = Hunt.inner(CAMO_START), k = (Math.max(0, Net.myId) * 5 + 3) % Math.max(1, sc.length), s0 = sc[k] || [4, 24];
+    p.pos.set(cc(s0[0]), 0, cc(s0[1])); p.vel && p.vel.set(0, 0, 0); p.yaw = -Math.PI / 2; p.pitch = -0.05;
+    this.myPaint = this.load(); this.defPaint = cmDefPaint(); this.paints.set(this.me(), this.myPaint);
+    if (Net.active) this.sendPaint();
+    // the Warden: asleep in Containment until the prep is over
+    const cm = Hunt.centre(CAMO_CAGE) || [25, 4];
+    Monster.pos.set(cc(cm[0]), 0, cc(cm[1]) + 1); Monster.yaw = 0; if (Monster.model) Monster.model.visible = true;
+    Monster.active = false;
+    // the breakers: somewhere new every round (online: the same on every screen)
+    const sg = Hunt.centre(CAMO_START) || [4, 24];
+    const rooms = CAMO_ROOMS.split('').filter(ch => { const c = Hunt.centre(ch); return c && astar(sg[0], sg[1], c[0], c[1], guardPass); });
+    for (let i = rooms.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [rooms[i], rooms[j]] = [rooms[j], rooms[i]]; }
+    this.need = Math.min(7, D.need + this.nTeam - 1);
+    const spots = Math.min(rooms.length, this.need + 2);
+    for (const ch of rooms) { if (this.breakers.length >= spots) break; this.addBreaker(ch, rnd, sg); }
+    this.need = Math.min(this.need, this.breakers.length);
+    // the cages: in Containment, along the back wall
+    const cs = Hunt.inner(CAMO_CAGE).sort((a, b) => a[1] - b[1] || a[0] - b[0]), pick = [];
+    for (const c of cs) { if (pick.length >= 4) break; if (pick.every(q => Math.abs(q[0] - c[0]) + Math.abs(q[1] - c[1]) >= 2)) pick.push(c); }
+    pick.forEach(c => this.addCage(c));
+    this.speedK = D.speed * (1 + 0.04 * (this.nTeam - 1));
+    this.sniffT = D.sniff * 0.8;
+    this.hudEl.classList.add('on'); if (Net.active) this.teamEl.classList.add('on');
+    document.body.classList.add('camo-on');
+  },
+  addBreaker(ch, rnd, sg) {
+    const DIRS = [[0, -1], [0, 1], [-1, 0], [1, 0]], cells = [];
+    for (const [x, z] of (Hunt.rooms()[ch] || [])) {
+      if (!guardPass(x, z) || cellAt(x, z).kind !== 'floor') continue;
+      for (const [ox, oz] of DIRS) if (cellAt(x + ox, z + oz).kind === 'wall' && !CamoWorld.ray(cc(x), 0.9, cc(z), ox, 0, oz, 0.05, CELL / 2 - 0.2, _cqHit)) cells.push([x, z, ox, oz]);
+    }
+    const ok = cells.filter(([x, z]) => astar(sg[0], sg[1], x, z, guardPass)); if (!ok.length) return;
+    const [x, z, ox, oz] = ok[Math.floor(rnd() * ok.length)];
+    const wx = cc(x) + ox * (CELL / 2 - 0.09), wz = cc(z) + oz * (CELL / 2 - 0.09), g = new T.Group();
+    g.position.set(wx, 0, wz); g.rotation.y = Math.atan2(-ox, -oz) + Math.PI;
+    const box = new T.Mesh(CMG.box, this.panelMat); box.scale.set(0.52, 0.66, 0.14); box.position.y = 0.95; box.castShadow = true; g.add(box);
+    const lever = new T.Group(); lever.position.set(0, 0.95, -0.09); g.add(lever);
+    const arm = new T.Mesh(CMG.box, this.leverMat); arm.scale.set(0.06, 0.32, 0.06); arm.position.y = 0.14; lever.add(arm);
+    const knob = new T.Mesh(CMG.sph, new T.MeshPhongMaterial({ color: 0xd03020 })); knob.scale.setScalar(0.05); knob.position.y = 0.3; lever.add(knob);
+    lever.rotation.x = 0.6;
+    const led = new T.Mesh(CMG.sph, this.ledOff); led.scale.setScalar(0.03); led.position.set(0.17, 1.2, -0.075); g.add(led);
+    scene.add(g);
+    const glow = new T.Sprite(new T.SpriteMaterial({ map: TX.glow, color: 0xffa040, transparent: true, opacity: 0.5, depthWrite: false, blending: T.AdditiveBlending })); glow.scale.setScalar(0.8); glow.position.set(wx - ox * 0.12, 1.2, wz - oz * 0.12); scene.add(glow);
+    const fx = cc(x) - ox * 0.15, fz = cc(z) - oz * 0.15; // (where you stand to work it)
+    this.breakers.push({ i: this.breakers.length, room: ch, x: wx, z: wz, fx, fz, ox, oz, g, lever, led, glow, done: false, prog: 0 });
+  },
+  addCage(c) {
+    const x = cc(c[0]), z = cc(c[1]), g = new T.Group(); g.position.set(x, 0, z);
+    const parts = [], S = 0.62;
+    for (let i = 0; i <= 6; i++) { const u = -S + i * S * 2 / 6; for (const [px, pz] of [[u, -S], [u, S], [-S, u], [S, u]]) { const b = new T.CylinderGeometry(0.018, 0.018, 1.7, 6); b.translate(px, 0.85, pz); parts.push(b); } }
+    const top = new T.BoxGeometry(S * 2 + 0.06, 0.05, S * 2 + 0.06); top.translate(0, 1.72, 0); parts.push(top);
+    const base = new T.BoxGeometry(S * 2 + 0.06, 0.04, S * 2 + 0.06); base.translate(0, 0.02, 0); parts.push(base);
+    const m = new T.Mesh(mergeGeos(parts), this.barMat); parts.forEach(p => p.dispose()); m.castShadow = true; g.add(m); scene.add(g);
+    this.cages.push({ i: this.cages.length, x, z, g });
+  },
+  /* ---- how each mech is moving, how long it's been in one place (every screen keeps its own; the host's decide) ---- */
+  track(a, dt) {
+    const T0 = a._cm || (a._cm = { sp: 0, prev: 0, spike: 0, still: 0, ax: a.pos.x, az: a.pos.z, at: 0, scent: 0, lx: a.pos.x, lz: a.pos.z });
+    const raw = a === player ? Math.hypot(player.vel.x, player.vel.z) : (a.speed !== undefined ? a.speed : Math.hypot(a.pos.x - T0.lx, a.pos.z - T0.lz) / Math.max(dt, 1e-3));
+    T0.lx = a.pos.x; T0.lz = a.pos.z;
+    T0.prev = T0.sp; T0.sp = T0.sp * 0.6 + clamp(raw, 0, 9) * 0.4;
+    if (T0.sp - T0.prev > 0.9 && T0.sp > 2.2) T0.spike = 0.6; else T0.spike = Math.max(0, T0.spike - dt);
+    if (T0.sp < 0.15) T0.still += dt; else T0.still = 0;
+    if (Math.hypot(a.pos.x - T0.ax, a.pos.z - T0.az) > 2.5) { T0.ax = a.pos.x; T0.az = a.pos.z; T0.at = 0; } else T0.at += dt;
+    T0.scent = clamp((T0.at - 15) / this.D().scent, 0, 1);
+    return T0;
+  },
+  mv(a) { const T0 = a._cm; if (!T0) return 0; if (T0.sp < 0.15) return T0.still > 1 ? 0 : 1; return a.crouching ? 2 : T0.sp < 3.6 ? 3 : 4; },
+  spraying(a) { return a === player ? this.sprayT > 0 : (a._cmSpray || 0) > Game.time; },
+  // (host) how much this mech stands out to the Warden, right now (a few times a second)
+  kOf(M, a) {
+    const C = a._cmk || (a._cmk = { t: -9, k: 0, L: {} });
+    if (Game.time - C.t < 0.15) return C.k;
+    C.t = Game.time;
+    const L = CamoWorld.look(M.pos.x, M.eyeH(), M.pos.z, a.pos.x, a.pos.z, !!a.crouching, this.paintOf(a), C.L);
+    C.k = CamoWorld.conspic(L, this.mv(a), !!a.crouching, a._cm && a._cm.spike > 0, this.spraying(a));
+    return C.k;
+  },
+  // (host) the Warden's eye, in this mode
+  vis(M, a) {
+    if (this.held(a) || (a._cmGrace || 0) > Game.time || a.dead) return 0;
+    const D = this.D(), dx = a.pos.x - M.pos.x, dz = a.pos.z - M.pos.z, d = Math.hypot(dx, dz);
+    if (d > D.range + 2) return 0;
+    if (!losClear(M.pos.x, M.pos.z, a.pos.x, a.pos.z)) return 0;
+    if (a.inVent && d > 2.2) return 0;
+    const face = M.yaw + M.headYaw, fx = Math.sin(face), fz = Math.cos(face), cosA = d > 0.01 ? (dx * fx + dz * fz) / d : 1;
+    const fov = M.state === 'HUNT' || M.charging ? -0.2 : 0.42;
+    if (!(cosA > fov || d < 2.4)) return 0;
+    const range = D.range * (a.crouching ? 0.85 : 1); if (d > range) return 0;
+    if (d < 1.4) return 3; // (it walks right into you)
+    const k = this.kOf(M, a);
+    let v = Math.pow(1 - d / range, 0.6) * (cosA > 0.86 ? 1.25 : 1) * k * 0.6;
+    if (d < 3.2) v = Math.max(v, 2.2 * (1 - (d - 1.4) / 1.8 * 0.65) * clamp(k, 0.04, 1)); // (this close it can tell a painted wall from a painted mech — the closer, the surer)
+    return v < 0.06 ? 0 : v; // (below that, there's nothing there to see)
+  },
+  /* ---- every frame ---- */
+  update(dt) {
+    if (!this.on || this.over || Game.state !== 'playing') return;
+    this.t += dt;
+    const D = this.D(), p = player, me = this.me(), host = this.host();
+    for (const a of this.team()) this.track(a, dt);
+    // your spray
+    if (this.sprayT > 0) { this.sprayT -= dt; this.hissT = (this.hissT || 0) - dt; if (this.hissT <= 0) { this.hissT = 0.28; Sound.gasHiss(_cq1.set(p.pos.x, 0.9, p.pos.z)); } if (this.sprayT <= 0) this.sprayDone(); }
+    // holding [E] at a breaker or a cage
+    if (this.myWork) {
+      const w = this.myWork, tg = this.workPos(w.code);
+      if (!tg || !Keys.down('interact') || this.held(p) || Math.hypot(tg[0] - p.pos.x, tg[1] - p.pos.z) > 2.1) this.cancelWork();
+    }
+    for (const b of this.breakers) if (!b.done) b.glow.material.opacity = 0.35 + Math.sin(Game.time * 3 + b.x) * 0.15;
+    for (const F of this.flights) this.flight(F, dt);
+    this.flights = this.flights.filter(F => !F.done);
+    // where you are: caged, or out
+    if (this.caught.has(me)) { const c = this.cages[this.caught.get(me)]; if (c) { p.pos.x = c.x; p.pos.z = c.z; p.vel.set(0, 0, 0); } }
+    if (host) this.hostUpdate(dt);
+    this.hudT -= dt; if (this.hudT <= 0) { this.hudT = 0.25; this.evalHud(); }
+    this.hud(); this.warn(dt);
+  },
+  hostUpdate(dt) {
+    const D = this.D(), M = Monster;
+    if (this.phase === 'prep' && this.t >= D.prep) this.release();
+    if (this.released) {
+      this.huntT += dt;
+      M.throwCD = Game.time + 60; // (nothing thrown in this mode: it has to come and look)
+      // the nose: anyone who stays in one place too long gets smelled (it goes to the area — never the exact spot)
+      if (M.active && (M.state === 'PATROL' || M.state === 'SEARCH' || M.state === 'LOST')) { this.sniffT -= dt; if (this.sniffT <= 0) { this.sniffT = D.sniff * rand(0.8, 1.2) * Math.max(0.7, 1 - 0.06 * (this.nTeam - 1)); M.setState('SNIFF'); M.sniffT = 2.6; Game.emit({ k: 'cqn', x: +M.pos.x.toFixed(1), z: +M.pos.z.toFixed(1) }); } }
+      if (M.state === 'HUNT' && M.target) { const id = Game.idOf(M.target); if (!this.said['h' + id + '_' + M.huntCount]) { this.said['h' + id + '_' + M.huntCount] = 1; Game.emit({ k: 'cqhh', id }); } }
+    }
+    for (const r of Net.remotes.values()) if (r._cmPaintPend && Game.time - (r._cmPaintAt || -9) >= 0.3) this.hostPaint(r, r._cmPaintPend);
+    // the work: a breaker thrown, a cage opened — only if they stayed at it the whole time
+    for (const [id, w] of this.works) {
+      const a = w.a, tg = this.workPos(w.code);
+      if (!a || !tg || this.held(a) || !this.team().includes(a) || Math.hypot(tg[0] - a.pos.x, tg[1] - a.pos.z) > 2.6) { this.works.delete(id); continue; }
+      if (w.code < 100) { const b = this.breakers[w.code]; if (b.done) { this.works.delete(id); continue; } b.prog = Math.max(b.prog, (Game.time - w.t0) / w.dur); }
+      if (Game.time - w.t0 >= w.dur) { this.works.delete(id); if (w.code < 100) this.hostBreaker(w.code, a); else this.hostFree(w.code - 100, a); }
+    }
+    // the lift
+    if (this.open) for (const a of this.team()) { if (this.held(a)) continue; const c = cellOf(a.pos.x, a.pos.z); if (c.kind === 'lift' && EXIT_LIFTS.has(c.room)) this.hostEscape(a); }
+    // the clock
+    if (this.released && this.huntT >= D.len) { this.finish('time'); return; }
+    if (this.released && this.huntT >= D.len - 60 && !this.said.min) { this.said.min = 1; Game.emit({ k: 'cqm' }); }
+    this.endCheck();
+    this.snapT -= dt; if (Net.active && this.snapT <= 0) { this.snapT = 0.5; this.snap(); }
+  },
+  release() { // (host) the prep is over: it wakes
+    if (this.released) return;
+    this.released = true; this.phase = 'hunt';
+    Monster.activate(); Monster.pauseT = 2.2;
+    Game.emit({ k: 'cqgo' });
+  },
+  workPos(code) {
+    if (code < 100) { const b = this.breakers[code]; return b && !b.done ? [b.fx, b.fz] : null; }
+    const s = this.caught.get(code - 100); if (s === undefined) return null; const c = this.cages[s]; return c ? [c.x, c.z + 0.95] : null;
+  },
+  // what [E] would do right now (a breaker in front of you, a caged teammate)
+  target() {
+    const p = player; if (this.held(p)) return null;
+    const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw);
+    let best = null, bd = 1.8;
+    for (const b of this.breakers) { if (b.done || !this.released) continue; const dx = b.x - p.pos.x, dz = b.z - p.pos.z, d = Math.hypot(dx, dz); if (d < bd + 0.6 && (dx * fx + dz * fz) / (d || 1) > 0.2) { bd = d - 0.6; best = { code: b.i, text: 'HOLD — throw the breaker (' + this.D().work.toFixed(1) + 's) · it\'s loud' }; } }
+    for (const [id, s] of this.caught) { if (id === this.me()) continue; const c = this.cages[s]; if (!c) continue; const d = Math.hypot(c.x - p.pos.x, c.z - p.pos.z); if (d < 2) { best = { code: 100 + id, text: 'HOLD — free ' + Net.nameOf(id) + ' (' + this.D().rescue.toFixed(1) + 's) · the chains are loud' }; break; } }
+    return best;
+  },
+  beginWork(t) {
+    if (this.myWork || this.over) return;
+    this.myWork = { code: t.code, t0: Game.time, dur: t.code < 100 ? this.D().work : this.D().rescue };
+    if (t.code < 100) Sound.breaker(_cq1.set(player.pos.x, 1, player.pos.z)); else Sound.chains(_cq1.set(player.pos.x, 1, player.pos.z));
+    if (this.host()) this.hostWork(player, t.code); else Net.request('cqw', t.code);
+  },
+  cancelWork() { if (!this.myWork) return; this.myWork = null; if (this.host()) this.hostWork(player, -1); else Net.request('cqw', -1); },
+  hostWork(a, code) {
+    const id = Game.idOf(a);
+    if (code < 0) { this.works.delete(id); return; }
+    if (this.held(a) || this.over || this.works.has(id)) return;
+    const tg = this.workPos(code); if (!tg || Math.hypot(tg[0] - a.pos.x, tg[1] - a.pos.z) > 2.6) return;
+    if (code >= 100 && code - 100 === id) return;
+    const D = this.D();
+    this.works.set(id, { a, code, t0: Game.time, dur: code < 100 ? D.work : D.rescue });
+    Game.hearAt(_cq1.set(tg[0], 0, tg[1]), code < 100 ? 9 : 12, 'player', a); // (the lever grinds; the chains rattle)
+    Game.emit({ k: 'cqws', by: id, c: code });
+  },
+  hostBreaker(i, a) {
+    const b = this.breakers[i]; if (!b || b.done) return;
+    this.got++;
+    Game.emit({ k: 'cqb', i, by: Game.idOf(a), g: this.got });
+    Game.hearAt(_cq1.set(b.x, 0, b.z), 16, 'player', a); // CLUNK
+    if (this.got >= this.need && !this.open) Game.emit({ k: 'cqo' });
+  },
+  hostFree(id, by) {
+    if (!this.caught.has(id)) return;
+    Game.emit({ k: 'cqf', id, by: Game.idOf(by) });
+    const s = this.cages[this.caught.get(id)]; if (s) Game.hearAt(_cq1.set(s.x, 0, s.z), 18, 'player', by);
+  },
+  hostCapture(a) {
+    if (!this.on || this.over || this.held(a) || (a._cmGrace || 0) > Game.time) return;
+    const used = new Set(this.caught.values()); let s = 0; while (used.has(s) && s < this.cages.length - 1) s++;
+    const id = Game.idOf(a);
+    this.works.delete(id);
+    Game.emit({ k: 'cqc', id, s, x: +a.pos.x.toFixed(2), z: +a.pos.z.toFixed(2) });
+    const M = Monster; M.atk = null; M.attackHit = false; M.leaping = false; M.leapY = 0; M.vel.set(0, 0, 0); M.target = null; M.awareness = 0; M.recoverT = this.D().recover; M.setState('RECOVER');
+    this.endCheck();
+  },
+  hostEscape(a) { const id = Game.idOf(a); if (this.out.has(id)) return; this.works.delete(id); Game.emit({ k: 'cqe', id }); this.endCheck(); },
+  endCheck() {
+    if (this.over || !this.host()) return;
+    const team = this.team(); if (!team.length) return;
+    if (team.every(a => this.held(a))) this.finish('all');
+  },
+  finish(why) { // (host)
+    if (this.over) return;
+    const team = this.team(), outN = team.filter(a => this.out.has(Game.idOf(a))).length, won = outN >= 1 && outN >= Math.ceil(team.length / 2);
+    Game.emit({ k: 'cqr', w: won ? 1 : 0, why, o: [...this.out], c: [...this.caught.keys()], n: team.length, t: +this.huntT.toFixed(1), g: this.got });
+  },
+  snap() {
+    const b = this.breakers.map(B => B.done ? 100 : Math.round(clamp(B.prog, 0, 0.99) * 99));
+    const w = [...this.works.entries()].map(([id, W]) => [id, W.code, Math.round(clamp((Game.time - W.t0) / W.dur, 0, 1) * 100)]);
+    const m = { k: 'cqs', t: +this.t.toFixed(1), h: +this.huntT.toFixed(1), r: this.released ? 1 : 0, op: this.open ? 1 : 0, g: this.got, n: this.need, b, w, c: [...this.caught.entries()], o: [...this.out] };
+    this.snapN = (this.snapN || 0) + 1; if (this.snapN % 6 === 0) m.p = [...this.paints.entries()].filter(([id]) => this.team().some(a => Game.idOf(a) === id));
+    Game.emit(m);
+  },
+  /* ---- the mode's events (every screen) ---- */
+  event(ev) {
+    const me = this.me(), who = id => id === me ? 'You' : Net.nameOf(id);
+    switch (ev.k) {
+      case 'cqs': {
+        if (this.host()) return;
+        this.t = +ev.t || this.t; this.huntT = +ev.h || 0; this.got = ev.g | 0; this.need = (ev.n | 0) || this.need;
+        if (ev.r && !this.released) this.event({ k: 'cqgo' });
+        if (Array.isArray(ev.b)) ev.b.forEach((v, i) => { const B = this.breakers[i]; if (!B) return; if (v >= 100 && !B.done) this.event({ k: 'cqb', i, by: -9, g: this.got }); else if (!B.done) B.prog = clamp((v | 0) / 100, 0, 1); });
+        if (ev.op && !this.open) this.event({ k: 'cqo' });
+        if (Array.isArray(ev.c)) { const now = new Map(ev.c.filter(e => Array.isArray(e)).map(([id, s]) => [id | 0, s | 0])); for (const [id, s] of now) if (!this.caught.has(id)) this.event({ k: 'cqc', id, s }); for (const id of [...this.caught.keys()]) if (!now.has(id)) this.event({ k: 'cqf', id, by: -9 }); }
+        if (Array.isArray(ev.o)) for (const id of ev.o) if (!this.out.has(id | 0)) this.event({ k: 'cqe', id: id | 0 });
+        this.remoteWork = Array.isArray(ev.w) ? ev.w : [];
+        if (Array.isArray(ev.p)) for (const e of ev.p) if (Array.isArray(e) && (e[0] | 0) !== me) this.setPaint(e[0] | 0, e[1]);
+        return;
+      }
+      case 'cqgo': {
+        if (this.released && !this.host()) return;
+        this.released = true; this.phase = this.open ? 'open' : 'hunt';
+        UI.center('IT\'S AWAKE', 'Stay still against something your colour · throw the breakers · get to the lift', 3.8);
+        Sound.roar(1.3); Sound.sting(true); Game.shake(0.4);
+        UI.msg('Somewhere up in Containment, something tall gets up. It looks for anything that doesn\'t belong.', 'story', 5);
+        return;
+      }
+      case 'cqp': { if ((ev.id | 0) !== me) this.setPaint(ev.id | 0, ev.d); return; }
+      case 'cqsp': { if ((ev.id | 0) === me) return; const r = Net.remotes.get(ev.id | 0); if (r) { r._cmSpray = Game.time + clamp(+ev.d || 0.5, 0.2, 1.3); Sound.gasHiss(_cq1.set(r.pos.x, 0.9, r.pos.z)); } return; }
+      case 'cqws': { if ((ev.by | 0) === me) return; const tg = this.workPos(ev.c | 0); if (tg) { if ((ev.c | 0) < 100) Sound.breaker(_cq1.set(tg[0], 1, tg[1])); else Sound.chains(_cq1.set(tg[0], 1, tg[1])); } return; }
+      case 'cqb': {
+        const B = this.breakers[ev.i | 0]; if (!B || B.done) return;
+        B.done = true; B.prog = 1; B.led.material = this.ledOn; B.lever.rotation.x = -0.6; B.glow.visible = false;
+        if (!this.host()) this.got = Math.max(this.got, ev.g | 0);
+        if (this.myWork && this.myWork.code === B.i) this.myWork = null;
+        Sound.breaker(_cq1.set(B.x, 1, B.z)); Sound.metalHit(_cq1, 0.8);
+        const left = this.need - this.got;
+        if ((ev.by | 0) !== -9) UI.msg((ev.by | 0) === me ? 'CLUNK — the breaker\'s thrown. ' + (left > 0 ? left + ' more.' : 'That\'s all of them.') : who(ev.by | 0) + ' threw a breaker in the ' + ROOM_NAMES[ROOMDEF[B.room][0]] + '. ' + (left > 0 ? left + ' more.' : ''), left > 0 ? 'good' : 'good', 3.2);
+        UI.hudCache.obj = null;
+        return;
+      }
+      case 'cqo': {
+        if (this.open) return; this.open = true; this.phase = 'open';
+        const X = Hunt.exitDoor(); if (X) { X.unlocked = true; X.open(); }
+        UI.center('THE LIFT HAS POWER', 'The blast door is open — get to the Surface Lift, through the Lift Lobby', 4);
+        Sound.powerUp && Sound.powerUp(); Sound.sealOpen && Sound.sealOpen(_cq1.set(cc(36), 1.5, cc(21)));
+        UI.hudCache.obj = null;
+        return;
+      }
+      case 'cqc': {
+        const id = ev.id | 0, s = clamp(ev.s | 0, 0, Math.max(0, this.cages.length - 1));
+        if (this.caught.has(id)) return;
+        this.caught.set(id, s); this.stats.caught++;
+        if (this.myWork && (this.myWork.code === 100 + id || id === me)) this.myWork = null;
+        const c = this.cages[s];
+        if (id === me) {
+          if (this.menu) this.closeMenu(true);
+          this.sprayT = 0; this.myWork = null;
+          Sound.scream && Sound.scream(); Game.shake(0.9);
+          const f = $('fx-white'); if (f) { f.style.transition = 'none'; f.style.opacity = 0.8; requestAnimationFrame(() => { f.style.transition = 'opacity 1.2s'; f.style.opacity = 0; }); }
+          if (c) { player.pos.set(c.x, 0, c.z); player.yaw = Math.PI; }
+          UI.center('CAUGHT', Net.active && this.team().length > 1 ? 'It dragged you to a cage in Containment — your team can free you' : 'It dragged you back to Containment', 3);
+        } else {
+          Sound.scream && Sound.scream(); Sound.chains(_cq1.set(c ? c.x : 0, 1, c ? c.z : 0));
+          UI.msg(who(id) + ' was caught — locked in a cage in Containment. Hold ' + Keys.b('interact') + ' at the cage to free them.', 'warn', 4.5);
+        }
+        UI.hudCache.obj = null;
+        return;
+      }
+      case 'cqf': {
+        const id = ev.id | 0; if (!this.caught.has(id)) return;
+        const s = this.caught.get(id), c = this.cages[s]; this.caught.delete(id);
+        const by = ev.by | 0;
+        if (by === me && id !== me) { this.stats.freed++; Goals.unlock('camo_rescue'); }
+        if (this.myWork && this.myWork.code === 100 + id) this.myWork = null;
+        if (c) Sound.revived && Sound.revived(_cq1.set(c.x, 1, c.z));
+        const a = id === me ? player : Net.remotes.get(id); if (a) a._cmGrace = Game.time + 3;
+        if (id === me) { if (c) { player.pos.set(c.x, 0, c.z + 0.95); player.yaw = Math.PI; } UI.center('FREE', by !== -9 ? who(by) + ' opened the cage — go!' : 'The cage is open — go!', 2.4); }
+        else UI.msg(by === -9 ? who(id) + ' is free.' : (by === me ? 'You freed ' + who(id) + '.' : who(by) + ' freed ' + who(id) + '.'), 'good', 3.2);
+        UI.hudCache.obj = null;
+        return;
+      }
+      case 'cqe': {
+        const id = ev.id | 0; if (this.out.has(id)) return; this.out.add(id);
+        if (id === me) { if (this.menu) this.closeMenu(true); this.myWork = null; UI.center('YOU\'RE OUT', this.team().length > 1 ? 'Wait in the lift for the others — or for the timer' : 'The lift rises', 3); Sound.liftRise && Sound.liftRise(); }
+        else UI.msg(who(id) + ' made it into the Surface Lift.', 'good', 3.4);
+        UI.hudCache.obj = null;
+        return;
+      }
+      case 'cqx': { // a paint can, thrown
+        const by = ev.by | 0, a = by === me ? player : Net.remotes.get(by), fx = a ? a.pos.x : +ev.x, fz = a ? a.pos.z : +ev.z;
+        this.flights.push({ x0: fx, z0: fz, x1: clamp(+ev.x || 0, 0, W * CELL), z1: clamp(+ev.z || 0, 0, LEVEL_ROWS * CELL), t: 0, dur: 0.6, done: false, host: this.host() });
+        if (by !== me) Sound.decoyThrow && Sound.decoyThrow();
+        return;
+      }
+      case 'cqn': { // it sniffs the air
+        const x = +ev.x || 0, z = +ev.z || 0, d = Math.hypot(x - player.pos.x, z - player.pos.z);
+        Sound.breathM(1.5); setTimeout(() => { if (this.on) Sound.breathM(1.3); }, 700);
+        if (d < 24 && !this.held(player)) UI.msg('A long, wet sniff — it\'s smelling the air. Anyone who\'s stayed in one place too long…', 'warn', 3.4);
+        return;
+      }
+      case 'cqns': { if ((ev.id | 0) === me) { UI.msg('It caught your scent — you\'ve been in one place too long. MOVE.', 'warn', 3.6); Sound.sting(false); } return; }
+      case 'cqhh': { if ((ev.id | 0) === me) { this.huntedMe = true; this.stats.hunted++; } return; }
+      case 'cqm': { UI.msg('One minute to lockdown. Whoever isn\'t in the lift stays down here.', 'warn', 4.5); Sound.lockdown && Sound.lockdown(_cq1.set(player.pos.x, 2, player.pos.z)); return; }
+      case 'cqr': { this.result(ev); return; }
+    }
+  },
+  setPaint(id, d) {
+    const P = cmCleanPaint(d, this.paints.get(id) || this.defPaint);
+    this.paints.set(id, P);
+    const f = this.figs.get(id); if (f) paintMech(f, P);
+    const a = Net.remotes.get(id); if (a) a._cmk = null;
+  },
+  sendPaint() {
+    const P = this.myPaint;
+    if (this.host()) Game.emit({ k: 'cqp', id: this.me(), d: P }); else Net.request('cqp', 0, P);
+  },
+  // (host) a guest's request
+  remote(r, a, i, x) {
+    if (!r || !this.on || this.over || Game.mode !== 'camo' || Net.isClient) return;
+    const now = Game.time;
+    if (a === 'cqp') { if (now - (r._cmPaintAt || -9) < 0.3) { r._cmPaintPend = x; return; } this.hostPaint(r, x); return; } // (too soon after the last: kept, and applied in a moment — never dropped)
+    if (a === 'cqsp') { if (this.held(r) || now - (r._cmSprayAt || -9) < 0.4) return; r._cmSprayAt = now; const d = clamp(i / 10, 0.3, 1.2); r._cmSpray = now + d; Game.hearAt(_cq1.set(r.pos.x, 0, r.pos.z), 6, 'player', r); Game.emit({ k: 'cqsp', id: r.id, d }); return; }
+    if (a === 'cqw') { this.hostWork(r, Number.isInteger(i) ? i : -1); return; }
+    if (a === 'cqx') { if (x && typeof x === 'object') this.hostClatter(r, +x.x, +x.z); return; }
+  },
+  hostPaint(r, x) { r._cmPaintAt = Game.time; r._cmPaintPend = null; const P = cmCleanPaint(x, this.paints.get(r.id) || this.defPaint); this.paints.set(r.id, P); r._cmk = null; Game.emit({ k: 'cqp', id: r.id, d: P }); },
+  /* ---- the paint can: [X] ---- */
+  clatter() {
+    const p = player; if (this.held(p) || !this.released) { UI.msg(this.released ? 'Not now.' : 'It\'s still asleep — save it.', '', 1.8); return false; }
+    const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), ey = p.eyeY;
+    const h = CamoWorld.ray(p.pos.x, ey, p.pos.z, fx, 0, fz, 0.3, 14, _cqHit), d = h ? Math.max(0.6, h.t - 0.5) : 14;
+    let x = p.pos.x + fx * d, z = p.pos.z + fz * d;
+    if (!isWalkKind(cellOf(x, z))) { x = p.pos.x + fx * Math.max(0.6, d - 1.5); z = p.pos.z + fz * Math.max(0.6, d - 1.5); }
+    Sound.decoyThrow && Sound.decoyThrow();
+    if (this.host()) this.hostClatter(p, x, z); else Net.request('cqx', 0, { x: +x.toFixed(2), z: +z.toFixed(2) });
+    return true;
+  },
+  hostClatter(a, x, z) {
+    if (!Number.isFinite(x) || !Number.isFinite(z) || this.held(a)) return;
+    if (a !== player) { if (Game.time - (a._cmClat === undefined ? -1e9 : a._cmClat) < ABIL.clatter.cd * 0.8 - 0.5) return; a._cmClat = Game.time; }
+    if (Math.hypot(x - a.pos.x, z - a.pos.z) > 15.5 || !isWalkKind(cellOf(x, z)) || cellOf(x, z).lvl !== 0) return;
+    Game.emit({ k: 'cqx', x: +x.toFixed(2), z: +z.toFixed(2), by: Game.idOf(a) });
+  },
+  flight(F, dt) {
+    F.t += dt; const k = clamp(F.t / F.dur, 0, 1);
+    this.can.visible = k < 1; this.can.position.set(lerp(F.x0, F.x1, k), 1.0 + Math.sin(k * Math.PI) * 1.4 - k * 0.8, lerp(F.z0, F.z1, k)); this.can.rotation.set(F.t * 14, F.t * 9, 0);
+    if (k >= 1 && !F.done) {
+      F.done = true; this.can.visible = false;
+      const pos = _cq2.set(F.x1, 0.1, F.z1);
+      Sound.decoyLand && Sound.decoyLand(pos); Sound.metalHit(pos, 0.6); setTimeout(() => { if (this.on) Sound.metalHit(_cq2.set(F.x1, 0.1, F.z1), 0.4); }, 260);
+      if (F.host && this.host()) Game.hearAt(pos, 22, 'event');
+    }
+  },
+  /* ---- [F]: SAMPLE what you face ---- */
+  sample(ox, oy, oz, dx, dy, dz, maxD) {
+    const p = player; if (this.held(p)) return false;
+    if (ox === undefined) { const f = p.forward(_cq1); ox = p.pos.x; oy = p.eyeY; oz = p.pos.z; dx = f.x; dy = f.y; dz = f.z; maxD = 7; }
+    const h = CamoWorld.ray(ox, oy, oz, dx, dy, dz, 0.05, maxD || 7, _cqHit);
+    if (!h || Math.hypot(h.x - p.pos.x, h.z - p.pos.z) > 8.5) { UI.msg('Nothing close enough to sample.', '', 1.6); Sound.abDeny(); return false; }
+    const hex = CamoColor.hex(h.st.r, h.st.g, h.st.b), busy = h.st.con > 9;
+    this.sampled = { hex, con: h.st.con, kind: h.kind, room: h.room };
+    this.seen = [hex].concat((this.seen || []).filter(c => c !== hex)).slice(0, 8);
+    this.stats.samples++;
+    Sound.click && Sound.click();
+    const rn = h.room && ROOM_NAMES[h.room] ? ' (' + ROOM_NAMES[h.room] + ')' : '', where = (h.kind === 'paint' ? 'the paint on the wall' : h.kind === 'prop' ? 'the furniture' : 'the ' + h.kind) + rn;
+    if (this.menu) this.menuPick(hex);
+    else UI.msg('Sampled ' + where + ': ' + CamoColor.css(hex).toUpperCase() + (busy ? ' — a busy surface: a pattern will sit on it better' : '') + '. ' + Keys.b('nextWeapon') + ' sprays it on · [B] paint shop.', '', 3.4);
+    return true;
+  },
+  /* ---- spraying: quick ([Q]: all over, in the last sampled colour), or from the paint shop ---- */
+  quickSpray() {
+    if (!this.sampled) { UI.msg('Sample a colour first: face a wall and press ' + Keys.b('ability') + '.', '', 2.4); Sound.abDeny(); return; }
+    const P = cmClonePaint(this.myPaint), c = this.sampled.hex;
+    for (const k of CM_PARTS) P[k] = [c, P[k][1], 0];
+    this.spray(P, CM_PARTS);
+  },
+  spray(P, parts) {
+    if (this.sprayT > 0 || this.held(player) || this.over) return false;
+    const dur = parts.length >= 4 ? 1.1 : 0.45 * parts.length;
+    this.sprayT = dur; this.sprayDur = dur; this.sprayNext = P; this.hissT = 0;
+    this.stats.sprays++;
+    if (this.host()) { Game.noise(player.pos, 6, 'player'); if (Net.active) Game.emit({ k: 'cqsp', id: this.me(), d: dur }); }
+    else Net.request('cqsp', Math.round(dur * 10));
+    return true;
+  },
+  sprayDone() {
+    this.sprayT = 0; const P = this.sprayNext; this.sprayNext = null; if (!P) return;
+    this.myPaint = P; this.paints.set(this.me(), P); this.save(P); player._cmk = null;
+    if (this.myFig) paintMech(this.myFig, P);
+    if (Net.active) this.sendPaint();
+    if (this.menu) this.menuSync();
+    UI.hudCache.ab = null; this.hudT = 0;
+  },
+  /* ---- the paint shop ([B]) ---- */
+  buildMenu() {
+    const el = document.createElement('div'); el.id = 'camo-paint';
+    const parts = ['all'].concat(CM_PARTS).map(k => '<button data-part="' + k + '">' + (k === 'all' ? 'ALL' : CM_PART_NAMES[k]) + '</button>').join('');
+    const pats = CM_PATS.map((n, i) => '<button data-pat="' + i + '">' + n + '</button>').join('');
+    const sw = CM_SWATCH.map(c => '<i data-c="' + c + '" style="background:' + CamoColor.css(c) + '"></i>').join('');
+    el.innerHTML = '<div class="cp-panel"><div class="cp-h">PAINT SHOP<small>drag to turn the camera · scroll to zoom · click anything near you to sample it</small></div>'
+      + '<div class="cp-parts">' + parts + '</div>'
+      + '<div class="cp-pick"><canvas id="cp-sv" width="176" height="104"></canvas><canvas id="cp-hue" width="16" height="104"></canvas><div class="cp-wells"><button class="well sel" data-w="0"><i id="cp-wa"></i>MAIN</button><button class="well" data-w="1"><i id="cp-wb"></i>2ND</button><span id="cp-hex"></span></div></div>'
+      + '<div class="cp-mix"><span>MIX</span><input type="range" id="cp-mix" min="0" max="100" value="0"><b id="cp-mixv">0%</b><i id="cp-res"></i></div>'
+      + '<div class="cp-sw">' + sw + '</div><div class="cp-seen"><span>SAMPLED</span><span id="cp-seen"></span></div>'
+      + '<div class="cp-pats">' + pats + '</div><div class="cp-acc" id="cp-acc"></div>'
+      + '<div class="cp-match" id="cp-match"></div>'
+      + '<div class="cp-btns"><button id="cp-sample">SAMPLE WHAT YOU FACE</button><button id="cp-spray" class="go">SPRAY [SPACE]</button><button id="cp-done">DONE [B]</button></div><div class="cp-prog"><i id="cp-prog"></i></div></div>';
+    document.body.appendChild(el); this.menuEl = el;
+    const stop = e => e.stopPropagation();
+    el.querySelector('.cp-panel').addEventListener('mousedown', stop); el.querySelector('.cp-panel').addEventListener('wheel', stop);
+    el.querySelectorAll('[data-part]').forEach(b => b.addEventListener('click', () => { this.ed.part = b.dataset.part; this.menuSync(); Sound.ui(); }));
+    el.querySelectorAll('[data-pat]').forEach(b => b.addEventListener('click', () => { this.ed.pat = +b.dataset.pat; this.menuSync(); Sound.ui(); }));
+    el.querySelectorAll('.well').forEach(b => b.addEventListener('click', () => { this.ed.well = +b.dataset.w; this.menuSync(); }));
+    el.querySelectorAll('.cp-sw i').forEach(b => b.addEventListener('click', () => { this.menuPick(+b.dataset.c); }));
+    $('cp-mix').addEventListener('input', e => { this.ed.mix = clamp(+e.target.value / 100, 0, 1); this.menuSync(); });
+    $('cp-sample').addEventListener('click', () => { this.sample(); });
+    $('cp-spray').addEventListener('click', () => { this.menuSpray(); });
+    $('cp-done').addEventListener('click', () => { this.closeMenu(); });
+    const sv = $('cp-sv'), hue = $('cp-hue');
+    const svAt = e => { const r = sv.getBoundingClientRect(), s = clamp((e.clientX - r.left) / r.width, 0, 1), v = 1 - clamp((e.clientY - r.top) / r.height, 0, 1); this.ed.hsv[1] = s; this.ed.hsv[2] = v; this.menuPick(CamoColor.hsv(this.ed.hsv[0], s, v), true); };
+    const hueAt = e => { const r = hue.getBoundingClientRect(); this.ed.hsv[0] = clamp((e.clientY - r.top) / r.height, 0, 0.999); this.menuPick(CamoColor.hsv(this.ed.hsv[0], this.ed.hsv[1], this.ed.hsv[2]), true); };
+    let dragSV = false, dragH = false;
+    sv.addEventListener('mousedown', e => { dragSV = true; svAt(e); }); hue.addEventListener('mousedown', e => { dragH = true; hueAt(e); });
+    window.addEventListener('mousemove', e => { if (dragSV) svAt(e); else if (dragH) hueAt(e); });
+    window.addEventListener('mouseup', () => { dragSV = dragH = false; });
+    // the view: drag to orbit the camera round your mech, click to sample, scroll to zoom
+    let down = null;
+    el.addEventListener('mousedown', e => { if (e.target !== el) return; down = { x: e.clientX, y: e.clientY, moved: 0 }; e.preventDefault(); });
+    window.addEventListener('mousemove', e => { if (!down || !this.menu) return; const dx = e.clientX - down.x, dy = e.clientY - down.y; down.moved += Math.abs(dx) + Math.abs(dy); down.x = e.clientX; down.y = e.clientY; this.orbYaw -= dx * 0.008 * (settings.sens || 1); this.orbPitch = clamp(this.orbPitch - dy * 0.006 * (settings.sens || 1), -0.9, 0.7); });
+    window.addEventListener('mouseup', e => { if (!down) return; const click = down.moved < 5; down = null; if (click && this.menu && e.target === el) this.sampleAt(e.clientX, e.clientY); });
+    el.addEventListener('wheel', e => { if (!this.menu) return; this.orbD = clamp(this.orbD + Math.sign(e.deltaY) * 0.25, 1.3, 4.2); e.preventDefault(); }, { passive: false });
+  },
+  openMenu() {
+    if (this.menu || this.over || this.held(player) || Game.state !== 'playing' || Cine.locks()) return;
+    if (this.myWork) this.cancelWork();
+    const P = this.myPaint, c = P.body[0];
+    this.ed = this.ed || { part: 'all', pat: P.body[2], well: 0, mix: 0, a: c, b: P.body[1], hsv: CamoColor.toHsv(c) };
+    this.ed.acc = P.acc;
+    this.menu = true; this.orbYaw = player.yaw + Math.PI * 0.85; this.orbPitch = -0.12; this.orbD = this.orbD || 2.3;
+    this.menuEl.classList.add('on'); Input.exitLock(); Sound.ui();
+    this.menuSync(); this.drawPicker();
+  },
+  closeMenu(silent) {
+    if (!this.menu) return;
+    this.menu = false; this.menuEl.classList.remove('on');
+    if (this.myFig) paintMech(this.myFig, this.myPaint);
+    if (!silent && Game.state === 'playing' && !Input.dragLook) Input.requestLock();
+  },
+  // the paint as it would be if you sprayed now (what the preview shows)
+  edPaint() {
+    const E = this.ed, P = cmClonePaint(this.myPaint), main = E.mix > 0 ? CamoColor.mix(E.a, E.b, E.mix) : E.a, parts = E.part === 'all' ? CM_PARTS : [E.part];
+    for (const k of parts) P[k] = [main, E.b, E.pat];
+    P.acc = E.acc && this.accOk(E.acc) ? E.acc : this.myPaint.acc;
+    return { P, parts };
+  },
+  menuPick(hex, fromPicker) {
+    if (!this.ed) return;
+    if (this.ed.well === 0) this.ed.a = hex; else this.ed.b = hex;
+    if (!fromPicker) { this.ed.hsv = CamoColor.toHsv(hex); this.drawPicker(); }
+    this.menuSync();
+  },
+  menuSpray() { if (!this.menu) return; const { P, parts } = this.edPaint(); this.spray(P, parts); },
+  // an accessory: on at once (it's never what gives you away — it wears your head's paint)
+  wear(id) { if (!this.accOk(id) || this.over) return; this.ed.acc = id; const P = cmClonePaint(this.myPaint); P.acc = id; this.myPaint = P; this.paints.set(this.me(), P); this.save(P); if (Net.active) this.sendPaint(); this.menuSync(); Sound.ui(); },
+  sampleAt(cx, cy) {
+    const ndc = _cq1.set(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1, 0.5).unproject(camera).sub(camera.position).normalize();
+    this.sample(camera.position.x, camera.position.y, camera.position.z, ndc.x, ndc.y, ndc.z, 12);
+  },
+  drawPicker() {
+    const sv = $('cp-sv'), hue = $('cp-hue'); if (!sv || !this.ed) return;
+    const g = sv.getContext('2d'), w = sv.width, h = sv.height, base = CamoColor.css(CamoColor.hsv(this.ed.hsv[0], 1, 1));
+    g.fillStyle = base; g.fillRect(0, 0, w, h);
+    let gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#fff'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, '#000'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.arc(this.ed.hsv[1] * w, (1 - this.ed.hsv[2]) * h, 5, 0, TAU); g.stroke();
+    const hg = hue.getContext('2d'); for (let y = 0; y < hue.height; y++) { hg.fillStyle = CamoColor.css(CamoColor.hsv(y / hue.height, 1, 1)); hg.fillRect(0, y, hue.width, 1); }
+    hg.fillStyle = '#fff'; hg.fillRect(0, this.ed.hsv[0] * hue.height - 1, hue.width, 2);
+  },
+  menuSync() {
+    if (!this.menuEl || !this.ed) return;
+    const E = this.ed, el = this.menuEl;
+    el.querySelectorAll('[data-part]').forEach(b => b.classList.toggle('sel', b.dataset.part === E.part));
+    el.querySelectorAll('[data-pat]').forEach(b => b.classList.toggle('sel', +b.dataset.pat === E.pat));
+    el.querySelectorAll('.well').forEach(b => b.classList.toggle('sel', +b.dataset.w === E.well));
+    $('cp-wa').style.background = CamoColor.css(E.a); $('cp-wb').style.background = CamoColor.css(E.b);
+    $('cp-hex').textContent = CamoColor.css(E.well ? E.b : E.a).toUpperCase();
+    $('cp-mixv').textContent = Math.round(E.mix * 100) + '%'; $('cp-mix').value = Math.round(E.mix * 100);
+    $('cp-res').style.background = CamoColor.css(E.mix > 0 ? CamoColor.mix(E.a, E.b, E.mix) : E.a);
+    $('cp-seen').innerHTML = (this.seen || []).map(c => '<i data-c="' + c + '" style="background:' + CamoColor.css(c) + '"></i>').join('') || '<em>press SAMPLE, or click a wall</em>';
+    $('cp-seen').querySelectorAll('i').forEach(b => b.addEventListener('click', () => this.menuPick(+b.dataset.c)));
+    $('cp-acc').innerHTML = '<span>WEAR</span>' + CM_ACC.map(o => { const ok = this.accOk(o.id); return '<button data-acc="' + o.id + '"' + (ok ? '' : ' disabled title="' + escHtml(o.how) + '"') + (E.acc === o.id ? ' class="sel"' : '') + '>' + o.name + (ok ? '' : ' 🔒') + '</button>'; }).join('');
+    $('cp-acc').querySelectorAll('button[data-acc]').forEach(b => b.addEventListener('click', () => { if (b.disabled) return; this.wear(b.dataset.acc); }));
+    const { P } = this.edPaint();
+    if (this.myFig) paintMech(this.myFig, P); // (the live preview: on you, now — what everyone else sees changes when you spray)
+    this.previewP = P; this.hudT = 0;
+  },
+  /* ---- the camouflage meter: how well you blend in where you stand, from the places an eye could be ---- */
+  evalHud() {
+    const p = player; if (!this.on) return;
+    const P = this.menu && this.previewP ? this.previewP : this.myPaint, mv = this.menu ? 0 : this.mv(p), cr = !!p.crouching;
+    let ks = 0, n = 0, des = 0, me = 0, bg = 0, best = null;
+    for (const R of [6.5, 3.5]) {
+      for (let i = 0; i < 8; i++) {
+        const a = i / 8 * TAU, ox = p.pos.x + Math.cos(a) * R, oz = p.pos.z + Math.sin(a) * R, c = cellOf(ox, oz);
+        if (!isWalkKind(c) || c.lvl !== 0 || c.h < 2 || !losClear(ox, oz, p.pos.x, p.pos.z)) continue;
+        const L = CamoWorld.look(ox, 1.9, oz, p.pos.x, p.pos.z, cr, P, _cqLook); if (L.vis <= 0) continue;
+        const k = CamoWorld.conspic(L, mv, cr, false, !this.menu && this.sprayT > 0);
+        ks += k; des += L.de; n++; if (!best || L.de > best.de) best = { de: L.de, me: L.me, bg: L.bg };
+      }
+      if (n >= 2) break;
+    }
+    const k = n ? ks / n : 0, de = n ? des / n : 0;
+    this.hudK = k; this.hudDe = de; this.hudBest = best;
+    if (!this.menu && this.released && !this.held(p)) { this.stats.sumK += k; this.stats.nK++; }
+    // the meter
+    const g = n ? CamoWorld.grade(k) : 'HIDDEN', el = $('cm-grade');
+    el.textContent = g; el.className = 'g-' + g.toLowerCase();
+    $('cm-bar').style.width = (n ? clamp(1 - k / 1.2, 0.03, 1) * 100 : 100) + '%'; $('cm-bar').className = 'g-' + g.toLowerCase();
+    if (best) { $('cm-me').style.background = CamoColor.css(best.me); $('cm-bg').style.background = CamoColor.css(best.bg); }
+    const T0 = p._cm || {}, still = ['STILL', 'SETTLING', 'SNEAKING', 'MOVING', 'RUNNING'][mv], sc = T0.scent || 0;
+    $('cm-sub').textContent = still + (cr ? ' · LOW' : '') + (this.sprayT > 0 ? ' · SPRAYING' : '') + ' · ΔE ' + de.toFixed(1) + (sc > 0.05 ? ' · SCENT ' + '▮'.repeat(Math.ceil(sc * 5)) + '▯'.repeat(5 - Math.ceil(sc * 5)) : '');
+    if (this.menu) { const m = $('cp-match'); if (m) m.innerHTML = 'STANDING STILL HERE: <b class="g-' + g.toLowerCase() + '">' + g + '</b> · ΔE<sub>00</sub> ' + de.toFixed(1) + (best ? ' <i style="background:' + CamoColor.css(best.me) + '" title="you"></i><i style="background:' + CamoColor.css(best.bg) + '" title="behind you"></i>' : '') + '<br><small>Measured against what\'s behind you from 8 directions, lit as it is lit. Move and it changes.</small>'; }
+  },
+  watched() { // is the Warden's eye on you right now? (the host knows; a guest reads the host's word)
+    const M = Monster; if (!M.active || this.held(player)) return false;
+    if (this.host()) return M.seeing && M.target === player && M.awareness > 0.12 && M.state !== 'HUNT';
+    return M.seeing && M.targetId === this.me() && M.state !== 'HUNT';
+  },
+  warn(dt) {
+    const M = Monster, me = this.me(), tg = this.host() ? M.target === player : M.targetId === me;
+    const atk = M.active && M.state === 'ATTACK' && tg;
+    if (atk && !this.atkSaid) { this.atkSaid = true; Sound.atkWarn && Sound.atkWarn(); }
+    if (!atk) this.atkSaid = false;
+    const cls = atk ? 'atk' : this.watched() ? 'eye' : M.active && M.state === 'HUNT' && tg ? 'hunt' : '';
+    if (this.warnEl.className !== cls) this.warnEl.className = cls;
+    const ey = $('cm-eye'); if (ey) ey.classList.toggle('on', cls === 'eye');
+  },
+  /* ---- the camera: first person, or [Shift] over the shoulder; the paint shop orbits you ---- */
+  toggleTp() { if (this.held(player) && !this.tp) return; this.tp = !this.tp; Sound.ui(); UI.msg(this.tp ? 'Shift-lock camera: over the shoulder. ' + '[Shift] again for first person.' : 'First person.', '', 1.6); },
+  camView(dt, fov) {
+    const p = player, menu = !!this.menu;
+    this.tpK = damp(this.tpK, (this.tp || menu) ? 1 : 0, 8, dt);
+    if (this.tpK < 0.01 && !menu) { this.camOn = false; return null; }
+    this.camOn = true;
+    const hx = p.pos.x, hz = p.pos.z, hy = (p.crouching ? 0.74 : 1.08) - (menu ? 0.28 : 0);
+    const yaw = menu ? this.orbYaw : p.yaw, pitch = menu ? this.orbPitch : clamp(p.pitch, -1.1, 1.0);
+    const cp = Math.cos(pitch), fx = -Math.sin(yaw) * cp, fy = Math.sin(pitch), fz = -Math.cos(yaw) * cp, rx = Math.cos(yaw), rz = -Math.sin(yaw);
+    // the pivot: your head (over the right shoulder in shift-lock), made sure it isn't inside a wall
+    let side = menu ? 0 : 0.5, up = menu ? 0 : 0.28;
+    if (side) { const h = CamoWorld.ray(hx, hy, hz, rx, 0, rz, 0.01, side + 0.25, _cqHit); if (h) side = Math.max(0, h.t - 0.25); }
+    const px = hx + rx * side, py = hy + up, pz = hz + rz * side;
+    const want = menu ? this.orbD : 2.4, h = CamoWorld.ray(px, py, pz, -fx, -fy, -fz, 0.01, want + 0.3, _cqHit);
+    const d = h ? Math.max(0.25, h.t - 0.3) : want;
+    this.camD = d < this.camD ? d : damp(this.camD, d, 5, dt); // (in at once when something's behind you; out again gently)
+    // squeezed in (a wall right behind you): up over your head instead, so you still see past yourself
+    let lift = 0; if (!menu && this.camD < 1.4) { lift = (1.4 - this.camD) * 0.4; const hu = CamoWorld.ray(px, py, pz, 0, 1, 0, 0.01, lift + 0.3, _cqHit); if (hu) lift = Math.max(0, hu.t - 0.3); }
+    const k = this.tpK, tx = px - fx * this.camD, ty = py + lift - fy * this.camD, tz = pz - fz * this.camD;
+    camera.position.set(lerp(hx, tx, k), lerp(p.eyeY + p.bob, ty, k), lerp(hz, tz, k));
+    if (menu) lookQuat(camera.position, _cq2.set(hx, hy, hz), camera.quaternion);
+    else camera.rotation.set(p.pitch, p.yaw, 0);
+    return fov + 4 * k;
+  },
+  /* ---- drawing the mechs (every frame, every screen) ---- */
+  draw(dt) {
+    const me = this.me(), p = player;
+    // you: seen only when the camera is behind you
+    if (!this.myFig) { this.myFig = buildMech(this.myPaint); this.myFig.traverse(o => o.layers.enableAll()); scene.add(this.myFig); }
+    const mine = this.myFig, show = (this.tpK > 0.3 || this.menu) && this.camD > 0.4 && !this.out.has(me);
+    mine.visible = show;
+    if (show) { // (the camera right up against you: you fade, so you don't fill the screen)
+      const al = this.menu ? 1 : clamp((this.camD - 0.45) / 0.8, 0.3, 1), U = mine.userData;
+      if (U.alpha !== al) { U.alpha = al; const ms = Object.values(U.mats).concat([U.eyeM]); for (const m of ms) { m.transparent = al < 0.99; m.opacity = al; } }
+    }
+    if (show || this.caught.has(me)) poseMech(mine, { x: p.pos.x, z: p.pos.z, yaw: p.yaw, spd: Math.hypot(p.vel.x, p.vel.z), crouch: !!p.crouching, paint: this.sprayT > 0, caught: this.caught.has(me), still: this.mv(p) === 0 }, dt);
+    // your team
+    for (const r of Net.remotes.values()) {
+      if (r.avatar) r.avatar.visible = false;
+      let f = this.figs.get(r.id);
+      const on = r.inGame && !this.out.has(r.id) && Game.state === 'playing';
+      if (!on) { if (f) f.visible = false; continue; }
+      if (!f) { f = buildMech(this.paints.get(r.id) || this.defPaint); f.traverse(o => o.layers.enableAll()); scene.add(f); this.figs.set(r.id, f); }
+      const at = r.avatar ? r.avatar.position : r.pos, cg = this.caught.get(r.id), c = cg !== undefined ? this.cages[cg] : null;
+      f.visible = true;
+      poseMech(f, { x: c ? c.x : at.x, z: c ? c.z : at.z, yaw: (r.yaw || 0), spd: c ? 0 : (r.speed || 0), crouch: !!r.crouching, paint: (r._cmSpray || 0) > Game.time, caught: !!c, still: (r.speed || 0) < 0.15 }, dt);
+    }
+    for (const [id, f] of this.figs) if (!Net.remotes.has(id)) { scene.remove(f); this.figs.delete(id); }
+    if (Net.self) Net.self.visible = false;
+    // the mist: yours from the can in front of you; theirs from their hand
+    if (this.sprayT > 0) { const f = p.forward(_cq1), hx = p.pos.x + f.x * 0.42 - Math.sin(p.yaw - 1.2) * 0.12, hz = p.pos.z + f.z * 0.42 - Math.cos(p.yaw - 1.2) * 0.12, P = this.sprayNext || this.myPaint; this.puff(hx, (p.crouching ? 0.55 : 0.82), hz, -Math.sin(p.yaw), -Math.cos(p.yaw), P.body[0], dt); }
+    for (const r of Net.remotes.values()) { if ((r._cmSpray || 0) <= Game.time) continue; const f = this.figs.get(r.id); if (!f || !f.visible) continue; f.userData.arms[1].hand.getWorldPosition(_cq2); const P = this.paints.get(r.id) || this.defPaint; this.puff(_cq2.x, _cq2.y, _cq2.z, -Math.sin(r.yaw || 0), -Math.cos(r.yaw || 0), P.body[0], dt); }
+    this.drawMist(dt);
+  },
+  puff(x, y, z, fx, fz, hex, dt) {
+    const c = CamoColor.rgb(hex), n = Math.min(8, Math.ceil(dt * 160));
+    for (let i = 0; i < n && this.mistP.length < this.mistN; i++) { const sp = rand(1.4, 2.6); this.mistP.push({ x, y, z, vx: fx * sp + rand(-0.45, 0.45), vy: rand(-0.25, 0.35), vz: fz * sp + rand(-0.45, 0.45), life: rand(0.35, 0.6), r: c[0], g: c[1], b: c[2] }); }
+  },
+  drawMist(dt) {
+    const M = this.mist; if (!M) return;
+    const pos = M.geometry.attributes.position, col = M.geometry.attributes.color; let n = 0;
+    for (const q of this.mistP) { q.life -= dt; if (q.life <= 0) continue; q.vx *= 0.9; q.vz *= 0.9; q.vy -= dt * 0.6; q.x += q.vx * dt; q.y += q.vy * dt; q.z += q.vz * dt; pos.setXYZ(n, q.x, q.y, q.z); col.setXYZ(n, q.r, q.g, q.b); n++; }
+    this.mistP = this.mistP.filter(q => q.life > 0);
+    M.geometry.setDrawRange(0, n); M.visible = n > 0; if (n) { pos.needsUpdate = true; col.needsUpdate = true; }
+  },
+  // first person: your arms, in your paint
+  poseVm() {
+    if (!this.vmBuilt && this.myFig) {
+      this.vmBuilt = true; const M = this.myFig.userData.mats;
+      this.vmArms = [-1, 1].map(sd => { const g = new T.Group(); const c = cmCapsule(0.075, 0.42, M.arms); c.rotation.x = Math.PI / 2 - 0.25; g.add(c); const hd = new T.Mesh(CMG.sph, M.arms); hd.scale.setScalar(0.085); hd.position.set(0, -0.1, -0.42); g.add(hd); this.vm.add(g); return g; });
+      const can = new T.Mesh(CMG.can, this.canMat); can.rotation.x = -Math.PI / 2 + 0.2; can.position.set(0, -0.05, -0.5); this.vmArms[1].add(can); this.vmCan = can;
+    }
+    if (!this.vmArms) return;
+    const p = player, mv = Math.hypot(p.vel.x, p.vel.z), bob = Math.sin(Game.time * 7) * 0.012 * Math.min(1, mv / 3), sp = this.sprayT > 0 ? 1 : 0;
+    this.vmArms.forEach((g, i) => { const sd = i ? 1 : -1; g.position.set(sd * 0.25, -0.31 + bob + (i && sp ? 0.1 : 0), -0.18 - (i && sp ? 0.08 : 0)); g.rotation.set(i && sp ? 0.2 + Math.sin(Game.time * 30) * 0.02 : 0, -sd * 0.12, 0); });
+    this.vmCan.visible = sp > 0;
+  },
+  /* ---- the HUD ---- */
+  hud() {
+    const me = this.me();
+    // the prompt for [E] and its progress: drawn by UI.updateHud (see the hook)
+    if (Net.active) {
+      const rows = this.team().map(a => { const id = Game.idOf(a), P = this.paints.get(id) || this.defPaint, st = this.out.has(id) ? 'OUT' : this.caught.has(id) ? 'CAGED' : [...this.works.keys(), ...(this.remoteWork || []).map(w => w[0])].includes(id) ? 'WORKING' : 'FREE'; return [id, P.body[0], id === me ? Net.myName : a.name, st]; });
+      const key = JSON.stringify(rows); if (this.teamKey !== key) { this.teamKey = key; this.teamEl.innerHTML = '<b>TEAM</b>' + rows.map(([id, c, n, s]) => '<div class="s-' + s.toLowerCase() + '"><i style="background:' + CamoColor.css(c) + '"></i>' + escHtml(n || 'Guard') + '<em>' + s + '</em></div>').join(''); }
+    }
+  },
+  progress() {
+    if (this.myWork) return clamp((Game.time - this.myWork.t0) / this.myWork.dur, 0, 1);
+    if (this.sprayT > 0) return clamp(1 - this.sprayT / this.sprayDur, 0, 1);
+    return -1;
+  },
+  clockLeft() { const D = this.D(); return this.released ? Math.max(0, D.len - this.huntT) : Math.max(0, D.prep - this.t); },
+  fmt(s) { s = Math.ceil(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); },
+  objectives() {
+    const D = this.D(), L = [];
+    if (!this.released) L.push({ id: 'cm-prep', text: 'Paint up before it wakes (' + this.fmt(this.clockLeft()) + ') — ' + Keys.b('ability') + ' sample a wall, ' + Keys.b('nextWeapon') + ' spray, [B] paint shop', done: false });
+    L.push({ id: 'cm-brk', text: this.open ? 'Breakers thrown — the lift has power' : 'Throw the breakers (' + this.got + '/' + this.need + ') — hold ' + Keys.b('interact') + ' at a panel. It\'s loud.', done: this.open });
+    L.push({ id: 'cm-lift', text: this.open ? 'Get to the Surface Lift, through the Lift Lobby' : 'Then: the Surface Lift (Lift Lobby)', done: this.out.has(this.me()) });
+    if (this.caught.size && Net.active) L.push({ id: 'cm-cage', text: 'Free your team: hold ' + Keys.b('interact') + ' at their cage in Containment (' + this.caught.size + ' caged)', done: false });
+    L.push({ id: 'cm-keys', text: '[Shift] camera · ' + (this.shiftSprint() ? '[Space]' : Keys.b('sprint')) + ' run · ' + Keys.b('ultimate') + ' throw a can', done: false });
+    return L;
+  },
+  shiftSprint() { const k = Keys.map.sprint; return k === 'ShiftLeft' || k === 'ShiftRight'; },
+  cardBest(d) { const b = Goals.data.best['camo-' + d]; return b ? 'Best: ' + b.rank + ' · ' + b.out + '/' + b.n + ' out' : 'No escape yet'; },
+  hint() {
+    const tips = ['Face a wall and press ' + Keys.b('ability') + ' to sample its colour, then ' + Keys.b('nextWeapon') + ' to spray it on. Stand against that wall and keep still.', 'The meter reads what\'s behind you from 8 directions. Open floor behind you is worse than a wall right at your back.',
+      'Moving is what it notices first. Crouch, freeze, and let it walk past.', 'Stay in one spot too long and it smells you: it comes to the area. Move between hiding places.', 'Throw a can (' + Keys.b('ultimate') + ') to pull it away from a breaker — then work fast.'];
+    this.tipI = ((this.tipI || 0) + 1) % tips.length; UI.msg(tips[this.tipI], 'hint', 6);
+  },
+  intro() { UI.center('MECHA CAMO', (Net.active && this.team().length > 1 ? this.team().length + ' MECHS · ' : '') + 'PAINT · HIDE · ' + this.need + ' BREAKERS · GET TO THE LIFT', 4.6); },
+  introMsgs() {
+    const run = this.runId, live = () => this.on && this.runId === run && Game.state === 'playing';
+    UI.msg('You\'re a paint mech, factory orange. The Warden wakes in ' + this.D().prep + ' seconds — and it looks for anything that doesn\'t belong.', 'story', 7);
+    setTimeout(() => { if (live()) UI.msg(Keys.b('ability') + ' samples the wall you face · ' + Keys.b('nextWeapon') + ' sprays it on · [B] paint shop (patterns, mixing, per part) · [Shift] over-the-shoulder camera.', '', 8); }, 4500);
+    setTimeout(() => { if (live()) UI.msg('Match what\'s BEHIND you, keep still, stay low. Throw the ' + this.need + ' breakers, then get to the Surface Lift.', 'hint', 6); }, 13000);
+  },
+  /* ---- the end ---- */
+  result(ev) {
+    if (this.over || Game.state !== 'playing') return;
+    this.over = true; if (this.menu) this.closeMenu(true);
+    const G = Game, dn = Net.sessionDiff || settings.difficulty, DN = dn.toUpperCase(), me = this.me();
+    const won = !!ev.w, n = ev.n | 0 || this.team().length, outs = Array.isArray(ev.o) ? ev.o.map(x => x | 0) : [...this.out], outN = outs.length, iOut = outs.includes(me);
+    G.state = won ? 'won' : 'dead'; Input.exitLock(); UI.hud(false); G.endFrame();
+    this.hudEl.classList.remove('on'); this.teamEl.classList.remove('on'); this.warnEl.className = ''; this.markEl.innerHTML = '';
+    const caps = this.stats.caught, rank = !won ? (outN ? 'C' : 'D') : outN === n && caps === 0 ? 'S' : outN === n ? 'A' : 'B';
+    const bk = 'camo-' + dn, prev = Goals.data.best[bk], score = (won ? 100 : 0) + outN * 20 - caps * 5 + (ev.g | 0) * 3;
+    const isBest = !prev || score > (prev.score || 0);
+    if (isBest) Goals.data.best[bk] = { score, rank, won: won ? 1 : 0, out: outN, n, time: Math.floor(+ev.t || 0), at: Date.now() };
+    if (won && iOut) { Goals.unlock('camo_win'); if (!this.huntedMe) Goals.unlock('camo_ghost'); if (dn === 'nightmare') Goals.unlock('camo_nm'); }
+    Goals.save();
+    const avg = this.stats.nK ? this.stats.sumK / this.stats.nK : 0;
+    const rows = [['Escaped', outN + ' of ' + n], ['Times caught', caps + ''], ['Breakers', (ev.g | 0) + ' of ' + this.need], ['Time', this.fmt(+ev.t || 0)], ['Your camouflage', this.stats.nK ? CamoWorld.grade(avg) + ' on average' : '—'], ['Hunted you', this.stats.hunted + '×'], ['Difficulty', DN]];
+    if (this.stats.freed) rows.splice(2, 0, ['You freed', this.stats.freed + '']);
+    rows.push(...Chars.payout(won));
+    const put = (el, list) => { el.innerHTML = ''; list.forEach(([a, b]) => { const sp = document.createElement('span'); sp.textContent = a; const v = document.createElement('b'); v.textContent = b; el.appendChild(sp); el.appendChild(v); }); };
+    if (won) {
+      $('win-title').textContent = outN === n ? (n > 1 ? 'Every mech got out' : 'You got out') : 'Enough of you got out';
+      $('win-sub').textContent = 'Mecha Camo · ' + outN + ' of ' + n + ' out · caught ' + caps + '×';
+      put($('win-stats'), rows);
+      put($('win-score'), [['Everyone out', outN === n ? '✓' : '—'], ['Never caught', caps === 0 ? '✓' : '—'], ['Never hunted', !this.huntedMe ? '✓' : '—']]);
+      $('rank-letter').textContent = rank; $('rank-letter').className = 'r-' + rank; $('rank-score').textContent = outN + '/' + n + ' OUT';
+      $('rank-best').textContent = isBest ? 'NEW BEST ON ' + DN : 'BEST ON ' + DN + ': ' + prev.rank + ' · ' + prev.out + '/' + prev.n;
+      const wa = $('win-ach'); wa.innerHTML = ''; (Goals.runGot || []).forEach(x => { const d = document.createElement('span'); d.textContent = '★ ' + x.name; wa.appendChild(d); });
+      $('epilogue').textContent = 'The lift rises through eleven floors of quiet. On Sublevel 6 the paint is still wet on the walls — and in one of the rooms, a patch of wall that was never painted turns its head.';
+      G.endButtons('btn-win-again', 'Play Again');
+      UI.show('screen-victory'); Sound.dawn();
+    } else {
+      put($('go-stats'), rows);
+      $('go-title').textContent = ev.why === 'time' ? 'Lockdown' : n > 1 ? 'It found every one of you' : 'It found you';
+      $('go-sub').textContent = ev.why === 'time' ? 'The blast doors sealed with ' + (n - outN) + ' of you still down there' : 'Something that didn\'t belong';
+      G.endButtons('btn-go-restart', 'Play Again');
+      UI.show('screen-gameover');
+      $('fx-fade').style.transition = 'opacity .8s'; $('fx-fade').style.opacity = 0;
+    }
+  },
+};
+Camo.figs = new Map(); Camo.paints = new Map(); Camo.caught = new Map(); Camo.out = new Set(); Camo.works = new Map(); Camo.breakers = []; Camo.cages = []; Camo.flights = [];
+
+const CAMO_CSS = `
+#camo-hud{position:fixed;left:50%;bottom:118px;transform:translateX(-50%);z-index:6;display:none;font-family:var(--mono);color:#e8e2d4;text-align:center;pointer-events:none;letter-spacing:.12em;text-shadow:0 1px 3px #000}
+#camo-hud.on{display:block}
+#camo-hud .cm-row{display:flex;align-items:center;gap:8px;justify-content:center;background:rgba(10,10,12,.55);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 10px}
+#camo-hud .cm-lbl{font-size:10px;opacity:.7}
+#camo-hud b{font-size:13px;min-width:84px}
+#camo-hud .cm-bar{width:120px;height:6px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
+#camo-hud .cm-bar i{display:block;height:100%;transition:width .25s}
+#camo-hud .cm-sw{width:16px;height:16px;border-radius:3px;border:1px solid rgba(255,255,255,.35);overflow:hidden}
+#camo-hud .cm-sw i{display:block;width:100%;height:100%}
+#camo-hud small{display:block;font-size:10px;margin-top:4px;opacity:.85}
+.g-excellent{color:#7dffa0}#cm-bar.g-excellent{background:#5fe08a}.g-good{color:#ffd46a}#cm-bar.g-good{background:#e7b84a}.g-poor{color:#ff7a5a}#cm-bar.g-poor{background:#e0583c}.g-hidden{color:#9fd8ff}#cm-bar.g-hidden{background:#7ab8e0}
+#cm-eye{display:none;margin-top:6px;font-size:11px;color:#ffb07a;animation:cmPulse .9s ease-in-out infinite}
+#cm-eye.on{display:block}
+@keyframes cmPulse{0%,100%{opacity:.45}50%{opacity:1}}
+#camo-warn{position:fixed;inset:0;pointer-events:none;z-index:5;transition:box-shadow .2s}
+#camo-warn.eye{box-shadow:inset 0 0 120px rgba(255,150,60,.28)}
+#camo-warn.hunt{box-shadow:inset 0 0 140px rgba(255,40,30,.32)}
+#camo-warn.atk{box-shadow:inset 0 0 200px rgba(255,20,10,.7);animation:cmPulse .25s linear infinite}
+#camo-team{position:fixed;right:14px;top:150px;z-index:6;display:none;font-family:var(--mono);font-size:11px;color:#ddd;background:rgba(10,10,12,.5);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 9px;pointer-events:none;letter-spacing:.08em}
+#camo-team.on{display:block}
+#camo-team b{display:block;font-size:10px;opacity:.6;margin-bottom:3px}
+#camo-team div{display:flex;align-items:center;gap:6px;margin:2px 0}
+#camo-team div i{width:10px;height:10px;border-radius:2px;border:1px solid rgba(255,255,255,.3)}
+#camo-team em{font-style:normal;margin-left:auto;padding-left:10px;opacity:.8}
+#camo-team .s-caged em{color:#ff7a5a}#camo-team .s-out em{color:#7dffa0}#camo-team .s-working em{color:#ffd46a}
+body.camo-on #st-light,body.camo-on #cards,body.camo-on #st-health,body.camo-on #objectives .bonus-h,body.camo-on #bonus-list,body.camo-on #diff-chip{display:none}
+#camo-paint{position:fixed;inset:0;z-index:30;display:none;cursor:grab}
+#camo-paint.on{display:block}
+#camo-paint .cp-panel{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:330px;max-height:94vh;overflow:auto;background:rgba(14,14,16,.9);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px;font-family:var(--mono);color:#e8e2d4;font-size:11px;letter-spacing:.06em;cursor:default;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#camo-paint .cp-h{font-size:15px;letter-spacing:.2em;color:#ffb26a;margin-bottom:8px}
+#camo-paint .cp-h small{display:block;font-size:9px;letter-spacing:.06em;color:#aaa;margin-top:3px}
+#camo-paint button{font:inherit;color:#ddd;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:4px;padding:4px 6px;cursor:pointer}
+#camo-paint button:hover{background:rgba(255,255,255,.12)}
+#camo-paint button.sel{border-color:#ffb26a;color:#ffd2a0;background:rgba(255,160,80,.14)}
+#camo-paint button:disabled{opacity:.4;cursor:not-allowed}
+#camo-paint .cp-parts,#camo-paint .cp-pats,#camo-paint .cp-acc{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+#camo-paint .cp-acc span{width:100%;opacity:.6;font-size:9px}
+#camo-paint .cp-pick{display:flex;gap:6px;align-items:flex-start;margin:6px 0}
+#camo-paint canvas{border-radius:4px;cursor:crosshair;border:1px solid rgba(255,255,255,.15)}
+#camo-paint .cp-wells{display:flex;flex-direction:column;gap:4px;flex:1}
+#camo-paint .well{display:flex;align-items:center;gap:5px}
+#camo-paint .well i,#camo-paint .cp-mix i{display:inline-block;width:18px;height:18px;border-radius:3px;border:1px solid rgba(255,255,255,.35)}
+#camo-paint #cp-hex{font-size:10px;opacity:.8}
+#camo-paint .cp-mix{display:flex;align-items:center;gap:6px;margin:4px 0}
+#camo-paint .cp-mix input{flex:1}
+#camo-paint .cp-sw,#camo-paint #cp-seen{display:flex;flex-wrap:wrap;gap:3px;margin:5px 0}
+#camo-paint .cp-sw i,#camo-paint #cp-seen i{width:20px;height:20px;border-radius:3px;border:1px solid rgba(255,255,255,.3);cursor:pointer}
+#camo-paint .cp-seen>span:first-child{font-size:9px;opacity:.6}
+#camo-paint #cp-seen em{opacity:.5;font-size:10px}
+#camo-paint .cp-match{margin:8px 0;padding:6px;border-radius:5px;background:rgba(255,255,255,.05);line-height:1.5}
+#camo-paint .cp-match i{display:inline-block;width:14px;height:14px;border-radius:2px;border:1px solid rgba(255,255,255,.35);vertical-align:middle;margin-left:4px}
+#camo-paint .cp-match small{opacity:.6;font-size:9px}
+#camo-paint .cp-btns{display:flex;gap:5px;flex-wrap:wrap}
+#camo-paint .cp-btns .go{border-color:#ffb26a;color:#ffd2a0}
+#camo-paint .cp-prog{height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:8px;overflow:hidden}
+#camo-paint .cp-prog i{display:block;height:100%;width:0;background:#ffb26a}
+@media (max-width:700px){#camo-paint .cp-panel{width:auto;left:8px;right:8px;top:auto;bottom:8px;transform:none;max-height:60vh}}
+`;
+
+/* ---- the hooks ---- */
+{
+  const on = () => Camo.on && Game.mode === 'camo';
+  const cur0 = Chars.cur; Chars.cur = function () { return on() && !Camo.over ? CAMO_CHAR : cur0.call(this); };
+  const sm0 = Chars.speedMul; Chars.speedMul = function () { const m = sm0.apply(this, arguments); return on() ? m * (Camo.sprayT > 0 ? 0.35 : 1) : m; };
+  Chars.use_sample = function (A) { this.cd = A.cd; return Camo.sample(); };
+  Chars.use_clatter = function () { return Camo.clatter(); };
+  const wa0 = Weapons.attack; Weapons.attack = function () { if (on()) return false; return wa0.apply(this, arguments); };
+  const cp0 = Combat.punch; Combat.punch = function () { if (on()) return false; return cp0.apply(this, arguments); };
+  const wc0 = Weapons.cycle; Weapons.cycle = function () { if (on()) { Camo.quickSpray(); return; } return wc0.apply(this, arguments); };
+  const ws0 = Weapons.slot; Weapons.slot = function () { if (on()) return; return ws0.apply(this, arguments); };
+  // in this mode the Warden catches — it doesn't hurt — and nothing else does either
+  const hh0 = Health.hit; Health.hit = function (a, kind, src) { if (on()) { if (src === Monster && a && !Net.isClient) Camo.hostCapture(a); return 0; } return hh0.apply(this, arguments); };
+  const ph0 = Game.playerHit; Game.playerHit = function () { if (on()) return 0; return ph0.apply(this, arguments); };
+  const gd0 = Game.die; Game.die = function () { if (on() && !Camo.over) return; return gd0.apply(this, arguments); };
+  // the Warden's senses, in this mode: colour against what's behind you, movement, open space; never through walls
+  const vo0 = Monster.visibilityOf; Monster.visibilityOf = function (a) { if (on()) return Camo.vis(this, a); return vo0.apply(this, arguments); };
+  const pc0 = Monster.perceive; Monster.perceive = function (step) {
+    if (!on()) return pc0.apply(this, arguments);
+    let best = 0, bestA = null, nearD = 99, nearA = null;
+    for (const a of actors()) {
+      const d = Math.hypot(a.pos.x - this.pos.x, a.pos.z - this.pos.z); if (d < nearD) { nearD = d; nearA = a; }
+      const v = this.visibilityOf(a); if (v > best) { best = v; bestA = a; }
+    }
+    this.nearest = nearA; this.nearestD = nearD;
+    this.los = !player.dead && losClear(this.pos.x, this.pos.z, player.pos.x, player.pos.z);
+    const was = this.seeing; this.seeing = best > 0;
+    if (this.seeing) {
+      if (this.state !== 'HUNT' || !this.target || Camo.held(this.target) || best >= 1.5) this.target = bestA;
+      this.awareness = Math.min(1.2, this.awareness + best * 2.3 * diff().aware * step);
+      this.lastContact = Game.time;
+      if (this.awareness > 0.25) { this.lastKnown.copy(bestA.pos); this.lastSeen = Game.time; }
+      if (!was && this.state !== 'HUNT' && this.state !== 'ATTACK') Sound.clicks();
+    } else this.awareness = Math.max(0, this.awareness - step * (this.state === 'HUNT' ? 0.1 : 0.22));
+    if (nearD < 14) this.closeT += step; else this.closeT = Math.max(0, this.closeT - step * 2);
+    if (this.state === 'ATTACK' || this.state === 'RECOVER' || this.state === 'SNIFF' || this.state === 'SCRIPT') return;
+    if (this.awareness >= 1 && this.state !== 'HUNT') { this.setState('HUNT'); this.path = null; this.repathT = 0; }
+    else if (this.seeing && this.awareness > 0.3 && (this.state === 'PATROL' || this.state === 'LOST' || this.state === 'SEARCH') && !this.stareT) {
+      // DETECT: something about that spot is wrong. It stops and stares — then comes over, walking, to look
+      this.stareT = 1.1; this.stareAt = bestA.pos.clone();
+    }
+  };
+  const mu0 = Monster.update; Monster.update = function (dt) {
+    if (!on() || Net.isClient || !this.active || this.down || this.cine) return mu0.apply(this, arguments);
+    if (this.state === 'RECOVER') { // (it has what it came for — a few seconds, and it starts again)
+      this.vel.set(0, 0, 0); this.speed = 0; this.charging = false; this.recoverT = (this.recoverT || 0) - dt; this.lookAround(dt); this.animate(dt, 0);
+      if (this.recoverT <= 0) { this.awareness = 0; this.target = null; this.hasGoal = false; this.path = null; this.setState('PATROL'); this.pauseT = 0.6; }
+      return;
+    }
+    if (this.state === 'SNIFF') { // it stops, lifts its head, and breathes in
+      this.vel.set(0, 0, 0); this.speed = 0; this.sniffT = (this.sniffT || 0) - dt; this.headYaw = Math.sin(Game.time * 1.7) * 0.6; this.animate(dt, 0);
+      this.perceiveT -= dt; if (this.perceiveT <= 0) { this.perceive(0.08); this.perceiveT = 0.08; }
+      if (this.awareness >= 1) { this.setState('HUNT'); return; }
+      if (this.sniffT <= 0) {
+        let tg = null, ts = 0.5;
+        for (const a of actors()) { const sc = a._cm ? a._cm.scent : 0; if (sc >= ts && Math.hypot(a.pos.x - this.pos.x, a.pos.z - this.pos.z) < 18) { ts = sc; tg = a; } }
+        if (tg) { // (the area: somewhere within a couple of metres of them — a nose, not a compass)
+          let x = NaN, z = NaN; for (let k = 0; k < 16; k++) { const a = rand(0, TAU), r = rand(0.8, 2.6), tx = tg.pos.x + Math.cos(a) * r, tz = tg.pos.z + Math.sin(a) * r, c = cellOf(tx, tz); if (c.kind === 'floor' && !c.navBlocked && losClear(tg.pos.x, tg.pos.z, tx, tz)) { x = tx; z = tz; break; } }
+          if (!Number.isFinite(x)) { const cx = Math.floor(tg.pos.x / CELL), cz = Math.floor(tg.pos.z / CELL); let bd = 1e9; for (const [ox, oz] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) { const c = cellAt(cx + ox, cz + oz), d = Math.hypot(cc(cx + ox) - tg.pos.x, cc(cz + oz) - tg.pos.z); if (c.kind === 'floor' && d > 0.6 && d < bd) { bd = d; x = cc(cx + ox); z = cc(cz + oz); } } if (!Number.isFinite(x)) { x = tg.pos.x + rand(-1.5, 1.5); z = tg.pos.z + rand(-1.5, 1.5); } }
+          this.setState('PATROL'); this.investigate(new T.Vector3(x, 0, z), 0.7, false); Game.emit({ k: 'cqns', id: Game.idOf(tg) });
+        } else { this.setState('PATROL'); this.pauseT = 0.4; }
+      }
+      return;
+    }
+    if (this.stareT > 0) { // DETECT: frozen, staring at the spot
+      this.stareT -= dt; this.vel.set(0, 0, 0); this.speed = 0;
+      const want = Math.atan2(this.stareAt.x - this.pos.x, this.stareAt.z - this.pos.z); this.yaw += clamp(angleDiff(this.yaw, want), -4 * dt, 4 * dt); this.headYaw = damp(this.headYaw, 0, 8, dt);
+      this.perceiveT -= dt; if (this.perceiveT <= 0) { this.perceive(0.08); this.perceiveT = 0.08; }
+      this.animate(dt, 0);
+      if (this.awareness >= 1) { this.stareT = 0; this.setState('HUNT'); this.path = null; this.repathT = 0; return; }
+      if (this.stareT <= 0) { this.stareT = 0; if (this.awareness > 0.2) this.investigate(this.stareAt.clone(), 0.7, false); }
+      return;
+    }
+    return mu0.apply(this, arguments);
+  };
+  const sf0 = Monster.speedFor; Monster.speedFor = function () { return sf0.apply(this, arguments) * (on() ? (Camo.speedK || 1) * (this.state === 'PATROL' ? 1.25 : 1) : 1); }; // (a big floor to search: it walks its rounds a little quicker)
+  // its rounds: the patrol points — and the places it knows you need (a breaker, a cage with someone in it, the lift). Never where you are.
+  const cpt0 = Monster.choosePatrol; Monster.choosePatrol = function () {
+    if (!on()) return cpt0.apply(this, arguments);
+    this.lastContact = Game.time; // (no drifting toward wherever the players happen to be: it doesn't know)
+    if (Math.random() < 0.45) {
+      const goals = Camo.breakers.filter(b => !b.done).map(b => [b.fx, b.fz]);
+      for (const s of Camo.caught.values()) { const c = Camo.cages[s]; if (c) goals.push([c.x, c.z + 2]); }
+      if (Camo.open) goals.push([cc(33), cc(24)]);
+      const far = goals.filter(g => Math.hypot(g[0] - this.pos.x, g[1] - this.pos.z) > 6);
+      if (far.length) { const g = far[Math.floor(Math.random() * far.length)]; if (this.goTo(g[0] + rand(-1.5, 1.5), g[1] + rand(-1.5, 1.5), () => { this.pauseT = rand(1.5, 3.5); this.headTimer = 0; })) return; }
+    }
+    // a room sweep: into a room it hasn't checked lately, to somewhere in the middle of it, and a long look round
+    if (Math.random() < 0.7) {
+      const seen = Camo.swept || (Camo.swept = []), here = cellOf(this.pos.x, this.pos.z).room;
+      const rooms = (CAMO_ROOMS + 's' + (Camo.open ? 'e' : '')).split('').filter(ch => seen.indexOf(ch) < 0 && ROOMDEF[ch] && ROOMDEF[ch][0] !== here);
+      for (let tries = 0; tries < 3 && rooms.length; tries++) {
+        const ch = rooms.splice(Math.floor(Math.random() * rooms.length), 1)[0], cs = Hunt.inner(ch); if (!cs.length) continue;
+        const [x, z] = cs[Math.floor(Math.random() * cs.length)];
+        if (this.goTo(cc(x) + rand(-0.5, 0.5), cc(z) + rand(-0.5, 0.5), () => { this.pauseT = rand(2.5, 4.5); this.headTimer = 0; })) { seen.push(ch); if (seen.length > 6) seen.shift(); return; }
+      }
+    }
+    return cpt0.apply(this, arguments);
+  };
+  const act0 = actors; actors = function () { const o = act0(); return on() ? o.filter(a => !Camo.held(a)) : o; };
+  // you: a mech's eye height; caged or out, you stay put
+  const pu0 = player.update; player.update = function (dt) {
+    const r = pu0.apply(this, arguments);
+    if (on()) { Camo.eye = damp(Camo.eye || 1.05, this.crouching ? 0.7 : 1.05, 10, dt); this.eyeY = Camo.eye; this.flashState = false; }
+    return r;
+  };
+  const kd0 = Keys.down; Keys.down = function (a) {
+    if (on()) {
+      if (Camo.held(player) && (a === 'forward' || a === 'back' || a === 'left' || a === 'right' || a === 'sprint' || a === 'crouch')) return false; // (in a cage, or in the lift)
+      if (a === 'sprint' && Camo.shiftSprint()) return !!Input.keys.Space; // (Shift is the camera in this mode: run on Space)
+    }
+    return kd0.apply(this, arguments);
+  };
+  const hp0 = Hold.press; Hold.press = function () { if (on()) return; return hp0.apply(this, arguments); };
+  const gi0 = Game.interact; Game.interact = function () {
+    if (on()) { if (Camo.held(player) || Camo.menu) return; const t = Camo.target(); if (t) { Camo.beginWork(t); return; } }
+    return gi0.apply(this, arguments);
+  };
+  // the prompt for [E], and its bar
+  const uh0 = UI.updateHud; UI.updateHud = function () {
+    const r = uh0.apply(this, arguments);
+    if (on() && Game.state === 'playing') {
+      const t = Camo.held(player) ? null : Camo.target();
+      if (t) { const html = '<span class="key">' + escHtml(Keys.label('interact')) + '</span>' + escHtml(t.text); if (this.hudCache.prompt !== html) { this.hudCache.prompt = html; $('prompt').innerHTML = html; } this.set('prompt', 'class', 'show'); this.set('crosshair', 'class', 'hot'); }
+      else if (Camo.caught.has(Camo.me())) { const html = Net.active && Camo.team().length > 1 ? 'CAGED — a teammate can free you (hold ' + escHtml(Keys.label('interact')) + ' at the cage)' : 'CAGED'; if (this.hudCache.prompt !== html) { this.hudCache.prompt = html; $('prompt').innerHTML = html; } this.set('prompt', 'class', 'show locked'); }
+      const pr = Camo.progress(); $('progress').style.display = pr >= 0 ? 'block' : 'none'; if (pr >= 0) $('progress').firstElementChild.style.width = (pr * 100) + '%';
+      const cpp = $('cp-prog'); if (cpp) cpp.style.width = (Camo.sprayT > 0 ? Camo.progress() * 100 : 0) + '%';
+    }
+    return r;
+  };
+  // the camera: Shift-lock, and the paint shop's orbit (this mode only)
+  const ac0 = Cine.applyCamera; Cine.applyCamera = function (dt, fov) { const r = ac0.apply(this, arguments); if (r !== null && r !== undefined) return r; return on() && Game.state === 'playing' ? Camo.camView(dt, fov) : r; };
+  const ar0 = Arms.render; Arms.render = function () {
+    if (on() && this.R) {
+      const v = [this.R.visible, this.L.visible, this.Lbare.visible]; this.R.visible = this.L.visible = this.Lbare.visible = false;
+      const fp = Camo.tpK < 0.3 && !Camo.menu && !Camo.out.has(Camo.me());
+      Camo.vm.visible = fp; if (fp) Camo.poseVm();
+      const av = this.visible; this.visible = fp && Game.state === 'playing'; const r = ar0.apply(this, arguments); this.visible = av; [this.R.visible, this.L.visible, this.Lbare.visible] = v; return r;
+    }
+    if (Camo.vm) Camo.vm.visible = false;
+    return ar0.apply(this, arguments);
+  };
+  const gr0 = Game.render; Game.render = function (dt) { if (on()) Camo.draw(clamp(dt || 0.016, 0, 0.1)); return gr0.apply(this, arguments); };
+  const ul0 = Game.updateLights; Game.updateLights = function (dt) { const r = ul0.apply(this, arguments); if (on()) { hemi.intensity = damp(hemi.intensity, 0.95, 1.5, dt); scene.fog.density = damp(scene.fog.density, FOG_BASE * 0.55, 1, dt); } return r; };
+  // every door but the blast door, for everyone
+  const DP = doors.length && Object.getPrototypeOf(doors[0]); if (DP && DP.locked) { const lk0 = DP.locked; DP.locked = function () { if (on() && this.type !== 'exit' && cellOf(this.cx, this.cz).lvl === 0) return false; if (on() && this.type === 'exit' && cellOf(this.cx, this.cz).lvl === 0) return !Camo.open; return lk0.apply(this, arguments); }; }
+  const sc0 = Game.scripts; Game.scripts = function (dt) { if (this.mode === 'camo') { this.eventT -= dt; if (this.eventT <= 0) { this.eventT = rand(16, 30); if (Math.random() < 0.5) Sound.pipeGroan(_v3c.set(rand(4, 30), 2, rand(4, 42))); else this.ambientEvent(); } return; } return sc0.apply(this, arguments); };
+  // the mode's events, and a guest's requests (checked by the host)
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) { if (ev && typeof ev.k === 'string' && ev.k.indexOf('cq') === 0 && Game.mode === 'camo') { if (Camo.on) Camo.event(ev); return; } return ae0.apply(this, arguments); };
+  const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i, x) { if (a === 'cqp' || a === 'cqsp' || a === 'cqw' || a === 'cqx') { Camo.remote(r, a, i, x); return; } return ra0.apply(this, arguments); };
+  const ng0 = Game.newGame; Game.newGame = function () { if (Camo.on) Camo.reset(); return ng0.apply(this, arguments); };
+  const qt0 = Game.quitToTitle; Game.quitToTitle = function () { if (Camo.on) Camo.reset(); return qt0.apply(this, arguments); };
+  const ps0 = Game.pause; Game.pause = function () { if (on() && Camo.menu) Camo.closeMenu(true); return ps0.apply(this, arguments); };
+  const ia0 = Infestant.allowed; Infestant.allowed = function () { return Game.mode !== 'camo' && ia0.call(this); };
+  const tl0 = Trader.tooLate; Trader.tooLate = function () { return Game.mode === 'camo' || tl0.call(this); };
+  const hr0 = Hints.request; Hints.request = function () { if (on()) { Camo.hint(); return; } return hr0.apply(this, arguments); };
+  const hpr0 = Hints.primary; Hints.primary = function () {
+    if (!on()) return hpr0.apply(this, arguments);
+    const p = player; if (Camo.held(p)) return null;
+    if (Camo.open) return { pos: new T.Vector3(cc(32.5), 1.4, cc(27)), label: 'Surface Lift', key: 'lift', done: () => Camo.out.has(Camo.me()) };
+    let b = null, bd = 1e9; for (const B of Camo.breakers) { if (B.done) continue; const d = Math.hypot(B.x - p.pos.x, B.z - p.pos.z); if (d < bd) { bd = d; b = B; } }
+    return b ? { pos: new T.Vector3(b.x, 1.2, b.z), label: 'Breaker', key: 'breaker', done: () => b.done } : null;
+  };
+  // smoke grenades are laid out after the mode starts: not in this mode (nor in THE HUNT)
+  const sl0 = SmokeSpots.layout; SmokeSpots.layout = function () { const r = sl0.apply(this, arguments); if (Game.mode === 'camo' || Game.mode === 'hunt') for (const L of this.defs) for (const d of L || []) { d.enabled = false; d.visual.visible = false; if (d.item) d.item.taken = true; } return r; };
+  // [Shift]: the camera; [B]: the paint shop; in the shop, [Space] sprays and [Esc]/[B] closes (this mode only)
+  window.addEventListener('keydown', e => {
+    if (!on() || Game.state !== 'playing') return;
+    const code = e.code, free = c => !Keys.actionOf(c);
+    if (Camo.menu) {
+      if (code === 'Escape' || (code === 'KeyB' && free(code))) { e.preventDefault(); e.stopImmediatePropagation(); if (!e.repeat) Camo.closeMenu(); return; }
+      if (code === 'Space' || code === 'Enter') { e.preventDefault(); e.stopImmediatePropagation(); if (!e.repeat) Camo.menuSpray(); return; }
+      if (code === 'ShiftLeft' || code === 'ShiftRight') return;
+    }
+    if (e.repeat) return;
+    if (code === 'ShiftLeft' || code === 'ShiftRight') { if (!Camo.menu) Camo.toggleTp(); }
+    else if (code === 'KeyL' && free(code)) Camo.toggleTp();
+    else if (code === 'KeyB' && free(code)) { e.preventDefault(); if (!Camo.menu) Camo.openMenu(); }
+  }, true);
+  // the modes' shared parts
+  const mr0 = Modes.reset; Modes.reset = function () { Camo.reset(); return mr0.apply(this, arguments); };
+  const ms0 = Modes.start; Modes.start = function () {
+    if (Game.mode !== 'camo') return ms0.apply(this, arguments);
+    $('objectives').classList.remove('m-photos', 'm-endless', 'm-watch'); document.querySelector('#objectives .opt-h').textContent = 'MECHA CAMO';
+    Game.flags.awakeQueued = Game.flags.woke = true; Camo.start();
+  };
+  const mi0 = Modes.intro; Modes.intro = function () { if (Game.mode === 'camo') { Camo.intro(); return; } return mi0.apply(this, arguments); };
+  const mm0 = Modes.introMsgs; Modes.introMsgs = function () { if (Game.mode === 'camo') { Camo.introMsgs(); return; } return mm0.apply(this, arguments); };
+  const mo0 = Modes.objectives; Modes.objectives = function () { if (Game.mode === 'camo' && Camo.on) return Camo.objectives(); return mo0.apply(this, arguments); };
+  const mc0 = Modes.cardBest; Modes.cardBest = function (m) { if (m === 'camo') return Camo.cardBest(settings.difficulty); return mc0.apply(this, arguments); };
+  const mh0 = Modes.hud; Modes.hud = function () {
+    if (Game.mode !== 'camo' || !Camo.on) return mh0.apply(this, arguments);
+    const el = $('shift'); if (!el) return;
+    const left = Camo.clockLeft(), shown = Camo.fmt(left), rel = Camo.released, goal = !rel ? 'IT WAKES IN ' + shown : Camo.open ? 'THE LIFT HAS POWER' : 'BREAKERS ' + Camo.got + ' / ' + Camo.need;
+    const mission = !rel ? 'Paint up' : Camo.open ? 'Get to the Surface Lift' : 'Hide · throw the breakers', sub = (Net.active ? Camo.team().filter(a => !Camo.held(a)).length + ' free · ' : '') + Camo.cardBest(settings.difficulty);
+    const cls = !rel ? '' : Camo.open ? 'surge' : left < 60 ? 'late' : '';
+    const key = shown + cls + goal + mission + sub; if (UI.hudCache.shift === key) return; UI.hudCache.shift = key;
+    el.className = cls; $('shift-clock').firstChild.textContent = shown; $('shift-clock').querySelector('small').textContent = rel ? 'LEFT' : 'PREP';
+    $('shift-goal').textContent = goal; $('shift-bar').firstElementChild.style.width = clamp(rel ? Camo.huntT / Camo.D().len : Camo.t / Camo.D().prep, 0, 1) * 100 + '%';
     $('mission').textContent = mission; $('mission-sub').textContent = sub; $('objectives').classList.toggle('dawn', false);
   };
 }
@@ -27120,7 +28612,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS }); // (Build 18) // (Build 18: the sculpted people)
+  Object.assign(window.LS, { People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmCleanPaint, cmClonePaint, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS }); // (Build 18) // (Build 18: the sculpted people)
 }
 };
 </script>
