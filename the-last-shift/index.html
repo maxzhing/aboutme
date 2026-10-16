@@ -142,6 +142,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .mode.hunt.sel{border-color:#ff6a50;background:rgba(200,50,40,.16)}
 .mode.camo{border-color:rgba(255,170,90,.5);background:linear-gradient(160deg,rgba(208,106,30,.14),rgba(47,127,122,.1) 60%,rgba(255,255,255,.01))}
 .mode.camo.sel{border-color:#ffb26a;background:rgba(208,106,30,.18)}
+.camo-maps{display:flex;gap:8px;align-items:stretch;margin:4px 0 12px;flex-wrap:wrap}.camo-maps>span{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--amber);align-self:center;margin-right:4px}.camo-maps button{flex:1;min-width:180px;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.14);color:inherit;padding:8px 10px;cursor:pointer;font:inherit}.camo-maps button b{display:block;letter-spacing:.12em;font-size:12px}.camo-maps button small{display:block;opacity:.7;font-size:11px;margin-top:3px}.camo-maps button.sel{border-color:#ffb26a;background:rgba(208,106,30,.16)}
+.camo-maps .new{display:inline-block;font-size:9px;letter-spacing:.2em;color:#111;background:var(--amber);padding:1px 5px;margin-left:8px;vertical-align:2px}
+.mp-cmaps span{font-size:10px;letter-spacing:.2em;opacity:.7;align-self:center}
 .modes.six{grid-template-columns:repeat(3,1fr)}
 #hunt-marks{position:fixed;inset:0;pointer-events:none;z-index:6}
 #hunt-marks i{position:absolute;display:none;width:26px;height:26px;margin:-13px 0 0 -13px;border:2px solid rgba(255,60,40,.85);border-radius:50%;box-shadow:0 0 12px rgba(255,40,30,.7);animation:huntPing 1s ease-out infinite}
@@ -1142,10 +1145,12 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p">If <b>half of them</b> get out, the hunt is lost. Catch them all — or keep them inside until 6:00 AM. <b>Online</b>, everyone is a Warden and you hunt together: there are more guards for more of you, and the host decides every catch.</p>
     </div>
     <div id="brief-camo" hidden>
+    <div class="camo-maps"><span>MAP</span><button data-cmap="s6"><b>SUBLEVEL 6</b><small>The facility, mid-renovation: offices, labs, Containment.</small></button><button data-cmap="works"><b>THE COLOUR WORKS<i class="new">NEW</i></b><small>A paint factory: vats, hanging sheets, spray booths.</small></button></div>
     <p class="p">Sublevel 6 is half-way through a renovation: <b>the lights are on</b> and there's paint everywhere — murals, tarps, panels, rugs, a colour to every room. You are a thick little <b>stickman</b>, factory orange. You have <b>25 seconds</b> (Normal) before the Warden wakes up in Containment.</p>
-    <p class="p">Press <b>[Esc]</b> (or <b>[B]</b>) and your mouse is free: <b>click a wall to pick up its colour, then drag on yourself to paint</b> — brush sizes, fill a piece, patterns, mixing, and the camera turns round you. <span data-key="ability"></span> picks up the colour of whatever you face. <span data-key="nextWeapon"></span> is the <b>CHAMELEON SPRAY</b>: back against a wall, crouch, and every part of you turns the colour (and the pattern) that's behind it. <b>[Shift]</b> swaps to an over-the-shoulder camera (run with <b>Space</b> in this mode); <span data-key="pause"></span> pauses.</p>
+    <p class="p">Press <b>[L]</b> to <b>lock yourself in place</b>: your mouse is free, the camera turns round you from any angle (drag the view, scroll to zoom) and you <b>drag on yourself to paint</b> — down to a <b>FINE</b> brush a centimetre wide, on any part of you ([ and ] change the size); <b>click a wall to pick up its colour</b>. <b>[L]</b> again and you can move. <b>[Esc]</b> (or <b>[B]</b>) opens the whole paint shop: fill a piece, patterns, mixing. <span data-key="ability"></span> picks up the colour of whatever you face. <span data-key="nextWeapon"></span> is the <b>CHAMELEON SPRAY</b>: back against a wall, crouch, and every part of you turns the colour (and the pattern) that's behind it. <b>[Shift]</b> swaps to an over-the-shoulder camera (run with <b>Space</b> in this mode); <span data-key="pause"></span> pauses.</p>
     <p class="p">The Warden doesn't see <i>you</i> — it sees what doesn't match what's <b>behind</b> you, from where it stands: colour, light, open space, which side of you it's looking at, and above all <b>movement</b>. Crouch, freeze against a wall your colour and it can walk right past you — a couple of metres away — and when it does you get a <b>CLOSE CALL</b> (and coins). Your <b>CAMO</b> meter says how well you blend in from where it could be standing. But it hears you, it smells anyone who stays in one place too long, a near-miss colour shows up close, and nothing survives it walking straight into you. Lose it, and it only knows where it last saw you: break its line of sight, move, freeze. Throw the <b>breakers</b> (hold <span data-key="interact"></span> — loud), then get to the <b>Surface Lift</b>. <b>Online</b>, a caught player is caged in Containment until a teammate frees them; the team wins if half of you get out.</p>
     <p class="p"><b>No two rounds are the same.</b> The Warden wakes up as one of three: <b>THE STALKER</b> (slow, careful, a sharp eye), <b>THE PROWLER</b> (fast rounds, never looks for long) or <b>THE LISTENER</b> (half-blind, but every sound brings it running). It remembers where it glimpsed something odd, and comes back to look. A minute or so in, something happens — named and timed at the top of the screen: a <b>BLACKOUT</b> (it sees less, hears more), a <b>SEARCHLIGHT DRONE</b> (stay out of its light), <b>THE SLEEPWALKER</b> (never let it touch you: it screams) or a <b>FRESH COAT</b> (a room is repainted: re-spray). Three <b>gold paint tins</b> are hidden against the walls — collect them over your rounds for new paints — and every round has a <b>bonus job</b>. Online, from a cage: <span data-key="interact"></span> calls for help (it hears that too) and <span data-key="nextWeapon"></span> watches a teammate; the free see <b>FREE &lt;NAME&gt;</b> over the cage.</p>
+    <p class="p"><b>Two maps.</b> <b>SUBLEVEL 6</b> is the facility, mid-renovation. <b>THE COLOUR WORKS</b> (Sublevel 5) is the paint factory upstairs: every room its own colours — earth pigments, the primaries of the Mixing Hall's vats, the Tint Lab's pastels, the Showroom's swatch walls. Hide behind the Drying Room's hanging sheets (they hide you; they don't stop anyone walking through), and step into a <b>SPRAY BOOTH</b>: <span data-key="interact"></span> and you're coated head to toe in its colours — it hisses, and the Warden knows what booths are for. Caught, you go to the Wash Bay; the way out is the Goods Lift. Online, the host picks the map.</p>
     </div>
     <div id="brief-endless" hidden>
     <p class="p">The day shift is never coming. There is no lift, no keycard, no way out — only the night, and <b>how long you can last in it</b>.</p>
@@ -1159,7 +1164,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <button class="mode" data-mode="endless"><b>ENDLESS NIGHT</b><span>Dawn never comes. Every hour, pick a curse. How long can you last?</span><em data-best="endless"></em></button>
       <button class="mode watch" data-mode="watch"><b>THE WATCH</b><span>Midnight to 6 AM without leaving Desk B. Ten cameras, one door, one vent — and the power runs out.</span><em data-best="watch"></em></button>
       <button class="mode hunt" data-mode="hunt"><b>THE HUNT<i class="new">NEW</i></b><span>Play as the Warden. The night shift is pulling fuses to open the blast door — catch them before they reach the lift. Solo or online, together.</span><em data-best="hunt"></em></button>
-      <button class="mode camo" data-mode="camo"><b>MECHA CAMO<i class="new">NEW</i></b><span>You're a thick little stickman. Pick up the colours off the walls, paint yourself by hand, freeze — and get to the lift while the Warden looks for anything that doesn't belong. Solo or online.</span><em data-best="camo"></em></button>
+      <button class="mode camo" data-mode="camo"><b>MECHA CAMO<i class="new">NEW</i></b><span>You're a thick little stickman. Paint yourself into the walls, freeze — and get to the lift while the Warden looks for anything that doesn't belong. Two maps: Sublevel 6 and the new COLOUR WORKS. Solo or online.</span><em data-best="camo"></em></button>
     </div>
     <div class="kicker" style="margin-top:14px">Deeper · new floors, new monsters</div>
     <div class="modes deep" id="modes-deep">
@@ -1261,7 +1266,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li><b>The deeper floors</b> (New Game → Deeper): <b>Sublevel 7, the Gallery</b> — a museum of mannequins where one of them only moves while nobody looks at it: keep it in your light, find three fuses, power the freight lift. <b>Sublevel 8, the Blackout</b> — a power station gone dark, where the Shade lives between the lights: torch beams, flares and fire burn it, lamps keep it out, and it puts the lamps out to reach you. Restart three turbines, throw the main breaker, call the Surface Express — and survive the dark until it comes. <b>Sublevel 9, the Hive</b> — a bio-lab that grew a brood: crawler packs that flank you, screamer pods that call the rest, mimics among the supplies, spitters, and the Butcher (knock it down and keep hitting it while it's down: it gets up weaker, and the third time it stays down). Find three cultures, run the sequencer, burn three nests, reroute the power and hold the Lobby until the Quarantine Lift comes. <b>Sublevel 10, the Root</b> — the mine under everything: charge three pylons (one is missing its power cell), kill the Mother by bursting her three sacs while her arms come down in the red rings, then outrun the collapse to the old mine elevator — a different way out is buried every time.</li>
           <li><b>Five modes on Sublevel 6</b> (pick one when you press New Game): <b>The Night Shift</b> — survive until 6:00 AM; <b>The Polaroids</b> — find 8 photos hidden somewhere new every run, each one making it worse, then race to the lift (there is a Daily layout to compete on); <b>Endless Night</b> — no dawn, a new curse every hour (press <b>1</b> or <b>2</b> to choose), survive as long as you can; <b>The Watch</b> (Build 19) — midnight to 6 AM without leaving Desk B; <b>The Hunt</b> (Build 20, solo or online) — you are the Warden.</li>
            <li><b>The Hunt:</b> you play the monster. Click to <b>swipe</b> (a guard in reach is caught), <span data-key="ability"></span> <b>SCREECH</b> (you hear every guard for 6 s, through the walls; the ones close by freeze), <span data-key="ultimate"></span> <b>POUNCE</b> (a long leap that ends in a swipe), <span data-key="interact"></span> on a locker tears it open. Red marks show the guards you hear. The guards pull fuses; enough of them and the blast door opens and they run for the surface lift. Their flashlights blind you if they see you coming. If half of them get out, the hunt is lost; if they're still inside at 6 AM, you win.</li>
-          <li><b>Mecha Camo:</b> <b>[Esc]</b> or <b>[B]</b> frees your mouse to paint: <b>click a wall</b> to pick up its colour, <b>drag on yourself</b> to paint (BRUSH S/M/L, or FILL A PIECE; patterns use the 2nd colour), drag anywhere else or right-drag to turn the camera, scroll to zoom, <b>[Esc]</b>/<b>[B]</b> again to go back. <span data-key="ability"></span> picks up the colour of what you face; <span data-key="nextWeapon"></span> is the chameleon spray (each part of you, the colour behind it). A yellow <b>?</b> over the Warden: something caught its eye. A red <b>!</b>: it's hunting. <b>HOLD STILL</b> when it's close — if it walks away, that's a <b>CLOSE CALL</b> (and coins). <b>[Shift]</b> toggles the over-the-shoulder camera (or <b>[L]</b>); run with <b>Space</b>; <span data-key="pause"></span> pauses. The CAMO meter grades how well you blend in where you stand (from 8 directions, against what's behind you, lit as it's lit, and which side of you faces each way): <b>EXCELLENT</b>, <b>GOOD</b> or <b>POOR</b>. Hold <span data-key="interact"></span> at a breaker panel to throw it; <span data-key="ultimate"></span> lobs a paint can to pull the Warden away. Stay put too long and it smells you. Each round the Warden has a temperament (STALKER, PROWLER or LISTENER), something happens part-way through (BLACKOUT, SEARCHLIGHT DRONE, THE SLEEPWALKER, FRESH COAT — named on screen), three gold paint tins are hidden (they unlock paints), and there's a bonus job. Caged online: <span data-key="interact"></span> calls for help, <span data-key="nextWeapon"></span> watches a teammate.</li>
+          <li><b>Mecha Camo:</b> <b>[L]</b> locks you in place to paint: <b>drag on yourself</b> to paint (FINE/S/M/L brushes, <b>[</b> and <b>]</b> to change), drag anywhere else or right-drag to turn round yourself from any angle, scroll to zoom, <b>click a wall</b> to pick up its colour, <b>[L]</b> again to move. <b>[Esc]</b> or <b>[B]</b> opens the whole paint shop (FILL A PIECE, patterns with the 2nd colour, mixing). <span data-key="ability"></span> picks up the colour of what you face; <span data-key="nextWeapon"></span> is the chameleon spray (each part of you, the colour behind it). A yellow <b>?</b> over the Warden: something caught its eye. A red <b>!</b>: it's hunting. <b>HOLD STILL</b> when it's close — if it walks away, that's a <b>CLOSE CALL</b> (and coins). <b>[Shift]</b> toggles the over-the-shoulder camera (or <b>[L]</b>); run with <b>Space</b>; <span data-key="pause"></span> pauses. The CAMO meter grades how well you blend in where you stand (from 8 directions, against what's behind you, lit as it's lit, and which side of you faces each way): <b>EXCELLENT</b>, <b>GOOD</b> or <b>POOR</b>. Hold <span data-key="interact"></span> at a breaker panel to throw it; <span data-key="ultimate"></span> lobs a paint can to pull the Warden away. Stay put too long and it smells you. Each round the Warden has a temperament (STALKER, PROWLER or LISTENER), something happens part-way through (BLACKOUT, SEARCHLIGHT DRONE, THE SLEEPWALKER, FRESH COAT — named on screen), three gold paint tins are hidden (they unlock paints), and there's a bonus job. Caged online: <span data-key="interact"></span> calls for help, <span data-key="nextWeapon"></span> watches a teammate. Two maps: Sublevel 6 and THE COLOUR WORKS (pick on the briefing screen, or the host picks online) — in the Works, <span data-key="interact"></span> in a SPRAY BOOTH coats you in its colours.</li>
           <li><b>The Watch:</b> <span data-key="map"></span> opens the cameras (<b>1–0</b>, the arrow keys or the map to switch; <span data-key="map"></span> again to look up). The red switch on the desk opens and shuts the door. <b>The Warden</b> shows up on CAM 05 or CAM 06 before your door — shut it in time and it slams it and goes. <b>The Mannequin</b> only moves while nobody watches it (a camera, or your own eyes through the doorway): check CAM 10 before you open the door. <b>The brood</b> comes down the vent: hold your light on the grate. Cameras and a shut door burn power; at 0% everything goes dark and the door won't hold.</li>
           <li><b>The Night Shift: survive until 6:00 AM</b> (the clock is at the top of the screen), then get onto the surface lift when the day shift opens it. Every hour it gets faster and sharper-eared; at 4:00 a power surge blacks everything out; in the last hour it can crawl into the vents. Or open the lift early: three keycards, main power and the breach report.</li>
           <li>It hunts by sound and sight — and it has sharp ears. Walking near it is enough; when it hears you it <b>runs</b> to the sound. Crouch close to it, and hide the moment it starts running.</li>
@@ -1342,6 +1347,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="kicker" style="margin-top:14px">Guards on shift</div>
       <ul id="mp-players"></ul>
       <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
+      <div class="mp-modes mp-cmaps" id="mp-cmaps" hidden><span>MECHA CAMO MAP:</span><button data-cmap="s6">SUBLEVEL 6</button><button data-cmap="works">THE COLOUR WORKS</button></div>
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
@@ -1470,7 +1476,7 @@ const fmtTime = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60)
 /* Settings (persisted, validated)                                     */
 /* ------------------------------------------------------------------ */
 const DEFAULTS = { sensitivity: 1, invertY: false, fov: 72, volume: 0.8, muted: false, difficulty: 'normal',
-  quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '', mode: 'night', daily: false, dynRes: 'on' };
+  quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '', mode: 'night', daily: false, dynRes: 'on', camoMap: 's6' };
 const settings = Object.assign({}, DEFAULTS);
 (function loadSettings() {
   try {
@@ -1482,7 +1488,7 @@ const settings = Object.assign({}, DEFAULTS);
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8);
     bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily');
-    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo']);
+    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo']); oneOf('camoMap', ['s6', 'works']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
   } catch (e) { /* storage blocked or corrupt: keep defaults */ }
@@ -1784,6 +1790,36 @@ const MAP = [
 '#@@@@@@@@@@@@@@@@******************>>>>>>>>>>>>>>>>||#',
 '#@@@@@@@@@@@@@@@@******************>>>>>>>>>>>>>>>>###',
 '######################################################',
+// Sublevel 5 — the Colour Works (rows 145–173): MECHA CAMO's second floor, a paint factory
+'######################################################',
+'#(((((((((((#++#[[[[[[[[[[[[[[[[[[[[[#++#{{{{{{{{{{{{#',
+'#(((((((((((#++#[[[[[[[[[[[[[[[[[[[[[#++#{{{{{{{{{{{{#',
+'#(((((((((((#++#[[[[[[[[[[[[[[[[[[[[[#++#{{{{{{{{{{{{#',
+'#(((((((((((D++D[[[[[[[[[[[[[[[[[[[[[D++D{{{{{{{{{{{{#',
+'#(((((((((((#++#[[[[[[[[[[[[[[[[[[[[[#++#{{{{{{{{{{{{#',
+'#(((((((((((#++#[[[[[[[[[[[[[[[[[[[[[#++#{{{{{{{{{{{{#',
+'#(((((((((((#++#[[[[[[[[[[[[[[[[[[[[[#++#{{{{{{{{{{{{#',
+'#(((((((((((#++#[[[[[[[[[[[[[[[[[[[[[#++#{{{{{{{{{{{{#',
+'######D######++#######D#######D#######++######D#######',
+'#++++++++++++++++++++++++++++++++++++++++++++++++++++#',
+'#++++++++++++++++++++++++++++++++++++++++++++++++++++#',
+'######D######++###########D###########++######D#######',
+'#===========#++#]]]]]]]]]]]]]]]]]]]]]#++#}}}}}}}}}}}}#',
+'#===========#++#]]]]]]]]]]]]]]]]]]]]]#++#}}}}}}}}}}###',
+'#===========D++D]]]]]]]]]]]]]]]]]]]]]D++D}}}}}}}}}}}}#',
+'#===========#++#]]]]]]]]]]]]]]]]]]]]]#++#}}}}}}}}}}###',
+'#===========#++#]]]]]]]]]]]]]]]]]]]]]#++#}}}}}}}}}}}}#',
+'######D######++###########D###########++######D#######',
+'#++++++++++++++++++++++++++++++++++++++++++++++++++++#',
+'#++++++++++++++++++++++++++++++++++++++++++++++++++++#',
+'######D######++#######D#######D#######++######D#######',
+'#```````````#++#)))))))))))))))))))))#++#"""""""""####',
+'#```````````#++#)))))))))))))))))))))#++#"""""""""#//#',
+'#```````````D++D)))))))))))))))))))))D++D"""""""""X//#',
+'#```````````#++#)))))))))))))))))))))#++#"""""""""#//#',
+'#```````````#++#)))))))))))))))))))))#++#"""""""""#//#',
+'#```````````#++#)))))))))))))))))))))#++#"""""""""####',
+'######################################################',
 ];
 const CELL = 2, WALL_H = 3.2, DOOR_H = 2.45, VENT_H = 1.15, LIFT_H = 2.8, SILL_H = 1.0, WIN_TOP = 2.25;
 const EYE_STAND = 1.62, EYE_CROUCH = 0.92, PLAYER_R = 0.3, MONSTER_R = 0.4;
@@ -1811,12 +1847,16 @@ const ROOMDEF = {
   _: ['rcave', 'Cave Passage'], Z: ['r_cage', 'Mine Cage'], '^': ['r_camp', 'Base Camp'], '<': ['r_lab', 'Field Lab'], '%': ['r_dig', 'The Dig'],
   '&': ['r_grotto', 'Fungal Grotto'], $: ['r_heart', 'The Heart'], '?': ['r_works', 'Mine Works'], '@': ['r_lake', 'The Black Lake'], '*': ['r_chasm', 'The Chasm'],
   '>': ['r_land', 'Elevator Landing'], '|': ['melev', 'Old Mine Elevator'],
+  // Sublevel 5 — the Colour Works (Build 24: MECHA CAMO's second map)
+  '+': ['wcorr', 'Works Corridor'], '=': ['w_dock', 'Loading Dock'], '[': ['w_mix', 'Mixing Hall'], ']': ['w_tint', 'Tint Lab'], '{': ['w_dry', 'Drying Room'],
+  '}': ['w_booth', 'Spray Booths'], '(': ['w_pig', 'Pigment Store'], ')': ['w_show', 'Showroom'], '`': ['w_wash', 'Wash Bay'], '"': ['w_lobby', 'Goods Lift Lobby'], '/': ['w_lift', 'Goods Lift'],
 };
 // the halls that are taller than the rest (metres; everything else is WALL_H)
 const ROOM_H = { g_long: 4.2, g_show: 3.8, g_faces: 3.6, g_bay: 4.6, b_turbA: 5.6, b_turbB: 5.6, b_turbC: 5.6, b_pump: 4.2, b_sub: 3.6, bcorr: 2.7,
   hcorr: 2.9, h_atrium: 6.4, h_green: 5.2, h_pens: 4.2, h_vent: 4.0, h_flood: 3.6, h_incu: 3.4,
-  rcave: 3.4, r_camp: 5.2, r_dig: 6.4, r_grotto: 4.8, r_heart: 9.0, r_works: 5.6, r_lake: 6.0, r_chasm: 8.0, r_land: 5.4 };
-const LIFT_CH = 'ELFQU0NZ|'; // lift cars: the surface lift (6), the Gallery's service and freight lifts (7), the Blackout's service lift and the Surface Express (8), the Hive's dead service lift and the Quarantine Lift (9), the Root's mine cage and the old mine elevator (10)
+  rcave: 3.4, r_camp: 5.2, r_dig: 6.4, r_grotto: 4.8, r_heart: 9.0, r_works: 5.6, r_lake: 6.0, r_chasm: 8.0, r_land: 5.4,
+  w_mix: 4.6, w_dry: 4.2, w_show: 3.6 };
+const LIFT_CH = 'ELFQU0NZ|/'; // lift cars: the surface lift (6), the Gallery's service and freight lifts (7), the Blackout's service lift and the Surface Express (8), the Hive's dead service lift and the Quarantine Lift (9), the Root's mine cage and the old mine elevator (10)
 // the floors share one grid, one under the other: 29 rows each
 const LEVEL_ROWS = 29;
 const LEVELS = [
@@ -1825,11 +1865,12 @@ const LEVELS = [
   { id: 8, z0: 58, name: 'Sublevel 8', title: 'SUBLEVEL 8 · THE BLACKOUT' },
   { id: 9, z0: 87, name: 'Sublevel 9', title: 'SUBLEVEL 9 · THE HIVE' },
   { id: 10, z0: 116, name: 'Sublevel 10', title: 'SUBLEVEL 10 · THE ROOT' },
+  { id: 5, z0: 145, name: 'Sublevel 5', title: 'SUBLEVEL 5 · THE COLOUR WORKS', camo: true }, // (Build 24: MECHA CAMO only)
 ];
-let LVL = 0; // the floor being played: 0 Sublevel 6, 1 the Gallery, 2 the Blackout, 3 the Hive, 4 the Root
+let LVL = 0; // the floor being played: 0 Sublevel 6, 1 the Gallery, 2 the Blackout, 3 the Hive, 4 the Root, 5 the Colour Works (MECHA CAMO)
 const lvlOfRow = z => clamp(Math.floor(z / LEVEL_ROWS), 0, LEVELS.length - 1);
 const lvlAt = wz => lvlOfRow(Math.floor(wz / CELL));
-const CORR_IDS = new Set(['corridor', 'gcorr', 'bcorr', 'hcorr', 'rcave']);
+const CORR_IDS = new Set(['corridor', 'gcorr', 'bcorr', 'hcorr', 'rcave', 'wcorr']);
 const isCorr = r => CORR_IDS.has(r);
 const ROOM_NAMES = {}; Object.keys(ROOMDEF).forEach(k => { ROOM_NAMES[ROOMDEF[k][0]] = ROOMDEF[k][1]; });
 const grid = [];
@@ -2618,7 +2659,7 @@ function addStatic(geo, mat, x, y, z, sx = 1, sy = 1, sz = 1, ry = 0, rx = 0, rz
   _m4.compose(_v, _q, _s);
   const g = geo.clone(); g.applyMatrix4(_m4);
   const lv = lvlAt(z), key = mat.uuid + (shadow ? 's' : 'n') + lv;
-  if (lv === 0 && !mat.transparent) { g.computeBoundingBox(); const bb = g.boundingBox; staticBoxes.push([bb.min.x, bb.min.y, bb.min.z, bb.max.x, bb.max.y, bb.max.z, mat]); } // (Build 21: what each prop on Sublevel 6 is made of, and where — the camouflage reads it)
+  if ((lv === 0 || (LEVELS[lv] && LEVELS[lv].camo)) && !mat.transparent) { g.computeBoundingBox(); const bb = g.boundingBox; staticBoxes.push([bb.min.x, bb.min.y, bb.min.z, bb.max.x, bb.max.y, bb.max.z, mat]); } // (Build 21: what each prop on Sublevel 6 is made of, and where — the camouflage reads it)
   let b = staticBatches.get(key);
   if (!b) { b = { mat, geos: [], shadow, lv }; staticBatches.set(key, b); }
   b.geos.push(g);
@@ -2683,7 +2724,7 @@ function gatherBoxes(px, pz, r, who, crouched) {
     const x0 = x * CELL, z0 = z * CELL;
     let solid = c.kind === 'wall' || c.kind === 'window';
     const mon = who === 'monster' || who === 'ceil'; // 'ceil': the Warden up on the ceiling
-    if (c.kind === 'vent' && (mon ? !(Night.ventsOpen || (crouched && LVL >= 3)) : !crouched)) solid = true; // (down on 9 and 10 the crawlers live in the vents)
+    if (c.kind === 'vent' && (mon ? !(Night.ventsOpen || (crouched && (LVL === 3 || LVL === 4))) : !crouched)) solid = true; // (down on 9 and 10 the crawlers live in the vents)
     if (c.kind === 'lift' && mon && Game.endingLock) solid = true;
     if (mon && Trader.on && Trader.blocks(x, z)) solid = true; // (nothing big comes into the Business Man's room while he's there)
     if (mon && Lockdown.blocks(x, z, px, pz)) solid = true;     // (a Hacker's LOCKDOWN: not into that room — unless it's already in it)
@@ -2794,6 +2835,10 @@ const ROOM_LOOK = {
   rcave: ['rock', 'cave', 'rock'], r_cage: ['metal', 'plate', 'rock'], r_camp: ['rock', 'cave', 'rock'], r_lab: ['white', 'vinyl', 'tile'],
   r_dig: ['rock', 'cave', 'rock'], r_grotto: ['rock', 'cave', 'rock'], r_heart: ['flesh', 'flesh', 'rock'], r_works: ['rock', 'plate', 'rock'],
   r_lake: ['rock', 'cave', 'rock'], r_chasm: ['rock', 'void', 'rock'], r_land: ['rock', 'plate', 'rock'], melev: ['metal', 'plate', 'rock'],
+  // the Colour Works: a paint factory — white walls under the colour, concrete and steel underfoot
+  wcorr: ['white', 'concrete', 'concrete'], w_dock: ['block', 'concrete', 'concrete'], w_mix: ['white', 'concrete', 'concrete'], w_tint: ['white', 'lab', 'tile'],
+  w_dry: ['white', 'concrete', 'concrete'], w_booth: ['white', 'plate', 'concrete'], w_pig: ['block', 'concrete', 'concrete'], w_show: ['white', 'checker', 'tile'],
+  w_wash: ['tile', 'lab', 'tile'], w_lobby: ['white', 'vinyl', 'tile'], w_lift: ['metal', 'plate', 'concrete'],
 };
 function wallKey(c) {
   if (c.kind === 'door') return 'frame';
@@ -2880,7 +2925,7 @@ const DOOR_TYPES = { D: 'normal', Y: 'yellow', B: 'blue', P: 'power', X: 'exit' 
 const wardenBreaksDoors = () => dkey() === 'hard' || dkey() === 'nightmare' || Endless.has('iron'); // Hard and Nightmare, or the Iron Will curse
 const doorMats = {};
 ['normal', 'yellow', 'blue', 'power', 'exit'].forEach(t => { const tx = mkTex(genDoor(t), false); doorMats[t] = phong({ map: tx, shininess: 35, specular: 0x333333 }); });
-[['normal@1', 'normal', 'SUBLEVEL 7'], ['power@1', 'power', 'FREIGHT BAY'], ['normal@2', 'normal', 'SUBLEVEL 8'], ['power@2', 'power', 'EXPRESS'], ['normal@3', 'normal', 'SUBLEVEL 9'], ['power@3', 'power', 'HOLDING'], ['normal@4', 'normal', 'BULKHEAD'], ['power@4', 'power', 'THE HEART']].forEach(([k, t, label]) => { doorMats[k] = phong({ map: mkTex(genDoor(t, label), false), shininess: 35, specular: 0x333333 }); });
+[['normal@1', 'normal', 'SUBLEVEL 7'], ['power@1', 'power', 'FREIGHT BAY'], ['normal@2', 'normal', 'SUBLEVEL 8'], ['power@2', 'power', 'EXPRESS'], ['normal@3', 'normal', 'SUBLEVEL 9'], ['power@3', 'power', 'HOLDING'], ['normal@4', 'normal', 'BULKHEAD'], ['power@4', 'power', 'THE HEART'], ['normal@5', 'normal', 'COLOUR WORKS'], ['exit@5', 'exit', 'GOODS LIFT']].forEach(([k, t, label]) => { doorMats[k] = phong({ map: mkTex(genDoor(t, label), false), shininess: 35, specular: 0x333333 }); });
 class Door {
   constructor(c) {
     this.cell = c; this.x = c.x; this.z = c.z; this.type = DOOR_TYPES[c.ch];
@@ -10098,7 +10143,7 @@ const SCENES = {
       return fov - 6 - 8 * smooth(0, 0.2, t);
     },
     light(sc) { flashFill.position.copy(camera.position).addScaledVector(sc.dir, 0.12); flashFill.distance = 4; flashFill.decay = 1; flashFill.intensity = sc.black ? 0 : 1.7 + Math.random() * 0.7; },
-    end() { Scare.hide(); Monster.model.visible = LVL === 0; $('hud').classList.remove('scare'); },
+    end() { Scare.hide(); Monster.model.visible = Level.wardenHere(); $('hud').classList.remove('scare'); },
   },
   // it cut you: the view whips to its face for a heartbeat
   hurt: {
@@ -10148,7 +10193,7 @@ const Cine = {
     this.cuts.forEach(el => { el.style.opacity = '0'; }); this.cuts.length = 0;
     this.el.flash.style.transition = 'none'; this.el.flash.style.opacity = '0';
     $('hud').classList.remove('cine', 'clean'); Net.selfAvatar(false);
-    Scare.hide(); if (Monster.model) Monster.model.visible = LVL === 0; $('hud').classList.remove('scare');
+    Scare.hide(); if (Monster.model) Monster.model.visible = Level.wardenHere(); $('hud').classList.remove('scare');
   },
   blocking() { return !!(this.cur && this.cur.def.full); },
   cctvOn() { return !!(this.cur && this.cur.cctv); },
@@ -10329,7 +10374,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 20, BUILD = 23, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 21, BUILD = 24, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -10931,7 +10976,7 @@ const Net = {
     this.peers.clear(); this.byCid.clear(); this.goneCids.clear(); this.relays = []; this.relay = null;
     for (const r of this.remotes.values()) r.dispose();
     this.remotes.clear();
-    this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.sessionMode = null; this.sessionDaily = false; this.myId = 0; this.code = ''; this.hid = '';
+    this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.sessionMode = null; this.sessionDaily = false; this.sessionCamoMap = null; this.myId = 0; this.code = ''; this.hid = '';
     this.welcomed = false; this.recovering = false; this.hiccup = false; this.goneAt = 0;
     this.lights.forEach(l => { l.visible = false; l.intensity = 0; });
     this.pings.forEach(p => { scene.remove(p.spr); p.spr.material.map.dispose(); p.spr.material.dispose(); }); this.pings.length = 0;
@@ -10975,7 +11020,7 @@ const Net = {
         const taken = new Set([this.myName].concat([...this.remotes.values()].map(x => x.name)));
         for (let k = 2; taken.has(name); k++) name = (cleanName(m.name) || 'Guard').slice(0, 13) + ' ' + k;
         peer.name = name; peer.remote = new RemotePlayer(peer.id, name); peer.remote.setChar(Chars.byIdx(m.c)); this.remotes.set(peer.id, peer.remote);
-        this.rel(peer, { k: 'welcome', id: peer.id, diff: settings.difficulty, mode: settings.mode, daily: settings.daily ? 1 : 0 });
+        this.rel(peer, { k: 'welcome', id: peer.id, diff: settings.difficulty, mode: settings.mode, daily: settings.daily ? 1 : 0, cm: settings.camoMap });
         this.sendRoster(); this.lobbyUpdate(); Sound.ui();
         break;
       }
@@ -11015,8 +11060,8 @@ const Net = {
         : m.why === 'gone' ? 'Lost connection to the host.' : m.why === 'kicked' ? 'The host removed you from this room.' : 'The host ended the session.'); break;
     }
   },
-  applyCfg(m) { this.sessionDiff = DIFF[m.diff] ? m.diff : 'normal'; this.sessionMode = MODES[m.mode] ? m.mode : 'night'; this.sessionDaily = !!m.daily; },
-  sendCfg() { if (this.isHost) this.broadcast({ k: 'cfg', diff: settings.difficulty, mode: settings.mode, daily: settings.daily ? 1 : 0 }); }, // the host changed the mode in the lobby
+  applyCfg(m) { this.sessionDiff = DIFF[m.diff] ? m.diff : 'normal'; this.sessionMode = MODES[m.mode] ? m.mode : 'night'; this.sessionDaily = !!m.daily; this.sessionCamoMap = m.cm === 'works' ? 'works' : 's6'; }, // (Build 24: and MECHA CAMO's map)
+  sendCfg() { if (this.isHost) this.broadcast({ k: 'cfg', diff: settings.difficulty, mode: settings.mode, daily: settings.daily ? 1 : 0, cm: settings.camoMap }); }, // the host changed the mode in the lobby
   roster() { const l = [[0, this.myName, Chars.idx()]]; for (const r of this.remotes.values()) l.push([r.id, r.name, Chars.idx(r.nextChar || r.charId)]); return l; },
   // (lobby) I picked someone else: tell everyone
   sendChar() { if (this.isHost) { this.sendRoster(); this.lobbyUpdate(); } else if (this.isClient && this.welcomed) { this.rel(this.host0(), { k: 'char', c: Chars.idx() }); this.lobbyUpdate(); } },
@@ -11036,9 +11081,9 @@ const Net = {
   startGame() { // host
     if (!this.isHost) return;
     for (const peer of [...this.peers.values()]) if (!peer.remote) this.dropPeer(peer, 'left', true);
-    this.sessionDiff = settings.difficulty; this.sessionMode = settings.mode; this.sessionDaily = !!settings.daily;
+    this.sessionDiff = settings.difficulty; this.sessionMode = settings.mode; this.sessionDaily = !!settings.daily; this.sessionCamoMap = settings.camoMap === 'works' ? 'works' : 's6';
     this.sessionSeed = this.sessionDaily ? dailySeed() : (Math.random() * 4294967296) >>> 0; // everyone gets the same photos
-    this.broadcast({ k: 'start', diff: this.sessionDiff, mode: this.sessionMode, daily: this.sessionDaily ? 1 : 0, seed: this.sessionSeed, l: this.roster() });
+    this.broadcast({ k: 'start', diff: this.sessionDiff, mode: this.sessionMode, daily: this.sessionDaily ? 1 : 0, cm: this.sessionCamoMap, seed: this.sessionSeed, l: this.roster() });
     UI.closeNote(true);
     Game.newGame();
   },
@@ -14393,6 +14438,7 @@ const Level = {
   of(mode) { return LEVEL_OF_MODE[mode] || 0; },
   mod() { return this.mods[LVL] || null; },
   foe() { const M = this.mods[LVL]; return M ? M.foe : null; },
+  wardenHere() { const M = this.mods[LVL]; return LVL === 0 || !!(M && M.warden); }, // (Build 24: the Colour Works has the Warden too)
   // (boot, once everything is built) every floor's things go on that floor's layer
   init() {
     const keep = new Set([camera, Monster.model, Sleeper.model, Phantom.model, Scare.model, Net.self, dust, instMain, instEm, flash.target, Hints.halo, Hints.marker, Hints.column]
@@ -14429,7 +14475,7 @@ const Level = {
     this.attach();
     pipCam.layers.mask = camera.layers.mask;
     flash.shadow.camera.layers.mask = camera.layers.mask;
-    if (Monster.model) Monster.model.visible = LVL === 0;
+    if (Monster.model) Monster.model.visible = this.wardenHere();
     for (const f of fixtures) if (f.lvl !== LVL) { f.on = false; f.b = 0; }
     pool.forEach(l => { l.userData.fix = null; l.intensity = 0; });
     Game.poolT = 0;
@@ -14448,7 +14494,7 @@ const Level = {
   clampZ(z) { const z0 = LEVELS[LVL].z0 * CELL; return clamp(z, z0 + 4, z0 + LEVEL_ROWS * CELL - 4); },
 };
 // the exit lifts (the arrival lifts on 7 and 8 are dead: their cables are cut)
-const EXIT_LIFTS = new Set(['lift', 'freight', 'express', 'qlift', 'melev']);
+const EXIT_LIFTS = new Set(['lift', 'freight', 'express', 'qlift', 'melev', 'w_lift']);
 // the end of a run on Sublevel 7 or 8: the floor says what happened, the time is the score
 Level.result = function (won) {
   const M = this.mod(), G = Game, m = G.mode, dn = (Net.sessionDiff || settings.difficulty).toUpperCase();
@@ -14482,6 +14528,142 @@ Level.result = function (won) {
   $('fx-fade').style.transition = 'opacity .8s'; $('fx-fade').style.opacity = 0;
   Sound.setAlarm(false);
 };
+/* ------------------------------------------------------------------ */
+/* SUBLEVEL 5 — THE COLOUR WORKS (Build 24)                            */
+/* MECHA CAMO's second map: the paint factory that coats the site.     */
+/* Every room has its own colours. Hide among the Mixing Hall's vats,  */
+/* behind the Drying Room's hanging sheets (they stop an eye, not a    */
+/* body: you walk through them, and so does the Warden), against the   */
+/* Showroom's display walls — or step into a Spray Booth and come out  */
+/* in its colours (loud). Only MECHA CAMO comes here, and the Warden   */
+/* is its monster: the floor's module hands every question to it.     */
+/* Everything here is built from a fixed seed: every screen has the    */
+/* same floor.                                                          */
+/* ------------------------------------------------------------------ */
+const WORKS_LV = 5, WZ0 = LEVELS[WORKS_LV].z0;
+const wkx = x => cc(x), wkz = r => cc(WZ0 + r);           // a Works cell (column, row) -> world centre
+const WORKS_SPAWNS = [[wkx(3), wkz(14), -Math.PI / 2], [wkx(3), wkz(16), -Math.PI / 2], [wkx(5), wkz(14), -Math.PI / 2], [wkx(5), wkz(16), -Math.PI / 2]];
+// the three spray booths: alcoves in the Spray Booths' east wall (columns 51–52), each with its own coat
+const WORKS_BOOTHS = [
+  { row: 13, name: 'RED STRIPES', scheme: [0xb3372b, 0xf2f0ea, 1] },
+  { row: 15, name: 'TEAL SPOTS', scheme: [0x2f7f7a, 0x1f3460, 3] },
+  { row: 17, name: 'OLIVE BLOTCH', scheme: [0x5b6b2f, 0x9c8b5a, 5] },
+];
+(function buildWorks() {
+  const rng = mulberry32(0xc0105), r = (a, b) => a + rng() * (b - a);
+  const mats = new Map(), M = hex => { let m = mats.get(hex); if (!m) { m = new T.MeshPhongMaterial({ color: hex, shininess: 18, specular: 0x1a1a1a }); mats.set(hex, m); } return m; };
+  const steel = M(0x6a7076), dark = M(0x2c2f33), rubber = M(0x1b1c1e);
+  const box = (mat, x, y, z, sx, sy, sz, ry = 0) => addStatic(GEO.box, mat, x, y, z, sx, sy, sz, ry);
+  const solid = (x0, z0, x1, z1, pad = 0.25, opaque = false) => addCollider(x0, z0, x1, z1, { navPad: pad, opaque });
+  const X0 = c => c * CELL, Z0 = rw => (WZ0 + rw) * CELL; // (a cell's near edges)
+  /* ---- lights: a panel every 6 m in the rooms, every third cell along the corridors — the Works runs bright ---- */
+  const lamp = (x, z, h, along, room) => { const f = addFixture('main', x, h - 0.06, z, along, room); f.mode = 'steady'; f.color.set(0xf4f2ea); return f; };
+  for (let rw = 1; rw < LEVEL_ROWS - 1; rw++) for (let c = 1; c < W - 1; c++) {
+    const cl = cellAt(c, WZ0 + rw); if (cl.kind !== 'floor' || cl.room !== 'wcorr') continue;
+    const horiz = isWalkKind(cellAt(c - 1, WZ0 + rw)) || isWalkKind(cellAt(c + 1, WZ0 + rw)), vert = isWalkKind(cellAt(c, WZ0 + rw - 1)) || isWalkKind(cellAt(c, WZ0 + rw + 1));
+    if ((c + rw) % 3 === 0) lamp(wkx(c), wkz(rw), WALL_H, horiz && !vert ? 'x' : 'z', 'wcorr');
+  }
+  for (const id of ['w_dock', 'w_mix', 'w_tint', 'w_dry', 'w_booth', 'w_pig', 'w_show', 'w_wash', 'w_lobby']) {
+    const R = rooms[id]; if (!R) continue;
+    const x0 = R.minX * CELL, x1 = (R.maxX + 1) * CELL, z0 = R.minZ * CELL, z1 = (R.maxZ + 1) * CELL, h = ROOM_H[id] || WALL_H;
+    const nx = Math.max(1, Math.round((x1 - x0) / 6)), nz = Math.max(1, Math.round((z1 - z0) / 6));
+    for (let i = 0; i < nx; i++) for (let k = 0; k < nz; k++) lamp(x0 + (i + 0.5) * (x1 - x0) / nx, z0 + (k + 0.5) * (z1 - z0) / nz, h, (x1 - x0) >= (z1 - z0) ? 'x' : 'z', id);
+  }
+  lamp(104, 340, LIFT_H, 'z', 'w_lift');
+  for (const B of WORKS_BOOTHS) lamp(wkx(52) - 0.2, wkz(B.row), WALL_H, 'z', 'w_booth').intensity = 0.95;
+
+  /* ---- the Pigment Store: shelves of sacks, pallets of pigment in the earth colours ---- */
+  const EARTH = [0xc9a227, 0xb5522e, 0x6b4a2f, 0x8a4b2a, 0x5b6b2f, 0x4f6272, 0x9c8b5a];
+  const sacks = (x, z, col) => { // a pallet with a stack of sacks
+    box(M(0x8a6a44), x, 0.07, z, 1.3, 0.14, 1.1);
+    for (let i = 0; i < 2; i++) for (let k = 0; k < 2; k++) for (let y = 0; y < 2; y++) box(M(col), x - 0.31 + i * 0.62 + r(-0.03, 0.03), 0.32 + y * 0.32, z - 0.26 + k * 0.52, 0.58, 0.3, 0.48, r(-0.08, 0.08));
+    solid(x - 0.7, z - 0.6, x + 0.7, z + 0.6, 0.2);
+  };
+  shelf(X0(2) + 3, Z0(1) + 0.6, 0, 4); shelf(X0(7) + 3, Z0(1) + 0.6, 0, 4);
+  [[wkx(3), wkz(4)], [wkx(3), wkz(7)], [wkx(7), wkz(5)], [wkx(9), wkz(7)], [wkx(10), wkz(3)]].forEach(([x, z], i) => sacks(x, z, EARTH[i % EARTH.length]));
+
+  /* ---- the Mixing Hall: five great vats in the primaries, smaller tanks, pipes overhead ---- */
+  const vat = (x, z, rad, h, col) => {
+    addStatic(GEO.cyl, M(col), x, h / 2, z, rad * 2, h, rad * 2);
+    addStatic(GEO.cyl, dark, x, h + 0.04, z, rad * 2 + 0.12, 0.08, rad * 2 + 0.12);
+    addStatic(GEO.cyl, steel, x, 0.06, z, rad * 2 + 0.2, 0.12, rad * 2 + 0.2);
+    solid(x - rad, z - rad, x + rad, z + rad, 0.25, true);
+  };
+  [[wkx(19), 0xb3372b], [wkx(23), 0xd8b11a], [wkx(27), 0x2f5fb3], [wkx(31), 0xe6e9ea], [wkx(35), 0x2d5a3a]].forEach(([x, col]) => vat(x, wkz(2), 1.25, 2.7, col));
+  [[wkx(21), 0xd06a1e], [wkx(29), 0x8a78b8], [wkx(33), 0x9fc9b5]].forEach(([x, col]) => vat(x, wkz(6), 0.85, 2.0, col));
+  for (const z of [wkz(4) - 0.3, wkz(4) + 0.3]) addStatic(GEO.cyl8, steel, (wkx(16) + wkx(36)) / 2, 3.9, z, 0.16, wkx(36) - wkx(16), 0.16, 0, 0, Math.PI / 2, false); // (pipes along the hall)
+
+  /* ---- the Drying Room: three rows of hanging sheets (they hide you; they don't stop anyone) ---- */
+  const SHEETS = [0xb3372b, 0x2f5fb3, 0xd8b11a, 0x2d5a3a, 0xf2f0ea, 0x8a78b8, 0xd06a1e, 0x9fc9b5, 0x6e1f24, 0x141516, 0xd9a3a8, 0x5b6b2f];
+  let si = 0;
+  for (const rw of [2, 5, 7]) {
+    addStatic(GEO.cyl8, steel, (wkx(42) + wkx(51)) / 2, 2.78, wkz(rw), 0.05, wkx(51) - wkx(42) + 1, 0.05, 0, 0, Math.PI / 2, false); // (the rail)
+    for (const c of [42, 44, 48, 50]) { const col = SHEETS[(si++ * 5) % SHEETS.length]; box(M(col), wkx(c), 1.5, wkz(rw), 1.7, 2.3, 0.04); } // (no collider: you push through cloth)
+  }
+
+  /* ---- the Loading Dock: where you start — pallets, crates, the shutter, hazard paint ---- */
+  const hazard = M(0xd8b11a);
+  box(M(0x7a7f84), X0(1) + 0.08, 1.6, wkz(15), 0.12, 3.0, 5.6); // (the roller shutter: shut)
+  for (let i = 0; i < 6; i++) box(i % 2 ? rubber : hazard, X0(1) + 0.16, 0.25, wkz(15) - 2.5 + i, 0.06, 0.5, 1.0);
+  crate(wkx(2), wkz(13) - 0.2, 1.0, 0, 2); crate(wkx(10), wkz(17) + 0.2, 0.9, 0.3, 2); crate(wkx(10), wkz(13) - 0.1, 0.8, 0.1, 1);
+  box(M(0x8a6a44), wkx(8), 0.07, wkz(17) + 0.2, 1.3, 0.14, 1.1); barrel(wkx(2), wkz(17) + 0.2);
+
+  /* ---- the Tint Lab: two rows of benches, colour jars in the pastels ---- */
+  const PASTEL = [0xd9a3a8, 0x9fc9b5, 0x8a78b8, 0xe2d6b8, 0x9fb8c0, 0xc8b89a, 0xf2f0ea];
+  for (const z of [wkz(13) + 0.4, wkz(17) - 0.4]) for (const x of [wkx(18), wkx(22), wkx(30), wkx(34)]) {
+    labBench(x, z, 0, 3, false);
+    for (let i = 0; i < 6; i++) addStatic(GEO.cyl8, M(PASTEL[(i + Math.round(x)) % PASTEL.length]), x - 1.2 + i * 0.48, 1.03, z + r(-0.15, 0.15), 0.14, 0.22, 0.14);
+  }
+
+  /* ---- the Spray Booths: the alcoves' frames (their coats are painted on with the room's colours when a round starts) ---- */
+  for (const B of WORKS_BOOTHS) {
+    const z = wkz(B.row);
+    box(dark, X0(51) - 0.05, 2.62, z, 0.12, 0.12, CELL - 0.1); // (the booth's lintel)
+    addStatic(GEO.cyl8, steel, wkx(52) + 0.6, 2.4, z, 0.08, 0.4, 0.08); // (a spray head)
+    box(M(B.scheme[0]), X0(51) - 0.1, 2.85, z, 0.06, 0.32, 1.5); // (its colour on the sign)
+  }
+  box(dark, wkx(43), 0.45, wkz(17) + 0.3, 2.6, 0.9, 0.6); solid(wkx(43) - 1.3, wkz(17), wkx(43) + 1.3, wkz(17) + 0.6, 0.2); // (the compressor)
+
+  /* ---- the Showroom: freestanding display walls, each a colour ---- */
+  const wall = (x, z, len, col, alongX = true) => {
+    box(M(col), x, 1.3, z, alongX ? len : 0.22, 2.6, alongX ? 0.22 : len);
+    box(dark, x, 0.05, z, alongX ? len + 0.1 : 0.4, 0.1, alongX ? 0.4 : len + 0.1);
+    if (alongX) solid(x - len / 2, z - 0.11, x + len / 2, z + 0.11, 0.3, true); else solid(x - 0.11, z - len / 2, x + 0.11, z + len / 2, 0.3, true);
+  };
+  wall(wkx(19), wkz(23), 4, 0xb0457a); wall(wkx(27), wkz(23), 4, 0x2f5fb3); wall(wkx(34), wkz(23), 4, 0x7fb83a);
+  wall(wkx(23), wkz(26), 4, 0xd06a1e); wall(wkx(31), wkz(26), 4, 0x8a78b8);
+
+  /* ---- the Wash Bay: tiles, drains, hose reels (the cages go in when a round starts) ---- */
+  for (const c of [3, 6, 9]) addStatic(GEO.cyl, dark, wkx(c), 0.006, wkz(25), 0.5, 0.012, 0.5, 0, 0, 0, false);
+  for (const c of [2, 6, 10]) { addStatic(GEO.cyl, M(0xb3372b), wkx(c), 1.5, Z0(22) + 0.12, 0.5, 0.12, 0.5, 0, Math.PI / 2, 0); }
+
+  /* ---- the Goods Lift lobby, and the sign over the lift ---- */
+  bench(wkx(43), wkz(27) + 0.3, 0, 2.4); bench(wkx(47), wkz(27) + 0.3, 0, 2.4); plant(wkx(41) - 0.3, wkz(22) - 0.3);
+  box(hazard, X0(50) - 0.02, 2.75, wkz(24), 0.04, 0.3, 1.9);
+  // the corridors: a drum or two in the dead ends
+  barrel(wkx(1), wkz(10) + 0.2); barrel(wkx(52), wkz(20) - 0.2); barrel(wkx(52), wkz(10) + 0.2);
+})();
+
+/* ---- the floor's module: the Warden is its monster; MECHA CAMO runs everything else ---- */
+const Works = {
+  name: 'The Colour Works', optHead: 'MECHA CAMO', scareScene: 'jumpscare', spawns: WORKS_SPAWNS, foe: Monster, warden: true,
+  init() { }, reset() { }, show() { }, start() { }, intro() { }, introMsgs() { },
+  update(dt) { if (Game.mode === 'camo') Camo.update(dt); },
+  fixOn(f, t) { if (f.type === 'main') f.on = Game.power && f.mode !== 'dead' && t >= f.powerOnAt; },
+  dim(f, b) { return b; },
+  ambient() { return [Game.power ? 0.62 : 0.5, Game.power ? FOG_BASE * 0.85 : FOG_BASE]; },
+  threat() { const L = LVL; LVL = 0; try { return Game.threat(); } finally { LVL = L; } }, // (the Warden's, read as it is read on Sublevel 6)
+  audio() { return { seen: Monster.los }; },
+  hunted() { return Monster.huntsLocal(); },
+  hint() { return null; }, progress() { return -1; }, progressKey() { return ''; }, objectives() { return []; }, bonus() { return []; },
+  hud() { return { clock: '', goal: '', cls: '', bar: 0, mission: 'MECHA CAMO', sub: '' }; },
+  hurtText(hp) { return hp > 35 ? 'It cut you. RUN!' : 'One more and it\'s over.'; },
+  startEnding() { }, updateEnding() { }, onEscape() { },
+  resultInfo(won) { return { title: won ? 'You got out' : 'It found you', sub: 'The Colour Works', rows: [], score: [] }; },
+  netState() { return undefined; }, netPush() { },
+  event() { }, remote() { }, onTake() { },
+};
+Level.mods[WORKS_LV] = Works;
 
 /* ------------------------------------------------------------------ */
 /* SUBLEVEL 7 — THE GALLERY                                            */
@@ -18632,7 +18814,7 @@ const HProj = {
         if (p.K.splash) { // acid: it splashes whoever stands close, and pools on the floor
           const F = Powers.foeByKey(p.by), bx = p.pos.x - (wall ? p.v.x * 0.04 : 0), bz = p.pos.z - (wall ? p.v.z * 0.04 : 0);
           for (const a of crew()) { if (a === hit || a.dead || a.downed || a.hidden) continue; if (Math.hypot(a.pos.x - bx, a.pos.z - bz) < p.K.splash) Health.hit(a, p.kind, F, _hpv.set(bx, 0, bz)); }
-          if (LVL >= 3) Game.emit({ k: 'cr', e: 'pu', x: +bx.toFixed(2), z: +bz.toFixed(2) });
+          if (LVL === 3 || LVL === 4) Game.emit({ k: 'cr', e: 'pu', x: +bx.toFixed(2), z: +bz.toFixed(2) });
         }
       }
     }
@@ -18652,7 +18834,7 @@ const HProj = {
 // shrieks, and whatever lives on this floor comes running. Crouch through, go round, or kill it (Volt's EMP, anyone's hands — an
 // Engineer's much faster). Shorting electrical panels in the rooms crackle, then arc: stand clear. Where they are is worked out from
 // the map, so every peer has the same ones; the host decides when they trip, arc and die.
-const HAZ_N = [{ sensor: 6, arc: 2 }, { sensor: 5, arc: 1 }, { sensor: 3, arc: 4 }, { sensor: 3, arc: 3 }, { sensor: 0, arc: 2 }];
+const HAZ_N = [{ sensor: 6, arc: 2 }, { sensor: 5, arc: 1 }, { sensor: 3, arc: 4 }, { sensor: 3, arc: 3 }, { sensor: 0, arc: 2 }, { sensor: 0, arc: 0 }]; // (Build 24: none in the Colour Works)
 const HAZ = {
   sensorR: { easy: 1.7, normal: 2.1, hard: 2.4, nightmare: 2.7 }, // how wide each sensor watches (m)
   trip: 1.7,        // faster than this (m/s) sets it off — a crouch-walk doesn't
@@ -18891,10 +19073,10 @@ const Powers = {
   /* ---- the monsters on this floor ---- */
   foes() {
     const out = [];
-    if (LVL === 0) { if (Monster.active && !Monster.down) out.push(Monster); if (Sleeper.active) out.push(Sleeper); }
+    if (LVL === 0 || Level.wardenHere()) { if (Monster.active && !Monster.down) out.push(Monster); if (Sleeper.active) out.push(Sleeper); }
     else if (LVL === 1) { if (Mannequin.active && !Mannequin.dead) out.push(Mannequin); }
     else if (LVL === 2) { if (Shade.active && !Shade.gone) out.push(Shade); }
-    else if (LVL >= 3) { for (const m of Horde.list) if (!m.dead) out.push(m); } // (the brood: every one of them)
+    else if (LVL === 3 || LVL === 4) { for (const m of Horde.list) if (!m.dead) out.push(m); } // (the brood: every one of them)
     return out;
   },
   keyOf(F) { return !F ? '' : F.isCreature ? F.key : F === Monster ? 'W' : F === Mannequin ? 'M' : F === Shade ? 'H' : F === Sleeper ? 'S' : ''; },
@@ -26485,7 +26667,12 @@ const Hunt = {
 /*  paint, lit the way you are lit (CIEDE2000, a perceptual distance). */
 /* ================================================================== */
 const CM_PIECES = ['head', 'torso', 'armLU', 'armLL', 'armRU', 'armRL', 'legLU', 'legLL', 'legRU', 'legRL'];
-const CM_G = 12, CM_N = CM_G * CM_G; // (each piece's paint: 12 cells round it by 12 along it)
+const CM_G = 32, CM_N = CM_G * CM_G; // (Build 24: each piece's paint is 32 cells round it by 32 along it — about a centimetre a cell on an arm or a leg)
+const CM_G0 = 12; // (Build 21–23 painted on 12 × 12: the patterns keep that scale, and old paint jobs are scaled up to the new cells)
+const CM_MID = (CM_G >> 1) * CM_G + (CM_G >> 1); // (the middle of a piece: its colour at a glance)
+// how big each piece is (metres round it, metres along it): a brush is a size on the body, not a number of cells
+const CM_SIZE = { head: [0.74, 0.37], torso: [0.68, 0.5], armLU: [0.3, 0.26], armRU: [0.3, 0.26], armLL: [0.28, 0.24], armRL: [0.28, 0.24], legLU: [0.36, 0.32], legRU: [0.36, 0.32], legLL: [0.35, 0.3], legRL: [0.35, 0.3] };
+const CM_BRUSH = [0.008, 0.018, 0.035, 0.065], CM_BRUSH_N = ['FINE', 'S', 'M', 'L']; // (Build 24: brush radius, metres on the body)
 const CM_PATS = ['SOLID', 'STRIPES', 'CHECKS', 'SPOTS', 'FADE', 'BLOTCH'];
 const CM_SWATCH = [0xf2f0ea, 0xb9bcbc, 0x7c8084, 0x3e4246, 0x141516, 0xc8b89a, 0x6b4a2f, 0x5b6b2f, 0x2d5a3a, 0x9fc9b5, 0x2f7f7a, 0x1f3460, 0x2f5fb3, 0x8a78b8, 0x6e1f24, 0xb3372b, 0xc9a227, 0xd06a1e, 0xd9a3a8, 0xb0457a];
 const CM_FACTORY = 0xd06a1e; // (a fresh stickman comes out safety orange: you have to paint before you can hide)
@@ -26496,15 +26683,18 @@ const cmDefPaint = () => cmNewPaint(CM_FACTORY);
 function cmClonePaint(P) { const g = {}; for (const k of CM_PIECES) g[k] = P.g[k].slice(); return { g, v: (P.v || 0) + 1 }; }
 // a pattern, cell by cell (i round, j along, the piece's number for the scatter)
 function cmPatCol(c1, c2, p, i, j, n) {
+  i = Math.floor(i * CM_G0 / CM_G); j = Math.floor(j * CM_G0 / CM_G); // (a pattern is as big on you as it always was)
   if (p === 1) return Math.floor(j / 2) % 2 ? c2 : c1;
   if (p === 2) return (Math.floor(i / 3) + Math.floor(j / 3)) % 2 ? c2 : c1;
   const h = (a, b) => { let x = Math.imul(a * 73856093 ^ b * 19349663 ^ n * 83492791, 0x27d4eb2d) >>> 0; x ^= x >>> 15; return (x >>> 0) / 4294967296; };
   if (p === 3) return h(i, j) < 0.22 ? c2 : c1;
-  if (p === 4) return CamoColor.mix(c1, c2, Math.round(j / (CM_G - 1) * 4) / 4);
+  if (p === 4) return CamoColor.mix(c1, c2, Math.round(j / (CM_G0 - 1) * 4) / 4);
   if (p === 5) { const v = h(i >> 1, j >> 1) * 0.6 + h(i, j) * 0.4; return v < 0.42 ? c2 : c1; }
   return c1;
 }
-// for the wire and the save: a palette (at most 36 colours) and one character a cell
+// for the wire and the save: a palette (at most 36 colours), then the cells in runs — a palette character, and when
+// more than one in a row, how many (base 26, A–Z). (Build 24: 32 × 32 a piece; a plain coat is a few characters)
+function cmRun(n) { let s = ''; do { s = String.fromCharCode(65 + n % 26) + s; n = Math.floor(n / 26); } while (n > 0); return s; }
 function cmEncodePaint(P) {
   const cnt = new Map(); for (const k of CM_PIECES) for (const c of P.g[k]) cnt.set(c, (cnt.get(c) || 0) + 1);
   let pal = [...cnt.keys()].sort((a, b) => cnt.get(b) - cnt.get(a)); const idx = new Map();
@@ -26514,16 +26704,38 @@ function cmEncodePaint(P) {
     pal = keep;
   }
   pal.forEach((c, i) => idx.set(c, i));
-  let d = ''; for (const k of CM_PIECES) for (const c of P.g[k]) d += CM_DIG[idx.get(c)];
-  return { p: pal, d };
+  const out = []; let prev = -1, run = 0;
+  const flush = () => { if (prev < 0) return; out.push(CM_DIG[prev]); if (run > 1) out.push(cmRun(run)); };
+  for (const k of CM_PIECES) for (const c of P.g[k]) { const q = idx.get(c); if (q === prev) run++; else { flush(); prev = q; run = 1; } }
+  flush();
+  return { p: pal, d: out.join(''), g: CM_G };
 }
-// a paint job from the network or the save, made safe: anything wrong with it and it's refused whole (prev stands)
+// a paint job from the network or the save, made safe: anything wrong with it and it's refused whole (prev stands).
+// Takes this build's runs, or a Build 21–23 paint job (12 × 12 a piece, a character a cell), scaled up cell for cell
 function cmDecodePaint(x, prev) {
-  const no = prev || null;
-  if (!x || typeof x !== 'object' || !Array.isArray(x.p) || typeof x.d !== 'string' || x.d.length !== CM_PIECES.length * CM_N) return no;
+  const no = prev || null, total = CM_PIECES.length * CM_N;
+  if (!x || typeof x !== 'object' || !Array.isArray(x.p) || typeof x.d !== 'string') return no;
   const pal = x.p; if (!pal.length || pal.length > 36 || !pal.every(c => Number.isInteger(c) && c >= 0 && c <= 0xffffff)) return no;
-  const g = {}; let n = 0;
-  for (const k of CM_PIECES) { const a = new Array(CM_N); for (let j = 0; j < CM_N; j++, n++) { const q = CM_DIG.indexOf(x.d[n]); if (q < 0 || q >= pal.length) return no; a[j] = pal[q]; } g[k] = a; }
+  const cells = new Array(total), s = x.d;
+  if (x.g === CM_G) {
+    if (s.length > total * 3) return no;
+    let n = 0, i = 0;
+    while (i < s.length) {
+      const q = CM_DIG.indexOf(s[i++]); if (q < 0 || q >= pal.length) return no;
+      let run = 0, digits = 0;
+      while (i < s.length) { const c = s.charCodeAt(i); if (c < 65 || c > 90) break; run = run * 26 + (c - 65); digits++; i++; if (run > total) return no; }
+      if (!digits) run = 1; else if (run < 2) return no;
+      if (n + run > total) return no;
+      for (let t = 0; t < run; t++) cells[n++] = pal[q];
+    }
+    if (n !== total) return no;
+  } else if (x.g === undefined && s.length === CM_PIECES.length * CM_G0 * CM_G0) {
+    const N0 = CM_G0 * CM_G0;
+    for (let k = 0; k < s.length; k++) { const q = CM_DIG.indexOf(s[k]); if (q < 0 || q >= pal.length) return no; }
+    for (let pc = 0; pc < CM_PIECES.length; pc++) for (let j = 0; j < CM_G; j++) for (let i = 0; i < CM_G; i++)
+      cells[pc * CM_N + j * CM_G + i] = pal[CM_DIG.indexOf(s[pc * N0 + Math.floor(j * CM_G0 / CM_G) * CM_G0 + Math.floor(i * CM_G0 / CM_G)])];
+  } else return no;
+  const g = {}; CM_PIECES.forEach((k, pc) => { g[k] = cells.slice(pc * CM_N, (pc + 1) * CM_N); });
   return { g, v: (prev ? prev.v || 0 : 0) + 1 };
 }
 // (Build 21 saves kept a colour and pattern per part: painted onto the pieces they covered)
@@ -26642,13 +26854,13 @@ const CamoWorld = {
   },
   build() {
     if (this.built) return; this.built = true;
-    this.cells = new Array(W * LEVEL_ROWS);
+    this.cells = new Array(W * H); // (Build 24: every floor's rows — the Colour Works is its own floor)
     for (const s of staticBoxes) this.add({ x0: s[0], y0: s[1], z0: s[2], x1: s[3], y1: s[4], z1: s[5], st: this.stat(s[6]), kind: 'prop' });
-    this.fx = fixtures.filter(f => f.lvl === 0);
+    this.fx = fixtures.filter(f => f.lvl === 0 || (LEVELS[f.lvl] && LEVELS[f.lvl].camo)); // (Build 24: and the Colour Works')
     this.doorSt = this.stat(MAT.metal);
   },
   add(b) {
-    const cx0 = Math.max(0, Math.floor(b.x0 / CELL)), cx1 = Math.min(W - 1, Math.floor((b.x1 - 1e-4) / CELL)), cz0 = Math.max(0, Math.floor(b.z0 / CELL)), cz1 = Math.min(LEVEL_ROWS - 1, Math.floor((b.z1 - 1e-4) / CELL));
+    const cx0 = Math.max(0, Math.floor(b.x0 / CELL)), cx1 = Math.min(W - 1, Math.floor((b.x1 - 1e-4) / CELL)), cz0 = Math.max(0, Math.floor(b.z0 / CELL)), cz1 = Math.min(H - 1, Math.floor((b.z1 - 1e-4) / CELL));
     for (let z = cz0; z <= cz1; z++) for (let x = cx0; x <= cx1; x++) { const k = z * W + x; (this.cells[k] || (this.cells[k] = [])).push(b); }
   },
   // walk a ray from o along unit d through the cells; the first wall, floor, ceiling, door or prop between tmin and tmax.
@@ -26663,7 +26875,7 @@ const CamoWorld = {
     for (let i = 0; i < 160; i++) {
       const c = cellAt(cx, cz), tOut = Math.min(tmx, tmz, tmax), yIn = oy + dy * tIn;
       // a solid cell (a wall; a closed door; the wall above a vent's mouth; a window's frame): the face we came in through
-      let solid = c.kind === 'wall' || cz >= LEVEL_ROWS;
+      let solid = c.kind === 'wall' || cz >= H || cz < 0;
       if (!solid && c.kind === 'window') solid = yIn < SILL_H || yIn > WIN_TOP;
       if (!solid && c.door && c.door.t < 0.55) solid = true;
       if (!solid && prev && isWalkKind(c) && yIn > c.h) solid = true;
@@ -26679,7 +26891,7 @@ const CamoWorld = {
         let best = Infinity, st = null, kind = '';
         if (dy < -1e-6) { const tf = -oy / dy; if (tf >= t0 && tf <= tOut) { best = tf; st = this.stat(MAT.floor[floorKey(c)]); kind = 'floor'; } }
         else if (dy > 1e-6) { const tc = (c.h - oy) / dy; if (tc >= t0 && tc <= tOut) { best = tc; st = this.stat(MAT.ceil[ceilKey(c)]); kind = 'ceiling'; } }
-        const bx = cz < LEVEL_ROWS ? this.cells[cz * W + cx] : null;
+        const bx = cz < H && cz >= 0 ? this.cells[cz * W + cx] : null;
         if (bx) for (const b of bx) {
           if (b.off) continue;
           let lo = t0, hi = Math.min(tOut, best);
@@ -26720,6 +26932,11 @@ const CamoWorld = {
     l: [[0xe6e9ea, 0x39a6c4, 4], [0xe6e9ea, 0x9fb8c0, 2]], r: [[0x2d5a3a, 0x141516, 0], [0x141516, 0x2d5a3a, 2]], f: [[0xb0457a, 0xc8b89a, 0], [0xc8b89a, 0xb0457a, 3]],
     m: [[0xd9a3a8, 0xf2f0ea, 0], [0xf2f0ea, 0xd9a3a8, 1]], s: [[0x4f6272, 0x2b3640, 0], [0x2b3640, 0x4f6272, 1]], e: [[0xc0642a, 0xe2d6b8, 0], [0xe2d6b8, 0xc0642a, 4]],
     c: [[0x7a2a26, 0x141516, 1], [0x3e4246, 0x7a2a26, 0]], '.': [[0xc9a227, 0x141516, 1], [0x2f7f7a, 0x9fc9b5, 0]],
+    // (Build 24) the Colour Works: a factory that makes the stuff — every room its own, and nearly every wall painted
+    '(': [[0xc9a227, 0x8a4b2a, 5], [0x6b4a2f, 0xc9a227, 1]], '[': [[0xb3372b, 0xd8b11a, 0], [0x2f5fb3, 0xf2f0ea, 2]], '{': [[0xf2f0ea, 0xd9a3a8, 0], [0x9fc9b5, 0xf2f0ea, 1]],
+    ']': [[0xd9a3a8, 0x9fc9b5, 4], [0x8a78b8, 0xe2d6b8, 3]], '}': [[0x3e4246, 0xd06a1e, 1], [0xd06a1e, 0x3e4246, 0]], ')': [[0x2f5fb3, 0xd8b11a, 2], [0xb0457a, 0xf2f0ea, 1]],
+    '`': [[0xe6e9ea, 0x9fb8c0, 2], [0x9fb8c0, 0xe6e9ea, 0]], '"': [[0x1f3460, 0xc9a227, 0], [0xc9a227, 0x1f3460, 1]], '=': [[0xd8b11a, 0x141516, 1], [0x7c8084, 0xd8b11a, 0]],
+    '+': [[0x3e4246, 0xd8b11a, 1], [0x2f7f7a, 0x9fc9b5, 0]],
   },
   buildDress() {
     if (this.dressBuilt) return; this.dressBuilt = true; this.build();
@@ -26731,14 +26948,17 @@ const CamoWorld = {
       geos.get(m).push(g); const b = { x0, y0, z0, x1, y1, z1, st: this.stat(m), kind: 'paint', off: true }; panels.push(b); this.add(b);
     };
     const DIRS = [[0, -1, 'N'], [0, 1, 'S'], [-1, 0, 'W'], [1, 0, 'E']];
-    for (let z = 1; z < LEVEL_ROWS - 1; z++) for (let x = 1; x < W - 1; x++) {
+    for (const lv of [0, WORKS_LV]) {
+    const zA = LEVELS[lv].z0, works = lv === WORKS_LV;
+    for (let z = zA + 1; z < zA + LEVEL_ROWS - 1; z++) for (let x = 1; x < W - 1; x++) {
       const c = grid[z][x]; if (c.kind !== 'floor' || !c.room) continue;
-      const ch = MAP[z][x], scheme = this.DRESS[ch]; if (!scheme) continue;
-      const corr = ch === '.';
+      const ch = MAP[z][x], booth = works ? WORKS_BOOTHS.find(B => z === WZ0 + B.row && x >= 51) : null, scheme = booth ? [booth.scheme, booth.scheme] : this.DRESS[ch]; if (!scheme) continue;
+      const corr = ch === '.' || ch === '+';
+      if (booth) { const [c1, c2, p] = booth.scheme, m = matOf(c1, c2, p), x0 = x * CELL, z0 = z * CELL; box(m, x0 + 0.03, 0.011, z0 + 0.03, x0 + CELL - 0.03, 0.019, z0 + CELL - 0.03, [1, 1]); } // (a booth is painted all over: its floor too)
       for (const [ox, oz] of DIRS) {
         const n = cellAt(x + ox, z + oz); if (n.kind !== 'wall') continue;
-        if (R() > (corr ? 0.16 : 0.5)) continue;
-        const [c1, c2, p] = scheme[R() < 0.62 ? 0 : 1], m = matOf(c1, c2, p), half = R() < 0.3, top = half ? 1.1 : Math.min(c.h - 0.25, 2.55), th = 0.035, inset = 0.02;
+        if (booth ? false : R() > (works ? (corr ? 0.4 : 0.85) : corr ? 0.16 : 0.5)) continue;
+        const [c1, c2, p] = scheme[R() < 0.62 ? 0 : 1], m = matOf(c1, c2, p), half = !booth && R() < (works ? 0.15 : 0.3), top = half ? 1.1 : Math.min(c.h - 0.25, 2.55), th = 0.035, inset = 0.02;
         const x0 = x * CELL, z0 = z * CELL, x1 = x0 + CELL, z1 = z0 + CELL, w0 = 0.04;
         if (ox === -1) box(m, x0 + inset, 0.02, z0 + w0, x0 + inset + th, top, z1 - w0, [1, top / 2]);
         else if (ox === 1) box(m, x1 - inset - th, 0.02, z0 + w0, x1 - inset, top, z1 - w0, [1, top / 2]);
@@ -26747,14 +26967,16 @@ const CamoWorld = {
       }
     }
     // rugs: one or two to a room, where there's floor all round
+    const inner = ch => { const cs = []; for (let z = zA; z < zA + LEVEL_ROWS; z++) for (let x = 0; x < W; x++) { if (MAP[z][x] !== ch) continue; const ok = (a, b) => { const q = cellAt(a, b); return MAP[b] && MAP[b][a] === ch && q.kind === 'floor' && !q.navBlocked; }; if (ok(x, z) && ok(x + 1, z) && ok(x - 1, z) && ok(x, z + 1) && ok(x, z - 1)) cs.push([x, z]); } return cs; };
     for (const ch of Object.keys(this.DRESS)) {
-      if (ch === '.') continue;
-      const cs = Hunt.inner(ch); if (!cs.length) continue;
+      if (ch === '.' || ch === '+' || lvlOfRow((this.dressCells || (this.dressCells = {}))[ch] !== undefined ? this.dressCells[ch] : (this.dressCells[ch] = MAP.findIndex(row => row.indexOf(ch) >= 0))) !== lv) continue;
+      const cs = inner(ch); if (!cs.length) continue;
       const nR = cs.length > 30 ? 2 : 1;
       for (let i = 0; i < nR; i++) {
         const [x, z] = cs[Math.floor(R() * cs.length)], [c1, c2, p] = this.DRESS[ch][R() < 0.5 ? 1 : 0], m = matOf(c1, c2, p === 0 ? 1 : p), s = R() < 0.5 ? 1.5 : 1.15;
         box(m, cc(x) - s, 0.011, cc(z) - s, cc(x) + s, 0.019, cc(z) + s, [s, s]);
       }
+    }
     }
     this.dressMeshes = [];
     for (const [m, list] of geos) { if (!list.length) continue; const mesh = new T.Mesh(mergeGeos(list), m); list.forEach(g => g.dispose()); mesh.receiveShadow = true; mesh.matrixAutoUpdate = false; mesh.updateMatrix(); mesh.visible = false; mesh.userData.lvl = 0; scene.add(mesh); this.dressMeshes.push(mesh); }
@@ -26810,7 +27032,7 @@ CamoWorld.behind = function (ax, az, crouch) {
   const hs = crouch ? 0.64 : 1, tally = {}, views = [];
   for (const R of [6.5, 3.5]) for (let i = 0; i < 8; i++) {
     const a = i / 8 * TAU, ox = ax + Math.cos(a) * R, oz = az + Math.sin(a) * R, c = cellOf(ox, oz);
-    if (isWalkKind(c) && c.lvl === 0 && c.h >= 2 && losClear(ox, oz, ax, az)) views.push([ox, oz]);
+    if (isWalkKind(c) && c.lvl === LVL && c.h >= 2 && losClear(ox, oz, ax, az)) views.push([ox, oz]);
   }
   if (views.length < 2) return null;
   const all = {}; // (Build 23: a line where a crate or a desk hides that part counts for nothing, unless every line is hidden)
@@ -26927,6 +27149,19 @@ const CAMO_DIFF = {
   nightmare: { len: 450, prep: 15, need: 5, work: 4.0, rescue: 3.8, sniff: 42, scent: 25, recover: 3, range: 28, speed: 1.08, eye: 0.7, mem: 2.4 },
 };
 const CAMO_ROOMS = 'tbogakprdfmhl', CAMO_START = 's', CAMO_CAGE = 'c';
+// Build 24: the maps — Sublevel 6, and the Colour Works (Sublevel 5, its own floor). rooms: where the breakers can go (twice over for the big halls);
+// start: where you wake up; cage: where it takes you; lobby and lift: the way out
+const CAMO_MAPS = {
+  s6: { id: 's6', lvl: 0, title: 'SUBLEVEL 6', rooms: CAMO_ROOMS, start: CAMO_START, cage: CAMO_CAGE, lobby: 'e', lift: 'E', sleeper: true, lightsFrom: [8, 48], cagesSouth: false,
+    names: { start: 'the Security Office', cage: 'Containment', lobby: 'the Lift Lobby', lift: 'the Surface Lift', Lift: 'Surface Lift' },
+    epi: 'The lift rises through eleven floors of quiet. On Sublevel 6 the paint is still wet on the walls — and in one of the rooms, a patch of wall that was never painted turns its head.' },
+  works: { id: 'works', lvl: WORKS_LV, title: 'THE COLOUR WORKS', rooms: '([{]})[)', start: '=', cage: '`', lobby: '"', lift: '/', sleeper: false, lightsFrom: [wkx(6), wkz(15)], cagesSouth: true, booths: true,
+    names: { start: 'the Loading Dock', cage: 'the Wash Bay', lobby: 'the Goods Lift lobby', lift: 'the Goods Lift', Lift: 'Goods Lift' },
+    epi: 'The goods lift grinds up out of the Colour Works. Behind you the vats are still turning, the sheets are still swaying — and one of them sways the wrong way.' },
+};
+// which map: the host's choice online, yours alone
+const camoMapId = () => (Net.active && Net.sessionCamoMap) || (CAMO_MAPS[settings.camoMap] ? settings.camoMap : 's6');
+{ const lof0 = Level.of; Level.of = function (mode) { return mode === 'camo' ? CAMO_MAPS[camoMapId()].lvl : lof0.apply(this, arguments); }; } // (the floor the round is played on)
 const CAMO_KEY = 'lastshift.camo.v1';
 Object.assign(ABIL, {
   sample: { id: 'sample', name: 'SAMPLE', icon: 'eye', cd: 0.6, desc: 'SAMPLE: pick up the colour of whatever you face (within 7 m), to paint with by hand — [Esc] or [B] frees the mouse. [Q] is the CHAMELEON SPRAY: every part of you, the colour that\'s behind it.' },
@@ -26939,6 +27174,19 @@ const Camo = {
   on: false, over: false, built: false, phase: 'prep', t: 0, huntT: 0,
   D() { return CAMO_DIFF[Net.sessionDiff || settings.difficulty] || CAMO_DIFF.normal; },
   host() { return !Net.isClient; },
+  mapId: 's6',
+  get M() { return CAMO_MAPS[this.mapId] || CAMO_MAPS.s6; },
+  // this map's rooms: every cell of each, by its letter on the map (Build 24: on whichever floor the map is)
+  rooms() {
+    const k = this.M.id; if (this._rooms && this._rooms.k === k) return this._rooms.R;
+    const R = {}, z0 = LEVELS[this.M.lvl].z0;
+    for (let z = z0; z < z0 + LEVEL_ROWS; z++) for (let x = 0; x < W; x++) { const c = grid[z][x]; if (!c.room || c.kind === 'door' || c.kind === 'vent' || c.kind === 'wall') continue; (R[MAP[z][x]] = R[MAP[z][x]] || []).push([x, z]); }
+    this._rooms = { k, R }; return R;
+  },
+  inner(ch) { return (this.rooms()[ch] || []).filter(([x, z]) => guardPass(x, z) && [[1, 0], [-1, 0], [0, 1], [0, -1]].every(([a, b]) => MAP[z + b] && MAP[z + b][x + a] === ch && guardPass(x + a, z + b))); },
+  centre(ch) { const cs = this.inner(ch); if (!cs.length) return null; let mx = 0, mz = 0; cs.forEach(c => { mx += c[0]; mz += c[1]; }); mx /= cs.length; mz /= cs.length; let b = cs[0], bd = 1e9; for (const c of cs) { const d = (c[0] - mx) ** 2 + (c[1] - mz) ** 2; if (d < bd) { bd = d; b = c; } } return b; },
+  exitDoor() { const lv = this.M.lvl; return doors.find(d => d.type === 'exit' && cellOf(d.cx, d.cz).lvl === lv) || null; },
+  liftPos() { const cs = this.rooms()[this.M.lift] || []; if (!cs.length) return [cc(32.5), cc(27)]; let x = 0, z = 0; cs.forEach(c => { x += cc(c[0]); z += cc(c[1]); }); return [x / cs.length, z / cs.length]; },
   me() { return Game.idOf(player); },
   team() { return crew(); },
   // in a cage, or out: the Warden has nothing to do with them
@@ -26947,11 +27195,11 @@ const Camo = {
   /* ---- saved: your last paint job (its own key: nothing else is touched; a Build 21 save is painted onto the new pieces) ---- */
   load() {
     let o = null; try { o = JSON.parse(localStorage.getItem(CAMO_KEY) || 'null'); } catch (e) { }
-    if (o && o.v === 2) return cmDecodePaint(o.last, null) || cmDefPaint();
+    if (o && (o.v === 2 || o.v === 3)) return cmDecodePaint(o.last, null) || cmDefPaint(); // (v2: Build 22–23, 12 × 12 — scaled up; v3: Build 24)
     if (o && o.v === 1) return cmFromV1(o.last) || cmDefPaint();
     return cmDefPaint();
   },
-  save(P) { try { localStorage.setItem(CAMO_KEY, JSON.stringify({ v: 2, last: cmEncodePaint(P) })); } catch (e) { } },
+  save(P) { try { localStorage.setItem(CAMO_KEY, JSON.stringify({ v: 3, last: cmEncodePaint(P) })); } catch (e) { } },
   /* ---- built once ---- */
   build() {
     if (this.built) return; this.built = true;
@@ -27005,38 +27253,39 @@ const Camo = {
   hudRedraw() { for (const id of ['abil', 'ult']) { const e = $(id); if (e) delete e.dataset.c; } if (UI.hudCache) { UI.hudCache.ab = null; UI.hudCache.ult = null; } },
   start() {
     this.build(); this.reset(); this.on = true; this.runId = (this.runId || 0) + 1;
+    this.mapId = camoMapId(); const MP = this.M;
     const D = this.D(), p = player, rnd = Net.active ? mulberry32((Net.sessionSeed ^ 0xca3f) >>> 0) : Math.random;
     this.nTeam = Math.max(1, this.team().length);
     // the floor, lit, freshly painted; every door but the blast door open to anyone
     Game.power = true; Sound.setHum && Sound.setHum(true);
-    fixtures.forEach(f => { if (f.type === 'main' && f.lvl === 0) { f.powerOnAt = Game.time + 0.6 + Math.hypot(f.pos.x - 8, f.pos.z - 48) / 22 + Math.random() * 0.4; f.on = f.mode !== 'dead'; } });
+    fixtures.forEach(f => { if (f.type === 'main' && f.lvl === MP.lvl) { f.powerOnAt = Game.time + 0.6 + Math.hypot(f.pos.x - MP.lightsFrom[0], f.pos.z - MP.lightsFrom[1]) / 22 + Math.random() * 0.4; f.on = f.mode !== 'dead'; } });
     CamoWorld.showDress(true);
-    for (const d of doors) if (cellOf(d.cx, d.cz).lvl === 0 && d.type !== 'exit') d.unlocked = true;
-    const X = Hunt.exitDoor(); if (X) { X.unlocked = false; X.target = 0; X.t = 0; X.place && X.place(); }
+    for (const d of doors) if (cellOf(d.cx, d.cz).lvl === MP.lvl && d.type !== 'exit') d.unlocked = true;
+    const X = this.exitDoor(); if (X) { X.unlocked = false; X.target = 0; X.t = 0; X.place && X.place(); }
     // nothing to pick up, nowhere to hide but in plain sight
     this.off = interactables.filter(d => d.enabled && d.kind !== 'door'); this.off.forEach(d => { d.enabled = false; });
     p.hasFlash = false; p.flashState = false; p.maxHp = 100; p.health = 100; Chars.lastHp = 100; p.stamina = 1;
     flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true;
     Chars.cd = 0; Chars.ucd = ABIL.clatter.first; this.hudRedraw();
-    // you: in the Security Office, in your last paint job
-    const sc = Hunt.inner(CAMO_START), k = (Math.max(0, Net.myId) * 5 + 3) % Math.max(1, sc.length), s0 = sc[k] || [4, 24];
+    // you: in the Security Office (or the Loading Dock), in your last paint job
+    const sc = this.inner(MP.start), k = (Math.max(0, Net.myId) * 5 + 3) % Math.max(1, sc.length), s0 = sc[k] || [4, 24];
     p.pos.set(cc(s0[0]), 0, cc(s0[1])); p.vel && p.vel.set(0, 0, 0); p.yaw = -Math.PI / 2; p.pitch = -0.05;
     this.myPaint = this.load(); this.defPaint = cmDefPaint(); this.paints.set(this.me(), this.myPaint); this.brushT = 0; this.paintDirty = false;
     if (Net.active) this.sendPaint();
-    // the Warden: asleep in Containment until the prep is over
-    const cm = Hunt.centre(CAMO_CAGE) || [25, 4];
+    // the Warden: asleep in Containment (or the Wash Bay) until the prep is over
+    const cm = this.centre(MP.cage) || [25, 4];
     Monster.pos.set(cc(cm[0]), 0, cc(cm[1]) + 1); Monster.yaw = 0; if (Monster.model) Monster.model.visible = true;
     Monster.active = false;
     // the breakers: somewhere new every round (online: the same on every screen)
-    const sg = Hunt.centre(CAMO_START) || [4, 24];
-    const rooms = CAMO_ROOMS.split('').filter(ch => { const c = Hunt.centre(ch); return c && astar(sg[0], sg[1], c[0], c[1], guardPass); });
+    const sg = this.centre(MP.start) || [4, 24];
+    const rooms = MP.rooms.split('').filter(ch => { const c = this.centre(ch); return c && astar(sg[0], sg[1], c[0], c[1], guardPass); });
     for (let i = rooms.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [rooms[i], rooms[j]] = [rooms[j], rooms[i]]; }
     this.need = Math.min(7, D.need + this.nTeam - 1);
     const spots = Math.min(rooms.length, this.need + 2);
     for (const ch of rooms) { if (this.breakers.length >= spots) break; this.addBreaker(ch, rnd, sg); }
     this.need = Math.min(this.need, this.breakers.length);
     // the cages: in Containment, along the back wall
-    const cs = Hunt.inner(CAMO_CAGE).sort((a, b) => a[1] - b[1] || a[0] - b[0]), pick = [];
+    const cs = this.inner(MP.cage).sort((a, b) => (MP.cagesSouth ? b[1] - a[1] : a[1] - b[1]) || a[0] - b[0]), pick = [];
     for (const c of cs) { if (pick.length >= 4) break; if (pick.every(q => Math.abs(q[0] - c[0]) + Math.abs(q[1] - c[1]) >= 2)) pick.push(c); }
     pick.forEach(c => this.addCage(c));
     this.speedK = D.speed * (1 + 0.04 * (this.nTeam - 1));
@@ -27046,8 +27295,9 @@ const Camo = {
   },
   addBreaker(ch, rnd, sg) {
     const DIRS = [[0, -1], [0, 1], [-1, 0], [1, 0]], cells = [];
-    for (const [x, z] of (Hunt.rooms()[ch] || [])) {
+    for (const [x, z] of (this.rooms()[ch] || [])) {
       if (!guardPass(x, z) || cellAt(x, z).kind !== 'floor') continue;
+      if (this.breakers.some(b => Math.hypot(b.x - cc(x), b.z - cc(z)) < 7)) continue; // (Build 24: two in one big hall, but never side by side)
       for (const [ox, oz] of DIRS) if (cellAt(x + ox, z + oz).kind === 'wall' && !CamoWorld.ray(cc(x), 0.9, cc(z), ox, 0, oz, 0.05, CELL / 2 - 0.2, _cqHit)) cells.push([x, z, ox, oz]);
     }
     const ok = cells.filter(([x, z]) => astar(sg[0], sg[1], x, z, guardPass)); if (!ok.length) return;
@@ -27117,6 +27367,13 @@ const Camo = {
   },
   /* ---- every frame ---- */
   update(dt) {
+    if (this.menu) { // (Build 24: locked in place, your movement keys move the camera instead — W/S up and down you, A/D round you)
+      const k = c => !!Input.keys[Keys.map[c]];
+      if (k('forward')) this.orbH = clamp((this.orbH || 0) + dt * 0.7, -0.42, 0.62);
+      if (k('back')) this.orbH = clamp((this.orbH || 0) - dt * 0.7, -0.42, 0.62);
+      if (k('left')) this.orbYaw += dt * 1.8;
+      if (k('right')) this.orbYaw -= dt * 1.8;
+    }
     if (!this.on || this.over || Game.state !== 'playing') return;
     this.t += dt;
     const D = this.D(), p = player, me = this.me(), host = this.host();
@@ -27198,13 +27455,23 @@ const Camo = {
     let best = null, bd = 1.8;
     for (const b of this.breakers) { if (b.done || !this.released) continue; const dx = b.x - p.pos.x, dz = b.z - p.pos.z, d = Math.hypot(dx, dz); if (d < bd + 0.6 && (dx * fx + dz * fz) / (d || 1) > 0.2) { bd = d - 0.6; best = { code: b.i, text: 'HOLD — throw the breaker (' + this.D().work.toFixed(1) + 's) · it\'s loud' }; } }
     for (const [id, s] of this.caught) { if (id === this.me()) continue; const c = this.cages[s]; if (!c) continue; const d = Math.hypot(c.x - p.pos.x, c.z - p.pos.z); if (d < 2) { best = { code: 100 + id, text: 'HOLD — free ' + Net.nameOf(id) + ' (' + this.D().rescue.toFixed(1) + 's) · the chains are loud' }; break; } }
+    // (Build 24) the Colour Works: standing in a spray booth
+    if (!best && this.M.booths) { const c = cellOf(p.pos.x, p.pos.z), i = WORKS_BOOTHS.findIndex(B => c.z === WZ0 + B.row && c.x >= 51 && c.x <= 52); if (i >= 0) best = { code: 200 + i, text: 'SPRAY BOOTH — ' + WORKS_BOOTHS[i].name + ', head to toe · it hisses' }; }
     return best;
   },
   beginWork(t) {
     if (this.myWork || this.over) return;
+    if (t.code >= 200) { this.boothSpray(t.code - 200); return; }
     this.myWork = { code: t.code, t0: Game.time, dur: t.code < 100 ? this.D().work : this.D().rescue };
     if (t.code < 100) Sound.breaker(_cq1.set(player.pos.x, 1, player.pos.z)); else Sound.chains(_cq1.set(player.pos.x, 1, player.pos.z));
     if (this.host()) this.hostWork(player, t.code); else Net.request('cqw', t.code);
+  },
+  // (Build 24) a spray booth: its coat, all over you, in the time a full spray takes — and just as loud
+  boothSpray(i) {
+    const B = WORKS_BOOTHS[i]; if (!B || !this.M.booths || this.held(player)) return;
+    const P = cmNewPaint(), [c1, c2, pt] = B.scheme;
+    CM_PIECES.forEach((k, pn) => { for (let j = 0; j < CM_G; j++) for (let q = 0; q < CM_G; q++) P.g[k][j * CM_G + q] = cmPatCol(c1, c2, pt, q, j, pn); });
+    if (this.spray(P, CM_PIECES.length)) { this.stats.booths = (this.stats.booths || 0) + 1; UI.msg('SPRAY BOOTH — ' + B.name + ', head to toe. It matches the booth; out there, find somewhere it matches.', 'good', 3); }
   },
   cancelWork() { if (!this.myWork) return; this.myWork = null; if (this.host()) this.hostWork(player, -1); else Net.request('cqw', -1); },
   hostWork(a, code) {
@@ -27254,7 +27521,7 @@ const Camo = {
     const b = this.breakers.map(B => B.done ? 100 : Math.round(clamp(B.prog, 0, 0.99) * 99));
     const w = [...this.works.entries()].map(([id, W]) => [id, W.code, Math.round(clamp((Game.time - W.t0) / W.dur, 0, 1) * 100)]);
     const m = { k: 'cqs', t: +this.t.toFixed(1), h: +this.huntT.toFixed(1), r: this.released ? 1 : 0, op: this.open ? 1 : 0, g: this.got, n: this.need, b, w, c: [...this.caught.entries()], o: [...this.out] };
-    this.snapN = (this.snapN || 0) + 1; if (this.snapN % 8 === 0) m.p = [...this.paints.entries()].filter(([id]) => this.team().some(a => Game.idOf(a) === id)).map(([id, P]) => [id, cmEncodePaint(P)]); // (everyone's paint, every 4 s: anyone who missed a change catches up)
+    this.snapN = (this.snapN || 0) + 1; if (this.snapN % 4 === 0) { const L = [...this.paints.entries()].filter(([id]) => this.team().some(a => Game.idOf(a) === id)); if (L.length) { const [id, P] = L[(this.snapN / 4) % L.length], e = cmEncodePaint(P); if (e.d.length < 24000) m.p = [[id, e]]; } } // (one guard's paint every 2 s, in turn: anyone who missed a change catches up — Build 24: one at a time, so a message never gets too big)
     Game.emit(m);
   },
   /* ---- the mode's events (every screen) ---- */
@@ -27278,7 +27545,7 @@ const Camo = {
         this.released = true; this.phase = this.open ? 'open' : 'hunt';
         UI.center('IT\'S AWAKE', 'Stay still against something your colour · throw the breakers · get to the lift', 3.8);
         Sound.roar(1.3); Sound.sting(true); Game.shake(0.4);
-        UI.msg('Somewhere up in Containment, something tall gets up. It looks for anything that doesn\'t belong.', 'story', 5);
+        UI.msg('Somewhere in ' + this.M.names.cage + ', something tall gets up. It looks for anything that doesn\'t belong.', 'story', 5);
         return;
       }
       case 'cqp': { if ((ev.id | 0) !== me) this.setPaint(ev.id | 0, ev.d); return; }
@@ -27297,9 +27564,9 @@ const Camo = {
       }
       case 'cqo': {
         if (this.open) return; this.open = true; this.phase = 'open';
-        const X = Hunt.exitDoor(); if (X) { X.unlocked = true; X.open(); }
-        UI.center('THE LIFT HAS POWER', 'The blast door is open — get to the Surface Lift, through the Lift Lobby', 4);
-        Sound.powerUp && Sound.powerUp(); Sound.sealOpen && Sound.sealOpen(_cq1.set(cc(36), 1.5, cc(21)));
+        const X = this.exitDoor(); if (X) { X.unlocked = true; X.open(); }
+        UI.center('THE LIFT HAS POWER', 'The lift door is open — get to ' + this.M.names.lift + ', through ' + this.M.names.lobby, 4);
+        Sound.powerUp && Sound.powerUp(); Sound.sealOpen && Sound.sealOpen(_cq1.set(X ? X.cx : cc(36), 1.5, X ? X.cz : cc(21)));
         UI.hudCache.obj = null;
         return;
       }
@@ -27315,10 +27582,10 @@ const Camo = {
           Sound.scream && Sound.scream(); Game.shake(0.9);
           const f = $('fx-white'); if (f) { f.style.transition = 'none'; f.style.opacity = 0.8; requestAnimationFrame(() => { f.style.transition = 'opacity 1.2s'; f.style.opacity = 0; }); }
           if (c) { player.pos.set(c.x, 0, c.z); player.yaw = Math.PI; }
-          UI.center('CAUGHT', Net.active && this.team().length > 1 ? 'It dragged you to a cage in Containment — your team can free you' : 'It dragged you back to Containment', 3);
+          UI.center('CAUGHT', Net.active && this.team().length > 1 ? 'It dragged you to a cage in ' + this.M.names.cage + ' — your team can free you' : 'It dragged you back to ' + this.M.names.cage, 3);
         } else {
           Sound.scream && Sound.scream(); Sound.chains(_cq1.set(c ? c.x : 0, 1, c ? c.z : 0));
-          UI.msg(who(id) + ' was caught — locked in a cage in Containment. Hold ' + Keys.b('interact') + ' at the cage to free them.', 'warn', 4.5);
+          UI.msg(who(id) + ' was caught — locked in a cage in ' + this.M.names.cage + '. Hold ' + Keys.b('interact') + ' at the cage to free them.', 'warn', 4.5);
         }
         UI.hudCache.obj = null;
         return;
@@ -27339,7 +27606,7 @@ const Camo = {
       case 'cqe': {
         const id = ev.id | 0; if (this.out.has(id)) return; this.out.add(id);
         if (id === me) { if (this.menu) this.closeMenu(true); this.myWork = null; UI.center('YOU\'RE OUT', this.team().length > 1 ? 'Wait in the lift for the others — or for the timer' : 'The lift rises', 3); Sound.liftRise && Sound.liftRise(); }
-        else UI.msg(who(id) + ' made it into the Surface Lift.', 'good', 3.4);
+        else UI.msg(who(id) + ' made it into ' + this.M.names.lift + '.', 'good', 3.4);
         UI.hudCache.obj = null;
         return;
       }
@@ -27395,7 +27662,7 @@ const Camo = {
   hostClatter(a, x, z) {
     if (!Number.isFinite(x) || !Number.isFinite(z) || this.held(a)) return;
     if (a !== player) { if (Game.time - (a._cmClat === undefined ? -1e9 : a._cmClat) < ABIL.clatter.cd * 0.8 - 0.5) return; a._cmClat = Game.time; }
-    if (Math.hypot(x - a.pos.x, z - a.pos.z) > 15.5 || !isWalkKind(cellOf(x, z)) || cellOf(x, z).lvl !== 0) return;
+    if (Math.hypot(x - a.pos.x, z - a.pos.z) > 15.5 || !isWalkKind(cellOf(x, z)) || cellOf(x, z).lvl !== this.M.lvl) return;
     Game.emit({ k: 'cqx', x: +x.toFixed(2), z: +z.toFixed(2), by: Game.idOf(a) });
   },
   flight(F, dt) {
@@ -27465,10 +27732,13 @@ const Camo = {
   },
   dab(piece, u, v) {
     const a = this.myPaint.g[piece]; if (!a || this.held(player) || this.over) return;
-    const E = this.ed, R = [0.7, 1.45, 2.3][E.size], ci = ((Math.floor(u * CM_G) % CM_G) + CM_G) % CM_G, cj = clamp(Math.floor((1 - v) * CM_G), 0, CM_G - 1), col = this.edColor(), pn = CM_PIECES.indexOf(piece);
+    // (Build 24: the brush is a size on the body — FINE is a line a centimetre wide, on an arm or on the chest alike)
+    const E = this.ed, R = CM_BRUSH[clamp(E.size | 0, 0, CM_BRUSH.length - 1)], Sz = CM_SIZE[piece] || [0.3, 0.3], cu = Sz[0] / CM_G, cv = Sz[1] / CM_G;
+    const ci = ((Math.floor(u * CM_G) % CM_G) + CM_G) % CM_G, cj = clamp(Math.floor((1 - v) * CM_G), 0, CM_G - 1), col = this.edColor(), pn = CM_PIECES.indexOf(piece);
+    const ri = Math.min(CM_G >> 1, Math.floor(R / cu)), rj = Math.floor(R / cv);
     let n = 0;
-    for (let dj = -3; dj <= 3; dj++) for (let di = -3; di <= 3; di++) {
-      if (di * di + dj * dj > R * R) continue; const j = cj + dj; if (j < 0 || j >= CM_G) continue;
+    for (let dj = -rj; dj <= rj; dj++) for (let di = -ri; di <= ri; di++) {
+      if ((di || dj) && (di * cu) * (di * cu) + (dj * cv) * (dj * cv) > R * R) continue; const j = cj + dj; if (j < 0 || j >= CM_G) continue;
       const i = (ci + di + CM_G) % CM_G, q = j * CM_G + i, c = E.pat ? cmPatCol(col, E.b, E.pat, i, j, pn) : col;
       if (a[q] !== c) { a[q] = c; n++; }
     }
@@ -27503,17 +27773,19 @@ const Camo = {
     const el = document.createElement('div'); el.id = 'camo-paint';
     const pats = CM_PATS.map((n, i) => '<button data-pat="' + i + '">' + n + '</button>').join('');
     const sw = CM_SWATCH.map(c => '<i data-c="' + c + '" style="background:' + CamoColor.css(c) + '"></i>').join('');
-    el.innerHTML = '<div class="cp-panel"><div class="cp-h">PAINT<small>drag on yourself to paint · drag anywhere else (or right-drag) to turn round · click a wall to pick up its colour · scroll to zoom</small></div>'
-      + '<div class="cp-tools"><button data-tool="brush">BRUSH</button><button data-tool="fill">FILL A PIECE</button><span>SIZE</span><button data-size="0">S</button><button data-size="1">M</button><button data-size="2">L</button></div>'
+    el.innerHTML = '<div class="cp-panel"><div class="cp-h"><span class="cp-t">PAINT</span><small>drag on you: paint · drag elsewhere / right-drag / A D: turn round you · W S: up and down you · scroll: zoom · click a wall: its colour</small></div>'
+      + '<div class="cp-tools"><button data-tool="brush">BRUSH</button><button data-tool="fill">FILL A PIECE</button><span>SIZE [ ]</span>' + CM_BRUSH_N.map((n, i) => '<button data-size="' + i + '">' + n + '</button>').join('') + '<button id="cp-more" class="cp-more">MORE ▸</button></div>'
       + '<div class="cp-pick"><canvas id="cp-sv" width="176" height="104"></canvas><canvas id="cp-hue" width="16" height="104"></canvas><div class="cp-wells"><button class="well sel" data-w="0"><i id="cp-wa"></i>PAINT</button><button class="well" data-w="1"><i id="cp-wb"></i>2ND</button><span id="cp-hex"></span></div></div>'
       + '<div class="cp-mix"><span>MIX</span><input type="range" id="cp-mix" min="0" max="100" value="0"><b id="cp-mixv">0%</b><i id="cp-res"></i></div>'
       + '<div class="cp-sw">' + sw + '</div><div class="cp-seen"><span>PICKED UP</span><span id="cp-seen"></span></div>'
       + '<div class="cp-pats"><span>PATTERN (with the 2nd colour)</span>' + pats + '</div>'
       + '<div class="cp-match" id="cp-match"></div>'
-      + '<div class="cp-btns"><button id="cp-fillall" class="go">FILL ALL OF ME</button><button id="cp-sample">PICK UP WHAT YOU FACE</button><button id="cp-done">BACK [B] / [Esc]</button><button id="cp-pause">PAUSE [' + escHtml(Keys.label('pause')) + ']</button></div><div class="cp-prog"><i id="cp-prog"></i></div></div>';
+      + '<div class="cp-btns"><button id="cp-fillall" class="go">FILL ALL OF ME</button><button id="cp-chamo">CHAMELEON ' + escHtml(Keys.b('nextWeapon')) + '</button><button id="cp-sample">PICK UP WHAT YOU FACE</button><button id="cp-done">UNLOCK [L] / [Esc]</button><button id="cp-pause">PAUSE [' + escHtml(Keys.label('pause')) + ']</button></div><div class="cp-prog"><i id="cp-prog"></i></div></div>';
     document.body.appendChild(el); this.menuEl = el;
     el.addEventListener('click', e => { if (e.target && e.target.tagName === 'BUTTON') e.target.blur(); }, true);
     this.ed = { tool: 'brush', size: 1, pat: 0, well: 0, mix: 0, a: 0x7c8084, b: 0x141516, hsv: CamoColor.toHsv(0x7c8084) };
+    $('cp-more').addEventListener('click', () => { this.setFull(!this.full); Sound.ui(); });
+    $('cp-chamo').addEventListener('click', () => { this.quickSpray(); });
     const panel = el.querySelector('.cp-panel'), stop = e => e.stopPropagation();
     panel.addEventListener('mousedown', stop); panel.addEventListener('wheel', stop); panel.addEventListener('contextmenu', e => e.preventDefault());
     el.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click', () => { this.ed.tool = b.dataset.tool; this.menuSync(); Sound.ui(); }));
@@ -27548,34 +27820,40 @@ const Camo = {
       if (!down || !this.menu) return;
       const dx = e.clientX - down.x, dy = e.clientY - down.y; down.moved += Math.abs(dx) + Math.abs(dy); down.x = e.clientX; down.y = e.clientY;
       if (down.paint) { // (a stroke: dabs along the way, so a fast drag leaves a line, not dots)
-        const L = Math.hypot(e.clientX - down.lx, e.clientY - down.ly), n = Math.max(1, Math.ceil(L / 6));
+        const L = Math.hypot(e.clientX - down.lx, e.clientY - down.ly), n = Math.max(1, Math.ceil(L / [2, 3, 5, 7][this.ed.size | 0] || 6));
         for (let k = 1; k <= n; k++) this.brushAt(down.lx + (e.clientX - down.lx) * k / n, down.ly + (e.clientY - down.ly) * k / n);
         down.lx = e.clientX; down.ly = e.clientY; return;
       }
-      this.orbYaw -= dx * 0.008 * (settings.sens || 1); this.orbPitch = clamp(this.orbPitch - dy * 0.006 * (settings.sens || 1), -0.9, 0.7);
+      this.orbYaw -= dx * 0.008 * (settings.sens || 1); this.orbPitch = clamp(this.orbPitch - dy * 0.006 * (settings.sens || 1), -1.4, 0.6); // (Build 24: right over the top of you, and from low down)
     });
     window.addEventListener('mouseup', e => { if (!down) return; const click = down.moved < 5 && !down.paint && !down.orbit; down = null; if (click && this.menu && e.target === el) this.sampleAt(e.clientX, e.clientY); });
-    el.addEventListener('wheel', e => { if (!this.menu) return; this.orbD = clamp(this.orbD + Math.sign(e.deltaY) * 0.2, 1.0, 3.6); e.preventDefault(); }, { passive: false });
+    el.addEventListener('wheel', e => { if (!this.menu) return; this.orbD = clamp(this.orbD + Math.sign(e.deltaY) * 0.2, 0.6, 4.2); e.preventDefault(); }, { passive: false });
   },
   pieceAt(cx, cy) {
     const F = this.myFig; if (!F || !F.visible) return null;
     const ray = this.ray3 || (this.ray3 = new T.Raycaster()); ray.setFromCamera({ x: cx / innerWidth * 2 - 1, y: -(cy / innerHeight) * 2 + 1 }, camera); F.updateMatrixWorld(true);
     const h = ray.intersectObjects(F.userData.meshes, false)[0]; return h ? h.object.userData.piece : null;
   },
-  openMenu() {
+  // Build 24: [L] locks you in place — you can't move, the mouse is free, the camera goes round you (any angle) and you paint
+  // straight onto yourself, with the brushes and colours in a bar along the bottom (MORE ▸ for the whole paint shop).
+  // [Esc] or [B] opens the whole shop, also locked in place. [L], [Esc] or [B] again unlocks.
+  openMenu(full) {
     if (this.menu || this.over || this.held(player) || Game.state !== 'playing' || Cine.locks()) return;
     if (this.myWork) this.cancelWork();
-    this.menu = true; this.menuAt = performance.now(); this.orbYaw = player.yaw + Math.PI * 0.85; this.orbPitch = -0.1; this.orbD = this.orbD || 1.9;
-    this.menuEl.classList.add('on'); Input.exitLock(); Sound.ui();
+    this.menu = true; this.menuAt = performance.now(); this.orbYaw = player.yaw + Math.PI * 0.85; this.orbPitch = -0.1; this.orbD = this.orbD || 1.9; this.orbH = 0;
+    player.vel.set(0, 0, 0); this.lockAt = { x: player.pos.x, z: player.pos.z };
+    this.menuEl.classList.add('on'); this.setFull(full !== false); document.body.classList.add('cm-locked'); Input.exitLock(); Sound.ui();
     this.menuSync(); this.drawPicker();
     if (!this.said.paintTip) { this.said.paintTip = 1; UI.msg('Drag on yourself to paint. Click a wall to pick up its colour. ' + Keys.b('pause') + ' pauses — the Warden doesn\'t wait while you paint.', 'hint', 6); }
   },
   closeMenu(silent) {
     if (!this.menu) return;
-    this.menu = false; this.menuEl.classList.remove('on');
+    this.menu = false; this.menuEl.classList.remove('on'); document.body.classList.remove('cm-locked'); this.lockAt = null;
     if (this.paintDirty && Net.active) this.sendPaint(); this.save(this.myPaint);
     if (!silent && Game.state === 'playing' && !Input.dragLook) Input.requestLock();
   },
+  setFull(on) { this.full = !!on; if (!this.menuEl) return; this.menuEl.classList.toggle('lock', !on); const t = this.menuEl.querySelector('.cp-t'); if (t) t.textContent = on ? 'PAINT · LOCKED IN PLACE' : 'LOCKED · PAINT'; const m = $('cp-more'); if (m) m.textContent = on ? '◂ LESS' : 'MORE ▸'; },
+  brushSize(d) { if (!this.ed) return; this.ed.size = clamp((this.ed.size | 0) + d, 0, CM_BRUSH.length - 1); this.ed.tool = 'brush'; this.menuSync(); Sound.ui(); },
   menuPick(hex, fromPicker) {
     if (!this.ed) return;
     if (this.ed.well === 0) this.ed.a = hex; else this.ed.b = hex;
@@ -27620,7 +27898,7 @@ const Camo = {
     for (const R of [6.5, 3.5]) {
       for (let i = 0; i < 8; i++) {
         const a = i / 8 * TAU, ox = p.pos.x + Math.cos(a) * R, oz = p.pos.z + Math.sin(a) * R, c = cellOf(ox, oz);
-        if (!isWalkKind(c) || c.lvl !== 0 || c.h < 2 || !losClear(ox, oz, p.pos.x, p.pos.z)) continue;
+        if (!isWalkKind(c) || c.lvl !== LVL || c.h < 2 || !losClear(ox, oz, p.pos.x, p.pos.z)) continue;
         const L = CamoWorld.look(ox, 1.9, oz, p.pos.x, p.pos.z, cr, P, _cqLook, p.yaw); if (L.vis <= 0) continue;
         const k = CamoWorld.conspic(L, mv, cr, false, !this.menu && (this.sprayT > 0 || this.brushT > 0));
         ks += k; des += L.de; n++; if (!best || L.de > best.de) best = { de: L.de, me: L.me, bg: L.bg };
@@ -27657,13 +27935,13 @@ const Camo = {
     const ey = $('cm-eye'); if (ey) ey.classList.toggle('on', cls === 'eye');
   },
   /* ---- the camera: first person, or [Shift] over the shoulder; the paint shop orbits you ---- */
-  toggleTp() { if (this.held(player) && !this.tp) return; this.tp = !this.tp; Sound.ui(); UI.msg(this.tp ? 'Shift-lock camera: over the shoulder. [Shift] again for first person.' : 'First person.', '', 1.6); },
+  toggleTp() { if (this.held(player) && !this.tp) return; this.tp = !this.tp; Sound.ui(); UI.msg(this.tp ? 'Over-the-shoulder camera. [Shift] again for first person — [L] locks you in place to paint.' : 'First person.', '', 1.6); },
   camView(dt, fov) {
     const p = player, menu = !!this.menu;
     this.tpK = damp(this.tpK, (this.tp || menu) ? 1 : 0, 8, dt);
     if (this.tpK < 0.01 && !menu) { this.camOn = false; return null; }
     this.camOn = true;
-    const hx = p.pos.x, hz = p.pos.z, hy = (p.crouching ? 0.64 : 0.95) - (menu ? 0.3 : 0);
+    const hx = p.pos.x, hz = p.pos.z, hy = (p.crouching ? 0.64 : 0.95) - (menu ? 0.3 - (this.orbH || 0) * (p.crouching ? 0.7 : 1) : 0);
     const yaw = menu ? this.orbYaw : p.yaw, pitch = menu ? this.orbPitch : clamp(p.pitch, -1.1, 1.0);
     const cp = Math.cos(pitch), fx = -Math.sin(yaw) * cp, fy = Math.sin(pitch), fz = -Math.cos(yaw) * cp, rx = Math.cos(yaw), rz = -Math.sin(yaw);
     // the pivot: your head (over the right shoulder in shift-lock), made sure it isn't inside a wall
@@ -27708,8 +27986,8 @@ const Camo = {
     for (const [id, f] of this.figs) if (!Net.remotes.has(id)) { scene.remove(f); this.figs.delete(id); }
     if (Net.self) Net.self.visible = false;
     // the mist: yours from the can in front of you; theirs from their hand
-    if (this.sprayT > 0 || (this.brushT > 0 && !this.menu)) { const f = p.forward(_cq1), hx = p.pos.x + f.x * 0.38 - Math.sin(p.yaw - 1.2) * 0.1, hz = p.pos.z + f.z * 0.38 - Math.cos(p.yaw - 1.2) * 0.1, col = this.sprayNext ? this.sprayNext.g.torso[66] : this.edColor(); this.puff(hx, (p.crouching ? 0.45 : 0.68), hz, -Math.sin(p.yaw), -Math.cos(p.yaw), col, dt); }
-    for (const r of Net.remotes.values()) { if ((r._cmSpray || 0) <= Game.time) continue; const f = this.figs.get(r.id); if (!f || !f.visible) continue; _cq2.set(0, -0.18, 0); f.userData.arms[1].el.localToWorld(_cq2); const P = this.paints.get(r.id) || this.defPaint; this.puff(_cq2.x, _cq2.y, _cq2.z, -Math.sin(r.yaw || 0), -Math.cos(r.yaw || 0), P.g.torso[66], dt); }
+    if (this.sprayT > 0 || (this.brushT > 0 && !this.menu)) { const f = p.forward(_cq1), hx = p.pos.x + f.x * 0.38 - Math.sin(p.yaw - 1.2) * 0.1, hz = p.pos.z + f.z * 0.38 - Math.cos(p.yaw - 1.2) * 0.1, col = this.sprayNext ? this.sprayNext.g.torso[CM_MID] : this.edColor(); this.puff(hx, (p.crouching ? 0.45 : 0.68), hz, -Math.sin(p.yaw), -Math.cos(p.yaw), col, dt); }
+    for (const r of Net.remotes.values()) { if ((r._cmSpray || 0) <= Game.time) continue; const f = this.figs.get(r.id); if (!f || !f.visible) continue; _cq2.set(0, -0.18, 0); f.userData.arms[1].el.localToWorld(_cq2); const P = this.paints.get(r.id) || this.defPaint; this.puff(_cq2.x, _cq2.y, _cq2.z, -Math.sin(r.yaw || 0), -Math.cos(r.yaw || 0), P.g.torso[CM_MID], dt); }
     this.drawMist(dt);
   },
   puff(x, y, z, fx, fz, hex, dt) {
@@ -27738,7 +28016,7 @@ const Camo = {
     const me = this.me();
     // the prompt for [E] and its progress: drawn by UI.updateHud (see the hook)
     if (Net.active) {
-      const rows = this.team().map(a => { const id = Game.idOf(a), P = this.paints.get(id) || this.defPaint, col = P.g.torso[66], st = this.out.has(id) ? 'OUT' : this.caught.has(id) ? 'CAGED' : [...this.works.keys(), ...(this.remoteWork || []).map(w => w[0])].includes(id) ? 'WORKING' : 'FREE'; return [id, col, id === me ? Net.myName : a.name, st]; });
+      const rows = this.team().map(a => { const id = Game.idOf(a), P = this.paints.get(id) || this.defPaint, col = P.g.torso[CM_MID], st = this.out.has(id) ? 'OUT' : this.caught.has(id) ? 'CAGED' : [...this.works.keys(), ...(this.remoteWork || []).map(w => w[0])].includes(id) ? 'WORKING' : 'FREE'; return [id, col, id === me ? Net.myName : a.name, st]; });
       const key = JSON.stringify(rows); if (this.teamKey !== key) { this.teamKey = key; this.teamEl.innerHTML = '<b>TEAM</b>' + rows.map(([id, c, n, s]) => '<div class="s-' + s.toLowerCase() + '"><i style="background:' + CamoColor.css(c) + '"></i>' + escHtml(n || 'Guard') + '<em>' + s + '</em></div>').join(''); }
     }
   },
@@ -27753,9 +28031,9 @@ const Camo = {
     const D = this.D(), L = [];
     if (!this.released) L.push({ id: 'cm-prep', text: 'Paint up before it wakes (' + this.fmt(this.clockLeft()) + ') — [Esc] paint yourself, ' + Keys.b('ability') + ' pick up a wall\'s colour, ' + Keys.b('nextWeapon') + ' spray it all over', done: false });
     L.push({ id: 'cm-brk', text: this.open ? 'Breakers thrown — the lift has power' : 'Throw the breakers (' + this.got + '/' + this.need + ') — hold ' + Keys.b('interact') + ' at a panel. It\'s loud.', done: this.open });
-    L.push({ id: 'cm-lift', text: this.open ? 'Get to the Surface Lift, through the Lift Lobby' : 'Then: the Surface Lift (Lift Lobby)', done: this.out.has(this.me()) });
-    if (this.caught.size && Net.active) L.push({ id: 'cm-cage', text: 'Free your team: hold ' + Keys.b('interact') + ' at their cage in Containment (' + this.caught.size + ' caged)', done: false });
-    L.push({ id: 'cm-keys', text: '[Esc] paint · ' + Keys.b('pause') + ' pause · [Shift] camera · ' + (this.shiftSprint() ? '[Space]' : Keys.b('sprint')) + ' run · ' + Keys.b('ultimate') + ' throw a can', done: false });
+    L.push({ id: 'cm-lift', text: this.open ? 'Get to ' + this.M.names.lift + ', through ' + this.M.names.lobby : 'Then: ' + this.M.names.lift + ' (' + this.M.names.lobby.replace(/^the /, '') + ')', done: this.out.has(this.me()) });
+    if (this.caught.size && Net.active) L.push({ id: 'cm-cage', text: 'Free your team: hold ' + Keys.b('interact') + ' at their cage in ' + this.M.names.cage + ' (' + this.caught.size + ' caged)', done: false });
+    L.push({ id: 'cm-keys', text: '[L] lock & paint · ' + Keys.b('pause') + ' pause · [Shift] camera · ' + (this.shiftSprint() ? '[Space]' : Keys.b('sprint')) + ' run · ' + Keys.b('ultimate') + ' throw a can', done: false });
     return L;
   },
   shiftSprint() { const k = Keys.map.sprint; return k === 'ShiftLeft' || k === 'ShiftRight'; },
@@ -27765,12 +28043,12 @@ const Camo = {
       'Moving is what it notices first. Crouch, freeze, and let it walk past.', 'Stay in one spot too long and it smells you: it comes to the area. Move between hiding places.', 'Throw a can (' + Keys.b('ultimate') + ') to pull it away from a breaker — then work fast.'];
     this.tipI = ((this.tipI || 0) + 1) % tips.length; UI.msg(tips[this.tipI], 'hint', 6);
   },
-  intro() { UI.center('MECHA CAMO', (Net.active && this.team().length > 1 ? this.team().length + ' OF YOU · ' : '') + 'PAINT · HIDE · ' + this.need + ' BREAKERS · GET TO THE LIFT', 4.6); },
+  intro() { UI.center('MECHA CAMO', this.M.title + ' · ' + (Net.active && this.team().length > 1 ? this.team().length + ' OF YOU · ' : '') + 'PAINT · HIDE · ' + this.need + ' BREAKERS · GET TO THE LIFT', 4.6); },
   introMsgs() {
     const run = this.runId, live = () => this.on && this.runId === run && Game.state === 'playing';
     UI.msg('You\'re a stickman, factory orange. The Warden wakes in ' + this.D().prep + ' seconds — and it looks for anything that doesn\'t belong.', 'story', 7);
-    setTimeout(() => { if (live()) UI.msg('[Esc] frees your mouse: click a wall to pick up its colour, drag on yourself to paint. ' + Keys.b('ability') + ' picks up what you face. ' + Keys.b('nextWeapon') + ': CHAMELEON SPRAY — back to a wall, crouch, and every part of you turns the colour behind it. [Shift] camera · ' + Keys.b('pause') + ' pause.', '', 9); }, 4500);
-    setTimeout(() => { if (live()) UI.msg('Match what\'s BEHIND you, keep still, stay low. Throw the ' + this.need + ' breakers, then get to the Surface Lift.', 'hint', 6); }, 13000);
+    setTimeout(() => { if (live()) UI.msg(Keys.b('nextWeapon') + ': CHAMELEON SPRAY — back to a wall, crouch, and every part of you turns the colour behind it. [L] locks you in place to paint by hand: turn round yourself, drag on yourself to paint, click a wall for its colour. [Shift] camera · ' + Keys.b('pause') + ' pause.', '', 9); }, 4500);
+    setTimeout(() => { if (live()) UI.msg('Match what\'s BEHIND you, keep still, stay low. Throw the ' + this.need + ' breakers, then get to ' + this.M.names.lift + '.', 'hint', 6); }, 13000);
   },
   /* ---- the end ---- */
   result(ev) {
@@ -27781,7 +28059,7 @@ const Camo = {
     G.state = won ? 'won' : 'dead'; Input.exitLock(); UI.hud(false); G.endFrame();
     this.hudEl.classList.remove('on'); this.teamEl.classList.remove('on'); this.warnEl.className = ''; if (this.stillEl) this.stillEl.className = ''; this.markEl.innerHTML = '';
     const caps = this.stats.caught, rank = !won ? (outN ? 'C' : 'D') : outN === n && caps === 0 ? 'S' : outN === n ? 'A' : 'B';
-    const bk = 'camo-' + dn, prev = Goals.data.best[bk], score = (won ? 100 : 0) + outN * 20 - caps * 5 + (ev.g | 0) * 3;
+    const bk = 'camo-' + (this.M.id === 's6' ? '' : this.M.id + '-') + dn, prev = Goals.data.best[bk], score = (won ? 100 : 0) + outN * 20 - caps * 5 + (ev.g | 0) * 3;
     const isBest = !prev || score > (prev.score || 0);
     if (isBest) Goals.data.best[bk] = { score, rank, won: won ? 1 : 0, out: outN, n, time: Math.floor(+ev.t || 0), at: Date.now() };
     if (won && iOut) { Goals.unlock('camo_win'); if (!this.huntedMe) Goals.unlock('camo_ghost'); if (dn === 'nightmare') Goals.unlock('camo_nm'); }
@@ -27794,13 +28072,13 @@ const Camo = {
     const put = (el, list) => { el.innerHTML = ''; list.forEach(([a, b]) => { const sp = document.createElement('span'); sp.textContent = a; const v = document.createElement('b'); v.textContent = b; el.appendChild(sp); el.appendChild(v); }); };
     if (won) {
       $('win-title').textContent = outN === n ? (n > 1 ? 'Every one of you got out' : 'You got out') : 'Enough of you got out';
-      $('win-sub').textContent = 'Mecha Camo · ' + outN + ' of ' + n + ' out · caught ' + caps + '×';
+      $('win-sub').textContent = 'Mecha Camo · ' + this.M.title.toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase()) + ' · ' + outN + ' of ' + n + ' out · caught ' + caps + '×';
       put($('win-stats'), rows);
       put($('win-score'), [['Everyone out', outN === n ? '✓' : '—'], ['Never caught', caps === 0 ? '✓' : '—'], ['Never hunted', !this.huntedMe ? '✓' : '—']]);
       $('rank-letter').textContent = rank; $('rank-letter').className = 'r-' + rank; $('rank-score').textContent = outN + '/' + n + ' OUT';
       $('rank-best').textContent = isBest ? 'NEW BEST ON ' + DN : 'BEST ON ' + DN + ': ' + prev.rank + ' · ' + prev.out + '/' + prev.n;
       const wa = $('win-ach'); wa.innerHTML = ''; (Goals.runGot || []).forEach(x => { const d = document.createElement('span'); d.textContent = '★ ' + x.name; wa.appendChild(d); });
-      $('epilogue').textContent = 'The lift rises through eleven floors of quiet. On Sublevel 6 the paint is still wet on the walls — and in one of the rooms, a patch of wall that was never painted turns its head.';
+      $('epilogue').textContent = this.M.epi;
       G.endButtons('btn-win-again', 'Play Again');
       UI.show('screen-victory'); Sound.dawn();
     } else {
@@ -27852,6 +28130,14 @@ body.camo-on #st-light,body.camo-on #cards,body.camo-on #st-health,body.camo-on 
 #camo-paint .cp-tools span,#camo-paint .cp-pats span{font-size:9px;opacity:.6;margin:0 2px 0 6px}
 #camo-paint .cp-pats span{width:100%;margin:0}
 #camo-paint.on{display:block}
+#camo-paint.lock .cp-panel{left:50%;top:auto;bottom:10px;transform:translateX(-50%);width:min(980px,calc(100vw - 20px));max-height:44vh;padding:7px 10px;display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px}
+#camo-paint.lock .cp-h{width:100%}#camo-paint.lock .cp-tools{margin:2px 0}#camo-paint.lock .cp-btns{margin-left:auto}#camo-paint.lock .cp-prog{width:100%;margin-top:3px}#camo-paint.lock .cp-seen>span:first-child{display:none}
+body.cm-locked #messages{bottom:calc(13vh + 70px)}
+#camo-paint.lock .cp-pick,#camo-paint.lock .cp-mix,#camo-paint.lock .cp-pats,#camo-paint.lock .cp-match,#camo-paint.lock #cp-sample,#camo-paint.lock #cp-pause,#camo-paint.lock #cp-fillall{display:none}
+#camo-paint.lock .cp-h{font-size:12px;margin-bottom:4px}#camo-paint.lock .cp-h small{display:inline;margin-left:10px}
+#camo-paint.lock .cp-sw,#camo-paint.lock .cp-seen{display:inline-flex;vertical-align:middle;margin:3px 8px 3px 0}#camo-paint.lock .cp-sw i{width:17px;height:17px}
+#camo-paint .cp-more{margin-left:auto}
+body.cm-locked #camo-hud{bottom:auto;top:15%}
 #camo-paint .cp-panel{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:330px;max-height:94vh;overflow:auto;background:rgba(14,14,16,.9);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px;font-family:var(--mono);color:#e8e2d4;font-size:11px;letter-spacing:.06em;cursor:default;box-shadow:0 10px 40px rgba(0,0,0,.6)}
 #camo-paint .cp-h{font-size:15px;letter-spacing:.2em;color:#ffb26a;margin-bottom:8px}
 #camo-paint .cp-h small{display:block;font-size:9px;letter-spacing:.06em;color:#aaa;margin-top:3px}
@@ -27972,21 +28258,33 @@ body.camo-on #st-light,body.camo-on #cards,body.camo-on #st-health,body.camo-on 
     if (Math.random() < 0.45) {
       const goals = Camo.breakers.filter(b => !b.done).map(b => [b.fx, b.fz]);
       for (const s of Camo.caught.values()) { const c = Camo.cages[s]; if (c) goals.push([c.x, c.z + 2]); }
-      if (Camo.open) goals.push([cc(33), cc(24)]);
+      if (Camo.open) { const lc = Camo.centre(Camo.M.lobby); if (lc) goals.push([cc(lc[0]), cc(lc[1])]); }
+      if (Camo.M.booths && Math.random() < 0.35) for (const B of WORKS_BOOTHS) goals.push([wkx(50), wkz(B.row)]); // (the Colour Works: it knows what the booths are for)
       const far = goals.filter(g => Math.hypot(g[0] - this.pos.x, g[1] - this.pos.z) > 6);
       if (far.length) { const g = far[Math.floor(Math.random() * far.length)]; if (this.goTo(g[0] + rand(-1.5, 1.5), g[1] + rand(-1.5, 1.5), () => { this.pauseT = rand(1.5, 3.5); this.headTimer = 0; })) return; }
     }
     // a room sweep: into a room it hasn't checked lately, to somewhere in the middle of it, and a long look round
     if (Math.random() < 0.7) {
       const seen = Camo.swept || (Camo.swept = []), here = cellOf(this.pos.x, this.pos.z).room;
-      const rooms = (CAMO_ROOMS + 's' + (Camo.open ? 'e' : '')).split('').filter(ch => seen.indexOf(ch) < 0 && ROOMDEF[ch] && ROOMDEF[ch][0] !== here);
+      const MP = Camo.M, rooms = [...new Set((MP.rooms + MP.start + (Camo.open ? MP.lobby : '')).split(''))].filter(ch => seen.indexOf(ch) < 0 && ROOMDEF[ch] && ROOMDEF[ch][0] !== here);
       for (let tries = 0; tries < 3 && rooms.length; tries++) {
-        const ch = rooms.splice(Math.floor(Math.random() * rooms.length), 1)[0], cs = Hunt.inner(ch); if (!cs.length) continue;
+        const ch = rooms.splice(Math.floor(Math.random() * rooms.length), 1)[0], cs = Camo.inner(ch); if (!cs.length) continue;
         const [x, z] = cs[Math.floor(Math.random() * cs.length)];
         if (this.goTo(cc(x) + rand(-0.5, 0.5), cc(z) + rand(-0.5, 0.5), () => { this.pauseT = rand(2.5, 4.5); this.headTimer = 0; })) { seen.push(ch); if (seen.length > 6) seen.shift(); return; }
       }
     }
+    if (Camo.M.lvl !== 0) { // (Build 24: off Sublevel 6 its own patrol points mean nothing: somewhere in a room of this floor)
+      const all = [...new Set((Camo.M.rooms + Camo.M.start).split(''))];
+      for (let tries = 0; tries < 6; tries++) { const cs = Camo.inner(all[Math.floor(Math.random() * all.length)]); if (!cs.length) continue; const [x, z] = cs[Math.floor(Math.random() * cs.length)]; if (this.goTo(cc(x), cc(z), () => { this.pauseT = rand(1.5, 3.5); this.headTimer = 0; })) return; }
+      this.pauseT = 1; return;
+    }
     return cpt0.apply(this, arguments);
+  };
+  const fpf0 = Monster.farPointFrom; Monster.farPointFrom = function (pos) {
+    if (!on() || Camo.M.lvl === 0) return fpf0.apply(this, arguments);
+    let best = null, bd = -1; const all = [...new Set((Camo.M.rooms + Camo.M.start).split(''))];
+    for (let i = 0; i < 10; i++) { const cs = Camo.inner(all[Math.floor(Math.random() * all.length)]); if (!cs.length) continue; const [x, z] = cs[Math.floor(Math.random() * cs.length)], d = Math.hypot(cc(x) - pos.x, cc(z) - pos.z); if (d > bd) { bd = d; best = [cc(x), cc(z)]; } }
+    return best;
   };
   const act0 = actors; actors = function () { const o = act0(); return on() ? o.filter(a => !Camo.held(a)) : o; };
   // you: a mech's eye height; caged or out, you stay put
@@ -27998,6 +28296,7 @@ body.camo-on #st-light,body.camo-on #cards,body.camo-on #st-health,body.camo-on 
   const kd0 = Keys.down; Keys.down = function (a) {
     if (on()) {
       if (Camo.held(player) && (a === 'forward' || a === 'back' || a === 'left' || a === 'right' || a === 'sprint' || a === 'crouch')) return false; // (in a cage, or in the lift)
+      if (Camo.menu && (a === 'forward' || a === 'back' || a === 'left' || a === 'right' || a === 'sprint' || a === 'jump')) return false; // (Build 24: painting, you're locked in place)
       if (a === 'sprint' && Camo.shiftSprint()) return !!Input.keys.Space; // (Shift is the camera in this mode: run on Space)
     }
     return kd0.apply(this, arguments);
@@ -28034,8 +28333,8 @@ body.camo-on #st-light,body.camo-on #cards,body.camo-on #st-health,body.camo-on 
   const gr0 = Game.render; Game.render = function (dt) { if (on()) Camo.draw(clamp(dt || 0.016, 0, 0.1)); return gr0.apply(this, arguments); };
   const ul0 = Game.updateLights; Game.updateLights = function (dt) { const r = ul0.apply(this, arguments); if (on()) { hemi.intensity = damp(hemi.intensity, 0.95, 1.5, dt); scene.fog.density = damp(scene.fog.density, FOG_BASE * 0.55, 1, dt); } return r; };
   // every door but the blast door, for everyone
-  const DP = doors.length && Object.getPrototypeOf(doors[0]); if (DP && DP.locked) { const lk0 = DP.locked; DP.locked = function () { if (on() && this.type !== 'exit' && cellOf(this.cx, this.cz).lvl === 0) return false; if (on() && this.type === 'exit' && cellOf(this.cx, this.cz).lvl === 0) return !Camo.open; return lk0.apply(this, arguments); }; }
-  const sc0 = Game.scripts; Game.scripts = function (dt) { if (this.mode === 'camo') { this.eventT -= dt; if (this.eventT <= 0) { this.eventT = rand(16, 30); if (Math.random() < 0.5) Sound.pipeGroan(_v3c.set(rand(4, 30), 2, rand(4, 42))); else this.ambientEvent(); } return; } return sc0.apply(this, arguments); };
+  const DP = doors.length && Object.getPrototypeOf(doors[0]); if (DP && DP.locked) { const lk0 = DP.locked; DP.locked = function () { if (on() && this.type !== 'exit' && cellOf(this.cx, this.cz).lvl === Camo.M.lvl) return false; if (on() && this.type === 'exit' && cellOf(this.cx, this.cz).lvl === Camo.M.lvl) return !Camo.open; return lk0.apply(this, arguments); }; }
+  const sc0 = Game.scripts; Game.scripts = function (dt) { if (this.mode === 'camo') { this.eventT -= dt; if (this.eventT <= 0) { this.eventT = rand(16, 30); if (Math.random() < 0.5) Sound.pipeGroan(_v3c.set(player.pos.x + rand(-16, 16), 2, player.pos.z + rand(-16, 16))); else if (Camo.M.lvl === 0) this.ambientEvent(); } return; } return sc0.apply(this, arguments); };
   // the mode's events, and a guest's requests (checked by the host)
   const ae0 = Game.applyEvent; Game.applyEvent = function (ev) { if (ev && typeof ev.k === 'string' && ev.k.indexOf('cq') === 0 && Game.mode === 'camo') { if (Camo.on) Camo.event(ev); return; } return ae0.apply(this, arguments); };
   const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i, x) { if (a === 'cqp' || a === 'cqsp' || a === 'cqw' || a === 'cqx') { Camo.remote(r, a, i, x); return; } return ra0.apply(this, arguments); };
@@ -28060,7 +28359,7 @@ body.camo-on #st-light,body.camo-on #cards,body.camo-on #st-health,body.camo-on 
   const hpr0 = Hints.primary; Hints.primary = function () {
     if (!on()) return hpr0.apply(this, arguments);
     const p = player; if (Camo.held(p)) return null;
-    if (Camo.open) return { pos: new T.Vector3(cc(32.5), 1.4, cc(27)), label: 'Surface Lift', key: 'lift', done: () => Camo.out.has(Camo.me()) };
+    if (Camo.open) { const lp = Camo.liftPos(); return { pos: new T.Vector3(lp[0], 1.4, lp[1]), label: Camo.M.names.Lift, key: 'lift', done: () => Camo.out.has(Camo.me()) }; }
     let b = null, bd = 1e9; for (const B of Camo.breakers) { if (B.done) continue; const d = Math.hypot(B.x - p.pos.x, B.z - p.pos.z); if (d < bd) { bd = d; b = B; } }
     return b ? { pos: new T.Vector3(b.x, 1.2, b.z), label: 'Breaker', key: 'breaker', done: () => b.done } : null;
   };
@@ -28071,14 +28370,15 @@ body.camo-on #st-light,body.camo-on #cards,body.camo-on #st-health,body.camo-on 
     if (!on() || Game.state !== 'playing') return;
     const code = e.code, free = c => !Keys.actionOf(c);
     if (Camo.menu) {
-      if (code === 'Escape' || (code === 'KeyB' && free(code))) { e.preventDefault(); e.stopImmediatePropagation(); if (!e.repeat && (code !== 'Escape' || performance.now() - (Camo.menuAt || 0) > 300)) Camo.closeMenu(); return; } // (an Esc that both let the mouse go and arrived as a key press: not a second Esc)
+      if (code === 'Escape' || ((code === 'KeyB' || code === 'KeyL') && free(code))) { e.preventDefault(); e.stopImmediatePropagation(); if (!e.repeat && (code !== 'Escape' || performance.now() - (Camo.menuAt || 0) > 300)) Camo.closeMenu(); return; } // (an Esc that both let the mouse go and arrived as a key press: not a second Esc)
+      if (code === 'BracketLeft' || code === 'BracketRight' || code === 'Minus' || code === 'Equal') { e.preventDefault(); e.stopImmediatePropagation(); Camo.brushSize(code === 'BracketLeft' || code === 'Minus' ? -1 : 1); return; } // (brush size)
       if (code === 'ShiftLeft' || code === 'ShiftRight') return;
     }
     if (e.repeat) return;
-    if (code === 'Escape' && !Camo.menu && !Camo.held(player)) { e.preventDefault(); e.stopImmediatePropagation(); Camo.openMenu(); if (Camo.menu) return; }
+    if (code === 'Escape' && !Camo.menu && !Camo.held(player)) { e.preventDefault(); e.stopImmediatePropagation(); Camo.openMenu(true); if (Camo.menu) return; }
     if (code === 'ShiftLeft' || code === 'ShiftRight') { if (!Camo.menu) Camo.toggleTp(); }
-    else if (code === 'KeyL' && free(code)) Camo.toggleTp();
-    else if (code === 'KeyB' && free(code)) { e.preventDefault(); if (!Camo.menu) Camo.openMenu(); }
+    else if (code === 'KeyL' && free(code)) { e.preventDefault(); if (!Camo.menu) Camo.openMenu(false); } // (Build 24: lock in place and paint)
+    else if (code === 'KeyB' && free(code)) { e.preventDefault(); if (!Camo.menu) Camo.openMenu(true); }
   }, true);
   // the modes' shared parts
   const mr0 = Modes.reset; Modes.reset = function () { Camo.reset(); return mr0.apply(this, arguments); };
@@ -28095,13 +28395,36 @@ body.camo-on #st-light,body.camo-on #cards,body.camo-on #st-health,body.camo-on 
     if (Game.mode !== 'camo' || !Camo.on) return mh0.apply(this, arguments);
     const el = $('shift'); if (!el) return;
     const left = Camo.clockLeft(), shown = Camo.fmt(left), rel = Camo.released, goal = !rel ? 'IT WAKES IN ' + shown : Camo.open ? 'THE LIFT HAS POWER' : 'BREAKERS ' + Camo.got + ' / ' + Camo.need;
-    const mission = !rel ? 'Paint up' : Camo.open ? 'Get to the Surface Lift' : 'Hide · throw the breakers', sub = (Net.active ? Camo.team().filter(a => !Camo.held(a)).length + ' free · ' : '') + Camo.cardBest(settings.difficulty);
+    const mission = !rel ? 'Paint up' : Camo.open ? 'Get to ' + Camo.M.names.lift : 'Hide · throw the breakers', sub = (Net.active ? Camo.team().filter(a => !Camo.held(a)).length + ' free · ' : '') + Camo.cardBest(settings.difficulty);
     const cls = !rel ? '' : Camo.open ? 'surge' : left < 60 ? 'late' : '';
     const key = shown + cls + goal + mission + sub; if (UI.hudCache.shift === key) return; UI.hudCache.shift = key;
     el.className = cls; $('shift-clock').firstChild.textContent = shown; $('shift-clock').querySelector('small').textContent = rel ? 'LEFT' : 'PREP';
     $('shift-goal').textContent = goal; $('shift-bar').firstElementChild.style.width = clamp(rel ? Camo.huntT / Camo.D().len : Camo.t / Camo.D().prep, 0, 1) * 100 + '%';
     $('mission').textContent = mission; $('mission-sub').textContent = sub; $('objectives').classList.toggle('dawn', false);
   };
+}
+
+/* ---- (Build 24) choosing MECHA CAMO's map: on the briefing screen, and in the online lobby (the host's choice) ---- */
+{
+  const sync = () => {
+    const v = CAMO_MAPS[settings.camoMap] ? settings.camoMap : 's6';
+    document.querySelectorAll('[data-cmap]').forEach(b => b.classList.toggle('sel', b.dataset.cmap === v));
+    const k = $('brief-kicker'); if (k && settings.mode === 'camo') k.textContent = v === 'works' ? 'Mecha Camo · Site Kestrel, Sublevel 5 · the Colour Works · lights on' : 'Mecha Camo · Site Kestrel, Sublevel 6 · the renovation · lights on';
+  };
+  const smc0 = syncModeCards; syncModeCards = function () { const r = smc0.apply(this, arguments); sync(); return r; };
+  document.querySelectorAll('[data-cmap]').forEach(b => b.addEventListener('click', e => {
+    e.preventDefault(); if (Net.isClient) return;
+    settings.camoMap = CAMO_MAPS[b.dataset.cmap] ? b.dataset.cmap : 's6'; saveSettings(); Sound.ui && Sound.ui(); sync();
+    if (Net.isHost) { Net.sendCfg(); Net.lobbyUpdate(); }
+  }));
+  const lu0 = Net.lobbyUpdate; Net.lobbyUpdate = function () {
+    const r = lu0.apply(this, arguments);
+    const mode = this.isClient ? this.sessionMode : settings.mode, cmEl = $('mp-cmaps'); if (cmEl) cmEl.hidden = !this.isHost || mode !== 'camo';
+    const note = $('mp-diff-note'), cm = this.isClient ? this.sessionCamoMap : settings.camoMap;
+    if (note && mode === 'camo' && note.textContent.indexOf(' · Map: ') < 0) note.textContent = note.textContent.replace('MECHA CAMO', 'MECHA CAMO · Map: ' + (CAMO_MAPS[cm] || CAMO_MAPS.s6).title);
+    sync(); return r;
+  };
+  sync();
 }
 /* ================================================================== */
 /* Build 23: MECHA CAMO+                                               */
@@ -28166,7 +28489,7 @@ const CQ = {
     this.rnd = rnd;
     // the gold tins: tucked against walls, away from the breakers and the start (online: the same spots on every screen)
     const cand = [];
-    for (const ch of CAMO_ROOMS.split('')) for (const [x, z] of (Hunt.rooms()[ch] || [])) {
+    for (const ch of [...new Set(C.M.rooms.split(''))]) for (const [x, z] of (C.rooms()[ch] || [])) { // (Build 24: this map's rooms)
       if (!guardPass(x, z) || cellAt(x, z).kind !== 'floor') continue;
       let wall = null; for (const [ox, oz] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) if (cellAt(x + ox, z + oz).kind === 'wall') { wall = [ox, oz]; break; }
       if (!wall) continue;
@@ -28219,7 +28542,7 @@ const CQ = {
   update(dt) {
     const C = Camo; if (!C.on) return;
     this.droneStep(dt);
-    for (const t of this.tins) if (t.m && !t.got) { t.m.rotation.y += dt * 1.6; t.m.position.y = 0.16 + Math.sin(Game.time * 2.4 + t.i) * 0.04; t.glow.material.opacity = 0.35 + Math.sin(Game.time * 3 + t.i) * 0.15; t.m.visible = t.glow.visible = LVL === 0; }
+    for (const t of this.tins) if (t.m && !t.got) { t.m.rotation.y += dt * 1.6; t.m.position.y = 0.16 + Math.sin(Game.time * 2.4 + t.i) * 0.04; t.glow.material.opacity = 0.35 + Math.sin(Game.time * 3 + t.i) * 0.15; t.m.visible = t.glow.visible = LVL === Camo.M.lvl; }
     // close-call bookkeeping for the highlights (the camo's own counter says when one happened; this remembers how close)
     if ((C.stats.close || 0) > (this.closeSeen || 0)) { this.closeSeen = C.stats.close; if (this.lastNear < 99) this.hlNear = Math.min(this.hlNear === undefined ? 99 : this.hlNear, this.lastNear); }
     this.lastNear = C.nearSt ? C.nearSt.min : (C.nearSt === null ? this.lastNear : 99);
@@ -28238,7 +28561,7 @@ const CQ = {
     this.vsT -= dt; if (Net.active && this.vsT <= 0) { this.vsT = 2; Game.emit({ k: 'cqvs', tp: this.temper, e: this.ev ? this.ev.id : '', l: this.ev && this.ev.until ? +(this.ev.until - Game.time).toFixed(1) : 0, g: this.tins.filter(t => t.got).map(t => t.i) }); }
   },
   hostEvent() {
-    const left = CQ_EVENT_IDS.filter(id => this.used.indexOf(id) < 0); if (!left.length) { this.evN = this.evMax; return; }
+    const left = CQ_EVENT_IDS.filter(id => this.used.indexOf(id) < 0 && (id !== 'sleeper' || Camo.M.sleeper)); if (!left.length) { this.evN = this.evMax; return; } // (Build 24: the Sleepwalker lives under Sublevel 6's Morgue)
     const id = left[Math.floor(Math.random() * left.length)], E = CQ_EVENTS[id], ev = { k: 'cqv', e: id, d: E.dur };
     if (id === 'drone') { const w = this.dronePath(); if (!w) { this.used.push(id); return; } ev.w = w; }
     if (id === 'coat') { const c = this.coatPick(); if (!c) { this.used.push(id); return; } ev.r = c.r; ev.c = c.c; }
@@ -28253,7 +28576,7 @@ const CQ = {
     this.ev = { id, until: d ? Game.time + d : 0 }; if (this.used.indexOf(id) < 0) this.used.push(id);
     this.hl.events.push(E.name);
     if (id === 'blackout') {
-      for (const f of fixtures) if (f.type === 'main' && f.lvl === 0) f.powerOnAt = Infinity;
+      for (const f of fixtures) if (f.type === 'main' && f.lvl === LVL) f.powerOnAt = Infinity;
       Sound.brownout && Sound.brownout(); Game.shake(0.25);
     } else if (id === 'drone') {
       if (Array.isArray(ev.w)) this.droneStart(ev.w);
@@ -28271,7 +28594,7 @@ const CQ = {
   evEnd(E, quiet) {
     if (!E) return;
     const id = E.id;
-    if (id === 'blackout') { for (const f of fixtures) if (f.type === 'main' && f.lvl === 0) f.powerOnAt = Game.time + 0.3 + Math.random() * 1.2; if (!quiet) UI.msg('The lights stutter back on.', '', 2.6); }
+    if (id === 'blackout') { for (const f of fixtures) if (f.type === 'main' && f.lvl === LVL) f.powerOnAt = Game.time + 0.3 + Math.random() * 1.2; if (!quiet) UI.msg('The lights stutter back on.', '', 2.6); }
     else if (id === 'drone') { this.dropDrone(); if (!quiet) UI.msg('The drone docks and goes dark.', '', 2.6); }
     else if (id === 'sleeper') { Sleeper.sink(); if (!quiet) UI.msg('The music box winds down. It sinks back into the floor.', '', 3); }
     if (this.ev && this.ev.id === id) this.ev = null;
@@ -28280,11 +28603,11 @@ const CQ = {
   /* ---- THE SEARCHLIGHT DRONE ---- */
   // (host) a loop through three or four rooms and the halls between them
   dronePath() {
-    const rooms = CAMO_ROOMS.split('').filter(ch => Hunt.centre(ch)); if (rooms.length < 3) return null;
+    const rooms = [...new Set(Camo.M.rooms.split(''))].filter(ch => Camo.centre(ch)); if (rooms.length < 3) return null;
     for (let i = rooms.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rooms[i], rooms[j]] = [rooms[j], rooms[i]]; }
     const pick = rooms.slice(0, 3 + (Math.random() < 0.5 ? 1 : 0)), cells = [];
     for (let i = 0; i < pick.length; i++) {
-      const a = Hunt.centre(pick[i]), b = Hunt.centre(pick[(i + 1) % pick.length]);
+      const a = Camo.centre(pick[i]), b = Camo.centre(pick[(i + 1) % pick.length]);
       const p = astar(a[0], a[1], b[0], b[1], guardPass); if (!p) return null;
       if (!cells.length) cells.push(a); for (const c of p) cells.push(c);
     }
@@ -28337,7 +28660,7 @@ const CQ = {
     D.M.cone.material.color.setHex(D.flash > 0 ? 0xff7050 : 0xfff2c8); D.M.pool.material.color.setHex(D.flash > 0 ? 0xff6040 : 0xfff0b8);
     const px = D.x - Math.sin(D.yaw) * 0.95, pz = D.z - Math.cos(D.yaw) * 0.95; D.px = px; D.pz = pz;
     D.M.pool.position.set(px, 0.025, pz);
-    D.M.g.visible = D.M.pool.visible = LVL === 0;
+    D.M.g.visible = D.M.pool.visible = LVL === Camo.M.lvl;
     // (every screen) am I in its light? (the host's word decides; this is for your HUD)
     const p = player; this.inLight = !Camo.held(p) && Math.hypot(p.pos.x - px, p.pos.z - pz) < 1.9 && losClear(D.x, D.z, p.pos.x, p.pos.z);
     if (Camo.host()) this.myDroneAw = D.aw.get(Game.idOf(p)) || 0;
@@ -28383,7 +28706,7 @@ const CQ = {
   // (host) a room — often one somebody is hiding in — and a colour scheme that isn't its own
   coatPick() {
     const C = Camo, here = new Set(C.team().filter(a => !C.held(a)).map(a => cellOf(a.pos.x, a.pos.z).room));
-    let rooms = CAMO_ROOMS.split('').filter(ch => ROOMDEF[ch] && CamoWorld.DRESS[ch] && CamoWorld.dress.some(b => b.y1 > 1.2 && this.roomOfBox(b) === ROOMDEF[ch][0]));
+    let rooms = [...new Set(C.M.rooms.split(''))].filter(ch => ROOMDEF[ch] && CamoWorld.DRESS[ch] && CamoWorld.dress.some(b => b.y1 > 1.2 && this.roomOfBox(b) === ROOMDEF[ch][0]));
     if (!rooms.length) return null;
     const occ = rooms.filter(ch => here.has(ROOMDEF[ch][0]));
     const r = occ.length && Math.random() < 0.6 ? occ[Math.floor(Math.random() * occ.length)] : rooms[Math.floor(Math.random() * rooms.length)];
@@ -28483,7 +28806,7 @@ const CQ_BONUS_IDS = Object.keys(CQ_BONUS);
 // (the camo eye's grid: a box out again)
 CamoWorld.remove = function (b) {
   if (!this.cells) return;
-  const cx0 = Math.max(0, Math.floor(b.x0 / CELL)), cx1 = Math.min(W - 1, Math.floor((b.x1 - 1e-4) / CELL)), cz0 = Math.max(0, Math.floor(b.z0 / CELL)), cz1 = Math.min(LEVEL_ROWS - 1, Math.floor((b.z1 - 1e-4) / CELL));
+  const cx0 = Math.max(0, Math.floor(b.x0 / CELL)), cx1 = Math.min(W - 1, Math.floor((b.x1 - 1e-4) / CELL)), cz0 = Math.max(0, Math.floor(b.z0 / CELL)), cz1 = Math.min(H - 1, Math.floor((b.z1 - 1e-4) / CELL));
   for (let z = cz0; z <= cz1; z++) for (let x = cx0; x <= cx1; x++) { const L = this.cells[z * W + x]; if (!L) continue; const i = L.indexOf(b); if (i >= 0) L.splice(i, 1); }
 };
 
@@ -28531,7 +28854,7 @@ CamoWorld.remove = function (b) {
   // the objectives: the bonus job, the tins, the event
   const ob0 = Camo.objectives; Camo.objectives = function () {
     const L = ob0.apply(this, arguments);
-    const pr = L.find(o => o.id === 'cm-prep'); if (pr) pr.text = 'Paint up before it wakes (' + this.fmt(this.clockLeft()) + ') — back to a wall, crouch, ' + Keys.b('nextWeapon') + ': chameleon spray · [Esc] paint by hand';
+    const pr = L.find(o => o.id === 'cm-prep'); if (pr) pr.text = 'Paint up before it wakes (' + this.fmt(this.clockLeft()) + ') — back to a wall, crouch, ' + Keys.b('nextWeapon') + ': chameleon spray · [L] lock in place and paint by hand';
     const B = CQ_BONUS[CQ.bonus]; if (B) L.splice(L.length - 1, 0, { id: 'cm-bonus', text: 'BONUS: ' + B.text + ' (+40 coins)', done: CQ.bonusDone() });
     if (CQ.tins.length) L.splice(L.length - 1, 0, { id: 'cm-tins', text: 'Gold paint tins: ' + CQ.tinGot + '/' + CQ.tins.length + ' — walk over one to pick it up', done: CQ.tinGot >= CQ.tins.length });
     if (this.released) L.splice(L.length - 1, 0, { id: 'cm-temper', text: 'It\'s ' + CQ.T().name + ': ' + CQ.T().line, done: false });
@@ -28726,7 +29049,7 @@ Object.assign(CQ, {
     const L = ob1.apply(this, arguments), o = L.find(q => q.id === 'cm-cage');
     if (o && !this.held(player)) {
       let best = null; for (const [id, s] of this.caught) { const c = this.cages[s]; if (!c || id === this.me()) continue; const d = Math.hypot(c.x - player.pos.x, c.z - player.pos.z); if (!best || d < best.d) best = { id, d }; }
-      if (best) o.text = 'Free ' + Net.nameOf(best.id) + (this.caught.size > 1 ? ' (+' + (this.caught.size - 1) + ' more)' : '') + ': hold ' + Keys.b('interact') + ' at their cage in Containment — ' + Math.round(best.d) + ' m';
+      if (best) o.text = 'Free ' + Net.nameOf(best.id) + (this.caught.size > 1 ? ' (+' + (this.caught.size - 1) + ' more)' : '') + ': hold ' + Keys.b('interact') + ' at their cage in ' + this.M.names.cage + ' — ' + Math.round(best.d) + ' m';
     } else if (o && caged()) o.text = 'You\'re caged: ' + Keys.b('interact') + ' call for help · ' + Keys.b('nextWeapon') + ' watch your team';
     return L;
   };
@@ -28734,6 +29057,7 @@ Object.assign(CQ, {
   Camo.hint = function () {
     const K = Keys.b, tips = [
       'Back against a wall, crouch, ' + K('nextWeapon') + ': the chameleon spray turns each part of you the colour (and pattern) behind it. Then hold still.',
+      '[L] locks you in place: drag on yourself to paint (FINE, S, M, L brushes — [ and ] to change), drag the view to turn round yourself, scroll to zoom, click a wall for its colour. [L] again to move.',
       'Moving is what it notices first. Crouch, freeze, and let it walk past — a CLOSE CALL pays coins.',
       'Your front and back are seen separately: it matters which way you face. Face the room, back to the wall.',
       'A yellow ? over it: something caught its eye and it\'s coming to look. Hold still. A red ! — run, break its line of sight, freeze somewhere new.',
@@ -28743,6 +29067,7 @@ Object.assign(CQ, {
       'Stay in one spot too long and it smells you. Move between hiding places.',
       'Three gold paint tins are hidden against the walls each round — they unlock new paints in the shop.',
       'Throw a can (' + K('ultimate') + ') to pull it away from a breaker or a cage — then work fast.'];
+    if (this.M.booths) tips.push('THE COLOUR WORKS: the Drying Room\'s sheets hide you but stop no one — stand behind one your colour. In a SPRAY BOOTH, ' + K('interact') + ' coats you in its colours (it hisses — and it checks the booths).');
     this.tipI = ((this.tipI || 0) + 1) % tips.length; UI.msg(tips[this.tipI], 'hint', 6);
   };
 }
@@ -30087,7 +30412,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
+  Object.assign(window.LS, { People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
 </script>
