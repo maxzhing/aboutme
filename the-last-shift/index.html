@@ -25,7 +25,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .screen{position:fixed;inset:0;display:none;z-index:20;align-items:center;justify-content:center;flex-direction:column}
 .screen.active{display:flex}
 .shade{background:radial-gradient(ellipse at center,rgba(6,6,7,.78) 0%,rgba(0,0,0,.94) 75%)}
-.codes-panel{max-width:min(560px,94vw)}.codes-sub{color:#b9b3a6;font-size:14px;line-height:1.55;margin:-6px 0 16px}
+.codes-panel{max-width:min(560px,94vw)}.ct-panel{max-width:min(620px,94vw)}.ct-count{white-space:nowrap;font-size:.5em;color:#ffd77a;letter-spacing:.1em;vertical-align:middle;margin-left:8px}.ct-row{position:relative;padding:12px 14px;margin:0 0 10px;border:1px solid var(--line);background:rgba(255,255,255,.03)}.ct-row.done{border-color:#5a8a5a;background:rgba(90,160,90,.08)}.ct-t{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.ct-t b{font-size:15px;color:#efe9dc;font-weight:600}.ct-m{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#9a927f;white-space:nowrap}.ct-bar{height:5px;background:rgba(255,255,255,.08);margin:9px 0 6px}.ct-bar i{display:block;height:100%;background:#d9a83a}.ct-row.done .ct-bar i{background:#6ac06a}.ct-r{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:#bfae80}.ct-row.done .ct-p{color:#8ad08a}.ct-row .btn.ct-rr{display:inline-block;margin:8px 0 0;padding:4px 10px;font-size:10px;letter-spacing:.16em;min-width:0;line-height:1.3}.ct-foot{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#9a927f;line-height:1.6;margin:6px 0 14px}.menu .mbtn .ct-badge{animation:none;background:#c9a227}.menu .mbtn .ct-badge.all{background:#3a7a3a;color:#eaffea}.codes-sub{color:#b9b3a6;font-size:14px;line-height:1.55;margin:-6px 0 16px}
 .code-box{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
 #code-in{flex:1 1 220px;min-width:0;font-family:var(--mono);font-size:18px;letter-spacing:.24em;text-transform:uppercase;padding:12px 14px;background:rgba(0,0,0,.35);border:1px solid var(--line2);color:#fff;outline:none}
 #code-in:focus{border-color:var(--amber)}
@@ -1058,6 +1058,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
         <button class="mbtn" id="btn-roll">Character Roll<i class="free" id="free-tag" hidden>FREE SPIN</i></button>
         <button class="mbtn" id="btn-settings">Settings</button>
         <button class="mbtn" id="btn-goals">Goals</button>
+        <button class="mbtn" id="btn-contracts">Daily Contracts<i class="free ct-badge" id="ct-badge">0/3</i></button>
         <button class="mbtn" id="btn-codes">Codes</button>
         <button class="mbtn" id="btn-howto">How to Play</button>
       </nav>
@@ -1111,6 +1112,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p"><b>Your mission: stay alive until dawn — then make it onto the lift.</b> Every hour it gets worse. It crawls. It hears everything. At 4:00 the power goes, and in the last hour it can follow you into the vents. Lockers only buy you time.</p>
     <p class="p">It is not alone. A little after 2:30 something else gets up out of the Morgue — slow, humming a lullaby. <b>It never chases you</b>, but stay away from it: near it you start to hallucinate, and you can't trust anything you see or hear.</p>
     <p class="p">Want out sooner? Find the three keycards, restore main power and upload the breach report, and you can open the lift yourself.</p>
+    <p class="p"><b>You're not the only one left.</b> Three of the voices on the tapes are still alive down here, hiding where their tapes say they were. Find them, talk to them — each can help you — and <b>bring them to the lift</b>.</p>
     </div>
     <div id="brief-photos" hidden>
     <p class="p">Someone has been taking pictures down here. <b>Eight Polaroids</b> are pinned to walls around Sublevel 6 — <b>somewhere different every time you play</b>. You start with a flashlight, and the Warden is already awake.</p>
@@ -1259,6 +1261,8 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div>
         <h4>Surviving the Warden</h4>
         <ul class="tips">
+          <li><b>Daily Contracts.</b> Three jobs a day (title screen → <b>Daily Contracts</b>) from all over the game — survive the Night Shift, reach door 30, win a round of MECHA CAMO… Each pays coins at the end of the run that does it; all three in a day pays a bonus that grows with your streak. One free swap a day for a job you don't fancy.</li>
+          <li><b>Survivors (Night Shift).</b> Three of the people on the voice logs are still alive, hiding where their tapes say: <b>Rosa Ortiz</b> in the vent behind Storage, <b>Pete Doyle</b> in the Generator Hall, <b>Dr. Adebayo</b> in a morgue drawer (listen for the knocking). Found a tape? <b data-key="hint">H</b> points to its owner. <b data-key="interact">E</b> on one to talk; <b data-key="interact">E</b> again: <b>"follow me"</b> or <b>"wait here"</b>. Rosa's radio warns you when it's coming your way; ask Doyle in the Generator Hall and he gets the power on (after 4:00, the emergency lights); Dr. Adebayo stitches you up (every 60 s) and gets a downed teammate back up. They freeze when it's near — but it hears them walk, and if it walks into one of them, they're gone. Whoever is with you when the lift leaves gets out: coins, rank points and three achievements.</li>
           <li><b>Characters.</b> Everyone starts as the <b>Night Guard</b>. <b>Character Roll</b> (title screen) spins for one of 36 characters in seven rarities — Common 39.99%, Rare 27%, Epic 16%, Legendary 10%, Mythic 5%, <b>Special 2%</b> and <b>ULTIMATE 0.01%</b> (the odds are on the roll screen). Three of the <b>Specials</b> change what you carry: the <b>Tarnished</b> starts with a sword (three clean cuts stun it) and a shield that blocks standing still and charges on the run; <b>Glitch</b> fights with a glitching fist that leaves the monster weaker to every blow, can't hold any weapon but the shotgun, and skips 8 m untouchable; the <b>Demolitionist</b> carries frag and stun grenades in slots 1 and 2, turns a shotgun into a grenade launcher, has no melee at all — and his breach charge throws anything away from him, at the cost of 30 health. Your first spin is free; after that each costs 100 coins, earned only by playing: escaping, staying alive, completing objectives, reviving and healing teammates, achievements. Harder difficulties pay more. Rarity is how rare a character is — not how strong: each has a real strength, a real weakness and one ability on <b data-key="ability">F</b>.</li>
           <li><b>The new hires.</b> The <b>Sportsman</b> (150 stamina) spikes a volleyball that knocks a monster back and staggers it. The <b>Hybrid</b> is always the monsters' last choice, and sensors and traps never notice them. The <b>Scientist</b> turns a smoke grenade into a <b>gas bomb</b> (a green cloud that eats at whatever is in it) or a molotov into <b>napalm</b> (a bigger fire: a monster in it is slowed, and hits half as hard for a while after). The <b>Robot</b> carries only a crowbar and smoke, heals twice as fast, gets a downed teammate up at once — but can't be revived itself — and its <b>SERVO LOCK</b> holds a monster still for 4.5 s while everyone runs. The <b>Builder</b> can't swing a crowbar or axe or fire a shotgun, but raises a <b>barricade</b> (100 HP, two at a time) in 3 s: your team climbs through, the monsters have to smash it, and nothing hits you through it. The <b>Hacker</b> (Special) sees three tasks at once, works 1.5× faster, and can <b>lock down</b> the room they're in for 10 s — nothing gets in.</li>
           <li><b>ULTIMATE (one spin in ten thousand).</b> An Ultimate has a second power on <b data-key="ultimate">X</b>. <b>AETHER, THE STARBORN</b>: <b>NOVA</b> (25 stamina) blasts back everything within 9 m and shields everyone near him (half damage for 6 s); <b>SUPERNOVA</b> — he rises, untouchable, everything within 22 m frozen, then detonates: 120 damage and a 4 s stun to every monster in reach, downed teammates back on their feet, everyone else healed. After it he's burned out for 10 s (no stamina, slow, no sprint) and it takes 150 s to charge again — and he glows: monsters see and hear him from much further away. <b>NYX, THE ECLIPSE</b>: <b>UMBRA VEIL</b> hides her and anyone near from the monsters; <b>TOTAL ECLIPSE</b> blinds every monster on the floor for 8 s while the team sees them through walls — but her own light dies for 10 s after.</li>
@@ -1425,6 +1429,16 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 </div>
 
 <!-- goals -->
+<div id="screen-contracts" class="screen shade">
+  <div class="panel ct-panel">
+    <div class="kicker">Site Kestrel · today's work orders</div>
+    <div class="h1">Daily Contracts <span id="ct-count" class="ct-count">0 / 3</span></div>
+    <p class="codes-sub">Three jobs a day, from all over the game. Each one pays the moment it's done — at the end of the run that does it. Finish all three for a bonus, and keep the streak going: it pays more every day.</p>
+    <div id="ct-list"></div>
+    <div class="ct-foot" id="ct-foot"></div>
+    <div class="row"><button class="btn" id="btn-ct-back">Back</button></div>
+  </div>
+</div>
 <div id="screen-codes" class="screen shade">
   <div class="panel codes-panel">
     <div class="kicker">Personnel office · a sealed envelope</div>
@@ -4507,7 +4521,7 @@ world.camScreens = []; world.tapes = [];
   // cold-storage drawer bank along the north wall (3 x 16); three drawers hang open
   addStatic(GEO.box, MAT.metal, 97, 1.2, 2.45, 16.2, 2.4, 0.9);
   addStatic(GEO.box, MAT.metalDark, 97, 2.44, 2.5, 16.3, 0.08, 1.0);
-  const OPEN = { '4,0': 'body', '9,1': 'empty', '13,0': 'torn' };
+  const OPEN = { '4,0': 'body', '9,1': 'empty', '13,0': 'torn', '15,0': 'sv' }; // (Build 26: drawer 16's front is Survivors' — Dr. Adebayo is in there)
   for (let i = 0; i < 16; i++) for (let j = 0; j < 3; j++) {
     const x = 89.5 + i, y = 0.42 + j * 0.78;
     if (OPEN[i + ',' + j]) { addStatic(GEO.box, MAT.dark, x, y, 2.885, 0.84, 0.64, 0.04, 0, 0, 0, false); continue; }
@@ -8065,7 +8079,7 @@ const UI = {
   hideAll() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); this.current = null; },
   goto(id) { if (this.current) this.prev.push(this.current); this.show(id); Sound.ui(); },
   back() {
-    if (['screen-settings', 'screen-howto', 'screen-journal', 'screen-briefing', 'screen-mp', 'screen-goals', 'screen-chars', 'screen-roll', 'screen-codes'].indexOf(this.current) < 0) return;
+    if (['screen-settings', 'screen-howto', 'screen-journal', 'screen-briefing', 'screen-mp', 'screen-goals', 'screen-chars', 'screen-roll', 'screen-codes', 'screen-contracts'].indexOf(this.current) < 0) return;
     if (this.current === 'screen-roll' && CharUI.spinning) return; // (not in the middle of a roll)
     if (this.current === 'screen-mp' && Net.active && !Net.inGame) Net.leave(); // backing out of the lobby closes it
     const p = this.prev.pop() || (Game.state === 'paused' ? 'screen-pause' : 'screen-title');
@@ -8798,6 +8812,7 @@ const Game = {
     if (killed || Battle.dealt > 0) rows.splice(2, 0, ['Damage you dealt', Math.round(Battle.dealt)], ['Weapons found', Weapons.count() + ' / 5']);
     if (Net.active) rows.unshift(['Guards escaped', crew().length + '']);
     if (this.stats.stuns) rows.push(['Times you stunned it', this.stats.stuns]);
+    if (this.mode === 'night' && typeof Survivors !== 'undefined') rows.push(...Survivors.winRows()); // (Build 26)
     rows.push(...Chars.payout(true));
     rows.forEach(([a, b]) => { const s = document.createElement('span'); s.textContent = a; const v = document.createElement('b'); v.textContent = b; $('win-stats').appendChild(s); $('win-stats').appendChild(v); });
     // the shift's score and rank
@@ -8815,6 +8830,7 @@ const Game = {
       : this.notesRead.has('badge')
       ? 'The lift climbs for a long time. Somewhere below, the lights flicker back on, and a tall shape walks the west corridor, checking every door — the way Elias Crane did for twenty-two years. Lily turned seven on Thursday. He is still waiting for his shift to end.'
       : 'The lift climbs for a long time. Somewhere below, the lights flicker back on, and a tall shape walks the west corridor, checking every door. Its shift never ends.';
+    if (this.mode === 'night' && typeof Survivors !== 'undefined') $('epilogue').textContent += Survivors.epilogue(); // (Build 26: who rode up with you)
     this.endButtons('btn-win-again', 'Play Again');
     UI.show('screen-victory');
     $('fx-white').style.transition = 'opacity .6s'; $('fx-white').style.opacity = 0;
@@ -10574,7 +10590,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 22, BUILD = 25, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 23, BUILD = 26, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -11836,6 +11852,7 @@ const Goals = {
       ['Damage dealt', Math.round(Battle.dealt * 1.5)],
       ['Voice logs ×' + G.tapes.size, G.tapes.size * 150],
       ['Cameras rebooted', G.cams ? 300 : 0],
+      ['Survivors out ×' + (s.rescued || 0), (s.rescued || 0) * 400], // (Build 26)
       ['Documents ×' + G.notesRead.size, G.notesRead.size * 40],
       ['Stuns ×' + (s.myStuns || 0), (s.myStuns || 0) * 120],
       ['Stared it down ×' + (s.stares || 0), (s.stares || 0) * 150],
@@ -17586,7 +17603,7 @@ const CODES = {
 // Build 18: PITY — a run of bad luck can't go on forever. Counted on the save, across every spin you ever make.
 // A spin that hasn't seen this rarity (or a better one) for this many spins in a row is guaranteed it;
 // and after ULTIMATE's soft start, every spin without one adds 0.5% to its odds.
-const PITY = { legendary: 10, mythic: 40, special: 90, ultimate: 500, secret: 1500 }; // (Build 20: SECRET is guaranteed within 1,500 spins)
+const PITY = { legendary: 10, mythic: 40, special: 90, ultimate: 500, secret: 10000 }; // (Build 26: SECRET is guaranteed within 10,000 spins — it was 1,500; a save's count so far is kept)
 const PITY_IDS = ['legendary', 'mythic', 'special', 'ultimate', 'secret'];
 const PITY_SOFT = 400, PITY_SOFT_STEP = 0.5;
 const isCode = c => typeof c === 'string' && Object.prototype.hasOwnProperty.call(CODES, c);
@@ -17604,6 +17621,7 @@ const ECON = {
   perRevive: 15, maxRevive: 3, // for getting a downed teammate back on their feet
   perHeal: 5, maxHeal: 4,      // for healing a teammate
   perClose: 8, maxClose: 10,   // (Build 22) MECHA CAMO: the Warden came right up to you and walked away
+  perSurvivor: 80,             // (Build 26) the Night Shift: a survivor you got out on the lift
   perTin: 15, perBonus: 40,    // (Build 23) MECHA CAMO: a gold paint tin; the round's bonus job
   minRun: 45,                  // a run shorter than this (seconds) pays nothing: no quit-and-restart farming
   diff: { easy: 0.7, normal: 1, hard: 1.4, nightmare: 1.8 },
@@ -17697,10 +17715,10 @@ const ABIL = {
     desc: 'A ring of light goes out from you: you and every guard within 10 m are healed 35 and get their breath back, and for 2.5 s nothing can hurt any of you. It wakes the floor up, though: the monsters hear it from 20 m.' },
   sanctuary: { name: 'SANCTUARY', icon: 'sanctuary', ult: true, cd: 150, first: 45, stam: 0.3, dur: 8, range: 14, stun: 3, push: 8,
     desc: 'ULTIMATE. Wings of light over the whole team, wherever they are on the floor: every guard is healed to full, every downed guard is back on their feet, and for 8 s none of you can be hurt by anything. Every monster within 14 m of you is thrown back and stunned for 3 s.' },
-  unmake: { name: 'UNMAKE', icon: 'unmake', cd: 10, range: 34, dmg: 260, stun: 4, width: 1.2,
-    desc: 'Point at something and take it out of the blueprints: a white line straight through walls, 34 m long. The first monster on it takes 260 damage — the small ones simply stop existing — and whatever survives is frozen for 4 s.' },
-  demolish: { name: 'DEMOLITION ORDER', icon: 'demolish', ult: true, cd: 120, first: 30, stam: 0.2,
-    desc: 'ULTIMATE. Sign the order: every monster on the floor — every one of them, wherever it is — is erased. Your whole team is healed to full. Whatever this floor sends next, it has to start again.' },
+  unmake: { name: 'UNMAKE', icon: 'unmake', cd: 16, range: 20, dmg: 70, stun: 1.5, width: 1.0, // (Build 26: it was 260 damage, a 4 s freeze, 34 m, every 10 s)
+    desc: 'Point at something and rub it out of the blueprints: a white line straight through walls, 20 m long. The first monster on it takes 70 damage and is frozen for 1.5 s.' },
+  demolish: { name: 'DEMOLITION ORDER', icon: 'demolish', ult: true, cd: 150, first: 45, stam: 0.2, dur: 5, heal: 40, // (Build 26: it used to erase every monster on the floor)
+    desc: 'ULTIMATE. Sign the order: the floor comes down around every monster on it — each one is pinned where it stands for 5 s. Your whole team, wherever they are, is patched up (+40 health).' },
   // ---- Build 22 ----
   blink: { name: 'BLINK', icon: 'blink', cd: 6, range: 12,
     desc: 'It was never standing there. Up to 12 m where you\'re looking, to anywhere you could walk — never through a wall or a closed door — and whatever was hunting you loses you.' },
@@ -17854,13 +17872,13 @@ const CHARS = {
   seraph: { name: 'SERAPH', title: 'THE LAST LIGHT', rarity: 'ultimate', role: 'Guardian', col: '#ffe08a', ab: 'halo', ult: 'sanctuary', hp: 125, stam: 120, regen: 1.2, hpRegen: 1.6, glow: 1.3,
     strength: 'HALO heals her and everyone near her and makes them untouchable for a moment. Her ULTIMATE, SANCTUARY, raises the whole team — full health, every downed guard back up — and nothing can hurt any of them for 8 s, while the monsters near her are thrown back and stunned. 125 HP, heals 60% faster.',
     weakness: 'She shines: monsters spot her from a third farther, and every HALO can be heard 20 m away. No extra damage of her own.' },
-  architect: { name: 'THE ARCHITECT', title: 'WHO BUILT KESTREL', rarity: 'secret', role: 'Reality', col: '#f4f2ff', ab: 'unmake', ult: 'demolish', hp: 300, stam: 300, speed: 1.3, power: 2.5, noise: 0.6, dmg: 0.5, battery: 0.25, regen: 2, hpRegen: 3, work: 2,
-    strength: 'She drew Site Kestrel, and the building still does what she says. She sees every monster on the floor through the walls, all the time; takes half damage; 300 HP and 300 stamina; 30% faster, 2.5× the damage, quiet, a torch that barely drains, every job twice as fast. UNMAKE deletes what she points at. Her ULTIMATE, DEMOLITION ORDER, erases every monster on the floor.',
-    weakness: 'None that anyone has found. She is a secret: one spin in a hundred thousand (or 1,500 spins without her).' },
+  architect: { name: 'THE ARCHITECT', title: 'WHO BUILT KESTREL', rarity: 'secret', role: 'Reality', col: '#f4f2ff', ab: 'unmake', ult: 'demolish', hp: 260, stam: 280, speed: 1.25, power: 1.4, noise: 0.6, dmg: 0.65, battery: 0.35, regen: 1.8, hpRegen: 2, work: 1.6, // (Build 26: brought down to NULL's level)
+    strength: 'She drew Site Kestrel, and she still knows where everything in it is: every 15 s the blueprints show her every monster on the floor through the walls, for 3 s. 260 HP, 280 stamina, 25% faster, takes 35% less damage, 1.4× the damage, jobs 60% faster. UNMAKE draws a line through the walls that hurts and freezes the first monster on it. Her ULTIMATE, DEMOLITION ORDER, pins every monster on the floor for 5 s and patches up the team.',
+    weakness: 'Loud for a secret: the monsters hear her coming. UNMAKE only stings — it won\'t kill anything big. She is a secret: one spin in a hundred thousand (or 10,000 spins without one).' },
   // ---- Build 22 ----
   nil: { name: 'NULL', title: 'THE GAP IN THE FOOTAGE', rarity: 'secret', role: 'Erasure', col: '#c8ccd8', ab: 'blink', ult: 'gap', hp: 280, stam: 320, speed: 1.35, power: 1.6, noise: 0.15, dmg: 0.6, battery: 0.3, regen: 2, hpRegen: 2.5, work: 1.8,
     strength: 'No camera ever caught it, and neither does anything else: the monsters never see NULL unless they walk right into it. 280 HP, 320 stamina, 35% faster, almost silent, takes 40% less damage. BLINK puts it 12 m away every 6 s; its ULTIMATE, THE GAP, stops every monster on the floor for 8 s and hides the whole team.',
-    weakness: 'None that anyone has found. It is a secret: one spin in a hundred thousand (or 1,500 spins without one).' },
+    weakness: 'None that anyone has found. It is a secret: one spin in a hundred thousand (or 10,000 spins without one).' },
   horse: { name: 'THE HORSE', title: 'NEIGH', rarity: null, code: 'HELLOHORSE', role: 'Speed', col: '#8b5a2b', ab: 'adrenaline', hp: 120, stam: 150, speed: 1.6,
     strength: 'A horse. 160% speed all the time, a lot of stamina, and ADRENALINE on top to run even faster.',
     weakness: 'Still a horse: there is nowhere to hide a horse. Only the code HELLOHORSE gets you one.' },
@@ -18706,8 +18724,9 @@ const Chars = {
     const objs = Math.min(ECON.maxObj, S.objs || 0), revs = Math.min(ECON.maxRevive, S.revives || 0), heals = Math.min(ECON.maxHeal, S.heals || 0);
     const close = m === 'camo' ? Math.min(ECON.maxClose, S.close || 0) : 0; // (Build 22: MECHA CAMO — it was right there and never saw you)
     const tins = m === 'camo' ? Math.min(3, S.tins || 0) : 0, bonus = m === 'camo' && S.bonus ? 1 : 0; // (Build 23: gold tins, the bonus job)
+    const resc = m === 'night' ? Math.min(3, (Game.stats && Game.stats.rescued) || 0) : 0; // (Build 26)
     const hdoors = m === 'doors' ? Math.min(100, S.doors || 0) : 0, hgold = m === 'doors' ? Math.min(ECON.maxGold, S.gold || 0) : 0; // (Build 25)
-    c = (base + objs * ECON.perObj + revs * ECON.perRevive + heals * ECON.perHeal + close * ECON.perClose + tins * ECON.perTin + bonus * ECON.perBonus + hdoors * ECON.perDoor + hgold * ECON.perGold) * (ECON.diff[dn] || 1);
+    c = (base + objs * ECON.perObj + revs * ECON.perRevive + heals * ECON.perHeal + close * ECON.perClose + tins * ECON.perTin + bonus * ECON.perBonus + hdoors * ECON.perDoor + hgold * ECON.perGold + resc * ECON.perSurvivor) * (ECON.diff[dn] || 1);
     c += (Goals.runGot || []).length * ECON.perAch;
     if (S.killed) c *= ECON.killK; // (you killed it: the whole run pays five times over)
     c = Math.max(0, Math.round(c)) || 0;
@@ -18718,6 +18737,7 @@ const Chars = {
     if (close) rows.push(['Close calls', close + ' × ' + ECON.perClose]);
     if (tins) rows.push(['Gold tins', tins + ' × ' + ECON.perTin]);
     if (bonus) rows.push(['Bonus job', '+' + ECON.perBonus]);
+    if (resc) rows.push(['Survivors out', resc + ' × ' + ECON.perSurvivor]);
     if (hdoors) rows.push(['Doors', hdoors + ' × ' + ECON.perDoor]); if (hgold) rows.push(['Gold', hgold + ' × ' + ECON.perGold]);
     if (S.killed) rows.push(['Killed ' + S.killed, '×' + ECON.killK + ' coins']);
     rows.push(['Coins earned', '+' + c + ' (' + (this.data ? this.data.coins : c) + ' total) · ×' + (ECON.diff[dn] || 1) + ' ' + (DIFF_NAME[dn] || '')]);
@@ -26220,10 +26240,11 @@ body.wt-on #minimap-wrap{display:none}`;
 /*    untouchable for 2.5 s. SANCTUARY [X]: the whole team, wherever    */
 /*    they are, healed to full and back on their feet, untouchable for  */
 /*    8 s; monsters near her thrown back and stunned.                   */
-/*  THE ARCHITECT — sees every monster through the walls, always;       */
-/*    takes half damage. UNMAKE [F]: a line through the walls, 260      */
-/*    damage and a freeze to the first monster on it. DEMOLITION ORDER  */
-/*    [X]: every monster on the floor erased, the team healed to full.  */
+/*  THE ARCHITECT (nerfed in Build 26, to NULL's level) — every 15 s   */
+/*    the blueprints show her every monster through the walls, for 3 s. */
+/*    UNMAKE [F]: a line through the walls, 70 damage and a 1.5 s       */
+/*    freeze to the first monster on it. DEMOLITION ORDER [X]: every    */
+/*    monster on the floor pinned for 5 s, the team +40 health.         */
 /*  As with every ability: your [F] asks the host, the host checks and  */
 /*  decides (POWERS[id].host), and every peer sees it (POWERS[id].fx).  */
 /* ================================================================== */
@@ -26343,26 +26364,29 @@ Object.assign(POWERS, {
       if (mine) UI.msg(ev.hit ? 'UNMADE.' : 'UNMAKE — nothing on that line.', ev.hit ? 'good' : '', 1.8);
     },
   },
-  demolish: {
+  demolish: { // (Build 26: it no longer erases anything — every monster on the floor is pinned where it stands for a few seconds)
     host(a, x, ev) {
+      const U = ABIL.demolish, now = Game.time;
+      Powers.haltUntil = Math.max(Powers.haltUntil, now + U.dur); ev.d = U.dur;
       let n = 0;
-      eachFoe20(F => {
-        const o = { kind: 'blast', stg: 9, dot: true, w: 'demolish', final: true };
-        const bodies = F.isCreature && F.T && F.T.bodies ? F.T.bodies(F) : null;
-        if (bodies) { for (const [sub] of bodies) { if (sub < 0) continue; Horde.focus = F; F.sub = sub; Weapons.foeHit(Horde, a, 99999, o, 'demolish'); } n++; return; }
-        if (F.isCreature) { Horde.focus = F; Weapons.foeHit(Horde, a, 99999, o, 'demolish'); } else Weapons.foeHit(F, a, 99999, o, 'demolish');
+      for (const F of Powers.foes()) { // (whatever was mid-attack lets go)
+        if (F === Monster && Monster.state === 'ATTACK') { Monster.state = 'HUNT'; Monster.attackT = 0; Monster.attackHit = false; Monster.charging = false; }
+        if (F.isCreature && F.atk) { F.atk = null; F.state = 'HUNT'; }
+        if (F.wind) F.wind = null;
         n++;
-      });
-      if (typeof Infestant !== 'undefined' && Infestant.state && Infestant.state !== 'gone') { try { Infestant.hp = 0; Infestant.driveOff ? Infestant.driveOff(a, 'burn') : Infestant.vanish(''); } catch (e) { } n++; }
-      if (Game.mode === 'watch' && typeof Watch !== 'undefined' && Watch.on) n += Watch.erase();
-      for (const g of crew()) heal20(g, a, true);
-      HProj.knockDown(a.pos, 999); ev.n = n;
+      }
+      HProj.knockDown(a.pos, 12);
+      for (const g of crew()) if (g !== player) Health.heal(g, U.heal); // (the books for the others; every screen patches up its own guard in fx)
+      ev.n = n;
     },
     fx(ev, mine, who) {
-      Game.shake(1.4); Cine.redFlash && Cine.redFlash(0.2);
-      const f = $('fx-white'); if (f) { f.style.transition = 'none'; f.style.opacity = 0.85; requestAnimationFrame(() => { f.style.transition = 'opacity 1.6s'; f.style.opacity = 0; }); }
-      Sound.supernova(); if (!player.dead && !player.downed) { player.health = player.maxHp; Chars.lastHp = player.health; }
-      UI.center('DEMOLITION ORDER', (mine ? 'Signed. ' : who + ' signed it. ') + (ev.n ? (ev.n === 1 ? 'One thing on this floor stopped existing.' : ev.n + ' things on this floor stopped existing.') : 'There was nothing left to erase.'), 3.2);
+      const U = ABIL.demolish, d = clamp(+ev.d || U.dur, 0.5, 8);
+      Powers.haltUntil = Math.max(Powers.haltUntil, Game.time + d);
+      Game.shake(0.9);
+      const f = $('fx-white'); if (f) { f.style.transition = 'none'; f.style.opacity = 0.45; requestAnimationFrame(() => { f.style.transition = 'opacity 1.2s'; f.style.opacity = 0; }); }
+      Sound.supernova(); if (!player.dead && !player.downed) { player.health = Math.min(player.maxHp, player.health + U.heal); Chars.lastHp = player.health; }
+      for (const F of Powers.foes()) Cosmos.stars(F.pos.x, 1.2, F.pos.z, 8, 0.9, [0xffffff, 0x9fd4ff], 0.9, 0.3);
+      UI.center('DEMOLITION ORDER', (mine ? 'Signed. ' : who + ' signed it. ') + (ev.n ? 'Every monster on this floor is pinned for ' + d + ' s — and you\'re all patched up. MOVE.' : 'Nothing on this floor to pin down — but you\'re all patched up.'), 3);
     },
   },
 });
@@ -26379,12 +26403,12 @@ if (typeof Watch !== 'undefined') Watch.erase = function () {
 {
   const cu0 = Chars.update; Chars.update = function (dt) {
     const r = cu0.apply(this, arguments);
-    if (this.run === 'architect' && !player.dead) this.itUntil = Math.max(this.itUntil || 0, Game.time + 0.4); // (she sees them all, always)
+    if (this.run === 'architect' && !player.dead && Game.time >= (this.archNext || 0)) { this.archNext = Game.time + 15; this.trackIts(3); } // (Build 26: every 15 s, 3 s of the blueprints — it used to be always)
     if (this.sanctT > 0) this.sanctT = Math.max(0, this.sanctT - dt);
     Beam20.update(dt);
     return r;
   };
-  const r0 = Roster17.reset; Roster17.reset = function () { r0.call(this); Beam20.reset(); Chars.sanctT = 0; };
+  const r0 = Roster17.reset; Roster17.reset = function () { r0.call(this); Beam20.reset(); Chars.sanctT = 0; Chars.archNext = 0; };
   for (const u of ['sanctuary', 'demolish']) { const P = POWERS[u], f0 = P.fx; P.fx = function (ev, mine) { Polish.ultBanner(ev.by | 0, u, mine); return f0.apply(this, arguments); }; }
 }
 
@@ -31325,6 +31349,616 @@ SCENES.hotelScare = {
   const mapOn = () => on();
   window.addEventListener('keydown', e => { if (mapOn() && e.code === Keys.map.map) { e.stopImmediatePropagation(); e.preventDefault(); UI.msg('No map in the Holloway. Count the doors.', '', 2); } }, true);
 }
+/* ================================================================== */
+/* Build 26: SURVIVORS — the people on the tapes, alive               */
+/* Three of the voices on the Night Shift's tapes are still down here,  */
+/* hiding where their tapes say they were:                              */
+/*  ROSA ORTIZ (tape 2) in the vent behind Storage — her RADIO: she     */
+/*    hears it everywhere it goes, and tells you when it's coming;      */
+/*  PETE DOYLE (tape 4) in the Generator Hall — ask him there and he    */
+/*    gets the power back on (or, after 04:00, the emergency lights);   */
+/*  DR. ADEBAYO (tape 5) in a morgue drawer, knocking — she stitches    */
+/*    you up, and gets a downed guard back on their feet.               */
+/* Find one, press [E]: they talk to you. [E] again: "follow me" or     */
+/* "wait here". The ones with you when the lift leaves get out with     */
+/* you. They know the trick — when it's near they freeze — but it       */
+/* hears them moving, and if it walks into one of them, that's it.      */
+/* The host decides everything; every screen sees it.                   */
+/* ================================================================== */
+const SV_DEF = [
+  { id: 'rosa', tape: 't2', name: 'ROSA ORTIZ', short: 'Rosa', her: 'her', pitch: 1.12, look: ['#a8754f', '#3c4c5e', '#1a1210'],
+    style: { top: 'jacket', tc2: 0x2a3644, hs: 'pony', x: ['tools'], pants: 0x2a2e36, gloves: 0x3a3a3a },
+    spot: [9, 15.5, 0], out: [9, 12.7, 0], vent: true, hb: [9, 0.6, 14.6, 1.0, 1.0, 0.8],
+    hide: 'Someone is curled up in the vent', where: 'the vent behind Storage', cue: 'whisper',
+    meet: ['Don\'t shine that in my face. Please.', 'You heard my tape? Then you know. Rosa — Rosa Ortiz.', 'I\'ve been in this vent since midnight. I can hear it everywhere it goes.', 'Here — my radio. I\'ll tell you when it\'s coming your way.'],
+    gift: 'ROSA\'S RADIO — she warns you when it\'s coming your way' },
+  { id: 'doyle', tape: 't4', name: 'PETE DOYLE', short: 'Doyle', her: 'him', pitch: 0.92, look: ['#d8a888', '#5a4a2a', '#6a6a66'],
+    style: { top: 'uniform', slv: 'rolled', vest: 'hivis', vestc: 0xe8a020, beard: 'full', gloves: 0x6a5238, x: ['tools'], pants: 0x2c3036 },
+    spot: [37, 34.8, Math.PI / 4], out: [36.4, 34.2, Math.PI / 4],
+    hide: 'Someone is hiding in the corner', where: 'the Generator Hall', cue: 'tinker',
+    meet: ['Easy! Easy. I thought you were… him.', 'Pete Doyle, maintenance. Twenty years I\'ve kept this place running.', 'Breaker B, then A, then C, then the lever. I could do it in my sleep.', 'Want the power on? Ask me in here and I\'ll get it done.'],
+    gift: 'DOYLE — ask him in the Generator Hall and he gets the power on' },
+  { id: 'ade', tape: 't5', name: 'DR. ADEBAYO', short: 'Dr. Adebayo', her: 'her', pitch: 1.0, look: ['#5a3a26', '#e8e6e0', '#14100c'],
+    style: { top: 'labcoat', face: 'glasses', facec: 0x222428, x: ['pens'], hs: 'short', pants: 0x2e3038 },
+    spot: [104.5, 3.7, Math.PI], out: [104.4, 5.1, Math.PI], drawer: true, hb: [104.5, 0.5, 3.15, 0.95, 0.8, 0.5],
+    hide: 'Drawer 16 — someone is knocking from the inside', where: 'the morgue', cue: 'knock',
+    meet: ['Oh, thank God. I thought it had come back for me.', 'Dr. Adebayo. I was the coroner here. I suppose I still am.', 'I hid where it had already looked: in with the dead.', 'If you\'re hurt, come to me. I can stitch you up.'],
+    gift: 'DR. ADEBAYO — she stitches you up, and gets a downed guard back on their feet' },
+];
+const SV_FOLLOW = ['Right behind you.', 'Okay. Okay. Go — I\'m with you.', 'Don\'t run. It hears running.', 'Lead the way.'];
+const SV_WAIT = ['I\'ll stay here. Don\'t forget me.', 'Here? …Okay. Come back.', 'I\'ll keep still. It doesn\'t see you if you keep still.'];
+const SV_HEAL = ['Hold still. This will sting.', 'There. Try not to get hit again.', 'Deep breath… done.'];
+const SV_REVIVE = ['Up. Up! You\'re not dying in my morgue.'];
+const SV_POWER = ['Breaker B…', '…A…', '…C. And the lever.'];
+const SV_HEAL_CD = 60, SV_REVIVE_CD = 90, SV_RADIO_CD = 14;
+const _sv1 = new T.Vector3();
+ACH.push(
+  { id: 'sv_found', name: 'Still Alive', desc: 'Find Rosa Ortiz, Pete Doyle and Dr. Adebayo in one Night Shift.' },
+  { id: 'sv_one', name: 'Not Alone', desc: 'Get a survivor onto the surface lift.' },
+  { id: 'sv_all', name: 'Nobody Left Behind', desc: 'Get all three survivors out on the lift in one night.' },
+);
+
+const Survivors = {
+  list: [], built: false, on: false, said: {}, radioT: 0, radioTold: false, cueT: 0, netT: 0, hud: null, sub: null,
+  // the state of one: 0 hiding, 1 found (staying put), 2 following someone, 3 caught, 4 out on the lift
+  build() {
+    if (this.built) return; this.built = true;
+    if (typeof CHAR_LOOK !== 'undefined') for (const D of SV_DEF) CHAR_LOOK['sv_' + D.id] = D.look;
+    if (People.LOOKS) for (const D of SV_DEF) People.LOOKS['sv_' + D.id] = D.style;
+    this.list = SV_DEF.map((D, i) => {
+      // (the model kit looks a person up in CHARS — name, colour, id — and only finds their clothes through it: a moment's entry while they're made)
+      const cid = 'sv_' + D.id, had = CHARS[cid]; CHARS[cid] = { id: cid, name: D.name, col: '#7ac0a0' };
+      let g; try { g = buildGuard(0xffffff, '', cid); } finally { if (had) CHARS[cid] = had; else delete CHARS[cid]; }
+      g.userData.global = true; g.traverse(o => { o.layers.set(1); if (o.isMesh) o.castShadow = true; }); g.visible = false; scene.add(g);
+      const hb = hitBox(D.spot[0], 0.8, D.spot[1], 0.9, 1.6, 0.9); hb.layers.set(1);
+      const S = { i, D, g, hb, st: 0, lead: -1, pos: new T.Vector3(D.spot[0], 0, D.spot[1]), yaw: D.spot[2], crouch: true, speed: 0, dead: false, home: true, path: null, pathT: 0, goal: null, emerge: 0,
+        frozen: false, freezeT: 0, healAt: 0, reviveAt: 0, reviveT: 0, busy: null, noiseT: 0, seenT: 0, net: null, said: 0 };
+      S.inter = addInteract([hb], { kind: 'survivor', prompt: () => this.prompt(S), use: () => this.use(S) });
+      return S;
+    });
+    // Dr. Adebayo's drawer: its front slides out when you open it (the static bank leaves this one out — see d_world3e.js)
+    const dg = new T.Group(); dg.userData.global = true;
+    const front = new T.Mesh(GEO.box, MAT.white); front.scale.set(0.86, 0.66, 0.03); dg.add(front);
+    const handle = new T.Mesh(GEO.box, MAT.metalDark); handle.scale.set(0.05, 0.22, 0.04); handle.position.set(0.31, 0, 0.025); dg.add(handle);
+    const tag = new T.Mesh(GEO.box, MAT.paper); tag.scale.set(0.16, 0.07, 0.006); tag.position.set(-0.16, 0.2, 0.018); dg.add(tag);
+    const tray = new T.Mesh(GEO.box, MAT.metal); tray.scale.set(0.8, 0.04, 1.4); tray.position.set(0, -0.28, -0.72); dg.add(tray);
+    dg.position.set(104.5, 0.42, 2.915); dg.traverse(o => o.layers.set(1)); scene.add(dg); this.drawer = dg; this.drawerT = 0;
+    // the subtitles of whoever is talking to you, and the little roll-call on the HUD
+    const css = document.createElement('style');
+    css.textContent = '#sv-sub{position:absolute;left:50%;bottom:168px;transform:translateX(-50%);max-width:min(720px,86vw);padding:8px 15px 9px;background:rgba(0,0,0,.66);border-left:2px solid #7ac0a0;opacity:0;transition:opacity .3s;pointer-events:none;z-index:6}'
+      + '#sv-sub.show{opacity:1}#sv-sub b{display:block;font-weight:400;font-size:10px;letter-spacing:.28em;color:#7ac0a0;margin-bottom:3px}#sv-sub span{display:block;font:15px/1.5 "Helvetica Neue",Arial,sans-serif;color:#efe9dc}'
+      + '#sv-hud{position:absolute;right:18px;top:118px;font:600 11px/1.6 "Helvetica Neue",Arial,sans-serif;letter-spacing:.12em;color:#cfe8dc;text-align:right;text-shadow:0 0 6px #000;pointer-events:none;display:none}'
+      + '#sv-hud i{font-style:normal;color:#7ac0a0}#sv-hud .x{color:#c06a5a;text-decoration:line-through}#sv-hud .w{color:#e8d48a}';
+    document.head.appendChild(css);
+    const hud = $('hud') || document.body;
+    this.sub = document.createElement('div'); this.sub.id = 'sv-sub'; this.sub.innerHTML = '<b></b><span></span>'; hud.appendChild(this.sub);
+    this.hud = document.createElement('div'); this.hud.id = 'sv-hud'; hud.appendChild(this.hud);
+  },
+  live() { return Game.mode === 'night' && !LVL; },
+  start() {
+    this.on = this.live();
+    if (!this.on && !this.built) return;
+    this.build();
+    this.said = {}; this.radioT = 3; this.radioTold = false; this.cueT = 4; this.talk = null; this.drawerT = 0; this.drawer.position.z = 2.915;
+    this.sub.classList.remove('show'); this.hud.style.display = 'none'; this.hudKey = '';
+    for (const S of this.list) {
+      const D = S.D; S.st = 0; S.lead = -1; S.pos.set(D.spot[0], 0, D.spot[1]); S.yaw = D.spot[2]; S.crouch = true; S.speed = 0; S.dead = false; S.home = true; S.path = null; S.goal = null;
+      S.emerge = 0; S.frozen = false; S.freezeT = 0; S.healAt = 0; S.reviveAt = 0; S.reviveT = 0; S.busy = null; S.noiseT = 0; S.seenT = 0; S.net = null; S.said = 0;
+      S.g.visible = this.on && !D.drawer; S.inter.enabled = this.on; S.hb.position.set(D.spot[0], 0.8, D.spot[1]); S.hb.updateMatrixWorld(true);
+      this.pose(S, 0.016);
+    }
+  },
+  stop() { this.on = false; if (!this.built) return; for (const S of this.list) { S.g.visible = false; S.inter.enabled = false; } this.sub.classList.remove('show'); this.hud.style.display = 'none'; },
+  byId(id) { if (id === Net.myId || (!Net.active && id === 0)) return player; return Net.remotes.get(id) || null; },
+  alive(S) { return S.st === 1 || S.st === 2; },
+  found() { return this.list.filter(S => S.st !== 0).length; },
+  nameOf(a) { return a === player ? 'you' : Net.nameOf(a.id); },
+
+  /* ---------------- what [E] does ---------------- */
+  prompt(S) {
+    if (!this.on) return '';
+    const D = S.D, me = player;
+    if (S.st === 0) return D.hide;
+    if (S.st === 3) return D.name + ' — gone';
+    if (S.st === 4) return '';
+    if (S.busy) return D.name + ' — working… keep watch';
+    const act = this.service(S, me);
+    if (act === 'heal') return D.name + ' — let ' + S.D.her + ' patch you up';
+    if (act === 'power') return D.name + ' — "Get the power on"';
+    if (act === 'surge') return D.name + ' — "Get the emergency lights back"';
+    if (S.st === 2) return D.name + ' — "Wait here"';
+    return D.name + ' — "Follow me"';
+  },
+  // the thing they'd do for this guard right now, if any (otherwise [E] is "follow me" / "wait here")
+  service(S, a) {
+    const D = S.D;
+    if (D.id === 'ade' && Game.time >= S.healAt) { const hp = a === player ? player.health : a.ahp, mx = a === player ? player.maxHp : (a.amax || 100); if (Number.isFinite(hp) && hp < mx - 5) return 'heal'; }
+    if (D.id === 'doyle' && cellOf(S.pos.x, S.pos.z).room === 'power') { if (!Game.power) return 'power'; if (Night.surge) return 'surge'; }
+    return '';
+  },
+  use(S) {
+    if (!this.on || S.st >= 3) return;
+    if (Net.isClient) { Net.request('svu', S.i); return; }
+    this.act(S, player);
+  },
+  // (host / solo) a guard pressed [E] on one of them
+  act(S, a) {
+    if (!this.on || !a || a.dead || a.downed || S.st >= 3 || S.busy || Game.endingLock) return;
+    const by = Game.idOf(a);
+    if (S.st === 0) { Game.emit({ k: 'svs', i: S.i, st: 1, by, w: 'meet' }); return; }
+    const sv = this.service(S, a);
+    if (sv === 'heal') { Game.emit({ k: 'svs', i: S.i, st: S.st, lead: S.lead, by, w: 'heal' }); if (a !== player) Health.heal(a, 999); return; }
+    if (sv === 'power') { S.busy = { t: 0, step: 0, by }; S.goal = [23.6, 28.4]; S.path = null; Game.emit({ k: 'svs', i: S.i, st: 1, by, w: 'power' }); return; }
+    if (sv === 'surge') { Game.emit({ k: 'svs', i: S.i, st: S.st, lead: S.lead, by, w: 'surge' }); return; }
+    if (S.st === 2 && S.lead === by) Game.emit({ k: 'svs', i: S.i, st: 1, by, w: 'wait', x: +S.pos.x.toFixed(2), z: +S.pos.z.toFixed(2) });
+    else Game.emit({ k: 'svs', i: S.i, st: 2, lead: by, by, w: 'follow' });
+  },
+  remote(r, i) { // (host) a guest pressed [E]: only if they're really standing there
+    const S = this.list[i | 0]; if (!S || !r || !this.on) return;
+    if (Math.hypot(r.pos.x - S.pos.x, r.pos.z - S.pos.z) > 3.4) return;
+    this.act(S, r);
+  },
+
+  /* ---------------- every screen: what happened ---------------- */
+  event(ev) {
+    if (!this.built) return;
+    const S = this.list[ev.i | 0];
+    if (ev.k === 'svr') { this.rescued(ev); return; }
+    if (!S) return;
+    const mine = ev.by === Net.myId || (!Net.active && (ev.by === undefined || ev.by === 0)), who = Net.nameOf(ev.by), D = S.D, near = Math.hypot(player.pos.x - S.pos.x, player.pos.z - S.pos.z) < 14;
+    if (ev.k === 'svd') { // caught
+      S.st = 3; S.dead = true; S.lead = -1; S.busy = null; if (Number.isFinite(+ev.x)) S.pos.set(+ev.x, 0, +ev.z);
+      Sound.scream && Sound.scream(); Sound.bodyFall && Sound.bodyFall(_sv1.set(S.pos.x, 0.5, S.pos.z)); if (near) Game.shake(0.4);
+      UI.msg(D.name + ' — it got ' + D.her + '.', 'warn', 4);
+      if (D.id === 'rosa') setTimeout(() => { if (Game.inWorld() && this.on) { Sound.radio && Sound.radio(player.pos, 1.4); this.say(S, ['…' + '[static]'], 'ROSA (RADIO)'); } }, 1600);
+      this.hudKey = ''; return;
+    }
+    if (ev.k !== 'svs') return;
+    const was = S.st; S.st = ev.st | 0; S.lead = S.st === 2 ? ev.lead | 0 : -1;
+    if (Number.isFinite(+ev.x) && Net.isClient) S.pos.set(+ev.x, 0, +ev.z);
+    if (ev.w === 'meet') {
+      S.emerge = 0.001; S.home = true;
+      if (mine || near) this.say(S, D.meet);
+      if (mine) setTimeout(() => { if (this.on && Game.inWorld()) UI.msg('Found ' + D.name + '. ' + D.gift + '. [E] again: "follow me".', 'good', 6); }, 600);
+      else UI.msg(who + ' found ' + D.name + ' in ' + D.where + '.', 'good', 4);
+      if (D.drawer) { Sound.drawer && Sound.drawer(_sv1.set(104.5, 0.5, 3.4)); }
+      if (this.list.every(x => x.st !== 0)) Goals.unlock('sv_found');
+    } else if (ev.w === 'follow') {
+      S.home = false; if (mine || near) this.say(S, [pick(SV_FOLLOW)]);
+      if (!mine) UI.msg(D.name + ' is going with ' + who + '.', '', 3);
+    } else if (ev.w === 'wait') {
+      if (mine || near) this.say(S, [pick(SV_WAIT)]);
+    } else if (ev.w === 'heal') {
+      S.healAt = Game.time + SV_HEAL_CD;
+      if (mine) { if (!player.dead && !player.downed) { player.health = player.maxHp; Chars.lastHp = player.health; } Sound.heal && Sound.heal(player.pos); UI.msg('Dr. Adebayo stitches you up — full health. (Again in ' + SV_HEAL_CD + ' s.)', 'good', 3.5); }
+      if (mine || near) this.say(S, [pick(SV_HEAL)]);
+    } else if (ev.w === 'revive') {
+      S.reviveAt = Game.time + SV_REVIVE_CD; if (near) this.say(S, SV_REVIVE);
+    } else if (ev.w === 'power') {
+      S.busy = S.busy || { t: 0, step: 0, by: ev.by }; if (mine || near) this.say(S, ['Watch the door. This takes a moment.']);
+      if (!mine) UI.msg(who + ' asked Pete Doyle to get the power on.', '', 3);
+    } else if (ev.w === 'pstep') {
+      if (near) this.say(S, [SV_POWER[clamp(ev.n | 0, 0, 2)]]);
+    } else if (ev.w === 'pdone') {
+      S.busy = null; if (near) this.say(S, ['There. Lights. Now it knows exactly where we are — move.']);
+    } else if (ev.w === 'surge') {
+      Night.surgeUntil = Math.min(Night.surgeUntil, Game.time + 1.5); Sound.breaker && Sound.breaker(_sv1.set(S.pos.x, 1.4, S.pos.z));
+      if (mine || near) this.say(S, ['Emergency circuit… there. That\'s the best I can do.']);
+      UI.msg('Pete Doyle got the emergency lights back on.', 'good', 3.5);
+    }
+    if (was !== S.st) this.hudKey = '';
+  },
+  // the lift is leaving: whoever is with you (or already at the lift) gets out
+  rescued(ev) {
+    const ids = Array.isArray(ev.ids) ? ev.ids.map(v => v | 0) : [];
+    let n = 0;
+    for (const S of this.list) if (ids.indexOf(S.i) >= 0 && this.alive(S)) { S.st = 4; S.lead = -1; S.busy = null; n++; const k = n - 1; S.pos.set(65.2 + k * 0.8, 0, 56.3); S.yaw = Math.PI; }
+    Game.stats.rescued = n;
+    if (n) { Goals.unlock('sv_one'); if (n === this.list.length) Goals.unlock('sv_all'); }
+  },
+  // the lines someone says to you: subtitles, a murmur under them (the tapes' voice)
+  say(S, lines, spk) {
+    if (!lines || !lines.length) return;
+    if (this.talk && this.talk.h) { try { this.talk.h.stop(); } catch (e) { } }
+    const sched = []; let t = 0.15;
+    for (const line of lines) { const d = clamp(0.9 + line.length * 0.05, 1.8, 5.4); sched.push([t, d]); t += d + 0.35; }
+    let h = null; try { h = Sound.tape ? Sound.tape(sched, S.D.pitch) : null; } catch (e) { }
+    this.talk = { S, lines, sched, t: 0, end: t + 0.2, i: -1, h };
+    this.sub.querySelector('b').textContent = spk || S.D.name; this.sub.querySelector('span').textContent = ''; this.sub.classList.add('show');
+  },
+  updateTalk(dt) {
+    const T0 = this.talk; if (!T0) return;
+    T0.t += dt;
+    let i = -1; for (let k = 0; k < T0.sched.length; k++) if (T0.t >= T0.sched[k][0] - 0.05) i = k;
+    if (i !== T0.i) { T0.i = i; this.sub.querySelector('span').textContent = i >= 0 ? T0.lines[i] : ''; }
+    if (T0.t >= T0.end) { this.talk = null; this.sub.classList.remove('show'); }
+  },
+
+  /* ---------------- every frame ---------------- */
+  update(dt) {
+    if (!this.on || !this.built) return;
+    if (!Net.isClient) this.host(dt); else this.client(dt);
+    for (const S of this.list) this.pose(S, dt);
+    this.updateTalk(dt);
+    this.radio(dt); this.cues(dt); this.drawHud();
+    // the drawer slides out once she's been found
+    const dOpen = this.list[2] && this.list[2].st !== 0; this.drawerT = damp(this.drawerT, dOpen ? 1 : 0, 5, dt); this.drawer.position.z = 2.915 + this.drawerT * 0.75;
+  },
+  host(dt) {
+    const M = Monster, mOn = M.active && !(M.isDown && M.isDown()) && !M.dead && M.state !== 'SCRIPT' && !Game.endingLock;
+    for (const S of this.list) {
+      if (S.st === 0 || S.st >= 3) { S.speed = 0; continue; }
+      // coming out of hiding
+      if (S.emerge > 0 && S.emerge < 1) { S.emerge = Math.min(1, S.emerge + dt / 2.2); const o = S.D.out, sp = S.D.spot; S.pos.set(lerp(sp[0], o[0], S.emerge), 0, lerp(sp[1], o[1], S.emerge)); S.crouch = S.emerge < 0.8; S.speed = 0.8; continue; }
+      const dM = Math.hypot(M.pos.x - S.pos.x, M.pos.z - S.pos.z), seesIt = mOn && dM < 13 && losClear(M.pos.x, M.pos.z, S.pos.x, S.pos.z);
+      // it walked right into them: that's it (hiding in the spot you found them in, they're safe)
+      if (mOn && dM < 1.35 && !(S.st === 1 && S.home)) { this.caught(S); continue; }
+      // they know the trick: when it's near, they freeze
+      S.freezeT = seesIt ? 0.6 : Math.max(0, S.freezeT - dt);
+      S.frozen = S.freezeT > 0;
+      let tx = null, tz = null, want = 0;
+      if (S.busy) { // Doyle at the breakers
+        const B = S.busy;
+        if (S.goal && Math.hypot(S.goal[0] - S.pos.x, S.goal[1] - S.pos.z) > 0.45) { tx = S.goal[0]; tz = S.goal[1]; want = 2.6; }
+        else if (!S.frozen) {
+          S.goal = null; B.t += dt; S.yaw = Math.atan2(1, 0); // (facing the panel on the west wall)
+          const steps = ['B', 'A', 'C'], by = this.byId(B.by) || player;
+          if (B.step < 3 && B.t > 1.6 * (B.step + 1)) {
+            const L = steps[B.step], def = world.breakers.find(b => b.label === L);
+            if (Game.power) B.step = 4; else { if (def && !def.on) Game.flipBreaker(def, by); Game.emit({ k: 'svs', i: S.i, st: S.st, lead: S.lead, w: 'pstep', n: B.step }); B.step++; }
+          } else if (B.step === 3 && B.t > 6.4) { B.step = 4; if (!Game.power && Game.breakerSeq.join('') === 'BAC') Game.pullLever(by); Game.emit({ k: 'svs', i: S.i, st: 1, w: 'pdone' }); S.busy = null; }
+          else if (B.step >= 4) { S.busy = null; Game.emit({ k: 'svs', i: S.i, st: 1, w: 'pdone' }); }
+        }
+      } else if (S.st === 2) {
+        const L = this.byId(S.lead);
+        if (!L || L.dead || (L !== player && !L.inGame)) { Game.emit({ k: 'svs', i: S.i, st: 1, w: 'wait', x: +S.pos.x.toFixed(2), z: +S.pos.z.toFixed(2) }); continue; }
+        const d = Math.hypot(L.pos.x - S.pos.x, L.pos.z - S.pos.z);
+        if (d > 1.9 + S.i * 0.5) { const fy = L.yaw || 0; tx = L.pos.x + Math.sin(fy) * 1.2 + Math.cos(fy) * (S.i - 1) * 0.6; tz = L.pos.z + Math.cos(fy) * 1.2 - Math.sin(fy) * (S.i - 1) * 0.6; want = d > 9 ? 4.8 : d > 4 ? 3.6 : 2.4; }
+        S.crouch = !!L.crouching || !!L.hidden;
+        if (L.hidden) want = 0; // (you got into a locker: they keep still where they are)
+      }
+      // Dr. Adebayo: a downed guard near her is back on their feet
+      if (S.D.id === 'ade' && Game.time >= S.reviveAt && !S.frozen) {
+        const g = crew().find(c => c.downed && !c.dead && Math.hypot(c.pos.x - S.pos.x, c.pos.z - S.pos.z) < 6);
+        if (g) { S.reviveT += dt; if (S.reviveT > 3) { S.reviveT = 0; Down.revive(g, g, 1, 'medic'); Game.emit({ k: 'svs', i: S.i, st: S.st, lead: S.lead, w: 'revive' }); } } else S.reviveT = 0;
+      }
+      if (S.frozen || tx === null || want <= 0) { S.speed = damp(S.speed, 0, 10, dt); S.crouch = S.crouch || S.frozen; continue; }
+      this.walk(S, tx, tz, want, dt);
+      // no way through to you (a locked door in between): they say so, and wait
+      if (S.noPath && S.st === 2) { S.stuckT = (S.stuckT || 0) + dt; if (S.stuckT > 2.5 && Game.time > (S.toldAt || 0)) { S.toldAt = Game.time + 25; const L = this.byId(S.lead); if (L) Game.tell(L, S.D.short + ' can\'t get to you — something locked is in the way. Go back for ' + S.D.her + '.', 'warn', 4); } } else S.stuckT = 0;
+      // it hears them: footsteps, louder the faster they go
+      S.noiseT -= dt; if (S.noiseT <= 0 && S.speed > 1.2) { S.noiseT = 0.8; Game.hearAt(_sv1.set(S.pos.x, 0, S.pos.z), S.speed > 3.5 ? 7 : S.crouch ? 1.2 : 3.2, 'survivor', null); }
+    }
+    this.netT -= dt;
+  },
+  walk(S, tx, tz, want, dt) {
+    const cx = Math.floor(S.pos.x / CELL), cz = Math.floor(S.pos.z / CELL), gx = Math.floor(tx / CELL), gz = Math.floor(tz / CELL);
+    S.pathT -= dt;
+    if (!S.path || S.pathT <= 0 || S.pathTo !== gx + ',' + gz) {
+      S.pathT = 0.7; S.pathTo = gx + ',' + gz;
+      const pass = (x, z) => guardPass(x, z) || (x === cx && z === cz);
+      let p = astar(cx, cz, gx, gz, pass);
+      if (!p) { // (their spot isn't walkable: the guard's own cell will do)
+        const L = this.byId(S.lead); if (L) p = astar(cx, cz, Math.floor(L.pos.x / CELL), Math.floor(L.pos.z / CELL), pass);
+      }
+      S.path = p ? p.map(([x, z]) => [x * CELL + 1, z * CELL + 1]) : null; S.noPath = !p;
+      if (S.path && S.path.length) S.path[S.path.length - 1] = guardPass(gx, gz) ? [tx, tz] : S.path[S.path.length - 1];
+    }
+    const P = S.path; if (!P || !P.length) { S.speed = damp(S.speed, 0, 10, dt); return; }
+    let w = P[0]; while (P.length > 1 && Math.hypot(w[0] - S.pos.x, w[1] - S.pos.z) < 0.35) { P.shift(); w = P[0]; }
+    // a closed door in the way: they open it (never a locked one)
+    const c = cellOf(w[0], w[1]); if (c.kind === 'door' && c.door && !c.door.locked() && c.door.target < 0.5) { c.door.target = 1; Game.syncDoor(c.door, false, true); }
+    const dx = w[0] - S.pos.x, dz = w[1] - S.pos.z, d = Math.hypot(dx, dz);
+    if (d < 0.05) { S.speed = damp(S.speed, 0, 10, dt); return; }
+    S.speed = damp(S.speed, want * (S.crouch ? 0.55 : 1), 6, dt);
+    const step = Math.min(d, S.speed * dt); S.pos.x += dx / d * step; S.pos.z += dz / d * step;
+    S.yaw += angleDiff(S.yaw, Math.atan2(-dx, -dz)) * (1 - Math.exp(-dt * 10));
+  },
+  caught(S) {
+    Game.emit({ k: 'svd', i: S.i, x: +S.pos.x.toFixed(2), z: +S.pos.z.toFixed(2) });
+    const M = Monster; if (M.state === 'INVESTIGATE' || M.state === 'SEARCH') { M.searchCenter && M.searchCenter.copy(S.pos); }
+  },
+  // (guests) where they are comes in the snapshots
+  netState() { return this.list.map(S => [+S.pos.x.toFixed(2), +S.pos.z.toFixed(2), +S.yaw.toFixed(2), (S.crouch ? 1 : 0) | (S.speed > 0.3 ? 2 : 0), +S.speed.toFixed(1), S.st, S.lead, S.busy ? 1 : 0]); },
+  netPush(a) {
+    if (!this.built || !Array.isArray(a)) return;
+    a.forEach((v, i) => { const S = this.list[i]; if (!S || !Array.isArray(v)) return; S.net = { x: +v[0], z: +v[1], yaw: +v[2], cr: !!(v[3] & 1), sp: +v[4] || 0 }; if ((v[5] | 0) !== S.st && (v[5] | 0) <= 4) { S.st = v[5] | 0; this.hudKey = ''; } S.lead = v[6] | 0; S.busy = v[7] ? (S.busy || { t: 0 }) : null; });
+  },
+  client(dt) {
+    for (const S of this.list) {
+      if (S.emerge > 0 && S.emerge < 1) S.emerge = Math.min(1, S.emerge + dt / 2.2);
+      const N = S.net; if (!N || !Number.isFinite(N.x)) continue;
+      S.pos.x = damp(S.pos.x, N.x, 9, dt); S.pos.z = damp(S.pos.z, N.z, 9, dt); S.yaw += angleDiff(S.yaw, N.yaw) * (1 - Math.exp(-dt * 9)); S.crouch = N.cr; S.speed = N.sp;
+    }
+  },
+  pose(S, dt) {
+    const show = this.on && (S.st !== 0 || !S.D.drawer) && S.st !== 4;
+    S.g.visible = show;
+    if (S.st === 4) { S.inter.enabled = false; return; }
+    S.inter.enabled = this.on;
+    const H = S.st === 0 && S.D.hb; // (still hiding: [E] where you'd look — the vent's mouth, the drawer's front)
+    if (H) { S.hb.position.set(H[0], H[1], H[2]); S.hb.scale.set(H[3], H[4], H[5]); } else { S.hb.position.set(S.pos.x, S.st === 3 ? 0.3 : 0.8, S.pos.z); S.hb.scale.set(0.9, 1.6, 0.9); }
+    S.hb.updateMatrixWorld(true);
+    if (!show) return;
+    const scaleK = S.D.vent && S.st === 0 ? 0.92 : 1;
+    poseGuard(S.g, S.pos, S.yaw, S.speed, S.crouch || S.st === 0, S.st === 3, false, dt);
+    S.g.scale.setScalar(scaleK);
+    if (S.st === 0) this.huddle(S);
+    if (S.st === 0 && !S.D.vent) { S.g.rotation.y = S.yaw + Math.sin(Game.time * 1.7 + S.i) * 0.06; } // (trembling)
+  },
+  // still hiding: down on the floor, knees up, arms round them, head down
+  huddle(S) {
+    const R = S.g.userData.rig; if (!R) return;
+    R.hips.position.y = 0.24; R.hips.rotation.set(0, 0, 0);
+    R.legL.rotation.set(1.95, 0, -0.12); R.legR.rotation.set(1.95, 0, 0.12);
+    R.kneeL.rotation.x = -2.45; R.kneeR.rotation.x = -2.45;
+    R.footL.rotation.x = 0.45; R.footR.rotation.x = 0.45;
+    R.spine.rotation.set(-0.42, 0, 0); R.chest.rotation.set(-0.24, 0, 0); R.neck.rotation.set(0.55, 0, 0); R.head.rotation.set(0.25, 0, 0);
+    R.armL.rotation.set(0.5, 0, -0.28); R.armR.rotation.set(0.5, 0, 0.28); R.elbowL.rotation.set(1.55, 0, 0); R.elbowR.rotation.set(1.55, 0, 0);
+  },
+  // the sounds that give a hiding place away
+  cues(dt) {
+    this.cueT -= dt; if (this.cueT > 0) return; this.cueT = rand(5, 8);
+    for (const S of this.list) {
+      if (S.st !== 0) continue;
+      const d = Math.hypot(player.pos.x - S.pos.x, player.pos.z - S.pos.z); if (d > 12) continue;
+      const at = _sv1.set(S.pos.x, 0.6, S.pos.z);
+      if (S.D.cue === 'whisper') Sound.whisper && Sound.whisper(at);
+      else if (S.D.cue === 'knock') { Sound.thump && Sound.thump(0.35); Sound.metalHit && Sound.metalHit(at, 0.5); }
+      else Sound.metalHit && Sound.metalHit(at, 0.35);
+      if (d < 7 && !this.said['cue' + S.i]) { this.said['cue' + S.i] = 1; UI.msg(S.D.cue === 'whisper' ? 'A whisper from the vent: "…psst. In here."' : S.D.cue === 'knock' ? 'Knocking — from inside one of the drawers.' : 'Something clinks in the corner. Someone is there.', 'story', 3.5); }
+    }
+  },
+  // ROSA'S RADIO: she hears it moving and tells you before you see it
+  radio(dt) {
+    const R = this.list[0]; if (!R || !this.alive(R) || player.dead || player.downed) return;
+    this.radioT -= dt; if (this.radioT > 0) return; this.radioT = 1;
+    const M = Monster; if (!M.active || (M.isDown && M.isDown()) || M.dead) return;
+    const dx = M.pos.x - player.pos.x, dz = M.pos.z - player.pos.z, d = Math.hypot(dx, dz);
+    if (d > 20 || d < 4 || losClear(M.pos.x, M.pos.z, player.pos.x, player.pos.z) || player.hidden) return;
+    if (Game.time < (this.radioAt || 0)) return;
+    this.radioAt = Game.time + SV_RADIO_CD;
+    const fx = -Math.sin(player.yaw), fz = -Math.cos(player.yaw), dot = (dx * fx + dz * fz) / d, cr = (dx * fz - dz * fx) / d;
+    const dir = dot > 0.6 ? 'ahead of you' : dot < -0.6 ? 'behind you' : cr > 0 ? 'on your left' : 'on your right';
+    Sound.radio && Sound.radio(player.pos, 1.2);
+    this.say(R, [pick(['It\'s coming your way — ', 'Heads up — it\'s ', 'It\'s close — ']) + dir + '. ' + (d < 10 ? 'Hide. NOW.' : 'Find a locker.')], 'ROSA (RADIO)');
+    if (Chars.trackIts) Chars.trackIts(2.2);
+    if (!this.radioTold) { this.radioTold = true; }
+  },
+  drawHud() {
+    const show = this.list.some(S => S.st !== 0) || this.list.some(S => Game.tapes && Game.tapes.has(S.D.tape));
+    const key = show ? this.list.map(S => S.st + ':' + S.lead).join() + '|' + (Game.tapes ? Game.tapes.size : 0) : '';
+    if (key === this.hudKey) return; this.hudKey = key;
+    this.hud.style.display = show && this.on ? 'block' : 'none'; if (!show) return;
+    const me = Net.myId, row = S => {
+      const n = S.D.short;
+      if (S.st === 0) return Game.tapes && Game.tapes.has(S.D.tape) ? '<span>' + n + ' — somewhere in ' + S.D.where + '?</span>' : '';
+      if (S.st === 3) return '<span class="x">' + n + '</span>';
+      if (S.st === 4) return '<i>' + n + ' — out</i>';
+      if (S.st === 2) return '<i>' + n + ' — ' + (S.lead === me || (!Net.active && S.lead === 0) ? 'with you' : 'with ' + Net.nameOf(S.lead)) + '</i>';
+      return '<span class="w">' + n + ' — waiting</span>';
+    };
+    this.hud.innerHTML = 'SURVIVORS ' + this.list.filter(S => S.st !== 0).length + '/' + this.list.length + '<br>' + this.list.map(row).filter(Boolean).join('<br>');
+  },
+  // [H] — once you have a survivor's tape, it can point you to them
+  hintTarget() {
+    if (!this.on || Night.dawn) return null;
+    const S = this.list.find(x => x.st === 0 && Game.tapes && Game.tapes.has(x.D.tape)); if (!S) return null;
+    return { pos: new T.Vector3(S.D.spot[0], 1.0, S.D.spot[1]), label: S.D.name, key: 'sv' + S.i, tip: S.D.name + '\'s tape said ' + S.D.where + '. ' + (S.D.vent ? 'Crouch into the vent.' : S.D.drawer ? 'Listen for the knocking.' : 'Look in the corners.'), done: () => S.st !== 0 };
+  },
+  // the lift is leaving (host / solo decides who's on it)
+  onEnding() {
+    if (!this.on || Net.isClient) return;
+    const ids = [];
+    for (const S of this.list) {
+      if (!this.alive(S)) continue;
+      const dl = Math.hypot(S.pos.x - LIFT_POS.x, S.pos.z - LIFT_POS.z), L = S.st === 2 ? this.byId(S.lead) : null;
+      if (dl < 9 || (L && !L.dead && Math.hypot(L.pos.x - S.pos.x, L.pos.z - S.pos.z) < 12 && Math.hypot(L.pos.x - LIFT_POS.x, L.pos.z - LIFT_POS.z) < 9)) ids.push(S.i);
+    }
+    Game.emit({ k: 'svr', ids });
+  },
+  winRows() {
+    if (!this.on) return [];
+    const out = this.list.filter(S => S.st === 4).map(S => S.D.short), lost = this.list.filter(S => S.st === 3).map(S => S.D.short);
+    const rows = [['Survivors out', out.length + ' / ' + this.list.length + (out.length ? ' (' + out.join(', ') + ')' : '')]];
+    if (lost.length) rows.push(['Lost', lost.join(', ')]);
+    return rows;
+  },
+  epilogue() {
+    if (!this.on) return '';
+    const out = this.list.filter(S => S.st === 4).map(S => S.D);
+    if (!out.length) return this.found() ? ' You never found a way to bring the others up.' : '';
+    const lines = out.map(D => D.id === 'rosa' ? 'Rosa Ortiz rode up with you, still clutching her radio.' : D.id === 'doyle' ? 'Pete Doyle rode up with you and never once stopped talking about the breakers.' : 'Dr. Adebayo rode up with you and held your hand the whole way.');
+    return ' ' + lines.join(' ') + (out.length === this.list.length ? ' Nobody who was still alive was left behind.' : '');
+  },
+};
+
+/* ---------------- the hooks ---------------- */
+{
+  const ng0 = Game.newGame; Game.newGame = function () { const r = ng0.apply(this, arguments); try { Survivors.start(); } catch (e) { console.warn('survivors', e); } return r; };
+  const nu0 = Night.update; Night.update = function (dt) { const r = nu0.apply(this, arguments); if (Survivors.on) Survivors.update(dt); return r; };
+  const se0 = Game.startEnding; Game.startEnding = function () { if (!this.ending && Survivors.on) Survivors.onEnding(); return se0.apply(this, arguments); };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) { if (ev && (ev.k === 'svs' || ev.k === 'svd' || ev.k === 'svr')) { Survivors.event(ev); return; } return ae0.apply(this, arguments); };
+  const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i, x) { if (a === 'svu') { if (!Net.isClient) Survivors.remote(r, i); return; } return ra0.apply(this, arguments); };
+  const sn0 = Net.snapshot; Net.snapshot = function () { const s = sn0.apply(this, arguments); if (Survivors.on && Survivors.built) s.sv = Survivors.netState(); return s; };
+  const as0 = Net.applySnap; Net.applySnap = function (s, now) { const r = as0.apply(this, arguments); if (s && s.sv && (s.q | 0) === this.lastSeq) Survivors.netPush(s.sv); return r; };
+  const hp0 = Hints.primary; Hints.primary = function () { if (!LVL && Game.mode === 'night') { const t = Survivors.hintTarget(); if (t) return t; } return hp0.apply(this, arguments); };
+  const ti0 = Hints.progressKey; Hints.progressKey = function () { return ti0.apply(this, arguments) + '|sv' + (Survivors.built ? Survivors.list.map(S => S.st).join('') : ''); };
+}
+/* ================================================================== */
+/* Build 26: DAILY CONTRACTS                                           */
+/* Three jobs a day, picked for the date (everyone gets the same three  */
+/* on the same day), from every corner of the game: survive the Night   */
+/* Shift, get a survivor out, reach door 30, win a round of MECHA CAMO, */
+/* last until hour 3 of ENDLESS NIGHT… Each pays coins the moment it's  */
+/* done (on the end-of-run screen). All three in a day: a bonus, and    */
+/* the streak goes up — bigger every day you keep it going. One free    */
+/* re-roll a day for a job you don't fancy.                             */
+/* Saved on its own (lastshift.contracts.v1), apart from the character  */
+/* save: a broken or edited contracts file can't touch your coins.      */
+/* ================================================================== */
+const CT_KEY = 'lastshift.contracts.v1';
+const CT_ALL = 250, CT_STREAK = 50, CT_STREAK_MAX = 5; // (all three in a day: +250, and +50 for each day of the streak, up to +250 more)
+// id: [what to do, how many, coins, mode it's for (or ''), how a run counts toward it]
+const CONTRACTS = {
+  night: ['Survive the Night Shift', 1, 250, 'night', c => c.mode === 'night' && c.won ? 1 : 0],
+  rescue: ['Get a survivor out on the lift', 1, 300, 'night', c => c.rescued > 0 ? 1 : 0],
+  rescue2: ['Get survivors out on the lift (any nights)', 2, 350, 'night', c => c.rescued],
+  tapes: ['Find 3 voice logs in one Night Shift', 1, 200, 'night', c => c.mode === 'night' && c.tapes >= 3 ? 1 : 0],
+  doors30: ['Reach door 30 in 100 DOORS', 1, 250, 'doors', c => c.mode === 'doors' && c.doors >= 30 ? 1 : 0],
+  doorsout: ['Get out of the Holloway (100 DOORS)', 1, 500, 'doors', c => c.mode === 'doors' && c.won ? 1 : 0],
+  gold: ['Find gold in 100 DOORS (any runs)', 100, 200, 'doors', c => c.mode === 'doors' ? c.gold : 0],
+  camo: ['Win a round of MECHA CAMO', 1, 250, 'camo', c => c.mode === 'camo' && c.won ? 1 : 0],
+  close: ['Close calls in MECHA CAMO (any rounds)', 3, 200, 'camo', c => c.mode === 'camo' ? c.close : 0],
+  photos: ['Find all eight POLAROIDS', 1, 300, 'photos', c => c.mode === 'photos' && c.won ? 1 : 0],
+  endless: ['Last until HOUR 3 in ENDLESS NIGHT', 1, 250, 'endless', c => c.mode === 'endless' && c.hour >= 2 ? 1 : 0],
+  watch: ['Survive THE WATCH', 1, 300, 'watch', c => c.mode === 'watch' && c.won ? 1 : 0],
+  hunt: ['Win THE HUNT', 1, 300, 'hunt', c => c.mode === 'hunt' && c.won ? 1 : 0],
+  floor: ['Escape a lower floor (Gallery, Blackout, Hive or Root)', 1, 350, 'floor', c => ['gallery', 'blackout', 'hive', 'root'].indexOf(c.mode) >= 0 && c.won ? 1 : 0],
+  hard: ['Win any run on Hard or Nightmare', 1, 400, '', c => c.won && (c.diff === 'hard' || c.diff === 'nightmare') ? 1 : 0],
+  clean: ['Win any run without taking a hit', 1, 450, '', c => c.won && c.dmg === 0 ? 1 : 0],
+  coop: ['Finish a run online with a friend', 1, 200, '', c => c.net && c.secs >= 60 ? 1 : 0],
+  kill: ['Bring down a floor\'s monster', 1, 400, '', c => c.killed ? 1 : 0],
+  minutes: ['Stay alive for 20 minutes (any runs)', 20, 200, '', c => Math.floor(c.secs / 60)],
+  spin: ['Spin the Character Roll 5 times', 5, 150, '', null], // (counted from the save's spins)
+};
+const CT_IDS = Object.keys(CONTRACTS);
+
+const Contracts = {
+  d: null, ran: false, toast: null,
+  ensure() { if (!this.d) this.load(); else this.fresh(); return this.d; },
+  today(t) { const d = t ? new Date(t) : new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); },
+  dayBefore(day) { const [y, m, dd] = day.split('-').map(Number); const d = new Date(y, m - 1, dd - 1); return this.today(d.getTime()); },
+  // the three for a date: the same for everyone, never two for the same mode
+  pick(day, skip) {
+    let h = 2166136261; for (let i = 0; i < day.length; i++) h = Math.imul(h ^ day.charCodeAt(i), 16777619);
+    const rng = mulberry32(h >>> 0), ids = CT_IDS.slice();
+    for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
+    const out = [], modes = new Set();
+    for (const id of ids) { if (out.length >= 3) break; if (skip && skip.indexOf(id) >= 0) continue; const m = CONTRACTS[id][3]; if (m && modes.has(m)) continue; if (m) modes.add(m); out.push(id); }
+    return out;
+  },
+  spins() { return (Chars.data && Chars.data.spins) || 0; },
+  load() {
+    let o = null; try { o = JSON.parse(localStorage.getItem(CT_KEY) || 'null'); } catch (e) { o = null; }
+    const ok = o && typeof o === 'object' && !Array.isArray(o);
+    const num = (v, d) => { const n = Number(v); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : d; };
+    const d = { v: 1, day: ok && typeof o.day === 'string' ? o.day : '', ids: [], prog: {}, done: {}, rerolled: ok && o.rerolled ? 1 : 0, streak: ok ? Math.min(999, num(o.streak, 0)) : 0, lastAll: ok && typeof o.lastAll === 'string' ? o.lastAll : '', spins0: ok ? num(o.spins0, 0) : 0, total: ok ? num(o.total, 0) : 0, bonus: ok && o.bonus ? 1 : 0 };
+    if (ok && Array.isArray(o.ids)) d.ids = o.ids.filter(id => typeof id === 'string' && CONTRACTS[id]).slice(0, 3);
+    if (ok && o.prog && typeof o.prog === 'object') for (const id of d.ids) d.prog[id] = Math.min(CONTRACTS[id][1], num(o.prog[id], 0));
+    if (ok && o.done && typeof o.done === 'object') for (const id of d.ids) if (o.done[id]) d.done[id] = 1;
+    this.d = d; this.fresh();
+  },
+  save() { try { localStorage.setItem(CT_KEY, JSON.stringify(this.d)); } catch (e) { } },
+  // a new day: three new jobs (the streak carries on if yesterday's three were all done)
+  fresh() {
+    const day = this.today(), d = this.d;
+    if (d.day === day && d.ids.length === 3) return false;
+    if (d.lastAll !== this.dayBefore(day) && d.lastAll !== day) d.streak = 0;
+    d.day = day; d.ids = this.pick(day); d.prog = {}; d.done = {}; d.rerolled = 0; d.bonus = 0; d.spins0 = this.spins();
+    this.save(); return true;
+  },
+  progress(id) {
+    const C = CONTRACTS[id], d = this.d;
+    if (id === 'spin') return Math.min(C[1], Math.max(d.prog[id] || 0, this.spins() - d.spins0));
+    return Math.min(C[1], d.prog[id] || 0);
+  },
+  // count something toward today's jobs; returns the jobs it finished (paid right away)
+  add(id, n) {
+    const d = this.d; if (!d || !CONTRACTS[id] || d.ids.indexOf(id) < 0 || d.done[id] || !(n > 0)) return null;
+    if (id !== 'spin') d.prog[id] = Math.min(CONTRACTS[id][1], (d.prog[id] || 0) + n);
+    if (this.progress(id) >= CONTRACTS[id][1]) return this.finish(id);
+    return null;
+  },
+  finish(id) {
+    const d = this.d, C = CONTRACTS[id]; d.done[id] = 1; d.prog[id] = C[1];
+    let coins = C[2]; const out = [[C[0], coins]];
+    if (d.ids.every(x => d.done[x]) && !d.bonus) {
+      d.bonus = 1;
+      if (d.lastAll !== d.day) { d.streak = (d.lastAll === this.dayBefore(d.day) ? d.streak : 0) + 1; d.lastAll = d.day; }
+      const b = CT_ALL + CT_STREAK * Math.min(CT_STREAK_MAX, d.streak); coins += b; out.push(['All three today' + (d.streak > 1 ? ' · ' + d.streak + '-day streak' : ''), b]);
+      Goals.unlock('ct_all'); if (d.streak >= 3) Goals.unlock('ct_streak');
+    }
+    if (Chars.data) { Chars.data.coins = Math.min(ECON.maxCoins, Chars.data.coins + coins); Chars.save(); }
+    d.total += coins; this.save();
+    Goals.unlock('ct_one');
+    return out;
+  },
+  // (every screen, its own jobs) a run just ended: what did it count for?
+  onRun(won) {
+    if (this.ran) return [];
+    this.ensure(); this.ran = true;
+    const S = Chars.stats || {}, G = Game.stats || {};
+    const secs = Math.max(0, (Game.flags && (Game.flags.lastAlive || Game.flags.diedAt)) || Game.time);
+    const c = { mode: Game.mode, won: !!won, diff: Net.sessionDiff || settings.difficulty, secs, net: !!Net.active, rescued: G.rescued || 0, tapes: Game.tapes ? Game.tapes.size : 0,
+      doors: S.doors || 0, gold: S.gold || 0, close: S.close || 0, killed: S.killed || 0, hour: (typeof Endless !== 'undefined' && Endless.hour) || 0, dmg: G.damage || 0 };
+    const rows = [];
+    for (const id of this.d.ids) { const f = CONTRACTS[id][4]; const n = f ? +f(c) || 0 : (id === 'spin' ? 1 : 0); const got = id === 'spin' ? (this.progress(id) >= CONTRACTS[id][1] && !this.d.done[id] ? this.finish(id) : null) : this.add(id, n); if (got) rows.push(...got); }
+    this.drawBadge();
+    return rows.map(([t, n]) => ['Contract — ' + t, '+' + n + ' coins']);
+  },
+  reroll(i) {
+    const d = this.d; if (!d || d.rerolled || !d.ids[i] || d.done[d.ids[i]]) return false;
+    const keep = d.ids.filter((x, k) => k !== i), modes = new Set(keep.map(x => CONTRACTS[x][3]).filter(Boolean));
+    const pool = CT_IDS.filter(id => d.ids.indexOf(id) < 0 && !(CONTRACTS[id][3] && modes.has(CONTRACTS[id][3])));
+    if (!pool.length) return false;
+    let h = 0; for (const ch of d.day + i) h = (h * 31 + ch.charCodeAt(0)) | 0;
+    const id = pool[Math.abs(h) % pool.length];
+    d.ids[i] = id; d.prog[id] = 0; d.rerolled = 1; if (id === 'spin') d.spins0 = this.spins();
+    this.save(); return true;
+  },
+  // after a spin: the Character Roll job counts straight away
+  afterSpin() { this.ensure(); if (this.d.ids.indexOf('spin') >= 0 && !this.d.done.spin && this.progress('spin') >= CONTRACTS.spin[1]) { const got = this.finish('spin'); if (got) UI.msg('CONTRACT DONE — ' + got.map(g => g[0] + ' +' + g[1]).join(' · ') + ' coins', 'good', 4.5); } this.drawBadge(); },
+  left() { const n = new Date(), m = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1); const s = Math.max(0, (m - n) / 1000), h = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60); return h + 'h ' + mm + 'm'; },
+
+  /* ---------------- the screen ---------------- */
+  open() { this.ensure(); this.draw(); UI.goto('screen-contracts'); },
+  draw() {
+    const d = this.d, list = $('ct-list'); if (!list || !d) return;
+    list.innerHTML = '';
+    d.ids.forEach((id, i) => {
+      const C = CONTRACTS[id], p = this.progress(id), done = !!d.done[id];
+      const row = document.createElement('div'); row.className = 'ct-row' + (done ? ' done' : '');
+      row.innerHTML = '<div class="ct-t"><b></b><span class="ct-m"></span></div><div class="ct-bar"><i></i></div><div class="ct-r"><span class="ct-p"></span><span class="ct-c"></span></div>';
+      row.querySelector('b').textContent = C[0];
+      row.querySelector('.ct-m').textContent = C[3] ? ({ night: 'NIGHT SHIFT', doors: '100 DOORS', camo: 'MECHA CAMO', photos: 'POLAROIDS', endless: 'ENDLESS NIGHT', watch: 'THE WATCH', hunt: 'THE HUNT', floor: 'ANY LOWER FLOOR' })[C[3]] : 'ANY MODE';
+      row.querySelector('.ct-bar i').style.width = (p / C[1] * 100).toFixed(0) + '%';
+      row.querySelector('.ct-p').textContent = done ? 'DONE ✓' : p + ' / ' + C[1];
+      row.querySelector('.ct-c').textContent = '+' + C[2] + ' coins';
+      if (!done && !d.rerolled) { const b = document.createElement('button'); b.className = 'btn ct-rr'; b.textContent = '↻ Swap'; b.title = 'Swap this job for another (once a day)'; b.addEventListener('click', () => { if (this.reroll(i)) { Sound.ui(); this.draw(); this.drawBadge(); } }); row.appendChild(b); }
+      list.appendChild(row);
+    });
+    const nDone = d.ids.filter(x => d.done[x]).length, b = CT_ALL + CT_STREAK * Math.min(CT_STREAK_MAX, d.streak + (d.bonus ? 0 : 1));
+    $('ct-foot').textContent = (d.bonus ? 'All three done today — ' : 'All three today: +' + b + ' coins · ') + 'streak ' + d.streak + (d.streak === 1 ? ' day' : ' days') + ' · new jobs in ' + this.left() + (d.rerolled ? '' : ' · one free swap a day') + ' · earned so far: ' + d.total.toLocaleString('en-US');
+    $('ct-count').textContent = nDone + ' / 3';
+  },
+  drawBadge() {
+    const el = $('ct-badge'); if (!el) return; this.ensure();
+    const n = this.d.ids.filter(x => this.d.done[x]).length;
+    el.textContent = n >= 3 ? '✓' : n + '/3'; el.classList.toggle('all', n >= 3);
+  },
+};
+ACH.push(
+  { id: 'ct_one', name: 'On the Clock', desc: 'Finish a daily contract.' },
+  { id: 'ct_all', name: 'Overtime', desc: 'Finish all three daily contracts in one day.' },
+  { id: 'ct_streak', name: 'Company Man', desc: 'Finish all three daily contracts three days in a row.' },
+);
+
+/* ---------------- the hooks ---------------- */
+{
+  // the end of every run, in every mode, goes through the payout: the contracts count there (once a run)
+  const po0 = Chars.payout; Chars.payout = function (won) {
+    const had = !!this.paid, rows = po0.apply(this, arguments);
+    if (!had && Array.isArray(rows)) { try { const extra = Contracts.onRun(won); if (extra.length) { rows.push(...extra); Sound.coin && Sound.coin(); } } catch (e) { console.warn('contracts', e); } }
+    return rows;
+  };
+  const on = (id, f) => { const el = $(id); if (el) el.addEventListener('click', f); };
+  on('btn-contracts', () => Contracts.open()); on('btn-ct-back', () => UI.back());
+  const sh0 = UI.show; UI.show = function (id) { const r = sh0.apply(this, arguments); if (id === 'screen-title') try { Contracts.drawBadge(); } catch (e) { } return r; };
+  const ng0 = Game.newGame; Game.newGame = function () { Contracts.ran = false; return ng0.apply(this, arguments); };
+  const r0 = Chars.roll; Chars.roll = function () { const r = r0.apply(this, arguments); try { Contracts.afterSpin(); } catch (e) { } return r; };
+  if (Chars.rollMulti) { const m0 = Chars.rollMulti; Chars.rollMulti = function () { const r = m0.apply(this, arguments); try { Contracts.afterSpin(); } catch (e) { } return r; }; }
+}
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -32148,7 +32782,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
+  Object.assign(window.LS, { Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
 </script>
