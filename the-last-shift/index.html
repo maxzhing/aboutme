@@ -1221,6 +1221,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <label>Film grain</label><div class="set-ctl"><button class="tog" id="set-grain"></button></div>
       <label>Show FPS</label><div class="set-ctl"><button class="tog" id="set-fps"></button></div>
       <label>Item hints</label><div class="set-ctl"><button class="tog" id="set-hints"></button><span class="mp-note">yellow highlights when you're stuck</span></div>
+      <label>Panic effects</label><div class="seg" id="set-panic" title="When something is close: the red pulse at the edge of the screen"><button data-v="full">Full</button><button data-v="reduced">Reduced</button><button data-v="off">Off</button></div>
+      <label>Heartbeat sound</label><div class="set-ctl"><button class="tog" id="set-heart"></button><span class="mp-note">the heartbeat and breathing when it's near</span></div>
+      <label>Camera shake</label><div class="set-ctl"><button class="tog" id="set-shake"></button></div>
+      <label>Reduce flashing</label><div class="set-ctl"><button class="tog" id="set-noflash"></button><span class="mp-note">no strobing or flickering lights anywhere; softer red flashes</span></div>
     </div>
     <div class="set-sec"><div class="kicker">Controls</div><div class="mp-note">Click a key, then press the one you want. If another action already uses it, the two swap places. Esc cancels.</div></div>
     <div class="keys-grid" id="keys-grid"></div>
@@ -1283,6 +1287,12 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
            <li><b>The Hunt:</b> you play the monster. Click to <b>swipe</b> (a guard in reach is caught), <span data-key="ability"></span> <b>SCREECH</b> (you hear every guard for 6 s, through the walls; the ones close by freeze), <span data-key="ultimate"></span> <b>POUNCE</b> (a long leap that ends in a swipe), <span data-key="interact"></span> on a locker tears it open. Red marks show the guards you hear. The guards pull fuses; enough of them and the blast door opens and they run for the surface lift. Their flashlights blind you if they see you coming. If half of them get out, the hunt is lost; if they're still inside at 6 AM, you win.</li>
           <li><b>100 Doors:</b> walk into a door to open it; <b>locked</b> ones need the key from the room you're in (or a lockpick). Drawers hold gold, batteries, bandages (<b>[1]</b>), vitamins (<b>[2]</b>), lockpicks and, rarely, a crucifix. <b>Flickering lights</b> = SURGE (or REBOUND, which comes back): get in a <b>wardrobe</b> until it's past — but not for too long. In a dark room, <b>"psst"</b> = HISS behind you: look at it. <b>Purple light</b> = THE EYES: look away. <b>Eyes on the walls</b> = THE SEEKER is near: when it climbs out, run through the doors and around the black pools. The <b>library (50)</b>: find five books and the note on the desk; the note gives the order, the books the numbers — type them into the padlock. THE BLIND ONE hears footsteps (crouch near it); if it opens your wardrobe, press <b>A</b>/<b>D</b> as each heartbeat reaches the line. <b>Room 100</b>: the breaker key is on a crate; set every switch to its lamp (a wrong switch is loud), then run for the way out. <span data-key="hint"></span> points to the next door, key or book. No map.</li>
           <li><b>Mecha Camo:</b> <b>[L]</b> locks you in place to paint: <b>drag on yourself</b> to paint (FINE/S/M/L brushes, <b>[</b> and <b>]</b> to change), drag anywhere else or right-drag to turn round yourself from any angle, scroll to zoom, <b>click a wall</b> to pick up its colour, <b>[L]</b> again to move. <b>[Esc]</b> or <b>[B]</b> opens the whole paint shop (FILL A PIECE, patterns with the 2nd colour, mixing). <span data-key="ability"></span> picks up the colour of what you face; <span data-key="nextWeapon"></span> is the chameleon spray (each part of you, the colour behind it). A yellow <b>?</b> over the Warden: something caught its eye. A red <b>!</b>: it's hunting. <b>HOLD STILL</b> when it's close — if it walks away, that's a <b>CLOSE CALL</b> (and coins). <b>[Shift]</b> toggles the over-the-shoulder camera (or <b>[L]</b>); run with <b>Space</b>; <span data-key="pause"></span> pauses. The CAMO meter grades how well you blend in where you stand (from 8 directions, against what's behind you, lit as it's lit, and which side of you faces each way): <b>EXCELLENT</b>, <b>GOOD</b> or <b>POOR</b>. Hold <span data-key="interact"></span> at a breaker panel to throw it; <span data-key="ultimate"></span> lobs a paint can to pull the Warden away. Stay put too long and it smells you. Each round the Warden has a temperament (STALKER, PROWLER or LISTENER), something happens part-way through (BLACKOUT, SEARCHLIGHT DRONE, THE SLEEPWALKER, FRESH COAT — named on screen), three gold paint tins are hidden (they unlock paints), and there's a bonus job. Caged online: <span data-key="interact"></span> calls for help, <span data-key="nextWeapon"></span> watches a teammate. Two maps: Sublevel 6 and THE COLOUR WORKS (pick on the briefing screen, or the host picks online) — in the Works, <span data-key="interact"></span> in a SPRAY BOOTH coats you in its colours.</li>
+          <li><b>Mecha Camo emotes:</b> <b>[Z]</b> opens the emote wheel — wave, dance, laugh, point, celebrate, facepalm, a nervous look, a fake faint (1–8, a click, or aim with the mouse and let go of Z; Esc closes it). Your team sees them. Moving stops one; the ♪ ones can be <b>heard</b>, and a big one in its sight counts as moving.</li>
+          <li><b>Mecha Camo, living maps:</b> new round events — <b>COLOUR SHIFT</b> (the lamps change colour: only light and dark show, so match how bright the wall is), <b>POWER SURGE</b> (a flare that lets it see further, then the dark), <b>EMERGENCY DOORS</b> (Sublevel 6: a lockdown seals some doors for a while — never trapping anyone) and <b>PAINT SPILL</b> (the Colour Works: wet feet take the colour and leave footprints it follows). Props on the floor clatter if you <b>run</b> into them; the <b>big red button</b> starts a loud machine somewhere else to draw it away.</li>
+          <li><b>Cosmetic Locker (title screen):</b> hats, masks, back pieces, body effects, paint jobs, footsteps and victory moves for your stickman, in six rarities. Earn them by playing (each one says how), find the secret on each camo map, or use the <b>Cosmetic Roll</b> (350 coins — odds printed, never a duplicate). Looks only: they never change your camo score, hitbox or speed.</li>
+          <li><b>Warden vs Guards (online):</b> in the lobby, with MECHA CAMO picked, the host can choose to <b>play the Warden</b>: they wait in the dark while you hide, then hunt in first person — <b>click</b> to grab, <b>[F]</b> to sniff (everyone within 9 m shows for a moment, every 20 s). They see no meter and no cosmetics: only your paint.</li>
+          <li><b>Halloween (15 Oct – 2 Nov):</b> five jack-o'-lanterns are hidden each run (Night Shift, Polaroids, Endless Night, Mecha Camo) — candy is +15 coins each, and all five in one run is the Pumpkin Head. The Warden dresses up too.</li>
+          <li><b>Panic Mode (every mode):</b> when it's close — and can see you, or is after you — the edges of the screen pulse red with your heartbeat. Get away from something that was right on top of you and it's a <b>CLOSE CALL</b> (coins at the end, up to 10 a run). Settings → Panic effects / Heartbeat sound / Camera shake / Reduce flashing turn it down or off.</li>
           <li><b>The Watch:</b> <span data-key="map"></span> opens the cameras (<b>1–0</b>, the arrow keys or the map to switch; <span data-key="map"></span> again to look up). The red switch on the desk opens and shuts the door. <b>The Warden</b> shows up on CAM 05 or CAM 06 before your door — shut it in time and it slams it and goes. <b>The Mannequin</b> only moves while nobody watches it (a camera, or your own eyes through the doorway): check CAM 10 before you open the door. <b>The brood</b> comes down the vent: hold your light on the grate. Cameras and a shut door burn power; at 0% everything goes dark and the door won't hold.</li>
           <li><b>The Night Shift: survive until 6:00 AM</b> (the clock is at the top of the screen), then get onto the surface lift when the day shift opens it. Every hour it gets faster and sharper-eared; at 4:00 a power surge blacks everything out; in the last hour it can crawl into the vents. Or open the lift early: three keycards, main power and the breach report.</li>
           <li>It hunts by sound and sight — and it has sharp ears. Walking near it is enough; when it hears you it <b>runs</b> to the sound. Crouch close to it, and hide the moment it starts running.</li>
@@ -1502,7 +1512,8 @@ const fmtTime = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60)
 /* Settings (persisted, validated)                                     */
 /* ------------------------------------------------------------------ */
 const DEFAULTS = { sensitivity: 1, invertY: false, fov: 72, volume: 0.8, muted: false, difficulty: 'normal',
-  quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '', mode: 'night', daily: false, dynRes: 'on', camoMap: 's6' };
+  quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '', mode: 'night', daily: false, dynRes: 'on', camoMap: 's6', camoWarden: 'ai',
+  panicFx: 'full', shake: true, heartbeat: true, noFlash: false }; // (Build 27: Panic Mode's screen effects, camera shake, the heartbeat, and REDUCE FLASHING)
 const settings = Object.assign({}, DEFAULTS);
 (function loadSettings() {
   try {
@@ -1513,8 +1524,8 @@ const settings = Object.assign({}, DEFAULTS);
     const bool = k => { if (typeof o[k] === 'boolean') settings[k] = o[k]; };
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8);
-    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily');
-    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors']); oneOf('camoMap', ['s6', 'works']);
+    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); oneOf('panicFx', ['full', 'reduced', 'off']);
+    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors']); oneOf('camoMap', ['s6', 'works']); oneOf('camoWarden', ['ai', 'host']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
   } catch (e) { /* storage blocked or corrupt: keep defaults */ }
@@ -1534,6 +1545,7 @@ const KEY_ACTIONS = [ // [action, what it does, default key]
   ['interact', 'Interact · hide · read', 'KeyE'], ['flashlight', 'Flashlight', 'KeyT'], ['ability', 'Character ability', 'KeyF'], ['ultimate', 'Ultimate (Ultimate characters)', 'KeyX'],
   ['reload', 'Battery / crank', 'KeyR'], ['punch', 'Punch', 'KeyV'], ['nextWeapon', 'Next weapon', 'KeyQ'],
   ['hold', 'Hold the door · skip a scene', 'Space'], ['map', 'Minimap', 'KeyM'], ['hint', 'Hint', 'KeyH'], ['ping', 'Ping (co-op)', 'KeyG'], ['pause', 'Pause', 'KeyP'],
+  ['emote', 'Emote wheel (MECHA CAMO)', 'KeyZ'], // (Build 27)
 ];
 const KEY_TWIN = { ShiftLeft: 'ShiftRight', ShiftRight: 'ShiftLeft', ControlLeft: 'ControlRight', ControlRight: 'ControlLeft', AltLeft: 'AltRight', AltRight: 'AltLeft' }; // (either Shift is Shift)
 const KEY_FIXED = { forward: ['ArrowUp'], back: ['ArrowDown'], left: ['ArrowLeft'], right: ['ArrowRight'] };
@@ -5683,6 +5695,10 @@ const Sound = (function () {
     [220, 277.2, 329.6, 440].forEach((f, i) => { tone(lp, t, 'sawtooth', f, f, 1.2, 0.16, 0.12); tone(lp, t, 'sawtooth', f * 1.004, f * 1.004, 1.2, 0.1, 0.12); });
   });
   S.thump = safe(function (k) { const t = ctx.currentTime, out = dest(null, 0); out.gain.value = 0.35 + k * 0.5; tone(out, t, 'sine', 64, 40, 0.13, 0.9, 0.003); tone(out, t + 0.16, 'sine', 56, 36, 0.11, 0.65, 0.003); });
+  // (Build 27) MECHA CAMO's stickmen: a tinny little robot laugh, a few claps, feet tapping out a dance
+  S.laugh = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.2); out.gain.value = 0.55; for (let i = 0; i < 4; i++) { const t0 = t + i * 0.16, f = 330 - i * 22 + rand(-8, 8); tone(out, t0, 'square', f * 1.15, f, 0.1, 0.16, 0.008); noise(out, t0, 0.08, 'bandpass', 1500, 2, 0.12, 0.004); } });
+  S.clap = safe(function (pos, n = 3) { const t = ctx.currentTime, out = dest(pos, 0.3); out.gain.value = 0.7; for (let i = 0; i < n; i++) noise(out, t + i * 0.19 + rand(0, 0.02), 0.05, 'bandpass', rand(1400, 1900), 1.4, 0.7, 0.002); });
+  S.tap = safe(function (pos, k = 1) { const t = ctx.currentTime, out = dest(pos, 0.2); out.gain.value = 0.35 * k; tone(out, t, 'triangle', 220, 120, 0.06, 0.5, 0.002); noise(out, t, 0.03, 'highpass', 2500, 0.8, 0.25, 0.002); });
   S.flatline = safe(function () { const t = ctx.currentTime, out = dest(null, 0.3); out.gain.value = 0.42; for (let i = 0; i < 3; i++) { tone(out, t + i * 0.42 * (1 + i * 0.4), 'sine', 64, 40, 0.14, 0.9, 0.003); tone(out, t + i * 0.42 * (1 + i * 0.4), 'sine', 980, 980, 0.1, 0.18, 0.002); } tone(out, t + 1.6, 'sine', 980, 980, 1.8, 0.2, 0.01); });
   S.rollStart = safe(function () { const t = ctx.currentTime, out = dest(null, 0.15, false, uiBus); out.gain.value = 0.45; noise(out, t, 0.12, 'lowpass', 700, 1, 0.8, 0.002); tone(out, t, 'sine', 110, 60, 0.25, 0.6, 0.002); tone(out, t + 0.05, 'triangle', 520, 1040, 0.25, 0.1, 0.01); });
   S.rollTick = safe(function (k) { const t = ctx.currentTime, out = dest(null, 0, false, uiBus); out.gain.value = 0.16 + 0.1 * (1 - k); tone(out, t, 'square', 1500 + 900 * k, 1500 + 900 * k, 0.018, 0.4, 0.001); noise(out, t, 0.015, 'highpass', 4000, 1, 0.3, 0.001); });
@@ -8079,7 +8095,7 @@ const UI = {
   hideAll() { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); this.current = null; },
   goto(id) { if (this.current) this.prev.push(this.current); this.show(id); Sound.ui(); },
   back() {
-    if (['screen-settings', 'screen-howto', 'screen-journal', 'screen-briefing', 'screen-mp', 'screen-goals', 'screen-chars', 'screen-roll', 'screen-codes', 'screen-contracts'].indexOf(this.current) < 0) return;
+    if (['screen-settings', 'screen-howto', 'screen-journal', 'screen-briefing', 'screen-mp', 'screen-goals', 'screen-chars', 'screen-roll', 'screen-codes', 'screen-contracts', 'screen-locker'].indexOf(this.current) < 0) return;
     if (this.current === 'screen-roll' && CharUI.spinning) return; // (not in the middle of a roll)
     if (this.current === 'screen-mp' && Net.active && !Net.inGame) Net.leave(); // backing out of the lobby closes it
     const p = this.prev.pop() || (Game.state === 'paused' ? 'screen-pause' : 'screen-title');
@@ -8463,7 +8479,7 @@ const Game = {
     if (LVL) { const F = Level.foe(); if (F && F.hear) F.hear(pos, radius, kind, actor); return; }
     Monster.hear(pos, radius, kind, actor);
   },
-  shake(a) { this.shakeAmt = Math.min(1.5, this.shakeAmt + a); },
+  shake(a) { if (settings.shake === false) return; this.shakeAmt = Math.min(1.5, this.shakeAmt + a); }, // (Build 27: Camera shake off — none at all)
   inWorld() { return ['playing', 'paused', 'reading', 'dead', 'won'].indexOf(this.state) >= 0; },
   idOf(a) { return !a || a === player ? Net.myId : a.id; },
   // a message for one guard (the local player, or a remote one via the network)
@@ -9471,15 +9487,16 @@ const Game = {
       else if (f.type === 'main') f.on = this.power && f.mode !== 'dead' && t >= f.powerOnAt;
       if (f.on) {
         b = 1;
-        if (f.mode === 'flicker' && this.mode !== 'watch') { f.next -= dt; if (f.next <= 0) { f.burst = rand(0.15, 1.3); f.next = rand(2.5, 9); } if (f.burst > 0) { f.burst -= dt; b = Math.random() < 0.5 ? rand(0, 0.25) : 1; } }
+        const NF = settings.noFlash; // (Build 27: REDUCE FLASHING — every stutter below becomes a steady dip)
+        if (f.mode === 'flicker' && this.mode !== 'watch') { f.next -= dt; if (f.next <= 0) { f.burst = rand(0.15, 1.3); f.next = rand(2.5, 9); } if (f.burst > 0) { f.burst -= dt; b = NF ? 0.55 : Math.random() < 0.5 ? rand(0, 0.25) : 1; } }
         else if (f.mode === 'beacon') b = 0.15 + 0.85 * Math.pow(Math.max(0, Math.sin(t * 5.5 + f.pos.x)), 6);
-        if (f.pop > 0) { f.pop -= dt; b *= Math.random() < 0.75 ? 0 : 0.35; } // a bulb blown by the Warden
-        if (f.type === 'main' && t < f.powerOnAt + 0.7) b *= Math.random() < 0.5 ? 0.15 : 1;
+        if (f.pop > 0) { f.pop -= dt; b *= NF ? 0 : Math.random() < 0.75 ? 0 : 0.35; } // a bulb blown by the Warden
+        if (f.type === 'main' && t < f.powerOnAt + 0.7) b *= NF ? (t < f.powerOnAt ? 0 : clamp((t - f.powerOnAt) / 0.7, 0, 1)) : Math.random() < 0.5 ? 0.15 : 1;
         if (f.type === 'emerg' && this.power && f.mode !== 'beacon') b *= 0.5;
-        if (mActive) { const dm = Math.abs(f.pos.x - mp.x) + Math.abs(f.pos.z - mp.z); if (dm < 10) { const k = 1 - dm / 10; if (Math.random() < k * 0.55) b *= rand(0, 0.45); } }
+        if (mActive) { const dm = Math.abs(f.pos.x - mp.x) + Math.abs(f.pos.z - mp.z); if (dm < 10) { const k = 1 - dm / 10; if (NF) b *= 1 - k * 0.4; else if (Math.random() < k * 0.55) b *= rand(0, 0.45); } }
         if (sl) { const ds = Math.abs(f.pos.x - sl.x) + Math.abs(f.pos.z - sl.z); if (ds < 10) { const k = 1 - ds / 10; b *= 1 - k * 0.85 * (0.5 + 0.5 * Math.sin(t * 2.1 + f.pos.x * 0.7)); } } // around the Sleepwalker the lights slowly breathe out
-        if (DK > 0.45 && Math.abs(f.pos.x - player.pos.x) + Math.abs(f.pos.z - player.pos.z) < 8 && Math.random() < (DK - 0.45) * 0.3) b *= rand(0, 0.5);
-        if (this.dip > 0.05) b *= 1 - this.dip * (Math.random() < 0.3 ? 1 : 0.75);
+        if (DK > 0.45 && Math.abs(f.pos.x - player.pos.x) + Math.abs(f.pos.z - player.pos.z) < 8 && (NF ? true : Math.random() < (DK - 0.45) * 0.3)) b *= NF ? 1 - (DK - 0.45) * 0.5 : rand(0, 0.5);
+        if (this.dip > 0.05) b *= 1 - this.dip * (NF ? 0.8 : Math.random() < 0.3 ? 1 : 0.75);
         if (Night.surge) b *= f.mode === 'beacon' ? 0.5 : 0; // the 04:00 surge: black
         if (LM) b = LM.dim(f, b, t);
       }
@@ -9618,9 +9635,9 @@ const Game = {
     let fi = 0;
     if (on) {
       fi = 2.05 * lerp(0.38, 1, near) * (p.battery < 0.2 ? lerp(0.35, 1, p.battery / 0.2) : 1) * (0.985 + Math.random() * 0.015);
-      if (p.battery < 0.12 && Math.random() < 0.08) fi *= rand(0, 0.4);
+      if (p.battery < 0.12 && Math.random() < 0.08 && !settings.noFlash) fi *= rand(0, 0.4); else if (p.battery < 0.12 && settings.noFlash) fi *= 0.6;
       if (fActive && md < 11 && Math.random() < (1 - md / 11) * (LVL ? LF.flicker || 0 : 0.5)) fi *= rand(0.05, 0.6);
-      if (this.dip > 0.3 && Math.random() < 0.3) fi *= 0.5;
+      if (this.dip > 0.3 && !settings.noFlash && Math.random() < 0.3) fi *= 0.5;
     }
     if (Chars.flashT > 0) fi = Math.max(fi, 2.05) * (1 + 4 * Chars.flashT / 0.32); // (FLASHBURST)
     flash.intensity = fi;
@@ -9720,16 +9737,17 @@ function bindSettingsUI() {
   const muteEl = $('set-mute'); const drawMute = () => { muteEl.textContent = settings.muted ? 'MUTED' : 'ON'; muteEl.classList.toggle('on', !settings.muted); };
   drawMute(); muteEl.addEventListener('click', () => { settings.muted = !settings.muted; drawMute(); applySettings(); saveSettings(); });
   const d2 = tog('set-bob', 'headBob', 'ON', 'OFF'), d3 = tog('set-grain', 'grain', 'ON', 'OFF'), d4 = tog('set-fps', 'showFps', 'ON', 'OFF'), d7 = tog('set-hints', 'hints', 'ON', 'OFF');
+  const d9 = tog('set-heart', 'heartbeat', 'ON', 'OFF'), d10 = tog('set-shake', 'shake', 'ON', 'OFF'), d11 = tog('set-noflash', 'noFlash', 'ON', 'OFF'); // (Build 27)
   const seg = (id, key) => {
     const el = $(id); const draw = () => el.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === settings[key]));
     draw(); el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { settings[key] = b.dataset.v; draw(); applySettings(); saveSettings(); Sound.ui(); syncDiffCards(); }));
     return draw;
   };
-  const d5 = seg('set-diff', 'difficulty'), d6 = seg('set-quality', 'quality'), d8 = seg('set-dynres', 'dynRes');
+  const d5 = seg('set-diff', 'difficulty'), d6 = seg('set-quality', 'quality'), d8 = seg('set-dynres', 'dynRes'), d12 = seg('set-panic', 'panicFx');
   $('btn-set-reset').addEventListener('click', () => {
     Object.assign(settings, DEFAULTS); saveSettings(); applySettings();
     ['set-sens', 'set-fov', 'set-vol', 'set-bright'].forEach(id => { const key = { 'set-sens': 'sensitivity', 'set-fov': 'fov', 'set-vol': 'volume', 'set-bright': 'brightness' }[id]; $(id).value = settings[key]; $(id).dispatchEvent(new Event('input')); });
-    d1(); drawMute(); d2(); d3(); d4(); d5(); d6(); d7(); d8(); syncDiffCards();
+    d1(); drawMute(); d2(); d3(); d4(); d5(); d6(); d7(); d8(); d9(); d10(); d11(); d12(); syncDiffCards();
     KeysUI.stop(); Keys.reset(); KeysUI.draw(); KeysUI.refresh(); Sound.ui();
   });
 }
@@ -10519,7 +10537,7 @@ const Cine = {
       el.style.backgroundPosition = ((Math.random() * 200) | 0) + 'px ' + ((Math.random() * 200) | 0) + 'px';
     }
   },
-  redFlash(k) { const f = this.el.flash; f.style.transition = 'none'; f.style.opacity = String(k); void f.offsetWidth; f.style.transition = 'opacity .9s'; f.style.opacity = '0'; },
+  redFlash(k) { if (settings.noFlash) k *= 0.35; const f = this.el.flash; f.style.transition = 'none'; f.style.opacity = String(k); void f.offsetWidth; f.style.transition = 'opacity .9s'; f.style.opacity = '0'; }, // (Build 27: REDUCE FLASHING — a softer flash)
   /* ---- picture-in-picture camera ---- */
   startPip(sc) {
     if (this.blocking() || (!sc.def.subj && !Monster.active)) return false;
@@ -10590,7 +10608,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 23, BUILD = 26, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 24, BUILD = 27, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -17620,7 +17638,7 @@ const ECON = {
   perObj: 10, maxObj: 6,       // for every objective the team completes (each counts once a run)
   perRevive: 15, maxRevive: 3, // for getting a downed teammate back on their feet
   perHeal: 5, maxHeal: 4,      // for healing a teammate
-  perClose: 8, maxClose: 10,   // (Build 22) MECHA CAMO: the Warden came right up to you and walked away
+  perClose: 8, maxClose: 10,   // (Build 22) MECHA CAMO: the Warden came right up to you and walked away (Build 27: a CLOSE CALL in any mode)
   perSurvivor: 80,             // (Build 26) the Night Shift: a survivor you got out on the lift
   perTin: 15, perBonus: 40,    // (Build 23) MECHA CAMO: a gold paint tin; the round's bonus job
   minRun: 45,                  // a run shorter than this (seconds) pays nothing: no quit-and-restart farming
@@ -18722,7 +18740,7 @@ const Chars = {
     const base = m === 'endless' ? ECON.lose + Math.min(30, t) * ECON.perMinute + (Endless.hour || 0) * ECON.perHour
       : (won ? (ECON.win[m] || 100) : ECON.lose) + Math.min(ECON.maxMinutes, t) * ECON.perMinute;
     const objs = Math.min(ECON.maxObj, S.objs || 0), revs = Math.min(ECON.maxRevive, S.revives || 0), heals = Math.min(ECON.maxHeal, S.heals || 0);
-    const close = m === 'camo' ? Math.min(ECON.maxClose, S.close || 0) : 0; // (Build 22: MECHA CAMO — it was right there and never saw you)
+    const close = m === 'hunt' ? 0 : Math.min(ECON.maxClose, S.close || 0); // (Build 22: MECHA CAMO — it was right there and never saw you; Build 27: every mode, at most 10 a run)
     const tins = m === 'camo' ? Math.min(3, S.tins || 0) : 0, bonus = m === 'camo' && S.bonus ? 1 : 0; // (Build 23: gold tins, the bonus job)
     const resc = m === 'night' ? Math.min(3, (Game.stats && Game.stats.rescued) || 0) : 0; // (Build 26)
     const hdoors = m === 'doors' ? Math.min(100, S.doors || 0) : 0, hgold = m === 'doors' ? Math.min(ECON.maxGold, S.gold || 0) : 0; // (Build 25)
@@ -27207,7 +27225,32 @@ const CamoWorld = {
       lr += CamoColor.lin(r); lg += CamoColor.lin(gg); lb += CamoColor.lin(b);
       const L = CamoColor.lab(r, gg, b, _cmL)[0]; s += L; s2 += L * L; n++;
     }
-    return { r: CamoColor.enc(lr / n), g: CamoColor.enc(lg / n), b: CamoColor.enc(lb / n), con: Math.sqrt(Math.max(0, s2 / n - (s / n) * (s / n))) };
+    const out = { r: CamoColor.enc(lr / n), g: CamoColor.enc(lg / n), b: CamoColor.enc(lb / n), con: Math.sqrt(Math.max(0, s2 / n - (s / n) * (s / n))) };
+    if (out.con > 6) { const pl = this.texPal(d, tr, tg, tb); if (pl.length > 1) out.pal = pl; } // (Build 27: a busy texture — stripes, checks, tiles — is its colours too, not just their muddy average)
+    return out;
+  },
+  // (Build 27) a texture's main colours, as an eye would name them: up to three, each with how much of the surface it covers (a small k-means in
+  // linear light on the 16×16 thumbnail; colours closer than ~7 ΔE00 are one colour; a sliver under 12% is folded into its nearest)
+  texPal(d, tr, tg, tb) {
+    const px = []; for (let i = 0; i < d.length; i += 4) px.push([CamoColor.lin(d[i] / 255 * tr), CamoColor.lin(d[i + 1] / 255 * tg), CamoColor.lin(d[i + 2] / 255 * tb)]);
+    const lum = q => q[0] * 0.2126 + q[1] * 0.7152 + q[2] * 0.0722;
+    let C = [px.reduce((a, q) => lum(q) < lum(a) ? q : a), px.reduce((a, q) => lum(q) > lum(a) ? q : a)]; // (start from the darkest and the lightest)
+    { let far = null, fd = -1; for (const q of px) { let m = 1e9; for (const c of C) m = Math.min(m, (q[0] - c[0]) ** 2 + (q[1] - c[1]) ** 2 + (q[2] - c[2]) ** 2); if (m > fd) { fd = m; far = q; } } if (far) C.push(far); }
+    C = C.map(c => c.slice()); let lab = [];
+    for (let it = 0; it < 8; it++) {
+      const acc = C.map(() => [0, 0, 0, 0]); lab = px.map(q => { let bi = 0, bd = 1e9; C.forEach((c, i) => { const dd = (q[0] - c[0]) ** 2 + (q[1] - c[1]) ** 2 + (q[2] - c[2]) ** 2; if (dd < bd) { bd = dd; bi = i; } }); const A = acc[bi]; A[0] += q[0]; A[1] += q[1]; A[2] += q[2]; A[3]++; return bi; });
+      C = acc.map((A, i) => A[3] ? [A[0] / A[3], A[1] / A[3], A[2] / A[3], A[3]] : [C[i][0], C[i][1], C[i][2], 0]);
+    }
+    let K = C.filter(c => c[3] > 0).map(c => ({ lin: c, n: c[3], lab: CamoColor.lab(CamoColor.enc(c[0]), CamoColor.enc(c[1]), CamoColor.enc(c[2]), [0, 0, 0]).slice() }));
+    // merge the ones an eye wouldn't tell apart, and fold in slivers
+    for (let again = true; again && K.length > 1;) {
+      again = false; K.sort((a, b) => b.n - a.n);
+      outer: for (let i = 0; i < K.length; i++) for (let j = i + 1; j < K.length; j++) if (CamoColor.de(K[i].lab, K[j].lab) < 7 || K[j].n < px.length * 0.12) {
+        const A = K[i], B = K[j], t = A.n + B.n; A.lin = [0, 1, 2].map(c => (A.lin[c] * A.n + B.lin[c] * B.n) / t); A.n = t; A.lab = CamoColor.lab(CamoColor.enc(A.lin[0]), CamoColor.enc(A.lin[1]), CamoColor.enc(A.lin[2]), [0, 0, 0]).slice(); K.splice(j, 1); again = true; break outer;
+      }
+    }
+    K.sort((a, b) => b.n - a.n);
+    return K.map(k => [CamoColor.hex(CamoColor.enc(k.lin[0]), CamoColor.enc(k.lin[1]), CamoColor.enc(k.lin[2])), k.n / px.length]);
   },
   stat(mat) {
     if (!mat) return this.GREY;
@@ -27383,7 +27426,28 @@ const CamoWorld = {
     this.dressOn = on; for (const b of this.dress) b.off = !on; for (const m of this.dressMeshes) m.visible = on;
   },
 };
-const _cmH1 = {}, _cmH2 = {}, _cmC1 = [0, 0, 0], _cmC2 = [0, 0, 0], _cmA = [0, 0, 0], _cmB = [0, 0, 0];
+const _cmH1 = {}, _cmH2 = {}, _cmH3 = {}, _cmC1 = [0, 0, 0], _cmC2 = [0, 0, 0], _cmA = [0, 0, 0], _cmB = [0, 0, 0];
+// (Build 27) what an eye sees behind a part of you: straight on past you — but if that's only open space (a floor far off, the end of a
+// corridor), and there's a wall, a panel or a prop right beside you, THAT is what your outline is seen against. Pressed against a wall and
+// seen from along it, you're seen against the wall — not the floor at the far end of the corridor. Out in the open, nothing changes.
+CamoWorld.behindHit = function (ox, oy, oz, ux, uy, uz, d, out) {
+  const h = this.ray(ox, oy, oz, ux, uy, uz, d + 0.24, d + 45, out);
+  if (h && h.t - d < 1.2) return h; // (something right behind you — the wall, a prop, the floor at your feet: that's it)
+  const hl = Math.hypot(ux, uz) || 1, px = -uz / hl, pz = ux / hl, ax = ox + ux * d, ay = oy + uy * d, az = oz + uz * d; let best = null, bt = 1e9;
+  for (const sd of [-1, 1]) for (const off of [0.3, 0.5]) {
+    // a line to just beside you, at the same height: where it meets a surface within arm's reach of you, that's beside your outline
+    const tx = ax + px * sd * off, tz = az + pz * sd * off, ex = tx - ox, ey = ay - oy, ez = tz - oz, el = Math.hypot(ex, ey, ez);
+    const q = this.ray(ox, oy, oz, ex / el, ey / el, ez / el, Math.max(0.05, el - 1.2), el + 3, _cmH3);
+    if (!q || q.kind === 'floor' || q.kind === 'ceiling') continue;
+    // beside your outline: at most a couple of hands to the side of it (seen from along a wall, the wall meets that line a metre or two on)
+    const lat = Math.abs((q.x - ax) * px + (q.z - az) * pz), along = ((q.x - ax) * ux + (q.z - az) * uz) / hl;
+    if (lat > 0.65 || along < -1.2 || along > 3 || q.y < -0.01 || q.y > 2.6) continue;
+    const r = lat + Math.max(0, along) * 0.25;
+    if (r < bt) { bt = r; best = { t: d + 0.24 + r, x: q.x, y: q.y, z: q.z, st: q.st, kind: q.kind, room: q.room }; }
+  }
+  if (best) { Object.assign(out, best); return out; }
+  return h;
+};
 // where on a mech an eye looks: its head, its chest (with the arms), its legs — and how much of the mech each is
 const CM_SAMPLE = [{ y: 0.88, w: 0.24, part: 'head' }, { y: 0.6, w: 0.46, part: 'body' }, { y: 0.21, w: 0.3, part: 'legs' }];
 /* How a stickman at (ax, az), facing yaw, looks from an eye at o: per part — hidden behind something, or seen against what is behind it.
@@ -27413,6 +27477,7 @@ CamoWorld.palette = function (P, part, ax, az, yaw, ox, oz) {
 const CM_PAT_W = [0, 0.5, 0.5, 0.18, 0.5, 0.38];
 CamoWorld.surfPal = function (st) {
   if (st && st.pat && st.pat[2] > 0) { const [c1, c2, p] = st.pat; if (p === 4) return [[c1, 1 / 3], [CamoColor.mix(c1, c2, 0.5), 1 / 3], [c2, 1 / 3]]; return [[c1, 1 - CM_PAT_W[p]], [c2, CM_PAT_W[p]]]; }
+  if (st && st.pal && st.pal.length > 1) return st.pal; // (Build 27: a striped, checked or tiled texture — its own main colours)
   const q = st || this.GREY; return [[CamoColor.hex(q.r, q.g, q.b), 1]];
 };
 const _cmPS = { r: 0, g: 0, b: 0 }, _cmPC = [0, 0, 0], _cmC3 = [0, 0, 0], _cmML = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]], _cmBL = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
@@ -27426,7 +27491,7 @@ CamoWorld.look = function (ox, oy, oz, ax, az, crouch, P, out, yaw) {
     const ux = dx / d, uy = dy / d, uz = dz / d;
     if (d > 0.5 && this.ray(ox, oy, oz, ux, uy, uz, 0.05, d - 0.24, _cmH1)) continue; // (a desk, a doorframe, a crate in front of this part: it isn't seen)
     vis += s.w; dsum += d * s.w;
-    const h = this.ray(ox, oy, oz, ux, uy, uz, d + 0.24, d + 45, _cmH2);
+    const h = this.behindHit(ox, oy, oz, ux, uy, uz, d, _cmH2); // (Build 27: the wall right beside you counts)
     const ps = this.paintStatFor(P, s.part, ax, az, yaw, ox, oz);
     const pc = this.seen(ps, Lp, d, _cmC1);
     let bc, gap, con = 0;
@@ -27477,7 +27542,7 @@ CamoWorld.behind = function (ax, az, crouch) {
   for (const [ox, oz] of views) for (const s of CM_SAMPLE) {
     const oy = 1.9, py = s.y * hs, dx = ax - ox, dy = py - oy, dz = az - oz, d = Math.hypot(dx, dy, dz); if (d < 0.3) continue;
     const ux = dx / d, uy = dy / d, uz = dz / d, hid = d > 0.5 && !!this.ray(ox, oy, oz, ux, uy, uz, 0.05, d - 0.24, _cmH1);
-    const h = this.ray(ox, oy, oz, ux, uy, uz, d + 0.24, d + 45, _cmH2), st = h ? h.st : this.GREY, w = 1 / (0.5 + (h ? h.t - d : 45)); // (what's right behind you is behind you from most places; a floor far off, only along the wall)
+    const h = this.behindHit(ox, oy, oz, ux, uy, uz, d, _cmH2), st = h ? h.st : this.GREY, w = 1 / (0.5 + (h ? h.t - d : 45)); // (what's right behind you is behind you from most places; a floor far off, only along the wall)
     const A = all[s.part] || (all[s.part] = new Map()); A.set(st, (A.get(st) || 0) + w);
     if (!hid) { const T0 = tally[s.part] || (tally[s.part] = new Map()); T0.set(st, (T0.get(st) || 0) + w); }
   }
@@ -28121,7 +28186,10 @@ const Camo = {
     if (ox === undefined) { const f = p.forward(_cq1); ox = p.pos.x; oy = p.eyeY; oz = p.pos.z; dx = f.x; dy = f.y; dz = f.z; maxD = 7; }
     const h = CamoWorld.ray(ox, oy, oz, dx, dy, dz, 0.05, maxD || 7, _cqHit);
     if (!h || Math.hypot(h.x - p.pos.x, h.z - p.pos.z) > 8.5) { UI.msg('Nothing close enough to sample.', '', 1.6); Sound.abDeny(); return false; }
-    const pat = h.st.pat && h.st.pat[2] > 0 ? h.st.pat : null, hex = pat ? pat[0] : CamoColor.hex(h.st.r, h.st.g, h.st.b), busy = !pat && h.st.con > 9;
+    let pat = h.st.pat && h.st.pat[2] > 0 ? h.st.pat : null;
+    // (Build 27) a two-tone texture — hazard stripes, checker tiles, brick and mortar: you pick up its two colours as a pattern, not their muddy average
+    if (!pat && h.st.pal && h.st.pal.length >= 2 && h.st.pal[1][1] >= 0.25) { const c1 = h.st.pal[0][0], c2 = h.st.pal[1][0], A = CamoColor.rgb(c1), B = CamoColor.rgb(c2); if (CamoColor.de(CamoColor.lab(A[0], A[1], A[2], [0, 0, 0]), CamoColor.lab(B[0], B[1], B[2], [0, 0, 0])) > 18) pat = [c1, c2, h.st.pal[1][1] < 0.34 ? 3 : 1]; }
+    const hex = pat ? pat[0] : CamoColor.hex(h.st.r, h.st.g, h.st.b), busy = !pat && h.st.con > 9;
     this.sampled = { hex, con: h.st.con, kind: h.kind, room: h.room, pat };
     const got = pat ? [pat[0], pat[1]] : [hex]; // (Build 25: a painted pattern — you pick up both its colours, and the pattern)
     this.seen = got.concat((this.seen || []).filter(c => got.indexOf(c) < 0)).slice(0, 8);
@@ -28562,6 +28630,7 @@ const Camo = {
     UI.msg('You\'re a stickman, factory orange. The Warden wakes in ' + this.D().prep + ' seconds — and it looks for anything that doesn\'t belong.', 'story', 7);
     setTimeout(() => { if (live()) UI.msg(Keys.b('nextWeapon') + ': CHAMELEON SPRAY — back to a wall, crouch, and every part of you turns the colour behind it. [L] locks you in place to paint by hand: turn round yourself, drag on yourself to paint, click a wall for its colour. [Shift] camera · ' + Keys.b('pause') + ' pause.', '', 9); }, 4500);
     setTimeout(() => { if (live()) UI.msg('Match what\'s BEHIND you, keep still, stay low. Throw the ' + this.need + ' breakers, then get to ' + this.M.names.lift + '.', 'hint', 6); }, 13000);
+    setTimeout(() => { if (live()) UI.msg(Keys.b('emote') + ': EMOTES — wave to your team, dance, fake a faint. Moving stops one, and the loud ones can be heard.', 'hint', 5); }, 21000); // (Build 27)
   },
   /* ---- the end ---- */
   result(ev) {
@@ -30417,12 +30486,13 @@ const Hotel = {
   },
   fixOn(f, t) {
     if (!f.own) { f.on = false; return; }
+    f.powerOnAt = -100; // (Build 27: the hotel's lamps are simply on — they used to stutter all the time)
     const i = f.hroom;
     f.on = this.dressed && !this.dark.has(i) && !this.broken.has(i) && i <= this.fIdx + 1 && !this.allDark;
   },
   dim(f, b, t) {
-    const k = this.flick.get(f.hroom); if (k && k > Game.time) b *= Math.random() < 0.45 ? Math.random() * 0.2 : 1; // (it's coming: the lights stutter)
-    if (this.purple.has(f.hroom)) b *= 0.55 + 0.1 * Math.sin(t * 3 + f.pos.x);
+    const k = this.flick.get(f.hroom); if (k && k > Game.time) b *= settings.noFlash ? 0.45 : Math.random() < 0.45 ? Math.random() * 0.2 : 1; // (it's coming: the lights stutter — or, with REDUCE FLASHING, dim)
+    if (this.purple.has(f.hroom)) b *= 0.55;
     return b;
   },
   ambient() { return [0.34, FOG_BASE * 1.05]; },
@@ -30872,8 +30942,8 @@ const HEnt = {
     const rb = ev.kind === 'rebound';
     this.surge = { kind: ev.kind, t: 0, warn: +ev.w || 5, pts, cum, len: cum[cum.length - 1], s: 0, dir: 1, passes: rb ? clamp(ev.p | 0, 1, 6) : 1, pass: 0, pause: 0, sp: rb ? 26 : 32, pos: new T.Vector3(pts[0][0], 1.6, pts[0][1]), beg, end, rumbleT: 0 };
     for (let i = beg; i <= end + 1; i++) Hotel.flick.set(i, Game.time + this.surge.warn + 30);
-    Sound.flickerTick(); Game.dip = 0.6;
-    if (!this.saidSurge) { this.saidSurge = 1; setTimeout(() => { if (this.surge && Game.state === 'playing') UI.msg('The lights are flickering — something is coming. HIDE in a wardrobe!', 'warn', 4); }, 600); }
+    Sound.flickerTick();
+    if (!this.saidSurge) { this.saidSurge = 1; setTimeout(() => { if (this.surge && Game.state === 'playing') UI.msg((settings.noFlash ? 'The lights dim' : 'The lights are flickering') + ' — something is coming. HIDE in a wardrobe!', 'warn', 4); }, 600); }
   },
   surgeAt(S, s) { const P = S.pts, C = S.cum; let k = 1; while (k < C.length - 1 && C[k] < s) k++; const a = P[k - 1], b = P[k], t = clamp((s - C[k - 1]) / ((C[k] - C[k - 1]) || 1), 0, 1); return [lerp(a[0], b[0], t), lerp(a[1], b[1], t)]; },
   updSurge(dt) {
@@ -30892,7 +30962,7 @@ const HEnt = {
     M.children.forEach(c => { if (c.userData.smoke) { c.position.z = -0.4 - ((S.t * 3 + c.position.x) % 1.2); } });
     const d = Math.hypot(player.pos.x - x, player.pos.z - z); if (d < 26) { Game.shake(dt * (26 - d) * 0.12); if (d < 12 && !S.near) { S.near = 1; Sound.whoosh(); } } else S.near = 0;
     // lights in the rooms it passes
-    const ri = Hotel.idx(x, z); if (ri >= 0 && ri !== S.lastRoom) { S.lastRoom = ri; if (!S.broke) S.broke = new Set(); if (!S.broke.has(ri)) { S.broke.add(ri); for (const f of HT.fix[ri] || []) f.pop = 0.6; if (ri < S.end && Math.random() < 0.55) Hotel.broken.add(ri); } }
+    const ri = Hotel.idx(x, z); if (ri >= 0 && ri !== S.lastRoom) { S.lastRoom = ri; if (!S.broke) S.broke = new Set(); if (!S.broke.has(ri)) { S.broke.add(ri); if (ri < S.end && Math.random() < 0.55) Hotel.broken.add(ri); } }
     // (host) anyone it can see is dead
     if (!Net.isClient) for (const a of actors()) { if (a.dead || a.downed || a.hidden || a.outOfWorld) continue; const da = Math.hypot(a.pos.x - x, a.pos.z - z); if (da < 15 && losClear(x, z, a.pos.x, a.pos.z)) this.hurt(a, 999, 'h_' + S.kind); }
     if ((S.dir > 0 && S.s >= S.len) || (S.dir < 0 && S.s <= 0)) {
@@ -30901,7 +30971,7 @@ const HEnt = {
       S.dir = -S.dir; S.pause = 2.5 + Math.random() * 3; S.going = false; S.near = 0; Sound.rumble(0.9); UI.msg('It\'s coming back — stay hidden!', 'warn', 2.5);
     }
   },
-  endSurge() { const S = this.surge; if (!S) return; this.models.surge.visible = false; this.models.rebound.visible = false; for (let i = S.beg; i <= S.end + 1; i++) Hotel.flick.delete(i); this.surge = null; Game.dip = 0.3; if (Hotel.stats) Hotel.stats.hid++; },
+  endSurge() { const S = this.surge; if (!S) return; this.models.surge.visible = false; this.models.rebound.visible = false; for (let i = S.beg; i <= S.end + 1; i++) Hotel.flick.delete(i); this.surge = null; if (Hotel.stats) Hotel.stats.hid++; },
   /* ---------------- HISS ---------------- */
   hissTick(dt) { // (host) somebody standing in the dark long enough hears "psst"
     if (this.hiss) return; const D = htd();
@@ -31111,7 +31181,7 @@ const HEnt = {
       case 'hhb': if (ev.id === Hotel.me()) this.hbStart(); return true;
       case 'hcx': { const v = Hotel.invOf(ev.id); v.cross = Math.max(0, (v.cross || 0) - 1); const mine = ev.id === Hotel.me();
         if (/surge|rebound/.test(ev.w)) this.endSurge(); else if (ev.w === 'h_seek' && this.seek) this.seek.s = Math.max(0, this.seek.s - 12); else if (ev.w === 'h_blind' && this.blind) { this.blind.state = 'listen'; this.blind.listenT = 6; } else if (ev.w === 'h_hiss' && this.hiss) this.hiss.gone = this.hiss.t;
-        Sound.sting(true); Game.dip = 1; UI.msg(mine ? 'Your CRUCIFIX burns white — it shrieks and is gone. (The crucifix crumbles.)' : Hotel.nameOf(ev.id) + '\'s crucifix held it off!', 'good', 4); Hotel.invHud(true); return true; }
+        Sound.sting(true); UI.msg(mine ? 'Your CRUCIFIX burns white — it shrieks and is gone. (The crucifix crumbles.)' : Hotel.nameOf(ev.id) + '\'s crucifix held it off!', 'good', 4); Hotel.invHud(true); return true; }
     }
     return false;
   },
@@ -31308,7 +31378,7 @@ SCENES.hotelScare = {
     const k = Hotel.cause || '', M = HEnt.models, m = /surge/.test(k) ? M.surge : /rebound/.test(k) ? M.rebound : /seek|hands/.test(k) ? M.seek : /blind/.test(k) ? M.blind : /hiss/.test(k) ? M.hiss : M.surge;
     sc.m = m; sc.was = { vis: m.visible, pos: m.position.clone(), rot: m.rotation.clone() };
     sc.eye = new T.Vector3(player.pos.x, player.eyeY, player.pos.z); const f = player.forward(new T.Vector3()); f.y = 0; f.normalize(); sc.dir = f;
-    m.visible = true; Sound.jumpscare(); Cine.redFlash(0.8); Game.shake(1.5); $('fx-damage').style.opacity = 1; $('hud').classList.add('scare');
+    m.visible = true; Sound.jumpscare(); Cine.redFlash(0.25); Game.shake(1.5); $('fx-damage').style.opacity = 0.4; $('hud').classList.add('scare');
   },
   tick(sc, t) { if (t > 1.0 && !sc.black) { sc.black = 1; const fd = $('fx-fade'); fd.style.transition = 'none'; fd.style.opacity = 1; Game.flags.deathFade = true; sc.m.visible = false; } },
   cam(sc, t, fov) {
@@ -31317,7 +31387,7 @@ SCENES.hotelScare = {
     m.position.x += Math.sin(t * 50) * 0.02; lookQuat(camera.position, _he1.set(sc.eye.x + sc.dir.x * reach, sc.eye.y - 0.02, sc.eye.z + sc.dir.z * reach), camera.quaternion);
     Cine.snapFov = true; return fov - 6 - 10 * smooth(0, 0.2, t);
   },
-  light(sc) { flashFill.position.copy(camera.position); flashFill.position.y += 0.3; flashFill.distance = 4; flashFill.decay = 1.4; flashFill.intensity = sc.black ? 0 : 0.9 + Math.random() * 0.5; },
+  light(sc) { flashFill.position.copy(camera.position); flashFill.position.y += 0.3; flashFill.distance = 4; flashFill.decay = 1.4; flashFill.intensity = sc.black ? 0 : 1.1; },
   end(sc) { if (sc.m) { sc.m.visible = sc.was.vis; sc.m.position.copy(sc.was.pos); sc.m.rotation.copy(sc.was.rot); } $('hud').classList.remove('scare'); },
 };
 
@@ -31958,6 +32028,1397 @@ ACH.push(
   const ng0 = Game.newGame; Game.newGame = function () { Contracts.ran = false; return ng0.apply(this, arguments); };
   const r0 = Chars.roll; Chars.roll = function () { const r = r0.apply(this, arguments); try { Contracts.afterSpin(); } catch (e) { } return r; };
   if (Chars.rollMulti) { const m0 = Chars.rollMulti; Chars.rollMulti = function () { const r = m0.apply(this, arguments); try { Contracts.afterSpin(); } catch (e) { } return r; }; }
+}
+/* ================================================================== */
+/* Build 27: PANIC MODE — when it's close, you feel it                 */
+/* A threat score, worked out on your own screen from what's really     */
+/* there: how near the thing hunting this floor is, whether it can see  */
+/* you (a wall between you counts for a lot), whether it's chasing YOU, */
+/* searching the spot you're in, or staring at you in MECHA CAMO.       */
+/* As it climbs: a red pulse at the edges of the screen in time with a  */
+/* heartbeat, breathing when it's very close, a little camera tremor —  */
+/* then a breath out when it's gone. Get away from something that was  */
+/* right on top of you and it's a CLOSE CALL: a banner, a sound, and    */
+/* coins at the end of the run (at most 10 a run, and only for real     */
+/* danger — standing next to a monster that isn't after you doesn't     */
+/* count, and neither does doing it again a few seconds later).         */
+/* It is only feedback: it never slows you, never moves your camera     */
+/* where you don't want it, and never tells the monster anything.       */
+/* Settings: Panic effects (full / reduced / off), Heartbeat sound,     */
+/* Camera shake.                                                        */
+/* ================================================================== */
+const PANIC_CD = 25, PANIC_MAX = 10;
+const Panic = {
+  lv: 0, raw: 0, ep: null, beatT: 0, beatAt: -9, closeAt: -99, el: null, banner: null, bannerT: 0, n: 0, lastCause: '',
+  init() {
+    if (this.el) return;
+    const st = document.createElement('style');
+    st.textContent = '#panic-fx{position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 52%,rgba(90,0,0,.55) 82%,rgba(40,0,0,.85) 100%);mix-blend-mode:multiply}'
+      + '#closecall{position:fixed;left:50%;top:15%;transform:translate(-50%,0) scale(.9);pointer-events:none;z-index:9;opacity:0;font:800 30px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.32em;color:#fff3c8;text-shadow:0 0 18px rgba(255,180,60,.75),0 2px 0 #000;transition:opacity .25s,transform .35s cubic-bezier(.2,1.6,.4,1)}'
+      + '#closecall small{display:block;margin-top:8px;font:600 11px/1.3 "Helvetica Neue",Arial,sans-serif;letter-spacing:.24em;color:#ffd77a;text-align:center}'
+      + '#closecall.on{opacity:1;transform:translate(-50%,0) scale(1)}';
+    document.head.appendChild(st);
+    this.el = document.createElement('div'); this.el.id = 'panic-fx'; document.body.appendChild(this.el);
+    this.banner = document.createElement('div'); this.banner.id = 'closecall'; document.body.appendChild(this.banner);
+  },
+  reset() { this.lv = 0; this.raw = 0; this.ep = null; this.beatT = 0; this.beatAt = -9; this.closeAt = -99; this.n = 0; this.bannerT = 0; if (this.el) this.el.style.opacity = 0; if (this.banner) this.banner.classList.remove('on'); },
+  active() { return Game.state === 'playing' && !player.dead && !Cine.locks() && Game.mode !== 'hunt'; }, // (THE HUNT: you're the monster)
+  // what's hunting on this floor, as { x, z, chase (after you), look (its eye on you), inv (searching right here) }
+  threats() {
+    const out = [], me = Net.myId, p = player;
+    for (const F of Powers.foes()) {
+      if (!F || !F.pos) continue;
+      const isW = F === Monster;
+      const chase = isW && (F.state === 'HUNT' || F.state === 'ATTACK') && (Net.isClient ? F.targetId === me : F.target === p);
+      const atk = isW && F.state === 'ATTACK' && (Net.isClient ? F.targetId === me : F.target === p);
+      const inv = isW && (F.state === 'INVESTIGATE' || F.state === 'SEARCH') && (Net.isClient ? Math.hypot(F.pos.x - p.pos.x, F.pos.z - p.pos.z) < 7 : F.searchCenter && Math.hypot(F.searchCenter.x - p.pos.x, F.searchCenter.z - p.pos.z) < 4);
+      out.push({ x: F.pos.x, z: F.pos.z, chase, atk, inv, k: F === Sleeper ? 0.55 : F.isCreature ? 0.8 : 1 });
+    }
+    if (typeof Camo !== 'undefined' && Camo.on && Camo.watched && Camo.watched()) { const M = Monster; out.push({ x: M.pos.x, z: M.pos.z, look: true, k: 1 }); }
+    if (typeof Hotel !== 'undefined' && Hotel.on && Hotel.on() && typeof HEnt !== 'undefined') { // (the Holloway's things)
+      const S = HEnt.surge; if (S && S.t >= S.warn && S.pos) out.push({ x: S.pos.x, z: S.pos.z, chase: !p.hidden, k: 1 });
+      const K = HEnt.seek; if (K && K.pos) out.push({ x: K.pos.x, z: K.pos.z, chase: true, k: 1 });
+      const B = HEnt.blind; if (B && B.pos) out.push({ x: B.pos.x, z: B.pos.z, inv: B.state === 'check', k: 0.9 });
+    }
+    return out;
+  },
+  score() {
+    const p = player; let best = 0, cause = '';
+    if (p.downed || (typeof Camo !== 'undefined' && Camo.on && Camo.held && Camo.held(p))) return { s: 0, cause: '' }; // (caught or down: there's nothing left to be afraid of)
+    for (const T0 of this.threats()) {
+      const d = Math.hypot(T0.x - p.pos.x, T0.z - p.pos.z), los = d < 30 && losClear(T0.x, T0.z, p.pos.x, p.pos.z);
+      let s = d < 2 ? 1 : d < 14 ? 1 - (d - 2) / 12 * 0.85 : d < 22 ? 0.15 * (1 - (d - 14) / 8) : 0; // (close: a lot; across a big room: a little)
+      if (!los) s *= d < 7 ? 0.45 : 0; // (behind a wall it hardly counts — and far behind one, not at all)
+      if (T0.chase && d < 24) { s = Math.max(s, 0.62 + 0.38 * clamp(1 - d / 14, 0, 1)); cause = 'chase'; }
+      if (T0.atk) s = 1;
+      if (T0.inv) { s = Math.max(s, 0.55 + 0.3 * clamp(1 - d / 8, 0, 1)); cause = cause || 'search'; }
+      if (T0.look && d < 18) { s = Math.max(s, 0.7); cause = cause || 'look'; }
+      if (p.hidden && d < 4) s = Math.max(s, 0.6); // (in a locker, and it's right outside)
+      s *= T0.k; if (s > best) { best = s; if (!cause) cause = d < 4 ? 'near' : 'far'; }
+    }
+    return { s: clamp(best, 0, 1), cause };
+  },
+  update(dt) {
+    if (!this.el) this.init();
+    if (!this.active()) { this.lv = damp(this.lv, 0, 4, dt); this.draw(dt); this.ep = null; return; }
+    const { s, cause } = this.score(); this.raw = s;
+    this.lv = s > this.lv ? damp(this.lv, s, 5, dt) : damp(this.lv, s, 0.9, dt); // (up fast, down slowly)
+    // an episode: it started, it peaked, and it's over — was it a close call?
+    if (s > 0.6) { if (!this.ep) this.ep = { t0: Game.time, peak: 0, chased: false, near: 99 }; const E = this.ep; E.peak = Math.max(E.peak, s); if (cause === 'chase' || cause === 'search' || cause === 'look') E.chased = true; for (const T0 of this.threats()) E.near = Math.min(E.near, Math.hypot(T0.x - player.pos.x, T0.z - player.pos.z)); }
+    else if (this.ep && s < 0.2) {
+      const E = this.ep; this.ep = null;
+      if (settings.heartbeat !== false && E.peak > 0.7) Sound.breath && Sound.breath(0.15); // (the breath out)
+      if (Game.mode !== 'camo' && E.peak >= 0.85 && (E.chased || E.near < 3) && Game.time - E.t0 > 1.2 && Game.time - this.closeAt > PANIC_CD && this.n < PANIC_MAX && !player.dead && !player.downed) {
+        this.n++; this.closeAt = Game.time; Chars.stats.close = (Chars.stats.close || 0) + 1;
+        this.show(E.near < 99 ? 'it was ' + E.near.toFixed(1) + ' m away' : 'you got away');
+        if (this.n >= 3) Goals.unlock('pn_three');
+      }
+    }
+    this.sound(dt); this.draw(dt);
+  },
+  // the heartbeat, louder and faster with the danger (the breathing is the guard's own: it already gets heavier as it comes closer)
+  sound(dt) {
+    if (settings.heartbeat === false || settings.muted) return;
+    const L = this.lv;
+    if (L > 0.22) { this.beatT -= dt; if (this.beatT <= 0) { const bpm = 64 + L * 86; this.beatT = 60 / bpm; this.beatAt = Game.time; Sound.thump(clamp((L - 0.15) * 0.75, 0.05, 0.7)); } } else this.beatT = 0.4;
+  },
+    draw(dt) {
+    const fx = settings.panicFx || 'full', on = fx !== 'off';
+    const L = this.lv, pulse = 0.8 + 0.2 * Math.exp(-Math.max(0, Game.time - (this.beatAt || -9)) * 7) // (a throb on each beat);
+    const op = on ? clamp((L - 0.2) / 0.8, 0, 1) * (fx === 'reduced' ? 0.45 : 0.9) * pulse : 0;
+    if (Math.abs((this._op || 0) - op) > 0.01) { this._op = op; this.el.style.opacity = op.toFixed(3); }
+    if (fx === 'full' && settings.shake !== false && L > 0.85 && Game.state === 'playing') Game.shakeAmt = Math.max(Game.shakeAmt, (L - 0.85) * 0.35); // (a tremor, never a shove)
+    if (this.bannerT > 0) { this.bannerT -= dt; if (this.bannerT <= 0) this.banner.classList.remove('on'); }
+  },
+  // CLOSE CALL: a banner up top for a moment, a sound — it never covers the middle of the screen
+  show(sub, quiet) {
+    if (!this.banner) this.init();
+    this.banner.innerHTML = 'CLOSE CALL<small>' + escHtml(String(sub || '').toUpperCase()) + '</small>';
+    this.banner.classList.remove('on'); void this.banner.offsetWidth; this.banner.classList.add('on'); this.bannerT = 1.8;
+    if (!quiet) Sound.coin && Sound.coin(); Sound.whoosh && Sound.whoosh();
+  },
+};
+
+ACH.push({ id: 'pn_three', name: 'Heart in Mouth', desc: 'Three CLOSE CALLS in one run.' });
+
+/* ---------------- the hooks ---------------- */
+{
+  const gu0 = Game.update; Game.update = function (dt) { const r = gu0.apply(this, arguments); try { Panic.update(dt); } catch (e) { if (!Panic.err) { Panic.err = e; console.error('Panic', e); } } return r; }; // (never takes the game down with it — but it doesn't hide either)
+  const ng0 = Game.newGame; Game.newGame = function () { Panic.reset(); return ng0.apply(this, arguments); };
+  // Heartbeat off (Settings): no heartbeat anywhere — not this one, not Bob's, not a teammate going down
+  const th0 = Sound.thump; Sound.thump = function () { if (settings.heartbeat === false) return; Panic.beats = (Panic.beats || 0) + 1; return th0.apply(this, arguments); };
+  // MECHA CAMO: its close calls get the banner too (it counts them its own way: right there, and it never saw you);
+  // and its own near-thump stands down — this is the heartbeat now
+  if (typeof Camo !== 'undefined') {
+    const nc0 = Camo.nearCheck; Camo.nearCheck = function (dt) {
+      const before = this.stats ? this.stats.close || 0 : 0, nb = this.nearSt, mn = nb ? nb.min : 99;
+      const th1 = Sound.thump; Sound.thump = () => { };
+      try { nc0.apply(this, arguments); } finally { Sound.thump = th1; }
+      if (this.stats && (this.stats.close || 0) > before) { Panic.show(mn < 99 ? 'it was ' + mn.toFixed(1) + ' m away — and never saw you' : 'it never saw you', true); if (this.stats.close >= 3) Goals.unlock('pn_three'); }
+    };
+  }
+}
+/* ================================================================== */
+/* Build 27: STICKMAN PERSONALITY — MECHA CAMO                         */
+/* The stickmen act like someone's in there:                            */
+/*  - they look round at it when it's near (and shake), at a sound      */
+/*    close by, at a teammate's cage when they're caught (hands to the  */
+/*    head), and about the place when they've been standing a while;    */
+/*  - a dead stop from a sprint is a stumble and a catch;               */
+/*  - in a cage they rattle the bars now and then;                      */
+/*  - getting out at the lift is a little celebration first.            */
+/* EMOTES: [Z] (Settings → Controls) opens the wheel — eight of them;   */
+/*  1–8, a click, or (mouse captured) push the mouse toward one and let */
+/*  go of Z. Esc closes it. Everyone sees them (the host passes them    */
+/*  on). They never hold you: move and it stops. The loud ones (dance,  */
+/*  laugh, celebrate, the faint's thud) can be HEARD — and the big ones */
+/*  count as moving if it's looking your way. All of it is the model    */
+/*  only: the camo score, hitboxes, speed and camera are never touched. */
+/* ================================================================== */
+const EMOTES = [ // dur s; loud: how far it's heard (m); big: the Warden's eye sees you move
+  { id: 'wave', name: 'Wave', ico: '👋', dur: 2.2, loud: 0, big: 1 },
+  { id: 'dance', name: 'Dance', ico: '💃', dur: 4.6, loud: 7, big: 1 },
+  { id: 'laugh', name: 'Laugh', ico: '😂', dur: 2.4, loud: 9, big: 0 },
+  { id: 'point', name: 'Point', ico: '👉', dur: 2.0, loud: 0, big: 0 },
+  { id: 'cheer', name: 'Celebrate', ico: '🎉', dur: 2.6, loud: 8, big: 1 },
+  { id: 'facepalm', name: 'Facepalm', ico: '🤦', dur: 2.2, loud: 0, big: 0 },
+  { id: 'nervous', name: 'Nervous look', ico: '👀', dur: 3.2, loud: 0, big: 0 },
+  { id: 'faint', name: 'Fake faint', ico: '😵', dur: 4.4, loud: 5, big: 1 },
+];
+const EMO_N = EMOTES.length;
+const Emote = {
+  st: new Map(), // actor id -> { e, t0, x, z }
+  snd: null, cages: new Set(), outs: new Map(), last: new Map(), wheel: null, open: false, openAt: 0, vx: 0, vy: 0, sel: -1, el: null, reqAt: -9,
+  on() { return Game.mode === 'camo' && typeof Camo !== 'undefined' && Camo.on && Game.state === 'playing'; },
+  reset() { this.st.clear(); this.cages.clear(); this.outs.clear(); this.last.clear(); this.snd = null; this.shock = null; this.close(); },
+  of(id) { const S = this.st.get(id); if (!S) return null; const E = EMOTES[S.e]; return Game.time - S.t0 < E.dur ? S : null; },
+  def(id) { const S = this.of(id); return S ? EMOTES[S.e] : null; },
+  /* ---- playing one ---- */
+  can() { const p = player; return this.on() && !p.dead && !Camo.held(p) && !Camo.over && !Camo.menu && !Cine.locks() && !Camo.out.has(Camo.me()); },
+  pick(i) { // you chose one on the wheel
+    this.close(); i = i | 0; if (i < 0 || i >= EMO_N || !this.can()) return false;
+    if (Game.time - this.reqAt < 0.6) return false; this.reqAt = Game.time; // (no spamming)
+    const me = Camo.me(), E = EMOTES[i];
+    if (Net.isClient) { Net.request('emo', i); this.start(me, i); } // (yours plays at once; the host tells everyone else)
+    else Game.emit({ k: 'emo', by: me, e: i });
+    if (E.loud) Game.noise(player.pos, E.loud, 'player'); // (it hears a dance)
+    return true;
+  },
+  start(id, i) {
+    const E = EMOTES[i]; if (!E) return;
+    const S0 = this.of(id); if (S0 && S0.e === i && Game.time - S0.t0 < 0.8) return; // (your own coming back from the host)
+    const a = id === Camo.me() ? player : Net.remotes.get(id); if (!a || !a.pos) return;
+    const S = { e: i, t0: Game.time, x: a.pos.x, z: a.pos.z, tap: 0, fell: false }; this.st.set(id, S);
+    const at = new T.Vector3(a.pos.x, 0.6, a.pos.z);
+    if (E.id === 'laugh') Sound.laugh && Sound.laugh(at);
+    else if (E.id === 'cheer') Sound.clap && Sound.clap(at, 4);
+  },
+  // the host: a guest asked
+  remote(r, i) {
+    if (!this.on() || !r || r.dead || Camo.held(r) || Camo.out.has(r.id)) return;
+    i = i | 0; if (i < 0 || i >= EMO_N) return;
+    if (Game.time - (r._emoAt || -9) < 0.5) return; r._emoAt = Game.time;
+    Game.emit({ k: 'emo', by: r.id, e: i });
+  },
+  event(ev) { if (!this.on()) return; const id = ev.by | 0, i = ev.e | 0; if (i >= 0 && i < EMO_N) this.start(id, i); },
+  /* ---- every frame ---- */
+  update(dt) {
+    if (!this.on()) { if (this.open) this.close(); return; }
+    const me = Camo.me();
+    for (const [id, S] of this.st) {
+      const E = EMOTES[S.e], u = Game.time - S.t0;
+      const a = id === me ? player : Net.remotes.get(id);
+      const sp = !a ? 9 : a === player ? Math.hypot(player.vel.x, player.vel.z) : (a.speed || 0);
+      if (u > E.dur || !a || sp > 0.9 || Camo.held(a) || Camo.out.has(id)) { this.st.delete(id); continue; } // (move and it stops: an emote never holds you)
+      const d = Math.hypot(a.pos.x - player.pos.x, a.pos.z - player.pos.z);
+      if (E.id === 'dance' && d < 24) { S.tap -= dt; if (S.tap <= 0) { S.tap = 0.45; Sound.tap && Sound.tap(new T.Vector3(a.pos.x, 0.1, a.pos.z), 0.9); } }
+      if (E.id === 'faint' && !S.fell && u > 0.75) { S.fell = true; if (d < 24) Sound.bodyFall && Sound.bodyFall(new T.Vector3(a.pos.x, 0.1, a.pos.z)); }
+    }
+    // a teammate caught: everyone looks
+    for (const [id, s] of Camo.caught) if (!this.cages.has(id)) { this.cages.add(id); const c = Camo.cages[s]; if (c) this.shock = { id, x: c.x, z: c.z, t: Game.time }; }
+    for (const id of [...this.cages]) if (!Camo.caught.has(id)) this.cages.delete(id);
+    // out at the lift: a moment of celebration where they were standing
+    for (const id of Camo.out) if (!this.outs.has(id)) { const L = this.last.get(id); this.outs.set(id, L ? { x: L.x, z: L.z, yaw: L.yaw, t: Game.time } : null); }
+    if (this.open && performance.now() - this.openAt > 7000) this.close(); // (left open: it goes)
+  },
+  heard(pos) { if (!this.on() || !pos || !Number.isFinite(pos.x)) return; this.snd = { x: pos.x, z: pos.z, t: Game.time }; },
+  /* ---- the pose: on top of the stickman's own walk / crouch / paint / cage pose ---- */
+  pose(g, s, dt) {
+    const U = g.userData, t = Game.time, id = this.idOfFig(g); if (id === null) return;
+    if (!s.caught) this.last.set(id, { x: s.x, z: s.z, yaw: s.yaw });
+    if (g.rotation.order !== 'YXZ') g.rotation.order = 'YXZ'; // (so a faint falls over the stickman's own heels)
+    const S = this.of(id), E = S ? EMOTES[S.e] : null, u = S ? t - S.t0 : 0;
+    U.ew = damp(U.ew || 0, E ? 1 : 0, E ? 12 : 7, dt); if (U.ew > 0.01 && E) U.eLast = S.e; // (fades in, and out)
+    const walk = clamp(U.spd / 2.4, 0, 1), still = 1 - walk;
+    /* -- the personality: what it looks at, how it stands -- */
+    if (!s.caught) {
+      const M = Monster; let fear = 0, look = null;
+      if (M.active && !Camo.over) { const d = Math.hypot(M.pos.x - s.x, M.pos.z - s.z); if (d < 13) { const los = losClear(M.pos.x, M.pos.z, s.x, s.z); fear = clamp(1 - d / 10, 0, 1) * (los ? 1 : 0.35); if (los || d < 6) look = [M.pos.x, M.pos.z, 1]; } }
+      if (!look && this.shock && t - this.shock.t < 2.2 && this.shock.id !== id) look = [this.shock.x, this.shock.z, 1];
+      if (!look && this.snd && t - this.snd.t < 1.6 && Math.hypot(this.snd.x - s.x, this.snd.z - s.z) < 16) look = [this.snd.x, this.snd.z, 0.85];
+      U.stillT = still > 0.8 && !s.paint ? (U.stillT || 0) + dt : 0;
+      let ly = 0, lw = 0;
+      if (look) { let rel = Math.atan2(-(look[0] - s.x), -(look[1] - s.z)) - s.yaw; rel = Math.atan2(Math.sin(rel), Math.cos(rel)); ly = clamp(rel, -1.15, 1.15); lw = look[2] * (0.4 + 0.6 * still); }
+      else if (U.stillT > 4) { ly = Math.sin(t * 0.55 + s.x) * 0.75 * Math.max(0, Math.sin(t * 0.21 + s.z)); lw = 0.7; } // (been standing a while: a look about)
+      U.ly = damp(U.ly || 0, ly * lw, 5, dt); U.fear = damp(U.fear || 0, fear, 4, dt);
+      U.neck.rotation.y += U.ly * 0.8; U.torso.rotation.y += U.ly * 0.22;
+      const f = U.fear * still;
+      if (f > 0.05) { // shaking, hunched, knees going
+        U.arms.forEach((A, i) => { const sd = i ? 1 : -1; if (i === 1 && U.pk > 0.02) return; A.sh.rotation.z -= sd * 0.08 * f; A.sh.rotation.x += 0.25 * f + Math.sin(t * 37 + i * 2) * 0.05 * f; A.el.rotation.x += 0.7 * f; });
+        U.neck.rotation.z += Math.sin(t * 41) * 0.03 * f; U.neck.rotation.x -= 0.12 * f;
+        U.legs.forEach((L, i) => { L.hp.rotation.x += 0.12 * f; L.kn.rotation.x -= 0.24 * f; }); U.hips.position.y -= 0.02 * f + Math.abs(Math.sin(t * 33)) * 0.004 * f;
+      }
+      // a teammate caught, right there: hands to the head
+      if (this.shock && this.shock.id !== id && t - this.shock.t < 1.4 && U.spd < 1.6) { const k = Math.sin(Math.PI * clamp((t - this.shock.t) / 1.4, 0, 1)); this.armsTo(U, k, 2.45, 0.55, 2.3); }
+      // a dead stop out of a sprint: a stumble
+      if (s.spd > 3.4) U.runAt = t; // (a sprint, and a moment later standing: the brakes went on hard)
+      else if (s.spd < 0.6 && t - (U.runAt || -9) < 0.45 && t - (U.stLast || -9) > 6) { U.stLast = t; U.stT = t; U.runAt = -9; }
+      if (U.stT !== undefined && t - U.stT < 0.75) { const k = Math.sin(Math.PI * (t - U.stT) / 0.75);
+        U.torso.rotation.x -= 0.5 * k; U.arms.forEach((A, i) => { A.sh.rotation.x = lerp(A.sh.rotation.x, 1.5 + Math.sin(t * 19 + i * Math.PI) * 1.3, k); A.el.rotation.x = lerp(A.el.rotation.x, 0.3, k); });
+        U.legs[1].hp.rotation.x += 0.55 * k; U.legs[1].kn.rotation.x -= 0.25 * k; }
+    } else { // caught: every few seconds, up and at the bars
+      const c = (t + (id * 1.7)) % 4.5, k = c < 1.1 ? Math.sin(Math.PI * c / 1.1) : 0;
+      if (k > 0) { U.hips.position.y = lerp(U.hips.position.y, 0.4, k); U.torso.rotation.x = lerp(U.torso.rotation.x, 0.05, k); U.neck.rotation.x = lerp(U.neck.rotation.x, 0.1, k);
+        U.legs.forEach(L => { L.hp.rotation.x = lerp(L.hp.rotation.x, 0, k); L.kn.rotation.x = lerp(L.kn.rotation.x, 0, k); });
+        U.arms.forEach((A, i) => { A.sh.rotation.x = lerp(A.sh.rotation.x, 2.6 + Math.sin(t * 26 + i) * 0.12, k); A.sh.rotation.z = lerp(A.sh.rotation.z, (i ? 1 : -1) * 0.25, k); A.el.rotation.x = lerp(A.el.rotation.x, 0.45, k); }); }
+    }
+    /* -- the emote -- */
+    const w = U.ew; if (w < 0.01 || s.caught) { g.rotation.x = 0; return; }
+    const EE = EMOTES[E ? S.e : (U.eLast | 0)];
+    this.emotePose(U, EE.id, E ? u : EE.dur, t, w, g);
+  },
+  armsTo(U, k, x, z, el) { U.arms.forEach((A, i) => { const sd = i ? 1 : -1; A.sh.rotation.x = lerp(A.sh.rotation.x, x, k); A.sh.rotation.z = lerp(A.sh.rotation.z, sd * z, k); A.el.rotation.x = lerp(A.el.rotation.x, el, k); }); },
+  set(o, x, y, z, w) { const r = o.rotation; if (x !== null) r.x = lerp(r.x, x, w); if (y !== null) r.y = lerp(r.y, y, w); if (z !== null) r.z = lerp(r.z, z, w); },
+  emotePose(U, id, u, t, w, g) {
+    const A0 = U.arms[0], A1 = U.arms[1], L0 = U.legs[0], L1 = U.legs[1], S = this.set;
+    g.rotation.x = 0;
+    switch (id) {
+      case 'wave': S(A1.sh, 0.25, 0, 2.45 + Math.sin(t * 11) * 0.35, w); S(A1.el, 0.55, null, null, w); S(U.neck, null, null, Math.sin(t * 3) * 0.12, w); break;
+      case 'dance': { const b = Math.sin(t * 7), c = Math.cos(t * 7);
+        U.hips.position.y += Math.abs(b) * 0.05 * w; S(U.torso, 0.05, Math.sin(t * 3.5) * 0.45, b * 0.08, w); S(U.neck, 0.1, -Math.sin(t * 3.5) * 0.3, -b * 0.1, w);
+        S(A0.sh, 1.2 + b * 0.9, 0, -0.55, w); S(A1.sh, 1.2 - b * 0.9, 0, 0.55, w); S(A0.el, 1.2, null, null, w); S(A1.el, 1.2, null, null, w);
+        S(L0.hp, Math.max(0, b) * 0.4, 0, -0.05, w); S(L0.kn, -Math.max(0, b) * 0.7, null, null, w); S(L1.hp, Math.max(0, -b) * 0.4, 0, 0.05, w); S(L1.kn, -Math.max(0, -b) * 0.7, null, null, w);
+        g.rotation.y += Math.sin(t * 1.75) * 0.5 * w; break; }
+      case 'laugh': { const k = Math.sin(t * 22) * 0.06, fw = u > 1.3 ? clamp((u - 1.3) * 3, 0, 1) : 0; // (back, then doubled over)
+        S(U.torso, lerp(0.22, -0.45, fw) + k, 0, 0, w); S(U.neck, lerp(0.35, 0.25, fw), 0, 0, w); this.armsTo(U, w, lerp(0.55, 0.9, fw), 0.12, lerp(1.7, 0.6, fw)); break; }
+      case 'point': S(A1.sh, 1.52, 0, 0.04, w); S(A1.el, 0.02, null, null, w); S(U.torso, null, -0.18, null, w); S(U.neck, 0.05, 0.1, null, w); break;
+      case 'cheer': { const j = Math.abs(Math.sin(t * 7)); g.position.y += j * 0.16 * w; this.armsTo(U, w, 0.15, 2.75 + Math.sin(t * 14) * 0.15, 0.3); S(L0.kn, -0.6 * j, null, null, w); S(L1.kn, -0.6 * j, null, null, w); S(L0.hp, 0.3 * j, null, null, w); S(L1.hp, 0.3 * j, null, null, w); S(U.neck, 0.3, null, null, w); break; }
+      case 'facepalm': S(A1.sh, 2.25, 0, -0.5, w); S(A1.el, 2.15, null, null, w); S(U.neck, -0.38, Math.sin(t * 5) * 0.16, 0, w); S(U.torso, -0.12, null, null, w); break;
+      case 'nervous': S(U.neck, 0.04, Math.sin(t * 2.6) * 1.0, Math.sin(t * 40) * 0.02, w); this.armsTo(U, w, 0.55, 0.04, 1.55); U.hips.position.y -= 0.025 * w;
+        S(L0.hp, 0.22, null, null, w); S(L1.hp, 0.22, null, null, w); S(L0.kn, -0.42, null, null, w); S(L1.kn, -0.42, null, null, w); break;
+      case 'faint': { const k = clamp((u - 0.3) / 0.45, 0, 1), e = k * k * (3 - 2 * k), up = u > 3.6 ? clamp((u - 3.6) / 0.8, 0, 1) : 0, f = e * (1 - up); // (sways, keels over backwards, lies there, gets up)
+        g.rotation.x = (Math.PI / 2 - 0.06) * f * w + (u < 0.3 ? Math.sin(u * 20) * 0.04 * w : 0); g.position.y += 0.07 * f * w;
+        this.armsTo(U, w * Math.max(f, u < 0.3 ? 0.5 : 0), u < 0.3 ? 2.2 : 0.2, 1.25, u < 0.3 ? 2.2 : 0.2); S(L0.hp, 0.05, 0, -0.12, w * f); S(L1.hp, 0.05, 0, 0.12, w * f); S(L0.kn, 0, null, null, w * f); S(L1.kn, 0, null, null, w * f); S(U.neck, 0.2, 0.5, null, w * f); break; }
+    }
+  },
+  idOfFig(g) { if (g === Camo.myFig) return Camo.me(); for (const [id, f] of Camo.figs) if (f === g) return id; return null; },
+  // the moment you're out at the lift: a jump for joy where you stood, then gone
+  drawOuts(dt) {
+    for (const [id, O] of this.outs) {
+      if (!O || Game.time - O.t > 1.8) continue;
+      const g = id === Camo.me() ? Camo.myFig : Camo.figs.get(id); if (!g) continue;
+      if (id === Camo.me() && !(Camo.tpK > 0.3)) continue; // (first person: you don't see yourself)
+      g.visible = true; poseMech0(g, { x: O.x, z: O.z, yaw: O.yaw, spd: 0, crouch: false, paint: false, caught: false, still: true }, dt);
+      const U = g.userData; U.ew = 1;
+      if (typeof Cos !== 'undefined') { const eq = Cos.eqOf(id); g.userData.cosEq = eq; Cos.dress(g, eq, false); if (Cos.victory(eq, g, U, Game.time - O.t, scene)) { Cos.animate(g, { x: O.x, z: O.z, yaw: O.yaw, spd: 0 }, dt, scene, false); continue; } } // (Build 27: your victory, if you've one on)
+      this.emotePose(U, 'cheer', Game.time - O.t, Game.time, 1, g);
+    }
+  },
+  /* ---- the wheel ---- */
+  build() {
+    if (this.el) return;
+    const st = document.createElement('style');
+    st.textContent = '#emote-wheel{position:fixed;left:50%;top:50%;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;z-index:30;display:none;background:radial-gradient(circle,rgba(10,12,16,.55) 0 32%,rgba(10,12,16,.82) 33% 100%);box-shadow:0 0 0 2px rgba(255,255,255,.12),0 8px 40px rgba(0,0,0,.6);font-family:"Helvetica Neue",Arial,sans-serif;user-select:none}'
+      + '#emote-wheel.on{display:block;animation:emoIn .14s ease-out}@keyframes emoIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}'
+      + '#emote-wheel .em{position:absolute;width:70px;height:62px;margin:-31px 0 0 -35px;border-radius:12px;text-align:center;color:#d8dde6;cursor:pointer;transition:background .1s,transform .1s}'
+      + '#emote-wheel .em b{display:block;font-size:24px;line-height:32px;font-weight:400}#emote-wheel .em span{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;line-height:12px}#emote-wheel .em i{position:absolute;top:2px;left:6px;font-size:9px;font-style:normal;opacity:.55}'
+      + '#emote-wheel .em.sel,#emote-wheel .em:hover{background:rgba(255,200,90,.22);color:#fff;transform:scale(1.08)}#emote-wheel .em.loud span:after{content:" ♪";color:#ffcf6a}'
+      + '#emote-wheel .mid{position:absolute;left:50%;top:50%;width:96px;margin:-22px 0 0 -48px;text-align:center;color:#9aa3b2;font-size:10px;line-height:13px;letter-spacing:.04em}#emote-wheel .mid b{display:block;color:#fff;font-size:12px;letter-spacing:.12em}';
+    document.head.appendChild(st);
+    const el = document.createElement('div'); el.id = 'emote-wheel';
+    el.innerHTML = EMOTES.map((E, i) => { const a = -Math.PI / 2 + i * Math.PI * 2 / EMO_N, x = 150 + Math.cos(a) * 108, y = 150 + Math.sin(a) * 108; return '<div class="em' + (E.loud ? ' loud' : '') + '" data-i="' + i + '" style="left:' + x.toFixed(0) + 'px;top:' + y.toFixed(0) + 'px"><i>' + (i + 1) + '</i><b>' + E.ico + '</b><span>' + E.name + '</span></div>'; }).join('')
+      + '<div class="mid"><b>EMOTES</b>1–8 · click<br>Esc to close<br>♪ can be heard</div>';
+    el.addEventListener('mousedown', e => { const b = e.target.closest('.em'); e.preventDefault(); e.stopPropagation(); if (b) this.pick(+b.dataset.i); });
+    document.body.appendChild(el); this.el = el;
+  },
+  toggle() { if (this.open) this.close(); else this.show(); },
+  show() { if (!this.can()) return; this.build(); this.open = true; this.openAt = performance.now(); this.vx = this.vy = 0; this.sel = -1; this.el.classList.add('on'); this.mark(); Sound.ui && Sound.ui(); },
+  close() { this.open = false; if (this.el) this.el.classList.remove('on'); },
+  mark() { if (!this.el) return; this.el.querySelectorAll('.em').forEach((b, i) => b.classList.toggle('sel', i === this.sel)); },
+  aim(mx, my) { // (mouse captured) push toward one
+    this.vx = clamp(this.vx + mx, -140, 140); this.vy = clamp(this.vy + my, -140, 140);
+    const L = Math.hypot(this.vx, this.vy); if (L > 140) { this.vx *= 140 / L; this.vy *= 140 / L; }
+    if (L < 28) { if (this.sel !== -1) { this.sel = -1; this.mark(); } return; }
+    let a = Math.atan2(this.vy, this.vx) + Math.PI / 2; if (a < 0) a += Math.PI * 2;
+    const s = Math.round(a / (Math.PI * 2 / EMO_N)) % EMO_N; if (s !== this.sel) { this.sel = s; this.mark(); }
+  },
+};
+let poseMech0 = poseMech;
+
+/* ---------------- the hooks ---------------- */
+{
+  // the pose: the stickman's own, then the personality and the emote on top
+  poseMech = function (g, s, dt) { poseMech0(g, s, dt); if (Emote.on()) { try { Emote.pose(g, s, dt); } catch (e) { if (!Emote.err) { Emote.err = e; console.error('Emote', e); } } } };
+  const cd0 = Camo.draw; Camo.draw = function (dt) { const r = cd0.apply(this, arguments); if (Emote.on()) Emote.drawOuts(dt); return r; };
+  const gu0 = Game.update; Game.update = function (dt) { const r = gu0.apply(this, arguments); Emote.update(dt); return r; };
+  const cr0 = Camo.reset; Camo.reset = function () { Emote.reset(); return cr0.apply(this, arguments); };
+  // the big ones are movement, to its eye (a dance in the open is a dance in the open)
+  const mv0 = Camo.mv; Camo.mv = function (a) { const v = mv0.apply(this, arguments); if (v >= 1) return v; const E = Emote.def(Game.idOf(a)); return E && E.big ? 1 : v; };
+  // the paint menu or a cage: the wheel goes
+  const om0 = Camo.openMenu; Camo.openMenu = function () { if (Emote.open) { Emote.close(); return; } return om0.apply(this, arguments); };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) { if (ev && ev.k === 'emo') { Emote.event(ev); return; } return ae0.apply(this, arguments); };
+  const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i, x) { if (a === 'emo') { if (!Net.isClient) Emote.remote(r, i); return; } return ra0.apply(this, arguments); };
+  // a sound close by: heads turn (only sounds that come from somewhere)
+  for (const k of ['door', 'locked', 'metalHit', 'doorBang', 'pipeGroan', 'sparks', 'breaker', 'trip', 'glass', 'chains', 'chainsBreak', 'thud', 'decoyNoise', 'decoySmash', 'drawer', 'radio', 'lightPop', 'shutter']) {
+    const f0 = Sound[k]; if (typeof f0 !== 'function') continue;
+    Sound[k] = function (pos) { if (pos && typeof pos === 'object') Emote.heard(pos); return f0.apply(this, arguments); };
+  }
+  // the keys: [Z] the wheel; while it's open, 1–8 pick, Esc closes; the mouse aims (and doesn't turn the camera)
+  window.addEventListener('keydown', e => {
+    if (!Emote.on() || (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))) return;
+    const code = e.code;
+    if (code === Keys.map.emote) { e.preventDefault(); e.stopImmediatePropagation(); if (!e.repeat) Emote.toggle(); return; }
+    if (!Emote.open) return;
+    const m = /^(?:Digit|Numpad)([1-8])$/.exec(code);
+    if (m) { e.preventDefault(); e.stopImmediatePropagation(); Emote.pick(+m[1] - 1); return; }
+    if (code === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); Emote.close(); }
+  }, true);
+  window.addEventListener('keyup', e => { // (hold Z, aim with the mouse, let go)
+    if (!Emote.open || e.code !== Keys.map.emote) return;
+    if (Emote.sel >= 0 && performance.now() - Emote.openAt > 220) Emote.pick(Emote.sel);
+  }, true);
+  window.addEventListener('mousemove', e => { if (!Emote.open || !Input.locked) return; Emote.aim(e.movementX || 0, e.movementY || 0); e.stopImmediatePropagation(); }, true);
+  window.addEventListener('mousedown', e => { if (!Emote.open || !Input.locked) return; e.preventDefault(); e.stopImmediatePropagation(); if (Emote.sel >= 0) Emote.pick(Emote.sel); else Emote.close(); }, true);
+}
+/* ================================================================== */
+/* Build 27: COSMETICS — THE LOCKER (MECHA CAMO's stickmen)            */
+/* Hats, masks, things on your back, body effects, paint jobs,          */
+/* footsteps and victory animations, in six rarities. Unlocked by       */
+/* playing (challenges and milestones), by finding the secret on each   */
+/* camo map, by achievements — or by the Cosmetic Roll (coins), whose   */
+/* odds are printed on it and which never gives you something you own.  */
+/* LOOKS ONLY: nothing here changes the camo score, the hitboxes, your  */
+/* speed or what the Warden sees (it scores your paint, as always). The */
+/* body effects fade while you hold still, so they never give a hiding */
+/* teammate away either. Saved on its own (a broken file is repaired;   */
+/* coins and characters are never touched by it).                      */
+/* ================================================================== */
+const COS_KEY = 'lastshift.cosmetics.v1', COS_ROLL = 350;
+const COS_RAR = {
+  common: { n: 'COMMON', c: '#c3cad6', w: 45 }, uncommon: { n: 'UNCOMMON', c: '#5fd068', w: 27 }, rare: { n: 'RARE', c: '#4aa8ff', w: 16 },
+  epic: { n: 'EPIC', c: '#b46cff', w: 8 }, legendary: { n: 'LEGENDARY', c: '#ffb02e', w: 3.5 }, mythic: { n: 'MYTHIC', c: '#ff4fd8', w: 0.5 },
+};
+const COS_RIDS = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+const COS_SLOTS = { head: 'Hats & head', face: 'Masks & face', back: 'Back', body: 'Materials & FX', paint: 'Paint jobs', feet: 'Footsteps', victory: 'Victory', set: 'Sets' };
+const COS_EQ = ['head', 'face', 'back', 'body', 'feet', 'victory'];
+// how: roll (the Cosmetic Roll) · ch: [stat, n, what to do] · secret: map id · ach: achievement · set: which set it comes in · event
+const COSMETICS = [
+  { id: 'hardhat', name: 'Hard Hat', slot: 'head', rar: 'common', ico: '⛑️', how: { roll: 1 }, desc: 'Regulation yellow. Site Kestrel insists.' },
+  { id: 'beanie', name: 'Beanie', slot: 'head', rar: 'common', ico: '🧶', how: { ch: ['rounds', 3, 'Play 3 rounds of MECHA CAMO'] }, desc: 'Knitted by someone on the night shift.' },
+  { id: 'cone', name: 'Traffic Cone', slot: 'head', rar: 'uncommon', ico: '🚧', how: { roll: 1 }, desc: 'Nobody looks twice at a traffic cone. Well — everybody does.' },
+  { id: 'frog', name: 'Mini Frog Hat', slot: 'head', rar: 'rare', ico: '🐸', how: { secret: 's6' }, desc: 'Someone left a little frog somewhere on Sublevel 6. Find it.' },
+  { id: 'shood', name: 'Shadow Hood', slot: 'head', rar: 'epic', ico: '🌑', how: { ach: 'pn_three' }, desc: 'Two dim eyes in the dark. For the brave: three CLOSE CALLS in one run.' },
+  { id: 'jhat', name: 'Jester Hat', slot: 'head', rar: 'epic', ico: '🃏', how: { set: 'set_jester' }, desc: 'Part of the Royal Jester Set. Jingles.' },
+  { id: 'crown', name: 'Cosmic Crown', slot: 'head', rar: 'legendary', ico: '👑', how: { roll: 1 }, desc: 'A crown with its own little stars going round it.' },
+  { id: 'halo', name: 'Celestial Halo', slot: 'head', rar: 'mythic', ico: '😇', how: { set: 'set_celest' }, desc: 'Part of the Celestial Stickman Set.' },
+  { id: 'pumpkin', name: 'Pumpkin Head', slot: 'head', rar: 'epic', ico: '🎃', how: { event: 'halloween' }, desc: 'Halloween only: carve a pumpkin out of the Warden\'s pumpkins.' },
+  { id: 'visor', name: 'Visor', slot: 'face', rar: 'common', ico: '🕶️', how: { roll: 1 }, desc: 'A dark band of glass. Very serious.' },
+  { id: 'pixel', name: 'Pixel Face', slot: 'face', rar: 'rare', ico: '🙂', how: { secret: 'works' }, desc: 'An old game cartridge is hidden in the Colour Works. Find it.' },
+  { id: 'phantom', name: 'Phantom Mask', slot: 'face', rar: 'legendary', ico: '🎭', how: { ch: ['close', 25, 'Survive 25 CLOSE CALLS (any mode)'] }, desc: 'White, smooth, and the eyes glow.' },
+  { id: 'pack', name: 'Backpack', slot: 'back', rar: 'common', ico: '🎒', how: { roll: 1 }, desc: 'Snacks for the shift.' },
+  { id: 'tank', name: 'Paint Tank', slot: 'back', rar: 'uncommon', ico: '🛢️', how: { ch: ['escapes', 5, 'Get out at the lift in 5 MECHA CAMO rounds'] }, desc: 'Twin spray tanks, for the professional.' },
+  { id: 'collar', name: 'Jester Collar', slot: 'back', rar: 'epic', ico: '🔔', how: { set: 'set_jester' }, desc: 'Part of the Royal Jester Set. Bells all round.' },
+  { id: 'holo', name: 'Hologram Stickman', slot: 'body', rar: 'epic', ico: '🔷', how: { roll: 1 }, desc: 'Scanlines and a flicker, as if you\'re only half here.' },
+  { id: 'gold', name: 'Golden Stickman', slot: 'body', rar: 'legendary', ico: '🥇', how: { ch: ['tins', 30, 'Find 30 gold paint tins'] }, desc: 'Solid gold when you move. (Your paint, when you hold still.)' },
+  { id: 'fracture', name: 'Reality Fracture', slot: 'body', rar: 'mythic', ico: '💠', how: { roll: 1, ch: ['nmw', 1, '…or win a NIGHTMARE round without being caught'] }, desc: 'Light leaking through the cracks in you, and bits of you that float.' },
+  { id: 'prism', name: 'Prismatic Paint', slot: 'body', rar: 'mythic', ico: '🌈', how: { roll: 1 }, desc: 'Every colour at once, rolling over you as you move.' },
+  { id: 'celest', name: 'Celestial Body', slot: 'body', rar: 'mythic', ico: '🌌', how: { set: 'set_celest' }, desc: 'Part of the Celestial Stickman Set: a night sky, inside you.' },
+  { id: 'hazard', name: 'Hazard Stripes', slot: 'paint', rar: 'common', ico: '⚠️', how: { roll: 1 }, desc: 'A paint job: yellow and black. Scored like any paint you make.' },
+  { id: 'tiger', name: 'Tiger Stripes', slot: 'paint', rar: 'uncommon', ico: '🐯', how: { ch: ['colours', 3, 'Get out of 3 rounds in 3 different main colours'] }, desc: 'A paint job: orange with black stripes. Scored like any paint.' },
+  { id: 'neon', name: 'Neon Camo', slot: 'paint', rar: 'rare', ico: '🟩', how: { roll: 1 }, desc: 'A paint job: camouflage, in colours no wall has ever been. Scored honestly — good luck.' },
+  { id: 'dust', name: 'Dust Puffs', slot: 'feet', rar: 'common', ico: '💨', how: { roll: 1 }, desc: 'Little puffs of dust where you step.' },
+  { id: 'elec', name: 'Electric Footsteps', slot: 'feet', rar: 'rare', ico: '⚡', how: { ch: ['tools', 1, 'In one round: spray, paint by hand AND throw a paint can'] }, desc: 'Sparks off every step.' },
+  { id: 'glitch', name: 'Glitch Trail', slot: 'feet', rar: 'epic', ico: '👾', how: { roll: 1 }, desc: 'You leave broken pixels behind you.' },
+  { id: 'stars', name: 'Star Steps', slot: 'feet', rar: 'mythic', ico: '✨', how: { set: 'set_celest' }, desc: 'Part of the Celestial Stickman Set.' },
+  { id: 'confetti', name: 'Confetti Pop', slot: 'victory', rar: 'uncommon', ico: '🎊', how: { roll: 1 }, desc: 'Out at the lift: a jump and a burst of confetti.' },
+  { id: 'royal', name: 'Royal Victory', slot: 'victory', rar: 'legendary', ico: '🎖️', how: { ch: ['freed', 10, 'Free 10 teammates from cages'] }, desc: 'Out at the lift: a deep bow, a flourish, gold falling.' },
+  { id: 'ascend', name: 'Celestial Ascension', slot: 'victory', rar: 'mythic', ico: '🌠', how: { set: 'set_celest' }, desc: 'Part of the Celestial Stickman Set: you rise, glowing.' },
+  { id: 'set_jester', name: 'Royal Jester Set', slot: 'set', rar: 'epic', ico: '🤹', how: { roll: 1 }, set: ['jhat', 'collar'], desc: 'The Jester Hat and the Jester Collar. Your emotes jingle.' },
+  { id: 'set_celest', name: 'Celestial Stickman Set', slot: 'set', rar: 'mythic', ico: '🪐', how: { roll: 1 }, set: ['halo', 'celest', 'stars', 'ascend'], desc: 'The Halo, the Celestial Body, Star Steps and Celestial Ascension.' },
+];
+const COS = {}; COSMETICS.forEach(c => { COS[c.id] = c; });
+const COS_ACH = [
+  { id: 'cos_first', name: 'Dress Code', desc: 'Unlock your first cosmetic.' },
+  { id: 'cos_set', name: 'The Full Look', desc: 'Complete a cosmetic set.' },
+  { id: 'cos_mythic', name: 'Beyond Rare', desc: 'Unlock a MYTHIC cosmetic.' },
+];
+ACH.push(...COS_ACH);
+
+/* ---------------- little textures ---------------- */
+const cosTex = (w, h, fn, rep) => { const c = document.createElement('canvas'); c.width = w; c.height = h; fn(c.getContext('2d'), w, h); const t = new T.CanvasTexture(c); if (rep) { t.wrapS = t.wrapT = T.RepeatWrapping; } return t; };
+let _cosT = null;
+function COS_TEX() {
+  if (_cosT) return _cosT;
+  const rng = (s => () => (s = (s * 16807) % 2147483647) / 2147483647)(7);
+  _cosT = {
+    dot: cosTex(32, 32, (x, w) => { const g = x.createRadialGradient(16, 16, 0, 16, 16, 16); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, w, w); }),
+    spark: cosTex(32, 32, (x) => { x.translate(16, 16); x.fillStyle = '#fff'; for (let i = 0; i < 2; i++) { x.rotate(Math.PI / 2 * i); x.beginPath(); x.moveTo(0, -15); x.lineTo(2.5, 0); x.lineTo(0, 15); x.lineTo(-2.5, 0); x.fill(); } }),
+    sq: cosTex(8, 8, (x) => { x.fillStyle = '#fff'; x.fillRect(0, 0, 8, 8); }),
+    star: cosTex(32, 32, (x) => { x.translate(16, 16); x.fillStyle = '#fff'; x.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 6 : 15, a = -Math.PI / 2 + i * Math.PI / 5; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.fill(); }),
+    scan: cosTex(4, 64, (x) => { for (let y = 0; y < 64; y++) { x.fillStyle = y % 4 < 2 ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.15)'; x.fillRect(0, y, 4, 1); } }, true),
+    crack: cosTex(128, 128, (x) => { x.fillStyle = '#000'; x.fillRect(0, 0, 128, 128); x.strokeStyle = '#fff'; x.lineWidth = 1.6; for (let k = 0; k < 9; k++) { let px = rng() * 128, py = rng() * 128; x.beginPath(); x.moveTo(px, py); for (let s = 0; s < 6; s++) { px += (rng() - 0.5) * 40; py += (rng() - 0.5) * 40; x.lineTo(px, py); } x.stroke(); } }, true),
+    sky: cosTex(128, 128, (x) => { const g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, '#0b0f3a'); g.addColorStop(1, '#2a0d4a'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); for (let i = 0; i < 70; i++) { x.fillStyle = 'rgba(255,255,255,' + (0.4 + rng() * 0.6).toFixed(2) + ')'; const r = rng() < 0.15 ? 1.4 : 0.7; x.beginPath(); x.arc(rng() * 128, rng() * 128, r, 0, 7); x.fill(); } }, true),
+    pixel: cosTex(8, 8, (x) => { x.fillStyle = '#111'; x.fillRect(0, 0, 8, 8); x.fillStyle = '#7dff6a'; [[2, 2], [5, 2], [2, 3], [5, 3], [1, 5], [6, 5], [2, 6], [3, 6], [4, 6], [5, 6]].forEach(([a, b]) => x.fillRect(a, b, 1, 1)); }),
+  };
+  _cosT.pixel.magFilter = T.NearestFilter; _cosT.pixel.minFilter = T.NearestFilter;
+  return _cosT;
+}
+
+/* ---------------- the models (head things in the neck's space: the head is a ball of 0.118 m round it, facing -z) ---------------- */
+const cosMat = (c, o) => new T.MeshPhongMaterial(Object.assign({ color: c, shininess: 30, specular: 0x222222 }, o || {}));
+const cosM = (geo, mat, x, y, z, parent) => { const m = new T.Mesh(geo, mat); m.position.set(x || 0, y || 0, z || 0); m.castShadow = true; if (parent) parent.add(m); return m; };
+const COS_BUILD = {
+  hardhat(g) { const y = cosMat(0xf2c418, { shininess: 60 }); cosM(new T.SphereGeometry(0.13, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), y, 0, 0.012, 0, g); cosM(new T.CylinderGeometry(0.165, 0.165, 0.012, 26), y, 0, 0.014, -0.012, g); cosM(new T.BoxGeometry(0.022, 0.03, 0.24), y, 0, 0.13, 0, g); },
+  beanie(g) { const r = cosMat(0xc23a3a), w = cosMat(0xf1ece2); cosM(new T.SphereGeometry(0.126, 18, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), r, 0, 0.0, 0, g); const c = cosM(new T.TorusGeometry(0.118, 0.02, 8, 26), w, 0, 0.02, 0, g); c.rotation.x = Math.PI / 2; cosM(new T.SphereGeometry(0.036, 10, 8), w, 0, 0.14, 0, g); },
+  cone(g) { const o = cosMat(0xff6a1a, { shininess: 50 }), w = cosMat(0xf4f4f4); cosM(new T.CylinderGeometry(0.012, 0.085, 0.24, 20), o, 0, 0.215, 0, g); cosM(new T.CylinderGeometry(0.048, 0.062, 0.04, 20), w, 0, 0.215, 0, g); cosM(new T.BoxGeometry(0.2, 0.016, 0.2), o, 0, 0.098, 0, g); },
+  frog(g) { const gr = cosMat(0x4fb43a, { shininess: 60 }), wh = cosMat(0xffffff), bk = cosMat(0x111111), b = cosM(new T.SphereGeometry(0.07, 16, 12), gr, 0, 0.14, 0, g); b.scale.set(1.1, 0.6, 1);
+    for (const s of [-1, 1]) { cosM(new T.SphereGeometry(0.026, 10, 8), wh, s * 0.036, 0.18, -0.035, g); cosM(new T.SphereGeometry(0.012, 8, 6), bk, s * 0.036, 0.183, -0.058, g); const l = cosM(new T.SphereGeometry(0.026, 8, 6), gr, s * 0.06, 0.115, -0.03, g); l.scale.set(1, 0.4, 1.6); } },
+  shood(g) { const d = cosMat(0x15121c, { side: T.DoubleSide, shininess: 6 }), h = cosM(new T.SphereGeometry(0.152, 20, 14, Math.PI * 1.5 + 0.95, Math.PI * 2 - 1.9, 0, Math.PI * 0.72), d, 0, 0.0, 0.004, g);
+    const f = cosM(new T.CircleGeometry(0.1, 18), new T.MeshBasicMaterial({ color: 0x050407 }), 0, -0.005, -0.098, g); f.rotation.y = Math.PI;
+    for (const s of [-1, 1]) cosM(new T.SphereGeometry(0.011, 8, 6), new T.MeshBasicMaterial({ color: 0xb37bff }), s * 0.035, 0.012, -0.104, g);
+    const dr = cosM(new T.CylinderGeometry(0.09, 0.14, 0.18, 16, 1, true), d, 0, -0.14, 0.04, g); dr.rotation.x = 0.25; },
+  jhat(g) { const r = cosMat(0xc0203a), p = cosMat(0x5a2ca0), gd = cosMat(0xe8c040, { shininess: 90, specular: 0xffffff }); const band = cosM(new T.TorusGeometry(0.12, 0.022, 8, 26), gd, 0, 0.03, 0, g); band.rotation.x = Math.PI / 2;
+    cosM(new T.SphereGeometry(0.122, 18, 10, 0, Math.PI * 2, 0, Math.PI * 0.45), r, 0, 0.02, 0, g);
+    for (const s of [-1, 1]) { const cv = new T.CatmullRomCurve3([new T.Vector3(s * 0.04, 0.1, 0), new T.Vector3(s * 0.13, 0.2, 0), new T.Vector3(s * 0.22, 0.17, 0), new T.Vector3(s * 0.25, 0.08, 0)]); cosM(new T.TubeGeometry(cv, 16, 0.03, 8, false), s < 0 ? r : p, 0, 0, 0, g); cosM(new T.SphereGeometry(0.024, 10, 8), gd, s * 0.25, 0.065, 0, g); } },
+  crown(g) { const gd = cosMat(0xf0c040, { shininess: 100, specular: 0xffffff, emissive: 0x3a2800, side: T.DoubleSide }); cosM(new T.CylinderGeometry(0.1, 0.095, 0.05, 22, 1, true), gd, 0, 0.12, 0, g);
+    for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; cosM(new T.ConeGeometry(0.018, 0.055, 6), gd, Math.cos(a) * 0.098, 0.172, Math.sin(a) * 0.098, g); cosM(new T.OctahedronGeometry(0.012), cosMat(i % 2 ? 0x2f7bff : 0xff2f5a, { shininess: 120, emissive: i % 2 ? 0x0a1a44 : 0x440a14 }), Math.cos(a + 0.5) * 0.1, 0.12, Math.sin(a + 0.5) * 0.1, g); }
+    const orb = new T.Group(); orb.position.y = 0.2; g.add(orb); g.userData.spin = orb;
+    for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2; cosM(new T.OctahedronGeometry(0.016), new T.MeshBasicMaterial({ color: 0xfff1a0 }), Math.cos(a) * 0.16, 0, Math.sin(a) * 0.16, orb); } },
+  halo(g) { const h = cosM(new T.TorusGeometry(0.1, 0.012, 8, 32), new T.MeshBasicMaterial({ color: 0xfff0a8 }), 0, 0.21, 0, g); h.rotation.x = Math.PI / 2; g.userData.bob = h; },
+  pumpkin(g) { const o = cosMat(0xe8740e, { shininess: 25 }), p = new T.LatheGeometry([[0, -0.13], [0.08, -0.125], [0.14, -0.08], [0.16, 0], [0.14, 0.08], [0.08, 0.12], [0, 0.125]].map(v => new T.Vector2(v[0], v[1])), 16); const pos = p.attributes.position; for (let i = 0; i < pos.count; i++) { const x = pos.getX(i), z = pos.getZ(i), a = Math.atan2(z, x), k = 1 + 0.06 * Math.cos(a * 8); pos.setX(i, x * k); pos.setZ(i, z * k); } p.computeVertexNormals();
+    cosM(p, o, 0, 0.01, 0, g); cosM(new T.CylinderGeometry(0.012, 0.018, 0.06, 8), cosMat(0x4a6a22), 0, 0.155, 0, g);
+    const glow = new T.MeshBasicMaterial({ color: 0xffd23a, side: T.DoubleSide }); for (const s of [-1, 1]) { const e = cosM(new T.CircleGeometry(0.03, 3), glow, s * 0.055, 0.03, -0.158, g); e.rotation.set(0, Math.PI, s * 0.3); } const m = cosM(new T.PlaneGeometry(0.12, 0.03), glow, 0, -0.05, -0.155, g); m.rotation.y = Math.PI; },
+  visor(g) { cosM(new T.CylinderGeometry(0.124, 0.124, 0.045, 24, 1, true, Math.PI - 1.15, 2.3), cosMat(0x101418, { shininess: 140, specular: 0x88aaff, side: T.DoubleSide }), 0, 0.016, 0, g); },
+  pixel(g) { const m = cosM(new T.PlaneGeometry(0.13, 0.13), new T.MeshBasicMaterial({ map: COS_TEX().pixel }), 0, 0.0, -0.122, g); m.rotation.y = Math.PI; },
+  phantom(g) { const w = cosMat(0xf3f1ea, { shininess: 70, side: T.DoubleSide }); cosM(new T.SphereGeometry(0.128, 18, 12, Math.PI * 1.5 - 1.05, 2.1, Math.PI * 0.18, Math.PI * 0.62), w, 0, 0, 0, g);
+    for (const s of [-1, 1]) cosM(new T.SphereGeometry(0.013, 8, 6), new T.MeshBasicMaterial({ color: 0x7ff6ff }), s * 0.038, 0.022, -0.122, g); },
+  pack(g) { const b = cosMat(0x6a4a2a), d = cosMat(0x3a2a18); cosM(new T.BoxGeometry(0.16, 0.18, 0.08), b, 0, 0.21, 0.085, g); cosM(new T.BoxGeometry(0.12, 0.07, 0.03), d, 0, 0.16, 0.135, g); },
+  tank(g) { const m = cosMat(0xb8c2cc, { shininess: 110, specular: 0xffffff }), r = cosMat(0xd03a2a); for (const s of [-1, 1]) { cosM(new T.CylinderGeometry(0.042, 0.042, 0.2, 14), m, s * 0.048, 0.21, 0.09, g); cosM(new T.SphereGeometry(0.042, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), r, s * 0.048, 0.31, 0.09, g); } },
+  collar(g) { const r = cosMat(0xc0203a, { side: T.DoubleSide }), p = cosMat(0x5a2ca0, { side: T.DoubleSide }), gd = cosMat(0xe8c040, { shininess: 90 });
+    for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, c = cosM(new T.ConeGeometry(0.04, 0.09, 3), i % 2 ? r : p, Math.cos(a) * 0.075, 0.43, Math.sin(a) * 0.075, g); c.rotation.set(Math.PI, 0, 0); c.lookAt(Math.cos(a) * 0.5, 0.2, Math.sin(a) * 0.5); c.rotateX(Math.PI / 2); cosM(new T.SphereGeometry(0.014, 8, 6), gd, Math.cos(a) * 0.115, 0.4, Math.sin(a) * 0.115, g); } },
+};
+const COS_FX = { // body effects: a second skin over each piece of you
+  holo: () => new T.MeshBasicMaterial({ color: 0x5ff6ff, map: COS_TEX().scan, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false }),
+  gold: () => new T.MeshPhongMaterial({ color: 0xd9ad3a, specular: 0xfff0b0, shininess: 90, emissive: 0x2a1c00, transparent: true, opacity: 0 }),
+  fracture: () => new T.MeshBasicMaterial({ color: 0xff7af0, map: COS_TEX().crack, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false }),
+  prism: () => new T.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false }),
+  celest: () => new T.MeshBasicMaterial({ map: COS_TEX().sky, transparent: true, opacity: 0, depthWrite: false }),
+};
+const COS_FEET = { dust: 1, elec: 1, glitch: 1, stars: 1 };
+
+/* ---------------- the save ---------------- */
+const Cos = {
+  d: null, loads: new Map(), pools: new Map(), roundT: null, secretMesh: null,
+  fresh() { return { v: 1, own: {}, eq: {}, st: { rounds: 0, escapes: 0, freed: 0, close: 0, nmw: 0, tools: 0, colours: [] }, recent: [], rolls: 0, seen: 0 }; },
+  load() {
+    let o = null; try { o = JSON.parse(localStorage.getItem(COS_KEY) || 'null'); } catch (e) { }
+    const d = this.fresh();
+    if (o && typeof o === 'object' && !Array.isArray(o)) {
+      if (o.own && typeof o.own === 'object') for (const id in o.own) if (COS[id] && COS[id].slot !== 'set') d.own[id] = 1;
+      if (o.eq && typeof o.eq === 'object') for (const s of COS_EQ) { const id = o.eq[s]; if (typeof id === 'string' && d.own[id] && COS[id].slot === s) d.eq[s] = id; }
+      const st = o.st && typeof o.st === 'object' ? o.st : {};
+      for (const k of ['rounds', 'escapes', 'freed', 'close', 'nmw', 'tools']) d.st[k] = Number.isFinite(+st[k]) ? clamp(Math.floor(+st[k]), 0, 1e6) : 0;
+      d.st.colours = Array.isArray(st.colours) ? st.colours.filter(x => typeof x === 'string' && /^[a-z0-9]{1,8}$/.test(x)).slice(0, 16) : [];
+      d.recent = Array.isArray(o.recent) ? o.recent.filter(id => d.own[id]).slice(0, 6) : [];
+      d.rolls = Number.isFinite(+o.rolls) ? clamp(Math.floor(+o.rolls), 0, 1e6) : 0; d.seen = Number.isFinite(+o.seen) ? +o.seen : 0; if (typeof o.seenTop === 'string' && COS[o.seenTop]) d.seenTop = o.seenTop;
+    }
+    this.d = d; return d;
+  },
+  ensure() { return this.d || this.load(); },
+  save() { try { localStorage.setItem(COS_KEY, JSON.stringify(this.d)); } catch (e) { } },
+  owns(id) { const C = COS[id], d = this.ensure(); if (!C) return false; if (C.slot === 'set') return C.set.every(x => d.own[x]); return !!d.own[id]; },
+  count() { const d = this.ensure(); return { have: COSMETICS.filter(c => c.slot !== 'set' && d.own[c.id]).length, all: COSMETICS.filter(c => c.slot !== 'set').length }; },
+  // unlock (one, or a whole set); says so; returns what was new
+  give(id, why) {
+    const C = COS[id], d = this.ensure(); if (!C) return [];
+    const ids = C.slot === 'set' ? C.set : [id], fresh = ids.filter(x => !d.own[x]); if (!fresh.length) return [];
+    for (const x of fresh) { d.own[x] = 1; d.recent.unshift(x); } d.recent = [...new Set(d.recent)].slice(0, 6); this.save();
+    Goals.unlock('cos_first'); if (ids.some(x => COS[x].rar === 'mythic')) Goals.unlock('cos_mythic');
+    if (COSMETICS.some(S => S.slot === 'set' && S.set.every(x => d.own[x]))) Goals.unlock('cos_set');
+    if (why) UI.msg('UNLOCKED: ' + C.name.toUpperCase() + ' (' + COS_RAR[C.rar].n + ') — ' + why + '. It\'s in the Cosmetic Locker.', 'good', 5);
+    this.badge(); return fresh;
+  },
+  progress(C) { const h = C.how; if (!h.ch) return null; const st = this.ensure().st, [k, n] = h.ch; let v = k === 'colours' ? st.colours.length : k === 'tins' ? (typeof CQ !== 'undefined' ? CQ.extra().tins : 0) : st[k] || 0; return { v: Math.min(v, n), n }; },
+  // challenges, milestones, achievements: anything earned is handed over
+  check() {
+    const d = this.ensure();
+    for (const C of COSMETICS) {
+      if (d.own[C.id] || C.slot === 'set') continue;
+      const h = C.how;
+      if (h.ch) { const p = this.progress(C); if (p.v >= p.n) this.give(C.id, h.ch[2]); }
+      else if (h.ach && Goals.has && Goals.has(h.ach)) this.give(C.id, 'for "' + ((ACH.find(a => a.id === h.ach) || {}).name || h.ach) + '"');
+    }
+  },
+  /* ---- the roll: honest odds, never a duplicate ---- */
+  pool() { const d = this.ensure(); return COSMETICS.filter(C => C.how.roll && !this.owns(C.id)); },
+  odds() { // the chance of each rarity right now (a rarity that's all yours passes its share to the others — as shown)
+    const P = this.pool(), out = {}; let tot = 0;
+    for (const r of COS_RIDS) if (P.some(C => C.rar === r)) { out[r] = COS_RAR[r].w; tot += COS_RAR[r].w; }
+    for (const r in out) out[r] = out[r] / tot * 100; return out;
+  },
+  roll(rnd) {
+    rnd = rnd || Math.random; const d = this.ensure(), P = this.pool();
+    if (!P.length) return { err: 'all' };
+    if (!Chars.data || Chars.data.coins < COS_ROLL) return { err: 'coins' };
+    const od = this.odds(); let x = rnd() * 100, rar = null; for (const r of COS_RIDS) { if (!(r in od)) continue; if (x < od[r]) { rar = r; break; } x -= od[r]; } if (!rar) rar = Object.keys(od).pop();
+    const list = P.filter(C => C.rar === rar), C = list[Math.floor(rnd() * list.length) % list.length];
+    Chars.data.coins -= COS_ROLL; Chars.save(); d.rolls++; this.give(C.id, null); try { CharUI.refresh(); } catch (e) { }
+    return { id: C.id, rar };
+  },
+  /* ---- the loadout, everyone's (online: the host passes each one on) ---- */
+  eqOf(id) { return id === Net.myId ? (this.ensure().eq) : (this.loads.get(id) || {}); },
+  clean(eq) { const o = {}; if (!eq || typeof eq !== 'object') return o; for (const s of COS_EQ) { const id = eq[s]; if (typeof id === 'string' && COS[id] && COS[id].slot === s) o[s] = id; } return o; },
+  share() { if (!Net.active || !Net.inGame) return; const eq = this.clean(this.ensure().eq); if (Net.isClient) Net.request('cos', 0, eq); else Game.emit({ k: 'cos', id: Net.myId, eq }); },
+  remote(r, x) { if (!r) return; const eq = this.clean(x); if (Game.time - (r._cosAt || -9) < 0.5) return; r._cosAt = Game.time; Game.emit({ k: 'cos', id: r.id, eq }); },
+  event(ev) { const id = ev.id | 0; if (id === Net.myId) return; this.loads.set(id, this.clean(ev.eq)); },
+  /* ---- dressing a stickman ---- */
+  dress(g, eq, preview) {
+    const U = g.userData, key = COS_EQ.map(s => eq[s] || '').join(','); if (U.cosKey === key) return; U.cosKey = key;
+    if (U.cos) { for (const o of U.cos) { o.parent && o.parent.remove(o); } } U.cos = [];
+    if (U.fxSkins) { for (const m of U.fxSkins) m.parent && m.parent.remove(m); } U.fxSkins = []; U.fxId = null;
+    const add = (slot, parent) => { const id = eq[slot]; if (!id || !COS_BUILD[id]) return; const grp = new T.Group(); COS_BUILD[id](grp); grp.userData.cosId = id; parent.add(grp); grp.traverse(o => o.layers.enableAll()); U.cos.push(grp); };
+    add('head', U.neck); add('face', U.neck); add('back', U.torso);
+    const fx = eq.body; if (fx && COS_FX[fx]) { const mat = COS_FX[fx](); U.fxId = fx; U.fxMat = mat; for (const m of U.meshes) { const s = new T.Mesh(m.geometry, mat); s.scale.setScalar(1.015); s.renderOrder = 2; s.layers.enableAll(); m.add(s); U.fxSkins.push(s); }
+      if (fx === 'fracture') { const sh = new T.Group(); for (let i = 0; i < 6; i++) { const t = cosM(new T.TetrahedronGeometry(0.03), new T.MeshBasicMaterial({ color: 0xffb8f8, transparent: true, opacity: 0.9 }), 0, 0, 0, sh); t.userData.a = i / 6 * Math.PI * 2; t.userData.h = 0.15 + (i % 3) * 0.18; } U.torso.add(sh); sh.traverse(o => o.layers.enableAll()); U.cos.push(sh); U.shards = sh; } else U.shards = null; }
+    U.fxK = preview ? 1 : 0;
+  },
+  // every frame, after the pose: the body effect breathes, the crown's stars go round, footsteps
+  animate(g, s, dt, scn, preview) {
+    const U = g.userData, t = performance.now() / 1000, eq = U.cosEq || {};
+    const al = preview ? 1 : U.alpha === undefined ? 1 : U.alpha; // (the camera right up against you: your hat fades with you)
+    if (U.cosAl !== al) { U.cosAl = al; for (const grp of U.cos || []) grp.traverse(o => { if (o.material && !o.isSprite && o.material.blending !== T.AdditiveBlending) { if (o.material._o0 === undefined) o.material._o0 = o.material.opacity; o.material.transparent = al < 0.99 || o.material._o0 < 1; o.material.opacity = o.material._o0 * al; } }); }
+    for (const grp of U.cos || []) { if (grp.userData.spin) grp.userData.spin.rotation.y = t * 1.6; if (grp.userData.bob) grp.userData.bob.position.y = 0.21 + Math.sin(t * 2) * 0.01; }
+    if (U.fxId) {
+      const moving = s.spd > 0.4 || (typeof Emote !== 'undefined' && (U.ew || 0) > 0.3) || U.victory > 0;
+      const quiet = U.fxId === 'holo' || U.fxId === 'fracture' ? 0.12 : 0; // (holding still: it all but goes — a look, never a giveaway)
+      U.fxK = damp(U.fxK || 0, preview ? 1 : moving ? 1 : quiet, moving || preview ? 6 : 3, dt);
+      const M = U.fxMat, k = U.fxK * al;
+      if (U.fxId === 'holo') { M.opacity = k * (0.42 + 0.12 * Math.sin(t * 31) * Math.sin(t * 7)); if (M.map) M.map.offset.y = -t * 0.6; }
+      else if (U.fxId === 'gold') M.opacity = k * 0.92;
+      else if (U.fxId === 'fracture') { M.opacity = k * (0.7 + 0.3 * Math.sin(t * 5)); if (M.map) M.map.offset.set(Math.sin(t * 0.3) * 0.2, t * 0.05); }
+      else if (U.fxId === 'prism') { M.color.setHSL((t * 0.25 + s.x * 0.05) % 1, 1, 0.5); M.opacity = k * 0.6; }
+      else if (U.fxId === 'celest') { M.opacity = k * 0.9; if (M.map) M.map.offset.x = t * 0.02; }
+      if (U.shards) { U.shards.visible = k > 0.05; U.shards.children.forEach(c => { const a = c.userData.a + t * 0.9; c.position.set(Math.cos(a) * 0.17, c.userData.h + Math.sin(t * 2 + a) * 0.03, Math.sin(a) * 0.17); c.rotation.set(t * 2 + a, t * 1.3, 0); c.material.opacity = 0.9 * k; }); }
+    }
+    // footsteps
+    const ft = eq.feet; if (ft && COS_FEET[ft] && s.spd > 0.5) { U.cStep = (U.cStep || 0) + s.spd * dt; if (U.cStep > 0.38) { U.cStep = 0; U.foot = U.foot ? 0 : 1; const sd = U.foot ? 1 : -1, c = Math.cos(s.yaw), sn = Math.sin(s.yaw); this.step(scn || scene, ft, s.x + sd * 0.06 * c, s.z - sd * 0.06 * sn, preview ? g.position.y : 0); } }
+  },
+  /* ---- a small particle system (one per scene: the game's, the Locker's) ---- */
+  pool0(scn) {
+    let P = this.pools.get(scn); if (P) return P;
+    P = { list: [], free: [] }; this.pools.set(scn, P); return P;
+  },
+  spawn(scn, tex, col, x, y, z, vx, vy, vz, size, life, add, grow) {
+    const P = this.pool0(scn); let p = P.free.pop();
+    if (!p) { if (P.list.length > 260) return; const s = new T.Sprite(new T.SpriteMaterial({ map: tex, color: col, transparent: true, depthWrite: false })); s.layers.enableAll(); scn.add(s); p = { s }; }
+    const M = p.s.material; if (M.map !== tex) { M.map = tex; M.needsUpdate = true; } M.color.setHex(col); M.blending = add ? T.AdditiveBlending : T.NormalBlending;
+    p.s.position.set(x, y, z); p.v = [vx, vy, vz]; p.life = 0; p.max = life; p.size = size; p.grow = grow || 0; p.s.visible = true; p.s.scale.setScalar(size); P.list.push(p);
+  },
+  tick(scn, dt) {
+    const P = this.pools.get(scn); if (!P) return;
+    for (let i = P.list.length - 1; i >= 0; i--) {
+      const p = P.list[i]; p.life += dt; const u = p.life / p.max;
+      if (u >= 1) { p.s.visible = false; P.list.splice(i, 1); P.free.push(p); continue; }
+      p.s.position.x += p.v[0] * dt; p.s.position.y += p.v[1] * dt; p.s.position.z += p.v[2] * dt; p.v[1] -= p.grav ? 0 : 0;
+      p.s.scale.setScalar(p.size * (1 + p.grow * u)); p.s.material.opacity = (1 - u) * (1 - u) * 0.95;
+    }
+  },
+  step(scn, ft, x, z, y0) {
+    const X = COS_TEX(), y = (y0 || 0) + 0.03;
+    if (ft === 'dust') for (let i = 0; i < 3; i++) this.spawn(scn, X.dot, 0xb9b2a4, x + rand(-0.04, 0.04), y, z + rand(-0.04, 0.04), rand(-0.2, 0.2), rand(0.15, 0.35), rand(-0.2, 0.2), 0.06, 0.7, false, 1.4);
+    else if (ft === 'elec') { for (let i = 0; i < 4; i++) this.spawn(scn, X.spark, 0x7fe8ff, x, y, z, rand(-1.2, 1.2), rand(0.4, 1.4), rand(-1.2, 1.2), 0.05, 0.25, true, -0.5); this.spawn(scn, X.dot, 0x3ab8ff, x, y, z, 0, 0, 0, 0.12, 0.18, true, 0.8); }
+    else if (ft === 'glitch') for (let i = 0; i < 3; i++) this.spawn(scn, X.sq, [0xff2fd0, 0x2ffff0, 0x9cff2f][i], x + rand(-0.08, 0.08), y + rand(0, 0.12), z + rand(-0.08, 0.08), 0, 0, 0, rand(0.03, 0.07), rand(0.3, 0.55), true, 0);
+    else if (ft === 'stars') for (let i = 0; i < 3; i++) this.spawn(scn, X.star, [0xfff1a0, 0xffd0ff, 0xa8d8ff][i], x + rand(-0.05, 0.05), y, z + rand(-0.05, 0.05), rand(-0.1, 0.1), rand(0.4, 0.7), rand(-0.1, 0.1), 0.06, 0.9, true, 0.2);
+  },
+  // out at the lift: your victory, whatever you've got on (Emote calls this; false = the plain jump for joy)
+  victory(eq, g, U, u, scn) {
+    const v = (eq || {}).victory; if (!v) return false; const X = COS_TEX(), t = Game.time;
+    U.victory = 1;
+    if (v === 'confetti') { Emote.emotePose(U, 'cheer', u, t, 1, g); if (!U.conf) { U.conf = 1; for (let i = 0; i < 26; i++) this.spawn(scn || scene, X.sq, [0xff4f6a, 0xffd23a, 0x4fd6ff, 0x8aff4f, 0xd06aff][i % 5], g.position.x, 0.9, g.position.z, rand(-1.4, 1.4), rand(1.2, 2.6), rand(-1.4, 1.4), 0.035, 1.4, false, 0); } return true; }
+    if (v === 'royal') { const k = Math.min(1, u * 3), A0 = U.arms[0], A1 = U.arms[1]; U.torso.rotation.x = lerp(U.torso.rotation.x, -0.85, k); U.neck.rotation.x = lerp(U.neck.rotation.x, -0.2, k);
+      A1.sh.rotation.set(lerp(A1.sh.rotation.x, 1.2, k), 0, lerp(A1.sh.rotation.z, -0.6, k)); A1.el.rotation.x = 1.6 * k; A0.sh.rotation.set(lerp(A0.sh.rotation.x, 0.4, k), 0, lerp(A0.sh.rotation.z, -1.3, k)); A0.el.rotation.x = 0.2;
+      U.legs[1].hp.rotation.x = -0.35 * k; U.legs[0].kn.rotation.x = -0.4 * k;
+      U.vT = (U.vT || 0) - 0.05; if (U.vT <= 0) { U.vT = 0.12; for (let i = 0; i < 3; i++) this.spawn(scn || scene, X.spark, 0xffd860, g.position.x + rand(-0.5, 0.5), 1.6, g.position.z + rand(-0.5, 0.5), 0, rand(-0.8, -0.5), 0, 0.05, 1.2, true, 0); } return true; }
+    if (v === 'ascend') { const k = Math.min(1, u / 1.4); g.position.y += k * k * (scn && scn !== scene ? 0.3 : 0.7); Emote.armsTo(U, Math.min(1, u * 2), 0.2, 1.9, 0.2); U.neck.rotation.x = 0.35;
+      U.vT = (U.vT || 0) - 0.05; if (U.vT <= 0) { U.vT = 0.08; this.spawn(scn || scene, X.star, 0xfff1a0, g.position.x + rand(-0.2, 0.2), g.position.y + rand(0, 0.8), g.position.z + rand(-0.2, 0.2), 0, rand(0.2, 0.6), 0, 0.06, 0.9, true, 0.3); this.spawn(scn || scene, X.dot, 0xd8c8ff, g.position.x, g.position.y + 0.5, g.position.z, 0, 0, 0, 0.9, 0.3, true, 0.2); } return true; }
+    return false;
+  },
+  /* ---- the secret on each camo map: a little frog (Sublevel 6), an old cartridge (the Colour Works) ---- */
+  secretSpot() {
+    if (typeof Camo === 'undefined' || !Camo.M) return null;
+    const mid = Camo.M.id, lv = Camo.M.lvl, lc = Camo.centre(Camo.M.lobby), sx = lc ? cc(lc[0]) : player.pos.x, sz = lc ? cc(lc[1]) : player.pos.z; let best = null, bd = -1;
+    for (let gz = 1; gz < 28; gz++) for (let gx = 1; gx < 53; gx++) {
+      const x = gx * 2 + 1, z = gz * 2 + 1, c = cellOf(x, z); if (!c || c.kind !== 'floor' || c.lvl !== lv || c.navBlocked) continue;
+      let n = 0; for (const [dx, dz] of [[2, 0], [-2, 0], [0, 2], [0, -2]]) { const q = cellOf(x + dx, z + dz); if (q && q.kind === 'floor' && !q.navBlocked) n++; }
+      if (n !== 1) continue; const d = Math.hypot(x - sx, z - sz); if (d > bd) { bd = d; best = [x, z]; }
+    }
+    return best ? { x: best[0], z: best[1], id: mid === 's6' ? 'frog' : 'pixel' } : null;
+  },
+  placeSecret() {
+    this.dropSecret(); const S = this.secretSpot(); if (!S || this.ensure().own[S.id]) return;
+    const g = new T.Group(); g.position.set(S.x, 0.05, S.z); g.userData.global = true;
+    if (S.id === 'frog') COS_BUILD.frog(g); else { cosM(new T.BoxGeometry(0.12, 0.16, 0.025), cosMat(0x5a5a62), 0, 0.08, 0, g); cosM(new T.BoxGeometry(0.09, 0.07, 0.027), cosMat(0x7dff6a, { emissive: 0x1a4a14 }), 0, 0.1, 0, g); }
+    g.children.forEach(m => { m.position.y -= S.id === 'frog' ? 0.1 : 0; });
+    const glint = new T.Sprite(new T.SpriteMaterial({ map: COS_TEX().spark, color: 0xfff6b0, transparent: true, blending: T.AdditiveBlending, depthWrite: false })); glint.position.y = 0.2; glint.scale.setScalar(0.18); g.add(glint); g.userData.glint = glint;
+    g.traverse(o => o.layers.enableAll()); scene.add(g); this.secretMesh = g; this.secret = S;
+  },
+  dropSecret() { if (this.secretMesh) { scene.remove(this.secretMesh); this.secretMesh = null; } this.secret = null; },
+  /* ---- round bookkeeping (MECHA CAMO) ---- */
+  roundStart() { this.roundT = { spray: 0, brush: 0, can: 0 }; this.placeSecret(); setTimeout(() => this.share(), 400); setTimeout(() => { if (Net.isHost) for (const [id, eq] of this.loads) Game.emit({ k: 'cos', id, eq }); this.share(); }, 2500); },
+  roundEnd(ev) {
+    const d = this.ensure(), me = Camo.me(), won = !!ev.w, outs = Array.isArray(ev.o) ? ev.o.map(x => x | 0) : [...Camo.out], iOut = outs.includes(me);
+    d.st.rounds++;
+    if (won && iOut) { d.st.escapes++; const hue = this.mainColour(Camo.myPaint); if (hue && d.st.colours.indexOf(hue) < 0) d.st.colours.push(hue); if ((Net.sessionDiff || settings.difficulty) === 'nightmare' && !Camo.stats.caught) d.st.nmw = 1; }
+    const R = this.roundT || {}; if (R.spray && R.brush && R.can) d.st.tools = 1;
+    this.save(); this.check(); this.dropSecret();
+  },
+  mainColour(P) { // the colour family your body's painted (hue in twelfths, or grey / black / white)
+    if (!P || !P.g || !P.g.torso) return null; let r = 0, g = 0, b = 0; const A = P.g.torso; for (const c of A) { r += (c >> 16) & 255; g += (c >> 8) & 255; b += c & 255; } const n = A.length || 1; r /= n * 255; g /= n * 255; b /= n * 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, s = mx === mn ? 0 : (mx - mn) / (1 - Math.abs(2 * l - 1));
+    if (s < 0.18) return l < 0.25 ? 'black' : l > 0.75 ? 'white' : 'grey';
+    let h = mx === r ? ((g - b) / (mx - mn)) % 6 : mx === g ? (b - r) / (mx - mn) + 2 : (r - g) / (mx - mn) + 4; h = (h * 60 + 360) % 360; return 'h' + Math.floor(h / 30);
+  },
+  // a paint job from the Locker: it goes on your stickman (and is saved as your paint, like one you made)
+  paintJob(id) {
+    const P = cmNewPaint(0xd06a1e), G = CM_G;
+    for (const k of CM_PIECES) for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) {
+      let c;
+      if (id === 'hazard') c = Math.floor((i + j) / 4) % 2 ? 0x141516 : 0xf2c418;
+      else if (id === 'tiger') { const w = Math.sin(i * 0.5 + k.length) * 1.5; c = Math.floor((j + w) / 3) % 3 === 0 ? 0x161210 : 0xe8741e; }
+      else { const h = Math.sin(i * 0.61 + j * 0.37 + k.length * 1.7) + Math.sin(i * 0.23 - j * 0.71 + k.length) + Math.sin((i + j) * 0.15); c = h > 1.1 ? 0xff2fd0 : h > 0.2 ? 0x39ff14 : h > -0.8 ? 0x14d8ff : 0x111111; }
+      P.g[k][j * G + i] = c;
+    }
+    return P;
+  },
+  apply(id) {
+    if (!this.owns(id) || COS[id].slot !== 'paint') return false;
+    const P = this.paintJob(id);
+    if (typeof Camo !== 'undefined') { Camo.save(P); if (Camo.on) { P.v = (Camo.myPaint.v || 0) + 1; Camo.myPaint = P; Camo.paints.set(Camo.me(), P); if (Camo.myFig) paintMech(Camo.myFig, P); player._cmk = null; } }
+    return true;
+  },
+  equip(id) { const C = COS[id], d = this.ensure(); if (!C || !this.owns(id)) return false; if (C.slot === 'paint') return this.apply(id); if (C.slot === 'set') { for (const x of C.set) d.eq[COS[x].slot] = x; } else d.eq[C.slot] = id; this.save(); this.share(); return true; },
+  unequip(slot) { const d = this.ensure(); delete d.eq[slot]; this.save(); this.share(); },
+  badge() { const b = $('lk-badge'); if (!b) return; const d = this.ensure(), n = d.recent.filter(id => !d.seenIds || d.seenIds.indexOf(id) < 0).length; b.hidden = !(d.recent.length && d.recent[0] !== d.seenTop); },
+};
+
+/* ---------------- the Locker ---------------- */
+const Locker = {
+  built: false, tab: 'all', rar: '', sel: null, r: null, scn: null, cam: null, fig: null, yaw: 0.6, drag: null, raf: 0, last: 0, mode: 'idle', modeT: 0, prevEq: null,
+  build() {
+    if (this.built) return; this.built = true;
+    const st = document.createElement('style');
+    st.textContent = '.lk-panel{max-width:min(1120px,96vw);width:min(1120px,96vw);padding:24px 28px}'
+      + '.lk-wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px;margin-top:10px}@media (max-width:820px){.lk-wrap{grid-template-columns:1fr}.lk-view{height:300px!important}}'
+      + '.lk-tabs,.lk-rars{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.lk-tabs button,.lk-rars button{font:600 11px/1 var(--mono,monospace);letter-spacing:.08em;padding:7px 10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#cfd5de;cursor:pointer;text-transform:uppercase}'
+      + '.lk-tabs button.on{background:#f0e6c8;color:#111;border-color:#f0e6c8}.lk-rars button.on{box-shadow:inset 0 0 0 2px currentColor}'
+      + '.lk-feat{display:flex;gap:8px;margin:4px 0 10px;flex-wrap:wrap}.lk-feat .lk-fh{width:100%;font:600 10px/1 var(--mono,monospace);letter-spacing:.16em;color:#9aa3b2}'
+      + '.lk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;max-height:40vh;overflow:auto;padding-right:4px}'
+      + '.lk-card{position:relative;border:1px solid rgba(255,255,255,.1);border-top:3px solid var(--rc);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));padding:10px 8px 8px;cursor:pointer;text-align:center;min-height:96px;transition:transform .1s,background .1s}'
+      + '.lk-card:hover{transform:translateY(-2px);background:rgba(255,255,255,.08)}.lk-card.sel{outline:2px solid var(--rc);outline-offset:1px}.lk-card .ic{font-size:30px;line-height:38px;display:block}.lk-card b{display:block;font:600 11px/1.25 var(--sans,Arial);color:#eef1f5}.lk-card small{display:block;font:600 9px/1.4 var(--mono,monospace);letter-spacing:.12em;color:var(--rc)}'
+      + '.lk-card.locked .ic{filter:grayscale(1) brightness(.45)}.lk-card.locked b{color:#8b93a0}.lk-card .lk-lock{position:absolute;top:6px;right:7px;font-size:11px;opacity:.75}.lk-card .lk-eq{position:absolute;top:5px;left:6px;font:700 9px/1 var(--mono,monospace);color:#111;background:#7dff9a;padding:2px 4px;letter-spacing:.06em}'
+      + '.lk-card.lkr-mythic{background:linear-gradient(135deg,rgba(255,79,216,.14),rgba(79,214,255,.12),rgba(255,210,58,.12));background-size:200% 200%;animation:lkMy 4s linear infinite}@keyframes lkMy{0%{background-position:0 0}100%{background-position:200% 200%}}'
+      + '.lk-view{position:relative;height:290px;background:radial-gradient(ellipse at 50% 70%,#2a2f3a,#0d0f14 70%);border:1px solid rgba(255,255,255,.1);cursor:grab;overflow:hidden}.lk-view canvas{width:100%!important;height:100%!important;display:block}'
+      + '.lk-vb{position:absolute;bottom:8px;left:8px;display:flex;gap:6px}.lk-vb button{font:600 10px/1 var(--mono,monospace);letter-spacing:.08em;padding:6px 8px;background:rgba(0,0,0,.55);color:#dfe4ea;border:1px solid rgba(255,255,255,.18);cursor:pointer}.lk-vb button.on{background:#f0e6c8;color:#111}'
+      + '.lk-hint{position:absolute;top:8px;right:10px;font:600 9px/1 var(--mono,monospace);letter-spacing:.14em;color:#8a93a3}'
+      + '.lk-info{margin-top:8px;min-height:96px}.lk-info h3{margin:0 0 2px;font:700 18px/1.2 var(--sans,Arial);color:#fff}.lk-info .rr{font:700 10px/1 var(--mono,monospace);letter-spacing:.18em}.lk-info p{margin:6px 0;color:#c2c8d2;font-size:13px;line-height:1.45}.lk-info .req{color:#ffd77a}.lk-bar{height:6px;background:rgba(255,255,255,.08);margin:6px 0}.lk-bar i{display:block;height:100%;background:#ffd77a}'
+      + '.lk-info .btn{margin-right:6px}.lk-roll{margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:10px}.lk-odds{display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0 8px;font:600 10px/1.4 var(--mono,monospace);letter-spacing:.06em}.lk-odds span{white-space:nowrap}.lk-roll .note{font-size:11px;color:#8e97a6;line-height:1.4}'
+      + '#cos-reveal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(4,5,8,.82);cursor:pointer}#cos-reveal.on{display:flex}'
+      + '#cos-reveal .cz-rays{position:absolute;width:760px;height:760px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 6%,var(--rc) 8%,transparent 10% 22%,var(--rc) 24%,transparent 26% 38%,var(--rc) 40%,transparent 42% 54%,var(--rc) 56%,transparent 58% 70%,var(--rc) 72%,transparent 74% 86%,var(--rc) 88%,transparent 90%);opacity:.22;animation:czSpin 6s linear infinite;mask:radial-gradient(circle,#000 20%,transparent 70%);-webkit-mask:radial-gradient(circle,#000 20%,transparent 70%)}@keyframes czSpin{to{transform:rotate(360deg)}}'
+      + '#cos-reveal .cz-card{position:relative;width:230px;padding:26px 18px;text-align:center;background:linear-gradient(180deg,#1a1d26,#0c0e13);border:2px solid var(--rc);box-shadow:0 0 60px var(--rc);animation:czFlip .7s cubic-bezier(.2,1.3,.4,1) both}@keyframes czFlip{from{transform:perspective(700px) rotateY(180deg) scale(.6);opacity:0}to{transform:perspective(700px) rotateY(0) scale(1);opacity:1}}'
+      + '#cos-reveal .cz-card .ic{font-size:64px;line-height:80px;display:block}#cos-reveal .cz-card b{display:block;font:800 20px/1.2 var(--sans,Arial);color:#fff;margin-top:6px}#cos-reveal .cz-card small{display:block;margin-top:6px;font:700 12px/1 var(--mono,monospace);letter-spacing:.3em;color:var(--rc)}#cos-reveal .cz-skip{position:absolute;bottom:22px;font:600 10px/1 var(--mono,monospace);letter-spacing:.2em;color:#7f8796}'
+      + '#cos-reveal.cz-mythic{background:radial-gradient(circle,rgba(60,10,60,.85),rgba(4,5,8,.92))}#cos-reveal.cz-mythic .cz-card{border-image:linear-gradient(90deg,#ff4fd8,#4fd6ff,#ffd23a,#8aff4f,#ff4fd8) 1;animation:czFlip .9s cubic-bezier(.2,1.3,.4,1) both,czHue 2.4s linear infinite}@keyframes czHue{to{filter:hue-rotate(360deg)}}'
+      + '#cos-reveal.cz-mythic .cz-rays{opacity:.4;background:conic-gradient(#ff4fd8,#4fd6ff,#ffd23a,#8aff4f,#ff4fd8)}';
+    document.head.appendChild(st);
+    // the title button (under Daily Contracts)
+    const ct = $('btn-contracts');
+    if (ct && !$('btn-locker')) { const b = document.createElement('button'); b.className = 'mbtn'; b.id = 'btn-locker'; b.innerHTML = 'Cosmetic Locker<i class="free" id="lk-badge" hidden>NEW</i>'; ct.after(b); b.addEventListener('click', () => this.open()); }
+    const sc = document.createElement('div'); sc.id = 'screen-locker'; sc.className = 'screen shade';
+    sc.innerHTML = '<div class="panel lk-panel"><div class="kicker">MECHA CAMO · your stickman</div><div class="h1">Cosmetic Locker <span id="lk-count" class="ct-count"></span></div>'
+      + '<p class="codes-sub" style="margin:4px 0 0">Looks only: nothing here changes your camo score, your hitbox, your speed or what the Warden sees. Body effects fade while you hold still.</p>'
+      + '<div class="lk-wrap"><div class="lk-left"><div class="lk-tabs" id="lk-tabs"></div><div class="lk-rars" id="lk-rars"></div><div class="lk-feat" id="lk-feat"></div><div class="lk-grid" id="lk-grid"></div></div>'
+      + '<div class="lk-right"><div class="lk-view" id="lk-view"><span class="lk-hint">DRAG TO TURN</span><div class="lk-vb"><button data-m="idle" class="on">Stand</button><button data-m="walk">Walk</button><button data-m="victory">Victory</button></div></div><div class="lk-info" id="lk-info"></div><div class="lk-roll" id="lk-roll"></div></div></div>'
+      + '<div class="row"><button class="btn" id="btn-lk-back">Back</button></div></div>';
+    document.body.appendChild(sc);
+    const rv = document.createElement('div'); rv.id = 'cos-reveal'; document.body.appendChild(rv);
+    rv.addEventListener('click', () => this.endReveal());
+    $('btn-lk-back').addEventListener('click', () => UI.back());
+    $('lk-view').querySelectorAll('.lk-vb button').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); this.setMode(b.dataset.m); }));
+    const v = $('lk-view');
+    v.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; this.drag = { x: e.clientX, y: this.yaw }; v.setPointerCapture && v.setPointerCapture(e.pointerId); });
+    v.addEventListener('pointermove', e => { if (this.drag) this.yaw = this.drag.y + (e.clientX - this.drag.x) * 0.012; });
+    v.addEventListener('pointerup', () => { this.drag = null; });
+    window.addEventListener('keydown', e => { if ($('cos-reveal').classList.contains('on')) { e.preventDefault(); e.stopImmediatePropagation(); this.endReveal(); } }, true);
+  },
+  open() { this.build(); Cos.ensure(); Cos.check(); this.sel = this.sel || COSMETICS[0].id; this.draw(); UI.goto('screen-locker'); this.start3d(); const d = Cos.d; d.seenTop = d.recent[0]; Cos.save(); Cos.badge(); },
+  setMode(m) { this.mode = m; this.modeT = 0; $('lk-view').querySelectorAll('.lk-vb button').forEach(b => b.classList.toggle('on', b.dataset.m === m)); if (this.fig) { this.fig.userData.conf = 0; this.fig.userData.victory = 0; } },
+  draw() {
+    const d = Cos.ensure(), cnt = Cos.count(); $('lk-count').textContent = cnt.have + ' / ' + cnt.all;
+    const tabs = $('lk-tabs'); tabs.innerHTML = ''; for (const [k, n] of [['all', 'All']].concat(Object.entries(COS_SLOTS))) { const b = document.createElement('button'); b.textContent = n; b.className = this.tab === k ? 'on' : ''; b.addEventListener('click', () => { this.tab = k; this.draw(); }); tabs.appendChild(b); }
+    const rars = $('lk-rars'); rars.innerHTML = ''; for (const r of [''].concat(COS_RIDS)) { const b = document.createElement('button'); b.textContent = r ? COS_RAR[r].n : 'Any rarity'; if (r) b.style.color = COS_RAR[r].c; b.className = this.rar === r ? 'on' : ''; b.addEventListener('click', () => { this.rar = r; this.draw(); }); rars.appendChild(b); }
+    // featured today (the same for everyone on a date) and what you got last
+    const feat = $('lk-feat'); feat.innerHTML = '<span class="lk-fh">FEATURED TODAY' + (d.recent.length ? ' · RECENT' : '') + '</span>';
+    const day = Contracts && Contracts.today ? Contracts.today() : new Date().toISOString().slice(0, 10); let h = 0; for (const ch of day) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const pick = []; const cand = COSMETICS.filter(c => c.slot !== 'set' && !c.how.event); for (let i = 0; pick.length < 3 && i < 40; i++) { const c = cand[(h + i * 7919) % cand.length]; if (pick.indexOf(c) < 0) pick.push(c); h = (h * 1103515245 + 12345) >>> 0; }
+    pick.concat(d.recent.slice(0, 3).map(id => COS[id]).filter(c => pick.indexOf(c) < 0)).forEach(C => feat.appendChild(this.card(C, true)));
+    const grid = $('lk-grid'); grid.innerHTML = '';
+    COSMETICS.filter(C => (this.tab === 'all' || C.slot === this.tab) && (!this.rar || C.rar === this.rar)).forEach(C => grid.appendChild(this.card(C)));
+    this.info(); this.rollBox();
+  },
+  card(C, mini) {
+    const own = Cos.owns(C.id), eq = Cos.ensure().eq[C.slot] === C.id || (C.slot === 'set' && C.set.every(x => Cos.d.eq[COS[x].slot] === x));
+    const el = document.createElement('div'); el.className = 'lk-card lkr-' + C.rar + (own ? '' : ' locked') + (this.sel === C.id ? ' sel' : ''); el.style.setProperty('--rc', COS_RAR[C.rar].c); el.dataset.id = C.id;
+    if (mini) { el.style.minHeight = '0'; el.style.width = '94px'; el.style.padding = '6px'; }
+    el.innerHTML = (eq ? '<span class="lk-eq">ON</span>' : '') + (own ? '' : '<span class="lk-lock">🔒</span>') + '<span class="ic"></span><b></b><small></small>';
+    el.querySelector('.ic').textContent = C.ico; el.querySelector('b').textContent = C.name; el.querySelector('small').textContent = COS_RAR[C.rar].n;
+    el.addEventListener('click', () => { this.sel = C.id; this.draw(); });
+    return el;
+  },
+  howText(C) {
+    const h = C.how, out = [];
+    if (h.roll) out.push('From the Cosmetic Roll (' + COS_RAR[C.rar].n.toLowerCase() + ')');
+    if (h.ch) { const p = Cos.progress(C); out.push(h.ch[2] + ' — ' + p.v + ' / ' + p.n); }
+    if (h.secret) out.push('Secret: ' + (h.secret === 's6' ? 'somewhere on Sublevel 6, in MECHA CAMO — look in the dead ends' : 'somewhere in the Colour Works, in MECHA CAMO — look in the dead ends'));
+    if (h.ach) out.push('Achievement: "' + ((ACH.find(a => a.id === h.ach) || {}).name || h.ach) + '"');
+    if (h.set) out.push('Comes in the ' + COS[h.set].name + ' (Cosmetic Roll)');
+    if (h.event) out.push('Event: Halloween (in October) — find pumpkins in any mode');
+    return out;
+  },
+  info() {
+    const C = COS[this.sel] || COSMETICS[0], own = Cos.owns(C.id), d = Cos.d, box = $('lk-info');
+    box.innerHTML = '<span class="rr"></span><h3></h3><p class="ds"></p><div class="hw"></div><div class="bt"></div>';
+    box.querySelector('.rr').textContent = COS_RAR[C.rar].n + ' · ' + COS_SLOTS[C.slot].toUpperCase(); box.querySelector('.rr').style.color = COS_RAR[C.rar].c;
+    box.querySelector('h3').textContent = C.name; box.querySelector('.ds').textContent = C.desc;
+    const hw = box.querySelector('.hw');
+    if (!own) for (const t of this.howText(C)) { const p = document.createElement('p'); p.className = 'req'; p.textContent = '🔒 ' + t; hw.appendChild(p); if (C.how.ch && t.indexOf(C.how.ch[2]) === 0) { const pr = Cos.progress(C), b = document.createElement('div'); b.className = 'lk-bar'; b.innerHTML = '<i></i>'; b.firstChild.style.width = (pr.v / pr.n * 100).toFixed(0) + '%'; hw.appendChild(b); } }
+    const bt = box.querySelector('.bt'), mk = (txt, fn) => { const b = document.createElement('button'); b.className = 'btn'; b.textContent = txt; b.addEventListener('click', fn); bt.appendChild(b); return b; };
+    if (own) {
+      if (C.slot === 'paint') mk('Apply this paint job', () => { Cos.apply(C.id); UI.msg(C.name + ': your stickman\'s paint job now. (Scored like any paint.)', 'good', 3); this.dressPreview(); });
+      else if (C.slot === 'set') mk('Wear the set', () => { Cos.equip(C.id); this.draw(); });
+      else if (d.eq[C.slot] === C.id) mk('Take off', () => { Cos.unequip(C.slot); this.draw(); });
+      else mk('Wear', () => { Cos.equip(C.id); this.draw(); });
+    }
+    this.dressPreview();
+  },
+  rollBox() {
+    const box = $('lk-roll'), P = Cos.pool(), od = Cos.odds(), coins = Chars.data ? Chars.data.coins : 0;
+    box.innerHTML = '<div class="h3" style="font:700 13px/1 var(--mono,monospace);letter-spacing:.18em;color:#f0e6c8">COSMETIC ROLL</div><div class="lk-odds" id="lk-odds"></div><button class="btn" id="btn-lk-roll"></button><p class="note">Never gives you something you already have. If a rarity is all yours, its chance goes to the others — the odds above are always the real ones. Looks only.</p>';
+    const oe = box.querySelector('#lk-odds'); for (const r of COS_RIDS) { const s = document.createElement('span'); s.style.color = COS_RAR[r].c; s.textContent = COS_RAR[r].n + ' ' + (r in od ? (od[r] < 1 ? od[r].toFixed(2) : od[r].toFixed(1)) + '%' : '— (all yours)'); oe.appendChild(s); }
+    const b = box.querySelector('#btn-lk-roll'); b.textContent = P.length ? 'Roll — ' + COS_ROLL + ' coins (you have ' + coins + ')' : 'You have everything the roll can give';
+    b.disabled = !P.length || coins < COS_ROLL; b.addEventListener('click', () => { const r = Cos.roll(); if (r.id) { this.sel = r.id; this.reveal(r.id); this.draw(); } });
+  },
+  /* ---- the reveal: short, and any click or key skips it ---- */
+  reveal(id) {
+    const C = COS[id], rv = $('cos-reveal'); rv.className = 'on cz-' + C.rar; rv.style.setProperty('--rc', COS_RAR[C.rar].c);
+    rv.innerHTML = '<div class="cz-rays"></div><div class="cz-card"><span class="ic"></span><b></b><small></small></div><div class="cz-skip">CLICK OR ANY KEY</div>';
+    rv.querySelector('.ic').textContent = C.ico; rv.querySelector('b').textContent = C.name; rv.querySelector('small').textContent = COS_RAR[C.rar].n;
+    if (settings.noFlash) rv.querySelector('.cz-rays').style.animation = 'none';
+    Sound.coin && Sound.coin(); if (['epic', 'legendary', 'mythic'].indexOf(C.rar) >= 0) Sound.powerUp && Sound.powerUp(); if (C.rar === 'mythic') Sound.ascend && Sound.ascend();
+    clearTimeout(this.revT); this.revT = setTimeout(() => this.endReveal(), C.rar === 'mythic' ? 3200 : 2000);
+  },
+  endReveal() { clearTimeout(this.revT); const rv = $('cos-reveal'); if (rv) rv.className = ''; },
+  /* ---- the 3D preview: its own little renderer, only while the Locker is open ---- */
+  start3d() {
+    if (!this.r) {
+      try { const cv = document.createElement('canvas'); $('lk-view').prepend(cv); this.r = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, preserveDrawingBuffer: true }); this.r.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); this.r.shadowMap.enabled = false; }
+      catch (e) { this.r = null; $('lk-view').insertAdjacentHTML('afterbegin', '<p style="padding:20px;color:#999">No 3D preview on this device.</p>'); return; }
+      const s = this.scn = new T.Scene(); this.cam = new T.PerspectiveCamera(28, 1, 0.05, 20); this.cam.position.set(0, 0.85, 2.85); this.cam.lookAt(0, 0.6, 0);
+      s.add(new T.HemisphereLight(0xdfe8ff, 0x2a2420, 0.9)); const k = new T.DirectionalLight(0xffffff, 0.9); k.position.set(1.5, 2.5, 2); s.add(k); const rim = new T.DirectionalLight(0x88aaff, 0.5); rim.position.set(-2, 1.5, -2); s.add(rim);
+      const fl = new T.Mesh(new T.CircleGeometry(0.75, 40), new T.MeshPhongMaterial({ color: 0x2a2e38, shininess: 10 })); fl.rotation.x = -Math.PI / 2; s.add(fl);
+    }
+    this.dressPreview(); cancelAnimationFrame(this.raf); this.last = performance.now();
+    const loop = (now) => { if (UI.current !== 'screen-locker') { this.raf = 0; return; } this.raf = requestAnimationFrame(loop); this.frame(Math.min(0.05, (now - this.last) / 1000)); this.last = now; };
+    this.raf = requestAnimationFrame(loop);
+  },
+  dressPreview() {
+    if (!this.scn) return;
+    const C = COS[this.sel], d = Cos.ensure(), eq = Object.assign({}, d.eq);
+    if (C && C.slot !== 'paint') { if (C.slot === 'set') for (const x of C.set) eq[COS[x].slot] = x; else eq[C.slot] = C.id; } // (trying it on: what you've picked, over what you wear)
+    let P = typeof Camo !== 'undefined' ? Camo.load() : cmDefPaint(); if (C && C.slot === 'paint') P = Cos.paintJob(C.id);
+    if (!this.fig) { this.fig = buildMech(P); this.scn.add(this.fig); }
+    paintMech(this.fig, P); this.fig.userData.cosEq = eq; Cos.dress(this.fig, eq, true);
+    if (C && C.slot === 'victory' && this.mode !== 'victory') this.setMode('victory'); else if (C && C.slot === 'feet' && this.mode === 'idle') this.setMode('walk');
+  },
+  frame(dt) {
+    if (!this.r || !this.fig) return;
+    const v = $('lk-view'), w = v.clientWidth || 300, h = v.clientHeight || 300;
+    if (this._w !== w || this._h !== h) { this._w = w; this._h = h; this.r.setSize(w, h, false); this.cam.aspect = w / h; this.cam.updateProjectionMatrix(); }
+    if (!this.drag) this.yaw += dt * 0.35;
+    this.modeT += dt; const g = this.fig, U = g.userData, walk = this.mode === 'walk';
+    const s = { x: 0, z: 0, yaw: this.yaw, spd: walk ? 2 : 0, crouch: false, paint: false, caught: false, still: !walk };
+    poseMech0(g, s, dt); g.position.set(0, 0, 0); g.rotation.order = 'YXZ'; g.rotation.x = 0;
+    if (this.mode === 'victory') { const u = this.modeT % 3.2; if (u < dt * 1.5) { U.conf = 0; } U.ew = 1; if (!Cos.victory(U.cosEq, g, U, u, this.scn)) Emote.emotePose(U, 'cheer', u, u, 1, g); }
+    else U.victory = 0;
+    Cos.animate(g, Object.assign({}, s, { spd: walk || this.mode === 'victory' ? 2 : 0 }), dt, this.scn, true);
+    if (walk) { U.cStep = (U.cStep || 0); } Cos.tick(this.scn, dt);
+    // walking on the spot: the steps drift back past you
+    const P = Cos.pools.get(this.scn); if (P && walk) for (const p of P.list) { p.s.position.x += Math.sin(this.yaw) * 2 * dt; p.s.position.z += Math.cos(this.yaw) * 2 * dt; }
+    this.r.render(this.scn, this.cam);
+  },
+};
+Cos.victoryOf = id => Cos.eqOf(id).victory;
+
+/* ---------------- the hooks ---------------- */
+{
+  // every stickman, after its pose (and the personality layer): dressed in what its player wears
+  const pm1 = poseMech; poseMech = function (g, s, dt) {
+    pm1(g, s, dt);
+    if (typeof Camo === 'undefined' || !Camo.on) return;
+    try { const id = Emote.idOfFig(g); if (id === null) return; const eq = Cos.eqOf(id); g.userData.cosEq = eq; Cos.dress(g, eq, false); Cos.animate(g, s, dt, scene, false); } catch (e) { if (!Cos.err) { Cos.err = e; console.error('Cos', e); } }
+  };
+  const cd0 = Camo.draw; Camo.draw = function (dt) {
+    const r = cd0.apply(this, arguments);
+    try { Cos.tick(scene, dt); const S = Cos.secretMesh; if (S && S.userData.glint) { const k = 0.5 + 0.5 * Math.sin(performance.now() / 300); S.userData.glint.material.opacity = 0.35 + 0.6 * k; S.rotation.y += dt * 0.8; } } catch (e) { }
+    return r;
+  };
+  // the round: start, the secret, what you did, the end
+  const cs0 = Camo.start; Camo.start = function () { const r = cs0.apply(this, arguments); try { Cos.ensure(); Cos.loads.clear(); Cos.roundStart(); } catch (e) { console.error('Cos', e); } return r; };
+  const cre0 = Camo.result; Camo.result = function (ev) { const was = this.over; const r = cre0.apply(this, arguments); if (!was && this.over) { try { Cos.roundEnd(ev); } catch (e) { console.error('Cos', e); } } return r; };
+  const cr0 = Camo.reset; Camo.reset = function () { Cos.dropSecret(); return cr0.apply(this, arguments); };
+  const gu0 = Game.update; Game.update = function (dt) {
+    const r = gu0.apply(this, arguments);
+    if (typeof Camo !== 'undefined' && Camo.on && Game.state === 'playing') {
+      if (Cos.roundT) { if (Camo.sprayT > 0) Cos.roundT.spray = 1; if (Camo.brushT > 0) Cos.roundT.brush = 1; } // (the chameleon spray; painting by hand)
+      const S = Cos.secret; if (S && Cos.secretMesh && !player.dead && Math.hypot(player.pos.x - S.x, player.pos.z - S.z) < 0.95) { const id = S.id; Cos.dropSecret(); Sound.coin && Sound.coin(); Sound.ping && Sound.ping(player.pos); Cos.give(id, id === 'frog' ? 'you found the little frog' : 'you found the old cartridge'); UI.center && UI.center('SECRET FOUND', COS[id].name + ' — a ' + COS_RAR[COS[id].rar].n + ' cosmetic, in the Locker'); }
+    }
+    return r;
+  };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) {
+    if (ev && ev.k === 'cos') { Cos.event(ev); return; }
+    if (ev && Game.mode === 'camo' && typeof Camo !== 'undefined' && Camo.on) {
+      if (ev.k === 'cqf' && (ev.by | 0) === Camo.me() && (ev.by | 0) !== -9 && Camo.caught.has(ev.id | 0) && (ev.id | 0) !== Camo.me()) { const d = Cos.ensure(); d.st.freed++; Cos.save(); Cos.check(); }
+      if (ev.k === 'cqx' && (ev.by | 0) === Camo.me() && Cos.roundT) Cos.roundT.can = 1;
+    }
+    return ae0.apply(this, arguments);
+  };
+  const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i, x) { if (a === 'cos') { if (!Net.isClient) Cos.remote(r, x); return; } return ra0.apply(this, arguments); };
+  // close calls count toward the Phantom Mask (every mode: added up when the run is paid)
+  const po0 = Chars.payout; Chars.payout = function (won) { const first = !this.paid; const r = po0.apply(this, arguments); if (first) { try { const n = Math.min(ECON.maxClose, (this.stats && this.stats.close) || 0); if (n) { const d = Cos.ensure(); d.st.close += n; Cos.save(); } Cos.check(); } catch (e) { } } return r; };
+  // achievements hand over their cosmetics
+  const gl0 = Goals.unlock; Goals.unlock = function (id) { const r = gl0.apply(this, arguments); try { if (COSMETICS.some(C => C.how.ach === id)) Cos.check(); } catch (e) { } return r; };
+  // the emote wheel: a jester jingles
+  const es0 = Emote.start; Emote.start = function (id, i) { const r = es0.apply(this, arguments); try { const eq = Cos.eqOf(id); if (eq.head === 'jhat' || eq.back === 'collar') { const a = id === Camo.me() ? player : Net.remotes.get(id); if (a) setTimeout(() => Sound.ping && Sound.ping(new T.Vector3(a.pos.x, 1, a.pos.z)), 120); } } catch (e) { } return r; };
+  // the Locker on Esc / Back
+  const ub0 = UI.back; UI.back = function () { if (this.current === 'screen-locker') { Locker.endReveal(); const p = this.prev.pop() || 'screen-title'; this.show(p); Sound.ui(); return; } return ub0.apply(this, arguments); };
+  Locker.build(); Cos.ensure(); Cos.badge();
+}
+/* ================================================================== */
+/* Build 27: LIVING MAPS — MECHA CAMO's floors fight back               */
+/* Four new round events, joining the blackout, the drone, the          */
+/* Sleepwalker and the fresh coat (the host rolls them; everyone gets   */
+/* them; each one is announced before it bites, and never two at once): */
+/*  COLOUR SHIFT  the lamps change colour. Your paint and the walls are */
+/*                both seen in that light — oranges vanish under red,   */
+/*                blues turn black — so the camo meter changes and the  */
+/*                Warden sees it the same way. (Both floors.)           */
+/*  POWER SURGE   the lights flare (it sees further — get out of        */
+/*                sight), then everything shorts out: dark, and sparks  */
+/*                at the breaker panels draw it over. (Both floors.)    */
+/*  EMERGENCY DOORS  a lockdown seals some doors for a while — never    */
+/*                one that would cut anywhere off (checked first), and  */
+/*                never with anyone in the way. Find another way round. */
+/*                (Sublevel 6.)                                         */
+/*  PAINT SPILL   a drum bursts: walk through it and your feet take the */
+/*                colour (honestly, in your camo) and leave footprints  */
+/*                — which it follows. (The Colour Works.)               */
+/* And all the time:                                                    */
+/*  - props on the floor (buckets, cones, paint cans) go over with a    */
+/*    clatter if you RUN into them — it comes to look; they're stood    */
+/*    back up later;                                                    */
+/*  - a big red button on each floor starts a noisy machine somewhere   */
+/*    else for a few seconds: it goes to look at that instead (45 s to  */
+/*    recharge).                                                        */
+/* ================================================================== */
+const LM_EVENTS = {
+  tint: { name: 'COLOUR SHIFT', dur: 40, maps: ['s6', 'works'], line: 'The lamps change colour. Your paint and the walls are both seen in it now — check your meter.' },
+  surge: { name: 'POWER SURGE', dur: 19, maps: ['s6', 'works'], line: 'The lights are about to flare — it\'ll see further. Then they\'ll short out. Get out of sight, now.' },
+  doors: { name: 'EMERGENCY DOORS', dur: 35, maps: ['s6'], line: 'LOCKDOWN: some doors are sealing. Find another way round.' },
+  spill: { name: 'PAINT SPILL', dur: 45, maps: ['works'], line: 'A paint drum bursts. Walk through it and your feet take the colour — and leave footprints it can follow.' },
+};
+Object.assign(CQ_EVENTS, LM_EVENTS); for (const id in LM_EVENTS) if (CQ_EVENT_IDS.indexOf(id) < 0) CQ_EVENT_IDS.push(id);
+const LM_TINTS = [
+  { n: 'EMERGENCY RED', c: [1, 0.24, 0.17], css: 'rgb(255,72,52)', tip: 'Everything is red now — only light and dark show. Match how BRIGHT the wall is.' },
+  { n: 'SODIUM AMBER', c: [1, 0.72, 0.24], css: 'rgb(255,190,80)', tip: 'Everything is amber — colours wash out. Match how BRIGHT the wall is.' },
+  { n: 'BLACKLIGHT', c: [0.52, 0.3, 1], css: 'rgb(150,90,255)', tip: 'Everything glows violet — colours wash out. Match how BRIGHT the wall is.' },
+];
+const LM_SPILL = [0x19e3ff, 0xff2fb4, 0x9cff2f];
+const _lmV = new T.Vector3();
+const LiveMap = {
+  ev: null, tintK: 0, tintC: [1, 1, 1], surgeK: 0, dark: 0, sealed: new Set(), puddle: null, wet: new Map(), prints: [], props: [], btn: null, mach: null, el: null, built: '',
+  on() { return typeof Camo !== 'undefined' && Camo.on && Game.mode === 'camo'; },
+  reset() {
+    this.endAll(true); this.ev = null; this.tintK = 0; this.surgeK = 0; this.dark = 0; this.wet.clear(); this.followAt = 0;
+    for (const p of this.prints) scene.remove(p.m); this.prints = [];
+    for (const P of this.props) { scene.remove(P.g); } this.props = []; if (this.btn) { scene.remove(this.btn.g); this.btn = null; } if (this.mach) { scene.remove(this.mach.g); this.mach = null; } this.built = '';
+    if (this.el) this.el.style.opacity = 0;
+  },
+  /* ---- the host picks one (the camo's own scheduler calls this: it never runs two at once, and leaves a gap after each) ---- */
+  hostPick(id) {
+    const M = Camo.M, ev = { k: 'cqv', e: id, d: LM_EVENTS[id].dur };
+    if (id === 'tint') { const ok = M.id === 'works' ? [2, 1] : [0, 1]; ev.t = ok[Math.floor(Math.random() * ok.length)]; }
+    if (id === 'doors') { const ds = this.pickDoors(); if (!ds) return null; ev.ds = ds; }
+    if (id === 'spill') { const s = this.spillSpot(); if (!s) return null; ev.x = s[0]; ev.z = s[1]; ev.c = Math.floor(Math.random() * LM_SPILL.length); }
+    return ev;
+  },
+  /* ---- on every screen ---- */
+  start(ev) {
+    const id = String(ev.e); this.endAll(true); this.ev = { id, t0: Game.time, dur: LM_EVENTS[id].dur, ev };
+    if (id === 'tint') { const T0 = LM_TINTS[clamp(ev.t | 0, 0, LM_TINTS.length - 1)]; this.ev.tint = T0; this.tintC = T0.c.slice(); this.overlay().style.background = T0.css; setTimeout(() => { if (this.ev && this.ev.id === 'tint') UI.msg(T0.n + ': ' + T0.tip, 'hint', 6); }, 3200); }
+    else if (id === 'surge') { Sound.sparks && Sound.sparks(_lmV.set(player.pos.x, 2.4, player.pos.z)); }
+    else if (id === 'doors') { this.ev.ds = (Array.isArray(ev.ds) ? ev.ds : []).map(i => i | 0).filter(i => doors[i]); Sound.lockdown && Sound.lockdown(_lmV.set(player.pos.x, 2, player.pos.z)); }
+    else if (id === 'spill') { this.makePuddle(+ev.x || 0, +ev.z || 0, LM_SPILL[clamp(ev.c | 0, 0, LM_SPILL.length - 1)]); Sound.glass && Sound.glass(_lmV.set(+ev.x || 0, 0.5, +ev.z || 0)); Sound.acidSplash && Sound.acidSplash(_lmV.set(+ev.x || 0, 0.3, +ev.z || 0)); }
+  },
+  end(quiet) {
+    const E = this.ev; if (!E) return; this.ev = null;
+    if (E.id === 'surge') { this.unDark(); }
+    if (E.id === 'doors') { this.unseal(); if (!quiet) UI.msg('The lockdown lifts: the doors open again.', '', 3); }
+    if (E.id === 'tint' && !quiet) UI.msg('The lamps go back to white.', '', 2.6);
+    if (E.id === 'spill' && !quiet) UI.msg('The spill\'s dried up.', '', 2.6);
+  },
+  endAll(quiet) { if (this.ev) this.end(quiet); this.unseal(); this.unDark(); if (this.puddle) { scene.remove(this.puddle.m); this.puddle = null; } },
+  update(dt) {
+    if (!this.on()) return;
+    this.buildProps();
+    const E = this.ev, u = E ? Game.time - E.t0 : 0;
+    // COLOUR SHIFT: in after the warning, out at the end
+    const tw = E && E.id === 'tint' ? (u < 3 ? 0 : u > E.dur - 2 ? clamp((E.dur - u) / 2, 0, 1) : clamp((u - 3) / 1.5, 0, 1)) : 0;
+    this.tintK = damp(this.tintK, tw, 4, dt); if (this.tintK < 0.003 && !tw) this.tintK = 0;
+    if (this.el) this.el.style.opacity = (this.tintK * 0.92).toFixed(3);
+    // POWER SURGE: 3 s warning, 6 s flare, then dark until it ends
+    const sp = E && E.id === 'surge' ? (u < 3 ? 'warn' : u < 9 ? 'flare' : 'dark') : '';
+    this.surgeK = damp(this.surgeK, sp === 'flare' ? 1 : 0, 6, dt);
+    if (sp === 'dark' && !this.dark) this.goDark();
+    if (this.fl) this.fl.style.opacity = (this.surgeK * (settings.noFlash ? 0.08 : 0.16)).toFixed(3);
+    // EMERGENCY DOORS: after the klaxon, they seal
+
+    if (!Net.isClient) for (const i of this.sealed) { const d = doors[i]; if (!d || d.target === 0) continue; if (Camo.team().some(a => Math.hypot(a.pos.x - d.cx, a.pos.z - d.cz) < 1.3) || Math.hypot(Monster.pos.x - d.cx, Monster.pos.z - d.cz) < 1.3) continue; d.target = 0; Game.syncDoor(d, false, true); } // (never shut on anyone: it waits till the doorway's clear)
+    // PAINT SPILL: the puddle, wet feet, footprints
+    this.spillStep(dt, E);
+    this.propsStep(dt);
+    this.hud(E, u, sp);
+  },
+  // (host) the event's own beats: sparks that draw it over, footprints it follows
+  hostUpdate(dt) {
+    if (!this.on() || Camo.over) return;
+    const E = this.ev, u = E ? Game.time - E.t0 : 0, M = Monster;
+    if (E && E.id === 'surge' && u >= 9 && !E.sparks) { const bs = (Camo.breakers || []).slice().sort(() => Math.random() - 0.5).slice(0, 2); E.sparks = bs.map((b, i) => ({ b, at: Game.time + 0.4 + i * 1.6, lure: i === 0 })); }
+    if (E && E.sparks) for (const S of E.sparks) { if (S.done || Game.time < S.at) continue; S.done = true; Game.emit({ k: 'lmz', x: +S.b.x.toFixed(2), z: +S.b.z.toFixed(2) }); if (S.lure && M.active && M.state !== 'HUNT' && M.state !== 'ATTACK') M.investigate(_lmV.set(S.b.x, 0, S.b.z), 0.7, false); } // (the first panel to spark draws it over)
+    if (this.prints.length && M.active && M.state !== 'HUNT' && M.state !== 'ATTACK' && Game.time - (this.followAt || 0) > 4) {
+      let best = null; for (const p of this.prints) { if (Game.time - p.at > 15) continue; const d = Math.hypot(p.x - M.pos.x, p.z - M.pos.z); if (d < 7 && (!best || p.at > best.at) && losClear(M.pos.x, M.pos.z, p.x, p.z)) best = p; }
+      if (best) { this.followAt = Game.time; const nw = this.prints.filter(p => p.by === best.by).reduce((a, b) => (b.at > a.at ? b : a), best); M.investigate(_lmV.set(nw.x, 0, nw.z), 0.55, false); }
+    }
+    // EMERGENCY DOORS: at the end of the klaxon, the host checks again with everyone where they are now — and seals what's still safe to
+    if (E && E.id === 'doors' && u >= 3 && !E.sent) { E.sent = true; const fin = []; for (const i of E.ds || []) if (this.allReach(new Set(fin.concat([i])))) fin.push(i); Game.emit({ k: 'lmd', ds: fin }); }
+    // the button
+    const B = this.btn; if (B && Game.time >= (B.ready || 0)) for (const a of Camo.team()) { if (a.dead || Camo.held(a)) continue; if (Math.hypot(a.pos.x - B.x, a.pos.z - B.z) < 0.7) { Game.emit({ k: 'lmb', by: Game.idOf(a) }); break; } }
+    if (this.mach && this.mach.until > Game.time && M.active && M.state !== 'HUNT' && M.state !== 'ATTACK' && Game.time - (this.mach.inv || 0) > 3) { this.mach.inv = Game.time; M.investigate(_lmV.set(this.mach.x, 0, this.mach.z), 0.8, false); }
+    // props: whoever runs into one knocks it over
+    for (const P of this.props) { if (P.down) { if (Game.time > P.upAt) Game.emit({ k: 'lmk', i: P.i, up: 1 }); continue; }
+      for (const a of Camo.team()) { if (a.dead || Camo.held(a)) continue; const sp = a === player ? Math.hypot(player.vel.x, player.vel.z) : (a.speed || 0); if (sp > 2.6 && Math.hypot(a.pos.x - P.x, a.pos.z - P.z) < 0.55) { Game.emit({ k: 'lmk', i: P.i, by: Game.idOf(a) }); break; } } }
+  },
+  event(ev) {
+    if (!this.on()) return;
+    if (ev.k === 'lmd') { if (this.ev && this.ev.id === 'doors') this.seal((Array.isArray(ev.ds) ? ev.ds : []).map(i => i | 0).filter(i => doors[i])); return; }
+    if (ev.k === 'lmk') { const P = this.props[ev.i | 0]; if (!P) return; if (ev.up) { P.down = false; P.tip = 0; return; } if (P.down) return; P.down = true; P.tipT = 0; P.upAt = Game.time + 40; const a = (ev.by | 0) === Camo.me() ? player : Net.remotes.get(ev.by | 0); P.dir = a ? Math.atan2(P.x - a.pos.x, P.z - a.pos.z) : 0;
+      Sound.metalHit && Sound.metalHit(_lmV.set(P.x, 0.3, P.z), 0.6); if (!Net.isClient) Game.noise(_lmV.set(P.x, 0, P.z), 11, 'player', a || null);
+      if ((ev.by | 0) === Camo.me()) UI.msg('CLATTER — you knocked something over running. It heard that.', 'warn', 2.6); }
+    else if (ev.k === 'lmb') { const B = this.btn, Mh = this.mach; if (!B || !Mh) return; B.ready = Game.time + 45; Mh.until = Game.time + 8; Mh.inv = 0; Sound.beep && Sound.beep(true); Sound.turbineStart && Sound.turbineStart(_lmV.set(Mh.x, 1, Mh.z), 0.8);
+      const who = (ev.by | 0) === Camo.me() ? 'You' : Net.nameOf(ev.by | 0); UI.msg(who + ' pressed the big red button: the ' + Mh.name + ' starts up — LOUD — over there. It\'ll go and look.', 'good', 4); }
+    else if (ev.k === 'lmz') { Sound.sparks && Sound.sparks(_lmV.set(+ev.x || 0, 1.4, +ev.z || 0)); Sound.breaker && Sound.breaker(_lmV.set(+ev.x || 0, 1.4, +ev.z || 0)); this.sparkFx(+ev.x || 0, +ev.z || 0); }
+  },
+  /* ---- COLOUR SHIFT: your paint and the walls, both in the new light ---- */
+  overlay() {
+    if (!this.el) { const e = document.createElement('div'); e.id = 'lm-tint'; e.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;mix-blend-mode:multiply;transition:background .3s'; document.body.appendChild(e); this.el = e;
+      const f = document.createElement('div'); f.id = 'lm-flare'; f.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;mix-blend-mode:screen;background:#fff8e8'; document.body.appendChild(f); this.fl = f; }
+    return this.el;
+  },
+  /* ---- POWER SURGE ---- */
+  goDark() { this.dark = 1; for (const f of fixtures) if (f.type === 'main' && f.lvl === LVL) f.powerOnAt = Infinity; Sound.brownout && Sound.brownout(); UI.msg('SHORTED OUT — the lights are gone. It can barely see; listen.', 'warn', 3); },
+  unDark() { if (!this.dark) return; this.dark = 0; for (const f of fixtures) if (f.type === 'main' && f.lvl === LVL) f.powerOnAt = Game.time + 0.3 + Math.random() * 1.2; },
+  sparkFx(x, z) { if (typeof Cos === 'undefined') return; const X = COS_TEX(); for (let i = 0; i < 14; i++) Cos.spawn(scene, X.spark, 0xffe08a, x, 1.4, z, rand(-1.6, 1.6), rand(0.2, 1.8), rand(-1.6, 1.6), 0.06, 0.45, true, -0.4); },
+  /* ---- EMERGENCY DOORS ---- */
+  // (host) up to three doors that can close without trapping anyone or anything that matters: every guard, the Warden, every breaker,
+  // every cage and the lift stay reachable from each other (an empty dead-end room can be shut for a while — nobody's in it)
+  must() { const out = Camo.team().filter(a => !a.dead).map(a => [a.pos.x, a.pos.z]); if (Monster.active) out.push([Monster.pos.x, Monster.pos.z]); for (const b of Camo.breakers || []) out.push([b.x, b.z]); for (const c of Camo.cages || []) out.push([c.x, c.z]); for (const d of doors) if (d.type === 'exit' && cellOf(d.cx, d.cz).lvl === Camo.M.lvl) out.push([d.cx, d.cz]); return out; },
+  pickDoors() {
+    const lv = Camo.M.lvl, cand = []; doors.forEach((d, i) => { if (d.type === 'exit' || cellOf(d.cx, d.cz).lvl !== lv) return; if (Camo.team().some(a => Math.hypot(a.pos.x - d.cx, a.pos.z - d.cz) < 2.2) || Math.hypot(Monster.pos.x - d.cx, Monster.pos.z - d.cz) < 2.2) return; cand.push(i); });
+    for (let i = cand.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cand[i], cand[j]] = [cand[j], cand[i]]; }
+    const pick = [];
+    for (const i of cand) { if (pick.length >= 3) break; if (this.allReach(new Set(pick.concat([i])))) pick.push(i); }
+    return pick.length ? pick : null;
+  },
+  allReach(shut) { const M = this.must(); if (!M.length) return false; const S = this.reachSet(shut, M[0][0], M[0][1]); return M.every(([x, z]) => S.has(Math.floor(x / CELL) + ',' + Math.floor(z / CELL)) || [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => S.has((Math.floor(x / CELL) + a) + ',' + (Math.floor(z / CELL) + b)))); },
+  reachSet(shut, x0, z0) {
+    const lv = Camo.M.lvl, sx = Math.floor(x0 / CELL), sz = Math.floor(z0 / CELL), seen = new Set([sx + ',' + sz]), q = [[sx, sz]];
+    const shutCells = new Set([...shut].map(i => Math.floor(doors[i].cx / CELL) + ',' + Math.floor(doors[i].cz / CELL)));
+    while (q.length) { const [x, z] = q.pop(); for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + a, nz = z + b, k = nx + ',' + nz; if (seen.has(k)) continue; const c = cellAt(nx, nz); if (!c || c.lvl !== lv) continue; if (shutCells.has(k)) continue; if (!(c.kind === 'floor' && !c.navBlocked) && c.kind !== 'door' && c.kind !== 'lift') continue; seen.add(k); q.push([nx, nz]); } }
+    return seen;
+  },
+  reach(shut) { return this.reachSet(shut, player.pos.x, player.pos.z).size; },
+  seal(ds) { if (!ds.length) { UI.msg('The lockdown fails to engage — every door stays open.', '', 3); return; } for (const i of ds) { const d = doors[i]; if (!d) continue; this.sealed.add(i); } if (!Net.isClient) { Monster.path = null; Monster.hasGoal = false; } UI.msg(ds.length + ' door' + (ds.length > 1 ? 's' : '') + ' sealed (marked on the map). They open again in ' + Math.round(this.ev ? this.ev.dur - 3 : 30) + ' s.', 'warn', 3.4); },
+  unseal() { if (!this.sealed.size) return; this.sealed.clear(); if (!Net.isClient) { Monster.path = null; Monster.hasGoal = false; } },
+  /* ---- PAINT SPILL ---- */
+  spillSpot() { // (host) the middle of a room, away from the lift and from everyone
+    const M = Camo.M, rooms = [...new Set(M.rooms.split(''))].map(ch => Camo.centre(ch)).filter(Boolean).map(c => [cc(c[0]), cc(c[1])]);
+    const ok = rooms.filter(([x, z]) => Camo.team().every(a => Math.hypot(a.pos.x - x, a.pos.z - z) > 5)); const L = ok.length ? ok : rooms; return L.length ? L[Math.floor(Math.random() * L.length)] : null;
+  },
+  makePuddle(x, z, col) {
+    if (this.puddle) scene.remove(this.puddle.m);
+    const m = new T.Mesh(new T.CircleGeometry(1, 40), new T.MeshPhongMaterial({ color: col, shininess: 90, specular: 0xffffff, transparent: true, opacity: 0.92, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
+    m.rotation.x = -Math.PI / 2; m.position.set(x, 0.02, z); m.scale.setScalar(0.1); m.layers.enableAll(); m.userData.global = true; scene.add(m);
+    const drum = new T.Mesh(new T.CylinderGeometry(0.28, 0.28, 0.8, 18), new T.MeshPhongMaterial({ color: 0x4a5a6a, shininess: 40 })); drum.rotation.z = Math.PI / 2; drum.position.set(0.5, 0.28, 0); m.add(drum); drum.rotation.set(0, 0, Math.PI / 2); drum.position.set(0.55, 0, -0.28); drum.layers.enableAll();
+    this.puddle = { m, x, z, col, r: 1.8, t: 0 };
+  },
+  spillStep(dt, E) {
+    const P = this.puddle;
+    if (P) { P.t += dt; const live = E && E.id === 'spill', k = live ? Math.min(1, P.t / 2) : 0; P.cur = live ? P.r * k : (P.cur || P.r) - dt * 0.6; P.m.scale.setScalar(Math.max(0.05, P.cur)); P.m.visible = LVL === Camo.M.lvl; if (!live && P.cur <= 0.05) { scene.remove(P.m); this.puddle = null; } }
+    // wet feet (every screen works it out for everyone: the puddle and where you all are is the same everywhere)
+    const me = Camo.me();
+    const list = [[me, player]].concat([...Net.remotes.values()].filter(r => r.inGame).map(r => [r.id, r]));
+    for (const [id, a] of list) {
+      if (!a || !a.pos || Camo.held(a)) continue;
+      if (P && P.cur > 0.3 && Math.hypot(a.pos.x - P.x, a.pos.z - P.z) < P.cur * 0.92) { const w = this.wet.get(id); this.wet.set(id, { until: Game.time + 20, col: P.col, d: w ? w.d : 0, lx: a.pos.x, lz: a.pos.z, foot: w ? w.foot : 0 }); if (id === me && !(w && w.painted === P)) this.wetPaint(P); if (w && w.painted) this.wet.get(id).painted = w.painted; if (id === me) this.wet.get(id).painted = P; }
+      const W = this.wet.get(id); if (!W) continue; if (Game.time > W.until) { this.wet.delete(id); continue; }
+      const step = Math.hypot(a.pos.x - W.lx, a.pos.z - W.lz); W.lx = a.pos.x; W.lz = a.pos.z; W.d += step;
+      if (W.d > 0.55 && step < 1) { W.d = 0; W.foot ^= 1; this.print(a.pos.x, a.pos.z, a.yaw || 0, W.col, W.foot, id); }
+    }
+    for (let i = this.prints.length - 1; i >= 0; i--) { const p = this.prints[i], age = Game.time - p.at; if (age > 25) { scene.remove(p.m); this.prints.splice(i, 1); continue; } p.m.material.opacity = 0.8 * (1 - age / 25); }
+  },
+  print(x, z, yaw, col, foot, by) {
+    if (this.prints.length > 140) { const o = this.prints.shift(); scene.remove(o.m); }
+    const sd = foot ? 1 : -1, c = Math.cos(yaw), s = Math.sin(yaw), px = x + sd * 0.07 * c, pz = z - sd * 0.07 * s;
+    const m = new T.Mesh(LiveMap.footGeo || (LiveMap.footGeo = new T.PlaneGeometry(0.09, 0.17)), new T.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.8, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 }));
+    m.rotation.set(-Math.PI / 2, 0, yaw); m.position.set(px, 0.022, pz); m.layers.enableAll(); scene.add(m); this.prints.push({ m, x: px, z: pz, at: Game.time, by });
+  },
+  // your feet, in the spill's colour: the bottom of your legs (that's honestly your paint now — re-spray to get rid of it)
+  wetPaint(P0) {
+    const P = cmClonePaint(Camo.myPaint), G = CM_G;
+    for (const k of ['legLL', 'legRL']) for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) if (j >= G * 0.35) P.g[k][j * G + i] = P0.col;
+    P.v = (Camo.myPaint.v || 0) + 1; Camo.myPaint = P; Camo.paints.set(Camo.me(), P); player._cmk = null; if (Camo.myFig) paintMech(Camo.myFig, P); if (Net.active) Camo.sendPaint();
+    UI.msg('PAINT ON YOUR FEET — it\'s in your camo now, and you\'re leaving footprints for 20 s. It follows fresh ones.', 'warn', 4.5);
+  },
+  /* ---- props and the button: built once a round, the same on every screen ---- */
+  buildProps() {
+    const M = Camo.M; if (this.built === M.id) return; this.built = M.id;
+    let seed = M.id === 's6' ? 1777 : 4243; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const lv = M.lvl, lc = Camo.centre(M.lobby), sx = lc ? cc(lc[0]) : player.pos.x, sz = lc ? cc(lc[1]) : player.pos.z, cells = []; // (from the lift lobby, not from where you stand: the same on every screen)
+    for (let gz = 0; gz < H; gz++) for (let gx = 0; gx < W; gx++) { const c = cellAt(gx, gz); if (!c || c.kind !== 'floor' || c.lvl !== lv || c.navBlocked) continue; let walls = 0; for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const q = cellAt(gx + a, gz + b); if (!q || q.kind === 'wall') walls++; } if (walls !== 1) continue; const x = cc(gx), z = cc(gz); if (Math.hypot(x - sx, z - sz) < 7) continue; cells.push([gx, gz, x, z]); }
+    for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [cells[i], cells[j]] = [cells[j], cells[i]]; }
+    const picks = []; for (const c of cells) { if (picks.length >= 8) break; if (picks.every(p => Math.hypot(p[2] - c[2], p[3] - c[3]) > 7)) picks.push(c); }
+    const kinds = M.id === 's6' ? ['bucket', 'cone', 'bucket', 'cans'] : ['cans', 'cans', 'bucket', 'cone'];
+    picks.slice(0, 6).forEach((c, i) => { const g = this.propMesh(kinds[i % kinds.length]); g.position.set(c[2], 0, c[3]); g.rotation.y = rnd() * 6.28; g.userData.global = true; g.traverse(o => o.layers.enableAll()); scene.add(g); this.props.push({ i, g, x: c[2], z: c[3], down: false, tip: 0, dir: 0 }); });
+    // the button (by a wall) and its machine (the far side of the floor)
+    const bc = picks[6], rooms = [...new Set(M.rooms.split(''))].map(ch => Camo.centre(ch)).filter(Boolean).map(r => [cc(r[0]), cc(r[1])]);
+    if (bc && rooms.length) {
+      let mc = rooms[0], md = 0; for (const r of rooms) { const d = Math.hypot(r[0] - bc[2], r[1] - bc[3]); if (d > md && d < 30) { md = d; mc = r; } }
+      const g = new T.Group(); g.position.set(bc[2], 0, bc[3]); g.userData.global = true;
+      cosM(new T.CylinderGeometry(0.3, 0.34, 0.08, 20), cosMat(0x2a2c30), 0, 0.04, 0, g); const cap = cosM(new T.CylinderGeometry(0.2, 0.22, 0.07, 20), new T.MeshPhongMaterial({ color: 0xd8261c, emissive: 0x500000, shininess: 80 }), 0, 0.11, 0, g);
+      const ring = cosM(new T.RingGeometry(0.36, 0.46, 28), new T.MeshBasicMaterial({ color: 0xffd23a, side: T.DoubleSide, transparent: true, opacity: 0.8 }), 0, 0.012, 0, g); ring.rotation.x = -Math.PI / 2;
+      g.traverse(o => o.layers.enableAll()); scene.add(g); this.btn = { g, cap, ring, x: bc[2], z: bc[3], ready: 0 };
+      const mg = new T.Group(); mg.position.set(mc[0], 0, mc[1]); mg.userData.global = true;
+      cosM(new T.BoxGeometry(0.9, 0.8, 0.7), cosMat(M.id === 's6' ? 0x5a6a4a : 0x4a5a7a, { shininess: 40 }), 0, 0.4, 0, mg); const fan = cosM(new T.CylinderGeometry(0.22, 0.22, 0.05, 6), cosMat(0x222222), 0, 0.83, 0, mg); const lamp = cosM(new T.SphereGeometry(0.06, 10, 8), new T.MeshBasicMaterial({ color: 0x331100 }), 0.3, 0.86, 0.2, mg);
+      mg.traverse(o => o.layers.enableAll()); scene.add(mg); this.mach = { g: mg, fan, lamp, x: mc[0], z: mc[1], until: 0, name: M.id === 's6' ? 'old generator' : 'paint mixer' };
+    }
+  },
+  propMesh(k) {
+    const g = new T.Group();
+    if (k === 'bucket') { cosM(new T.CylinderGeometry(0.15, 0.12, 0.3, 16, 1, true), cosMat(0x8a9098, { side: T.DoubleSide, shininess: 70 }), 0, 0.15, 0, g); cosM(new T.CircleGeometry(0.12, 16), cosMat(0x6a7078), 0, 0.005, 0, g).rotation.x = -Math.PI / 2; const h = cosM(new T.TorusGeometry(0.15, 0.008, 6, 20, Math.PI), cosMat(0x555555), 0, 0.3, 0, g); }
+    else if (k === 'cone') { cosM(new T.CylinderGeometry(0.02, 0.14, 0.42, 16), cosMat(0xff6a1a, { shininess: 50 }), 0, 0.23, 0, g); cosM(new T.BoxGeometry(0.3, 0.03, 0.3), cosMat(0xff6a1a), 0, 0.015, 0, g); cosM(new T.CylinderGeometry(0.07, 0.09, 0.06, 16), cosMat(0xf4f4f4), 0, 0.26, 0, g); }
+    else { for (const [x, y, z] of [[-0.09, 0.09, 0], [0.09, 0.09, 0], [0, 0.27, 0]]) { cosM(new T.CylinderGeometry(0.08, 0.08, 0.18, 14), cosMat([0xc0402a, 0x2a70c0, 0xd8b11a][Math.abs(Math.round(x * 30)) % 3], { shininess: 60 }), x, y, z, g); } }
+    return g;
+  },
+  propsStep(dt) {
+    for (const P of this.props) {
+      P.g.visible = LVL === Camo.M.lvl;
+      const want = P.down ? 1 : 0; P.tip = damp(P.tip || 0, want, P.down ? 9 : 3, dt);
+      P.g.rotation.x = Math.cos(P.dir) * P.tip * 1.45; P.g.rotation.z = -Math.sin(P.dir) * P.tip * 1.45; P.g.position.y = P.tip * 0.08;
+    }
+    const B = this.btn; if (B) { const ready = Game.time >= (B.ready || 0); B.cap.material.emissive.setHex(ready ? 0x500000 + ((Math.sin(Game.time * 4) > 0) ? 0x200000 : 0) : 0x050000); B.ring.material.color.setHex(ready ? 0xffd23a : 0x555555); B.g.visible = LVL === Camo.M.lvl; }
+    const Mh = this.mach; if (Mh) { const run = Mh.until > Game.time; Mh.fan.rotation.y += dt * (run ? 30 : 0); Mh.g.position.y = run ? Math.sin(Game.time * 60) * 0.006 : 0; Mh.lamp.material.color.setHex(run ? 0xff5010 : 0x331100); Mh.g.visible = LVL === Camo.M.lvl;
+      if (run) { Mh.snd = (Mh.snd || 0) - dt; if (Mh.snd <= 0) { Mh.snd = 0.7; Sound.pipeGroan && Sound.pipeGroan(_lmV.set(Mh.x, 1, Mh.z)); } } }
+  },
+  /* ---- what it says up top (the camo's event box) ---- */
+  hud(E, u, sp) {
+    if (!E || typeof CQ === 'undefined' || !CQ.el || Camo.over) return;
+    const D = LM_EVENTS[E.id], left = Math.max(0, Math.ceil(E.dur - u)); let sub = '', hot = false;
+    if (E.id === 'tint') sub = u < 3 ? 'The lamps are changing — check your meter' : (E.tint ? E.tint.n + ': ' + E.tint.tip : '');
+    else if (E.id === 'surge') { sub = sp === 'warn' ? 'Flare in ' + Math.ceil(3 - u) + ' — get out of its sight!' : sp === 'flare' ? 'THE LIGHTS FLARE — it sees further' : 'Dark — it can barely see · sparks at the breakers'; hot = sp !== 'dark'; }
+    else if (E.id === 'doors') sub = u < 3 ? 'Doors sealing in ' + Math.ceil(3 - u) + '…' : this.sealed.size + ' doors sealed · find another way';
+    else if (E.id === 'spill') { const w = this.wet.get(Camo.me()); sub = w ? 'PAINT ON YOUR FEET · footprints for ' + Math.ceil(w.until - Game.time) + 's' : 'Keep out of the puddle — it shows where you went'; hot = !!w; }
+    const html = escHtml(D.name + ' · ' + left + 's') + '<small>' + escHtml(sub) + '</small>', cls = hot ? 'on hot' : 'on';
+    if (CQ.el.className !== cls) CQ.el.className = cls; if (CQ.elHtml !== html) { CQ.elHtml = html; CQ.el.innerHTML = html; }
+  },
+};
+
+/* ---------------- the hooks ---------------- */
+{
+  // the camo's event roll: the new ones are in the hat (each floor its own), with what they need
+  CQ.hostEvent = function () {
+    const mid = Camo.M.id, left = CQ_EVENT_IDS.filter(id => this.used.indexOf(id) < 0 && (id !== 'sleeper' || Camo.M.sleeper) && (!LM_EVENTS[id] || LM_EVENTS[id].maps.indexOf(mid) >= 0));
+    if (!left.length) { this.evN = this.evMax; return; }
+    const id = left[Math.floor(Math.random() * left.length)], E = CQ_EVENTS[id]; let ev = { k: 'cqv', e: id, d: E.dur };
+    if (id === 'drone') { const w = this.dronePath(); if (!w) { this.used.push(id); return; } ev.w = w; }
+    if (id === 'coat') { const c = this.coatPick(); if (!c) { this.used.push(id); return; } ev.r = c.r; ev.c = c.c; }
+    if (LM_EVENTS[id]) { ev = LiveMap.hostPick(id); if (!ev) { this.used.push(id); return; } }
+    this.evN++; this.nextEv = 1e9;
+    Game.emit(ev);
+  };
+  const es0 = CQ.evStart; CQ.evStart = function (ev) { const id = String(ev && ev.e), was = this.ev; const r = es0.apply(this, arguments); if (LM_EVENTS[id] && this.ev && this.ev.id === id && this.ev !== was) LiveMap.start(ev); return r; };
+  const ee0 = CQ.evEnd; CQ.evEnd = function (E, quiet) { if (E && LM_EVENTS[E.id]) LiveMap.end(quiet); return ee0.apply(this, arguments); };
+  const cu0 = CQ.update; CQ.update = function (dt) { const r = cu0.apply(this, arguments); try { LiveMap.update(dt); } catch (e) { if (!LiveMap.err) { LiveMap.err = e; console.error('LiveMap', e); } } return r; };
+  const ch0 = CQ.hostUpdate; CQ.hostUpdate = function (dt) { const r = ch0.apply(this, arguments); try { LiveMap.hostUpdate(dt); } catch (e) { if (!LiveMap.err) { LiveMap.err = e; console.error('LiveMap', e); } } return r; };
+  const cr0 = Camo.reset; Camo.reset = function () { LiveMap.reset(); return cr0.apply(this, arguments); };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) { if (ev && (ev.k === 'lmk' || ev.k === 'lmb' || ev.k === 'lmz' || ev.k === 'lmd')) { LiveMap.event(ev); return; } return ae0.apply(this, arguments); };
+  // COLOUR SHIFT: everything is seen in that light — your paint and the walls alike
+  // (one colour of lamp: colours wash out into the lamp's own — what's left to see is how light or dark a thing is)
+  const sn0 = CamoWorld.seen; CamoWorld.seen = function (st, L, d, o) {
+    const r = sn0.apply(this, arguments); const k = LiveMap.tintK; if (!(k > 0.001)) return r;
+    const c = LiveMap.tintC; r[0] *= 1 + (c[0] - 1) * k; r[1] *= 1 + (c[1] - 1) * k; r[2] *= 1 + (c[2] - 1) * k;
+    const y = 0.2126 * r[0] + 0.7152 * r[1] + 0.0722 * r[2], cy = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2], m = 0.7 * k;
+    for (let i = 0; i < 3; i++) r[i] += (y * c[i] / cy - r[i]) * m;
+    return r;
+  };
+  // POWER SURGE: the flare lights you up; the dark hides you
+  const li0 = CamoWorld.light; CamoWorld.light = function (x, z) { const L = li0.apply(this, arguments); return LiveMap.surgeK > 0.01 ? L * (1 + 0.5 * LiveMap.surgeK) : L; };
+  const d0 = Camo.D; Camo.D = function () { const D = d0.apply(this, arguments); if (!LiveMap.on() || !LiveMap.ev || LiveMap.ev.id !== 'surge') return D; const u = Game.time - LiveMap.ev.t0, k = u >= 3 && u < 9 ? 1.3 : u >= 9 ? 0.6 : 1; if (k === 1) return D; return Object.assign({}, D, { range: D.range * k, eye: (D.eye || 0.5) * (k > 1 ? 1.15 : 0.75) }); };
+  const ul0 = Game.updateLights; Game.updateLights = function (dt) { const r = ul0.apply(this, arguments); if (LiveMap.on()) { LiveMap.dk = damp(LiveMap.dk || 0, LiveMap.dark ? 1 : 0, 2.5, dt); if (LiveMap.dk > 0.002) { hemi.intensity = Math.min(hemi.intensity, lerp(0.95, 0.26, LiveMap.dk)); } if (LiveMap.surgeK > 0.01) hemi.intensity *= 1 + 0.35 * LiveMap.surgeK; } return r; };
+  // EMERGENCY DOORS: sealed is locked — for everyone (on Hard it can still smash through, as it can any locked door)
+  const DP = doors.length && Object.getPrototypeOf(doors[0]);
+  if (DP && DP.locked) { const lk0 = DP.locked; DP.locked = function () { if (LiveMap.sealed.size && LiveMap.on()) { const i = doors.indexOf(this); if (LiveMap.sealed.has(i)) return true; } return lk0.apply(this, arguments); }; }
+}
+/* ================================================================== */
+/* Build 27: HALLOWEEN AT SITE KESTREL (15 October – 2 November)        */
+/* Only while it's on (by your computer's date):                        */
+/*  - five jack-o'-lanterns are hidden on the floor each run (the Night */
+/*    Shift, the Polaroids, Endless Night, MECHA CAMO) — the same       */
+/*    places for the whole team online, each one yours to find;         */
+/*  - each is candy: +15 coins at the end of the run;                   */
+/*  - all five in one run: the PUMPKIN HEAD cosmetic (EPIC) and "Trick  */
+/*    or Treat";                                                        */
+/*  - the Warden wears a carved pumpkin;                                */
+/*  - a banner on the title says so, and how long is left.              */
+/* Nothing else changes; after 2 November it's all gone again (what you */
+/* unlocked stays).                                                     */
+/* ================================================================== */
+const HW_MODES = ['night', 'photos', 'endless', 'camo'], HW_N = 5, HW_COIN = 15;
+ACH.push({ id: 'hw_all', name: 'Trick or Treat', desc: 'Find all five jack-o\'-lanterns in one run (Halloween).' });
+COS.pumpkin.desc = 'Halloween only (15 Oct – 2 Nov): find all five jack-o\'-lanterns in one run, in any mode.';
+const Halloween = {
+  force: null, list: [], got: 0, el: null, hat: null,
+  on(d) { if (this.force !== null) return !!this.force; d = d || new Date(); const m = d.getMonth(), day = d.getDate(); return (m === 9 && day >= 15) || (m === 10 && day <= 2); },
+  daysLeft(d) { d = d || new Date(); const end = new Date(d.getMonth() === 9 || d.getMonth() === 10 ? d.getFullYear() : d.getFullYear(), 10, 2, 23, 59, 59); return Math.max(0, Math.ceil((end - d) / 864e5)); },
+  active() { return this.on() && HW_MODES.indexOf(Game.mode) >= 0 && Game.state === 'playing'; },
+  /* ---- a run: five lanterns, from the run's seed (online, the session's: the same everywhere) ---- */
+  start() {
+    this.clear(); this.got = 0; if (!this.on() || HW_MODES.indexOf(Game.mode) < 0) { this.hud(); return; }
+    let seed = ((Net.active && Net.sessionSeed) || (Math.random() * 4294967296)) >>> 0 || 1; seed = ((seed ^ 0x9e3779b9) >>> 0) % 2147483646 + 1; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const lv = LVL, sp = [player.pos.x, player.pos.z], cells = [];
+    for (let gz = 0; gz < H; gz++) for (let gx = 0; gx < W; gx++) { const c = cellAt(gx, gz); if (!c || c.kind !== 'floor' || c.lvl !== lv || c.navBlocked) continue; let open = 0; for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const q = cellAt(gx + a, gz + b); if (q && q.kind === 'floor' && !q.navBlocked) open++; } if (open < 1) continue; cells.push([cc(gx), cc(gz)]); }
+    const picks = []; for (let tries = 0; picks.length < HW_N && tries < 4000 && cells.length; tries++) { const c = cells[Math.floor(rnd() * cells.length)]; if (Math.hypot(c[0] - sp[0], c[1] - sp[1]) < 8 && Game.mode !== 'camo') continue; if (picks.every(p => Math.hypot(p[0] - c[0], p[1] - c[1]) > 9)) picks.push(c); }
+    picks.forEach((c, i) => { const g = this.lantern(); g.position.set(c[0] + (rnd() - 0.5) * 0.6, 0, c[1] + (rnd() - 0.5) * 0.6); g.rotation.y = rnd() * 6.28; g.userData.global = true; g.traverse(o => o.layers.enableAll()); scene.add(g); this.list.push({ i, g, x: g.position.x, z: g.position.z, got: false, lvl: lv }); });
+    this.hud(); this.wardenHat(true);
+    setTimeout(() => { if (this.active() && this.list.length) UI.msg('🎃 HALLOWEEN: five jack-o\'-lanterns are hidden on this floor. Each is candy (+' + HW_COIN + ' coins) — all five: the Pumpkin Head.', 'hint', 6); }, 9000);
+  },
+  clear() { for (const L of this.list) scene.remove(L.g); this.list = []; this.wardenHat(false); },
+  lantern() {
+    const g = new T.Group(), p = new T.LatheGeometry([[0, -0.15], [0.09, -0.145], [0.16, -0.09], [0.18, 0], [0.16, 0.09], [0.09, 0.14], [0, 0.145]].map(v => new T.Vector2(v[0], v[1])), 16);
+    const pos = p.attributes.position; for (let i = 0; i < pos.count; i++) { const x = pos.getX(i), z = pos.getZ(i), a = Math.atan2(z, x), k = 1 + 0.07 * Math.cos(a * 8); pos.setX(i, x * k); pos.setZ(i, z * k); } p.computeVertexNormals();
+    const body = new T.Mesh(p, new T.MeshPhongMaterial({ color: 0xe8740e, emissive: 0x4a1a00, shininess: 25 })); body.position.y = 0.15; body.castShadow = true; g.add(body);
+    const stem = new T.Mesh(new T.CylinderGeometry(0.014, 0.022, 0.07, 8), new T.MeshPhongMaterial({ color: 0x4a6a22 })); stem.position.y = 0.32; g.add(stem);
+    const glow = new T.MeshBasicMaterial({ color: 0xffd23a, side: T.DoubleSide });
+    for (const s of [-1, 1]) { const e = new T.Mesh(new T.CircleGeometry(0.035, 3), glow); e.position.set(s * 0.06, 0.19, -0.176); e.rotation.set(0, Math.PI, s * 0.3); g.add(e); }
+    const m = new T.Mesh(new T.PlaneGeometry(0.13, 0.035), glow); m.position.set(0, 0.1, -0.172); m.rotation.y = Math.PI; g.add(m);
+    const halo = new T.Sprite(new T.SpriteMaterial({ map: COS_TEX().dot, color: 0xff9a2a, transparent: true, opacity: 0.55, blending: T.AdditiveBlending, depthWrite: false })); halo.position.y = 0.17; halo.scale.setScalar(0.9); g.add(halo); g.userData.halo = halo;
+    return g;
+  },
+  // the Warden, dressed for the occasion
+  wardenHat(on) {
+    const P = Monster.P; if (!P || !P.head) return;
+    if (!on) { if (this.hat) { this.hat.parent && this.hat.parent.remove(this.hat); this.hat = null; } return; }
+    if (this.hat) return;
+    const g = new T.Group(); COS_BUILD.pumpkin(g); g.scale.setScalar(1.45); g.position.set(0, 0.02, 0.01); g.traverse(o => { o.layers.enableAll(); if (o.isMesh) o.castShadow = true; }); P.head.add(g); this.hat = g;
+  },
+  update(dt) {
+    if (!this.list.length) return;
+    const p = player, t = performance.now() / 1000;
+    for (const L of this.list) {
+      if (L.got) continue; L.g.visible = LVL === L.lvl; L.g.userData.halo.material.opacity = 0.4 + 0.2 * Math.sin(t * 3 + L.i);
+      if (!this.active() || p.dead || LVL !== L.lvl || (typeof Camo !== 'undefined' && Camo.on && Camo.held(p))) continue;
+      if (Math.hypot(p.pos.x - L.x, p.pos.z - L.z) < 0.9) this.take(L);
+    }
+  },
+  // (each player finds their own: it's candy, not a team objective — your friends still see theirs)
+  take(L) {
+    L.got = true; scene.remove(L.g); this.got++; Chars.stats.pumpkins = this.got;
+    Sound.coin && Sound.coin(); Sound.musicBox && Sound.musicBox(_lmV.set(L.x, 0.5, L.z), 0.6);
+    if (this.got >= HW_N) { Goals.unlock('hw_all'); Cos.give('pumpkin', 'all five jack-o\'-lanterns'); UI.center && UI.center('TRICK OR TREAT', 'All five — the Pumpkin Head is yours (Cosmetic Locker)'); }
+    else UI.msg('🎃 Jack-o\'-lantern ' + this.got + '/' + HW_N + ' — candy, +' + HW_COIN + ' coins at the end.', 'good', 3);
+    this.hud();
+  },
+  hud() {
+    if (!this.el) { const e = document.createElement('div'); e.id = 'hw-hud'; e.style.cssText = 'position:fixed;right:24px;top:78px;z-index:6;pointer-events:none;font:700 13px/1 var(--mono,monospace);letter-spacing:.12em;color:#ffb347;text-shadow:0 0 10px rgba(255,140,30,.6),0 1px 0 #000;display:none'; document.body.appendChild(e); this.el = e; }
+    const on = this.list.length > 0 && HW_MODES.indexOf(Game.mode) >= 0; this.el.style.display = on ? 'block' : 'none'; if (on) this.el.textContent = '🎃 ' + this.got + ' / ' + HW_N;
+  },
+  banner() {
+    const meta = document.querySelector('.title-meta'); if (!meta) return; let b = $('hw-banner');
+    if (!this.on()) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('div'); b.id = 'hw-banner'; b.style.cssText = 'margin:0 0 10px;font:700 11px/1.4 var(--mono,monospace);letter-spacing:.22em;color:#ff9a2a;text-shadow:0 0 12px rgba(255,120,20,.55)'; meta.before(b); }
+    const n = this.daysLeft(); b.textContent = '🎃 HALLOWEEN AT SITE KESTREL · ' + (n <= 1 ? 'LAST DAY' : n + ' DAYS LEFT') + ' · FIND THE JACK-O\'-LANTERNS';
+  },
+};
+/* ---------------- the hooks ---------------- */
+{
+  const ng0 = Game.newGame; Game.newGame = function () { Halloween.clear(); Halloween.got = 0; const r = ng0.apply(this, arguments); try { Halloween.start(); } catch (e) { console.error('Halloween', e); } return r; };
+  const gu0 = Game.update; Game.update = function (dt) { const r = gu0.apply(this, arguments); try { Halloween.update(dt); } catch (e) { if (!Halloween.err) { Halloween.err = e; console.error('Halloween', e); } } return r; };
+  // candy pays at the end
+  const po0 = Chars.payout; Chars.payout = function (won) {
+    const first = !this.paid, r = po0.apply(this, arguments);
+    if (first && Array.isArray(r) && Halloween.got > 0 && this.data && !(r.length === 1 && /pays nothing/.test(String(r[0][1])))) {
+      const c = Halloween.got * HW_COIN; this.data.coins = Math.min(ECON.maxCoins, this.data.coins + c); this.save();
+      const i = r.findIndex(x => x[0] === 'Coins earned'); r.splice(i < 0 ? r.length : i, 0, ['Jack-o\'-lanterns 🎃', Halloween.got + ' × ' + HW_COIN]);
+      const T0 = r.find(x => x[0] === 'Coins earned'); if (T0) T0[1] = String(T0[1]).replace(/^\+(\d+) \((\d+) total\)/, (m, a) => '+' + (+a + c) + ' (' + this.data.coins + ' total)');
+    }
+    return r;
+  };
+  const us0 = UI.show; UI.show = function (id) { const r = us0.apply(this, arguments); if (id === 'screen-title') try { Halloween.banner(); } catch (e) { } return r; };
+  Halloween.banner();
+}
+/* ================================================================== */
+/* Build 27: WARDEN vs GUARDS — MECHA CAMO online, a person is the     */
+/* Warden. In the lobby, with MECHA CAMO picked, the host chooses who   */
+/* plays the Warden: the AI (as always) or THE HOST. With the host:     */
+/*  - the host waits in the dark while the others hide (the prep), then */
+/*    wakes as the Warden, in first person, and hunts with their own    */
+/*    eyes: nothing tells them where anyone is — no meter, no marks,    */
+/*    no cosmetics (they could give someone away); only paint, and      */
+/*    movement, and noise (props, the button, a dance…);                */
+/*  - [click] GRAB a guard right in front of you (into a cage, as ever) */
+/*  - [F] SNIFF: for 2.5 s, everyone within 9 m shows through the walls */
+/*    (every 20 s);                                                     */
+/*  - the guards play exactly as usual — breakers, the lift, freeing    */
+/*    each other — and see the Warden walking where the host walks.     */
+/* The host decides every grab (range, facing, line of sight). Needs at */
+/* least one guard: alone, the AI plays it.                             */
+/* ================================================================== */
+const HW_GRAB = 1.9, HW_SNIFF_CD = 20, HW_SNIFF_R = 9, HW_SNIFF_T = 2.5;
+const HumanWarden = {
+  ok: false, grabCD: 0, sniffCD: 0, sniffT: 0, marks: [], blind: null, hint: null,
+  on() { return this.ok && Game.mode === 'camo' && typeof Camo !== 'undefined' && Camo.on; },
+  me() { return this.on() && !Net.isClient; }, // (the host plays it)
+  isW(a) { return this.on() && a && Game.idOf(a) === 0; },
+  start() {
+    this.ok = !!(Net.active && Net.sessionCamoWarden === 'host' && crew().length >= 2); this.grabCD = 0; this.sniffCD = 0; this.sniffT = 0; this.clearMarks();
+    if (!this.ok) { this.show(false); return; }
+    if (this.me()) { [Camo.hudEl, Camo.stillEl, Camo.warnEl].forEach(e => { if (e) e.style.visibility = 'hidden'; }); this.show(true); UI.center('YOU ARE THE WARDEN', 'They\'re hiding. When the count ends, find them — [click] GRAB · ' + Keys.b('ability') + ' SNIFF', 5); }
+    else setTimeout(() => { if (this.on()) UI.center('A PERSON IS THE WARDEN', Net.nameOf(0) + ' is hunting you this time — with their own eyes. Paint well. Keep still.', 5); }, 600);
+  },
+  stop() { this.ok = false; this.show(false); this.clearMarks(); [Camo.hudEl, Camo.stillEl, Camo.warnEl].forEach(e => { if (e) e.style.visibility = ''; }); },
+  show(on) {
+    if (!this.blind) { const b = document.createElement('div'); b.id = 'hw-blind'; b.style.cssText = 'position:fixed;inset:0;z-index:8;background:#030304;display:none;align-items:center;justify-content:center;flex-direction:column;color:#d8d0c8;font:700 22px/1.4 var(--mono,monospace);letter-spacing:.3em;text-align:center;pointer-events:none'; document.body.appendChild(b); this.blind = b;
+      const h = document.createElement('div'); h.id = 'hw-hint'; h.style.cssText = 'position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:6;font:700 12px/1 var(--mono,monospace);letter-spacing:.16em;color:#ffb0a0;text-shadow:0 1px 0 #000;display:none;pointer-events:none'; document.body.appendChild(h); this.hint = h; }
+    if (!on) { this.blind.style.display = 'none'; this.hint.style.display = 'none'; }
+  },
+  // (host) every frame: the Warden is wherever you are
+  hostFrame(dt) {
+    const p = player, M = Monster;
+    if (!Camo.released) { // the prep: in the dark, at its post, counting
+      if (!this.post) this.post = [M.pos.x, M.pos.z, M.yaw];
+      p.pos.set(this.post[0], 0, this.post[1]); p.vel.set(0, 0, 0);
+      this.blind.style.display = 'flex'; this.blind.innerHTML = 'THEY\'RE HIDING<br><span style="font-size:48px;letter-spacing:.1em">' + Math.max(0, Math.ceil(Camo.D().prep - Camo.t)) + '</span><small style="font-size:11px;letter-spacing:.2em;opacity:.7">YOU ARE THE WARDEN · [click] GRAB · ' + escHtml(Keys.b('ability')) + ' SNIFF</small>';
+      this.hint.style.display = 'none'; return;
+    }
+    if (this.post) { p.pos.set(this.post[0], 0, this.post[1]); p.yaw = this.post[2] + Math.PI; this.post = null; } // (you wake where it slept)
+    this.blind.style.display = 'none';
+    this.grabCD = Math.max(0, this.grabCD - dt); this.sniffCD = Math.max(0, this.sniffCD - dt); this.sniffT = Math.max(0, this.sniffT - dt);
+    this.hint.style.display = 'block'; this.hint.textContent = '[CLICK] GRAB' + (this.grabCD > 0 ? ' …' : '') + '   ·   ' + Keys.b('ability') + ' SNIFF ' + (this.sniffCD > 0 ? Math.ceil(this.sniffCD) + 's' : 'READY') + '   ·   ' + Camo.team().filter(a => !Camo.held(a)).length + ' HIDING';
+    this.drawMarks();
+  },
+  // the Warden's body follows you (everyone else sees it walk, run and turn)
+  body(dt) {
+    const p = player, M = Monster, sp = Math.hypot(p.vel.x, p.vel.z);
+    M.active = true; M.pos.set(p.pos.x, 0, p.pos.z); M.yaw = p.yaw + Math.PI; M.vel.set(p.vel.x, 0, p.vel.z); M.speed = sp; M.seeing = false; M.target = null; M.awareness = 0; M.atk = null;
+    M.state = !Camo.released ? 'PATROL' : sp > 3.4 ? 'HUNT' : 'PATROL';
+    try { M.animate(dt, sp); } catch (e) { }
+    M.model.visible = false; // (first person: your own body would fill the screen)
+  },
+  grab() {
+    if (!this.me() || !Camo.released || Camo.over || this.grabCD > 0) return;
+    this.grabCD = 1.0; const p = player, fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw); let best = null, bd = 9;
+    for (const a of Camo.team()) { if (Camo.held(a) || a.dead) continue; const dx = a.pos.x - p.pos.x, dz = a.pos.z - p.pos.z, d = Math.hypot(dx, dz); if (d > HW_GRAB) continue; const dot = (dx * fx + dz * fz) / (d || 1); if (d > 0.7 && dot < 0.55) continue; if (!losClear(p.pos.x, p.pos.z, a.pos.x, a.pos.z)) continue; if (d < bd) { bd = d; best = a; } }
+    Sound.whoosh && Sound.whoosh();
+    if (best) { Sound.growl && Sound.growl(); Game.shake(0.25); Camo.hostCapture(best); UI.msg('GOT ONE — ' + Net.nameOf(Game.idOf(best)) + ' is in a cage.', 'good', 3); }
+  },
+  sniff() {
+    if (!this.me() || !Camo.released || Camo.over || this.sniffCD > 0) return;
+    this.sniffCD = HW_SNIFF_CD; this.sniffT = HW_SNIFF_T; Sound.breathM && Sound.breathM(1); Sound.growl && Sound.growl();
+    const n = Camo.team().filter(a => !Camo.held(a) && Math.hypot(a.pos.x - player.pos.x, a.pos.z - player.pos.z) < HW_SNIFF_R).length;
+    UI.msg(n ? 'SNIFF — ' + n + ' close by.' : 'SNIFF — nobody within ' + HW_SNIFF_R + ' m.', n ? 'warn' : '', 2.4);
+  },
+  clearMarks() { for (const m of this.marks) scene.remove(m); this.marks = []; },
+  drawMarks() {
+    const list = this.sniffT > 0 ? Camo.team().filter(a => !Camo.held(a) && Math.hypot(a.pos.x - player.pos.x, a.pos.z - player.pos.z) < HW_SNIFF_R) : [];
+    while (this.marks.length < list.length) { const s = new T.Sprite(new T.SpriteMaterial({ map: COS_TEX().dot, color: 0xff2a1a, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false, blending: T.AdditiveBlending })); s.renderOrder = 9; s.layers.enableAll(); scene.add(s); this.marks.push(s); }
+    this.marks.forEach((s, i) => { const a = list[i]; s.visible = !!a; if (!a) return; s.position.set(a.pos.x, 0.75, a.pos.z); const k = Math.min(1, this.sniffT / 0.6); s.material.opacity = 0.85 * k; s.scale.setScalar(0.9 + 0.15 * Math.sin(Game.time * 9)); });
+  },
+};
+
+/* ---------------- the lobby: who plays it ---------------- */
+{
+  const row = document.createElement('div'); row.className = 'mp-modes mp-cmaps'; row.id = 'mp-cwar'; row.hidden = true;
+  row.innerHTML = '<span>THE WARDEN:</span><button data-cwar="ai">THE AI</button><button data-cwar="host">YOU (THE HOST) PLAY IT</button>';
+  const after = $('mp-cmaps'); if (after) after.after(row);
+  const sync = () => { const v = settings.camoWarden === 'host' ? 'host' : 'ai'; row.querySelectorAll('[data-cwar]').forEach(b => b.classList.toggle('sel', b.dataset.cwar === v)); };
+  row.querySelectorAll('[data-cwar]').forEach(b => b.addEventListener('click', e => { e.preventDefault(); if (Net.isClient) return; settings.camoWarden = b.dataset.cwar === 'host' ? 'host' : 'ai'; saveSettings(); Sound.ui && Sound.ui(); sync(); if (Net.isHost) { Net.sendCfg(); Net.lobbyUpdate(); } }));
+  const lu0 = Net.lobbyUpdate; Net.lobbyUpdate = function () {
+    const r = lu0.apply(this, arguments), mode = this.isClient ? this.sessionMode : settings.mode; row.hidden = !this.isHost || mode !== 'camo';
+    const note = $('mp-diff-note'), cw = this.isClient ? this.sessionCamoWarden : settings.camoWarden;
+    if (note && mode === 'camo' && cw === 'host' && note.textContent.indexOf('host plays the Warden') < 0) note.textContent += ' · The host plays the Warden';
+    sync(); return r;
+  };
+  // the choice travels with the lobby's settings and the start of the game
+  const ac0 = Net.applyCfg; Net.applyCfg = function (m) { const r = ac0.apply(this, arguments); this.sessionCamoWarden = m && m.cw === 'host' ? 'host' : 'ai'; return r; };
+  const br0 = Net.broadcast; Net.broadcast = function (m) { if (m && (m.k === 'cfg' || m.k === 'start') && this.isHost) m.cw = settings.camoWarden === 'host' ? 'host' : 'ai'; return br0.apply(this, arguments); };
+  const rl0 = Net.rel; Net.rel = function (peer, m) { if (m && m.k === 'welcome' && this.isHost) m.cw = settings.camoWarden === 'host' ? 'host' : 'ai'; return rl0.apply(this, arguments); };
+  const sg0 = Net.startGame; Net.startGame = function () { if (this.isHost) this.sessionCamoWarden = settings.camoWarden === 'host' ? 'host' : 'ai'; return sg0.apply(this, arguments); };
+  sync();
+}
+
+/* ---------------- the round ---------------- */
+{
+  const H = HumanWarden;
+  const cs0 = Camo.start; Camo.start = function () { const r = cs0.apply(this, arguments); try { H.post = null; H.start(); } catch (e) { console.error('HumanWarden', e); } return r; };
+  const cr0 = Camo.reset; Camo.reset = function () { H.stop(); return cr0.apply(this, arguments); };
+  // the Warden isn't one of the team: not hiding, not escaping, not counted
+  const ct0 = Camo.team; Camo.team = function () { const t = ct0.apply(this, arguments); return H.on() ? t.filter(a => Game.idOf(a) !== 0) : t; };
+  // (host) no AI: the body is yours
+  const mu0 = Monster.update; Monster.update = function (dt) { if (H.me()) { H.body(dt); return; } return mu0.apply(this, arguments); };
+  const gu0 = Game.update; Game.update = function (dt) { const r = gu0.apply(this, arguments); if (H.me() && Game.state === 'playing') { try { H.hostFrame(dt); } catch (e) { if (!H.err) { H.err = e; console.error('HumanWarden', e); } } } return r; };
+  // (guests) the host's stickman isn't drawn: the Warden is
+  const cd0 = Camo.draw; Camo.draw = function (dt) { const r = cd0.apply(this, arguments); if (H.on()) { const f = this.figs.get(0); if (f) f.visible = false; if (H.me() && this.myFig) this.myFig.visible = false; } return r; };
+  // the Warden's eyes only: no cosmetics on the guards (a crown could give someone away), no panic, no paint, no emotes
+  const eq0 = Cos.eqOf; Cos.eqOf = function (id) { if (H.me() && id !== Net.myId) return {}; return eq0.apply(this, arguments); };
+  const pa0 = Panic.active; Panic.active = function () { if (H.me()) return false; return pa0.apply(this, arguments); };
+  const om0 = Camo.openMenu; Camo.openMenu = function () { if (H.me()) return; return om0.apply(this, arguments); };
+  const ec0 = Emote.can; Emote.can = function () { if (H.me()) return false; return ec0.apply(this, arguments); };
+  const csp0 = Camo.sprayStart; if (csp0) Camo.sprayStart = function () { if (H.me()) return false; return csp0.apply(this, arguments); };
+  // the keys and the click (only while you're the Warden, in a round)
+  window.addEventListener('keydown', e => { if (!H.me() || Game.state !== 'playing' || e.repeat) return; const act = Keys.actionOf(e.code); if (act === 'ability') { e.preventDefault(); e.stopImmediatePropagation(); H.sniff(); } else if (act === 'nextWeapon' || act === 'emote' || ((e.code === 'KeyB' || e.code === 'KeyL') && !act)) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  window.addEventListener('mousedown', e => { if (!H.me() || Game.state !== 'playing' || !Input.locked || e.button !== 0) return; e.preventDefault(); e.stopImmediatePropagation(); H.grab(); }, true);
+  // the end, from the Warden's side
+  const re0 = Camo.result; Camo.result = function (ev) {
+    const was = this.over, r = re0.apply(this, arguments);
+    if (!was && this.over && H.me()) { const won = !!ev.w; try { if (won) { $('win-title').textContent = 'They got out'; $('win-sub').textContent = 'You were the Warden · ' + $('win-sub').textContent; } else { $('go-title').textContent = 'You caught them'; $('go-sub').textContent = 'You were the Warden — ' + (ev.why === 'time' ? 'and the lockdown sealed them in' : 'every one of them, in a cage'); } } catch (e) { } H.show(false); }
+    return r;
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -32782,7 +34243,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
+  Object.assign(window.LS, { HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
 </script>
