@@ -25,7 +25,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .screen{position:fixed;inset:0;display:none;z-index:20;align-items:center;justify-content:center;flex-direction:column}
 .screen.active{display:flex}
 .shade{background:radial-gradient(ellipse at center,rgba(6,6,7,.78) 0%,rgba(0,0,0,.94) 75%)}
-.codes-panel{max-width:min(560px,94vw)}.ct-panel{max-width:min(620px,94vw)}.ct-count{white-space:nowrap;font-size:.5em;color:#ffd77a;letter-spacing:.1em;vertical-align:middle;margin-left:8px}.ct-row{position:relative;padding:12px 14px;margin:0 0 10px;border:1px solid var(--line);background:rgba(255,255,255,.03)}.ct-row.done{border-color:#5a8a5a;background:rgba(90,160,90,.08)}.ct-t{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.ct-t b{font-size:15px;color:#efe9dc;font-weight:600}.ct-m{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#9a927f;white-space:nowrap}.ct-bar{height:5px;background:rgba(255,255,255,.08);margin:9px 0 6px}.ct-bar i{display:block;height:100%;background:#d9a83a}.ct-row.done .ct-bar i{background:#6ac06a}.ct-r{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:#bfae80}.ct-row.done .ct-p{color:#8ad08a}.ct-row .btn.ct-rr{display:inline-block;margin:8px 0 0;padding:4px 10px;font-size:10px;letter-spacing:.16em;min-width:0;line-height:1.3}.ct-foot{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#9a927f;line-height:1.6;margin:6px 0 14px}.menu .mbtn .ct-badge{animation:none;background:#c9a227}.menu .mbtn .ct-badge.all{background:#3a7a3a;color:#eaffea}.codes-sub{color:#b9b3a6;font-size:14px;line-height:1.55;margin:-6px 0 16px}
+.codes-panel{max-width:min(560px,94vw)}.ct-panel{max-width:min(620px,94vw)}.dx-mods{display:grid;gap:6px;margin:6px 0 4px}.dx-mod{display:flex;gap:8px;align-items:baseline;font-size:13px;cursor:pointer}.dx-mod b{font-weight:600;letter-spacing:.06em;white-space:nowrap}.dx-mod span{opacity:.75}.dx-brief-cp{border:1px solid rgba(201,162,39,.45);background:rgba(201,162,39,.08);padding:10px 12px;margin:8px 0;font-size:13px}.dx-brief-cp .dx-act{display:flex;gap:6px;flex-wrap:wrap}.dx-brief-cp button{font:600 11px/1 var(--mono,monospace);letter-spacing:.1em;padding:8px 10px;background:rgba(255,255,255,.05);color:#e8e0d0;border:1px solid rgba(255,255,255,.2);cursor:pointer}.dx-brief-cp button.sel{background:#f0e6c8;color:#111}.ct-count{white-space:nowrap;font-size:.5em;color:#ffd77a;letter-spacing:.1em;vertical-align:middle;margin-left:8px}.ct-row{position:relative;padding:12px 14px;margin:0 0 10px;border:1px solid var(--line);background:rgba(255,255,255,.03)}.ct-row.done{border-color:#5a8a5a;background:rgba(90,160,90,.08)}.ct-t{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.ct-t b{font-size:15px;color:#efe9dc;font-weight:600}.ct-m{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#9a927f;white-space:nowrap}.ct-bar{height:5px;background:rgba(255,255,255,.08);margin:9px 0 6px}.ct-bar i{display:block;height:100%;background:#d9a83a}.ct-row.done .ct-bar i{background:#6ac06a}.ct-r{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:#bfae80}.ct-row.done .ct-p{color:#8ad08a}.ct-row .btn.ct-rr{display:inline-block;margin:8px 0 0;padding:4px 10px;font-size:10px;letter-spacing:.16em;min-width:0;line-height:1.3}.ct-foot{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#9a927f;line-height:1.6;margin:6px 0 14px}.menu .mbtn .ct-badge{animation:none;background:#c9a227}.menu .mbtn .ct-badge.all{background:#3a7a3a;color:#eaffea}.codes-sub{color:#b9b3a6;font-size:14px;line-height:1.55;margin:-6px 0 16px}
 .code-box{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
 #code-in{flex:1 1 220px;min-width:0;font-family:var(--mono);font-size:18px;letter-spacing:.24em;text-transform:uppercase;padding:12px 14px;background:rgba(0,0,0,.35);border:1px solid var(--line2);color:#fff;outline:none}
 #code-in:focus{border-color:var(--amber)}
@@ -1148,6 +1148,14 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p">Click to <b>swipe</b>: a guard in reach is caught. <span data-key="ability"></span> <b>SCREECH</b>: you hear every one of them for 6 seconds, through the walls, and the ones close to you freeze. <span data-key="ultimate"></span> <b>POUNCE</b>: a long leap. The guards hide in <b>lockers</b> — a heartbeat means one is close; <span data-key="interact"></span> tears the door open. They run when they see you, and their <b>flashlights blind you</b> if you come at them from the front.</p>
     <p class="p">If <b>half of them</b> get out, the hunt is lost. Catch them all — or keep them inside until 6:00 AM. <b>Online</b>, everyone is a Warden and you hunt together: there are more guards for more of you, and the host decides every catch.</p>
     </div>
+    <div id="brief-descent" hidden>
+    <p class="p">One expedition, five floors, in order: <b>Sublevel 6</b> (the Night Shift), <b>7</b> (the Gallery), <b>8</b> (the Blackout), <b>9</b> (the Hive) and <b>10</b> (the Root). Each floor is the real one — clear it the way you would on its own.</p>
+    <p class="p"><b>Between floors you ride the lift</b>: see how the team is, use the shared <b>med kits</b> and <b>battery packs</b>, read what you found — then <b>EXTRACT</b> (bank everything, the expedition ends) or vote to <b>CONTINUE</b> (deeper floors pay more, nothing is banked yet). Online, going deeper needs more than half the team; a tie or the clock running out means extract.</p>
+    <p class="p">Your health, battery, spares and weapons come down with you. <b>[J]</b> uses a med kit on a floor. Lost on a floor: <b>one retry</b> from the last lift (it costs 20% of the unbanked bounty) — or the expedition ends and you keep <b>25%</b>. Leaving in the middle of a floor counts as a failed attempt. A <b>dossier page</b> is hidden on every floor.</p>
+    <div class="dx-brief-cp" id="dx-brief-cp" hidden></div>
+    <div class="kicker" style="margin-top:10px">Modifiers · harder, and they pay more</div><div class="dx-mods" id="dx-mods"></div>
+    <p class="p" style="opacity:.75" id="dx-best"></p>
+    </div>
     <div id="brief-camo" hidden>
     <div class="camo-maps"><span>MAP</span><button data-cmap="s6"><b>SUBLEVEL 6</b><small>The facility, mid-renovation: offices, labs, Containment.</small></button><button data-cmap="works"><b>THE COLOUR WORKS<i class="new">NEW</i></b><small>A paint factory: vats, hanging sheets, spray booths.</small></button></div>
     <p class="p">Sublevel 6 is half-way through a renovation: <b>the lights are on</b> and there's paint everywhere — murals, tarps, panels, rugs, a colour to every room. You are a thick little <b>stickman</b>, factory orange. You have <b>25 seconds</b> (Normal) before the Warden wakes up in Containment.</p>
@@ -1178,6 +1186,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div class="kicker" style="margin-top:14px">The Holloway · a hotel under the hill</div>
     <div class="modes hotel">
       <button class="mode doors" data-mode="doors"><b>100 DOORS<i class="new">NEW</i></b><span>A hundred numbered doors, one after the next, in an old hotel that furnishes itself anew every run. Search the drawers, find the keys — and when the lights flicker, hide. The library at 50. Room 100. Solo or online, up to four.</span><em data-best="doors"></em></button>
+    </div>
+    <div class="kicker" style="margin-top:14px">The Descent · Sublevels 6 to 10 · one expedition</div>
+    <div class="modes descent">
+      <button class="mode lv10" data-mode="descent"><b>THE DESCENT<i class="new">NEW</i></b><span>The Night Shift, the Gallery, the Blackout, the Hive and the Root, one after the other — what you carry comes with you. Between floors, in the lift: extract and bank it, or vote to go deeper.</span><em data-best="descent"></em></button>
     </div>
     <div class="kicker" style="margin-top:14px">Deeper · new floors, new monsters</div>
     <div class="modes deep" id="modes-deep">
@@ -1283,6 +1295,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li><b>THE INFESTANT (online co-op only).</b> Play with friends and, after a while, something else comes in with you: it wears one of your team — their face, their kit, their name over its head, a light in its hand — and it goes for whoever is <b>alone</b>. Up close it comes apart and strikes, then runs, and comes back later as someone else. Tells: its light lights nothing, its feet make no sound, and when it thinks nobody is watching its head goes over too far. <b>Hold your flashlight on it</b> and it burns, shrieks and flees; hit it and it flees; burn it enough and it's gone for the floor. Stay together and it only watches.</li>
           <li><b>Build 18's new hires.</b> <b>KAIROS, THE LAST SECOND</b> (ULTIMATE): <b>REWIND</b> takes him back to where he stood four seconds ago, with any health he lost since (it never takes health away); <b>CHRONO HALT</b> on <b data-key="ultimate">X</b> stops every monster on the floor for 6 s — then TIME DEBT, 8 s of taking 50% more damage. <b>PYRO</b> (Special): <b>INFERNO</b>, a 7.5 m jet of fire that burns, drives back and leaves the floor alight; fireproof — no fire, molotov or napalm hurts him — but his tanks make him slower and louder. <b>TRAPPER</b> (Special): <b>BEAR TRAP</b>, up to three on the floor; the first monster to step in one is clamped for 3.5 s and hurt, the team hears it, and he sees every monster through the walls for 4 s.</li>
           <li><b>The deeper floors</b> (New Game → Deeper): <b>Sublevel 7, the Gallery</b> — a museum of mannequins where one of them only moves while nobody looks at it: keep it in your light, find three fuses, power the freight lift. <b>Sublevel 8, the Blackout</b> — a power station gone dark, where the Shade lives between the lights: torch beams, flares and fire burn it, lamps keep it out, and it puts the lamps out to reach you. Restart three turbines, throw the main breaker, call the Surface Express — and survive the dark until it comes. <b>Sublevel 9, the Hive</b> — a bio-lab that grew a brood: crawler packs that flank you, screamer pods that call the rest, mimics among the supplies, spitters, and the Butcher (knock it down and keep hitting it while it's down: it gets up weaker, and the third time it stays down). Find three cultures, run the sequencer, burn three nests, reroute the power and hold the Lobby until the Quarantine Lift comes. <b>Sublevel 10, the Root</b> — the mine under everything: charge three pylons (one is missing its power cell), kill the Mother by bursting her three sacs while her arms come down in the red rings, then outrun the collapse to the old mine elevator — a different way out is buried every time.</li>
+          <li><b>THE DESCENT</b> (New Game → The Descent, solo or online): one expedition down through all five floors — the Night Shift, the Gallery, the Blackout, the Hive and the Root, each exactly as you know it. Between floors the lift stops: see the team's condition, use a <b>med kit</b> or a <b>battery</b> from the shared supplies (one requisition per lift buys a med kit from your own bounty), read the evidence you found, and <b>vote</b>: <b>EXTRACT</b> (take the bounty home) or <b>CONTINUE</b> (deeper floors pay more). CONTINUE needs more than half the team; a tie, silence or the countdown running out means EXTRACT. What you carry goes down with you — health, batteries, weapons, ammo. Nothing is paid until you get out: the coins from each floor are your <b>unsecured bounty</b>, and a wipe keeps only 25% of it — unless you spend your one <b>retry</b> (from the last lift, for 20% of the bounty). Each floor hides one <b>evidence page</b> (a grey folder). Clear the Root to finish the expedition. <span data-key="medkit"></span> uses a med kit on a floor. Modifiers on the briefing (Iron, Lean, Dark) make it harder and pay more. Alone, the expedition is saved at every lift and can be resumed from the title; leaving mid-floor counts as a failed attempt.</li>
           <li><b>Five modes on Sublevel 6</b> (pick one when you press New Game): <b>The Night Shift</b> — survive until 6:00 AM; <b>The Polaroids</b> — find 8 photos hidden somewhere new every run, each one making it worse, then race to the lift (there is a Daily layout to compete on); <b>Endless Night</b> — no dawn, a new curse every hour (press <b>1</b> or <b>2</b> to choose), survive as long as you can; <b>The Watch</b> (Build 19) — midnight to 6 AM without leaving Desk B; <b>The Hunt</b> (Build 20, solo or online) — you are the Warden.</li>
            <li><b>The Hunt:</b> you play the monster. Click to <b>swipe</b> (a guard in reach is caught), <span data-key="ability"></span> <b>SCREECH</b> (you hear every guard for 6 s, through the walls; the ones close by freeze), <span data-key="ultimate"></span> <b>POUNCE</b> (a long leap that ends in a swipe), <span data-key="interact"></span> on a locker tears it open. Red marks show the guards you hear. The guards pull fuses; enough of them and the blast door opens and they run for the surface lift. Their flashlights blind you if they see you coming. If half of them get out, the hunt is lost; if they're still inside at 6 AM, you win.</li>
           <li><b>100 Doors:</b> walk into a door to open it; <b>locked</b> ones need the key from the room you're in (or a lockpick). Drawers hold gold, batteries, bandages (<b>[1]</b>), vitamins (<b>[2]</b>), lockpicks and, rarely, a crucifix. <b>Flickering lights</b> = SURGE (or REBOUND, which comes back): get in a <b>wardrobe</b> until it's past — but not for too long. In a dark room, <b>"psst"</b> = HISS behind you: look at it. <b>Purple light</b> = THE EYES: look away. <b>Eyes on the walls</b> = THE SEEKER is near: when it climbs out, run through the doors and around the black pools. The <b>library (50)</b>: find five books and the note on the desk; the note gives the order, the books the numbers — type them into the padlock. THE BLIND ONE hears footsteps (crouch near it); if it opens your wardrobe, press <b>A</b>/<b>D</b> as each heartbeat reaches the line. <b>Room 100</b>: the breaker key is on a crate; set every switch to its lamp (a wrong switch is loud), then run for the way out. <span data-key="hint"></span> points to the next door, key or book. No map.</li>
@@ -1372,7 +1385,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div id="mp-lobby" hidden>
       <div class="kicker" style="margin-top:14px">Guards on shift</div>
       <ul id="mp-players"></ul>
-      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="doors">100 DOORS</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
+      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="descent">THE DESCENT</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="doors">100 DOORS</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
       <div class="mp-modes mp-cmaps" id="mp-cmaps" hidden><span>MECHA CAMO MAP:</span><button data-cmap="s6">SUBLEVEL 6</button><button data-cmap="works">THE COLOUR WORKS</button></div>
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
@@ -1525,7 +1538,7 @@ const settings = Object.assign({}, DEFAULTS);
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8);
     bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); oneOf('panicFx', ['full', 'reduced', 'off']);
-    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors']); oneOf('camoMap', ['s6', 'works']); oneOf('camoWarden', ['ai', 'host']);
+    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors', 'descent']); oneOf('camoMap', ['s6', 'works']); oneOf('camoWarden', ['ai', 'host']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
   } catch (e) { /* storage blocked or corrupt: keep defaults */ }
@@ -1546,6 +1559,7 @@ const KEY_ACTIONS = [ // [action, what it does, default key]
   ['reload', 'Battery / crank', 'KeyR'], ['punch', 'Punch', 'KeyV'], ['nextWeapon', 'Next weapon', 'KeyQ'],
   ['hold', 'Hold the door · skip a scene', 'Space'], ['map', 'Minimap', 'KeyM'], ['hint', 'Hint', 'KeyH'], ['ping', 'Ping (co-op)', 'KeyG'], ['pause', 'Pause', 'KeyP'],
   ['emote', 'Emote wheel (MECHA CAMO)', 'KeyZ'], // (Build 27)
+  ['medkit', 'Use a med kit (THE DESCENT)', 'KeyJ'], // (Build 28)
 ];
 const KEY_TWIN = { ShiftLeft: 'ShiftRight', ShiftRight: 'ShiftLeft', ControlLeft: 'ControlRight', ControlRight: 'ControlLeft', AltLeft: 'AltRight', AltRight: 'AltLeft' }; // (either Shift is Shift)
 const KEY_FIXED = { forward: ['ArrowUp'], back: ['ArrowDown'], left: ['ArrowLeft'], right: ['ArrowRight'] };
@@ -10608,7 +10622,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 24, BUILD = 27, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 25, BUILD = 28, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -33420,6 +33434,529 @@ const HumanWarden = {
     return r;
   };
 }
+/* ================================================================== */
+/* Build 28: THE DESCENT — one expedition down through Sublevels 6–10   */
+/* Each floor is the real one, played exactly as its own mode (the      */
+/* Night Shift, the Gallery, the Blackout, the Hive, the Root): it      */
+/* starts through Game.newGame() — the same full reset every mode uses  */
+/* — with the floor's mode set for that call only. When the host's game */
+/* says a floor is won (Game.showVictory), the team rides the lift down */
+/* to an intermission: condition, supplies, evidence, rewards, and a    */
+/* vote — EXTRACT (bank what you've earned) or CONTINUE (one floor      */
+/* deeper; bigger rewards; nothing banked yet).                         */
+/* Rules (the same for everyone; the host decides):                     */
+/*  - CONTINUE needs a strict majority of the team. A tie, a timeout or */
+/*    silence is EXTRACT. Solo: your choice (90 s, then EXTRACT).       */
+/*  - Each floor's usual coins are measured (its normal end-of-run      */
+/*    payout) and go into the UNSECURED bounty, ×1.12 per floor deeper; */
+/*    nothing is paid until you extract.                                */
+/*  - Lost on a floor: one retry from the last lift (costs 20% of the   */
+/*    unsecured bounty), or the expedition ends and you keep 25%.       */
+/*  - Leaving in the middle of a floor counts as a failed attempt.      */
+/*  - Health, battery, spares and weapons carry from floor to floor;    */
+/*    the team shares med kits ([J] to use one) and battery packs, and  */
+/*    the lift restocks a little each time.                             */
+/*  - A dossier page is hidden on every floor: evidence. All five, all  */
+/*    the way down: another ending.                                     */
+/* Nothing here changes how the standalone modes play; nothing removes  */
+/* anything you've unlocked.                                            */
+/* ================================================================== */
+const DX_CFG = {
+  stages: ['night', 'gallery', 'blackout', 'hive', 'root'],
+  start: { med: 2, bat: 2 }, restock: { med: 1, bat: 1 },
+  medHeal: 50, restHeal: 20, minHp: 0.3, spareCap: 3, reqCost: 150, reqMax: 1,
+  depth: 0.12, depthPay: [0, 150, 250, 350, 500], complete: 600, page: 60, salvage: 0.25, retries: 1, retryCost: 0.2,
+  vote: 30, voteSolo: 90,
+};
+const DX_SUB = { night: 6, gallery: 7, blackout: 8, hive: 9, root: 10 };
+const DX_NAME = { night: 'THE NIGHT SHIFT', gallery: 'THE GALLERY', blackout: 'THE BLACKOUT', hive: 'THE HIVE', root: 'THE ROOT' };
+const DX_MODS = {
+  iron: { name: 'IRON NERVE', desc: 'No retries at all.', bonus: 0.25 },
+  lean: { name: 'SHORT SUPPLY', desc: 'The lift restocks nothing; you start with one of each.', bonus: 0.2 },
+  dark: { name: 'DEAD CELLS', desc: 'No spare batteries to start with, none in the lift.', bonus: 0.15 },
+};
+const DX_KEY = 'lastshift.descent.v1';
+// the lift down: what it feels like between floors
+const DX_RIDE = {
+  night: 'The lift should have gone up. The panel says 6, then nothing, then it starts to fall — slowly, as if it knows the way.',
+  gallery: 'The freight lift shudders. Someone scratched a tally into the wall of the car: seven marks, then the eighth, half done.',
+  blackout: 'The Surface Express runs on the wrong rails — down. The lights in the car stay off. You can hear your own heart.',
+  hive: 'The Quarantine Lift smells of disinfectant and something sweeter underneath. The cable sings the whole way down.',
+};
+// the dossier: new pages, nothing on the old tapes changes
+const DX_PAGES = [
+  { t: 'KESTREL-DEEP · SURVEY 01', b: 'Sublevel 6 was never the bottom. The plans you were given stop at 6 because the plans you weren\'t given start there.\n\nThe night shift is not a security rotation. It is a containment rotation. Someone has to be awake on every floor, every night, or the floor below wakes up instead.\n\n— stamped: KESTREL-DEEP / NOT FOR SITE STAFF' },
+  { t: 'KESTREL-DEEP · SURVEY 02', b: 'Gallery inventory, item 0: one mannequin, delivered 1974, no maker\'s mark. Every other mannequin on this floor was bought later — to give it something to stand among.\n\nIt does not move when observed. Therefore: the gallery is lit, staffed, and full of glass. Therefore: the gallery is a camera pointed at one thing.' },
+  { t: 'KESTREL-DEEP · SURVEY 03', b: 'The power station feeds the floors above. It also feeds the dark.\n\nThe turbines were not installed to make electricity. They were installed to make light, and the thing on Sublevel 8 eats light, and as long as it is eating it is not climbing.\n\nIf the power ever fails, start with the turbines. Then pray.' },
+  { t: 'KESTREL-DEEP · SURVEY 04', b: 'The brood on 9 was not engineered. It was sampled.\n\nWe took one cell from the chamber on 10 and grew it in glass and it grew into everything you have seen here. The cultures are not experiments. They are a census — of what the Root already is.' },
+  { t: 'KESTREL-DEEP · SURVEY 05', b: 'Construction order, as recorded: 10, 9, 8, 7, 6.\n\nThe facility was not dug down into the Root. It was built up out of it, one lid at a time, each floor a seal on the floor beneath — and each seal needs a guard on the night shift.\n\nThat is what the lift is for. It was always going to take you down.' },
+];
+DX_PAGES.forEach((P, i) => { NOTES['dx_' + (i + 1)] = { title: P.t, body: P.b }; });
+ACH.push(
+  { id: 'dx_out', name: 'Hazard Pay', desc: 'Extract from THE DESCENT with something banked.' },
+  { id: 'dx_deep', name: 'All the Way Down', desc: 'Finish all five floors of THE DESCENT.' },
+  { id: 'dx_truth', name: 'Built Upward', desc: 'Finish THE DESCENT with all five dossier pages.' },
+  { id: 'dx_iron', name: 'Iron Nerve', desc: 'Finish THE DESCENT with IRON NERVE on.' },
+);
+MODES.descent = { name: 'The Descent', tag: 'THE DESCENT' };
+
+const Expedition = {
+  on: false, phase: 'idle', id: 0, stage: 0, done: [], sup: { med: 0, bat: 0 }, team: {}, pages: [], mods: [], retries: 0, diff: 'normal',
+  bounty: 0, secured: 0, paid: new Set(), carry: null, cp: null, vote: null, choice: null, reqN: 0, el: null, hud: null, timer: 0, pendingResume: null, err: null, page: null,
+  cfg: DX_CFG,
+  stages() { return this.cfg.stages; },
+  floorMode(s) { const L = this.stages(); return L[clamp(s === undefined ? this.stage : s, 0, L.length - 1)]; },
+  last() { return this.stage >= this.stages().length - 1; },
+  host() { return !Net.isClient; },
+  me() { return Net.myId; },
+  team0() { return crew().filter(a => a); },
+  ids() { return [Net.myId].concat([...Net.remotes.values()].map(r => r.id)); },
+  modBonus() { return this.mods.reduce((s, m) => s + ((DX_MODS[m] && DX_MODS[m].bonus) || 0), 0); },
+  diffK() { return (ECON.diff && ECON.diff[this.diff]) || 1; },
+  /* ---- the save (solo checkpoints, the records, the pages ever found) ---- */
+  store() { let o = null; try { o = JSON.parse(localStorage.getItem(DX_KEY) || 'null'); } catch (e) { } if (!o || typeof o !== 'object' || Array.isArray(o)) o = {}; const out = { v: 1, cp: null, best: { deep: 0, haul: 0, runs: 0 }, pages: {}, mods: [] };
+    if (o.best && typeof o.best === 'object') for (const k of ['deep', 'haul', 'runs']) out.best[k] = Number.isFinite(+o.best[k]) ? clamp(Math.floor(+o.best[k]), 0, 1e9) : 0;
+    if (o.pages && typeof o.pages === 'object') for (let i = 1; i <= 5; i++) if (o.pages['dx_' + i]) out.pages['dx_' + i] = 1;
+    if (Array.isArray(o.mods)) out.mods = o.mods.filter(m => DX_MODS[m]);
+    out.cp = this.validCp(o.cp); return out; },
+  saveStore(S) { try { localStorage.setItem(DX_KEY, JSON.stringify(S)); } catch (e) { } },
+  validCp(c) { // a checkpoint that doesn't add up is thrown away (never half-restored)
+    if (!c || typeof c !== 'object') return null; const n = this.stages().length;
+    if (!Number.isFinite(c.id) || !Number.isInteger(c.stage) || c.stage < 0 || c.stage >= n) return null;
+    if (!Array.isArray(c.done) || c.done.length !== c.stage || c.done.some((m, i) => m !== this.stages()[i])) return null;
+    if (!c.sup || !Number.isFinite(c.sup.med) || !Number.isFinite(c.sup.bat) || !Number.isFinite(c.bounty) || c.bounty < 0 || c.bounty > 1e7) return null;
+    if (!c.carry || typeof c.carry !== 'object') return null;
+    return { id: c.id, stage: c.stage, done: c.done.slice(), sup: { med: clamp(c.sup.med | 0, 0, 99), bat: clamp(c.sup.bat | 0, 0, 99) }, bounty: Math.floor(c.bounty), pages: Array.isArray(c.pages) ? c.pages.filter(x => Number.isInteger(x) && x >= 0 && x < n) : [],
+      mods: Array.isArray(c.mods) ? c.mods.filter(m => DX_MODS[m]) : [], retries: clamp(c.retries | 0, 0, 9), diff: DIFF[c.diff] ? c.diff : 'normal', hp: clamp(+c.hp || 1, 0.05, 1), team: c.team && typeof c.team === 'object' ? c.team : null, carry: c.carry, inFloor: c.inFloor === true, at: +c.at || 0 };
+  },
+  // (after the host has confirmed a floor, or when a floor starts) the whole expedition as it stands — solo: kept on disk; online: for this session
+  checkpoint(inFloor) {
+    const c = { id: this.id, stage: this.stage, done: this.done.slice(), sup: Object.assign({}, this.sup), bounty: this.bounty, pages: this.pages.slice(), mods: this.mods.slice(), retries: this.retries, diff: this.diff,
+      hp: this.team[this.me()] ? this.team[this.me()].hp : 1, team: JSON.parse(JSON.stringify(this.team)), carry: this.carry ? JSON.parse(JSON.stringify(this.carry)) : this.blankCarry(), inFloor: !!inFloor, at: Date.now() };
+    this.cp = c; if (!Net.active) { const S = this.store(); S.cp = c; this.saveStore(S); }
+  },
+  clearCp() { this.cp = null; if (!Net.active) { const S = this.store(); S.cp = null; this.saveStore(S); } },
+  blankCarry() { return { bat: 1, spares: this.mods.indexOf('dark') >= 0 ? 0 : 1, flash: false, wpn: null }; },
+  /* ---- a new expedition (the host, or solo) ---- */
+  begin() {
+    const S = this.store(), lean = (Net.active ? this.netMods : S.mods) || [];
+    this.on = true; this.phase = 'floor'; this.id = (Date.now() % 1e9) + Math.floor(Math.random() * 1000); this.stage = 0; this.done = []; this.pages = []; this.paid = new Set();
+    this.mods = lean.filter(m => DX_MODS[m]); this.diff = Net.sessionDiff || settings.difficulty || 'normal';
+    const few = this.mods.indexOf('lean') >= 0, dark = this.mods.indexOf('dark') >= 0;
+    this.sup = { med: few ? 1 : this.cfg.start.med, bat: dark ? 0 : few ? 1 : this.cfg.start.bat };
+    this.retries = this.mods.indexOf('iron') >= 0 ? 0 : this.cfg.retries; this.bounty = 0; this.secured = 0; this.team = {}; this.carry = this.blankCarry(); this.reqN = 0;
+    for (const id of this.ids()) this.team[id] = { hp: 1, alive: true };
+    if (!Net.active) { S.best.runs++; this.saveStore(S); }
+  },
+  // (solo) carry on from the saved lift
+  resume(cp) {
+    this.on = true; this.id = cp.id; this.stage = cp.stage; this.done = cp.done.slice(); this.sup = Object.assign({}, cp.sup); this.bounty = cp.bounty; this.pages = cp.pages.slice(); this.mods = cp.mods.slice();
+    this.retries = cp.retries; this.diff = cp.diff; this.carry = cp.carry; this.team = { [this.me()]: { hp: cp.hp, alive: true } }; this.paid = new Set(); this.reqN = 0; this.cp = cp; this.secured = 0; this.phase = 'inter'; this.note = '';
+    if (cp.inFloor) { // you left in the middle of a floor: that was a failed attempt
+      if (this.retries > 0) { this.retries--; this.bounty = Math.floor(this.bounty * (1 - this.cfg.retryCost)); this.checkpoint(false); this.note = 'You left Sublevel ' + DX_SUB[this.floorMode()] + ' in the middle — that counted as a failed attempt: a retry used, −' + Math.round(this.cfg.retryCost * 100) + '% of the unsecured bounty.'; }
+      else { this.phase = 'lost'; this.endRun('fail', 'You left Sublevel ' + DX_SUB[this.floorMode()] + ' in the middle with no retries left.'); return; }
+    }
+    this.openInter(this.stage > 0 ? 'resume' : 'start');
+  },
+  /* ---- a floor ---- */
+  // Game.newGame, for an expedition floor: the real one, with the floor's mode for this call only
+  runFloor(ng0, G) {
+    const m = this.floorMode(), sm = settings.mode, ss = Net.sessionMode;
+    this.closeInter(); this.phase = 'floor'; this.waiting = false;
+    settings.mode = m; if (Net.active) Net.sessionMode = m;
+    try { ng0.call(G); }
+    catch (e) { settings.mode = sm; if (Net.active) Net.sessionMode = ss; this.err = e; console.error('Descent: the floor failed to load', e); this.loadFailed(); return; }
+    settings.mode = sm; if (Net.active) Net.sessionMode = ss;
+    this.floorStarted();
+  },
+  loadFailed() { // the floor couldn't be set up: back to the lift, nothing lost, nothing counted
+    this.phase = 'inter'; try { Game.state = 'descent'; UI.hud(false); Input.exitLock(); } catch (e) { }
+    this.openInter('jam');
+  },
+  floorStarted() {
+    const p = player, me = this.me(), T0 = this.team[me] || { hp: 1, alive: true }, C = this.carry || this.blankCarry();
+    // what you carried down
+    const hp = Math.max(this.cfg.minHp, T0.alive ? T0.hp : this.cfg.minHp);
+    p.health = Math.max(1, Math.round(p.maxHp * hp)); Chars.lastHp = p.health;
+    if (this.stage > 0 || C.wpn) {
+      p.battery = clamp(+C.bat || 0, 0, 1); p.spares = clamp(C.spares | 0, 0, 9); if (C.flash) { p.hasFlash = true; try { flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true; } catch (e) { } }
+      const Wd = C.wpn; if (Wd) { for (const id of WPN_IDS) if (Wd.has && Wd.has[id] && !Weapons.has[id] && Weapons.canHold(id)) { Weapons.has[id] = true; Weapons.found++; } for (const k in (Wd.ammo || {})) if (k in Weapons.ammo) Weapons.ammo[k] = Math.max(Weapons.ammo[k] | 0, Wd.ammo[k] | 0); if (Wd.upg) Weapons.upg = Object.assign({}, Weapons.upg || {}, Wd.upg); if (Weapons.count()) { $('wpn').classList.add('on'); if (!Weapons.cur) Weapons.select(WPN_IDS.find(id => Weapons.has[id]), true); } }
+    } else if (this.mods.indexOf('dark') >= 0) p.spares = 0;
+    // the host's books for everyone's health
+    if (Net.isHost) for (const r of Net.remotes.values()) { const t = this.team[r.id]; if (!t) continue; const mx = r.amax || r.maxHp || 100; r.ahp = Math.max(1, Math.round(mx * Math.max(this.cfg.minHp, t.alive ? t.hp : this.cfg.minHp))); }
+    this.reqN = 0; this.checkpoint(true); // (from here, leaving counts as a failed attempt)
+    this.placePage();
+    this.drawHud();
+    const m = this.floorMode();
+    setTimeout(() => { if (this.on && this.phase === 'floor' && Game.state === 'playing') UI.center('THE DESCENT · ' + (this.stage + 1) + ' / ' + this.stages().length, 'SUBLEVEL ' + DX_SUB[m] + ' · ' + DX_NAME[m] + ' · ' + Keys.b('medkit') + ' med kit (' + this.sup.med + ' left)', 4.2); }, 4600);
+  },
+  // what you take down to the next floor (each guard their own)
+  snapCarry() {
+    const p = player, W = Weapons;
+    this.carry = { bat: +p.battery.toFixed(3), spares: p.spares | 0, flash: !!p.hasFlash, wpn: { has: Object.assign({}, W.has), ammo: Object.assign({}, W.ammo), upg: Object.assign({}, W.upg || {}) } };
+  },
+  // each floor's usual coins, measured (the normal end-of-run payout) and moved into the unsecured bounty — never paid twice
+  floorReward(s) {
+    const key = this.id + ':' + s; if (this.paid.has(key)) return 0; this.paid.add(key);
+    const C = Chars, c0 = C.data ? C.data.coins : 0; let d = 0;
+    try { C.paid = null; C.payout(true); d = Math.max(0, (C.data ? C.data.coins : 0) - c0); } catch (e) { console.error('Descent payout', e); }
+    if (C.data) { C.data.coins = c0; C.save(); }
+    return Math.round(d * (1 + this.cfg.depth * s) + Math.round((this.cfg.depthPay[s] || 0) * this.diffK()));
+  },
+  /* ---- the host's word: the floor is done ---- */
+  hostFloorWon() {
+    if (!this.on || this.phase !== 'floor' || !this.host()) return;
+    const team = {}; const mx = player.maxHp || 100;
+    team[this.me()] = { hp: player.dead ? 0 : +(player.health / mx).toFixed(3), alive: !player.dead };
+    for (const r of Net.remotes.values()) { const m2 = r.amax || r.maxHp || 100, h = Number.isFinite(r.ahp) ? r.ahp : m2; team[r.id] = { hp: r.dead ? 0 : +(h / m2).toFixed(3), alive: !r.dead }; }
+    Game.emit({ k: 'xf', s: this.stage, id: this.id, t: team });
+  },
+  floorDone(ev) { // (every screen) the host says floor s is done
+    if (!this.on || (ev.id | 0) !== this.id || (ev.s | 0) !== this.stage || this.phase !== 'floor') return; // (once, and only the floor we're on)
+    const s = this.stage, m = this.floorMode();
+    this.phase = 'inter';
+    this.snapCarry();
+    this.team = {}; for (const k in (ev.t || {})) { const t = ev.t[k]; this.team[k | 0] = { hp: clamp(+t.hp || 0, 0, 1), alive: !!t.alive }; }
+    const got = this.floorReward(s); this.bounty += got; this.lastGot = got;
+    this.done.push(m);
+    const S = this.store(); S.best.deep = Math.max(S.best.deep, DX_SUB[m]); this.saveStore(S);
+    Game.state = 'descent'; Input.exitLock(); UI.hud(false); Sound.setAlarm && Sound.setAlarm(false); UI.closeNote(true);
+    if (this.last()) { this.stage++; if (this.host()) setTimeout(() => this.decide('out', true), 900); this.openInter('final'); return; }
+    // down one: the lift restocks, everyone catches their breath
+    this.stage++;
+    const few = this.mods.indexOf('lean') >= 0, dark = this.mods.indexOf('dark') >= 0;
+    if (!few) { this.sup.med += this.cfg.restock.med; if (!dark) this.sup.bat += this.cfg.restock.bat; }
+    for (const k in this.team) { const t = this.team[k]; if (t.alive) t.hp = Math.min(1, t.hp + this.cfg.restHeal / 100); else { t.hp = this.cfg.minHp; t.alive = true; } }
+    this.checkpoint(false);
+    this.openInter('down');
+  },
+  /* ---- lost on a floor ---- */
+  floorLost() {
+    if (!this.on || this.phase !== 'floor') return;
+    this.phase = 'lost'; Game.state = 'descent'; Input.exitLock(); UI.hud(false); UI.closeNote(true);
+    if (this.retries > 0 && this.cp) this.openInter('lost');
+    else if (this.host()) this.decide('end');
+    else this.openInter('lostwait');
+  },
+  retry() { // (every screen, on the host's word) back to the last lift
+    const c = this.cp; if (!c) return;
+    this.retries = Math.max(0, this.retries - 1); this.stage = c.stage; this.done = c.done.slice(); this.sup = Object.assign({}, c.sup); this.pages = c.pages.slice();
+    this.bounty = Math.floor(this.bounty * (1 - this.cfg.retryCost)); this.carry = JSON.parse(JSON.stringify(c.carry));
+    if (this.host()) { const t = {}; for (const id of this.ids()) { const ct = c.team && c.team[id]; t[id] = { hp: Math.max(this.cfg.minHp, ct ? +ct.hp || 0 : c.hp), alive: true }; } this.team = t; }
+    this.phase = 'floor';
+  },
+  /* ---- the vote (the host counts; everyone sees it) ---- */
+  startVote(kind) {
+    const solo = !Net.active || !Net.remotes.size, secs = solo ? this.cfg.voteSolo : this.cfg.vote;
+    this.vote = { kind, until: performance.now() + secs * 1000, secs, votes: {} };
+    clearInterval(this.timer); this.timer = setInterval(() => this.tick(), 200);
+  },
+  cast(c) { // you pressed a choice
+    if (!this.vote) return; c = c ? 1 : 0;
+    if (this.host()) this.hostVote(this.me(), c); else Net.request('xv', c);
+    this.myVote = c; this.drawInter();
+  },
+  hostVote(id, c) { if (!this.vote || !this.host()) return; this.vote.votes[id] = c ? 1 : 0; this.sendState(); this.tryDecide(); },
+  tryDecide(timeUp) {
+    if (!this.vote || !this.host()) return;
+    const ids = this.ids(), V = this.vote.votes, n = ids.length, yes = ids.filter(id => V[id] === 1).length, all = ids.every(id => V[id] === 0 || V[id] === 1);
+    if (!all && !timeUp) return;
+    const go = yes * 2 > n; // (a strict majority; a tie, a timeout or silence: the safe choice)
+    if (this.vote.kind === 'go') this.decide(go ? 'go' : 'out'); else this.decide(go ? 'retry' : 'end');
+  },
+  tick() {
+    if (!this.vote) { clearInterval(this.timer); return; }
+    const left = Math.max(0, (this.vote.until - performance.now()) / 1000); this.voteLeft = left;
+    const b = this.el && this.el.querySelector('.dx-cd'); if (b) { b.textContent = Math.ceil(left) + 's'; const bar = this.el.querySelector('.dx-bar i'); if (bar) bar.style.width = (left / this.vote.secs * 100).toFixed(1) + '%'; }
+    if (left <= 0 && this.host()) this.tryDecide(true);
+  },
+  decide(c, full) { if (!this.host()) return; const ev = { k: 'xd', c, id: this.id, s: this.stage }; if (full) ev.f = 1; if (this.cp && c === 'retry') ev.cp = this.netCp(); Game.emit(ev); },
+  decided(ev) {
+    if (!this.on || (ev.id | 0) !== this.id) return;
+    clearInterval(this.timer); this.vote = null; this.myVote = null;
+    const c = String(ev.c);
+    if (c === 'out') { this.endRun(ev.f ? 'complete' : 'extract'); return; }
+    if (c === 'end') { this.endRun('fail'); return; }
+    if (c === 'retry') { if (ev.cp && Net.isClient) this.cp = this.fromNetCp(ev.cp); this.retry(); }
+    if (c === 'go' || c === 'retry') { this.phase = 'floor'; this.drawInter('go'); if (this.host()) setTimeout(() => this.nextFloor(), 1400); }
+  },
+  nextFloor() { if (!this.host() || !this.on) return; if (Net.active) Net.startGame(); else Game.newGame(); },
+  /* ---- supplies (the host keeps the count) ---- */
+  // a = 1 med kit, 2 a spare battery from the lift, 3 requisition (a med kit for 150 of your unsecured coins)
+  ask(a) {
+    if (a === 3 && this.bounty < this.cfg.reqCost) { UI.msg('Not enough unsecured bounty for that.', 'warn', 2.4); return; }
+    if (a === 2 && this.carry && this.carry.spares >= this.cfg.spareCap) { UI.msg('You can\'t carry more than ' + this.cfg.spareCap + ' spares.', 'warn', 2.4); return; }
+    if (a === 1 && this.phase === 'floor' && player.health >= player.maxHp - 0.5) { UI.msg('You\'re not hurt.', '', 2); return; }
+    if (this.host()) this.hostAsk(this.me(), a); else Net.request('xu', a);
+  },
+  hostAsk(id, a) {
+    if (!this.on || !this.host()) return;
+    const inter = this.phase === 'inter', floor = this.phase === 'floor';
+    if (a === 1 && this.sup.med > 0 && (inter || floor)) {
+      const r = id === this.me() ? player : Net.remotes.get(id); if (floor && (!r || r.dead || r.downed)) return;
+      this.sup.med--; if (inter && this.team[id]) this.team[id].hp = Math.min(1, this.team[id].hp + this.cfg.medHeal / 100);
+      if (floor && r && r !== player) Health.heal(r, this.cfg.medHeal);
+      Game.emit({ k: 'xm', id, sup: this.sup, t: this.team, f: floor ? 1 : 0 });
+    } else if (a === 2 && this.sup.bat > 0 && inter) { this.sup.bat--; Game.emit({ k: 'xg', id, sup: this.sup }); }
+    else if (a === 3 && inter && this.reqN < this.cfg.reqMax) { this.reqN++; this.sup.med++; Game.emit({ k: 'xq', id, sup: this.sup, n: this.reqN }); }
+  },
+  supEvent(ev) {
+    if (!this.on) return; const me = this.me(), mine = (ev.id | 0) === me, who = mine ? 'You' : Net.nameOf(ev.id | 0);
+    if (ev.sup) this.sup = { med: ev.sup.med | 0, bat: ev.sup.bat | 0 };
+    if (ev.k === 'xm') { if (ev.t) this.applyTeam(ev.t); if (ev.f && mine) { Health.heal(player, this.cfg.medHeal); Sound.heal && Sound.heal(player.pos); } UI.msg(who + ' used a med kit (+' + this.cfg.medHeal + '). ' + this.sup.med + ' left.', mine ? 'good' : '', 2.8); }
+    if (ev.k === 'xg' && mine) { if (!this.carry) this.carry = this.blankCarry(); this.carry.spares = Math.min(this.cfg.spareCap, (this.carry.spares | 0) + 1); UI.msg('A spare battery from the lift locker.', 'good', 2.4); }
+    if (ev.k === 'xq') { this.reqN = ev.n | 0; if (mine) { this.bounty = Math.max(0, this.bounty - this.cfg.reqCost); } UI.msg(who + ' requisitioned a med kit (−' + this.cfg.reqCost + ' unsecured).', '', 2.8); }
+    if (this.phase === 'inter') this.checkpoint(false);
+    this.drawInter(); this.drawHud();
+  },
+  applyTeam(t) { for (const k in t) this.team[k | 0] = { hp: clamp(+t[k].hp || 0, 0, 1), alive: !!t[k].alive }; },
+  /* ---- the end ---- */
+  endRun(how, why) {
+    if (this.phase === 'over') return;
+    const was = this.bounty, mult = (1 + this.modBonus());
+    let pay = 0, rows = [];
+    const floors = this.done.length;
+    if (how === 'fail') pay = Math.floor(was * this.cfg.salvage);
+    else { pay = Math.round(was * mult); if (how === 'complete') pay += Math.round(this.cfg.complete * this.diffK()); pay += this.pages.length * this.cfg.page; }
+    this.phase = 'over'; clearInterval(this.timer); this.vote = null;
+    // the checkpoint goes first: a crash after this can't pay twice
+    this.clearCp(); const S = this.store(); // (read after the checkpoint is gone: writing it back can't bring it back)
+    if (Chars.data) { Chars.data.coins = Math.min(ECON.maxCoins, Chars.data.coins + pay); Chars.save(); try { CharUI.refresh(); } catch (e) { } }
+    this.secured = pay; S.best.haul = Math.max(S.best.haul, pay); for (const i of this.pages) S.pages['dx_' + (i + 1)] = 1; this.saveStore(S);
+    if (how !== 'fail' && pay > 0) Goals.unlock('dx_out');
+    if (how === 'complete') { Goals.unlock('dx_deep'); if (this.pages.length >= 5) Goals.unlock('dx_truth'); if (this.mods.indexOf('iron') >= 0) Goals.unlock('dx_iron'); }
+    this.closeInter(); this.hideHud();
+    const G = Game, last = floors ? DX_SUB[this.done[floors - 1]] : 5;
+    rows = [['Floors cleared', floors + ' / ' + this.stages().length], ['Deepest', floors ? 'Sublevel ' + last : '—'], ['Evidence', this.pages.length + ' / ' + this.stages().length], ['Unsecured bounty', was + ''], ['Modifiers', this.mods.length ? this.mods.map(m => DX_MODS[m].name).join(', ') + ' (+' + Math.round(this.modBonus() * 100) + '%)' : 'none']];
+    if (how === 'fail') rows.push(['Salvaged', Math.round(this.cfg.salvage * 100) + '% — ' + pay + ' coins']);
+    else { if (how === 'complete') rows.push(['All the way down', '+' + Math.round(this.cfg.complete * this.diffK())]); if (this.pages.length) rows.push(['Dossier pages', this.pages.length + ' × ' + this.cfg.page]); rows.push(['Coins secured', '+' + pay + ' (' + (Chars.data ? Chars.data.coins : pay) + ' total)']); }
+    G.state = how === 'fail' ? 'dead' : 'won'; Input.exitLock(); UI.hud(false); Sound.setAlarm && Sound.setAlarm(false);
+    const put = (el, list) => { el.innerHTML = ''; list.forEach(([a, b]) => { const sp = document.createElement('span'); sp.textContent = a; const v = document.createElement('b'); v.textContent = b; el.appendChild(sp); el.appendChild(v); }); };
+    if (how === 'fail') {
+      put($('go-stats'), rows); $('go-title').textContent = 'The expedition is lost';
+      $('go-sub').textContent = why || ('Sublevel ' + DX_SUB[this.floorMode()] + ' kept you. You salvaged a quarter of what you hadn\'t banked.');
+      G.endButtons('btn-go-restart', 'New Expedition'); UI.show('screen-gameover');
+    } else {
+      const truth = how === 'complete' && this.pages.length >= 5;
+      $('win-title').textContent = how === 'complete' ? (truth ? 'The bottom of everything' : 'All the way down') : 'Extracted from Sublevel ' + last;
+      $('win-sub').textContent = 'The Descent · ' + floors + ' floor' + (floors === 1 ? '' : 's') + ' · ' + pay + ' coins secured';
+      put($('win-stats'), rows); put($('win-score'), [['Floors', floors + '/' + this.stages().length], ['Evidence', this.pages.length + '/5'], ['Retries left', this.retries + '']]);
+      const rk = floors >= 5 ? 'S' : floors >= 4 ? 'A' : floors >= 3 ? 'B' : floors >= 2 ? 'C' : 'D';
+      $('rank-letter').textContent = rk; $('rank-letter').className = 'r-' + rk; $('rank-score').textContent = floors + '/' + this.stages().length + ' FLOORS'; $('rank-best').textContent = 'BEST HAUL: ' + S.best.haul + ' · DEEPEST: SUBLEVEL ' + Math.max(6, S.best.deep);
+      const wa = $('win-ach'); wa.innerHTML = ''; (Goals.runGot || []).forEach(x => { const d = document.createElement('span'); d.textContent = '★ ' + x.name; wa.appendChild(d); });
+      $('epilogue').textContent = truth ? 'You read every page on the way down. The facility was built upward, out of the Root, one lid at a time — and the night shift was never security. You rode the last lift back up anyway. Somebody has to tell the day shift.'
+        : how === 'complete' ? 'The mine elevator brings you up through every floor you cleared. They are quiet now. For tonight.' : 'You hit the call button for the surface and, for once, the lift goes up.';
+      G.endButtons('btn-win-again', 'New Expedition'); UI.show('screen-victory');
+    }
+    try { $('fx-fade').style.opacity = 0; $('fx-white').style.opacity = 0; } catch (e) { }
+  },
+  stop() { this.on = false; this.phase = 'idle'; clearInterval(this.timer); this.vote = null; this.closeInter(); this.hideHud(); this.dropPage(); },
+  /* ---- online: what everyone needs to know ---- */
+  netState() { return { id: this.id, s: this.stage, d: this.done, sup: this.sup, pg: this.pages, mo: this.mods, r: this.retries, df: this.diff, t: this.team, ph: this.phase }; },
+  netCp() { const c = this.cp; return c ? { stage: c.stage, done: c.done, sup: c.sup, pages: c.pages } : null; },
+  fromNetCp(n) { const base = this.cp || {}; return Object.assign({}, base, { stage: n.stage | 0, done: (n.done || []).slice(), sup: { med: n.sup.med | 0, bat: n.sup.bat | 0 }, pages: (n.pages || []).slice(), carry: base.carry || this.carry || this.blankCarry(), hp: base.hp || 1 }); },
+  applyNet(x) { // (a guest) the host's expedition, as it stands
+    if (!x || typeof x !== 'object') return;
+    const fresh = (x.id | 0) !== this.id || !this.on;
+    this.on = true; this.id = x.id | 0; this.stage = clamp(x.s | 0, 0, this.stages().length - 1); this.done = Array.isArray(x.d) ? x.d.filter(m => DX_SUB[m]) : [];
+    this.sup = { med: (x.sup && x.sup.med) | 0, bat: (x.sup && x.sup.bat) | 0 }; this.pages = Array.isArray(x.pg) ? x.pg.map(i => i | 0) : []; this.mods = Array.isArray(x.mo) ? x.mo.filter(m => DX_MODS[m]) : [];
+    this.retries = x.r | 0; this.diff = DIFF[x.df] ? x.df : 'normal'; if (x.t) { this.team = {}; this.applyTeam(x.t); }
+    if (fresh) { this.bounty = 0; this.secured = 0; this.paid = new Set(); this.carry = this.blankCarry(); this.cp = null; }
+    this.phase = 'floor';
+  },
+  sendState() { if (this.host() && Net.active) Game.emit({ k: 'xs', id: this.id, sup: this.sup, t: this.team, v: this.vote ? this.vote.votes : null, vl: this.vote ? Math.max(0, (this.vote.until - performance.now()) / 1000) : 0, vk: this.vote ? this.vote.kind : '' }); },
+  stateEvent(ev) {
+    if (!this.on || (ev.id | 0) !== this.id) return;
+    if (ev.sup) this.sup = { med: ev.sup.med | 0, bat: ev.sup.bat | 0 }; if (ev.t) this.applyTeam(ev.t);
+    if (Net.isClient && ev.vk) { if (!this.vote) this.vote = { kind: ev.vk, votes: {}, secs: this.cfg.vote, until: 0 }; this.vote.votes = ev.v || {}; this.vote.until = performance.now() + (+ev.vl || 0) * 1000; clearInterval(this.timer); this.timer = setInterval(() => this.tick(), 200); }
+    this.drawInter(); this.drawHud();
+  },
+  /* ---- the dossier page on each floor ---- */
+  placePage() {
+    this.dropPage(); const s = this.stage; if (this.pages.indexOf(s) >= 0) return;
+    const sp = Level.spawn(0), sx = Math.floor(sp[0] / CELL), sz = Math.floor(sp[1] / CELL), lv = LVL;
+    const dist = new Map([[sx + ',' + sz, 0]]), q = [[sx, sz]], cells = [];
+    for (let h = 0; h < q.length; h++) { const [x, z] = q[h], d0 = dist.get(x + ',' + z); for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + a, nz = z + b, k = nx + ',' + nz; if (dist.has(k)) continue; if (!guardPass(nx, nz)) continue; dist.set(k, d0 + 1); q.push([nx, nz]); const c = cellAt(nx, nz); if (c && c.kind === 'floor' && c.lvl === lv && !c.navBlocked) cells.push([nx, nz, d0 + 1]); } }
+    if (!cells.length) return;
+    cells.sort((A, B) => A[2] - B[2]); let seed = ((this.id * 31 + s * 977) >>> 0) % 2147483646 + 1; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const lo = Math.floor(cells.length * 0.55), hi = Math.max(lo + 1, Math.floor(cells.length * 0.8)), c = cells[lo + Math.floor(rnd() * (hi - lo))];
+    const g = new T.Group(); g.position.set(cc(c[0]), 0, cc(c[1])); g.userData.global = true;
+    const fold = new T.Mesh(new T.BoxGeometry(0.24, 0.025, 0.32), new T.MeshPhongMaterial({ color: 0xc8a050, shininess: 30 })); fold.position.y = 0.05; fold.rotation.y = rnd() * 3; g.add(fold);
+    const sheet = new T.Mesh(new T.PlaneGeometry(0.2, 0.27), new T.MeshBasicMaterial({ color: 0xf2ecdc })); sheet.rotation.x = -Math.PI / 2; sheet.position.y = 0.065; sheet.rotation.z = fold.rotation.y + 0.2; g.add(sheet);
+    const glint = new T.Sprite(new T.SpriteMaterial({ map: COS_TEX().spark, color: 0xffe6a0, transparent: true, blending: T.AdditiveBlending, depthWrite: false })); glint.position.y = 0.32; glint.scale.setScalar(0.22); g.add(glint);
+    g.traverse(o => o.layers.enableAll()); scene.add(g); this.page = { s, g, glint, x: g.position.x, z: g.position.z };
+  },
+  dropPage() { if (this.page) { scene.remove(this.page.g); this.page = null; } },
+  pageEvent(ev) {
+    if (!this.on || (ev.id | 0) !== this.id) return; const s = ev.s | 0; if (this.pages.indexOf(s) >= 0) return;
+    this.pages.push(s); if (this.page && this.page.s === s) this.dropPage();
+    const mine = (ev.by | 0) === this.me(); Sound.paper && Sound.paper(); Sound.coin && Sound.coin();
+    if (mine) UI.readNote('dx_' + (s + 1)); else UI.msg(Net.nameOf(ev.by | 0) + ' found a page of the dossier (' + this.pages.length + ' / ' + this.stages().length + ') — it\'s in the lift when you get there.', 'good', 4);
+    this.drawHud();
+  },
+  /* ---- every frame on a floor ---- */
+  update(dt) {
+    if (!this.on || this.phase !== 'floor' || Game.state !== 'playing') return;
+    const P = this.page; if (P) { P.glint.material.opacity = 0.5 + 0.4 * Math.sin(performance.now() / 260); P.g.visible = true;
+      if (this.host()) for (const a of crew()) { if (!a || a.dead) continue; if (Math.hypot(a.pos.x - P.x, a.pos.z - P.z) < 0.95) { Game.emit({ k: 'xe', id: this.id, s: P.s, by: Game.idOf(a) }); break; } } }
+    this.hudT = (this.hudT || 0) - dt; if (this.hudT <= 0) { this.hudT = 0.5; this.drawHud(); }
+  },
+  /* ---- the HUD on a floor ---- */
+  drawHud() {
+    if (!this.hud) { const h = document.createElement('div'); h.id = 'dx-hud'; document.body.appendChild(h); this.hud = h; }
+    if (!this.on || this.phase !== 'floor') { this.hud.style.display = 'none'; return; }
+    const m = this.floorMode(), mx = player.maxHp || 100, alive = crew().filter(a => a && !a.dead).length;
+    const html = '<b>THE DESCENT</b><span>' + (this.stage + 1) + ' / ' + this.stages().length + ' · SUBLEVEL ' + DX_SUB[m] + '</span>'
+      + '<span>Cleared ' + this.done.length + ' · Team ' + alive + '/' + crew().length + ' · You ' + Math.round(player.health / mx * 100) + '%</span>'
+      + '<span>MED ' + this.sup.med + ' (' + escHtml(Keys.b('medkit')) + ') · BATTERY PACKS ' + this.sup.bat + '</span>'
+      + '<span>Unsecured ' + this.bounty + ' · Secured ' + this.secured + '</span><span>Evidence ' + this.pages.length + ' / ' + this.stages().length + (this.page ? ' · a page is on this floor' : '') + '</span>';
+    if (this.hud.innerHTML !== html) this.hud.innerHTML = html; this.hud.style.display = 'block';
+  },
+  hideHud() { if (this.hud) this.hud.style.display = 'none'; },
+  /* ---- the lift between floors ---- */
+  openInter(kind) {
+    this.interKind = kind; this.myVote = null;
+    if (!this.el) {
+      const st = document.createElement('style');
+      st.textContent = '#dx-inter{position:fixed;inset:0;z-index:25;display:none;background:radial-gradient(ellipse at 50% 30%,#1a1612,#060505 70%);color:#e8e0d0;font-family:var(--sans,Arial);overflow:auto}#dx-inter.on{display:flex;align-items:center;justify-content:center}'
+        + '.dx-wrap{display:grid;grid-template-columns:120px minmax(0,1fr);gap:26px;width:min(980px,94vw);padding:26px 0}@media (max-width:700px){.dx-wrap{grid-template-columns:1fr}.dx-shaft{display:none}}'
+        + '.dx-shaft{position:relative;border-left:2px solid rgba(255,255,255,.12);border-right:2px solid rgba(255,255,255,.12);background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 2px,transparent 2px 46px);min-height:440px}'
+        + '.dx-shaft .lv{position:absolute;left:0;right:0;text-align:center;font:700 11px/1 var(--mono,monospace);letter-spacing:.14em;color:#6e675c}.dx-shaft .lv.done{color:#9bd28a}.dx-shaft .lv.next{color:#ffcf6a}'
+        + '.dx-car{position:absolute;left:14%;right:14%;height:48px;border:2px solid #c9a227;background:rgba(201,162,39,.12);box-shadow:0 0 18px rgba(201,162,39,.35);transition:top 2.4s cubic-bezier(.45,0,.25,1)}'
+        + '.dx-k{font:700 11px/1 var(--mono,monospace);letter-spacing:.28em;color:#c9a227}.dx-h{font:300 34px/1.1 var(--sans,Arial);letter-spacing:.16em;text-transform:uppercase;margin:8px 0 6px}.dx-ride{color:#bdb3a2;font-style:italic;line-height:1.5;margin:0 0 16px;max-width:640px}'
+        + '.dx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:14px}.dx-box{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);padding:12px 14px}.dx-box h4{margin:0 0 8px;font:700 10px/1 var(--mono,monospace);letter-spacing:.24em;color:#9a9182}'
+        + '.dx-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;line-height:1.7}.dx-row b{color:#fff;font-weight:600}.dx-hp{height:5px;background:rgba(255,255,255,.08);margin:2px 0 6px}.dx-hp i{display:block;height:100%;background:#7fbf6a}'
+        + '.dx-act{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.dx-act button,.dx-vote button{font:600 11px/1 var(--mono,monospace);letter-spacing:.1em;padding:9px 11px;background:rgba(255,255,255,.05);color:#e8e0d0;border:1px solid rgba(255,255,255,.18);cursor:pointer}.dx-act button:disabled{opacity:.35;cursor:default}'
+        + '.dx-vote{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}.dx-vote button{padding:16px 12px;font-size:13px;letter-spacing:.16em;text-align:left;line-height:1.5}.dx-vote button small{display:block;font:400 11px/1.4 var(--sans,Arial);letter-spacing:0;color:#bdb3a2;margin-top:4px}'
+        + '.dx-vote .out{border-color:#7fbf6a}.dx-vote .go{border-color:#d0542a}.dx-vote button.mine{background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 2px currentColor}.dx-bar{height:4px;background:rgba(255,255,255,.08);margin:12px 0 4px}.dx-bar i{display:block;height:100%;background:#c9a227;transition:width .2s linear}'
+        + '.dx-foot{display:flex;justify-content:space-between;font:600 11px/1.4 var(--mono,monospace);letter-spacing:.1em;color:#9a9182}.dx-rule{font-size:12px;color:#8e8676;line-height:1.5;margin-top:10px}.dx-pages{display:flex;gap:6px;flex-wrap:wrap}.dx-pages button{font:600 10px/1 var(--mono,monospace);padding:7px 8px;background:#2a2418;color:#ffd77a;border:1px solid #6a5a30;cursor:pointer}'
+        + '#dx-hud{position:fixed;right:22px;top:112px;z-index:6;display:none;pointer-events:none;font:600 11px/1.55 var(--mono,monospace);letter-spacing:.08em;color:#d8cfbf;text-align:right;text-shadow:0 1px 0 #000;background:linear-gradient(90deg,transparent,rgba(0,0,0,.45));padding:6px 10px}#dx-hud b{display:block;color:#c9a227;letter-spacing:.24em}#dx-hud span{display:block}';
+      document.head.appendChild(st);
+      const el = document.createElement('div'); el.id = 'dx-inter'; document.body.appendChild(el); this.el = el;
+      el.addEventListener('click', e => { const b = e.target.closest('[data-dx]'); if (!b || b.disabled) return; e.preventDefault(); Sound.ui && Sound.ui(); const a = b.dataset.dx;
+        if (a === 'out' || a === 'end') this.cast(0); else if (a === 'go' || a === 'retry') this.cast(1); else if (a === 'med') this.ask(1); else if (a === 'bat') this.ask(2); else if (a === 'req') this.ask(3); else if (a.indexOf('pg') === 0) UI.readNote('dx_' + a.slice(2), true); });
+    }
+    this.el.classList.add('on'); Game.state = 'descent'; UI.hud(false); Input.exitLock(); this.hideHud();
+    if (kind === 'down' || kind === 'resume' || kind === 'start' || kind === 'jam') this.startVote('go');
+    else if (kind === 'lost') this.startVote('retry');
+    this.drawInter();
+    if (this.host()) this.sendState();
+  },
+  closeInter() { if (this.el) this.el.classList.remove('on'); clearInterval(this.timer); },
+  drawInter(flash) {
+    if (!this.el || !this.el.classList.contains('on')) return;
+    const n = this.stages().length, kind = this.interKind, m = this.floorMode(), prev = this.done.length ? this.done[this.done.length - 1] : null, V = this.vote;
+    const nextSub = DX_SUB[m], yes = V ? Object.values(V.votes).filter(x => x === 1).length : 0, no = V ? Object.values(V.votes).filter(x => x === 0).length : 0, tn = this.ids().length;
+    let k = 'THE DESCENT · LIFT', h = '', ride = '';
+    if (kind === 'down') { h = 'Sublevel ' + DX_SUB[prev] + ' cleared'; ride = DX_RIDE[prev] || ''; }
+    else if (kind === 'final') { h = 'Sublevel 10 cleared'; ride = 'There is nothing below the Root. The mine elevator only goes one way from here: up.'; }
+    else if (kind === 'resume') { h = 'Back in the lift'; ride = this.note || 'You pick up where you left the expedition: in the car, between floors.'; }
+    else if (kind === 'start') { h = 'Before the first floor'; ride = this.note || ''; }
+    else if (kind === 'jam') { h = 'The lift jammed'; ride = 'Sublevel ' + nextSub + ' wouldn\'t open. Nothing was lost and nothing was counted — try again, or get out.'; }
+    else if (kind === 'lost' || kind === 'lostwait') { k = 'THE DESCENT · LOST'; h = 'Sublevel ' + nextSub + ' kept you'; ride = this.retries > 0 ? 'The lift is still waiting where you left it. You can go back to it and try the floor again — it will cost you.' : 'No retries left.'; }
+    const shaft = this.stages().map((sm, i) => { const top = 20 + i * 84, cls = i < this.done.length ? 'done' : i === this.done.length ? 'next' : ''; return '<div class="lv ' + cls + '" style="top:' + (top + 16) + 'px">' + DX_SUB[sm] + '</div>'; }).join('');
+    const carTop = 20 + Math.min(this.done.length, n - 1) * 84 - (kind === 'down' ? 0 : 0);
+    const team = this.ids().map(id => { const t = this.team[id] || { hp: 1, alive: true }, nm = id === this.me() ? 'You' : Net.nameOf(id); return '<div class="dx-row"><span>' + escHtml(nm) + '</span><b>' + (t.alive ? Math.round(t.hp * 100) + '%' : 'DOWN') + '</b></div><div class="dx-hp"><i style="width:' + Math.round(t.hp * 100) + '%"></i></div>'; }).join('');
+    const C = this.carry || this.blankCarry(), inter = this.phase === 'inter' && (kind === 'down' || kind === 'resume' || kind === 'start' || kind === 'jam');
+    const myHp = this.team[this.me()] ? this.team[this.me()].hp : 1;
+    const nextGain = 'pays its usual coins ×' + (1 + this.cfg.depth * this.done.length).toFixed(2) + ' + ' + Math.round((this.cfg.depthPay[this.done.length] || 0) * this.diffK()) + ' depth pay';
+    const pages = this.pages.slice().sort((a, b) => a - b).map(i => '<button data-dx="pg' + (i + 1) + '">PAGE ' + (i + 1) + '</button>').join('') || '<span style="color:#7d7568;font-size:12px">None yet — one is hidden on every floor.</span>';
+    let vote = '';
+    if (kind === 'final') vote = '<div class="dx-rule">Extracting — every coin banked, plus the bonus for going all the way down.</div>';
+    else if (kind === 'lostwait') vote = '<div class="dx-rule">Waiting for the host…</div>';
+    else if (V && V.kind === 'retry') vote = '<div class="dx-vote"><button class="go' + (this.myVote === 1 ? ' mine' : '') + '" data-dx="retry">RETRY THE FLOOR<small>From the last lift. Costs ' + Math.round(this.cfg.retryCost * 100) + '% of the unsecured bounty (' + Math.floor(this.bounty * this.cfg.retryCost) + '). ' + this.retries + ' retr' + (this.retries === 1 ? 'y' : 'ies') + ' left.</small></button><button class="out' + (this.myVote === 0 ? ' mine' : '') + '" data-dx="end">END THE EXPEDITION<small>Keep ' + Math.round(this.cfg.salvage * 100) + '% of the unsecured bounty: ' + Math.floor(this.bounty * this.cfg.salvage) + ' coins.</small></button></div>';
+    else if (V) vote = '<div class="dx-vote"><button class="out' + (this.myVote === 0 ? ' mine' : '') + '" data-dx="out">EXTRACT<small>Bank ' + Math.round(this.bounty * (1 + this.modBonus()) + this.pages.length * this.cfg.page) + ' coins now. The expedition ends.</small></button><button class="go' + (this.myVote === 1 ? ' mine' : '') + '" data-dx="go">CONTINUE → SUBLEVEL ' + nextSub + '<small>' + DX_NAME[m] + ' · ' + nextGain + '. Nothing is banked until you extract; lose and you keep ' + Math.round(this.cfg.salvage * 100) + '%.</small></button></div>';
+    const tally = V ? '<div class="dx-bar"><i style="width:100%"></i></div><div class="dx-foot"><span>' + (Net.active && Net.remotes.size ? 'VOTES · ' + (V.kind === 'retry' ? 'RETRY ' : 'CONTINUE ') + yes + ' · ' + (V.kind === 'retry' ? 'END ' : 'EXTRACT ') + no + ' · ' + (tn - yes - no) + ' waiting' : 'YOUR CHOICE') + '</span><span class="dx-cd">' + Math.ceil(this.voteLeft || V.secs) + 's</span></div>'
+      + '<div class="dx-rule">' + (Net.active && Net.remotes.size ? (V.kind === 'retry' ? 'RETRY' : 'CONTINUE') + ' needs more than half the team (' + (Math.floor(tn / 2) + 1) + ' of ' + tn + '). A tie, the clock running out, or nobody voting means ' + (V.kind === 'retry' ? 'END' : 'EXTRACT') + '.' : 'When the clock runs out, the lift takes you up: ' + (V.kind === 'retry' ? 'END' : 'EXTRACT') + '.') + '</div>' : '';
+    const go = flash === 'go' ? '<div class="dx-rule" style="color:#ffcf6a">The doors close. Going down to Sublevel ' + nextSub + '…</div>' : '';
+    this.el.innerHTML = '<div class="dx-wrap"><div class="dx-shaft">' + shaft + '<div class="dx-car" style="top:' + carTop + 'px"></div></div><div>'
+      + '<div class="dx-k">' + k + ' · ' + this.done.length + ' / ' + n + ' CLEARED</div><div class="dx-h">' + escHtml(h) + '</div>' + (ride ? '<p class="dx-ride">' + escHtml(ride) + '</p>' : '')
+      + '<div class="dx-grid"><div class="dx-box"><h4>TEAM CONDITION</h4>' + team + '<div class="dx-row" style="margin-top:4px"><span>Your battery</span><b>' + Math.round((C.bat || 0) * 100) + '% · ' + (C.spares | 0) + ' spare' + ((C.spares | 0) === 1 ? '' : 's') + '</b></div></div>'
+      + '<div class="dx-box"><h4>SUPPLIES (THE TEAM\'S)</h4><div class="dx-row"><span>Med kits</span><b>' + this.sup.med + '</b></div><div class="dx-row"><span>Battery packs</span><b>' + this.sup.bat + '</b></div>'
+      + (inter ? '<div class="dx-act"><button data-dx="med"' + (this.sup.med > 0 && myHp < 0.99 ? '' : ' disabled') + '>USE MED KIT +' + this.cfg.medHeal + '</button><button data-dx="bat"' + (this.sup.bat > 0 && (C.spares | 0) < this.cfg.spareCap ? '' : ' disabled') + '>TAKE A BATTERY</button><button data-dx="req"' + (this.reqN < this.cfg.reqMax && this.bounty >= this.cfg.reqCost ? '' : ' disabled') + '>REQUISITION A MED KIT −' + this.cfg.reqCost + '</button></div>' : '') + '</div>'
+      + '<div class="dx-box"><h4>REWARDS</h4><div class="dx-row"><span>Unsecured bounty</span><b>' + this.bounty + '</b></div>' + (this.lastGot && kind === 'down' ? '<div class="dx-row"><span>This floor</span><b>+' + this.lastGot + '</b></div>' : '') + '<div class="dx-row"><span>Secured</span><b>' + this.secured + '</b></div><div class="dx-row"><span>Modifiers</span><b>' + (this.mods.length ? '+' + Math.round(this.modBonus() * 100) + '%' : '—') + '</b></div><div class="dx-row"><span>Retries left</span><b>' + this.retries + '</b></div></div>'
+      + '<div class="dx-box"><h4>EVIDENCE · ' + this.pages.length + ' / ' + n + '</h4><div class="dx-pages">' + pages + '</div></div></div>'
+      + vote + tally + go + '</div></div>';
+  },
+};
+
+/* ---------------- the briefing card, the lobby, the key ---------------- */
+{
+  const S0 = Expedition.store();
+  // (the static card and brief live in the page; these keep them up to date)
+  const drawBrief = () => {
+    const el = $('brief-descent'); if (!el) return; const S = Expedition.store(), cp = S.cp;
+    const box = $('dx-brief-cp'), mods = $('dx-mods');
+    if (mods) { mods.innerHTML = ''; for (const k in DX_MODS) { const M = DX_MODS[k], b = document.createElement('label'); b.className = 'dx-mod'; b.innerHTML = '<input type="checkbox"> <b></b> <span></span>'; b.querySelector('input').checked = S.mods.indexOf(k) >= 0; b.querySelector('b').textContent = M.name + ' (+' + Math.round(M.bonus * 100) + '%)'; b.querySelector('span').textContent = M.desc;
+      b.querySelector('input').addEventListener('change', e => { const T0 = Expedition.store(); T0.mods = T0.mods.filter(x => x !== k); if (e.target.checked) T0.mods.push(k); Expedition.saveStore(T0); if (Net.isHost) Net.sendCfg(); }); mods.appendChild(b); } }
+    if (box) { if (cp && !Net.active) { const pay = Math.floor(cp.bounty * DX_CFG.salvage); box.hidden = false; box.innerHTML = '<b>A saved expedition:</b> next is Sublevel ' + DX_SUB[DX_CFG.stages[cp.stage]] + ' · ' + cp.done.length + ' floor' + (cp.done.length === 1 ? '' : 's') + ' cleared · ' + cp.bounty + ' unsecured' + (cp.inFloor ? ' · <span style="color:#ff9a7a">you left in the middle of a floor: resuming counts as a failed attempt</span>' : '') + '<div class="dx-act" style="margin-top:8px"><button data-r="resume"' + (Expedition.pendingResume !== 'new' ? ' class="sel"' : '') + '>RESUME IT</button><button data-r="new"' + (Expedition.pendingResume === 'new' ? ' class="sel"' : '') + '>START A NEW ONE (keep ' + pay + ')</button></div>';
+      box.querySelectorAll('[data-r]').forEach(b => b.addEventListener('click', e => { e.preventDefault(); Expedition.pendingResume = b.dataset.r; drawBrief(); })); } else box.hidden = true; }
+    const best = $('dx-best'); if (best) best.textContent = S.best.runs ? 'Deepest: Sublevel ' + Math.max(6, S.best.deep) + ' · best haul ' + S.best.haul + ' · pages found ' + Object.keys(S.pages).length + '/5' : 'No expedition yet';
+  };
+  const smc0 = syncModeCards; syncModeCards = function () {
+    const r = smc0.apply(this, arguments), on = settings.mode === 'descent', b = $('brief-descent'); if (b) b.hidden = !on;
+    if (on) { $('brief-h1').textContent = 'Go all the way down'; $('brief-kicker').textContent = 'The Descent · Site Kestrel · Sublevels 6 to 10 · one expedition'; drawBrief(); }
+    const em = document.querySelector('#modes .mode[data-mode="descent"] em'); if (em) { const S = Expedition.store(); em.textContent = S.cp && !Net.active ? 'A saved expedition is waiting' : S.best.runs ? 'Deepest: Sublevel ' + Math.max(6, S.best.deep) + ' · best haul ' + S.best.haul : 'No expedition yet'; }
+    return r;
+  };
+  const mcb0 = Modes.cardBest; Modes.cardBest = function (m) { if (m === 'descent') { const S = Expedition.store(); return S.best.runs ? 'Deepest: Sublevel ' + Math.max(6, S.best.deep) : 'No expedition yet'; } return mcb0.apply(this, arguments); };
+}
+
+/* ---------------- the hooks into the game ---------------- */
+{
+  const X = Expedition;
+  const ng0 = Game.newGame;
+  Game.newGame = function () {
+    const want = (Net.active && Net.sessionMode) || settings.mode;
+    if (want !== 'descent') { if (X.on) X.stop(); return ng0.apply(this, arguments); }
+    if (!Net.isClient && (!X.on || X.phase === 'over' || X.phase === 'idle')) {
+      const cp = !Net.active ? X.store().cp : null;
+      if (cp && X.pendingResume !== 'new') { X.pendingResume = null; UI.hideAll(); UI.prev = []; Preview.detach && Preview.detach(); Sound.init(); Sound.setMode('game'); X.resume(cp); return; }
+      if (cp && X.pendingResume === 'new') { const S = X.store(), pay = Math.floor(cp.bounty * DX_CFG.salvage); S.cp = null; X.saveStore(S); if (Chars.data && pay) { Chars.data.coins = Math.min(ECON.maxCoins, Chars.data.coins + pay); Chars.save(); } X.pendingResume = null; }
+      X.begin();
+    }
+    if (Net.isClient && !X.on) { console.error('Descent: no expedition from the host'); return ng0.apply(this, arguments); }
+    return X.runFloor(ng0, this);
+  };
+  // the host prepares the expedition before it tells everyone to start (the start message carries it)
+  const sg0 = Net.startGame; Net.startGame = function () { if (this.isHost && settings.mode === 'descent') { X.netMods = X.store().mods; if (!X.on || X.phase === 'over' || X.phase === 'idle') X.begin(); } return sg0.apply(this, arguments); };
+  const br0 = Net.broadcast; Net.broadcast = function (m) { if (m && this.isHost && (m.k === 'start' || m.k === 'cfg') && settings.mode === 'descent') { if (m.k === 'start' && X.on) m.x = X.netState(); m.xm = X.store().mods; } return br0.apply(this, arguments); };
+  const rl0 = Net.rel; Net.rel = function (peer, m) { if (m && m.k === 'welcome' && this.isHost && settings.mode === 'descent') m.xm = X.store().mods; return rl0.apply(this, arguments); };
+  const ac0 = Net.applyCfg; Net.applyCfg = function (m) { const r = ac0.apply(this, arguments); if (m && Array.isArray(m.xm)) X.netMods = m.xm.filter(k => DX_MODS[k]); if (m && m.k === 'start' && m.x && this.isClient) X.applyNet(m.x); return r; };
+  // a floor won / lost: the expedition decides what happens next
+  const sv0 = Game.showVictory; Game.showVictory = function () { if (X.on && X.phase !== 'over') { if (X.phase === 'floor') { if (X.host()) X.hostFloorWon(); else X.waiting = true; } return; } return sv0.apply(this, arguments); }; // (a guest's own ending can land after the host's word: it never pays or shows a screen)
+  const sg1 = Game.showGameOver; Game.showGameOver = function () { if (X.on && X.phase === 'floor') { X.floorLost(); return; } if (X.on && X.phase !== 'over') return; return sg1.apply(this, arguments); };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) {
+    if (ev && typeof ev.k === 'string' && ev.k[0] === 'x' && ev.k.length === 2 && 'fdsmgqe'.indexOf(ev.k[1]) >= 0 && (ev.k !== 'xs' || true)) {
+      if (ev.k === 'xf') X.floorDone(ev); else if (ev.k === 'xd') X.decided(ev); else if (ev.k === 'xs') X.stateEvent(ev); else if (ev.k === 'xe') X.pageEvent(ev); else X.supEvent(ev);
+      return;
+    }
+    return ae0.apply(this, arguments);
+  };
+  const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i, x) {
+    if (a === 'xv' || a === 'xu') { if (!Net.isClient && X.on && r) { if (a === 'xv') X.hostVote(r.id, i); else X.hostAsk(r.id, i | 0); } return; }
+    return ra0.apply(this, arguments);
+  };
+  // (the guest's remoteAction refuses a dead guard: votes in the lift come from guards who may have died on the floor)
+  const gu0 = Game.update; Game.update = function (dt) { const r = gu0.apply(this, arguments); try { X.update(dt); } catch (e) { if (!X.err) { X.err = e; console.error('Descent', e); } } return r; };
+  // leaving: solo keeps the checkpoint (resuming counts as a failed attempt); online the expedition ends and you keep the salvage
+  const qt0 = Game.quitToTitle; Game.quitToTitle = function () {
+    if (X.on && X.phase !== 'over') { if (Net.active) { const pay = Math.floor(X.bounty * DX_CFG.salvage); if (Chars.data && pay) { Chars.data.coins = Math.min(ECON.maxCoins, Chars.data.coins + pay); Chars.save(); } X.clearCp(); } X.stop(); }
+    return qt0.apply(this, arguments);
+  };
+  const nl0 = Net.lost; Net.lost = function (text) {
+    let extra = ''; if (X.on && X.phase !== 'over') { const pay = Math.floor(X.bounty * DX_CFG.salvage); if (Chars.data && pay) { Chars.data.coins = Math.min(ECON.maxCoins, Chars.data.coins + pay); Chars.save(); } extra = ' The expedition is over — you salvaged ' + pay + ' coins.'; X.phase = 'over'; X.stop(); }
+    const r = nl0.call(this, text + extra); return r;
+  };
+  // (a guest) in the lift the world isn't running, but the host's word still has to arrive: supplies, votes, the decision
+  const cm0 = Net.onClientMsg; Net.onClientMsg = function (m) { if (m && m.k === 'ev' && this.inGame && Game.state === 'descent' && X.on) { Game.applyEvent(m.e); return; } return cm0.apply(this, arguments); };
+  // a guest who drops in the lift: the host stops waiting for their vote (and a drop never forces the risky choice)
+  const dp0 = Net.dropPeer; Net.dropPeer = function (peer, why, quiet) { const r = dp0.apply(this, arguments); if (!this.isClient && X.on && peer && X.vote) { delete X.vote.votes[peer.id]; delete X.team[peer.id]; X.sendState(); X.tryDecide(); } return r; };
+  // the pause menu's Restart would quietly reset a floor: in an expedition, leaving is the only way out (and counts)
+  const up0 = UI.updatePause; if (up0) UI.updatePause = function () { const r = up0.apply(this, arguments); const b = $('btn-p-restart'); if (b && X.on) b.style.display = 'none'; return r; };
+  // [J]: a med kit, on a floor
+  window.addEventListener('keydown', e => { if (!X.on || X.phase !== 'floor' || Game.state !== 'playing' || e.repeat || (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))) return; if (e.code === Keys.map.medkit) { e.preventDefault(); if (X.sup.med <= 0) { UI.msg('No med kits left in the team\'s supplies.', 'warn', 2.4); return; } X.ask(1); } });
+}
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -34243,7 +34780,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
+  Object.assign(window.LS, { Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
 </script>
