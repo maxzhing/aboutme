@@ -34233,7 +34233,7 @@ const AnWorld = {
     for (const rk of AN_ROOM_IDS) {
       const R = AN_ROOMS[rk]; this.byRoom[rk] = [];
       for (const [id, kind, x, z, ry, alt] of R.props) {
-        const mesh = AN_BUILD[kind](); mesh.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; } }); G.add(mesh);
+        const mesh = AN_BUILD[kind](); mesh.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } }); G.add(mesh);
         const P = { id, kind, room: rk, mesh, base: { x, z, ry, s: 1 }, alt: alt || [], label: AN_LABEL[kind] || kind };
         this.props[id] = P; this.byRoom[rk].push(P);
       }
@@ -34258,6 +34258,10 @@ const AnWorld = {
     this.restore();
   },
   show(on) { if (this.g) this.g.visible = !!on; },
+  // a camera shows one room: for its render the other rooms' furniture and clocks step out (nothing culls through walls),
+  // and come straight back — the stills and the live picture are drawn the same way
+  cull(rk) { const hid = []; for (const r in this.byRoom) { if (r === rk) continue; for (const P of this.byRoom[r]) if (P.mesh.visible) { P.mesh.visible = false; hid.push(P.mesh); } const C = this.clocks[r]; if (C && C.mesh.visible) { C.mesh.visible = false; hid.push(C.mesh); } } return hid; },
+  uncull(hid) { if (hid) for (const m of hid) m.visible = true; },
   dup(kind) { if (!this.dupMeshes[kind]) { const m = AN_BUILD[kind](); m.visible = false; this.g.add(m); this.dupMeshes[kind] = m; } return this.dupMeshes[kind]; },
   place(mesh, x, z, ry, s) { mesh.position.set(x, 0, z); mesh.rotation.set(0, ry || 0, 0); mesh.scale.setScalar(s || 1); },
   setProp(id, o) { const P = this.props[id]; if (!P) return; const c = Object.assign({ x: P.base.x, z: P.base.z, ry: P.base.ry, s: 1, vis: true }, P.cur || {}, o); P.cur = c; this.place(P.mesh, c.x, c.z, c.ry, c.s); P.mesh.visible = c.vis; },
@@ -35061,7 +35065,8 @@ const AnFeedCap = {
       Game.poolT = 0; Game.updateLights(0);
       const fp = flashFill.position.clone(), fi = flashFill.intensity, fd = flashFill.distance, fde = flashFill.decay, fl = flash.intensity;
       flashFill.position.copy(cam.position); flashFill.intensity = 2.6; flashFill.distance = 24; flashFill.decay = 1; flash.intensity = 0;
-      try { renderer.setRenderTarget(this.rt); renderer.render(scene, cam); } finally { flashFill.position.copy(fp); flashFill.intensity = fi; flashFill.distance = fd; flashFill.decay = fde; flash.intensity = fl; }
+      const hid = AnWorld.cull(pose.room);
+      try { renderer.setRenderTarget(this.rt); renderer.render(scene, cam); } finally { AnWorld.uncull(hid); flashFill.position.copy(fp); flashFill.intensity = fi; flashFill.distance = fd; flashFill.decay = fde; flash.intensity = fl; }
       renderer.readRenderTargetPixels(this.rt, 0, 0, 384, 216, this.buf); ok = true;
     } catch (e) { console.warn('still', e); }
     finally {
@@ -35095,7 +35100,8 @@ const AnFeedCap = {
     const sa = Net.self && Net.self.visible; Net.selfAvatar && Net.selfAvatar(true);
     const fp = flashFill.position.clone(), fi = flashFill.intensity, fd = flashFill.distance, fde = flashFill.decay, fl = flash.intensity; // (Desk B through the same infrared as the feeds)
     flashFill.position.copy(cam.position); flashFill.intensity = 2.6; flashFill.distance = 24; flashFill.decay = 1; flash.intensity = 0;
-    try { renderer.setRenderTarget(this.rtR); renderer.render(scene, cam); } catch (e) { } finally { renderer.setRenderTarget(null); flashFill.position.copy(fp); flashFill.intensity = fi; flashFill.distance = fd; flashFill.decay = fde; flash.intensity = fl; W.position.copy(wp); W.rotation.y = wr; W.visible = was; if (!sa && !AnUI.isOpen) Net.selfAvatar && Net.selfAvatar(false); }
+    const hid = AnWorld.cull('hall');
+    try { renderer.setRenderTarget(this.rtR); renderer.render(scene, cam); } catch (e) { } finally { AnWorld.uncull(hid); renderer.setRenderTarget(null); flashFill.position.copy(fp); flashFill.intensity = fi; flashFill.distance = fd; flashFill.decay = fde; flash.intensity = fl; W.position.copy(wp); W.rotation.y = wr; W.visible = was; if (!sa && !AnUI.isOpen) Net.selfAvatar && Net.selfAvatar(false); }
   },
 };
 
@@ -35378,7 +35384,8 @@ body.an-on #minimap-wrap,body.an-on #objectives .bonus-h,body.an-on #bonus-list,
     const asp = R.w / R.h; if (Math.abs(camera.aspect - asp) > 0.001) { camera.aspect = asp; camera.updateProjectionMatrix(); }
     renderer.setScissorTest(false); renderer.setClearColor(0x050605, 1); renderer.clear();
     const yb = sz.y - R.y - R.h; renderer.setScissorTest(true); renderer.setScissor(R.x, yb, R.w, R.h); renderer.setViewport(R.x, yb, R.w, R.h);
-    try { draw(); } finally { renderer.setScissorTest(false); renderer.setViewport(0, 0, sz.x, sz.y); }
+    const k = AN_CAMS[Anomaly.sel] ? AN_CAMS[Anomaly.sel].id : '01', F = AnWorld.feed[k] || {}, hid = AnWorld.cull(AN_CAM[F.wrong || k].room);
+    try { draw(); } finally { AnWorld.uncull(hid); renderer.setScissorTest(false); renderer.setViewport(0, 0, sz.x, sz.y); }
   },
   restoreAspect() { const sz = renderer.getSize(_anV2), a = sz.x / Math.max(1, sz.y); if (Math.abs(camera.aspect - a) > 0.001) { camera.aspect = a; camera.updateProjectionMatrix(); } },
   // ---- every frame ----
@@ -35744,6 +35751,7 @@ Anomaly.hint = function () {
   const lu0 = Net.lobbyUpdate; Net.lobbyUpdate = function () { const r = lu0.apply(this, arguments); const mode = this.isClient ? this.sessionMode : settings.mode, note = $('mp-diff-note'), ar = this.isClient ? this.sessionAnRun : settings.anRun;
     if (note && mode === 'anomaly' && note.textContent.indexOf(' · Run: ') < 0) note.textContent += ' · Run: ' + (ar === 'endless' ? 'ENDLESS' : 'CAMPAIGN'); return r; };
   // ---- the keys: on the monitor, the console has them all ----
+  document.addEventListener('pointerlockchange', () => { if (on() && AnUI.isOpen && document.pointerLockElement) Input.exitLock(); }); // (a lock asked for on Resume can land after [M] opened the console: the console keeps its cursor)
   window.addEventListener('keydown', e => {
     if (Game.state !== 'playing' || Game.mode !== 'anomaly' || !Anomaly.on || e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
