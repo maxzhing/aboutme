@@ -1244,6 +1244,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <label for="set-bright">Brightness</label><div class="set-ctl"><input type="range" id="set-bright" min="0.6" max="1.8" step="0.05"><output id="out-bright"></output></div>
       <label>Head bob</label><div class="set-ctl"><button class="tog" id="set-bob"></button></div>
       <label>Film grain</label><div class="set-ctl"><button class="tog" id="set-grain"></button></div>
+      <label>Cinematic look</label><div class="set-ctl"><button class="tog" id="set-cinema"></button><span class="mp-note">lamp glow, film colour, lens</span></div>
       <label>Show FPS</label><div class="set-ctl"><button class="tog" id="set-fps"></button></div>
       <label>Item hints</label><div class="set-ctl"><button class="tog" id="set-hints"></button><span class="mp-note">yellow highlights when you're stuck</span></div>
       <label>Panic effects</label><div class="seg" id="set-panic" title="When something is close: the red pulse at the edge of the screen"><button data-v="full">Full</button><button data-v="reduced">Reduced</button><button data-v="off">Off</button></div>
@@ -1544,7 +1545,7 @@ const fmtTime = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60)
 const DEFAULTS = { sensitivity: 1, invertY: false, fov: 72, volume: 0.8, muted: false, difficulty: 'normal',
   quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '', mode: 'night', daily: false, dynRes: 'on', camoMap: 's6', camoWarden: 'ai',
   panicFx: 'full', shake: true, heartbeat: true, noFlash: false, // (Build 27: Panic Mode's screen effects, camera shake, the heartbeat, and REDUCE FLASHING)
-  anFeedFx: 'full', anCaptions: false, anFeedVol: 0.8, anRun: 'campaign' }; // (Build 29: THE ANOMALY — the camera picture's effects, the microphones' captions and volume, a week or ENDLESS)
+  cinema: true, anFeedFx: 'full', anCaptions: false, anFeedVol: 0.8, anRun: 'campaign' }; // (Build 29: THE ANOMALY — the camera picture's effects, the microphones' captions and volume, a week or ENDLESS)
 const settings = Object.assign({}, DEFAULTS);
 (function loadSettings() {
   try {
@@ -1555,7 +1556,7 @@ const settings = Object.assign({}, DEFAULTS);
     const bool = k => { if (typeof o[k] === 'boolean') settings[k] = o[k]; };
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8);
-    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); oneOf('panicFx', ['full', 'reduced', 'off']); oneOf('anFeedFx', ['full', 'reduced', 'off']); bool('anCaptions'); num('anFeedVol', 0, 1); oneOf('anRun', ['campaign', 'endless']);
+    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); oneOf('panicFx', ['full', 'reduced', 'off']); oneOf('anFeedFx', ['full', 'reduced', 'off']); bool('anCaptions'); bool('cinema'); num('anFeedVol', 0, 1); oneOf('anRun', ['campaign', 'endless']);
     oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors', 'descent', 'anomaly']); oneOf('camoMap', ['s6', 'works']); oneOf('camoWarden', ['ai', 'host']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
@@ -1696,8 +1697,8 @@ const recOf = kind => (ATTACK[kind] || ATTACK.swipe).rec * diff().recover;
 const diff = () => DIFF[Net.sessionDiff || settings.difficulty] || DIFF.normal;
 const QUALITY = {
   low:    { pixelRatio: 0.7,  shadows: false, shadowSize: 256,  lights: 3, particles: 110, bump: false, far: 36 },
-  medium: { pixelRatio: 1.0,  shadows: true,  shadowSize: 512,  lights: 5, particles: 240, bump: true,  far: 46 },
-  high:   { pixelRatio: 1.4,  shadows: true,  shadowSize: 1024, lights: 7, particles: 420, bump: true,  far: 58 },
+  medium: { pixelRatio: 1.0,  shadows: true,  shadowSize: 512,  lights: 6, particles: 240, bump: true,  far: 46 },
+  high:   { pixelRatio: 1.4,  shadows: true,  shadowSize: 1024, lights: 8, particles: 420, bump: true,  far: 58 },
 };
 const qual = () => QUALITY[settings.quality] || QUALITY.medium;
 const DRS = { k: 1 }; // (Build 17: auto resolution — the share of the pixels being drawn right now; see Perf)
@@ -2581,6 +2582,293 @@ function genKeycard(color, label) {
   g.fillStyle = '#c9b25a'; g.fillRect(40, 40, 18, 12);
   return c;
 }
+/* =====================================================================
+   Build 30 — the realism pass: surfaces at twice the detail.
+   Aged floral wallpaper (three colourways), oak boards, glazed tiles,
+   stained plaster, dark trim and the portraits on the walls. Every
+   surface also gets a relief (normal) map drawn from the same marks,
+   and the floors and tiles a gloss map (varnish and glaze, worn away).
+   ===================================================================== */
+const RZ_PAPER = { paper: 1, paper2: 1, paper3: 1 }; // (the wallpapered looks: they get skirting boards, wooden door frames and warm lamps)
+// a seeded value-noise field, sampled smoothly anywhere (cheaper than a full-size fbm for the big textures)
+function rzField(rng, gs) {
+  const gr = new Float32Array(gs * gs); for (let i = 0; i < gr.length; i++) gr[i] = rng();
+  return (u, v) => { // u, v in grid cells (wrapping)
+    const iu = Math.floor(u), iv = Math.floor(v), tu = u - iu, tv = v - iv, su = tu * tu * (3 - 2 * tu), sv = tv * tv * (3 - 2 * tv);
+    const x0 = ((iu % gs) + gs) % gs, x1 = (x0 + 1) % gs, y0 = ((iv % gs) + gs) % gs, y1 = (y0 + 1) % gs;
+    const a = gr[y0 * gs + x0], b = gr[y0 * gs + x1], c = gr[y1 * gs + x0], d = gr[y1 * gs + x1];
+    return (a + (b - a) * su) * (1 - sv) + (c + (d - c) * su) * sv;
+  };
+}
+function rzFbm(rng, gs, oct) { const f = []; for (let o = 0; o < oct; o++) f.push(rzField(rng, gs << o)); return (u, v) => { let s = 0, a = 1, t = 0; for (let o = 0; o < oct; o++) { s += f[o](u * (1 << o), v * (1 << o)) * a; t += a; a *= 0.5; } return s / t; }; }
+// a smooth noise image, S×S, worked out at a quarter of the size and spread up (the large textures' mottling is low frequency anyway)
+function rzNoiseImg(f, S, scale, lo) {
+  lo = lo || 256; const L = new Float32Array(lo * lo), out = new Float32Array(S * S);
+  for (let y = 0; y < lo; y++) for (let x = 0; x < lo; x++) L[y * lo + x] = f(x / lo * scale, y / lo * scale);
+  const k = lo / S;
+  for (let y = 0; y < S; y++) { const fy = y * k, y0 = Math.floor(fy), ty = fy - y0, r0 = y0 * lo, r1 = ((y0 + 1) % lo) * lo;
+    for (let x = 0; x < S; x++) { const fx = x * k, x0 = Math.floor(fx), tx = fx - x0, x1 = (x0 + 1) % lo; const a = L[r0 + x0], b = L[r0 + x1], c = L[r1 + x0], d = L[r1 + x1]; out[y * S + x] = (a + (b - a) * tx) * (1 - ty) + (c + (d - c) * tx) * ty; } }
+  return out;
+}
+// a grey height canvas -> a tangent-space normal map (OpenGL convention, as three.js expects: green points up the texture)
+function rzNormal(hc, k, wrapY) {
+  const w = hc.width, h = hc.height, src = hc.getContext('2d').getImageData(0, 0, w, h).data, H = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) H[i] = src[i * 4] / 255;
+  const c = makeCanvas(w, h), g = c.getContext('2d'), img = g.createImageData(w, h), d = img.data;
+  for (let y = 0; y < h; y++) {
+    const yu = wrapY ? (y - 1 + h) % h : Math.max(0, y - 1), yd = wrapY ? (y + 1) % h : Math.min(h - 1, y + 1);
+    for (let x = 0; x < w; x++) {
+      const xl = (x - 1 + w) % w, xr = (x + 1) % w;
+      const dx = (H[y * w + xr] - H[y * w + xl]) * k, dy = (H[yd * w + x] - H[yu * w + x]) * k;
+      const l = Math.sqrt(dx * dx + dy * dy + 1), i = (y * w + x) * 4;
+      d[i] = (-dx / l * 0.5 + 0.5) * 255; d[i + 1] = (dy / l * 0.5 + 0.5) * 255; d[i + 2] = (1 / l * 0.5 + 0.5) * 255; d[i + 3] = 255;
+    }
+  }
+  g.putImageData(img, 0, 0); return c;
+}
+// draw something wrapped across the left/right edge (the textures repeat along the wall)
+function rzWrap(S, x, w, fn) { fn(0); if (x - w < 0) fn(S); if (x + w > S) fn(-S); }
+// an irregular blob (a stain, a tear): a closed path whose radius wanders
+function rzBlob(g, cx, cy, r, ry, rng, wob) {
+  const n = 22, ph = [rng() * 6, rng() * 6, rng() * 6]; g.beginPath();
+  for (let k = 0; k <= n; k++) { const a = k / n * TAU, q = 1 + wob * (0.5 * Math.sin(a * 2 + ph[0]) + 0.3 * Math.sin(a * 5 + ph[1]) + 0.2 * Math.sin(a * 9 + ph[2])); const x = cx + Math.cos(a) * r * q, y = cy + Math.sin(a) * ry * q; k ? g.lineTo(x, y) : g.moveTo(x, y); }
+  g.closePath();
+}
+
+/* ---------------- wallpaper: a small floral print, sixty years on ---------------- */
+// the texture covers 4 m of wall across and the whole height (floor to ceiling) up: the dirt knows where the floor is
+function genPaper(kind) {
+  const S = 1024, N = 512, PX = S / 4, PY = S / WALL_H, AS = PY / PX, rng = mulberry32(strHash('rz-' + kind));
+  const P = {
+    paper: { base: [160, 134, 96], ink: [66, 46, 28], leaf: [74, 66, 40], dot: [204, 182, 138], tint: '96,66,30' },   // the reference: tan, with brown sprigs
+    paper2: { base: [128, 132, 104], ink: [58, 62, 42], leaf: [72, 58, 40], dot: [182, 176, 138], tint: '74,70,40' },  // faded sage
+    paper3: { base: [146, 116, 104], ink: [78, 46, 42], leaf: [70, 60, 44], dot: [196, 166, 146], tint: '86,56,40' },  // dusty rose, striped
+  }[kind] || {};
+  const c = makeCanvas(S, S), g = c.getContext('2d'), hc = makeCanvas(N, N), h = hc.getContext('2d');
+  // 1) the paper: mottled by age and light, fine fibres
+  const big = rzFbm(rng, 4, 4), BN = rzNoiseImg(big, S, 4), FN = rzNoiseImg(rzField(rng, 64), S, 64);
+  { const img = g.createImageData(S, S), d = img.data;
+    for (let i = 0, n = S * S; i < n; i++) { const k = (BN[i] - 0.5) * 46 + (FN[i] - 0.5) * 10 + (Math.random() - 0.5) * 6, o = i * 4; d[o] = P.base[0] + k; d[o + 1] = P.base[1] + k * 0.95; d[o + 2] = P.base[2] + k * 0.8; d[o + 3] = 255; }
+    g.putImageData(img, 0, 0); }
+  { const HN = rzNoiseImg(big, N, 8, 128), img = h.createImageData(N, N), d = img.data; for (let i = 0, n = N * N; i < n; i++) { const v = 128 + (HN[i] - 0.5) * 34 + (Math.random() - 0.5) * 6, o = i * 4; d[o] = d[o + 1] = d[o + 2] = v; d[o + 3] = 255; } h.putImageData(img, 0, 0); } // (the plaster under it is not quite flat)
+  // 2) the print (paper3: broad stripes first)
+  if (kind === 'paper3') {
+    for (let x = 0; x < S; x += 64) { g.fillStyle = 'rgba(255,236,220,.07)'; g.fillRect(x, 0, 32, S); g.fillStyle = 'rgba(70,40,36,.35)'; g.fillRect(x + 32, 0, 2, S); g.fillRect(x + 62, 0, 1, S); }
+  }
+  const fade = rzFbm(rng, 3, 3), cw = 32, rh = 40; // (12.5 cm across and up: the repeat divides the texture exactly, so it wraps unseen)
+  const sprig = (ctx, sc, x, y, a, inkA) => { // a five-petal flower, two leaves, a stem
+    ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc * AS);
+    ctx.fillStyle = `rgba(${P.leaf[0]},${P.leaf[1]},${P.leaf[2]},${inkA * 0.9})`;
+    ctx.beginPath(); ctx.ellipse(-3.3, 3.6, 2.5, 1.0, -0.7, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(3.3, 3.6, 2.5, 1.0, 0.7, 0, TAU); ctx.fill();
+    ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.moveTo(0, 1.5); ctx.quadraticCurveTo(0.8, 4.5, -0.4, 7.2); ctx.stroke();
+    ctx.fillStyle = `rgba(${P.ink[0]},${P.ink[1]},${P.ink[2]},${inkA})`;
+    for (let k = 0; k < 5; k++) { const q = k / 5 * TAU - Math.PI / 2 + a; ctx.beginPath(); ctx.ellipse(Math.cos(q) * 2.0, Math.sin(q) * 2.0, 1.55, 0.95, q, 0, TAU); ctx.fill(); }
+    ctx.fillStyle = `rgba(${P.dot[0]},${P.dot[1]},${P.dot[2]},${inkA * 0.9})`; ctx.beginPath(); ctx.arc(0, 0, 0.75, 0, TAU); ctx.fill();
+    ctx.restore();
+  };
+  { const tw = cw * 2, th = rh * 2, t = makeCanvas(tw, th), tg = t.getContext('2d'), ht = makeCanvas(tw / 2, th / 2), hg = ht.getContext('2d');
+    for (const [x, y, a] of [[cw / 2, rh / 2, -0.2], [cw / 2, rh * 1.5, 0.3], [cw * 1.5, rh, -0.2], [cw * 1.5, 0, 0.3], [cw * 1.5, th, 0.3]]) {
+      if (kind === 'paper3' && x > cw) continue; // (the stripes carry every other column)
+      for (const ox of [0, -tw, tw]) for (const oy of [0, -th, th]) { sprig(tg, 2.3, x + ox, y + oy, kind === 'paper3' ? 0 : a, 0.5); hg.fillStyle = 'rgba(255,255,255,.12)'; hg.beginPath(); hg.arc((x + ox) / 2, (y + oy) / 2, 2.6, 0, TAU); hg.fill(); }
+      if (kind !== 'paper3') { tg.fillStyle = `rgba(${P.dot[0]},${P.dot[1]},${P.dot[2]},.5)`; tg.beginPath(); tg.ellipse((x + cw / 2) % tw, (y + rh / 2) % th, 1.0, 1.0 * AS, 0, 0, TAU); tg.fill(); }
+    }
+    g.fillStyle = g.createPattern(t, 'repeat'); g.fillRect(0, 0, S, S); h.fillStyle = h.createPattern(ht, 'repeat'); h.fillRect(0, 0, N, N);
+    // sun and damp fade the print unevenly: wash it back toward the paper where it's faded
+    const fc = makeCanvas(64, 64), fg = fc.getContext('2d'), fi = fg.createImageData(64, 64);
+    for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) { const v = fade(x / 64 * 3, y / 64 * 3), o = (y * 64 + x) * 4; fi.data[o] = P.base[0]; fi.data[o + 1] = P.base[1]; fi.data[o + 2] = P.base[2]; fi.data[o + 3] = 60 + (1 - v) * 150; }
+    fg.putImageData(fi, 0, 0); g.imageSmoothingEnabled = true; g.drawImage(fc, 0, 0, S, S);
+    // (and put back a little of the paper's own mottling over it)
+    const mc = makeCanvas(256, 256), mg = mc.getContext('2d'), mi = mg.createImageData(256, 256); for (let i = 0; i < 256 * 256; i++) { const v = BN[(Math.floor(i / 256) * 4) * S + (i % 256) * 4], o = i * 4; mi.data[o] = mi.data[o + 1] = mi.data[o + 2] = v > 0.5 ? 255 : 0; mi.data[o + 3] = Math.abs(v - 0.5) * 70; }
+    mg.putImageData(mi, 0, 0); g.drawImage(mc, 0, 0, S, S); }
+  // 3) the seams: every half metre, a strip of paper; some lift
+  for (let k = 0; k < 8; k++) {
+    const x = k * 128 + (k ? (rng() - 0.5) * 3 : 0);
+    g.fillStyle = 'rgba(40,28,16,.16)'; g.fillRect(x, 0, 1.2, S); g.fillStyle = 'rgba(255,240,210,.05)'; g.fillRect(x + 1.2, 0, 1, S);
+    h.fillStyle = 'rgba(255,255,255,.3)'; h.fillRect(x / 2, 0, 1, N);
+    if (rng() < 0.55) { // a strip peeling at the bottom or the top
+      const top = rng() < 0.4, len = 40 + rng() * 120, wd = 10 + rng() * 22, y0 = top ? 0 : S - (0.12 * PY) - len * 0.4, side = rng() < 0.5 ? -1 : 1;
+      g.fillStyle = 'rgba(20,14,8,.35)'; g.beginPath(); g.moveTo(x, y0); g.lineTo(x + side * (wd + 5), y0 + len * 0.5); g.lineTo(x, y0 + len); g.fill(); // (its shadow)
+      g.fillStyle = 'rgb(206,190,152)'; g.beginPath(); g.moveTo(x, y0); g.lineTo(x + side * wd, y0 + len * 0.45); g.lineTo(x, y0 + len); g.fill(); // (the back of the paper)
+      h.fillStyle = 'rgba(255,255,255,.8)'; h.beginPath(); h.moveTo(x / 2, y0 / 2); h.lineTo((x + side * wd) / 2, (y0 + len * 0.45) / 2); h.lineTo(x / 2, (y0 + len) / 2); h.fill();
+    }
+  }
+  // 4) where pictures hung for decades: unfaded rectangles, the nail still there
+  for (let k = 0; k < 2; k++) {
+    const w = 90 + rng() * 80, hh = (110 + rng() * 90), x = 80 + k * 470 + rng() * 260, y = S - (1.45 + rng() * 0.4) * PY - hh / 2;
+    for (let s = 0; s < 4; s++) { g.fillStyle = 'rgba(255,238,200,.035)'; g.fillRect(x + s * 2, y + s * 2, w - s * 4, hh - s * 4); }
+    g.fillStyle = 'rgba(20,12,6,.8)'; g.beginPath(); g.arc(x + w / 2, y - 10, 2, 0, TAU); g.fill();
+  }
+  // 5) water: stains with tide-lines, and streaks run down from them and from the ceiling
+  for (let k = 0; k < 5; k++) {
+    const x = rng() * S, y = (k < 2 ? rng() * 0.25 : 0.2 + rng() * 0.55) * S, r = 40 + rng() * 110, ry = r * (0.8 + rng() * 0.6);
+    rzWrap(S, x, r * 1.5, o => {
+      rzBlob(g, x + o, y, r, ry, rng, 0.35); g.fillStyle = `rgba(${P.tint},.16)`; g.fill();
+      for (let q = 0; q < 3; q++) { rzBlob(g, x + o, y, r * (1 - q * 0.18), ry * (1 - q * 0.18), rng, 0.3); g.strokeStyle = `rgba(74,50,24,${0.3 - q * 0.07})`; g.lineWidth = 2.6 - q * 0.6; g.stroke(); }
+    });
+    for (let q = 0; q < 3; q++) { const sx = x + (rng() - 0.5) * r, len = 120 + rng() * 380, sw = 3 + rng() * 10, gr = g.createLinearGradient(0, y, 0, y + len); gr.addColorStop(0, `rgba(${P.tint},.22)`); gr.addColorStop(1, `rgba(${P.tint},0)`); g.fillStyle = gr; rzWrap(S, sx, sw, o => g.fillRect(sx + o, y, sw, len)); }
+  }
+  stains(g, S, S, rng, 16, S * 0.5, 0.16, P.tint);
+  // 6) the dirt: yellowed under the ceiling, black along the floor, scuffs where chairs and shoulders rubbed
+  { let gr = g.createLinearGradient(0, 0, 0, 0.9 * PY); gr.addColorStop(0, `rgba(${P.tint},.42)`); gr.addColorStop(0.25, `rgba(${P.tint},.16)`); gr.addColorStop(1, `rgba(${P.tint},0)`); g.fillStyle = gr; g.fillRect(0, 0, S, 0.9 * PY);
+    gr = g.createLinearGradient(0, S - 0.7 * PY, 0, S); gr.addColorStop(0, 'rgba(26,18,10,0)'); gr.addColorStop(0.6, 'rgba(26,18,10,.32)'); gr.addColorStop(1, 'rgba(18,12,6,.7)'); g.fillStyle = gr; g.fillRect(0, S - 0.7 * PY, S, 0.7 * PY); }
+  for (let k = 0; k < 70; k++) { const y = S - (rng() < 0.6 ? 0.75 + rng() * 0.35 : 0.12 + rng() * 0.3) * PY, x = rng() * S, l = 10 + rng() * 60; g.strokeStyle = `rgba(30,20,10,${0.08 + rng() * 0.16})`; g.lineWidth = 1 + rng() * 2; g.beginPath(); g.moveTo(x, y); g.lineTo(x + l, y + (rng() - 0.5) * 6); g.stroke(); }
+  for (let k = 0; k < 9; k++) { const x = rng() * S, y = S - rng() * 0.45 * PY; for (let q = 0; q < 40; q++) { g.fillStyle = `rgba(38,46,28,${0.1 + rng() * 0.25})`; g.beginPath(); g.arc(x + (rng() - 0.5) * 50, y + (rng() - 0.5) * 30, 0.6 + rng() * 2, 0, TAU); g.fill(); } } // (mildew)
+  // 7) one place where the paper has torn away to the plaster
+  if (kind !== 'paper') { const x = 200 + rng() * 600, y = S - (0.3 + rng() * 1.0) * PY, r = 14 + rng() * 16;
+    rzBlob(g, x, y, r + 3, r * 1.3 + 3, rng, 0.45); g.fillStyle = 'rgba(232,220,190,.9)'; g.fill(); // (torn white fibres)
+    rzBlob(g, x + 1, y + 1, r, r * 1.3, rng, 0.45); g.fillStyle = 'rgb(150,146,134)'; g.fill();
+    rzBlob(h, x / 2, y / 2, r / 2, r * 0.65, rng, 0.45); h.fillStyle = 'rgba(0,0,0,.55)'; h.fill(); }
+  cracks(g, S, S, rng, 6, 'rgba(40,28,16,.4)');
+  return { map: c, nrm: rzNormal(hc, 3.2, false) };
+}
+
+/* ---------------- oak boards: varnished once, walked on ever since ---------------- */
+function genPlanks() {
+  const S = 1024, N = 512, rng = mulberry32(strHash('rz-planks')), rows = 30, rh = S / rows; // (4 m: 13 cm boards)
+  const c = makeCanvas(S, S), g = c.getContext('2d'), hc = makeCanvas(N, N), h = hc.getContext('2d'), sc = makeCanvas(N, N), s = sc.getContext('2d');
+  const grainF = rzField(rng, 64), WN = rzNoiseImg(rzFbm(rng, 4, 3), S, 4, 128), wear = (x, y) => WN[(y | 0) * S + (x | 0)], img = g.createImageData(S, S), d = img.data, H = new Float32Array(S * S), G = new Float32Array(S * S);
+  for (let r = 0; r < rows; r++) {
+    const y0 = Math.round(r * rh), y1 = Math.round((r + 1) * rh);
+    let x = rng() * S, start = x; const ends = [];
+    while (x < start + S) { const L = (0.9 + rng() * 1.4) * S / 4; ends.push([x, x + L]); x += L; }
+    for (const [a, b] of ends) {
+      const tone = rng(), base = [118 + tone * 48, 74 + tone * 34, 40 + tone * 20], ph = rng() * 100, freq = 0.6 + rng() * 0.7, knot = rng() < 0.35 ? [a + rng() * (b - a), y0 + rng() * (y1 - y0)] : null;
+      for (let xx = Math.floor(a); xx < b; xx++) {
+        const X = ((xx % S) + S) % S;
+        for (let y = y0; y < y1; y++) {
+          const ly = y - y0, i = y * S + X;
+          let gv = Math.sin((ly * freq + grainF(xx / 64, (y + ph) / 6) * 9 + ph) * 1.7) * 0.5 + 0.5; gv = gv * gv;
+          let kk = 0; if (knot) { const dx = (xx - knot[0]) / 9, dy = (y - knot[1]) / 4, dd = Math.sqrt(dx * dx + dy * dy); if (dd < 3) { kk = (Math.sin(dd * 5) * 0.5 + 0.5) * (1 - dd / 3); } }
+          const wv = wear(X, y), k = -gv * 26 - kk * 40 + (wv - 0.5) * 30, edge = ly < 1.5 || ly > rh - 2 ? 1 : 0;
+          const o = i * 4;
+          d[o] = edge ? 22 : base[0] + k; d[o + 1] = edge ? 15 : base[1] + k * 0.8; d[o + 2] = edge ? 9 : base[2] + k * 0.55; d[o + 3] = 255;
+          H[i] = edge ? 0 : 0.6 + gv * 0.06 - kk * 0.05;
+          G[i] = edge ? 0 : Math.max(0.1, 0.78 - (wv > 0.56 ? (wv - 0.56) * 3.5 : 0) - gv * 0.12); // (varnish worn dull in the walked places)
+        }
+        if (xx === Math.floor(a)) for (let y = y0; y < y1; y++) { const o = (y * S + X) * 4; d[o] = 26; d[o + 1] = 18; d[o + 2] = 10; H[y * S + X] = 0.1; G[y * S + X] = 0; } // (the butt joint)
+      }
+    }
+  }
+  g.putImageData(img, 0, 0);
+  for (let k = 0; k < 420; k++) { const x = rng() * S, y = rng() * S, l = 6 + rng() * 40, a = (rng() - 0.5) * 0.5; g.strokeStyle = `rgba(210,180,140,${0.05 + rng() * 0.08})`; g.lineWidth = 0.6; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke(); } // (scratches)
+  for (let k = 0; k < 14; k++) { const x = rng() * S, y = rng() * S, r = 20 + rng() * 60; rzBlob(g, x, y, r, r * (0.5 + rng() * 0.7), rng, 0.4); g.fillStyle = `rgba(20,12,6,${0.06 + rng() * 0.1})`; g.fill(); } // (old spills)
+  // the relief and the gloss, at half size
+  { const hi = h.createImageData(N, N), si = s.createImageData(N, N);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const i = (y * 2) * S + x * 2, j = (y * N + x) * 4; hi.data[j] = hi.data[j + 1] = hi.data[j + 2] = H[i] * 255; hi.data[j + 3] = 255; si.data[j] = si.data[j + 1] = si.data[j + 2] = G[i] * 255; si.data[j + 3] = 255; }
+    h.putImageData(hi, 0, 0); s.putImageData(si, 0, 0); }
+  return { map: c, nrm: rzNormal(hc, 4.5, true), spec: sc };
+}
+
+/* ---------------- glazed tiles to shoulder height, painted plaster above ---------------- */
+function genTilesHQ() {
+  const S = 1024, N = 512, PX = S / 4, PY = S / WALL_H, rng = mulberry32(strHash('rz-tiles')), tw = 0.15 * PX, th = 0.15 * PY, top = S - Math.round(2.0 / 0.15) * th; // (15 cm tiles to 2 m)
+  const c = makeCanvas(S, S), g = c.getContext('2d'), hc = makeCanvas(N, N), h = hc.getContext('2d'), sc = makeCanvas(N, N), s = sc.getContext('2d');
+  const BN = rzNoiseImg(rzFbm(rng, 4, 4), S, 4);
+  // the plaster above: a hospital green gone grey
+  { const img = g.createImageData(S, S), d = img.data; for (let i = 0, n = S * S; i < n; i++) { const k = (BN[i] - 0.5) * 40 + (Math.random() - 0.5) * 6, o = i * 4; d[o] = 112 + k; d[o + 1] = 124 + k; d[o + 2] = 112 + k * 0.9; d[o + 3] = 255; } g.putImageData(img, 0, 0); }
+  h.fillStyle = '#707070'; h.fillRect(0, 0, N, N); s.fillStyle = '#202020'; s.fillRect(0, 0, N, N);
+  const grout = 'rgb(58,56,48)';
+  g.fillStyle = grout; g.fillRect(0, top, S, S - top); h.fillStyle = '#383838'; h.fillRect(0, top / 2, N, (S - top) / 2);
+  for (let y = top, row = 0; y < S - 0.5; y += th, row++) for (let x = 0; x < S - 0.5; x += tw) {
+    const dark = row === 0 || y + th > S - 0.5 - th * 0.2; // (a dark border course on top, a dark skirting course at the floor)
+    const v = (rng() - 0.5) * 14, chip = rng() < 0.03, crack = rng() < 0.05;
+    const col = dark ? [54 + v, 74 + v, 66 + v] : [196 + v, 204 + v, 190 + v];
+    const gx = x + 1.5, gy = y + 1.5, gw = tw - 3, gh = th - 3;
+    g.fillStyle = `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`; g.fillRect(gx, gy, gw, gh);
+    const gl = g.createLinearGradient(gx, gy, gx + gw, gy + gh); gl.addColorStop(0, 'rgba(255,255,255,.10)'); gl.addColorStop(0.5, 'rgba(255,255,255,0)'); gl.addColorStop(1, 'rgba(0,0,0,.08)'); g.fillStyle = gl; g.fillRect(gx, gy, gw, gh); // (the glaze is never flat)
+    h.fillStyle = '#a8a8a8'; h.fillRect(gx / 2, gy / 2, gw / 2, gh / 2); h.fillStyle = '#b4b4b4'; h.fillRect(gx / 2 + 1, gy / 2 + 1, gw / 2 - 2, gh / 2 - 2);
+    s.fillStyle = dark ? '#b0b0b0' : '#d0d0d0'; s.fillRect(gx / 2, gy / 2, gw / 2, gh / 2);
+    if (chip) { const cx = gx + (rng() < 0.5 ? 0 : gw), cy = gy + (rng() < 0.5 ? 0 : gh); rzBlob(g, cx, cy, 6 + rng() * 6, 6 + rng() * 6, rng, 0.4); g.fillStyle = 'rgb(120,114,100)'; g.fill(); rzBlob(s, cx / 2, cy / 2, 4, 4, rng, 0.4); s.fillStyle = '#181818'; s.fill(); }
+    if (crack) { g.strokeStyle = 'rgba(40,36,30,.6)'; g.lineWidth = 0.8; g.beginPath(); let px = gx + rng() * gw, py = gy; g.moveTo(px, py); for (let q = 0; q < 6; q++) { px += (rng() - 0.5) * 10; py += gh / 6; g.lineTo(px, py); } g.stroke(); }
+  }
+  // grime in the grout and down the tiles, rust from the border course, dirt at the floor
+  { const gr = g.createLinearGradient(0, S - 0.6 * PY, 0, S); gr.addColorStop(0, 'rgba(40,34,20,0)'); gr.addColorStop(1, 'rgba(36,30,16,.6)'); g.fillStyle = gr; g.fillRect(0, S - 0.6 * PY, S, 0.6 * PY); }
+  stains(g, S, S, rng, 12, S * 0.55, 0.18, '70,52,30');
+  for (let k = 0; k < 10; k++) { const x = rng() * S, len = 60 + rng() * 260, gr = g.createLinearGradient(0, top, 0, top + len); gr.addColorStop(0, 'rgba(110,60,24,.35)'); gr.addColorStop(1, 'rgba(110,60,24,0)'); g.fillStyle = gr; g.fillRect(x, top, 2 + rng() * 5, len); }
+  { const gr = g.createLinearGradient(0, 0, 0, 0.5 * PY); gr.addColorStop(0, 'rgba(40,40,30,.45)'); gr.addColorStop(1, 'rgba(40,40,30,0)'); g.fillStyle = gr; g.fillRect(0, 0, S, 0.5 * PY); }
+  for (let k = 0; k < 4; k++) { const x = rng() * S, y = rng() * top * 0.9, r = 30 + rng() * 80; rzBlob(g, x, y, r, r * 0.8, rng, 0.35); g.fillStyle = 'rgba(80,70,40,.14)'; g.fill(); g.strokeStyle = 'rgba(70,56,30,.28)'; g.lineWidth = 2; g.stroke(); }
+  cracks(g, S, top, rng, 8, 'rgba(40,40,32,.5)');
+  return { map: c, nrm: rzNormal(hc, 3.5, false), spec: sc };
+}
+
+/* ---------------- the ceiling: plaster, browned by leaks ---------------- */
+function genPlasterCeil() {
+  const S = 1024, N = 512, rng = mulberry32(strHash('rz-ceil')), c = makeCanvas(S, S), g = c.getContext('2d'), hc = makeCanvas(N, N), h = hc.getContext('2d'), big = rzFbm(rng, 4, 4), BN = rzNoiseImg(big, S, 4), HN = rzNoiseImg(big, N, 12, 256);
+  { const img = g.createImageData(S, S), d = img.data; for (let i = 0, n = S * S; i < n; i++) { const k = (BN[i] - 0.5) * 36 + (Math.random() - 0.5) * 8, o = i * 4; d[o] = 128 + k; d[o + 1] = 122 + k; d[o + 2] = 108 + k * 0.9; d[o + 3] = 255; } g.putImageData(img, 0, 0); }
+  { const img = h.createImageData(N, N), d = img.data; for (let i = 0, n = N * N; i < n; i++) { const v = 128 + (HN[i] - 0.5) * 60, o = i * 4; d[o] = d[o + 1] = d[o + 2] = v; d[o + 3] = 255; } h.putImageData(img, 0, 0); }
+  for (let k = 0; k < 6; k++) { const x = rng() * S, y = rng() * S, r = 50 + rng() * 150; rzWrap(S, x, r * 1.4, o => { rzBlob(g, x + o, y, r, r * (0.7 + rng() * 0.5), rng, 0.4); g.fillStyle = 'rgba(96,70,36,.14)'; g.fill(); for (let q = 0; q < 3; q++) { rzBlob(g, x + o, y, r * (1 - q * 0.2), r * (0.8 - q * 0.15), rng, 0.35); g.strokeStyle = `rgba(80,56,26,${0.28 - q * 0.06})`; g.lineWidth = 2.5; g.stroke(); } }); }
+  for (let k = 0; k < 7; k++) { const x = rng() * S, y = rng() * S; for (let q = 0; q < 50; q++) { g.fillStyle = `rgba(30,34,24,${0.1 + rng() * 0.2})`; g.beginPath(); g.arc(x + (rng() - 0.5) * 70, y + (rng() - 0.5) * 70, 0.7 + rng() * 2.4, 0, TAU); g.fill(); } }
+  cracks(g, S, S, rng, 14, 'rgba(30,26,20,.45)');
+  return { map: c, nrm: rzNormal(hc, 2.4, true) };
+}
+
+/* ---------------- dark trim: skirting boards, door casings, frames ---------------- */
+function genTrimWood() {
+  const W = 512, Hh = 128, rng = mulberry32(strHash('rz-trim')), c = makeCanvas(W, Hh), g = c.getContext('2d'), f = rzField(rng, 32), img = g.createImageData(W, Hh), d = img.data;
+  for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) { const gv = Math.sin((y * 0.55 + f(x / 64, y / 8) * 8) * 2) * 0.5 + 0.5, k = -gv * gv * 22 + (Math.random() - 0.5) * 6, i = (y * W + x) * 4; d[i] = 58 + k; d[i + 1] = 36 + k * 0.75; d[i + 2] = 22 + k * 0.5; d[i + 3] = 255; }
+  g.putImageData(img, 0, 0);
+  for (let k = 0; k < 60; k++) { g.strokeStyle = `rgba(200,170,120,${0.04 + rng() * 0.07})`; g.lineWidth = 0.7; const x = rng() * W, y = rng() * Hh; g.beginPath(); g.moveTo(x, y); g.lineTo(x + 6 + rng() * 30, y + (rng() - 0.5) * 3); g.stroke(); } // (knocks and scuffs)
+  return c;
+}
+
+/* ---------------- the portraits: who used to live here ---------------- */
+function genPortraits() {
+  const CW = 256, CH = 320, c = makeCanvas(CW * 4, CH * 2), g = c.getContext('2d'), rng = mulberry32(strHash('rz-portraits'));
+  for (let k = 0; k < 8; k++) {
+    const ox = (k % 4) * CW, oy = Math.floor(k / 4) * CH, cx = ox + CW / 2, sep = [[150, 120, 84], [120, 112, 98], [96, 104, 100], [140, 108, 80]][k % 4], wrong = k === 2 || k === 5 || k === 7;
+    g.save(); g.beginPath(); g.rect(ox, oy, CW, CH); g.clip();
+    let gr = g.createRadialGradient(cx, oy + CH * 0.4, 20, cx, oy + CH * 0.5, CH * 0.75); gr.addColorStop(0, `rgb(${sep[0]},${sep[1]},${sep[2]})`); gr.addColorStop(1, `rgb(${sep[0] * 0.35 | 0},${sep[1] * 0.33 | 0},${sep[2] * 0.3 | 0})`);
+    g.fillStyle = gr; g.fillRect(ox, oy, CW, CH);
+    const dark = `rgb(${sep[0] * 0.18 | 0},${sep[1] * 0.16 | 0},${sep[2] * 0.14 | 0})`, skin = `rgb(${Math.min(255, sep[0] * 1.25) | 0},${Math.min(255, sep[1] * 1.2) | 0},${Math.min(255, sep[2] * 1.12) | 0})`;
+    const neck = k === 7 ? 70 : 0; // (one of them has far too long a neck)
+    // shoulders and clothes
+    g.fillStyle = dark; g.beginPath(); g.moveTo(ox + 20, oy + CH); g.quadraticCurveTo(cx - 70, oy + 200 + neck * 0.3, cx, oy + 205 + neck * 0.2); g.quadraticCurveTo(cx + 70, oy + 200 + neck * 0.3, ox + CW - 20, oy + CH); g.fill();
+    if (k % 3 === 1) { g.fillStyle = `rgba(230,220,200,.5)`; g.beginPath(); g.moveTo(cx - 22, oy + 212); g.lineTo(cx, oy + 250); g.lineTo(cx + 22, oy + 212); g.fill(); } // (a white collar)
+    g.fillStyle = skin; g.fillRect(cx - 15, oy + 160 - neck, 30, 52 + neck);
+    // the head: an oval, lit from the left
+    const hy = oy + 128 - neck; gr = g.createRadialGradient(cx - 14, hy - 12, 6, cx, hy, 56); gr.addColorStop(0, skin); gr.addColorStop(1, `rgb(${sep[0] * 0.55 | 0},${sep[1] * 0.5 | 0},${sep[2] * 0.45 | 0})`);
+    g.fillStyle = gr; g.beginPath(); g.ellipse(cx, hy, 40, 52, 0, 0, TAU); g.fill();
+    // hair (or a veil)
+    g.fillStyle = dark; g.beginPath();
+    if (k % 2) { g.ellipse(cx, hy - 26, 46, 34, 0, Math.PI, TAU); g.fill(); g.beginPath(); g.ellipse(cx - 34, hy + 4, 14, 44, 0.1, 0, TAU); g.fill(); g.beginPath(); g.ellipse(cx + 34, hy + 4, 14, 44, -0.1, 0, TAU); }
+    else g.ellipse(cx, hy - 30, 42, 26, 0, Math.PI, TAU);
+    g.fill();
+    if (k === 4) { g.fillStyle = 'rgba(210,200,180,.55)'; g.beginPath(); g.moveTo(cx - 60, oy + CH); g.quadraticCurveTo(cx - 64, hy - 70, cx, hy - 62); g.quadraticCurveTo(cx + 64, hy - 70, cx + 60, oy + CH); g.lineTo(cx + 40, oy + CH); g.quadraticCurveTo(cx + 44, hy - 40, cx, hy - 44); g.quadraticCurveTo(cx - 44, hy - 40, cx - 40, oy + CH); g.fill(); } // (a nun's wimple)
+    // the face: shadowed sockets, a mouth line
+    if (k === 5) { g.fillStyle = `rgba(${sep[0] * 1.1 | 0},${sep[1] * 1.08 | 0},${sep[2] | 0},.92)`; g.beginPath(); g.ellipse(cx, hy + 6, 30, 36, 0, 0, TAU); g.fill(); } // (no face at all)
+    else {
+      g.fillStyle = 'rgba(10,6,2,.55)'; g.beginPath(); g.ellipse(cx - 15, hy - 4, 8, 5, 0, 0, TAU); g.fill(); g.beginPath(); g.ellipse(cx + 15, hy - 4, 8, 5, 0, 0, TAU); g.fill();
+      g.fillStyle = 'rgba(10,6,2,.85)'; g.beginPath(); g.arc(cx - 15, hy - 4, 2.4, 0, TAU); g.fill(); g.beginPath(); g.arc(cx + 15, hy - 4, 2.4, 0, TAU); g.fill();
+      g.strokeStyle = 'rgba(30,16,8,.55)'; g.lineWidth = 2; g.beginPath(); g.moveTo(cx - 10, hy + 26); g.quadraticCurveTo(cx, hy + 29, cx + 10, hy + 26); g.stroke();
+      g.strokeStyle = 'rgba(30,16,8,.3)'; g.beginPath(); g.moveTo(cx, hy); g.lineTo(cx - 3, hy + 14); g.stroke();
+    }
+    if (k === 2) { g.strokeStyle = 'rgba(240,232,214,.85)'; g.lineWidth = 3; for (let q = 0; q < 14; q++) { const ex = cx + (q < 7 ? -15 : 15); g.beginPath(); g.moveTo(ex - 12 + rng() * 4, hy - 10 + rng() * 12); g.lineTo(ex + 12 - rng() * 4, hy - 8 + rng() * 10); g.stroke(); } } // (the eyes scratched out)
+    // the photograph's age: foxing, scratches, a dark edge
+    for (let q = 0; q < 50; q++) { g.fillStyle = `rgba(90,60,30,${0.08 + rng() * 0.2})`; g.beginPath(); g.arc(ox + rng() * CW, oy + rng() * CH, 1 + rng() * 5, 0, TAU); g.fill(); }
+    for (let q = 0; q < 16; q++) { g.strokeStyle = `rgba(230,220,200,${0.08 + rng() * 0.15})`; g.lineWidth = 0.8; const x = ox + rng() * CW; g.beginPath(); g.moveTo(x, oy); g.lineTo(x + (rng() - 0.5) * 30, oy + CH); g.stroke(); }
+    gr = g.createRadialGradient(cx, oy + CH / 2, CH * 0.3, cx, oy + CH / 2, CH * 0.7); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.6)'); g.fillStyle = gr; g.fillRect(ox, oy, CW, CH);
+    g.restore();
+  }
+  return c;
+}
+
+/* ---------------- a sliding leaf of the old building's doors: dark walnut, three panels, a dirty glass light ---------------- */
+function genWoodLeaf() {
+  const w = 256, h = 512, rng = mulberry32(strHash('rz-leaf')), c = makeCanvas(w, h), g = c.getContext('2d'), f = rzField(rng, 32), img = g.createImageData(w, h), d = img.data;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const gv = Math.sin((x * 0.35 + f(x / 16, y / 64) * 7) * 1.6) * 0.5 + 0.5, k = -gv * gv * 20 + (Math.random() - 0.5) * 6, i = (y * w + x) * 4; d[i] = 70 + k; d[i + 1] = 44 + k * 0.75; d[i + 2] = 26 + k * 0.5; d[i + 3] = 255; }
+  g.putImageData(img, 0, 0);
+  const panel = (x, y, pw, ph, glass) => {
+    if (glass) { const gr = g.createLinearGradient(x, y, x + pw, y + ph); gr.addColorStop(0, 'rgb(46,52,50)'); gr.addColorStop(0.5, 'rgb(24,28,28)'); gr.addColorStop(1, 'rgb(38,42,40)'); g.fillStyle = gr; g.fillRect(x, y, pw, ph); g.fillStyle = 'rgba(200,210,200,.08)'; for (let q = 0; q < 30; q++) g.fillRect(x + rng() * pw, y + rng() * ph, 1 + rng() * 3, 1 + rng() * 3); }
+    g.fillStyle = 'rgba(0,0,0,.45)'; g.fillRect(x, y, pw, 5); g.fillRect(x, y, 5, ph);
+    g.fillStyle = 'rgba(255,214,170,.12)'; g.fillRect(x, y + ph - 5, pw, 5); g.fillRect(x + pw - 5, y, 5, ph);
+    if (!glass) { g.strokeStyle = 'rgba(0,0,0,.3)'; g.lineWidth = 2; g.strokeRect(x + 14, y + 14, pw - 28, ph - 28); }
+  };
+  panel(34, 34, w - 68, 150, true); panel(34, 210, w - 68, 120, false); panel(34, 356, w - 68, 120, false);
+  stains(g, w, h, rng, 6, h * 0.45, 0.2, '20,10,4');
+  { const gr = g.createLinearGradient(0, h - 90, 0, h); gr.addColorStop(0, 'rgba(10,6,2,0)'); gr.addColorStop(1, 'rgba(10,6,2,.5)'); g.fillStyle = gr; g.fillRect(0, h - 90, w, 90); } // (kicked and mopped for sixty years)
+  g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, 5, h); g.fillRect(w - 5, 0, 5, h); g.fillRect(0, 0, w, 4);
+  return c;
+}
 /* ------------------------------------------------------------------ */
 /* 100 DOORS (Build 25): THE HOLLOWAY — a hotel three floors deep.     */
 /* Room after room, one door after the next, every door numbered:      */
@@ -2740,6 +3028,14 @@ const TX = {
 };
 ['crate', 'box', 'barrel', 'rack', 'paper', 'note', 'blood', 'drip', 'claw', 'grate', 'hazard', 'pale', 'paleBlood', 'glow', 'whiteboard', 'vending', 'console']
   .forEach(k => { TX[k] = mkTex(genSimple(k), k !== 'glow'); });
+// Build 30: the realism pass — the papered building (see c1_realism.js)
+const RZT = {}; let RZ_GEN_MS = 0;
+{ const t0 = performance.now();
+  for (const k of ['paper', 'paper2', 'paper3']) { const p = genPaper(k); RZT[k] = { map: mkTex(p.map), nrm: mkTex(p.nrm) }; }
+  const pl = genPlanks(), tl = genTilesHQ(), ce = genPlasterCeil();
+  RZT.planks = { map: mkTex(pl.map), nrm: mkTex(pl.nrm), spec: mkTex(pl.spec) }; RZT.tiles = { map: mkTex(tl.map), nrm: mkTex(tl.nrm), spec: mkTex(tl.spec) };
+  RZT.plaster = { map: mkTex(ce.map), nrm: mkTex(ce.nrm) }; RZT.trim = mkTex(genTrimWood()); RZT.portraits = mkTex(genPortraits(), false);
+  RZ_GEN_MS = performance.now() - t0; }
 const bumpMats = [];
 function phong(o, bump) {
   const m = new T.MeshPhongMaterial(Object.assign({ shininess: 10, specular: 0x141414 }, o));
@@ -2814,6 +3110,20 @@ const MAT = {
 function decalMat(tex, opacity = 1) {
   return new T.MeshPhongMaterial({ map: tex, transparent: true, opacity, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3, shininess: 30, specular: 0x222222 });
 }
+// (Build 30) the papered building: relief maps for every surface, gloss maps for the boards and the glaze (both off on Low, like the bump maps)
+const rzNrmMats = [];
+function rzPhong(o, nrm, ns) { const m = phong(o); m.userData.nrm = nrm; m.userData.ns = ns; rzNrmMats.push(m); return m; }
+MAT.wall.paper = rzPhong({ map: RZT.paper.map, shininess: 6, specular: 0x14110c }, RZT.paper.nrm, 0.8);
+MAT.wall.paper2 = rzPhong({ map: RZT.paper2.map, shininess: 6, specular: 0x14110c }, RZT.paper2.nrm, 0.8);
+MAT.wall.paper3 = rzPhong({ map: RZT.paper3.map, shininess: 6, specular: 0x14110c }, RZT.paper3.nrm, 0.8);
+MAT.wall.tileHQ = rzPhong({ map: RZT.tiles.map, specularMap: RZT.tiles.spec, shininess: 80, specular: 0x5c5e58 }, RZT.tiles.nrm, 0.9);
+MAT.floor.planks = rzPhong({ map: RZT.planks.map, specularMap: RZT.planks.spec, shininess: 60, specular: 0x5a4632 }, RZT.planks.nrm, 1.0);
+MAT.ceil.plaster = rzPhong({ map: RZT.plaster.map, shininess: 3, specular: 0x080808 }, RZT.plaster.nrm, 0.7);
+MAT.trim = phong({ map: RZT.trim, shininess: 46, specular: 0x30241a });
+MAT.wall.trimW = MAT.trim; // (a wooden doorway's reveal)
+MAT.gilt = phong({ color: 0x6e4f22, shininess: 70, specular: 0x8a6a34 });
+MAT.portrait = phong({ map: RZT.portraits, shininess: 40, specular: 0x262626 });
+MAT.brass = phong({ color: 0x6a5228, shininess: 80, specular: 0x9a7a44 });
 MAT.blood = decalMat(TX.blood, 0.92); MAT.drip = decalMat(TX.drip, 0.9); MAT.claw = decalMat(TX.claw, 0.95); MAT.hazardDecal = decalMat(TX.hazard, 0.75);
 MAT.grate = new T.MeshPhongMaterial({ map: TX.grate, transparent: true, alphaTest: 0.5, side: T.DoubleSide, shininess: 30 });
 // Screens: animated canvases shared by all monitors
@@ -2837,6 +3147,7 @@ MAT.vendLit = new T.MeshBasicMaterial({ map: TX.vending, color: 0x9a9a9a });
 function applyBump() {
   const on = qual().bump;
   for (const m of bumpMats) { m.bumpMap = on ? m.userData.bump : null; m.bumpScale = m.userData.bumpScale; m.needsUpdate = true; }
+  for (const m of rzNrmMats) { m.normalMap = on ? m.userData.nrm : null; m.normalScale.set(m.userData.ns, m.userData.ns); m.needsUpdate = true; }
 }
 applyBump();
 
@@ -2844,9 +3155,10 @@ applyBump();
 /* Geometry helpers                                                    */
 /* ------------------------------------------------------------------ */
 class GeoBuf {
-  constructor() { this.p = []; this.n = []; this.u = []; this.i = []; this.c = 0; }
-  quad(a, b, c, d, nrm, ua, ub, uc, ud) {
+  constructor() { this.p = []; this.n = []; this.u = []; this.i = []; this.c = 0; this.k = []; this.hasK = false; }
+  quad(a, b, c, d, nrm, ua, ub, uc, ud, ao) { // (ao: four shades, one per corner — Build 30)
     this.p.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2], d[0], d[1], d[2]);
+    if (ao) { this.hasK = true; for (let k = 0; k < 4; k++) this.k.push(ao[k], ao[k], ao[k]); } else this.k.push(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
     for (let k = 0; k < 4; k++) this.n.push(nrm[0], nrm[1], nrm[2]);
     this.u.push(ua[0], ua[1], ub[0], ub[1], uc[0], uc[1], ud[0], ud[1]);
     const o = this.c; this.i.push(o, o + 1, o + 2, o, o + 2, o + 3); this.c += 4;
@@ -2856,6 +3168,7 @@ class GeoBuf {
     g.setAttribute('position', new T.Float32BufferAttribute(this.p, 3));
     g.setAttribute('normal', new T.Float32BufferAttribute(this.n, 3));
     g.setAttribute('uv', new T.Float32BufferAttribute(this.u, 2));
+    if (this.hasK) g.setAttribute('color', new T.Float32BufferAttribute(this.k, 3));
     g.setIndex(this.c > 65000 ? new T.Uint32BufferAttribute(this.i, 1) : new T.Uint16BufferAttribute(this.i, 1));
     g.computeBoundingSphere();
     return g;
@@ -3057,10 +3370,11 @@ function losClear(x0, z0, x1, z1, ignoreEnd) {
 /* ------------------------------------------------------------------ */
 // each room's look: [wall, floor, ceiling]
 const ROOM_LOOK = {
-  corridor: ['corridor', 'concrete', 'concrete'], storage: ['corridor', 'concrete', 'concrete'], security: ['plaster', 'vinyl', 'tile'], office: ['plaster', 'vinyl', 'tile'],
-  break: ['plaster', 'vinyl', 'tile'], locker: ['plaster', 'vinyl', 'tile'], lab: ['tile', 'lab', 'tile'], medical: ['tile', 'lab', 'tile'], lobby: ['tile', 'lab', 'tile'],
+  // (Build 30: Sublevel 6 is an old building — papered walls over oak boards, dark skirting; the clinical rooms tiled to the shoulder)
+  corridor: ['paper', 'planks', 'plaster'], storage: ['paper2', 'planks', 'plaster'], security: ['paper3', 'planks', 'plaster'], office: ['paper3', 'planks', 'tile'],
+  break: ['paper', 'planks', 'plaster'], locker: ['paper2', 'planks', 'tile'], lab: ['tileHQ', 'lab', 'tile'], medical: ['tileHQ', 'lab', 'tile'], lobby: ['tileHQ', 'lab', 'tile'],
   lift: ['metal', 'plate', 'concrete'], power: ['metal', 'plate', 'concrete'], server: ['metal', 'plate', 'tile'], containment: ['metal', 'plate', 'concrete'],
-  observation: ['metal', 'plate', 'tile'], morgue: ['tile', 'lab', 'concrete'], archives: ['plaster', 'vinyl', 'tile'], dorm: ['plaster', 'vinyl', 'tile'], camctl: ['metal', 'plate', 'tile'],
+  observation: ['metal', 'plate', 'tile'], morgue: ['tileHQ', 'lab', 'concrete'], archives: ['paper3', 'planks', 'plaster'], dorm: ['paper2', 'planks', 'plaster'], camctl: ['metal', 'plate', 'tile'],
   // the Gallery: velvet-dark wallpaper, oak and marble — a museum for things that pretend to be people
   gcorr: ['wainscot', 'parquet', 'coffer'], g_recep: ['damask', 'checker', 'coffer'], g_lift: ['metal', 'plate', 'concrete'], g_home: ['damask', 'carpet', 'tile'],
   g_store: ['white', 'concrete', 'concrete'], g_fit: ['damask', 'carpet', 'tile'], g_show: ['white', 'checker', 'tile'], g_ctrl: ['metal', 'plate', 'tile'],
@@ -3089,27 +3403,55 @@ const ROOM_LOOK = {
   ht2: ['hotelG', 'parquet', 'coffer'], hh2: ['hotelG', 'hcarpet', 'coffer'], h_st2: ['wainscot', 'parquet', 'coffer'], h_st3: ['wainscot', 'void', 'coffer'], h_lib: ['wainscot', 'parquet', 'coffer'],
   ht3: ['damask', 'parquet', 'coffer'], hh3: ['damask', 'carpet', 'coffer'], h_st4: ['wainscot', 'parquet', 'coffer'], h_vault: ['rough', 'concrete', 'concrete'], h_exit: ['block', 'concrete', 'concrete'],
 };
+const LOOK0 = ['corridor', 'concrete', 'concrete']; // (a room no floor has dressed: the old painted block)
+const lookOf = c => ROOM_LOOK[c.room] || LOOK0;
+// (Build 30) a doorway between papered rooms is a wooden one: its reveal, its casing, its leaves, its boards
+function rzWoodDoor(c) {
+  if (!c || c.kind !== 'door' || c.lvl !== 0) return false;
+  const ax = (cellAt(c.x - 1, c.z).kind === 'wall' && cellAt(c.x + 1, c.z).kind === 'wall') ? 'z' : 'x';
+  const a = ax === 'z' ? cellAt(c.x, c.z - 1) : cellAt(c.x - 1, c.z), b = ax === 'z' ? cellAt(c.x, c.z + 1) : cellAt(c.x + 1, c.z);
+  return !!(RZ_PAPER[lookOf(a)[0]] || RZ_PAPER[lookOf(b)[0]]);
+}
 function wallKey(c) {
-  if (c.kind === 'door') return 'frame';
+  if (c.kind === 'door') return rzWoodDoor(c) ? 'trimW' : 'frame';
   if (c.kind === 'vent') return 'metal';
-  return (ROOM_LOOK[c.room] || ROOM_LOOK.corridor)[0];
+  return lookOf(c)[0];
 }
 function floorKey(c) {
-  if (c.kind === 'door' || c.kind === 'vent') return 'plate';
-  return (ROOM_LOOK[c.room] || ROOM_LOOK.corridor)[1];
+  if (c.kind === 'door') return rzWoodDoor(c) ? 'planks' : 'plate';
+  if (c.kind === 'vent') return 'plate';
+  return lookOf(c)[1];
 }
-function ceilKey(c) { return (ROOM_LOOK[c.room] || ROOM_LOOK.corridor)[2]; }
+function ceilKey(c) { return lookOf(c)[2]; }
 (function buildLevel() {
-  const wb = {}, fb = {}, cb = {};
+  const wb = {}, fb = {}, cb = {}, tb = {};
   let LV = 0; // (the floor of the cell being built: every floor gets its own meshes)
+  // (Build 30) ambient occlusion, baked into the corners: where two walls meet and where wall meets floor the light can't reach
+  const solid = (x, z) => { const k = cellAt(x, z).kind; return k === 'wall' || k === 'window' ? 1 : 0; };
+  const aoCorner = (x, z, ox, oz, k) => { const a = solid(x + ox, z), b = solid(x, z + oz), d = solid(x + ox, z + oz); return Math.max(0.5, 1 - k * (a + b) - (d && !a && !b ? k * 0.55 : 0)); };
+  const endShade = (x, z) => solid(x, z) ? 0.66 : 1;
+  const SKIRT_H = 0.14, SKIRT_D = 0.022;
+  const skirt = (b, dir, x0, x1, z0, z1) => { // a dark board along the foot of the wall, its face and its top (uv: metres along, 0..1 up)
+    const h = SKIRT_H, d = SKIRT_D;
+    if (dir === 'N') { b.quad([x0, 0, z0 + d], [x1, 0, z0 + d], [x1, h, z0 + d], [x0, h, z0 + d], [0, 0, 1], [x0, 0], [x1, 0], [x1, 1], [x0, 1]); b.quad([x0, h, z0 + d], [x1, h, z0 + d], [x1, h, z0], [x0, h, z0], [0, 1, 0], [x0, 1], [x1, 1], [x1, 0.9], [x0, 0.9]); }
+    else if (dir === 'S') { b.quad([x1, 0, z1 - d], [x0, 0, z1 - d], [x0, h, z1 - d], [x1, h, z1 - d], [0, 0, -1], [x1, 0], [x0, 0], [x0, 1], [x1, 1]); b.quad([x1, h, z1 - d], [x0, h, z1 - d], [x0, h, z1], [x1, h, z1], [0, 1, 0], [x1, 1], [x0, 1], [x0, 0.9], [x1, 0.9]); }
+    else if (dir === 'W') { b.quad([x0 + d, 0, z1], [x0 + d, 0, z0], [x0 + d, h, z0], [x0 + d, h, z1], [1, 0, 0], [z1, 0], [z0, 0], [z0, 1], [z1, 1]); b.quad([x0 + d, h, z1], [x0 + d, h, z0], [x0, h, z0], [x0, h, z1], [0, 1, 0], [z1, 1], [z0, 1], [z0, 0.9], [z1, 0.9]); }
+    else { b.quad([x1 - d, 0, z0], [x1 - d, 0, z1], [x1 - d, h, z1], [x1 - d, h, z0], [-1, 0, 0], [z0, 0], [z1, 0], [z1, 1], [z0, 1]); b.quad([x1 - d, h, z0], [x1 - d, h, z1], [x1, h, z1], [x1, h, z0], [0, 1, 0], [z0, 1], [z1, 1], [z1, 0.9], [z0, 0.9]); }
+  };
   const buf = (o, k) => o[LV + '|' + k] || (o[LV + '|' + k] = new GeoBuf());
   const U = 4; // texture repeat (m)
-  const wallQuad = (b, dir, x0, x1, z0, z1, y0, y1) => {
-    const v0 = y0 / WALL_H, v1 = y1 / WALL_H;
-    if (dir === 'N') b.quad([x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], [0, 0, 1], [x0 / U, v0], [x1 / U, v0], [x1 / U, v1], [x0 / U, v1]);
-    else if (dir === 'S') b.quad([x1, y0, z1], [x0, y0, z1], [x0, y1, z1], [x1, y1, z1], [0, 0, -1], [-x1 / U, v0], [-x0 / U, v0], [-x0 / U, v1], [-x1 / U, v1]);
-    else if (dir === 'W') b.quad([x0, y0, z1], [x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [1, 0, 0], [-z1 / U, v0], [-z0 / U, v0], [-z0 / U, v1], [-z1 / U, v1]);
-    else b.quad([x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0], [-1, 0, 0], [z0 / U, v0], [z1 / U, v0], [z1 / U, v1], [z0 / U, v1]);
+  const wallQuad = (b, dir, x0, x1, z0, z1, y0, y1, ao, uo) => {
+    const v0 = y0 / WALL_H, v1 = y1 / WALL_H, o = (uo || 0) / U; // (o: slide the texture along, not the wall)
+    if (dir === 'N') b.quad([x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], [0, 0, 1], [x0 / U + o, v0], [x1 / U + o, v0], [x1 / U + o, v1], [x0 / U + o, v1], ao);
+    else if (dir === 'S') b.quad([x1, y0, z1], [x0, y0, z1], [x0, y1, z1], [x1, y1, z1], [0, 0, -1], [-x1 / U + o, v0], [-x0 / U + o, v0], [-x0 / U + o, v1], [-x1 / U + o, v1], ao);
+    else if (dir === 'W') b.quad([x0, y0, z1], [x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [1, 0, 0], [-z1 / U + o, v0], [-z0 / U + o, v0], [-z0 / U + o, v1], [-z1 / U + o, v1], ao);
+    else b.quad([x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0], [-1, 0, 0], [z0 / U + o, v0], [z1 / U + o, v0], [z1 / U + o, v1], [z0 / U + o, v1], ao);
+  };
+  // the corner shades of one wall face, in wallQuad's vertex order (the far ends: is there a wall turning in beside it?)
+  const wallAO = (x, z, dir, y0, y1, h) => {
+    const lo = y0 < 0.01 ? 0.8 : 1, hi = y1 > h - 0.01 ? 0.9 : 1;
+    const [ea, eb] = dir === 'N' ? [endShade(x - 1, z), endShade(x + 1, z)] : dir === 'S' ? [endShade(x + 1, z), endShade(x - 1, z)] : dir === 'W' ? [endShade(x, z + 1), endShade(x, z - 1)] : [endShade(x, z - 1), endShade(x, z + 1)];
+    return [ea * lo, eb * lo, eb * hi, ea * hi];
   };
   const DIRS = [['N', 0, -1], ['S', 0, 1], ['W', -1, 0], ['E', 1, 0]];
   for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
@@ -3118,15 +3460,18 @@ function ceilKey(c) { return (ROOM_LOOK[c.room] || ROOM_LOOK.corridor)[2]; }
     LV = c.lvl;
     if (isWalkKind(c)) {
       const S = c.kind === 'vent' ? 2 : 4;
-      buf(fb, floorKey(c)).quad([x0, 0, z0], [x0, 0, z1], [x1, 0, z1], [x1, 0, z0], [0, 1, 0], [x0 / S, -z0 / S], [x0 / S, -z1 / S], [x1 / S, -z1 / S], [x1 / S, -z0 / S]);
-      buf(cb, ceilKey(c)).quad([x0, c.h, z0], [x1, c.h, z0], [x1, c.h, z1], [x0, c.h, z1], [0, -1, 0], [x0 / 4, z0 / 4], [x1 / 4, z0 / 4], [x1 / 4, z1 / 4], [x0 / 4, z1 / 4]);
+      buf(fb, floorKey(c)).quad([x0, 0, z0], [x0, 0, z1], [x1, 0, z1], [x1, 0, z0], [0, 1, 0], [x0 / S, -z0 / S], [x0 / S, -z1 / S], [x1 / S, -z1 / S], [x1 / S, -z0 / S],
+        [aoCorner(x, z, -1, -1, 0.2), aoCorner(x, z, -1, 1, 0.2), aoCorner(x, z, 1, 1, 0.2), aoCorner(x, z, 1, -1, 0.2)]);
+      buf(cb, ceilKey(c)).quad([x0, c.h, z0], [x1, c.h, z0], [x1, c.h, z1], [x0, c.h, z1], [0, -1, 0], [x0 / 4, z0 / 4], [x1 / 4, z0 / 4], [x1 / 4, z1 / 4], [x0 / 4, z1 / 4],
+        [aoCorner(x, z, -1, -1, 0.16), aoCorner(x, z, 1, -1, 0.16), aoCorner(x, z, 1, 1, 0.16), aoCorner(x, z, -1, 1, 0.16)]);
       for (const [d, ox, oz] of DIRS) {
         const n = cellAt(x + ox, z + oz);
         const segs = [];
         if (n.kind === 'wall') segs.push([0, c.h]);
         else if (n.kind === 'window') { segs.push([0, Math.min(SILL_H, c.h)]); if (c.h > WIN_TOP) segs.push([WIN_TOP, c.h]); }
         else if (isWalkKind(n) && n.h < c.h - 0.01) segs.push([n.h, c.h]);
-        for (const [y0, y1] of segs) wallQuad(buf(wb, wallKey(c)), d, x0, x1, z0, z1, y0, y1);
+        const wk = wallKey(c), uo = RZ_PAPER[wk] ? ((x * 7 + z * 13 + d.charCodeAt(0) * 5) % 8) * 0.5 : 0; // (Build 30: each stretch of papered wall takes a different strip of the roll — whole strips, so the print runs on)
+        for (const [y0, y1] of segs) { wallQuad(buf(wb, wk), d, x0, x1, z0, z1, y0, y1, wallAO(x, z, d, y0, y1, c.h), uo); if (y0 < 0.01 && RZ_PAPER[wk] && c.kind !== 'vent') skirt(buf(tb, 'trim'), d, x0, x1, z0, z1); }
       }
     } else if (c.kind === 'window') {
       const b = buf(wb, 'metal');
@@ -3138,16 +3483,24 @@ function ceilKey(c) { return (ROOM_LOOK[c.room] || ROOM_LOOK.corridor)[2]; }
       }
     }
   }
+  const aoMat = m => { // (the same material, reading the corner shades from the vertices; it follows the quality's relief maps like its original)
+    if (m.userData.ao) return m.userData.ao;
+    const ud = m.userData; m.userData = {}; const k = m.clone(); m.userData = ud; // (clone() copies userData through JSON: it would turn the relief map into a data URL)
+    k.vertexColors = true; k.userData = Object.assign({}, ud); m.userData.ao = k;
+    if (bumpMats.indexOf(m) >= 0) bumpMats.push(k); if (rzNrmMats.indexOf(m) >= 0) rzNrmMats.push(k);
+    return k;
+  };
   const addAll = (bufs, mats, shadowCast) => {
     for (const k in bufs) {
       const [lv, key] = k.split('|');
-      const m = new T.Mesh(bufs[k].geometry(), mats[key]);
+      const B = bufs[k], m = new T.Mesh(B.geometry(), B.hasK && mats[key] && !mats[key].transparent ? aoMat(mats[key]) : mats[key]);
       m.receiveShadow = true; m.castShadow = shadowCast; m.matrixAutoUpdate = false; m.updateMatrix();
       m.userData.lvl = +lv;
       scene.add(m); staticMeshes.push(m);
     }
   };
-  addAll(wb, MAT.wall, false); addAll(fb, MAT.floor, false); addAll(cb, MAT.ceil, false);
+  addAll(wb, MAT.wall, false); addAll(fb, MAT.floor, false); addAll(cb, MAT.ceil, false); addAll(tb, { trim: MAT.trim }, false);
+  applyBump();
 })();
 // Glass panes for observation windows
 for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
@@ -3175,6 +3528,7 @@ const wardenBreaksDoors = () => dkey() === 'hard' || dkey() === 'nightmare' || E
 const doorMats = {};
 ['normal', 'yellow', 'blue', 'power', 'exit', 'hotel'].forEach(t => { const tx = mkTex(genDoor(t), false); doorMats[t] = phong({ map: tx, shininess: t === 'hotel' ? 22 : 35, specular: 0x333333 }); });
 [['normal@1', 'normal', 'SUBLEVEL 7'], ['power@1', 'power', 'FREIGHT BAY'], ['normal@2', 'normal', 'SUBLEVEL 8'], ['power@2', 'power', 'EXPRESS'], ['normal@3', 'normal', 'SUBLEVEL 9'], ['power@3', 'power', 'HOLDING'], ['normal@4', 'normal', 'BULKHEAD'], ['power@4', 'power', 'THE HEART'], ['normal@5', 'normal', 'COLOUR WORKS'], ['exit@5', 'exit', 'GOODS LIFT']].forEach(([k, t, label]) => { doorMats[k] = phong({ map: mkTex(genDoor(t, label), false), shininess: 35, specular: 0x333333 }); });
+doorMats.wood = phong({ map: mkTex(genWoodLeaf(), false), shininess: 30, specular: 0x2a2018 }); // (Build 30: the papered building's doors)
 class Door {
   constructor(c) {
     this.cell = c; this.x = c.x; this.z = c.z; this.type = DOOR_TYPES[c.ch];
@@ -3183,7 +3537,8 @@ class Door {
     this.t = 0; this.target = 0; this.speed = 1.7; this.unlocked = this.type === 'normal'; this.panels = []; this.leds = [];
     this.lastUse = -10;
     this.group = new T.Group(); scene.add(this.group);
-    const mat = doorMats[this.type + '@' + c.lvl] || doorMats[this.type];
+    this.wood = rzWoodDoor(c); // (Build 30: a door between papered rooms is a wooden one; the coloured keycard doors keep their colours)
+    const mat = this.wood && this.type === 'normal' ? doorMats.wood : doorMats[this.type + '@' + c.lvl] || doorMats[this.type];
     this.hotel = !!(LEVELS[c.lvl] && LEVELS[c.lvl].hotel); this.swing = 1; // (Build 25: the Holloway's doors are wooden, on a hinge; 100 DOORS says which way each one swings)
     if (this.hotel) {
       const piv = new T.Group(); this.group.add(piv); this.piv = piv;
@@ -3212,16 +3567,16 @@ class Door {
       const off = s * (CELL / 2 - 0.04);
       const fx = ax === 'z' ? this.cx : this.cx + off, fz = ax === 'z' ? this.cz + off : this.cz;
       const wAcross = CELL;
-      const fm = this.hotel ? MAT.wood : MAT.metalDark;
+      const fm = this.hotel ? MAT.wood : this.wood ? MAT.trim : MAT.metalDark, cw = this.wood ? 0.17 : 0.12, cd = this.wood ? 0.13 : 0.1; // (a wooden casing: broader, standing proud of the paper)
       // header strip
-      addStatic(GEO.box, fm, fx, DOOR_H + 0.06, fz, ax === 'z' ? wAcross : 0.1, 0.12, ax === 'z' ? 0.1 : wAcross);
+      addStatic(GEO.box, fm, fx, DOOR_H + 0.06 + (this.wood ? 0.02 : 0), fz, ax === 'z' ? wAcross + (this.wood ? 0.1 : 0) : cd, this.wood ? 0.16 : 0.12, ax === 'z' ? cd : wAcross + (this.wood ? 0.1 : 0));
       // side posts
       for (const k of [-1, 1]) {
         const px = ax === 'z' ? this.cx + k * (CELL / 2 - 0.06) : fx, pz = ax === 'z' ? fz : this.cz + k * (CELL / 2 - 0.06);
-        addStatic(GEO.box, fm, px, DOOR_H / 2, pz, ax === 'z' ? 0.12 : 0.1, DOOR_H, ax === 'z' ? 0.1 : 0.12);
+        addStatic(GEO.box, fm, px, DOOR_H / 2, pz, ax === 'z' ? cw : cd, DOOR_H, ax === 'z' ? cd : cw);
       }
-      // hazard threshold decal
-      if (!this.hotel) addStatic(GEO.plane, MAT.hazardDecal, ax === 'z' ? this.cx : this.cx + s * (CELL / 2 + 0.14), 0.006, ax === 'z' ? this.cz + s * (CELL / 2 + 0.14) : this.cz,
+      // hazard threshold decal (an industrial door's; the old building's are bare boards)
+      if (!this.hotel && !this.wood) addStatic(GEO.plane, MAT.hazardDecal, ax === 'z' ? this.cx : this.cx + s * (CELL / 2 + 0.14), 0.006, ax === 'z' ? this.cz + s * (CELL / 2 + 0.14) : this.cz,
         CELL - 0.2, 0.22, 1, ax === 'x' ? Math.PI / 2 : 0, -Math.PI / 2, 0, false);
     }
     // card reader / status lights on walls next to each entrance
@@ -3357,8 +3712,76 @@ for (const id in rooms) {
 // guarantee the opening scene has light
 fixtures.forEach(f => { if (f.room === 'security' || (f.type === 'emerg' && f.room === 'corridor' && f.pos.x < 21 && f.pos.z > 40)) { if (f.mode === 'dead') f.mode = 'steady'; } });
 addFixture('main', 66, LIFT_H - 0.06, 55, 'x', 'lift').mode = 'steady';
+// (Build 30) the papered building burns tungsten, not fluorescent tube: its ceiling lights go warm; the tiled rooms stay cold and blue-white
+fixtures.forEach(f => { if (f.lvl === 0 && f.type === 'main' && RZ_PAPER[(ROOM_LOOK[f.room] || LOOK0)[0]]) { f.color.setRGB(1.0, 0.74, 0.5); f.pc = f.color.clone(); } });
+fixtures.forEach(f => { if (f.lvl === 0 && f.type === 'emerg' && RZ_PAPER[(ROOM_LOOK[f.room] || LOOK0)[0]]) { f.color.setRGB(1.0, 0.3, 0.14); f.intensity = 0.55; } }); // (the alarm lamps still glow red — under the house lamps, not over them)
+// ...and its own lamps: brass sconces with fabric shades along the corridors, on the old circuit (lit with the main power off)
+let rzRoomSconces = null;
+const RZ_LAMP_WARM = new T.Color(1.0, 0.7, 0.42), RZ_SHADE = new T.Color(1.0, 0.82, 0.56); // (the light it throws; the glow of the shade itself)
+{ const rr = mulberry32(3030), used = new Set();
+  const sconce = (x, z, ox, oz, room) => {
+    const wx = cc(x) + ox * CELL / 2, wz = cc(z) + oz * CELL / 2, lx = wx - ox * 0.2, lz = wz - oz * 0.2, y = 2.02;
+    used.add(x + ',' + z);
+    const f = { type: 'lamp', pos: new T.Vector3(lx, y, lz), along: ox ? 'z' : 'x', room, mode: rr() < 0.08 ? 'flicker' : 'steady', b: 0, target: 1, next: rr() * 5, burst: 0, idx: 0, lvl: 0,
+      color: RZ_LAMP_WARM.clone(), pc: RZ_SHADE.clone(), pk: 0.08, intensity: 1.2, range: 8.5, wall: [ox, oz] };
+    fixtures.push(f);
+    addStatic(GEO.box, MAT.brass, wx - ox * 0.012, y - 0.1, wz - oz * 0.012, ox ? 0.025 : 0.12, 0.2, ox ? 0.12 : 0.025, 0, 0, 0, false); // (the back plate)
+    addStatic(GEO.box, MAT.brass, (wx + lx) / 2, y - 0.17, (wz + lz) / 2, ox ? 0.2 : 0.02, 0.02, ox ? 0.02 : 0.2, 0, 0, 0, false); // (the arm)
+  };
+  const near = (x, z, r) => { for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) if (used.has((x + dx) + ',' + (z + dz))) return true; return false; };
+  const solidSides = (x, z) => [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([ox, oz]) => cellAt(x + ox, z + oz).kind === 'wall' && !cellAt(x + ox * 0 + oz, z + oz * 0 + ox).door && !cellAt(x - oz, z - ox).door);
+  // along the corridors: one every two or three cells
+  for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
+    const c = grid[z][x]; if (c.kind !== 'floor' || c.room !== 'corridor' || c.lvl !== 0 || (x * 5 + z * 3) % 3 || near(x, z, 1)) continue;
+    const sides = solidSides(x, z); if (!sides.length) continue;
+    const [ox, oz] = sides[Math.floor(rr() * sides.length)]; sconce(x, z, ox, oz, 'corridor');
+  }
+  // (and the papered rooms get theirs once every floor knows what hangs on its walls: rzRoomSconces, called from y9z5_realism.js)
+  rzRoomSconces = (avoid) => {
+    for (const id in rooms) {
+      const R = rooms[id]; if (R.cells[0].lvl > 0 || isCorr(id) || !RZ_PAPER[(ROOM_LOOK[id] || LOOK0)[0]]) continue;
+      const cand = []; for (const c of R.cells) if (c.kind === 'floor') for (const [ox, oz] of solidSides(c.x, c.z)) { const wx = cc(c.x) + ox * CELL / 2, wz = cc(c.z) + oz * CELL / 2; if (!avoid || !avoid(wx, wz)) cand.push([c.x, c.z, ox, oz]); }
+      if (!cand.length) continue;
+      const n = Math.max(2, Math.min(5, Math.round(R.cells.length / 7))), got = [cand[Math.floor(rr() * cand.length)]]; sconce(got[0][0], got[0][1], got[0][2], got[0][3], id);
+      while (got.length < n) { // (spread out: each next one as far as it can be from the others)
+        let best = null, bd = -1; for (const q of cand) { let d = 1e9; for (const g of got) d = Math.min(d, Math.hypot(q[0] - g[0], q[1] - g[1])); if (d > bd) { bd = d; best = q; } }
+        if (!best || bd < 2.5) break; got.push(best); sconce(best[0], best[1], best[2], best[3], id);
+      }
+    }
+  };
+}
+// framed photographs along the corridors and in the offices: the people who used to work here (and some who shouldn't be in a photograph at all)
+const RZ_PICS = new GeoBuf();
+// a framed photograph on a wall: (wx, wz) on the wall plane, (ox, oz) toward the wall, centred `along` it at height cy; k: which portrait
+function rzFrame(wx, wz, ox, oz, along, cy, pw, ph, bw, k, gilt) {
+  const nx = -ox, nz = -oz, tx = oz ? 1 : 0, tz = ox ? 1 : 0, px = wx + tx * along, pz = wz + tz * along, fm = gilt ? MAT.gilt : MAT.trim, dep = 0.035;
+  for (const [dx, dy, sw, sh] of [[0, ph / 2 + bw / 2, pw + bw * 2, bw], [0, -ph / 2 - bw / 2, pw + bw * 2, bw], [-pw / 2 - bw / 2, 0, bw, ph], [pw / 2 + bw / 2, 0, bw, ph]])
+    addStatic(GEO.box, fm, px + tx * dx + nx * dep / 2, cy + dy, pz + tz * dx + nz * dep / 2, tx ? sw : dep, sh, tx ? dep : sw, 0, 0, 0, false);
+  const u0 = (k % 4) / 4, u1 = u0 + 0.25, v1 = 1 - Math.floor(k / 4) / 2, v0 = v1 - 0.5, o = 0.008, ax = px + nx * o, az = pz + nz * o, rx = nz * pw / 2, rz = -nx * pw / 2; // (right, as seen from the room: up × n)
+  RZ_PICS.quad([ax - rx, cy - ph / 2, az - rz], [ax + rx, cy - ph / 2, az + rz], [ax + rx, cy + ph / 2, az + rz], [ax - rx, cy + ph / 2, az - rz], [nx, 0, nz], [u0, v0], [u1, v0], [u1, v1], [u0, v1]);
+}
+function rzFinishPics() { if (!RZ_PICS.c || RZ_PICS.done) return; RZ_PICS.done = true; const m = new T.Mesh(RZ_PICS.geometry(), MAT.portrait); m.receiveShadow = true; m.matrixAutoUpdate = false; m.userData.lvl = 0; scene.add(m); staticMeshes.push(m); }
+// a lamp of the old circuit that stands on furniture: a brass base and stem under a fabric shade (y: the top it stands on)
+function rzTableLamp(x, y, z, room) {
+  addStatic(GEO.cyl, MAT.brass, x, y + 0.02, z, 0.13, 0.04, 0.13, 0, 0, 0, true); addStatic(GEO.cyl, MAT.brass, x, y + 0.2, z, 0.035, 0.34, 0.035, 0, 0, 0, true);
+  const f = { type: 'lamp', pos: new T.Vector3(x, y + 0.5, z), along: 'x', room, mode: 'steady', b: 0, target: 1, next: 3, burst: 0, idx: 0, lvl: 0, color: RZ_LAMP_WARM.clone(), pc: RZ_SHADE.clone(), pk: 0.1, intensity: 1.15, range: 7.5, table: true };
+  fixtures.push(f); return f;
+}
+{ const rr = mulberry32(3131), lamps = new Set(fixtures.filter(f => f.type === 'lamp').map(f => cellOf(f.pos.x, f.pos.z).x + ',' + cellOf(f.pos.x, f.pos.z).z));
+  for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
+    const c = grid[z][x]; if (c.kind !== 'floor' || c.lvl !== 0 || !(c.room === 'corridor' || c.room === 'security' || c.room === 'archives' || c.room === 'storage')) continue;
+    for (const [ox, oz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      if (cellAt(x + ox, z + oz).kind !== 'wall' || rr() > (c.room === 'corridor' ? 0.26 : 0.4)) continue;
+      if (lamps.has(x + ',' + z) && rr() < 0.7) continue; // (mostly not under a lamp's arm)
+      const pw = 0.3 + rr() * 0.28, ph = pw * (1.2 + rr() * 0.2), bw = 0.045 + rr() * 0.02, gilt = rr() < 0.35, along = (rr() - 0.5) * 0.9, cy = 1.45 + rr() * 0.3, k = Math.floor(rr() * 8);
+      rzFrame(cc(x) + ox * CELL / 2, cc(z) + oz * CELL / 2, ox, oz, along, cy, pw, ph, bw, k, gilt);
+    }
+  }
+}
 // instanced emissive panels (built at boot, once every floor has put up its lights)
-const fixGeoMain = new T.BoxGeometry(1.15, 0.03, 0.22), fixGeoEm = new T.BoxGeometry(0.2, 0.1, 0.06);
+const fixGeoMain = new T.BoxGeometry(1.15, 0.03, 0.22), fixGeoEm = new T.BoxGeometry(0.2, 0.1, 0.06), fixGeoLamp = new T.CylinderGeometry(0.085, 0.14, 0.17, 14, 1, true); // (Build 30: a lamp's fabric shade)
+const fixMatLamp = new T.MeshBasicMaterial({ color: 0xffffff, fog: true, side: T.DoubleSide });
+let instLamp = null;
 const fixMatMain = new T.MeshBasicMaterial({ color: 0xffffff, fog: true });
 const fixMatEm = new T.MeshBasicMaterial({ color: 0xffffff, fog: true });
 let instMain = null, instEm = null;
@@ -3380,6 +3803,12 @@ function buildFixtureMeshes() {
   if (instMain.instanceColor) instMain.instanceColor.needsUpdate = true;
   if (instEm.instanceColor) instEm.instanceColor.needsUpdate = true;
   scene.add(instMain); scene.add(instEm);
+  const lampFx = fixtures.filter(f => f.type === 'lamp' && !f.own);
+  if (lampFx.length) {
+    instLamp = new T.InstancedMesh(fixGeoLamp, fixMatLamp, lampFx.length);
+    lampFx.forEach((f, i) => { f.idx = i; f.inst = instLamp; o.position.copy(f.pos); o.position.y -= 0.02; o.rotation.set(0, 0, 0); o.updateMatrix(); instLamp.setMatrixAt(i, o.matrix); instLamp.setColorAt(i, col); });
+    instLamp.instanceMatrix.needsUpdate = true; if (instLamp.instanceColor) instLamp.instanceColor.needsUpdate = true; scene.add(instLamp);
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -3393,7 +3822,7 @@ scene.add(flash); scene.add(flash.target);
 const flashFill = new T.PointLight(0xffe2c0, 0, 4.5, 2); // light bouncing back from wherever the beam lands
 scene.add(flashFill);
 const pool = [];
-const MAX_POOL = 7;
+const MAX_POOL = 8; // (Build 30: the house lamps want one more on High)
 for (let i = 0; i < MAX_POOL; i++) { const l = new T.PointLight(0xffffff, 0, 8, 1.6); l.userData.fix = null; scene.add(l); pool.push(l); }
 
 /* ================================================================== */
@@ -4150,6 +4579,16 @@ const world = { monitors: [], wallScreens: [], breakers: [], lever: null, termin
     world.wallScreens.push(wallPlane(MAT.screen, 2.1, 1.85, z, 'E', 1.08, 0.62));
   }
   chair(3.6, 49.0, -Math.PI / 2);
+  { // (Build 30) against the west wall, past the desks: an old dresser with a lamp, a wireless and a telephone — and a portrait over it
+    const x = 2.27, z = 51.45, ry = RY(1);
+    part(GEO.box, MAT.trim, x, z, ry, 0, 0.41, 0, 1.0, 0.8, 0.44); part(GEO.box, MAT.trim, x, z, ry, 0, 0.825, 0.01, 1.06, 0.035, 0.48);
+    for (let i = 0; i < 3; i++) { part(GEO.box, MAT.wood, x, z, ry, 0, 0.15 + i * 0.235, 0.226, 0.9, 0.2, 0.012); for (const k of [-0.24, 0.24]) part(GEO.box, MAT.brass, x, z, ry, k, 0.15 + i * 0.235, 0.236, 0.05, 0.02, 0.012); }
+    foot(x, z, ry, 1.0, 0.44, { navPad: 0.2 });
+    rzTableLamp(x + 0.02, 0.843, z + 0.3, 'security');
+    part(GEO.box, MAT.wood, x, z, ry, 0.06, 0.92, -0.02, 0.3, 0.17, 0.16); part(GEO.box, MAT.fabric, x, z, ry, 0.06, 0.93, 0.062, 0.2, 0.1, 0.004); // (the wireless, its cloth grille)
+    part(GEO.box, MAT.dark, x, z, ry, 0.37, 0.88, 0.04, 0.17, 0.07, 0.2); part(GEO.cyl, MAT.dark, x, z, ry, 0.37, 0.93, 0.06, 0.1, 0.03, 0.1); part(GEO.box, MAT.dark, x, z, ry, 0.37, 0.95, -0.02, 0.2, 0.035, 0.05); // (the telephone)
+    rzFrame(2.0, z, -1, 0, 0, 1.78, 0.5, 0.66, 0.07, 4, true); // (the nun)
+  }
   cabinet(10.6, 44.35, 0); cabinet(11.15, 44.35, 0); waterCooler(13.6, 44.35);
   desk(8.2, 55.55, 2); monitor(8.4, 0.765, 55.6, Math.PI); chair(8.9, 53.6, 0.6, true);
   cabinet(4.2, 55.65, 2, 1.8); cabinet(4.75, 55.65, 2, 1.8);
@@ -4807,6 +5246,7 @@ world.terminalDef = addInteract([hitBox(71, 1.2, 2.75, 1.2, 1.5, 0.6), world.ter
 doors.forEach(d => {
   addInteract(d.panels.map(p => p.mesh), { kind: 'door', door: d, prompt: () => Game.doorPrompt(d), use: () => Game.useDoor(d) });
 });
+rzFinishPics(); // (Build 30: the photographs on the walls, hung by every floor's builder)
 flushStatic();
 
 /* ------------------------------------------------------------------ */
@@ -5040,12 +5480,41 @@ const Sound = (function () {
     noise(out, t, 0.05, 'lowpass', 180, 1, 0.3);
   }
   S.footstep = safe(function (surface, k, pos) {
-    const t = ctx.currentTime, out = dest(pos || null, 0.08);
-    out.gain.value = 0.18 + k * 0.6;
+    const t = ctx.currentTime, out = dest(pos || null, surface === 'tile' ? 0.14 : 0.08);
+    out.gain.value = (0.18 + k * 0.6) * (surface === 'carpet' ? 0.45 : 1);
+    if (surface === 'wood') { // (Build 30) old oak boards: a hollow knock, and now and then a board gives under you
+      noise(out, t, 0.07, 'bandpass', 420 * rand(0.85, 1.15), 1.4, 0.55, 0.002);
+      tone(out, t, 'sine', 150 * rand(0.9, 1.1), 85, 0.11, 0.55, 0.002); tone(out, t + 0.004, 'triangle', 260 * rand(0.9, 1.1), 190, 0.06, 0.12, 0.002);
+      if (Math.random() < 0.16 + k * 0.1) { const o = ctx.createOscillator(), bp = ctx.createBiquadFilter(), g = ctx.createGain(), f = rand(380, 700); o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t + 0.05); o.frequency.linearRampToValueAtTime(f * rand(0.7, 1.25), t + 0.5);
+        bp.type = 'bandpass'; bp.frequency.value = f * 2; bp.Q.value = 6; env(g.gain, t + 0.05, 0.08, 0.07 + k * 0.05, 0.42); o.connect(bp); bp.connect(g); g.connect(out); o.start(t + 0.05); o.stop(t + 0.6); }
+      return;
+    }
+    if (surface === 'tile') { // a hard heel on glazed tile, and the room answers
+      noise(out, t, 0.035, 'highpass', 2600 * rand(0.9, 1.1), 1, 0.6, 0.001); tone(out, t, 'sine', 1900 * rand(0.92, 1.08), 1700, 0.05, 0.12, 0.001); tone(out, t, 'sine', 110, 60, 0.06, 0.35, 0.002);
+      return;
+    }
+    if (surface === 'carpet') { noise(out, t, 0.12, 'lowpass', 380, 1, 0.5, 0.01); tone(out, t, 'sine', 80, 50, 0.08, 0.35, 0.004); return; }
     const metal = surface === 'metal';
     noise(out, t, metal ? 0.13 : 0.09, 'bandpass', (metal ? 1900 : 650) * rand(0.85, 1.15), metal ? 3 : 1.2, metal ? 0.5 : 0.6, 0.002);
     tone(out, t, 'sine', 95, 55, 0.08, 0.5, 0.002);
     if (metal) tone(out, t + 0.005, 'triangle', 420 * rand(0.9, 1.1), 380, 0.12, 0.08);
+  });
+  // (Build 30) the old building settles: a long groan in the joists somewhere near
+  S.creak = safe(function (pos) {
+    const t = ctx.currentTime, out = dest(pos || null, 0.35); out.gain.value = rand(0.25, 0.5);
+    const n = Math.random() < 0.5 ? 1 : 2;
+    for (let i = 0; i < n; i++) { const o = ctx.createOscillator(), bp = ctx.createBiquadFilter(), g = ctx.createGain(), t0 = t + i * rand(0.35, 0.7), f = rand(140, 320), d = rand(0.5, 1.3);
+      o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t0); o.frequency.linearRampToValueAtTime(f * rand(0.75, 1.3), t0 + d);
+      bp.type = 'bandpass'; bp.frequency.value = f * 2.4; bp.Q.value = 7; env(g.gain, t0, 0.15, 0.22, d); o.connect(bp); bp.connect(g); g.connect(out); o.start(t0); o.stop(t0 + d + 0.3); }
+    noise(out, t, 0.05, 'bandpass', 900, 2, 0.2, 0.002);
+  });
+  // a lamp's bad contact: a 50-cycle buzz while it stutters
+  S.lampBuzz = safe(function (pos, dur) {
+    const t = ctx.currentTime, out = dest(pos || null, 0.05), d = Math.min(1.4, dur || 0.5); out.gain.value = 0.16;
+    const o = ctx.createOscillator(), hp = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = 'sawtooth'; o.frequency.value = 100; hp.type = 'highpass'; hp.frequency.value = 600;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.5, t + 0.02); g.gain.setValueAtTime(0.5, t + d); g.gain.linearRampToValueAtTime(0, t + d + 0.05);
+    o.connect(hp); hp.connect(g); g.connect(out); o.start(t); o.stop(t + d + 0.1);
+    for (let i = 0; i < 3; i++) noise(out, t + Math.random() * d, 0.02, 'highpass', 4000, 1, 0.35, 0.001); // (and it ticks)
   });
   S.click = safe(function () { const t = ctx.currentTime, out = dest(null, 0, false, uiBus); out.gain.value = 0.5; noise(out, t, 0.025, 'highpass', 3000, 1, 0.6, 0.001); tone(out, t, 'square', 2200, 1800, 0.02, 0.15, 0.001); });
   S.ui = safe(function () { const t = ctx.currentTime, out = dest(null, 0, false, uiBus); out.gain.value = 0.3; tone(out, t, 'sine', 1400, 1100, 0.05, 0.4, 0.002); });
@@ -9554,7 +10023,7 @@ const Game = {
     if (this.poolT <= 0) {
       this.poolT = 0.12;
       const cam = camera.position, cands = [];
-      for (const f of fixtures) { if (!f.on || f.lvl !== LVL) continue; const dx = f.pos.x - cam.x, dz = f.pos.z - cam.z, d2 = dx * dx + dz * dz; if (d2 < 400) cands.push([d2 / (f.intensity * f.range), f]); } // (nearest first, the stronger lamp winning a tie)
+      for (const f of fixtures) { if (!f.on || f.lvl !== LVL) continue; const dx = f.pos.x - cam.x, dz = f.pos.z - cam.z, d2 = dx * dx + dz * dz; if (d2 < 400) cands.push([d2 / (f.intensity * f.range) * (d2 > 9 && !losClear(cam.x, cam.z, f.pos.x, f.pos.z, true) ? 6 : 1), f]); } // (nearest first, the stronger lamp winning a tie; Build 30: a lamp you can see beats one behind a wall)
       cands.sort((a, b) => a[0] - b[0]);
       const want = new Set(); for (let i = 0; i < Math.min(n, cands.length); i++) want.add(cands[i][1]);
       const free = [];
@@ -10640,7 +11109,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 26, BUILD = 29, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 27, BUILD = 30, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -27325,7 +27794,7 @@ const CamoWorld = {
     if (this.built) return; this.built = true;
     this.cells = new Array(W * H); // (Build 24: every floor's rows — the Colour Works is its own floor)
     for (const s of staticBoxes) this.add({ x0: s[0], y0: s[1], z0: s[2], x1: s[3], y1: s[4], z1: s[5], st: this.stat(s[6]), kind: 'prop' });
-    this.fx = fixtures.filter(f => f.lvl === 0 || (LEVELS[f.lvl] && LEVELS[f.lvl].camo)); // (Build 24: and the Colour Works')
+    this.fx = fixtures.filter(f => f.type !== 'lamp' && (f.lvl === 0 || (LEVELS[f.lvl] && LEVELS[f.lvl].camo))); // (Build 24: and the Colour Works')
     this.doorSt = this.stat(MAT.metal);
   },
   add(b) {
@@ -35817,6 +36286,379 @@ Anomaly.hint = function () {
   const d1 = seg('set-anfx', 'anFeedFx'), d2 = tog('set-ancap', 'anCaptions'), d3 = rng('set-anvol', 'anFeedVol');
   const rs = $('btn-set-reset'); if (rs) rs.addEventListener('click', () => { d1(); d2(); d3(); });
 }
+/* =====================================================================
+   Build 30 — the realism pass, part two: the lamps' circuit and the lens.
+   ---------------------------------------------------------------------
+   The old building's lamps (brass sconces, see d_world1) burn on their
+   own circuit: lit before the main power comes back — except where a
+   mode's darkness is the game (THE WATCH runs on infrared; MECHA CAMO's
+   light is part of its scoring). They never make a guard "lit" to the
+   Warden: stealth is unchanged.
+   Then the lens: every finished frame is copied, and drawn back through
+   a film grade — a warm glow round every lamp (bloom), teal in the
+   shadows and amber in the light, a slow S-curve, a vignette, grain and
+   a little colour fringing at the edges. Settings → Cinematic look;
+   Low quality keeps the grade without the glow.
+   ===================================================================== */
+const RZ_LAMPS_OFF = { watch: 1, camo: 1 };
+// the papered rooms' sconces: kept a metre clear of THE ANOMALY's wall clocks and of the places its shadows and false doors appear
+{ const near = []; for (const rk in AN_ROOMS) { const R = AN_ROOMS[rk]; if (R.clock) near.push([R.clock[0], R.clock[2]]); (R.wall || []).forEach(w => near.push([w[0], w[2]])); }
+  if (rzRoomSconces) { rzRoomSconces((x, z) => near.some(([a, b]) => Math.hypot(a - x, b - z) < 1.1)); flushStatic(); } }
+{
+  const ul0 = Game.updateLights;
+  Game.updateLights = function (dt) {
+    const on = !RZ_LAMPS_OFF[Game.mode] && LVL === 0;
+    for (const f of fixtures) if (f.type === 'lamp') f.on = on && f.mode !== 'dead';
+    const r = ul0.apply(this, arguments);
+    if (instLamp && instLamp.instanceColor) instLamp.instanceColor.needsUpdate = true;
+    return r;
+  };
+}
+
+const _pv2 = new T.Vector2(), _pv3 = new T.Vector2();
+const Post = {
+  ok: null, w: 0, h: 0, tex: null, rt: [], scene: null, cam: null, quad: null, M: {}, ran: 0,
+  // (shared by every pass: a full-screen triangle pair)
+  VS: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+  init() {
+    if (this.ok !== null) return this.ok;
+    try {
+      this.scene = new T.Scene(); this.cam = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const mk = (fs, u) => new T.ShaderMaterial({ uniforms: u, vertexShader: this.VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+      this.M.bright = mk(`uniform sampler2D t; uniform vec2 px; uniform float thr; varying vec2 vUv;
+        void main() { vec3 c = (texture2D(t, vUv + px * vec2(-1.0, -1.0)).rgb + texture2D(t, vUv + px * vec2(1.0, -1.0)).rgb + texture2D(t, vUv + px * vec2(-1.0, 1.0)).rgb + texture2D(t, vUv + px * vec2(1.0, 1.0)).rgb) * 0.25;
+          float L = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(thr, 1.0, L), 1.0); }`, { t: { value: null }, px: { value: new T.Vector2() }, thr: { value: 0.55 } });
+      this.M.blur = mk(`uniform sampler2D t; uniform vec2 dir; varying vec2 vUv;
+        void main() { vec3 c = texture2D(t, vUv).rgb * 0.2270270270;
+          c += texture2D(t, vUv + dir * 1.3846153846).rgb * 0.3162162162; c += texture2D(t, vUv - dir * 1.3846153846).rgb * 0.3162162162;
+          c += texture2D(t, vUv + dir * 3.2307692308).rgb * 0.0702702703; c += texture2D(t, vUv - dir * 3.2307692308).rgb * 0.0702702703;
+          gl_FragColor = vec4(c, 1.0); }`, { t: { value: null }, dir: { value: new T.Vector2() } });
+      this.M.comp = mk(`uniform sampler2D tS; uniform sampler2D tA; uniform sampler2D tB; uniform float time; uniform float bloom; uniform float grain; uniform float vig; uniform float ca; uniform float grade; varying vec2 vUv;
+        float hash(vec2 p) { p = fract(p * vec2(443.897, 441.423)); p += dot(p, p.yx + 19.19); return fract((p.x + p.y) * p.x); }
+        void main() {
+          vec2 d = vUv - 0.5; float r2 = dot(d, d); vec2 o = d * ca * r2 * 0.012;
+          vec3 c = vec3(texture2D(tS, vUv + o).r, texture2D(tS, vUv).g, texture2D(tS, vUv - o).b);
+          c += (texture2D(tA, vUv).rgb * 0.55 + texture2D(tB, vUv).rgb * 0.9) * bloom * vec3(1.0, 0.84, 0.66);
+          float L = dot(c, vec3(0.2126, 0.7152, 0.0722));
+          vec3 g = c * mix(vec3(0.88, 1.0, 1.07), vec3(1.08, 0.99, 0.84), smoothstep(0.03, 0.45, L));
+          g += vec3(0.0, 0.007, 0.011) * (1.0 - smoothstep(0.0, 0.1, L));
+          g = mix(vec3(L), g, 1.1); g = clamp(g, 0.0, 1.0); g = mix(g, g * g * (3.0 - 2.0 * g), 0.24);
+          c = mix(c, g, grade);
+          c *= 1.0 - vig * smoothstep(0.1, 0.6, r2 * 1.5);
+          c += (hash(gl_FragCoord.xy + fract(time) * 917.0) - 0.5) * grain * (1.0 - 0.5 * L);
+          gl_FragColor = vec4(c, 1.0); }`, { tS: { value: null }, tA: { value: null }, tB: { value: null }, time: { value: 0 }, bloom: { value: 0.9 }, grain: { value: 0.03 }, vig: { value: 0.28 }, ca: { value: 1 }, grade: { value: 1 } });
+      this.quad = new T.Mesh(new T.PlaneGeometry(2, 2), this.M.comp); this.quad.frustumCulled = false; this.scene.add(this.quad);
+      this.ok = true;
+    } catch (e) { console.warn('post-processing unavailable', e); this.ok = false; }
+    return this.ok;
+  },
+  enabled() { return settings.cinema !== false && this.ok !== false && !(typeof AnUI !== 'undefined' && AnUI.isOpen && Anomaly.on); },
+  size() {
+    const s = renderer.getDrawingBufferSize(_pv2), w = s.x | 0, h = s.y | 0; if (w === this.w && h === this.h && this.tex) return;
+    this.w = w; this.h = h;
+    if (this.tex) this.tex.dispose(); this.rt.forEach(r => r.dispose());
+    const t = new T.DataTexture(new Uint8Array(w * h * 3), w, h, T.RGBFormat); t.minFilter = t.magFilter = T.LinearFilter; t.generateMipmaps = false; t.wrapS = t.wrapT = T.ClampToEdgeWrapping; t.needsUpdate = true; this.tex = t;
+    const o = { minFilter: T.LinearFilter, magFilter: T.LinearFilter, format: T.RGBAFormat, depthBuffer: false, stencilBuffer: false }, q = (k) => new T.WebGLRenderTarget(Math.max(1, w >> k), Math.max(1, h >> k), o);
+    this.rt = [q(2), q(2), q(3), q(3)]; // (a quarter and an eighth: two widths of glow)
+  },
+  pass(mat, target) { this.quad.material = mat; renderer.setRenderTarget(target); renderer.render(this.scene, this.cam); },
+  run() {
+    if (!this.init()) return;
+    try {
+      this.size();
+      const q = settings.quality, low = q === 'low', ar = renderer.info.autoReset, sc = renderer.getScissorTest(); renderer.info.autoReset = false; // (the scene's draw counts stay the scene's)
+      renderer.copyFramebufferToTexture(_pv3.set(0, 0), this.tex);
+      const [A, B, C, D] = this.rt, M = this.M;
+      if (!low) {
+        M.bright.uniforms.t.value = this.tex; M.bright.uniforms.px.value.set(1 / this.w, 1 / this.h); this.pass(M.bright, A);
+        M.blur.uniforms.t.value = A.texture; M.blur.uniforms.dir.value.set(1 / A.width, 0); this.pass(M.blur, B);
+        M.blur.uniforms.t.value = B.texture; M.blur.uniforms.dir.value.set(0, 1 / A.height); this.pass(M.blur, A);
+        M.blur.uniforms.t.value = A.texture; M.blur.uniforms.dir.value.set(1.5 / C.width, 0); this.pass(M.blur, C);
+        M.blur.uniforms.t.value = C.texture; M.blur.uniforms.dir.value.set(0, 1.5 / C.height); this.pass(M.blur, D);
+        M.blur.uniforms.t.value = D.texture; M.blur.uniforms.dir.value.set(2 / C.width, 2 / C.height); this.pass(M.blur, C);
+      }
+      const U = M.comp.uniforms; U.tS.value = this.tex; U.tA.value = A.texture; U.tB.value = C.texture; U.time.value = (performance.now() / 1000) % 100;
+      U.bloom.value = low ? 0 : q === 'high' ? 0.95 : 0.8; U.ca.value = low ? 0 : q === 'high' ? 1 : 0.6; U.grain.value = settings.grain ? 0.028 : 0; U.vig.value = 0.26; U.grade.value = 1;
+      renderer.setRenderTarget(null); renderer.setScissorTest(false); const cs = renderer.getSize(_pv3); renderer.setViewport(0, 0, cs.x, cs.y);
+      this.pass(M.comp, null);
+      renderer.setScissorTest(sc); renderer.info.autoReset = ar; this.ran++;
+    } catch (e) { console.warn('post-processing failed: off', e); this.ok = false; renderer.setRenderTarget(null); renderer.info.autoReset = true; }
+  },
+};
+{ // after a frame is drawn (and only if one was), through the lens
+  const grP = Game.render; Game.render = function () { const f0 = renderer.info.render.frame, r = grP.apply(this, arguments); if (renderer.info.render.frame !== f0 && Post.enabled()) Post.run(); return r; };
+  const puP = Preview.update; Preview.update = function () { const f0 = renderer.info.render.frame, r = puP.apply(this, arguments); if (renderer.info.render.frame !== f0 && Post.enabled()) Post.run(); return r; };
+  // Settings → Cinematic look
+  const el = $('set-cinema');
+  if (el) { const draw = () => { el.textContent = settings.cinema !== false ? 'ON' : 'OFF'; el.classList.toggle('on', settings.cinema !== false); }; draw(); el.addEventListener('click', () => { settings.cinema = settings.cinema === false; draw(); saveSettings(); Sound.ui(); }); const rs = $('btn-set-reset'); if (rs) rs.addEventListener('click', draw); }
+}
+/* =====================================================================
+   Build 30 — presence: the realism pass, part three.
+   ---------------------------------------------------------------------
+   · Contact shadows: furniture that stands on the floor darkens the
+     boards under and around it (a soft footprint, one instanced mesh a
+     floor), so nothing seems to float.
+   · Physically based surfaces on Medium and High: the papered
+     building's wallpaper, boards, tiles, plaster, trim, brass, gilt,
+     photographs and doors become MeshStandardMaterial — albedo,
+     roughness (the boards' worn varnish, the tiles' glaze), metalness
+     (brass, gilt), relief maps, the baked corner shading — and reflect a
+     dim warm room. The reflection is only as strong as the lamplight
+     round you: where it is dark, it stays dark. Low keeps the old look.
+   · The flashlight: a dim spill round the beam (a reflector's two
+     cones), a faint shaft through the dust on Medium and High, softer
+     shadow edges and a sharper shadow map on High.
+   · First-person presence: the chest rises and falls (faster winded or
+     afraid), the body leans into a strafe and a hard turn. Off with
+     Head bob.
+   · The building's sound: footsteps by what is underfoot (oak, tile,
+     carpet, steel, concrete), joists that creak, lamps that buzz while
+     they stutter. And cobwebs in the corners.
+   ===================================================================== */
+
+/* ---------------- contact shadows ---------------- */
+const RzContact = { meshes: [], n: 0, webs: 0, webAt: [], ms: 0 };
+{ const t0 = performance.now();
+  const S = 64, cv = makeCanvas(S, S), g = cv.getContext('2d'), img = g.createImageData(S, S);
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { // (a rounded square: dark across the middle, fading out to the rim)
+    const u = Math.abs(x + 0.5 - S / 2) / (S / 2), v = Math.abs(y + 0.5 - S / 2) / (S / 2);
+    const d = Math.min(1, Math.hypot(Math.max(0, u - 0.45), Math.max(0, v - 0.45)) / 0.55), k = 1 - d, i = (y * S + x) * 4;
+    img.data[i + 3] = k * k * (3 - 2 * k) * 255;
+  }
+  g.putImageData(img, 0, 0);
+  const mat = new T.MeshBasicMaterial({ color: 0x000000, map: mkTex(cv, false), transparent: true, opacity: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+  const geo = new T.PlaneGeometry(1, 1); geo.rotateX(-Math.PI / 2);
+  // what stands on the floor: a static collider with a solid prop resting on the floor inside it (an invisible blocker casts nothing)
+  const standing = staticBoxes.filter(b => b[1] < 0.12 && b[4] - b[1] > 0.25), seen = new Set(), byL = {};
+  for (const row of buckets) for (const list of row) for (const b of list) {
+    if (seen.has(b)) continue; seen.add(b);
+    if (b.dyn || b.monOnly) continue;
+    const w = b.maxX - b.minX, d = b.maxZ - b.minZ; if (w < 0.18 || d < 0.18 || w > 4.5 || d > 4.5) continue;
+    if (!standing.some(s => s[0] < b.maxX && s[3] > b.minX && s[2] < b.maxZ && s[5] > b.minZ)) continue;
+    const lv = lvlAt((b.minZ + b.maxZ) / 2); (byL[lv] || (byL[lv] = [])).push(b);
+  }
+  const o = new T.Object3D();
+  for (const lv in byL) {
+    const L = byL[lv], m = new T.InstancedMesh(geo, mat, L.length);
+    L.forEach((b, i) => { o.position.set((b.minX + b.maxX) / 2, 0.006, (b.minZ + b.maxZ) / 2); o.scale.set(b.maxX - b.minX + 0.36, 1, b.maxZ - b.minZ + 0.36); o.updateMatrix(); m.setMatrixAt(i, o.matrix); });
+    m.instanceMatrix.needsUpdate = true; m.userData.lvl = +lv; m.renderOrder = -1; m.frustumCulled = false; scene.add(m); RzContact.meshes.push(m); RzContact.n += L.length;
+  }
+  RzContact.ms = performance.now() - t0;
+}
+
+/* ---------------- cobwebs in the corners of the papered rooms ---------------- */
+{
+  const S = 128, cv = makeCanvas(S, S), g = cv.getContext('2d'), rr = mulberry32(3232), cx = S / 2, cy = 1, rays = 11;
+  g.strokeStyle = 'rgba(236,232,220,.95)'; g.lineWidth = 1.4;
+  for (let k = 0; k < rays; k++) { const a = 0.08 + k / (rays - 1) * (Math.PI - 0.16); g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(a) * 150, cy + Math.sin(a) * 150); g.stroke(); }
+  g.lineWidth = 1.0;
+  for (let r = 6; r < 120; r += 4.5 + rr() * 4) { // (the spiral, sagging between the spokes)
+    g.beginPath();
+    for (let k = 0; k < rays; k++) { const a = 0.08 + k / (rays - 1) * (Math.PI - 0.16), rj = r * (0.94 + rr() * 0.1), x = cx + Math.cos(a) * rj, y = cy + Math.sin(a) * rj;
+      if (!k) g.moveTo(x, y); else { const am = a - (Math.PI - 0.16) / (rays - 1) / 2; g.quadraticCurveTo(cx + Math.cos(am) * rj * 0.9, cy + Math.sin(am) * rj * 0.9, x, y); } }
+    g.stroke();
+  }
+  g.globalCompositeOperation = 'destination-out'; for (let k = 0; k < 4; k++) { g.beginPath(); g.arc(20 + rr() * 88, 30 + rr() * 80, 8 + rr() * 16, 0, TAU); g.fill(); } // (torn)
+  const mat = new T.MeshLambertMaterial({ map: mkTex(cv, false), transparent: true, alphaTest: 0.02, side: T.DoubleSide, depthWrite: false, color: 0xd6d0c2 });
+  const ok = c => c.kind === 'floor' && c.lvl === 0 && (c.room === 'corridor' || c.room === 'security' || c.room === 'archives' || c.room === 'storage' || c.room === 'dorm');
+  const solid = (x, z) => cellAt(x, z).kind === 'wall';
+  let n = 0;
+  for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
+    const c = grid[z][x]; if (!ok(c)) continue;
+    for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+      if (!solid(x + sx, z) || !solid(x, z + sz) || rr() > 0.45) continue;
+      // a sheet across the corner, leaning: its top edge up under the ceiling and into the corner
+      const s = 0.75 + rr() * 0.4, hh = s * 0.45, tilt = -0.32, t = s * 0.5 / Math.SQRT2;
+      const kx = cc(x) + sx * CELL / 2, kz = cc(z) + sz * CELL / 2, h = c.h || WALL_H;
+      addStatic(GEO.plane, mat, kx - sx * t, h - 0.03 - hh * Math.cos(tilt), kz - sz * t, s * 1.15, hh * 2, 1, Math.atan2(-sx, -sz), tilt, 0, false); n++; RzContact.webAt.push([kx, h, kz, sx, sz]);
+    }
+  }
+  if (n) flushStatic();
+  RzContact.webs = n;
+}
+
+/* ---------------- physically based surfaces (Medium and High) ---------------- */
+// (the environment's light is scaled by rzEnvK — how much lamplight is round you — and gives almost no diffuse light of its own: the dark stays dark)
+const RZ_LFM = (() => {
+  const c = T.ShaderChunk.lights_fragment_maps, a = 'iblIrradiance += getLightProbeIndirectIrradiance( geometry, maxMipLevel );', b = 'radiance += getLightProbeIndirectRadiance( geometry.viewDir, geometry.normal, material.specularRoughness, maxMipLevel );';
+  if (c.indexOf(a) < 0 || c.indexOf(b) < 0) return null;
+  return c.replace(a, 'iblIrradiance += getLightProbeIndirectIrradiance( geometry, maxMipLevel ) * rzEnvK * 0.15;').replace(b, 'radiance += getLightProbeIndirectRadiance( geometry.viewDir, geometry.normal, material.specularRoughness, maxMipLevel ) * rzEnvK;');
+})();
+const RzPBR = {
+  pairs: new Map(), back: new Map(), env: null, on: null, q: null, built: false, envK: { value: 0 }, list: [],
+  patch(m) {
+    if (!RZ_LFM) return;
+    m.onBeforeCompile = sh => { // (and a gloss map read as roughness: bright = glossy, mapped onto this material's own range)
+      const r = m.userData.rough || [0.5, 0.5]; sh.uniforms.rzEnvK = RzPBR.envK; sh.uniforms.rzRough = { value: new T.Vector2(r[0], r[1]) };
+      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform float rzEnvK;\nuniform vec2 rzRough;').replace('#include <lights_fragment_maps>', RZ_LFM)
+        .replace('#include <roughnessmap_fragment>', 'float roughnessFactor = roughness;\n#ifdef USE_ROUGHNESSMAP\n  roughnessFactor = mix( rzRough.y, rzRough.x, texture2D( roughnessMap, vUv ).r );\n#endif');
+    };
+    m.customProgramCacheKey = () => 'rzEnv';
+  },
+  envMap() { // a dim, warm room to reflect, painted on six small faces (mip-mapped: rougher surfaces see it blurrier): a dark ceiling, papered walls in lamplight, brown boards
+    const S = 64, face = (k) => {
+      const c = makeCanvas(S, S), g = c.getContext('2d');
+      if (k === 2) { g.fillStyle = '#0b0a09'; g.fillRect(0, 0, S, S); return c; } // (up: the ceiling)
+      if (k === 3) { g.fillStyle = '#17100a'; g.fillRect(0, 0, S, S); return c; } // (down: the boards)
+      const gr = g.createLinearGradient(0, 0, 0, S); gr.addColorStop(0, '#120f0c'); gr.addColorStop(0.35, '#2a2118'); gr.addColorStop(0.55, '#46352a'); gr.addColorStop(0.75, '#21170f'); gr.addColorStop(1, '#120c08');
+      g.fillStyle = gr; g.fillRect(0, 0, S, S);
+      if (k === 0 || k === 5) { const x = k ? 20 : 44, y = 24, r = 9, rg = g.createRadialGradient(x, y, 0, x, y, r); rg.addColorStop(0, 'rgba(255,214,150,.85)'); rg.addColorStop(1, 'rgba(255,190,110,0)'); g.fillStyle = rg; g.fillRect(x - r, y - r, r * 2, r * 2); } // (a lamp on two of the walls)
+      return c;
+    };
+    const t = new T.CubeTexture([0, 1, 2, 3, 4, 5].map(face)); t.needsUpdate = true; return t;
+  },
+  build() {
+    if (this.built) return; this.built = true; const t0 = performance.now();
+    try {
+      if (!RZ_LFM) throw new Error('shader chunk changed');
+      this.env = this.envMap();
+      const std = (o, rough) => { const m = new T.MeshStandardMaterial(Object.assign({ metalness: 0, envMap: this.env }, o)); if (rough) m.userData.rough = rough; this.patch(m); return m; };
+      const list = [
+        [MAT.wall.paper, std({ map: RZT.paper.map, roughness: 0.88, envMapIntensity: 0.25 })],
+        [MAT.wall.paper2, std({ map: RZT.paper2.map, roughness: 0.88, envMapIntensity: 0.25 })],
+        [MAT.wall.paper3, std({ map: RZT.paper3.map, roughness: 0.88, envMapIntensity: 0.25 })],
+        [MAT.wall.tileHQ, std({ map: RZT.tiles.map, roughnessMap: RZT.tiles.spec, envMapIntensity: 0.6 }, [0.2, 0.92])], // (the glaze glossy, the grout and the plaster above it dull)
+        [MAT.floor.planks, std({ map: RZT.planks.map, roughnessMap: RZT.planks.spec, envMapIntensity: 0.55 }, [0.28, 0.82])], // (varnish where it survives, bare wood where it's worn)
+        [MAT.ceil.plaster, std({ map: RZT.plaster.map, roughness: 0.95, envMapIntensity: 0.1 })],
+        [MAT.trim, std({ map: RZT.trim, roughness: 0.5, envMapIntensity: 0.4 })],
+        [MAT.gilt, std({ color: 0x7a5824, metalness: 0.85, roughness: 0.52, envMapIntensity: 0.9 })],
+        [MAT.brass, std({ color: 0x9c7a3e, metalness: 1, roughness: 0.34, envMapIntensity: 1 })],
+        [MAT.portrait, std({ map: RZT.portraits, roughness: 0.45, envMapIntensity: 0.4 })],
+        [doorMats.wood, std({ map: doorMats.wood.map, roughness: 0.72, envMapIntensity: 0.3 })],
+      ];
+      for (const [p, s] of list) {
+        if (!p) continue;
+        if (p.userData.nrm) { s.userData.nrm = p.userData.nrm; s.userData.ns = p.userData.ns; rzNrmMats.push(s); }
+        this.pairs.set(p, s); this.back.set(s, p); this.list.push(s);
+        const pa = p.userData.ao;
+        if (pa) { // (the copy that reads the corner shading from the vertices)
+          const ud = s.userData; s.userData = {}; const a = s.clone(); s.userData = ud; a.userData = Object.assign({}, ud); a.vertexColors = true; this.patch(a);
+          if (ud.nrm) rzNrmMats.push(a); this.pairs.set(pa, a); this.back.set(a, pa); this.list.push(a);
+        }
+      }
+      applyBump(); // (the relief maps follow the quality, for these too)
+      this.ms = performance.now() - t0;
+    } catch (e) { console.warn('PBR surfaces unavailable', e); this.pairs.clear(); this.back.clear(); this.list.length = 0; }
+  },
+  apply() {
+    const q = settings.quality; if (q === this.q) return; this.q = q;
+    let dirty = false;
+    const st = q === 'high' ? T.PCFSoftShadowMap : T.PCFShadowMap; if (renderer.shadowMap.type !== st) { renderer.shadowMap.type = st; dirty = true; } // (High: softer shadow edges)
+    const on = q !== 'low';
+    if (on !== this.on) {
+      this.on = on; if (on) this.build();
+      if (this.pairs.size) {
+        const M = on ? this.pairs : this.back, swap = o => { if (o.material && M.has(o.material)) o.material = M.get(o.material); };
+        scene.traverse(swap); for (const L of Level.byLvl) if (L) for (const o of L) if (!o.parent) o.traverse(swap);
+        dirty = true;
+      }
+    }
+    if (dirty) { scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { m.needsUpdate = true; }); }); Level.staleAway(); }
+  },
+  frame(dt) { // how much lamplight is round you: the reflections follow it
+    let s = 0; for (const l of pool) if (l.visible && l.intensity > 0) { const d = l.position.distanceTo(camera.position), k = Math.max(0, 1 - d / Math.max(1, l.distance)); s += l.intensity * k * k; }
+    this.envK.value = damp(this.envK.value, clamp(s * 0.9, 0, 1), 3, Math.min(dt, 0.1) || 0.016);
+  },
+};
+QUALITY.high.shadowSize = 2048; // (the torch's shadows, sharper on High)
+
+/* ---------------- the flashlight: a spill round the beam, and a shaft through the dust ---------------- */
+const RzTorch = {
+  spill: new T.SpotLight(0xffe2be, 0, 9, 0.9, 1, 2), shaft: null, k: 0,
+  init() {
+    // (rides on the torch, aimed at the torch's own target: never a frame behind it)
+    this.spill.target = flash.target; flash.add(this.spill);
+    const geo = new T.CylinderGeometry(0.27, 0.012, 1, 32, 6, true); geo.translate(0, 0.5, 0); geo.rotateX(Math.PI / 2); // (the apex at the bulb, opening along +z)
+    const mat = new T.ShaderMaterial({
+      uniforms: { k: { value: 0 }, len: { value: 1 }, col: { value: new T.Color(1.0, 0.88, 0.7) }, time: { value: 0 } }, transparent: true, depthWrite: false, side: T.DoubleSide, blending: T.AdditiveBlending,
+      vertexShader: 'varying vec3 vN; varying vec3 vV; varying vec3 vP; void main() { vP = position; vN = normalize(normalMatrix * normal); vec4 mv = modelViewMatrix * vec4(position, 1.0); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+      // (seen from just behind the bulb most of the cone is edge-on, so the facing term only shades it; the light in the air falls off with real distance from the bulb)
+      fragmentShader: 'uniform float k; uniform float len; uniform vec3 col; uniform float time; varying vec3 vN; varying vec3 vV; varying vec3 vP;\n' +
+        'void main() { float t = vP.z, d = t * len; float face = 0.3 + 0.7 * abs(dot(normalize(vN), normalize(vV)));\n' +
+        '  float along = smoothstep(0.0, 0.35, d) / (1.0 + d * d * 0.22) * (1.0 - smoothstep(0.8, 1.0, t));\n' +
+        '  float dust = 0.78 + 0.22 * sin(d * 2.9 + time * 0.6 + vP.x * 31.0) * sin(vP.y * 27.0 - time * 0.45);\n' +
+        '  float a = k * face * along * dust; gl_FragColor = vec4(col * a, 1.0); }',
+    });
+    this.shaft = new T.Mesh(geo, mat); this.shaft.frustumCulled = false; this.shaft.visible = false; this.shaft.userData.global = true; this.shaft.renderOrder = 5; scene.add(this.shaft);
+    this.shaft.onBeforeRender = (r, s, cam) => { mat.uniforms.k.value = cam === camera ? this.k : 0; mat.uniformsNeedUpdate = true; }; // (never in a CCTV feed, a picture-in-picture or THE ANOMALY's cameras)
+  },
+  sync(fi) { // (from Game.render, right after the torch is placed)
+    const L = flash.position.distanceTo(flash.target.position), q = settings.quality;
+    this.spill.intensity = fi * 0.17; this.spill.distance = Math.min(9, L + 1.5); // (unshadowed, so it only reaches a little past what the beam lands on)
+    const show = fi > 0.05 && q !== 'low' && !Cine.cctvOn() && Game.state === 'playing' && !player.dead;
+    this.shaft.visible = show;
+    if (show) {
+      const len = Math.min(8, Math.max(0.8, L)), U = this.shaft.material.uniforms;
+      this.shaft.position.copy(flash.position); this.shaft.lookAt(flash.target.position); this.shaft.scale.setScalar(len);
+      this.k = Math.min(1.2, fi / 2.05) * (q === 'high' ? 0.06 : 0.05); U.len.value = len; U.time.value = Game.time;
+    }
+  },
+};
+RzTorch.init();
+{ const ud0 = updateDust; updateDust = function (fi, pos, dir) { ud0(fi, pos, dir); try { RzTorch.sync(fi); } catch (e) { } }; }
+
+/* ---------------- breath and lean ---------------- */
+const RZ_NO_BODY = { camo: 1, hunt: 1 }; // (a mech seen from behind, the Warden's own eyes: not a guard's chest)
+const RzBody = {
+  ph: 0, lean: 0, yaw0: null, bob: 0, roll: 0,
+  frame(dt) {
+    const p = player; this.bob = 0; this.roll = 0;
+    if (!settings.headBob || Game.state !== 'playing' || RZ_NO_BODY[Game.mode] || p.dead || p.hidden || Cine.locks() || !(dt > 0)) { this.yaw0 = null; this.lean = 0; return; }
+    const LF = LVL ? Level.foe() : Monster, md = LF && LF.active ? Math.hypot(LF.pos.x - p.pos.x, LF.pos.z - p.pos.z) : 99;
+    const exert = clamp(1 - p.stamina, 0, 1), fear = clamp((p.panic || 0) * 0.5 + Math.max(0, 1 - md / 12) * 0.7, 0, 1);
+    const rate = 0.24 + exert * 0.42 + fear * 0.3, amp = 0.0035 + exert * 0.01 + fear * 0.003;
+    const prev = this.ph; this.ph += dt * rate * TAU;
+    this.bob = Math.sin(this.ph) * amp; // (the chest rising and falling)
+    if (exert > 0.4 && !p.exhausted && p.stamina >= 0.25 && Math.floor(this.ph / TAU) !== Math.floor(prev / TAU)) Sound.breath(0.06 + exert * 0.18); // (winded, not yet spent: you hear yourself; no noise the Warden hears)
+    // lean into a strafe, and a little into a hard turn
+    const right = p.vel.x * Math.cos(p.yaw) - p.vel.z * Math.sin(p.yaw);
+    let yr = 0; if (this.yaw0 !== null) yr = angleDiff(this.yaw0, p.yaw) / dt; this.yaw0 = p.yaw;
+    this.lean = damp(this.lean, clamp(-right * 0.008, -0.026, 0.026) + clamp(yr * 0.0035, -0.018, 0.018), 6, dt);
+    this.roll = this.lean;
+  },
+};
+
+/* ---------------- the building's sound ---------------- */
+const RZ_SURF = { planks: 'wood', parquet: 'wood', lab: 'tile', checker: 'tile', vinyl: 'tile', biotile: 'tile', tile: 'tile', carpet: 'carpet', hcarpet: 'carpet', plate: 'metal', grating: 'metal', concrete: 'concrete' };
+{
+  const fs0 = Sound.footstep;
+  Sound.footstep = function (surface, k, pos) { // (what is underfoot, from the floor itself)
+    if (surface !== 'metal') try { const c = cellOf(pos ? pos.x : player.pos.x, pos ? pos.z : player.pos.z); if (c && c.kind !== 'wall' && c.kind !== 'vent') surface = RZ_SURF[floorKey(c)] || surface; } catch (e) { }
+    RzAmb.lastSurf = surface; return fs0.call(this, surface, k, pos);
+  };
+}
+const _rzV = new T.Vector3();
+const RzAmb = {
+  creakT: 14, buzzT: 0, lastSurf: null,
+  frame(dt) {
+    if (Game.state !== 'playing' || !(dt > 0)) return;
+    const p = player;
+    this.creakT -= dt; this.buzzT -= dt;
+    if (this.creakT <= 0) { // (the old floor settling, somewhere near)
+      this.creakT = rand(11, 26);
+      const c = LVL === 0 ? cellOf(p.pos.x, p.pos.z) : null;
+      if (c && c.kind !== 'wall' && floorKey(c) === 'planks') { const a = rand(0, TAU), d = rand(3, 7); Sound.creak(_rzV.set(p.pos.x + Math.cos(a) * d, rand(0.3, 3), p.pos.z + Math.sin(a) * d)); }
+    }
+    for (const f of fixtures) { // (a lamp near you that stutters buzzes while it does)
+      if (f.lvl !== LVL || f.mode !== 'flicker') continue;
+      const on = !!f.on && f.burst > 0;
+      if (on && !f._bz && this.buzzT <= 0 && Math.abs(f.pos.x - p.pos.x) + Math.abs(f.pos.z - p.pos.z) < 8) { Sound.lampBuzz(f.pos, f.burst); this.buzzT = 2.5; }
+      f._bz = on;
+    }
+  },
+};
+
+/* ---------------- wiring ---------------- */
+{
+  const ul1 = Game.updateLights; // (every frame, in play and behind the title: the quality's surfaces, the reflections, the building)
+  Game.updateLights = function (dt) { const r = ul1.apply(this, arguments); try { RzPBR.apply(); RzPBR.frame(dt || 0); RzAmb.frame(dt || 0); } catch (e) { console.warn('presence', e); } return r; };
+  const gr1 = Game.render; // (the breath and the lean ride on the camera for the frame being drawn, and come off again after)
+  Game.render = function (dt) {
+    let b = 0, ro = 0; try { RzBody.frame(dt || 0); b = RzBody.bob; ro = RzBody.roll; } catch (e) { }
+    player.bob += b; player.roll += ro;
+    try { return gr1.apply(this, arguments); } finally { player.bob -= b; player.roll -= ro; }
+  };
+}
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -36640,7 +37482,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
+  Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Post, RZT, ROOM_LOOK, genPaper, genPlanks, genTilesHQ, genPlasterCeil, genTrimWood, genPortraits, genWoodLeaf, get RZ_GEN_MS() { return RZ_GEN_MS; }, get instLamp() { return instLamp; }, RzContact, RzPBR, RzTorch, RzBody, RzAmb, RZ_SURF, flash, floorKey, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
 </script>
