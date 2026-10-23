@@ -37219,17 +37219,9 @@ FW.buildTrees = function (rr) {
     if (inside && rr() < 0.3) { const a = rr() * TAU, d = 1.6 + rr() * 1.6, sx = x + Math.cos(a) * d, sz = z + Math.sin(a) * d; if (fwInside(sx, sz) && fwOpen(sx, sz, -0.6)) list.push({ kind: 'sapling', x: sx, z: sz, y: FWG.groundY(sx, sz) - 0.02, s: 0.7 + rr() * 0.7, ry: rr() * TAU, r: 0.05 }); }
   }
   this.trees = list;
-  // instanced by 40 m chunks: each chunk its own InstancedMesh per kind (placed at the chunk's centre, so culling works)
-  const CH = 40, chunks = new Map(), o = new T.Object3D();
-  for (const t of list) { const k = Math.floor((t.x + 30) / CH) + ',' + Math.floor((t.z - 495) / CH) + ',' + t.kind; let a = chunks.get(k); if (!a) chunks.set(k, a = []); a.push(t); }
-  const bs = new T.Sphere(new T.Vector3(), CH * 0.75 + 22);
-  for (const kind in K) { if (K[kind][0]) K[kind][0].boundingSphere = bs.clone(); if (K[kind][1]) K[kind][1].boundingSphere = bs.clone(); }
-  for (const [key, arr] of chunks) {
-    const kind = arr[0].kind, [gB, gF] = K[kind], [mB, mF] = kinds[kind];
-    let cx = 0, cz = 0; for (const t of arr) { cx += t.x; cz += t.z; } cx /= arr.length; cz /= arr.length;
-    const make = (geo, mat, sh) => { const im = new T.InstancedMesh(geo, mat, arr.length); arr.forEach((t, i) => { o.position.set(t.x - cx, t.y, t.z - cz); o.rotation.set(0, t.ry, 0); o.scale.setScalar(t.s); o.updateMatrix(); im.setMatrixAt(i, o.matrix); }); im.instanceMatrix.needsUpdate = true; im.position.set(cx, 0, cz); im.castShadow = sh; im.receiveShadow = true; return this.add(im); };
-    make(gB, mB, true); if (gF && mF) make(gF, mF, true);
-  }
+  // instanced in chunks per kind (bark, and foliage where it has some), each chunk culled on its own
+  const byKind = {}; for (const t of list) (byKind[t.kind] || (byKind[t.kind] = [])).push(t);
+  for (const kind in byKind) { const [gB, gF] = K[kind], [mB, mF] = kinds[kind]; this.chunked(gB, mB, byKind[kind], true, true); if (gF && mF) this.chunked(gF, mF, byKind[kind], true, true); }
   // trunks: you walk round them, and nothing sees through them
   for (const t of list) {
     if (!fwInside(t.x, t.z)) continue;
@@ -37238,12 +37230,33 @@ FW.buildTrees = function (rr) {
   }
 };
 // a sight blocker: a circle (k: how much of the view it takes — 1 a trunk, less a sapling's needles)
+// instanced in ~20 m chunks, each with its own true bounds: only the chunks in view, and nearer than the fog lets you see, are drawn (FW.cull, each frame)
+FW.chunks = [];
+FW.chunked = function (geo, mat, arr, shadow, setY, CH) {
+  if (!arr.length) return; CH = CH || 20; geo.computeBoundingSphere(); const gs = geo.boundingSphere, gr = gs.radius + Math.hypot(gs.center.x, gs.center.z), groups = new Map(), o = _fwo;
+  for (const a of arr) { const k = Math.floor(a.x / CH) + ',' + Math.floor(a.z / CH); let g = groups.get(k); if (!g) groups.set(k, g = []); g.push(a); }
+  for (const g of groups.values()) {
+    let cx = 0, cz = 0; for (const a of g) { cx += a.x; cz += a.z; } cx /= g.length; cz /= g.length;
+    const im = new T.InstancedMesh(geo, mat, g.length); let cy = 0; const ys = [];
+    g.forEach((a, i) => { const y = setY ? a.y : FWG.groundY(a.x, a.z), sc = Math.max(a.sx || a.s || 1, a.sy || a.s || 1, a.sz || a.s || 1); o.position.set(a.x - cx, y, a.z - cz); o.rotation.set(a.rx || 0, a.ry || 0, a.rz || 0); o.scale.set(a.sx || a.s || 1, a.sy || a.s || 1, a.sz || a.s || 1); o.updateMatrix(); im.setMatrixAt(i, o.matrix); ys.push([y + gs.center.y * sc, gr * sc]); cy += y + gs.center.y * sc; });
+    cy /= g.length; let r = 0; g.forEach((a, i) => { r = Math.max(r, Math.hypot(a.x - cx, ys[i][0] - cy, a.z - cz) + ys[i][1]); });
+    im.instanceMatrix.needsUpdate = true; im.position.set(cx, 0, cz); im.frustumCulled = false; im.castShadow = !!shadow; im.receiveShadow = true; this.add(im);
+    this.chunks.push({ m: im, x: cx, y: cy, z: cz, r });
+  }
+};
+const _fwFr = new T.Frustum(), _fwPm = new T.Matrix4(), _fwSp = new T.Sphere();
+FW.cull = function (cam) {
+  _fwFr.setFromProjectionMatrix(_fwPm.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse));
+  const see = Math.min(cam.far, scene.fog && scene.fog.density ? 2.3 / scene.fog.density : 1e9) + 2, px = cam.position.x, pz = cam.position.z; let n = 0;
+  for (const c of this.chunks) { if (Math.hypot(c.x - px, c.z - pz) - c.r > see) { c.m.visible = false; continue; } _fwSp.center.set(c.x, c.y, c.z); _fwSp.radius = c.r + 1; c.m.visible = _fwFr.intersectsSphere(_fwSp); if (c.m.visible) n++; }
+  this.drawn = n;
+};
 FW.blocker = function (x, z, r, k) { const key = Math.floor(x / this.HS) + ',' + Math.floor(z / this.HS); let a = this.hash.get(key); if (!a) this.hash.set(key, a = []); a.push({ x, z, r: Math.max(r, 0.25), k }); };
 
 /* ---------------- what grows under them ---------------- */
 FW.buildUnder = function (rr) {
   const M = this.mats, o = new T.Object3D();
-  const inst = (geo, mat, arr, shadow, setY) => { if (!arr.length) return null; let cx = 0, cz = 0; for (const a of arr) { cx += a.x; cz += a.z; } cx /= arr.length; cz /= arr.length;
+  const inst = (geo, mat, arr, shadow, setY, single) => { if (!arr.length) return null; if (!single) return this.chunked(geo, mat, arr, shadow, setY, 16); let cx = 0, cz = 0; for (const a of arr) { cx += a.x; cz += a.z; } cx /= arr.length; cz /= arr.length;
     const im = new T.InstancedMesh(geo, mat, arr.length); arr.forEach((a, i) => { o.position.set(a.x - cx, setY ? a.y : FWG.groundY(a.x, a.z), a.z - cz); o.rotation.set(a.rx || 0, a.ry || 0, a.rz || 0); o.scale.set(a.sx || a.s || 1, a.sy || a.s || 1, a.sz || a.s || 1); o.updateMatrix(); im.setMatrixAt(i, o.matrix); });
     im.instanceMatrix.needsUpdate = true; im.position.set(cx, 0, cz); geo.boundingSphere = new T.Sphere(new T.Vector3(), 140); im.castShadow = !!shadow; im.receiveShadow = true; return this.add(im); };
   // bushes: crossed leaf cards; the big ones (thickets) hide someone crouched and still inside
@@ -37282,7 +37295,7 @@ FW.buildUnder = function (rr) {
   // dry twigs: they snap under a careless foot (once each)
   const twigGeo = (() => { const gs = [fwXform(new T.CylinderGeometry(0.012, 0.02, 0.9, 4), 0, 0.03, 0, 0, 0, Math.PI / 2)]; gs.push(fwXform(new T.CylinderGeometry(0.006, 0.01, 0.35, 3), 0.15, 0.05, 0.08, 0, 0.6, Math.PI / 2)); return mergeGeos(gs); })(), twigs = [];
   for (let i = 0; i < 520 && twigs.length < 170; i++) { const x = 4 + rr() * 100, z = 527 + rr() * 106; if (Math.hypot(x - 54, z - 585) < 8 || Math.hypot(x - 55, z - 631) < 7) continue; const [pd] = FWG.pathDist(x, z); if (pd < 0.8 && rr() < 0.7) continue; twigs.push({ i: twigs.length, x, z, ry: rr() * TAU, s: 0.8 + rr() * 0.6, broken: false }); }
-  this.twigs = twigs; this.twigMesh = inst(twigGeo, M.barkD, twigs, false);
+  this.twigs = twigs; this.twigMesh = inst(twigGeo, M.barkD, twigs, false, false, true);
   // puddles: black still water in the hollows near the trails and the stream
   const pud = []; for (let i = 0; i < 300 && pud.length < 28; i++) { const x = 4 + rr() * 100, z = 527 + rr() * 106, [pd] = FWG.pathDist(x, z), sd = FWG.streamDist(x, z); if (!(pd < 2 || (sd > 2.4 && sd < 6))) continue; if (Math.hypot(x - 54, z - 585) < 8) continue; pud.push({ x, z, r: 0.5 + rr() * 0.9, ry: rr() * TAU }); }
   this.puddles = pud;
@@ -37666,7 +37679,7 @@ FW.buildCabin = function () {
   part(58.65, 1.0, 583.0, 0.6, 2.0, 1.2, M.woodDk); solid(58.33, 582.38, 58.97, 583.62);
   const wd = new T.Group(); wd.position.set(58.33, C.FY, 582.42); const wdl = new T.Mesh(fwBoxGeo(0.03, 1.9, 1.16, 1, 2), M.door || M.wood); wdl.position.set(-0.015, 0.97, 0.58); wd.add(wdl); this.add(wd); wd.userData.baseRy = 0;
   this.hide({ kind: 'wardrobe', name: 'wardrobe', pos: [58.62, 583.0], out: [57.6, 583.0], yaw: Math.PI / 2, eye: 1.5, pivot: wd, door: wdl, hit: [58.33, 1.0, 583.0, 0.08, 1.9, 1.16], q: 0.8, room: 'bed' });
-  this.hide({ kind: 'bed', name: 'bed', pos: [57.7, 580.82], out: [57.7, 581.95], yaw: Math.PI, eye: 0.24, hit: [57.7, 0.25, 581.38, 2.0, 0.3, 0.08], q: 0.7, room: 'bed' });
+  this.hide({ kind: 'bed', name: 'bed', pos: [57.7, 580.82], out: [57.7, 581.95], yaw: Math.PI, eye: 0.24, hit: [57.7, 0.38, 580.85, 2.15, 0.76, 1.1], q: 0.7, room: 'bed' });
 
   /* ---- the store room ---- */
   part(57.3, 0.9, 587.7, 2.6, 0.04, 0.42, M.wood); part(57.3, 1.4, 587.7, 2.6, 0.04, 0.42, M.wood); part(57.3, 0.45, 587.7, 2.6, 0.04, 0.42, M.wood); part(56.0, 0.9, 587.7, 0.04, 1.8, 0.42, M.woodDk); part(58.6, 0.9, 587.7, 0.04, 1.8, 0.42, M.woodDk);
@@ -37884,7 +37897,7 @@ const Hollow = {
 
   /* ---- hearing (host): every sound the woods make comes here once (FwNoise dedups by id) ---- */
   hear(ev) {
-    if (!this.active || this.state === 'GONE') return;
+    if (!this.active || this.state === 'GONE' || ev.by === -2) return; // (a door it opened itself is not news)
     const d = Math.hypot(ev.x - this.pos.x, ev.z - this.pos.z);
     let r = ev.r * hd().hear;
     const inS = this.indoors(ev.x, ev.z), inM = this.indoors(this.pos.x, this.pos.z);
@@ -37967,6 +37980,7 @@ const Hollow = {
   // walk the current path toward (gx, gz) at speed v; returns true when there
   go(gx, gz, v, dt, near) {
     near = near || 0.9;
+    if (!this.failG || Math.hypot(this.failG[0] - gx, this.failG[1] - gz) > 2.5) { this.failG = [gx, gz]; this.fails = 0; } // (giving up counts per goal: a new goal starts with a clean slate)
     if (Math.hypot(gx - this.pos.x, gz - this.pos.z) < near) { this.speed = damp(this.speed, 0, 8, dt); return true; }
     this.repathT -= dt;
     if (!this.path || this.repathT <= 0 || Math.hypot(this.path.gx - gx, this.path.gz - gz) > (this.state === 'PURSUE' ? 1.2 : 2.5)) {
@@ -38361,7 +38375,7 @@ const Woods = {
     this.setDoor(D, D.target > 0.5 ? 0 : 1, mode, Net.myId);
   },
   setDoor(D, to, mode, by) { Game.emit({ k: 'fwd', i: D.i, o: to, m: mode, by }); const r = mode === 'quiet' ? 3 : mode === 'slam' ? 24 : to ? 9 : 11; FwNoise.emit(D.x, D.z, 'door', r, by === undefined ? -1 : by); },
-  creatureDoor(D, hard) { if (D.target > 0.5) return; this.setDoor(D, 1, hard ? 'slam' : 'normal', -1); },
+  creatureDoor(D, hard) { if (D.target > 0.5) return; this.setDoor(D, 1, hard ? 'slam' : 'normal', -2); }, // (by -2: the creature itself — you hear it, it doesn't chase its own noise)
   creatureCheck(L, what, who) { Game.emit({ k: 'fwchk', i: FW.hides.indexOf(L), w: what, id: who ? Game.idOf(who) : -1 }); },
   // (every screen) things you can hear but the creature already knows about
   voc(kind) { Game.emit({ k: 'fwv', s: kind }); },
@@ -38697,6 +38711,8 @@ SCENES.fwEnd = {
   // a loose bottle or can: [E] picks it up
   const utE = Game.updateTarget; Game.updateTarget = function () { if (!on()) return utE.apply(this, arguments); const g = Woods.groundAt(player.pos.x, player.pos.z); player.eyeY += g; try { return utE.apply(this, arguments); } finally { player.eyeY -= g; } };
   const ut0 = Game.updateTarget; Game.updateTarget = function () { ut0.apply(this, arguments); if (!on() || this.target || player.hidden || this.controlLock) return; let best = null, bd = 1.6; const e = _fwv2.set(player.pos.x, player.eyeY + FWG.groundY(player.pos.x, player.pos.z), player.pos.z), f = player.forward(_fwv3); for (const P of FW.props) { if (P.held >= 0 || P.K.chair || P.kind === 'pot' || P.kind === 'bucket' || P.kind === 'book') continue; const dx = P.pos.x - e.x, dy = P.pos.y + 0.08 - e.y, dz = P.pos.z - e.z, d = Math.hypot(dx, dy, dz); if (d > bd || (dx * f.x + dy * f.y + dz * f.z) / d < 0.9) continue; bd = d; best = P; } if (best) this.target = best.def || (best.def = { kind: 'fwprop', enabled: true, prompt: () => 'Pick up the ' + best.kind, use: () => Woods.pick(best) }); };
+  // what's drawn: only the forest in view and nearer than the fog lets you see (decided on the frame's own camera, just before it is drawn)
+  const rnd0 = renderer.render; renderer.render = function (sc, cam) { if (sc === scene && cam === camera && FW.built && Woods.on()) { cam.updateMatrixWorld(); FW.cull(cam); } return rnd0.apply(this, arguments); };
   // the truck's interaction
   const fwTruckDef = { kind: 'fwtruck', enabled: true, prompt: () => Woods.truckPrompt(), use: () => Woods.useTruck() };
   const ut1 = Game.updateTarget; Game.updateTarget = function () { ut1.apply(this, arguments); if (!on() || this.target || player.hidden) return; if (Math.hypot(player.pos.x - 16.8, player.pos.z - 530.8) < 3.4) this.target = fwTruckDef; };
