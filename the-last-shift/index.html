@@ -6619,6 +6619,9 @@ const Sound = (function () {
   // the woods themselves
   S.fwOwl = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.15); out.gain.value = 0.28; const b = rand(330, 390); [[0, 0.3], [0.45, 0.14], [0.66, 0.5]].forEach(([d, l]) => { const o = tone(out, t + d, 'sine', b, b * 0.94, l, 0.5, 0.05); }); });
   S.fwBranch = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.1); out.gain.value = rand(0.15, 0.32); const o = ctx.createOscillator(), bp = ctx.createBiquadFilter(), g = ctx.createGain(), f = rand(90, 200), d = rand(0.8, 1.8); o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t); o.frequency.linearRampToValueAtTime(f * rand(0.8, 1.3), t + d); bp.type = 'bandpass'; bp.frequency.value = f * 3; bp.Q.value = 9; env(g.gain, t, 0.3, 0.25, d); o.connect(bp); bp.connect(g); g.connect(out); o.start(t); o.stop(t + d + 0.3); S.fwGust(0.35); });
+  // (Build 33) BIG CHONK's footstep: a stomp you feel in your chest; and the grunt as he leaves the ground
+  S.stomp = safe(function (pos, k) { k = k === undefined ? 0.5 : k; const t = ctx.currentTime, out = dest(pos || null, 0.3, !!pos); out.gain.value = 0.5 + 0.55 * k; tone(out, t, 'sine', 66, 30, 0.34, 1, 0.003); noise(out, t, 0.3, 'lowpass', 240 + k * 120, 0.9, 0.9, 0.003, brown); noise(out, t + 0.01, 0.07, 'bandpass', rand(160, 300), 2, 0.55, 0.002, brown); for (let i = 0; i < 2; i++) noise(out, t + 0.05 + i * rand(0.03, 0.07), 0.04, 'bandpass', rand(900, 1700), 3, 0.12 + k * 0.1, 0.002); });
+  S.grunt = safe(function (pos) { const t = ctx.currentTime, out = dest(pos || null, 0.2, !!pos); out.gain.value = 0.5; tone(out, t, 'sawtooth', 120, 85, 0.32, 0.35, 0.02); noise(out, t, 0.3, 'bandpass', 420, 2.5, 0.4, 0.02, brown); });
   S.fwThud = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.25); out.gain.value = 0.5; tone(out, t, 'sine', 45, 28, 0.6, 0.8, 0.01); noise(out, t, 0.5, 'lowpass', 240, 1, 0.6, 0.01, brown); for (let i = 0; i < 4; i++) noise(out, t + 0.1 + i * rand(0.05, 0.15), 0.03, 'bandpass', rand(800, 1600), 2, 0.2, 0.002); });
   S.fwDeer = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.1); out.gain.value = 0.35; for (let i = 0; i < 2; i++) { const n = noise(out, t + i * 0.55, 0.22, 'bandpass', 1100, 2.5, 0.8, 0.005); n.f.frequency.exponentialRampToValueAtTime(600, t + i * 0.55 + 0.2); tone(out, t + i * 0.55, 'sawtooth', 300, 180, 0.2, 0.08, 0.005); } });
   S.fwCricket = safe(function (pos, k) { const t = ctx.currentTime, out = dest(pos, 0.02); out.gain.value = 0.05 * (k || 1); const f = rand(4200, 4900), n = 2 + Math.floor(Math.random() * 3); for (let c = 0; c < n; c++) for (let i = 0; i < 4; i++) tone(out, t + c * 0.36 + i * 0.028, 'sine', f, f, 0.018, 0.5, 0.002); });
@@ -8571,7 +8574,7 @@ const player = {
     const hs = Math.hypot(this.vel.x, this.vel.z);
     // stamina
     if (this.sprinting && hs > 3) { this.stamina = Math.max(0, this.stamina - dt / (Monster.huntsLocal() ? 8.8 : 5.6) * Chars.drainMul()); // adrenaline: you run longer while it hunts you
-      this.staminaDelay = 0.8; if (this.stamina <= 0) { this.exhausted = true; if (Chars.run !== 'bob') UI.msg('You\'re out of breath.', 'warn'); } }
+      this.staminaDelay = 0.8; if (this.stamina <= 0) { this.exhausted = true; if (!Chars.heartRisk()) UI.msg('You\'re out of breath.', 'warn'); } }
     else { this.staminaDelay -= dt; if (this.staminaDelay <= 0) this.stamina = Math.min(1, this.stamina + dt / (moving ? 5.5 : 3.8) * Chars.regenMul()); }
     if (this.exhausted && this.stamina > 0.35) this.exhausted = false;
     if (this.exhausted || this.stamina < 0.25) { this.breathT -= dt; if (this.breathT <= 0) { this.breathT = 1.25; Sound.breath(1 - this.stamina); Game.noise(this.pos, 2.5, 'player'); } }
@@ -11354,7 +11357,7 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 29, BUILD = 32, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 30, BUILD = 33, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -12445,7 +12448,7 @@ const Combat = {
     if (!this.can() || this.cd > 0) return false;
     const p = player;
     const cost = Chars.stamCost(0.13);
-    if (p.stamina < (Chars.run === 'bob' ? cost + 0.02 : Chars.stamCost(0.08))) { UI.msg(Chars.run === 'bob' ? 'Not enough breath to swing — and Bob can\'t afford to run out.' : 'Too winded to swing.', 'warn', 1.4); return false; }
+    if (p.stamina < (Chars.heartRisk() ? cost + 0.02 : Chars.stamCost(0.08))) { UI.msg(Chars.heartRisk() ? 'Not enough breath to swing — and ' + (Chars.run === 'bob' ? 'Bob' : Chars.cur().name) + ' can\'t afford to run out.' : 'Too winded to swing.', 'warn', 1.4); return false; }
     p.stamina = Math.max(0, p.stamina - cost); p.staminaDelay = 0.9; Chars.onAttack();
     this.kind = Game.time - this.lastAt < 0.9 ? 1 - this.kind : 0; this.lastAt = Game.time;
     this.hand = p.hasFlash ? 1 : (this.kind ? -1 : 1); // no light: alternate fists
@@ -14652,7 +14655,7 @@ const Weapons = {
     const w = WPN[this.cur], p = player;
     if (w.kind === 'melee') {
       const cost = Chars.stamCost(w.stam); // (the character's stamina: some of them pay more for every swing)
-      if (p.stamina < (Chars.run === 'bob' ? cost + 0.02 : Chars.stamCost(0.06))) { UI.msg(Chars.run === 'bob' ? 'Not enough breath to swing — and Bob can\'t afford to run out.' : 'Too winded to swing.', 'warn', 1.4); return false; }
+      if (p.stamina < (Chars.heartRisk() ? cost + 0.02 : Chars.stamCost(0.06))) { UI.msg(Chars.heartRisk() ? 'Not enough breath to swing — and ' + (Chars.run === 'bob' ? 'Bob' : Chars.cur().name) + ' can\'t afford to run out.' : 'Too winded to swing.', 'warn', 1.4); return false; }
       p.stamina = Math.max(0, p.stamina - cost); p.staminaDelay = 0.9;
       this.t = 0; this.cd = w.dur; this.hitDone = false; this.side = -this.side; Chars.onAttack();
       if (this.cur === 'sword') Sound.swordSwing(); else if (this.cur === 'gfist') Sound.glitch(); else Sound.swing(this.cur === 'axe'); Game.noise(p.pos, w.noise, 'player');
@@ -18363,6 +18366,8 @@ const CODES = {
   HELLOOWNER: { owner: 1, text: 'OWNER ACCESS: every character, max coins, the 5× SPIN' },
   HELLORESETALL: { reset: 1, text: 'everything reset — a brand-new save' },
   HELLOHORSE: { char: 'horse', text: 'THE HORSE joins your roster — and you are now a horse' },
+  // Build 33
+  HELLOCHONK: { char: 'chonk', text: 'BIG CHONK joins your roster — the floor will never be the same' },
 };
 // Build 18: PITY — a run of bad luck can't go on forever. Counted on the save, across every spin you ever make.
 // A spin that hasn't seen this rarity (or a better one) for this many spins in a row is guaranteed it;
@@ -18504,6 +18509,9 @@ const ABIL = {
     desc: 'A blast of freezing air in front of you, 9 m: every monster in it is frozen solid for 2.2 s, then moves at under half speed for 6 s more. Anything thrown at you is frozen out of the air.' },
   sentry: { name: 'SENTRY', icon: 'sentry', cd: 40, life: 14, range: 13, rate: 0.6, dmg: 6, stagEvery: 4, stun: 0.6, loud: 14,
     desc: 'Set down an arc turret on the floor in front of you. For 14 s it zaps the nearest monster it can see within 13 m — 6 damage a shot, every fourth one staggers it. It\'s loud: the monsters come for it instead of you. One at a time.' },
+  // ---- Build 33 ----
+  flop: { name: 'BELLY FLOP', icon: 'flop', cd: 30, dur: 0.95, air: 0.95, height: 0.75, hop: 2.6, range: 7.5, dmg: 35, stun: 3, push: 7, loud: 45, stam: 0.2,
+    desc: 'Up into the air — and down on everything within 7.5 m: every monster there is crushed (heavy damage), thrown back and flattened for 3 s, anything thrown at you is knocked out of the air and the lights round you burst. You can\'t be hit while you\'re up there. It costs a fifth of your breath, and everything on the floor hears you land.' },
 };
 for (const k in ABIL) ABIL[k].id = k;
 // hp: max health · stam: stamina pool (100 = standard) · stamCost: how much sprinting and swinging cost · regen: getting your breath back
@@ -18662,6 +18670,10 @@ const CHARS = {
   rivet: { name: 'RIVET', title: 'THE FIELD ENGINEER', rarity: 'mythic', role: 'Turret', col: '#f0a830', ab: 'sentry', hp: 110, stam: 90, speed: 0.95, work: 1.25,
     strength: 'SENTRY: an arc turret that zaps the nearest monster it can see for 14 s — and draws them to it instead of you. Every job with a progress bar goes 25% faster.',
     weakness: 'Carries a toolbox: 5% slower and only 90 stamina. One turret at a time, and 40 s to build the next.' },
+  // ---- Build 33 (a code, like THE HORSE) ----
+  chonk: { name: 'BIG CHONK', title: 'THE HEAVYWEIGHT', rarity: null, code: 'HELLOCHONK', role: 'Heavyweight', col: '#d0602e', ab: 'flop', hp: 240, stam: 70, stamCost: 1.3, regen: 0.75, speed: 0.6, noise: 2.4, power: 1.6, dmg: 0.8, heart: 1,
+    strength: 'Enormous: 240 HP, takes 20% less damage, hits 60% harder. BELLY FLOP: up into the air and down on everything within 7.5 m — crushed, thrown back and flattened for 3 s.',
+    weakness: 'Very slow (40% slower) and LOUD: every step is a stomp the monsters hear from far away. Only 70 stamina — and if it ever runs out, his heart gives out and he dies on the spot, like Bob. Only the code HELLOCHONK gets him.' },
 };
 for (const id in CHARS) CHARS[id] = Object.assign({ id }, CHAR_BASE, CHARS[id]);
 const CHAR_IDS = Object.keys(CHARS);                       // (the index is what goes over the network: never reorder)
@@ -18674,7 +18686,7 @@ const BUFF_BITS = { guard: 1, rage: 2, vanish: 4, over: 8, adren: 16, brace: 32,
   star: 262144, asc: 524288, grip: 1048576, spent: 2097152, debt: 4194304 }; // (Build 18: KAIROS in TIME DEBT) // (Build 17: NOVA's half damage, SUPERNOVA's ascent, a Robot's grip, AETHER burned out)
 // which buff an ability's running time is kept in (a few are only for your own HUD: pulse, markd, mirage)
 const BUFF_OF = { guard: 'guard', rage: 'rage', vanish: 'vanish', overdrive: 'over', adrenaline: 'adren', brace: 'brace', second: 'second', rally: 'rally', pulse: 'pulse',
-  limit: 'limit', dome: 'dome', premon: 'premon', mark: 'markd', mirage: 'mirage', chains: 'chain', shield: 'shield', gdash: 'gdash', grapple: 'grip', umbra: 'vanish' };
+  limit: 'limit', dome: 'dome', premon: 'premon', mark: 'markd', mirage: 'mirage', chains: 'chain', shield: 'shield', gdash: 'gdash', grapple: 'grip', umbra: 'vanish', flop: 'flop' };
 const _cv3 = new T.Vector3(), _cv4 = new T.Vector3();
 function rand01() { // a fair roll (the browser's crypto RNG when there is one)
   try { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; } catch (e) { return Math.random(); }
@@ -19251,14 +19263,15 @@ const Chars = {
     if (p.dead) { if (this.fxKey) this.onDeath(); }
     this.popT = Math.max(0, this.popT - dt); this.flashT = Math.max(0, this.flashT - dt);
     if (this.saveT > 0) { this.saveT -= dt; if (this.saveT <= 0) this.save(); }
-    // Bob: his heart gives out when his stamina does
-    if (this.run === 'bob' && !p.dead && Game.state === 'playing' && !Game.endingLock) {
+    // Bob (and BIG CHONK): the heart gives out when the stamina does
+    if (this.heartRisk() && !p.dead && Game.state === 'playing' && !Game.endingLock) {
       if (p.stamina <= 0.0005) { this.heartStop(); return; }
       if (p.stamina < 0.3) {
         this.breathT -= dt;
         if (this.breathT <= 0) { this.breathT = 0.28 + p.stamina * 1.6; Sound.thump(1 - p.stamina / 0.3); }
-        if (p.stamina < 0.15 && this.warned < 2) { this.warned = 2; UI.msg('BOB\'S HEART IS POUNDING — STOP RUNNING!', 'warn', 2.4); }
-        else if (this.warned < 1) { this.warned = 1; UI.msg('Easy, Bob. If your stamina runs out, so does your heart.', 'warn', 3.2); }
+        const nm = this.run === 'bob' ? 'Bob' : this.cur().name;
+        if (p.stamina < 0.15 && this.warned < 2) { this.warned = 2; UI.msg(nm.toUpperCase() + '\'S HEART IS POUNDING — STOP RUNNING!', 'warn', 2.4); }
+        else if (this.warned < 1) { this.warned = 1; UI.msg('Easy, ' + nm + '. If your stamina runs out, so does your heart.', 'warn', 3.2); }
       } else if (p.stamina > 0.45) this.warned = 0;
     }
     // TARNISHED: the shield only holds while you stand your ground
@@ -19287,9 +19300,10 @@ const Chars = {
     else if (k === 'grip' && this.run === 'robot') UI.msg('SERVO LOCK released.', '', 1.8);
     UI.hudCache.ab = null;
   },
+  heartRisk() { return this.run === 'bob' || !!this.cur().heart; }, // (Bob, BIG CHONK: no breath left means no heartbeat left)
   heartStop() {
     const p = player; p.stamina = 0;
-    UI.msg('Bob ran out of breath — and his heart gave out.', 'warn', 5);
+    UI.msg((this.run === 'bob' ? 'Bob' : this.cur().name) + ' ran out of breath — and his heart gave out.', 'warn', 5);
     Game.stats.heart = 1;
     Game.die('heartStop');
   },
@@ -19303,7 +19317,7 @@ const Chars = {
   updateFx() {
     let k = '';
     for (const b of ['guard', 'rage', 'vanish', 'over', 'adren', 'brace', 'second', 'rally', 'limit', 'crash', 'dome', 'chain', 'premon', 'ember', 'star', 'asc', 'spent', 'grip']) if (this.has(b)) k += ' ' + b;
-    if (this.run === 'bob' && player.stamina < 0.3 && !player.dead) k += ' heart';
+    if (this.heartRisk() && player.stamina < 0.3 && !player.dead) k += ' heart';
     if (k !== this.fxKey) { this.fxKey = k; const el = $('fx-ab'); if (el) el.className = 'fx' + k; }
   },
   // a ring of light on the floor, spreading out (rally, pulse)
@@ -19487,7 +19501,7 @@ const Chars = {
   },
   // the CONDITION / STAMINA lines on the HUD
   hpText() { const p = player, f = p.health / p.maxHp; if (p.downed) return 'DOWN · ' + Math.max(0, Math.ceil(p.bleedT || 0)) + 's'; return (this.run === 'bob' ? 'ONE HIT · ' : f > 0.7 ? 'STABLE · ' : f > 0.35 ? 'INJURED · ' : 'CRITICAL · ') + Math.max(0, Math.ceil(p.health)) + '/' + p.maxHp; },
-  stamText() { const p = player; if (this.run === 'bob' && p.stamina < 0.3 && !p.dead) return 'BREATHE!'; return (p.exhausted ? 'WINDED · ' : '') + Math.round(p.stamina * this.cur().stam); },
+  stamText() { const p = player; if (this.heartRisk() && p.stamina < 0.3 && !p.dead) return 'BREATHE!'; return (p.exhausted ? 'WINDED · ' : '') + Math.round(p.stamina * this.cur().stam); },
   /* ================= coins at the end of a run ================= */
   // (every peer, for itself) an objective the team completed: counts once a run
   objDone(id) { if (!this.objSeen || this.objSeen[id]) return; this.objSeen[id] = 1; this.stats.objs = (this.stats.objs || 0) + 1; },
@@ -25186,6 +25200,7 @@ const People = (() => {
       d += 0.006 * bk * gs(Math.abs(xn) - 0.45, 0.2) * gs(y - 0.4, 0.07);                     // shoulder blades
       d -= 0.004 * bk * gs(xn, 0.09) * ss(-0.02, 0.1, y) * (1 - ss(0.45, 0.55, y));           // the spine
       d += 0.007 * bk * gs(Math.abs(xn) - 0.45, 0.3) * gs(y + 0.05, 0.05);                    // seat
+      if (S.belly) d += S.belly * (fr * gs(y - 0.12, 0.14) * gs(xn, 0.8) + 0.35 * gs(y - 0.08, 0.16)); // (Build 33: a belly out in front, a bit of everything else)
       if (bare) d += 0.003 * fr * gs(xn, 0.32) * Math.max(0, Math.sin(y * 70)) * ss(0.02, 0.08, y) * ss(0.26, 0.2, y) * k.m; // (a hint of a stomach that works)
       else d += wrinkle(x, y, z, 14, 0.007);
       return d;
@@ -39667,6 +39682,148 @@ const NIGHT_CSS = `
 #fw-journal i{color:#cfa870;font-style:normal}
 #fw-journal em{color:#a8a090;font-style:normal;font-size:11px}
 `;
+/* ================================================================== */
+/* Build 33: BIG CHONK (a code: HELLOCHONK) — THE HEAVYWEIGHT           */
+/*  Enormous, slow and loud: every step is a stomp the monsters hear,  */
+/*  and you feel it. His heart can't take running out of breath (Bob's */
+/*  rule). BELLY FLOP [F]: up into the air, and down on everything     */
+/*  round him. As with every ability: your key asks the host, the host */
+/*  checks it (POWERS.flop.host) and lands him when he comes down      */
+/*  (Chonk.hostTick), and every screen sees the landing ('chk').       */
+/* ================================================================== */
+const _ck = new T.Vector3(), _ck2 = new T.Vector3();
+const Chonk = {
+  air: null,       // (my own leap) { t, dur, h, fx, fz }
+  lift: 0,         // (how far my eyes are off their usual height: up in the leap, down in the landing)
+  dip: 0,
+  hops: new Map(), // (the others' leaps, on this screen: id → when it started)
+  pend: [],        // (host) landings to come: { a, at }
+  stompBy: null,   // (a teammate whose footstep is being played right now)
+  reset() { this.air = null; this.lift = 0; this.dip = 0; this.hops.clear(); this.pend = []; },
+  // how high a leap is t seconds in (a heavy one: quick up, a moment at the top, down hard)
+  arc(t, dur, h) { const k = clamp(t / dur, 0, 1); return h * Math.pow(Math.sin(Math.PI * k), 0.8); },
+  update(dt) {
+    const p = player, A = ABIL.flop;
+    if (this.air) {
+      const L = this.air; L.t += dt;
+      if (p.dead || p.downed) { this.air = null; }
+      else {
+        if (L.t < L.dur && (L.fx || L.fz)) moveBody(p.pos, L.fx * A.hop / L.dur * dt, L.fz * A.hop / L.dur * dt, PLAYER_R, 'player', false); // (carried forward if you were moving; walls still stop you)
+        if (L.t >= L.dur) { this.air = null; this.dip = 0.3; }
+      }
+    }
+    this.dip = Math.max(0, this.dip - dt);
+    this.lift = this.air ? this.arc(this.air.t, this.air.dur, this.air.h) : -0.28 * (this.dip / 0.3); // (the knees give as he lands)
+    for (const [id, t0] of this.hops) if (Game.time - t0 > A.air + 0.3) this.hops.delete(id);
+    if (!Net.isClient) this.hostTick();
+  },
+  // (host) whoever's leap is coming down now: what they crushed
+  hostTick() {
+    for (let i = this.pend.length - 1; i >= 0; i--) {
+      const P = this.pend[i]; if (Game.time < P.at) continue; this.pend.splice(i, 1);
+      const a = P.a; if (!a || a.dead || a.downed || (a !== player && crew().indexOf(a) < 0)) continue;
+      this.crush(a);
+    }
+  },
+  crush(a) {
+    const A = ABIL.flop, ax = a.pos.x, az = a.pos.z; let n = 0;
+    for (const F of Powers.foes()) {
+      const d = Math.hypot(F.pos.x - ax, F.pos.z - az) - (F.isCreature ? F.T.r : 0.4); if (d > A.range) continue;
+      if (F !== Sleeper) {
+        const k = 1 - 0.4 * clamp(d / A.range, 0, 1), dmg = A.dmg * k * Chars.powerOf(a); // (right under him: the full weight)
+        Powers.reelFoe(F, a, A.stun, 'flop'); Powers.pushFoe(F, a, A.push, true);
+        if (F.many || F.isCreature) { Horde.focus = F; Weapons.foeHit(Horde, a, dmg, { kind: 'blast', stg: 0.8, w: 'flop' }, 'flop'); } else Weapons.foeHit(F, a, dmg, { kind: 'blast', stg: 0.8, w: 'flop' }, 'flop');
+      }
+      n++;
+    }
+    HProj.knockDown(a.pos, A.range); // (anything thrown at him: out of the air)
+    Game.hearAt({ x: ax, z: az }, A.loud, 'event', null); // (everything on the floor hears him land)
+    Game.emit({ k: 'chk', by: Game.idOf(a), x: +ax.toFixed(2), z: +az.toFixed(2), n });
+  },
+  // (every screen) the landing: the floor jumps, the lights round him burst, debris everywhere
+  land(ev) {
+    const A = ABIL.flop, me = (ev.by | 0) === Net.myId, x = +ev.x || 0, z = +ev.z || 0, d = Math.hypot(x - player.pos.x, z - player.pos.z), who = Net.nameOf ? Net.nameOf(ev.by) : 'Someone';
+    Chars.ring(x, z, 0xd0602e, A.range);
+    for (let i = 0; i < 10; i++) spawnImpact(_ck.set(x + rand(-2.5, 2.5), 0.1, z + rand(-2.5, 2.5)));
+    Sound.quake(me ? null : _ck.set(x, 0.5, z)); Sound.stomp(me ? null : _ck2.set(x, 0.2, z), 1);
+    Game.shake(clamp(1.6 - d / 12, 0, 1.5));
+    for (const f of fixtures) if (f.lvl === LVL && f.on && Math.abs(f.pos.x - x) + Math.abs(f.pos.z - z) < A.range) f.pop = Math.max(f.pop || 0, rand(0.4, 0.9)); // (the bulbs can't take it either)
+    if (me) { this.dip = 0.3; UI.msg(ev.n ? 'BELLY FLOP — ' + (ev.n === 1 ? 'it\'s' : ev.n + ' of them are') + ' flattened!' : 'BELLY FLOP — nothing close enough to crush. Everything heard that.', ev.n ? 'good' : '', 2.6); }
+    else if (d < 25 && ev.n) UI.msg(who + ' BELLY FLOPS — it\'s flattened!', 'good', 2.2);
+  },
+};
+
+/* ================= [F] BELLY FLOP ================= */
+Object.assign(Chars, {
+  use_flop(A) {
+    const p = player, f = p.forward(_ck), L = Math.hypot(f.x, f.z) || 1, moving = Math.hypot(p.vel.x, p.vel.z) > 0.6;
+    this.start(A);
+    p.stamina = Math.max(0.01, p.stamina - A.stam); p.staminaDelay = 1.2; // (a fifth of his breath: never the last of it — that's checked before he jumps)
+    Chonk.air = { t: 0, dur: A.air, h: A.height, fx: moving ? f.x / L : 0, fz: moving ? f.z / L : 0 };
+    p.invulnUntil = Math.max(p.invulnUntil || 0, Game.time + A.air + 0.1); // (nothing lands a blow on him in the air)
+    Sound.grunt(); Game.noise(p.pos, 8, 'player'); this.popFx('quake');
+    this.send('flop');
+  },
+});
+POWERS.flop = {
+  host(a, x, ev) {
+    const A = ABIL.flop; Chonk.pend.push({ a, at: Game.time + A.air });
+    if (a !== player) a.invulnUntil = Math.max(a.invulnUntil || 0, Game.time + A.air + 0.1);
+    ev.air = A.air;
+  },
+  fx(ev, mine, who, near, at) { if (!mine) { Chonk.hops.set(ev.by | 0, Game.time); Sound.grunt(_ck.set(at.x, 1.4, at.z)); } }, // (everyone else sees him go up)
+};
+
+/* ================= the hooks ================= */
+{
+  // what stops him jumping
+  const pb0 = Powers.blocked; Powers.blocked = function (A) {
+    if (A.id === 'flop') {
+      const p = player;
+      if (p.hidden) return 'Not from inside a locker.';
+      if (p.inVent) return 'No room to jump in a vent.';
+      if (Chonk.air) return 'You\'re already in the air.';
+      if (p.stamina < A.stam + 0.1) return 'Not enough breath to jump — and his heart can\'t afford to run out.';
+    }
+    return pb0.apply(this, arguments);
+  };
+  const cu0 = Chars.update; Chars.update = function (dt) { const r = cu0.apply(this, arguments); Chonk.update(dt); return r; };
+  const r0 = Roster17.reset; Roster17.reset = function () { r0.call(this); Chonk.reset(); };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) { if (ev && ev.k === 'chk') { Chonk.land(ev); return; } return ae0.apply(this, arguments); };
+  // the leap and the landing: your eyes go with you
+  const gr0 = Game.render; Game.render = function () { const l = Chonk.lift; if (!l) return gr0.apply(this, arguments); player.bob += l; try { return gr0.apply(this, arguments); } finally { player.bob -= l; } };
+  // every step a stomp: you hear it, you feel it (and the noise it makes is the character's: 2.4× — see CHARS.chonk.noise)
+  const fs0 = Sound.footstep; Sound.footstep = function (surface, k, pos) {
+    if (!pos && Chars.run === 'chonk') { Sound.stomp(null, k); Game.shake(0.05 + (k || 0) * 0.12); return fs0.call(this, surface, (k || 0) * 0.6, pos); }
+    if (pos && Chonk.stompBy) { Sound.stomp(pos, k); return; }
+    return fs0.apply(this, arguments);
+  };
+  // a teammate who is BIG CHONK: their steps are stomps too, and you see them go up when they leap
+  const ru0 = RemotePlayer.prototype.update; RemotePlayer.prototype.update = function (dt) {
+    Chonk.stompBy = this.charId === 'chonk' ? this : null;
+    let r; try { r = ru0.apply(this, arguments); } finally { Chonk.stompBy = null; }
+    const t0 = Chonk.hops.get(this.id); if (t0 !== undefined && this.avatar) this.avatar.position.y += Chonk.arc(Game.time - t0, ABIL.flop.air, ABIL.flop.height);
+    return r;
+  };
+}
+
+/* ================= how he looks: very big, very round; he waddles, his arms out past the belly ================= */
+Object.assign(People.LOOKS, {
+  chonk: { top: 'hoodie', tc: 0xb04a26, tc2: 0x5a2414, hat: 'beanie', hatc: 0x2a2f38, beard: 'full', pants: 0x2a3444, boots: 0x1a1612, belly: 0.18, k: { w: 2.05, d: 2.35, a: 1.75, lw: 1.8, s: 1.12, m: 2.0 } },
+});
+{
+  const pg0 = poseGuard;
+  poseGuard = function (g, pos, yaw, speed, crouch, dead, flashOn, dt) {
+    const r = pg0.apply(this, arguments), U = g && g.userData;
+    if (U && U.charId === 'chonk' && U.rig && !dead) {
+      const R = U.rig, sp = Math.max(0, speed || 0), k = Math.min(1, sp / 1.5);
+      U.wad = (U.wad || 0) + (dt || 0.016) * sp * 2.4;
+      if (U.root) U.root.rotation.z = Math.sin(U.wad) * 0.08 * k; // (side to side with every step)
+      if (R.armL) R.armL.rotation.z -= 0.45; if (R.armR) R.armR.rotation.z += 0.45;
+    }
+    return r;
+  };
+}
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -39692,6 +39849,7 @@ const CHAR_LOOK = { // skin, uniform, hair
   nil: ['#e8eaf2', '#15171c', '#0c0d11'], horse: ['#6b4423', '#5a3a1e', '#1e140c'],
   valkyrie: ['#e2c2a6', '#1a2a3a', '#eef2ff'], vesper: ['#ead8d6', '#1a0a10', '#1a0a0e'], ronin: ['#c89c78', '#e8e4dc', '#121214'],
   frost: ['#e0d4cc', '#d8eef8', '#e8f4fa'], rivet: ['#a8785a', '#3a3a34', '#3a2a1a'],
+  chonk: ['#d8a484', '#b04a26', '#3a2a1c'],
 };
 const CharArt = {
   cache: {},
@@ -39742,12 +39900,16 @@ const CharArt = {
     } else if (id === 'rivet') { // a schematic of the turret on graph paper
       g.strokeStyle = 'rgba(240,168,48,.18)'; g.lineWidth = 1; for (let i = 0; i <= 160; i += 10) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 160); g.stroke(); g.beginPath(); g.moveTo(0, i); g.lineTo(160, i); g.stroke(); }
       g.strokeStyle = 'rgba(240,168,48,.5)'; g.lineWidth = 1.5; g.strokeRect(116, 20, 30, 18); g.beginPath(); g.moveTo(146, 29); g.lineTo(158, 29); g.moveTo(131, 38); g.lineTo(120, 64); g.moveTo(131, 38); g.lineTo(131, 64); g.moveTo(131, 38); g.lineTo(142, 64); g.stroke();
+    } else if (id === 'chonk') { // the floor he just landed on: cracked, rings of dust going out
+      const cg2 = g.createRadialGradient(80, 150, 6, 80, 150, 120); cg2.addColorStop(0, 'rgba(255,150,80,.45)'); cg2.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = cg2; g.fillRect(0, 0, 160, 160);
+      g.strokeStyle = 'rgba(255,190,130,.35)'; g.lineWidth = 2; for (const r of [30, 52, 76]) { g.beginPath(); g.ellipse(80, 150, r * 1.5, r * 0.45, 0, Math.PI, TAU); g.stroke(); }
+      g.strokeStyle = 'rgba(20,12,8,.7)'; g.lineWidth = 1.5; for (let i = 0; i < 9; i++) { let x = 80, y = 152; g.beginPath(); g.moveTo(x, y); const a = Math.PI + 0.2 + rng() * (Math.PI - 0.4); for (let k = 0; k < 4; k++) { x += Math.cos(a) * 12 + (rng() - 0.5) * 8; y += Math.sin(a) * 5 + (rng() - 0.5) * 3; g.lineTo(x, y); } g.stroke(); }
     } else if (id === 'horse') { // a field at dusk
       const hg2 = g.createLinearGradient(0, 0, 0, 160); hg2.addColorStop(0, 'rgba(240,170,90,.5)'); hg2.addColorStop(0.6, 'rgba(120,80,40,.3)'); hg2.addColorStop(1, 'rgba(40,60,20,.6)'); g.fillStyle = hg2; g.fillRect(0, 0, 160, 160);
     } else if (id === 'hacker') { // green code raining down behind
       g.font = '9px monospace'; for (let x = 4; x < 160; x += 9) { const top = rng() * 120; for (let y = top; y < top + 60 + rng() * 60; y += 10) { g.fillStyle = 'rgba(61,255,138,' + (0.12 + 0.5 * (y - top) / 120).toFixed(2) + ')'; g.fillText(String.fromCharCode(0x30 + ((rng() * 40) | 0)), x, y); } }
     }
-    const wide = id === 'bruiser' ? 1.16 : id === 'vanguard' ? 1.1 : id === 'titan' ? 1.26 : id === 'demo' ? 1.12 : id === 'glitch' ? 1.08 : id === 'robot' ? 1.14 : id === 'builder' ? 1.1 : id === 'sportsman' ? 1.06 : 1;
+    const wide = id === 'bruiser' ? 1.16 : id === 'vanguard' ? 1.1 : id === 'titan' ? 1.26 : id === 'demo' ? 1.12 : id === 'glitch' ? 1.08 : id === 'robot' ? 1.14 : id === 'builder' ? 1.1 : id === 'sportsman' ? 1.06 : id === 'chonk' ? 1.6 : 1;
     // shoulders
     g.save(); g.translate(80, 0); g.scale(wide, 1);
     g.fillStyle = uni; g.beginPath(); g.moveTo(-70, 162); g.bezierCurveTo(-66, 126, -50, 118, -22, 114); g.lineTo(22, 114); g.bezierCurveTo(50, 118, 66, 126, 70, 162); g.closePath(); g.fill();
@@ -40032,6 +40194,19 @@ const CharArt = {
         g.fillStyle = 'rgba(255,255,255,.75)'; g.fillRect(64, 71, 12, 1.5); g.fillRect(84, 71, 12, 1.5);
         g.fillStyle = '#e8f8ff'; g.fillRect(56, 108, 48, 12); g.fillStyle = 'rgba(230,248,255,.35)'; g.beginPath(); g.ellipse(80, 106, 14, 6, 0, 0, TAU); g.fill();
         break;
+      case 'chonk': { // a big round face, full cheeks, a double chin, a beard, a beanie — and a grin
+        const skin = '#d8a484', fg3 = g.createRadialGradient(74, 80, 8, 80, 88, 46); fg3.addColorStop(0, skin); fg3.addColorStop(1, artShade(skin, -0.32));
+        g.fillStyle = fg3; g.beginPath(); g.ellipse(80, 88, 36, 34, 0, 0, TAU); g.fill(); // (the face, wider than the head under it)
+        g.fillStyle = artShade(skin, -0.2); g.beginPath(); g.ellipse(80, 118, 26, 9, 0, 0, TAU); g.fill(); // (the second chin)
+        g.fillStyle = '#3a2a1c'; g.beginPath(); g.moveTo(50, 96); g.bezierCurveTo(52, 124, 108, 124, 110, 96); g.bezierCurveTo(100, 112, 60, 112, 50, 96); g.fill(); // (the beard)
+        g.fillStyle = 'rgba(220,90,70,.35)'; for (const x of [60, 100]) { g.beginPath(); g.ellipse(x, 92, 8, 5, 0, 0, TAU); g.fill(); } // (red cheeks)
+        for (const x of [69, 91]) { g.fillStyle = '#120c08'; g.beginPath(); g.ellipse(x, 80, 3.2, 2.4, 0, 0, TAU); g.fill(); g.fillStyle = '#fff'; g.fillRect(x + 0.5, 79, 1.2, 1.2); }
+        g.strokeStyle = '#3a2a1c'; g.lineWidth = 2.6; g.beginPath(); g.moveTo(62, 72); g.lineTo(75, 73); g.moveTo(85, 73); g.lineTo(98, 72); g.stroke();
+        g.strokeStyle = artShade(skin, -0.45); g.lineWidth = 1.6; g.beginPath(); g.moveTo(78, 82); g.quadraticCurveTo(76, 90, 82, 90); g.stroke();
+        g.strokeStyle = '#5a2414'; g.lineWidth = 2.2; g.beginPath(); g.moveTo(68, 99); g.quadraticCurveTo(80, 107, 92, 99); g.stroke();
+        g.fillStyle = '#2a2f38'; g.beginPath(); g.ellipse(80, 58, 34, 20, 0, Math.PI, TAU); g.fill(); g.fillRect(46, 54, 68, 9); g.fillStyle = '#3a4250'; g.fillRect(46, 58, 68, 5); // (the beanie)
+        break;
+      }
       case 'rivet': // a hard hat, welding goggles on it, a wrench on his shoulder
         artCap(g, '#f0a830', '#c88820'); g.fillStyle = '#2a2a2a'; g.fillRect(58, 50, 44, 7); for (const x of [69, 91]) { g.fillStyle = '#4a5a3a'; g.beginPath(); g.arc(x, 53, 5, 0, TAU); g.fill(); }
         g.fillStyle = 'rgba(40,30,20,.45)'; g.beginPath(); g.ellipse(80, 98, 17, 9, 0, 0, Math.PI); g.fill();
@@ -40121,6 +40296,7 @@ const CharArt = {
       case 'iai': g.lineWidth = 5; P([[10, 54], [50, 14]]); g.stroke(); g.lineWidth = 3; P([[8, 46], [18, 56]]); g.stroke(); g.lineWidth = 2; g.beginPath(); g.arc(32, 32, 26, -2.6, 0.2); g.stroke(); break;
       case 'cuts': g.lineWidth = 3; for (const [a, b, c, d] of [[8, 12, 56, 52], [56, 10, 8, 54], [6, 32, 58, 30], [30, 4, 34, 60], [14, 50, 50, 8]]) { P([[a, b], [c, d]]); g.stroke(); } g.beginPath(); g.arc(32, 32, 6, 0, TAU); g.fill(); break;
       case 'freeze': g.lineWidth = 3.5; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU, c = Math.cos(a), s2 = Math.sin(a); P([[32, 32], [32 + c * 26, 32 + s2 * 26]]); g.stroke(); for (const k of [14, 20]) { P([[32 + c * k, 32 + s2 * k], [32 + c * k + Math.cos(a + 0.8) * 6, 32 + s2 * k + Math.sin(a + 0.8) * 6]]); g.stroke(); P([[32 + c * k, 32 + s2 * k], [32 + c * k + Math.cos(a - 0.8) * 6, 32 + s2 * k + Math.sin(a - 0.8) * 6]]); g.stroke(); } } break;
+      case 'flop': g.beginPath(); g.ellipse(32, 22, 15, 12, 0, 0, TAU); g.fill(); g.fillRect(4, 48, 56, 4); P([[12, 46], [6, 38]]); g.stroke(); P([[52, 46], [58, 38]]); g.stroke(); P([[20, 44], [16, 36]]); g.stroke(); P([[44, 44], [48, 36]]); g.stroke(); break; // (a round body coming down on a line, the floor kicking up)
       case 'sentry': g.lineWidth = 3; P([[32, 34], [16, 58]]); g.stroke(); P([[32, 34], [32, 58]]); g.stroke(); P([[32, 34], [48, 58]]); g.stroke(); g.beginPath(); g.roundRect ? g.roundRect(18, 18, 26, 18, 5) : g.rect(18, 18, 26, 18); g.fill(); g.fillRect(42, 24, 16, 6); g.beginPath(); g.arc(60, 27, 3, 0, TAU); g.fill(); break;
       default: g.beginPath(); g.moveTo(32, 8); g.lineTo(52, 15); g.bezierCurveTo(52, 36, 44, 49, 32, 56); g.bezierCurveTo(20, 49, 12, 36, 12, 15); g.closePath(); g.stroke(); artStar(g, 32, 31, 10, 4.5); break;
     }
@@ -40496,7 +40672,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
+  Object.assign(window.LS, { Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
   Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Post, RZT, ROOM_LOOK, genPaper, genPlanks, genTilesHQ, genPlasterCeil, genTrimWood, genPortraits, genWoodLeaf, get RZ_GEN_MS() { return RZ_GEN_MS; }, get instLamp() { return instLamp; }, RzContact, RzPBR, RzTorch, RzBody, RzAmb, RZ_SURF, flash, floorKey, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
