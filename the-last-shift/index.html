@@ -470,9 +470,9 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 .mp-panel input:focus,.mp-panel textarea:focus{border-color:var(--amber)}
 .mp-or{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#77726a;margin:18px 0 8px}
 .mp-joinrow{display:flex;gap:10px;align-items:stretch}
-.mp-panel #mp-code{flex:0 0 172px;width:172px;min-width:0;font-size:24px;letter-spacing:.42em;text-transform:uppercase;text-align:center;padding:8px 6px 8px 14px}
+.mp-panel #mp-code{flex:1 1 auto;width:auto;min-width:0;max-width:300px;font-size:20px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:8px 8px 8px 12px}
 .mp-room{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:2px 0 8px}
-#mp-room{font-family:var(--mono);font-size:46px;letter-spacing:.3em;color:#ffd27a;text-shadow:0 0 18px rgba(255,190,90,.35);user-select:all;-webkit-user-select:all}
+#mp-room{font-family:var(--mono);font-size:30px;letter-spacing:.12em;white-space:nowrap;color:#ffd27a;text-shadow:0 0 18px rgba(255,190,90,.35);user-select:all;-webkit-user-select:all}
 .mp-panel #mp-link{display:block;width:100%;font-size:11.5px;color:#a49e91}
 .mp-steps{margin:4px 0 0 18px;color:#bdb7aa;font-size:14px;line-height:1.5}
 .mp-steps li{margin-bottom:12px}
@@ -1114,6 +1114,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p"><b>Your mission: stay alive until dawn — then make it onto the lift.</b> Every hour it gets worse. It crawls. It hears everything. At 4:00 the power goes, and in the last hour it can follow you into the vents. Lockers only buy you time.</p>
     <p class="p">It is not alone. A little after 2:30 something else gets up out of the Morgue — slow, humming a lullaby. <b>It never chases you</b>, but stay away from it: near it you start to hallucinate, and you can't trust anything you see or hear.</p>
     <p class="p">Want out sooner? Find the three keycards, restore main power and upload the breach report, and you can open the lift yourself.</p>
+    <p class="p" style="opacity:.8">Now and then something happens on its own — lights stutter, a door slams, footsteps behind you, a radio that says where it is (it doesn't always tell the truth). Settings → <b>Nightmare Director</b> turns it off.</p>
     <p class="p"><b>You're not the only one left.</b> Three of the voices on the tapes are still alive down here, hiding where their tapes say they were. Find them, talk to them — each can help you — and <b>bring them to the lift</b>.</p>
     </div>
     <div id="brief-photos" hidden>
@@ -1154,6 +1155,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p">One expedition, five floors, in order: <b>Sublevel 6</b> (the Night Shift), <b>7</b> (the Gallery), <b>8</b> (the Blackout), <b>9</b> (the Hive) and <b>10</b> (the Root). Each floor is the real one — clear it the way you would on its own.</p>
     <p class="p"><b>Between floors you ride the lift</b>: see how the team is, use the shared <b>med kits</b> and <b>battery packs</b>, read what you found — then <b>EXTRACT</b> (bank everything, the expedition ends) or vote to <b>CONTINUE</b> (deeper floors pay more, nothing is banked yet). Online, going deeper needs more than half the team; a tie or the clock running out means extract.</p>
     <p class="p">Your health, battery, spares and weapons come down with you. <b>[J]</b> uses a med kit on a floor. Lost on a floor: <b>one retry</b> from the last lift (it costs 20% of the unbanked bounty) — or the expedition ends and you keep <b>25%</b>. Leaving in the middle of a floor counts as a failed attempt. A <b>dossier page</b> is hidden on every floor.</p>
+    <p class="p">In the lift you also pick <b>the way down</b> to the next floor: the <b>main shaft</b>, the <b>service stairs</b> (everything hits softer; the floor pays less) or the <b>deep cut</b> (everything hits harder; the floor pays a lot more).</p>
     <div class="dx-brief-cp" id="dx-brief-cp" hidden></div>
     <div class="kicker" style="margin-top:10px">Modifiers · harder, and they pay more</div><div class="dx-mods" id="dx-mods"></div>
     <p class="p" style="opacity:.75" id="dx-best"></p>
@@ -1190,6 +1192,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div id="brief-endless" hidden>
     <p class="p">The day shift is never coming. There is no lift, no keycard, no way out — only the night, and <b>how long you can last in it</b>.</p>
     <p class="p">Every hour (about a minute and a half) you get a spare battery — and you must <b>choose one of two curses</b>. They stack: a faster Warden, sharper ears, brownouts, open vents, phantoms everywhere… Every run is different. Beat your longest night.</p>
+        <p class="p"><b>The shift pot</b>: every hour you last adds coins to a pot — more each hour. Every second hour you choose: <b>[1] CASH OUT</b> (the pot is yours and the night ends) or <b>[2] KEEP GOING</b> (it keeps growing, and if the night takes you, it's gone). The usual pay for every minute is paid either way.</p>
     </div>
     <div id="modes">
     <div class="kicker" style="margin-top:18px">Sublevel 6 · the Warden</div>
@@ -1250,6 +1253,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <label>Invert mouse Y</label><div class="set-ctl"><button class="tog" id="set-invert"></button></div>
       <label for="set-fov">Field of view</label><div class="set-ctl"><input type="range" id="set-fov" min="60" max="95" step="1"><output id="out-fov"></output></div>
       <label for="set-vol">Master volume</label><div class="set-ctl"><input type="range" id="set-vol" min="0" max="1" step="0.01"><output id="out-vol"></output></div>
+      <label for="set-vsfx">Effects</label><div class="set-ctl"><input type="range" id="set-vsfx" min="0" max="1" step="0.05"><output id="out-vsfx"></output><span class="mp-note">footsteps, doors, monsters</span></div>
+      <label for="set-vamb">Ambience</label><div class="set-ctl"><input type="range" id="set-vamb" min="0" max="1" step="0.05"><output id="out-vamb"></output><span class="mp-note">hum, wind, room tone</span></div>
+      <label for="set-vmus">Music &amp; stings</label><div class="set-ctl"><input type="range" id="set-vmus" min="0" max="1" step="0.05"><output id="out-vmus"></output><span class="mp-note">tension, battle music, chimes</span></div>
+      <label for="set-vui">Interface</label><div class="set-ctl"><input type="range" id="set-vui" min="0" max="1" step="0.05"><output id="out-vui"></output></div>
       <label>Sound</label><div class="set-ctl"><button class="tog" id="set-mute"></button></div>
       <label>Difficulty</label><div class="seg" id="set-diff"><button data-v="easy">Easy</button><button data-v="normal">Normal</button><button data-v="hard">Hard</button><button data-v="nightmare">Nightmare</button></div>
       <label>Graphics quality</label><div class="seg" id="set-quality"><button data-v="low">Low</button><button data-v="medium">Medium</button><button data-v="high">High</button></div>
@@ -1264,6 +1271,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <label>Heartbeat sound</label><div class="set-ctl"><button class="tog" id="set-heart"></button><span class="mp-note">the heartbeat and breathing when it's near</span></div>
       <label>Camera shake</label><div class="set-ctl"><button class="tog" id="set-shake"></button></div>
       <label>Reduce flashing</label><div class="set-ctl"><button class="tog" id="set-noflash"></button><span class="mp-note">no strobing or flickering lights anywhere; softer red flashes</span></div>
+      <label>Nightmare Director</label><div class="set-ctl"><button class="tog" id="set-director"></button><span class="mp-note">things that happen now and then: lights, sounds, doors, a radio that lies (online: the host's setting)</span></div>
       <label>Anomaly: feed effects</label><div class="seg" id="set-anfx" title="THE ANOMALY: the grain, scan lines and vignette on the camera picture (faults always show)"><button data-v="full">Full</button><button data-v="reduced">Reduced</button><button data-v="off">Off</button></div>
       <label>Anomaly: audio captions</label><div class="set-ctl"><button class="tog" id="set-ancap"></button><span class="mp-note">what each room's microphone hears, written on the picture</span></div>
       <label for="set-anvol">Anomaly: microphone volume</label><div class="set-ctl"><input type="range" id="set-anvol" min="0" max="1" step="0.05"><output id="out-anvol"></output></div>
@@ -1355,7 +1363,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li>On <b>Hard</b> the Warden breaks through locked iron security doors. Only the blast door to the lift holds.</li>
           <li>Read every note. They contain the codes, routes and secrets you need to get out.</li>
           <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and every achievement is saved under Goals, with your best times for every mode.</li>
-          <li>Co-op (up to 4): one player hosts and sends the invite link (or the 4-letter room code); friends open it and press Join. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
+          <li>Co-op (up to 4): one player hosts and sends the invite link (or the 12-character room code — only people you give it to can get in); friends open it and press Join. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
         </ul>
       </div>
     </div>
@@ -1406,7 +1414,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <p class="p">Play the whole game together. One guard hosts and sends the invite link — friends open it and press <b>Join</b>. Up to 4 players, nothing to install.</p>
       <div class="row"><button class="btn primary" id="btn-mp-host">Host a game</button><button class="btn" id="btn-mp-back">Back</button></div>
       <div class="mp-or">or join a friend's room</div>
-      <div class="mp-joinrow"><input id="mp-code" size="5" placeholder="CODE" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn primary" id="btn-mp-join">Join</button></div>
+      <div class="mp-joinrow"><input id="mp-code" size="16" placeholder="ABCD-EFGH-JKLM" autocomplete="off" spellcheck="false" aria-label="Room code (12 characters)"><button class="btn primary" id="btn-mp-join">Join</button></div>
     </div>
     <div id="mp-hostbox" hidden>
       <div class="kicker">Your room code</div>
@@ -1558,7 +1566,7 @@ const fmtTime = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60)
 /* ------------------------------------------------------------------ */
 const DEFAULTS = { sensitivity: 1, invertY: false, fov: 72, volume: 0.8, muted: false, difficulty: 'normal',
   quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '', mode: 'night', daily: false, dynRes: 'on', camoMap: 's6', camoWarden: 'ai',
-  panicFx: 'full', shake: true, heartbeat: true, noFlash: false, // (Build 27: Panic Mode's screen effects, camera shake, the heartbeat, and REDUCE FLASHING)
+  panicFx: 'full', shake: true, heartbeat: true, noFlash: false, director: true, volSfx: 1, volAmb: 1, volMus: 1, volUi: 1, // (Build 27: Panic Mode's screen effects, camera shake, the heartbeat, and REDUCE FLASHING)
   cinema: true, anFeedFx: 'full', anCaptions: false, anFeedVol: 0.8, anRun: 'campaign', woodsLen: 'normal' }; // (Build 31: THE HOLLOW WOODS — how long the night is) // (Build 29: THE ANOMALY — the camera picture's effects, the microphones' captions and volume, a week or ENDLESS)
 const settings = Object.assign({}, DEFAULTS);
 (function loadSettings() {
@@ -1569,8 +1577,8 @@ const settings = Object.assign({}, DEFAULTS);
     const num = (k, a, b) => { if (typeof o[k] === 'number' && isFinite(o[k])) settings[k] = clamp(o[k], a, b); };
     const bool = k => { if (typeof o[k] === 'boolean') settings[k] = o[k]; };
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
-    num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8);
-    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); oneOf('panicFx', ['full', 'reduced', 'off']); oneOf('anFeedFx', ['full', 'reduced', 'off']); bool('anCaptions'); bool('cinema'); num('anFeedVol', 0, 1); oneOf('anRun', ['campaign', 'endless']);
+    num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8); num('volSfx', 0, 1); num('volAmb', 0, 1); num('volMus', 0, 1); num('volUi', 0, 1);
+    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); bool('director'); oneOf('panicFx', ['full', 'reduced', 'off']); oneOf('anFeedFx', ['full', 'reduced', 'off']); bool('anCaptions'); bool('cinema'); num('anFeedVol', 0, 1); oneOf('anRun', ['campaign', 'endless']);
     oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors', 'descent', 'anomaly', 'woods']); oneOf('camoMap', ['s6', 'works']); oneOf('woodsLen', ['short', 'normal', 'long']); oneOf('camoWarden', ['ai', 'host']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
@@ -1709,7 +1717,8 @@ const hitDmg = kind => Math.max(1, Math.round(diff().damage * ((ATTACK[kind] || 
 const windOf = kind => (ATTACK[kind] || ATTACK.swipe).wind * diff().windup;
 const recOf = kind => (ATTACK[kind] || ATTACK.swipe).rec * diff().recover;
 // in an online session everyone plays the host's difficulty
-const diff = () => DIFF[Net.sessionDiff || settings.difficulty] || DIFF.normal;
+let DIFF_MOD = null; // (Build 34: THE DESCENT's route for this floor — a tuned copy of the difficulty, or nothing)
+const diff = () => DIFF_MOD || DIFF[Net.sessionDiff || settings.difficulty] || DIFF.normal;
 const QUALITY = {
   low:    { pixelRatio: 0.7,  shadows: false, shadowSize: 256,  lights: 3, particles: 110, bump: false, far: 36 },
   medium: { pixelRatio: 1.0,  shadows: true,  shadowSize: 512,  lights: 6, particles: 240, bump: true,  far: 46 },
@@ -5428,6 +5437,7 @@ const Sound = (function () {
   let ctx, master, comp, gameBus, uiBus, ambBus, sfx, revIn, rev, white, brown, pink, distCurve;
   let monIn, monFilter, monGain, monPanner, droneGain, droneFilter, highGain, humGain, alarmGain, alarmOsc, ventGain, dreamGain;
   let roomGain, subGain; // (Build 31: the woods turn the building's hum down)
+  let vSfx, vAmb, vMus; // (Build 34: the mixer — effects, ambience, music & stings; the interface has uiBus)
 
   function noiseBuf(kind, sec) {
     const len = Math.floor(ctx.sampleRate * sec), b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
@@ -5498,12 +5508,13 @@ const Sound = (function () {
       master.connect(comp); comp.connect(ctx.destination);
       gameBus = ctx.createGain(); gameBus.connect(master);
       uiBus = ctx.createGain(); uiBus.gain.value = 0.7; uiBus.connect(master);
-      ambBus = ctx.createGain(); ambBus.gain.value = 1; ambBus.connect(gameBus);
-      sfx = ctx.createGain(); sfx.connect(gameBus);
+      vSfx = ctx.createGain(); vSfx.connect(gameBus); vAmb = ctx.createGain(); vAmb.connect(gameBus); vMus = ctx.createGain(); vMus.connect(gameBus);
+      ambBus = ctx.createGain(); ambBus.gain.value = 1; ambBus.connect(vAmb);
+      sfx = ctx.createGain(); sfx.connect(vSfx);
       white = noiseBuf('white', 2.5); brown = noiseBuf('brown', 5); pink = noiseBuf('pink', 5); distCurve = curve(40);
       rev = ctx.createConvolver(); rev.buffer = makeIR(3.2, 2.6);
       revIn = ctx.createGain(); revIn.gain.value = 0.55; const revOut = ctx.createGain(); revOut.gain.value = 0.55;
-      revIn.connect(rev); rev.connect(revOut); revOut.connect(gameBus);
+      revIn.connect(rev); rev.connect(revOut); revOut.connect(vSfx);
       // monster voice channel (spatial, occlusion filter)
       monIn = ctx.createGain(); monFilter = ctx.createBiquadFilter(); monFilter.type = 'lowpass'; monFilter.frequency.value = 12000;
       monGain = ctx.createGain(); monPanner = ctx.createPanner();
@@ -5518,8 +5529,15 @@ const Sound = (function () {
   S.resume = function () { try { if (ctx && ctx.state === 'suspended') ctx.resume(); } catch (e) { } };
   S.applyVolume = function () {
     if (!ctx || !master) return;
-    try { master.gain.setTargetAtTime(settings.muted ? 0 : settings.volume, ctx.currentTime, 0.06); } catch (e) { }
+    try {
+      const t = ctx.currentTime, v = k => (typeof settings[k] === 'number' ? settings[k] : 1);
+      master.gain.setTargetAtTime(settings.muted ? 0 : settings.volume, t, 0.06);
+      vSfx.gain.setTargetAtTime(v('volSfx'), t, 0.06); vAmb.gain.setTargetAtTime(v('volAmb'), t, 0.06); vMus.gain.setTargetAtTime(v('volMus'), t, 0.06); uiBus.gain.setTargetAtTime(0.7 * v('volUi'), t, 0.06);
+    } catch (e) { }
   };
+  // (Build 34) how much the place you're standing in rings: 0 (outdoors) … 1 (a big hard hall)
+  S.setRoom = function (wet) { if (!ctx || !revIn) return; try { revIn.gain.setTargetAtTime(clamp(wet, 0, 1) * 0.9, ctx.currentTime, 0.8); } catch (e) { } };
+  S.mixLevels = function () { return ctx && vSfx ? { sfx: vSfx.gain.value, amb: vAmb.gain.value, mus: vMus.gain.value, ui: uiBus.gain.value, rev: revIn.gain.value } : null; }; // (tests)
   S.setMode = function (mode) { // 'title' | 'game' | 'paused'
     if (!ctx || !gameBus) return;
     try {
@@ -5539,12 +5557,12 @@ const Sound = (function () {
     humGain = ctx.createGain(); humGain.gain.value = 0; hum.connect(hf); hf.connect(humGain); humGain.connect(ambBus); hum.start(t);
     // tension drone
     droneFilter = ctx.createBiquadFilter(); droneFilter.type = 'lowpass'; droneFilter.frequency.value = 150; droneFilter.Q.value = 3;
-    droneGain = ctx.createGain(); droneGain.gain.value = 0; droneFilter.connect(droneGain); droneGain.connect(gameBus);
+    droneGain = ctx.createGain(); droneGain.gain.value = 0; droneFilter.connect(droneGain); droneGain.connect(vMus);
     for (const f of [49, 51.9, 73.4]) { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(droneFilter); o.start(t); }
-    highGain = ctx.createGain(); highGain.gain.value = 0; highGain.connect(gameBus);
+    highGain = ctx.createGain(); highGain.gain.value = 0; highGain.connect(vMus);
     for (const f of [1244, 1318.5]) { const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f; const tr = ctx.createOscillator(); tr.frequency.value = 5 + Math.random() * 2; const tg = ctx.createGain(); tg.gain.value = 9; tr.connect(tg); tg.connect(o.frequency); tr.start(t); o.connect(highGain); o.start(t); }
     // the dream: a slow, detuned pad and a ringing in the ears (silent until you are near the Sleepwalker)
-    dreamGain = ctx.createGain(); dreamGain.gain.value = 0; dreamGain.connect(gameBus);
+    dreamGain = ctx.createGain(); dreamGain.gain.value = 0; dreamGain.connect(vMus);
     const dlp = ctx.createBiquadFilter(); dlp.type = 'lowpass'; dlp.frequency.value = 900; dlp.connect(dreamGain);
     for (const f of [110, 164.8, 220.6, 262.4]) { const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f; const tr = ctx.createOscillator(); tr.frequency.value = 0.12 + Math.random() * 0.2; const tg = ctx.createGain(); tg.gain.value = f * 0.012; tr.connect(tg); tg.connect(o.frequency); tr.start(t); o.connect(dlp); o.start(t); }
     const ring = ctx.createOscillator(); ring.type = 'sine'; ring.frequency.value = 4300; const rg = ctx.createGain(); rg.gain.value = 0.06; ring.connect(rg); rg.connect(dreamGain); ring.start(t);
@@ -5831,12 +5849,12 @@ const Sound = (function () {
     metal(out, t + 0.95, 110, 1.6, 0.8); tone(out, t + 0.95, 'sine', 60, 30, 0.5, 0.8, 0.003);
   });
   S.hourBell = safe(function (h) { // the facility PA marks the hour: a chime, and a deep clock bell for each hour gone
-    const t = ctx.currentTime, out = dest(null, 0.5); out.gain.value = 0.85;
+    const t = ctx.currentTime, out = dest(null, 0.5, false, vMus); out.gain.value = 0.85;
     [880, 698, 523].forEach((f, i) => tone(out, t + i * 0.32, 'sine', f, f, 1.1, 0.22, 0.01));
     for (let i = 0; i < Math.max(1, h); i++) { const st = t + 1.2 + i * 1.1; tone(out, st, 'sine', 98, 96, 2.6, 0.5, 0.005); tone(out, st, 'sine', 196, 194, 1.8, 0.18, 0.005); metal(out, st, 220, 1.6, 0.18); }
   });
   S.dawn = safe(function () { // the day shift: a long rising chord, the lift motors, a klaxon far above
-    const t = ctx.currentTime, out = dest(null, 0.6); out.gain.value = 0.9;
+    const t = ctx.currentTime, out = dest(null, 0.6, false, vMus); out.gain.value = 0.9;
     for (const f of [261.6, 329.6, 392, 523.3]) tone(out, t, 'sawtooth', f * 0.5, f, 3.2, 0.07, 0.8);
     tone(out, t, 'sine', 55, 82, 4, 0.5, 1.2);
     noise(out, t + 0.4, 3.5, 'lowpass', 300, 1, 0.35, 1.5, brown);
@@ -5860,7 +5878,8 @@ const Sound = (function () {
     tone(out, t, 'sine', 50, 28, 0.9, 1, 0.005);
   });
   S.sting = safe(function (strong) {
-    const t = ctx.currentTime, out = dest(null, 0.6); out.gain.value = strong ? 0.9 : 0.4;
+    if (ctx.currentTime - (S.stingAt || -9) < (strong ? 2 : 3.5)) return; S.stingAt = ctx.currentTime; // (Build 34: stings never pile up)
+    const t = ctx.currentTime, out = dest(null, 0.6, false, vMus); out.gain.value = strong ? 0.9 : 0.4;
     const notes = strong ? [196, 207.6, 220, 233, 392, 415] : [311, 329.6, 349.2];
     for (const f of notes) tone(out, t, 'sawtooth', f, f * (strong ? 0.97 : 1.01), strong ? 1.8 : 2.6, strong ? 0.22 : 0.12, strong ? 0.008 : 0.6);
     noise(out, t, strong ? 0.9 : 2.2, 'bandpass', strong ? 1600 : 900, 0.7, strong ? 0.5 : 0.15, strong ? 0.01 : 0.8);
@@ -6121,7 +6140,7 @@ const Sound = (function () {
   const M = { lvl: 0, next: 0, step: 0, dropAt: 0, intro: [], bus: null, dly: null };
   function mbus() {
     if (!M.bus) {
-      M.bus = ctx.createGain(); M.bus.gain.value = 0; M.bus.connect(gameBus);
+      M.bus = ctx.createGain(); M.bus.gain.value = 0; M.bus.connect(vMus);
       M.dly = ctx.createDelay(1); M.dly.delayTime.value = BQ * 0.75; const fb = ctx.createGain(); fb.gain.value = 0.32; const dl = ctx.createBiquadFilter(); dl.type = 'lowpass'; dl.frequency.value = 2400;
       M.dly.connect(dl); dl.connect(fb); fb.connect(M.dly); dl.connect(M.bus);
       if (DEBUG) { S.mAn = ctx.createAnalyser(); S.mAn.fftSize = 2048; M.bus.connect(S.mAn); } // (tests: is the music making any sound?)
@@ -6620,6 +6639,10 @@ const Sound = (function () {
   S.fwOwl = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.15); out.gain.value = 0.28; const b = rand(330, 390); [[0, 0.3], [0.45, 0.14], [0.66, 0.5]].forEach(([d, l]) => { const o = tone(out, t + d, 'sine', b, b * 0.94, l, 0.5, 0.05); }); });
   S.fwBranch = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.1); out.gain.value = rand(0.15, 0.32); const o = ctx.createOscillator(), bp = ctx.createBiquadFilter(), g = ctx.createGain(), f = rand(90, 200), d = rand(0.8, 1.8); o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t); o.frequency.linearRampToValueAtTime(f * rand(0.8, 1.3), t + d); bp.type = 'bandpass'; bp.frequency.value = f * 3; bp.Q.value = 9; env(g.gain, t, 0.3, 0.25, d); o.connect(bp); bp.connect(g); g.connect(out); o.start(t); o.stop(t + d + 0.3); S.fwGust(0.35); });
   // (Build 33) BIG CHONK's footstep: a stomp you feel in your chest; and the grunt as he leaves the ground
+  S.knock = safe(function (pos, n) { // (Build 34) knuckles on a door, somewhere close — three, then nothing
+    const t = ctx.currentTime, out = dest(pos, 0.5, true); out.gain.value = 0.9; n = n || 3;
+    for (let i = 0; i < n; i++) { const st = t + i * rand(0.26, 0.34); tone(out, st, 'sine', 150, 70, 0.09, 0.8, 0.002); noise(out, st, 0.06, 'bandpass', rand(500, 700), 2.2, 0.7, 0.001, brown); }
+  });
   S.stomp = safe(function (pos, k) { k = k === undefined ? 0.5 : k; const t = ctx.currentTime, out = dest(pos || null, 0.3, !!pos); out.gain.value = 0.5 + 0.55 * k; tone(out, t, 'sine', 66, 30, 0.34, 1, 0.003); noise(out, t, 0.3, 'lowpass', 240 + k * 120, 0.9, 0.9, 0.003, brown); noise(out, t + 0.01, 0.07, 'bandpass', rand(160, 300), 2, 0.55, 0.002, brown); for (let i = 0; i < 2; i++) noise(out, t + 0.05 + i * rand(0.03, 0.07), 0.04, 'bandpass', rand(900, 1700), 3, 0.12 + k * 0.1, 0.002); });
   S.grunt = safe(function (pos) { const t = ctx.currentTime, out = dest(pos || null, 0.2, !!pos); out.gain.value = 0.5; tone(out, t, 'sawtooth', 120, 85, 0.32, 0.35, 0.02); noise(out, t, 0.3, 'bandpass', 420, 2.5, 0.4, 0.02, brown); });
   S.fwThud = safe(function (pos) { const t = ctx.currentTime, out = dest(pos, 0.25); out.gain.value = 0.5; tone(out, t, 'sine', 45, 28, 0.6, 0.8, 0.01); noise(out, t, 0.5, 'lowpass', 240, 1, 0.6, 0.01, brown); for (let i = 0; i < 4; i++) noise(out, t + 0.1 + i * rand(0.05, 0.15), 0.03, 'bandpass', rand(800, 1600), 2, 0.2, 0.002); });
@@ -10246,6 +10269,7 @@ const Game = {
         if (sl) { const ds = Math.abs(f.pos.x - sl.x) + Math.abs(f.pos.z - sl.z); if (ds < 10) { const k = 1 - ds / 10; b *= 1 - k * 0.85 * (0.5 + 0.5 * Math.sin(t * 2.1 + f.pos.x * 0.7)); } } // around the Sleepwalker the lights slowly breathe out
         if (DK > 0.45 && Math.abs(f.pos.x - player.pos.x) + Math.abs(f.pos.z - player.pos.z) < 8 && (NF ? true : Math.random() < (DK - 0.45) * 0.3)) b *= NF ? 1 - (DK - 0.45) * 0.5 : rand(0, 0.5);
         if (this.dip > 0.05) b *= 1 - this.dip * (NF ? 0.8 : Math.random() < 0.3 ? 1 : 0.75);
+        if (Director.lightN) b = Director.fix(f, b, t); // (Build 34: the Nightmare Director's flickers and blackouts)
         if (Night.surge) b *= f.mode === 'beacon' ? 0.5 : 0; // the 04:00 surge: black
         if (LM) b = LM.dim(f, b, t);
       }
@@ -10476,6 +10500,7 @@ function bindSettingsUI() {
   rng('set-sens', 'sensitivity', v => v.toFixed(2) + '×');
   rng('set-fov', 'fov', v => Math.round(v) + '°');
   rng('set-vol', 'volume', v => Math.round(v * 100) + '%');
+  const pct = v => Math.round(v * 100) + '%'; rng('set-vsfx', 'volSfx', pct); rng('set-vamb', 'volAmb', pct); rng('set-vmus', 'volMus', pct); rng('set-vui', 'volUi', pct); // (Build 34: the mixer)
   rng('set-bright', 'brightness', v => Math.round(v * 100) + '%');
   const tog = (id, key, on, off) => {
     const el = $(id); const draw = () => { el.textContent = settings[key] ? on : off; el.classList.toggle('on', !!settings[key]); };
@@ -10486,7 +10511,7 @@ function bindSettingsUI() {
   const muteEl = $('set-mute'); const drawMute = () => { muteEl.textContent = settings.muted ? 'MUTED' : 'ON'; muteEl.classList.toggle('on', !settings.muted); };
   drawMute(); muteEl.addEventListener('click', () => { settings.muted = !settings.muted; drawMute(); applySettings(); saveSettings(); });
   const d2 = tog('set-bob', 'headBob', 'ON', 'OFF'), d3 = tog('set-grain', 'grain', 'ON', 'OFF'), d4 = tog('set-fps', 'showFps', 'ON', 'OFF'), d7 = tog('set-hints', 'hints', 'ON', 'OFF');
-  const d9 = tog('set-heart', 'heartbeat', 'ON', 'OFF'), d10 = tog('set-shake', 'shake', 'ON', 'OFF'), d11 = tog('set-noflash', 'noFlash', 'ON', 'OFF'); // (Build 27)
+  const d9 = tog('set-heart', 'heartbeat', 'ON', 'OFF'), d10 = tog('set-shake', 'shake', 'ON', 'OFF'), d11 = tog('set-noflash', 'noFlash', 'ON', 'OFF'), d13 = tog('set-director', 'director', 'ON', 'OFF'); // (Build 27) (Build 34: the Nightmare Director)
   const seg = (id, key) => {
     const el = $(id); const draw = () => el.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === settings[key]));
     draw(); el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { settings[key] = b.dataset.v; draw(); applySettings(); saveSettings(); Sound.ui(); syncDiffCards(); }));
@@ -10495,8 +10520,8 @@ function bindSettingsUI() {
   const d5 = seg('set-diff', 'difficulty'), d6 = seg('set-quality', 'quality'), d8 = seg('set-dynres', 'dynRes'), d12 = seg('set-panic', 'panicFx');
   $('btn-set-reset').addEventListener('click', () => {
     Object.assign(settings, DEFAULTS); saveSettings(); applySettings();
-    ['set-sens', 'set-fov', 'set-vol', 'set-bright'].forEach(id => { const key = { 'set-sens': 'sensitivity', 'set-fov': 'fov', 'set-vol': 'volume', 'set-bright': 'brightness' }[id]; $(id).value = settings[key]; $(id).dispatchEvent(new Event('input')); });
-    d1(); drawMute(); d2(); d3(); d4(); d5(); d6(); d7(); d8(); d9(); d10(); d11(); d12(); syncDiffCards();
+    ['set-sens', 'set-fov', 'set-vol', 'set-bright', 'set-vsfx', 'set-vamb', 'set-vmus', 'set-vui'].forEach(id => { const key = { 'set-sens': 'sensitivity', 'set-fov': 'fov', 'set-vol': 'volume', 'set-bright': 'brightness', 'set-vsfx': 'volSfx', 'set-vamb': 'volAmb', 'set-vmus': 'volMus', 'set-vui': 'volUi' }[id]; $(id).value = settings[key]; $(id).dispatchEvent(new Event('input')); });
+    d1(); drawMute(); d2(); d3(); d4(); d5(); d6(); d7(); d8(); d9(); d10(); d11(); d12(); d13(); syncDiffCards();
     KeysUI.stop(); Keys.reset(); KeysUI.draw(); KeysUI.refresh(); Sound.ui();
   });
 }
@@ -11345,8 +11370,8 @@ const Cine = {
 
 /* ------------------------------------------------------------------ */
 /* Online co-op (up to 4 guards)                                       */
-/* The host gets a 4-letter room code + invite link; friends open the  */
-/* link (or type the code) and press Join. Everything travels through  */
+/* The host gets a room code + invite link; friends open the link (or */
+/* type the code) and press Join. Everything travels through           */
 /* free public relay servers (MQTT over secure WebSockets), so it works */
 /* between any two internet connections — different Wi-Fi, different  */
 /* cities — with nothing to set up. The host opens the room on every   */
@@ -11356,18 +11381,105 @@ const Cine = {
 /* again until the other side confirms them, so nothing goes missing.  */
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
+/* Build 33 — who may speak in a room: the relays are public, so       */
+/* anyone can read and publish on any topic. The room code (12         */
+/* characters, ~60 bits, from the browser's crypto RNG) is the room's  */
+/* secret and never goes over the wire: the topic is a tag derived     */
+/* from it and every message is signed with a key derived from it      */
+/* (PBKDF2-SHA256 → HMAC-SHA256), and numbered, so a message that      */
+/* isn't signed with this room's key — or is an old one played back — */
+/* is thrown away before anything reads it. What this can't do: tell   */
+/* the people who were given the code apart (they share the key), stop */
+/* a relay from dropping messages or anyone from flooding a topic, or  */
+/* sign the relay's own "host disconnected" notice (that is only ever  */
+/* taken as a hint to look for the host again).                        */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 30, BUILD = 33, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 31, BUILD = 34, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
-const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.';
+const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 12-character room codes.';
+const SHORT_MSG = 'That is a 4-letter room code from an older version of the game. Room codes now have 12 characters (like ABCD-EFGH-JKLM), so strangers can\'t guess them or listen in. Both of you refresh the page (Cmd+Shift+R / Ctrl+Shift+R), then the host makes a new room.';
+const CODE_LEN = 12, KDF_N = 150000; // (12 of the 32 code characters: 60 bits — and slow to try out, key derivation is 150,000 rounds)
 const GUARD_COLORS = [0xffc65a, 0x5ac8ff, 0xff7aa8, 0x8dff7a];
 const cleanName = s => String(s || '').replace(/[^\w .'-]/g, '').trim().slice(0, 16);
-const cleanCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
-const codeFrom = s => { const m = /room=([A-Za-z0-9]{4})/.exec(String(s || '')); return cleanCode(m ? m[1] : s); }; // a code, or a whole invite link
+const cleanCode = s => (String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, CODE_LEN).match(/.{1,4}/g) || []).join('-'); // ABCD-EFGH-JKLM
+const codeFrom = s => { const m = /room=([A-Za-z0-9-]{4,20})/.exec(String(s || '')); return cleanCode(m ? m[1] : s); }; // a code, or a whole invite link
+const newCode = () => cleanCode(Array.from(crypto.getRandomValues(new Uint8Array(CODE_LEN)), b => CODE_ABC[b & 31]).join('')); // (32 characters: every one equally likely)
 const OLD_CODE = s => /LS1[ZP]/.test(String(s || ''));
 const rid = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join('');
+
+/* ---- signing (Build 33): SHA-256, HMAC and PBKDF2, here so that every message can be checked at once, as it arrives ---- */
+const NetSec = (() => {
+  const K = new Uint32Array([0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]);
+  const IV = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]), W = new Uint32Array(64);
+  function blocks(H, b, end) { // the compression function over b's 64-byte blocks
+    for (let p = 0; p < end; p += 64) {
+      for (let i = 0; i < 16; i++) { const q = p + 4 * i; W[i] = (b[q] << 24) | (b[q + 1] << 16) | (b[q + 2] << 8) | b[q + 3]; }
+      for (let i = 16; i < 64; i++) {
+        const x = W[i - 15], y = W[i - 2];
+        W[i] = (W[i - 16] + (((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3)) + W[i - 7] + (((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10))) | 0;
+      }
+      let a = H[0], c1 = H[1], c2 = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (let i = 0; i < 64; i++) {
+        const t1 = (h + (((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7))) + ((e & f) ^ (~e & g)) + K[i] + W[i]) | 0;
+        const t2 = ((((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10))) + ((a & c1) ^ (a & c2) ^ (c1 & c2))) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0; d = c2; c2 = c1; c1 = a; a = (t1 + t2) | 0;
+      }
+      H[0] += a; H[1] += c1; H[2] += c2; H[3] += d; H[4] += e; H[5] += f; H[6] += g; H[7] += h;
+    }
+  }
+  function finish(H0, pre, m) { // the digest of m, carrying on from state H0 that already took in pre bytes
+    const H = H0.slice(), n = m.length, full = n - (n % 64);
+    blocks(H, m, full);
+    const L = (n % 64) + 9 > 64 ? 128 : 64, t = new Uint8Array(L), bits = (pre + n) * 8;
+    t.set(m.subarray(full)); t[n - full] = 0x80;
+    const hi = Math.floor(bits / 4294967296), lo = bits >>> 0;
+    t[L - 8] = hi >>> 24; t[L - 7] = (hi >>> 16) & 255; t[L - 6] = (hi >>> 8) & 255; t[L - 5] = hi & 255;
+    t[L - 4] = lo >>> 24; t[L - 3] = (lo >>> 16) & 255; t[L - 2] = (lo >>> 8) & 255; t[L - 1] = lo & 255;
+    blocks(H, t, L);
+    const out = new Uint8Array(32); for (let i = 0; i < 8; i++) { out[4 * i] = H[i] >>> 24; out[4 * i + 1] = (H[i] >>> 16) & 255; out[4 * i + 2] = (H[i] >>> 8) & 255; out[4 * i + 3] = H[i] & 255; }
+    return out;
+  }
+  const sha256 = m => finish(IV, 0, m);
+  function hkey(key) { // an HMAC key, with both pads already run through (each message then costs two short passes, not four)
+    const k = key.length > 64 ? sha256(key) : key, pad = new Uint8Array(64), ip = IV.slice(), op = IV.slice();
+    pad.fill(0x36); for (let i = 0; i < k.length; i++) pad[i] ^= k[i]; blocks(ip, pad, 64);
+    pad.fill(0x5c); for (let i = 0; i < k.length; i++) pad[i] ^= k[i]; blocks(op, pad, 64);
+    return { ip, op };
+  }
+  const hmac = (hk, m) => finish(hk.op, 64, finish(hk.ip, 64, m));
+  function pbkdf2(pw, salt, iters, len) { // (only where the browser has no crypto.subtle)
+    const hk = hkey(pw), out = new Uint8Array(len);
+    for (let blk = 1, o = 0; o < len; blk++, o += 32) {
+      const s = new Uint8Array(salt.length + 4); s.set(salt); s[salt.length] = blk >>> 24; s[salt.length + 1] = (blk >>> 16) & 255; s[salt.length + 2] = (blk >>> 8) & 255; s[salt.length + 3] = blk & 255;
+      let u = hmac(hk, s); const t = u.slice();
+      for (let i = 1; i < iters; i++) { u = hmac(hk, u); for (let j = 0; j < 32; j++) t[j] ^= u[j]; }
+      out.set(t.subarray(0, Math.min(32, len - o)), o);
+    }
+    return out;
+  }
+  const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_', B32 = 'abcdefghijklmnopqrstuvwxyz234567';
+  const b64 = (u, n) => { let s = ''; for (let i = 0; i < n; i += 3) { const v = (u[i] << 16) | (u[i + 1] << 8) | u[i + 2]; s += B64[(v >>> 18) & 63] + B64[(v >>> 12) & 63] + B64[(v >>> 6) & 63] + B64[v & 63]; } return s; };
+  const b32 = u => { let s = '', acc = 0, nb = 0; for (const x of u) { acc = (acc << 8) | x; nb += 8; while (nb >= 5) { nb -= 5; s += B32[(acc >>> nb) & 31]; } acc &= 255; } return s; };
+  const mac = (hk, str) => b64(hmac(hk, TXE.encode(str)), 12); // (96 bits of the HMAC: 16 characters)
+  const eq = (a, b) => { if (typeof a !== 'string' || a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; };
+  return {
+    sha256, hkey, hmac, pbkdf2, b64, b32, mac, eq,
+    ok(hk, str, m) { return !!hk && typeof m === 'string' && m.length === 16 && eq(m, mac(hk, str)); },
+    // the room's topic tag and signing key, from its code (the code itself never leaves this browser)
+    async derive(code) {
+      const pw = TXE.encode(String(code).replace(/-/g, '')), salt = TXE.encode('the-last-shift/room/v1'), n = 42;
+      let out = null;
+      try { if (crypto.subtle && crypto.subtle.deriveBits) { const k = await crypto.subtle.importKey('raw', pw, 'PBKDF2', false, ['deriveBits']); out = new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: KDF_N }, k, n * 8)); } } catch (e) { out = null; }
+      if (!out) out = pbkdf2(pw, salt, KDF_N, n);
+      return { tag: b32(out.subarray(0, 10)), hk: hkey(out.slice(10, 42)) };
+    },
+  };
+})();
 
 /* ---- a tiny MQTT 3.1.1 client over WebSocket: connect, subscribe, publish, stay alive ---- */
 const TXE = new TextEncoder(), TXD = new TextDecoder();
@@ -11715,7 +11827,7 @@ const Net = {
   byCid: new Map(),     // host: the same links, by connection id
   goneCids: new Set(),  // host: friends we had to let go of
   relays: [], relay: null, // relay servers: the host keeps the room open on all it can reach; a friend uses one
-  code: '', cid: '', hid: '', epoch: 0, tok: null, welcomed: false, recovering: false, hiccup: false, joinAt: 0, nextTry: 0, goneAt: 0,
+  code: '', tag: '', hk: null, octr: 0, cctr: 0, ictr: { a: 0, c: 0 }, hctr: new Map(), cid: '', hid: '', epoch: 0, tok: null, welcomed: false, recovering: false, hiccup: false, joinAt: 0, nextTry: 0, goneAt: 0,
   nextId: 1, sendT: 0, kaT: 0, snapSeq: 0, lastSeq: 0, lastPing: 0, pings: [], lights: [], self: null, teamT: 0, busy: false,
   get active() { return this.role !== 'solo'; },
   get isHost() { return this.role === 'host'; },
@@ -11739,23 +11851,32 @@ const Net = {
   },
   /* ---- connections ---- */
   relayUrls() { const o = window.__LS_RELAYS; return (Array.isArray(o) && o.length ? o : RELAYS).slice(); },
-  T() { return TOPIC(this.code); },
+  T() { return TOPIC(this.tag); }, // (the room's topics: named after a tag derived from the code — not the code)
+  // signed and numbered: what the host publishes (sub: 'a', 'c/<id>' or 'p' — which topic it is for is signed too)
+  seal(sub, s) { const n = ++this.octr; return n + '.' + NetSec.mac(this.hk, sub + '|' + n + '|' + s) + '|' + s; },
+  unseal(sub, s) { // → { n, body } when it carries this room's signature, null otherwise
+    const bar = s.indexOf('|'); if (bar < 3 || bar > 40) return null;
+    const head = s.slice(0, bar), dot = head.indexOf('.'), ns = head.slice(0, dot), body = s.slice(bar + 1);
+    if (dot < 1 || !/^\d{1,15}$/.test(ns) || !NetSec.ok(this.hk, sub + '|' + ns + '|' + body, head.slice(dot + 1))) return null;
+    return { n: +ns, body };
+  },
   async host() {
     this.leave();
     const tok = this.tok = {};
-    this.role = 'host'; this.myId = 0; this.nextId = 1; this.hid = rid(8); this.myName = cleanName(settings.playerName) || 'Guard 1';
+    this.role = 'host'; this.myId = 0; this.nextId = 1; this.hid = rid(8); this.myName = cleanName(settings.playerName) || 'Guard 1'; this.octr = 0; this.hctr = new Map();
     for (let tries = 0; tries < 4; tries++) {
-      const code = Array.from({ length: 4 }, () => CODE_ABC[(Math.random() * CODE_ABC.length) | 0]).join('');
+      const code = newCode(), key = await NetSec.derive(code), tag = key.tag;
+      if (this.tok !== tok) return '';
       const list = this.relayUrls().map(u => new Relay(u)), quit = () => list.forEach(r => r.close());
-      for (const r of list) { r.pending = r.connect({ t: TOPIC(code) + 'p', p: '' }); r.pending.catch(() => { }); } // if we vanish, the relay takes the room down
+      for (const r of list) { r.pending = r.connect({ t: TOPIC(tag) + 'p', p: '' }); r.pending.catch(() => { }); } // if we vanish, the relay takes the room down
       let first = null;
       try { first = await Promise.any(list.map(r => r.pending)); } catch (e) { }
       if (this.tok !== tok) { quit(); return ''; }
       if (!first) { quit(); this.role = 'solo'; this.tok = null; throw new Error(NO_NET); }
-      const taken = await this.peek(first, TOPIC(code) + 'p');
+      const taken = await this.peek(first, TOPIC(tag) + 'p');
       if (this.tok !== tok) { quit(); return ''; }
       if (taken) { quit(); continue; } // someone already has that code: pick another
-      this.code = code; this.relays = list;
+      this.code = code; this.tag = tag; this.hk = key.hk; this.relays = list;
       for (const r of list) r.onlost = () => this.relayLost(r);
       await this.relayUp(first);
       for (const r of list) if (r !== first) r.pending.then(() => this.relayUp(r), () => this.relayLost(r));
@@ -11775,11 +11896,11 @@ const Net = {
   async relayUp(r) { // host: open the room on this relay
     if (!this.isHost || this.relays.indexOf(r) < 0) return;
     r.onmsg = (t, s) => this.onRelayMsg(r, t, s);
-    try { await r.sub(this.T() + 'h'); } catch (e) { if (r.ok) r.drop(); else this.relayLost(r); return; }
+    try { await r.sub(this.T() + 'h'); await r.sub(this.T() + 'p'); } catch (e) { if (r.ok) r.drop(); else this.relayLost(r); return; } // (and its own notice: so it notices when someone overwrites it)
     if (!this.isHost || this.relays.indexOf(r) < 0) return;
     r.retryIn = 0; r.up = true; this.presence(r); this.lobbyUpdate();
   },
-  presence(r) { if (r.ok) r.pub(this.T() + 'p', JSON.stringify({ v: NET_PROTO, b: BUILD, h: this.hid, n: this.myName, g: this.inGame ? 1 : 0 }), true); },
+  presence(r) { if (r.ok) { r.presStr = this.seal('p', JSON.stringify({ v: NET_PROTO, b: BUILD, h: this.hid, n: this.myName, g: this.inGame ? 1 : 0 })); r.pub(this.T() + 'p', r.presStr, true); } },
   relayLost(r) {
     if (this.isClient) { if (r === this.relay) this.recover('relay'); return; }
     if (!this.isHost || this.relays.indexOf(r) < 0 || r.retryTimer || r.closed) return;
@@ -11792,11 +11913,15 @@ const Net = {
   },
   async join(raw) {
     if (OLD_CODE(raw)) throw new Error(OLD_MSG);
-    const code = codeFrom(raw);
-    if (code.length !== 4) throw new Error('Type the 4-letter room code from the host — or just open their invite link.');
+    const code = codeFrom(raw), len = code.replace(/-/g, '').length;
+    if (len === 4) throw new Error(SHORT_MSG);
+    if (len !== CODE_LEN) throw new Error('Type the whole room code from the host — 12 letters and numbers, like ABCD-EFGH-JKLM — or just open their invite link.');
     this.leave();
     const tok = this.tok = {};
-    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code; this.cid = rid(10); this.epoch = 0;
+    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code; this.cid = rid(10); this.epoch = 0; this.cctr = 0; this.ictr = { a: 0, c: 0 };
+    const key = await NetSec.derive(code);
+    if (this.tok !== tok) return;
+    this.tag = key.tag; this.hk = key.hk;
     let hit;
     try { hit = await this.findRoom(); } catch (e) { if (this.tok !== tok) return; this.leave(); throw e; }
     if (this.tok !== tok) { hit.relay.close(); return; }
@@ -11827,7 +11952,8 @@ const Net = {
       for (const r of list) {
         r.finder = (t, s) => {
           if (done || t !== T + 'p' || !s) return;
-          let p = null; try { p = JSON.parse(s); } catch (e) { }
+          const u = this.unseal('p', s); if (!u) return; // (a notice that isn't signed with this room's key is not the host's)
+          let p = null; try { p = JSON.parse(u.body); } catch (e) { }
           if (p && p.h && (!hid || p.h === hid)) finish(null, { relay: r, pres: p });
         };
         (r.ok ? Promise.resolve() : r.connect(null))
@@ -11872,7 +11998,7 @@ const Net = {
       return;
     }
     if (this.recovering || now < this.nextTry) return;
-    if (this.goneAt && now - this.goneAt > 2500) { this.goneAt = 0; this.recover('gone'); } // the host vanished from this relay
+    if (this.goneAt && now - this.goneAt > 2500 && now - h.heard > 2500) { this.goneAt = 0; this.recover('gone'); } // the host vanished from this relay (the relay's notice can't be signed: it only counts if the host has gone quiet too)
     else if (!this.relay || !this.relay.ok) this.recover('relay');
     else if (this.welcomed ? quiet > 7000 : now - h.since > 7000) { h.since = now; this.recover(this.welcomed ? 'quiet' : 'nowelcome'); }
   },
@@ -11881,10 +12007,22 @@ const Net = {
     if (!this.code || t.indexOf(T) !== 0 || s.length > 60000) return;
     const sub = t.slice(T.length);
     if (this.isHost) {
+      if (sub === 'p') { // the room's notice, as the relay now has it: anything but ours (wiped, or replaced) is put right at once
+        if (!r.up || s === r.presStr || r.presT) return;
+        const wait = Math.max(0, 1000 - (performance.now() - (r.presFix || 0))); // (at most once a second: someone flooding the topic can't make us flood it back)
+        r.presT = setTimeout(() => { r.presT = 0; if (this.isHost && r.up && this.relays.indexOf(r) >= 0) { r.presFix = performance.now(); this.presence(r); } }, wait);
+        return;
+      }
       if (sub !== 'h') return;
-      const bar = s.indexOf('|'), head = bar > 0 && bar < 30 ? s.slice(0, bar).split('.') : null, cid = head && head[0];
-      if (!cid || !/^[a-z0-9]{6,16}$/.test(cid)) return;
-      let m; try { m = JSON.parse(s.slice(bar + 1)); } catch (e) { return; }
+      // cid.epoch.number.signature|message — signed with the room's key, or it isn't from anyone who was given the code
+      const bar = s.indexOf('|'), head = bar > 0 && bar < 64 ? s.slice(0, bar).split('.') : null;
+      if (!head || head.length !== 4) return;
+      const cid = head[0], body = s.slice(bar + 1), n = +head[2];
+      if (!/^[a-z0-9]{6,16}$/.test(cid) || !/^\d{1,9}$/.test(head[1]) || !/^\d{1,15}$/.test(head[2])) return;
+      if (!NetSec.ok(this.hk, 'h/' + cid + '.' + head[1] + '|' + head[2] + '|' + body, head[3])) return;
+      if (n <= (this.hctr.get(cid) || 0)) return; // (one we've had already, played back again)
+      this.hctr.set(cid, n);
+      let m; try { m = JSON.parse(body); } catch (e) { return; }
       if (!m || typeof m.k !== 'string') return;
       let peer = this.byCid.get(cid);
       if (!peer) {
@@ -11896,13 +12034,18 @@ const Net = {
       if (ep >= peer.epoch) { const moved = ep > peer.epoch; peer.epoch = ep; peer.relay = r; if (moved) this.resendNow(peer); } // answer them on the relay they use now
       this.recv(peer, m);
     } else if (this.isClient) {
-      if (sub === 'p') { // the room's notice: empty means the host dropped off this relay
-        if (!s) { if (!this.goneAt) this.goneAt = performance.now(); }
-        else if (s.indexOf(this.hid) >= 0) this.goneAt = 0;
+      if (sub === 'p') { // the room's notice: empty means the host dropped off this relay (the relay's own notice: unsigned, so only a hint)
+        if (!s) { if (!this.goneAt) this.goneAt = performance.now(); return; }
+        const u = this.unseal('p', s); if (!u) return;
+        let p = null; try { p = JSON.parse(u.body); } catch (e) { }
+        if (p && p.h === this.hid) this.goneAt = 0;
         return;
       }
       if (r !== this.relay || (sub !== 'a' && sub !== 'c/' + this.cid)) return;
-      let m; try { m = JSON.parse(s); } catch (e) { return; }
+      const u = this.unseal(sub, s), st = sub === 'a' ? 'a' : 'c';
+      if (!u || u.n <= this.ictr[st]) return; // (not signed with this room's key — or an old one played back again)
+      this.ictr[st] = u.n; this.goneAt = 0; // (and the host is plainly still here)
+      let m; try { m = JSON.parse(u.body); } catch (e) { return; }
       const h = this.host0(); if (h && m && typeof m.k === 'string') this.recv(h, m);
     }
   },
@@ -11913,7 +12056,7 @@ const Net = {
     this.peers.set(p.id, p); this.byCid.set(cid, p);
     return p;
   },
-  tell(r, cid, m) { r.pub(this.T() + 'c/' + cid, JSON.stringify(m)); },
+  tell(r, cid, m) { r.pub(this.T() + 'c/' + cid, this.seal('c/' + cid, JSON.stringify(m))); },
   resendNow(peer) { for (const o of peer.out) { o[2] = 0; o[3] = 1200; } },
   link(id) { const now = performance.now(); return { id, cid: '', relay: null, epoch: 0, name: '', remote: null, dropped: false, heard: now, since: now, so: 0, out: [], si: 0, early: new Map(), ackDue: false }; },
   recv(peer, m) { // everything from a link comes through here
@@ -11960,6 +12103,7 @@ const Net = {
     for (const r of this.remotes.values()) r.dispose();
     this.remotes.clear();
     this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.sessionMode = null; this.sessionDaily = false; this.sessionCamoMap = null; this.myId = 0; this.code = ''; this.hid = '';
+    this.tag = ''; this.hk = null; this.octr = 0; this.cctr = 0; this.ictr = { a: 0, c: 0 }; this.hctr = new Map();
     this.welcomed = false; this.recovering = false; this.hiccup = false; this.goneAt = 0;
     this.lights.forEach(l => { l.visible = false; l.intensity = 0; });
     this.pings.forEach(p => { scene.remove(p.spr); p.spr.material.map.dispose(); p.spr.material.dispose(); }); this.pings.length = 0;
@@ -11967,8 +12111,8 @@ const Net = {
   },
   /* ---- messages ---- */
   xmit(peer, s, droppable) {
-    if (this.isHost) { if (peer.relay) peer.relay.pub(this.T() + 'c/' + peer.cid, s, false, droppable); }
-    else if (this.relay) this.relay.pub(this.T() + 'h', this.cid + '.' + this.epoch + '|' + s, false, droppable);
+    if (this.isHost) { if (peer.relay) peer.relay.pub(this.T() + 'c/' + peer.cid, this.seal('c/' + peer.cid, s), false, droppable); }
+    else if (this.relay) { const n = ++this.cctr, h = this.cid + '.' + this.epoch; this.relay.pub(this.T() + 'h', h + '.' + n + '.' + NetSec.mac(this.hk, 'h/' + h + '|' + n + '|' + s) + '|' + s, false, droppable); }
   },
   rel(peer, m) { // numbered and re-sent until the other side confirms it
     if (!peer || peer.dropped) return;
@@ -11983,7 +12127,7 @@ const Net = {
   broadcast(m, exceptId) { if (this.isHost) for (const p of this.peers.values()) if (p.id !== exceptId && p.remote) this.rel(p, m); },
   broadcastUnrel(m) { // snapshots: once per relay that has friends on it
     if (!this.isHost) return;
-    const s = JSON.stringify(m), done = new Set();
+    const s = this.seal('a', JSON.stringify(m)), done = new Set(); // (signed once: the same message on every relay)
     for (const p of this.peers.values()) if (p.remote && p.relay && !done.has(p.relay)) { done.add(p.relay); p.relay.pub(this.T() + 'a', s, false, true); }
   },
   request(a, i, x) { const m = { k: 'req', a, i }; if (x) m.x = x; this.rel(this.host0(), m); },
@@ -12137,6 +12281,7 @@ const Net = {
     const now = performance.now(), frozen = now - (this.tickAt || now) > 2500; this.tickAt = now;
     for (const r of this.relays) r.tick(now, frozen);
     this.kaT -= dt; const ka = this.kaT <= 0; if (ka) this.kaT = 2;
+    if (this.isHost && now - (this.presAt || 0) > 8000) { this.presAt = now; for (const r of this.relays) if (r.up) this.presence(r); } // (every 8 s anyway: the room's signed notice again)
     for (const peer of [...this.peers.values()]) {
       if (frozen) { peer.heard = Math.max(peer.heard, now - 4000); peer.since = Math.max(peer.since, now - 4000); continue; } // WE were frozen (loading shaders, a hidden tab): don't blame them
       if (this.isHost && now - peer.heard > 20000) { this.dropPeer(peer, 'timeout'); continue; }
@@ -12235,7 +12380,7 @@ const Net = {
   },
   // a friend opened an invite link (…#room=CODE): straight to Join
   checkInviteLink() {
-    const m = /[#&]room=([A-Za-z0-9]{4})/.exec(location.hash || '');
+    const m = /[#&]room=([A-Za-z0-9-]{4,20})/.exec(location.hash || ''); // (after the #: browsers never send it to the website)
     if (!m) return false;
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
     const code = cleanCode(m[1]);
@@ -21192,7 +21337,7 @@ const CR = {
       }
       if (m.state === 'SEARCH') {
         if (m.st > 9) { m.state = 'ROAM'; m.goal = null; return; }
-        if (!m.goal || Math.hypot(m.goal.x - m.pos.x, m.goal.z - m.pos.z) < 0.8) { m.home.copy(m.lastKnown); m.goal = crWander(m, 5); }
+        if (!m.goal || Math.hypot(m.goal.x - m.pos.x, m.goal.z - m.pos.z) < 0.8) { m.home.copy(m.lastKnown); m.goal = AISearch.creature(m, 5) || crWander(m, 5); } // (Build 34: where it thinks you went — see y9z9e)
         return;
       }
       // roaming near its nest: skitter, stop, listen
@@ -21374,7 +21519,7 @@ const CR = {
         }
         m.goal = tg.pos.clone(); return;
       }
-      if (m.state === 'SEARCH') { if (m.st > 14) { m.state = 'ROAM'; m.goal = null; } else if (!m.goal || Math.hypot(m.goal.x - m.pos.x, m.goal.z - m.pos.z) < 1) { m.home.copy(m.lastKnown); m.goal = crWander(m, 8); } return; }
+      if (m.state === 'SEARCH') { if (m.st > 14) { m.state = 'ROAM'; m.goal = null; } else if (!m.goal || Math.hypot(m.goal.x - m.pos.x, m.goal.z - m.pos.z) < 1) { m.home.copy(m.lastKnown); m.goal = AISearch.creature(m, 8) || crWander(m, 8); } return; }
       m.state = 'ROAM'; m.wanderT -= dt;
       if (m.wanderT <= 0 || !m.goal) { m.wanderT = rand(5, 9); const W0 = Horde.patrol && Horde.patrol.length ? pick(Horde.patrol) : null; m.goal = W0 ? new T.Vector3(W0[0], 0, W0[1]) : crWander(m, 12); }
     },
@@ -32907,7 +33052,7 @@ const Panic = {
     const fx = settings.panicFx || 'full', on = fx !== 'off';
     const L = this.lv, pulse = 0.8 + 0.2 * Math.exp(-Math.max(0, Game.time - (this.beatAt || -9)) * 7) // (a throb on each beat);
     const op = on ? clamp((L - 0.2) / 0.8, 0, 1) * (fx === 'reduced' ? 0.45 : 0.9) * pulse : 0;
-    if (Math.abs((this._op || 0) - op) > 0.01) { this._op = op; this.el.style.opacity = op.toFixed(3); }
+    if (Math.abs((this._op || 0) - op) > 0.01 || (op === 0 && this._op)) { this._op = op; this.el.style.opacity = op.toFixed(3); } // (and all the way off when it's off: a last 1% never lingers)
     if (fx === 'full' && settings.shake !== false && L > 0.85 && Game.state === 'playing') Game.shakeAmt = Math.max(Game.shakeAmt, (L - 0.85) * 0.35); // (a tremor, never a shove)
     if (this.bannerT > 0) { this.bannerT -= dt; if (this.bannerT <= 0) this.banner.classList.remove('on'); }
   },
@@ -39824,6 +39969,922 @@ Object.assign(People.LOOKS, {
     return r;
   };
 }
+/* ================================================================== */
+/* Build 34: THE NIGHTMARE DIRECTOR                                    */
+/*  Now and then, something happens: the lights stutter, a door slams, */
+/*  footsteps come up behind you, the radio says where it is (and it   */
+/*  doesn't always tell the truth), something crashes far away and the */
+/*  thing goes to look. The host decides what and when, from a seeded  */
+/*  generator: never the same event twice running, each with its own   */
+/*  cooldown, never two of a kind at once (or two that clash), and     */
+/*  nothing that darkens a room or moves a door while something is     */
+/*  already after a guard. Every screen plays the host's event ('nd'). */
+/*  Nothing here hurts anyone, locks anyone in or ends a run.          */
+/*  Settings → Nightmare Director turns it off (the host's setting     */
+/*  counts online).                                                    */
+/* ================================================================== */
+const ND_MODES = new Set(['night', 'endless', 'gallery', 'blackout', 'hive', 'root']);
+const _nd = new T.Vector3();
+// a repeatable "random" number from an event's seed (every screen gets the same flicker)
+const ndHash = (a, b, c) => { let h = (a ^ Math.imul(b | 0, 0x9e3779b1) ^ Math.imul(c | 0, 0x85ebca6b)) >>> 0; h = Math.imul(h ^ (h >>> 15), 0x2c1b3c6d); h = Math.imul(h ^ (h >>> 12), 0x297a2d39); return ((h ^ (h >>> 15)) >>> 0) / 4294967296; };
+const ndRoomName = id => (id && ROOM_NAMES[id]) || null;
+const ndNear = (a, x, z, r) => Math.hypot(a.pos.x - x, a.pos.z - z) < r;
+// a walkable spot on this floor, between lo and hi metres from every guard in gs (or null)
+function ndSpot(D, gs, lo, hi, tries, ok) {
+  const L = LEVELS[LVL] || LEVELS[0], z0 = L.z0, rows = L.rows || LEVEL_ROWS;
+  for (let k = 0; k < (tries || 40); k++) {
+    const cx = Math.floor(D.rng() * W), cz = z0 + Math.floor(D.rng() * rows), c = cellAt(cx, cz);
+    if (!c || c.kind !== 'floor' || c.navBlocked || !monsterPassable(cx, cz)) continue;
+    const x = cc(cx), z = cc(cz); let dmin = Infinity;
+    for (const g of gs) dmin = Math.min(dmin, Math.hypot(g.pos.x - x, g.pos.z - z));
+    if (dmin >= lo && dmin <= hi && (!ok || ok(x, z))) return { x: +x.toFixed(1), z: +z.toFixed(1), room: c.room || '' };
+  }
+  return null;
+}
+// what can happen. grp: one of each group at a time · calm: not while something is after a guard · cd: seconds before it can come again
+// pick(D, g, gs) → the event's details (host), or null if it can't happen right now · start/tick/end(A) on every screen · fix(A, f, b, t): a light's brightness
+const ND_EVENTS = {
+  flicker: {
+    name: 'THE LIGHTS STUTTER', grp: 'light', calm: true, w: 3, cd: 70, dur: [6, 9], modes: ['night', 'endless', 'gallery', 'hive', 'root'],
+    desc: 'The lights round one guard stutter for a few seconds.',
+    pick(D, g) { return { x: +g.pos.x.toFixed(1), z: +g.pos.z.toFixed(1) }; },
+    start(A) { if (ndNear(player, A.p.x, A.p.z, 20)) Sound.flickerTick(); },
+    fix(A, f, b, t) {
+      if (Math.abs(f.pos.x - A.p.x) + Math.abs(f.pos.z - A.p.z) > 18) return b;
+      if (settings.noFlash) return b * 0.55; // (REDUCE FLASHING: a steady dip instead)
+      const k = ndHash(A.s, Math.round(f.pos.x * 7 + f.pos.z * 131), Math.floor((t - A.t0) * 11));
+      return b * (k < 0.45 ? k * 0.4 : 1);
+    },
+  },
+  sector: {
+    name: 'SECTOR BLACKOUT', grp: 'light', calm: true, w: 2, cd: 150, dur: [14, 18], modes: ['night', 'endless', 'hive', 'root'], excl: ['dip'],
+    desc: 'Every light in one room goes out, then buzzes back on.',
+    pick(D, g) { const c = cellOf(g.pos.x, g.pos.z), r = c && c.room; if (!r || !rooms[r] || !fixtures.some(f => f.lvl === LVL && f.on && ndFixRoom(f) === r)) return null; return { r }; },
+    start(A) {
+      const R = rooms[A.p.r], here = R && cellOf(player.pos.x, player.pos.z).room === A.p.r;
+      if (R) Sound.trip(_nd.set(cc((R.minX + R.maxX) / 2), 2.8, cc((R.minZ + R.maxZ) / 2)));
+      if (here) UI.msg('The lights in the ' + (ndRoomName(A.p.r) || 'room') + ' die. Torch on.', 'warn', 3);
+    },
+    fix(A, f, b, t) { if (ndFixRoom(f) !== A.p.r) return b; const k = t - A.t0, left = A.until - t; if (k < 0.7 && !settings.noFlash) return b * (ndHash(A.s, f.idx | 0, Math.floor(k * 14)) < 0.5 ? 0.15 : 1); if (left < 0.8 && !settings.noFlash) return b * (ndHash(A.s, f.idx | 0, Math.floor(left * 14)) < 0.5 ? 0 : 0.6); return 0; },
+    end(A) { const R = rooms[A.p.r]; if (R) Sound.lampBuzz(_nd.set(cc((R.minX + R.maxX) / 2), 2.8, cc((R.minZ + R.maxZ) / 2)), 1.2); },
+  },
+  dip: {
+    name: 'POWER DIP', grp: 'light', calm: true, w: 2, cd: 120, dur: [2.5, 2.5], modes: ['night', 'endless', 'gallery', 'hive', 'root'], excl: ['sector'],
+    desc: 'Everything electrical sags at once, for a moment.',
+    pick() { return {}; },
+    start() { Game.dip = 1; Sound.brownout(); },
+  },
+  steps: {
+    name: 'FOOTSTEPS', grp: 'sound', w: 3, cd: 90, dur: [4, 4],
+    desc: 'Footsteps come up behind one guard. Nobody is there. (Only they hear it.)',
+    pick(D, g) { return { a: +(D.rng() * 0.8 - 0.4).toFixed(2) }; },
+    start(A) {
+      if (!A.me || player.dead) return;
+      const f = player.forward(_nd), L = Math.hypot(f.x, f.z) || 1, a = Math.atan2(-f.x / L, -f.z / L) + A.p.a; // (behind you, a little to one side)
+      Sound.fakeSteps(_nd.set(player.pos.x + Math.sin(a) * 6, 0.2, player.pos.z + Math.cos(a) * 6), 6);
+    },
+  },
+  whisper: {
+    name: 'WHISPERS', grp: 'sound', w: 2, cd: 110, dur: [3, 3],
+    desc: 'Something whispers from the ceiling just behind one guard. (Only they hear it.)',
+    pick() { return {}; },
+    start(A) { if (!A.me || player.dead) return; const f = player.forward(_nd), L = Math.hypot(f.x, f.z) || 1; Sound.whisper(_nd.set(player.pos.x - f.x / L * 2.5, 2.6, player.pos.z - f.z / L * 2.5)); },
+  },
+  knock: {
+    name: 'KNOCKING', grp: 'sound', w: 2, cd: 100, dur: [2, 2],
+    desc: 'Three knocks on a closed door near one guard — from the other side.',
+    pick(D, g) {
+      const list = []; doors.forEach((d, i) => { if (d.cell.lvl === LVL && !d.isOpen() && d.type !== 'exit' && !d.hotel) { const dd = Math.hypot(d.cx - g.pos.x, d.cz - g.pos.z); if (dd > 3 && dd < 14) list.push(i); } });
+      return list.length ? { i: list[Math.floor(D.rng() * list.length)] } : null;
+    },
+    start(A) { const d = doors[A.p.i | 0]; if (d) Sound.knock(_nd.set(d.cx, 1.3, d.cz), 3); },
+  },
+  radio: {
+    name: 'RADIO CHATTER', grp: 'clue', w: 2, cd: 140, dur: [4, 4],
+    desc: 'A garbled voice on the radio says which room it is in. Sometimes it is right.',
+    ok() { const F = ndFoe(); return !!(F && F.pos); },
+    pick(D, g) {
+      const F = ndFoe(), real = cellOf(F.pos.x, F.pos.z).room, mine = cellOf(g.pos.x, g.pos.z).room, L = LEVELS[LVL] || LEVELS[0];
+      const truth = D.rng() < 0.5 && real && ndRoomName(real);
+      let r = truth ? real : null;
+      if (!r) { const ids = Object.keys(rooms).filter(id => id !== real && id !== mine && ndRoomName(id) && !isCorr(id) && lvlOfRow(Math.floor((rooms[id].minZ + rooms[id].maxZ) / 2)) === LVL); if (ids.length) r = ids[Math.floor(D.rng() * ids.length)]; }
+      if (!r) return null;
+      D.radioTruth = r === real; return { r };
+    },
+    start(A) { Sound.radio(null, 3.2); UI.msg('📻 …kkrrsh… it\'s in the ' + ndRoomName(A.p.r) + '… kkh… — or so the radio says.', 'story', 4.5); },
+  },
+  lure: {
+    name: 'SOMETHING FALLS', grp: 'monster', calm: true, w: 2, cd: 120, dur: [3, 3],
+    desc: 'Something crashes somewhere far from everyone — and the thing goes to look.',
+    ok() { const F = ndFoe(); return !!(F && F.pos && F.hear); },
+    pick(D, g, gs) { const F = ndFoe(); return ndSpot(D, gs, 18, 38, 80, (x, z) => Math.hypot(F.pos.x - x, F.pos.z - z) < 16); }, // (far from every guard — and close enough to it that it hears)
+    start(A) { const v = _nd.set(A.p.x, 1.2, A.p.z); Sound.metalHit(v, 1.3); Sound.glass(v); },
+    host(D, p) { Game.hearAt({ x: p.x, z: p.z }, 34, 'event', null); D.why = 'lure → ' + p.x + ',' + p.z; }, // (whatever lives on this floor hears it: it goes there, away from you)
+  },
+  prowl: {
+    name: 'IT PROWLS', grp: 'monster', calm: true, w: 2, cd: 160, dur: [3, 3], modes: ['night', 'endless'],
+    desc: 'The Warden drifts toward one guard\'s part of the floor — not to where they are, just near.',
+    ok() { const M = Monster; return M.active && !M.down && !M.cine && (M.state === 'PATROL' || M.state === 'LOST' || M.state === 'SEARCH'); },
+    pick(D, g, gs) {
+      for (let k = 0; k < 20; k++) {
+        const a = D.rng() * TAU, r = 7 + D.rng() * 6, x = g.pos.x + Math.cos(a) * r, z = g.pos.z + Math.sin(a) * r, cx = Math.floor(x / CELL), cz = Math.floor(z / CELL), c = cellAt(cx, cz);
+        if (c && c.kind === 'floor' && !c.navBlocked && monsterPassable(cx, cz) && lvlOfRow(cz) === LVL) return { x: +x.toFixed(1), z: +z.toFixed(1) };
+      }
+      return null;
+    },
+    start(A) { if (Math.hypot(Monster.pos.x - player.pos.x, Monster.pos.z - player.pos.z) < 40) Sound.creak(_nd.set(Monster.pos.x, 2.6, Monster.pos.z)); },
+    host(D, p) { const M = Monster; if (M.active && !M.down) { M.investigate(_nd.set(p.x, 0, p.z), 0.4, false); D.why = 'prowl → ' + p.x + ',' + p.z; } },
+  },
+  slam: {
+    name: 'A DOOR SLAMS', grp: 'route', calm: true, w: 2, cd: 110, dur: [1.5, 1.5],
+    desc: 'An open door near a guard slams shut on its own. It opens again — it just isn\'t open now.',
+    pick(D, g, gs) {
+      const all = crew(), list = [];
+      doors.forEach((d, i) => {
+        if (d.cell.lvl !== LVL || d.type !== 'normal' || d.hotel || !d.isOpen() || d.t < 0.9) return;
+        const dd = Math.hypot(d.cx - g.pos.x, d.cz - g.pos.z); if (dd < 6 || dd > 22) return;
+        if (all.some(a => ndNear(a, d.cx, d.cz, 3)) || (Monster.active && ndNear(Monster, d.cx, d.cz, 3))) return; // (never on anybody)
+        list.push(i);
+      });
+      return list.length ? { i: list[Math.floor(D.rng() * list.length)] } : null;
+    },
+    host(D, p) { const d = doors[p.i | 0]; if (!d) return; d.close(); d.fast = true; Game.syncDoor(d, true, false); Game.hearAt({ x: d.cx, z: d.cz }, 16, 'event', null); },
+  },
+  static: {
+    name: 'INTERFERENCE', grp: 'screen', calm: true, w: 2, cd: 120, dur: [3.5, 4.5],
+    desc: 'Electrical interference: static on the radio and in your eyes; torches near one guard stutter.',
+    pick(D, g) { return { x: +g.pos.x.toFixed(1), z: +g.pos.z.toFixed(1) }; },
+    start(A) { A.near = ndNear(player, A.p.x, A.p.z, 14); if (A.near) { Sound.staticCut(0.7); ndStatic(true); } },
+    tick(A, dt) {
+      if (!A.near) return;
+      const el = ndStatic(); if (el) el.style.opacity = settings.noFlash ? 0.16 : (0.12 + ndHash(A.s, 7, Math.floor((Game.time - A.t0) * 15)) * 0.22).toFixed(2);
+      if (!settings.noFlash && !player.dead && ndHash(A.s, 11, Math.floor((Game.time - A.t0) * 6)) < 0.18) player.outUntil = Math.max(player.outUntil || 0, Game.time + 0.12); // (a stutter — never out for longer than a blink)
+    },
+    end(A) { if (A.near) ndStatic(false); },
+  },
+};
+const ND_IDS = Object.keys(ND_EVENTS);
+const ndFixRoom = f => (f._ndRoom !== undefined ? f._ndRoom : (f._ndRoom = (cellOf(f.pos.x, f.pos.z) || {}).room || ''));
+const ndFoe = () => (LVL ? Level.foe() : (Monster.active ? Monster : null));
+function ndStatic(on) {
+  let el = document.getElementById('nd-static');
+  if (!el) {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), im = g.createImageData(128, 128);
+    for (let i = 0; i < im.data.length; i += 4) { const v = (Math.random() * 255) | 0; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
+    g.putImageData(im, 0, 0);
+    el = document.createElement('div'); el.id = 'nd-static';
+    el.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:5;opacity:0;display:none;mix-blend-mode:screen;background:url(' + c.toDataURL() + ');background-size:256px 256px;image-rendering:pixelated';
+    document.body.appendChild(el);
+  }
+  if (on === true) { el.style.display = 'block'; el.style.backgroundPosition = ((Math.random() * 256) | 0) + 'px ' + ((Math.random() * 256) | 0) + 'px'; }
+  else if (on === false) { el.style.display = 'none'; el.style.opacity = 0; }
+  return el;
+}
+
+const Director = {
+  seed: 0, rng: Math.random, nextT: 0, act: new Map(), cd: {}, last: null, hitAt: -99, lightN: 0, n: 0, log: [], why: '', radioTruth: null,
+  on() { return settings.director !== false && ND_MODES.has(Game.mode); },
+  // (every screen) a new run: nothing is happening
+  reset() {
+    for (const id of [...this.act.keys()]) this.stopOne(id);
+    this.act.clear(); this.lightN = 0; this.cd = {}; this.last = null; this.hitAt = -99; this.n = 0; this.log = []; this.why = ''; this.radioTruth = null;
+    this.seed = ((Net.active ? Net.sessionSeed : (Math.random() * 4294967296)) ^ 0x4e44) >>> 0;
+    this.rng = mulberry32(this.seed);
+    this.nextT = 45 + this.rng() * 25; // (the first one: not before the run has properly begun)
+    if (DEBUG && this.on()) console.log('Nightmare Director: seed ' + this.seed + ' (' + Game.mode + ')');
+  },
+  live() {
+    return this.on() && Game.state === 'playing' && !Game.ending && !Game.endingLock && !(typeof Cine !== 'undefined' && Cine.locks && Cine.locks())
+      && !(Game.mode === 'night' && Night.dawn) && !(Game.introT >= 0 && Game.introT < 3.2); // (not during the wake-up)
+  },
+  // something is after a guard (or right on top of one): nothing that darkens, closes or draws it in
+  hot(gs) {
+    const M = Monster;
+    if (!LVL && M.active && !M.down && (M.state === 'HUNT' || M.state === 'ATTACK' || M.state === 'FLANK' || M.state === 'YANK' || M.state === 'STALK')) return true;
+    for (const F of Powers.foes()) { if (!F || !F.pos || F === Sleeper) continue; for (const g of gs) { const d = Math.hypot(F.pos.x - g.pos.x, F.pos.z - g.pos.z); if (d < 12 && losClear(F.pos.x, F.pos.z, g.pos.x, g.pos.z)) return true; } }
+    return false;
+  },
+  gap() { const dg = Night.danger ? Night.danger() : 0; return 30 + this.rng() * 40 - dg * 4; }, // 30–70 s between events (a little sooner as the night gets worse)
+  update(dt) {
+    this.tick();
+    if (Net.isClient || !this.live()) return;
+    this.nextT -= dt; if (this.nextT > 0) return;
+    this.nextT = this.gap();
+    if (!this.choose()) this.nextT = 5 + this.rng() * 5; // (nothing could happen just now: look again soon)
+  },
+  // (host) what happens next, if anything can
+  choose() {
+    const gs = crew().filter(a => !a.dead && !a.downed); if (!gs.length) return false;
+    const hot = this.hot(gs) || Game.time - this.hitAt < 15, act = [...this.act.values()];
+    const cands = ND_IDS.filter(id => {
+      const E = ND_EVENTS[id];
+      if (E.modes && E.modes.indexOf(Game.mode) < 0) return false;
+      if (Game.time < (this.cd[id] || 0) || this.last === id) return false; // (its cooldown; and never the same one twice running)
+      if (act.some(A => A.E.grp === E.grp || (E.excl || []).indexOf(A.id) >= 0 || (A.E.excl || []).indexOf(id) >= 0)) return false; // (one of a kind at a time; never two that clash)
+      if (E.calm && hot) return false;
+      if (E.grp === 'light' && Night.surge) return false; // (the lights are already out)
+      return !E.ok || E.ok(this);
+    });
+    let tot = 0; for (const id of cands) tot += ND_EVENTS[id].w;
+    let x = this.rng() * tot, id = null; for (const c of cands) { x -= ND_EVENTS[c].w; if (x <= 0) { id = c; break; } }
+    if (!id) return false;
+    const E = ND_EVENTS[id], g = gs[Math.floor(this.rng() * gs.length) % gs.length], p = E.pick(this, g, gs);
+    if (!p) { this.cd[id] = Game.time + 15; return false; } // (it had nowhere to happen: try something else)
+    const d = E.dur[0] + this.rng() * (E.dur[1] - E.dur[0]);
+    Game.emit({ k: 'nd', id, g: Game.idOf(g), s: (this.rng() * 4294967296) >>> 0, d: +d.toFixed(1), p });
+    this.cd[id] = Game.time + E.cd; this.last = id;
+    if (E.host) E.host(this, p, g);
+    return true;
+  },
+  // (host; debug and tests) make one particular event happen now, if it can — its own checks still apply
+  force(id, g) {
+    const E = ND_EVENTS[id]; if (!E || Net.isClient) return false;
+    const gs = crew().filter(a => !a.dead && !a.downed); g = g || gs[0]; if (!g || (E.ok && !E.ok(this))) return false;
+    const p = E.pick(this, g, gs); if (!p) return false;
+    Game.emit({ k: 'nd', id, g: Game.idOf(g), s: (this.rng() * 4294967296) >>> 0, d: E.dur[0], p });
+    this.cd[id] = Game.time + E.cd; this.last = id; if (E.host) E.host(this, p, g);
+    return true;
+  },
+  // (every screen) the host's event
+  apply(ev) {
+    const E = ND_EVENTS[ev && ev.id]; if (!E || !this.on() || !ev.p || typeof ev.p !== 'object') return;
+    if (this.act.has(ev.id)) this.stopOne(ev.id);
+    const A = { id: ev.id, E, p: ev.p, s: (+ev.s || 0) >>> 0, g: ev.g | 0, me: (ev.g | 0) === Net.myId, t0: Game.time, until: Game.time + clamp(+ev.d || 2, 0.5, 30) };
+    this.act.set(ev.id, A); if (E.fix) this.lightN++;
+    this.n++; this.log.push({ id: ev.id, t: +Game.time.toFixed(1), g: A.g }); if (this.log.length > 40) this.log.shift();
+    try { if (E.start) E.start(A); } catch (e) { if (DEBUG) console.warn('director', ev.id, e); }
+  },
+  tick() {
+    if (!this.act.size) return;
+    for (const [id, A] of this.act) {
+      if (Game.time >= A.until) { this.stopOne(id); continue; }
+      if (A.E.tick) try { A.E.tick(A); } catch (e) { if (DEBUG) console.warn('director', id, e); }
+    }
+  },
+  stopOne(id) {
+    const A = this.act.get(id); if (!A) return;
+    this.act.delete(id); if (A.E.fix) this.lightN = Math.max(0, this.lightN - 1);
+    if (A.E.end) try { A.E.end(A); } catch (e) { if (DEBUG) console.warn('director', id, e); }
+  },
+  // (every frame, every lit fixture) what the events do to it
+  fix(f, b, t) { for (const A of this.act.values()) if (A.E.fix) b = A.E.fix(A, f, b, t); return b; },
+  debugText() {
+    const act = [...this.act.values()].map(A => A.id + ' ' + Math.max(0, A.until - Game.time).toFixed(1) + 's');
+    return 'DIRECTOR seed ' + this.seed + ' · ' + (this.on() ? (Net.isClient ? 'following the host' : 'next ≈' + Math.max(0, this.nextT).toFixed(0) + 's') : 'off') + ' · now: ' + (act.join(', ') || '—') + ' · last: ' + (this.last || '—') + (this.why ? ' · ' + this.why : '') + (this.radioTruth !== null ? ' · radio ' + (this.radioTruth ? 'told the truth' : 'lied') : '');
+  },
+};
+
+/* ================= the hooks ================= */
+{
+  const nu0 = Night.update; Night.update = function (dt) { const r = nu0.apply(this, arguments); Director.update(dt); return r; };
+  const ng0 = Game.newGame; Game.newGame = function () { const r = ng0.apply(this, arguments); Director.reset(); return r; };
+  const qt0 = Game.quitToTitle; Game.quitToTitle = function () { for (const id of [...Director.act.keys()]) Director.stopOne(id); return qt0.apply(this, arguments); };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) { if (ev && ev.k === 'nd') { Director.apply(ev); return; } return ae0.apply(this, arguments); };
+  const hh0 = Health.hit; Health.hit = function () { Director.hitAt = Game.time; return hh0.apply(this, arguments); }; // (someone just got hurt: give them a moment)
+}
+/* ================================================================== */
+/* Build 34: WHERE IT LOOKS WHEN IT HAS LOST YOU                       */
+/*  Before, a search was a walk to random spots round the place it     */
+/*  lost you. Now it thinks about it: the lockers near there, the way  */
+/*  you were heading, the doorways out, and not the spots it has just  */
+/*  checked; the surer it is of where you were (its confidence fades   */
+/*  with time), the tighter it searches. It still knows only what it   */
+/*  saw and heard: a locker it checks is a guess, with the same odds   */
+/*  of noticing you as ever (half of them — it didn't see you go in).  */
+/*  The Warden first; the Hive's and the Root's creatures use the same */
+/*  plan, and a pack spreads out instead of all checking one corner.   */
+/*  Every plan is made once per search (a few hundred cells, no path   */
+/*  finding) and walked one goTo at a time. ?debug shows its thinking. */
+/* ================================================================== */
+const AIS_MODES = new Set(['night', 'endless', 'photos', 'hive', 'root']); // (MECHA CAMO, THE WATCH and THE HUNT keep their own Warden exactly as it was)
+const AISearch = {
+  // the best few places to look round (x, z): [{ x, z, s, why, key, L? }], best first
+  plan(o) {
+    const out = [], r = o.r, c0x = Math.floor(o.x / CELL), c0z = Math.floor(o.z / CELL), hd = o.heading, hl = hd ? Math.hypot(hd.x, hd.z) : 0, now = Game.time, R = hl > 0.4 ? r + 3 : r; // (ahead of where you were going it looks further)
+    for (let dz = -R; dz <= R; dz++) for (let dx = -R; dx <= R; dx++) {
+      const d2 = dx * dx + dz * dz; if (d2 > R * R) continue;
+      if (d2 > r * r && (dx * hd.x + dz * hd.z) / (Math.sqrt(d2) * hl) < 0.7) continue; // (beyond the usual ring: only straight ahead)
+      const cx = c0x + dx, cz = c0z + dz, c = cellAt(cx, cz);
+      if (!c || c.kind !== 'floor' || c.navBlocked || lvlOfRow(cz) !== o.lvl || !o.pass(cx, cz)) continue;
+      const x = cc(cx), z = cc(cz), d = Math.hypot(x - o.x, z - o.z), key = cx * 1000 + cz;
+      let s = 1 - d / (R * CELL + 2) * 0.8, why = 'somewhere it hasn\'t looked yet';
+      if (hl > 0.4 && d > 1.5) { const k = ((x - o.x) * hd.x + (z - o.z) * hd.z) / (d * hl); if (k > 0.55) { s += 1.5 * k; why = 'the way you were heading'; } }
+      if (aisDoorBy(cx, cz)) { s += 0.6; if (why[0] === 's') why = 'a doorway out of there'; }
+      const t = o.seen.get(key); if (t !== undefined && now - t < 45) s -= 2.4; // (it looked there a moment ago)
+      if (o.avoid) for (const a of o.avoid) if (Math.hypot(a.x - x, a.z - z) < 4) s -= 1.3; // (another one is already looking there)
+      s += o.rnd() * 0.5;
+      out.push({ x, z, s, why, key });
+    }
+    if (o.lockers) hideLockers.forEach((L, i) => {
+      if (lvlAt(L.out.z) !== o.lvl) return;
+      const d = Math.hypot(L.out.x - o.x, L.out.z - o.z); if (d > r * CELL + 1.5) return;
+      const t = o.seen.get('L' + i); if (t !== undefined && now - t < 60) return;
+      const cx = Math.floor(L.out.x / CELL), cz = Math.floor(L.out.z / CELL); if (!o.pass(cx, cz) || cellAt(cx, cz).navBlocked) return; // (it stands in the walkable cell in front of it)
+      out.push({ x: cc(cx), z: cc(cz), s: 2.3 - d / 10 + o.rnd() * 0.4, why: 'a locker near where it lost you', key: 'L' + i, L });
+    });
+    out.sort((a, b) => b.s - a.s);
+    // not all in one corner: each next pick at least 3 m from the ones before
+    const pick = [];
+    for (const P of out) { if (pick.length >= (o.n || 4)) break; if (pick.every(Q => Math.hypot(Q.x - P.x, Q.z - P.z) > 3)) pick.push(P); }
+    return pick;
+  },
+  mark(seen, x, z) { const cx = Math.floor(x / CELL), cz = Math.floor(z / CELL), now = Game.time; for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) seen.set((cx + dx) * 1000 + cz + dz, now); if (seen.size > 600) { for (const [k, t] of seen) if (now - t > 60) seen.delete(k); } },
+  // how sure it is of where you were: 1 when it can see you, fading after
+  conf(seenAgo, memory, heardK, heardAgo) {
+    const s = clamp(1 - seenAgo / (memory * 3 + 6), 0, 1), h = heardK > 0 ? clamp(heardK, 0, 1) * clamp(1 - heardAgo / 14, 0, 1) * 0.8 : 0;
+    return Math.max(s, h);
+  },
+  // (the Hive / the Root) a creature searching: its next place to look, or null
+  creature(m, rMetres) {
+    if (!AIS_MODES.has(Game.mode)) return null;
+    const now = Game.time, conf = this.conf(now - (m.knowT || -99), diff().memory, 0, 99);
+    const seen = m.aisSeen || (m.aisSeen = new Map());
+    if (m.aisGoal) this.mark(seen, m.aisGoal.x, m.aisGoal.z);
+    const avoid = Horde.list.filter(o => o !== m && !o.dead && o.state === 'SEARCH' && o.goal).map(o => o.goal);
+    const P = this.plan({ x: m.lastKnown.x, z: m.lastKnown.z, r: Math.max(2, Math.round(rMetres / CELL + (1 - conf) * 2)), lvl: LVL, pass: (x, z) => m.T.pass(x, z), seen, avoid, rnd: Math.random, n: 1 })[0];
+    if (!P) return null;
+    m.why = P.why; m.aisGoal = { x: P.x, z: P.z };
+    return new T.Vector3(P.x + rand(-0.4, 0.4), 0, P.z + rand(-0.4, 0.4));
+  },
+};
+const aisDoorBy = (cx, cz) => cellAt(cx + 1, cz).kind === 'door' || cellAt(cx - 1, cz).kind === 'door' || cellAt(cx, cz + 1).kind === 'door' || cellAt(cx, cz - 1).kind === 'door';
+
+/* ================= the Warden ================= */
+Object.assign(Monster, {
+  why: '', plan: null, aisSeen: new Map(), lockerRolled: new Set(), conf: 0,
+  confNow() { const now = Game.time; return this.seeing ? 1 : AISearch.conf(now - this.lastSeen, diff().memory, this.invStrength || 0, now - (this.invTime || -99)); },
+  // (a new search) where it will look, in order
+  makePlan() {
+    const now = Game.time, conf = this.confNow(), heading = this.knewT && now - this.knewT < 10 && this.tgVel.length() > 0.6 ? this.tgVel : null;
+    this.plan = AISearch.plan({ x: this.searchCenter.x, z: this.searchCenter.z, r: Math.round(2 + (1 - conf) * 5), lvl: LVL, pass: monsterPassable, heading, seen: this.aisSeen, lockers: true, rnd: Math.random, n: 5 });
+    this.planAt = now;
+  },
+  // it got to one: it looks round — and at a locker, it listens
+  searched(P) {
+    this.pauseT = rand(1.0, 2.0); this.headTimer = 0;
+    AISearch.mark(this.aisSeen, P.x, P.z);
+    if (!P.L) return;
+    this.aisSeen.set(P.key, Game.time); this.why = 'listening at a locker'; this.pauseT = rand(1.4, 2.4);
+    Sound.breathM(0.8);
+    const a = actors().find(x => x.hidden && x.locker === P.L);
+    if (!a || this.lockerRolled.has(P.L)) return;
+    this.lockerRolled.add(P.L); // (one guess per locker per search)
+    const d = Math.hypot(P.L.out.x - this.lastKnown.x, P.L.out.z - this.lastKnown.z);
+    if (Math.random() < this.checkChance(d) * 0.5) { // (a guess: half the odds of a locker it saw you get into)
+      this.seenHide = { actor: a, locker: P.L }; this.target = a; this.lastKnown.copy(P.L.out); this.lastSeen = Game.time; this.awareness = 1.2;
+      this.path = null; this.hasGoal = false; this.repathT = 0; this.setState('HUNT'); this.why = 'heard you breathing in the locker';
+    }
+  },
+  debugText() {
+    const tg = this.target, who = !tg ? '—' : tg === player ? Net.myName : tg.name || 'a guard';
+    return 'WARDEN ' + (this.active ? this.state : 'asleep') + ' · target ' + who + ' · confidence ' + this.confNow().toFixed(2) + ' · ' + (this.why || '—') + (this.state === 'SEARCH' && this.plan ? ' · ' + this.plan.length + ' places left to look' : '');
+  },
+});
+{
+  const M = Monster;
+  const cs0 = M.chooseSearchPoint;
+  M.chooseSearchPoint = function () {
+    if (!AIS_MODES.has(Game.mode)) return cs0.apply(this, arguments);
+    if (!this.plan) this.makePlan();
+    while (this.plan.length) {
+      const P = this.plan.shift();
+      if (Math.hypot(P.x - this.pos.x, P.z - this.pos.z) < 1.5) { this.searched(P); return; }
+      if (this.goTo(P.x + (P.L ? 0 : rand(-0.4, 0.4)), P.z + (P.L ? 0 : rand(-0.4, 0.4)), () => this.searched(P))) { this.why = P.why; this.crawlMode = Math.random() < 0.5; return; }
+    }
+    this.why = 'anywhere near, now';
+    return cs0.apply(this, arguments);
+  };
+  const ss0 = M.setState;
+  M.setState = function (s) {
+    const prev = this.state, r = ss0.apply(this, arguments);
+    if (s === prev) return r;
+    if (s === 'SEARCH') { this.plan = null; this.lockerRolled.clear(); this.why = 'searching where it lost you'; }
+    else if (s === 'HUNT') this.why = 'after ' + (this.target === player ? Net.myName : (this.target && this.target.name) || 'a guard');
+    else if (s === 'INVESTIGATE') this.why = this.charging ? 'heard something — running to it' : 'heard something — going to look';
+    else if (s === 'LOST') this.why = 'lost the trail';
+    else if (s === 'PATROL') this.why = 'patrolling';
+    else if (s === 'FLANK') this.why = 'circling round to cut you off';
+    else if (s === 'STALK') this.why = 'stalking';
+    else if (s === 'WAIT') this.why = 'waiting for you to come out';
+    return r;
+  };
+  const rs0 = M.reset; M.reset = function () { const r = rs0.apply(this, arguments); this.why = ''; this.plan = null; this.aisSeen.clear(); this.lockerRolled.clear(); return r; };
+}
+
+/* ================= ?debug: what it's thinking ================= */
+const AIDebug = {
+  el: null,
+  tick() {
+    if (!DEBUG || !Game.inWorld()) { if (this.el) this.el.style.display = 'none'; return; }
+    if (!this.el) { this.el = document.createElement('div'); this.el.id = 'ai-debug'; this.el.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:30;max-width:70vw;font:11px/1.35 monospace;color:#bfe;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:4px;pointer-events:none;white-space:pre-wrap'; document.body.appendChild(this.el); }
+    const lines = [];
+    if (!LVL || Level.wardenHere()) lines.push(Monster.debugText());
+    if (LVL === 3 || LVL === 4) { const n = {}; for (const m of Horde.list) if (!m.dead) n[m.state] = (n[m.state] || 0) + 1; lines.push('CREATURES ' + (Object.keys(n).map(k => k + ' ' + n[k]).join(' · ') || '—')); const s = Horde.list.find(m => !m.dead && m.state === 'SEARCH' && m.why); if (s) lines.push('  one searching: ' + s.why); }
+    lines.push(Director.debugText());
+    this.el.style.display = 'block'; this.el.textContent = lines.join('\n');
+  },
+};
+if (DEBUG) setInterval(() => { try { AIDebug.tick(); } catch (e) { } }, 250);
+/* ================================================================== */
+/* Build 34: ENDLESS NIGHT — THE SHIFT POT                             */
+/*  Every hour you last adds to a pot of coins, more each hour. Every  */
+/*  second hour you choose: CASH OUT (the pot is yours, the night ends */
+/*  here — on your terms) or KEEP GOING (the pot keeps growing, and if */
+/*  the night takes you, it's gone). Nothing else changes: the usual   */
+/*  pay for every minute and hour you lasted is still paid either way. */
+/*  [1] cash out · [2] keep going (or click). Let the timer run out    */
+/*  and you keep going — the night never ends a run for you.           */
+/*  Online: the host counts the votes; cashing out needs a strict      */
+/*  majority of the team (the run ends for everyone, and everyone gets */
+/*  the pot). Paid once, on the end screen, with everything else.      */
+/*  Coins only: nothing here costs real money or buys a chance.        */
+/* ================================================================== */
+const CASH_CFG = { every: 2, base: 40, grow: 0.35, secs: 14, delay: 10 };
+const Cashout = {
+  pot: 0, banked: 0, done: false, offer: null, openAt: 0, openH: 0, offered: new Set(), myVote: null, el: null,
+  // the pot after h hours (on this difficulty)
+  potFor(h) { let s = 0; for (let i = 1; i <= h; i++) s += CASH_CFG.base * (1 + CASH_CFG.grow * (i - 1)); return Math.round(s * (ECON.diff[Net.sessionDiff || settings.difficulty] || 1)); },
+  reset() { this.pot = 0; this.banked = 0; this.done = false; this.offer = null; this.openAt = 0; this.openH = 0; this.offered = new Set(); this.myVote = null; this.hide(); },
+  // (every screen) a new hour
+  onHour(h) {
+    if (Game.mode !== 'endless' || this.done || h < 1) return;
+    this.pot = this.potFor(h);
+    UI.msg('SHIFT POT · ' + this.pot + ' coins, not yet yours' + (h % CASH_CFG.every ? ' — the next chance to cash out is at hour ' + (h + 2 - (h % CASH_CFG.every)) : ''), 'story', 4);
+    if (h % CASH_CFG.every === 0 && !this.offered.has(h)) { this.openAt = Game.time + CASH_CFG.delay; this.openH = h; } // (after the curse is chosen)
+  },
+  update(dt) {
+    if (Game.mode !== 'endless' || this.done) return;
+    if (this.openH && !this.offer && Game.time >= this.openAt && !Endless.offer && Game.state === 'playing') this.open(this.openH);
+    const O = this.offer; if (!O) return;
+    const left = Math.max(0, O.until - Game.time);
+    if (this.el) { const b = this.el.querySelector('.co-bar i'); if (b) b.style.width = (left / CASH_CFG.secs * 100).toFixed(1) + '%'; }
+    if (left <= 0 && !Net.isClient) this.tryDecide(true);
+  },
+  open(h) {
+    this.offered.add(h); this.openH = 0; this.myVote = null;
+    if (crew().every(a => a.dead)) return; // (nobody left standing: nothing to decide)
+    this.offer = { h, until: Game.time + CASH_CFG.secs, votes: {} };
+    this.draw(); Sound.sting(false);
+  },
+  // you chose (1 / 2 or a click)
+  vote(cash) {
+    if (!this.offer || this.done) return;
+    this.myVote = cash ? 1 : 0; Sound.click();
+    if (Net.isClient) Net.request('cov', cash ? 1 : 0, { h: this.offer.h }); else this.hostVote(Net.myId, cash ? 1 : 0, this.offer.h);
+    this.draw();
+  },
+  // (host) a vote, from anyone on the team
+  hostVote(id, c, h) {
+    if (!this.offer || this.done || (h | 0) !== this.offer.h) return;
+    this.offer.votes[id | 0] = c ? 1 : 0;
+    if (Net.active) Game.emit({ k: 'cov', h: this.offer.h, v: this.offer.votes });
+    this.tryDecide(false);
+  },
+  tryDecide(timeUp) {
+    const O = this.offer; if (!O || Net.isClient) return;
+    const ids = crew().map(a => Game.idOf(a)), n = ids.length, cash = ids.filter(id => O.votes[id] === 1).length, all = ids.every(id => O.votes[id] === 0 || O.votes[id] === 1);
+    if (cash * 2 > n) { Game.emit({ k: 'cod', c: 'cash', h: O.h }); return; } // (a strict majority wants out)
+    if (all || timeUp) Game.emit({ k: 'cod', c: 'go', h: O.h }); // (a tie, a timeout or silence: the night goes on — nothing is lost by it)
+  },
+  // (every screen) the host's word
+  decided(ev) {
+    if (Game.mode !== 'endless' || this.done || !this.offer || (ev.h | 0) !== this.offer.h) return;
+    this.offer = null; this.hide();
+    if (ev.c === 'cash') {
+      this.done = true; this.banked = this.pot;
+      Game.flags.lastAlive = Game.time; Game.flags.cashedOut = true;
+      Game.showResult('endless');
+      Game.state = 'won';
+      $('win-title').textContent = Net.active && crew().length > 1 ? 'You cashed out — together' : 'You cashed out';
+      $('win-sub').textContent = 'Endless Night · you walked away after hour ' + ev.h + ' with ' + this.banked + ' coins from the shift pot';
+      $('epilogue').textContent = 'You badge out at ' + ev.h + ' hours. Behind you the clock on the wall reads 3:33, and something in the dark is still counting.';
+    } else {
+      UI.msg('KEEP GOING — the pot rides: ' + this.pot + ' coins, gone if the night takes ' + (Net.active ? 'all of you' : 'you') + '. Next chance at hour ' + (ev.h + CASH_CFG.every) + ' (' + this.potFor(ev.h + CASH_CFG.every) + ' coins).', 'warn', 5);
+    }
+  },
+  votesEvent(ev) { if (this.offer && (ev.h | 0) === this.offer.h && ev.v && typeof ev.v === 'object') { const v = {}; for (const k in ev.v) v[k | 0] = ev.v[k] ? 1 : 0; this.offer.votes = v; this.draw(); } },
+  /* ---- the panel ---- */
+  draw() {
+    const O = this.offer; if (!O) return;
+    if (!this.el) {
+      const st = document.createElement('style');
+      st.textContent = '#cash-pick{position:absolute;left:50%;bottom:27vh;transform:translateX(-50%);width:min(720px,92vw);z-index:8}'
+        + '#cash-pick .co-t{text-align:center;font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:#ffd27a;margin-bottom:10px;text-shadow:0 0 12px #000}'
+        + '#cash-pick .co-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}'
+        + '#cash-pick button{all:unset;cursor:pointer;background:rgba(14,12,4,.86);border:1px solid #7a6424;padding:12px 14px 13px;position:relative;color:#e8dcc0;font-size:12.5px;line-height:1.45}'
+        + '#cash-pick button:focus-visible,#cash-pick button:hover{border-color:#e8c060}#cash-pick button.on{border-color:#ffd27a;box-shadow:0 0 0 1px #ffd27a inset}'
+        + '#cash-pick h4{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.16em;color:#ffd27a;margin:0 0 6px}'
+        + '#cash-pick .k{position:absolute;right:10px;top:9px;font-family:var(--mono);font-size:11px;color:#111;background:#e8c060;padding:1px 7px}'
+        + '#cash-pick .co-v{text-align:center;font-size:11.5px;color:#cfc4a8;margin-top:8px;min-height:1em}'
+        + '#cash-pick .co-bar{height:3px;background:rgba(255,255,255,.12);margin-top:8px}#cash-pick .co-bar i{display:block;height:100%;width:100%;background:#d9a34a}';
+      document.head.appendChild(st);
+      const el = document.createElement('div'); el.id = 'cash-pick'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Shift pot: cash out or keep going');
+      el.innerHTML = '<div class="co-t"></div><div class="co-cards"><button class="co-c" data-c="1"><span class="k">1</span><h4>CASH OUT</h4><p class="co-p1"></p></button><button class="co-c" data-c="0"><span class="k">2</span><h4>KEEP GOING</h4><p class="co-p0"></p></button></div><div class="co-v"></div><div class="co-bar"><i></i></div>';
+      el.querySelectorAll('button').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); this.vote(b.dataset.c === '1'); }));
+      (document.getElementById('hud') || document.body).appendChild(el); this.el = el;
+    }
+    const nx = O.h + CASH_CFG.every, n = crew().length, cash = Object.values(O.votes).filter(v => v === 1).length;
+    this.el.style.display = 'block';
+    this.el.querySelector('.co-t').textContent = 'HOUR ' + (O.h + 1) + ' — THE SHIFT POT: ' + this.pot + ' COINS';
+    this.el.querySelector('.co-p1').textContent = 'Bank ' + this.pot + ' coins now and walk away. The night ends here' + (Net.active && n > 1 ? ', for everyone.' : '.');
+    this.el.querySelector('.co-p0').textContent = 'By hour ' + (nx + 1) + ' the pot is ' + this.potFor(nx) + '. If the night takes ' + (Net.active && n > 1 ? 'all of you' : 'you') + ' before then, it\'s gone.';
+    this.el.querySelectorAll('button').forEach(b => b.classList.toggle('on', this.myVote !== null && (b.dataset.c === '1') === (this.myVote === 1)));
+    this.el.querySelector('.co-v').textContent = Net.active && n > 1 ? cash + ' of ' + n + ' want to cash out (it takes more than half). No answer counts as keep going.' : 'No answer: you keep going.';
+  },
+  hide() { if (this.el) this.el.style.display = 'none'; },
+};
+
+/* ================= the hooks ================= */
+{
+  const eh0 = Endless.onHour; Endless.onHour = function (h) { const was = this.hour, r = eh0.apply(this, arguments); if (this.hour > was) Cashout.onHour(this.hour); return r; };
+  const eu0 = Endless.update; Endless.update = function (dt) { const r = eu0.apply(this, arguments); Cashout.update(dt); return r; };
+  const er0 = Endless.reset; Endless.reset = function () { const r = er0.apply(this, arguments); Cashout.reset(); return r; };
+  const eo0 = Endless.hideOffer; Endless.hideOffer = function () { const r = eo0.apply(this, arguments); if (Game.state !== 'playing') Cashout.hide(); return r; }; // (the run ended: the panel goes with the curse picker)
+  const ws0 = Weapons.slot; Weapons.slot = function (n) { if (Cashout.offer && !Endless.offer && n <= 2) { Cashout.vote(n === 1); return; } return ws0.apply(this, arguments); };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) {
+    if (ev && ev.k === 'cod') { Cashout.decided(ev); return; }
+    if (ev && ev.k === 'cov') { if (Net.isClient) Cashout.votesEvent(ev); return; }
+    return ae0.apply(this, arguments);
+  };
+  const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i, x) { if (a === 'cov') { if (r && Game.inWorld()) Cashout.hostVote(r.id, i, x && x.h); return; } return ra0.apply(this, arguments); }; // (a guard who's been caught still gets a say)
+  // the end screen: the pot, paid once with everything else — or lost
+  const pay0 = Chars.payout; Chars.payout = function (won) {
+    const first = !this.paid, rows = pay0.apply(this, arguments);
+    if (!first || Game.mode !== 'endless') return rows;
+    if (Cashout.banked > 0) {
+      if (this.data) { this.data.coins = Math.min(ECON.maxCoins, this.data.coins + Cashout.banked); this.save(); }
+      rows.push(['Shift pot, cashed out', '+' + Cashout.banked + ' (' + (this.data ? this.data.coins : Cashout.banked) + ' total)']);
+    } else if (Cashout.pot > 0) rows.push(['Shift pot', 'lost — ' + Cashout.pot + ' coins, the night kept it']);
+    return rows;
+  };
+}
+/* ================================================================== */
+/* Build 34: THE DESCENT — THE WAY DOWN                                */
+/*  In the lift, before each floor, you choose how to go down:         */
+/*   MAIN SHAFT — as it always was.                                    */
+/*   SERVICE STAIRS — the long way round: whatever lives down there    */
+/*     hits softer and forgets you sooner; the floor pays less.        */
+/*   DEEP CUT — straight down the old mine cut: it hits harder,        */
+/*     remembers you longer, the Warden hears and sees further; the    */
+/*     floor pays a lot more.                                          */
+/*  Nothing else about the floor changes, no route costs coins, and    */
+/*  none can strand you: every route leads to the same floor. Online,  */
+/*  everyone picks; the host counts (most picks wins; a tie goes to    */
+/*  the safer way). The choice holds for that one floor (and its       */
+/*  retry); back in the lift, it's MAIN SHAFT again unless you change  */
+/*  it.                                                                */
+/* ================================================================== */
+const DX_ROUTES = {
+  main: { name: 'MAIN SHAFT', desc: 'As it always was.', pay: 1, mod: null, safe: 1 },
+  stairs: { name: 'SERVICE STAIRS', desc: 'Everything down there hits 20% softer and forgets you sooner. The floor pays ×0.7.', pay: 0.7, mod: { damage: 0.8, memory: 0.8 }, safe: 2 },
+  deep: { name: 'DEEP CUT', desc: 'Everything hits 20% harder and remembers you longer; the Warden hears and sees further. The floor pays ×1.45.', pay: 1.45, mod: { damage: 1.2, memory: 1.25, hearing: 1.15, sight: 1.15 }, safe: 0 },
+};
+const DX_RIDS = ['main', 'stairs', 'deep'];
+const Routes = {
+  pick: 'main', votes: {}, floorRoute: 'main', cache: {},
+  // the difficulty, as this route has it (cached: diff() is asked for many times a frame)
+  modFor(r) {
+    const R = DX_ROUTES[r]; if (!R || !R.mod) return null;
+    const dk = Net.sessionDiff || settings.difficulty, key = r + ':' + dk;
+    if (!this.cache[key]) { const o = Object.assign({}, DIFF[dk] || DIFF.normal); for (const k in R.mod) if (typeof o[k] === 'number') o[k] *= R.mod[k]; this.cache[key] = o; }
+    return this.cache[key];
+  },
+  clear() { DIFF_MOD = null; },
+  reset() { this.pick = 'main'; this.votes = {}; this.floorRoute = 'main'; this.clear(); },
+  // (host) the team's pick: most votes; a tie goes to the safer way
+  tally() {
+    const n = { main: 0, stairs: 0, deep: 0 }; for (const id in this.votes) if (n[this.votes[id]] !== undefined) n[this.votes[id]]++;
+    let best = 'main'; for (const r of DX_RIDS) if (n[r] > n[best] || (n[r] === n[best] && DX_ROUTES[r].safe > DX_ROUTES[best].safe)) best = r;
+    return Object.values(n).some(x => x > 0) ? best : 'main';
+  },
+  // you clicked a route
+  choose(r) {
+    if (!DX_ROUTES[r]) return;
+    if (Net.isClient) Net.request('xrv', DX_RIDS.indexOf(r)); else this.hostVote(Net.myId, DX_RIDS.indexOf(r));
+    this.mine = r; Expedition.drawInter();
+  },
+  hostVote(id, i) {
+    const r = DX_RIDS[i | 0]; if (!r || !Expedition.on || Expedition.phase !== 'inter') return;
+    this.votes[id | 0] = r;
+    if (Net.active) Game.emit({ k: 'xrv', v: this.votes, id: Expedition.id }); else Expedition.drawInter();
+  },
+};
+
+/* ================= the hooks ================= */
+{
+  const X = Expedition;
+  const b0 = X.begin; X.begin = function () { Routes.reset(); Routes.mine = null; return b0.apply(this, arguments); };
+  const rs0 = X.resume; X.resume = function () { Routes.reset(); Routes.mine = null; return rs0.apply(this, arguments); };
+  // the decision: the route goes out first (the same ordered channel), then CONTINUE
+  const d0 = X.decide; X.decide = function (c, full) { if (this.host() && c === 'go') Game.emit({ k: 'xrt', id: this.id, rt: Routes.tally() }); return d0.apply(this, arguments); };
+  // a floor starts: its route's tuning, for this floor only
+  const fs0 = X.floorStarted; X.floorStarted = function () {
+    Routes.floorRoute = Routes.pick || 'main'; DIFF_MOD = Routes.modFor(Routes.floorRoute);
+    const r = fs0.apply(this, arguments);
+    if (Routes.floorRoute !== 'main') setTimeout(() => { if (this.on && this.phase === 'floor' && Game.state === 'playing') UI.msg('ROUTE · ' + DX_ROUTES[Routes.floorRoute].name + ' — ' + DX_ROUTES[Routes.floorRoute].desc, 'warn', 5); }, 9200);
+    return r;
+  };
+  // what the floor pays: × its route
+  const fr0 = X.floorReward; X.floorReward = function (s) { const g = fr0.apply(this, arguments); return Math.round(g * (DX_ROUTES[Routes.floorRoute] || DX_ROUTES.main).pay); };
+  // off the floor: the tuning goes; back in the lift, the main shaft again unless you choose otherwise
+  const fd0 = X.floorDone; X.floorDone = function (ev) { const was = this.phase, r = fd0.apply(this, arguments); if (was === 'floor' && this.phase !== 'floor') { Routes.clear(); Routes.votes = {}; Routes.mine = null; Routes.pick = 'main'; this.drawInter(); } return r; };
+  const fl0 = X.floorLost; X.floorLost = function () { const r = fl0.apply(this, arguments); Routes.clear(); return r; };
+  const st0 = X.stop; X.stop = function () { const r = st0.apply(this, arguments); Routes.reset(); return r; };
+  const er0 = X.endRun; X.endRun = function () { Routes.clear(); return er0.apply(this, arguments); };
+  const ng0 = Game.newGame; Game.newGame = function () { const want = (Net.active && Net.sessionMode) || settings.mode; if (want !== 'descent') Routes.reset(); return ng0.apply(this, arguments); };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) {
+    if (ev && ev.k === 'xrt') { if (X.on && (ev.id | 0) === X.id && DX_ROUTES[ev.rt]) Routes.pick = ev.rt; return; }
+    if (ev && ev.k === 'xrv') { if (X.on && (ev.id | 0) === X.id && ev.v && typeof ev.v === 'object') { const v = {}; for (const k in ev.v) if (DX_ROUTES[ev.v[k]]) v[k | 0] = ev.v[k]; Routes.votes = v; X.drawInter(); } return; }
+    return ae0.apply(this, arguments);
+  };
+  const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i, x) { if (a === 'xrv') { if (!Net.isClient && X.on && r) Routes.hostVote(r.id, i); return; } return ra0.apply(this, arguments); };
+  // the lift's screen: the routes, under the vote to go on
+  const di0 = X.drawInter; X.drawInter = function () {
+    const r = di0.apply(this, arguments), el = this.el;
+    if (!el || !el.classList.contains('on') || !this.vote || this.vote.kind !== 'go' || this.phase !== 'inter') return r;
+    const vote = el.querySelector('.dx-vote'); if (!vote) return r;
+    const n = { main: 0, stairs: 0, deep: 0 }; for (const id in Routes.votes) n[Routes.votes[id]]++;
+    const lead = Routes.tally(), mine = Routes.votes[Net.myId] || Routes.mine || null, team = Net.active && Net.remotes.size;
+    const box = document.createElement('div'); box.className = 'dx-routes';
+    box.innerHTML = '<h4>THE WAY DOWN TO SUBLEVEL ' + DX_SUB[this.floorMode()] + '</h4><div class="dx-rt"></div><div class="dx-rule"></div>';
+    const row = box.querySelector('.dx-rt');
+    for (const id of DX_RIDS) {
+      const R = DX_ROUTES[id], b = document.createElement('button'); b.type = 'button'; b.dataset.rt = id;
+      b.className = (mine === id ? 'mine ' : '') + (lead === id ? 'lead' : '');
+      const t = document.createElement('b'); t.textContent = R.name + (team && n[id] ? ' · ' + n[id] : ''); const sm = document.createElement('small'); sm.textContent = R.desc; b.appendChild(t); b.appendChild(sm);
+      b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); Sound.ui && Sound.ui(); Routes.choose(id); });
+      row.appendChild(b);
+    }
+    box.querySelector('.dx-rule').textContent = team ? 'Everyone picks; most picks wins, a tie takes the safer way. Nobody picking: the main shaft.' : 'Pick one before you vote to go on (the main shaft if you don\'t).';
+    vote.parentNode.insertBefore(box, vote);
+    return r;
+  };
+  const sy0 = X.style; X.style = function () {
+    const r = sy0.apply(this, arguments);
+    const st = document.createElement('style');
+    st.textContent = '.dx-routes{margin:10px 0 4px}.dx-routes h4{font:600 11px/1 var(--mono);letter-spacing:.22em;color:#cdbb92;margin:0 0 7px}'
+      + '.dx-rt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.dx-rt button{all:unset;cursor:pointer;border:1px solid #4d4434;background:rgba(18,15,10,.85);padding:8px 10px;color:#e5dac2}'
+      + '.dx-rt button b{display:block;font:600 12px/1.2 var(--mono);letter-spacing:.12em;color:#ffd27a;margin-bottom:3px}.dx-rt button small{display:block;font-size:11.5px;line-height:1.35;color:#c7bba2}'
+      + '.dx-rt button.lead{border-color:#9a8450}.dx-rt button.mine{border-color:#ffd27a;box-shadow:0 0 0 1px #ffd27a inset}.dx-rt button:focus-visible{outline:2px solid #ffd27a}'
+      + '@media (max-width:700px){.dx-rt{grid-template-columns:1fr}}';
+    document.head.appendChild(st);
+    return r;
+  };
+}
+/* ================================================================== */
+/* Build 34: THE ROOM YOU'RE IN, BY EAR                                */
+/*  The reverb follows where you stand: a vent is tight and dead, a    */
+/*  small office is close, the corridors ring, a turbine hall or the   */
+/*  Gallery's long room rings for a long time, and outdoors (the       */
+/*  Hollow Woods) there is next to none. It glides from one to the     */
+/*  next over about a second. (The mixer — effects, ambience, music &  */
+/*  stings, interface — is in Settings; see Sound.applyVolume.)        */
+/* ================================================================== */
+const Acoustics = {
+  t: 0, last: -1,
+  // 0 (outdoors) … 1 (a big hard hall), for where the listener is
+  wetAt(x, z) {
+    if (Game.mode === 'woods' || (LEVELS[LVL] && LEVELS[LVL].forest)) return 0.12;
+    const c = cellOf(x, z); if (!c || c.kind === 'wall') return 0.6;
+    if (c.kind === 'vent') return 0.24;
+    const id = c.room; if (!id) return 0.6;
+    if (isCorr(id)) return 0.52; // (long and hard, but narrow: more than a small office, less than a big hall)
+    const R = rooms[id], area = R ? R.cells.length : 40, h = ROOM_H[id] || WALL_H;
+    return clamp(0.28 + Math.min(area, 120) / 120 * 0.5 + (h - WALL_H) * 0.08, 0.3, 0.95);
+  },
+  tick(dt) {
+    this.t -= dt; if (this.t > 0) return; this.t = 0.4;
+    const w = +this.wetAt(player.pos.x, player.pos.z).toFixed(2);
+    if (Math.abs(w - this.last) > 0.02) { this.last = w; Sound.setRoom(w); }
+  },
+  reset() { this.t = 0; this.last = -1; Sound.setRoom(0.6); },
+};
+{
+  const cu0 = Chars.update; Chars.update = function (dt) { const r = cu0.apply(this, arguments); try { Acoustics.tick(dt); } catch (e) { } return r; };
+  const qt0 = Game.quitToTitle; Game.quitToTitle = function () { const r = qt0.apply(this, arguments); Acoustics.reset(); return r; };
+  const ng0 = Game.newGame; Game.newGame = function () { const r = ng0.apply(this, arguments); Acoustics.last = -1; Acoustics.t = 0; return r; };
+}
+/* ================================================================== */
+/* Build 34: THE COLLECTION                                            */
+/*  The Cosmetic Locker's pieces, gathered into collections (by the    */
+/*  same IDs they always had — nothing renamed, no rarity changed):    */
+/*  each shows how much of it you have, which pieces are missing and   */
+/*  how to get every one of them, and pays once when it's complete    */
+/*  (coins and a badge). Every piece in a collection can be had at any */
+/*  time of year (the Halloween pumpkin is in none of them). The two   */
+/*  rolled sets show their pieces too. Looks and coins only.           */
+/* ================================================================== */
+const COS_COLS = [
+  { id: 'col_basics', name: 'FIRST SHIFT KIT', badge: 'KITTED OUT', coins: 150, items: ['hardhat', 'visor', 'pack', 'dust', 'hazard'], desc: 'The basics, from the Cosmetic Roll.' },
+  { id: 'col_show', name: 'SHOWSTOPPERS', badge: 'SHOWSTOPPER', coins: 300, items: ['cone', 'neon', 'confetti', 'glitch', 'holo', 'crown'], desc: 'The loud ones, from the Cosmetic Roll.' },
+  { id: 'col_earned', name: 'EARNED, NOT ROLLED', badge: 'EARNED IT', coins: 600, items: ['beanie', 'tank', 'tiger', 'elec', 'royal', 'phantom', 'gold'], desc: 'Only by doing the thing: every one is a challenge.' },
+  { id: 'col_secrets', name: 'KESTREL\'S SECRETS', badge: 'FINDER', coins: 400, items: ['frog', 'pixel', 'shood'], desc: 'Hidden on the maps, or earned the brave way.' },
+  { id: 'col_beyond', name: 'BEYOND RARE', badge: 'BEYOND', coins: 800, items: ['fracture', 'prism', 'celest'], desc: 'Three MYTHIC bodies.' },
+];
+const Collections = {
+  claimed() {
+    const d = Cos.ensure();
+    if (!d.col || typeof d.col !== 'object') { d.col = {}; try { const o = JSON.parse(localStorage.getItem(COS_KEY) || 'null'); if (o && o.col) for (const Cl of COS_COLS) if (o.col[Cl.id] === 1) d.col[Cl.id] = 1; } catch (e) { } }
+    return d.col;
+  },
+  progress(Cl) { const have = Cl.items.filter(id => Cos.owns(id)).length; return { have, n: Cl.items.length, done: have === Cl.items.length }; },
+  // anything newly complete: paid, once
+  check(quiet) {
+    const got = this.claimed(), fresh = [];
+    for (const Cl of COS_COLS) {
+      if (got[Cl.id] || !this.progress(Cl).done) continue;
+      got[Cl.id] = 1; fresh.push(Cl);
+      if (Chars.data) { Chars.data.coins = Math.min(ECON.maxCoins, Chars.data.coins + Cl.coins); Chars.save(); }
+    }
+    if (fresh.length) {
+      Cos.save(); try { CharUI.refresh(); } catch (e) { }
+      if (!quiet) for (const Cl of fresh) UI.msg('COLLECTION COMPLETE: ' + Cl.name + ' — +' + Cl.coins + ' coins and the "' + Cl.badge + '" badge.', 'good', 5);
+    }
+    return fresh;
+  },
+  badges() { const got = this.claimed(); return COS_COLS.filter(Cl => got[Cl.id]).map(Cl => Cl.badge); },
+  // the Locker's Collections tab
+  draw(L) {
+    const grid = $('lk-grid'); grid.innerHTML = ''; grid.classList.add('lk-cols');
+    const sets = COSMETICS.filter(C => C.slot === 'set').map(S => ({ id: S.id, name: S.name.toUpperCase(), items: S.set, set: true, desc: S.desc, rar: S.rar }));
+    for (const Cl of COS_COLS.concat(sets)) {
+      const p = this.progress(Cl), got = !Cl.set && this.claimed()[Cl.id];
+      const box = document.createElement('div'); box.className = 'lk-col' + (p.done ? ' done' : '');
+      const h = document.createElement('div'); h.className = 'lk-colh';
+      const nm = document.createElement('b'); nm.textContent = Cl.name; const ct = document.createElement('span'); ct.textContent = p.have + ' / ' + p.n; h.appendChild(nm); h.appendChild(ct); box.appendChild(h);
+      const bar = document.createElement('div'); bar.className = 'lk-bar'; const fi = document.createElement('i'); fi.style.width = (p.have / p.n * 100) + '%'; bar.appendChild(fi); box.appendChild(bar);
+      const row = document.createElement('div'); row.className = 'lk-colp';
+      for (const id of Cl.items) {
+        const C = COS[id], b = document.createElement('button'); b.type = 'button'; b.className = Cos.owns(id) ? 'own' : 'miss'; b.style.setProperty('--rc', COS_RAR[C.rar].c);
+        b.textContent = C.ico; b.title = C.name + ' (' + COS_RAR[C.rar].n + ')' + (Cos.owns(id) ? ' — yours' : ' — ' + L.howText(C).join('; '));
+        b.setAttribute('aria-label', b.title);
+        b.addEventListener('click', () => { L.sel = id; L.info(); });
+        row.appendChild(b);
+      }
+      box.appendChild(row);
+      const ft = document.createElement('p'); ft.className = 'lk-colr';
+      ft.textContent = Cl.set ? 'A set from the Cosmetic Roll: rolled whole, all ' + p.n + ' pieces at once.' : (got ? '✓ Complete — +' + Cl.coins + ' coins paid, badge "' + Cl.badge + '"' : 'Complete it: +' + Cl.coins + ' coins and the "' + Cl.badge + '" badge. ' + Cl.desc);
+      box.appendChild(ft);
+      grid.appendChild(box);
+    }
+    const bd = this.badges(), cnt = $('lk-count'); if (cnt) cnt.textContent = Cos.count().have + ' / ' + Cos.count().all + ' · collections ' + COS_COLS.filter(Cl => this.claimed()[Cl.id]).length + ' / ' + COS_COLS.length + (bd.length ? ' · ' + bd.join(' · ') : '');
+  },
+};
+
+/* ================= the hooks ================= */
+{
+  // the save: the collections paid for ride along in the cosmetics file (an older one simply has none)
+  const ld0 = Cos.load; Cos.load = function () {
+    const d = ld0.apply(this, arguments); let o = null; try { o = JSON.parse(localStorage.getItem(COS_KEY) || 'null'); } catch (e) { }
+    d.col = {}; if (o && o.col && typeof o.col === 'object') for (const Cl of COS_COLS) if (o.col[Cl.id] === 1) d.col[Cl.id] = 1;
+    return d;
+  };
+  const gv0 = Cos.give; Cos.give = function () { const r = gv0.apply(this, arguments); if (r && r.length) Collections.check(); return r; };
+  const dr0 = Locker.draw; Locker.draw = function () {
+    const r = dr0.apply(this, arguments), tabs = $('lk-tabs');
+    if (tabs) { const b = document.createElement('button'); b.textContent = 'Collections'; b.className = this.tab === 'col' ? 'on' : ''; b.addEventListener('click', () => { this.tab = 'col'; this.draw(); }); tabs.appendChild(b); }
+    const g = $('lk-grid'); if (g) g.classList.remove('lk-cols');
+    if (this.tab === 'col') Collections.draw(this);
+    return r;
+  };
+  const op0 = Locker.open; Locker.open = function () { Collections.check(true); return op0.apply(this, arguments); }; // (anything completed before this build: paid now, once)
+  const st = document.createElement('style');
+  st.textContent = '.lk-grid.lk-cols{display:block}.lk-col{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);padding:8px 10px;margin-bottom:8px}.lk-col.done{border-color:#7dff9a55}'
+    + '.lk-colh{display:flex;justify-content:space-between;font:600 11px/1.3 var(--mono,monospace);letter-spacing:.12em;color:#eef1f5}.lk-colh span{color:#9aa3b2}'
+    + '.lk-colp{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 4px}.lk-colp button{width:34px;height:34px;font-size:19px;line-height:30px;border:1px solid var(--rc);background:rgba(0,0,0,.3);cursor:pointer;padding:0}.lk-colp button.miss{filter:grayscale(1) brightness(.5);border-style:dashed}'
+    + '.lk-colp button:focus-visible{outline:2px solid #f0e6c8}.lk-colr{margin:2px 0 0;font-size:11.5px;color:#a9b1bd}';
+  document.head.appendChild(st);
+}
+/* ================================================================== */
+/* Build 34: THE KESTREL FILE — a secret, in four steps                */
+/*  1 · Scratched into the wall of the security office, by the door:  */
+/*      a time.                                                        */
+/*  2 · The old radio on the wall by Desk B: at that time on the shift */
+/*      clock (03:25–03:45), and only once you've read the scratches,  */
+/*      a voice answers — and says where it left something.            */
+/*  3 · A plate with two screws missing, where the west corridor ends  */
+/*      (north). Once you know, it comes off: badge KESTREL #0.        */
+/*  4 · Finish THE NIGHT SHIFT carrying it: another ending.            */
+/*  Nothing is random and nothing is timed to the second: the clock is */
+/*  on your HUD and the window is twenty minutes of shift time. It is  */
+/*  remembered between runs (its own save). Online, everyone finds it  */
+/*  for themselves — nothing about it goes over the network. No coins: */
+/*  just the story, two achievements and the ending.                   */
+/*  The journal (P → Notes) keeps it, spoiler-free until found.        */
+/* ================================================================== */
+const KS_KEY = 'lastshift.secrets.v1';
+const KS_MODES = new Set(['night', 'endless', 'photos']);
+const KS_POS = { scratch: [15.97, 0.95, 46.6], radio: [2.18, 1.35, 52.2], plate: [19.0, 1.15, 4.04] };
+const KS_TEXT = {
+  ks_1: { title: 'Scratches — Security office', body: 'Scratched into the paint at knee height, by the door, over and over, by someone who sat at Desk B for a very long time:\n\nTUNE IN AT 3:33.\nHE STILL ANSWERS.', hint: 'Someone who sat at Desk B left something on the wall by the door.' },
+  ks_2: { title: 'The radio at 3:33 — Desk B', body: '…kkrrsh… this is Crane. Desk B. Night shift.\n\n…twenty-two years they had me on this desk. They told me Sublevel 6 was the bottom. It never was.\n\nMy badge. The first one, before the numbers meant anything. Where the west corridor stops — the north end — behind the plate with the screws missing.\n\nDon\'t let them give you my shift. Don\'t… kkh…', hint: 'Somebody wrote down a time. The old radio by the desk might be worth listening to then.' },
+  ks_3: { title: 'Badge KESTREL #0 — E. Crane', body: 'Behind the plate, in a hollow in the wall, wrapped in a shift log page: a guard\'s badge.\n\nKESTREL #0 · E. CRANE · NIGHT SHIFT\n\nThe photo has been scratched out. On the back, in pencil: "LILY — 7 ON THURSDAY".', hint: 'A voice said where something was left. You\'d need to know that before you went looking.' },
+  ks_4: { title: 'The first guard', body: 'You rode the lift up with Elias Crane\'s badge in your pocket. At the top, the day supervisor read the name and went very quiet.\n\n"He was the first," she said. "Before the Warden had a name."\n\nShe didn\'t ask for it back.', hint: 'Whatever you find down there, you could try carrying it all the way to dawn.' },
+};
+ACH.push(
+  { id: 'ks_found', name: 'Badge #0', desc: 'Find what Elias Crane left behind.' },
+  { id: 'ks_first', name: 'The First Guard', desc: 'Finish THE NIGHT SHIFT carrying it.' },
+);
+for (const k in KS_TEXT) NOTES[k] = { title: KS_TEXT[k].title, body: KS_TEXT[k].body };
+const Secrets = {
+  d: null, objs: [],
+  load() {
+    let o = null; try { o = JSON.parse(localStorage.getItem(KS_KEY) || 'null'); } catch (e) { }
+    const d = { v: 1, s: {} }; if (o && o.s && typeof o.s === 'object') for (const k in KS_TEXT) if (o.s[k] === 1) d.s[k] = 1;
+    // (the chain only counts in order: a step without the one before it is dropped)
+    ['ks_1', 'ks_2', 'ks_3', 'ks_4'].reduce((ok, k) => { if (!ok) delete d.s[k]; return ok && !!d.s[k]; }, true);
+    this.d = d; return d;
+  },
+  ensure() { return this.d || this.load(); },
+  has(k) { return !!this.ensure().s[k]; },
+  save() { try { localStorage.setItem(KS_KEY, JSON.stringify(this.d)); } catch (e) { } },
+  found(k, quiet) {
+    if (this.has(k)) return false;
+    this.ensure().s[k] = 1; this.save();
+    if (!quiet) UI.msg('THE KESTREL FILE · ' + KS_TEXT[k].title + ' — in your journal (P → Notes).', 'story', 4.5);
+    return true;
+  },
+  on() { return KS_MODES.has(Game.mode) && LVL === 0; },
+  // the clock on the wall, in minutes after midnight (only THE NIGHT SHIFT keeps one)
+  atTheTime() { if (Game.mode !== 'night' || Night.dawn) return false; const m = Night.minutes(); return m >= 205 && m < 225; }, // (03:25–03:45)
+  /* ---- the three things in the building ---- */
+  use(what) {
+    if (!this.on()) return;
+    if (what === 'scratch') { Sound.paper(); UI.readNote('ks_1'); this.found('ks_1'); return; }
+    if (what === 'radio') {
+      if (this.has('ks_1') && this.atTheTime()) { Sound.radio(_ksv.set(...KS_POS.radio), 4); UI.readNote('ks_2'); this.found('ks_2'); return; }
+      Sound.staticCut(0.5); UI.msg(this.has('ks_1') && Game.mode === 'night' ? 'Only static. The clock says ' + Night.clock() + ' AM.' : 'An old wall radio. Only static.', '', 2.6); return;
+    }
+    if (what === 'plate') {
+      if (!this.has('ks_2')) { UI.msg('A metal plate on the wall. Two of its screws are missing.', '', 2.6); return; }
+      if (this.has('ks_3')) { UI.msg('The plate is loose. The hollow behind it is empty now.', '', 2.4); return; }
+      Sound.drawer(_ksv.set(...KS_POS.plate)); Game.noise(player.pos, 5, 'player'); UI.readNote('ks_3'); this.found('ks_3'); Goals.unlock('ks_found'); return; // (prying it off isn't quiet)
+    }
+  },
+  prompt(what) {
+    if (!this.on()) return null;
+    return what === 'scratch' ? 'Look at the scratches' : what === 'radio' ? 'Listen to the old radio' : this.has('ks_2') && !this.has('ks_3') ? 'Pry the plate off' : 'Look at the plate';
+  },
+  build() {
+    const mk = (what, x, y, z, mesh, hb) => { mesh.userData.lvl = 0; hb.userData.lvl = 0; const def = addInteract([hb, mesh], { kind: 'secret', what, prompt: () => this.prompt(what), use: () => this.use(what) }); this.objs.push(def); };
+    // the scratches: pale gouges in the paint, by the door
+    { const c = makeCanvas(128, 64), g = c.getContext('2d'); g.clearRect(0, 0, 128, 64); g.strokeStyle = 'rgba(225,215,195,.85)'; g.lineWidth = 2; g.font = 'bold 15px monospace'; g.fillStyle = 'rgba(225,215,195,.8)';
+      g.fillText('TUNE IN 3:33', 10, 24); g.fillText('HE ANSWERS', 18, 44); for (let i = 0; i < 9; i++) { g.beginPath(); g.moveTo(6 + i * 13, 52); g.lineTo(12 + i * 13, 62); g.stroke(); }
+      const m = wallPlane(new T.MeshLambertMaterial({ map: mkTex(c, false), transparent: true, depthWrite: false }), KS_POS.scratch[0], KS_POS.scratch[1], KS_POS.scratch[2], 'W', 0.62, 0.31, 0.012);
+      mk('scratch', 0, 0, 0, m, hitBox(KS_POS.scratch[0] - 0.1, KS_POS.scratch[1], KS_POS.scratch[2], 0.25, 0.5, 0.8)); }
+    // the radio: an old bakelite set on a wall bracket by Desk B
+    { const g0 = new T.Group(); g0.position.set(KS_POS.radio[0], KS_POS.radio[1], KS_POS.radio[2]); scene.add(g0);
+      const body = new T.Mesh(GEO.box, new T.MeshPhongMaterial({ color: 0x3a2618, shininess: 40 })); body.scale.set(0.2, 0.22, 0.36); body.position.x = 0.1; g0.add(body);
+      const grille = new T.Mesh(GEO.box, new T.MeshPhongMaterial({ color: 0x8a7a5a, shininess: 10 })); grille.scale.set(0.01, 0.13, 0.2); grille.position.set(0.205, 0.02, -0.04); g0.add(grille);
+      const dial = new T.Mesh(GEO.box, new T.MeshBasicMaterial({ color: 0xd8b06a })); dial.scale.set(0.01, 0.04, 0.06); dial.position.set(0.205, 0.0, 0.12); g0.add(dial);
+      const br = new T.Mesh(GEO.box, MAT.metalDark); br.scale.set(0.22, 0.03, 0.3); br.position.set(0.1, -0.125, 0); g0.add(br);
+      g0.userData.lvl = 0; g0.traverse(o => { o.userData.lvl = 0; });
+      mk('radio', 0, 0, 0, body, hitBox(KS_POS.radio[0] + 0.12, KS_POS.radio[1], KS_POS.radio[2], 0.4, 0.4, 0.5)); }
+    // the plate: four screw holes, two of them empty
+    { const c = makeCanvas(64, 64), g = c.getContext('2d'); g.fillStyle = '#7d8086'; g.fillRect(0, 0, 64, 64); g.strokeStyle = '#4a4c50'; g.lineWidth = 3; g.strokeRect(2, 2, 60, 60);
+      [[9, 9, 1], [55, 9, 0], [9, 55, 0], [55, 55, 1]].forEach(([x, y, s]) => { g.fillStyle = s ? '#c9ccd2' : '#1b1c1e'; g.beginPath(); g.arc(x, y, 4, 0, TAU); g.fill(); });
+      const m = wallPlane(phong({ map: mkTex(c, false), shininess: 50 }), KS_POS.plate[0], KS_POS.plate[1], KS_POS.plate[2], 'S', 0.42, 0.42, 0.012);
+      mk('plate', 0, 0, 0, m, hitBox(KS_POS.plate[0], KS_POS.plate[1], KS_POS.plate[2] + 0.1, 0.6, 0.6, 0.25)); }
+  },
+  // (every new run) only where it belongs
+  arm() { const on = this.on(); for (const def of this.objs) def.enabled = on; },
+};
+const _ksv = new T.Vector3();
+Secrets.build();
+
+/* ================= the hooks ================= */
+{
+  const ng0 = Game.newGame; Game.newGame = function () { const r = ng0.apply(this, arguments); Secrets.arm(); return r; };
+  // the ending
+  const sv0 = Game.showVictory; Game.showVictory = function () {
+    const r = sv0.apply(this, arguments);
+    if (Game.mode === 'night' && Game.state === 'won' && Secrets.has('ks_3')) {
+      const first = Secrets.found('ks_4', true);
+      const truth = typeof Expedition !== 'undefined' && Object.keys((Expedition.store() || {}).pages || {}).length >= 5;
+      $('win-title').textContent = 'The first guard';
+      $('epilogue').textContent = KS_TEXT.ks_4.body.replace(/\n\n/g, ' ') + (truth ? ' You know now what the first night shift was for — the dossier said it: every floor a lid on the one below. Crane was the first lid. You don\'t intend to be the last.' : '');
+      Goals.unlock('ks_first');
+      if (first) UI.msg('THE KESTREL FILE is complete.', 'story', 5);
+    }
+    return r;
+  };
+  // the journal: the file, spoiler-free until found
+  const bj0 = UI.buildJournal; UI.buildJournal = function () {
+    const r = bj0.apply(this, arguments), list = $('journal-list'); if (!list) return r;
+    const em = list.querySelector('.empty'); const any = ['ks_1', 'ks_2', 'ks_3', 'ks_4'].some(k => Secrets.has(k));
+    if (em && any) em.remove();
+    const h = document.createElement('div'); h.className = 'ks-h'; h.textContent = 'THE KESTREL FILE · ' + ['ks_1', 'ks_2', 'ks_3', 'ks_4'].filter(k => Secrets.has(k)).length + ' / 4'; list.appendChild(h);
+    let next = true;
+    for (const k of ['ks_1', 'ks_2', 'ks_3', 'ks_4']) {
+      if (Secrets.has(k)) { const b = document.createElement('button'); b.textContent = KS_TEXT[k].title; b.addEventListener('click', () => { Sound.ui(); UI.readNote(k, true); }); list.appendChild(b); }
+      else { const p = document.createElement('div'); p.className = 'ks-hint'; p.textContent = next ? '??? — ' + KS_TEXT[k].hint : '???'; list.appendChild(p); next = false; }
+    }
+    return r;
+  };
+  const st = document.createElement('style');
+  st.textContent = '.ks-h{margin:12px 0 4px;font:600 11px/1 var(--mono,monospace);letter-spacing:.22em;color:#d9b25a}.ks-hint{font-size:12.5px;color:#8f8a7e;padding:6px 2px;line-height:1.4}';
+  document.head.appendChild(st);
+}
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -40578,6 +41639,152 @@ const CharUI = {
   },
   closeReveal(quiet) { const rv = $('reveal'); if (rv) rv.hidden = true; if (!quiet) Sound.ui(); },
 };
+/* ================================================================== */
+/* Build 34: CHARACTER MASTERY                                         */
+/*  Every character has a mastery level (1–6), earned by playing them: */
+/*  the minutes you were actually playing (moving, hiding, fighting —  */
+/*  standing still in a corner doesn't count), runs won, objectives,   */
+/*  using their ability, and three challenges each. Levels give titles */
+/*  you can wear and a frame on their card; level 6 marks them         */
+/*  MASTERED. Looks only — nothing here changes how anyone plays.      */
+/*  Saved on its own (a broken file is repaired; coins, characters and */
+/*  spins are never touched by it). Online, each guard counts only     */
+/*  their own play, on their own screen: nothing is sent or accepted.  */
+/* ================================================================== */
+const MS_KEY = 'lastshift.mastery.v1';
+const MS_XP = [0, 0, 30, 80, 150, 240, 360]; // the XP each level starts at (level 1 at 0)
+const MS_TITLES = [null, null, 'ON THE ROSTER', 'NIGHT REGULAR', 'SHIFT VETERAN', 'KESTREL EXPERT', 'MASTER'];
+const MS_CAP = 60; // XP a run can give at most (challenges on top)
+const MS_CH_XP = 25;
+// each character's three challenges (the ability one follows the character's own ability)
+const msChallenges = id => {
+  const C = CHARS[id], A = C && C.ab ? ABIL[C.ab] : null;
+  return [
+    { k: 't', n: 30, name: 'Thirty minutes on shift', desc: 'Play ' + C.name + ' for 30 minutes (only the time you\'re actually playing counts).' },
+    A ? { k: 'ab', n: 8, name: 'Know your ' + A.name, desc: 'Use ' + A.name + ' in 8 runs that last at least ' + ECON.minRun + ' s.' } : { k: 'r', n: 8, name: 'No tricks', desc: 'Finish 8 runs as ' + C.name + ' (at least ' + ECON.minRun + ' s each).' },
+    { k: 'w', n: 3, name: 'Clocked out alive', desc: 'Win 3 runs as ' + C.name + ' (any mode; a cleared DESCENT floor counts).' },
+  ];
+};
+const Mastery = {
+  d: null, activeT: 0, lastRun: null,
+  fresh() { return { v: 1, c: {}, title: '' }; },
+  blank() { return { xp: 0, t: 0, ab: 0, r: 0, w: 0, ch: [0, 0, 0] }; },
+  load() {
+    let o = null; try { o = JSON.parse(localStorage.getItem(MS_KEY) || 'null'); } catch (e) { }
+    const d = this.fresh(), num = (v, hi) => { const n = Number(v); return Number.isFinite(n) ? clamp(Math.floor(n), 0, hi) : 0; };
+    if (o && typeof o === 'object' && !Array.isArray(o)) {
+      if (o.c && typeof o.c === 'object') for (const id in o.c) {
+        if (!CHARS[id]) continue; const s = o.c[id]; if (!s || typeof s !== 'object') continue;
+        const b = this.blank(); b.xp = num(s.xp, 100000); b.t = num(s.t, 1e7); b.ab = num(s.ab, 1e5); b.r = num(s.r, 1e5); b.w = num(s.w, 1e5);
+        b.ch = [0, 1, 2].map(i => Array.isArray(s.ch) && s.ch[i] === 1 ? 1 : 0); d.c[id] = b;
+      }
+      if (typeof o.title === 'string' && /^[a-z0-9]{1,16}:[2-6]$/.test(o.title)) { const [id, lv] = o.title.split(':'); if (d.c[id] && this.lvOf(d.c[id].xp) >= +lv) d.title = o.title; }
+    }
+    this.d = d; return d;
+  },
+  ensure() { return this.d || this.load(); },
+  save() { try { localStorage.setItem(MS_KEY, JSON.stringify(this.d)); } catch (e) { } },
+  of(id) { const d = this.ensure(); return d.c[id] || this.blank(); },
+  lvOf(xp) { let lv = 1; for (let i = 2; i < MS_XP.length; i++) if (xp >= MS_XP[i]) lv = i; return lv; },
+  level(id) { return this.lvOf(this.of(id).xp); },
+  titleText(id, lv) { const C = CHARS[id]; return lv >= 6 ? C.name + ' · MASTER' : MS_TITLES[lv] + ' · ' + C.name; },
+  progress(id, i) { const s = this.of(id), Q = msChallenges(id)[i], v = Q.k === 't' ? Math.floor(s.t / 60) : Q.k === 'ab' ? s.ab : Q.k === 'r' ? s.r : s.w; return { v: Math.min(v, Q.n), n: Q.n, done: s.ch[i] === 1 }; },
+  // (every frame of a run) the time you're actually playing
+  tick(dt) {
+    if (Game.state !== 'playing' || player.dead || player.downed || Game.controlLock) return;
+    const mv = Math.hypot(player.vel.x, player.vel.z) > 0.4, busy = player.hidden || (typeof Hold !== 'undefined' && Hold.active) || Chars.cd > 0;
+    if (mv || busy) this.activeT += dt;
+  },
+  // (the end of a run, once — from the payout) what it was worth
+  award(won) {
+    this.lastRun = null;
+    if (Game.mode === 'hunt') return null; // (you were the Warden)
+    const id = Chars.run, C = CHARS[id]; if (!C) return null;
+    const secs = Math.max(0, (Game.flags && (Game.flags.lastAlive || Game.flags.diedAt)) || Game.time);
+    if (secs < ECON.minRun && !won) return null; // (a run that barely started: nothing, same as the coins)
+    const d = this.ensure(), s = d.c[id] || (d.c[id] = this.blank()), lv0 = this.lvOf(s.xp), S = Chars.stats || {};
+    const act = Math.min(this.activeT, secs), mins = Math.min(15, act / 60), used = (S.used | 0) > 0;
+    let xp = Math.round(mins * 2) + (won ? 10 : 0) + Math.min(6, S.objs | 0) * 2 + (used ? 4 : 0);
+    xp = Math.min(MS_CAP, xp);
+    s.t += Math.round(act); s.r++; if (won) s.w++; if (used) s.ab++;
+    const fresh = [];
+    msChallenges(id).forEach((Q, i) => { if (!s.ch[i] && this.progress(id, i).v >= Q.n) { s.ch[i] = 1; xp += MS_CH_XP; fresh.push(Q.name); } });
+    s.xp += xp; const lv1 = this.lvOf(s.xp);
+    this.save();
+    this.lastRun = { id, xp, lv0, lv1, fresh, mins: +mins.toFixed(1) };
+    return this.lastRun;
+  },
+  wear(id, lv) { const d = this.ensure(); if (lv >= 2 && this.level(id) >= lv) { d.title = id + ':' + lv; this.save(); } },
+  worn() { const d = this.ensure(); if (!d.title) return null; const [id, lv] = d.title.split(':'); return CHARS[id] ? this.titleText(id, +lv) : null; },
+  /* ---- the dossier's mastery section ---- */
+  section(id) {
+    const s = this.of(id), lv = this.level(id), C = CHARS[id], nx = MS_XP[Math.min(6, lv + 1)], cur = MS_XP[lv];
+    const box = mkEl('div', 'ds-ms'); const h = mkEl('div', 'ds-msh');
+    h.appendChild(mkEl('b', '', 'MASTERY · LEVEL ' + lv + (lv >= 6 ? ' · MASTERED' : '')));
+    h.appendChild(mkEl('em', '', lv >= 6 ? s.xp + ' XP' : s.xp + ' / ' + nx + ' XP'));
+    box.appendChild(h);
+    const bar = mkEl('div', 'ds-msbar'); const f = mkEl('i'); f.style.width = (lv >= 6 ? 100 : clamp((s.xp - cur) / (nx - cur), 0, 1) * 100) + '%'; bar.appendChild(f); box.appendChild(bar);
+    msChallenges(id).forEach((Q, i) => {
+      const p = this.progress(id, i), row = mkEl('div', 'ds-msq' + (p.done ? ' done' : ''));
+      row.appendChild(mkEl('span', '', (p.done ? '✓ ' : '') + Q.name)); row.appendChild(mkEl('em', '', p.done ? '+' + MS_CH_XP + ' XP' : p.v + ' / ' + p.n));
+      row.title = Q.desc; box.appendChild(row);
+      box.appendChild(mkEl('p', 'ds-msd', Q.desc));
+    });
+    const tr = mkEl('div', 'ds-mst'); const worn = this.ensure().title;
+    for (let L = 2; L <= 6; L++) {
+      const got = lv >= L, b = mkEl('button', 'ds-msr' + (got ? ' got' : '') + (worn === id + ':' + L ? ' worn' : ''), 'LV ' + L);
+      b.type = 'button'; b.title = (got ? '' : 'Locked — ') + 'Title: ' + this.titleText(id, L) + (L === 3 ? ' · a bronze frame on the card' : L === 4 ? ' · a silver frame' : L === 5 ? ' · a gold frame' : L === 6 ? ' · MASTERED' : '');
+      b.disabled = !got; b.addEventListener('click', () => { this.wear(id, L); Sound.ui(); CharUI.dossier(id); CharUI.refresh(); });
+      tr.appendChild(b);
+    }
+    box.appendChild(tr);
+    box.appendChild(mkEl('p', 'ds-msd', this.ensure().title ? 'Wearing: ' + this.worn() + ' (click a level you\'ve reached to wear its title)' : 'Reach level 2 to earn a title; click one to wear it.'));
+    return box;
+  },
+};
+
+/* ================= the hooks ================= */
+{
+  const cr0 = Chars.reset; Chars.reset = function () { const r = cr0.apply(this, arguments); Mastery.activeT = 0; return r; };
+  const cu0 = Chars.update; Chars.update = function (dt) { const r = cu0.apply(this, arguments); Mastery.tick(dt); return r; };
+  // the end of the run: once, with the coins
+  const pay0 = Chars.payout; Chars.payout = function (won) {
+    const first = !this.paid, rows = pay0.apply(this, arguments);
+    if (!first || this.paid !== rows) return rows;
+    const R = Mastery.award(won);
+    if (R && R.xp > 0) rows.push(['Mastery · ' + CHARS[R.id].name, '+' + R.xp + ' XP' + (R.lv1 > R.lv0 ? ' — LEVEL ' + R.lv1 + '!' : ' (level ' + R.lv1 + ')') + (R.fresh.length ? ' · ' + R.fresh.join(', ') : '')]);
+    return rows;
+  };
+  // the roster: a level pip and a frame on the cards, the mastery section in the file
+  const bg0 = CharUI.buildGrid; CharUI.buildGrid = function () {
+    const r = bg0.apply(this, arguments);
+    document.querySelectorAll('#chars-grid .cc').forEach(card => {
+      const id = card.dataset.id; if (!id || !Chars.owns(id)) return;
+      const lv = Mastery.level(id); if (lv < 2) return;
+      card.classList.add('ms' + Math.min(5, lv)); if (lv >= 6) card.classList.add('ms6');
+      const pip = mkEl('span', 'cc-lv', lv >= 6 ? '★ MASTERED' : 'LV ' + lv); card.appendChild(pip);
+    });
+    return r;
+  };
+  const ds0 = CharUI.dossier; CharUI.dossier = function (id) {
+    const r = ds0.apply(this, arguments);
+    if (charHid(id) || !CHARS[id]) return r;
+    const d = $('dossier'), ft = d && d.querySelector('.ds-foot');
+    if (ft) d.insertBefore(Mastery.section(id), ft);
+    return r;
+  };
+  const st = document.createElement('style');
+  st.textContent = '.ds-ms{border-top:1px solid rgba(255,255,255,.08);padding-top:8px;margin-top:4px}'
+    + '.ds-msh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.ds-msh b{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--cc,#ffd27a)}.ds-msh em{font-style:normal;font-size:11px;color:#bdb7aa}'
+    + '.ds-msbar{height:4px;background:rgba(255,255,255,.1);margin:5px 0 6px}.ds-msbar i{display:block;height:100%;background:var(--cc,#ffd27a)}'
+    + '.ds-msq{display:flex;justify-content:space-between;font-size:12px;color:#d8d1c2;margin-top:3px}.ds-msq em{font-style:normal;color:#9d968a}.ds-msq.done span{color:#8fdc8a}'
+    + '.ds-msd{font-size:11px;line-height:1.4;color:#8d877c;margin:1px 0 0}'
+    + '.ds-mst{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}.ds-msr{font:600 10px/1 var(--mono);letter-spacing:.12em;padding:5px 7px;border:1px solid #3d3a34;background:rgba(0,0,0,.3);color:#77716a;cursor:pointer}'
+    + '.ds-msr.got{color:#e8dcc0;border-color:#6d6450}.ds-msr.worn{border-color:var(--cc,#ffd27a);color:var(--cc,#ffd27a)}.ds-msr:disabled{cursor:default}'
+    + '.cc-lv{position:absolute;left:6px;top:6px;font:600 9px/1 var(--mono);letter-spacing:.1em;padding:3px 5px;background:rgba(0,0,0,.65);color:#e8dcc0;pointer-events:none}'
+    + '.cc.ms3{box-shadow:0 0 0 1px #a8703a inset}.cc.ms4{box-shadow:0 0 0 1px #c9cdd6 inset}.cc.ms5{box-shadow:0 0 0 2px #e8c060 inset}.cc.ms6 .cc-lv{color:#ffd27a}';
+  document.head.appendChild(st);
+}
 
 /* ------------------------------------------------------------------ */
 /* Boot                                                                */
@@ -40665,7 +41872,7 @@ if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
     Level, Foe, LEVELS, lvlAt, get LVL() { return LVL; }, Gallery, GAL, Mannequin, Blackout, Shade, BL, TURB, Horde, CR, CR_IDS, CR_BUILD, CR_NAME, crHp, crCap, Hive, HV, NESTS, CULT_SPOTS, JUNCS, HIVE_SEQ, HIVE_PANEL, HIVE_LIFT, HIVE_SPAWNS, Root, RT, PYLONS, RCELL_SPOTS, ROUTES, ROOT_HEART, ROOT_ELEV, ROOT_SPAWNS, hideLockers, Trader, TRADES, CODES, codeKey, Perf, DRS, ORG, OM, SmokeSpots, Smoke, Boom, PROJ_TYPES, CHAR_ONLY, AMMO_KINDS, Chars, CHARS, ABIL, RARITY, ECON, CHAR_IDS, ROLL_IDS, ROSTER_IDS, BUFF_BITS, CharUI, CharArt, Keys, KeysUI, KEY_ACTIONS, Health, Down, Threat, HProj, Hazards, HAZ, Powers, POWERS, Fakes, ATTACK, ATK_IDS, DIFF, DIFF_IDS, hitDmg, windOf, recOf, dkey, ECON, RARITY, RARITY_IDS, voidSpot, CHAIN_RATE, REVIVE_T, reachFor, WARDEN_REACH, MANN_REACH, SHADE_REACH, mannPassable, shadePassable, bodyOverlaps, Roster17, Cosmos, Volley, Gas, Walls, Lockdown, Tasks, WALL_DPS, fixturesOf(lv) { return fixtures.filter(f => f.lvl === lv); },
-    Hints, Cine, Net, Relay, Night, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom, Photos, Endless, Modes, CURSES, PHOTO_ART, Weapons, WPN, WPN_IDS, Battle, Hold, Proj, Fires, Voice, holdSchedule, fxLight, SCENES,
+    Hints, Cine, Net, Relay, NetSec, Director, ND_EVENTS, mulberry32, AISearch, AIDebug, Cashout, CASH_CFG, ENDLESS_HOUR, Routes, DX_ROUTES, get DIFF_MOD() { return DIFF_MOD; }, diff, Mastery, MS_XP, Acoustics, Collections, COS_COLS, Secrets, KS_POS, KS_TEXT, Night, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom, Photos, Endless, Modes, CURSES, PHOTO_ART, Weapons, WPN, WPN_IDS, Battle, Hold, Proj, Fires, Voice, holdSchedule, fxLight, SCENES,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
