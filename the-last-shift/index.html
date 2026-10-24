@@ -146,6 +146,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .mode.doors.sel{border-color:#e2c27a;background:rgba(90,26,30,.4)}
 .mode.woods{border-color:rgba(150,180,140,.5);background:linear-gradient(160deg,rgba(20,40,26,.42),rgba(10,16,12,.3) 60%,rgba(255,255,255,.01))}.mode.woods b{font-family:Georgia,serif;letter-spacing:.2em;color:#bcd2a8}
 .mode.woods.sel{border-color:#bcd2a8;background:rgba(20,44,28,.5)}.modes.woods{grid-template-columns:1fr}.modes.hotel{grid-template-columns:1fr}
+.mode.escape{border-color:rgba(120,170,200,.5);background:linear-gradient(160deg,rgba(14,34,46,.45),rgba(8,14,18,.3) 60%,rgba(255,255,255,.01))}.mode.escape b{letter-spacing:.2em;color:#a8d0e4}
+.mode.escape.sel{border-color:#a8d0e4;background:rgba(14,36,50,.5)}.modes.escape{grid-template-columns:1fr}
 .camo-maps{display:flex;gap:8px;align-items:stretch;margin:4px 0 12px;flex-wrap:wrap}.camo-maps>span{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--amber);align-self:center;margin-right:4px}.camo-maps button{flex:1;min-width:180px;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.14);color:inherit;padding:8px 10px;cursor:pointer;font:inherit}.camo-maps button b{display:block;letter-spacing:.12em;font-size:12px}.camo-maps button small{display:block;opacity:.7;font-size:11px;margin-top:3px}.camo-maps button.sel{border-color:#ffb26a;background:rgba(208,106,30,.16)}
 .camo-maps .new{display:inline-block;font-size:9px;letter-spacing:.2em;color:#111;background:var(--amber);padding:1px 5px;margin-left:8px;vertical-align:2px}
 .mp-cmaps span{font-size:10px;letter-spacing:.2em;opacity:.7;align-self:center}
@@ -1189,6 +1191,11 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p"><b>Feed the fire</b> (wood or fuel, at the fire pit): it won't walk into its light, and the more you feed it the bigger it grows — five levels, each pushing the fog back further. At the bench, <b>make things</b>: <b>bear traps</b> ([1]) that hold it where it stands, <b>noise lures</b> ([2]) that send it after a rattle, <b>flares</b> ([3]) and <b>lantern posts</b> ([5]) it won't come near, batteries, a bigger pack, steel traps; build the bench up for more. Eat ([4]) or you'll starve — cook three berries into a hot meal at the fire.</p>
     <p class="p">At night it comes looking. It <b>hears</b> everything you do and <b>sees</b> your torch from far off — but hold your beam on its face and it can't stand it. Every night it gets <b>faster, sharper, bolder</b>. Four people are <b>lost</b> in these woods: find them and walk them home to the fire. Dozens of <b>goals</b> ([J]) pay coins and stay done. Your run is <b>saved at every dawn</b>. <b>No weapons</b> — none to find, none to bring. Online, up to four of you.</p>
     </div>
+    <div id="brief-escape" hidden>
+    <p class="p">The <b>Pressure Wing</b>: an airlock, <b>six locked rooms</b> and a lift out. Every run a seed decides which room is which, in what order, and where everything is — <b>FLOOD CHAMBER</b>, <b>POWER ROOM</b>, <b>REFLECTION ROOM</b>, <b>PRESSURE CHAMBER</b>, <b>SHIFTING ROOM</b>, <b>OBSERVATION ROOM</b>, <b>LOCKDOWN ROOM</b>.</p>
+    <p class="p">Each room has a <b>clue</b> on its wall (read it with [E]), a <b>puzzle</b>, and a <b>hazard</b> — rising water, live cables, a burning laser, steam, searchlights, a thing that moves when nobody is looking. The hazards hurt; none of them kills you outright. Solve the room and its <b>security door</b> opens. Three rooms have <b>another way through</b>, quicker and riskier: the flood room's overflow hatch, the power room's hot-wire, the pressure room's purge.</p>
+    <p class="p">In deep water you <b>swim</b> at the surface: slower, and it tires you. The room you last walked into is your <b>checkpoint</b> — online you come back to its doorway; alone, the end screen lets you start again from it. [H] gives a hint. Somewhere there is a room nobody was told about.</p>
+    </div>
     <div id="brief-endless" hidden>
     <p class="p">The day shift is never coming. There is no lift, no keycard, no way out — only the night, and <b>how long you can last in it</b>.</p>
     <p class="p">Every hour (about a minute and a half) you get a spare battery — and you must <b>choose one of two curses</b>. They stack: a faster Warden, sharper ears, brownouts, open vents, phantoms everywhere… Every run is different. Beat your longest night.</p>
@@ -1211,6 +1218,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div class="kicker" style="margin-top:14px">The Hollow Woods · above ground · night</div>
     <div class="modes woods">
       <button class="mode woods" data-mode="woods"><b>THE HOLLOW WOODS<i class="new">NEW</i></b><span>Survive 99 nights in the woods. Gather by day, keep the fire burning, craft traps, lures, flares and lanterns, find the four lost campers. Something in the trees hunts by sound — and gets worse every night. No weapons. Solo or online, up to four.</span><em data-best="woods"></em></button>
+    </div>
+    <div class="kicker" style="margin-top:14px">The Pressure Wing · six locked rooms</div>
+    <div class="modes escape">
+      <button class="mode escape" data-mode="escape"><b>ESCAPE PROTOCOL<i class="new">NEW</i></b><span>Six locked rooms, a new layout every run: a chamber that floods, a dead power room, mirrors and a laser, rising pressure, walls that move in the dark, and something that only moves when you look away. Read the clue, solve the room, the door opens. Solo or online, up to four.</span><em data-best="escape"></em></button>
     </div>
     <div class="kicker" style="margin-top:14px">The Anomaly · Desk B · the camera network</div>
     <div class="modes anomaly">
@@ -1339,6 +1350,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
            <li><b>The Hunt:</b> you play the monster. Click to <b>swipe</b> (a guard in reach is caught), <span data-key="ability"></span> <b>SCREECH</b> (you hear every guard for 6 s, through the walls; the ones close by freeze), <span data-key="ultimate"></span> <b>POUNCE</b> (a long leap that ends in a swipe), <span data-key="interact"></span> on a locker tears it open. Red marks show the guards you hear. The guards pull fuses; enough of them and the blast door opens and they run for the surface lift. Their flashlights blind you if they see you coming. If half of them get out, the hunt is lost; if they're still inside at 6 AM, you win.</li>
           <li><b>100 Doors:</b> walk into a door to open it; <b>locked</b> ones need the key from the room you're in (or a lockpick). Drawers hold gold, batteries, bandages (<b>[1]</b>), vitamins (<b>[2]</b>), lockpicks and, rarely, a crucifix. <b>Flickering lights</b> = SURGE (or REBOUND, which comes back): get in a <b>wardrobe</b> until it's past — but not for too long. In a dark room, <b>"psst"</b> = HISS behind you: look at it. <b>Purple light</b> = THE EYES: look away. <b>Eyes on the walls</b> = THE SEEKER is near: when it climbs out, run through the doors and around the black pools. The <b>library (50)</b>: find five books and the note on the desk; the note gives the order, the books the numbers — type them into the padlock. THE BLIND ONE hears footsteps (crouch near it); if it opens your wardrobe, press <b>A</b>/<b>D</b> as each heartbeat reaches the line. <b>Room 100</b>: the breaker key is on a crate; set every switch to its lamp (a wrong switch is loud), then run for the way out. <span data-key="hint"></span> points to the next door, key or book. No map.</li>
           <li><b>The Hollow Woods</b> (New Game → The Hollow Woods, solo or online): <b>survive 99 nights</b>. By day, gather (<span data-key="interact"></span> on dead trees, fallen logs, junk piles, wrecks, berry bushes and crates; hold still until it's done) and bring it back to the <b>bench</b> at camp. <b>Feed the fire</b> with wood or fuel — the creature won't walk into its light, and a bigger fire (5 levels) pushes the fog back further. At the bench, <b>[1]–[8]</b> make things and <b>[U]</b> builds the bench up. In the woods: <b>[1]</b> set a bear trap (it holds the creature in place — pick traps back up with <span data-key="interact"></span>), <b>[2]</b> a noise lure, <b>[3]</b> a flare, <b>[4]</b> eat, <b>[5]</b> a lantern post. Hold your <b>torch beam on its face</b> to drive it off. Find the <b>four lost campers</b> and walk them back to the fire. <b>[J]</b>: your goals (they pay coins and stay done). The run is saved at every dawn (CONTINUE in the briefing). <b>No weapons</b>, no map; it hunts by <b>sound</b> — crouch (<span data-key="crouch"></span>), open doors crouched, and when the insects stop, it's close.</li>
+          <li><b>Escape Protocol</b> (New Game → Escape Protocol, solo or online): <b>six locked rooms</b>, laid out from a seed every run. Read each room's <b>clue</b> (<span data-key="interact"></span>), solve its puzzle and its security door opens: shut the flood room's valves in the order on the placard (or swim up to the overflow hatch), match the power room's fuses to their sockets, turn the mirrors until the laser reaches its receiver (crouch under the beam), vent the pressure valves while each one's needle is in the green, read the three marks on the moving walls and set them on the keypad, collect the data cores without looking away from the exhibit, and hold the lockdown terminal's ring out of the searchlights. The last room you entered is your checkpoint. [H] for a hint.</li>
           <li><b>Mecha Camo:</b> <b>[L]</b> locks you in place to paint: <b>drag on yourself</b> to paint (FINE/S/M/L brushes, <b>[</b> and <b>]</b> to change), drag anywhere else or right-drag to turn round yourself from any angle, scroll to zoom, <b>click a wall</b> to pick up its colour, <b>[L]</b> again to move. <b>[Esc]</b> or <b>[B]</b> opens the whole paint shop (FILL A PIECE, patterns with the 2nd colour, mixing). <span data-key="ability"></span> picks up the colour of what you face; <span data-key="nextWeapon"></span> is the chameleon spray (each part of you, the colour behind it). A yellow <b>?</b> over the Warden: something caught its eye. A red <b>!</b>: it's hunting. <b>HOLD STILL</b> when it's close — if it walks away, that's a <b>CLOSE CALL</b> (and coins). <b>[Shift]</b> toggles the over-the-shoulder camera (or <b>[L]</b>); run with <b>Space</b>; <span data-key="pause"></span> pauses. The CAMO meter grades how well you blend in where you stand (from 8 directions, against what's behind you, lit as it's lit, and which side of you faces each way): <b>EXCELLENT</b>, <b>GOOD</b> or <b>POOR</b>. Hold <span data-key="interact"></span> at a breaker panel to throw it; <span data-key="ultimate"></span> lobs a paint can to pull the Warden away. Stay put too long and it smells you. Each round the Warden has a temperament (STALKER, PROWLER or LISTENER), something happens part-way through (BLACKOUT, SEARCHLIGHT DRONE, THE SLEEPWALKER, FRESH COAT — named on screen), three gold paint tins are hidden (they unlock paints), and there's a bonus job. Caged online: <span data-key="interact"></span> calls for help, <span data-key="nextWeapon"></span> watches a teammate. Two maps: Sublevel 6 and THE COLOUR WORKS (pick on the briefing screen, or the host picks online) — in the Works, <span data-key="interact"></span> in a SPRAY BOOTH coats you in its colours.</li>
           <li><b>Mecha Camo emotes:</b> <b>[Z]</b> opens the emote wheel — wave, dance, laugh, point, celebrate, facepalm, a nervous look, a fake faint (1–8, a click, or aim with the mouse and let go of Z; Esc closes it). Your team sees them. Moving stops one; the ♪ ones can be <b>heard</b>, and a big one in its sight counts as moving.</li>
           <li><b>Mecha Camo, living maps:</b> new round events — <b>COLOUR SHIFT</b> (the lamps change colour: only light and dark show, so match how bright the wall is), <b>POWER SURGE</b> (a flare that lets it see further, then the dark), <b>EMERGENCY DOORS</b> (Sublevel 6: a lockdown seals some doors for a while — never trapping anyone) and <b>PAINT SPILL</b> (the Colour Works: wet feet take the colour and leave footprints it follows). Props on the floor clatter if you <b>run</b> into them; the <b>big red button</b> starts a loud machine somewhere else to draw it away.</li>
@@ -1425,7 +1437,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div id="mp-lobby" hidden>
       <div class="kicker" style="margin-top:14px">Guards on shift</div>
       <ul id="mp-players"></ul>
-      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="descent">THE DESCENT</button><button data-mode="anomaly">THE ANOMALY</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="doors">100 DOORS</button><button data-mode="woods">HOLLOW WOODS</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
+      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="descent">THE DESCENT</button><button data-mode="anomaly">THE ANOMALY</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="doors">100 DOORS</button><button data-mode="woods">HOLLOW WOODS</button><button data-mode="escape">ESCAPE PROTOCOL</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
       <div class="mp-modes mp-cmaps" id="mp-cmaps" hidden><span>MECHA CAMO MAP:</span><button data-cmap="s6">SUBLEVEL 6</button><button data-cmap="works">THE COLOUR WORKS</button></div>
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
@@ -1579,7 +1591,7 @@ const settings = Object.assign({}, DEFAULTS);
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8); num('volSfx', 0, 1); num('volAmb', 0, 1); num('volMus', 0, 1); num('volUi', 0, 1);
     bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); bool('director'); oneOf('panicFx', ['full', 'reduced', 'off']); oneOf('anFeedFx', ['full', 'reduced', 'off']); bool('anCaptions'); bool('cinema'); num('anFeedVol', 0, 1); oneOf('anRun', ['campaign', 'endless']);
-    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors', 'descent', 'anomaly', 'woods']); oneOf('camoMap', ['s6', 'works']); oneOf('woodsLen', ['short', 'normal', 'long']); oneOf('camoWarden', ['ai', 'host']);
+    oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors', 'descent', 'anomaly', 'woods', 'escape']); oneOf('camoMap', ['s6', 'works']); oneOf('woodsLen', ['short', 'normal', 'long']); oneOf('camoWarden', ['ai', 'host']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
   } catch (e) { /* storage blocked or corrupt: keep defaults */ }
@@ -1711,6 +1723,12 @@ const ATTACK = {
   skin:   { k: 0.6,  wind: 0.8,  rec: 1.2,  range: 2.6,  name: 'strike' },           // (Build 18) THE INFESTANT, coming apart: 21 on Normal
   wvent:  { k: 0.6,  wind: 0,    rec: 0,    range: 3.0,  name: 'bite' },             // (Build 19) THE WATCH: the brood, dropping out of the vent (last: the list order goes over the network)
   hollow: { k: 1.7,  wind: 0.55, rec: 2.6,  range: 1.9,  name: 'grab' },             // (Build 31) THE HOLLOW WOODS: it catches you (a second one, and that's it)
+  // (Build 35) ESCAPE PROTOCOL's rooms. hazard: not a monster's blow (no parry, nothing to stagger) — and never more than a fraction of you at once
+  drown:   { k: 0.18, wind: 0, rec: 0, range: 0,   name: 'no air', hazard: true },
+  steam:   { k: 0.42, wind: 0, rec: 0, range: 2.4, name: 'steam', hazard: true },
+  squeeze: { k: 0.12, wind: 0, rec: 0, range: 0,   name: 'pressure', hazard: true },
+  beam:    { k: 0.22, wind: 0, rec: 0, range: 0,   name: 'burning light', hazard: true },
+  watcher: { k: 0.55, wind: 0, rec: 0, range: 1.1, name: 'the exhibit' },
 };
 const dkey = () => (typeof Net !== 'undefined' && Net.sessionDiff) || settings.difficulty;
 const hitDmg = kind => Math.max(1, Math.round(diff().damage * ((ATTACK[kind] || ATTACK.swipe).k)));
@@ -1920,6 +1938,8 @@ const HOTEL = hotelLayout(); MAP.push(...HOTEL.rows); // (Build 25: 100 DOORS �
 if (MAP.some(r => r.length !== 54) || HOTEL.LV0 * 29 + HOTEL.NF * 29 !== MAP.length) throw new Error('the hotel does not fit the grid');
 const FOREST = forestLayout(); MAP.push(...FOREST.rows); // (Build 31: THE HOLLOW WOODS — one floor, two floors deep, laid out in c0_forest.js)
 if (MAP.some(r => r.length !== 54) || MAP.length !== 261 + FOREST.R) throw new Error('the forest does not fit the grid');
+const ESCAPE = escapeLayout(); MAP.push(...ESCAPE.rows); // (Build 35: ESCAPE PROTOCOL — the Pressure Wing, one floor under the woods, laid out in c0_escape.js)
+if (MAP.some(r => r.length !== 54) || MAP.length !== 261 + FOREST.R + ESCAPE.R) throw new Error('the Pressure Wing does not fit the grid');
 const CELL = 2, WALL_H = 3.2, DOOR_H = 2.45, VENT_H = 1.15, LIFT_H = 2.8, SILL_H = 1.0, WIN_TOP = 2.25;
 const EYE_STAND = 1.62, EYE_CROUCH = 0.92, PLAYER_R = 0.3, MONSTER_R = 0.4;
 const H = MAP.length, W = MAP[0].length;
@@ -1957,6 +1977,9 @@ const ROOMDEF = {
   'ω': ['fw_woods', 'The Woods'], 'ξ': ['fw_deep', 'The Deep Woods'], 'π': ['fw_trail', 'The Trail'], 'χ': ['fw_clear', 'The Clearing'], 'θ': ['fw_cabin', 'The Cabin'],
   'κ': ['fw_camp', 'The Abandoned Camp'], 'ν': ['fw_stream', 'The Stream'], 'μ': ['fw_road', 'The Logging Road'], 'η': ['fw_head', 'The Trailhead'], 'ι': ['fw_stand', 'The Hunting Stand'], 'ο': ['fw_shed', 'The Old Shed'],
   // (Build 32) the south woods
+  // (Build 35) ESCAPE PROTOCOL: the Pressure Wing (what each room is, is decided every run)
+  'Э': ['ep_air', 'The Airlock'], 'Ц': ['ep_r1', 'Room 1'], 'Ч': ['ep_r2', 'Room 2'], 'Щ': ['ep_r3', 'Room 3'], 'Ъ': ['ep_r4', 'Room 4'], 'Ы': ['ep_r5', 'Room 5'], 'Ь': ['ep_r6', 'Room 6'],
+  'Й': ['ep_pass', 'Service Passage'], 'Я': ['ep_lift', 'The Lift Out'], 'Ю': ['ep_secret', 'The Sealed Room'],
   'Б': ['fw_base', 'The Camp'], 'Л': ['fw_lodge', 'The Lodge'], 'Ш': ['fw_hshack', 'The Hunter\'s Shack'], 'Ж': ['fw_trailer', 'The Trailer'], 'Ф': ['fw_mill', 'The Sawmill'], 'Д': ['fw_south', 'The South Woods'],
 };
 // the halls that are taller than the rest (metres; everything else is WALL_H)
@@ -1965,8 +1988,9 @@ const ROOM_H = { g_long: 4.2, g_show: 3.8, g_faces: 3.6, g_bay: 4.6, b_turbA: 5.
   rcave: 3.4, r_camp: 5.2, r_dig: 6.4, r_grotto: 4.8, r_heart: 9.0, r_works: 5.6, r_lake: 6.0, r_chasm: 8.0, r_land: 5.4,
   w_mix: 4.6, w_dry: 4.2, w_show: 3.6,
   ht1: 3.4, ht2: 3.4, ht3: 3.4, h_lobby: 4.6, h_lib: 6.4, h_vault: 5.2, h_exit: 3.4, h_st1: 3.4, h_st2: 3.4, h_st3: 3.4, h_st4: 3.4,
-  fw_woods: 40, fw_deep: 40, fw_trail: 40, fw_clear: 40, fw_cabin: 40, fw_camp: 40, fw_stream: 40, fw_road: 40, fw_head: 40, fw_stand: 40, fw_shed: 40, fw_base: 40, fw_lodge: 40, fw_hshack: 40, fw_trailer: 40, fw_mill: 40, fw_south: 40 }; // (no ceiling out there)
-const LIFT_CH = 'ELFQU0NZ|/'; // lift cars: the surface lift (6), the Gallery's service and freight lifts (7), the Blackout's service lift and the Surface Express (8), the Hive's dead service lift and the Quarantine Lift (9), the Root's mine cage and the old mine elevator (10)
+  fw_woods: 40, fw_deep: 40, fw_trail: 40, fw_clear: 40, fw_cabin: 40, fw_camp: 40, fw_stream: 40, fw_road: 40, fw_head: 40, fw_stand: 40, fw_shed: 40, fw_base: 40, fw_lodge: 40, fw_hshack: 40, fw_trailer: 40, fw_mill: 40, fw_south: 40, // (no ceiling out there)
+  ep_r1: 4.2, ep_r2: 4.2, ep_r3: 4.2, ep_r4: 4.2, ep_r5: 4.2, ep_r6: 4.2, ep_pass: 2.9, ep_secret: 3.0 }; // (Build 35: the Pressure Wing's rooms are tall — room for the water)
+const LIFT_CH = 'ELFQU0NZ|/Я'; // lift cars: the surface lift (6), the Gallery's service and freight lifts (7), the Blackout's service lift and the Surface Express (8), the Hive's dead service lift and the Quarantine Lift (9), the Root's mine cage and the old mine elevator (10)
 // the floors share one grid, one under the other: 29 rows each
 const LEVEL_ROWS = 29;
 const LEVELS = [
@@ -1980,10 +2004,12 @@ const LEVELS = [
   { id: 2, z0: 203, name: 'The Holloway', title: 'THE HOLLOWAY · SECOND FLOOR', hotel: true }, //  33–66 (the library is 50)
   { id: 3, z0: 232, name: 'The Holloway', title: 'THE HOLLOWAY · THIRD FLOOR', hotel: true },   //  and 66–100)
   { id: 0, z0: 261, rows: 58, name: 'The Hollow Woods', title: 'THE HOLLOW WOODS', forest: true }, // (Build 31: the forest — 58 rows, not 29)
+  { id: 11, z0: 377, name: 'The Pressure Wing', title: 'ESCAPE PROTOCOL · THE PRESSURE WING', escape: true }, // (Build 35: ESCAPE PROTOCOL only)
 ];
 let LVL = 0; // the floor being played: 0 Sublevel 6, 1 the Gallery, 2 the Blackout, 3 the Hive, 4 the Root, 5 the Colour Works (MECHA CAMO), 6–8 the Holloway (100 DOORS)
 const FW_LV = 9; // (Build 31: the forest's floor index)
-const lvlOfRow = z => z >= 261 ? FW_LV : clamp(Math.floor(z / LEVEL_ROWS), 0, FW_LV - 1); // (every floor is 29 rows but the forest)
+const EP_LV = 10; // (Build 35: the Pressure Wing's)
+const lvlOfRow = z => z >= 377 ? EP_LV : z >= 261 ? FW_LV : clamp(Math.floor(z / LEVEL_ROWS), 0, FW_LV - 1); // (every floor is 29 rows but the forest)
 const lvlAt = wz => lvlOfRow(Math.floor(wz / CELL));
 const CORR_IDS = new Set(['corridor', 'gcorr', 'bcorr', 'hcorr', 'rcave', 'wcorr']);
 const isCorr = r => CORR_IDS.has(r);
@@ -2731,6 +2757,38 @@ const FWG = (() => {
   };
   return G;
 })();
+/* ------------------------------------------------------------------ */
+/* ESCAPE PROTOCOL (Build 35): THE PRESSURE WING — one floor, laid out */
+/* once. An airlock, six rooms in a loop (three along the north band,  */
+/* three back along the south), and the lift out. Every room is the   */
+/* same empty shell, 12 × 9 cells: what's in it — which room it is,    */
+/* its clue, its puzzle, its hazard — is set every run, from a seed    */
+/* (see y9z9m_escape.js). Each room's way out is a security door that  */
+/* opens when the room is solved. Between rooms 2 and 5 there is a     */
+/* sealed room nobody is told about, behind a door that looks like a   */
+/* wall from the inside of room 2.                                     */
+/* ------------------------------------------------------------------ */
+function escapeLayout() { // (called from c_core.js, after the forest)
+  const WD = 54, R = 29, g = [];
+  for (let z = 0; z < R; z++) g.push(new Array(WD).fill('#'));
+  const fill = (x0, z0, x1, z1, ch) => { for (let z = z0; z <= z1; z++) for (let x = x0; x <= x1; x++) g[z][x] = ch; };
+  const SLOT = ['Ц', 'Ч', 'Щ', 'Ъ', 'Ы', 'Ь']; // (the six rooms, in the order you go through them)
+  // the north band (rows 2–10): airlock, then rooms 1–3 going east
+  fill(1, 3, 6, 9, 'Э');                       // the airlock (where you start)
+  fill(8, 2, 19, 10, SLOT[0]); fill(21, 2, 32, 10, SLOT[1]); fill(34, 2, 45, 10, SLOT[2]);
+  // the turn: a service passage down the east side
+  fill(47, 4, 51, 22, 'Й');
+  // the south band (rows 16–24): rooms 4–6 going west, then the lift
+  fill(34, 16, 45, 24, SLOT[3]); fill(21, 16, 32, 24, SLOT[4]); fill(8, 16, 19, 24, SLOT[5]);
+  fill(1, 17, 6, 23, 'Я');                     // the lift out
+  // the sealed room, between the bands (its door opens off room 2)
+  fill(22, 12, 31, 14, 'Ю');
+  // the doors: in from the airlock (an ordinary door), then each room's way out (a security door, opened when it's solved)
+  g[6][7] = 'D';  g[6][20] = 'Y'; g[6][33] = 'Y'; g[6][46] = 'Y';
+  g[20][46] = 'D'; g[20][33] = 'Y'; g[20][20] = 'Y'; g[20][7] = 'Y';
+  g[11][26] = 'Y'; // (the sealed room's)
+  return { rows: g.map(r => r.join('')), R, SLOT, doors: { in: [7, 6], out: [[20, 6], [33, 6], [46, 6], [33, 20], [20, 20], [7, 20]], turn: [46, 20], secret: [26, 11] } };
+}
 /* =====================================================================
    Build 30 — the realism pass: surfaces at twice the detail.
    Aged floral wallpaper (three colourways), oak boards, glazed tiles,
@@ -3550,6 +3608,9 @@ const ROOM_LOOK = {
   // the Holloway: an old hotel — striped paper over panelling and a red carpet on the first floor, flocked green on the second, damask and boards on the third
   ht1: ['hotel', 'hcarpet', 'coffer'], hh1: ['hotel', 'hcarpet', 'coffer'], h_lobby: ['hotel', 'checker', 'coffer'], h_st1: ['wainscot', 'void', 'coffer'], // (the top of a stair: no floor where the steps go down — the stairwell lays its own landing)
   ht2: ['hotelG', 'parquet', 'coffer'], hh2: ['hotelG', 'hcarpet', 'coffer'], h_st2: ['wainscot', 'parquet', 'coffer'], h_st3: ['wainscot', 'void', 'coffer'], h_lib: ['wainscot', 'parquet', 'coffer'],
+  // (Build 35) the Pressure Wing: poured block, steel plate underfoot
+  ep_air: ['metal', 'plate', 'concrete'], ep_r1: ['block', 'plate', 'concrete'], ep_r2: ['block', 'plate', 'concrete'], ep_r3: ['block', 'plate', 'concrete'], ep_r4: ['block', 'plate', 'concrete'],
+  ep_r5: ['block', 'plate', 'concrete'], ep_r6: ['block', 'plate', 'concrete'], ep_pass: ['block', 'concrete', 'concrete'], ep_lift: ['metal', 'plate', 'concrete'], ep_secret: ['rough', 'concrete', 'concrete'],
   ht3: ['damask', 'parquet', 'coffer'], hh3: ['damask', 'carpet', 'coffer'], h_st4: ['wainscot', 'parquet', 'coffer'], h_vault: ['rough', 'concrete', 'concrete'], h_exit: ['block', 'concrete', 'concrete'],
 };
 const LOOK0 = ['corridor', 'concrete', 'concrete']; // (a room no floor has dressed: the old painted block)
@@ -3858,6 +3919,14 @@ for (const id in rooms) {
     addFixture('main', X0 + (i + 0.5) * (X1 - X0) / nx, WALL_H - 0.06, Z0 + (k + 0.5) * (Z1 - Z0) / nz, (X1 - X0) >= (Z1 - Z0) ? 'x' : 'z', id);
   }
   (EMERG_SPOTS[id] || []).forEach(p => addFixture('emerg', p[0], p[1], p[2], 'x', id));
+}
+// (Build 35) the Pressure Wing: ceiling lights in a grid, and two alarm lamps in each of the six rooms (what they do is the room's business: y9z9n_eprooms.js)
+for (const id in rooms) {
+  if (id.slice(0, 3) !== 'ep_') continue;
+  const R = rooms[id], X0 = R.minX * CELL, X1 = (R.maxX + 1) * CELL, Z0 = R.minZ * CELL, Z1 = (R.maxZ + 1) * CELL, h = (id === 'ep_lift' ? LIFT_H : ROOM_H[id] || WALL_H) - 0.06;
+  const nx = Math.max(1, Math.round((X1 - X0) / 8)), nz = Math.max(1, Math.round((Z1 - Z0) / 8));
+  for (let i = 0; i < nx; i++) for (let k = 0; k < nz; k++) { const f = addFixture('main', X0 + (i + 0.5) * (X1 - X0) / nx, h, Z0 + (k + 0.5) * (Z1 - Z0) / nz, (X1 - X0) >= (Z1 - Z0) ? 'x' : 'z', id); f.mode = 'steady'; if (h > 3.5) { f.intensity = 1.3; f.range = 13.5; } } // (tall rooms: brighter lamps that reach the floor)
+  if (/^ep_r\d$/.test(id)) for (const [fx, fz] of [[(X0 + X1) / 2 - 6, Z0 + 0.14], [(X0 + X1) / 2 + 6, Z1 - 0.14]]) { const f = addFixture('emerg', fx, 2.9, fz, 'x', id); f.mode = 'steady'; f.range = 9.5; }
 }
 // guarantee the opening scene has light
 fixtures.forEach(f => { if (f.room === 'security' || (f.type === 'emerg' && f.room === 'corridor' && f.pos.x < 21 && f.pos.z > 40)) { if (f.mode === 'dead') f.mode = 'steady'; } });
@@ -6666,6 +6735,15 @@ const Sound = (function () {
     if (what === 'fuel') { for (let i = 0; i < Math.floor(d / 0.3); i++) { const tt = t + i * 0.3 + rand(0, 0.08); tone(out, tt, 'sine', rand(220, 380), rand(120, 200), 0.12, 0.3, 0.01); noise(out, tt, 0.15, 'bandpass', 900, 2, 0.15, 0.01); } return; }
     if (what === 'keys') { for (let i = 0; i < 5; i++) tone(out, t + i * 0.05, 'sine', rand(3200, 5200), rand(3000, 5000), 0.08, 0.15, 0.001); noise(out, t + 0.3, 0.05, 'bandpass', 1400, 3, 0.4, 0.001); return; }
     for (let i = 0; i < Math.floor(d / 0.55); i++) metal(out, t + i * 0.55 + rand(0, 0.2), rand(220, 420), 0.4, 0.35); });
+  // (Build 35) ESCAPE PROTOCOL's water: the jets' roar (flow 0–1), and the slap of it round the walls as it rises (lvl 0–1)
+  const EPB = { jet: null, jetLo: null, lap: null };
+  S.epWater = safe(function (flow, lvl) {
+    const t = ctx.currentTime;
+    if (!EPB.jet) { if (!(flow > 0) && !(lvl > 0)) return; EPB.jet = fwLoop(white, 'bandpass', 900, 0.5); EPB.jetLo = fwLoop(brown, 'lowpass', 380, 0.8); EPB.lap = fwLoop(pink, 'bandpass', 520, 1.2); }
+    EPB.jet.g.gain.setTargetAtTime(0.09 * flow, t, 0.4); EPB.jetLo.g.gain.setTargetAtTime(0.12 * flow, t, 0.4);
+    EPB.lap.g.gain.setTargetAtTime(lvl > 0.02 ? (0.03 + 0.05 * lvl) * (0.6 + 0.4 * Math.sin(t * 1.3)) : 0, t, 0.5); EPB.lap.f.frequency.setTargetAtTime(520 - lvl * 220, t, 0.5);
+  });
+  S.epSplash = safe(function (pos, k) { const t = ctx.currentTime, out = dest(pos || null, 0.2, !!pos); out.gain.value = 0.3 + 0.4 * (k || 0.5); const n = noise(out, t, 0.28, 'bandpass', 900, 1.5, 0.7, 0.01); n.f.frequency.linearRampToValueAtTime(1800, t + 0.2); noise(out, t + 0.05, 0.2, 'lowpass', 500, 1, 0.4, 0.02, brown); });
   S.fwSlosh = safe(function () { const t = ctx.currentTime, out = dest(null, 0); out.gain.value = 0.25; const n = noise(out, t, 0.3, 'bandpass', 600, 2, 0.6, 0.05); n.f.frequency.linearRampToValueAtTime(1100, t + 0.25); });
   return S;
 })();
@@ -10586,7 +10664,7 @@ function syncModeCards() {
   document.querySelectorAll('#modes .mode').forEach(b => { b.classList.toggle('sel', b.dataset.mode === m); const em = b.querySelector('em'); if (em) em.textContent = Modes.cardBest(b.dataset.mode); });
   $('brief-h1').textContent = { camo: 'Paint yourself into the walls', hunt: 'You are the Warden', watch: 'Keep watch until 6:00 AM', photos: 'The Polaroids', endless: 'Endless Night', gallery: 'Get out of the Gallery', blackout: 'Bring the lights back', hive: 'Burn the brood', root: 'Kill the Mother' }[m] || 'Survive until 6:00 AM';
   $('brief-kicker').textContent = { camo: 'Mecha Camo · Site Kestrel, Sublevel 6 · the renovation · lights on', hunt: 'The other side · Site Kestrel, Sublevel 6 · Containment · 12:00 AM', watch: 'Night watch · Site Kestrel, Sublevel 6 · Desk B · 12:00 AM', gallery: 'Site Kestrel · Sublevel 7 · the Mimicry wing', blackout: 'Site Kestrel · Sublevel 8 · the power station', hive: 'Site Kestrel · Sublevel 9 · Lantern Bio-Containment', root: 'Site Kestrel · Sublevel 10 · the old mine' }[m] || 'Night shift · Site Kestrel, Sublevel 6 · 02:00 AM';
-  ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors', 'woods'].forEach(k => { const el = $('brief-' + k); if (el) el.hidden = k !== m; });
+  ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors', 'woods', 'escape'].forEach(k => { const el = $('brief-' + k); if (el) el.hidden = k !== m; });
   $('daily-row').hidden = m !== 'photos'; $('daily').checked = !!settings.daily;
   $('diff-kicker').textContent = m === 'night' ? 'Difficulty · how long the night lasts' : 'Difficulty';
   const tx = DIFF_TEXT[DIFF_TEXT[m] ? m : m === 'night' ? 'night' : 'other'];
@@ -11394,7 +11472,7 @@ const Cine = {
 /* sign the relay's own "host disconnected" notice (that is only ever  */
 /* taken as a hint to look for the host again).                        */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 31, BUILD = 34, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 32, BUILD = 35, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -19767,7 +19845,7 @@ const Health = {
     if (src && Smoke.confused(src)) return 0; // (lost in the smoke: it can't hurt anyone)
     if (src && src.pos && Walls.between(from || src.pos, a.pos)) return 0; // (a Builder's barricade between them: it hits the barricade)
     if (a.fake) { Fakes.struck(a, src); return 0; }
-    const foe = kind !== 'arc', f = from || (src && src.pos) || a.pos;
+    const foe = kind !== 'arc' && !(ATTACK[kind] && ATTACK[kind].hazard), f = from || (src && src.pos) || a.pos; // (Build 35: a room's hazard is no monster either)
     const wk = Powers.weakK(src); // (a monster that walked through napalm hits half as hard for a while)
     if (a === player) { if (forceOut) player.forceOut(); return Game.playerHit(hitDmg(kind) * wk, { kind, src, from: f, foe }); }
     if (a.invuln()) return 0;
@@ -20157,7 +20235,7 @@ const HProj = {
 // shrieks, and whatever lives on this floor comes running. Crouch through, go round, or kill it (Volt's EMP, anyone's hands — an
 // Engineer's much faster). Shorting electrical panels in the rooms crackle, then arc: stand clear. Where they are is worked out from
 // the map, so every peer has the same ones; the host decides when they trip, arc and die.
-const HAZ_N = [{ sensor: 6, arc: 2 }, { sensor: 5, arc: 1 }, { sensor: 3, arc: 4 }, { sensor: 3, arc: 3 }, { sensor: 0, arc: 2 }, { sensor: 0, arc: 0 }, { sensor: 0, arc: 0 }, { sensor: 0, arc: 0 }, { sensor: 0, arc: 0 }, { sensor: 0, arc: 0 }]; // (Build 24: none in the Colour Works; Build 31: none in the woods)
+const HAZ_N = [{ sensor: 6, arc: 2 }, { sensor: 5, arc: 1 }, { sensor: 3, arc: 4 }, { sensor: 3, arc: 3 }, { sensor: 0, arc: 2 }, { sensor: 0, arc: 0 }, { sensor: 0, arc: 0 }, { sensor: 0, arc: 0 }, { sensor: 0, arc: 0 }, { sensor: 0, arc: 0 }, { sensor: 0, arc: 0 }]; // (Build 35: none in the Pressure Wing either; Build 24: none in the Colour Works; Build 31: none in the woods)
 const HAZ = {
   sensorR: { easy: 1.7, normal: 2.1, hard: 2.4, nightmare: 2.7 }, // how wide each sensor watches (m)
   trip: 1.7,        // faster than this (m/s) sets it off — a crouch-walk doesn't
@@ -40885,6 +40963,1355 @@ Secrets.build();
   st.textContent = '.ks-h{margin:12px 0 4px;font:600 11px/1 var(--mono,monospace);letter-spacing:.22em;color:#d9b25a}.ks-hint{font-size:12.5px;color:#8f8a7e;padding:6px 2px;line-height:1.4}';
   document.head.appendChild(st);
 }
+/* ================================================================== */
+/* Build 35: WATER (ESCAPE PROTOCOL's FLOOD CHAMBER)                   */
+/*  Stylised, not simulated: a surface made of a few overlapping wave  */
+/*  trains, rings that spread from anything that touches it (a step, a */
+/*  falling drop, a jet), foam where it meets the walls and where the  */
+/*  inflow pours in, the emergency lights glinting on it, deeper water */
+/*  darker. Under it the floor ripples with caustics (high quality);   */
+/*  above it the walls darken to a wet tide-line. Spray and drops are  */
+/*  one pool of points (nothing is created while it runs). Detail by   */
+/*  the quality setting: low is a coarse sheet with two waves and no   */
+/*  rings, caustics or spray. ONE level per room: the host's (see      */
+/*  Escape.flood); this only draws it.                                 */
+/* ================================================================== */
+const EPW_Q = { low: { seg: 18, rip: 0, spray: 0, caus: 0, waves: 2 }, medium: { seg: 56, rip: 6, spray: 140, caus: 0, waves: 4 }, high: { seg: 104, rip: 10, spray: 320, caus: 1, waves: 4 } };
+const EPW_VS = [
+  'uniform float uT; uniform vec4 uRip[10]; uniform int uNR; uniform float uAmp; uniform int uWaves;',
+  'varying vec3 vW; varying vec3 vN; varying float vH;',
+  'float hgt(vec2 p) {',
+  '  float h = sin(p.x * 1.3 + uT * 1.1) * 0.022 + sin(p.y * 1.7 - uT * 0.9) * 0.018;',
+  '  if (uWaves > 2) { h += sin((p.x + p.y) * 2.9 + uT * 2.3) * 0.009 + sin((p.x * 0.6 - p.y) * 4.7 - uT * 3.1) * 0.006; }',
+  '  for (int i = 0; i < 10; i++) { if (i >= uNR) break; vec4 r = uRip[i]; float age = uT - r.z; if (age < 0.0 || age > 3.5) continue;',
+  '    float d = length(p - r.xy), front = age * 1.9; if (d > front + 0.6) continue;',
+  '    h += r.w * exp(-age * 1.4) * exp(-d * 0.45) * sin(d * 8.5 - age * 13.0) * smoothstep(front + 0.6, front - 0.4, d); }',
+  '  return h * uAmp;',
+  '}',
+  'void main() {',
+  '  vec4 w = modelMatrix * vec4(position, 1.0); vec2 p = w.xz;',
+  '  float h = hgt(p), e = 0.08; float hx = hgt(p + vec2(e, 0.0)), hz = hgt(p + vec2(0.0, e));',
+  '  w.y += h; vW = w.xyz; vH = h; vN = normalize(vec3(h - hx, e, h - hz));',
+  '  gl_Position = projectionMatrix * viewMatrix * w;',
+  '}'].join('\n');
+const EPW_FS = [
+  'uniform float uT; uniform vec3 uDeep; uniform vec3 uShal; uniform vec3 uFog; uniform float uDepth;',
+  'uniform vec4 uRect; uniform vec4 uJet[3]; uniform vec4 uL[4]; uniform vec3 uLC[4]; uniform vec3 uSky; uniform vec3 uFP; uniform vec3 uFD; uniform float uFK;',
+  'varying vec3 vW; varying vec3 vN; varying float vH;',
+  'float n2(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = fract(sin(dot(i, vec2(12.9898, 78.233))) * 43758.5453), b = fract(sin(dot(i + vec2(1.0, 0.0), vec2(12.9898, 78.233))) * 43758.5453), c = fract(sin(dot(i + vec2(0.0, 1.0), vec2(12.9898, 78.233))) * 43758.5453), d = fract(sin(dot(i + vec2(1.0, 1.0), vec2(12.9898, 78.233))) * 43758.5453); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); }',
+  'void main() {',
+  '  float e = 0.12, m0 = n2(vW.xz * 6.0 + vec2(uT * 0.9, uT * 0.6)), mx = n2((vW.xz + vec2(e, 0.0)) * 6.0 + vec2(uT * 0.9, uT * 0.6)), mz = n2((vW.xz + vec2(0.0, e)) * 6.0 + vec2(uT * 0.9, uT * 0.6));',
+  '  vec3 N = normalize(vN + vec3(m0 - mx, 0.0, m0 - mz) * 0.55), V = normalize(cameraPosition - vW);', // (fine ripples break the glints up)
+  '  float fr = 0.04 + 0.96 * pow(1.0 - max(dot(N, V), 0.0), 5.0);',
+  '  vec3 col = mix(uShal, uDeep, clamp(uDepth / 1.4, 0.0, 1.0));',
+  '  vec3 R = reflect(-V, N); vec3 refl = uSky * (0.4 + 0.6 * max(R.y, 0.0));',
+  '  vec3 spec = vec3(0.0);',
+  '  for (int i = 0; i < 4; i++) { vec4 L = uL[i]; if (L.w <= 0.0) continue; vec3 Ld = L.xyz - vW; float dl = length(Ld); Ld /= dl;',
+  '    float s = pow(max(dot(R, Ld), 0.0), 160.0) * 1.8 + pow(max(dot(R, Ld), 0.0), 18.0) * 0.05; spec += uLC[i] * s * L.w / (1.0 + dl * dl * 0.06); refl += uLC[i] * L.w * 0.08 / (1.0 + dl * dl * 0.05); }',
+  '  // the torch: where its beam lands the water lights up, and it glints',
+  '  if (uFK > 0.0) { vec3 Fd = vW - uFP; float fl = length(Fd); Fd /= fl; float cone = smoothstep(0.86, 0.97, dot(Fd, uFD)) * uFK / (1.0 + fl * fl * 0.02);',
+  '    col += vec3(0.32, 0.4, 0.42) * cone; spec += vec3(1.0, 0.95, 0.85) * pow(max(dot(R, -Fd), 0.0), 120.0) * cone * 2.5; }',
+  '  spec = min(spec, vec3(1.4));',
+  '  // foam: along the walls, and where the jets pour in',
+  '  float ed = min(min(vW.x - uRect.x, uRect.z - vW.x), min(vW.z - uRect.y, uRect.w - vW.z));',
+  '  float fm = smoothstep(0.7, 0.0, ed);',
+  '  for (int i = 0; i < 3; i++) { vec4 J = uJet[i]; if (J.w <= 0.0) continue; float dj = length(vW.xz - J.xy); fm = max(fm, J.w * smoothstep(1.6, 0.0, dj)); }',
+  '  float nz = n2(vW.xz * 5.0 + vec2(uT * 0.4, -uT * 0.3)) * 0.6 + n2(vW.xz * 11.0 - vec2(uT * 0.7, uT * 0.2)) * 0.4;',
+  '  fm *= smoothstep(0.35, 0.75, nz + vH * 4.0);',
+  '  vec3 c = mix(col, refl, fr) + spec;',
+  '  c = mix(c, vec3(0.78, 0.84, 0.86), fm * 0.75);',
+  '  float dist = length(cameraPosition - vW); c = mix(c, uFog, clamp(dist / 34.0, 0.0, 0.7));',
+  '  gl_FragColor = vec4(c, clamp(mix(0.42, 0.9, clamp(uDepth / 1.2, 0.0, 1.0)) + fr * 0.2 + fm * 0.25, 0.0, 0.97));', // (shallow, you see the floor through it)
+  '}'].join('\n');
+// the caustics on the floor under the water (high quality only)
+const EPW_CFS = [
+  'uniform float uT; uniform float uK; varying vec2 vP;',
+  'void main() { vec2 p = vP * 1.6; float c = 0.0;',
+  '  for (int i = 0; i < 3; i++) { float fi = float(i); p += vec2(sin(p.y * 1.3 + uT * (0.6 + fi * 0.2)), cos(p.x * 1.1 - uT * (0.5 + fi * 0.15))) * 0.5; c += abs(sin(p.x + p.y)) ; }',
+  '  c = pow(clamp(1.0 - abs(c / 3.0 - 0.5) * 2.0, 0.0, 1.0), 6.0);',
+  '  gl_FragColor = vec4(vec3(0.55, 0.85, 0.9) * c * uK, c * uK); }'].join('\n');
+const EPW_CVS = 'varying vec2 vP; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vP = w.xz; gl_Position = projectionMatrix * viewMatrix * w; }';
+
+const EPWater = {
+  root: null, mesh: null, mat: null, caus: null, wet: [], pts: null, ptsGeo: null, P: null, q: null, rect: null, floorY: 0,
+  level: 0, shown: 0, ripN: 0, ripI: 0, jets: [], lights: [], dropT: 0,
+  // build the water for a room: rect = [x0, z0, x1, z1] (world metres), lights = [{x,y,z,col,k}], jets = [{x,z,y,dirx,dirz}]
+  build(rect, lights, jets) {
+    this.dispose();
+    const q = this.q = EPW_Q[settings.quality] || EPW_Q.medium, w = rect[2] - rect[0], d = rect[3] - rect[1];
+    this.rect = rect; this.jets = jets || []; this.lights = (lights || []).slice(0, 4);
+    const root = this.root = new T.Group(); root.userData.lvl = EP_LV; root.userData.global = false; scene.add(root);
+    const U = {
+      uT: { value: 0 }, uAmp: { value: 1 }, uNR: { value: q.rip }, uWaves: { value: q.waves }, uRip: { value: Array.from({ length: 10 }, () => new T.Vector4(0, 0, -99, 0)) },
+      uDeep: { value: new T.Color(0x06161a) }, uShal: { value: new T.Color(0x1d4148) }, uFog: { value: new T.Color(0x0b1517) }, uSky: { value: new T.Color(0x10181a) }, uDepth: { value: 0 },
+      uRect: { value: new T.Vector4(rect[0], rect[1], rect[2], rect[3]) },
+      uJet: { value: [0, 1, 2].map(i => { const J = this.jets[i]; return new T.Vector4(J ? J.x : 0, J ? J.z : 0, 0, 0); }) },
+      uL: { value: [0, 1, 2, 3].map(i => { const L = this.lights[i]; return new T.Vector4(L ? L.x : 0, L ? L.y : 0, L ? L.z : 0, L ? L.k : 0); }) },
+      uLC: { value: [0, 1, 2, 3].map(i => new T.Color(this.lights[i] ? this.lights[i].col : 0)) },
+      uFP: { value: new T.Vector3() }, uFD: { value: new T.Vector3(0, -1, 0) }, uFK: { value: 0 },
+    };
+    this.mat = new T.ShaderMaterial({ uniforms: U, vertexShader: EPW_VS, fragmentShader: EPW_FS, transparent: true, depthWrite: false });
+    const g = new T.PlaneGeometry(w, d, Math.max(2, Math.round(q.seg * w / 24)), Math.max(2, Math.round(q.seg * d / 24))); g.rotateX(-Math.PI / 2);
+    this.mesh = new T.Mesh(g, this.mat); this.mesh.position.set((rect[0] + rect[2]) / 2, 0.02, (rect[1] + rect[3]) / 2); this.mesh.renderOrder = 3; root.add(this.mesh);
+    if (q.caus) {
+      const cm = new T.ShaderMaterial({ uniforms: { uT: U.uT, uK: { value: 0 } }, vertexShader: EPW_CVS, fragmentShader: EPW_CFS, transparent: true, depthWrite: false, blending: T.AdditiveBlending });
+      const cg = new T.PlaneGeometry(w, d); cg.rotateX(-Math.PI / 2); this.caus = new T.Mesh(cg, cm); this.caus.position.set(this.mesh.position.x, 0.012, this.mesh.position.z); root.add(this.caus);
+    }
+    // the walls: a dark wet band up to the highest the water has been (four thin planes, just off the walls)
+    const wm = new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.32, depthWrite: false });
+    const side = (x, z, ry, len) => { const m = new T.Mesh(new T.PlaneGeometry(len, 1), wm); m.position.set(x, 0.5, z); m.rotation.y = ry; m.scale.y = 0.001; root.add(m); this.wet.push(m); };
+    side((rect[0] + rect[2]) / 2, rect[1] + 0.02, 0, w); side((rect[0] + rect[2]) / 2, rect[3] - 0.02, Math.PI, w); side(rect[0] + 0.02, (rect[1] + rect[3]) / 2, Math.PI / 2, d); side(rect[2] - 0.02, (rect[1] + rect[3]) / 2, -Math.PI / 2, d);
+    this.wetMax = 0;
+    // spray and drops: one pool
+    if (q.spray) {
+      const n = q.spray, pos = new Float32Array(n * 3), geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(pos, 3));
+      const tex = (() => { const c = makeCanvas(32, 32), x = c.getContext('2d'), gr = x.createRadialGradient(16, 16, 0, 16, 16, 16); gr.addColorStop(0, 'rgba(230,245,250,1)'); gr.addColorStop(0.5, 'rgba(200,225,235,.5)'); gr.addColorStop(1, 'rgba(200,225,235,0)'); x.fillStyle = gr; x.fillRect(0, 0, 32, 32); return new T.CanvasTexture(c); })();
+      const pm = new T.PointsMaterial({ size: 0.09, map: tex, transparent: true, depthWrite: false, opacity: 0.85, sizeAttenuation: true });
+      this.pts = new T.Points(geo, pm); this.pts.frustumCulled = false; root.add(this.pts); this.ptsGeo = geo;
+      this.P = Array.from({ length: n }, () => ({ x: 0, y: -50, z: 0, vx: 0, vy: 0, vz: 0, life: 0 }));
+      for (let i = 0; i < n; i++) pos[i * 3 + 1] = -50;
+    }
+    root.traverse(o => { o.userData.lvl = EP_LV; o.layers.set(EP_LV + 1); });
+    this.level = 0; this.shown = 0;
+  },
+  // a ring on the surface at (x, z), strength k (a step ~0.6, a drop ~0.25, a jet ~1)
+  ripple(x, z, k) {
+    if (!this.mat || !this.q.rip) return;
+    const R = this.mat.uniforms.uRip.value[this.ripI]; R.set(x, z, this.mat.uniforms.uT.value, clamp(k, 0, 1.5) * 0.06); this.ripI = (this.ripI + 1) % this.q.rip;
+  },
+  // one particle from the pool
+  emit(x, y, z, vx, vy, vz, life) { if (!this.P) return; for (let i = 0; i < 8; i++) { const P = this.P[(this.pi = ((this.pi || 0) + 1) % this.P.length)]; if (P.life <= 0 || i === 7) { Object.assign(P, { x, y, z, vx, vy, vz, life }); return; } } },
+  // (every frame) level: the host's water height (metres above the floor); jetsOn: how hard each jet pours, 0–1
+  update(dt, level, jetsOn) {
+    if (!this.mat) return;
+    const U = this.mat.uniforms, t = (U.uT.value += dt);
+    this.shown += (level - this.shown) * Math.min(1, dt * 1.5); // (it never jumps: it rises and falls)
+    const y = this.shown; this.mesh.position.y = 0.02 + y; U.uDepth.value = y;
+    U.uAmp.value = 0.6 + Math.min(1, y) * 0.6;
+    if (this.caus) this.caus.material.uniforms.uK.value = clamp(y / 0.4, 0, 1) * 0.5;
+    this.wetMax = Math.max(this.wetMax, y); for (const m of this.wet) { m.scale.y = Math.max(0.001, this.wetMax + 0.15); m.position.y = (this.wetMax + 0.15) / 2; }
+    for (let i = 0; i < 3; i++) U.uJet.value[i].w = jetsOn && jetsOn[i] ? jetsOn[i] : 0;
+    U.uFK.value = player.flashState && player.battery > 0 && !player.dead ? 1 : 0; if (U.uFK.value) { U.uFP.value.copy(camera.position); player.forward(U.uFD.value); }
+    // the jets: spray, and the rings they make
+    if (this.P) {
+      this.dropT -= dt;
+      for (let i = 0; i < this.jets.length; i++) {
+        const J = this.jets[i], k = jetsOn ? jetsOn[i] || 0 : 0; if (k <= 0) continue;
+        const n = Math.ceil(dt * 90 * k); for (let j = 0; j < n; j++) this.emit(J.x + rand(-0.08, 0.08), J.y, J.z + rand(-0.08, 0.08), J.dx * rand(1.6, 2.6) + rand(-0.4, 0.4), rand(0.3, 1.2), J.dz * rand(1.6, 2.6) + rand(-0.4, 0.4), rand(0.6, 1.1));
+        if (Math.random() < dt * 6 * k) this.ripple(J.x + J.dx * 1.2, J.z + J.dz * 1.2, 1);
+      }
+      const pos = this.ptsGeo.attributes.position.array, sy = 0.02 + y;
+      for (let i = 0; i < this.P.length; i++) {
+        const P = this.P[i]; if (P.life <= 0) { pos[i * 3 + 1] = -50; continue; }
+        P.life -= dt; P.vy -= 9.8 * dt; P.x += P.vx * dt; P.y += P.vy * dt; P.z += P.vz * dt;
+        if (P.y < sy && P.vy < 0) { P.life = 0; if (Math.random() < 0.08) this.ripple(P.x, P.z, 0.25); pos[i * 3 + 1] = -50; continue; } // (a drop lands: now and then, a ring)
+        pos[i * 3] = P.x; pos[i * 3 + 1] = P.y; pos[i * 3 + 2] = P.z;
+      }
+      this.ptsGeo.attributes.position.needsUpdate = true;
+    }
+  },
+  // a guard wading: rings, and a little splash
+  wade(x, z, k) { if (!this.mat || this.shown < 0.08) return; this.ripple(x, z, 0.5 + k * 0.4); for (let i = 0; i < 6 * k; i++) this.emit(x + rand(-0.2, 0.2), 0.05 + this.shown, z + rand(-0.2, 0.2), rand(-0.6, 0.6), rand(0.8, 1.8), rand(-0.6, 0.6), 0.5); },
+  surfaceY() { return 0.02 + this.shown; },
+  dispose() {
+    if (this.root) {
+      this.root.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
+      scene.remove(this.root);
+    }
+    this.root = this.mesh = this.mat = this.caus = this.pts = this.ptsGeo = this.P = null; this.wet = []; this.jets = []; this.lights = [];
+  },
+};
+/* ================================================================== */
+/* Build 35: ESCAPE PROTOCOL — the rooms                               */
+/*  Seven kinds of room. Each one is built into an empty 24 × 18 m     */
+/*  shell from the run's numbers (its own frame: u from the door you   */
+/*  came in by to the door out, v across), checked, then run by the    */
+/*  host. Every room has a clue on its walls, a puzzle, a hazard that  */
+/*  hurts but never kills outright, and a door that opens when it's    */
+/*  solved; three of them have another, riskier way through.           */
+/*   FLOOD CHAMBER  · three valves, in the order on the placard, while */
+/*                    the water rises (or swim up to the hatch)        */
+/*   POWER ROOM     · in the dark: three fuses to their sockets, then  */
+/*                    the master switch (or hot-wire the door)         */
+/*   REFLECTION     · turn the mirrors till the laser reaches home     */
+/*   PRESSURE       · vent three valves when the needle's in the green */
+/*                    (or pull the purge and take the blast)           */
+/*   SHIFTING       · the walls move when the lights go: three marks,  */
+/*                    in order, on the keypad                          */
+/*   OBSERVATION    · it only moves when nobody's looking: three cores */
+/*   LOCKDOWN       · hold the terminal ring through the upload, out of */
+/*                    the searchlights                                 */
+/* ================================================================== */
+const epKD = () => ({ easy: 0.75, normal: 1, hard: 1.2, nightmare: 1.4 })[dkey()] || 1;
+const EPM = {
+  steel: phong({ color: 0x5c6268, shininess: 60, specular: 0x555555 }),
+  pipe: phong({ color: 0x34444c, shininess: 50, specular: 0x444444 }),
+  red: phong({ color: 0x9a1d18, shininess: 40, specular: 0x331111 }),
+  yellow: phong({ color: 0xc89a22, shininess: 30 }),
+  dark: phong({ color: 0x141619, shininess: 20 }),
+  porcelain: phong({ color: 0xd8d2c6, shininess: 70, specular: 0x666666, emissive: 0x16140f }), // (pale even in the dark: you can always find it — if you look)
+  mirror: new T.MeshPhongMaterial({ color: 0x8fa4b4, emissive: 0x0a1014, shininess: 140, specular: 0xdde8f0 }),
+  lensRed: new T.MeshBasicMaterial({ color: 0xff2a1a }), lensGreen: new T.MeshBasicMaterial({ color: 0x3dff7a }), lensDark: new T.MeshBasicMaterial({ color: 0x3a0d0a }),
+  beam: new T.MeshBasicMaterial({ color: 0xff3020, transparent: true, opacity: 0.85, blending: T.AdditiveBlending, depthWrite: false }),
+  ring: new T.MeshBasicMaterial({ color: 0xe8c040, transparent: true, opacity: 0.55, depthWrite: false, side: T.DoubleSide }),
+  spot: new T.MeshBasicMaterial({ color: 0xfff2c8, transparent: true, opacity: 0.32, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }),
+  cone: new T.MeshBasicMaterial({ color: 0xfff2c8, transparent: true, opacity: 0.03, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }),
+  spark: new T.MeshBasicMaterial({ color: 0xbfe4ff, transparent: true, opacity: 0.9, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }),
+  wet: new T.MeshPhongMaterial({ color: 0x050607, shininess: 140, specular: 0x6a7480, transparent: true, opacity: 0.8, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }),
+};
+const EP_FUSE = [{ n: 'RED', c: 0xff3b30 }, { n: 'AMBER', c: 0xffb020 }, { n: 'BLUE', c: 0x3aa0ff }];
+const EP_GLYPHS = ['TRIANGLE', 'CIRCLE', 'SQUARE', 'DIAMOND', 'CROSS', 'STAR'];
+const epShuffle = (a, rng) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const epPick = (a, rng) => a[Math.floor(rng() * a.length)];
+// a mesh in a room's own frame (a: its turn in that frame)
+function epMesh(R, geo, mat, u, v, y, sx, sy, sz, a) {
+  const m = new T.Mesh(geo, mat); m.scale.set(sx, sy, sz); const [x, z] = R.S.w(u, v); m.position.set(x, y, z); m.rotation.y = (a || 0) + R.S.rot; m.castShadow = true; m.receiveShadow = true; R.g.add(m); return m;
+}
+function epCol(R, u0, v0, u1, v1, o) { const [ax, az] = R.S.w(u0, v0), [bx, bz] = R.S.w(u1, v1), b = addCollider(Math.min(ax, bx), Math.min(az, bz), Math.max(ax, bx), Math.max(az, bz), Object.assign({ nav: false }, o || {})); R.cols.push(b); return b; }
+// a plate on a wall: side 'v0' (the wall at v = 0, facing in), 'v1', 'u1' (the far wall)
+function epWallPlate(R, side, along, y, lines, o) {
+  const p = epPlate(lines, o), [u, v, a] = side === 'v0' ? [along, 0.03, 0] : side === 'v1' ? [along, 17.97, Math.PI] : [23.97, along, -Math.PI / 2];
+  const [x, z] = R.S.w(u, v); p.position.set(x, y, z); p.rotation.y = a + R.S.rot; R.g.add(p); return { u: side === 'u1' ? 23.4 : u, v: side === 'v0' ? 0.6 : side === 'v1' ? 17.4 : v };
+}
+// a clue you read with [E] (on your own screen: nothing is sent)
+function epCluePt(R, at, y, key, text, label) {
+  R.pts.push({ id: 'clue', u: at.u, v: at.v, y, r: 2.1, wide: true, prompt: () => label || 'Read the placard', ok: () => true, local: () => { Escape.clue(R, key); UI.msg(text, 'story', 7); return false; } });
+}
+// spots in the room's floor away from the doorways (for things you have to find)
+function epSpots(rng, n, avoid, pad) {
+  const out = [], cand = [];
+  for (let u = 4; u <= 20; u += 2) for (let v = 2.5; v <= 15.5; v += 2.6) { if (Math.abs(v - 9) < 2.4 && (u < 5 || u > 19)) continue; cand.push([u + (rng() - 0.5) * 0.8, v + (rng() - 0.5) * 0.8]); }
+  epShuffle(cand, rng);
+  for (const c of cand) { if (out.length >= n) break; if ((avoid || []).concat(out).some(q => Math.hypot(q[0] - c[0], q[1] - c[1]) < (pad || 3))) continue; out.push(c); }
+  return out;
+}
+function epCrate(R, u, v, h, mat) { epMesh(R, GEO.box, mat || MAT.crate, u, v, h / 2, 1.05, h, 1.05); epCol(R, u - 0.55, v - 0.55, u + 0.55, v + 0.55); return h; }
+// the room's fixtures (placed with the floor: see d_world1.js)
+const epFix = R => fixtures.filter(f => f.room === R.S.id);
+const epIn = (R, a) => !a.dead && R.S.inside(a.pos.x, a.pos.z);
+const epGuardsIn = R => crew().filter(a => epIn(R, a));
+const epMine = (id) => id === Net.myId;
+// a small glyph drawn on a canvas (no font needed)
+function epGlyph(g, k, x, y, s) {
+  g.beginPath();
+  if (k === 0) { g.moveTo(x, y - s); g.lineTo(x + s * 0.95, y + s * 0.7); g.lineTo(x - s * 0.95, y + s * 0.7); g.closePath(); }
+  else if (k === 1) g.arc(x, y, s * 0.85, 0, TAU);
+  else if (k === 2) g.rect(x - s * 0.75, y - s * 0.75, s * 1.5, s * 1.5);
+  else if (k === 3) { g.moveTo(x, y - s); g.lineTo(x + s * 0.8, y); g.lineTo(x, y + s); g.lineTo(x - s * 0.8, y); g.closePath(); }
+  else if (k === 4) { const w = s * 0.32; g.rect(x - w, y - s, w * 2, s * 2); g.rect(x - s, y - w, s * 2, w * 2); }
+  else { for (let i = 0; i < 10; i++) { const r = i % 2 ? s * 0.42 : s, a = -Math.PI / 2 + i * Math.PI / 5; i ? g.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r) : g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); } g.closePath(); }
+  g.fill();
+}
+function epGlyphTex(k, dots, o) {
+  o = o || {}; const c = makeCanvas(128, 128), g = c.getContext('2d');
+  g.fillStyle = o.bg || '#1a1c1e'; g.fillRect(0, 0, 128, 128); g.strokeStyle = o.ink || '#e8e2cc'; g.lineWidth = 5; g.strokeRect(5, 5, 118, 118);
+  g.fillStyle = o.ink || '#e8e2cc'; if (k >= 0) epGlyph(g, k, 64, dots ? 54 : 64, 34);
+  for (let i = 0; i < (dots || 0); i++) { g.beginPath(); g.arc(64 + (i - (dots - 1) / 2) * 22, 106, 7, 0, TAU); g.fill(); }
+  const t = new T.CanvasTexture(c); t.anisotropy = maxAniso; return t;
+}
+// a little steam/spark puff pool, shared by the rooms (nothing is created while it runs)
+const EpFx = {
+  pts: null, P: [], geo: null,
+  ensure() {
+    if (this.pts) return; const n = 160, pos = new Float32Array(n * 3), col = new Float32Array(n * 3); this.geo = new T.BufferGeometry(); this.geo.setAttribute('position', new T.BufferAttribute(pos, 3)); this.geo.setAttribute('color', new T.BufferAttribute(col, 3));
+    const c = makeCanvas(32, 32), x = c.getContext('2d'), gr = x.createRadialGradient(16, 16, 0, 16, 16, 16); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 32, 32);
+    this.pts = new T.Points(this.geo, new T.PointsMaterial({ size: 0.5, map: new T.CanvasTexture(c), vertexColors: true, transparent: true, depthWrite: false, opacity: 0.7 })); this.pts.frustumCulled = false; this.pts.layers.set(EP_LV + 1); scene.add(this.pts);
+    for (let i = 0; i < n; i++) { this.P.push({ life: 0 }); pos[i * 3 + 1] = -50; }
+  },
+  puff(x, y, z, col, n, sp) { this.ensure(); const c = new T.Color(col); for (let k = 0; k < n; k++) { const P = this.P[(this.i = ((this.i || 0) + 1) % this.P.length)]; Object.assign(P, { x, y, z, vx: rand(-1, 1) * (sp || 1), vy: rand(0.4, 1.6) * (sp || 1), vz: rand(-1, 1) * (sp || 1), life: rand(0.6, 1.3), r: c.r, g: c.g, b: c.b }); } },
+  update(dt) {
+    if (!this.pts) return; const pos = this.geo.attributes.position.array, col = this.geo.attributes.color.array;
+    for (let i = 0; i < this.P.length; i++) { const P = this.P[i]; if (P.life <= 0) { pos[i * 3 + 1] = -50; continue; } P.life -= dt; P.x += P.vx * dt; P.y += P.vy * dt; P.z += P.vz * dt; P.vx *= 0.96; P.vz *= 0.96; const k = clamp(P.life, 0, 1); pos[i * 3] = P.x; pos[i * 3 + 1] = P.y; pos[i * 3 + 2] = P.z; col[i * 3] = P.r * k; col[i * 3 + 1] = P.g * k; col[i * 3 + 2] = P.b * k; }
+    this.geo.attributes.position.needsUpdate = true; this.geo.attributes.color.needsUpdate = true;
+  },
+};
+
+const EP_ROOMS = {};
+
+/* ================= FLOOD CHAMBER ================= */
+EP_ROOMS.flood = {
+  id: 'flood', name: 'FLOOD CHAMBER', short: 'flood', tier: 2, w: 3, minSlot: 1, after: true,
+  tagline: 'The pipes burst. Shut the valves — in the right order.', brief: 'Shut the three valves in the order on the placard',
+  routes: { hatch: 'You swam up to the overflow hatch and dropped through.' }, alt: 'let the water lift you to the overflow hatch',
+  MAX: 3.4, HATCH: 2.1,
+  rate(R) { return 0.0118 * (0.8 + 0.4 * R.k) * epKD(); },
+  make(R, rng) {
+    const st = R.st = { lv: 0, v: [0, 0, 0], n: 0, on: 0, dr: 0, wt: 4 };
+    R.lab = epShuffle([1, 2, 3], rng); R.ord = epShuffle([1, 2, 3], rng);
+    R.jets = []; R.wheels = []; R.tubes = [];
+    const wtx = (() => { const c = makeCanvas(32, 128), g = c.getContext('2d'); for (let y = 0; y < 128; y++) { const a = 0.35 + 0.35 * Math.sin(y * 0.4) * Math.sin(y * 0.13); g.fillStyle = 'rgba(205,230,240,' + a.toFixed(2) + ')'; g.fillRect(0, y, 32, 1); } for (let i = 0; i < 18; i++) { g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(rng() * 30, rng() * 128, 2, 6 + rng() * 14); } const t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping; return t; })();
+    R.wmat = new T.MeshPhongMaterial({ map: wtx, color: 0xbfd8e2, transparent: true, opacity: 0.62, shininess: 90, specular: 0xaaccdd, depthWrite: false });
+    [[6, 0], [12, 1], [18, 0]].forEach(([u, side], j) => {
+      const v0 = side ? 18 : 0, s = side ? -1 : 1, a = side ? Math.PI : 0;
+      // the pipe through the wall, its flange, and the jet
+      const p = epMesh(R, GEO.cyl, EPM.pipe, u, v0 + s * 0.35, 2.3, 0.28, 0.7, 0.28); p.rotation.x = Math.PI / 2;
+      const fl = epMesh(R, GEO.torus, EPM.steel, u, v0 + s * 0.05, 2.3, 0.75, 0.75, 1.2, a);
+      epMesh(R, GEO.cyl, EPM.pipe, u, v0 + s * 0.13, 3.25, 0.2, 1.9, 0.2); // (the riser, up to the ceiling)
+      const [nx, nz] = R.S.w(u, v0 + s * 0.72), [cx, cz] = R.S.w(u, v0 + s * 1.7), [lx, lz] = R.S.w(u, v0 + s * 2.5);
+      const curve = new T.QuadraticBezierCurve3(new T.Vector3(nx, 2.3, nz), new T.Vector3(cx, 2.25, cz), new T.Vector3(lx, 0, lz));
+      const tube = new T.Mesh(new T.TubeGeometry(curve, 20, 0.075, 7, false), R.wmat); tube.userData.own = true; tube.visible = false; R.g.add(tube); R.tubes.push(tube);
+      R.jets.push({ x: lx, z: lz, y: 0.05, dx: Math.sign(lx - nx) || 0, dz: Math.sign(lz - nz) || 0, ix: nx, iz: nz });
+      // its valve, beside it, and its label
+      const vu = u + 1.6, wv = v0 + s * 0.16, wheel = new T.Group(); const [wx, wz] = R.S.w(vu, wv); wheel.position.set(wx, 1.15, wz); wheel.rotation.y = a + R.S.rot; R.g.add(wheel);
+      const rim = new T.Mesh(GEO.torus, EPM.red); rim.scale.set(0.55, 0.55, 1.4); wheel.add(rim);
+      for (const r of [0, Math.PI / 2]) { const sp = new T.Mesh(GEO.box, EPM.red); sp.scale.set(0.5, 0.035, 0.035); sp.rotation.z = r; wheel.add(sp); }
+      const hub = new T.Mesh(GEO.cyl, EPM.steel); hub.scale.set(0.08, 0.2, 0.08); hub.rotation.x = Math.PI / 2; hub.position.z = -0.08; wheel.add(hub);
+      R.wheels.push(wheel);
+      epWallPlate(R, side ? 'v1' : 'v0', vu, 1.72, ['V-' + R.lab[j]], { w: 0.34, h: 0.2, bg: '#c8b23a' });
+      R.pts.push({ id: 'v' + j, u: vu, v: v0 + s * 0.5, y: 1.15, r: () => 1.9 + Math.max(0, st.lv - 1.0), prompt: () => (st.lv > 1.3 ? 'Dive down and shut' : 'Shut') + ' valve V-' + R.lab[j], ok: () => !R.solved && !st.dr && !st.v[j] && st.on });
+    });
+    // the placard: the shutdown order (low on the wall: read it before the water does)
+    const pl = epWallPlate(R, 'v0', 2.7, 1.45, ['FLOOD CONTROL', 'SHUTDOWN: V-' + R.ord[0] + ' > V-' + R.ord[1] + ' > V-' + R.ord[2], 'WRONG ORDER = SURGE', 'DRAIN OPENS AFTER'], { w: 1.2, h: 0.7 });
+    epCluePt(R, pl, 1.45, 'flood' + R.i, 'FLOOD CONTROL — SHUTDOWN ORDER: V-' + R.ord[0] + ', then V-' + R.ord[1] + ', then V-' + R.ord[2] + '. Out of order and the pipes surge. The floor drain opens when all three are shut.');
+    // the overflow hatch: high on the far wall — only in reach when the water has lifted you to it
+    epMesh(R, GEO.box, EPM.steel, 23.93, 3.2, 2.75, 0.1, 0.95, 1.05); epMesh(R, GEO.box, EPM.yellow, 23.86, 3.2, 2.75, 0.06, 0.78, 0.88);
+    epWallPlate(R, 'u1', 3.2, 3.45, ['OVERFLOW'], { w: 0.7, h: 0.18, bg: '#c8b23a' });
+    R.pts.push({ id: 'hatch', u: 23.4, v: 3.2, y: 2.75, r: 2.2, free: true, wide: true, prompt: () => 'Climb through the overflow hatch', ok: () => st.lv >= this.HATCH - 0.15 });
+    // the drain, and the floor's rust stains
+    epMesh(R, GEO.box, EPM.dark, 12, 9, 0.012, 1.4, 0.02, 1.4); for (let i = 0; i < 4; i++) epMesh(R, GEO.box, EPM.steel, 12 - 0.5 + i / 3, 9, 0.026, 0.05, 0.02, 1.36);
+  },
+  validate() { return true; },
+  skip(R) { R.st.lv = 0; R.st.on = 0; },
+  arm(R) {
+    const st = R.st; st.on = 1; st.wt = 4; this.water3d(R);
+    UI.msg('The door seals behind you with a hiss. Somewhere in the walls a pipe groans — then all three burst.', 'warn', 5);
+    Sound.pipeGroan && Sound.pipeGroan(_epv.set(R.jets[1].ix, 2.3, R.jets[1].iz));
+  },
+  water3d(R) { if (R.wb) return; const S = R.S, L = epFix(R).slice(0, 4).map(f => ({ x: f.pos.x, y: f.pos.y, z: f.pos.z, col: f.color.getHex(), k: f.type === 'emerg' ? 1.2 : 0.6 })); EPWater.build([S.x0 + 0.02, S.z0 + 0.02, S.x1 - 0.02, S.z1 - 0.02], L, R.jets); R.wb = true; },
+  water(R) { return R.armed ? R.st.lv : 0; },
+  jetsOn(R) { const st = R.st; return st.on && st.wt <= 0 && !st.dr && !R.solved ? st.v.map(x => x ? 0 : 1) : [0, 0, 0]; },
+  host(R, dt) {
+    const st = R.st;
+    if (st.wt > 0) { st.wt -= dt; return; }
+    if (R.solved || st.dr) { st.lv = Math.max(0, st.lv - (R.solved ? 0.3 : 0.12) * dt); if (!R.solved && st.lv <= 0.55) Escape.solve(R); const d = R.S.outDoor; if (R.solved && st.lv < 0.7 && !d.isOpen() && !R.doorDone) { R.doorDone = true; d.open(); Game.syncDoor(d, false, true); } return; }
+    const open = st.v.filter(x => !x).length; st.lv = Math.min(this.MAX, st.lv + open * this.rate(R) * dt);
+    if (st.lv >= 3.0) { R.dT = (R.dT || 0) - dt; if (R.dT <= 0) { R.dT = 3; for (const a of epGuardsIn(R)) Escape.hurt(a, 'drown'); } } else R.dT = 1.2;
+  },
+  holdDoor(R) { return R.st.lv >= 0.7; }, // (its door opens once the water is down: nothing pours through a doorway)
+  use(R, pt, who) {
+    const st = R.st;
+    if (pt.id === 'hatch') { if (st.lv < this.HATCH - 0.3) return; if (!R.solved) Escape.solve(R, 'hatch'); const [x, z] = R.S.w(25.9, 9); Escape.emit(R, { e: 'tp', id: Game.idOf(who), x: +x.toFixed(2), z: +z.toFixed(2) }); return; }
+    const j = +pt.id.slice(1); if (!(j >= 0 && j < 3) || st.v[j] || st.dr || !st.on) return;
+    if (R.lab[j] === R.ord[st.n]) { const n = st.n + 1; Escape.emit(R, { e: 'valve', j, n }); if (n >= 3) Escape.emit(R, { e: 'drain' }); }
+    else { st.lv = Math.min(this.MAX, st.lv + 0.25); Escape.emit(R, { e: 'surge', j }); }
+  },
+  ev(R, e, mine) {
+    const st = R.st;
+    if (e.e === 'valve') { st.v[e.j | 0] = 1; st.n = clamp(e.n | 0, 0, 3); R.fx.spin = R.fx.spin || [0, 0, 0]; R.fx.spin[e.j | 0] = 1.2; const W = R.wheels[e.j | 0]; Sound.crank && Sound.crank(); Sound.metalHit && Sound.metalHit(W.position, 0.4); UI.msg('Valve V-' + R.lab[e.j | 0] + ' shut (' + st.n + ' / 3). That pipe goes quiet.', 'good', 3); return; }
+    if (e.e === 'surge') { st.v = [0, 0, 0]; st.n = 0; R.fx.spin = [1, 1, 1]; Sound.pipeGroan && Sound.pipeGroan(R.wheels[1].position); Sound.metalHit && Sound.metalHit(R.wheels[e.j | 0].position, 1); Game.shake(0.35); for (const J of R.jets) EPWater.ripple(J.x, J.z, 1.5); UI.msg('WRONG ORDER — the pipes bang and every valve spins back open. A surge of water comes through.', 'warn', 4.5); return; }
+    if (e.e === 'drain') { st.dr = 1; const [x, z] = R.S.w(12, 9); Sound.sealOpen && Sound.sealOpen(_epv.set(x, 0.2, z)); UI.msg('All three shut. With a grinding clank the floor drain opens — the water starts to fall.', 'good', 4.5); return; }
+    if (e.e === 'tp') { if (epMine(e.id | 0)) { player.pos.set(+e.x, 0, +e.z); player.vel.set(0, 0, 0); UI.msg('You haul yourself through the hatch and drop down on the other side, soaked.', 'good', 4); Sound.fwSlosh && Sound.fwSlosh(); } return; }
+  },
+  tick(R, dt) {
+    if (!R.armed) return; this.water3d(R);
+    const st = R.st, on = this.jetsOn(R);
+    for (const J of R.jets) J.y = EPWater.surfaceY() + 0.03;
+    EPWater.update(dt, st.lv, on);
+    R.tubes.forEach((t, j) => { t.visible = on[j] > 0; }); if (R.wmat.map) R.wmat.map.offset.y -= dt * 2.4;
+    if (R.fx.spin) R.fx.spin.forEach((s, j) => { if (s > 0) { R.fx.spin[j] = s - dt; R.wheels[j].rotation.z += dt * 7; } });
+    // what you hear: the jets, the slosh, and how close the ceiling is
+    const p = player, near = R.S.inside(p.pos.x, p.pos.z, -6), flow = on.reduce((s, x) => s + x, 0) / 3;
+    Sound.epWater && Sound.epWater(near ? flow : 0, near ? st.lv / this.MAX : 0);
+    R.fx.drip = (R.fx.drip || 0) - dt; if (near && R.fx.drip <= 0) { R.fx.drip = rand(0.3, 1.2); const [x, z] = R.S.w(rand(1, 23), rand(1, 17)); EPWater.emit(x, 3.9, z, 0, -0.5, 0, 1.2); }
+  },
+  st(R) { const s = R.st; return { l: +s.lv.toFixed(3), v: s.v.join(''), n: s.n, d: s.dr, o: s.on, w: +Math.max(0, s.wt).toFixed(1) }; },
+  put(R, s) { const st = R.st; if (!s) return; st.lv = clamp(+s.l || 0, 0, this.MAX); if (typeof s.v === 'string') st.v = [0, 1, 2].map(i => s.v[i] === '1' ? 1 : 0); st.n = clamp(s.n | 0, 0, 3); st.dr = s.d ? 1 : 0; st.on = s.o ? 1 : 0; st.wt = +s.w || 0; },
+  hud(R) { const st = R.st, lv = st.lv; return { goal: 'WATER ' + lv.toFixed(1) + ' M' + (st.dr ? ' · DRAINING' : ''), bar: lv / this.MAX, cls: lv >= 2.6 ? 'surge' : lv >= 1.6 ? 'late' : '', sub: st.dr ? 'The drain is open. Hold on.' : st.n ? 'Valves shut: ' + st.n + ' / 3 — next by the placard\'s order' : lv >= this.HATCH ? 'The overflow hatch is in reach — or keep shutting valves' : 'Read the placard by the door: it gives the order' }; },
+  hint(R) {
+    const st = R.st;
+    if (!Escape.stats.clues.has('flood' + R.i)) return { u: 2.7, v: 0.7, y: 1.45, key: 'pl', label: 'The placard', tip: 'Read the placard by the door — it gives the order to shut the valves in.' };
+    if (st.dr) return { tip: 'The drain is open: wait for the water to go down and the door will open.' };
+    const j = R.lab.indexOf(R.ord[st.n]), P = R.pts.find(p => p.id === 'v' + j);
+    return { u: P.u, v: P.v, y: 1.15, key: 'v' + j, label: 'Valve V-' + R.ord[st.n], tip: 'Next: valve V-' + R.ord[st.n] + (st.lv > 1.3 ? ' — it\'s under the water: get right above it and [E] to dive for it.' : '.') + ' (High enough, the water lets you reach the overflow hatch by the far door instead.)' };
+  },
+  threat(R) { const lv = R.st.lv; return lv >= 3 ? [3, 'AIR IS RUNNING OUT — SHUT THE VALVES OR TAKE THE HATCH', 1] : lv >= this.HATCH ? [2, 'THE WATER IS OVER YOUR HEAD', 0.6] : lv > 0.9 ? [1, 'THE WATER IS RISING', 0.3] : [0, '', 0]; },
+  hurtText(R) { return R.st.lv >= 3 ? 'You\'re running out of air. Shut the valves — or get to the hatch.' : null; },
+  fixOn() { return true; },
+  dim(R, f, b, t) { if (f.type === 'emerg') return 0.15 + 0.85 * Math.pow(Math.max(0, Math.sin(t * 4.2 + f.pos.x)), 4); return settings.noFlash ? b * 0.7 : b * (Math.sin(t * 9 + f.pos.z) > 0.93 ? 0.2 : 0.72); },
+  dispose(R) { if (R.wb) { EPWater.dispose(); R.wb = false; } if (R.wmat) { if (R.wmat.map) R.wmat.map.dispose(); R.wmat.dispose(); } },
+};
+
+/* ================= POWER ROOM ================= */
+EP_ROOMS.power = {
+  id: 'power', name: 'POWER ROOM', short: 'power', tier: 1, w: 1, minSlot: 0,
+  tagline: 'The lights are dead. Three fuses, three sockets, one switch.', brief: 'Put the three fuses in their sockets, then throw the switch',
+  routes: { wire: 'You hot-wired the door — and felt every volt of it.' }, alt: 'hot-wire the door (it shocks you)',
+  make(R, rng, k) {
+    const st = R.st = { f: [0, 0, 0], by: [-1, -1, -1], seat: [-1, -1, -1], w: 0 };
+    R.sock = epShuffle([0, 1, 2], rng); R.h = { at: [], z: [], cd: 0 };
+    const spots = epSpots(rng, 7, [[12, 9]], 2.6), crates = spots.slice(0, 6).map(([u, v]) => ({ u, v, h: epCrate(R, u, v, 0.75 + rng() * 0.5, rng() < 0.4 ? MAT.box : MAT.crate) }));
+    R.fz = epShuffle(crates.slice(), rng).slice(0, 3).map((c, i) => ({ u: c.u + (rng() - 0.5) * 0.4, v: c.v + (rng() - 0.5) * 0.4, y: c.h + 0.06 }));
+    R.fm = R.fz.map((p, i) => { const g = new T.Group(); const [x, z] = R.S.w(p.u, p.v); g.position.set(x, p.y, z); g.rotation.y = rng() * TAU; const b = new T.Mesh(GEO.cyl, EPM.steel); b.scale.set(0.07, 0.24, 0.07); b.rotation.z = Math.PI / 2; g.add(b); for (const s of [-1, 1]) { const c = new T.Mesh(GEO.cyl, new T.MeshBasicMaterial({ color: EP_FUSE[i].c })); c.userData.own = true; c.scale.set(0.085, 0.05, 0.085); c.rotation.z = Math.PI / 2; c.position.x = s * 0.1; g.add(c); } R.g.add(g); return g; });
+    R.fz.forEach((p, i) => R.pts.push({ id: 'f' + i, u: p.u, v: p.v, y: p.y, r: 1.9, wide: true, prompt: () => 'Take the ' + EP_FUSE[i].n + ' fuse', ok: (R2, who) => st.f[i] === 0 && this.carrying(R, who ? Game.idOf(who) : Net.myId) < 0 }));
+    // the breaker panel, by the far door
+    epMesh(R, GEO.box, EPM.dark, 23.92, 4.6, 1.35, 1.3, 1.0, 0.12, -Math.PI / 2);
+    R.sm = [0, 1, 2].map(s => { const v = 4.1 + s * 0.5; const rim = epMesh(R, GEO.torus, new T.MeshBasicMaterial({ color: EP_FUSE[R.sock[s]].c }), 23.84, v, 1.3, 0.22, 0.22, 0.5, -Math.PI / 2); rim.userData.own = true; const f = epMesh(R, GEO.cyl, new T.MeshBasicMaterial({ color: EP_FUSE[R.sock[s]].c }), 23.78, v, 1.3, 0.07, 0.24, 0.07); f.userData.own = true; f.rotation.set(0, 0, Math.PI / 2); f.visible = false; return f; });
+    [0, 1, 2].forEach(s => R.pts.push({ id: 's' + s, u: 23.4, v: 4.1 + s * 0.5, y: 1.3, r: 1.8, prompt: () => { const i = this.carrying(R, Net.myId); return i >= 0 ? 'Put the ' + EP_FUSE[i].n + ' fuse in the ' + EP_FUSE[R.sock[s]].n + ' socket' : 'The ' + EP_FUSE[R.sock[s]].n + ' socket'; }, ok: (R2, who) => st.seat[s] < 0 && this.carrying(R, who ? Game.idOf(who) : Net.myId) >= 0 }));
+    R.lever = epMesh(R, GEO.box, EPM.red, 23.82, 6.1, 1.25, 0.08, 0.5, 0.08);
+    epMesh(R, GEO.box, EPM.dark, 23.92, 6.1, 1.3, 0.3, 0.7, 0.12, -Math.PI / 2);
+    R.pts.push({ id: 'lever', u: 23.4, v: 6.1, y: 1.3, r: 1.8, prompt: () => 'Throw the master switch', ok: () => !R.solved && st.seat.every(x => x >= 0) });
+    // the hot-wire box on the other side of the door: the quick way, and it bites
+    epMesh(R, GEO.box, EPM.dark, 23.92, 12.3, 1.2, 0.5, 0.4, 0.1, -Math.PI / 2); for (let i = 0; i < 3; i++) epMesh(R, GEO.cyl, new T.MeshBasicMaterial({ color: [0xcc2222, 0x2266cc, 0xdddd22][i] }), 23.85, 12.15 + i * 0.15, 1.05, 0.02, 0.3, 0.02).userData.own = true;
+    R.pts.push({ id: 'wire', u: 23.4, v: 12.3, y: 1.2, r: 1.8, prompt: () => 'Hot-wire the door (' + st.w + ' / 4 — it will shock you)', ok: () => !R.solved });
+    // live cables on wet floor: they arc
+    R.arcs = epSpots(rng, 1 + (k > 0.9 ? 1 : 0) + 1, crates.map(c => [c.u, c.v]), 3).map(([u, v]) => { epMesh(R, GEO.plane, EPM.wet, u, v, 0.008, 2.4, 1.8, 1).rotation.x = -Math.PI / 2; const cb = epMesh(R, GEO.cyl, EPM.dark, u - 0.8, v, 0.03, 0.035, 1.8, 0.035); cb.rotation.z = Math.PI / 2; const sp = epMesh(R, GEO.plane, EPM.spark, u, v, 0.35, 0.9, 0.9, 1); sp.visible = false; return { u, v, sp }; });
+    R.h.at = R.arcs.map(() => rand(3, 7)); R.h.z = R.arcs.map(() => 0);
+    const pl = epWallPlate(R, 'v0', 2.7, 1.6, ['POWER ROOM', 'FUSES TO MATCHING SOCKETS', 'THEN THE MASTER SWITCH', 'LIVE CABLES — KEEP CLEAR'], { w: 1.2, h: 0.7 });
+    epCluePt(R, pl, 1.6, 'power' + R.i, 'POWER ROOM — each fuse goes in the socket of its own colour, on the panel by the far door; then throw the master switch. Keep clear of the live cables on the wet floor.');
+  },
+  carrying(R, id) { return R.st.f.findIndex((f, i) => f === 1 && R.st.by[i] === id); },
+  validate() { return true; },
+  skip() { },
+  arm(R) { UI.msg('Dark. The emergency lights barely reach the floor. Somewhere a cable is spitting sparks.', 'warn', 4.5); },
+  host(R, dt) {
+    const st = R.st;
+    // a guard who's gone (caught, left) drops what they carried: it's back where it was
+    st.f.forEach((f, i) => { if (f !== 1) return; const a = crew().find(x => Game.idOf(x) === st.by[i]); if (!a || a.dead || !epIn(R, a) && !R.S.inside(a.pos.x, a.pos.z, -3)) Escape.emit(R, { e: 'drop', i }); });
+    R.h.cd -= dt;
+    R.arcs.forEach((A, j) => {
+      if (R.h.z[j] > 0) { R.h.z[j] -= dt; if (R.h.z[j] <= 0) { const [x, z] = R.S.w(A.u, A.v); for (const a of epGuardsIn(R)) if (Math.hypot(a.pos.x - x, a.pos.z - z) < 1.55) Escape.hurt(a, 'arc', _epv.set(x, 0, z)); } return; }
+      R.h.at[j] -= dt; if (R.h.at[j] <= 0) { R.h.at[j] = rand(4.5, 7.5) / (0.8 + 0.4 * R.k) / epKD(); R.h.z[j] = 0.85; Escape.emit(R, { e: 'arc', j }); }
+    });
+  },
+  use(R, pt, who) {
+    const st = R.st, id = Game.idOf(who), have = this.carrying(R, id);
+    if (pt.id[0] === 'f') { const i = +pt.id.slice(1); if (st.f[i] === 0 && have < 0) Escape.emit(R, { e: 'pick', i, by: id }); return; }
+    if (pt.id[0] === 's') { const s = +pt.id.slice(1); if (have < 0 || st.seat[s] >= 0) return; if (R.sock[s] === have) Escape.emit(R, { e: 'seat', i: have, so: s }); else { Escape.emit(R, { e: 'wrong', so: s, by: id }); Escape.hurt(who, 'arc'); } return; } // (so: the socket — e.s is the room's own number)
+    if (pt.id === 'lever') { if (st.seat.every(x => x >= 0)) Escape.solve(R); return; }
+    if (pt.id === 'wire') { if (R.h.cd > 0) return; R.h.cd = 1.1; Health.selfHurt(who, Math.round(9 * epKD())); const w = st.w + 1; Escape.emit(R, { e: 'wire', w }); if (w >= 4) Escape.solve(R, 'wire'); }
+  },
+  ev(R, e) {
+    const st = R.st, i = e.i | 0;
+    if (e.e === 'pick') { st.f[i] = 1; st.by[i] = e.by | 0; R.fm[i].visible = false; Sound.pickup && Sound.pickup(); if (epMine(e.by | 0)) UI.msg('You have the ' + EP_FUSE[i].n + ' fuse. Its socket is on the panel by the far door.', 'good', 3.5); return; }
+    if (e.e === 'drop') { st.f[i] = 0; st.by[i] = -1; R.fm[i].visible = true; return; }
+    if (e.e === 'seat') { st.f[i] = 2; st.by[i] = -1; st.seat[e.so | 0] = i; R.sm[e.so | 0].visible = true; R.fm[i].visible = false; Sound.fuseIn && Sound.fuseIn(); UI.msg('The ' + EP_FUSE[i].n + ' fuse seats with a clunk (' + st.seat.filter(x => x >= 0).length + ' / 3).', 'good', 3); return; }
+    if (e.e === 'wrong') { const P = R.sm[e.so | 0].position; Sound.sparks && Sound.sparks(P); EpFx.puff(P.x, P.y, P.z, 0xbfe4ff, 10, 1.4); if (epMine(e.by | 0)) UI.msg('It won\'t seat — wrong socket. It bit you.', 'warn', 3); return; }
+    if (e.e === 'wire') { st.w = clamp(e.w | 0, 0, 4); const [x, z] = R.S.w(23.7, 12.3); Sound.arcZap && Sound.arcZap(_epv.set(x, 1.2, z)); EpFx.puff(x, 1.2, z, 0xbfe4ff, 14, 1.6); return; }
+    if (e.e === 'arc') { const A = R.arcs[e.j | 0]; if (!A) return; A.t = 0.85; A.z = 0; const [x, z] = R.S.w(A.u, A.v); Sound.arcCharge && Sound.arcCharge(_epv.set(x, 0.3, z)); return; }
+  },
+  tick(R, dt) {
+    for (const A of R.arcs) {
+      if (A.t > 0) { A.t -= dt; A.sp.visible = Math.random() < 0.4; A.sp.scale.setScalar(0.4 + Math.random() * 0.5); if (A.t <= 0) { A.z = 0.3; const P = A.sp.position; Sound.arcZap && Sound.arcZap(P); EpFx.puff(P.x, 0.3, P.z, 0xbfe4ff, 16, 2); } }
+      else if (A.z > 0) { A.z -= dt; A.sp.visible = true; A.sp.scale.setScalar(1.6); } else A.sp.visible = false;
+      A.sp.lookAt(camera.position);
+    }
+    if (R.solved && R.lever.rotation.x > -0.9) R.lever.rotation.x -= dt * 4;
+  },
+  solved(R) { Sound.breaker && Sound.breaker(); },
+  st(R) { const s = R.st; return { f: s.f.join(''), b: s.by.join(','), s: s.seat.join(','), w: s.w }; },
+  put(R, s) {
+    if (!s) return; const st = R.st;
+    if (typeof s.f === 'string') st.f = [0, 1, 2].map(i => clamp(+s.f[i] || 0, 0, 2));
+    if (typeof s.b === 'string') st.by = s.b.split(',').map(x => x === '' ? -1 : x | 0).slice(0, 3);
+    if (typeof s.s === 'string') st.seat = s.s.split(',').map(x => clamp(x | 0, -1, 2)).slice(0, 3);
+    st.w = clamp(s.w | 0, 0, 4);
+    R.fm.forEach((m, i) => { m.visible = st.f[i] === 0; }); R.sm.forEach((m, s2) => { m.visible = st.seat[s2] >= 0; });
+  },
+  hud(R) { const n = R.st.seat.filter(x => x >= 0).length, i = this.carrying(R, Net.myId); return { goal: 'FUSES ' + n + ' / 3' + (i >= 0 ? ' · YOU HAVE THE ' + EP_FUSE[i].n : ''), bar: n / 3, sub: n >= 3 ? 'Throw the master switch by the panel.' : 'Find the fuses — they glow. Sockets by the far door.' }; },
+  hint(R) {
+    const st = R.st, i = this.carrying(R, Net.myId);
+    if (st.seat.every(x => x >= 0)) return { u: 23.4, v: 6.1, y: 1.3, key: 'lv', label: 'Master switch', tip: 'All three fuses are in: throw the master switch beside the panel.' };
+    if (i >= 0) { const s = R.sock.indexOf(i); return { u: 23.4, v: 4.1 + s * 0.5, y: 1.3, key: 's' + s, label: EP_FUSE[i].n + ' socket', tip: 'Put the ' + EP_FUSE[i].n + ' fuse in the ' + EP_FUSE[i].n + ' socket on the panel.' }; }
+    const k = st.f.findIndex(f => f === 0); if (k < 0) return { tip: 'A teammate has the last fuse.' };
+    return { u: R.fz[k].u, v: R.fz[k].v, y: R.fz[k].y, key: 'f' + k, label: EP_FUSE[k].n + ' fuse', tip: 'The ' + EP_FUSE[k].n + ' fuse is on a crate. (Or hot-wire the door by the far door — it hurts.)' };
+  },
+  threat(R) { const p = player; for (const A of R.arcs) { const [x, z] = R.S.w(A.u, A.v); if (Math.hypot(p.pos.x - x, p.pos.z - z) < 3) return [A.t > 0 ? 2 : 1, 'LIVE CABLE', A.t > 0 ? 0.6 : 0.3]; } return [0, '', 0]; },
+  fixOn(R, f) { return f.type === 'emerg' || R.solved || R.pre; },
+  dim(R, f, b) { return f.type === 'emerg' && !R.solved ? b * 0.55 : b; },
+  dispose() { },
+};
+
+/* ================= REFLECTION ROOM ================= */
+const EP_LU = [6, 10, 14, 18], EP_LV_ = [3, 6, 12, 15];
+EP_ROOMS.reflect = {
+  id: 'reflect', name: 'REFLECTION ROOM', short: 'mirrors', tier: 2, w: 1, minSlot: 0,
+  tagline: 'Turn the mirrors. Bring the light home.', brief: 'Turn the mirrors until the laser reaches the receiver',
+  routes: {},
+  ref(d, t) { return t === 'A' ? [d[1], d[0]] : [-d[1], -d[0]]; },
+  typeFor(din, dout) { return dout[0] === din[1] && dout[1] === din[0] ? 'A' : 'B'; },
+  make(R, rng, k) {
+    let P = null;
+    for (let tries = 0; tries < 40 && !P; tries++) P = this.gen(rng);
+    if (!P) return; // (validate() fails and the room is made again)
+    R.path = P; R.ms = P.ms; const st = R.st = { t: P.ms.map(m => m.t0).join('') };
+    // the emitter and the receiver
+    const em = P.e, rc = P.rc;
+    const ea = em.dir[1] > 0 ? 0 : Math.PI; epMesh(R, GEO.box, EPM.dark, em.u, em.v + (em.dir[1] > 0 ? -0.15 : 0.15), 1.15, 0.5, 0.4, 0.4, ea); epMesh(R, GEO.cyl, EPM.lensRed, em.u, em.v + (em.dir[1] > 0 ? 0.08 : -0.08), 1.15, 0.12, 0.08, 0.12).rotation.x = Math.PI / 2;
+    const ra = rc.u > 12 ? -Math.PI / 2 : Math.PI / 2; epMesh(R, GEO.box, EPM.dark, rc.u, rc.v, 1.15, 0.6, 0.6, 0.25, ra); R.lens = epMesh(R, GEO.box, EPM.lensDark, rc.u + (rc.u > 12 ? -0.14 : 0.14), rc.v, 1.15, 0.36, 0.36, 0.04, ra);
+    // the mirrors: a pedestal, a pane on a pivot, a number
+    R.panes = P.ms.map((m, i) => {
+      epMesh(R, GEO.cyl, EPM.steel, m.u, m.v, 0.45, 0.28, 0.9, 0.28); epCol(R, m.u - 0.3, m.v - 0.3, m.u + 0.3, m.v + 0.3);
+      const piv = new T.Group(); const [x, z] = R.S.w(m.u, m.v); piv.position.set(x, 1.15, z); R.g.add(piv);
+      const pane = new T.Mesh(GEO.box, EPM.mirror); pane.scale.set(0.95, 0.62, 0.05); piv.add(pane); const fr = new T.Mesh(GEO.box, EPM.dark); fr.scale.set(1.0, 0.68, 0.035); fr.position.z = -0.03; piv.add(fr);
+      piv.rotation.y = this.ang(m.t0) + R.S.rot; piv.userData.want = piv.rotation.y;
+      const num = epPlate([String(i + 1)], { w: 0.22, h: 0.22, title: false }); const [nx, nz] = R.S.w(m.u, m.v - 0.29); num.position.set(nx, 0.62, nz); num.rotation.y = Math.PI + R.S.rot; R.g.add(num);
+      R.pts.push({ id: 'm' + i, u: m.u, v: m.v, y: 1.15, r: 1.9, wide: true, prompt: () => 'Turn mirror ' + (i + 1), ok: () => !R.solved });
+      return piv;
+    });
+    R.beams = Array.from({ length: 12 }, () => { const b = new T.Mesh(GEO.box, EPM.beam); b.visible = false; b.castShadow = false; R.g.add(b); return b; });
+    // the clue: written backwards, as if for a mirror
+    const pn = P.ms.map((m, i) => m.need ? i + 1 : 0).filter(Boolean);
+    const pl = epWallPlate(R, 'v0', 2.7, 1.6, ['ONLY ' + pn.join(' · ') + ' MATTER', 'THE REST LIE', 'BRING THE LIGHT HOME', 'KEEP BELOW THE BEAM'], { w: 1.2, h: 0.7, mirror: true });
+    epCluePt(R, pl, 1.6, 'reflect' + R.i, 'The placard is written backwards. In a mirror it would read: "ONLY MIRRORS ' + pn.join(', ') + ' MATTER — THE REST LIE. BRING THE LIGHT HOME. KEEP BELOW THE BEAM."', 'Read the backwards placard');
+    this.trace(R);
+  },
+  ang(t) { return t === 'A' ? -Math.PI / 4 : Math.PI / 4; },
+  gen(rng) {
+    const fromV0 = rng() < 0.5, eu = epPick(EP_LU, rng), d0 = [0, fromV0 ? 1 : -1];
+    const v1 = epPick(EP_LV_, rng), us = EP_LU.filter(u => u !== eu), u2 = epPick(us, rng), d1 = [Math.sign(u2 - eu), 0];
+    const vs = EP_LV_.filter(v => v !== v1), v3 = epPick(vs, rng), d2 = [0, Math.sign(v3 - v1)], d3 = [rng() < 0.5 ? 1 : -1, 0];
+    // the beam has to go the right way up the first leg: from the wall it starts on to v1
+    const M1 = { u: eu, v: v1, need: 1, t: this.typeFor(d0, d1) }, M2 = { u: u2, v: v1, need: 1, t: this.typeFor(d1, d2) }, M3 = { u: u2, v: v3, need: 1, t: this.typeFor(d2, d3) };
+    const rc = { u: d3[0] > 0 ? 23.75 : 0.25, v: v3 };
+    const e = { u: eu, v: fromV0 ? 0.25 : 17.75, dir: d0 };
+    const segs = [[e.u, e.v, M1.u, M1.v], [M1.u, M1.v, M2.u, M2.v], [M2.u, M2.v, M3.u, M3.v], [M3.u, M3.v, rc.u, rc.v]];
+    const onSeg = (u, v) => segs.some(([a, b, c, d]) => (Math.abs(a - c) < 0.01 ? Math.abs(u - a) < 0.01 && v > Math.min(b, d) + 0.01 && v < Math.max(b, d) - 0.01 : Math.abs(v - b) < 0.01 && u > Math.min(a, c) + 0.01 && u < Math.max(a, c) - 0.01));
+    if ([M1, M2, M3].some(m => onSeg(m.u, m.v))) return null;
+    if (Math.abs(rc.v - 9) < 2.6) return null; // (not into a doorway)
+    // decoys: on the lattice, off the light's way
+    const free = []; for (const u of EP_LU) for (const v of EP_LV_) if (!onSeg(u, v) && ![M1, M2, M3].some(m => m.u === u && m.v === v)) free.push({ u, v });
+    epShuffle(free, rng); const ds = free.slice(0, 2).map(p => ({ u: p.u, v: p.v, need: 0, t: rng() < 0.5 ? 'A' : 'B' }));
+    const ms = epShuffle([M1, M2, M3].concat(ds), rng);
+    ms.forEach(m => { m.t0 = rng() < 0.5 ? 'A' : 'B'; });
+    if (ms.filter(m => m.need).every(m => m.t0 === m.t)) { const m = ms.find(x => x.need); m.t0 = m.t === 'A' ? 'B' : 'A'; } // (never already solved)
+    return { e, rc, ms };
+  },
+  // the light's way, from the emitter, mirror to mirror, to a wall
+  trace(R) {
+    const P = R.path; if (!P) return; const types = R.st.t, segs = []; let u = P.e.u, v = P.e.v, d = P.e.dir.slice(), lit = false;
+    for (let n = 0; n < 12; n++) {
+      let best = null, bd = 1e9;
+      P.ms.forEach((m, i) => { const du = m.u - u, dv = m.v - v; if (d[0] && Math.abs(dv) < 0.01 && du * d[0] > 0.01 && Math.abs(du) < bd) { bd = Math.abs(du); best = i; } if (d[1] && Math.abs(du) < 0.01 && dv * d[1] > 0.01 && Math.abs(dv) < bd) { bd = Math.abs(dv); best = i; } });
+      const wu = d[0] > 0 ? 23.75 : d[0] < 0 ? 0.25 : u, wv = d[1] > 0 ? 17.75 : d[1] < 0 ? 0.25 : v, wd = Math.abs(wu - u) + Math.abs(wv - v);
+      if (best !== null && bd < wd) { const m = P.ms[best]; segs.push([u, v, m.u, m.v]); u = m.u; v = m.v; d = this.ref(d, types[best]); continue; }
+      segs.push([u, v, wu, wv]); lit = Math.abs(wu - P.rc.u) < 0.3 && Math.abs(wv - P.rc.v) < 0.3; break;
+    }
+    R.segs = segs; R.lit = lit;
+    R.beams.forEach((b, i) => { const s = segs[i]; b.visible = !!s; if (!s) return; const [ax, az] = R.S.w(s[0], s[1]), [bx, bz] = R.S.w(s[2], s[3]); b.position.set((ax + bx) / 2, 1.15, (az + bz) / 2); b.scale.set(Math.max(0.035, Math.abs(bx - ax)), 0.035, Math.max(0.035, Math.abs(bz - az))); b.rotation.y = 0; });
+    if (R.lens) R.lens.material = lit ? EPM.lensGreen : EPM.lensDark;
+    return lit;
+  },
+  validate(R) { return !!R.path; },
+  skip(R) { R.st.t = R.ms.map(m => m.need ? m.t : m.t0).join(''); this.trace(R); },
+  arm(R) { UI.msg('A red laser crosses the room, glancing off mirrors on pedestals. It burns — crouch under it.', 'warn', 4.5); Sound.hum && Sound.hum(); },
+  host(R, dt) {
+    R.h = R.h || {}; R.h.t = (R.h.t || 0) - dt; if (R.h.t > 0) return; R.h.t = 0.25;
+    for (const a of epGuardsIn(R)) {
+      if (a.crouching || (a === player && player.crouching)) continue; // (below the beam)
+      const near = (R.segs || []).some(s => { const [ax, az] = R.S.w(s[0], s[1]), [bx, bz] = R.S.w(s[2], s[3]); const L = Math.hypot(bx - ax, bz - az) || 1, t = clamp(((a.pos.x - ax) * (bx - ax) + (a.pos.z - az) * (bz - az)) / (L * L), 0, 1); return Math.hypot(a.pos.x - (ax + (bx - ax) * t), a.pos.z - (az + (bz - az) * t)) < 0.34; });
+      if (near) Escape.hurt(a, 'beam');
+    }
+  },
+  use(R, pt) { const i = +pt.id.slice(1); if (!(i >= 0 && i < R.ms.length)) return; const t = R.st.t.split(''); t[i] = t[i] === 'A' ? 'B' : 'A'; Escape.emit(R, { e: 'rot', t: t.join(''), i }); R.st.t = t.join(''); if (this.trace(R)) Escape.solve(R); },
+  ev(R, e) { if (e.e === 'rot' && typeof e.t === 'string' && e.t.length === R.ms.length) { R.st.t = e.t; R.panes.forEach((p, i) => { p.userData.want = this.ang(e.t[i]) + R.S.rot; }); const P = R.panes[e.i | 0]; if (P) { Sound.click && Sound.click(); Sound.metalHit && Sound.metalHit(P.position, 0.25); } this.trace(R); } },
+  tick(R, dt) { for (const p of R.panes || []) { const w = p.userData.want; if (Math.abs(p.rotation.y - w) > 0.001) p.rotation.y = damp(p.rotation.y, w, 10, dt); } if (R.beams) for (const b of R.beams) if (b.visible) b.material.opacity = 0.7 + Math.sin(Game.time * 31) * 0.15; },
+  solved(R) { if (R.lens) R.lens.material = EPM.lensGreen; Sound.pulse && Sound.pulse(); },
+  st(R) { return { t: R.st.t }; },
+  put(R, s) { if (s && typeof s.t === 'string' && s.t !== R.st.t && s.t.length === R.ms.length) this.ev(R, { e: 'rot', t: s.t, i: -1 }); },
+  hud(R) { return { goal: R.lit ? 'THE LIGHT IS HOME' : 'BRING THE LIGHT HOME', sub: 'Crouch under the beam — it burns.' }; },
+  hint(R) {
+    if (!Escape.stats.clues.has('reflect' + R.i)) return { u: 2.7, v: 0.7, y: 1.6, key: 'pl', label: 'The placard', tip: 'Read the placard by the door — it\'s written backwards.' };
+    const i = R.ms.findIndex((m, k) => m.need && R.st.t[k] !== m.t); if (i < 0) return { tip: 'Follow the beam.' };
+    return { u: R.ms[i].u, v: R.ms[i].v, y: 1.15, key: 'm' + i, label: 'Mirror ' + (i + 1), tip: 'Turn mirror ' + (i + 1) + ' — and keep your head below the beam.' };
+  },
+  threat(R) { const p = player; if (!R.segs || p.crouching) return [0, '', 0]; for (const s of R.segs) { const [ax, az] = R.S.w(s[0], s[1]), [bx, bz] = R.S.w(s[2], s[3]); const L = Math.hypot(bx - ax, bz - az) || 1, t = clamp(((p.pos.x - ax) * (bx - ax) + (p.pos.z - az) * (bz - az)) / (L * L), 0, 1); if (Math.hypot(p.pos.x - (ax + (bx - ax) * t), p.pos.z - (az + (bz - az) * t)) < 1.1) return [1, 'THE BEAM BURNS — CROUCH UNDER IT', 0.3]; } return [0, '', 0]; },
+  fixOn() { return true; },
+  dim(R, f, b) { return b * 0.9; },
+  dispose() { },
+};
+
+/* ================= PRESSURE CHAMBER ================= */
+EP_ROOMS.pressure = {
+  id: 'pressure', name: 'PRESSURE CHAMBER', short: 'pressure', tier: 2, w: 1, minSlot: 1,
+  tagline: 'The pressure is climbing. Vent it — at the right moment.', brief: 'Vent the three relief valves while the needle is in their green',
+  routes: { purge: 'You pulled the emergency purge and took the blast.' }, alt: 'the emergency purge, above 60 (it blasts everyone)',
+  needle(R, t) { return clamp(50 + 46 * Math.sin(t * (1.05 + 0.3 * R.k) + R.ph + 0.7 * Math.sin(t * 0.41)), 0, 100); },
+  make(R, rng, k) {
+    R.ph = rng() * TAU; R.bw = 22 - 5 * R.k; const st = R.st = { p: 20, v: '000', rt: 0 }; R.h = { cd: [0, 0, 0], pulse: 2 };
+    R.vs = [[7.5, 0], [15.5, 1], [19.5, 0]].map(([u, side], i) => {
+      const v0 = side ? 18 : 0, s = side ? -1 : 1, a = side ? Math.PI : 0, g0 = 8 + rng() * (84 - R.bw);
+      const wheel = new T.Group(); const [x, z] = R.S.w(u, v0 + s * 0.16); wheel.position.set(x, 1.2, z); wheel.rotation.y = a + R.S.rot; R.g.add(wheel);
+      const rim = new T.Mesh(GEO.torus, EPM.red); rim.scale.set(0.5, 0.5, 1.3); wheel.add(rim); for (const r of [0, Math.PI / 2]) { const sp = new T.Mesh(GEO.box, EPM.red); sp.scale.set(0.46, 0.03, 0.03); sp.rotation.z = r; wheel.add(sp); }
+      // its own little dial: the green band, and the needle
+      const c = makeCanvas(128, 128), g = c.getContext('2d'); g.fillStyle = '#e8e4d8'; g.beginPath(); g.arc(64, 64, 60, 0, TAU); g.fill(); g.strokeStyle = '#222'; g.lineWidth = 4; g.stroke();
+      const A = n => (-135 + n * 2.7) * Math.PI / 180 - Math.PI / 2; g.strokeStyle = '#2ea84a'; g.lineWidth = 16; g.beginPath(); g.arc(64, 64, 44, A(g0), A(g0 + R.bw)); g.stroke(); g.strokeStyle = '#b8261e'; g.beginPath(); g.arc(64, 64, 44, A(85), A(100)); g.stroke();
+      const dial = epPlateMesh(c, 0.34, 0.34); dial.material.emissive.setHex(0xffffff); dial.material.emissiveMap = dial.material.map; dial.material.emissiveIntensity = 0.45; // (back-lit, like a real dial) const [dx, dz] = R.S.w(u, v0 + s * 0.04); dial.position.set(dx, 1.78, dz); dial.rotation.y = a + R.S.rot; R.g.add(dial); // (above the wheel)
+      const nd = new T.Mesh(GEO.box, EPM.dark); nd.scale.set(0.012, 0.13, 0.01); const npiv = new T.Group(); npiv.position.copy(dial.position); npiv.rotation.y = dial.rotation.y; npiv.translateZ(0.012); nd.position.y = 0.06; npiv.add(nd); R.g.add(npiv);
+      R.pts.push({ id: 'v' + i, u, v: v0 + s * 0.55, y: 1.2, r: 1.9, prompt: () => 'Open relief valve ' + (i + 1) + ' (when its needle is in the green)', ok: () => !R.solved && st.v[i] !== '1' });
+      return { u, v: v0, side, g0, wheel, npiv, sp: 0 };
+    });
+    // the big gauge on the far wall, and the pressure column
+    const c = makeCanvas(256, 256), g = c.getContext('2d'); g.fillStyle = '#e8e4d8'; g.beginPath(); g.arc(128, 128, 120, 0, TAU); g.fill(); g.strokeStyle = '#222'; g.lineWidth = 8; g.stroke(); g.fillStyle = '#222'; g.font = '700 26px "Courier New",monospace'; g.textAlign = 'center'; g.fillText('PRESSURE', 128, 200);
+    for (let n = 0; n <= 100; n += 10) { const a = (-135 + n * 2.7) * Math.PI / 180 - Math.PI / 2; g.lineWidth = n % 50 ? 3 : 6; g.beginPath(); g.moveTo(128 + Math.cos(a) * 100, 128 + Math.sin(a) * 100); g.lineTo(128 + Math.cos(a) * 116, 128 + Math.sin(a) * 116); g.stroke(); }
+    const gm = epPlateMesh(c, 1.3, 1.3), [gx, gz] = R.S.w(23.95, 13); gm.material.emissive.setHex(0xffffff); gm.material.emissiveMap = gm.material.map; gm.material.emissiveIntensity = 0.4; gm.position.set(gx, 2.0, gz); gm.rotation.y = -Math.PI / 2 + R.S.rot; R.g.add(gm);
+    const gn = new T.Mesh(GEO.box, EPM.red); gn.scale.set(0.03, 0.52, 0.02); gn.position.y = 0.22; const gp = new T.Group(); gp.position.copy(gm.position); gp.rotation.y = gm.rotation.y; gp.translateZ(0.02); gp.add(gn); R.g.add(gp); R.gp = gp;
+    R.col = []; for (let i = 0; i < 10; i++) { const m = epMesh(R, GEO.box, new T.MeshBasicMaterial({ color: 0x222222 }), 23.93, 14.2, 0.9 + i * 0.16, 0.06, 0.12, 0.3, -Math.PI / 2); m.userData.own = true; R.col.push(m); }
+    // the purge lever: the other way out, and it blasts everyone in the room
+    epMesh(R, GEO.box, EPM.yellow, 23.9, 4.6, 1.35, 0.5, 0.9, 0.12, -Math.PI / 2); R.purge = epMesh(R, GEO.box, EPM.red, 23.8, 4.6, 1.3, 0.08, 0.55, 0.08);
+    epWallPlate(R, 'u1', 4.6, 2.0, ['EMERGENCY PURGE', 'ABOVE 60 ONLY · STAND CLEAR'], { w: 0.9, h: 0.3, bg: '#c8b23a' });
+    R.pts.push({ id: 'purge', u: 23.4, v: 4.6, y: 1.3, r: 1.8, prompt: () => st.p >= 60 ? 'Pull the emergency purge (everyone in here gets blasted)' : 'Emergency purge — only above 60', ok: () => !R.solved });
+    const pl = epWallPlate(R, 'v0', 2.7, 1.6, ['PRESSURE CHAMBER', 'VENT EACH VALVE', 'WHEN ITS NEEDLE IS GREEN', 'WRONG TIME = STEAM'], { w: 1.2, h: 0.7 });
+    epCluePt(R, pl, 1.6, 'pressure' + R.i, 'PRESSURE CHAMBER — open each relief valve only while the needle on its own little dial is in the green. At the wrong moment it blows steam in your face. Over 85 the room starts to crush you.');
+  },
+  validate() { return true; },
+  skip(R) { R.st.v = '111'; },
+  arm(R) { UI.msg('The door thuds shut. Your ears pop. Somewhere a gauge starts to climb.', 'warn', 4); const [x, z] = R.S.w(12, 9); Sound.gasHiss && Sound.gasHiss(_epv.set(x, 3, z)); },
+  host(R, dt) {
+    const st = R.st; st.rt = R.t; st.p = Math.min(100, st.p + 0.85 * (0.8 + 0.4 * R.k) * epKD() * dt);
+    R.h.cd = R.h.cd.map(c => c - dt);
+    if (st.p >= 85) { R.h.pulse -= dt; if (R.h.pulse <= 0) { R.h.pulse = 2.5; for (const a of epGuardsIn(R)) Escape.hurt(a, 'squeeze'); } } else R.h.pulse = 1.2;
+    if (st.p >= 100) { st.p = 70; for (const a of epGuardsIn(R)) Escape.hurt(a, 'steam'); Escape.emit(R, { e: 'blow' }); }
+  },
+  use(R, pt, who) {
+    const st = R.st;
+    if (pt.id === 'purge') { if (st.p < 60 || R.solved) return; for (const a of epGuardsIn(R)) Escape.hurt(a, 'steam'); Escape.emit(R, { e: 'purge' }); Escape.solve(R, 'purge'); return; }
+    const i = +pt.id.slice(1), V = R.vs[i]; if (!V || st.v[i] === '1' || R.h.cd[i] > 0) return; R.h.cd[i] = 1.2;
+    const n = this.needle(R, R.t), ok = n >= V.g0 - 4 && n <= V.g0 + R.bw + 4;
+    if (ok) { const v = st.v.split(''); v[i] = '1'; st.p = Math.max(0, st.p - 22); Escape.emit(R, { e: 'vent', i, ok: 1, v: v.join('') }); if (v.every(x => x === '1')) Escape.solve(R); }
+    else { st.p = Math.min(100, st.p + 14); const [x, z] = R.S.w(V.u, V.v); for (const a of epGuardsIn(R)) if (Math.hypot(a.pos.x - x, a.pos.z - z) < 2.4) Escape.hurt(a, 'steam', _epv.set(x, 0, z)); Escape.emit(R, { e: 'vent', i, ok: 0, v: st.v }); }
+  },
+  ev(R, e) {
+    if (e.e === 'vent') { const V = R.vs[e.i | 0]; if (!V) return; if (typeof e.v === 'string') R.st.v = e.v; V.sp = 1; const P = V.wheel.position; Sound.gasHiss && Sound.gasHiss(P); EpFx.puff(P.x, P.y + 0.3, P.z, 0xe8eef2, e.ok ? 18 : 40, e.ok ? 1 : 2.2); UI.msg(e.ok ? 'Valve ' + ((e.i | 0) + 1) + ' vents with a long hiss — the needle drops.' : 'Wrong moment — STEAM blasts out of valve ' + ((e.i | 0) + 1) + '!', e.ok ? 'good' : 'warn', 3); return; }
+    if (e.e === 'blow') { Game.shake(0.6); Sound.boom && Sound.boom(); for (const V of R.vs) { const P = V.wheel.position; EpFx.puff(P.x, P.y, P.z, 0xe8eef2, 30, 2.5); } UI.msg('BLOWOUT — every seal in the room screams at once.', 'warn', 3.5); return; }
+    if (e.e === 'purge') { Game.shake(0.8); Sound.boom && Sound.boom(); const [x, z] = R.S.w(12, 9); EpFx.puff(x, 2.5, z, 0xe8eef2, 60, 3); return; }
+  },
+  tick(R, dt) {
+    if (!R.armed) return; if (Net.isClient && R.st.rt && Math.abs(R.st.rt - R.t) > 0.4) R.t = R.st.rt;
+    const n = this.needle(R, R.t), A = (-135 + n * 2.7) * Math.PI / 180;
+    R.gp.rotation.z = -A; for (const V of R.vs) { V.npiv.rotation.z = -A; if (V.sp > 0) { V.sp -= dt; V.wheel.rotation.z += dt * 6; } }
+    const p = R.st.p; R.col.forEach((m, i) => m.material.color.setHex(p >= (i + 1) * 10 ? (i >= 8 ? 0xff3020 : i >= 5 ? 0xffb020 : 0x3dff7a) : 0x222222));
+    const inR = R.S.inside(player.pos.x, player.pos.z); Escape.pressFx = inR && !R.solved ? clamp((p - 50) / 50, 0, 1) : 0;
+  },
+  st(R) { return { p: +R.st.p.toFixed(1), v: R.st.v, rt: +R.t.toFixed(2) }; },
+  put(R, s) { if (!s) return; R.st.p = clamp(+s.p || 0, 0, 100); if (typeof s.v === 'string' && /^[01]{3}$/.test(s.v)) R.st.v = s.v; R.st.rt = +s.rt || 0; },
+  hud(R) { const p = R.st.p; return { goal: 'PRESSURE ' + Math.round(p) + ' · VENTED ' + R.st.v.split('').filter(x => x === '1').length + ' / 3', bar: p / 100, cls: p >= 85 ? 'surge' : p >= 65 ? 'late' : '', sub: 'Watch each valve\'s little dial: vent it in the green.' }; },
+  progress(R) { return -1; },
+  hint(R) {
+    if (!Escape.stats.clues.has('pressure' + R.i)) return { u: 2.7, v: 0.7, y: 1.6, key: 'pl', label: 'The placard', tip: 'Read the placard by the door.' };
+    const i = R.st.v.indexOf('0'); if (i < 0) return { tip: 'All three vented.' }; const V = R.vs[i];
+    return { u: V.u, v: V.side ? 17.4 : 0.6, y: 1.4, key: 'v' + i, label: 'Valve ' + (i + 1), tip: 'Valve ' + (i + 1) + ': watch the needle on its own little dial and [E] while it\'s in the green band. (Desperate? Above 60 the purge lever by the far door opens it — with a blast.)' };
+  },
+  threat(R) { const p = R.st.p; return p >= 85 ? [3, 'THE PRESSURE IS CRUSHING YOU', 1] : p >= 65 ? [2, 'PRESSURE RISING', 0.6] : [1, 'PRESSURE ' + Math.round(p), 0.25]; },
+  fixOn() { return true; },
+  dim(R, f, b, t) { const p = R.st.p; return p >= 85 && !settings.noFlash ? b * (0.6 + 0.4 * Math.sin(t * 12)) : b * 0.85; },
+  dispose() { Escape.pressFx = 0; },
+};
+
+/* ================= SHIFTING ROOM ================= */
+EP_ROOMS.shifting = {
+  id: 'shifting', name: 'SHIFTING ROOM', short: 'shifting', tier: 3, w: 1, minSlot: 2,
+  tagline: 'When the lights go out, the walls move.', brief: 'Find the three marks on the moving walls, set them on the keypad',
+  routes: {},
+  period(R) { return Math.max(9, 16 - 5 * R.k) / epKD(); },
+  make(R, rng, k) {
+    const st = R.st = { c: 0, d: [0, 0, 0], nx: this.period(R) };
+    R.code = [0, 1, 2].map(() => Math.floor(rng() * 6)); st.d = R.code.map(c => (c + 1 + Math.floor(rng() * 5)) % 6);
+    // the walls: slabs that slide 4 m along themselves
+    const slabs = [], n = 5 + (k > 0.9 ? 1 : 0), rects = [];
+    const ok = r => r[0] > 3.2 && r[2] < 20.8 && r[1] > 0.6 && r[3] < 17.4 && !rects.some(q => r[0] < q[2] + 1.2 && r[2] > q[0] - 1.2 && r[1] < q[3] + 1.2 && r[3] > q[1] - 1.2);
+    for (let tries = 0; tries < 200 && slabs.length < n; tries++) {
+      const alongU = slabs.length % 2 === 0, L = 4;
+      if (alongU) { const u0 = 3.6 + rng() * 9, v = 2 + rng() * 14, A = [u0, v - 0.15, u0 + L, v + 0.15], B = [u0 + L, v - 0.15, u0 + 2 * L, v + 0.15]; if (ok(A) && ok(B)) { rects.push(A, B); slabs.push({ alongU, A, B }); } }
+      else { const u = 5 + rng() * 14, v0 = 0.8 + rng() * 8.6, A = [u - 0.15, v0, u + 0.15, v0 + L], B = [u - 0.15, v0 + L, u + 0.15, v0 + 2 * L]; if (ok(A) && ok(B)) { rects.push(A, B); slabs.push({ alongU, A, B }); } }
+    }
+    R.slabs = slabs.map((s, i) => {
+      const m = epMesh(R, GEO.box, MAT.wall.block, 0, 0, WALL_H / 2, s.alongU ? 4 : 0.3, WALL_H, s.alongU ? 0.3 : 4); s.m = m; s.k = 0;
+      s.cols = [s.A, s.B].map((r, c) => epCol(R, r[0], r[1], r[2], r[3], { dyn: () => R.st.c === c }));
+      this.place(R, s, 0); return s;
+    });
+    // the three marks, each on its own wall (they ride with it)
+    const pick = epShuffle(R.slabs.slice(), rng).slice(0, 3);
+    R.marks = pick.map((s, i) => {
+      const side = rng() < 0.5 ? 1 : -1, tex = epGlyphTex(R.code[i], i + 1), pl = new T.Mesh(new T.PlaneGeometry(0.42, 0.42), new T.MeshPhongMaterial({ map: tex, shininess: 20 })); pl.userData.own = true;
+      // (on the slab's face: its local z is across it)
+      pl.position.set(0, (1.55 - WALL_H / 2) / WALL_H, side * 0.52); pl.rotation.y = side > 0 ? 0 : Math.PI; pl.scale.set(1 / (s.alongU ? 4 : 0.3), 1 / WALL_H, 1);
+      if (!s.alongU) { pl.position.set(side * 0.52, (1.55 - WALL_H / 2) / WALL_H, 0); pl.rotation.y = side > 0 ? Math.PI / 2 : -Math.PI / 2; pl.scale.set(1 / 4, 1 / WALL_H, 1); }
+      s.m.add(pl); s.mark = i; s.side = side;
+      const pt = { id: 'k' + i, y: 1.55, r: 2.0, wide: true, prompt: () => 'Look at the mark', ok: () => !R.solved, local: () => { Escape.clue(R, 'shift' + R.i + i); UI.msg('A mark painted on the wall: ' + (i + 1) + ' dot' + (i ? 's' : '') + ' under a ' + EP_GLYPHS[R.code[i]] + '. (Mark ' + (i + 1) + ' of 3.)', 'story', 5); return false; } };
+      Object.defineProperty(pt, 'u', { get: () => this.markUV(R, s)[0] }); Object.defineProperty(pt, 'v', { get: () => this.markUV(R, s)[1] });
+      R.pts.push(pt); return { s, i };
+    });
+    // the keypad by the far door: three dials
+    epMesh(R, GEO.box, EPM.dark, 23.93, 13.1, 1.3, 1.4, 0.6, 0.1, -Math.PI / 2);
+    R.dials = [0, 1, 2].map(i => { const tex = epGlyphTex(st.d[i], 0, { bg: '#0d1a12', ink: '#7dffa0' }); const m = new T.Mesh(new T.PlaneGeometry(0.34, 0.34), new T.MeshBasicMaterial({ map: tex })); m.userData.own = true; const [x, z] = R.S.w(23.86, 12.62 + i * 0.48); m.position.set(x, 1.3, z); m.rotation.y = -Math.PI / 2 + R.S.rot; R.g.add(m); return m; });
+    [0, 1, 2].forEach(i => R.pts.push({ id: 'd' + i, u: 23.4, v: 12.62 + i * 0.48, y: 1.3, r: 1.8, prompt: () => 'Turn dial ' + (i + 1) + ' (' + EP_GLYPHS[R.st.d[i]].toLowerCase() + ')', ok: () => !R.solved }));
+    const pl = epWallPlate(R, 'v0', 2.7, 1.6, ['SHIFTING ROOM', 'THE WALLS MOVE IN THE DARK', 'THREE MARKS, BY THEIR DOTS', 'SET THEM ON THE KEYPAD'], { w: 1.2, h: 0.7 });
+    epCluePt(R, pl, 1.6, 'shift' + R.i, 'SHIFTING ROOM — the walls slide whenever the lights go out. Three marks are painted on them: set the keypad by the far door to the marks, in the order of their dots.');
+  },
+  place(R, s, k) { const r = [lerp(s.A[0], s.B[0], k), lerp(s.A[1], s.B[1], k), lerp(s.A[2], s.B[2], k), lerp(s.A[3], s.B[3], k)], [x, z] = R.S.w((r[0] + r[2]) / 2, (r[1] + r[3]) / 2); s.m.position.set(x, WALL_H / 2, z); s.k = k; },
+  markUV(R, s) { const r = R.st.c ? s.B : s.A, cu = (r[0] + r[2]) / 2, cv = (r[1] + r[3]) / 2; return s.alongU ? [cu, cv + s.side * 0.75] : [cu + s.side * 0.75, cv]; },
+  validate(R) { if (!R.slabs || R.slabs.length < 3) return false; const c0 = R.st.c; let ok = true; for (const c of [0, 1]) { R.st.c = c; if (!Escape.reachable(R)) ok = false; } R.st.c = c0; return ok; },
+  skip() { },
+  arm(R) { UI.msg('Grey walls stand about the room at odd angles. The lights hum — and stutter.', 'warn', 4); },
+  host(R, dt) { const st = R.st; st.nx -= dt; if (st.nx <= 0) { st.nx = this.period(R); Escape.emit(R, { e: 'shift', c: st.c ? 0 : 1 }); } },
+  use(R, pt) { if (pt.id[0] !== 'd') return; const i = +pt.id.slice(1), d = R.st.d.slice(); d[i] = (d[i] + 1) % 6; Escape.emit(R, { e: 'dial', d: d.join('') }); if (d.every((x, k) => x === R.code[k])) Escape.solve(R); },
+  ev(R, e) {
+    if (e.e === 'shift') { R.st.c = e.c ? 1 : 0; R.fx.dark = 2.0; R.fx.mv = 0; const [x, z] = R.S.w(12, 9); Sound.brownout && Sound.brownout(); setTimeout(() => { if (Escape.on()) Sound.wallUp && Sound.wallUp(_epv.set(x, 1.5, z)); }, 400); return; }
+    if (e.e === 'dial' && typeof e.d === 'string' && /^[0-5]{3}$/.test(e.d)) { const d = e.d.split('').map(Number); d.forEach((x, i) => { if (x !== R.st.d[i]) { const M = R.dials[i]; M.material.map.dispose(); M.material.map = epGlyphTex(x, 0, { bg: '#0d1a12', ink: '#7dffa0' }); M.material.needsUpdate = true; } }); R.st.d = d; Sound.beep && Sound.beep(); }
+  },
+  tick(R, dt) {
+    if (R.fx.dark > 0) R.fx.dark -= dt;
+    const want = R.st.c; for (const s of R.slabs || []) { if (Math.abs(s.k - want) > 0.001 && (R.fx.dark || 0) < 1.6) this.place(R, s, clamp(s.k + Math.sign(want - s.k) * dt / 1.4, 0, 1)); }
+  },
+  solved() { Sound.pulse && Sound.pulse(); },
+  st(R) { return { c: R.st.c, d: R.st.d.join(''), nx: +R.st.nx.toFixed(1) }; },
+  put(R, s) { if (!s) return; if ((s.c ? 1 : 0) !== R.st.c) this.ev(R, { e: 'shift', c: s.c }); if (typeof s.d === 'string' && s.d !== R.st.d.join('')) this.ev(R, { e: 'dial', d: s.d }); R.st.nx = +s.nx || R.st.nx; },
+  hud(R) { return { goal: 'THE WALLS MOVE IN ' + Math.max(0, Math.ceil(R.st.nx)) + 'S', bar: 1 - R.st.nx / this.period(R), cls: R.st.nx < 3 ? 'late' : '', sub: 'Marks read: ' + [0, 1, 2].filter(i => Escape.stats.clues.has('shift' + R.i + i)).length + ' / 3 · keypad by the far door' }; },
+  hint(R) {
+    const i = [0, 1, 2].find(k => !Escape.stats.clues.has('shift' + R.i + k));
+    if (i !== undefined) { const s = R.marks[i].s, [u, v] = this.markUV(R, s); return { u, v, y: 1.55, key: 'k' + i + R.st.c, label: 'Mark ' + (i + 1), tip: 'Mark ' + (i + 1) + ' is on one of the moving walls.', done: () => Escape.stats.clues.has('shift' + R.i + i) }; }
+    return { u: 23.4, v: 13.1, y: 1.3, key: 'kp', label: 'Keypad', tip: 'Set the three dials to the marks: ' + R.code.map(c => EP_GLYPHS[c].toLowerCase()).join(', ') + '.' };
+  },
+  threat(R) { return R.st.nx < 3 ? [2, 'THE LIGHTS ARE ABOUT TO GO', 0.5] : [0, '', 0]; },
+  fixOn() { return true; },
+  dim(R, f, b, t) { if (R.fx.dark > 0) return settings.noFlash ? b * 0.25 : 0; return R.st.nx < 2.5 && !settings.noFlash ? b * (Math.random() < 0.3 ? 0.2 : 0.9) : b * 0.8; },
+  dispose() { },
+};
+
+/* ================= OBSERVATION ROOM ================= */
+EP_ROOMS.observe = {
+  id: 'observe', name: 'OBSERVATION ROOM', short: 'observer', tier: 2, w: 1, minSlot: 1,
+  tagline: 'The exhibit only moves when nobody is looking at it.', brief: 'Collect the three data cores — and don\'t look away from it',
+  routes: {},
+  make(R, rng, k) {
+    const st = R.st = { u: 21.5, v: 15.5, a: Math.atan2(1, 0.6), m: 0, c: '000' }; R.home = [21.5, 15.5]; R.h = { frz: 0, t: 0 };
+    // a few plinths for the cores, and some cover
+    const spots = epSpots(rng, 7, [[21.5, 15.5], [12, 9]], 3.2);
+    R.cores = spots.slice(0, 3).map(([u, v], i) => { epMesh(R, GEO.cyl, EPM.steel, u, v, 0.5, 0.5, 1.0, 0.5); epCol(R, u - 0.3, v - 0.3, u + 0.3, v + 0.3); const c = epMesh(R, GEO.cyl, new T.MeshBasicMaterial({ color: 0x55c8ff }), u, v, 1.16, 0.16, 0.3, 0.16); c.userData.own = true; R.pts.push({ id: 'c' + i, u, v, y: 1.15, r: 1.9, wide: true, prompt: () => 'Take the data core', ok: () => !R.solved && R.st.c[i] !== '1' }); return { u, v, m: c }; });
+    spots.slice(3, 6).forEach(([u, v]) => epCrate(R, u, v, 1.1 + rng() * 0.6, MAT.crate));
+    // the exhibit: tall, pale, jointed, with a lens for a face
+    const M = R.ob = new T.Group(), P = EPM.porcelain;
+    const part = (geo, sx, sy, sz, x, y, z) => { const m = new T.Mesh(geo, P); m.scale.set(sx, sy, sz); m.position.set(x, y, z); m.castShadow = true; M.add(m); return m; };
+    R.legs = [part(GEO.cyl, 0.13, 1.15, 0.13, -0.14, 0.58, 0), part(GEO.cyl, 0.13, 1.15, 0.13, 0.14, 0.58, 0)];
+    part(GEO.taper, 0.5, 0.95, 0.32, 0, 1.62, 0); part(GEO.sphere, 0.3, 0.3, 0.3, 0, 1.12, 0);
+    R.arms = [part(GEO.cyl, 0.08, 1.35, 0.08, -0.34, 1.42, 0), part(GEO.cyl, 0.08, 1.35, 0.08, 0.34, 1.42, 0)];
+    part(GEO.cyl, 0.09, 0.22, 0.09, 0, 2.18, 0); const head = part(GEO.sphere, 0.34, 0.44, 0.36, 0, 2.48, 0);
+    const lens = new T.Mesh(GEO.cyl, EPM.lensRed); lens.scale.set(0.12, 0.06, 0.12); lens.rotation.x = Math.PI / 2; lens.position.set(0, 2.5, -0.19); M.add(lens);
+    const [x, z] = R.S.w(st.u, st.v); M.position.set(x, 0, z); M.rotation.y = st.a + R.S.rot; R.g.add(M);
+    const pl = epWallPlate(R, 'v0', 2.7, 1.6, ['OBSERVATION', 'THE EXHIBIT MOVES', 'WHEN UNOBSERVED', 'KEEP YOUR EYES ON IT'], { w: 1.2, h: 0.7 });
+    epCluePt(R, pl, 1.6, 'observe' + R.i, 'OBSERVATION — THE EXHIBIT MOVES ONLY WHEN UNOBSERVED. Keep your eyes on it: walk backwards, work in pairs, and mind the lights — when they blink, it can move.');
+  },
+  validate() { return true; },
+  skip(R) { R.st.c = '111'; },
+  arm(R) { UI.msg('Something tall stands at the far end of the room, very still. You get the feeling it was facing the other way a moment ago.', 'warn', 5); R.h.frz = 2.5; },
+  // is anyone looking at it? (their view, not just their position — and a wall in between counts)
+  seen(R) {
+    const M = R.ob.position; if (R.fx.blink > 0) return false;
+    for (const a of crew()) {
+      if (a.dead || a.downed || !epIn(R, a)) continue;
+      const yaw = a === player ? player.yaw : (a.yaw || 0), pitch = a === player ? player.pitch : (a.pitch || 0), ey = a === player ? player.eyeY : (a.eyeY || EYE_STAND);
+      const fx = -Math.sin(yaw) * Math.cos(pitch), fy = Math.sin(pitch), fz = -Math.cos(yaw) * Math.cos(pitch);
+      const dx = M.x - a.pos.x, dy = 1.8 - ey, dz = M.z - a.pos.z, d = Math.hypot(dx, dy, dz) || 1;
+      if ((fx * dx + fy * dy + fz * dz) / d > 0.78 && d < 26 && losClear(a.pos.x, a.pos.z, M.x, M.z)) return true;
+    }
+    return false;
+  },
+  host(R, dt) {
+    const st = R.st, M = R.ob.position;
+    if (R.h.frz > 0) { R.h.frz -= dt; st.m = 0; return; }
+    const tgt = epGuardsIn(R).filter(a => !a.downed).sort((a, b) => Math.hypot(a.pos.x - M.x, a.pos.z - M.z) - Math.hypot(b.pos.x - M.x, b.pos.z - M.z))[0];
+    if (!tgt || this.seen(R)) { st.m = 0; return; }
+    const dx = tgt.pos.x - M.x, dz = tgt.pos.z - M.z, d = Math.hypot(dx, dz) || 1, sp = 2.3 * (0.8 + 0.4 * R.k) * epKD();
+    if (d < 1.05) { Escape.hurt(tgt, 'watcher', M); const [hx, hz] = R.S.w(R.home[0], R.home[1]); M.set(hx, 0, hz); R.h.frz = 3; Escape.emit(R, { e: 'hit', id: Game.idOf(tgt) }); }
+    else { const p = _epv2.set(M.x + dx / d * sp * dt, 0, M.z + dz / d * sp * dt); resolveCircle(p, 0.38, gatherBoxes(p.x, p.z, 0.38, 'monster')); const [pu, pv] = R.S.uv(p.x, p.z), [cx, cz] = R.S.w(clamp(pu, 0.7, 23.3), clamp(pv, 0.7, 17.3)); M.set(cx, 0, cz); }
+    st.m = 1; const [u, v] = R.S.uv(M.x, M.z); st.u = u; st.v = v; st.a = Math.atan2(-dx, -dz) - R.S.rot;
+    R.h.st = (R.h.st || 0) - dt; if (R.h.st <= 0) { R.h.st = 0.5; Escape.emit(R, { e: 'step' }); }
+  },
+  use(R, pt) { const i = +pt.id.slice(1); if (!(i >= 0 && i < 3) || R.st.c[i] === '1') return; const c = R.st.c.split(''); c[i] = '1'; Escape.emit(R, { e: 'core', c: c.join('') }); if (c.every(x => x === '1')) Escape.solve(R); },
+  ev(R, e) {
+    if (e.e === 'core' && typeof e.c === 'string') { R.st.c = e.c; R.cores.forEach((C, i) => { C.m.visible = e.c[i] !== '1'; }); Sound.pickup && Sound.pickup(); UI.msg('Data core taken (' + e.c.split('').filter(x => x === '1').length + ' / 3).', 'good', 2.5); return; }
+    if (e.e === 'hit') { const [hx, hz] = R.S.w(R.home[0], R.home[1]); R.ob.position.set(hx, 0, hz); R.st.u = R.home[0]; R.st.v = R.home[1]; Sound.mannScare && Sound.mannScare(); if (epMine(e.id | 0)) UI.msg('It was right behind you. Then — it\'s back at the far end, as if it never moved.', 'warn', 4); return; }
+    if (e.e === 'step') { const P = R.ob.position; if (Math.hypot(P.x - player.pos.x, P.z - player.pos.z) < 18) Sound.plasticStep && Sound.plasticStep(P); return; }
+  },
+  tick(R, dt) {
+    const st = R.st;
+    if (Net.isClient) { const [x, z] = R.S.w(st.u, st.v); R.ob.position.x = damp(R.ob.position.x, x, 12, dt); R.ob.position.z = damp(R.ob.position.z, z, 12, dt); }
+    R.ob.rotation.y = st.a + R.S.rot;
+    if (st.m) { R.fx.w = (R.fx.w || 0) + dt * 9; const s = Math.sin(R.fx.w) * 0.5; R.legs[0].rotation.x = s; R.legs[1].rotation.x = -s; R.arms[0].rotation.x = -s * 0.7; R.arms[1].rotation.x = s * 0.7; }
+    // the lights blink now and then: in the dark it can move
+    if (R.armed && !R.solved) { R.fx.bt = (R.fx.bt || rand(6, 12)) - dt; if (R.fx.bt <= 0) { R.fx.bt = rand(7, 13) / (0.8 + 0.4 * R.k); if (!settings.noFlash) R.fx.blink = 0.55; } } // (the clock starts when you walk in)
+    if (R.fx.blink > 0) R.fx.blink -= dt;
+  },
+  solved(R) { R.fx.blink = 0; UI.msg('The exhibit stops mid-step and does not move again.', 'good', 3.5); },
+  st(R) { const s = R.st; return { u: +s.u.toFixed(2), v: +s.v.toFixed(2), a: +s.a.toFixed(2), m: s.m, c: s.c, b: R.fx.blink > 0 ? 1 : 0 }; },
+  put(R, s) { if (!s) return; R.st.u = clamp(+s.u || 0, 0, 24); R.st.v = clamp(+s.v || 0, 0, 18); R.st.a = +s.a || 0; R.st.m = s.m ? 1 : 0; if (typeof s.c === 'string' && s.c !== R.st.c) this.ev(R, { e: 'core', c: s.c }); if (s.b && !(R.fx.blink > 0)) R.fx.blink = 0.4; },
+  hud(R) { const n = R.st.c.split('').filter(x => x === '1').length; return { goal: 'DATA CORES ' + n + ' / 3', bar: n / 3, cls: R.st.m ? 'late' : '', sub: 'It moves when nobody is looking at it.' }; },
+  hint(R) { const i = R.st.c.indexOf('0'); if (i < 0) return { tip: 'All three cores taken.' }; const C = R.cores[i]; return { u: C.u, v: C.v, y: 1.2, key: 'c' + i, label: 'Data core', tip: 'A data core on a plinth. Walk backwards — keep it in sight.' }; },
+  hunted(R) { const P = R.ob.position; return R.armed && !R.solved && R.st.m && Math.hypot(P.x - player.pos.x, P.z - player.pos.z) < 10; },
+  threat(R) { const P = R.ob.position, d = Math.hypot(P.x - player.pos.x, P.z - player.pos.z); if (R.st.m && d < 6) return [3, 'IT IS RIGHT BEHIND YOU', 0.95]; if (R.st.m) return [2, 'IT IS MOVING', 0.65]; return [1, 'DON\'T LOOK AWAY', 0.4]; },
+  hurtText() { return 'It touched you. Turn round — LOOK AT IT.'; },
+  fixOn() { return true; },
+  dim(R, f, b) { return R.fx.blink > 0 ? 0.04 : b * 0.85; },
+  dispose() { },
+};
+
+/* ================= LOCKDOWN ROOM ================= */
+EP_ROOMS.lockdown = {
+  id: 'lockdown', name: 'LOCKDOWN ROOM', short: 'lockdown', tier: 3, w: 1, minSlot: 2,
+  tagline: 'LOCKDOWN. Hold the terminal until the override uploads.', brief: 'Stand in the ring at the terminal until the upload is done — out of the searchlights',
+  routes: {},
+  T(R) { return 34 * (0.85 + 0.3 * R.k) * epKD(); },
+  spot(R, i, t) { const L = R.lights[i]; return [12 + 9.2 * Math.sin(t * L.w1 + L.p1), 9 + 6.6 * Math.sin(t * L.w2 + L.p2)]; },
+  make(R, rng, k) {
+    const st = R.st = { p: 0, rt: 0 }; R.h = { cd: new Map() };
+    R.lights = Array.from({ length: k > 1.0 ? 3 : 2 }, (_, i) => ({ w1: (0.24 + rng() * 0.14) * (0.8 + 0.4 * k), w2: (0.3 + rng() * 0.18) * (0.8 + 0.4 * k), p1: rng() * TAU, p2: rng() * TAU, pu: 6 + i * 6, pv: i % 2 ? 4 : 14 }));
+    // the terminal and its ring
+    epMesh(R, GEO.box, EPM.dark, 12, 9, 0.6, 0.8, 1.2, 0.6); epCol(R, 11.55, 8.65, 12.45, 9.35);
+    R.tc = makeCanvas(256, 128); R.tt = new T.CanvasTexture(R.tc); const scr = new T.Mesh(new T.PlaneGeometry(0.7, 0.35), new T.MeshBasicMaterial({ map: R.tt })); scr.userData.own = true; const [sx, sz] = R.S.w(12, 8.68); scr.position.set(sx, 1.32, sz); scr.rotation.y = Math.PI + R.S.rot; scr.rotation.x = 0; R.g.add(scr);
+    const ring = new T.Mesh(new T.RingGeometry(2.05, 2.2, 48), EPM.ring); ring.rotation.x = -Math.PI / 2; const [rx, rz] = R.S.w(12, 9); ring.position.set(rx, 0.015, rz); R.g.add(ring);
+    // the searchlights: a lamp on the ceiling, a cone of light, a pool on the floor
+    R.lamps = R.lights.map(L => { const h = epMesh(R, GEO.cyl, EPM.dark, L.pu, L.pv, 3.95, 0.3, 0.3, 0.3); const cone = new T.Mesh(new T.ConeGeometry(1, 1, 20, 1, true), EPM.cone); R.g.add(cone); const pool = new T.Mesh(new T.CircleGeometry(1.7, 28), EPM.spot); pool.rotation.x = -Math.PI / 2; R.g.add(pool); return { h, cone, pool }; });
+    R.pts.push({ id: 'term', u: 12, v: 8.3, y: 1.2, r: 1.8, prompt: () => 'Stand in the ring: the upload runs while you\'re in it', ok: () => false });
+    const pl = epWallPlate(R, 'v0', 2.7, 1.6, ['LOCKDOWN', 'OVERRIDE UPLOADS FROM', 'INSIDE THE RING', 'AVOID THE SEARCHLIGHTS'], { w: 1.2, h: 0.7 });
+    epCluePt(R, pl, 1.6, 'lock' + R.i, 'LOCKDOWN — the override uploads only while someone stands inside the ring around the terminal. If a searchlight finds anyone, the upload loses ground and the light burns. Step out of its way, then back in.');
+    this.screen(R);
+  },
+  screen(R) { const g = R.tc.getContext('2d'), p = R.st.p; g.fillStyle = '#04110a'; g.fillRect(0, 0, 256, 128); g.fillStyle = '#7dffa0'; g.font = '700 22px "Courier New",monospace'; g.fillText('OVERRIDE UPLOAD', 16, 34); g.strokeStyle = '#7dffa0'; g.lineWidth = 3; g.strokeRect(16, 54, 224, 26); g.fillRect(19, 57, 218 * p, 20); g.fillText(Math.floor(p * 100) + '%', 16, 112); R.tt.needsUpdate = true; R.shownP = p; },
+  validate() { return true; },
+  skip(R) { R.st.p = 1; },
+  arm(R) { UI.msg('LOCKDOWN. Red light, a siren, and searchlights sweeping the floor. The terminal in the middle wants someone standing at it.', 'warn', 5); },
+  host(R, dt) {
+    const st = R.st; st.rt = R.t; const [tx, tz] = R.S.w(12, 9), gs = epGuardsIn(R).filter(a => !a.downed);
+    const lit = a => R.lights.some((L, i) => { const [u, v] = this.spot(R, i, R.t), [x, z] = R.S.w(u, v); return Math.hypot(a.pos.x - x, a.pos.z - z) < 1.7; });
+    let caught = false;
+    for (const a of gs) if (lit(a)) { caught = true; const id = Game.idOf(a), c = R.h.cd.get(id) || 0; if (Game.time > c) { R.h.cd.set(id, Game.time + 2); Escape.hurt(a, 'beam'); st.p = Math.max(0, st.p - 0.1); Escape.emit(R, { e: 'spot', id }); } }
+    const ring = gs.filter(a => Math.hypot(a.pos.x - tx, a.pos.z - tz) < 2.2);
+    if (ring.length && !caught) st.p = Math.min(1, st.p + dt / this.T(R));
+    if (st.p >= 1) Escape.solve(R);
+  },
+  use() { },
+  ev(R, e) { if (e.e === 'spot') { Sound.sensor && Sound.sensor(); if (epMine(e.id | 0)) UI.msg('SPOTTED — the light burns, and the upload slips back. Get out of its way.', 'warn', 2.5); } },
+  tick(R, dt) {
+    if (!R.armed) return; if (Net.isClient && R.st.rt && Math.abs(R.st.rt - R.t) > 0.4) R.t = R.st.rt;
+    R.lamps.forEach((Lm, i) => {
+      const [u, v] = this.spot(R, i, R.t), [x, z] = R.S.w(u, v), on = !R.solved, top = Lm.h.position;
+      Lm.pool.visible = Lm.cone.visible = on; if (!on) return;
+      Lm.pool.position.set(x, 0.02, z); const dx = x - top.x, dz = z - top.z, h = top.y - 0.1, L = Math.hypot(dx, h, dz);
+      Lm.cone.position.set((top.x + x) / 2, h / 2 + 0.05, (top.z + z) / 2); Lm.cone.scale.set(1.7, L, 1.7); Lm.cone.lookAt(top.x, top.y, top.z); Lm.cone.rotateX(Math.PI / 2);
+    });
+    if (Math.abs((R.shownP || 0) - R.st.p) > 0.01 || R.st.p >= 1 && R.shownP < 1) this.screen(R);
+    const inR = R.S.inside(player.pos.x, player.pos.z); if (inR !== R.fx.al) { R.fx.al = inR; Sound.setAlarm(inR && !R.solved); }
+  },
+  solved(R) { Sound.setAlarm(false); R.fx.al = false; Sound.lockdownOff && Sound.lockdownOff(); this.screen(R); },
+  st(R) { return { p: +R.st.p.toFixed(3), rt: +R.t.toFixed(2) }; },
+  put(R, s) { if (!s) return; R.st.p = clamp(+s.p || 0, 0, 1); R.st.rt = +s.rt || 0; },
+  hud(R) { return { goal: 'UPLOAD ' + Math.floor(R.st.p * 100) + '%', bar: R.st.p, cls: 'late', sub: 'Stand in the ring at the terminal. Out of the searchlights.' }; },
+  progress(R) { return R.st.p; },
+  hint(R) { return { u: 12, v: 8.2, y: 1.2, key: 'tm', label: 'The terminal', tip: 'Stand inside the yellow ring round the terminal — and step out of a searchlight\'s way when it comes.' }; },
+  threat(R) { const p = player; for (let i = 0; i < R.lights.length; i++) { const [u, v] = this.spot(R, i, R.t), [x, z] = R.S.w(u, v), d = Math.hypot(p.pos.x - x, p.pos.z - z); if (d < 1.7) return [3, 'SPOTTED', 1]; if (d < 3.6) return [2, 'THE LIGHT IS COMING', 0.6]; } return [1, 'LOCKDOWN', 0.3]; },
+  fixOn() { return true; },
+  dim(R, f, b, t) { if (R.solved) return b; return f.type === 'emerg' ? 0.2 + 0.8 * Math.pow(Math.max(0, Math.sin(t * 5 + f.pos.x)), 6) : b * 0.35; },
+  dispose(R) { if (R.fx.al) Sound.setAlarm(false); if (R.tt) R.tt.dispose(); },
+};
+
+/* ---------------- the shared puffs, every frame ---------------- */
+{ const gu = Game.update; Game.update = function (dt) { const r = gu.apply(this, arguments); if (Escape.on()) EpFx.update(dt); return r; }; }
+/* ================================================================== */
+/* Build 35: ESCAPE PROTOCOL — the mode                                */
+/*  The Pressure Wing (c0_escape.js): an airlock, six rooms, the lift. */
+/*  Every run a seed decides which room is which (seven kinds — see    */
+/*  y9z9n_eprooms.js), in what order, how hard, where its clue and its */
+/*  pieces are; each layout is checked before it's used (every thing   */
+/*  you need can be reached, the puzzle has an answer) and thrown away */
+/*  if it isn't. Solve a room and its security door opens. The room   */
+/*  you last walked into is your checkpoint: online you come back to   */
+/*  it; alone, the end screen lets you start again from it.           */
+/*  Online the host runs every room (its timers, its water, its        */
+/*  puzzle); a guard's [E] is a request the host checks — which room,  */
+/*  which thing, how close they are — and nobody's screen can say a    */
+/*  room is solved, pay itself, or set the water.                      */
+/* ================================================================== */
+const EP_KEY = 'lastshift.escape.v1';
+const EP_IN = 1.6; // (how far inside a room's doorway you count as in it, m)
+const _epv = new T.Vector3(), _epv2 = new T.Vector3();
+
+/* ---------------- the six slots: where each room is, and which way it faces ---------------- */
+// a room's own frame: u runs from the door you come in by (u = 0) to the door out (u = 24), v across it (0 … 18);
+// the north rooms face east, the south ones west — so a room is the same room whichever band it lands in
+const EP_SLOTS = ESCAPE.SLOT.map((ch, i) => {
+  const R = rooms['ep_r' + (i + 1)], x0 = R.minX * CELL, x1 = (R.maxX + 1) * CELL, z0 = R.minZ * CELL, z1 = (R.maxZ + 1) * CELL, south = i >= 3;
+  const S = {
+    i, id: 'ep_r' + (i + 1), x0, z0, x1, z1, south, rot: south ? Math.PI : 0, W: x1 - x0, D: z1 - z0,
+    w(u, v, out) { const x = south ? x1 - u : x0 + u, z = south ? z1 - v : z0 + v; if (out) { out.x = x; out.z = z; return out; } return [x, z]; },
+    uv(x, z) { return south ? [x1 - x, z1 - z] : [x - x0, z - z0]; },
+    inside(x, z, m) { m = m || 0; return x > x0 + m && x < x1 - m && z > z0 + m && z < z1 - m; },
+  };
+  const LZ = LEVELS[EP_LV].z0, o = ESCAPE.doors.out[i], inD = i === 0 ? ESCAPE.doors.in : i === 3 ? ESCAPE.doors.turn : ESCAPE.doors.out[i - 1];
+  S.outDoor = doorAt(o[0], LZ + o[1]); S.inDoor = doorAt(inD[0], LZ + inD[1]);
+  return S;
+});
+const EP_SECRET = (() => { const R = rooms.ep_secret, LZ = LEVELS[EP_LV].z0, d = ESCAPE.doors.secret; return { x0: R.minX * CELL, z0: R.minZ * CELL, x1: (R.maxX + 1) * CELL, z1: (R.maxZ + 1) * CELL, door: doorAt(d[0], LZ + d[1]) }; })();
+const EP_LIFT = (() => { const R = rooms.ep_lift; return { x0: R.minX * CELL, z0: R.minZ * CELL, x1: (R.maxX + 1) * CELL, z1: (R.maxZ + 1) * CELL }; })();
+const EP_AIR = (() => { const R = rooms.ep_air; return { x0: R.minX * CELL, z0: R.minZ * CELL, x1: (R.maxX + 1) * CELL, z1: (R.maxZ + 1) * CELL }; })();
+
+/* ---------------- a placard: a few lines of text on a plate ---------------- */
+function epPlate(lines, o) {
+  o = o || {};
+  const w = o.w || 1.1, h = o.h || 0.62, c = makeCanvas(512, Math.round(512 * h / w)), g = c.getContext('2d');
+  g.fillStyle = o.bg || '#d9d3c0'; g.fillRect(0, 0, c.width, c.height);
+  g.strokeStyle = o.ink || '#1d1d1b'; g.lineWidth = 8; g.strokeRect(10, 10, c.width - 20, c.height - 20);
+  g.fillStyle = o.ink || '#1d1d1b'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  const n = lines.length, lh = (c.height - 60) / Math.max(1, n);
+  lines.forEach((L, k) => { const big = k === 0 && o.title !== false; g.font = (big ? '700 ' : '600 ') + Math.round(lh * (big ? 0.62 : 0.5)) + 'px "Courier New",monospace'; g.fillText(L, c.width / 2, 30 + lh * (k + 0.5)); });
+  if (o.mirror) { const c2 = makeCanvas(c.width, c.height), g2 = c2.getContext('2d'); g2.translate(c.width, 0); g2.scale(-1, 1); g2.drawImage(c, 0, 0); return epPlateMesh(c2, w, h); }
+  return epPlateMesh(c, w, h);
+}
+function epPlateMesh(c, w, h) { const t = new T.CanvasTexture(c); t.anisotropy = maxAniso; const m = new T.Mesh(new T.PlaneGeometry(w, h), new T.MeshPhongMaterial({ map: t, shininess: 20 })); m.userData.own = true; return m; }
+
+/* ---------------- the run's numbers, kept between runs ---------------- */
+const EpStore = {
+  d: null,
+  load() {
+    if (this.d) return this.d;
+    let o = null; try { o = JSON.parse(localStorage.getItem(EP_KEY) || 'null'); } catch (e) { }
+    const n = v => Number.isFinite(+v) && +v >= 0 ? Math.floor(+v) : 0, best = {};
+    if (o && o.best && typeof o.best === 'object') for (const k of DIFF_IDS) if (Number.isFinite(+o.best[k]) && +o.best[k] > 0) best[k] = Math.floor(+o.best[k]);
+    this.d = { v: 1, runs: n(o && o.runs), escapes: n(o && o.escapes), rooms: n(o && o.rooms), secrets: n(o && o.secrets), clues: n(o && o.clues), best };
+    return this.d;
+  },
+  save() { try { localStorage.setItem(EP_KEY, JSON.stringify(this.load())); } catch (e) { } },
+};
+
+/* ---------------- the mode ---------------- */
+const Escape = {
+  name: 'Escape Protocol', optHead: 'ESCAPE PROTOCOL', scareScene: 'heartStop', // (no monster's face at the end: the room just takes you)
+  foe: { pos: new T.Vector3(0, -50, 0), active: false, eyeH: () => 2.0, hear() { }, body: out => out, hitFx() { }, lightCand() { } },
+  seed: 1, seq: [], rooms: [], cur: -1, ck: 0, from: 0, over: false, endT: 0, how: '', built: false, secret: { on: false, found: false }, pend: null,
+  stats: null, notes: null, slow: 1, swim: 0, eyeOff: 0, lastWet: 0, seenRoom: -1,
+  on() { return LVL === EP_LV && Game.mode === 'escape'; },
+  host() { return !Net.isClient; },
+  room(i) { return this.rooms[i] || null; },
+  roomAt(x, z) { for (const R of this.rooms) if (R.S.inside(x, z)) return R; return null; },
+  // where a guard (re)starts: the airlock, or the doorway of the last room the team walked into
+  get spawns() {
+    const k = this.ck;
+    if (!this.on() || k <= 0 || !this.rooms[k]) return [[6.2, 765.4, -Math.PI / 2], [6.2, 768.6, -Math.PI / 2], [9.4, 765.4, -Math.PI / 2], [9.4, 768.6, -Math.PI / 2], [4, 767, -Math.PI / 2], [11.4, 767, -Math.PI / 2]];
+    const S = this.rooms[k].S, yaw = S.south ? Math.PI / 2 : -Math.PI / 2;
+    return [[1.7, 9], [1.7, 7.4], [1.7, 10.6], [3.1, 8.2], [3.1, 9.8], [3.1, 7]].map(([u, v]) => { const [x, z] = S.w(u, v); return [x, z, yaw]; });
+  },
+
+  /* ---- the run: which room is which (the same on every screen: it comes from the seed) ---- */
+  plan(seed) {
+    const rng = mulberry32((seed >>> 0) ^ 0xe5ca9e), ids = Object.keys(EP_ROOMS), out = [];
+    if (DEBUG && Array.isArray(this.forceSeq) && this.forceSeq.length === 6 && this.forceSeq.every(id => EP_ROOMS[id])) return { ids: this.forceSeq.slice(), rng }; // (?debug, tests: a chosen order)
+    for (let i = 0; i < EP_SLOTS.length; i++) {
+      const ok = ids.filter(id => { const D = EP_ROOMS[id]; return out.indexOf(id) < 0 && i >= (D.minSlot || 0) && (D.maxTier === undefined || true) && (D.tier <= 1 + Math.ceil((i + 1) / 2)); });
+      const pool = ok.length ? ok : ids.filter(id => out.indexOf(id) < 0);
+      let tot = 0; for (const id of pool) tot += EP_ROOMS[id].w; let r = rng() * tot, pickId = pool[pool.length - 1];
+      for (const id of pool) { r -= EP_ROOMS[id].w; if (r <= 0) { pickId = id; break; } }
+      out.push(pickId);
+    }
+    return { ids: out, rng };
+  },
+  // build the six rooms for this seed; each layout is checked (and remade, with the next numbers from the seed, if it fails)
+  build(seed) {
+    this.dispose();
+    const P = this.plan(seed); this.seq = P.ids;
+    for (let i = 0; i < EP_SLOTS.length; i++) {
+      const D = EP_ROOMS[P.ids[i]], k = 0.55 + i * 0.13; let R = null;
+      for (let tries = 0; tries < 8 && !R; tries++) {
+        const r = mulberry32(((seed >>> 0) + i * 7919 + tries * 104729) ^ 0x51ab);
+        const c = this.make(D, EP_SLOTS[i], r, k);
+        if (D.validate(c) && this.reachable(c)) R = c; else this.free(c);
+      }
+      if (!R) { const F = EP_ROOMS.power; R = this.make(F, EP_SLOTS[i], mulberry32(seed ^ 0xfa11 ^ i), k); this.seq[i] = 'power'; if (DEBUG) console.warn('escape: room ' + (i + 1) + ' fell back to the power room'); } // (never seen in testing — but never a room that can't be done)
+      this.rooms.push(R);
+    }
+    // the sealed room: in about one run in three there's a way into it (a loose panel in room 2)
+    this.secret = { on: mulberry32(seed ^ 0x5ec4e7)() < 0.36, found: false };
+    EpSecret.build(this.secret.on, this.rooms[1]);
+    this.built = true;
+    if (DEBUG) console.log('ESCAPE PROTOCOL · seed ' + seed + ' · ' + this.seq.join(' → ') + (this.secret.on ? ' · sealed room: open' : ''));
+  },
+  make(D, S, rng, k) {
+    const g = new T.Group(); g.userData.lvl = EP_LV; scene.add(g);
+    const R = { def: D, S, i: S.i, g, rng, k, pts: [], cols: [], st: {}, solved: false, armed: false, t: 0, clue: '', route: '', fx: {} };
+    D.make(R, rng, k);
+    g.traverse(o => { o.layers.set(EP_LV + 1); });
+    return R;
+  },
+  free(R) {
+    if (!R) return;
+    try { if (R.def.dispose) R.def.dispose(R); } catch (e) { }
+    for (const b of R.cols) removeCollider(b); R.cols.length = 0;
+    const shared = new Set(Object.values(GEO)); // (the world's own shapes: never thrown away)
+    R.g.traverse(o => { if (o.geometry && !shared.has(o.geometry)) o.geometry.dispose(); if (o.material && o.userData.own) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
+    scene.remove(R.g);
+  },
+  dispose() { for (const R of this.rooms) this.free(R); this.rooms = []; EpSecret.dispose(); EPWater.dispose(); this.built = false; },
+  // (the check) can every thing in the room be got to from its doorway, round whatever stands in the room?
+  reachable(R) {
+    const S = R.S, cells = new Map(), key = (x, z) => x + ',' + z;
+    const blocked = (x, z) => { const px = cc(x), pz = cc(z); for (const b of R.cols) { if (b.dyn && !b.dyn()) continue; if (px > b.minX - 0.35 && px < b.maxX + 0.35 && pz > b.minZ - 0.35 && pz < b.maxZ + 0.35) return true; } return false; };
+    const [ex, ez] = S.w(0.9, 9), sx = Math.floor(ex / CELL), sz = Math.floor(ez / CELL), q = [[sx, sz]]; cells.set(key(sx, sz), 1);
+    while (q.length) { const [x, z] = q.shift(); for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, nz = z + dz, c = cellAt(nx, nz); if (c.room !== S.id || cells.has(key(nx, nz)) || blocked(nx, nz)) continue; cells.set(key(nx, nz), 1); q.push([nx, nz]); } }
+    const near = (x, z) => { const cx = Math.floor(x / CELL), cz = Math.floor(z / CELL); for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) if (cells.has(key(cx + dx, cz + dz))) return true; return false; };
+    for (const p of R.pts) { if (p.free) continue; const [x, z] = S.w(p.u, p.v); if (!near(x, z)) return false; }
+    const [ox, oz] = S.w(23.1, 9); return near(ox, oz); // (and the way out)
+  },
+
+  /* ---- the floor's own hooks ---- */
+  init() { },
+  show(on) {
+    if (on) { this.hudOn(true); return; }
+    const was = this.built; this.hudOn(false); this.dispose(); Sound.epWater && Sound.epWater(0, 0); if (was) Sound.setAlarm(false); this.pressFx = 0; if (this.pfx) { this.pfx.style.opacity = 0; this._pop = 0; }
+  },
+  reset() {
+    if (Game.mode !== 'escape') { if (this.built) this.dispose(); return; }
+    const pr = this.pend; this.pend = null;
+    this.seed = ((Net.active ? Net.sessionSeed : (pr ? pr.seed : (Math.random() * 4294967296))) >>> 0) || 1;
+    if (Net.active && Net.sessionEpFrom >= 0) this.from = clamp(Net.sessionEpFrom | 0, 0, 5); else this.from = pr ? clamp(pr.from | 0, 0, 5) : 0;
+    this.cur = -1; this.ck = 0; this.over = false; this.endT = 0; this.how = ''; this.seenRoom = -1; this.slow = 1; this.swim = 0; this.eyeOff = 0;
+    this.stats = { clues: new Set(), solved: 0, retried: this.from > 0, deaths: 0, routes: [], t0: 0 };
+    this.build(this.seed);
+    // the doors: the rooms' security doors locked, the sealed room shut
+    for (const S of EP_SLOTS) { S.outDoor.reset(); }
+    EP_SECRET.door.reset();
+    // starting again from a checkpoint: the rooms before it are done, their doors open, and you start in its doorway
+    for (let i = 0; i < this.from; i++) { const R = this.rooms[i]; R.armed = true; R.solved = true; R.pre = true; R.def.skip && R.def.skip(R); const d = R.S.outDoor; d.unlocked = true; d.target = 1; d.t = 1; d.place(); d.updateLeds(); }
+    if (this.from > 0) { this.ck = this.from; this.cur = this.from - 1; }
+  },
+  start() {
+    player.hasFlash = true; player.flashState = true; flashItem.enabled = false; flashItem.visual.visible = false; flashItem.item.taken = true;
+    if (this.from > 0) { const s = this.spawns[(Net.myId | 0) % 6]; player.pos.set(s[0], 0, s[1]); player.yaw = s[2]; }
+    EpStore.load().runs++; EpStore.save();
+  },
+  intro() { UI.center('ESCAPE PROTOCOL', (Net.active ? crew().length + ' of you · ' : '') + (this.from > 0 ? 'from room ' + (this.from + 1) + ' · ' : '') + 'six rooms · one way out', 4.4); },
+  introMsgs() {
+    setTimeout(() => { if (this.on() && Game.state === 'playing') UI.msg('THE PRESSURE WING. Every room is locked until you solve it: find its clue, work out its puzzle, and its security door opens. [H] if you\'re stuck.', 'story', 7); }, 2600);
+  },
+
+  /* ---- every frame (every screen) ---- */
+  update(dt) {
+    if (!this.built) return;
+    const host = this.host();
+    // walking into a room arms it (the host's call: it runs the room)
+    if (host && Game.state === 'playing') {
+      for (const R of this.rooms) {
+        if (R.armed) continue;
+        if (crew().some(a => !a.dead && R.S.inside(a.pos.x, a.pos.z, EP_IN))) { Game.emit({ k: 'epa', s: R.i }); break; }
+      }
+    }
+    for (const R of this.rooms) {
+      if (R.armed && !R.solved) R.t += dt;
+      if (host && R.armed && (!R.solved || R.def.after) && R.def.host) R.def.host(R, dt); // (the flood room keeps draining after it's solved)
+      if (R.def.tick) R.def.tick(R, dt);
+    }
+    EpSecret.tick(dt);
+    this.local(dt);
+    // everyone still standing in the lift, and the last room done: the way up
+    if (host && !this.over && Game.state === 'playing' && this.rooms[5] && this.rooms[5].solved) {
+      const up = crew().filter(a => !a.dead);
+      if (up.length && up.every(a => this.inLift(a))) { this.over = true; Game.emit({ k: 'epw' }); }
+    }
+  },
+  inLift(a) { return a.pos.x > EP_LIFT.x0 && a.pos.x < EP_LIFT.x1 && a.pos.z > EP_LIFT.z0 && a.pos.z < EP_LIFT.z1; },
+  // (the local guard) what the room you're in does to you: water slows you and lifts you, the rest is the room's own
+  local(dt) {
+    const p = player, R = this.roomAt(p.pos.x, p.pos.z);
+    let slow = 1, eye = 0, swim = 0;
+    if (R && !p.dead) {
+      if (R.def.water) {
+        const d = R.def.water(R), lv = d;
+        if (lv > 0.25 && !p.hidden) {
+          slow = lv < 1.3 ? lerp(1, 0.62, (lv - 0.25) / 1.05) : 0.56;
+          if (lv >= 1.3) { swim = 1; eye = Math.min(lv + 0.36, (ROOM_H[R.S.id] || 4.2) - 0.32) - EYE_STAND; p.stamina = Math.max(0, p.stamina - dt / (Math.hypot(p.vel.x, p.vel.z) > 0.4 ? 26 : 60)); if (p.stamina <= 0) p.exhausted = true; }
+          const sp = Math.hypot(p.vel.x, p.vel.z);
+          if (sp > 0.5 && Game.time - this.lastWet > (swim ? 0.7 : 0.45)) { this.lastWet = Game.time; EPWater.wade(p.pos.x, p.pos.z, swim ? 1 : clamp(sp / 3, 0.3, 1)); if (swim) Sound.epSplash && Sound.epSplash(null, 0.5); }
+        }
+      }
+      if (R.def.local) { const s = R.def.local(R, dt); if (s && s.slow) slow *= s.slow; }
+    }
+    this.slow = slow; this.swim = swim; this.eyeOff = damp(this.eyeOff, Math.max(0, eye), 3, dt);
+    // the pressure room presses on your eyes (a pale squeeze at the edges)
+    if (!this.pfx) { this.pfx = document.createElement('div'); this.pfx.id = 'ep-press'; this.pfx.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 46%,rgba(190,200,210,.32) 80%,rgba(225,232,238,.6) 100%)'; document.body.appendChild(this.pfx); }
+    const op = p.dead ? 0 : (this.pressFx || 0) * 0.8; if (Math.abs(op - (this._pop || 0)) > 0.01 || (op === 0 && this._pop)) { this._pop = op; this.pfx.style.opacity = op.toFixed(3); }
+    // a new room: its name, once
+    if (R && R.armed && this.seenRoom < R.i) { this.seenRoom = R.i; }
+  },
+
+  /* ---- [E]: the things in the rooms (found by where you look, like a bottle in the woods) ---- */
+  target() {
+    const p = player; if (p.hidden || p.dead || p.downed) return null;
+    const e = _epv.set(p.pos.x, p.eyeY + this.eyeOff, p.pos.z), f = player.forward(_epv2); let best = null, bs = -1;
+    const look = (pt, R) => {
+      if (!pt.ok || !pt.ok(R)) return;
+      const [x, z] = pt.S ? pt.S.w(pt.u, pt.v) : R.S.w(pt.u, pt.v), y = typeof pt.y === 'function' ? pt.y(R) : pt.y;
+      const dx = x - e.x, dy = y - e.y, dz = z - e.z, d = Math.hypot(dx, dy, dz), reach = typeof pt.r === 'function' ? pt.r(R) : pt.r || 1.9; if (d > reach) return;
+      const k = (dx * f.x + dy * f.y + dz * f.z) / (d || 1); if (k < (pt.wide ? 0.6 : 0.82)) return;
+      if (!losClear(e.x, e.z, x, z, true)) return;
+      const s = k - d * 0.05; if (s > bs) { bs = s; best = pt; best._R = R; }
+    };
+    const R = this.roomAt(p.pos.x, p.pos.z);
+    if (R) for (const pt of R.pts) look(pt, R);
+    for (const pt of EpSecret.pts) look(pt, null);
+    if (!best) return null;
+    const pt = best;
+    if (!pt.def) pt.def = { kind: 'ep', enabled: true, prompt: () => (typeof pt.prompt === 'function' ? pt.prompt(pt._R) : pt.prompt), use: () => Escape.use(pt._R, pt) };
+    return pt.def;
+  },
+  use(R, pt) {
+    if (Game.state !== 'playing' || player.dead) return;
+    if (pt.local && pt.local(R) === false) return; // (something only you need to see — a note: no request)
+    const s = R ? R.i : 9;
+    if (Net.isClient) { Net.request('epu', s, [pt.id]); return; }
+    this.hostUse(s, pt.id, player);
+  },
+  // (host) a guard used a thing: is it there, can it be used now, are they close enough?
+  hostUse(s, id, who) {
+    if (!this.on() || Game.state !== 'playing' || !who || who.dead || who.downed) return;
+    const R = s === 9 ? null : this.rooms[s | 0], list = R ? R.pts : EpSecret.pts, pt = list.find(p => p.id === id);
+    if (!pt || (R && !R.armed)) return;
+    const [x, z] = pt.S ? pt.S.w(pt.u, pt.v) : R.S.w(pt.u, pt.v), b = who.buf && who.buf[who.buf.length - 1];
+    const d = Math.min(Math.hypot(x - who.pos.x, z - who.pos.z), b ? Math.hypot(x - b.x, z - b.z) : 1e9);
+    if (d > (typeof pt.r === 'function' ? pt.r(R) : pt.r || 1.9) + 1.6) return; // (a little slack for the trip across the internet)
+    if (pt.ok && !pt.ok(R, who)) return;
+    if (R) R.def.use(R, pt, who); else EpSecret.use(pt, who);
+  },
+  // (host) a room is done: its door opens, on every screen
+  solve(R, route) { if (!R || R.solved || !this.host()) return; Game.emit({ k: 'eps', s: R.i, r: route || '' }); },
+  // (host) the room hurts whoever's standing in it — never more than the room's own kind of hurt, never all at once
+  hurt(a, kind, from) { if (!a || a.dead || a.downed || !this.host()) return 0; return Health.hit(a, kind, null, from || a.pos); },
+  // a clue read: counted once per run per screen
+  clue(R, key) { if (!this.stats || this.stats.clues.has(key)) return; this.stats.clues.add(key); EpStore.load().clues++; EpStore.save(); },
+  event(ev, mine, who) {
+    const k = ev.k;
+    if (k === 'epa') { const R = this.rooms[ev.s | 0]; if (!R || R.armed) return; R.armed = true; R.t = 0; this.cur = Math.max(this.cur, R.i); this.ck = Math.max(this.ck, R.i); if (R.def.arm) R.def.arm(R); UI.center('ROOM ' + (R.i + 1) + ' · ' + R.def.name, R.def.tagline, 3.6); Sound.sting && Sound.sting(false); return; }
+    if (k === 'eps') {
+      const R = this.rooms[ev.s | 0]; if (!R || R.solved) return;
+      R.solved = true; R.route = String(ev.r || ''); if (!R.pre) { this.stats.solved++; if (R.route) this.stats.routes.push(R.route); }
+      if (R.def.solved) R.def.solved(R);
+      const d = R.S.outDoor; d.unlocked = true; d.updateLeds(); if (this.host() && !(R.def.holdDoor && R.def.holdDoor(R))) { d.fast = false; d.open(); Game.syncDoor(d, false, true); }
+      Sound.sealOpen && Sound.sealOpen(_epv.set(d.cx, 1.4, d.cz)); Sound.powerUp && Sound.powerUp();
+      UI.msg((R.i === 5 ? 'THE LAST DOOR IS OPEN — GET TO THE LIFT. ' : 'ROOM ' + (R.i + 1) + ' CLEARED — the security door is open. ') + (R.route ? R.def.routes[R.route] || '' : ''), 'good', 4.5);
+      return;
+    }
+    if (k === 'epw') { this.how = 'win'; Game.startEnding(); return; }
+    if (k === 'epx') { EpSecret.event(ev, mine); return; }
+    if (k === 'epe') { const R = this.rooms[ev.s | 0]; if (R && R.def.ev) R.def.ev(R, ev, mine); return; }
+  },
+  remote(r, a, i, x) {
+    if (!this.on()) return;
+    if (a === 'epu') { const id = Array.isArray(x) ? String(x[0] || '') : ''; if (/^[a-z0-9_]{1,16}$/.test(id)) this.hostUse(i | 0, id, r); return; }
+  },
+  // (host → everyone) a room's own event
+  emit(R, e) { e.k = 'epe'; e.s = R.i; Game.emit(e); },
+
+  /* ---- online: the state of the rooms, for anyone who joins late or missed an event ---- */
+  netState() {
+    const s = { sv: this.rooms.map(R => R.solved ? 1 : 0).join(''), ar: this.rooms.map(R => R.armed ? 1 : 0).join(''), c: this.ck, x: this.secret.found ? 1 : 0, r: {} };
+    for (const R of this.rooms) if (R.armed && !R.solved && R.def.st) s.r[R.i] = R.def.st(R);
+    const fl = this.rooms.find(R => R.def.id === 'flood' && R.armed); if (fl && R_isWet(fl)) s.r[fl.i] = s.r[fl.i] || fl.def.st(fl); // (the water drains after the room is solved: keep sending it)
+    return s;
+  },
+  netPush(s) {
+    if (!s || typeof s !== 'object' || !this.built) return;
+    if (typeof s.ar === 'string') this.rooms.forEach((R, i) => { if (s.ar[i] === '1' && !R.armed) this.event({ k: 'epa', s: i }); });
+    if (typeof s.sv === 'string') this.rooms.forEach((R, i) => { if (s.sv[i] === '1' && !R.solved) this.event({ k: 'eps', s: i, r: '' }); });
+    this.ck = clamp(s.c | 0, this.ck, 5);
+    if (s.x && !this.secret.found) EpSecret.event({ k: 'epx', e: 'open' }, false);
+    if (s.r && typeof s.r === 'object') for (const k in s.r) { const R = this.rooms[k | 0]; if (R && R.def.put) R.def.put(R, s.r[k]); }
+  },
+
+  /* ---- the light: each room lights itself (the power room is dark until you fix it, the flood room's beacons turn) ---- */
+  fixOn(f, t) {
+    if (f.lvl !== EP_LV) { f.on = false; return; }
+    const R = this.rooms.find(R => R.S.id === f.room);
+    if (R && R.def.fixOn) { f.on = R.def.fixOn(R, f, t); return; }
+    f.on = f.type === 'main' ? f.mode !== 'dead' : true;
+  },
+  dim(f, b, t) { const R = this.rooms.find(R => R.S.id === f.room); return R && R.def.dim ? R.def.dim(R, f, b, t) : b; },
+  ambient() { return [0.42, FOG_BASE * 0.95]; },
+
+  /* ---- the HUD ---- */
+  curRoom() { const R = this.roomAt(player.pos.x, player.pos.z); return R || (this.cur >= 0 ? this.rooms[this.cur] : null) || null; }, // (between rooms: the last one you were in)
+  objectives() {
+    const out = this.rooms.map(R => ({ id: 'ep' + R.i, text: 'Room ' + (R.i + 1) + (R.armed ? ' · ' + R.def.name.toLowerCase().replace(/^\w/, c => c.toUpperCase()) : ' · ?') + (R.solved ? ' — cleared' : ''), done: R.solved }));
+    out.push({ id: 'escape', text: Net.active ? 'Everyone into the lift' : 'Get to the lift', done: Game.ending });
+    return out;
+  },
+  bonus() {
+    const R = this.curRoom(), out = [{ id: 'epb-clue', text: 'Clues read: ' + (this.stats ? this.stats.clues.size : 0), done: false }];
+    if (this.secret.found) out.push({ id: 'epb-sec', text: 'You found the sealed room', done: true });
+    const alt = R && !R.solved && R.def.alt; if (alt) out.push({ id: 'epb-rt', text: 'Another way through: ' + alt, done: false }); // (the flood room's hatch, the power room's hot-wire, the pressure room's purge)
+    return out;
+  },
+  hud() {
+    const R = this.curRoom(), t = Game.time;
+    if (!R) return { clock: fmtClock(t), goal: 'THE AIRLOCK', cls: '', bar: 0, mission: 'Get through the Pressure Wing', sub: Modes.bestText('escape') };
+    const H = R.armed && !R.solved && R.def.hud ? R.def.hud(R) : null, done = this.rooms.filter(r => r.solved).length;
+    if (this.rooms[5] && this.rooms[5].solved) return { clock: fmtClock(t), goal: 'GET TO THE LIFT · ' + Math.round(Math.hypot(player.pos.x - (EP_LIFT.x0 + EP_LIFT.x1) / 2, player.pos.z - (EP_LIFT.z0 + EP_LIFT.z1) / 2)) + ' M', cls: 'dawn', bar: 1, mission: 'GET TO THE LIFT!', sub: 'Six rooms. You did it. Go.' };
+    return { clock: fmtClock(t), goal: 'ROOM ' + (R.i + 1) + ' · ' + R.def.name + (H && H.goal ? ' · ' + H.goal : R.solved ? ' · CLEARED' : ''), cls: H && H.cls || '', bar: H && H.bar !== undefined ? H.bar : done / 6, mission: R.solved ? 'Room ' + (R.i + 1) + ' cleared — on to the next' : R.def.brief, sub: (H && H.sub) || done + ' / 6 rooms · ' + Modes.bestText('escape') };
+  },
+  progress() { const R = this.curRoom(); return R && R.armed && !R.solved && R.def.progress ? R.def.progress(R) : -1; },
+  progressKey() { return this.rooms.map(R => (R.armed ? 1 : 0) + '' + (R.solved ? 1 : 0)).join('') + (this.secret.found ? 'x' : ''); },
+  hint() {
+    const R = this.curRoom();
+    if (this.rooms[5] && this.rooms[5].solved) return { pos: _epv.set((EP_LIFT.x0 + EP_LIFT.x1) / 2, 1, (EP_LIFT.z0 + EP_LIFT.z1) / 2).clone(), label: 'The lift', key: 'eplift', tip: 'Everyone into the lift.', done: () => Game.ending };
+    if (!R) { const S = EP_SLOTS[0]; return { pos: new T.Vector3(S.inDoor.cx, 1.2, S.inDoor.cz), label: 'Room 1', key: 'epr1', tip: 'Through the door at the end of the airlock.', done: () => this.rooms[0] && this.rooms[0].armed }; }
+    if (R.solved) { const d = R.S.outDoor; return { pos: new T.Vector3(d.cx, 1.2, d.cz), label: 'On to room ' + (R.i + 2), key: 'epn' + R.i, tip: 'The door is open: on to the next room.', done: () => !this.roomAt(player.pos.x, player.pos.z) || this.roomAt(player.pos.x, player.pos.z) !== R }; }
+    const h = R.def.hint ? R.def.hint(R) : null;
+    if (h && h.u !== undefined) { const [x, z] = R.S.w(h.u, h.v); return { pos: new T.Vector3(x, h.y || 1.2, z), label: h.label || R.def.name, key: 'ep' + R.i + (h.key || ''), tip: h.tip, done: () => R.solved || (h.done && h.done()) }; }
+    return h ? { tip: h.tip } : null;
+  },
+  hunted() { const R = this.curRoom(); return !!(R && R.def.hunted && R.def.hunted(R)); },
+  threat() { const R = this.curRoom(); return R && R.armed && !R.solved && R.def.threat ? R.def.threat(R) : [0, '', 0]; },
+  audio(md) { return { stalk: 0, chase: this.hunted() ? 1 : 0, seen: false }; },
+  hurtText(hp) { const R = this.curRoom(); return (R && R.def.hurtText ? R.def.hurtText(R, hp) : null) || (hp > 35 ? 'That hurt. Get clear of it.' : 'One more like that and you\'re done.'); },
+  startEnding() { this.endT = 0; this.over = true; if (player.hidden) player.forceOut(); Sound.liftRise && Sound.liftRise(); $('fx-white').style.transition = 'opacity 4s'; $('fx-white').style.opacity = 0.5; },
+  updateEnding(dt) { this.endT += dt; if (this.endT > 4.5 && Game.state === 'playing') { Game.flags.lastAlive = Game.time; Game.showVictory(); } },
+  onEscape() { },
+  resultInfo(won) {
+    const t = Game.time, team = Net.active && crew().length > 1, dn = (Net.sessionDiff || settings.difficulty).toUpperCase(), st = this.stats || { clues: new Set(), solved: 0 }, n = this.rooms.filter(R => R.solved).length;
+    const rows = [['Rooms', n + ' / 6' + (this.from ? ' (from room ' + (this.from + 1) + ')' : '')], ['Time', fmtClock(t)], ['Clues read', st.clues.size + ''], ['Puzzles solved', st.solved + ''], ['The way through', this.seq.map((id, i) => (i + 1) + ' ' + EP_ROOMS[id].short).join(' · ')], ['Sealed room', this.secret.found ? 'found' : this.secret.on ? 'there was a way in…' : '—'], ['Difficulty', dn], ['Run seed', String(this.seed)]];
+    if (!won) return { title: team ? 'Nobody made it out' : 'You didn\'t make it out', sub: 'Escape Protocol · room ' + (Math.max(0, this.cur) + 1) + ' · ' + (this.rooms[Math.max(0, this.cur)] ? this.rooms[Math.max(0, this.cur)].def.name.toLowerCase() : ''), rows };
+    const d = EpStore.load(), dk = Net.sessionDiff || settings.difficulty;
+    if (!this.paidRun) { this.paidRun = true; d.escapes++; d.rooms += st.solved; if (this.secret.found) d.secrets++; if (!this.from && (!d.best[dk] || t < d.best[dk])) d.best[dk] = Math.floor(t); EpStore.save(); }
+    return {
+      title: team ? 'You all got out' : 'You got out', sub: 'Escape Protocol · six rooms · ' + fmtClock(t) + (this.from ? ' (from room ' + (this.from + 1) + ')' : ''), rows,
+      score: this.seq.map((id, i) => [(i + 1) + ' · ' + EP_ROOMS[id].name, this.rooms[i].route ? 'another way' : '✓']).concat([['Sealed room', this.secret.found ? '✓' : '—']]),
+      epilogue: this.secret.found ? 'The lift climbs. In your pocket is a page from the sealed room, a list of names under PRESSURE WING — TEST SUBJECTS. Yours is the last one. It has today\'s date.' : 'The lift climbs. Behind you, the Pressure Wing resets itself: the water drains, the walls slide home, the doors lock. Ready for whoever is next.',
+      extra: { rooms: n },
+    };
+  },
+
+  /* ---- the HUD bits that are its own ---- */
+  hudOn(on) { document.body.classList.toggle('ep-on', !!on); },
+};
+const R_isWet = R => !!(R && R.def.water && R.def.water(R) > 0.05);
+Level.mods[EP_LV] = Escape;
+LEVEL_OF_MODE.escape = EP_LV;
+MODES.escape = { name: 'Escape Protocol', tag: 'ESCAPE PROTOCOL' };
+FASTEST.add('escape');
+{ const rk0 = Modes.rank; Modes.rank = function (m, t) { if (m === 'escape') return t < 600 ? 'S' : t < 840 ? 'A' : t < 1140 ? 'B' : t < 1500 ? 'C' : 'D'; return rk0.apply(this, arguments); }; }
+
+/* ---------------- the sealed room ---------------- */
+const EpSecret = {
+  pts: [], g: null, cover: null, paid: false, on: false,
+  build(on, R1) {
+    this.dispose(); this.on = on; this.paid = false;
+    const g = this.g = new T.Group(); g.userData.lvl = EP_LV; scene.add(g);
+    const d = EP_SECRET.door, S = R1.S;
+    // from room 2 its door is a wall: a panel over the doorway (painted like the wall), and the card readers beside it
+    const cv = this.cover = new T.Mesh(GEO.box, MAT.wall.block); cv.scale.set(CELL + 0.3, WALL_H, 0.12); cv.position.set(d.cx, WALL_H / 2, d.cz - CELL / 2 - 0.1); g.add(cv);
+    for (const l of d.leds) l.visible = false;
+    if (on) { // a loose panel low on the wall beside it — in one run in three
+      const [u, v] = S.uv(d.cx + 1.6, d.cz - CELL / 2 - 0.08), m = new T.Mesh(GEO.box, MAT.metalDark); m.scale.set(0.5, 0.36, 0.04); m.position.set(d.cx + 1.6, 0.42, d.cz - CELL / 2 - 0.1); g.add(m);
+      const sc = new T.Mesh(GEO.box, MAT.metal); sc.scale.set(0.04, 0.04, 0.04); for (const [ox, oy] of [[-0.21, 0.14], [0.21, 0.14], [-0.21, -0.14]]) { const s = sc.clone(); s.position.set(d.cx + 1.6 + ox, 0.42 + oy, d.cz - CELL / 2 - 0.125); g.add(s); }
+      this.panel = m;
+      this.pts.push({ id: 'xpanel', S, u, v, y: 0.45, r: 1.7, wide: true, prompt: () => 'Pull at the loose panel', ok: () => !Escape.secret.found });
+    }
+    // inside: an archive box, and a cache
+    const box = new T.Mesh(GEO.box, MAT.crate); box.scale.set(0.9, 0.7, 0.6); box.position.set(EP_SECRET.x0 + 4, 0.35, (EP_SECRET.z0 + EP_SECRET.z1) / 2); g.add(box);
+    const file = epPlate(['PRESSURE WING', 'TEST SUBJECTS', '— see over —'], { w: 0.5, h: 0.36 }); file.rotation.x = -Math.PI / 2; file.position.set(EP_SECRET.x0 + 4, 0.71, (EP_SECRET.z0 + EP_SECRET.z1) / 2); g.add(file);
+    const cache = new T.Mesh(GEO.box, MAT.yellow); cache.scale.set(0.5, 0.32, 0.36); cache.position.set(EP_SECRET.x1 - 3, 0.16, (EP_SECRET.z0 + EP_SECRET.z1) / 2); g.add(cache); this.cache = cache;
+    const SX = { w: (u, v) => [u, v] };
+    this.pts.push({ id: 'xfile', S: SX, u: EP_SECRET.x0 + 4, v: (EP_SECRET.z0 + EP_SECRET.z1) / 2, y: 0.75, r: 1.8, wide: true, prompt: () => 'Read the file', ok: () => Escape.secret.found, local: () => { Escape.clue(null, 'secretfile'); UI.msg('PRESSURE WING — TEST SUBJECTS. Thirty-one names, each with a room number and a time. The last line is blank, and someone has written in it, in pencil, the name on your badge.', 'story', 8); Goals.unlock('ep_sealed'); return false; } });
+    this.pts.push({ id: 'xcache', S: SX, u: EP_SECRET.x1 - 3, v: (EP_SECRET.z0 + EP_SECRET.z1) / 2, y: 0.3, r: 1.8, wide: true, prompt: () => 'Open the emergency cache', ok: () => Escape.secret.found && !this.paid });
+    g.traverse(o => { o.layers.set(EP_LV + 1); });
+  },
+  tick(dt) { if (this.cover && Escape.secret.found && this.cover.position.y < WALL_H * 1.5) { this.cover.position.y += dt * 1.6; } },
+  use(pt, who) {
+    if (pt.id === 'xpanel' && this.on && !Escape.secret.found) { Game.emit({ k: 'epx', e: 'open' }); const d = EP_SECRET.door; d.unlocked = true; d.open(); Game.syncDoor(d, false, true); }
+    else if (pt.id === 'xcache' && Escape.secret.found && !this.paid) Game.emit({ k: 'epx', e: 'cache' });
+  },
+  event(ev, mine) {
+    if (ev.e === 'open' && !Escape.secret.found) { Escape.secret.found = true; const d = EP_SECRET.door; d.unlocked = true; d.updateLeds(); Sound.wallUp && Sound.wallUp(_epv.set(d.cx, 1.2, d.cz)); UI.msg('The panel comes away — and the wall behind it slides up. A sealed room nobody told you about.', 'good', 5); Goals.unlock('ep_sealed'); }
+    if (ev.e === 'cache' && !this.paid) { this.paid = true; if (this.cache) this.cache.material = MAT.metalDark; Sound.coin && Sound.coin(); UI.msg('An emergency cache: +' + EP_PAY.secret + ' coins at the end of the run (everyone gets them).', 'good', 4.5); }
+  },
+  dispose() { if (this.g) { this.g.traverse(o => { if (o.userData.own && o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); o.geometry.dispose(); } }); scene.remove(this.g); } this.g = this.cover = this.panel = this.cache = null; this.pts = []; },
+};
+
+/* ---------------- pay: by the room, for getting out, for the sealed room ---------------- */
+const EP_PAY = { room: 20, step: 8, out: 120, secret: 60 };
+ACH.push({ id: 'ep_out', name: 'Pressure Released', desc: 'Get out of the Pressure Wing (Escape Protocol).' });
+ACH.push({ id: 'ep_sealed', name: 'Off the Plans', desc: 'Find the sealed room in the Pressure Wing.' });
+ACH.push({ id: 'ep_clean', name: 'By the Book', desc: 'Escape Protocol: all six rooms, from the start, without anyone being caught.' });
+
+/* ---------------- the hooks: what the mode changes in the rest of the game ---------------- */
+{
+  const on = () => Escape.on();
+  // the rooms' things: [E] by where you look
+  const ut0 = Game.updateTarget; Game.updateTarget = function () {
+    if (!on()) return ut0.apply(this, arguments);
+    const o = Escape.eyeOff; player.eyeY += o; try { ut0.apply(this, arguments); } finally { player.eyeY -= o; }
+    if (this.target || player.hidden || this.controlLock) return; const d = Escape.target(); if (d) this.target = d;
+  };
+  // water slows you; deep water lifts you to the surface (the view rides it, and so do your teammates)
+  const sm0 = Chars.speedMul; Chars.speedMul = function () { const r = sm0.apply(this, arguments); return on() ? r * Escape.slow : r; };
+  const gr0 = Game.render; Game.render = function (dt) { if (!on() || Cine.locks() || !Escape.eyeOff) return gr0.apply(this, arguments); const g = Escape.eyeOff; player.bob += g; try { return gr0.apply(this, arguments); } finally { player.bob -= g; } };
+  const ru0 = RemotePlayer.prototype.update; RemotePlayer.prototype.update = function (dt) {
+    const r = ru0.apply(this, arguments);
+    if (on() && this.avatar) { const R = Escape.roomAt(this.pos.x, this.pos.z), lv = R && R.def.water ? R.def.water(R) : 0; if (lv >= 1.3) this.avatar.position.y += Math.min(lv - 1.2, 2.2); }
+    return r;
+  };
+  // your footsteps in water splash
+  const fs0 = Sound.footstep; Sound.footstep = function (surface, k, pos) {
+    if (on()) { const x = pos ? pos.x : player.pos.x, z = pos ? pos.z : player.pos.z, R = Escape.roomAt(x, z); if (R && R.def.water && R.def.water(R) > 0.08) return fs0.call(this, 'water', k, pos); }
+    return fs0.apply(this, arguments);
+  };
+  // no weapons to find down here, no trader, no smoke, nothing from the other floors
+  const wl0 = Weapons.loadout; Weapons.loadout = function () { if (Game.mode === 'escape') return; return wl0.apply(this, arguments); };
+  const ia0 = Infestant.allowed; Infestant.allowed = function () { return Game.mode !== 'escape' && ia0.call(this); };
+  const tl0 = Trader.tooLate; Trader.tooLate = function () { return Game.mode === 'escape' || tl0.call(this); };
+  const sl0 = SmokeSpots.layout; SmokeSpots.layout = function () { const r = sl0.apply(this, arguments); if (Game.mode === 'escape') for (const L of this.defs) for (const d of L || []) { d.enabled = false; if (d.visual) d.visual.visible = false; if (d.item) d.item.taken = true; } return r; };
+  // [H]: words, and a marker where it helps
+  const hp0 = Hints.primary; Hints.primary = function () { if (on()) { const h = Escape.hint(); return h && h.pos ? h : null; } return hp0.apply(this, arguments); };
+  const hq0 = Hints.request; Hints.request = function () { if (on()) { const h = Escape.hint(); if (h && !h.pos) { if (player.dead || Game.controlLock) return; if (Game.time - (Escape.hintT || -9) > 2) { Escape.hintT = Game.time; UI.msg(h.tip, 'hint', 6); } return; } } return hq0.apply(this, arguments); };
+  // online, caught: you come back in the doorway of the room the team is in
+  const rs0 = Game.respawn; Game.respawn = function () { const r = rs0.apply(this, arguments); if (on()) { if (Escape.stats) Escape.stats.deaths++; UI.clearMsgs(); UI.msg('You come to in the doorway of room ' + (Escape.ck + 1) + '. Your team still needs you.', 'story', 4.5); } return r; };
+  const gd0 = Game.die; Game.die = function () { if (on() && Escape.stats) Escape.stats.deaths++; return gd0.apply(this, arguments); };
+  // the end screen: the pay
+  const po0 = Chars.payout; Chars.payout = function (won) {
+    const first = !this.paid, r = po0.apply(this, arguments);
+    if (!first || Game.mode !== 'escape' || !Array.isArray(r) || r._ep) return r; r._ep = 1;
+    const k = ECON.diff[Net.sessionDiff || settings.difficulty] || 1, n = Escape.rooms.filter(R => R.solved && !R.pre), rooms = n.reduce((s, R) => s + EP_PAY.room + EP_PAY.step * R.i, 0);
+    let c = rooms + (won ? EP_PAY.out : 0) + (EpSecret.paid ? EP_PAY.secret : 0); c = Math.round(c * k);
+    if (c > 0 && this.data) { this.data.coins = Math.min(ECON.maxCoins, this.data.coins + c); this.save(); }
+    const at = Math.max(0, r.length - 1);
+    r.splice(at, 0, ['Rooms cleared', n.length + ' (+' + Math.round(rooms * k) + ')']);
+    if (won) r.splice(at + 1, 0, ['Got out', '+' + Math.round(EP_PAY.out * k)]);
+    if (EpSecret.paid) r.splice(at + 1, 0, ['Emergency cache', '+' + Math.round(EP_PAY.secret * k)]);
+    if (won) { Goals.unlock('ep_out'); if (!Escape.from && !(Escape.stats && Escape.stats.deaths)) Goals.unlock('ep_clean'); }
+    return r;
+  };
+  const cb0 = Modes.cardBest; Modes.cardBest = function (m) {
+    if (m === 'escape') { const d = EpStore.load(), b = d.best[settings.difficulty]; return (b ? 'Best: ' + Modes.rank('escape', b) + ' · ' + fmtClock(b) : 'Nobody has got out yet') + (d.escapes ? ' · ' + d.escapes + (d.escapes === 1 ? ' escape' : ' escapes') : ''); }
+    return cb0.apply(this, arguments);
+  };
+  // the end screen, alone (or the host): start again from the last room you reached
+  const lr0 = Level.result; Level.result = function (won) {
+    const r = lr0.apply(this, arguments);
+    const btn = $('btn-ep-retry'); if (btn) btn.hidden = true;
+    if (Game.mode === 'escape' && !won && Escape.ck > 0) {
+      let b = btn; if (!b) { b = document.createElement('button'); b.id = 'btn-ep-retry'; b.className = 'btn'; const rb = $('btn-go-restart'); rb.parentNode.insertBefore(b, rb); b.addEventListener('click', () => { if (Net.isClient) return; Escape.pend = { seed: Escape.seed, from: Escape.ck }; if (Net.isHost) Net.sessionEpFrom = Escape.ck; $('btn-go-restart').click(); }); }
+      b.hidden = Net.isClient; b.disabled = Net.isClient; b.textContent = 'Retry from room ' + (Escape.ck + 1) + (Net.isHost ? ' (everyone)' : '');
+    }
+    return r;
+  };
+  // a plain restart is a new run (a new seed); a retry carries the old seed and the room
+  const ng0 = Game.newGame; Game.newGame = function () { const r = ng0.apply(this, arguments); if (!Net.isClient) Net.sessionEpFrom = -1; Escape.paidRun = false; return r; };
+  // online: the checkpoint travels with the start (the host's choice)
+  Net.sessionEpFrom = -1;
+  // (the start message carries the seed: a retry keeps the run's, everything else gets a new one)
+  const bc0 = Net.broadcast; Net.broadcast = function (m) { if (m && m.k === 'start') { const P = settings.mode === 'escape' ? Escape.pend : null; m.ef = P ? clamp(P.from | 0, 0, 5) : -1; if (P) { m.seed = P.seed >>> 0; this.sessionSeed = m.seed; } } return bc0.apply(this, arguments); };
+  const acf0 = Net.applyCfg; Net.applyCfg = function (m) { const r = acf0.apply(this, arguments); if (m && m.k === 'start') this.sessionEpFrom = Number.isInteger(m.ef) ? clamp(m.ef, -1, 5) : -1; return r; };
+}
+
+/* ---------------- the briefing ---------------- */
+DIFF_TEXT.escape = {
+  easy: 'Rooms are slower to turn on you: the water rises slowly, the pressure builds slowly, hazards hurt less.',
+  normal: 'The intended experience: every room fights back a little harder than the one before.',
+  hard: 'Faster water, faster pressure, sharper hazards — and every mistake costs more.',
+  nightmare: 'The Pressure Wing at its worst: everything is quicker and hurts more. Read the clues.',
+};
+{
+  const smc0 = syncModeCards; syncModeCards = function () {
+    const r = smc0.apply(this, arguments);
+    if (settings.mode === 'escape') { $('brief-h1').textContent = 'Get through six rooms'; $('brief-kicker').textContent = 'Escape Protocol · the Pressure Wing · a new layout every run'; }
+    return r;
+  };
+}
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -41879,7 +43306,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
+  Object.assign(window.LS, { Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
   Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Post, RZT, ROOM_LOOK, genPaper, genPlanks, genTilesHQ, genPlasterCeil, genTrimWood, genPortraits, genWoodLeaf, get RZ_GEN_MS() { return RZ_GEN_MS; }, get instLamp() { return instLamp; }, RzContact, RzPBR, RzTorch, RzBody, RzAmb, RZ_SURF, flash, floorKey, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
