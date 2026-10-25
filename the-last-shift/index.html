@@ -1099,6 +1099,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <span class="key" data-key="hint">H</span><span>Hint (yellow marker)</span>
           <span class="key" data-key="ping">G</span><span>Ping (co-op)</span>
           <span><span class="key" data-key="pause">P</span> / <span class="key">Esc</span></span><span>Pause</span>
+          <span class="key">Tab</span><span>Show the HUD (hold)</span>
         </div>
       </div>
     </aside>
@@ -1276,6 +1277,9 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <label>Head bob</label><div class="set-ctl"><button class="tog" id="set-bob"></button><span class="mp-note">steps, breath, lean</span></div>
       <label>Film grain</label><div class="set-ctl"><button class="tog" id="set-grain"></button></div>
       <label>Cinematic look</label><div class="set-ctl"><button class="tog" id="set-cinema"></button><span class="mp-note">lamp glow, film colour, lens</span></div>
+      <label>HUD</label><div class="seg" id="set-hud" title="Immersive: the screen is the world — the HUD appears when something changes, when it matters, or while you hold Tab"><button data-v="immersive">Immersive</button><button data-v="full">Full</button><button data-v="minimal">Minimal</button></div>
+      <label>Motion blur</label><div class="set-ctl"><button class="tog" id="set-mblur"></button><span class="mp-note">a fast turn smears like a real camera (Medium/High)</span></div>
+      <label>Your body</label><div class="set-ctl"><button class="tog" id="set-body"></button><span class="mp-note">look down: your legs, your feet (Medium/High)</span></div>
       <label>Show FPS</label><div class="set-ctl"><button class="tog" id="set-fps"></button></div>
       <label>Item hints</label><div class="set-ctl"><button class="tog" id="set-hints"></button><span class="mp-note">yellow highlights when you're stuck</span></div>
       <label>Panic effects</label><div class="seg" id="set-panic" title="When something is close: the red pulse at the edge of the screen"><button data-v="full">Full</button><button data-v="reduced">Reduced</button><button data-v="off">Off</button></div>
@@ -1320,6 +1324,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <span class="key" data-key="ping">G</span><span>Co-op: mark a spot for your team</span>
           <span><span class="key">Hold <span data-key="hold">Space</span></span></span><span>Skip a camera cutscene</span>
           <span><span class="key" data-key="pause">P</span> / <span class="key">Esc</span></span><span>Pause and release the mouse</span>
+          <span><span class="key">Hold Tab</span></span><span>The whole HUD. Otherwise it steps aside: it comes up when something changes or matters (hurt, out of breath, a low battery, something near) — Settings → HUD → Full keeps it all on screen</span>
           <span class="key">Settings</span><span>Every key above can be changed: Settings → Controls</span>
         </div>
       </div>
@@ -1579,7 +1584,8 @@ const fmtTime = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60)
 const DEFAULTS = { sensitivity: 1, invertY: false, fov: 72, volume: 0.8, muted: false, difficulty: 'normal',
   quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '', mode: 'night', daily: false, dynRes: 'on', camoMap: 's6', camoWarden: 'ai',
   panicFx: 'full', shake: true, heartbeat: true, noFlash: false, director: true, volSfx: 1, volAmb: 1, volMus: 1, volUi: 1, // (Build 27: Panic Mode's screen effects, camera shake, the heartbeat, and REDUCE FLASHING)
-  cinema: true, anFeedFx: 'full', anCaptions: false, anFeedVol: 0.8, anRun: 'campaign', woodsLen: 'normal' }; // (Build 31: THE HOLLOW WOODS — how long the night is) // (Build 29: THE ANOMALY — the camera picture's effects, the microphones' captions and volume, a week or ENDLESS)
+  cinema: true, anFeedFx: 'full', anCaptions: false, anFeedVol: 0.8, anRun: 'campaign', woodsLen: 'normal',
+  hudMode: 'immersive', motionBlur: true, fpBody: true }; // (Build 31: THE HOLLOW WOODS — how long the night is) // (Build 29: THE ANOMALY — the camera picture's effects, the microphones' captions and volume, a week or ENDLESS)
 const settings = Object.assign({}, DEFAULTS);
 (function loadSettings() {
   try {
@@ -1590,7 +1596,7 @@ const settings = Object.assign({}, DEFAULTS);
     const bool = k => { if (typeof o[k] === 'boolean') settings[k] = o[k]; };
     const oneOf = (k, list) => { if (list.indexOf(o[k]) >= 0) settings[k] = o[k]; };
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8); num('volSfx', 0, 1); num('volAmb', 0, 1); num('volMus', 0, 1); num('volUi', 0, 1);
-    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); bool('director'); oneOf('panicFx', ['full', 'reduced', 'off']); oneOf('anFeedFx', ['full', 'reduced', 'off']); bool('anCaptions'); bool('cinema'); num('anFeedVol', 0, 1); oneOf('anRun', ['campaign', 'endless']);
+    bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); bool('director'); oneOf('panicFx', ['full', 'reduced', 'off']); oneOf('anFeedFx', ['full', 'reduced', 'off']); bool('anCaptions'); bool('cinema'); num('anFeedVol', 0, 1); oneOf('anRun', ['campaign', 'endless']); oneOf('hudMode', ['immersive', 'full', 'minimal']); bool('motionBlur'); bool('fpBody'); // (Build 36: IMMERSION — the HUD that steps aside, the shutter, your own body)
     oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors', 'descent', 'anomaly', 'woods', 'escape']); oneOf('camoMap', ['s6', 'works']); oneOf('woodsLen', ['short', 'normal', 'long']); oneOf('camoWarden', ['ai', 'host']);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
@@ -5502,7 +5508,7 @@ scene.add(dust);
 /* Every public call is safe when audio is blocked or unavailable.     */
 /* ------------------------------------------------------------------ */
 const Sound = (function () {
-  const S = { ctx: null, ok: false, paused: false, hb: 0, threat: 0, alarmOn: false, humOn: false, stalkT: 0, chaseOn: false, chaseNext: 0, chaseStep: 0 };
+  const S = { ctx: null, ok: false, paused: false, hb: 0, threat: 0, alarmOn: false, humOn: false, stalkT: 0, chaseOn: false, chaseNext: 0, chaseStep: 0, occl: null, occN: 0 }; // (Build 36: occl(x0, z0, x1, z1) → how many walls between; occN: sounds that went through the air or a wall)
   let ctx, master, comp, gameBus, uiBus, ambBus, sfx, revIn, rev, white, brown, pink, distCurve;
   let monIn, monFilter, monGain, monPanner, droneGain, droneFilter, highGain, humGain, alarmGain, alarmOsc, ventGain, dreamGain;
   let roomGain, subGain; // (Build 31: the woods turn the building's hum down)
@@ -5529,14 +5535,22 @@ const Sound = (function () {
     if (p.positionX) { p.positionX.value = v.x; p.positionY.value = v.y; p.positionZ.value = v.z; }
     else p.setPosition(v.x, v.y, v.z);
   }
-  // output chain: gain -> (panner) -> sfx (+ reverb send)
+  // output chain: gain -> (air & walls) -> (panner) -> sfx (+ reverb send)
+  let lisX = 0, lisY = 1.6, lisZ = 0, lisOk = false; // (Build 36: where you are listening from)
   function dest(pos, revAmt = 0.25, hrtf = false, bus) {
     const g = ctx.createGain();
     let node = g;
     if (pos) {
       const p = ctx.createPanner();
       p.panningModel = hrtf ? 'HRTF' : 'equalpower'; p.distanceModel = 'inverse'; p.refDistance = 1.6; p.maxDistance = 80; p.rolloffFactor = 1.15;
-      setPos(p, pos); g.connect(p); node = p;
+      setPos(p, pos);
+      // (Build 36) the air takes the top off a far sound; a wall between you muffles it and takes some of it away (more walls, more)
+      const d = lisOk ? Math.hypot(pos.x - lisX, (pos.y || 0) - lisY, pos.z - lisZ) : 0;
+      let hz = 20000 * Math.exp(-d / 30), k = 1;
+      if (d > 1.3 && S.occl) { const w = S.occl(lisX, lisZ, pos.x, pos.z); if (w > 0) { hz = Math.min(hz, w > 1 ? 650 : 1150); k = w > 1 ? 0.42 : 0.6; } }
+      if (hz < 15000) { const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = Math.max(350, hz); f.Q.value = 0.4; const kg = ctx.createGain(); kg.gain.value = k; g.connect(f); f.connect(kg); kg.connect(p); S.occN++; }
+      else g.connect(p);
+      node = p;
     }
     node.connect(bus || sfx);
     if (revAmt > 0) { const s = ctx.createGain(); s.gain.value = revAmt; node.connect(s); s.connect(revIn); }
@@ -5648,7 +5662,7 @@ const Sound = (function () {
     const t = ctx.currentTime, ex = extra || NOEX;
     const L = ctx.listener;
     if (listener) {
-      const p = listener.position, f = listener.forward;
+      const p = listener.position, f = listener.forward; lisX = p.x; lisY = p.y; lisZ = p.z; lisOk = true;
       if (L.positionX) { L.positionX.value = p.x; L.positionY.value = p.y; L.positionZ.value = p.z; L.forwardX.value = f.x; L.forwardY.value = f.y; L.forwardZ.value = f.z; L.upX.value = 0; L.upY.value = 1; L.upZ.value = 0; }
       else { L.setPosition(p.x, p.y, p.z); L.setOrientation(f.x, f.y, f.z, 0, 1, 0); }
     }
@@ -11472,7 +11486,7 @@ const Cine = {
 /* sign the relay's own "host disconnected" notice (that is only ever  */
 /* taken as a hint to look for the host again).                        */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 32, BUILD = 35, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 32, BUILD = 36, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
@@ -36820,7 +36834,8 @@ const RZ_LAMPS_OFF = { watch: 1, camo: 1 };
 
 const _pv2 = new T.Vector2(), _pv3 = new T.Vector2();
 const Post = {
-  ok: null, w: 0, h: 0, tex: null, rt: [], scene: null, cam: null, quad: null, M: {}, ran: 0,
+  ok: null, w: 0, h: 0, tex: null, rt: [], scene: null, cam: null, quad: null, M: {}, ran: 0, lum: null,
+  FX0: { ex: [0.1, 0, 0.8, 1.4], mb: [0, 0], hurt: [0, 0, 0], reset: false }, fx: null, // (Build 36: what the eye, the shutter and your injuries do to the picture — set each frame by Imm)
   // (shared by every pass: a full-screen triangle pair)
   VS: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
   init() {
@@ -36836,20 +36851,44 @@ const Post = {
           c += texture2D(t, vUv + dir * 1.3846153846).rgb * 0.3162162162; c += texture2D(t, vUv - dir * 1.3846153846).rgb * 0.3162162162;
           c += texture2D(t, vUv + dir * 3.2307692308).rgb * 0.0702702703; c += texture2D(t, vUv - dir * 3.2307692308).rgb * 0.0702702703;
           gl_FragColor = vec4(c, 1.0); }`, { t: { value: null }, dir: { value: new T.Vector2() } });
-      this.M.comp = mk(`uniform sampler2D tS; uniform sampler2D tA; uniform sampler2D tB; uniform float time; uniform float bloom; uniform float grain; uniform float vig; uniform float ca; uniform float grade; varying vec2 vUv;
+      // (Build 36) the eye: how bright the picture is, measured on the GPU into one pixel, and how far your eyes have got used to it (two pixels, in turn).
+      // A float kept in an 8-bit pixel: packed over its four channels.
+      const PK = 'vec4 pk(float v) { vec4 r = vec4(fract(v * vec3(16777216.0, 65536.0, 256.0)), v); r.yzw -= r.xyz / 256.0; return r * (256.0 / 255.0); }\n float upk(vec4 v) { return dot(v, vec4(1.0 / 16777216.0, 1.0 / 65536.0, 1.0 / 256.0, 1.0) * (255.0 / 256.0)); }\n';
+      this.M.meas = mk(PK + `uniform sampler2D t; uniform vec2 jit; varying vec2 vUv;
+        void main() { float s = 0.0, w = 0.0;
+          for (int y = 0; y < 9; y++) for (int x = 0; x < 16; x++) {
+            vec2 uv = (vec2(float(x), float(y)) + jit) / vec2(16.0, 9.0), dd = (uv - 0.5) * vec2(1.0, 0.75);
+            float k = exp(-dot(dd, dd) * 4.0); s += dot(texture2D(t, uv).rgb, vec3(0.2126, 0.7152, 0.0722)) * k; w += k; }
+          gl_FragColor = pk(clamp(s / w, 0.0, 0.999)); }`, { t: { value: null }, jit: { value: new T.Vector2(0.5, 0.5) } });
+      this.M.adapt = mk(PK + `uniform sampler2D tP; uniform sampler2D tC; uniform vec2 k; varying vec2 vUv;
+        void main() { float p = upk(texture2D(tP, vec2(0.5))), c = upk(texture2D(tC, vec2(0.5))); gl_FragColor = pk(clamp(mix(p, c, c > p ? k.x : k.y), 0.0, 0.999)); }`, { tP: { value: null }, tC: { value: null }, k: { value: new T.Vector2(1, 1) } });
+      // ex: the eye (key, how strongly it adapts, the darkest and brightest it will make the picture); mb: the camera's swing while the shutter is open (motion blur);
+      // hurt: badly hurt (how much, the heartbeat's pulse, double vision)
+      this.M.comp = mk(PK + `uniform sampler2D tS; uniform sampler2D tA; uniform sampler2D tB; uniform sampler2D tL; uniform float time; uniform float bloom; uniform float grain; uniform float vig; uniform float ca; uniform float grade;
+        uniform vec4 ex; uniform vec2 mb; uniform vec3 hurt; varying vec2 vUv;
         float hash(vec2 p) { p = fract(p * vec2(443.897, 441.423)); p += dot(p, p.yx + 19.19); return fract((p.x + p.y) * p.x); }
+        vec3 scn(vec2 uv, vec2 o) { return vec3(texture2D(tS, uv + o).r, texture2D(tS, uv).g, texture2D(tS, uv - o).b); }
         void main() {
           vec2 d = vUv - 0.5; float r2 = dot(d, d); vec2 o = d * ca * r2 * 0.012;
-          vec3 c = vec3(texture2D(tS, vUv + o).r, texture2D(tS, vUv).g, texture2D(tS, vUv - o).b);
+          vec3 c;
+          if (dot(mb, mb) > 1e-8) { c = vec3(0.0); float j = hash(gl_FragCoord.xy) - 0.5; for (int i = 0; i < 8; i++) c += scn(vUv + mb * ((float(i) + 0.5 + j) / 8.0 - 0.5), o); c *= 0.125; }
+          else c = scn(vUv, o);
+          if (hurt.z > 0.001) c = mix(c, scn(vUv + vec2(0.007, 0.0025) * hurt.z, o), 0.32 * hurt.z);
           c += (texture2D(tA, vUv).rgb * 0.55 + texture2D(tB, vUv).rgb * 0.9) * bloom * vec3(1.0, 0.84, 0.66);
+          if (ex.y > 0.0) { float La = upk(texture2D(tL, vec2(0.5))); c *= clamp(pow(ex.x / max(La, 0.002), ex.y), ex.z, ex.w); }
           float L = dot(c, vec3(0.2126, 0.7152, 0.0722));
           vec3 g = c * mix(vec3(0.88, 1.0, 1.07), vec3(1.08, 0.99, 0.84), smoothstep(0.03, 0.45, L));
           g += vec3(0.0, 0.007, 0.011) * (1.0 - smoothstep(0.0, 0.1, L));
           g = mix(vec3(L), g, 1.1); g = clamp(g, 0.0, 1.0); g = mix(g, g * g * (3.0 - 2.0 * g), 0.24);
           c = mix(c, g, grade);
+          if (hurt.x > 0.001) { float e = smoothstep(0.06, 0.5, r2 * 1.7); c = mix(c, vec3(dot(c, vec3(0.2126, 0.7152, 0.0722))) * vec3(1.06, 0.95, 0.9), hurt.x * 0.55);
+            c *= 1.0 - hurt.x * e * (0.42 + 0.3 * hurt.y); c += vec3(0.15, 0.0, 0.012) * hurt.x * e * hurt.y; }
           c *= 1.0 - vig * smoothstep(0.1, 0.6, r2 * 1.5);
           c += (hash(gl_FragCoord.xy + fract(time) * 917.0) - 0.5) * grain * (1.0 - 0.5 * L);
-          gl_FragColor = vec4(c, 1.0); }`, { tS: { value: null }, tA: { value: null }, tB: { value: null }, time: { value: 0 }, bloom: { value: 0.9 }, grain: { value: 0.03 }, vig: { value: 0.28 }, ca: { value: 1 }, grade: { value: 1 } });
+          gl_FragColor = vec4(c, 1.0); }`, { tS: { value: null }, tA: { value: null }, tB: { value: null }, tL: { value: null }, time: { value: 0 }, bloom: { value: 0.9 }, grain: { value: 0.03 }, vig: { value: 0.28 }, ca: { value: 1 }, grade: { value: 1 },
+        ex: { value: new T.Vector4(0.1, 0, 0.8, 1.4) }, mb: { value: new T.Vector2() }, hurt: { value: new T.Vector3() } });
+      const o1 = { minFilter: T.NearestFilter, magFilter: T.NearestFilter, format: T.RGBAFormat, depthBuffer: false, stencilBuffer: false, generateMipmaps: false };
+      this.lum = [new T.WebGLRenderTarget(1, 1, o1), new T.WebGLRenderTarget(1, 1, o1), new T.WebGLRenderTarget(1, 1, o1)]; // (now · the eye · the eye last frame)
       this.quad = new T.Mesh(new T.PlaneGeometry(2, 2), this.M.comp); this.quad.frustumCulled = false; this.scene.add(this.quad);
       this.ok = true;
     } catch (e) { console.warn('post-processing unavailable', e); this.ok = false; }
@@ -36865,13 +36904,26 @@ const Post = {
     this.rt = [q(2), q(2), q(3), q(3)]; // (a quarter and an eighth: two widths of glow)
   },
   pass(mat, target) { this.quad.material = mat; renderer.setRenderTarget(target); renderer.render(this.scene, this.cam); },
+  eye() { // (tests) [the picture's brightness this frame, what your eyes are used to]
+    if (!this.lum) return null; const b = new Uint8Array(4), f = rt => { renderer.readRenderTargetPixels(rt, 0, 0, 1, 1, b); return (b[0] / 16777216 + b[1] / 65536 + b[2] / 256 + b[3]) / 256; };
+    return [f(this.lum[0]), f(this.lum[1])];
+  },
   run() {
     if (!this.init()) return;
     try {
       this.size();
       const q = settings.quality, low = q === 'low', ar = renderer.info.autoReset, sc = renderer.getScissorTest(); renderer.info.autoReset = false; // (the scene's draw counts stay the scene's)
       renderer.copyFramebufferToTexture(_pv3.set(0, 0), this.tex);
-      const [A, B, C, D] = this.rt, M = this.M;
+      const [A, B, C, D] = this.rt, M = this.M, F = this.fx || this.FX0;
+      // (Build 36) the eye: this frame's brightness, then your eyes drift toward it — quickly into the light, slowly back into the dark
+      const now = performance.now(), adt = this._t ? clamp((now - this._t) / 1000, 0, 0.25) : 0.016; this._t = now;
+      if (F.ex[1] > 0) {
+        M.meas.uniforms.t.value = this.tex; M.meas.uniforms.jit.value.set(Math.random(), Math.random()); this.pass(M.meas, this.lum[0]);
+        const a0 = this.lum[1], a1 = this.lum[2];
+        M.adapt.uniforms.tP.value = a0.texture; M.adapt.uniforms.tC.value = this.lum[0].texture;
+        M.adapt.uniforms.k.value.set(F.reset ? 1 : 1 - Math.exp(-adt * 2.6), F.reset ? 1 : 1 - Math.exp(-adt * 0.7)); this.pass(M.adapt, a1);
+        this.lum[1] = a1; this.lum[2] = a0; F.reset = false;
+      }
       if (!low) {
         M.bright.uniforms.t.value = this.tex; M.bright.uniforms.px.value.set(1 / this.w, 1 / this.h); this.pass(M.bright, A);
         M.blur.uniforms.t.value = A.texture; M.blur.uniforms.dir.value.set(1 / A.width, 0); this.pass(M.blur, B);
@@ -36882,6 +36934,7 @@ const Post = {
       }
       const U = M.comp.uniforms; U.tS.value = this.tex; U.tA.value = A.texture; U.tB.value = C.texture; U.time.value = (performance.now() / 1000) % 100;
       U.bloom.value = low ? 0 : q === 'high' ? 0.95 : 0.8; U.ca.value = low ? 0 : q === 'high' ? 1 : 0.6; U.grain.value = settings.grain ? 0.028 : 0; U.vig.value = 0.26; U.grade.value = 1;
+      U.tL.value = this.lum[1].texture; U.ex.value.fromArray(F.ex); U.mb.value.fromArray(F.mb); U.hurt.value.fromArray(F.hurt);
       renderer.setRenderTarget(null); renderer.setScissorTest(false); const cs = renderer.getSize(_pv3); renderer.setViewport(0, 0, cs.x, cs.y);
       this.pass(M.comp, null);
       renderer.setScissorTest(sc); renderer.info.autoReset = ar; this.ran++;
@@ -42312,6 +42365,543 @@ DIFF_TEXT.escape = {
     return r;
   };
 }
+/* =====================================================================
+   Build 36 — IMMERSION: being there, in every mode.
+   ---------------------------------------------------------------------
+   The torch: a real reflector's beam — a hot core, a ring round it, a
+   soft spill and the faint rings of the glass — instead of a flat disc
+   (yours, and every other guard's). The eye: the picture opens up as
+   your eyes get used to the dark and closes down when you look into a
+   lamp; quickly into the light, slowly back out of it. The shutter: a
+   fast turn smears. Badly hurt: the colour drains out, the edges close
+   in on your heartbeat, at the worst the picture doubles. The air: the
+   haze isn't one even fog any more — it drifts, and it pools on the
+   floor.
+   Every piece is per mode: a camera's picture (THE ANOMALY's feeds,
+   MECHA CAMO's paint matching) is left exactly as it was.
+   ===================================================================== */
+
+/* ---------------- the torch's beam ---------------- */
+// Spot lights with a decay between 1.35 and 1.55 are torches (yours: 1.5, the other guards': 1.4); the wide spill round yours (2) and anything else are untouched.
+// (The hot core eases off on a surface at arm's length, so a wall right in front of you isn't burned white in the middle.)
+{
+  const C = T.ShaderChunk, src = C.lights_pars_begin, at = src.indexOf('void getSpotDirectLightIrradiance('),
+    line = 'directLight.color *= spotEffect * punctualLightIntensityToIrradianceFactor( lightDistance, spotLight.distance, spotLight.decay );';
+  if (at > 0 && src.indexOf(line) > at) {
+    const fn = `float imBeam( const in SpotLight L, const in float c, const in vec3 toP, const in float dist ) {
+		if ( L.decay < 1.35 || L.decay > 1.55 || L.color.r + L.color.g + L.color.b < 1e-4 ) return 1.0; // (not a torch — or a torch that's off: nothing to shape)
+		float r = sqrt( clamp( ( 1.0 - c ) / max( 1.0 - L.coneCos, 1e-4 ), 0.0, 1.0 ) );
+		vec3 ax = L.direction, up = abs( ax.y ) < 0.95 ? vec3( 0.0, 1.0, 0.0 ) : vec3( 1.0, 0.0, 0.0 ), u = normalize( cross( up, ax ) ), v = cross( ax, u );
+		float th = atan( dot( toP, v ), dot( toP, u ) + 1e-5 );
+		float hot = exp( - r * r * 16.0 ) * ( 0.35 + 0.65 * smoothstep( 0.8, 3.2, dist ) ), ring = exp( - ( r - 0.34 ) * ( r - 0.34 ) * 110.0 ), dip = exp( - ( r - 0.22 ) * ( r - 0.22 ) * 260.0 );
+		return 0.74 + 1.05 * hot + 0.26 * ring - 0.16 * dip + sin( r * 78.0 + sin( th * 3.0 ) * 0.6 ) * ( 1.0 - r ) * 0.035 + sin( th * 7.0 + r * 11.0 ) * 0.03 * smoothstep( 0.15, 0.5, r );
+	}
+	`;
+    C.lights_pars_begin = src.slice(0, at) + fn + src.slice(at).replace(line, 'directLight.color *= spotEffect * imBeam( spotLight, angleCos, - directLight.direction, lightDistance ) * punctualLightIntensityToIrradianceFactor( lightDistance, spotLight.distance, spotLight.decay );');
+  } else console.warn('immersion: the torch beam was left plain (unexpected three.js lighting chunk)');
+}
+
+/* ---------------- the air: drifting haze that pools on the floor ---------------- */
+// Every fogged material gets the fragment's place in the world and one shared uniform: [time, how much the haze moves, its size (1/m; negative: one layer of noise
+// instead of two — Medium, and the woods), how much it pools low]. Within a metre and a half of you there's too little haze to see it move: skipped; and cut-out
+// leaves and grass (alpha-tested) keep the plain fog — layer upon layer of them is where the cost would be.
+// (UniformsUtils.clone keeps a typed array by reference, so every material reads this same array.)
+const IM_FOG = new Float32Array([0, 0, 0.28, 0.2]);
+{
+  const C = T.ShaderChunk, n0 = [C.fog_pars_vertex, C.fog_vertex, C.fog_pars_fragment, C.fog_fragment].join('|');
+  C.fog_pars_vertex = C.fog_pars_vertex.replace('varying float fogDepth;', 'varying float fogDepth; varying vec3 vImFogW;');
+  // (the world position from the view-space one: undo the view's rotation and translation — no inverse() in this GLSL)
+  C.fog_vertex = C.fog_vertex.replace('fogDepth = - mvPosition.z;', 'fogDepth = - mvPosition.z;\n\tvec3 imFq = mvPosition.xyz - viewMatrix[ 3 ].xyz; vImFogW = vec3( dot( viewMatrix[ 0 ].xyz, imFq ), dot( viewMatrix[ 1 ].xyz, imFq ), dot( viewMatrix[ 2 ].xyz, imFq ) );');
+  C.fog_pars_fragment = C.fog_pars_fragment.replace('varying float fogDepth;', 'varying float fogDepth; varying vec3 vImFogW; uniform vec4 imFog;\n' +
+    '\tfloat imFh( vec3 p ) { p = fract( p * 0.3183099 + 0.1 ); p *= 17.0; return fract( p.x * p.y * p.z * ( p.x + p.y + p.z ) ); }\n' +
+    '\tfloat imFn( vec3 x ) { vec3 i = floor( x ), f = fract( x ); f = f * f * ( 3.0 - 2.0 * f );\n' +
+    '\t\treturn mix( mix( mix( imFh( i ), imFh( i + vec3( 1.0, 0.0, 0.0 ) ), f.x ), mix( imFh( i + vec3( 0.0, 1.0, 0.0 ) ), imFh( i + vec3( 1.0, 1.0, 0.0 ) ), f.x ), f.y ),\n' +
+    '\t\t\tmix( mix( imFh( i + vec3( 0.0, 0.0, 1.0 ) ), imFh( i + vec3( 1.0, 0.0, 1.0 ) ), f.x ), mix( imFh( i + vec3( 0.0, 1.0, 1.0 ) ), imFh( i + vec3( 1.0, 1.0, 1.0 ) ), f.x ), f.y ), f.z ); }');
+  // (the haze thickens and thins round its usual density — on average the same distance is visible — and gathers below knee height)
+  C.fog_fragment = C.fog_fragment.replace('float fogFactor = 1.0 - exp( - fogDensity * fogDensity * fogDepth * fogDepth );', 'float imD = fogDensity;\n' +
+    '\t\t#ifndef ALPHATEST\n' +
+    '\t\tif ( imFog.y > 0.001 && fogDepth > 1.5 ) { vec3 q = vImFogW * abs( imFog.z ) + vec3( imFog.x * 0.06, imFog.x * 0.012, imFog.x * 0.045 ); float n = imFn( q ); if ( imFog.z > 0.0 ) n = n * 0.65 + imFn( q * 2.17 + 7.3 ) * 0.35;\n' +
+    '\t\t\timD *= max( 0.25, 1.0 + imFog.y * ( ( n - 0.5 ) * 1.2 + ( 1.0 - smoothstep( 0.0, 1.7, vImFogW.y ) ) * imFog.w ) ); }\n' +
+    '\t\t#endif\n' +
+    '\t\tfloat fogFactor = 1.0 - exp( - imD * imD * fogDepth * fogDepth );');
+  const n1 = [C.fog_pars_vertex, C.fog_vertex, C.fog_pars_fragment, C.fog_fragment];
+  if (n1.join('|') === n0 || n1.some(s => s.indexOf('Im') < 0 && s.indexOf('imD') < 0)) console.warn('immersion: the drifting haze was not fully applied (unexpected three.js fog chunks)');
+  for (const k in T.ShaderLib) { const U = T.ShaderLib[k].uniforms; if (U && U.fogDensity) U.imFog = { value: IM_FOG }; }
+  if (T.UniformsLib && T.UniformsLib.fog) T.UniformsLib.fog.imFog = { value: IM_FOG };
+}
+
+/* ---------------- per mode ---------------- */
+// ex: the eye — [key, how strongly it adapts, the darkest it makes the picture, the brightest] (null: left alone)
+// fog: [how much the haze moves, its size, how much it pools on the floor] (null: an even fog, as before)
+const IM_EX = [0.115, 0.4, 0.8, 1.45], IM_OFF = [0.1, 0, 0.8, 1.4];
+const IMM_MODE = {
+  night: { ex: IM_EX, fog: [0.6, 0.28, 0.22] }, photos: { ex: IM_EX, fog: [0.6, 0.28, 0.22] }, endless: { ex: IM_EX, fog: [0.65, 0.28, 0.25] }, descent: { ex: IM_EX, fog: [0.6, 0.28, 0.25] },
+  gallery: { ex: IM_EX, fog: [0.55, 0.3, 0.2] },
+  blackout: { ex: [0.07, 0.3, 0.85, 1.25], fog: [0.75, 0.25, 0.4] }, // (THE SHADE lives in the dark: your eyes help less here)
+  hive: { ex: IM_EX, fog: [0.7, 0.3, 0.45] }, root: { ex: IM_EX, fog: [0.8, 0.22, 0.55] },
+  watch: { ex: IM_EX, fog: [0.45, 0.28, 0.15] },
+  hunt: { ex: [0.11, 0.3, 0.85, 1.3], fog: [0.6, 0.28, 0.22] },
+  camo: { ex: null, fog: null },    // (your paint is matched by eye against the wall: the picture stays put)
+  doors: { ex: IM_EX, fog: [0.55, 0.3, 0.2] },
+  anomaly: { ex: IM_EX, fog: null }, // (its cameras' pictures are compared frame to frame)
+  woods: { ex: [0.2, 0.35, 0.8, 1.35], fog: [0.9, 0.11, 0.6] },
+  escape: { ex: IM_EX, fog: [0.6, 0.3, 0.32] },
+};
+const IMM_NO_HURT = { hunt: 1, camo: 1 }; // (the Warden's eyes; a mech)
+const immNotGuard = () => !!(RZ_NO_BODY[Game.mode] || (typeof HumanWarden !== 'undefined' && HumanWarden.me && HumanWarden.me())); // (the Warden's eyes — THE HUNT, or the host playing it online — or a mech's)
+
+const Imm = {
+  fx: { ex: IM_OFF, mb: [0, 0], hurt: [0, 0, 0], reset: true },
+  yaw0: null, pitch0: 0, hp0: null, hit: 0, beat: 0, exOn: false, blur: 0,
+  cfg() { return IMM_MODE[Game.mode] || IMM_MODE.night; },
+  reset() { this.fx.reset = true; this.yaw0 = null; this.hp0 = null; this.hit = 0; },
+  frame(dt) {
+    const p = player, C = this.cfg(), F = this.fx, q = settings.quality, cctv = Cine.cctvOn();
+    // the eye (never on a camera's picture)
+    const ex = C.ex && !cctv ? C.ex : null;
+    if (ex && !this.exOn) F.reset = true; // (back from a camera: start from the picture as it is)
+    this.exOn = !!ex; F.ex = ex || IM_OFF;
+    // the shutter: a quick turn smears the picture — only the turn (not the shake), and never across a cut
+    let mx = 0, my = 0;
+    if (this.yaw0 !== null && dt > 0) {
+      const dy = angleDiff(this.yaw0, p.yaw), dp = p.pitch - this.pitch0, ang = Math.hypot(dy, dp);
+      if (settings.motionBlur !== false && q !== 'low' && ang < 0.35 && Game.state === 'playing' && !Cine.cur && !cctv && !p.dead) {
+        const w = ang / dt, k = clamp((w - 0.9) / 2.1, 0, 1), sh = Math.min(dt, 1 / 30) * 0.5 / dt; // (half the frame's swing: a half-open shutter)
+        const vf = camera.fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * camera.aspect);
+        mx = dy * sh / hf * k * k * (3 - 2 * k); my = dp * sh / vf * k * k * (3 - 2 * k);
+        const L = Math.hypot(mx, my); if (L > 0.04) { mx *= 0.04 / L; my *= 0.04 / L; }
+      }
+    }
+    this.yaw0 = p.yaw; this.pitch0 = p.pitch; F.mb[0] = mx; F.mb[1] = my; this.blur = Math.hypot(mx, my);
+    // badly hurt: the colour drains, the edges close in on your heartbeat; a fresh hit, and at the worst, double vision
+    const pfx = settings.panicFx || 'full';
+    let ha = 0, hp = 0, hg = 0;
+    if (pfx !== 'off' && !IMM_NO_HURT[Game.mode] && !immNotGuard() && Game.state === 'playing' && !p.dead && p.maxHp > 1 && dt > 0) {
+      const f = clamp(p.health / p.maxHp, 0, 1);
+      if (this.hp0 !== null && p.health < this.hp0 - 0.5) this.hit = Math.min(1, this.hit + 0.35 + (this.hp0 - p.health) / p.maxHp * 1.5);
+      this.hp0 = p.health; this.hit = Math.max(0, this.hit - dt * 1.4);
+      const low = p.downed ? 1 : clamp((0.5 - f) / 0.38, 0, 1);
+      ha = Math.min(1, low * 0.85 + this.hit * 0.5);
+      this.beat += dt * (1.05 + low * 0.9) * TAU;
+      const b1 = Math.max(0, Math.sin(this.beat)), b2 = Math.max(0, Math.sin(this.beat - 0.9));
+      hp = settings.noFlash ? 0.5 : clamp(Math.pow(b1, 6) + 0.6 * Math.pow(b2, 10), 0, 1); // (lub-dub; steady with Reduce flashing)
+      hg = pfx === 'full' && !settings.noFlash ? Math.max(clamp((low - 0.55) / 0.45, 0, 1) * 0.8, this.hit * 0.6) : 0;
+      if (pfx === 'reduced') ha *= 0.55;
+    } else { this.hp0 = p.health; this.hit = 0; }
+    F.hurt[0] = ha; F.hurt[1] = hp; F.hurt[2] = hg;
+    // the air
+    const fc = C.fog;
+    IM_FOG[0] = (Game.time || 0) % 10000; IM_FOG[1] = fc && q !== 'low' ? fc[0] : 0;
+    if (fc) { IM_FOG[2] = q === 'high' && Game.mode !== 'woods' ? fc[1] : -fc[1]; IM_FOG[3] = fc[2]; }
+  },
+};
+
+/* ---------------- the HUD steps aside ---------------- */
+// Immersive (the default): the screen is the world. A panel comes up when what it says changes, when it matters right now — out of breath, hurt, the
+// battery low, something close — for the first seconds of a run, and while you hold Tab. The minimap comes and goes with [M].
+// Minimal: only what's critical (and Tab). Full: everything, always, as before. (Every panel stays in the page and keeps updating: only its opacity changes.)
+const IMM_HUD_CSS = '#hud.imm #hud-left,#hud.imm #shift,#hud.imm #hud-bl,#hud.imm #threat,#hud.imm #wpn,#hud.imm #minimap-wrap{transition:opacity .55s ease}' +
+  'body.imm-hud:not(.imm-hud-obj) #dx-hud{opacity:0}#dx-hud{transition:opacity .55s ease}' +
+  '#hud.imm:not(.imm-obj) #hud-left,#hud.imm:not(.imm-clock) #shift,#hud.imm:not(.imm-stat) #hud-bl,#hud.imm:not(.imm-threat) #threat,#hud.imm:not(.imm-wpn) #wpn{opacity:0}' +
+  '#hud.imm.imm-map #minimap-wrap.hidden{display:block}' +
+  '#hud.imm:not(.imm-tab) #hud-left,#hud.imm:not(.imm-tab) #shift{transition-duration:1.4s}';
+const ImmHud = {
+  t: {}, sig: {}, vis: {}, tab: false, mapPref: false, tick: 0, flash0: null, dirty: false, told: false,
+  G: ['obj', 'clock', 'stat', 'map', 'threat', 'wpn'],
+  mode() { return settings.hudMode === 'full' || settings.hudMode === 'minimal' ? settings.hudMode : 'immersive'; },
+  apply() {
+    const h = $('hud'); if (!h) return; const m = this.mode(), was = h.classList.contains('imm');
+    h.classList.toggle('imm', m !== 'full'); h.classList.toggle('imm-min', m === 'minimal'); document.body.classList.toggle('imm-hud', m !== 'full');
+    if (m === 'full') for (const g of this.G.concat(['tab'])) h.classList.remove('imm-' + g);
+    if (was && m === 'full' && Game.state === 'playing' && !UI.mapVisible && this.mapPref === false) { UI.mapVisible = true; UI.applyFx(); } // (back to Full: the map as it was)
+    this.vis = {}; this.dirty = true;
+  },
+  start() { // (a new run: everything up for a few seconds, then it steps aside)
+    this.t = {}; this.sig = {}; this.vis = {}; this.flash0 = null; this.tab = false;
+    for (const g of this.G) this.t[g] = g === 'map' ? 0 : 8;
+    this.apply();
+    if (this.mode() !== 'full') {
+      UI.mapVisible = this.mapPref; UI.applyFx();
+      if (!this.told) { this.told = true; setTimeout(() => { if (Game.state === 'playing') UI.msg('The HUD steps aside — hold Tab to see everything, ' + Keys.b('map') + ' for the map · Settings → HUD', '', 6); }, 4500); }
+    }
+  },
+  norm(s) { return String(s || '').replace(/\d+:\d+(\s*[AP]M)?/gi, '#').replace(/\d+(\.\d+)?\s*%/g, '#').replace(/\b\d+(\.\d+)?s\b/g, '#').replace(/\s+/g, ' '); }, // (a ticking clock isn't news)
+  changed(k, s) { const o = this.sig[k]; this.sig[k] = s; return o !== undefined && o !== s; },
+  frame(dt) {
+    const h = $('hud'); if (!h || !h.classList.contains('active')) return;
+    const m = this.mode(); if (m === 'full') { if (h.classList.contains('imm')) this.apply(); return; }
+    if (!h.classList.contains('imm')) this.apply();
+    for (const g of this.G) if (this.t[g] > 0) this.t[g] -= dt;
+    this.tick -= dt; if (this.tick > 0 && !this.dirty) return; this.tick = 0.2; this.dirty = false;
+    const p = player, min = m === 'minimal', txt = id => { const e = $(id); return e ? e.textContent : ''; }, kids = id => { const e = $(id); return e ? [...e.children] : []; };
+    // what changed
+    if (this.changed('obj', this.norm(txt('mission') + '|' + kids('obj-list').map(li => li.className + ':' + li.textContent).join('|')))) this.t.obj = min ? 5 : 7;
+    if (this.changed('team', this.norm(txt('team')))) this.t.obj = Math.max(this.t.obj || 0, 5);
+    if (this.changed('goal', txt('shift-goal').replace(/[\d:.,]+/g, '#')) && !min) this.t.clock = 5; // (the goal line counts down the time left: only new words are news)
+    if (this.changed('hour', txt('shift-clock').slice(0, 2)) && !min) this.t.clock = 5;
+    if (this.changed('wpn', txt('wpn-name') + '|' + txt('wpn-ammo'))) this.t.wpn = 3.5;
+    if (this.changed('abil', ($('abil') || {}).className + '|' + ($('ult') || {}).className + '|' + kids('cards').map(c => c.className).join(','))) this.t.stat = Math.max(this.t.stat || 0, 3.5);
+    const fl = !!(p.hasFlash && p.flashState);
+    if (this.flash0 !== null && fl !== this.flash0 && !min) this.t.stat = Math.max(this.t.stat || 0, 2.5);
+    this.flash0 = fl;
+    // what matters right now
+    const th = $('threat'), lv = th ? +th.getAttribute('data-level') || 0 : 0, sh = $('shift');
+    const hurt = p.maxHp > 1 && p.health < p.maxHp * (min ? 0.35 : 0.98), winded = p.exhausted || p.stamina < (min ? 0.25 : 0.97);
+    const dim = p.hasFlash && p.battery < (min ? 0.12 : 0.25), loud = !min && p.noiseLevel > 0.55, busy = p.cranking || p.swapT > 0;
+    const want = {
+      obj: this.tab || this.t.obj > 0,
+      clock: this.tab || this.t.clock > 0 || !!(sh && (sh.classList.contains('surge') || sh.classList.contains('dawn'))),
+      stat: this.tab || this.t.stat > 0 || hurt || winded || dim || loud || busy || !!p.downed,
+      map: this.tab,
+      threat: this.tab || lv >= (min ? 3 : 1),
+      wpn: this.tab || this.t.wpn > 0,
+    };
+    if (want.map && !this.vis.map && !UI.mapVisible) try { UI.drawMap(); } catch (e) { } // (a glance at a map that wasn't being drawn)
+    for (const g of this.G) if (want[g] !== this.vis[g]) { this.vis[g] = want[g]; h.classList.toggle('imm-' + g, want[g]); if (g === 'obj') document.body.classList.toggle('imm-hud-obj', want[g]); } // (THE DESCENT's floor panel goes with the mission)
+    h.classList.toggle('imm-tab', this.tab);
+  },
+};
+Imm.hudApply = () => ImmHud.apply();
+
+/* ---------------- your own body ---------------- */
+// Look down: your legs, your feet, your belt — your character, in your colours, walking when you walk and folding when you crouch. Only ever in your own
+// eyes (never a camera's, never anyone else's: they see you as before). No head and no arms — your arms are your first-person arms — and no shadow.
+const _ibV = new T.Vector3();
+const ImmBody = {
+  g: null, R: null, cid: null, on: false, depth: 1,
+  want() {
+    const p = player;
+    return settings.fpBody !== false && settings.quality !== 'low' && Game.state === 'playing' && !immNotGuard() && !p.dead && !p.hidden && !p.inVent && !p.downed
+      && !Cine.cur && !Cine.cctvOn() && !(typeof Cosmos !== 'undefined' && Cosmos.lift > 0.05);
+  },
+  drop() { if (!this.g) return; scene.remove(this.g); const shared = new Set(Object.values(typeof WGEO !== 'undefined' ? WGEO : {})); this.g.traverse(o => { if (o.isMesh && !shared.has(o.geometry)) o.geometry.dispose(); }); this.g = null; this.R = null; this.cid = null; },
+  build() {
+    this.drop();
+    const id = Chars.run || 'guard';
+    let g = null; try { g = buildGuard(0x8a8a8a, '', id); } catch (e) { g = null; }
+    this.cid = id;
+    if (!g || !g.userData || !g.userData.rig || g.userData.horseRig) { if (g) { this.g = g; this.drop(); } this.cid = id; return; } // (a body that isn't a person — THE HORSE's neck would be in your eyes: none)
+    try { this.depth = clamp(People.styleOf(id).k.d || 1, 1, 3); } catch (e) { this.depth = 1; } // (a deeper body: your eyes further in front of the neck)
+    // (the person is skinned into one mesh per material: the head, the neck and the arms go by folding their bones away to nothing)
+    const R = g.userData.rig; for (const b of [R.neck, R.armL, R.armR]) if (b) b.scale.setScalar(1e-4);
+    if (g.userData.tag) g.userData.tag.visible = false; if (g.userData.lens) g.userData.lens.visible = false;
+    g.traverse(o => { if (o.isMesh) o.castShadow = false; });
+    g.visible = false; g.userData.fpBody = true; scene.add(g); this.g = g; this.R = R;
+  },
+  frame(dt) {
+    this.on = false;
+    if (!this.want()) return;
+    if (this.cid !== (Chars.run || 'guard')) this.build();
+    const g = this.g, R = this.R; if (!g || !R) return;
+    const p = player;
+    poseGuard(g, p.pos, p.yaw, Math.hypot(p.vel.x, p.vel.z), !!p.crouching, false, false, dt, false, null, 0);
+    // place it so the neck sits just behind and below your eyes (a little further back as you look down — your head comes forward): your chest under you, your feet ahead
+    g.updateMatrixWorld(true); R.neck.getWorldPosition(_ibV);
+    const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), back = (0.06 + 0.1 * clamp(-p.pitch / 1.2, 0, 1)) * (this.depth || 1), eye = p.eyeY + p.bob;
+    g.position.x += p.pos.x - fx * back - _ibV.x; g.position.z += p.pos.z - fz * back - _ibV.z;
+    g.position.y += clamp(eye - 0.14 - _ibV.y, -0.35, 0.3);
+    g.updateMatrixWorld(true);
+    this.on = true;
+  },
+};
+
+/* ---------------- the walls between you and a sound ---------------- */
+// How many walls (or shut doors) lie between where you're listening and a sound: e_audio muffles it through one, more through two.
+Sound.occl = function (x0, z0, x1, z1) {
+  const d = Math.hypot(x1 - x0, z1 - z0); if (!(d > 1) || d > 70) return 0;
+  const n = Math.ceil(d / 0.3); let w = 0, inW = false;
+  for (let i = 1; i < n; i++) {
+    const t = i / n, c = cellOf(x0 + (x1 - x0) * t, z0 + (z1 - z0) * t), solid = !!c && blocksSight(c, true);
+    if (solid && !inW && ++w > 2) break; inW = solid;
+  }
+  return w;
+};
+
+/* ---------------- the building around you ---------------- */
+// Now and then, somewhere off through the walls: a pipe settling, a drip, a tick of cooling metal — never anything that sounds like something coming.
+const IMM_WORLD = { building: ['pipe', 'drip', 'drip', 'tap', 'metal'], gallery: ['creak', 'drip', 'pipe'], blackout: ['spark', 'metal', 'pipe', 'drip'],
+  hive: ['drip', 'drip', 'pipe', 'tap'], root: ['drip', 'creak', 'metal', 'drip'], escape: ['drip', 'pipe', 'metal', 'drip'], hotel: ['creak', 'drip'] };
+const IMM_WORLD_OF = { night: 'building', photos: 'building', endless: 'building', descent: 'building', watch: 'building', hunt: 'building', gallery: 'gallery', blackout: 'blackout', hive: 'hive', root: 'root', escape: 'escape', doors: 'hotel' };
+const ImmWorld = {
+  t: 9, n: 0,
+  frame(dt) {
+    if (Game.state !== 'playing' || !(dt > 0) || Cine.blocking()) return;
+    const set = IMM_WORLD[IMM_WORLD_OF[Game.mode]]; if (!set) return;
+    if ((this.t -= dt) > 0) return; this.t = rand(9, 22);
+    const p = player, a = rand(0, TAU), d = rand(8, 18), k = pick(set), at = new T.Vector3(p.pos.x + Math.cos(a) * d, rand(1.4, 2.6), p.pos.z + Math.sin(a) * d);
+    if (k === 'pipe') Sound.pipeGroan(at); else if (k === 'drip') Sound.drip(at); else if (k === 'tap') Sound.tap(at, 0.45); else if (k === 'metal') Sound.metalHit(at, 0.3);
+    else if (k === 'creak') Sound.creak(at); else if (k === 'spark') Sound.sparks(at);
+    this.n++;
+  },
+};
+
+/* ---------------- the air: motes in the light ---------------- */
+// The dust that hung only in your torch beam now catches the lamps too, and each place has its own: the building's dust, the Hive's spores rising,
+// grit sifting down in the Root, the Escape wing's damp, pollen in the woods. (A camera's picture keeps the old dust: MECHA CAMO, THE ANOMALY.)
+const IMM_MOTES = { // [tint, drift (m/s: x, y, z), how much a lamp lights them]
+  building: [[1, 0.95, 0.85], [0.02, 0.0, 0.015], 1], hive: [[0.78, 1, 0.72], [0.0, 0.05, 0.004], 1.3], root: [[0.95, 0.86, 0.72], [0.004, -0.09, 0.0], 1],
+  escape: [[0.82, 0.92, 1], [0.012, -0.025, 0.0], 1.1], woods: [[1, 0.97, 0.8], [0.06, 0.012, 0.035], 0.7], blackout: [[1, 0.82, 0.62], [0.0, 0.035, 0.0], 1],
+  still: [[1, 0.95, 0.85], [0, 0, 0], 0],
+};
+const IMM_MOTES_OF = { hive: 'hive', root: 'root', escape: 'escape', woods: 'woods', blackout: 'blackout', camo: 'still', anomaly: 'still' };
+const _imL = []; for (let i = 0; i < 4; i++) _imL.push(new T.Vector4(0, -99, 0, 0));
+const ImmMotes = {
+  ok: false,
+  init() {
+    try {
+      const U = dustMat.uniforms;
+      U.uDrift = { value: new T.Vector3() }; U.uCam = { value: new T.Vector3() }; U.uBox = { value: DUST_BOX }; U.uH = { value: WALL_H - 0.2 }; U.uTint = { value: new T.Color(1, 0.95, 0.85) }; U.uLamp = { value: _imL }; U.uLampK = { value: 0 };
+      const vs = dustMat.vertexShader, fs = dustMat.fragmentShader;
+      const v1 = vs.replace('uniform float uScale;', 'uniform float uScale; uniform vec3 uDrift; uniform vec3 uCam; uniform float uBox; uniform float uH;')
+        .replace('vec4 w = modelMatrix * vec4(p,1.0);', 'p += uDrift * uTime; vec2 q = mod(p.xz - uCam.xz + uBox, 2.0 * uBox) - uBox; p.xz = uCam.xz + q; p.y = 0.1 + mod(p.y - 0.1, uH);\n      vec4 w = modelMatrix * vec4(p,1.0);');
+      const f1 = fs.replace('uniform float uCos;', 'uniform float uCos; uniform vec3 uTint; uniform vec4 uLamp[4]; uniform float uLampK;')
+        .replace('float a = (1.0 - d*4.0) * vA * (beam + 0.015);', 'float lamp = 0.0; for (int i = 0; i < 4; i++) { vec3 e = vW - uLamp[i].xyz; lamp += uLamp[i].w / (1.0 + dot(e, e) * 1.4); }\n      float a = (1.0 - d*4.0) * vA * (beam + 0.015 + lamp * uLampK * 0.22);')
+        .replace('gl_FragColor = vec4(vec3(1.0,0.95,0.85) * a, a);', 'gl_FragColor = vec4(uTint * a, a);');
+      if (v1 === vs || f1 === fs || v1.indexOf('uDrift * uTime') < 0 || f1.indexOf('uLampK') < 0) { console.warn('immersion: the motes were left as they were'); return; }
+      dustMat.vertexShader = v1; dustMat.fragmentShader = f1; dustMat.needsUpdate = true; this.ok = true;
+    } catch (e) { console.warn('immersion: motes', e); }
+  },
+  frame() {
+    if (!this.ok) return;
+    const U = dustMat.uniforms, M = IMM_MOTES[IMM_MOTES_OF[Game.mode] || 'building'];
+    U.uTint.value.setRGB(M[0][0], M[0][1], M[0][2]); U.uDrift.value.set(M[1][0], M[1][1], M[1][2]); U.uCam.value.copy(camera.position); U.uLampK.value = settings.quality === 'low' ? 0 : M[2];
+    // the four lamps nearest you
+    for (const v of _imL) v.set(0, -99, 0, 0);
+    if (M[2] > 0) { const c = camera.position; let n = 0; const best = [];
+      for (const l of pool) { if (!l.visible || !(l.intensity > 0)) continue; const d = l.position.distanceToSquared(c); if (d > 196) continue; best.push([d, l]); }
+      best.sort((a, b) => a[0] - b[0]);
+      for (const [, l] of best) { if (n >= 4) break; _imL[n++].set(l.position.x, l.position.y, l.position.z, Math.min(2, l.intensity)); } }
+  },
+};
+ImmMotes.init();
+
+// THE HOLLOW WOODS, after dark: fireflies over the grass, near the camp and in the clearings
+const ImmFlies = {
+  pts: null, N: 36, base: null,
+  init() {
+    const g = new T.BufferGeometry(), N = this.N, P = new Float32Array(N * 3), S = new Float32Array(N); this.base = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) { this.base[i * 3] = rand(-14, 14); this.base[i * 3 + 1] = rand(0.3, 2.2); this.base[i * 3 + 2] = rand(-14, 14); S[i] = Math.random(); }
+    g.setAttribute('position', new T.BufferAttribute(P, 3)); g.setAttribute('seed', new T.BufferAttribute(S, 1));
+    const m = new T.ShaderMaterial({ uniforms: { uT: { value: 0 }, uK: { value: 0 }, uScale: { value: 300 } }, transparent: true, depthWrite: false, blending: T.AdditiveBlending,
+      vertexShader: 'attribute float seed; uniform float uT; uniform float uScale; varying float vB; void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mv;\n' +
+        ' float b = pow(max(0.0, sin(uT * (0.7 + seed * 0.9) + seed * 37.0)), 6.0); vB = b; gl_PointSize = clamp(uScale * 0.05 / -mv.z, 1.5, 9.0) * (0.5 + 0.5 * b); }',
+      fragmentShader: 'uniform float uK; varying float vB; void main() { vec2 c = gl_PointCoord - 0.5; float d = dot(c, c); if (d > 0.25) discard; float a = (1.0 - d * 4.0); a *= a; gl_FragColor = vec4(vec3(0.75, 1.0, 0.45) * a * vB * uK, 1.0); }' });
+    this.pts = new T.Points(g, m); this.pts.frustumCulled = false; this.pts.visible = false; this.pts.userData.global = true; scene.add(this.pts);
+  },
+  frame(dt) {
+    if (!this.pts) return;
+    const on = Game.mode === 'woods' && typeof Nights !== 'undefined' && Game.state === 'playing' && settings.quality !== 'low' && !Cine.cctvOn(), k = on ? clamp((Nights.dk || 0) * 1.4 - 0.4, 0, 1) : 0;
+    this.pts.visible = k > 0.01; if (!this.pts.visible) return;
+    const P = this.pts.geometry.attributes.position, A = P.array, B = this.base, c = player.pos, t = Game.time;
+    if (!(Math.abs(c.x - (this.cx || 0)) + Math.abs(c.z - (this.cz || 0)) < 60)) for (let i = 0; i < this.N; i++) { B[i * 3] = c.x + rand(-14, 14); B[i * 3 + 2] = c.z + rand(-14, 14); } // (a new place: scattered round you at once)
+    this.cx = c.x; this.cz = c.z;
+    for (let i = 0; i < this.N; i++) { // (each drifts round its own spot, which stays within 14 m of you)
+      let bx = B[i * 3], bz = B[i * 3 + 2];
+      if (bx - c.x > 14) bx -= 28; else if (c.x - bx > 14) bx += 28; if (bz - c.z > 14) bz -= 28; else if (c.z - bz > 14) bz += 28; B[i * 3] = bx; B[i * 3 + 2] = bz;
+      A[i * 3] = bx + Math.sin(t * 0.31 + i * 1.7) * 0.9; A[i * 3 + 1] = B[i * 3 + 1] + Math.sin(t * 0.47 + i) * 0.35; A[i * 3 + 2] = bz + Math.cos(t * 0.27 + i * 2.3) * 0.9;
+    }
+    P.needsUpdate = true; const U = this.pts.material.uniforms; U.uT.value = t; U.uK.value = k; U.uScale.value = renderer.domElement.height * 0.5;
+  },
+};
+ImmFlies.init();
+
+/* ---------------- each place its own ---------------- */
+// Light hanging in the air under the ceiling lights (more in the Gallery's spotlit halls and the Hive's labs, none outdoors or on a camera's picture).
+const IMM_SHAFT = { night: 0.045, photos: 0.045, endless: 0.045, descent: 0.045, watch: 0.04, hunt: 0.035, gallery: 0.065, hive: 0.06, blackout: 0.055, root: 0.05, escape: 0.05 };
+const _isM = new T.Matrix4(), _isQ = new T.Quaternion(), _isS = new T.Vector3(), _isP = new T.Vector3(), _isC = new T.Color();
+const ImmShafts = {
+  mesh: null, N: 24, n: 0,
+  init() {
+    const geo = new T.CylinderGeometry(0.2, 1.0, 1, 18, 1, true); geo.translate(0, -0.5, 0); // (the lamp at the top, the floor at −1: scaled to the room's height)
+    const mat = new T.ShaderMaterial({ uniforms: { uK: { value: 0 }, uFog: { value: 0.07 } }, transparent: true, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide,
+      vertexShader: 'varying float vT; varying vec3 vCol; varying float vF; varying float vD;\n' +
+        'void main() { vT = -position.y; vec4 w = modelMatrix * instanceMatrix * vec4(position, 1.0); vec3 ax = (modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;\n' +
+        '  vec3 n = normalize(vec3(w.x - ax.x, 0.0, w.z - ax.z) + vec3(1e-5)), v = normalize(cameraPosition - w.xyz); vF = abs(dot(n, v));\n' +
+        '#ifdef USE_INSTANCING_COLOR\n  vCol = instanceColor;\n#else\n  vCol = vec3(1.0);\n#endif\n' +
+        '  vec4 mv = viewMatrix * w; vD = length(mv.xyz); gl_Position = projectionMatrix * mv; }',
+      fragmentShader: 'uniform float uK; uniform float uFog; varying float vT; varying vec3 vCol; varying float vF; varying float vD;\n' +
+        'void main() { float a = uK * pow(1.0 - vT, 1.7) * smoothstep(0.0, 0.06, vT) * (0.2 + 0.8 * vF * vF) * exp(-uFog * uFog * vD * vD * 0.6) * smoothstep(0.4, 1.6, vD);\n' +
+        '  gl_FragColor = vec4(vCol * a, 1.0); }' });
+    this.mesh = new T.InstancedMesh(geo, mat, this.N); this.mesh.instanceColor = new T.InstancedBufferAttribute(new Float32Array(this.N * 3), 3);
+    this.mesh.frustumCulled = false; this.mesh.count = 0; this.mesh.visible = false; this.mesh.renderOrder = 4; this.mesh.userData.global = true; scene.add(this.mesh);
+  },
+  frame() {
+    if (!this.mesh) return;
+    const k = IMM_SHAFT[Game.mode] || 0;
+    if (!k || settings.quality === 'low' || Game.state !== 'playing' || Cine.cctvOn()) { this.mesh.visible = false; this.n = 0; return; }
+    const c = camera.position, cand = [];
+    for (const f of fixtures) { if (f.lvl !== LVL || f.type !== 'main' || !(f.b > 0.04) || f.pos.y < 2.1) continue; const dx = f.pos.x - c.x, dz = f.pos.z - c.z, d = dx * dx + dz * dz; if (d < 324) cand.push([d, f]); }
+    cand.sort((a, b) => a[0] - b[0]);
+    let n = 0;
+    for (const [, f] of cand) {
+      if (n >= this.N) break;
+      _isM.compose(_isP.set(f.pos.x, f.pos.y - 0.04, f.pos.z), _isQ.set(0, 0, 0, 1), _isS.set(1, Math.max(1.2, f.pos.y - 0.05), 1)); this.mesh.setMatrixAt(n, _isM);
+      _isC.copy(f.pc || f.color).multiplyScalar(f.b); this.mesh.setColorAt(n, _isC); n++;
+    }
+    this.n = n; this.mesh.count = n; this.mesh.visible = n > 0;
+    if (n) { this.mesh.instanceMatrix.needsUpdate = true; this.mesh.instanceColor.needsUpdate = true; }
+    const U = this.mesh.material.uniforms; U.uK.value = k; U.uFog.value = scene.fog ? scene.fog.density : 0.05;
+  },
+};
+ImmShafts.init();
+
+// Sparks: now and then a dead or stuttering ceiling light near you spits a shower of them (the Blackout's broken station most of all)
+const IMM_SPARK = { night: [24, 48], photos: [24, 48], endless: [22, 44], descent: [24, 48], blackout: [7, 15], hive: [16, 32], root: [20, 40], escape: [18, 36] };
+const ImmSparks = {
+  pts: null, N: 42, V: null, life: 0, t: 14, at: new T.Vector3(), flash: 0, n: 0,
+  init() {
+    const g = new T.BufferGeometry(), P = new Float32Array(this.N * 3), S = new Float32Array(this.N); this.V = new Float32Array(this.N * 3);
+    for (let i = 0; i < this.N; i++) S[i] = Math.random();
+    g.setAttribute('position', new T.BufferAttribute(P, 3)); g.setAttribute('seed', new T.BufferAttribute(S, 1));
+    const m = new T.ShaderMaterial({ uniforms: { uA: { value: 0 }, uScale: { value: 300 } }, transparent: true, depthWrite: false, blending: T.AdditiveBlending,
+      vertexShader: 'attribute float seed; uniform float uScale; uniform float uA; varying float vK; void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mv; vK = clamp(uA * 1.6 - seed * 0.6, 0.0, 1.0); gl_PointSize = clamp(uScale * (0.012 + seed * 0.01) / -mv.z, 1.0, 5.0); }',
+      fragmentShader: 'varying float vK; void main() { vec2 c = gl_PointCoord - 0.5; float d = dot(c, c); if (d > 0.25 || vK <= 0.0) discard; gl_FragColor = vec4(mix(vec3(1.0, 0.45, 0.12), vec3(1.0, 0.95, 0.8), vK) * vK * (1.0 - d * 4.0), 1.0); }' });
+    this.pts = new T.Points(g, m); this.pts.frustumCulled = false; this.pts.visible = false; this.pts.userData.global = true; scene.add(this.pts);
+  },
+  burst(p) {
+    const A = this.pts.geometry.attributes.position.array, V = this.V; this.at.copy(p); this.at.y -= 0.06;
+    for (let i = 0; i < this.N; i++) { A[i * 3] = p.x + rand(-0.05, 0.05); A[i * 3 + 1] = p.y - 0.06; A[i * 3 + 2] = p.z + rand(-0.05, 0.05); const a = rand(0, TAU), s = rand(0.3, 1.8); V[i * 3] = Math.cos(a) * s; V[i * 3 + 1] = rand(-0.6, 1.4); V[i * 3 + 2] = Math.sin(a) * s; }
+    this.life = 1.1; this.flash = 1; this.n++; Sound.sparks(this.at);
+  },
+  frame(dt) {
+    if (!this.pts) return;
+    const R = IMM_SPARK[Game.mode];
+    if (R && Game.state === 'playing' && settings.quality !== 'low' && dt > 0 && !Cine.blocking()) {
+      if ((this.t -= dt) <= 0) {
+        this.t = rand(R[0], R[1]);
+        const c = player.pos, cand = [];
+        for (const f of fixtures) { if (f.lvl !== LVL || f.type !== 'main' || !(f.mode === 'dead' || f.mode === 'flicker' || f.b < 0.1)) continue; const d = Math.hypot(f.pos.x - c.x, f.pos.z - c.z); if (d > 2.5 && d < 12) cand.push(f); }
+        if (cand.length) this.burst(pick(cand).pos);
+      }
+    }
+    if (this.life > 0 && dt > 0) {
+      this.life -= dt; const A = this.pts.geometry.attributes.position.array, V = this.V;
+      for (let i = 0; i < this.N; i++) { V[i * 3 + 1] -= 9.8 * dt; A[i * 3] += V[i * 3] * dt; A[i * 3 + 2] += V[i * 3 + 2] * dt; A[i * 3 + 1] += V[i * 3 + 1] * dt; if (A[i * 3 + 1] < 0.02) { A[i * 3 + 1] = 0.02; V[i * 3 + 1] *= -0.3; V[i * 3] *= 0.6; V[i * 3 + 2] *= 0.6; } }
+      this.pts.geometry.attributes.position.needsUpdate = true;
+      const U = this.pts.material.uniforms; U.uA.value = clamp(this.life, 0, 1); U.uScale.value = renderer.domElement.height * 0.5;
+    }
+    this.pts.visible = this.life > 0 && Game.state === 'playing';
+    this.flash = Math.max(0, this.flash - dt * 6);
+  },
+};
+ImmSparks.init();
+{ // (the shower lights the room for an instant — through the effects light, only when no fire or flare needs it; never with Reduce flashing)
+  const wl = Weapons.updateLight;
+  Weapons.updateLight = function () { const r = wl.apply(this, arguments); if (!(fxLight.intensity > 0) && ImmSparks.flash > 0.02 && !settings.noFlash) { fxLight.position.copy(ImmSparks.at); fxLight.color.setHex(0xcfe0ff); fxLight.intensity = 1.8 * ImmSparks.flash * (Math.random() < 0.6 ? 1 : 0.25); fxLight.distance = 6.5; } return r; };
+}
+
+// Your breath, where it's cold: a puff in front of you with every breath out (faster when you've run) — the Root, the Blackout's dead station, the woods after dark
+const ImmBreath = {
+  P: [], cyc: null, own: 0, n: 0,
+  init() {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x = cv.getContext('2d'), gr = x.createRadialGradient(32, 32, 2, 32, 32, 31);
+    gr.addColorStop(0, 'rgba(255,255,255,0.9)'); gr.addColorStop(0.45, 'rgba(255,255,255,0.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+    const tex = new T.CanvasTexture(cv);
+    for (let i = 0; i < 3; i++) { const s = new T.Sprite(new T.SpriteMaterial({ map: tex, color: 0xd6dbe2, transparent: true, depthWrite: false, opacity: 0, fog: true })); s.visible = false; s.userData.global = true; s.userData.v = new T.Vector3(); s.userData.age = 9; s.renderOrder = 6; scene.add(s); this.P.push(s); }
+  },
+  cold() { const m = Game.mode; return m === 'root' || m === 'blackout' || (m === 'woods' && typeof Nights !== 'undefined' && (Nights.dk || 0) > 0.45); },
+  frame(dt) {
+    if (!this.P.length || !(dt > 0)) return;
+    const p = player, live = this.cold() && settings.quality !== 'low' && Game.state === 'playing' && !p.dead && !p.hidden && !Cine.cur && !Cine.cctvOn() && !immNotGuard();
+    // a breath out: RzBody's breath when it's running, else a slow breath of our own
+    let ph; if (settings.headBob && RzBody.ph) ph = RzBody.ph; else { this.own += dt * (0.26 + clamp(1 - p.stamina, 0, 1) * 0.4) * TAU; ph = this.own; }
+    const cyc = Math.floor(ph / TAU);
+    if (live && this.cyc !== null && cyc !== this.cyc) {
+      const s = this.P.reduce((a, b) => (b.userData.age > a.userData.age ? b : a)), f = p.forward(new T.Vector3());
+      s.position.set(camera.position.x + f.x * 0.3, camera.position.y - 0.1 + f.y * 0.3, camera.position.z + f.z * 0.3);
+      s.userData.v.set(p.vel.x * 0.7 + f.x * 0.22, 0.07, p.vel.z * 0.7 + f.z * 0.22); s.userData.age = 0; s.userData.k = 0.12 + clamp(1 - p.stamina, 0, 1) * 0.08; this.n++;
+    }
+    this.cyc = cyc;
+    const lit = p.flashOn && p.flashOn() ? 1 : 0.5;
+    for (const s of this.P) {
+      const u = s.userData; u.age += dt; const k = u.age / 1.7;
+      if (k >= 1 || !live) { s.visible = false; s.material.opacity = 0; continue; }
+      s.position.addScaledVector(u.v, dt); u.v.multiplyScalar(Math.exp(-dt * 1.6));
+      s.scale.setScalar(0.1 + 0.5 * Math.sqrt(k)); s.material.opacity = u.k * lit * Math.pow(1 - k, 1.6) * Math.min(1, k * 8); s.visible = true;
+    }
+  },
+};
+ImmBreath.init();
+
+// THE HUNT: the Warden's own hands, not boxes — long, pale, bony, a joint too many in every finger, black nails
+const ImmClaws = {
+  done: false,
+  rebuild(H) {
+    if (this.done || !H.claws) return; this.done = true;
+    const col = ORG.skinCol(0xd2c8bc, 0x5e4e46, { scale: 9, ends: 0.3, blot: 0.6 }), nailCol = () => [0.1, 0.085, 0.075];
+    const skin = ORG.mat('imm_claw', { tex: 'skin', shine: 24, spec: 0x2a2624, emissive: 0x241c18 }), nails = ORG.mat('imm_nail', { tex: 'smooth', shine: 70, spec: 0x5a5650, emissive: 0x060504 });
+    H.claws.forEach((arm, i) => {
+      const sd = i ? 1 : -1;
+      for (const c of arm.children.slice()) { arm.remove(c); if (c.geometry) c.geometry.dispose(); }
+      const sk = [], nl = [];
+      const knob = (u, v) => 0.0035 * Math.exp(-Math.pow((v - 0.86) / 0.05, 2)) + 0.0018 * Math.sin(u * TAU * 3) * Math.exp(-Math.pow((v - 0.5) / 0.3, 2)); // (the wrist bone; tendons)
+      sk.push(ORG.tube([[0, 0.006, 0.36], [0, 0.002, 0.12], [0, -0.004, -0.12], [0, 0, -0.26]], [[0.04, 0.046], [0.036, 0.042], [0.028, 0.034], [0.025, 0.031]], { seg: 14, sub: 4, cap0: false, col, disp: knob }));
+      sk.push(ORG.tube([[0, 0, -0.245], [0, -0.003, -0.305], [0, -0.007, -0.352]], [[0.022, 0.042], [0.019, 0.048], [0.016, 0.044]], { seg: 12, sub: 3, col }));
+      [[-0.034, 1.0], [-0.011, 1.1], [0.012, 1.06], [0.034, 0.9]].forEach(([fx, L]) => {
+        const z0 = -0.345, pts = [0, 0.07, 0.135, 0.19, 0.235].map((d, k) => [fx * (1 + k * 0.14), -0.004 - [0, 0.006, 0.016, 0.03, 0.048][k] * L, z0 - d * L]);
+        const knuck = (u, v) => 0.0024 * (Math.exp(-Math.pow((v - 0.3) / 0.05, 2)) + Math.exp(-Math.pow((v - 0.57) / 0.05, 2)) + Math.exp(-Math.pow((v - 0.8) / 0.045, 2)));
+        sk.push(ORG.tube(pts, [0.0112, 0.0102, 0.0092, 0.0079, 0.0064], { seg: 9, sub: 3, cap1: false, col, disp: knuck }));
+        const e = pts[4], d = [e[0] - pts[3][0], e[1] - pts[3][1], e[2] - pts[3][2]], dl = Math.hypot(d[0], d[1], d[2]) || 1;
+        nl.push(ORG.spike(e, [e[0] + d[0] / dl * 0.05, e[1] + d[1] / dl * 0.05 - 0.016, e[2] + d[2] / dl * 0.05], 0.0068, { col: nailCol, bend: [0, -0.008, 0] }));
+      });
+      const th = [[-sd * 0.024, -0.004, -0.27], [-sd * 0.046, -0.012, -0.315], [-sd * 0.054, -0.024, -0.356], [-sd * 0.05, -0.038, -0.388]];
+      sk.push(ORG.tube(th, [0.0125, 0.011, 0.0095, 0.008], { seg: 9, sub: 3, cap1: false, col }));
+      nl.push(ORG.spike(th[3], [th[3][0] + sd * 0.004, th[3][1] - 0.03, th[3][2] - 0.034], 0.0072, { col: nailCol }));
+      arm.add(new T.Mesh(ORG.merge(sk), skin)); arm.add(new T.Mesh(ORG.merge(nl), nails));
+    });
+  },
+};
+{ const hb0 = Hunt.build; Hunt.build = function () { const first = !this.built, r = hb0.apply(this, arguments); if (first) try { ImmClaws.rebuild(this); } catch (e) { console.warn('immersion: claws', e); } return r; }; }
+
+/* ---------------- the weight of your head ---------------- */
+// Break into a run and your head lags back a touch; pull up hard and it tips forward. (Head bob off: none.)
+const ImmCam = {
+  vf: 0, a: 0, k: 0,
+  frame(dt) {
+    const p = player;
+    if (!settings.headBob || !(dt > 0) || Game.state !== 'playing' || Cine.cur || immNotGuard() || p.dead || p.hidden) { this.k = damp(this.k, 0, 10, Math.max(dt, 0.016)); this.vf = 0; this.a = 0; return this.k; }
+    const f = -(p.vel.x * Math.sin(p.yaw) + p.vel.z * Math.cos(p.yaw)), a = clamp((f - this.vf) / dt, -30, 30); this.vf = f;
+    this.a = damp(this.a, a, 7, dt); this.k = damp(this.k, clamp(this.a * 0.0015, -0.028, 0.028), 9, dt);
+    return this.k;
+  },
+};
+
+/* ---------------- wiring ---------------- */
+{
+  const st = document.createElement('style'); st.id = 'imm-css'; st.textContent = IMM_HUD_CSS; document.head.appendChild(st);
+  // your body is drawn only in your own eyes: shown for the main picture, hidden for every other (cameras, the picture-in-picture, the shadow maps' own passes don't see it either: it casts none)
+  const rr = renderer.render, rc = renderer.compile;
+  renderer.render = function (s, c) { const b = ImmBody.g; if (b) b.visible = !!(ImmBody.on && s === scene && c === camera); try { return rr.apply(this, arguments); } finally { if (b) b.visible = false; } };
+  renderer.compile = function (s) { const b = ImmBody.g; if (b && s === scene) b.visible = true; try { return rc.apply(this, arguments); } finally { if (b) b.visible = false; } }; // (its materials ready before it's first seen)
+  // hold Tab: everything, for as long as you hold it
+  addEventListener('keydown', e => { if (e.code !== 'Tab' || Game.state !== 'playing') return; e.preventDefault(); if (!ImmHud.tab) { ImmHud.tab = true; ImmHud.dirty = true; } }, true);
+  addEventListener('keyup', e => { if (e.code === 'Tab' && ImmHud.tab) { ImmHud.tab = false; ImmHud.dirty = true; } }, true);
+  addEventListener('blur', () => { if (ImmHud.tab) { ImmHud.tab = false; ImmHud.dirty = true; } });
+  // [M] in Immersive or Minimal: the map comes up and goes again (and is remembered for the next run)
+  const tm = UI.toggleMap;
+  UI.toggleMap = function () { const r = tm.apply(this, arguments); if (ImmHud.mode() !== 'full') ImmHud.mapPref = this.mapVisible; return r; };
+  const gr = Game.render; // (outermost: the frame's lens settings are ready before the frame is drawn and put through the lens)
+  Game.render = function (dt) {
+    let ck = 0;
+    try { Imm.frame(dt || 0); Post.fx = Imm.fx; ImmHud.frame(dt || 0); ImmWorld.frame(dt || 0); ImmMotes.frame(); ImmFlies.frame(dt || 0); ck = ImmCam.frame(dt || 0); } catch (e) { console.warn('immersion', e); }
+    try { ImmShafts.frame(); ImmSparks.frame(dt || 0); ImmBreath.frame(dt || 0); } catch (e) { console.warn('immersion: places', e); }
+    try { ImmBody.frame(dt || 0); } catch (e) { ImmBody.on = false; console.warn('immersion: body', e); }
+    player.pitch += ck; // (the head's lag rides on the camera for this frame only, like the breath and the lean)
+    try { return gr.apply(this, arguments); } finally { player.pitch -= ck; }
+  };
+  const pu = Preview.update; // (behind the title: the plain lens, a gentle haze)
+  Preview.update = function () { Post.fx = null; IM_FOG[0] = (performance.now() / 1000) % 10000; IM_FOG[1] = settings.quality === 'low' ? 0 : 0.5; IM_FOG[2] = -0.28; IM_FOG[3] = 0.2; return pu.apply(this, arguments); };
+  const ng = Game.newGame;
+  Game.newGame = function () { const r = ng.apply(this, arguments); Imm.reset(); ImmHud.start(); ImmWorld.t = rand(6, 14); try { if (ImmBody.cid !== (Chars.run || 'guard')) ImmBody.build(); } catch (e) { } return r; };
+}
+{ // Settings → HUD · Motion blur · Your body
+  const seg = (id, key, after) => { const el = $(id); if (!el) return () => { }; const draw = () => el.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === settings[key])); draw();
+    el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { settings[key] = b.dataset.v; draw(); saveSettings(); Sound.ui(); if (after) after(); })); return draw; };
+  const tog = (id, key, after) => { const el = $(id); if (!el) return () => { }; const draw = () => { el.textContent = settings[key] ? 'ON' : 'OFF'; el.classList.toggle('on', !!settings[key]); }; draw();
+    el.addEventListener('click', () => { settings[key] = !settings[key]; draw(); saveSettings(); Sound.ui(); if (after) after(); }); return draw; };
+  const d1 = seg('set-hud', 'hudMode', () => { if (Imm.hudApply) Imm.hudApply(); }), d2 = tog('set-mblur', 'motionBlur'), d3 = tog('set-body', 'fpBody');
+  const rs = $('btn-set-reset'); if (rs) rs.addEventListener('click', () => { d1(); d2(); d3(); if (Imm.hudApply) Imm.hudApply(); });
+}
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -43306,7 +43896,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
+  Object.assign(window.LS, { Imm, IM_FOG, IMM_MODE, ImmHud, ImmBody, ImmWorld, ImmMotes, ImmFlies, ImmCam, ImmShafts, ImmSparks, ImmBreath, ImmClaws, dustMat, Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
   Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Post, RZT, ROOM_LOOK, genPaper, genPlanks, genTilesHQ, genPlasterCeil, genTrimWood, genPortraits, genWoodLeaf, get RZ_GEN_MS() { return RZ_GEN_MS; }, get instLamp() { return instLamp; }, RzContact, RzPBR, RzTorch, RzBody, RzAmb, RZ_SURF, flash, floorKey, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
