@@ -6759,6 +6759,46 @@ const Sound = (function () {
   });
   S.epSplash = safe(function (pos, k) { const t = ctx.currentTime, out = dest(pos || null, 0.2, !!pos); out.gain.value = 0.3 + 0.4 * (k || 0.5); const n = noise(out, t, 0.28, 'bandpass', 900, 1.5, 0.7, 0.01); n.f.frequency.linearRampToValueAtTime(1800, t + 0.2); noise(out, t + 0.05, 0.2, 'lowpass', 500, 1, 0.4, 0.02, brown); });
   S.fwSlosh = safe(function () { const t = ctx.currentTime, out = dest(null, 0); out.gain.value = 0.25; const n = noise(out, t, 0.3, 'bandpass', 600, 2, 0.6, 0.05); n.f.frequency.linearRampToValueAtTime(1100, t + 0.25); });
+  // ---- Build 37 ----
+  // HOMELANDER's eyes: a charge-up, then a hum that holds as long as the beams do (one per guard: 'me' is yours, in your head; the others' sit where they stand), and the sizzle where they land
+  const LZ = new Map();
+  S.laserOn = safe(function (id, pos) {
+    const t = ctx.currentTime, mine = id === 'me';
+    if (LZ.has(id)) { const L = LZ.get(id); if (mine || !pos || !L.at || Math.hypot(pos.x - L.at.x, pos.z - L.at.z) < 3) return; S.laserOff(id, true); } // (a teammate who walked away while firing: start the sound again where they are now)
+    const out = mine ? dest(null, 0.05) : dest(pos, 0.15, true); out.gain.value = mine ? 0.42 : 0.6;
+    const g = ctx.createGain(); g.gain.value = 0.0001; g.connect(out);
+    const saw1 = ctx.createOscillator(), saw2 = ctx.createOscillator(); saw1.type = saw2.type = 'sawtooth'; saw1.frequency.value = 96; saw2.frequency.value = 97.6;
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1400; bp.Q.value = 1.6; saw1.connect(bp); saw2.connect(bp); bp.connect(g);
+    const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 7.5; lg.gain.value = 650; lfo.connect(lg); lg.connect(bp.frequency);
+    const sub = ctx.createOscillator(), sg = ctx.createGain(); sub.type = 'sine'; sub.frequency.value = 48; sg.gain.value = 0.55; sub.connect(sg); sg.connect(g);
+    const wh = ctx.createOscillator(), wg = ctx.createGain(), vib = ctx.createOscillator(), vg = ctx.createGain(); wh.type = 'sine'; wh.frequency.value = 2350; wg.gain.value = 0.07; vib.frequency.value = 11; vg.gain.value = 40; vib.connect(vg); vg.connect(wh.frequency); wh.connect(wg); wg.connect(g);
+    const cr = ctx.createBufferSource(); cr.buffer = white; cr.loop = true; const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 3800; const cg = ctx.createGain(); cg.gain.value = 0.22; cr.connect(hp); hp.connect(cg); cg.connect(g);
+    for (const o of [saw1, saw2, lfo, sub, wh, vib, cr]) o.start(t);
+    g.gain.exponentialRampToValueAtTime(1, t + 0.06);
+    tone(out, t, 'sine', 380, 2600, 0.16, 0.5, 0.004); noise(out, t, 0.12, 'bandpass', 2400, 2, 0.6, 0.002); tone(out, t, 'sine', 70, 40, 0.3, 0.8, 0.004); // (the charge: a rising whine and a thump in the chest)
+    LZ.set(id, { nodes: [saw1, saw2, lfo, sub, wh, vib, cr], g, at: pos ? { x: pos.x, z: pos.z } : null });
+  });
+  S.laserOff = safe(function (id, quick) {
+    const L = LZ.get(id); if (!L) return; LZ.delete(id);
+    const t = ctx.currentTime; L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(L.g.gain.value, t); L.g.gain.exponentialRampToValueAtTime(0.0001, t + (quick ? 0.04 : 0.16));
+    setTimeout(() => { for (const o of L.nodes) { try { o.stop(); } catch (e) { } } }, quick ? 120 : 300);
+  });
+  S.laserBurn = safe(function (pos, flesh) { const t = ctx.currentTime, out = here(pos, 0.1, flesh ? 0.55 : 0.4); noise(out, t, 0.12, 'bandpass', flesh ? 1300 : 3200, 1.2, 0.8, 0.004); noise(out, t + 0.03, 0.08, 'highpass', 5200, 0.7, 0.45, 0.002); if (flesh) noise(out, t, 0.18, 'lowpass', 520, 0.8, 0.5, 0.01, brown); });
+  // POPPY BUTT FACE: the throw (a long, wet fart), the flight, the landing (a splat — and if it was a monster, a very final bonk)
+  S.poopThrow = safe(function (pos) {
+    const t = ctx.currentTime, out = here(pos || null, 0.15, pos ? 0.8 : 0.6);
+    const o = ctx.createOscillator(), g = ctx.createGain(), bp = ctx.createBiquadFilter(), w = ctx.createOscillator(), wg = ctx.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(92, t); o.frequency.exponentialRampToValueAtTime(58, t + 0.55); w.frequency.value = 23; wg.gain.value = 18; w.connect(wg); wg.connect(o.frequency);
+    bp.type = 'bandpass'; bp.frequency.value = 340; bp.Q.value = 2.2; o.connect(bp); bp.connect(g); g.connect(out); env(g.gain, t, 0.02, 0.9, 0.55);
+    o.start(t); w.start(t); o.stop(t + 0.65); w.stop(t + 0.65);
+    noise(out, t, 0.5, 'bandpass', 600, 1.5, 0.35, 0.02, brown); noise(out, t + 0.5, 0.14, 'bandpass', 1500, 1, 0.3, 0.01); // (a whoosh as it leaves your hand)
+  });
+  S.poopSplat = safe(function (pos, kill) {
+    const t = ctx.currentTime, out = here(pos, 0.25, kill ? 1.1 : 0.8);
+    noise(out, t, 0.22, 'lowpass', 900, 0.9, 1, 0.002, brown); noise(out, t, 0.09, 'bandpass', 2200, 1.2, 0.6, 0.001); tone(out, t, 'sine', 240, 70, 0.18, 0.7, 0.002);
+    for (let i = 0; i < 4; i++) noise(out, t + 0.12 + i * 0.07 + rand(0, 0.03), 0.05, 'bandpass', rand(700, 1600), 3, 0.3, 0.002, brown); // (bits landing)
+    if (kill) { tone(out, t + 0.05, 'square', 520, 130, 0.35, 0.35, 0.003); tone(out, t + 0.05, 'sine', 1046, 1046, 0.5, 0.25, 0.002); tone(out, t + 0.15, 'sine', 1568, 1568, 0.6, 0.2, 0.002); }
+  });
   return S;
 })();
 
@@ -11486,8 +11526,10 @@ const Cine = {
 /* sign the relay's own "host disconnected" notice (that is only ever  */
 /* taken as a hint to look for the host again).                        */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 32, BUILD = 36, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
+const NET_PROTO = 33, BUILD = 37, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+// (in order of preference: a friend joins through the first of these that has the room. Build 37: two on port 443 — the only port many school and
+//  work networks let through — mqtt.eclipseprojects.io and shiftr.io's public broker, which wants a login: user:pass@ in the address goes into MQTT's own)
+const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://test.mosquitto.org:8081/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://public:public@public.cloud.shiftr.io/'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
 const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 12-character room codes.';
@@ -11586,7 +11628,9 @@ function mqPack(head, parts) { // fixed header + remaining length + the parts
 }
 class Relay {
   constructor(url) {
-    this.url = url; this.name = url.replace(/^wss?:\/\//, '').replace(/[:/].*$/, '');
+    const cr = /^(wss?:\/\/)([^:@/]+):([^@/]*)@(.*)$/.exec(url); // (a login in the address: kept out of the WebSocket's URL, sent in MQTT's CONNECT)
+    this.url = url; this.wsUrl = cr ? cr[1] + cr[4] : url; this.user = cr ? decodeURIComponent(cr[2]) : ''; this.pass = cr ? decodeURIComponent(cr[3]) : '';
+    this.name = this.wsUrl.replace(/^wss?:\/\//, '').replace(/[:/].*$/, '');
     this.ws = null; this.ok = false; this.up = false; this.closed = false; this.connecting = false; this.will = null; this.abort = null; this.connack = null;
     this.pid = 0; this.subs = new Map(); this.onmsg = null; this.onlost = null; this.finder = null; this.buf = null;
     this.heard = 0; this.said = 0; this.pinged = 0; this.retryIn = 0; this.retryTimer = 0;
@@ -11607,11 +11651,11 @@ class Relay {
       this.abort = () => end(new Error('closed'));
       this.connack = rc => end(rc ? new Error('refused (' + rc + ')') : null);
       timer = setTimeout(() => end(new Error('timeout')), 9000);
-      try { ws = this.ws = new WebSocket(this.url, 'mqtt'); } catch (e) { end(e); return; }
+      try { ws = this.ws = new WebSocket(this.wsUrl, 'mqtt'); } catch (e) { end(e); return; }
       ws.binaryType = 'arraybuffer';
-      ws.onopen = () => { // CONNECT: clean session, keep-alive 30 s, and a "will" the server publishes if we vanish
-        const w = this.will;
-        this.send(mqPack(0x10, [mqStr('MQTT'), [4, w ? 0x26 : 0x02, 0, 30], mqStr('ls' + rid(14))].concat(w ? [mqStr(w.t), mqStr(w.p)] : [])));
+      ws.onopen = () => { // CONNECT: clean session, keep-alive 30 s, a "will" the server publishes if we vanish — and the relay's login, if it wants one
+        const w = this.will, u = !!this.user;
+        this.send(mqPack(0x10, [mqStr('MQTT'), [4, (w ? 0x26 : 0x02) | (u ? 0xC0 : 0), 0, 30], mqStr('ls' + rid(14))].concat(w ? [mqStr(w.t), mqStr(w.p)] : [], u ? [mqStr(this.user), mqStr(this.pass)] : [])));
       };
       ws.onmessage = e => { if (this.ws === ws && e.data instanceof ArrayBuffer) this.data(new Uint8Array(e.data)); };
       ws.onerror = () => { };
@@ -11872,7 +11916,7 @@ class RemotePlayer {
     if (a.length > 15) {
       const cid = Chars.byIdx(a[10]); if (cid !== this.charId) this.setChar(cid);
       this.maxHp = clamp(a[15] | 0, 1, 400); this.stam = clamp((a[11] | 0) / 100, 0, 1); // (Build 20: up to 400 — THE ARCHITECT has 300)
-      this.abCd = clamp((a[12] | 0) / 10, 0, 120); this.abAct = clamp((a[13] | 0) / 10, 0, 60); this.buffs = (a[14] | 0) & 0xffff;
+      this.abCd = clamp((a[12] | 0) / 10, 0, 120); this.abAct = clamp((a[13] | 0) / 10, 0, 60); this.buffs = (a[14] | 0) & 0xffffff; // (all 24 kinds: Build 37 — it was cut to the first 16, so a teammate never saw the newer ones)
     }
     this.hp = clamp(a[7] | 0, 0, this.maxHp);
     if (Net.isHost) { Health.report(this, this.hp); if (Number.isFinite(this.ahp)) this.hp = Math.min(this.hp, Math.ceil(this.ahp)); } // (the host's count wins)
@@ -11919,7 +11963,7 @@ const Net = {
   byCid: new Map(),     // host: the same links, by connection id
   goneCids: new Set(),  // host: friends we had to let go of
   relays: [], relay: null, // relay servers: the host keeps the room open on all it can reach; a friend uses one
-  code: '', tag: '', hk: null, octr: 0, cctr: 0, ictr: { a: 0, c: 0 }, hctr: new Map(), cid: '', hid: '', epoch: 0, tok: null, welcomed: false, recovering: false, hiccup: false, joinAt: 0, nextTry: 0, goneAt: 0,
+  code: '', tag: '', hk: null, octr: 0, cctr: 0, ictr: { a: 0, c: 0 }, hctr: new Map(), cid: '', hid: '', epoch: 0, tok: null, welcomed: false, recovering: false, hiccup: false, joinAt: 0, nextTry: 0, goneAt: 0, badRelays: new Set(), reached: 0,
   nextId: 1, sendT: 0, kaT: 0, snapSeq: 0, lastSeq: 0, lastPing: 0, pings: [], lights: [], self: null, teamT: 0, busy: false,
   get active() { return this.role !== 'solo'; },
   get isHost() { return this.role === 'host'; },
@@ -11990,9 +12034,9 @@ const Net = {
     r.onmsg = (t, s) => this.onRelayMsg(r, t, s);
     try { await r.sub(this.T() + 'h'); await r.sub(this.T() + 'p'); } catch (e) { if (r.ok) r.drop(); else this.relayLost(r); return; } // (and its own notice: so it notices when someone overwrites it)
     if (!this.isHost || this.relays.indexOf(r) < 0) return;
-    r.retryIn = 0; r.up = true; this.presence(r); this.lobbyUpdate();
+    r.retryIn = 0; r.up = true; r.upAt = performance.now(); r.echoAt = 0; this.presence(r); this.lobbyUpdate();
   },
-  presence(r) { if (r.ok) { r.presStr = this.seal('p', JSON.stringify({ v: NET_PROTO, b: BUILD, h: this.hid, n: this.myName, g: this.inGame ? 1 : 0 })); r.pub(this.T() + 'p', r.presStr, true); } },
+  presence(r) { if (r.ok) { if (r.presStr) (r.presOld || (r.presOld = [])).unshift(r.presStr); if (r.presOld && r.presOld.length > 4) r.presOld.length = 4; r.presStr = this.seal('p', JSON.stringify({ v: NET_PROTO, b: BUILD, h: this.hid, n: this.myName, g: this.inGame ? 1 : 0 })); r.pub(this.T() + 'p', r.presStr, true); } },
   relayLost(r) {
     if (this.isClient) { if (r === this.relay) this.recover('relay'); return; }
     if (!this.isHost || this.relays.indexOf(r) < 0 || r.retryTimer || r.closed) return;
@@ -12010,7 +12054,7 @@ const Net = {
     if (len !== CODE_LEN) throw new Error('Type the whole room code from the host — 12 letters and numbers, like ABCD-EFGH-JKLM — or just open their invite link.');
     this.leave();
     const tok = this.tok = {};
-    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code; this.cid = rid(10); this.epoch = 0; this.cctr = 0; this.ictr = { a: 0, c: 0 };
+    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code; this.cid = rid(10); this.epoch = 0; this.cctr = 0; this.ictr = { a: 0, c: 0 }; this.badRelays = new Set();
     const key = await NetSec.derive(code);
     if (this.tok !== tok) return;
     this.tag = key.tag; this.hk = key.hk;
@@ -12027,31 +12071,48 @@ const Net = {
     this.rel(h, { k: 'hello', v: NET_PROTO, b: BUILD, name: this.myName, c: Chars.idx() });
     this.lobbyUpdate();
   },
-  findRoom(exclude) { // client: ask every relay at once; the first one that has the room wins
-    const T = this.T(), cur = this.relay && this.relay.ok ? this.relay : null, hid = this.hid;
-    const list = this.relayUrls().filter(u => u !== exclude).map(u => (cur && cur.url === u ? cur : new Relay(u)));
+  findRoom(exclude) { // client: ask every relay at once; of those that have the room, the first in RELAYS' order wins
+    const T = this.T(), cur = this.relay && this.relay.ok ? this.relay : null, hid = this.hid, ex = [].concat(exclude || []);
+    const list = this.relayUrls().filter(u => ex.indexOf(u) < 0).map(u => (cur && cur.url === u ? cur : new Relay(u)));
     return new Promise((res, rej) => {
-      let left = list.length, reached = 0, done = false, timer = 0;
+      let left = list.length, reached = 0, done = false, timer = 0, grace = 0;
+      const hits = new Map(), settled = new Set(); // (relay's place in the list → what it had)
+      const best = () => hits.get(Math.min(...hits.keys()));
       const finish = (err, hit) => {
-        if (done) return; done = true; clearTimeout(timer);
+        if (done) return; done = true; clearTimeout(timer); clearTimeout(grace);
         for (const r of list) { r.finder = null; if (r !== cur && (!hit || r !== hit.relay)) r.close(); }
+        this.reached = reached; // (for the lobby: how many relays this network could reach)
         if (err) rej(err); else res(hit);
       };
-      const nothing = () => finish(new Error(!reached ? NO_NET : 'No room with the code ' + this.code + ' is open right now. Check the code, and make sure the host still has the Multiplayer screen open. (You both need Build ' + BUILD + ' — it says on the title screen. If not, refresh with Cmd+Shift+R.)'));
-      const settle = () => { if (--left <= 0) nothing(); };
-      timer = setTimeout(nothing, 15000);
+      const nothing = () => {
+        if (hits.size) { finish(null, best()); return; }
+        const some = reached < list.length && !ex.length ? ' Only ' + reached + ' of the ' + list.length + ' online servers can be reached from this network, so the room may be on one it blocks — a phone hotspot usually gets through.' : '';
+        finish(new Error(!reached ? NO_NET : 'No room with the code ' + this.code + ' is open right now. Check the code, and make sure the host still has the Multiplayer screen open. (You both need Build ' + BUILD + ' — it says on the title screen. If not, refresh with Cmd+Shift+R.)' + some));
+      };
+      const ready = () => { // done as soon as nothing better can still turn up (every relay before the best one so far has answered)
+        if (done || !hits.size) return;
+        const bi = Math.min(...hits.keys());
+        for (let i = 0; i < bi; i++) if (!settled.has(i)) return;
+        finish(null, best());
+      };
+      const settle = i => { if (settled.has(i)) return; settled.add(i); if (--left <= 0) nothing(); else ready(); };
+      timer = setTimeout(nothing, 16000);
       if (!list.length) { nothing(); return; }
-      for (const r of list) {
+      list.forEach((r, i) => {
         r.finder = (t, s) => {
-          if (done || t !== T + 'p' || !s) return;
+          if (done || t !== T + 'p' || !s || hits.has(i)) return;
           const u = this.unseal('p', s); if (!u) return; // (a notice that isn't signed with this room's key is not the host's)
           let p = null; try { p = JSON.parse(u.body); } catch (e) { }
-          if (p && p.h && (!hid || p.h === hid)) finish(null, { relay: r, pres: p });
+          if (!(p && p.h && (!hid || p.h === hid))) return;
+          hits.set(i, { relay: r, pres: p });
+          if (!grace) grace = setTimeout(() => { if (!done && hits.size) finish(null, best()); }, 1800); // (a better relay that's slow to answer gets a moment, no more)
+          settle(i);
         };
+        // the relay hands over the room's notice straight after subscribing; one that doesn't keep notices still passes on the host's next one (every 2 s in the lobby)
         (r.ok ? Promise.resolve() : r.connect(null))
           .then(() => { reached++; return r.sub(T + 'p'); })
-          .then(() => setTimeout(settle, 2500), settle); // the relay hands over the room's notice straight after subscribing
-      }
+          .then(() => setTimeout(() => settle(i), 5500), () => settle(i));
+      });
     });
   },
   async useRelay(r) { // client: talk to the host through this relay
@@ -12068,7 +12129,10 @@ const Net = {
     this.recovering = true; this.lobbyUpdate();
     if (DEBUG) console.log('net: reconnecting (' + why + ')');
     if (this.inGame && this.welcomed && Game.inWorld() && !this.hiccup) { this.hiccup = true; UI.msg('Connection hiccup — reconnecting…', 'warn', 3); }
-    const exclude = why === 'nowelcome' && cur && this.relayUrls().length > 1 ? cur.url : null; // that relay isn't delivering: try the others
+    // (still joining and the host hasn't answered through this relay: it isn't delivering — try the others, every one of them before any comes round again)
+    if (why === 'nowelcome' && cur) this.badRelays.add(cur.url);
+    let exclude = why === 'nowelcome' ? [...this.badRelays] : [];
+    if (exclude.length >= this.relayUrls().length) { this.badRelays.clear(); exclude = cur ? [cur.url] : []; }
     let found = null;
     this.findRoom(exclude).then(hit => { found = hit.relay; return this.tok === tok ? this.useRelay(found) : found.close(); }).then(() => {
       if (this.tok !== tok) return;
@@ -12085,7 +12149,7 @@ const Net = {
   watch(now) { // client: keep an eye on the line to the host
     const h = this.host0(); if (!h || h.dropped) return;
     const quiet = now - h.heard;
-    if (this.welcomed ? quiet > 25000 : now - this.joinAt > 24000) {
+    if (this.welcomed ? quiet > 25000 : now - this.joinAt > 40000) { // (joining: time to try the room on every relay that has it)
       this.lost(this.welcomed ? 'Lost connection to the host — they may have closed the game or lost their internet.' : 'Found the room, but the host isn\'t answering. Ask them to make a new room and send you the new code.');
       return;
     }
@@ -12100,7 +12164,8 @@ const Net = {
     const sub = t.slice(T.length);
     if (this.isHost) {
       if (sub === 'p') { // the room's notice, as the relay now has it: anything but ours (wiped, or replaced) is put right at once
-        if (!r.up || s === r.presStr || r.presT) return;
+        if (s === r.presStr || (r.presOld && r.presOld.indexOf(s) >= 0)) { r.echoAt = performance.now(); return; } // (our own, back again — this one or one of the last few: this relay delivers)
+        if (!r.up || r.presT) return;
         const wait = Math.max(0, 1000 - (performance.now() - (r.presFix || 0))); // (at most once a second: someone flooding the topic can't make us flood it back)
         r.presT = setTimeout(() => { r.presT = 0; if (this.isHost && r.up && this.relays.indexOf(r) >= 0) { r.presFix = performance.now(); this.presence(r); } }, wait);
         return;
@@ -12373,7 +12438,9 @@ const Net = {
     const now = performance.now(), frozen = now - (this.tickAt || now) > 2500; this.tickAt = now;
     for (const r of this.relays) r.tick(now, frozen);
     this.kaT -= dt; const ka = this.kaT <= 0; if (ka) this.kaT = 2;
-    if (this.isHost && now - (this.presAt || 0) > 8000) { this.presAt = now; for (const r of this.relays) if (r.up) this.presence(r); } // (every 8 s anyway: the room's signed notice again)
+    if (this.isHost && now - (this.presAt || 0) > (this.inGame ? 8000 : 2000)) { this.presAt = now; for (const r of this.relays) if (r.up) this.presence(r); } // (the room's signed notice again: every 2 s in the lobby — for a relay that doesn't keep it — and every 8 s in a game)
+    // (host) a relay that hasn't handed our own notice back for 30 s isn't delivering anything: let go of it and connect again
+    if (this.isHost && !frozen) for (const r of this.relays) if (r.up && now - r.upAt > 30000 && now - Math.max(r.echoAt || 0, r.upAt) > 30000) { if (DEBUG) console.log('net: ' + r.name + ' stopped delivering'); r.drop(); }
     for (const peer of [...this.peers.values()]) {
       if (frozen) { peer.heard = Math.max(peer.heard, now - 4000); peer.since = Math.max(peer.since, now - 4000); continue; } // WE were frozen (loading shaders, a hidden tab): don't blame them
       if (this.isHost && now - peer.heard > 20000) { this.dropPeer(peer, 'timeout'); continue; }
@@ -12510,7 +12577,7 @@ const Net = {
     $('mp-choose').hidden = this.active; $('mp-lobby').hidden = !this.active; $('mp-hostbox').hidden = !(this.isHost && this.code);
     if (this.isHost) { const link = this.inviteLink(); $('mp-room').textContent = this.code || '····'; $('mp-link').value = link; $('mp-link').hidden = !link; $('btn-mp-copylink').hidden = !link; }
     $('btn-mp-start').hidden = !this.isHost; $('btn-mp-start').disabled = ready === 0;
-    const via = this.isHost ? (up ? ' · online through ' + up + ' relay server' + (up > 1 ? 's' : '') : '') : this.relay && this.welcomed ? ' · online through ' + this.relay.name : '';
+    const via = this.isHost ? (up ? ' · online through ' + up + ' of ' + this.relays.length + ' relay servers' : '') : this.relay && this.welcomed ? ' · online through ' + this.relay.name : '';
     const mode = this.isClient ? this.sessionMode : settings.mode, daily = this.isClient ? this.sessionDaily : settings.daily;
     $('mp-diff-note').textContent = 'Mode: ' + (MODES[mode] ? MODES[mode].tag + (mode === 'photos' && daily ? ' (DAILY)' : '') : '…') + ' · Difficulty: ' + (this.isClient ? (this.sessionDiff || '…') : settings.difficulty).toUpperCase() + (this.isHost ? ' (difficulty in Settings)' : ' (set by the host)') + via;
     const mm = $('mp-modes'); mm.hidden = !this.isHost;
@@ -18605,6 +18672,8 @@ const CODES = {
   HELLOHORSE: { char: 'horse', text: 'THE HORSE joins your roster — and you are now a horse' },
   // Build 33
   HELLOCHONK: { char: 'chonk', text: 'BIG CHONK joins your roster — the floor will never be the same' },
+  // Build 37: one code, two characters
+  HELLOPOPPY: { chars: ['homelander', 'poppy'], text: 'HOMELANDER (SECRET) and POPPY BUTT FACE (MEME) join your roster' },
 };
 // Build 18: PITY — a run of bad luck can't go on forever. Counted on the save, across every spin you ever make.
 // A spin that hasn't seen this rarity (or a better one) for this many spins in a row is guaranteed it;
@@ -18749,6 +18818,11 @@ const ABIL = {
   // ---- Build 33 ----
   flop: { name: 'BELLY FLOP', icon: 'flop', cd: 30, dur: 0.95, air: 0.95, height: 0.75, hop: 2.6, range: 7.5, dmg: 35, stun: 3, push: 7, loud: 45, stam: 0.2,
     desc: 'Up into the air — and down on everything within 7.5 m: every monster there is crushed (heavy damage), thrown back and flattened for 3 s, anything thrown at you is knocked out of the air and the lights round you burst. You can\'t be hit while you\'re up there. It costs a fifth of your breath, and everything on the floor hears you land.' },
+  // ---- Build 37 ----
+  laser: { name: 'LASER EYES', icon: 'laser', hold: true, cd: 0.6, range: 28, dps: 48, drain: 32, min: 0.1, stg: 0.55, loud: 14,
+    desc: 'HOLD it: two beams of heat straight out of your eyes, wherever you look, for as long as your breath lasts. Whatever they touch burns — 48 damage a second, and it staggers. It eats stamina fast: when you run dry the beams cut out and you have to get your breath back.' },
+  poop: { name: 'POOP', icon: 'poop', cd: 3, range: 24, speed: 17, radius: 1.1,
+    desc: 'Throw a poop wherever you\'re looking. Whatever it lands on is DEAD — one hit, any monster. (It\'s a meme. Don\'t think about it.)' },
 };
 for (const k in ABIL) ABIL[k].id = k;
 // hp: max health · stam: stamina pool (100 = standard) · stamCost: how much sprinting and swinging cost · regen: getting your breath back
@@ -18911,6 +18985,13 @@ const CHARS = {
   chonk: { name: 'BIG CHONK', title: 'THE HEAVYWEIGHT', rarity: null, code: 'HELLOCHONK', role: 'Heavyweight', col: '#d0602e', ab: 'flop', hp: 240, stam: 70, stamCost: 1.3, regen: 0.75, speed: 0.6, noise: 2.4, power: 1.6, dmg: 0.8, heart: 1,
     strength: 'Enormous: 240 HP, takes 20% less damage, hits 60% harder. BELLY FLOP: up into the air and down on everything within 7.5 m — crushed, thrown back and flattened for 3 s.',
     weakness: 'Very slow (40% slower) and LOUD: every step is a stomp the monsters hear from far away. Only 70 stamina — and if it ever runs out, his heart gives out and he dies on the spot, like Bob. Only the code HELLOCHONK gets him.' },
+  // ---- Build 37 (always at the end: a character's place in this list is what goes over the network) ----
+  homelander: { name: 'HOMELANDER', title: 'THE STRONGEST THERE IS', rarity: 'secret', role: 'Laser eyes', col: '#1f4fd8', ab: 'laser', hp: 250, stam: 200, speed: 1.25, power: 1.5, noise: 0.8, dmg: 0.55, regen: 1.6, hpRegen: 2, work: 1.3,
+    strength: 'LASER EYES: hold the key and burn anything you look at with two beams of heat — for as long as your breath lasts. 250 HP, takes 45% less damage, 1.5× the damage, 25% faster, 200 stamina that comes back fast.',
+    weakness: 'The beams drink stamina: hold them too long and you\'re out of breath, beams dead, until it comes back. He is a SECRET: one spin in a hundred thousand — or the right code.' },
+  poppy: { name: 'POPPY BUTT FACE', title: 'THE MEME', rarity: null, code: 'HELLOPOPPY', tag: 'MEME', role: 'Meme', col: '#8a5a2b', ab: 'poop', hp: 100, stam: 100, noise: 1.3,
+    strength: 'POOP: throw it at a monster and the monster is dead. Any monster. One hit.',
+    weakness: 'Smells: 30% louder. Has to actually hit it. A meme character — only a code gets him.' },
 };
 for (const id in CHARS) CHARS[id] = Object.assign({ id }, CHAR_BASE, CHARS[id]);
 const CHAR_IDS = Object.keys(CHARS);                       // (the index is what goes over the network: never reorder)
@@ -18982,6 +19063,7 @@ const Chars = {
       const C = CODES[k]; if (!C) continue;
       coins += C.coins || 0; spins += C.spins || 0; ult += C.ult || 0; ryan += C.ryan || 0;
       if (C.char) D.owned = D.owned.filter(id => id !== C.char);
+      if (Array.isArray(C.chars)) D.owned = D.owned.filter(id => C.chars.indexOf(id) < 0);
       if (C.secret) { const sec = D.owned.filter(id => CHARS[id] && CHARS[id].rarity === 'secret'); if (sec.length) { const id = sec[sec.length - 1]; D.owned = D.owned.filter(x => x !== id); D.secrets = Math.max(0, D.secrets - 1); } else coins += RARITY.secret.dupe; }
     }
     D.coins = Math.max(0, D.coins - coins); D.freeSpins = Math.max(0, D.freeSpins - spins); D.ultSpins = Math.max(0, D.ultSpins - ult); D.ryanSpins = Math.max(0, D.ryanSpins - ryan);
@@ -19018,7 +19100,13 @@ const Chars = {
     }
     if (C.owner) { D.owned = CHAR_IDS.slice(); D.coins = ECON.maxCoins; D.multi = 1; }
     if (C.char && CHARS[C.char] && D.owned.indexOf(C.char) < 0) { D.owned.push(C.char); D.equipped = C.char; got = C.char; }
+    if (Array.isArray(C.chars)) { // (Build 37: one code, several characters — every one you don't have yet; you're the first of them)
+      const fresh = C.chars.filter(id => CHARS[id] && D.owned.indexOf(id) < 0);
+      for (const id of fresh) { D.owned.push(id); if (CHARS[id].rarity === 'secret') { D.secrets++; Goals.unlock('secret'); } }
+      if (fresh.length) { D.equipped = fresh[0]; got = fresh; }
+    }
     this.save();
+    if (Array.isArray(got)) return { ok: true, code: k, got, msg: k + ' — ' + C.text + ': ' + got.map(id => CHARS[id].name).join(' + ') + '!' };
     if (got) return { ok: true, code: k, got, msg: k + ' — ' + C.text + ': ' + CHARS[got].name + '!' };
     return { ok: true, code: k, msg: k + ' — ' + C.text + '!' };
   },
@@ -42902,6 +42990,449 @@ const ImmCam = {
   const d1 = seg('set-hud', 'hudMode', () => { if (Imm.hudApply) Imm.hudApply(); }), d2 = tog('set-mblur', 'motionBlur'), d3 = tog('set-body', 'fpBody');
   const rs = $('btn-set-reset'); if (rs) rs.addEventListener('click', () => { d1(); d2(); d3(); if (Imm.hudApply) Imm.hudApply(); });
 }
+/* ================================================================== */
+/* Build 37: two new characters (one code, HELLOPOPPY, gives both)     */
+/*  HOMELANDER (SECRET) — LASER EYES. Hold the ability key: two beams  */
+/*   of heat out of his eyes, wherever he looks, for as long as his    */
+/*   stamina lasts. Like a gun, your own screen aims and finds what    */
+/*   the beams touch; the host takes the damage off it ('hlz'). The    */
+/*   others see the beams from your buffs (LASER) and your aim — every */
+/*   screen traces them itself.                                        */
+/*  POPPY BUTT FACE (MEME) — POOP. Thrown on an arc; whatever it lands */
+/*   on is dead, one hit. Your screen flies it and sees what it hits   */
+/*   ('pooh' to the host); everyone sees it fly ('b37pp') and land     */
+/*   ('b37pk').                                                        */
+/* ================================================================== */
+const POOP_FAT = [0, -0.32, 0.22];
+const _hz = new T.Vector3(), _hz2 = new T.Vector3(), _hz3 = new T.Vector3(), _hz4 = new T.Vector3(), _hzN = new T.Vector3(), _hzF = new T.Vector3();
+BUFF_BITS.laser = 8388608; // (the beams are on: the host and everyone else know from your next update)
+
+/* ---------------- what a beam (or a poop) meets ---------------- */
+// the floor's monster, as something to hit: { F, key } — or null (nothing here can be hurt: 100 DOORS' entities, a camera's mode, an empty floor)
+function hz37Foe() {
+  if (Game.mode === 'woods') return typeof Hollow !== 'undefined' && Hollow.active && !Hollow.gone && Hollow.state !== 'GONE' ? { F: Hollow, woods: true } : null;
+  const F = Foe.cur();
+  if (!F || typeof F.hurt !== 'function') return null;
+  if (F.many ? !F.list.some(m => !m.dead) : !F.active || (F.isDown && F.isDown()) || F.dead || F.gone) return null;
+  return { F };
+}
+// the Hollow Woods' creature, as a body (it stands 2.3 m, crouches to all fours)
+function hz37HollowRay(ox, oy, oz, d, maxD) {
+  const H = Hollow, px = ox - H.pos.x, pz = oz - H.pos.z, r = 0.7, a = d.x * d.x + d.z * d.z, b = 2 * (px * d.x + pz * d.z), c = px * px + pz * pz - r * r;
+  if (a < 1e-6) return -1; const disc = b * b - 4 * a * c; if (disc < 0) return -1; const sq = Math.sqrt(disc), top = H.pos.y + H.eyeH() + 0.2;
+  for (const t of [(-b - sq) / (2 * a), (-b + sq) / (2 * a)]) { if (t < 0 || t > maxD) continue; const y = oy + d.y * t; if (y >= H.pos.y && y <= top) return t; }
+  return -1;
+}
+// along d from (ox, oy, oz): how far to whatever it meets first, and whether that's the monster (the brood: the one it meets becomes the one hit)
+function hz37Trace(ox, oy, oz, d, maxD) {
+  const wd = Math.min(maxD, Game.aimDist(ox, oy, oz, d)), H = hz37Foe();
+  let t = -1;
+  if (H) t = H.woods ? hz37HollowRay(ox, oy, oz, d, wd) : wardenRay(ox, oy, oz, d, wd);
+  return t >= 0 && t < wd ? { t, foe: H } : { t: wd, foe: null };
+}
+// which way the surface faces at the end of a trace (for a scorch mark or a splat lying flat on it)
+function hz37Normal(ox, oy, oz, d, t, out) {
+  const x = ox + d.x * t, y = oy + d.y * t, z = oz + d.z * t, c = cellOf(x, z), ceil = c && c.h ? c.h : WALL_H;
+  if (y <= 0.06) return out.set(0, 1, 0);
+  if (y >= ceil - 0.06) return out.set(0, -1, 0);
+  const bx = x - d.x * 0.12, bz = z - d.z * 0.12, cx = Math.floor(x / CELL), cz = Math.floor(z / CELL), pbx = Math.floor(bx / CELL), pbz = Math.floor(bz / CELL);
+  if (pbx !== cx && pbz === cz) return out.set(Math.sign(-d.x) || 1, 0, 0);
+  if (pbz !== cz && pbx === cx) return out.set(0, 0, Math.sign(-d.z) || 1);
+  return Math.abs(d.x) > Math.abs(d.z) ? out.set(Math.sign(-d.x) || 1, 0, 0) : out.set(0, 0, Math.sign(-d.z) || 1);
+}
+// (host / solo) a guard's beam or poop landed on the floor's monster: how much it does
+function hz37HostHit(a, what, amt, o, H) {
+  H = H || hz37Foe(); if (!H) return 0;
+  if (H.woods) { // (the Hollow can't be killed — it can be burned and sent running: a beam blinds it; a poop runs it off for the night)
+    if (Net.isClient) return 0;
+    if (what === 'poop') { Hollow.flee(a.pos.x, a.pos.z, 30, 'poop'); setTimeout(() => { if (Hollow.active && Game.mode === 'woods') Hollow.retreat(); }, 1500); return 1; }
+    if (Hollow.state !== 'BLIND' && Hollow.state !== 'FLEE') Hollow.blind(a.pos.x, a.pos.z, 1.4);
+    return 1;
+  }
+  const F = H.F; if (F.many && !F.focus) return 0;
+  return Weapons.foeHit(F, a, amt, Object.assign({ w: what }, o), what) || 0;
+}
+
+/* ---------------- the look of a beam: a ribbon that always faces you, white-hot in the middle, red at the edges ---------------- */
+const HZ_BEAM_MAT = new T.ShaderMaterial({
+  uniforms: { uT: { value: 0 }, uK: { value: 1 } }, transparent: true, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide, fog: false,
+  vertexShader: 'attribute vec2 bw; varying vec2 vB; varying float vL; uniform float uT; void main() { vB = bw; vL = bw.x; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: 'uniform float uT; uniform float uK; varying vec2 vB; varying float vL;\n' +
+    'void main() { float y = vB.y, core = exp(-y * y * 26.0), glow = exp(-y * y * 2.6);\n' +
+    '  float flow = 0.78 + 0.22 * sin(vL * 3.1 - uT * 46.0) * sin(vL * 1.3 + uT * 23.0 + y * 2.0);\n' +
+    '  float fade = smoothstep(0.0, 0.25, vL);\n' +
+    '  vec3 c = vec3(1.0, 0.94, 0.86) * core * 1.6 + vec3(1.0, 0.1, 0.04) * glow * 0.85 * flow;\n' +
+    '  gl_FragColor = vec4(c * fade * uK, 1.0); }',
+});
+// one beam: 4 corners moved every frame (no new geometry) — x along it in metres (the shimmer runs down it), y across it −1 … 1
+function hz37Beam() {
+  const g = new T.BufferGeometry(), P = new Float32Array(12), B = new Float32Array([0, -1, 0, 1, 1, -1, 1, 1]);
+  g.setAttribute('position', new T.BufferAttribute(P, 3)); g.setAttribute('bw', new T.BufferAttribute(B, 2)); g.setIndex([0, 2, 1, 2, 3, 1]);
+  const m = new T.Mesh(g, HZ_BEAM_MAT); m.frustumCulled = false; m.visible = false; m.renderOrder = 7; m.userData.global = true; m.layers.enableAll(); scene.add(m);
+  return m;
+}
+const _bs = new T.Vector3(), _bd = new T.Vector3(), _bv = new T.Vector3(), _bw = new T.Vector3();
+function hz37SetBeam(m, a, b, w) { // from a to b, w wide, its face turned to the camera
+  _bd.subVectors(b, a); const L = _bd.length(); if (L < 0.01) { m.visible = false; return; }
+  _bv.subVectors(camera.position, a); _bw.crossVectors(_bd, _bv); if (_bw.lengthSq() < 1e-8) _bw.set(0, 1, 0); _bw.normalize().multiplyScalar(w * 0.5);
+  const P = m.geometry.attributes.position.array, B = m.geometry.attributes.bw.array;
+  P[0] = a.x - _bw.x; P[1] = a.y - _bw.y; P[2] = a.z - _bw.z; P[3] = a.x + _bw.x; P[4] = a.y + _bw.y; P[5] = a.z + _bw.z;
+  P[6] = b.x - _bw.x; P[7] = b.y - _bw.y; P[8] = b.z - _bw.z; P[9] = b.x + _bw.x; P[10] = b.y + _bw.y; P[11] = b.z + _bw.z;
+  B[4] = B[6] = L; // (metres along it at the far end: the shimmer keeps its pace whatever the length)
+  m.geometry.attributes.position.needsUpdate = true; m.geometry.attributes.bw.needsUpdate = true; m.geometry.computeBoundingSphere(); m.visible = true;
+}
+// a pair of beams with their glow, a flare where they land, and the light it throws
+function hz37Rig() {
+  const glowTex = TX.glow;
+  const fl = new T.Sprite(new T.SpriteMaterial({ map: glowTex, color: 0xff3a14, transparent: true, depthWrite: false, depthTest: false, blending: T.AdditiveBlending, fog: false }));
+  const core = new T.Sprite(new T.SpriteMaterial({ map: glowTex, color: 0xfff2d8, transparent: true, depthWrite: false, depthTest: false, blending: T.AdditiveBlending, fog: false }));
+  for (const s of [fl, core]) { s.visible = false; s.renderOrder = 8; s.userData.global = true; s.layers.enableAll(); scene.add(s); }
+  return { b: [hz37Beam(), hz37Beam()], g: [hz37Beam(), hz37Beam()], fl, core, L: null, smokeT: 0, burnT: 0, sparkT: 0, scorchT: 0 };
+}
+function hz37HideRig(R) { if (!R) return; for (const m of R.b.concat(R.g)) m.visible = false; R.fl.visible = R.core.visible = false; if (R.L) { R.L.k = 0; } }
+// scorched spots: a glowing ember where the beams held, cooling to black
+const HZ_SCORCH = (() => {
+  const c = makeCanvas(64, 64), g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 2, 32, 32, 31);
+  gr.addColorStop(0, 'rgba(10,6,4,.95)'); gr.addColorStop(0.55, 'rgba(18,10,6,.7)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  return mkTex(c, false);
+})();
+
+/* ================= HOMELANDER: LASER EYES ================= */
+const Laser = {
+  on: false, held: false, t: 0, acc: 0, tick: 0, pulse: 0, noiseT: 0, mine: null, others: new Map(), scorches: [], hit: null, fov: 0,
+  reset() {
+    this.stop(true); this.held = false;
+    for (const [, R] of this.others) { hz37HideRig(R); if (R.L) Cosmos.lightsL = Cosmos.lightsL.filter(q => q !== R.L); R.L = null; }
+    for (const [id] of this.others) Sound.laserOff(id, true);
+    for (const S of this.scorches) { scene.remove(S.m); S.m.material.dispose(); } this.scorches = [];
+    this.lightOff(this.mine);
+  },
+  lightOff(R) { if (R && R.L) { Cosmos.lightsL = Cosmos.lightsL.filter(q => q !== R.L); R.L = null; } },
+  // (your screen) the key went down: the beams come on — if there's breath for them
+  start() {
+    const p = player, A = ABIL.laser;
+    if (p.exhausted || p.stamina < A.min) { UI.msg('Out of breath — the beams won\'t come. Get your breath back.', 'warn', 1.8); Sound.abDeny(); Chars.deny(); return false; }
+    this.on = true; this.held = true; this.t = 0; this.acc = 0; this.tick = 0; this.pulse = 0.35; this.noiseT = 0;
+    Sound.laserOn('me'); Game.shake(0.25); Chars.popFx && Chars.popFx('laser');
+    return true;
+  },
+  stop(quiet) {
+    if (!this.on) return;
+    this.on = false; Chars.B.laser = 0; hz37HideRig(this.mine); this.lightOff(this.mine);
+    if (!quiet) Sound.laserOff('me'); else Sound.laserOff('me', true);
+    Chars.cd = Math.max(Chars.cd, ABIL.laser.cd); UI.hudCache.ab = null;
+    const ov = $('fx-laser'); if (ov) ov.style.opacity = 0;
+  },
+  // (your screen) every frame of the game: breath, aim, what the beams touch, and what that does
+  update(dt) {
+    const p = player, A = ABIL.laser;
+    const can = Chars.run === 'homelander' && !p.dead && !p.downed && !p.hidden && Game.state === 'playing' && !Game.controlLock && !Cine.locks() && !Game.ending;
+    if (!this.on) { if (this.held && can && !p.exhausted && p.stamina >= A.min && Chars.cd <= 0) this.start(); return; } // (still holding the key after a cutscene took the screen: they come back on)
+    if (!this.held || !can) { this.stop(); return; }
+    this.t += dt;
+    p.stamina = Math.max(0, p.stamina - A.drain / Math.max(1, Chars.cur().stam) * dt); p.staminaDelay = 0.8;
+    if (p.stamina <= 0) { p.exhausted = true; this.held = false; this.stop(); UI.msg('Out of breath — the beams die. Get your breath back.', 'warn', 2.2); return; }
+    Chars.B.laser = 0.3;
+    const e = _hz.set(p.pos.x, p.eyeY + p.bob, p.pos.z), f = p.forward(_hzF), tr = hz37Trace(e.x, e.y, e.z, f, A.range);
+    this.hit = tr;
+    // the damage: a little every tenth of a second; a harder pulse every second that staggers and sets it alight
+    this.pulse -= dt; this.acc += A.dps * Chars.power() * dt; this.tick -= dt;
+    if (this.tick <= 0) {
+      this.tick = 0.1;
+      if (tr.foe) {
+        const big = this.pulse <= 0; if (big) this.pulse = 1;
+        const o = { kind: 'fire', stg: big ? A.stg : 0, burn: big ? 1.2 : 0, quiet: !big };
+        if (Net.isClient) { const F = tr.foe.F, m = F && F.many && F.focus ? F.focus : null; Net.request('hlz', 0, { d: +this.acc.toFixed(1), p: big ? 1 : 0, m: m ? m.id : undefined, sb: m && m.sub !== undefined ? m.sub : undefined }); }
+        else hz37HostHit(player, 'laser', this.acc, o, tr.foe);
+        $('crosshair').classList.add('hit'); clearTimeout(this.xhT); this.xhT = setTimeout(() => $('crosshair').classList.remove('hit'), 140);
+      }
+      this.acc = 0;
+    }
+    this.noiseT -= dt; if (this.noiseT <= 0) { this.noiseT = 0.5; Game.noise(p.pos, A.loud, 'player'); }
+    Game.shake(dt * 0.35);
+  },
+  // (every screen, every frame drawn) your beams, and everyone else's
+  render(dt) {
+    HZ_BEAM_MAT.uniforms.uT.value = Game.time;
+    const p = player, A = ABIL.laser;
+    // yours: out of your eyes — a hand's width below the middle of your view and either side, so you see them leave you
+    if (this.on && this.hit && Game.state === 'playing') {
+      const R = this.mine || (this.mine = hz37Rig()), f = p.forward(_hzF), right = _hz2.set(-f.z, 0, f.x).normalize(), cam = camera.position;
+      const end = _hz3.set(cam.x + f.x * this.hit.t, cam.y + f.y * this.hit.t, cam.z + f.z * this.hit.t);
+      for (let i = 0; i < 2; i++) {
+        const s = i ? 1 : -1, a = _hz4.set(cam.x + f.x * 0.16 + right.x * s * 0.05, cam.y + f.y * 0.16 - 0.06, cam.z + f.z * 0.16 + right.z * s * 0.05);
+        const j = (Math.random() - 0.5) * 0.004;
+        hz37SetBeam(R.b[i], a, end, 0.011 + j); hz37SetBeam(R.g[i], a, end, 0.07 + j * 4);
+      }
+      this.impact(R, end, f, this.hit, dt, true);
+      const ov = $('fx-laser'); if (ov) ov.style.opacity = (0.75 + Math.random() * 0.25).toFixed(2);
+    }
+    // the others': from where their head is, where they're looking (traced on this screen)
+    const seen = new Set();
+    for (const r of Net.remotes.values()) {
+      if (!r.inGame || r.dead || r.charId !== 'homelander' || !((r.buffs | 0) & BUFF_BITS.laser)) continue;
+      seen.add(r.id);
+      const R = this.others.get(r.id) || (this.others.set(r.id, hz37Rig()), this.others.get(r.id));
+      const cp = Math.cos(r.pitch || 0), f = _hzF.set(-Math.sin(r.yaw) * cp, Math.sin(r.pitch || 0), -Math.cos(r.yaw) * cp);
+      const head = this.headOf(r, _hz);
+      const tr = hz37Trace(head.x, head.y, head.z, f, A.range), end = _hz3.set(head.x + f.x * tr.t, head.y + f.y * tr.t, head.z + f.z * tr.t);
+      const right = _hz2.set(-f.z, 0, f.x).normalize();
+      for (let i = 0; i < 2; i++) { const s = i ? 1 : -1, a = _hz4.set(head.x + right.x * s * 0.033, head.y, head.z + right.z * s * 0.033); hz37SetBeam(R.b[i], a, end, 0.014); hz37SetBeam(R.g[i], a, end, 0.09); }
+      this.impact(R, end, f, tr, dt, false);
+      Sound.laserOn(r.id, r.pos);
+      if (r.avatar) this.eyes(r.avatar, true);
+    }
+    for (const [id, R] of this.others) if (!seen.has(id) && (R.b[0].visible || R.L)) { hz37HideRig(R); this.lightOff(R); Sound.laserOff(id); const r = Net.remotes.get(id); if (r && r.avatar) this.eyes(r.avatar, false); }
+    // the scorch marks cool and fade
+    for (let i = this.scorches.length - 1; i >= 0; i--) {
+      const S = this.scorches[i]; S.t += dt;
+      const heat = Math.max(0, 1 - S.t / 2.4), fade = S.t > 14 ? Math.max(0, 1 - (S.t - 14) / 4) : 1;
+      S.m.material.color.setRGB(0.25 + heat * 3.2, 0.12 + heat * 0.9, 0.06 + heat * 0.15); S.m.material.opacity = 0.85 * fade;
+      if (fade <= 0) { scene.remove(S.m); S.m.material.dispose(); this.scorches.splice(i, 1); }
+    }
+  },
+  // where a teammate's eyes are: their avatar's head, or (none drawn) their eye height
+  headOf(r, out) {
+    const R = r.avatar && r.avatar.userData && r.avatar.userData.rig;
+    if (R && R.head && r.avatar.visible) { R.head.getWorldPosition(out); out.y += 0.07; const cp = Math.cos(r.pitch || 0); out.x += -Math.sin(r.yaw) * cp * 0.12; out.z += -Math.cos(r.yaw) * cp * 0.12; return out; }
+    return out.set(r.pos.x, (r.eyeY || EYE_STAND) - 0.05, r.pos.z);
+  },
+  // the glowing red of his eyes while he fires (a teammate's avatar)
+  eyes(av, on) {
+    const U = av.userData; if (!U.hzEyes) { if (!on || !U.rig || !U.rig.head) return; const g = new T.Group(); for (const x of [-0.034, 0.034]) { const s = new T.Sprite(new T.SpriteMaterial({ map: TX.glow, color: 0xff2a10, transparent: true, depthWrite: false, blending: T.AdditiveBlending, fog: false })); s.position.set(x, 0.07, -0.085); s.scale.setScalar(0.09); g.add(s); } U.rig.head.add(g); U.hzEyes = g; }
+    U.hzEyes.visible = on;
+  },
+  // where they land: a white-hot flare, sparks, smoke, the room lit red — and the surface scorched
+  impact(R, end, f, tr, dt, mine) {
+    const k = 0.75 + Math.random() * 0.35;
+    R.core.position.copy(end).addScaledVector(f, -0.04); R.fl.position.copy(R.core.position);
+    R.core.scale.setScalar(0.22 * k); R.fl.scale.setScalar(0.7 * k + (tr.foe ? 0.25 : 0)); R.core.visible = R.fl.visible = true;
+    if (!R.L) { R.L = { x: end.x, y: end.y, z: end.z, col: 0xff3a18, k: 0 }; Cosmos.lightsL.push(R.L); }
+    R.L.x = end.x - f.x * 0.3; R.L.y = end.y - f.y * 0.3; R.L.z = end.z - f.z * 0.3; R.L.k = 2.6 * k;
+    R.sparkT -= dt; if (R.sparkT <= 0) { R.sparkT = 0.07; Cosmos.stars(end.x - f.x * 0.05, end.y - f.y * 0.05, end.z - f.z * 0.05, tr.foe ? 3 : 2, 3.2, [0xff6a1a, 0xffd27a, 0xff2a0a, 0xffffff], 0.45, 1.2); }
+    R.burnT -= dt; if (R.burnT <= 0) { R.burnT = 0.11; Sound.laserBurn(end, !!tr.foe); }
+    R.smokeT -= dt; if (R.smokeT <= 0) { R.smokeT = 0.22; spawnImpact(_hz2.copy(end).addScaledVector(f, -0.08)); }
+    if (!tr.foe) { R.scorchT -= dt; if (R.scorchT <= 0) { R.scorchT = 0.09; this.scorch(end, f, tr.t); } }
+  },
+  scorch(end, f, t) {
+    const near = this.scorches.find(S => S.m.position.distanceToSquared(end) < 0.0144);
+    if (near) { near.t = 0; return; } // (holding on the same spot: it stays white-hot)
+    if (this.scorches.length >= 60) { const S = this.scorches.shift(); scene.remove(S.m); S.m.material.dispose(); }
+    const n = hz37Normal(end.x - f.x * t, end.y - f.y * t, end.z - f.z * t, f, t, _hzN);
+    const m = new T.Mesh(GEO.plane, new T.MeshBasicMaterial({ map: HZ_SCORCH, color: 0xffffff, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, fog: true }));
+    m.position.copy(end).addScaledVector(n, 0.012); m.lookAt(_hz4.copy(m.position).add(n)); m.rotateZ(Math.random() * TAU); m.scale.setScalar(rand(0.16, 0.24));
+    m.userData.global = true; m.layers.enableAll(); scene.add(m); this.scorches.push({ m, t: 0 });
+  },
+};
+
+/* ================= POPPY BUTT FACE: POOP ================= */
+const POOP_GEO = (() => { // three tiers and a curl on top, the way everyone draws it
+  const pts = [[0, 0], [0.11, 0.005], [0.125, 0.03], [0.1, 0.055], [0.085, 0.07], [0.095, 0.085], [0.075, 0.115], [0.055, 0.125], [0.062, 0.14], [0.04, 0.165], [0.018, 0.19], [0.006, 0.215], [0, 0.22]];
+  const g = new T.LatheGeometry(pts.map(([x, y]) => new T.Vector2(x, y)), 18); g.translate(0, -0.09, 0);
+  const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i), a = Math.atan2(p.getZ(i), p.getX(i)), w = 1 + 0.08 * Math.sin(a * 3 + y * 40); p.setX(i, p.getX(i) * w); p.setZ(i, p.getZ(i) * w); }
+  g.computeVertexNormals(); return g;
+})();
+const POOP_MAT = new T.MeshStandardMaterial({ color: 0x6b3f1a, roughness: 0.45, metalness: 0.0, emissive: 0x1a0c04 });
+const SPLAT_TEX = (() => {
+  const c = makeCanvas(128, 128), g = c.getContext('2d'), rng = mulberry32(4471);
+  g.fillStyle = 'rgb(38,19,6)'; g.beginPath(); g.arc(64, 64, 30, 0, TAU); g.fill();
+  for (let i = 0; i < 14; i++) { const a = rng() * TAU, d = 30 + rng() * 26, r = 4 + rng() * 9; g.beginPath(); g.arc(64 + Math.cos(a) * d, 64 + Math.sin(a) * d, r, 0, TAU); g.fill(); g.lineWidth = r * 0.8; g.strokeStyle = g.fillStyle; g.beginPath(); g.moveTo(64 + Math.cos(a) * 20, 64 + Math.sin(a) * 20); g.lineTo(64 + Math.cos(a) * d, 64 + Math.sin(a) * d); g.stroke(); }
+  g.fillStyle = 'rgb(58,31,11)'; g.beginPath(); g.arc(60, 60, 20, 0, TAU); g.fill(); g.fillStyle = 'rgb(96,60,28)'; g.beginPath(); g.ellipse(54, 52, 9, 5, -0.6, 0, TAU); g.fill(); // (darker than any floor, a wet glint)
+  return mkTex(c, false);
+})();
+const Poop = {
+  flying: [], splats: [], flies: [],
+  reset() { for (const P of this.flying) scene.remove(P.m); this.flying = []; for (const S of this.splats) { scene.remove(S.m); S.m.material.dispose(); } this.splats = []; },
+  // (every screen) one in the air: from o, at v, gravity takes it; 'mine' is the thrower's own (it decides what it hit)
+  launch(o, v, by, mine) {
+    const m = new T.Mesh(POOP_GEO, POOP_MAT); m.castShadow = true; m.userData.global = true; m.layers.enableAll(); m.position.copy(o); m.scale.setScalar(1.15); scene.add(m);
+    this.flying.push({ m, v: v.clone(), by, mine, t: 0, trailT: 0, spin: new T.Vector3(rand(-9, 9), rand(-4, 4), rand(-9, 9)) });
+  },
+  update(dt) {
+    for (let i = this.flying.length - 1; i >= 0; i--) {
+      const P = this.flying[i]; P.t += dt;
+      let done = null;
+      for (let n = 0, steps = Math.max(1, Math.ceil(dt / 0.016)); n < steps && !done; n++) {
+        const h = dt / steps; P.v.y -= 9.8 * h; const q = P.m.position;
+        const d = _hzF.copy(P.v).normalize(), L = P.v.length() * h;
+        // the monster on the way?
+        const H = hz37Foe();
+        // (it's a fat, wobbling thing: it counts as a hit a hand's width high or low — over a crouched back, under a ducked head)
+        if (H) for (const dy of POOP_FAT) { const t = H.woods ? hz37HollowRay(q.x, q.y + dy, q.z, d, L + 0.25) : wardenRay(q.x, q.y + dy, q.z, d, L + 0.25); if (t >= 0) { q.addScaledVector(d, t); done = { foe: H }; break; } }
+        if (done) break;
+        q.addScaledVector(P.v, h);
+        const c = cellOf(q.x, q.z), ceil = c && c.h ? c.h : WALL_H;
+        if (q.y <= 0.06 || q.y >= ceil - 0.05 || !c || c.kind === 'wall' || c.kind === 'window' || (c.door && !c.door.isOpen())) { done = { foe: null }; break; }
+      }
+      P.m.rotation.x += P.spin.x * dt; P.m.rotation.y += P.spin.y * dt; P.m.rotation.z += P.spin.z * dt;
+      P.trailT -= dt; if (P.trailT <= 0) { P.trailT = 0.035; Cosmos.stars(P.m.position.x, P.m.position.y, P.m.position.z, 1, 0.3, [0x7a4a1c, 0x5a3412, 0x9ad04a], 0.4, -0.4); }
+      if (!done && P.t > 3) done = { foe: null };
+      if (!done) continue;
+      scene.remove(P.m); this.flying.splice(i, 1);
+      const at = P.m.position.clone();
+      if (done.foe && P.mine) { // (the thrower's screen says what it hit; the host makes it so)
+        if (Net.isClient) { const F = done.foe.F, m = F && F.many && F.focus ? F.focus : null; Net.request('pooh', 0, { m: m ? m.id : undefined, sb: m && m.sub !== undefined ? m.sub : undefined, x: +at.x.toFixed(2), y: +at.y.toFixed(2), z: +at.z.toFixed(2) }); }
+        else Poop.hostKill(player, done.foe, at);
+      }
+      this.splat(at, P.v, !!done.foe);
+    }
+    // the flies round every splat (and round Poppy himself: see his look)
+    for (let i = this.splats.length - 1; i >= 0; i--) {
+      const S = this.splats[i]; S.t += dt; const fade = S.t > 18 ? Math.max(0, 1 - (S.t - 18) / 3) : 1;
+      S.m.material.opacity = 0.92 * fade; if (S.fl) S.fl.children.forEach((f, k) => { if (f.userData.pile) { f.visible = fade > 0.15; return; } const a = Game.time * (3 + k) + k * 2.1; f.position.set(Math.cos(a) * 0.22, 0.12 + Math.sin(a * 1.7) * 0.07, Math.sin(a * 1.3) * 0.22); f.visible = fade > 0.2; });
+      if (fade <= 0) { scene.remove(S.m); if (S.fl) scene.remove(S.fl); S.m.material.dispose(); this.splats.splice(i, 1); }
+    }
+  },
+  // where it lands: a splat flat on the surface, chunks, a smell — and on a monster, a very final bonk
+  splat(at, v, onFoe) {
+    Sound.poopSplat(at, onFoe);
+    Cosmos.stars(at.x, at.y, at.z, 16, 3, [0x6b3f1a, 0x4a2a10, 0x8a5a2a], 0.7, 1.4);
+    if (onFoe) { Cosmos.shock(at.x, 0.06, at.z, 0x9a6a2a, 2.4, 0.5, 0.9); Cosmos.stars(at.x, at.y + 0.3, at.z, 10, 1.2, [0x9ad04a, 0xc8f07a], 1.4, 0.8); return; }
+    const d = _hzF.copy(v).normalize(), n = hz37Normal(at.x - d.x * 0.3, at.y - d.y * 0.3, at.z - d.z * 0.3, d, 0.3, _hzN);
+    if (this.splats.length >= 30) { const S = this.splats.shift(); scene.remove(S.m); if (S.fl) scene.remove(S.fl); S.m.material.dispose(); }
+    const m = new T.Mesh(GEO.plane, new T.MeshStandardMaterial({ map: SPLAT_TEX, alphaTest: 0.35, roughness: 0.3, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 })); // (cut out, not blended: blended, it vanished under the floor's own passes)
+    m.position.copy(at).addScaledVector(n, 0.015); m.lookAt(_hz4.copy(m.position).add(n)); m.rotateZ(Math.random() * TAU); m.scale.setScalar(rand(0.55, 0.75)); m.userData.global = true; m.layers.enableAll(); scene.add(m);
+    let fl = null; if (n.y > 0.5) { fl = new T.Group(); fl.position.copy(at); const pile = new T.Mesh(POOP_GEO, POOP_MAT); pile.position.y = 0.035; pile.scale.set(1.05, 0.42, 1.05); pile.rotation.y = Math.random() * TAU; pile.castShadow = true; pile.userData.pile = true; fl.add(pile); /* (what's left of it, squashed) */ for (let k = 0; k < 3; k++) { const f = new T.Mesh(GEO.box, new T.MeshBasicMaterial({ color: 0x0a0a0a })); f.scale.setScalar(0.012); fl.add(f); } fl.userData.global = true; fl.traverse(o => o.layers.enableAll()); scene.add(fl); }
+    this.splats.push({ m, fl, t: 0 });
+  },
+  // (host / solo) it landed on the monster: dead
+  hostKill(a, H, at) {
+    const done = hz37HostHit(a, 'poop', 1e6, { kind: 'shot', stg: 1 }, H) > 0;
+    Game.emit({ k: 'b37pk', by: Game.idOf(a), x: +at.x.toFixed(2), y: +at.y.toFixed(2), z: +at.z.toFixed(2), ok: done ? 1 : 0, n: H && H.woods ? 'THE HOLLOW' : '' });
+  },
+};
+
+/* ================= your keys: [F] for both; HOMELANDER's is held ================= */
+Object.assign(Chars, {
+  use_laser(A) { if (Laser.on) return false; return Laser.start(); },
+  use_poop(A) {
+    const p = player, f = p.forward(_hzF), right = _hz2.set(-f.z, 0, f.x).normalize();
+    const o = _hz3.set(p.pos.x + f.x * 0.45 + right.x * 0.22, p.eyeY + p.bob - 0.2 + f.y * 0.45, p.pos.z + f.z * 0.45 + right.z * 0.22);
+    const v = _hz4.set(f.x * A.speed + p.vel.x * 0.5, f.y * A.speed + 2.4, f.z * A.speed + p.vel.z * 0.5);
+    this.start(A); Sound.poopThrow(); Game.noise(p.pos, 10, 'player'); this.popFx && this.popFx('poop');
+    Poop.launch(o, v, Net.myId, true);
+    const msg = { o: [+o.x.toFixed(2), +o.y.toFixed(2), +o.z.toFixed(2)], v: [+v.x.toFixed(2), +v.y.toFixed(2), +v.z.toFixed(2)] };
+    if (Net.isClient) Net.request('ppt', 0, msg); else if (Net.active) Game.emit({ k: 'b37pp', by: Net.myId, o: msg.o, v: msg.v });
+  },
+});
+// let go of the key: the beams stop
+{
+  const up = e => { const act = typeof Keys !== 'undefined' && Keys.actionOf ? Keys.actionOf(e.code) : ''; if (act === 'ability') Laser.held = false; };
+  addEventListener('keyup', up, true);
+  addEventListener('mouseup', e => { const act = typeof Keys !== 'undefined' && Keys.actionOf ? Keys.actionOf('Mouse' + e.button) : ''; if (act === 'ability') Laser.held = false; }, true);
+  addEventListener('blur', () => { Laser.held = false; });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) Laser.held = false; });
+}
+// not from inside a locker (the same as the others that reach out of you)
+{
+  const b0 = Powers.blocked;
+  Powers.blocked = function (A) { const w = b0.call(this, A); if (w) return w; if ((A.id === 'laser' || A.id === 'poop') && player.hidden) return 'Not from inside a locker.'; return ''; };
+  const h0 = Powers.hudLine;
+  Powers.hudLine = function (A) {
+    if (A && A.id === 'laser') return Laser.on ? ['FIRING · ' + Math.round(player.stamina * 100) + '%', clamp(player.stamina, 0, 1)] : player.exhausted ? ['OUT OF BREATH', clamp(player.stamina / 0.35, 0, 1)] : ['HOLD ' + Keys.b('ability'), 1];
+    return h0.call(this, A);
+  };
+}
+
+/* ================= the host: a teammate's beams and poops ================= */
+{
+  const ra0 = Game.remoteAction;
+  Game.remoteAction = function (r, a, i, x) {
+    if (a === 'hlz' || a === 'pooh' || a === 'ppt') {
+      if (!r || Net.isClient || r.dead || r.downed) return;
+      const o = x || {}, cid = Chars.charOf(r);
+      if (a === 'ppt') { // a poop thrown: everyone else sees it fly
+        if (cid !== 'poppy' || !Array.isArray(o.o) || !Array.isArray(o.v)) return;
+        const P = o.o.map(Number), V = o.v.map(v => clamp(+v || 0, -40, 40)); if (!P.every(isFinite) || Math.hypot(P[0] - r.pos.x, P[2] - r.pos.z) > 3) return;
+        r.ppAt = Game.time;
+        Poop.launch(_hz.set(P[0], P[1], P[2]), _hz2.set(V[0], V[1], V[2]), r.id, false);
+        Net.broadcast({ k: 'ev', e: { k: 'b37pp', by: r.id, o: P, v: V } }, r.id);
+        return;
+      }
+      const H = hz37Foe(); if (!H) return;
+      const F = H.F;
+      if (F.many) { const m = F.pick(o.m); if (!m || m.dead) return; m.sub = m.t === 'Q' ? clamp(o.sb | 0, -1, 2) : undefined; }
+      const T0 = F.many ? F.focus : F, d = Math.hypot(r.pos.x - T0.pos.x, r.pos.z - T0.pos.z);
+      if (a === 'hlz') { // a teammate's beams on it (checked loosely: their position is a moment old)
+        if (cid !== 'homelander' || d > ABIL.laser.range + 6) return;
+        const big = !!o.p, amt = clamp(+o.d || 0, 0, ABIL.laser.dps * 0.5 * CHARS.homelander.power);
+        if (amt > 0) hz37HostHit(r, 'laser', amt, { kind: 'fire', stg: big ? ABIL.laser.stg : 0, burn: big ? 1.2 : 0, quiet: !big }, H);
+        return;
+      }
+      if (cid !== 'poppy' || d > ABIL.poop.range + 8 || Game.time - (r.ppAt === undefined ? -99 : r.ppAt) > 5) return; // (a poop it actually saw thrown, a moment ago)
+      r.ppAt = -99;
+      Poop.hostKill(r, H, _hz.set(+o.x || T0.pos.x, +o.y || 1.2, +o.z || T0.pos.z));
+      return;
+    }
+    return ra0.apply(this, arguments);
+  };
+  const ae0 = Game.applyEvent;
+  Game.applyEvent = function (ev) {
+    if (ev && (ev.k === 'b37pp' || ev.k === 'b37pk')) {
+      const me = Net.myId, by = ev.by | 0;
+      if (ev.k === 'b37pp') { if (by !== me && !Net.isHost && Array.isArray(ev.o) && Array.isArray(ev.v)) Poop.launch(_hz.set(+ev.o[0], +ev.o[1], +ev.o[2]), _hz2.set(+ev.v[0], +ev.v[1], +ev.v[2]), by, false); }
+      else if (ev.ok) {
+        const who = by === me ? 'You' : Net.nameOf(by), what = ev.n || (typeof Powers !== 'undefined' ? Powers.foeName(Foe.cur().many ? Foe.cur().focus : Foe.cur()) : 'IT');
+        UI.msg(by === me ? 'DIRECT HIT. ' + what + ' is ' + (ev.n ? 'GONE for the night.' : 'DEAD.') + ' 💩' : who + '\'s poop hit ' + what + ' — ' + (ev.n ? 'it\'s gone for the night.' : 'it\'s DEAD.'), 'good', 3.2);
+        if (Math.hypot(+ev.x - player.pos.x, +ev.z - player.pos.z) < 20) Game.shake(0.4);
+      }
+      return;
+    }
+    return ae0.apply(this, arguments);
+  };
+}
+
+/* ================= how they look ================= */
+Object.assign(People.LOOKS, {
+  homelander: { top: 'uniform', tc: 0x1f3fa8, tc2: 0x14286e, hs: 'slick', pants: 0x1f3fa8, boots: 0x8e1420, gloves: 0x1f3fa8, eye: 0x3a6ad8, glow: 0xff2a1a, x: ['epaulgold', 'goldtrim'], k: { w: 1.1, d: 1.06, a: 1.12, lw: 1.04, s: 1.03, m: 1.3 } },
+  poppy: { top: 'hoodie', tc: 0x7a4a22, tc2: 0x5a3416, hs: 'messy', pants: 0x5a4a2e, bk: 'sneaker', snk: 0xeeeeee, snk2: 0x7a4a22 },
+});
+{
+  const bg0 = buildGuard;
+  buildGuard = function (color, name, charId) {
+    const g = bg0(color, name, charId), R = g && g.userData && g.userData.rig;
+    if (!R) return g;
+    if (charId === 'homelander') { // the cape (from the shoulders to the backs of his knees) and a gold eagle across the chest
+      const cg = new T.PlaneGeometry(0.62, 1.08, 6, 12); cg.translate(0, -0.54, 0);
+      const p = cg.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), k = -y / 1.08; p.setZ(i, 0.07 * Math.pow(x / 0.31, 2) * (1 - k * 0.5) + k * 0.05); p.setX(i, x * (0.82 + 0.38 * k)); }
+      cg.computeVertexNormals();
+      const cape = new T.Mesh(cg, new T.MeshStandardMaterial({ color: 0xa8121c, roughness: 0.62, side: T.DoubleSide }));
+      cape.position.set(0, 0.17, 0.11); cape.rotation.x = 0.1; cape.castShadow = true; cape.userData.cape = 1; R.chest.add(cape);
+      const sh = new T.Shape(); sh.moveTo(0, 0.05); sh.lineTo(-0.07, 0.02); sh.lineTo(-0.11, 0.04); sh.lineTo(-0.075, -0.005); sh.lineTo(-0.03, -0.01); sh.lineTo(0, -0.06); sh.lineTo(0.03, -0.01); sh.lineTo(0.075, -0.005); sh.lineTo(0.11, 0.04); sh.lineTo(0.07, 0.02); sh.lineTo(0, 0.05);
+      const eg = new T.ExtrudeGeometry(sh, { depth: 0.012, bevelEnabled: false });
+      const eagle = new T.Mesh(eg, new T.MeshStandardMaterial({ color: 0xd9a83a, metalness: 0.85, roughness: 0.3, emissive: 0x2a1a04 }));
+      eagle.position.set(0, 0.12, -0.115 * (CHARS.homelander ? 1 : 1)); eagle.rotation.y = Math.PI; R.chest.add(eagle);
+      g.userData.cape = cape;
+    } else if (charId === 'poppy') { // the poop on his head, and the flies round it
+      const hat = new T.Mesh(POOP_GEO, POOP_MAT); hat.scale.setScalar(1.25); hat.position.set(0, 0.25, 0); R.head.add(hat);
+      const fl = new T.Group(); for (let k = 0; k < 3; k++) { const f = new T.Mesh(GEO.box, new T.MeshBasicMaterial({ color: 0x0a0a0a })); f.scale.setScalar(0.012); fl.add(f); } fl.position.set(0, 0.3, 0); R.head.add(fl);
+      g.userData.flies = fl;
+    }
+    return g;
+  };
+  const pg0 = poseGuard;
+  poseGuard = function (g, pos, yaw, speed, crouch, dead, flashOn, dt) {
+    const r = pg0.apply(this, arguments), U = g && g.userData;
+    if (U && U.cape) { const k = Math.min(1, (speed || 0) / 4); U.cape.rotation.x = 0.1 + k * 0.55 + Math.sin(Game.time * (1.6 + k * 4)) * (0.03 + k * 0.05); } // (it streams out behind him when he runs)
+    if (U && U.flies) U.flies.children.forEach((f, k) => { const a = Game.time * (4 + k) + k * 2.1; f.position.set(Math.cos(a) * 0.18, Math.sin(a * 1.6) * 0.06, Math.sin(a * 1.2) * 0.18); });
+    return r;
+  };
+}
+
+/* ================= wiring ================= */
+{
+  const st = document.createElement('style');
+  st.textContent = '#fx-laser{position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;transition:opacity .12s;background:radial-gradient(ellipse at 50% 55%,rgba(0,0,0,0) 52%,rgba(255,40,12,.16) 82%,rgba(255,20,6,.32) 100%);mix-blend-mode:screen}' +
+    '.cc.meme{box-shadow:0 0 0 1px rgba(170,110,50,.6),0 0 18px rgba(150,95,45,.35)}.cc.meme .cc-top em{color:#d8a060}';
+  document.head.appendChild(st);
+  const ov = document.createElement('div'); ov.id = 'fx-laser'; document.body.appendChild(ov);
+  const gu0 = Game.update; Game.update = function (dt) { const r = gu0.apply(this, arguments); try { Laser.update(dt); Poop.update(dt); } catch (e) { if (!Laser.err) { Laser.err = e; console.error('Build 37 characters', e); } } return r; };
+  // the beams are drawn once the camera is where it is this frame (right after the torch is placed, as the torch's own shaft is): never a frame behind your view
+  const gr0 = Game.render; Game.render = function (dt) { Laser.dt = dt || 0; Laser.drawn = false; Laser.inRender = true; try { return gr0.apply(this, arguments); } finally { Laser.inRender = false; } };
+  const ud0 = updateDust; updateDust = function () { const r = ud0.apply(this, arguments); if (Laser.inRender && !Laser.drawn) { Laser.drawn = true; try { Laser.render(Laser.dt); } catch (e) { if (!Laser.rerr) { Laser.rerr = e; console.error('Build 37 beams', e); } } } return r; };
+  const ng0 = Game.newGame; Game.newGame = function () { Laser.reset(); Poop.reset(); return ng0.apply(this, arguments); };
+  const qt0 = Game.quitToTitle; Game.quitToTitle = function () { Laser.reset(); Poop.reset(); return qt0.apply(this, arguments); };
+}
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -42928,6 +43459,7 @@ const CHAR_LOOK = { // skin, uniform, hair
   valkyrie: ['#e2c2a6', '#1a2a3a', '#eef2ff'], vesper: ['#ead8d6', '#1a0a10', '#1a0a0e'], ronin: ['#c89c78', '#e8e4dc', '#121214'],
   frost: ['#e0d4cc', '#d8eef8', '#e8f4fa'], rivet: ['#a8785a', '#3a3a34', '#3a2a1a'],
   chonk: ['#d8a484', '#b04a26', '#3a2a1c'],
+  homelander: ['#e6c0a0', '#1f4fd8', '#ead07a'], poppy: ['#cf9a72', '#7a4a22', '#3a2412'], // (Build 37)
 };
 const CharArt = {
   cache: {},
@@ -42984,6 +43516,14 @@ const CharArt = {
       g.strokeStyle = 'rgba(20,12,8,.7)'; g.lineWidth = 1.5; for (let i = 0; i < 9; i++) { let x = 80, y = 152; g.beginPath(); g.moveTo(x, y); const a = Math.PI + 0.2 + rng() * (Math.PI - 0.4); for (let k = 0; k < 4; k++) { x += Math.cos(a) * 12 + (rng() - 0.5) * 8; y += Math.sin(a) * 5 + (rng() - 0.5) * 3; g.lineTo(x, y); } g.stroke(); }
     } else if (id === 'horse') { // a field at dusk
       const hg2 = g.createLinearGradient(0, 0, 0, 160); hg2.addColorStop(0, 'rgba(240,170,90,.5)'); hg2.addColorStop(0.6, 'rgba(120,80,40,.3)'); hg2.addColorStop(1, 'rgba(40,60,20,.6)'); g.fillStyle = hg2; g.fillRect(0, 0, 160, 160);
+    } else if (id === 'homelander') { // the flag behind him, and the red of his cape round his shoulders
+      for (let i = 0; i < 7; i++) { g.fillStyle = i % 2 ? 'rgba(255,255,255,.05)' : 'rgba(200,30,40,.16)'; g.fillRect(0, 10 + i * 14, 160, 14); }
+      g.fillStyle = 'rgba(30,60,170,.28)'; g.fillRect(0, 10, 64, 56); g.fillStyle = 'rgba(255,255,255,.35)'; for (let y = 16; y < 62; y += 9) for (let x = 6 + ((y / 9) % 2) * 4; x < 60; x += 9) g.fillRect(x, y, 2, 2);
+      const cp = g.createLinearGradient(0, 100, 0, 160); cp.addColorStop(0, '#a4141e'); cp.addColorStop(1, '#5a060c'); g.fillStyle = cp;
+      g.beginPath(); g.moveTo(14, 162); g.bezierCurveTo(18, 120, 40, 104, 80, 102); g.bezierCurveTo(120, 104, 142, 120, 146, 162); g.closePath(); g.fill();
+    } else if (id === 'poppy') { // brown, swirling — and the smell coming off it, in green
+      const pg = g.createRadialGradient(80, 70, 6, 80, 70, 100); pg.addColorStop(0, 'rgba(150,95,45,.55)'); pg.addColorStop(1, 'rgba(40,24,10,.2)'); g.fillStyle = pg; g.fillRect(0, 0, 160, 160);
+      g.strokeStyle = 'rgba(140,220,90,.55)'; g.lineWidth = 2.5; for (const x of [22, 136, 30, 128]) { g.beginPath(); for (let y = 0; y < 40; y += 2) { const yy = (x < 80 ? 40 : 30) + y + (x === 30 || x === 128 ? 50 : 0); g.lineTo(x + Math.sin(y * 0.35) * 5, yy); } g.stroke(); }
     } else if (id === 'hacker') { // green code raining down behind
       g.font = '9px monospace'; for (let x = 4; x < 160; x += 9) { const top = rng() * 120; for (let y = top; y < top + 60 + rng() * 60; y += 10) { g.fillStyle = 'rgba(61,255,138,' + (0.12 + 0.5 * (y - top) / 120).toFixed(2) + ')'; g.fillText(String.fromCharCode(0x30 + ((rng() * 40) | 0)), x, y); } }
     }
@@ -43025,6 +43565,20 @@ const CharArt = {
       eyes(id === 'flash' ? '#1a1a1a' : undefined); nose(); mouth(id === 'decoy' ? 2 : id === 'commander' ? 0.5 : 0);
     }
     switch (id) {
+      case 'homelander': { // slicked-back gold hair, gold eagle across the chest, gold at the shoulders — and the eyes, starting to burn
+        g.fillStyle = '#ead07a'; g.beginPath(); g.ellipse(80, 56, 25, 12, 0, Math.PI, TAU); g.fill(); g.strokeStyle = 'rgba(160,120,40,.7)'; g.lineWidth = 1; for (let x = 62; x < 100; x += 5) { g.beginPath(); g.moveTo(x, 50); g.quadraticCurveTo(x + 6, 45, x + 12, 52); g.stroke(); }
+        g.fillStyle = '#d9a83a'; g.beginPath(); g.moveTo(80, 128); g.lineTo(58, 120); g.lineTo(66, 132); g.lineTo(50, 130); g.lineTo(70, 140); g.lineTo(80, 150); g.lineTo(90, 140); g.lineTo(110, 130); g.lineTo(94, 132); g.lineTo(102, 120); g.closePath(); g.fill();
+        g.fillStyle = '#f2d37a'; g.fillRect(26, 120, 22, 6); g.fillRect(112, 120, 22, 6);
+        for (const x of [70, 90]) { const eg = g.createRadialGradient(x, 79, 0, x, 79, 9); eg.addColorStop(0, 'rgba(255,240,220,1)'); eg.addColorStop(0.3, 'rgba(255,60,40,.9)'); eg.addColorStop(1, 'rgba(255,0,0,0)'); g.fillStyle = eg; g.beginPath(); g.arc(x, 79, 9, 0, TAU); g.fill(); }
+        break;
+      }
+      case 'poppy': { // the poop on his head, three tiers and a curl; a huge grin; a fly
+        const tier = (y, w, h) => { const tg = g.createLinearGradient(0, y - h, 0, y + h); tg.addColorStop(0, '#a8692e'); tg.addColorStop(1, '#5c3412'); g.fillStyle = tg; g.beginPath(); g.ellipse(80, y, w, h, 0, 0, TAU); g.fill(); g.fillStyle = 'rgba(255,230,180,.25)'; g.beginPath(); g.ellipse(74, y - h * 0.4, w * 0.45, h * 0.3, -0.2, 0, TAU); g.fill(); };
+        tier(52, 27, 9); tier(41, 20, 8); tier(31, 12, 7); g.fillStyle = '#7a4718'; g.beginPath(); g.moveTo(76, 26); g.quadraticCurveTo(86, 12, 94, 20); g.quadraticCurveTo(86, 20, 84, 28); g.fill();
+        g.strokeStyle = artShade(skin, -0.5); g.fillStyle = '#5a1a14'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(66, 92); g.quadraticCurveTo(80, 106, 94, 92); g.closePath(); g.fill(); g.stroke(); g.fillStyle = '#f4f0e8'; g.fillRect(70, 92, 20, 3);
+        g.fillStyle = '#111'; g.beginPath(); g.ellipse(120, 40, 3, 2.2, 0, 0, TAU); g.fill(); g.fillStyle = 'rgba(200,220,255,.6)'; g.beginPath(); g.ellipse(118, 37, 3, 1.6, -0.6, 0, TAU); g.ellipse(122, 37, 3, 1.6, 0.6, 0, TAU); g.fill();
+        break;
+      }
       case 'guard': artCap(g, '#1c2536', '#0e121a'); g.fillStyle = '#d9a34a'; g.beginPath(); g.arc(80, 55, 3, 0, TAU); g.fill(); break;
       case 'bob':
         g.fillStyle = '#ece8de'; g.fillRect(55, 59, 50, 7); g.fillStyle = '#b8322b'; g.fillRect(55, 61, 50, 2);
@@ -43374,6 +43928,8 @@ const CharArt = {
       case 'iai': g.lineWidth = 5; P([[10, 54], [50, 14]]); g.stroke(); g.lineWidth = 3; P([[8, 46], [18, 56]]); g.stroke(); g.lineWidth = 2; g.beginPath(); g.arc(32, 32, 26, -2.6, 0.2); g.stroke(); break;
       case 'cuts': g.lineWidth = 3; for (const [a, b, c, d] of [[8, 12, 56, 52], [56, 10, 8, 54], [6, 32, 58, 30], [30, 4, 34, 60], [14, 50, 50, 8]]) { P([[a, b], [c, d]]); g.stroke(); } g.beginPath(); g.arc(32, 32, 6, 0, TAU); g.fill(); break;
       case 'freeze': g.lineWidth = 3.5; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU, c = Math.cos(a), s2 = Math.sin(a); P([[32, 32], [32 + c * 26, 32 + s2 * 26]]); g.stroke(); for (const k of [14, 20]) { P([[32 + c * k, 32 + s2 * k], [32 + c * k + Math.cos(a + 0.8) * 6, 32 + s2 * k + Math.sin(a + 0.8) * 6]]); g.stroke(); P([[32 + c * k, 32 + s2 * k], [32 + c * k + Math.cos(a - 0.8) * 6, 32 + s2 * k + Math.sin(a - 0.8) * 6]]); g.stroke(); } } break;
+      case 'laser': for (const y of [24, 40]) { g.beginPath(); g.ellipse(12, y, 8, 5, 0, 0, TAU); g.stroke(); g.beginPath(); g.arc(13, y, 2.5, 0, TAU); g.fill(); g.lineWidth = 4; P([[22, y], [58, y + (y < 32 ? 6 : -6)]]); g.stroke(); g.lineWidth = 2; } g.beginPath(); g.arc(58, 32, 5, 0, TAU); g.fill(); for (let k = 0; k < 6; k++) { const a = k / 6 * TAU; P([[58 + Math.cos(a) * 7, 32 + Math.sin(a) * 7], [58 + Math.cos(a) * 11, 32 + Math.sin(a) * 11]]); g.stroke(); } break;
+      case 'poop': g.beginPath(); g.ellipse(32, 50, 24, 9, 0, 0, TAU); g.fill(); g.beginPath(); g.ellipse(32, 37, 17, 8, 0, 0, TAU); g.fill(); g.beginPath(); g.ellipse(32, 25, 10, 7, 0, 0, TAU); g.fill(); g.beginPath(); g.moveTo(30, 20); g.quadraticCurveTo(38, 6, 44, 12); g.quadraticCurveTo(38, 14, 36, 21); g.fill(); break;
       case 'flop': g.beginPath(); g.ellipse(32, 22, 15, 12, 0, 0, TAU); g.fill(); g.fillRect(4, 48, 56, 4); P([[12, 46], [6, 38]]); g.stroke(); P([[52, 46], [58, 38]]); g.stroke(); P([[20, 44], [16, 36]]); g.stroke(); P([[44, 44], [48, 36]]); g.stroke(); break; // (a round body coming down on a line, the floor kicking up)
       case 'sentry': g.lineWidth = 3; P([[32, 34], [16, 58]]); g.stroke(); P([[32, 34], [32, 58]]); g.stroke(); P([[32, 34], [48, 58]]); g.stroke(); g.beginPath(); g.roundRect ? g.roundRect(18, 18, 26, 18, 5) : g.rect(18, 18, 26, 18); g.fill(); g.fillRect(42, 24, 16, 6); g.beginPath(); g.arc(60, 27, 3, 0, TAU); g.fill(); break;
       default: g.beginPath(); g.moveTo(32, 8); g.lineTo(52, 15); g.bezierCurveTo(52, 36, 44, 49, 32, 56); g.bezierCurveTo(20, 49, 12, 36, 12, 15); g.closePath(); g.stroke(); artStar(g, 32, 31, 10, 4.5); break;
@@ -43496,13 +44052,13 @@ const CharUI = {
     for (const id of ROSTER_IDS) { // (sorted by rarity, Common to Mythic)
       if (CHARS[id].code && !Chars.owns(id)) continue; // (Build 22: a character only a code gives you isn't on the wall until you have it)
       const C = CHARS[id], A = C.ab ? ABIL[C.ab] : null, own = Chars.owns(id), eq = Chars.equipped() === id, hid = charHid(id);
-      const card = mkEl('div', 'cc r-' + (C.rarity || 'none') + (own ? ' owned' : ' locked') + (eq ? ' equipped' : '') + (this.sel === id ? ' sel' : '') + (hid ? ' hid' : ''));
+      const card = mkEl('div', 'cc r-' + (C.rarity || 'none') + (C.tag ? ' meme' : '') + (own ? ' owned' : ' locked') + (eq ? ' equipped' : '') + (this.sel === id ? ' sel' : '') + (hid ? ' hid' : ''));
       card.dataset.id = id; card.style.setProperty('--cc', C.col); card.tabIndex = 0;
       const pic = mkEl('img', 'cc-pic'); pic.src = CharArt.portrait(id, 96); pic.alt = ''; card.appendChild(pic);
-      const top = mkEl('div', 'cc-top'); top.appendChild(mkEl('b', '', hid ? '???' : C.name)); top.appendChild(mkEl('em', '', C.rarity ? RARITY[C.rarity].name : C.code ? 'CODE' : 'DEFAULT')); card.appendChild(top);
+      const top = mkEl('div', 'cc-top'); top.appendChild(mkEl('b', '', hid ? '???' : C.name)); top.appendChild(mkEl('em', '', C.rarity ? RARITY[C.rarity].name : C.code ? C.tag || 'CODE' : 'DEFAULT')); card.appendChild(top);
       card.appendChild(mkEl('div', 'cc-title', hid ? 'CLASSIFIED' : C.title));
       const st = mkEl('div', 'cc-stats'); st.appendChild(mkEl('span', '', 'HP ' + (hid ? '???' : C.hp))); st.appendChild(mkEl('span', '', 'STA ' + (hid ? '???' : C.stam))); card.appendChild(st);
-      card.appendChild(mkEl('div', 'cc-ab', hid ? '??? · ???' : A ? A.name + ' ' + Keys.b('ability') + ' · ' + A.cd + 's' : 'No ability'));
+      card.appendChild(mkEl('div', 'cc-ab', hid ? '??? · ???' : A ? A.name + ' ' + Keys.b('ability') + ' · ' + (A.hold ? 'HOLD' : A.cd + 's') : 'No ability'));
       const ft = mkEl('div', 'cc-foot'); ft.appendChild(mkEl('span', 'cc-own', eq ? 'EQUIPPED' : own ? 'OWNED' : 'LOCKED'));
       const b = mkEl('button', 'cc-eq', eq ? '✓' : own ? 'EQUIP' : '🔒'); b.type = 'button'; b.disabled = !own || eq; b.title = own ? (eq ? 'Equipped' : 'Equip ' + C.name) : 'Locked — roll to unlock';
       b.addEventListener('click', e => { e.stopPropagation(); this.equip(id); });
@@ -43529,7 +44085,7 @@ const CharUI = {
     const C = CHARS[id], A = C.ab ? ABIL[C.ab] : null, R = C.rarity ? RARITY[C.rarity] : null, own = Chars.owns(id), eq = Chars.equipped() === id;
     const d = $('dossier'); d.innerHTML = ''; d.style.setProperty('--cc', C.col); d.className = 'dossier r-' + (C.rarity || 'none');
     const head = mkEl('div', 'ds-head'); const pic = mkEl('img', 'ds-pic'); pic.src = CharArt.portrait(id, 160); pic.alt = ''; head.appendChild(pic);
-    const nm = mkEl('div', 'ds-nm'); nm.appendChild(mkEl('div', 'ds-rar', R ? R.name : C.code ? 'CODE · ' + C.code : 'DEFAULT · ALWAYS OWNED')); nm.appendChild(mkEl('div', 'ds-name', C.name)); nm.appendChild(mkEl('div', 'ds-title', '“' + C.title + '”')); nm.appendChild(mkEl('div', 'ds-role', C.role));
+    const nm = mkEl('div', 'ds-nm'); nm.appendChild(mkEl('div', 'ds-rar', R ? R.name : C.code ? (C.tag ? C.tag + ' · ' : '') + 'CODE · ' + C.code : 'DEFAULT · ALWAYS OWNED')); nm.appendChild(mkEl('div', 'ds-name', C.name)); nm.appendChild(mkEl('div', 'ds-title', '“' + C.title + '”')); nm.appendChild(mkEl('div', 'ds-role', C.role));
     head.appendChild(nm); d.appendChild(head);
     const bars = mkEl('div', 'ds-bars');
     const bar = (label, val, max, txt) => { const r = mkEl('div', 'ds-bar'); r.appendChild(mkEl('span', '', label)); const t = mkEl('i'); const f = mkEl('b'); f.style.width = clamp(val / max, 0.02, 1) * 100 + '%'; t.appendChild(f); r.appendChild(t); r.appendChild(mkEl('em', '', txt)); bars.appendChild(r); };
@@ -43540,7 +44096,7 @@ const CharUI = {
     if (A) {
       const h = mkEl('div', 'ds-abh'); const ic = mkEl('img'); ic.src = CharArt.icon(A.icon, 64); ic.alt = ''; h.appendChild(ic);
       h.appendChild(mkEl('b', '', A.name)); h.appendChild(mkEl('kbd', '', 'F'));
-      h.appendChild(mkEl('em', '', A.passive ? 'PASSIVE · always on' : (A.dur ? A.dur + 's · ' : '') + 'cooldown ' + A.cd + 's' + (A.stam ? ' · ' + A.stam + ' stamina' : ''))); ab.appendChild(h);
+      h.appendChild(mkEl('em', '', A.passive ? 'PASSIVE · always on' : A.hold ? 'HOLD ' + Keys.b('ability') + ' · as long as your stamina lasts' : (A.dur ? A.dur + 's · ' : '') + 'cooldown ' + A.cd + 's' + (A.stam ? ' · ' + A.stam + ' stamina' : ''))); ab.appendChild(h);
       ab.appendChild(mkEl('p', '', A.desc));
       const U = C.ult && ABIL[C.ult];
       if (U) { // an ULTIMATE character's second power, on its own key
@@ -43896,7 +44452,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { Imm, IM_FOG, IMM_MODE, ImmHud, ImmBody, ImmWorld, ImmMotes, ImmFlies, ImmCam, ImmShafts, ImmSparks, ImmBreath, ImmClaws, dustMat, Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
+  Object.assign(window.LS, { Laser, Poop, hz37Trace, hz37Foe, Imm, IM_FOG, IMM_MODE, ImmHud, ImmBody, ImmWorld, ImmMotes, ImmFlies, ImmCam, ImmShafts, ImmSparks, ImmBreath, ImmClaws, dustMat, Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
   Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Post, RZT, ROOM_LOOK, genPaper, genPlanks, genTilesHQ, genPlasterCeil, genTrimWood, genPortraits, genWoodLeaf, get RZ_GEN_MS() { return RZ_GEN_MS; }, get instLamp() { return instLamp; }, RzContact, RzPBR, RzTorch, RzBody, RzAmb, RZ_SURF, flash, floorKey, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
