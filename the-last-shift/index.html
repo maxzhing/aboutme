@@ -11526,7 +11526,7 @@ const Cine = {
 /* sign the relay's own "host disconnected" notice (that is only ever  */
 /* taken as a hint to look for the host again).                        */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 33, BUILD = 37, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const NET_PROTO = 33, BUILD = 38, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 // (in order of preference: a friend joins through the first of these that has the room. Build 37: two on port 443 — the only port many school and
 //  work networks let through — mqtt.eclipseprojects.io and shiftr.io's public broker, which wants a login: user:pass@ in the address goes into MQTT's own)
 const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://test.mosquitto.org:8081/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://public:public@public.cloud.shiftr.io/'];
@@ -43133,7 +43133,7 @@ const Laser = {
     p.stamina = Math.max(0, p.stamina - A.drain / Math.max(1, Chars.cur().stam) * dt); p.staminaDelay = 0.8;
     if (p.stamina <= 0) { p.exhausted = true; this.held = false; this.stop(); UI.msg('Out of breath — the beams die. Get your breath back.', 'warn', 2.2); return; }
     Chars.B.laser = 0.3;
-    const e = _hz.set(p.pos.x, p.eyeY + p.bob, p.pos.z), f = p.forward(_hzF), tr = hz37Trace(e.x, e.y, e.z, f, A.range);
+    const e = _hz.set(p.pos.x, p.eyeY + p.bob + Fly.h, p.pos.z), f = p.forward(_hzF), tr = hz37Trace(e.x, e.y, e.z, f, A.range);
     this.hit = tr;
     // the damage: a little every tenth of a second; a harder pulse every second that staggers and sets it alight
     this.pulse -= dt; this.acc += A.dps * Chars.power() * dt; this.tick -= dt;
@@ -43195,7 +43195,7 @@ const Laser = {
   headOf(r, out) {
     const R = r.avatar && r.avatar.userData && r.avatar.userData.rig;
     if (R && R.head && r.avatar.visible) { R.head.getWorldPosition(out); out.y += 0.07; const cp = Math.cos(r.pitch || 0); out.x += -Math.sin(r.yaw) * cp * 0.12; out.z += -Math.cos(r.yaw) * cp * 0.12; return out; }
-    return out.set(r.pos.x, (r.eyeY || EYE_STAND) - 0.05, r.pos.z);
+    return out.set(r.pos.x, (r.eyeY || EYE_STAND) - 0.05 + (r.flyH || 0), r.pos.z);
   },
   // the glowing red of his eyes while he fires (a teammate's avatar)
   eyes(av, on) {
@@ -43429,9 +43429,53 @@ Object.assign(People.LOOKS, {
   const gu0 = Game.update; Game.update = function (dt) { const r = gu0.apply(this, arguments); try { Laser.update(dt); Poop.update(dt); } catch (e) { if (!Laser.err) { Laser.err = e; console.error('Build 37 characters', e); } } return r; };
   // the beams are drawn once the camera is where it is this frame (right after the torch is placed, as the torch's own shaft is): never a frame behind your view
   const gr0 = Game.render; Game.render = function (dt) { Laser.dt = dt || 0; Laser.drawn = false; Laser.inRender = true; try { return gr0.apply(this, arguments); } finally { Laser.inRender = false; } };
-  const ud0 = updateDust; updateDust = function () { const r = ud0.apply(this, arguments); if (Laser.inRender && !Laser.drawn) { Laser.drawn = true; try { Laser.render(Laser.dt); } catch (e) { if (!Laser.rerr) { Laser.rerr = e; console.error('Build 37 beams', e); } } } return r; };
-  const ng0 = Game.newGame; Game.newGame = function () { Laser.reset(); Poop.reset(); return ng0.apply(this, arguments); };
-  const qt0 = Game.quitToTitle; Game.quitToTitle = function () { Laser.reset(); Poop.reset(); return qt0.apply(this, arguments); };
+  const ud0 = updateDust; updateDust = function () { const r = ud0.apply(this, arguments); if (Laser.inRender && !Laser.drawn) { Laser.drawn = true; camera.position.y += Fly.h; try { Laser.render(Laser.dt); } catch (e) { if (!Laser.rerr) { Laser.rerr = e; console.error('Build 37 beams', e); } } } return r; };
+  const ng0 = Game.newGame; Game.newGame = function () { Laser.reset(); Poop.reset(); Fly.reset(); return ng0.apply(this, arguments); };
+  const qt0 = Game.quitToTitle; Game.quitToTitle = function () { Laser.reset(); Poop.reset(); Fly.reset(); return qt0.apply(this, arguments); };
+}
+
+/* ================= HOMELANDER flies: hold [Space] (the Hold key) — up to the ceiling indoors, high over the Hollow Woods ================= */
+const FLY = { rise: 3.2, drain: 14, min: 0.06, gravity: 11, reach: 1.2, open: 9, noModes: ['watch', 'anomaly', 'hunt'] };
+const Fly = {
+  h: 0, vy: 0, on: false, told: false, inStep: false,
+  reset() { this.h = 0; this.vy = 0; this.on = false; this.told = false; },
+  // how high his eyes may go here: under the ceiling (a hand's width below it), or the open sky
+  top() { const p = player; if (Game.mode === 'woods') return FLY.open; const c = cellOf(p.pos.x, p.pos.z), ceil = c && c.h ? c.h : WALL_H; return Math.max(0, ceil - 0.22 - p.eyeY - p.bob); },
+  can() {
+    const p = player;
+    return Chars.run === 'homelander' && Game.state === 'playing' && Game.inWorld() && FLY.noModes.indexOf(Game.mode) < 0 && !p.dead && !p.downed && !p.hidden && !p.inVent && !p.hideAnim
+      && !Game.controlLock && !Cine.locks() && !Game.ending && !Game.endingLock;
+  },
+  update(dt) {
+    const p = player;
+    if (Chars.run !== 'homelander') { if (this.h) this.reset(); return; }
+    if (!this.told && Game.state === 'playing' && Game.inWorld() && FLY.noModes.indexOf(Game.mode) < 0) { this.told = true; UI.msg('HOMELANDER can fly — hold ' + Keys.b('hold') + ' to rise, let go to come down. It costs stamina.', '', 5); }
+    const tried = Keys.down('hold') && this.can() && !p.exhausted;
+    if (tried && p.stamina <= FLY.min) { p.exhausted = true; if (this.h > 0.05) UI.msg('Out of breath — you\'re coming down.', 'warn', 1.8); } // (out of breath: down, and no more till he has it back)
+    const want = tried && !p.exhausted;
+    const top = this.top();
+    if (want) {
+      this.vy = damp(this.vy, this.h < top - 0.05 ? FLY.rise : 0, 6, dt);
+      p.stamina = Math.max(0, p.stamina - FLY.drain / ((CHARS.homelander.stam || 100)) * dt); p.staminaDelay = Math.max(p.staminaDelay || 0, 0.8);
+    } else this.vy -= FLY.gravity * dt;
+    const was = this.h; this.h = clamp(this.h + this.vy * dt, 0, top);
+    if (this.h >= top && this.vy > 0) this.vy = 0;
+    if (this.h <= 0) { if (was > 0.4 && this.vy < -3.5) { Game.shake(Math.min(0.5, -this.vy * 0.05)); Sound.footstep('concrete', 1); Game.noise(p.pos, 12, 'player'); } this.vy = 0; }
+    this.on = this.h > 0.05;
+  },
+};
+{
+  // up there, he makes no footsteps (and nothing on the floor can reach him)
+  const pu0 = player.update; player.update = function () { Fly.inStep = true; try { return pu0.apply(this, arguments); } finally { Fly.inStep = false; } };
+  const fs0 = Sound.footstep; Sound.footstep = function () { if (Fly.inStep && Fly.h > 0.25) return; return fs0.apply(this, arguments); };
+  const gn0 = Game.noise; Game.noise = function (pos, r, kind) { if (Fly.inStep && Fly.h > 0.25 && pos === player.pos) return; return gn0.apply(this, arguments); };
+  const iv0 = player.invuln; player.invuln = function () { return Fly.h > FLY.reach || iv0.apply(this, arguments); };
+  const riv0 = RemotePlayer.prototype.invuln; RemotePlayer.prototype.invuln = function () { return (this.flyH || 0) > FLY.reach || riv0.apply(this, arguments); };
+  // everyone else: how high he is, sent with the rest of his state ([16], ×10)
+  const ns0 = Chars.netState; Chars.netState = function () { const a = ns0.apply(this, arguments); a.push(Math.round(Fly.h * 10)); return a; };
+  const as0 = RemotePlayer.prototype.applyState; RemotePlayer.prototype.applyState = function (a) { const r = as0.apply(this, arguments); if (Array.isArray(a)) { this.flyH = this.charId === 'homelander' ? clamp((a[16] | 0) / 10, 0, 12) : 0; if (this.last) this.last[16] = Math.round(this.flyH * 10); } return r; };
+  const ru0 = RemotePlayer.prototype.update; RemotePlayer.prototype.update = function (dt) { const r = ru0.apply(this, arguments); if (this.avatar) { this.flyShow = damp(this.flyShow || 0, this.flyH || 0, 10, dt); this.avatar.position.y += this.flyShow; } return r; };
+  const gu1 = Game.update; Game.update = function (dt) { const r = gu1.apply(this, arguments); try { Fly.update(dt); } catch (e) { if (!Fly.err) { Fly.err = e; console.error('Build 38 flight', e); } } return r; };
 }
 
 /* ------------------------------------------------------------------ */
@@ -44452,7 +44496,7 @@ if (DEBUG) {
     giveAll() { player.hasFlash = true; Game.cards.yellow = Game.cards.blue = Game.cards.red = true; },
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
-  Object.assign(window.LS, { Laser, Poop, hz37Trace, hz37Foe, Imm, IM_FOG, IMM_MODE, ImmHud, ImmBody, ImmWorld, ImmMotes, ImmFlies, ImmCam, ImmShafts, ImmSparks, ImmBreath, ImmClaws, dustMat, Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
+  Object.assign(window.LS, { Laser, Poop, Fly, FLY, hz37Trace, hz37Foe, Imm, IM_FOG, IMM_MODE, ImmHud, ImmBody, ImmWorld, ImmMotes, ImmFlies, ImmCam, ImmShafts, ImmSparks, ImmBreath, ImmClaws, dustMat, Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
   Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Post, RZT, ROOM_LOOK, genPaper, genPlanks, genTilesHQ, genPlasterCeil, genTrimWood, genPortraits, genWoodLeaf, get RZ_GEN_MS() { return RZ_GEN_MS; }, get instLamp() { return instLamp; }, RzContact, RzPBR, RzTorch, RzBody, RzAmb, RZ_SURF, flash, floorKey, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
