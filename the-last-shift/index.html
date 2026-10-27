@@ -1380,7 +1380,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
           <li>On <b>Hard</b> the Warden breaks through locked iron security doors. Only the blast door to the lift holds.</li>
           <li>Read every note. They contain the codes, routes and secrets you need to get out.</li>
           <li><b>Bonus goals</b> (under your objectives): six <b>voice logs</b> hidden around the level tell its story; rebooting the cameras in <b>Camera Control</b> puts it on your minimap (the reboot is loud); and you can learn who it used to be. Every shift ends with a score and a rank, and every achievement is saved under Goals, with your best times for every mode.</li>
-          <li>Co-op (up to 4): one player hosts and sends the invite link (or the 12-character room code — only people you give it to can get in); friends open it and press Join. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
+          <li>Co-op (up to 4): one player hosts and sends the invite link (or the 4-character room code); friends open it and press Join. Keycards are shared, the Warden hunts whoever it notices, and a caught guard wakes up at Desk B — unless the whole team goes down.</li>
         </ul>
       </div>
     </div>
@@ -1431,7 +1431,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <p class="p">Play the whole game together. One guard hosts and sends the invite link — friends open it and press <b>Join</b>. Up to 4 players, nothing to install.</p>
       <div class="row"><button class="btn primary" id="btn-mp-host">Host a game</button><button class="btn" id="btn-mp-back">Back</button></div>
       <div class="mp-or">or join a friend's room</div>
-      <div class="mp-joinrow"><input id="mp-code" size="16" placeholder="ABCD-EFGH-JKLM" autocomplete="off" spellcheck="false" aria-label="Room code (12 characters)"><button class="btn primary" id="btn-mp-join">Join</button></div>
+      <div class="mp-joinrow"><input id="mp-code" size="16" placeholder="K7QX" autocomplete="off" spellcheck="false" aria-label="Room code (4 characters)"><button class="btn primary" id="btn-mp-join">Join</button></div>
     </div>
     <div id="mp-hostbox" hidden>
       <div class="kicker">Your room code</div>
@@ -11571,15 +11571,15 @@ const Cine = {
 const NET_PROTO = 33, BUILD = 38, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 // (in order of preference: a friend joins through the first of these that has the room. Build 37: two on port 443 — the only port many school and
 //  work networks let through — mqtt.eclipseprojects.io and shiftr.io's public broker, which wants a login: user:pass@ in the address goes into MQTT's own)
-const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://test.mosquitto.org:8081/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://public:public@public.cloud.shiftr.io/'];
+const RELAYS = ['wss://test.mosquitto.org:8081/mqtt', 'wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt']; // (Build 38: test.mosquitto.org first — friends join through it whenever it has the room; the others are backups)
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
-const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 12-character room codes.';
-const SHORT_MSG = 'That is a 4-letter room code from an older version of the game. Room codes now have 12 characters (like ABCD-EFGH-JKLM), so strangers can\'t guess them or listen in. Both of you refresh the page (Cmd+Shift+R / Ctrl+Shift+R), then the host makes a new room.';
-const CODE_LEN = 12, KDF_N = 150000; // (12 of the 32 code characters: 60 bits — and slow to try out, key derivation is 150,000 rounds)
+const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-character room codes.';
+const LONG_MSG = 'That is a long room code from an older version of the game. Room codes are 4 characters again (like K7QX). Both of you refresh the page (Cmd+Shift+R / Ctrl+Shift+R), then the host makes a new room.';
+const CODE_LEN = 4, KDF_N = 150000; // (Build 38: back to 4 characters, as asked — about a million codes; messages are still signed with a key made from the code)
 const GUARD_COLORS = [0xffc65a, 0x5ac8ff, 0xff7aa8, 0x8dff7a];
 const cleanName = s => String(s || '').replace(/[^\w .'-]/g, '').trim().slice(0, 16);
-const cleanCode = s => (String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, CODE_LEN).match(/.{1,4}/g) || []).join('-'); // ABCD-EFGH-JKLM
+const cleanCode = s => (String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12).match(/.{1,4}/g) || []).join('-'); // ABCD (an old long code is kept whole, so joining can say what it is)
 const codeFrom = s => { const m = /room=([A-Za-z0-9-]{4,20})/.exec(String(s || '')); return cleanCode(m ? m[1] : s); }; // a code, or a whole invite link
 const newCode = () => cleanCode(Array.from(crypto.getRandomValues(new Uint8Array(CODE_LEN)), b => CODE_ABC[b & 31]).join('')); // (32 characters: every one equally likely)
 const OLD_CODE = s => /LS1[ZP]/.test(String(s || ''));
@@ -12091,9 +12091,10 @@ const Net = {
   },
   async join(raw) {
     if (OLD_CODE(raw)) throw new Error(OLD_MSG);
+    const m = /room=([A-Za-z0-9-]{4,20})/.exec(String(raw || '')), rawLen = String(m ? m[1] : raw || '').replace(/[^A-Za-z0-9]/g, '').length;
+    if (rawLen > CODE_LEN) throw new Error(LONG_MSG);
     const code = codeFrom(raw), len = code.replace(/-/g, '').length;
-    if (len === 4) throw new Error(SHORT_MSG);
-    if (len !== CODE_LEN) throw new Error('Type the whole room code from the host — 12 letters and numbers, like ABCD-EFGH-JKLM — or just open their invite link.');
+    if (len !== CODE_LEN) throw new Error('Type the 4-character room code from the host (like K7QX), or just open their invite link.');
     this.leave();
     const tok = this.tok = {};
     this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code; this.cid = rid(10); this.epoch = 0; this.cctr = 0; this.ictr = { a: 0, c: 0 }; this.badRelays = new Set();
