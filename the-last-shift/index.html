@@ -6799,6 +6799,48 @@ const Sound = (function () {
     for (let i = 0; i < 4; i++) noise(out, t + 0.12 + i * 0.07 + rand(0, 0.03), 0.05, 'bandpass', rand(700, 1600), 3, 0.3, 0.002, brown); // (bits landing)
     if (kill) { tone(out, t + 0.05, 'square', 520, 130, 0.35, 0.35, 0.003); tone(out, t + 0.05, 'sine', 1046, 1046, 0.5, 0.25, 0.002); tone(out, t + 0.15, 'sine', 1568, 1568, 0.6, 0.2, 0.002); }
   });
+  // ---- Build 38: HOMELANDER in the air ----
+  // the wind past your ears: one loop, its loudness and pitch set every frame by how fast you're going (0..1), a flutter when you're really moving
+  let FW = null;
+  S.flyWind = safe(function (k, boost) {
+    const t = ctx.currentTime;
+    if (!FW) {
+      if (!(k > 0.01)) return;
+      const out = dest(null, 0.04); out.gain.value = 0.55;
+      const g = ctx.createGain(); g.gain.value = 0.0001; g.connect(out);
+      const src = ctx.createBufferSource(); src.buffer = pink; src.loop = true; src.loopStart = 0; src.loopEnd = pink.duration;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 500; bp.Q.value = 0.7;
+      const hs = ctx.createBiquadFilter(); hs.type = 'highshelf'; hs.frequency.value = 3000; hs.gain.value = -6;
+      src.connect(bp); bp.connect(hs); hs.connect(g);
+      const rb = ctx.createBufferSource(); rb.buffer = brown; rb.loop = true; const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 160; const rg = ctx.createGain(); rg.gain.value = 0.0001; rb.connect(lp); lp.connect(rg); rg.connect(out);
+      const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 7; lg.gain.value = 0; lfo.connect(lg); lg.connect(g.gain);
+      src.start(t, Math.random() * 2); rb.start(t, Math.random() * 2); lfo.start(t);
+      FW = { g, rg, bp, lfo, lg, nodes: [src, rb, lfo] };
+    }
+    const kk = clamp(k || 0, 0, 1), b = boost ? 1 : 0;
+    FW.g.gain.setTargetAtTime(0.0001 + kk * kk * (0.5 + 0.25 * b), t, 0.08);
+    FW.rg.gain.setTargetAtTime(0.0001 + kk * (0.45 + 0.35 * b), t, 0.1);
+    FW.bp.frequency.setTargetAtTime(380 + kk * 1500 + b * 600, t, 0.1);
+    FW.lfo.frequency.setTargetAtTime(5 + kk * 9, t, 0.2); FW.lg.gain.setTargetAtTime(kk > 0.45 ? (kk - 0.45) * 0.18 : 0, t, 0.2); // (a cape snapping in it)
+  });
+  S.flyWindOff = safe(function () {
+    if (!FW) return; const L = FW, t = ctx.currentTime; FW = null;
+    L.g.gain.cancelScheduledValues(t); L.g.gain.setTargetAtTime(0.0001, t, 0.15); L.rg.gain.cancelScheduledValues(t); L.rg.gain.setTargetAtTime(0.0001, t, 0.15);
+    setTimeout(() => { for (const o of L.nodes) { try { o.stop(); } catch (e) { } } }, 900);
+  });
+  // lifting off: a deep push and a rush of air going up; a boost: a crack and a tearing whoosh
+  S.flyLaunch = safe(function (big) {
+    const t = ctx.currentTime, out = here(null, 0.08, big ? 0.9 : 0.7);
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(big ? 70 : 90, t); o.frequency.exponentialRampToValueAtTime(big ? 34 : 45, t + 0.4); o.connect(g); g.connect(out); env(g.gain, t, 0.01, big ? 0.9 : 0.6, 0.45); o.start(t); o.stop(t + 0.5);
+    noise(out, t, big ? 0.7 : 0.55, 'bandpass', big ? 900 : 650, 0.8, big ? 0.6 : 0.42, 0.03, pink);
+    if (big) noise(out, t, 0.08, 'highpass', 2500, 0.7, 0.5, 0.002);
+  });
+  // coming down hard: a thump through the floor (and a scuff if it was gentle)
+  S.flyLand = safe(function (k) {
+    const t = ctx.currentTime, out = here(null, 0.1, 0.5 + 0.5 * clamp(k, 0, 1));
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.25); o.connect(g); g.connect(out); env(g.gain, t, 0.004, 0.4 + 0.6 * clamp(k, 0, 1), 0.3); o.start(t); o.stop(t + 0.35);
+    noise(out, t, 0.18, 'lowpass', 700, 0.7, 0.35 + 0.3 * clamp(k, 0, 1), 0.003, brown);
+  });
   return S;
 })();
 
@@ -43429,53 +43471,169 @@ Object.assign(People.LOOKS, {
   const gu0 = Game.update; Game.update = function (dt) { const r = gu0.apply(this, arguments); try { Laser.update(dt); Poop.update(dt); } catch (e) { if (!Laser.err) { Laser.err = e; console.error('Build 37 characters', e); } } return r; };
   // the beams are drawn once the camera is where it is this frame (right after the torch is placed, as the torch's own shaft is): never a frame behind your view
   const gr0 = Game.render; Game.render = function (dt) { Laser.dt = dt || 0; Laser.drawn = false; Laser.inRender = true; try { return gr0.apply(this, arguments); } finally { Laser.inRender = false; } };
-  const ud0 = updateDust; updateDust = function () { const r = ud0.apply(this, arguments); if (Laser.inRender && !Laser.drawn) { Laser.drawn = true; camera.position.y += Fly.h; try { Laser.render(Laser.dt); } catch (e) { if (!Laser.rerr) { Laser.rerr = e; console.error('Build 37 beams', e); } } } return r; };
+  const ud0 = updateDust; updateDust = function () { const r = ud0.apply(this, arguments); if (Laser.inRender && !Laser.drawn) { Laser.drawn = true; camera.position.y += Fly.h + Fly.kick; try { Laser.render(Laser.dt); } catch (e) { if (!Laser.rerr) { Laser.rerr = e; console.error('Build 37 beams', e); } } } return r; };
   const ng0 = Game.newGame; Game.newGame = function () { Laser.reset(); Poop.reset(); Fly.reset(); return ng0.apply(this, arguments); };
   const qt0 = Game.quitToTitle; Game.quitToTitle = function () { Laser.reset(); Poop.reset(); Fly.reset(); return qt0.apply(this, arguments); };
 }
 
-/* ================= HOMELANDER flies: hold [Space] (the Hold key) — up to the ceiling indoors, high over the Hollow Woods ================= */
-const FLY = { rise: 3.2, drain: 14, min: 0.06, gravity: 11, reach: 1.2, open: 9, noModes: ['watch', 'anomaly', 'hunt'] };
+/* ================= HOMELANDER flies =================
+   [Space] (the Hold key) lifts off; up there he hovers. [Space] climbs, [Crouch] sinks (and lands), [WASD] flies with weight and momentum,
+   [Sprint] boosts the way he's looking — look down to dive, up to climb. Stamina: a little to hover, more to move, a lot to boost;
+   out of breath, he drops. Indoors up to the ceiling; over the Hollow Woods, far higher. Off the floor nothing can reach him. */
+const FLY = { lift: 3.4, sink: 4.6, cruise: 6.2, boost: 12.5, accel: 3.2, drag: 1.1, drainHover: 6, drainMove: 11, drainBoost: 24, min: 0.06, gravity: 11,
+  reach: 1.2, open: 9, noModes: ['watch', 'anomaly', 'hunt'] };
+const FLY_MOVE = new Set(['forward', 'back', 'left', 'right', 'crouch', 'sprint']); // (in the air these are his, not the walk's)
+const _flyA = new T.Vector3(), _flyB = new T.Vector3();
 const Fly = {
-  h: 0, vy: 0, on: false, told: false, inStep: false,
-  reset() { this.h = 0; this.vy = 0; this.on = false; this.told = false; },
-  // how high his eyes may go here: under the ceiling (a hand's width below it), or the open sky
-  top() { const p = player; if (Game.mode === 'woods') return FLY.open; const c = cellOf(p.pos.x, p.pos.z), ceil = c && c.h ? c.h : WALL_H; return Math.max(0, ceil - 0.22 - p.eyeY - p.bob); },
+  h: 0, vy: 0, vx: 0, vz: 0, air: false, on: false, told: false, inStep: false, kick: 0, kickV: 0, bank: 0, lastYaw: 0, speedK: 0, fov: 0, lean: 0, boosting: false, noiseT: 0, airT: 0,
+  reset() { this.h = 0; this.vy = 0; this.vx = 0; this.vz = 0; this.air = false; this.on = false; this.told = false; this.kick = 0; this.kickV = 0; this.bank = 0; this.speedK = 0; this.fov = 0; this.lean = 0; this.boosting = false; this.airT = 0;
+    Sound.flyWindOff(); const ov = $('fx-fly'); if (ov) ov.style.opacity = 0; },
+  // how high his eyes may go here: a hand's width under the ceiling, or the open sky
+  top() { const p = player; if (Game.mode === 'woods') return FLY.open; const c = cellOf(p.pos.x, p.pos.z), ceil = c && c.h ? c.h : WALL_H; return Math.max(0, ceil - 0.22 - p.eyeY); },
   can() {
     const p = player;
     return Chars.run === 'homelander' && Game.state === 'playing' && Game.inWorld() && FLY.noModes.indexOf(Game.mode) < 0 && !p.dead && !p.downed && !p.hidden && !p.inVent && !p.hideAnim
-      && !Game.controlLock && !Cine.locks() && !Game.ending && !Game.endingLock;
+      && !Game.controlLock && !Cine.locks() && !Game.ending && !Game.endingLock && !(typeof Battle !== 'undefined' && Battle.choice && !Battle.choice.done); // (Space is RUN in FIGHT or RUN)
+  },
+  dust(k) { const p = player; try { Cosmos.shock(p.pos.x, 0.05, p.pos.z, 0xb8ad9c, 1.2 + k * 1.6, 0.45, 0.5); Cosmos.stars(p.pos.x, 0.15, p.pos.z, 8 + Math.round(k * 10), 1.4 + k * 1.5, [0x8a8070, 0x6a6458, 0xaaa090], 0.5, 0.6); } catch (e) { } },
+  launch() {
+    const p = player; this.air = true; this.vy = 4.4; this.vx = p.vel.x; this.vz = p.vel.z; this.kickV = -1.4; this.airT = 0; this.lastYaw = p.yaw;
+    p.crouchToggle = false; Sound.flyLaunch(false); Game.shake(0.14); this.dust(0.6); Game.noise(p.pos, 9, 'player');
+  },
+  land() {
+    const p = player, k = clamp(-this.vy / 9, 0, 1);
+    this.air = false; this.h = 0; this.on = false; p.crouchToggle = false;
+    if (k > 0.15) { Sound.flyLand(k); Game.shake(0.1 + k * 0.4); this.dust(k); Game.noise(p.pos, 6 + k * 10, 'player'); }
+    this.kickV = Math.min(this.kickV, -0.6 - k * 2.6); this.vy = 0;
+    p.vel.x = this.vx * 0.5; p.vel.z = this.vz * 0.5; // (he skids a step as he touches down)
   },
   update(dt) {
     const p = player;
-    if (Chars.run !== 'homelander') { if (this.h) this.reset(); return; }
-    if (!this.told && Game.state === 'playing' && Game.inWorld() && FLY.noModes.indexOf(Game.mode) < 0) { this.told = true; UI.msg('HOMELANDER can fly — hold ' + Keys.b('hold') + ' to rise, let go to come down. It costs stamina.', '', 5); }
-    const tried = Keys.down('hold') && this.can() && !p.exhausted;
-    if (tried && p.stamina <= FLY.min) { p.exhausted = true; if (this.h > 0.05) UI.msg('Out of breath — you\'re coming down.', 'warn', 1.8); } // (out of breath: down, and no more till he has it back)
-    const want = tried && !p.exhausted;
-    const top = this.top();
-    if (want) {
-      this.vy = damp(this.vy, this.h < top - 0.05 ? FLY.rise : 0, 6, dt);
-      p.stamina = Math.max(0, p.stamina - FLY.drain / ((CHARS.homelander.stam || 100)) * dt); p.staminaDelay = Math.max(p.staminaDelay || 0, 0.8);
-    } else this.vy -= FLY.gravity * dt;
-    const was = this.h; this.h = clamp(this.h + this.vy * dt, 0, top);
-    if (this.h >= top && this.vy > 0) this.vy = 0;
-    if (this.h <= 0) { if (was > 0.4 && this.vy < -3.5) { Game.shake(Math.min(0.5, -this.vy * 0.05)); Sound.footstep('concrete', 1); Game.noise(p.pos, 12, 'player'); } this.vy = 0; }
+    if (Chars.run !== 'homelander') { if (this.air || this.h || this.fov) this.reset(); return; }
+    if (!this.told && Game.state === 'playing' && Game.inWorld() && FLY.noModes.indexOf(Game.mode) < 0) { this.told = true; UI.msg('HOMELANDER can fly — ' + Keys.b('hold') + ' to take off and climb, ' + Keys.b('crouch') + ' to sink and land, ' + Keys.b('sprint') + ' to boost where you look.', '', 6); }
+    // the landing dip / take-off push on the camera (a spring), and the speed feel fading out on the ground
+    this.kickV += (-this.kick * 70 - this.kickV * 10) * dt; this.kick = clamp(this.kick + this.kickV * dt, -0.35, 0.2);
+    const can = this.can();
+    if (!this.air) {
+      this.fov = damp(this.fov, 0, 4, dt); this.speedK = damp(this.speedK, 0, 4, dt); this.lean = damp(this.lean, 0, 6, dt);
+      if (this.speedK < 0.02) Sound.flyWindOff(); else Sound.flyWind(this.speedK, false);
+      this.overlay(); this.on = false;
+      if (can && Keys.down('hold') && !p.exhausted && p.stamina > FLY.min) this.launch(); else return;
+    }
+    // ---- in the air ----
+    this.airT += dt;
+    if (!can && (p.dead || p.downed || p.hidden || p.inVent || Game.state !== 'playing' || !Game.inWorld())) { this.h = 0; this.vy = 0; this.land(); return; } // (caught, down, in a locker: on the floor, now)
+    if (p.stamina <= FLY.min && !p.exhausted) { p.exhausted = true; UI.msg('Out of breath — you\'re falling!', 'warn', 1.8); }
+    const ctl = can && !p.exhausted, Kd = a => Keys.down(a);
+    let f = 0, s = 0, up = false, down = false, boost = false;
+    if (ctl) { f = (Kd('forward') ? 1 : 0) - (Kd('back') ? 1 : 0); s = (Kd('right') ? 1 : 0) - (Kd('left') ? 1 : 0); up = Kd('hold') && this.airT > 0.15; down = Kd('crouch') || !!p.crouchToggle; boost = Kd('sprint') && f > 0; }
+    if (boost && !this.boosting) { Sound.flyLaunch(true); Game.shake(0.12); this.kickV += 0.8; }
+    this.boosting = boost;
+    const yaw = p.yaw, fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw);
+    let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 0) { wx /= wl; wz /= wl; }
+    const spd = boost ? FLY.boost * Math.cos(clamp(p.pitch, -1.2, 1.2)) : FLY.cruise, k = (f || s) ? FLY.accel * (boost ? 1.4 : 1) : FLY.drag;
+    this.vx = damp(this.vx, wx * spd, k, dt); this.vz = damp(this.vz, wz * spd, k, dt);
+    // up and down: climbing, sinking, hovering — or, boosting, wherever he's looking; out of breath, just falling
+    if (!ctl) this.vy -= FLY.gravity * dt;
+    else { const tv = boost ? Math.sin(clamp(p.pitch, -1.2, 1.2)) * FLY.boost + (up ? 2 : 0) - (down ? 3 : 0) : up ? FLY.lift : down ? -FLY.sink : 0; this.vy = damp(this.vy, tv, this.airT < 0.3 && tv === 0 ? 2 : 4.5, dt); }
+    // stamina
+    if (ctl) { const dr = boost ? FLY.drainBoost : (f || s || up) ? FLY.drainMove : FLY.drainHover; p.stamina = Math.max(0, p.stamina - dr / (CHARS.homelander.stam || 100) * dt); p.staminaDelay = Math.max(p.staminaDelay || 0, 0.8); }
+    // across: through the same walls and doors as walking (a wall hit at speed stops him dead)
+    const ox = p.pos.x, oz = p.pos.z, hv = Math.hypot(this.vx, this.vz);
+    moveBody(p.pos, this.vx * dt, this.vz * dt, PLAYER_R, 'player', false);
+    if (dt > 0) { const ax = (p.pos.x - ox) / dt, az = (p.pos.z - oz) / dt, lost = hv - Math.hypot(ax, az); if (lost > 5) { Game.shake(Math.min(0.5, lost * 0.04)); Sound.flyLand(0.35); } this.vx = ax; this.vz = az; }
+    p.vel.x = this.vx; p.vel.z = this.vz;
+    // up: under the ceiling (a ceiling hit at speed: a bump)
+    const top = this.top(); this.h += this.vy * dt;
+    if (this.h >= top) { if (this.vy > 4) { Game.shake(0.16); Sound.flyLand(0.25); } this.h = top; if (this.vy > 0) this.vy = 0; }
+    if (this.h <= 0) { this.h = 0; if (this.vy <= 0 && this.airT > 0.2) { this.land(); this.overlay(); return; } }
+    // ---- how it feels ----
+    const sp = Math.hypot(this.vx, this.vz), fwd = this.vx * fx + this.vz * fz, lat = this.vx * rx + this.vz * rz;
+    this.speedK = clamp((sp + Math.abs(this.vy) * 0.6) / FLY.boost, 0, 1);
+    let dyaw = Math.atan2(Math.sin(yaw - this.lastYaw), Math.cos(yaw - this.lastYaw)); this.lastYaw = yaw; const yr = dt > 0 ? dyaw / dt : 0;
+    this.bank = damp(this.bank, clamp(yr * 0.045 * this.speedK - lat * 0.03, -0.32, 0.32), 4, dt); // (banking into a turn, leaning into a strafe)
+    p.roll = this.bank;
+    p.bob = Math.sin(Game.time * 2.1) * 0.035 * (1 - this.speedK) + (Math.random() - 0.5) * 0.02 * this.speedK * this.speedK; // (a hover's slow rise and fall; buffeting at speed)
+    this.fov = damp(this.fov, this.speedK * 13 + (boost ? 5 : 0), 3, dt);
+    this.lean = damp(this.lean, clamp(fwd / FLY.boost, -0.25, 1) * 1.25 + 0.1, 4, dt);
+    Sound.flyWind(this.speedK, boost);
+    if ((this.noiseT -= dt) <= 0) { this.noiseT = 0.5; if (sp > 4) Game.noise(p.pos, 4 + this.speedK * 10, 'player'); } // (a rush of air: things hear it go by)
+    this.overlay();
     this.on = this.h > 0.05;
   },
+  // the edges of the view stream past at speed
+  overlay() { const ov = $('fx-fly'); if (!ov) return; const k = this.air ? this.speedK : this.speedK * 0.5, o = k > 0.25 ? (k - 0.25) * 0.75 : 0; ov.style.opacity = o.toFixed(3); if (o > 0) ov.style.transform = 'rotate(' + (Math.random() * 360).toFixed(1) + 'deg) scale(' + (1.05 + Math.random() * 0.08).toFixed(3) + ')'; },
 };
+// a person in the air: legs together and trailing, one knee bent, toes pointed; the body tipping forward with speed; fists forward when fast
+function hz38FlyPose(g, R, yaw, lean, bank, k, arms) {
+  const t = Game.time, fl = Math.sin(t * 2.4) * 0.05;
+  const mix = (b, x, y, z) => { if (!b) return; b.rotation.x = lerp(b.rotation.x, x, k); b.rotation.y = lerp(b.rotation.y, y, k); b.rotation.z = lerp(b.rotation.z, z, k); };
+  mix(R.legL, 0.05 + fl, 0, -0.04); mix(R.legR, -0.1 - fl, 0, 0.04);
+  mix(R.kneeL, -0.12, 0, 0); mix(R.kneeR, -0.5, 0, 0);
+  mix(R.footL, 0.7, 0, 0); mix(R.footR, 0.7, 0, 0);
+  if (R.spine) mix(R.spine, -0.08 * lean, 0, 0);
+  if (arms) { const fast = clamp((lean - 0.5) / 0.6, 0, 1);
+    mix(R.armL, lerp(0.25, 0.35, fast), 0, lerp(-0.3, -0.15, fast)); mix(R.elbowL, 0.35, 0, 0);
+    mix(R.armR, lerp(0.25, 2.9, fast), 0, lerp(0.3, 0.05, fast)); mix(R.elbowR, lerp(0.35, 0, fast), 0, 0); }
+  // tip the whole body over about the hips (so it stays where it is)
+  g.updateMatrixWorld(true); R.hips.getWorldPosition(_flyA);
+  g.rotation.set(-lean * k, yaw, bank * 1.4 * k, 'YXZ');
+  g.updateMatrixWorld(true); R.hips.getWorldPosition(_flyB);
+  g.position.x += _flyA.x - _flyB.x; g.position.y += _flyA.y - _flyB.y; g.position.z += _flyA.z - _flyB.z;
+}
 {
-  // up there, he makes no footsteps (and nothing on the floor can reach him)
-  const pu0 = player.update; player.update = function () { Fly.inStep = true; try { return pu0.apply(this, arguments); } finally { Fly.inStep = false; } };
-  const fs0 = Sound.footstep; Sound.footstep = function () { if (Fly.inStep && Fly.h > 0.25) return; return fs0.apply(this, arguments); };
-  const gn0 = Game.noise; Game.noise = function (pos, r, kind) { if (Fly.inStep && Fly.h > 0.25 && pos === player.pos) return; return gn0.apply(this, arguments); };
+  // up there, his feet don't walk: the walk doesn't move him (the flight does), no footsteps, nothing on the floor can reach him
+  const pu0 = player.update; player.update = function (dt) {
+    Fly.inStep = true; const air = Fly.air && Chars.run === 'homelander'; let kd0 = null, ct = false;
+    if (air) { kd0 = Keys.down; Keys.down = function (a) { return FLY_MOVE.has(a) ? false : kd0.call(Keys, a); }; ct = this.crouchToggle; this.crouchToggle = false; this.vel.set(0, 0, 0); }
+    try { return pu0.apply(this, arguments); } finally { Fly.inStep = false; if (air) { Keys.down = kd0; this.crouchToggle = ct; this.vel.x = Fly.vx; this.vel.z = Fly.vz; } }
+  };
+  const fs0 = Sound.footstep; Sound.footstep = function () { if (Fly.inStep && (Fly.air || Fly.h > 0.25)) return; return fs0.apply(this, arguments); };
+  const gn0 = Game.noise; Game.noise = function (pos, r, kind) { if (Fly.inStep && (Fly.air || Fly.h > 0.25) && pos === player.pos) return; return gn0.apply(this, arguments); };
   const iv0 = player.invuln; player.invuln = function () { return Fly.h > FLY.reach || iv0.apply(this, arguments); };
   const riv0 = RemotePlayer.prototype.invuln; RemotePlayer.prototype.invuln = function () { return (this.flyH || 0) > FLY.reach || riv0.apply(this, arguments); };
-  // everyone else: how high he is, sent with the rest of his state ([16], ×10)
+  // the view widens with speed
+  const fa0 = Chars.fovAdd; Chars.fovAdd = function () { return fa0.apply(this, arguments) + (Chars.run === 'homelander' ? Fly.fov : 0); };
+  // the HUD: how long he can stay up
+  const hl1 = Powers.hudLine; Powers.hudLine = function (A) { if (A && A.id === 'laser' && Fly.air && !Laser.on) return [(player.exhausted ? 'FALLING' : Fly.boosting ? 'BOOST' : 'FLYING') + ' · ' + Math.round(player.stamina * 100) + '%', clamp(player.stamina, 0, 1)]; return hl1.call(this, A); };
+  // your own body, looking down: up here with you, in the flying pose
+  const ib0 = ImmBody.frame; ImmBody.frame = function (dt) {
+    const r = ib0.apply(this, arguments);
+    if (this.on && this.g && this.R && Chars.run === 'homelander' && (Fly.air || Fly.h > 0.02)) {
+      const g = this.g, R = this.R, p = player, kk = clamp(Fly.h / 0.5, 0, 1);
+      hz38FlyPose(g, R, p.yaw, Fly.lean, -Fly.bank, kk, false);
+      g.updateMatrixWorld(true); R.neck.getWorldPosition(_flyA);
+      const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), back = 0.07 * (this.depth || 1), eye = p.eyeY + p.bob + Fly.h + Fly.kick;
+      g.position.x += p.pos.x - fx * back - _flyA.x; g.position.z += p.pos.z - fz * back - _flyA.z; g.position.y += eye - 0.15 - _flyA.y;
+      g.updateMatrixWorld(true);
+    }
+    return r;
+  };
+  // everyone else: how high he is, sent with the rest of his state ([16], ×10) — and his avatar flies (posed, not walking on air)
   const ns0 = Chars.netState; Chars.netState = function () { const a = ns0.apply(this, arguments); a.push(Math.round(Fly.h * 10)); return a; };
   const as0 = RemotePlayer.prototype.applyState; RemotePlayer.prototype.applyState = function (a) { const r = as0.apply(this, arguments); if (Array.isArray(a)) { this.flyH = this.charId === 'homelander' ? clamp((a[16] | 0) / 10, 0, 12) : 0; if (this.last) this.last[16] = Math.round(this.flyH * 10); } return r; };
-  const ru0 = RemotePlayer.prototype.update; RemotePlayer.prototype.update = function (dt) { const r = ru0.apply(this, arguments); if (this.avatar) { this.flyShow = damp(this.flyShow || 0, this.flyH || 0, 10, dt); this.avatar.position.y += this.flyShow; } return r; };
+  const ru0 = RemotePlayer.prototype.update; RemotePlayer.prototype.update = function (dt) {
+    const r = ru0.apply(this, arguments);
+    if (this.avatar && dt > 0) {
+      this.flyShow = damp(this.flyShow || 0, this.flyH || 0, 8, dt);
+      const px = this.pos.x, pz = this.pos.z; if (this._fpx === undefined) { this._fpx = px; this._fpz = pz; }
+      const vx = (px - this._fpx) / dt, vz = (pz - this._fpz) / dt; this._fpx = px; this._fpz = pz;
+      const yw = this.yaw || 0, fwd = vx * -Math.sin(yw) + vz * -Math.cos(yw);
+      this.flyLean = damp(this.flyLean || 0, clamp(fwd / FLY.boost, -0.25, 1) * 1.25 + 0.1, 3, dt);
+      const k = clamp(this.flyShow / 0.5, 0, 1), U = this.avatar.userData;
+      if (k > 0.01 && U && U.rig) hz38FlyPose(this.avatar, U.rig, this.avatar.rotation.y, this.flyLean, 0, k, true);
+      this.avatar.position.y += this.flyShow;
+    }
+    return r;
+  };
   const gu1 = Game.update; Game.update = function (dt) { const r = gu1.apply(this, arguments); try { Fly.update(dt); } catch (e) { if (!Fly.err) { Fly.err = e; console.error('Build 38 flight', e); } } return r; };
+  // the speed streaks
+  const st = document.createElement('style');
+  st.textContent = '#fx-fly{position:fixed;inset:-12%;pointer-events:none;z-index:4;opacity:0;mix-blend-mode:screen;' +
+    'background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,0) 0deg,rgba(255,255,255,0) 4.2deg,rgba(225,236,255,.5) 4.6deg,rgba(255,255,255,0) 5.3deg,rgba(255,255,255,0) 7.9deg,rgba(210,225,255,.32) 8.2deg,rgba(255,255,255,0) 8.8deg);' +
+    '-webkit-mask-image:radial-gradient(ellipse at 50% 50%,transparent 34%,rgba(0,0,0,.5) 58%,#000 82%);mask-image:radial-gradient(ellipse at 50% 50%,transparent 34%,rgba(0,0,0,.5) 58%,#000 82%)}';
+  document.head.appendChild(st);
+  const ov = document.createElement('div'); ov.id = 'fx-fly'; document.body.appendChild(ov);
 }
 
 /* ------------------------------------------------------------------ */
