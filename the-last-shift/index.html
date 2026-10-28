@@ -11555,107 +11555,20 @@ const Cine = {
 /* again until the other side confirms them, so nothing goes missing.  */
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
-/* Build 33 — who may speak in a room: the relays are public, so       */
-/* anyone can read and publish on any topic. The room code (12         */
-/* characters, ~60 bits, from the browser's crypto RNG) is the room's  */
-/* secret and never goes over the wire: the topic is a tag derived     */
-/* from it and every message is signed with a key derived from it      */
-/* (PBKDF2-SHA256 → HMAC-SHA256), and numbered, so a message that      */
-/* isn't signed with this room's key — or is an old one played back — */
-/* is thrown away before anything reads it. What this can't do: tell   */
-/* the people who were given the code apart (they share the key), stop */
-/* a relay from dropping messages or anyone from flooding a topic, or  */
-/* sign the relay's own "host disconnected" notice (that is only ever  */
-/* taken as a hint to look for the host again).                        */
+/* Build 38: this is Build 30's co-op again (4-letter codes, unsigned */
+/* messages), with test.mosquitto.org tried first.                    */
 /* ------------------------------------------------------------------ */
-const NET_PROTO = 33, BUILD = 38, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-// (in order of preference: a friend joins through the first of these that has the room. Build 37: two on port 443 — the only port many school and
-//  work networks let through — mqtt.eclipseprojects.io and shiftr.io's public broker, which wants a login: user:pass@ in the address goes into MQTT's own)
-const RELAYS = ['wss://test.mosquitto.org:8081/mqtt', 'wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt']; // (Build 38: test.mosquitto.org first — friends join through it whenever it has the room; the others are backups)
+const NET_PROTO = 34, BUILD = 38, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const RELAYS = ['wss://test.mosquitto.org:8081/mqtt', 'wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt']; // (Build 38: co-op is Build 30's again, as asked — test.mosquitto.org first)
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
-const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-character room codes.';
-const LONG_MSG = 'That is a long room code from an older version of the game. Room codes are 4 characters again (like K7QX). Both of you refresh the page (Cmd+Shift+R / Ctrl+Shift+R), then the host makes a new room.';
-const CODE_LEN = 4, KDF_N = 150000; // (Build 38: back to 4 characters, as asked — about a million codes; messages are still signed with a key made from the code)
+const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.';
 const GUARD_COLORS = [0xffc65a, 0x5ac8ff, 0xff7aa8, 0x8dff7a];
 const cleanName = s => String(s || '').replace(/[^\w .'-]/g, '').trim().slice(0, 16);
-const cleanCode = s => (String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12).match(/.{1,4}/g) || []).join('-'); // ABCD (an old long code is kept whole, so joining can say what it is)
-const codeFrom = s => { const m = /room=([A-Za-z0-9-]{4,20})/.exec(String(s || '')); return cleanCode(m ? m[1] : s); }; // a code, or a whole invite link
-const newCode = () => cleanCode(Array.from(crypto.getRandomValues(new Uint8Array(CODE_LEN)), b => CODE_ABC[b & 31]).join('')); // (32 characters: every one equally likely)
+const cleanCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+const codeFrom = s => { const m = /room=([A-Za-z0-9]{4})/.exec(String(s || '')); return cleanCode(m ? m[1] : s); }; // a code, or a whole invite link
 const OLD_CODE = s => /LS1[ZP]/.test(String(s || ''));
 const rid = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join('');
-
-/* ---- signing (Build 33): SHA-256, HMAC and PBKDF2, here so that every message can be checked at once, as it arrives ---- */
-const NetSec = (() => {
-  const K = new Uint32Array([0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]);
-  const IV = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]), W = new Uint32Array(64);
-  function blocks(H, b, end) { // the compression function over b's 64-byte blocks
-    for (let p = 0; p < end; p += 64) {
-      for (let i = 0; i < 16; i++) { const q = p + 4 * i; W[i] = (b[q] << 24) | (b[q + 1] << 16) | (b[q + 2] << 8) | b[q + 3]; }
-      for (let i = 16; i < 64; i++) {
-        const x = W[i - 15], y = W[i - 2];
-        W[i] = (W[i - 16] + (((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3)) + W[i - 7] + (((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10))) | 0;
-      }
-      let a = H[0], c1 = H[1], c2 = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
-      for (let i = 0; i < 64; i++) {
-        const t1 = (h + (((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7))) + ((e & f) ^ (~e & g)) + K[i] + W[i]) | 0;
-        const t2 = ((((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10))) + ((a & c1) ^ (a & c2) ^ (c1 & c2))) | 0;
-        h = g; g = f; f = e; e = (d + t1) | 0; d = c2; c2 = c1; c1 = a; a = (t1 + t2) | 0;
-      }
-      H[0] += a; H[1] += c1; H[2] += c2; H[3] += d; H[4] += e; H[5] += f; H[6] += g; H[7] += h;
-    }
-  }
-  function finish(H0, pre, m) { // the digest of m, carrying on from state H0 that already took in pre bytes
-    const H = H0.slice(), n = m.length, full = n - (n % 64);
-    blocks(H, m, full);
-    const L = (n % 64) + 9 > 64 ? 128 : 64, t = new Uint8Array(L), bits = (pre + n) * 8;
-    t.set(m.subarray(full)); t[n - full] = 0x80;
-    const hi = Math.floor(bits / 4294967296), lo = bits >>> 0;
-    t[L - 8] = hi >>> 24; t[L - 7] = (hi >>> 16) & 255; t[L - 6] = (hi >>> 8) & 255; t[L - 5] = hi & 255;
-    t[L - 4] = lo >>> 24; t[L - 3] = (lo >>> 16) & 255; t[L - 2] = (lo >>> 8) & 255; t[L - 1] = lo & 255;
-    blocks(H, t, L);
-    const out = new Uint8Array(32); for (let i = 0; i < 8; i++) { out[4 * i] = H[i] >>> 24; out[4 * i + 1] = (H[i] >>> 16) & 255; out[4 * i + 2] = (H[i] >>> 8) & 255; out[4 * i + 3] = H[i] & 255; }
-    return out;
-  }
-  const sha256 = m => finish(IV, 0, m);
-  function hkey(key) { // an HMAC key, with both pads already run through (each message then costs two short passes, not four)
-    const k = key.length > 64 ? sha256(key) : key, pad = new Uint8Array(64), ip = IV.slice(), op = IV.slice();
-    pad.fill(0x36); for (let i = 0; i < k.length; i++) pad[i] ^= k[i]; blocks(ip, pad, 64);
-    pad.fill(0x5c); for (let i = 0; i < k.length; i++) pad[i] ^= k[i]; blocks(op, pad, 64);
-    return { ip, op };
-  }
-  const hmac = (hk, m) => finish(hk.op, 64, finish(hk.ip, 64, m));
-  function pbkdf2(pw, salt, iters, len) { // (only where the browser has no crypto.subtle)
-    const hk = hkey(pw), out = new Uint8Array(len);
-    for (let blk = 1, o = 0; o < len; blk++, o += 32) {
-      const s = new Uint8Array(salt.length + 4); s.set(salt); s[salt.length] = blk >>> 24; s[salt.length + 1] = (blk >>> 16) & 255; s[salt.length + 2] = (blk >>> 8) & 255; s[salt.length + 3] = blk & 255;
-      let u = hmac(hk, s); const t = u.slice();
-      for (let i = 1; i < iters; i++) { u = hmac(hk, u); for (let j = 0; j < 32; j++) t[j] ^= u[j]; }
-      out.set(t.subarray(0, Math.min(32, len - o)), o);
-    }
-    return out;
-  }
-  const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_', B32 = 'abcdefghijklmnopqrstuvwxyz234567';
-  const b64 = (u, n) => { let s = ''; for (let i = 0; i < n; i += 3) { const v = (u[i] << 16) | (u[i + 1] << 8) | u[i + 2]; s += B64[(v >>> 18) & 63] + B64[(v >>> 12) & 63] + B64[(v >>> 6) & 63] + B64[v & 63]; } return s; };
-  const b32 = u => { let s = '', acc = 0, nb = 0; for (const x of u) { acc = (acc << 8) | x; nb += 8; while (nb >= 5) { nb -= 5; s += B32[(acc >>> nb) & 31]; } acc &= 255; } return s; };
-  const mac = (hk, str) => b64(hmac(hk, TXE.encode(str)), 12); // (96 bits of the HMAC: 16 characters)
-  const eq = (a, b) => { if (typeof a !== 'string' || a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; };
-  return {
-    sha256, hkey, hmac, pbkdf2, b64, b32, mac, eq,
-    ok(hk, str, m) { return !!hk && typeof m === 'string' && m.length === 16 && eq(m, mac(hk, str)); },
-    // the room's topic tag and signing key, from its code (the code itself never leaves this browser)
-    async derive(code) {
-      const pw = TXE.encode(String(code).replace(/-/g, '')), salt = TXE.encode('the-last-shift/room/v1'), n = 42;
-      let out = null;
-      try { if (crypto.subtle && crypto.subtle.deriveBits) { const k = await crypto.subtle.importKey('raw', pw, 'PBKDF2', false, ['deriveBits']); out = new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: KDF_N }, k, n * 8)); } } catch (e) { out = null; }
-      if (!out) out = pbkdf2(pw, salt, KDF_N, n);
-      return { tag: b32(out.subarray(0, 10)), hk: hkey(out.slice(10, 42)) };
-    },
-  };
-})();
 
 /* ---- a tiny MQTT 3.1.1 client over WebSocket: connect, subscribe, publish, stay alive ---- */
 const TXE = new TextEncoder(), TXD = new TextDecoder();
@@ -11670,9 +11583,7 @@ function mqPack(head, parts) { // fixed header + remaining length + the parts
 }
 class Relay {
   constructor(url) {
-    const cr = /^(wss?:\/\/)([^:@/]+):([^@/]*)@(.*)$/.exec(url); // (a login in the address: kept out of the WebSocket's URL, sent in MQTT's CONNECT)
-    this.url = url; this.wsUrl = cr ? cr[1] + cr[4] : url; this.user = cr ? decodeURIComponent(cr[2]) : ''; this.pass = cr ? decodeURIComponent(cr[3]) : '';
-    this.name = this.wsUrl.replace(/^wss?:\/\//, '').replace(/[:/].*$/, '');
+    this.url = url; this.name = url.replace(/^wss?:\/\//, '').replace(/[:/].*$/, '');
     this.ws = null; this.ok = false; this.up = false; this.closed = false; this.connecting = false; this.will = null; this.abort = null; this.connack = null;
     this.pid = 0; this.subs = new Map(); this.onmsg = null; this.onlost = null; this.finder = null; this.buf = null;
     this.heard = 0; this.said = 0; this.pinged = 0; this.retryIn = 0; this.retryTimer = 0;
@@ -11693,11 +11604,11 @@ class Relay {
       this.abort = () => end(new Error('closed'));
       this.connack = rc => end(rc ? new Error('refused (' + rc + ')') : null);
       timer = setTimeout(() => end(new Error('timeout')), 9000);
-      try { ws = this.ws = new WebSocket(this.wsUrl, 'mqtt'); } catch (e) { end(e); return; }
+      try { ws = this.ws = new WebSocket(this.url, 'mqtt'); } catch (e) { end(e); return; }
       ws.binaryType = 'arraybuffer';
-      ws.onopen = () => { // CONNECT: clean session, keep-alive 30 s, a "will" the server publishes if we vanish — and the relay's login, if it wants one
-        const w = this.will, u = !!this.user;
-        this.send(mqPack(0x10, [mqStr('MQTT'), [4, (w ? 0x26 : 0x02) | (u ? 0xC0 : 0), 0, 30], mqStr('ls' + rid(14))].concat(w ? [mqStr(w.t), mqStr(w.p)] : [], u ? [mqStr(this.user), mqStr(this.pass)] : [])));
+      ws.onopen = () => { // CONNECT: clean session, keep-alive 30 s, and a "will" the server publishes if we vanish
+        const w = this.will;
+        this.send(mqPack(0x10, [mqStr('MQTT'), [4, w ? 0x26 : 0x02, 0, 30], mqStr('ls' + rid(14))].concat(w ? [mqStr(w.t), mqStr(w.p)] : [])));
       };
       ws.onmessage = e => { if (this.ws === ws && e.data instanceof ArrayBuffer) this.data(new Uint8Array(e.data)); };
       ws.onerror = () => { };
@@ -11958,7 +11869,7 @@ class RemotePlayer {
     if (a.length > 15) {
       const cid = Chars.byIdx(a[10]); if (cid !== this.charId) this.setChar(cid);
       this.maxHp = clamp(a[15] | 0, 1, 400); this.stam = clamp((a[11] | 0) / 100, 0, 1); // (Build 20: up to 400 — THE ARCHITECT has 300)
-      this.abCd = clamp((a[12] | 0) / 10, 0, 120); this.abAct = clamp((a[13] | 0) / 10, 0, 60); this.buffs = (a[14] | 0) & 0xffffff; // (all 24 kinds: Build 37 — it was cut to the first 16, so a teammate never saw the newer ones)
+      this.abCd = clamp((a[12] | 0) / 10, 0, 120); this.abAct = clamp((a[13] | 0) / 10, 0, 60); this.buffs = (a[14] | 0) & 0xffffff; // (all 24 kinds of buff — Build 37's fix, kept)
     }
     this.hp = clamp(a[7] | 0, 0, this.maxHp);
     if (Net.isHost) { Health.report(this, this.hp); if (Number.isFinite(this.ahp)) this.hp = Math.min(this.hp, Math.ceil(this.ahp)); } // (the host's count wins)
@@ -12005,7 +11916,7 @@ const Net = {
   byCid: new Map(),     // host: the same links, by connection id
   goneCids: new Set(),  // host: friends we had to let go of
   relays: [], relay: null, // relay servers: the host keeps the room open on all it can reach; a friend uses one
-  code: '', tag: '', hk: null, octr: 0, cctr: 0, ictr: { a: 0, c: 0 }, hctr: new Map(), cid: '', hid: '', epoch: 0, tok: null, welcomed: false, recovering: false, hiccup: false, joinAt: 0, nextTry: 0, goneAt: 0, badRelays: new Set(), reached: 0,
+  code: '', cid: '', hid: '', epoch: 0, tok: null, welcomed: false, recovering: false, hiccup: false, joinAt: 0, nextTry: 0, goneAt: 0,
   nextId: 1, sendT: 0, kaT: 0, snapSeq: 0, lastSeq: 0, lastPing: 0, pings: [], lights: [], self: null, teamT: 0, busy: false,
   get active() { return this.role !== 'solo'; },
   get isHost() { return this.role === 'host'; },
@@ -12029,32 +11940,23 @@ const Net = {
   },
   /* ---- connections ---- */
   relayUrls() { const o = window.__LS_RELAYS; return (Array.isArray(o) && o.length ? o : RELAYS).slice(); },
-  T() { return TOPIC(this.tag); }, // (the room's topics: named after a tag derived from the code — not the code)
-  // signed and numbered: what the host publishes (sub: 'a', 'c/<id>' or 'p' — which topic it is for is signed too)
-  seal(sub, s) { const n = ++this.octr; return n + '.' + NetSec.mac(this.hk, sub + '|' + n + '|' + s) + '|' + s; },
-  unseal(sub, s) { // → { n, body } when it carries this room's signature, null otherwise
-    const bar = s.indexOf('|'); if (bar < 3 || bar > 40) return null;
-    const head = s.slice(0, bar), dot = head.indexOf('.'), ns = head.slice(0, dot), body = s.slice(bar + 1);
-    if (dot < 1 || !/^\d{1,15}$/.test(ns) || !NetSec.ok(this.hk, sub + '|' + ns + '|' + body, head.slice(dot + 1))) return null;
-    return { n: +ns, body };
-  },
+  T() { return TOPIC(this.code); },
   async host() {
     this.leave();
     const tok = this.tok = {};
-    this.role = 'host'; this.myId = 0; this.nextId = 1; this.hid = rid(8); this.myName = cleanName(settings.playerName) || 'Guard 1'; this.octr = 0; this.hctr = new Map();
+    this.role = 'host'; this.myId = 0; this.nextId = 1; this.hid = rid(8); this.myName = cleanName(settings.playerName) || 'Guard 1';
     for (let tries = 0; tries < 4; tries++) {
-      const code = newCode(), key = await NetSec.derive(code), tag = key.tag;
-      if (this.tok !== tok) return '';
+      const code = Array.from({ length: 4 }, () => CODE_ABC[(Math.random() * CODE_ABC.length) | 0]).join('');
       const list = this.relayUrls().map(u => new Relay(u)), quit = () => list.forEach(r => r.close());
-      for (const r of list) { r.pending = r.connect({ t: TOPIC(tag) + 'p', p: '' }); r.pending.catch(() => { }); } // if we vanish, the relay takes the room down
+      for (const r of list) { r.pending = r.connect({ t: TOPIC(code) + 'p', p: '' }); r.pending.catch(() => { }); } // if we vanish, the relay takes the room down
       let first = null;
       try { first = await Promise.any(list.map(r => r.pending)); } catch (e) { }
       if (this.tok !== tok) { quit(); return ''; }
       if (!first) { quit(); this.role = 'solo'; this.tok = null; throw new Error(NO_NET); }
-      const taken = await this.peek(first, TOPIC(tag) + 'p');
+      const taken = await this.peek(first, TOPIC(code) + 'p');
       if (this.tok !== tok) { quit(); return ''; }
       if (taken) { quit(); continue; } // someone already has that code: pick another
-      this.code = code; this.tag = tag; this.hk = key.hk; this.relays = list;
+      this.code = code; this.relays = list;
       for (const r of list) r.onlost = () => this.relayLost(r);
       await this.relayUp(first);
       for (const r of list) if (r !== first) r.pending.then(() => this.relayUp(r), () => this.relayLost(r));
@@ -12074,11 +11976,11 @@ const Net = {
   async relayUp(r) { // host: open the room on this relay
     if (!this.isHost || this.relays.indexOf(r) < 0) return;
     r.onmsg = (t, s) => this.onRelayMsg(r, t, s);
-    try { await r.sub(this.T() + 'h'); await r.sub(this.T() + 'p'); } catch (e) { if (r.ok) r.drop(); else this.relayLost(r); return; } // (and its own notice: so it notices when someone overwrites it)
+    try { await r.sub(this.T() + 'h'); } catch (e) { if (r.ok) r.drop(); else this.relayLost(r); return; }
     if (!this.isHost || this.relays.indexOf(r) < 0) return;
-    r.retryIn = 0; r.up = true; r.upAt = performance.now(); r.echoAt = 0; this.presence(r); this.lobbyUpdate();
+    r.retryIn = 0; r.up = true; this.presence(r); this.lobbyUpdate();
   },
-  presence(r) { if (r.ok) { if (r.presStr) (r.presOld || (r.presOld = [])).unshift(r.presStr); if (r.presOld && r.presOld.length > 4) r.presOld.length = 4; r.presStr = this.seal('p', JSON.stringify({ v: NET_PROTO, b: BUILD, h: this.hid, n: this.myName, g: this.inGame ? 1 : 0 })); r.pub(this.T() + 'p', r.presStr, true); } },
+  presence(r) { if (r.ok) r.pub(this.T() + 'p', JSON.stringify({ v: NET_PROTO, b: BUILD, h: this.hid, n: this.myName, g: this.inGame ? 1 : 0 }), true); },
   relayLost(r) {
     if (this.isClient) { if (r === this.relay) this.recover('relay'); return; }
     if (!this.isHost || this.relays.indexOf(r) < 0 || r.retryTimer || r.closed) return;
@@ -12091,16 +11993,11 @@ const Net = {
   },
   async join(raw) {
     if (OLD_CODE(raw)) throw new Error(OLD_MSG);
-    const m = /room=([A-Za-z0-9-]{4,20})/.exec(String(raw || '')), rawLen = String(m ? m[1] : raw || '').replace(/[^A-Za-z0-9]/g, '').length;
-    if (rawLen > CODE_LEN) throw new Error(LONG_MSG);
-    const code = codeFrom(raw), len = code.replace(/-/g, '').length;
-    if (len !== CODE_LEN) throw new Error('Type the 4-character room code from the host (like K7QX), or just open their invite link.');
+    const code = codeFrom(raw);
+    if (code.length !== 4) throw new Error('Type the 4-letter room code from the host — or just open their invite link.');
     this.leave();
     const tok = this.tok = {};
-    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code; this.cid = rid(10); this.epoch = 0; this.cctr = 0; this.ictr = { a: 0, c: 0 }; this.badRelays = new Set();
-    const key = await NetSec.derive(code);
-    if (this.tok !== tok) return;
-    this.tag = key.tag; this.hk = key.hk;
+    this.role = 'client'; this.myId = -1; this.myName = cleanName(settings.playerName) || 'Guard'; this.code = code; this.cid = rid(10); this.epoch = 0;
     let hit;
     try { hit = await this.findRoom(); } catch (e) { if (this.tok !== tok) return; this.leave(); throw e; }
     if (this.tok !== tok) { hit.relay.close(); return; }
@@ -12114,48 +12011,30 @@ const Net = {
     this.rel(h, { k: 'hello', v: NET_PROTO, b: BUILD, name: this.myName, c: Chars.idx() });
     this.lobbyUpdate();
   },
-  findRoom(exclude) { // client: ask every relay at once; of those that have the room, the first in RELAYS' order wins
-    const T = this.T(), cur = this.relay && this.relay.ok ? this.relay : null, hid = this.hid, ex = [].concat(exclude || []);
-    const list = this.relayUrls().filter(u => ex.indexOf(u) < 0).map(u => (cur && cur.url === u ? cur : new Relay(u)));
+  findRoom(exclude) { // client: ask every relay at once; the first one that has the room wins
+    const T = this.T(), cur = this.relay && this.relay.ok ? this.relay : null, hid = this.hid;
+    const list = this.relayUrls().filter(u => u !== exclude).map(u => (cur && cur.url === u ? cur : new Relay(u)));
     return new Promise((res, rej) => {
-      let left = list.length, reached = 0, done = false, timer = 0, grace = 0;
-      const hits = new Map(), settled = new Set(); // (relay's place in the list → what it had)
-      const best = () => hits.get(Math.min(...hits.keys()));
+      let left = list.length, reached = 0, done = false, timer = 0;
       const finish = (err, hit) => {
-        if (done) return; done = true; clearTimeout(timer); clearTimeout(grace);
+        if (done) return; done = true; clearTimeout(timer);
         for (const r of list) { r.finder = null; if (r !== cur && (!hit || r !== hit.relay)) r.close(); }
-        this.reached = reached; // (for the lobby: how many relays this network could reach)
         if (err) rej(err); else res(hit);
       };
-      const nothing = () => {
-        if (hits.size) { finish(null, best()); return; }
-        const some = reached < list.length && !ex.length ? ' Only ' + reached + ' of the ' + list.length + ' online servers can be reached from this network, so the room may be on one it blocks — a phone hotspot usually gets through.' : '';
-        finish(new Error(!reached ? NO_NET : 'No room with the code ' + this.code + ' is open right now. Check the code, and make sure the host still has the Multiplayer screen open. (You both need Build ' + BUILD + ' — it says on the title screen. If not, refresh with Cmd+Shift+R.)' + some));
-      };
-      const ready = () => { // done as soon as nothing better can still turn up (every relay before the best one so far has answered)
-        if (done || !hits.size) return;
-        const bi = Math.min(...hits.keys());
-        for (let i = 0; i < bi; i++) if (!settled.has(i)) return;
-        finish(null, best());
-      };
-      const settle = i => { if (settled.has(i)) return; settled.add(i); if (--left <= 0) nothing(); else ready(); };
-      timer = setTimeout(nothing, 16000);
+      const nothing = () => finish(new Error(!reached ? NO_NET : 'No room with the code ' + this.code + ' is open right now. Check the code, and make sure the host still has the Multiplayer screen open. (You both need Build ' + BUILD + ' — it says on the title screen. If not, refresh with Cmd+Shift+R.)'));
+      const settle = () => { if (--left <= 0) nothing(); };
+      timer = setTimeout(nothing, 15000);
       if (!list.length) { nothing(); return; }
-      list.forEach((r, i) => {
+      for (const r of list) {
         r.finder = (t, s) => {
-          if (done || t !== T + 'p' || !s || hits.has(i)) return;
-          const u = this.unseal('p', s); if (!u) return; // (a notice that isn't signed with this room's key is not the host's)
-          let p = null; try { p = JSON.parse(u.body); } catch (e) { }
-          if (!(p && p.h && (!hid || p.h === hid))) return;
-          hits.set(i, { relay: r, pres: p });
-          if (!grace) grace = setTimeout(() => { if (!done && hits.size) finish(null, best()); }, 1800); // (a better relay that's slow to answer gets a moment, no more)
-          settle(i);
+          if (done || t !== T + 'p' || !s) return;
+          let p = null; try { p = JSON.parse(s); } catch (e) { }
+          if (p && p.h && (!hid || p.h === hid)) finish(null, { relay: r, pres: p });
         };
-        // the relay hands over the room's notice straight after subscribing; one that doesn't keep notices still passes on the host's next one (every 2 s in the lobby)
         (r.ok ? Promise.resolve() : r.connect(null))
           .then(() => { reached++; return r.sub(T + 'p'); })
-          .then(() => setTimeout(() => settle(i), 5500), () => settle(i));
-      });
+          .then(() => setTimeout(settle, 2500), settle); // the relay hands over the room's notice straight after subscribing
+      }
     });
   },
   async useRelay(r) { // client: talk to the host through this relay
@@ -12172,10 +12051,7 @@ const Net = {
     this.recovering = true; this.lobbyUpdate();
     if (DEBUG) console.log('net: reconnecting (' + why + ')');
     if (this.inGame && this.welcomed && Game.inWorld() && !this.hiccup) { this.hiccup = true; UI.msg('Connection hiccup — reconnecting…', 'warn', 3); }
-    // (still joining and the host hasn't answered through this relay: it isn't delivering — try the others, every one of them before any comes round again)
-    if (why === 'nowelcome' && cur) this.badRelays.add(cur.url);
-    let exclude = why === 'nowelcome' ? [...this.badRelays] : [];
-    if (exclude.length >= this.relayUrls().length) { this.badRelays.clear(); exclude = cur ? [cur.url] : []; }
+    const exclude = why === 'nowelcome' && cur && this.relayUrls().length > 1 ? cur.url : null; // that relay isn't delivering: try the others
     let found = null;
     this.findRoom(exclude).then(hit => { found = hit.relay; return this.tok === tok ? this.useRelay(found) : found.close(); }).then(() => {
       if (this.tok !== tok) return;
@@ -12192,12 +12068,12 @@ const Net = {
   watch(now) { // client: keep an eye on the line to the host
     const h = this.host0(); if (!h || h.dropped) return;
     const quiet = now - h.heard;
-    if (this.welcomed ? quiet > 25000 : now - this.joinAt > 40000) { // (joining: time to try the room on every relay that has it)
+    if (this.welcomed ? quiet > 25000 : now - this.joinAt > 24000) {
       this.lost(this.welcomed ? 'Lost connection to the host — they may have closed the game or lost their internet.' : 'Found the room, but the host isn\'t answering. Ask them to make a new room and send you the new code.');
       return;
     }
     if (this.recovering || now < this.nextTry) return;
-    if (this.goneAt && now - this.goneAt > 2500 && now - h.heard > 2500) { this.goneAt = 0; this.recover('gone'); } // the host vanished from this relay (the relay's notice can't be signed: it only counts if the host has gone quiet too)
+    if (this.goneAt && now - this.goneAt > 2500) { this.goneAt = 0; this.recover('gone'); } // the host vanished from this relay
     else if (!this.relay || !this.relay.ok) this.recover('relay');
     else if (this.welcomed ? quiet > 7000 : now - h.since > 7000) { h.since = now; this.recover(this.welcomed ? 'quiet' : 'nowelcome'); }
   },
@@ -12206,23 +12082,10 @@ const Net = {
     if (!this.code || t.indexOf(T) !== 0 || s.length > 60000) return;
     const sub = t.slice(T.length);
     if (this.isHost) {
-      if (sub === 'p') { // the room's notice, as the relay now has it: anything but ours (wiped, or replaced) is put right at once
-        if (s === r.presStr || (r.presOld && r.presOld.indexOf(s) >= 0)) { r.echoAt = performance.now(); return; } // (our own, back again — this one or one of the last few: this relay delivers)
-        if (!r.up || r.presT) return;
-        const wait = Math.max(0, 1000 - (performance.now() - (r.presFix || 0))); // (at most once a second: someone flooding the topic can't make us flood it back)
-        r.presT = setTimeout(() => { r.presT = 0; if (this.isHost && r.up && this.relays.indexOf(r) >= 0) { r.presFix = performance.now(); this.presence(r); } }, wait);
-        return;
-      }
       if (sub !== 'h') return;
-      // cid.epoch.number.signature|message — signed with the room's key, or it isn't from anyone who was given the code
-      const bar = s.indexOf('|'), head = bar > 0 && bar < 64 ? s.slice(0, bar).split('.') : null;
-      if (!head || head.length !== 4) return;
-      const cid = head[0], body = s.slice(bar + 1), n = +head[2];
-      if (!/^[a-z0-9]{6,16}$/.test(cid) || !/^\d{1,9}$/.test(head[1]) || !/^\d{1,15}$/.test(head[2])) return;
-      if (!NetSec.ok(this.hk, 'h/' + cid + '.' + head[1] + '|' + head[2] + '|' + body, head[3])) return;
-      if (n <= (this.hctr.get(cid) || 0)) return; // (one we've had already, played back again)
-      this.hctr.set(cid, n);
-      let m; try { m = JSON.parse(body); } catch (e) { return; }
+      const bar = s.indexOf('|'), head = bar > 0 && bar < 30 ? s.slice(0, bar).split('.') : null, cid = head && head[0];
+      if (!cid || !/^[a-z0-9]{6,16}$/.test(cid)) return;
+      let m; try { m = JSON.parse(s.slice(bar + 1)); } catch (e) { return; }
       if (!m || typeof m.k !== 'string') return;
       let peer = this.byCid.get(cid);
       if (!peer) {
@@ -12234,18 +12097,13 @@ const Net = {
       if (ep >= peer.epoch) { const moved = ep > peer.epoch; peer.epoch = ep; peer.relay = r; if (moved) this.resendNow(peer); } // answer them on the relay they use now
       this.recv(peer, m);
     } else if (this.isClient) {
-      if (sub === 'p') { // the room's notice: empty means the host dropped off this relay (the relay's own notice: unsigned, so only a hint)
-        if (!s) { if (!this.goneAt) this.goneAt = performance.now(); return; }
-        const u = this.unseal('p', s); if (!u) return;
-        let p = null; try { p = JSON.parse(u.body); } catch (e) { }
-        if (p && p.h === this.hid) this.goneAt = 0;
+      if (sub === 'p') { // the room's notice: empty means the host dropped off this relay
+        if (!s) { if (!this.goneAt) this.goneAt = performance.now(); }
+        else if (s.indexOf(this.hid) >= 0) this.goneAt = 0;
         return;
       }
       if (r !== this.relay || (sub !== 'a' && sub !== 'c/' + this.cid)) return;
-      const u = this.unseal(sub, s), st = sub === 'a' ? 'a' : 'c';
-      if (!u || u.n <= this.ictr[st]) return; // (not signed with this room's key — or an old one played back again)
-      this.ictr[st] = u.n; this.goneAt = 0; // (and the host is plainly still here)
-      let m; try { m = JSON.parse(u.body); } catch (e) { return; }
+      let m; try { m = JSON.parse(s); } catch (e) { return; }
       const h = this.host0(); if (h && m && typeof m.k === 'string') this.recv(h, m);
     }
   },
@@ -12256,7 +12114,7 @@ const Net = {
     this.peers.set(p.id, p); this.byCid.set(cid, p);
     return p;
   },
-  tell(r, cid, m) { r.pub(this.T() + 'c/' + cid, this.seal('c/' + cid, JSON.stringify(m))); },
+  tell(r, cid, m) { r.pub(this.T() + 'c/' + cid, JSON.stringify(m)); },
   resendNow(peer) { for (const o of peer.out) { o[2] = 0; o[3] = 1200; } },
   link(id) { const now = performance.now(); return { id, cid: '', relay: null, epoch: 0, name: '', remote: null, dropped: false, heard: now, since: now, so: 0, out: [], si: 0, early: new Map(), ackDue: false }; },
   recv(peer, m) { // everything from a link comes through here
@@ -12303,7 +12161,6 @@ const Net = {
     for (const r of this.remotes.values()) r.dispose();
     this.remotes.clear();
     this.role = 'solo'; this.inGame = false; this.sessionDiff = null; this.sessionMode = null; this.sessionDaily = false; this.sessionCamoMap = null; this.myId = 0; this.code = ''; this.hid = '';
-    this.tag = ''; this.hk = null; this.octr = 0; this.cctr = 0; this.ictr = { a: 0, c: 0 }; this.hctr = new Map();
     this.welcomed = false; this.recovering = false; this.hiccup = false; this.goneAt = 0;
     this.lights.forEach(l => { l.visible = false; l.intensity = 0; });
     this.pings.forEach(p => { scene.remove(p.spr); p.spr.material.map.dispose(); p.spr.material.dispose(); }); this.pings.length = 0;
@@ -12311,8 +12168,8 @@ const Net = {
   },
   /* ---- messages ---- */
   xmit(peer, s, droppable) {
-    if (this.isHost) { if (peer.relay) peer.relay.pub(this.T() + 'c/' + peer.cid, this.seal('c/' + peer.cid, s), false, droppable); }
-    else if (this.relay) { const n = ++this.cctr, h = this.cid + '.' + this.epoch; this.relay.pub(this.T() + 'h', h + '.' + n + '.' + NetSec.mac(this.hk, 'h/' + h + '|' + n + '|' + s) + '|' + s, false, droppable); }
+    if (this.isHost) { if (peer.relay) peer.relay.pub(this.T() + 'c/' + peer.cid, s, false, droppable); }
+    else if (this.relay) this.relay.pub(this.T() + 'h', this.cid + '.' + this.epoch + '|' + s, false, droppable);
   },
   rel(peer, m) { // numbered and re-sent until the other side confirms it
     if (!peer || peer.dropped) return;
@@ -12327,7 +12184,7 @@ const Net = {
   broadcast(m, exceptId) { if (this.isHost) for (const p of this.peers.values()) if (p.id !== exceptId && p.remote) this.rel(p, m); },
   broadcastUnrel(m) { // snapshots: once per relay that has friends on it
     if (!this.isHost) return;
-    const s = this.seal('a', JSON.stringify(m)), done = new Set(); // (signed once: the same message on every relay)
+    const s = JSON.stringify(m), done = new Set();
     for (const p of this.peers.values()) if (p.remote && p.relay && !done.has(p.relay)) { done.add(p.relay); p.relay.pub(this.T() + 'a', s, false, true); }
   },
   request(a, i, x) { const m = { k: 'req', a, i }; if (x) m.x = x; this.rel(this.host0(), m); },
@@ -12481,9 +12338,6 @@ const Net = {
     const now = performance.now(), frozen = now - (this.tickAt || now) > 2500; this.tickAt = now;
     for (const r of this.relays) r.tick(now, frozen);
     this.kaT -= dt; const ka = this.kaT <= 0; if (ka) this.kaT = 2;
-    if (this.isHost && now - (this.presAt || 0) > (this.inGame ? 8000 : 2000)) { this.presAt = now; for (const r of this.relays) if (r.up) this.presence(r); } // (the room's signed notice again: every 2 s in the lobby — for a relay that doesn't keep it — and every 8 s in a game)
-    // (host) a relay that hasn't handed our own notice back for 30 s isn't delivering anything: let go of it and connect again
-    if (this.isHost && !frozen) for (const r of this.relays) if (r.up && now - r.upAt > 30000 && now - Math.max(r.echoAt || 0, r.upAt) > 30000) { if (DEBUG) console.log('net: ' + r.name + ' stopped delivering'); r.drop(); }
     for (const peer of [...this.peers.values()]) {
       if (frozen) { peer.heard = Math.max(peer.heard, now - 4000); peer.since = Math.max(peer.since, now - 4000); continue; } // WE were frozen (loading shaders, a hidden tab): don't blame them
       if (this.isHost && now - peer.heard > 20000) { this.dropPeer(peer, 'timeout'); continue; }
@@ -12582,7 +12436,7 @@ const Net = {
   },
   // a friend opened an invite link (…#room=CODE): straight to Join
   checkInviteLink() {
-    const m = /[#&]room=([A-Za-z0-9-]{4,20})/.exec(location.hash || ''); // (after the #: browsers never send it to the website)
+    const m = /[#&]room=([A-Za-z0-9]{4})/.exec(location.hash || '');
     if (!m) return false;
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
     const code = cleanCode(m[1]);
@@ -12620,7 +12474,7 @@ const Net = {
     $('mp-choose').hidden = this.active; $('mp-lobby').hidden = !this.active; $('mp-hostbox').hidden = !(this.isHost && this.code);
     if (this.isHost) { const link = this.inviteLink(); $('mp-room').textContent = this.code || '····'; $('mp-link').value = link; $('mp-link').hidden = !link; $('btn-mp-copylink').hidden = !link; }
     $('btn-mp-start').hidden = !this.isHost; $('btn-mp-start').disabled = ready === 0;
-    const via = this.isHost ? (up ? ' · online through ' + up + ' of ' + this.relays.length + ' relay servers' : '') : this.relay && this.welcomed ? ' · online through ' + this.relay.name : '';
+    const via = this.isHost ? (up ? ' · online through ' + up + ' relay server' + (up > 1 ? 's' : '') : '') : this.relay && this.welcomed ? ' · online through ' + this.relay.name : '';
     const mode = this.isClient ? this.sessionMode : settings.mode, daily = this.isClient ? this.sessionDaily : settings.daily;
     $('mp-diff-note').textContent = 'Mode: ' + (MODES[mode] ? MODES[mode].tag + (mode === 'photos' && daily ? ' (DAILY)' : '') : '…') + ' · Difficulty: ' + (this.isClient ? (this.sessionDiff || '…') : settings.difficulty).toUpperCase() + (this.isHost ? ' (difficulty in Settings)' : ' (set by the host)') + via;
     const mm = $('mp-modes'); mm.hidden = !this.isHost;
@@ -44648,7 +44502,7 @@ if (DEBUG) {
   window.LS = {
     Game, Monster, Preview, player, doors, fixtures, settings, grid, items, world, Sound, UI, camera, renderer, scene, cellOf, losClear, astar, monsterPassable, Input,
     Level, Foe, LEVELS, lvlAt, get LVL() { return LVL; }, Gallery, GAL, Mannequin, Blackout, Shade, BL, TURB, Horde, CR, CR_IDS, CR_BUILD, CR_NAME, crHp, crCap, Hive, HV, NESTS, CULT_SPOTS, JUNCS, HIVE_SEQ, HIVE_PANEL, HIVE_LIFT, HIVE_SPAWNS, Root, RT, PYLONS, RCELL_SPOTS, ROUTES, ROOT_HEART, ROOT_ELEV, ROOT_SPAWNS, hideLockers, Trader, TRADES, CODES, codeKey, Perf, DRS, ORG, OM, SmokeSpots, Smoke, Boom, PROJ_TYPES, CHAR_ONLY, AMMO_KINDS, Chars, CHARS, ABIL, RARITY, ECON, CHAR_IDS, ROLL_IDS, ROSTER_IDS, BUFF_BITS, CharUI, CharArt, Keys, KeysUI, KEY_ACTIONS, Health, Down, Threat, HProj, Hazards, HAZ, Powers, POWERS, Fakes, ATTACK, ATK_IDS, DIFF, DIFF_IDS, hitDmg, windOf, recOf, dkey, ECON, RARITY, RARITY_IDS, voidSpot, CHAIN_RATE, REVIVE_T, reachFor, WARDEN_REACH, MANN_REACH, SHADE_REACH, mannPassable, shadePassable, bodyOverlaps, Roster17, Cosmos, Volley, Gas, Walls, Lockdown, Tasks, WALL_DPS, fixturesOf(lv) { return fixtures.filter(f => f.lvl === lv); },
-    Hints, Cine, Net, Relay, NetSec, Director, ND_EVENTS, mulberry32, AISearch, AIDebug, Cashout, CASH_CFG, ENDLESS_HOUR, Routes, DX_ROUTES, get DIFF_MOD() { return DIFF_MOD; }, diff, Mastery, MS_XP, Acoustics, Collections, COS_COLS, Secrets, KS_POS, KS_TEXT, Night, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom, Photos, Endless, Modes, CURSES, PHOTO_ART, Weapons, WPN, WPN_IDS, Battle, Hold, Proj, Fires, Voice, holdSchedule, fxLight, SCENES,
+    Hints, Cine, Net, Relay, Director, ND_EVENTS, mulberry32, AISearch, AIDebug, Cashout, CASH_CFG, ENDLESS_HOUR, Routes, DX_ROUTES, get DIFF_MOD() { return DIFF_MOD; }, diff, Mastery, MS_XP, Acoustics, Collections, COS_COLS, Secrets, KS_POS, KS_TEXT, Night, interactables, crew, Combat, Arms, Goals, TAPES, Scare, Screens, actors, looksAt, Sleeper, Dream, DreamFX, Phantom, posePhantom, Photos, Endless, Modes, CURSES, PHOTO_ART, Weapons, WPN, WPN_IDS, Battle, Hold, Proj, Fires, Voice, holdSchedule, fxLight, SCENES,
     teleport(x, z, yaw, pitch) { player.pos.set(x, 0, z); if (yaw !== undefined) player.yaw = yaw; if (pitch !== undefined) player.pitch = pitch; },
     step(sec, dt = 0.05) { const n = Math.round(sec / dt); for (let i = 0; i < n && (Game.state === 'playing' || Net.inGame); i++) { Cine.update(dt); Game.update(dt * Cine.timeScale()); } },
     snap() { Game.render(0.016); return renderer.domElement.toDataURL('image/jpeg', 0.85); },
