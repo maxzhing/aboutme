@@ -477,9 +477,9 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 .mp-panel input:focus,.mp-panel textarea:focus{border-color:var(--amber)}
 .mp-or{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#77726a;margin:18px 0 8px}
 .mp-joinrow{display:flex;gap:10px;align-items:stretch}
-.mp-panel #mp-code{flex:1 1 auto;width:auto;min-width:0;max-width:300px;font-size:20px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:8px 8px 8px 12px}
+.mp-panel #mp-code{flex:0 0 172px;width:172px;min-width:0;font-size:24px;letter-spacing:.42em;text-transform:uppercase;text-align:center;padding:8px 6px 8px 14px}
 .mp-room{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:2px 0 8px}
-#mp-room{font-family:var(--mono);font-size:30px;letter-spacing:.12em;white-space:nowrap;color:#ffd27a;text-shadow:0 0 18px rgba(255,190,90,.35);user-select:all;-webkit-user-select:all}
+#mp-room{font-family:var(--mono);font-size:46px;letter-spacing:.3em;color:#ffd27a;text-shadow:0 0 18px rgba(255,190,90,.35);user-select:all;-webkit-user-select:all}
 .mp-panel #mp-link{display:block;width:100%;font-size:11.5px;color:#a49e91}
 .mp-steps{margin:4px 0 0 18px;color:#bdb7aa;font-size:14px;line-height:1.5}
 .mp-steps li{margin-bottom:12px}
@@ -1461,7 +1461,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <p class="p">Play the whole game together. One guard hosts and sends the invite link — friends open it and press <b>Join</b>. Up to 4 players, nothing to install.</p>
       <div class="row"><button class="btn primary" id="btn-mp-host">Host a game</button><button class="btn" id="btn-mp-back">Back</button></div>
       <div class="mp-or">or join a friend's room</div>
-      <div class="mp-joinrow"><input id="mp-code" size="16" placeholder="K7QX" autocomplete="off" spellcheck="false" aria-label="Room code (4 characters)"><button class="btn primary" id="btn-mp-join">Join</button></div>
+      <div class="mp-joinrow"><input id="mp-code" size="5" placeholder="CODE" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn primary" id="btn-mp-join">Join</button></div>
     </div>
     <div id="mp-hostbox" hidden>
       <div class="kicker">Your room code</div>
@@ -1472,7 +1472,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div id="mp-lobby" hidden>
       <div class="kicker" style="margin-top:14px">Guards on shift</div>
       <ul id="mp-players"></ul>
-      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="descent">THE DESCENT</button><button data-mode="anomaly">THE ANOMALY</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="doors">100 DOORS</button><button data-mode="woods">HOLLOW WOODS</button><button data-mode="escape">ESCAPE PROTOCOL</button><button data-mode="circuit">THE LAST CIRCUIT</button><button data-mode="ihotel">THE INFINITE HOTEL</button><button data-mode="breach">CONTAINMENT BREACH</button><button data-mode="carnival">THE CARNIVAL</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
+      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div><div class="mp-modes" id="mp-modes2" hidden><button data-mode="descent">THE DESCENT</button><button data-mode="anomaly">THE ANOMALY</button><button data-mode="doors">100 DOORS</button><button data-mode="woods">HOLLOW WOODS</button><button data-mode="escape">ESCAPE PROTOCOL</button><button data-mode="circuit">THE LAST CIRCUIT</button><button data-mode="ihotel">THE INFINITE HOTEL</button><button data-mode="breach">CONTAINMENT BREACH</button><button data-mode="carnival">THE CARNIVAL</button></div>
       <div class="mp-modes mp-cmaps" id="mp-cmaps" hidden><span>MECHA CAMO MAP:</span><button data-cmap="s6">SUBLEVEL 6</button><button data-cmap="works">THE COLOUR WORKS</button></div>
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
@@ -44390,6 +44390,28 @@ function xGlow(col, s, x, y, z, lv, op) { const m = new T.SpriteMaterial({ map: 
     return r;
   };
 }
+
+/* ---- the co-op lobby: Build 24's layout, exactly, and the modes it didn't have yet on their own line under it ---- */
+{
+  const m2 = $('mp-modes2');
+  if (m2) {
+    m2.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { // (the same as a button on the line above)
+      if (!Net.isHost) return;
+      settings.mode = b.dataset.mode; saveSettings(); Sound.ui(); Net.sendCfg(); Net.lobbyUpdate();
+    }));
+    // (folded away behind one small button in the room Build 24's last line leaves free, so the screen is Build 24's until you open it)
+    let more = null, open = false;
+    const lu0 = Net.lobbyUpdate; Net.lobbyUpdate = function () {
+      const r = lu0.apply(this, arguments);
+      if (!more) { more = document.createElement('button'); more.id = 'mp-more'; more.type = 'button'; more.addEventListener('click', () => { open = !open; Sound.ui(); Net.lobbyUpdate(); }); $('mp-modes').appendChild(more); } // (added after the lobby wired its own buttons: this one picks no mode)
+      const nw = !!m2.querySelector('button[data-mode="' + settings.mode + '"]');
+      more.textContent = open || nw ? 'LESS \u2212' : 'MORE +'; more.classList.toggle('sel', nw); more.title = 'More modes: ' + [...m2.querySelectorAll('button')].map(b => b.textContent).join(', ');
+      m2.hidden = !this.isHost || !(open || nw);
+      m2.querySelectorAll('button').forEach(b => b.classList.toggle('sel', b.dataset.mode === settings.mode));
+      return r;
+    };
+  }
+}
 /* ================================================================== */
 /* Build 39: THE LAST CIRCUIT — Kestrel Power Research                 */
 /*  The grid went down at 23:52 and took the lifts with it. The night  */
@@ -48141,7 +48163,7 @@ const NGUI = {
   /* ---- the ULTIMATE showcase ---- */
   openShow(id) {
     const it = NG_ITEM[id]; if (!it) return; this.sel = id; this.mine = false; this.showOn = true; this.showT = 0; this.show0 = performance.now(); this.yaw = Math.PI + 0.35;
-    $('ng-show').hidden = false; this.drawShow(); if (typeof Sound.ascend === 'function') Sound.ascend(); else if (typeof Sound.powerUp === 'function') Sound.powerUp();
+    $('ng-show').hidden = false; this.host3d(); this.drawShow(); if (typeof Sound.ascend === 'function') Sound.ascend(); else if (typeof Sound.powerUp === 'function') Sound.powerUp();
   },
   drawShow() {
     const it = NG_ITEM[this.sel], box = $('ng-sinfo'); if (!it || !box) return;
@@ -48155,7 +48177,9 @@ const NGUI = {
     else if (!worn) mk('Wear the set', () => { NGShop.equip(it.id); this.afterWear(it); this.drawShow(); });
     mk('Close', () => this.closeShow());
   },
-  closeShow() { this.showOn = false; const s = $('ng-show'); if (s) s.hidden = true; this.drawInfo(); },
+  closeShow() { this.showOn = false; const s = $('ng-show'); if (s) s.hidden = true; this.host3d(); this.drawInfo(); },
+  // (the one 3D view moves at once between the shop and the showcase: no empty frame in between)
+  host3d() { if (!this.r) return; const h = this.showOn ? $('ng-sv') : $('ng-view'); if (h && this.r.domElement.parentNode !== h) { h.prepend(this.r.domElement); this._w = -1; } },
   /* ---- the Collection ---- */
   drawCol() {
     const box = $('ng-col'), d = NGShop.d(), cnt = NGShop.count(); box.innerHTML = '';
@@ -48229,8 +48253,7 @@ const NGUI = {
   },
   frame(dt) {
     if (!this.r) return;
-    const host = this.showOn ? $('ng-sv') : $('ng-view');
-    if (this.r.domElement.parentNode !== host) host.prepend(this.r.domElement);
+    this.host3d(); const host = this.showOn ? $('ng-sv') : $('ng-view');
     const w = host.clientWidth || 300, h = host.clientHeight || 300;
     if (this._w !== w || this._h !== h) { this._w = w; this._h = h; this.r.setSize(w, h, false); this.cam.aspect = w / h; this.cam.updateProjectionMatrix(); }
     const key = NGShop.keyOf(this.previewEq());
