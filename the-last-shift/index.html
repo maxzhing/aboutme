@@ -1210,6 +1210,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p">You took the night porter's job at <b>the Grand Meridian</b>. The revolving doors won't turn, and the hotel <b>remembers</b>: whatever nobody is looking at, it changes — the portraits, the <b>numbers on the doors</b>, the furniture, which doors stand open — and now and then <b>the Long Hall doesn't end</b> (turn around: it lets you go that way). It never shuts you in for good.</p>
     <p class="p">The <b>GUEST REGISTER</b> on the desk names four guests who never checked out and describes their rooms. The room numbers lie — and they're different on each of your screens. <b>What's in a room</b> doesn't: find each guest's <b>luggage tag</b> and the figure on it. A <b>fuse</b> from the Laundry wakes the <b>service lift</b> down to the Basement, where the night manager's <b>ledger</b> gives their order. Set the four dials of his <b>safe</b> in STAFF ONLY — and run for the front doors. The <b>Housekeeper</b> walks the halls with her cart: you'll hear its wheels. She sees and she hears, and she never appears anywhere she couldn't walk. Hide in a <b>wardrobe</b>. Solo or online, up to four.</p>
     </div>
+    <div id="brief-breach" hidden>
+    <p class="p">Site Kestrel's Deep Research wing has lost containment. <b>Three subjects</b> are out — and each one plays by its own rules. <b>THE STALKER</b> hunts by sound and sight and goes to where it last had you: break its line of sight. <b>THE MIMIC</b> lies — footsteps, a beeping terminal, a door, even a teammate's <b>mark</b> on the floor, always where it is waiting. Learn its tell (a wet double-click just before; a mark with the name spelled <b>backwards</b>). It only goes for a guard who is <b>alone</b>. <b>THE DORMANT</b> sleeps in C-3 — until its containment fails. Then it walks. Lure it home, shut the door, re-engage the field.</p>
+    <p class="p">The job: an <b>L2 badge</b>, then the research <b>DATA MODULES</b> — one at a time (they're heavy) — uploaded at the <b>Server & Comms uplink</b>; then the <b>freight lift</b> in the Loading Dock, and hold the dock until it comes. The Security power panel has <b>one spare unit</b>: <b>CONTAINMENT</b> (C-3 holds), <b>DOOR SEALS</b> (shut four lab doors to everything) or <b>LAB LIGHTS</b> (the Mimic can't hide in them — but the Stalker sees you further). The quick way is the dark Emergency Passage. Restricted Research has things worth the risk. Solo or online, up to four.</p>
+    </div>
     <div id="brief-endless" hidden>
     <p class="p">The day shift is never coming. There is no lift, no keycard, no way out — only the night, and <b>how long you can last in it</b>.</p>
     <p class="p">Every hour (about a minute and a half) you get a spare battery — and you must <b>choose one of two curses</b>. They stack: a faster Warden, sharper ears, brownouts, open vents, phantoms everywhere… Every run is different. Beat your longest night.</p>
@@ -1240,6 +1244,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div class="kicker" style="margin-top:14px">Build 39 · four new floors</div>
     <div class="modes xm" id="modes-x">
       <button class="mode xm ihotel" data-mode="ihotel"><b>THE INFINITE HOTEL<i class="new">NEW</i></b><span>An old hotel that changes whatever nobody is looking at. Four guests who never checked out, rooms you know only by what's in them, a hall that doesn't end — and the Housekeeper, making her rounds. Solo or online.</span><em data-best="ihotel"></em></button>
+      <button class="mode xm breach" data-mode="breach"><b>CONTAINMENT BREACH<i class="new">NEW</i></b><span>Three subjects loose in a research wing: one hunts by sound and sight, one lies with your own sounds and goes for whoever is alone, one sleeps — until its containment fails. Upload the data, choose where the power goes, get to the lift. Solo or online.</span><em data-best="breach"></em></button>
       <button class="mode xm circuit" data-mode="circuit"><b>THE LAST CIRCUIT<i class="new">NEW</i></b><span>A power research plant, dark. Keycard, relays, three generators, a panel to wire and an evacuation route to pick. Every generator you start is noise — and something walks the lines. Solo or online.</span><em data-best="circuit"></em></button>
     </div>
     <div class="kicker" style="margin-top:14px">The Anomaly · Desk B · the camera network</div>
@@ -1460,7 +1465,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div id="mp-lobby" hidden>
       <div class="kicker" style="margin-top:14px">Guards on shift</div>
       <ul id="mp-players"></ul>
-      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="descent">THE DESCENT</button><button data-mode="anomaly">THE ANOMALY</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="doors">100 DOORS</button><button data-mode="woods">HOLLOW WOODS</button><button data-mode="escape">ESCAPE PROTOCOL</button><button data-mode="circuit">THE LAST CIRCUIT</button><button data-mode="ihotel">THE INFINITE HOTEL</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
+      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="descent">THE DESCENT</button><button data-mode="anomaly">THE ANOMALY</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="doors">100 DOORS</button><button data-mode="woods">HOLLOW WOODS</button><button data-mode="escape">ESCAPE PROTOCOL</button><button data-mode="circuit">THE LAST CIRCUIT</button><button data-mode="ihotel">THE INFINITE HOTEL</button><button data-mode="breach">CONTAINMENT BREACH</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
       <div class="mp-modes mp-cmaps" id="mp-cmaps" hidden><span>MECHA CAMO MAP:</span><button data-cmap="s6">SUBLEVEL 6</button><button data-cmap="works">THE COLOUR WORKS</button></div>
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
@@ -43787,7 +43792,7 @@ function XMode(def) {
     set(fn) { if (!this.host()) return; const old = XB.clone(this.st); fn(this.st); this.st.v = (this.st.v | 0) + 1; this.syncAll(old); },
     syncAll(old) { if (def.sync) def.sync(this, old, this.st); Hints.progress(); },
     // (host) a moment everyone should see and hear (a sound, a shake, a message) — it isn't state
-    fx(n, o) { if (!this.host()) return; Game.emit(Object.assign({ k: 'xbf', m: this.key, n }, o || {})); },
+    fx(n, o) { if (!this.host()) return; Game.emit(Object.assign({}, o || {}, { k: 'xbf', m: this.key, n })); }, // (k, m and n are the event's own: a payload can't overwrite them)
     // (host) a line for everyone ({who} is whoever did it: "You" on their own screen)
     note(text, type, dur, by) { if (!this.host()) return; Game.emit({ k: 'xbn', m: this.key, t: text, y: type || '', d: dur || 4, b: by === undefined ? -9 : by }); },
     tell(a, text, type, dur, sfx) { Game.tell(a, text, type || '', dur || 3.6, sfx); },
@@ -43863,7 +43868,7 @@ function XMode(def) {
     },
     remote(r, a, i, x) {
       if (!this.on()) return;
-      if (a === 'xbu' && Array.isArray(x) && x[0] === this.key) { const id = String(x[1] || ''); if (/^[a-z0-9_]{1,24}$/.test(id)) this.hostUse(id, r); return; }
+      if (a === 'xbu' && Array.isArray(x) && x[0] === this.key) { const id = String(x[1] || ''); if (/^[A-Za-z0-9_]{1,24}$/.test(id)) this.hostUse(id, r); return; }
       if (def.remote) def.remote(this, r, a, i, x);
     },
     event(ev, mine, who) {
@@ -45499,6 +45504,460 @@ DIFF_TEXT.ihotel = {
   hard: 'She is out almost at once and hears more. The rooms go dark more often.',
   nightmare: 'She is already walking. She hears everything. The hotel never stops changing.',
 };
+/* ================================================================== */
+/* Build 39: CONTAINMENT BREACH — Site Kestrel Deep Research           */
+/*  Three subjects, three sets of rules:                               */
+/*   · THE STALKER (C-1) hunts by sound and sight, goes to where it    */
+/*     last had you, and loses you when you break its line of sight;   */
+/*   · THE MIMIC (C-2) lies: footsteps, a beeping terminal, a door, a  */
+/*     teammate's mark on the floor — always where IT is. It has a     */
+/*     tell (a wet double-click just before; a mark spelled backwards) */
+/*     and it only goes for a guard who is ALONE;                      */
+/*   · THE DORMANT (C-3) does nothing — until the containment fails:   */
+/*     its door opened, its power taken, its stability run out. Then   */
+/*     it walks. Lure it home, shut the door, re-engage the field.     */
+/*  The job: three research DATA MODULES (one at a time: they're       */
+/*  heavy), uploaded at the Server & Comms uplink (an L2 badge opens   */
+/*  it); then the freight lift in the Loading Dock. The power panel in */
+/*  Security has one spare unit: CONTAINMENT, DOOR SEALS or LAB LIGHTS */
+/*  — each one makes one of them easier and another harder.            */
+/* ================================================================== */
+const CBZ0 = LEVELS[CB_LV].z0;
+const CB_NEED = { easy: 2, normal: 3, hard: 3, nightmare: 4 };
+const CB_DRAIN = { easy: 0.45, normal: 0.75, hard: 1.0, nightmare: 1.35 }; // (C-3 stability, % a second, without its power)
+const CB_LIFT = { easy: 30, normal: 40, hard: 50, nightmare: 60 };
+const CB_SPAWNS = [[9, 968, Math.PI], [12, 968, Math.PI], [9, 972, Math.PI], [12, 972, Math.PI], [15, 968, Math.PI], [15, 972, Math.PI]];
+const CB_MODS = [[30.6, 0.98, 961.2, 'Laboratory A'], [58.4, 0.98, 961.4, 'the Medical Laboratory'], [27.6, 0.98, 982.8, 'Laboratory B'], [48.6, 1.02, 977.2, 'the Evidence Archive'], [71.6, 0.6, 936.2, 'Chamber C-4']];
+const CB_BADGE = [[38.6, 0.98, 968.6, 'on a bench in Laboratory A'], [47.6, 0.98, 968.8, 'on a trolley in the Medical Laboratory'], [59.4, 1.02, 982.6, 'on a desk in the Evidence Archive']];
+const CB_SEALS = [ // the doors the seals can shut: [door u, v, side A point, side B point]
+  [21, 18, [41.9, 966.6], [44.1, 966.6], 'Laboratory A / Medical'], [31, 18, [61.9, 966.6], [64.1, 966.6], 'Medical / Comms'],
+  [16, 21, [34.6, 969.9], [34.6, 972.1], 'Laboratory A / the Passage'], [26, 21, [54.6, 969.9], [54.6, 972.1], 'Medical / the Passage']];
+const CB_LIFTBOX = { x0: 96.4, x1: 105.6, z0: 976.4, z1: 983.6 };
+const CB_C3 = { x0: 38, x1: 62, z0: 930, z1: 944 };
+const CB_PATROL = [[20, 949], [50, 949], [76, 949], [30, 956], [60, 956], [90, 956], [33, 965], [53, 965], [77, 965], [12, 978], [33, 979], [53, 979], [77, 979], [99, 968], [94, 940], [10, 937], [28, 937], [72, 937], [56, 973]];
+const CB_DARK = [[94, 936], [100, 946], [28, 982], [52, 982], [76, 980], [10, 980], [33, 962], [60, 962], [56, 973], [80, 973]]; // (where the Mimic waits)
+const CB = { fix: [], light: null, mods: [], badge: null, seals: [], c3: null, panel: null, uplink: null, dock: null, gate: null, spec: null };
+const CBM = {
+  white: phong({ color: 0xd4d8d8, shininess: 50, specular: 0x444444 }), steel: phong({ color: 0x8a9298, shininess: 70, specular: 0x666666 }),
+  pad: phong({ color: 0xa8aca0, shininess: 4 }), teal: phong({ color: 0x2a7a72, shininess: 40 }), hazard: phong({ color: 0xb08a22, shininess: 20 }),
+  glass: new T.MeshPhongMaterial({ color: 0x9ad0c8, transparent: true, opacity: 0.2, shininess: 120, specular: 0xffffff, depthWrite: false }),
+  fluid: new T.MeshPhongMaterial({ color: 0x3a8a6a, emissive: 0x0a2a1a, transparent: true, opacity: 0.55, shininess: 90 }),
+  module: new T.MeshPhongMaterial({ color: 0x2a3a4a, emissive: 0x0a1a2a, shininess: 80, specular: 0x88aacc }), moduleLed: new T.MeshBasicMaterial({ color: 0x40d0ff }),
+  badge: new T.MeshPhongMaterial({ color: 0xd8e8f0, emissive: 0x18202a, shininess: 60 }), field: new T.MeshBasicMaterial({ color: 0x60c0ff, transparent: true, opacity: 0.12, depthWrite: false, side: T.DoubleSide, blending: T.AdditiveBlending }),
+};
+(function buildBreach() {
+  const lv = CB_LV, F = CB.fix;
+  const lamp = (x, z, h, along, room, sec, o) => XK.lamp(F, x, h - 0.08, z, along, room, Object.assign({ sec, col: 0xe8f4f4, pc: [0.88, 0.98, 1.0] }, o || {}));
+  const emerg = (x, y, z, room) => XK.lamp(F, x, y, z, 'x', room, { emerg: true, sec: 'EM', i: 0.55, r: 5.5 });
+  // ---- the chambers: padded walls, a restraint frame, the pod — C-1 and C-2 torn open, C-3 holding, C-4 sealed
+  for (const [x0, x1, id, k] of [[2, 18, 'cb_c1', 0], [20, 36, 'cb_c2', 1], [38, 62, 'cb_c3', 2], [64, 80, 'cb_c4', 3]]) {
+    const cx = (x0 + x1) / 2;
+    for (let x = x0 + 1; x < x1; x += 2) XK.box(CBM.pad, x, 1.6, 930.12, 1.8, 2.8, 0.14);
+    XK.box(CBM.steel, cx, 0.1, 935, 4.4, 0.2, 4.4); XK.box(MAT.metalDark, cx, 2.8, 935, 4.4, 0.3, 4.4);
+    for (const [ox, oz] of [[-2, -2], [2, -2], [-2, 2], [2, 2]]) XK.box(CBM.steel, cx + ox, 1.45, 935 + oz, 0.18, 2.7, 0.18);
+    XK.col(cx, 935, 4.6, 4.6, 0, k === 2 ? false : true);
+    if (k < 2) { for (let i = 0; i < 4; i++) XK.box(CBM.steel, cx - 1.2 + i * 0.8, 0.04, 939 + (i % 2) * 0.8, 0.5, 0.06, 0.12, i * 0.7); addStatic(GEO.plane, MAT.blood, cx + 1.6, 0.012, 940, 2.4, 1.8, 1, 0.4, -Math.PI / 2); addStatic(GEO.plane, MAT.claw, cx - 3, 1.4, 930.22, 1.6, 1.2, 1, 0); }
+    if (k === 3) XK.box(CBM.white, cx + 4, 0.5, 936.2, 1.2, 1.0, 0.8, 0, true);
+    lamp(cx, 935, 4.6, 'x', id, k === 2 ? 'CB' : 'CH', { col: 0xc8e8ff, pc: [0.8, 0.9, 1], i: 0.7 }); emerg(x0 + 0.12, 2.6, 940, id);
+  }
+  // C-3's containment field (it hums while the power holds)
+  { const f = XK.mesh(GEO.box, CBM.field, 50, 1.6, 937, 23.6, 3.2, 13.6, 0, lv); f.castShadow = false; f.receiveShadow = false; CB.c3 = { field: f }; }
+  // ---- the Observation Gallery: a console under every window, C-3's re-containment console the biggest
+  for (const x of [5, 13, 31, 41, 55, 67, 75]) { XK.box(MAT.console, x, 0.5, 946.5, 1.8, 1.0, 0.8, 0, true); const s = XK.mesh(GEO.box, MAT.screenOff, x, 1.2, 946.2, 1.4, 0.5, 0.04, 0, lv); s.rotation.x = -0.25; }
+  CB.c3.con = XK.mesh(GEO.box, MAT.ledRed, 49, 1.25, 946.24, 1.2, 0.36, 0.04, 0, lv); XK.box(MAT.console, 49, 0.55, 946.6, 2.6, 1.1, 1.0, 0, true);
+  for (let x = 6; x < 80; x += 12) { lamp(x, 949, 3.0, 'x', 'cb_obs', 'CB', { i: 0.7, col: 0xc8e8ff, pc: [0.8, 0.9, 1] }); emerg(x + 6, 2.5, 951.88, 'cb_obs'); }
+  { const c = XK.plate(['CONTAINMENT BLOCK C', 'SUBJECTS ARE NOT TO BE OBSERVED ALONE'], { w: 512, h: 128, bg: '#14202a', fg: '#9ad0e8' }); XK.sign(c, 3, 0.75, 40, 2.4, 951.94, Math.PI, lv); }
+  // ---- the Laboratory Corridor: long, lit (with the lab lights), open
+  for (let x = 8; x < 104; x += 10) { lamp(x, 956, 3.0, 'x', 'cb_corr', 'LAB'); if (x % 20 === 8) emerg(x + 4, 2.5, 954.12, 'cb_corr'); }
+  XK.pipe(CBM.steel, 2.4, 2.75, 954.4, 105.6, 954.4, 0.09);
+  // ---- Security Operations (where you start): desks, monitors, lockers, the power panel
+  for (const [x, z] of [[8, 963], [14, 963], [8, 967.5]]) { XK.desk(x, z, Math.PI, true); XK.chair(x, z + 1.1, Math.PI); }
+  hideLocker(20.6, 976, 3); hideLocker(20.6, 976.9, 3); hideLocker(20.6, 977.8, 3); XK.box(MAT.genGreen, 20.7, 0.95, 978.7, 0.5, 1.9, 0.58, 0, true);
+  XK.box(MAT.metalDark, 2.3, 1.5, 968, 0.4, 2.4, 4.4, 0, true);
+  CB.panel = ['C', 'S', 'L'].map((r, i) => ({ r, led: XK.mesh(GEO.box, MAT.ledOff, 2.52, 1.9, 966.6 + i * 1.4, 0.04, 0.16, 0.5, 0, lv) }));
+  { const c = XK.plate(['POWER · 1 SPARE UNIT', 'CONTAINMENT · SEALS · LIGHTS'], { w: 512, h: 128, bg: '#1a1c14', fg: '#e8d890' }); XK.sign(c, 2.0, 0.5, 2.54, 2.85, 968, Math.PI / 2, lv); }
+  { const c = XK.plate(['SITE KESTREL · DEEP RESEARCH', 'EXTRACTION: LOADING DOCK (EAST)', 'UPLINK: SERVER & COMMS (L2)'], { w: 512, h: 256, bg: '#101a1c', fg: '#a8d8d0' }); XK.sign(c, 2.6, 1.3, 11, 1.9, 960.06, 0, lv); }
+  lamp(8, 966, 3.0, 'x', 'cb_sec', 'SEC'); lamp(16, 966, 3.0, 'x', 'cb_sec', 'SEC'); lamp(10, 978, 3.0, 'x', 'cb_sec', 'SEC'); emerg(21.88, 2.5, 966, 'cb_sec');
+  // ---- the labs: benches, a fume hood, cabinets; Medical: beds, IV stands
+  for (const [x0, id] of [[24, 'cb_labA'], [24, 'cb_labB']]) { const z0 = id === 'cb_labA' ? 960 : 976; for (let k = 0; k < 2; k++) { XK.box(CBM.white, x0 + 6 + k * 6, 0.9, z0 + 4.6 - (id === 'cb_labB' ? 0.6 : 0), 4.4, 0.06, 1.2); XK.box(MAT.metalDark, x0 + 6 + k * 6, 0.45, z0 + 4.6 - (id === 'cb_labB' ? 0.6 : 0), 4.2, 0.88, 1.1, 0, true); for (let j = 0; j < 4; j++) XK.cyl(CBM.glass, x0 + 4.6 + k * 6 + j * 0.9, 1.05, z0 + 4.4, 0.06, 0.24); }
+    XK.box(CBM.steel, x0 + 1.2, 1.2, z0 + 1.0, 1.6, 2.4, 1.0, 0, true); lamp(x0 + 6, z0 + 4, 3.0, 'x', id, 'LAB'); lamp(x0 + 13, z0 + 4, 3.0, 'x', id, 'LAB'); emerg(x0 + 17.88, 2.5, z0 + 2, id); }
+  for (let k = 0; k < 3; k++) { const x = 47 + k * 5; XK.box(CBM.white, x, 0.55, 962.2, 1.0, 0.5, 2.1, 0, true); XK.box(MAT.mattress, x, 0.84, 962.2, 0.9, 0.1, 2.0); XK.vpipe(CBM.steel, x + 0.7, 961.4, 0, 1.9, 0.02); }
+  XK.box(CBM.white, 60.6, 1.0, 968.6, 1.6, 2.0, 0.5, 0, true); lamp(50, 964, 3.0, 'x', 'cb_med', 'LAB'); lamp(58, 966, 3.0, 'x', 'cb_med', 'LAB'); emerg(44.12, 2.5, 968, 'cb_med');
+  // the Archive: shelves of evidence boxes; Restricted Research: the tank, the machine
+  for (let z = 977.5; z < 984; z += 2.2) XK.shelf(48, z, 7, 0, MAT.rack, [MAT.box, MAT.paper, MAT.box]);
+  XK.desk(59.4, 982.4, Math.PI, false); lamp(52, 979, 3.0, 'x', 'cb_arch', 'LAB'); emerg(61.88, 2.5, 978, 'cb_arch');
+  { XK.cyl(CBM.glass, 82, 1.6, 980, 1.1, 3.0); XK.cyl(CBM.fluid, 82, 1.5, 980, 1.0, 2.6); XK.cyl(CBM.steel, 82, 0.1, 980, 1.2, 0.2); XK.cyl(CBM.steel, 82, 3.15, 980, 1.2, 0.2); addCollider(80.8, 978.8, 83.2, 981.2);
+    CB.spec = { x: 76, z: 977.2, m: XK.mesh(GEO.cyl, CBM.fluid, 76, 1.05, 977.2, 0.12, 0.3, 0.12, 0, lv) }; XK.box(CBM.white, 76, 0.5, 977.2, 1.2, 1.0, 0.7, 0, true);
+    XK.box(MAT.metalDark, 70, 1.1, 982.8, 3, 2.2, 1.2, 0, true); lamp(72, 980, 3.4, 'x', 'cb_rwing', 'RW', { mode: 'flicker', i: 0.6 }); emerg(64.12, 2.5, 980, 'cb_rwing'); }
+  // ---- Server & Comms: racks, and the uplink
+  for (let i = 0; i < 3; i++) { XK.box(MAT.rack, 70 + i * 6, 1.05, 966.5, 4.6, 2.1, 0.9, 0, true); }
+  XK.box(MAT.console, 77, 0.6, 960.6, 3.2, 1.2, 1.0, 0, true); CB.uplink = { scr: XK.mesh(GEO.box, MAT.screenOff, 77, 1.5, 960.24, 2.4, 0.9, 0.04, 0, lv), slots: [0, 1, 2, 3].map(i => XK.mesh(GEO.box, MAT.ledOff, 75.9 + i * 0.75, 1.25, 961.12, 0.4, 0.08, 0.04, 0, lv)) };
+  lamp(70, 963, 3.2, 'x', 'cb_comms', 'COM'); lamp(84, 963, 3.2, 'x', 'cb_comms', 'COM'); emerg(89.88, 2.5, 966, 'cb_comms');
+  // ---- the Loading Dock: crates, the freight lift (its gate rises when it comes), the call panel
+  for (const [x, z] of [[95, 962], [96.4, 963.6], [104, 964], [103, 970], [94.6, 969]]) XK.crate(x, z, 1.1, x * 0.3, x > 100);
+  { const g = XK.group(0, 0, 0, 0, lv); const plat = new T.Mesh(GEO.box, MAT.metalDark); plat.scale.set(9.4, 0.12, 7.4); plat.position.set(101, 0.06, 980); g.add(plat);
+    CB.gate = new T.Group(); g.add(CB.gate); for (let x = 96.6; x <= 105.4; x += 0.55) { const b = new T.Mesh(GEO.box, CBM.hazard); b.scale.set(0.06, 3.0, 0.06); b.position.set(x, 1.55, 976.2); CB.gate.add(b); }
+    XK.layer(g, lv); CB.gateCol = addCollider(96.3, 976.05, 105.7, 976.35, { dyn: () => !(CB_M && CB_M.st && CB_M.st.arrived) }); }
+  CB.dock = XK.mesh(GEO.box, MAT.ledRed, 100, 1.5, 960.14, 0.4, 0.12, 0.04, 0, lv); XK.box(MAT.metalDark, 100, 1.25, 960.12, 0.8, 0.9, 0.18);
+  lamp(98, 966, 5.8, 'x', 'cb_dock', 'DOCK', { r: 12 }); lamp(101, 980, 5.8, 'x', 'cb_dock', 'DOCK', { r: 12 }); emerg(92.12, 2.6, 966, 'cb_dock'); emerg(105.88, 2.6, 974, 'cb_dock');
+  // ---- Specimen Storage: jars, cryo freezers
+  for (let z = 932; z < 950; z += 3) { XK.shelf(85, z, 4, 0, MAT.rack, [CBM.glass, CBM.fluid, CBM.glass]); }
+  for (let k = 0; k < 4; k++) XK.box(CBM.white, 103.6, 1.0, 933 + k * 2.4, 1.6, 2.0, 1.8, 0, true);
+  lamp(94, 940, 3.4, 'x', 'cb_spec', 'SPEC', { mode: 'flicker', i: 0.55 }); emerg(105.88, 2.6, 946, 'cb_spec');
+  // ---- the Emergency Passage: red lamps, pipes (the quick way, and dark)
+  for (let x = 28; x < 90; x += 12) emerg(x, 2.2, 972.12, 'cb_pass'); XK.pipe(CBM.steel, 24.4, 2.3, 973.7, 89.6, 973.7, 0.08);
+  // ---- the pickups
+  const pk = (mat, s, col) => ({ m: XK.mesh(GEO.box, mat, 0, -10, 0, s[0], s[1], s[2], 0, lv), gl: xGlow(col, 0.8, 0, -10, 0, lv, 0.4) });
+  for (let k = 0; k < 5; k++) { const P = pk(CBM.module, [0.36, 0.14, 0.24], 0x60c8ff); const led = new T.Mesh(GEO.box, CBM.moduleLed); led.scale.set(0.5, 0.2, 0.05); led.position.set(0, 0.55, 0.52); P.m.add(led); CB.mods.push(P); }
+  CB.badge = pk(CBM.badge, [0.09, 0.012, 0.06], 0xe0f0ff);
+  // the seal panels beside the four doors
+  CB_SEALS.forEach((S, i) => { CB.seals.push([S[2], S[3]].map(([x, z]) => XK.mesh(GEO.box, MAT.ledOff, x, 1.35, z, 0.18, 0.12, 0.18, 0, lv))); });
+  flushStatic(); xLockersFix();
+  CB.light = XB.lightMap(lv, F);
+})();
+
+/* ---------------- the three subjects ---------------- */
+// one sculpt for all three (they came out of the same programme): proportions, limbs, skin and a head of its own
+function buildSubject(o) {
+  const root = new T.Group(), P = {};
+  const skin = ORG.mat(o.mat, { tex: o.tex || 'skin', shine: o.shine || 30, spec: o.spec || 0x2a2424, ns: 1.3 }), sc = ORG.skinCol(o.c0, o.c1, { scale: 6, ends: 0.3, blot: 0.6 });
+  const B = (p, x, y, z) => ORG.bone(p, x, y, z), s = o.s || 1;
+  P.hips = B(root, 0, o.hip * s, 0); P.sp1 = B(P.hips, 0, 0.06 * s, 0); P.sp2 = B(P.sp1, 0, o.sp * s, 0); P.chest = B(P.sp2, 0, o.sp * s, 0);
+  ORG.mesh(ORG.tube([[0, -0.1 * s, 0], [0, 0.05 * s, 0], [0, 0.2 * s, 0]], [[0.15 * s * o.w, 0.11 * s], [0.13 * s * o.w, 0.1 * s], [0.11 * s * o.w, 0.09 * s]], { seg: 12, sub: 3, col: sc }), skin, P.hips, true);
+  ORG.mesh(ORG.tube([[0, 0, 0], [0, o.sp * 0.5 * s, -0.02 * s], [0, o.sp * s, 0]], [[0.09 * s * o.w, 0.07 * s], [0.08 * s * o.w, 0.07 * s], [0.12 * s * o.w, 0.09 * s]], { seg: 12, sub: 3, col: sc, disp: (u, v) => -Math.max(0, Math.cos(u * TAU)) * 0.012 * s }), skin, P.sp1, true);
+  ORG.mesh(ORG.tube([[0, 0, 0], [0, o.sp * 0.5 * s, -0.02 * s], [0, o.sp * s, -0.01 * s]], [[0.13 * s * o.w, 0.1 * s], [0.19 * s * o.w, 0.13 * s], [0.22 * s * o.w, 0.11 * s]], { seg: 14, sub: 4, col: (u, v, k, x, y, z) => { const c = sc(u, v, k, x, y, z), r = Math.max(0, -Math.sin(v * Math.PI * 8)) * Math.max(0, Math.cos(u * TAU)) * 0.25; return [c[0] * (1 - r), c[1] * (1 - r), c[2] * (1 - r)]; } }), skin, P.sp2, true);
+  if (o.spines) for (let k = 0; k < o.spines; k++) ORG.mesh(ORG.spike([0, (0.05 + k * 0.08) * s, -0.1 * s], [0, (0.12 + k * 0.08) * s, -0.26 * s], 0.025 * s, { col: sc }), skin, P.sp2, true);
+  P.neck = B(P.chest, 0, 0.2 * s, 0.03 * s); P.head = B(P.neck, 0, o.neck * s, 0.06 * s);
+  ORG.mesh(ORG.tube([[0, 0, 0], [0, o.neck * 0.5 * s, 0.03 * s], [0, o.neck * s, 0.06 * s]], [0.055 * s, 0.05 * s, 0.055 * s], { seg: 10, sub: 3, col: sc }), skin, P.neck, true);
+  o.head(P, skin, sc, s);
+  const leg = sd => { const L = {}; L.hip = B(P.hips, sd * 0.12 * s * o.w, -0.06 * s, 0); L.knee = B(L.hip, 0, -o.leg * s, 0); L.ank = B(L.knee, 0, -o.leg * 0.95 * s, 0);
+    ORG.mesh(ORG.tube([[0, 0.05 * s, 0], [0, -o.leg * 0.5 * s, 0.03 * s], [0, -o.leg * s, 0]], [0.08 * s, 0.065 * s, 0.05 * s], { seg: 10, sub: 3, col: sc }), skin, L.hip, true);
+    ORG.mesh(ORG.tube([[0, 0.02 * s, 0], [0, -o.leg * 0.47 * s, -0.02 * s], [0, -o.leg * 0.95 * s, 0]], [0.05 * s, 0.04 * s, 0.034 * s], { seg: 9, sub: 3, col: sc }), skin, L.knee, true);
+    for (let k = -1; k <= 1; k++) ORG.mesh(ORG.spike([k * 0.025 * s, 0, 0], [k * 0.05 * s, -0.03 * s, 0.17 * s], 0.016 * s, { col: sc }), skin, L.ank, true);
+    return L; };
+  P.legs = [leg(-1), leg(1)];
+  const arm = (sd, up, dz) => { const A = {}; A.sh = B(P.chest, sd * 0.22 * s * o.w, (0.16 - up) * s, dz * s); A.el = B(A.sh, 0, -o.arm * s, 0); A.wr = B(A.el, 0, -o.arm * 0.95 * s, 0);
+    ORG.mesh(ORG.tube([[0, 0.04 * s, 0], [0, -o.arm * 0.5 * s, 0.02 * s], [0, -o.arm * s, 0]], [0.055 * s, 0.045 * s, 0.035 * s], { seg: 9, sub: 3, col: sc }), skin, A.sh, true);
+    ORG.mesh(ORG.tube([[0, 0.02 * s, 0], [0, -o.arm * 0.47 * s, 0.01 * s], [0, -o.arm * 0.95 * s, 0]], [0.035 * s, 0.03 * s, 0.025 * s], { seg: 8, sub: 3, col: sc }), skin, A.el, true);
+    for (let k = 0; k < 4; k++) { const fx = (k - 1.5) * 0.022 * s; ORG.mesh(ORG.spike([fx, 0, 0], [fx * 1.8, -(o.claw || 0.26) * s, 0.05 * s], 0.012 * s, { col: sc, bend: [0, 0, 0.04 * s] }), skin, A.wr, true); }
+    return A; };
+  P.arms = [arm(-1, 0, 0), arm(1, 0, 0)]; if (o.arms4) P.arms.push(arm(-1, 0.22, 0.04), arm(1, 0.22, 0.04));
+  ORG.skinify(root, { reach: 3.2 * s });
+  root.userData.P = P; return root;
+}
+const buildStalker = () => buildSubject({ mat: 'stalkerSkin', c0: 0x8a8278, c1: 0x2e2824, hip: 1.25, sp: 0.3, neck: 0.32, leg: 0.62, arm: 0.72, w: 0.9, spines: 5, claw: 0.32,
+  head(P, skin, sc, s) { // an eyeless skull split down the middle: the two halves of its jaw open sideways
+    ORG.mesh(ORG.tube([[0, -0.04, -0.06], [0, 0.05, 0.06], [0, 0.02, 0.2]], [[0.08, 0.09], [0.075, 0.07], [0.04, 0.035]], { seg: 12, sub: 4, col: sc }), skin, P.head, true);
+    P.jaws = [-1, 1].map(sd => { const j = ORG.bone(P.head, sd * 0.03, -0.04, 0.04); ORG.mesh(ORG.tube([[0, 0, 0], [sd * 0.03, -0.03, 0.1], [sd * 0.02, -0.04, 0.2]], [0.035, 0.025, 0.012], { seg: 8, sub: 3, col: sc }), skin, j, true); ORG.mesh(orgTeeth([[sd * 0.01, -0.01, 0.06], [sd * 0.02, -0.02, 0.11], [sd * 0.02, -0.03, 0.16]], [0, -0.6, 0.2], 0.03, 0.006), OM.tooth, j, false); return j; });
+  } });
+const buildMimic = () => buildSubject({ mat: 'mimicSkin', tex: 'membrane', c0: 0x5a6a62, c1: 0x141a18, hip: 0.95, sp: 0.26, neck: 0.2, leg: 0.5, arm: 0.66, w: 1.1, claw: 0.2, shine: 70, spec: 0x445550,
+  head(P, skin, sc, s) { // smooth, faceless — but it has learned to make your sounds
+    ORG.mesh(ORG.tube([[0, -0.08, 0], [0, 0.04, 0.03], [0, 0.16, 0]], [[0.1, 0.12], [0.11, 0.13], [0.07, 0.08]], { seg: 14, sub: 4, col: sc, disp: (u, v) => (v > 0.3 && v < 0.4 && Math.cos(u * TAU) > 0.5 ? -0.02 : 0) }), skin, P.head, true);
+    P.slit = new T.MeshBasicMaterial({ color: 0x7affe0, transparent: true, opacity: 0.0 }); const sl = new T.Mesh(GEO.box, P.slit); sl.scale.set(0.12, 0.012, 0.02); sl.position.set(0, -0.02, 0.12); P.head.add(sl);
+  } });
+const buildDormant = () => buildSubject({ mat: 'dormantSkin', tex: 'hide', c0: 0xc8c4b8, c1: 0x5a564c, hip: 1.55, sp: 0.42, neck: 0.16, leg: 0.7, arm: 0.95, w: 1.6, s: 1.25, arms4: true, spines: 7, claw: 0.36,
+  head(P, skin, sc, s) { // a heavy, low head with a round mouth like a drain — frost still on it from the field
+    ORG.mesh(ORG.tube([[0, -0.1 * s, -0.04 * s], [0, 0.02 * s, 0.06 * s], [0, -0.02 * s, 0.18 * s]], [[0.16 * s, 0.14 * s], [0.15 * s, 0.13 * s], [0.1 * s, 0.1 * s]], { seg: 14, sub: 4, col: sc }), skin, P.head, true);
+    P.maw = new T.Mesh(new T.TorusGeometry(0.06 * s, 0.02 * s, 6, 14), OM.gum); P.maw.position.set(0, -0.03 * s, 0.27 * s); P.head.add(P.maw);
+  } });
+// how each one moves
+function cbAnim(F, dt, o) {
+  const P = F.P; if (!P || !P.legs) return; const t = Game.time, sp = F.speed, run = clamp(sp / (o.top || 4.5), 0, 1);
+  F.ph = (F.ph || 0) + dt * (o.cad || 1.8) * (1 + sp * 1.1);
+  const sw = Math.sin(F.ph) * (0.15 + run * 0.6), hunt = F.state === 'HUNT' || F.state === 'WIND' ? 1 : 0;
+  F.lean = damp(F.lean || 0, (o.low || 0) + hunt * (o.huntLean || 0.4) + run * 0.15, 4, dt);
+  P.hips.position.y = P.hips.userData.y0 === undefined ? (P.hips.userData.y0 = P.hips.position.y) : P.hips.userData.y0 - Math.abs(Math.sin(F.ph)) * 0.05 * (0.3 + run) - F.lean * (o.drop || 0.15);
+  P.sp1.rotation.x = F.lean * 0.6; P.sp2.rotation.x = F.lean * 0.4 + Math.sin(t * (o.breath || 1)) * 0.03;
+  P.legs.forEach((L, i) => { const s = i ? -1 : 1, a = sw * s; L.hip.rotation.x = -a - F.lean * 0.5; L.knee.rotation.x = Math.max(0, a) * 1.0 + 0.12 + run * 0.3 + F.lean * 0.4; });
+  const reach = F.att;
+  P.arms.forEach((A, i) => { const s = i % 2 ? -1 : 1, up = i >= 2 ? 0.5 : 0; A.sh.rotation.set((sw * s * 0.7 * (i >= 2 ? -1 : 1)) - reach * 2.1 - hunt * 0.4 - up, 0, s * (0.15 + reach * 0.3 + up * 0.5)); A.el.rotation.x = -0.3 - reach * 0.5 - run * 0.3; });
+  F.tilt = damp(F.tilt || 0, F.state === 'WAIT' || F.state === 'SEARCH' || F.state === 'X1' ? Math.sin(t * 0.8) * 0.6 : 0, 2, dt);
+  P.neck.rotation.set(-F.lean * 0.7 + (o.headUp || 0), F.tilt * 0.6, F.tilt * 0.5 + (Math.random() < 0.012 ? rand(-0.4, 0.4) : 0));
+  if (P.jaws) P.jaws.forEach((j, i) => { j.rotation.y = (i ? -1 : 1) * (0.1 + reach * 0.7 + hunt * 0.2 + Math.max(0, Math.sin(t * 9)) * 0.05); });
+  if (P.maw) P.maw.scale.setScalar(1 + reach * 0.8 + Math.sin(t * 2) * 0.08);
+}
+const Stalker = XFoe({
+  key: 'XS', name: 'THE STALKER', lv: CB_LV, kind: 'stalker', build: buildStalker, hp: 110, goneT: 30, height: 2.4, eyeH: 2.2, r: 0.44,
+  speed: { patrol: 1.7, invest: 3.0, search: 2.2, hunt: 4.6 }, sight: { dark: 6, lit: 22, flash: 26, fov: 1.2 }, hear: 1.25, memory: 1.6,
+  patrol() { return CB_PATROL[Math.floor(Math.random() * CB_PATROL.length)]; },
+  onSpot(F) { CB_M.fx('spot', { f: 'S', x: +F.pos.x.toFixed(1), z: +F.pos.z.toFixed(1) }); },
+  anim(F, dt) { cbAnim(F, dt, { top: 4.6, cad: 2.0, huntLean: 0.55 }); },
+  sfx(F, dt) { const d = Math.hypot(F.pos.x - player.pos.x, F.pos.z - player.pos.z); if (d > 28) return; F.cT = (F.cT || 0) - dt; if (F.cT <= 0) { F.cT = rand(0.9, 2.2) * (F.state === 'HUNT' ? 0.5 : 1); Sound.crawlSkitter(_xv3.set(F.pos.x, 1.4, F.pos.z)); } F.sD = (F.sD || 0) + F.speed * dt; if (F.sD > 1.1) { F.sD = 0; Sound.bruteStep(_xv3.set(F.pos.x, 0.1, F.pos.z), 0.22); } },
+  onWind(F) { Sound.crawlShriek(_xv3.set(F.pos.x, 1.8, F.pos.z), 0.8); },
+});
+// the Mimic: it waits somewhere dark, makes your sounds there, and goes for whoever comes alone
+const Mimic = XFoe({
+  key: 'XM', name: 'THE MIMIC', lv: CB_LV, kind: 'mimic', build: buildMimic, hp: 80, goneT: 26, height: 1.7, eyeH: 1.5, r: 0.4,
+  speed: { patrol: 1.4, invest: 2.4, search: 1.8, hunt: 4.0 }, sight: { dark: 7, lit: 12, flash: 16, fov: 1.4 }, hear: 1.3, memory: 2.4,
+  pass(F, x, z) { return !(CB_M.st.route === 'L' && F.state === 'X1' && XB.litAt(CB.light, cc(x), cc(z)) > 0.5); }, // (with the lab lights up, it won't sit in them)
+  patrol(F) { const st = CB_M.st; let best = null, bs = -1e9; for (const p of CB_DARK) { if (st.route === 'L' && XB.litAt(CB.light, p[0], p[1]) > 0.5) continue; const d = Math.hypot(p[0] - F.pos.x, p[1] - F.pos.z), s = -Math.abs(d - 20) + Math.random() * 18; if (s > bs) { bs = s; best = p; } } return best || CB_DARK[0]; },
+  // it only commits to someone on their own; anyone with them and it lets go
+  think(F, dt) {
+    const alone = a => !crew().some(o => o !== a && !o.dead && !o.downed && Math.hypot(o.pos.x - a.pos.x, o.pos.z - a.pos.z) < 9);
+    if ((F.state === 'HUNT' || F.state === 'WIND') && F.target && !alone(F.target)) { F.target = null; F.aware = 0; F.setState('PATROL', 'not alone'); F.goal = null; return false; }
+    if (F.state === 'WAIT' && F.stT > 1) { F.waitT = 9999; F.setState('X1', 'lurk'); F.lureT = rand(6, 12); }
+    if (F.state === 'X1') { // LURK: still, in the dark; every so often, a lie
+      F.speed = damp(F.speed, 0, 6, dt); F.lureT -= dt; F.stT2 = (F.stT2 || 0) + dt;
+      if (F.lureT <= 0) { F.lureT = rand(11, 20) * (CB_M.st.route === 'L' ? 1.4 : 1); CB_M.fx('lure', { x: +F.pos.x.toFixed(1), z: +F.pos.z.toFixed(1), q: Math.floor(Math.random() * 4), a: crew().length > 1 ? Game.idOf(crew()[1 + Math.floor(Math.random() * (crew().length - 1))]) : Net.myId }); }
+      for (const a of actors()) { const d = Math.hypot(a.pos.x - F.pos.x, a.pos.z - F.pos.z); if (d < 6.5 && alone(a) && !a.hidden) { F.target = a; F.last = { x: a.pos.x, z: a.pos.z, t: Game.time }; F.aware = 1.4; F.setState('HUNT', 'pounce'); CB_M.fx('spot', { f: 'M', x: +F.pos.x.toFixed(1), z: +F.pos.z.toFixed(1) }); return true; } }
+      if (F.stT > 70) F.setState('PATROL', 'move on');
+      return true;
+    }
+    return false;
+  },
+  onHit(F) { F.aware = 0; F.target = null; F.recT = 0.5; }, // (one blow — then it is gone into the dark again)
+  onState(F, s) { if (s === 'SEARCH') F.setState('PATROL', 'no searching: it waits'); },
+  anim(F, dt) { cbAnim(F, dt, { top: 4, cad: 2.4, low: F.state === 'X1' ? 0.9 : 0.35, drop: 0.35, huntLean: 0.5, headUp: F.state === 'X1' ? 0.6 : 0 }); if (F.P.slit) F.P.slit.opacity = damp(F.P.slit.opacity, F.state === 'HUNT' ? 0.9 : (F.tell || 0), 8, dt); F.tell = Math.max(0, (F.tell || 0) - dt); },
+  sfx(F, dt) { if (F.state === 'HUNT') { F.cT = (F.cT || 0) - dt; if (F.cT <= 0) { F.cT = 0.8; Sound.crawlSkitter(_xv3.set(F.pos.x, 0.8, F.pos.z)); } } },
+  onWind(F) { Sound.mimicChomp && Sound.mimicChomp(_xv3.set(F.pos.x, 1.2, F.pos.z)); },
+});
+// the Dormant: asleep in C-3 until the containment fails — then slow, enormous, and very hard to stop
+const Dormant = XFoe({
+  key: 'XD', name: 'THE DORMANT', lv: CB_LV, kind: 'dormant', build: buildDormant, hp: 300, goneT: 40, height: 3.2, eyeH: 2.8, r: 0.6,
+  speed: { patrol: 1.1, invest: 1.8, search: 1.4, hunt: 2.9 }, sight: { dark: 9, lit: 18, flash: 20, fov: 1.0 }, hear: 0.85, memory: 3,
+  patrol(F) { return CB_PATROL[Math.floor(Math.random() * CB_PATROL.length)]; },
+  onHurt(F, a, dmg) { if (dmg < 30) { F.aware = 1.4; return true; } }, // (it barely notices small things)
+  onGone(F) { F.hp = F.maxHp; },
+  anim(F, dt) { cbAnim(F, dt, { top: 2.9, cad: 1.1, huntLean: 0.25, breath: 0.5 }); },
+  sfx(F, dt) { const d = Math.hypot(F.pos.x - player.pos.x, F.pos.z - player.pos.z); if (d > 34) return; F.sD = (F.sD || 0) + F.speed * dt; if (F.sD > 1.4) { F.sD = 0; Sound.bruteStep(_xv3.set(F.pos.x, 0.1, F.pos.z), 0.8); Game.shake(Math.max(0, 0.25 - d / 80)); } F.gT = (F.gT || 0) - dt; if (F.gT <= 0) { F.gT = rand(4, 8); Sound.bruteGrunt && Sound.bruteGrunt(_xv3.set(F.pos.x, 2.4, F.pos.z)); } },
+  onWind(F) { Sound.bruteRoar(_xv3.set(F.pos.x, 2.6, F.pos.z), 0.9); },
+});
+const CB_PACK = XPack([Stalker, Mimic, Dormant]);
+
+/* ---------------- the mode ---------------- */
+const CB_STORE = XB.store('breach');
+NOTES.cb_brief = { title: 'SITE KESTREL — BREACH PROTOCOL 7', body: 'C-1 (the Stalker): hunts by sound and sight. It will come to where it last had you. Break its line of sight and keep moving.\n\nC-2 (the Mimic): DO NOT TRUST WHAT YOU HEAR. It reproduces sounds — footsteps, terminals, doors, even a colleague marking a location. A wet double click precedes every reproduction. It attacks staff who are alone. Stay together.\n\nC-3 (the Dormant): inert while the containment field holds. Do not open C-3. Do not take C-3\'s power. If it wakes: lure it into C-3, close the door, re-engage the field from the gallery console.\n\nPower: one spare unit at the Security panel — CONTAINMENT, DOOR SEALS or LAB LIGHTS.\nUplink: Server & Comms (L2 badge). Extraction: the Loading Dock.' };
+const CB_M = XMode({
+  key: 'breach', lv: CB_LV, salt: 0xb4eac4, name: 'Containment Breach', tag: 'CONTAINMENT BREACH', title: 'CONTAINMENT BREACH', sub: 'Site Kestrel · Deep Research · three of them are out',
+  scareScene: 'jumpscare', spawns: CB_SPAWNS, foe: CB_PACK, store: CB_STORE, ranks: [720, 960, 1260, 1620],
+  briefH1: 'Upload the research — and get out', briefKicker: 'Containment Breach · Site Kestrel Deep Research · three subjects, three sets of rules',
+  respawnText: 'You come to in Security Operations, alarms still going. Your team still needs you.',
+  introMsgs: [[2600, 'CONTAINMENT BREACH. Three subjects are out of their chambers. Read the protocol on the Security desk. Upload the DATA MODULES at Server & Comms (you need an L2 badge), then extract at the Loading Dock. [H] for a hint.', 'story', 8],
+    [12000, 'Stay together: one of them only goes for a guard who is ALONE — and it lies. Not everything you hear down here is real.', 'hint', 6.5]],
+  fresh(M, r) {
+    const n = XB.dv(CB_NEED), spots = XB.shuffle([0, 1, 2, 3, 4], r).slice(0, Math.min(5, n + 1));
+    return { mods: spots.map(k => ({ k, s: 0, x: 0, z: 0, by: -1 })), up: 0, need: n, badge: Math.floor(r() * CB_BADGE.length), badgeGot: 0, comms: 0, rwing: 0, c4: 0,
+      route: 'C', stab: 100, dorm: 0, contained: 0, seal: [0, 0, 0, 0], call: -1, arrived: 0, spec: 0, wakeS: 0, wakeM: 0, rare: XB.pick(['alarm', 'vent', 'radio', ''], r), rareT: 150 + Math.floor(r() * 180), rareDone: 0, read: 0 };
+  },
+  reset(M, r) { M.secT = 0; M.alarmT = 0; M.lights = 0; CB_M.pts = cbPoints(); M.carry = {}; },
+  tick(M, dt, host) { cbTick(M, dt, host); },
+  sync(M, old, st) { cbSync(M, old, st); },
+  fx: {
+    foeWake(M, ev) { if (ev.f === 'XD') { Sound.bruteRoar(_xv.set(50, 2.5, 937), 1.2); Game.shake(0.8); UI.center('C-3 IS OPEN', 'The Dormant is awake.', 4); } else if (ev.f === 'XS') UI.msg('Something in the gallery clicks, fast — like a tongue counting the walls. The Stalker is out.', 'warn', 5); },
+    foeGone(M, ev) { Sound.crawlShriek(_xv.set(+ev.x || 0, 1.6, +ev.z || 0), 1); UI.msg(ev.f === 'XD' ? 'The Dormant staggers back into the dark — for now.' : ev.f === 'XM' ? 'The Mimic screams in a dozen of your voices and is gone.' : 'The Stalker shrieks and flees into the vents.', 'good', 4.5); M.flags.banished = (M.flags.banished | 0) + 1; },
+    foeBack() { }, foeStun(M, ev) { }, foeHit() { },
+    spot(M, ev) { if (Math.hypot((+ev.x || 0) - player.pos.x, (+ev.z || 0) - player.pos.z) < 24) { Sound.sting(false); Game.shake(0.2); } },
+    // the Mimic's lie: a sound where it is — and, half a second before, its tell
+    lure(M, ev) {
+      const x = +ev.x || 0, z = +ev.z || 0, k = ev.q | 0; Sound.clicksAt ? Sound.clicksAt(_xv.set(x, 1.0, z)) : Sound.crawlSkitter(_xv.set(x, 0.6, z)); Mimic.tell = 0.8;
+      if (CB_M.st.route === 'L') for (const f of CB.fix) if (Math.hypot(f.pos.x - x, f.pos.z - z) < 7) { f.burst = 0.6; f.next = 0; }
+      setTimeout(() => { if (!XB.on('breach')) return; const p = _xv.set(x, 1.2, z);
+        if (k === 0) Sound.fakeSteps(p, 5); else if (k === 1) { Sound.beep(true); Sound.ping(p); } else if (k === 2) { Sound.door(p, true); }
+        else cbFakePing(x, z, ev.a | 0);
+      }, 520);
+    },
+    take(M, ev) { if ((ev.b | 0) === Net.myId) Sound.pickup(); },
+    route(M, ev) { Sound.breaker(_xv.set(2.5, 1.8, 968)); Sound.powerUp(); },
+    up(M) { Sound.powerUp(_xv.set(77, 1.5, 961)); Sound.beep(true); },
+    seal(M, ev) { const S = CB_SEALS[ev.i | 0]; if (S) { const d = XB.door(CB_LV, S[0], S[1]); if (d) Sound.sealOpen ? Sound.door(_xv.set(d.cx, 1.2, d.cz), false, true) : 0; } },
+    c3(M, ev) { if (ev.on) { Sound.powerUp(_xv.set(50, 2, 937)); UI.msg('The field in C-3 hums back up. The Dormant\'s heavy breathing slows… stops.', 'good', 5); } },
+    call(M) { Sound.liftCall(_xv.set(101, 2, 980)); },
+    arrive(M) { Sound.freightArrive(_xv.set(101, 1.5, 980)); Game.shake(0.4); },
+    rare(M, ev) {
+      if (ev.r === 'alarm') { Sound.setAlarm(true); setTimeout(() => Sound.setAlarm(false), 6000); UI.msg('The breach alarm cycles up again — every one of them heard that.', 'warn', 4.5); }
+      if (ev.r === 'vent') { Sound.ventRattle && Sound.ventRattle(_xv.set(player.pos.x + rand(-5, 5), 2.8, player.pos.z + rand(-5, 5))); UI.msg('Something moves through the ceiling vents above you. Then nothing.', 'story', 4); }
+      if (ev.r === 'radio') { Sound.radio && Sound.radio(_xv.set(11, 1.2, 963)); UI.msg('The Security desk radio: "…extraction team to the dock… do not, repeat, do not open C-3…" Static.', 'story', 5.5); }
+    },
+  },
+  exitOpen(M) { return M.st.arrived === 1; },
+  inExit(M, a) { return a.pos.x > CB_LIFTBOX.x0 && a.pos.x < CB_LIFTBOX.x1 && a.pos.z > CB_LIFTBOX.z0 && a.pos.z < CB_LIFTBOX.z1; },
+  doorPrompt(M, d) {
+    const st = M.st;
+    if (d.x === 38 && d.z === CBZ0 + 15 && d.locked()) return st.badgeGot ? 'Swipe the L2 badge (Server & Comms)' : 'Server & Comms — L2 BADGE required';
+    if (d.x === 38 && d.z === CBZ0 + 23 && d.locked()) return st.badgeGot ? 'Swipe the L2 badge (Restricted Research)' : 'Restricted Research — L2 BADGE required';
+    if (d.x === 24 && d.z === CBZ0 + 8 && d.locked()) return 'C-3 — DO NOT OPEN (open it anyway)';
+    if (d.x === 35 && d.z === CBZ0 + 8 && d.locked()) return st.badgeGot ? 'Swipe the L2 badge (Chamber C-4)' : 'Chamber C-4 — sealed. L2 badge.';
+    if (d.xlock && d.locked()) return 'SEALED — use the seal panel to open it';
+    return null;
+  },
+  doorUse(M, d, by) {
+    const st = M.st;
+    if (d.x === 24 && d.z === CBZ0 + 8) { M.set(s => { s.c3open = 1; }); cbWakeDormant('door', by); return; }
+    if (d.x === 38 && d.z === CBZ0 + 15 || d.x === 38 && d.z === CBZ0 + 23 || d.x === 35 && d.z === CBZ0 + 8) {
+      if (!st.badgeGot) { M.tell(by, 'Locked. The reader wants an L2 BADGE.', 'warn', 3.6, 'beep0'); return; }
+      const k = d.z === CBZ0 + 15 ? 'comms' : d.z === CBZ0 + 23 ? 'rwing' : 'c4'; M.set(s => { s[k] = 1; }); M.note('{who} swiped the badge: ' + (k === 'comms' ? 'Server & Comms' : k === 'rwing' ? 'Restricted Research' : 'Chamber C-4') + ' is open.', 'good', 4, Game.idOf(by)); return;
+    }
+    if (d.xlock) { M.tell(by, 'Sealed. The seal panel is beside the door.', 'warn', 3.6, 'locked'); return; }
+  },
+  objectives: cbObjectives, bonus: cbBonus, hud: cbHud, hint: cbHint,
+  fixOn(M, f) {
+    const st = M.st; if (f.type === 'emerg') { f.on = true; return; }
+    const s = f.sec; f.on = f.mode !== 'dead' && (s === 'SEC' || s === 'CH' || s === 'SPEC' || s === 'RW' || (s === 'LAB' && st.route === 'L') || (s === 'CB' && st.route === 'C') || (s === 'COM' && st.comms) || (s === 'DOCK' && st.call >= 0));
+  },
+  dim(M, f, b, t) { if (M.st.stab < 30 && M.st.route !== 'C' && f.sec === 'CB') b *= 0.4 + 0.6 * Math.random(); if (Dormant.active && !Dormant.isDown() && Math.abs(f.pos.x - Dormant.pos.x) + Math.abs(f.pos.z - Dormant.pos.z) < 8 && Math.random() < 0.08) b *= 0.3; return b; },
+  ambient(M) { return [M.st.route === 'L' ? 0.26 : 0.16, FOG_BASE * 1.15]; },
+  hurtText(M, hp) { return hp > 35 ? 'Get out of its sight — round a corner, behind a door. And stay with your team.' : 'One more and you\'re finished. Break line of sight, now.'; },
+  startEnding(M) { Sound.liftRise && Sound.liftRise(); $('fx-white').style.transition = 'opacity 4s'; $('fx-white').style.opacity = 0.5; },
+  result(M, won) {
+    const st = M.st, rows = [['Data uploaded', st.up + ' / ' + st.need], ['Power to', { C: 'containment', S: 'door seals', L: 'lab lights' }[st.route]], ['C-3', st.contained ? 'woke — and was put back' : st.dorm ? 'awake' : 'held'], ['Driven off', (M.flags.banished | 0) + '']];
+    if (!won) return { sub: 'Containment Breach · ' + (st.up >= st.need ? 'the data was out — you weren\'t' : st.up + ' of ' + st.need + ' modules uploaded'), rows };
+    return { sub: 'Containment Breach · ' + fmtClock(Game.time) + (st.spec ? ' · with the specimen' : ''), rows,
+      score: [['Modules', st.up + ' / ' + st.need], ['C-3 held', st.contained ? 'recontained' : st.dorm ? 'no' : '✓'], ['Specimen', st.spec ? '✓' : '—'], ['Restricted file', st.rfile ? '✓' : '—']],
+      epilogue: st.dorm && !st.contained ? 'The freight lift climbs. Far below, something enormous is pulling at the dock gate — patiently, the way you would if you had all the time in the world.' : 'The freight lift climbs out of Deep Research. In the Comms room the uplink is still sending — and, under the data, something is sending back: a dozen voices you know, saying your name.' };
+  },
+  pay(M, won) {
+    const st = M.st, out = [];
+    if (st.up) out.push(['Data uploaded', 30 * st.up]); if (st.badgeGot) out.push(['L2 badge', 10]);
+    if (won) out.push(['Extracted', 175]); if (st.contained) out.push(['The Dormant recontained', 80]);
+    if (st.spec) out.push(['Specimen sample', 60]); if (st.rfile) out.push(['Project VESSEL file', 45]);
+    if (M.flags.banished) out.push(['Subjects driven off', 35 * Math.min(4, M.flags.banished)]);
+    return out;
+  },
+  paid(M, won) { if (won) { Goals.unlock('cb_out'); if (!M.st.dorm) Goals.unlock('cb_quiet'); if (M.st.contained) Goals.unlock('cb_recontain'); if (typeof NGShop !== 'undefined') NGShop.earn('cb'); } },
+});
+ACH.push({ id: 'cb_out', name: 'Data Extracted', desc: 'Get the research out of Site Kestrel (Containment Breach).' });
+ACH.push({ id: 'cb_quiet', name: 'Let Sleeping Things Lie', desc: 'Containment Breach: escape without the Dormant ever waking.' });
+ACH.push({ id: 'cb_recontain', name: 'Back In Your Box', desc: 'Containment Breach: put the Dormant back in C-3.' });
+
+/* ---- the Mimic's false mark: a teammate's ping — with the name spelled backwards ---- */
+function cbFakePing(x, z, id) {
+  const name = Net.active ? Net.nameOf(id) : 'YOU', col = '#' + new T.Color(GUARD_COLORS[Math.max(0, id) % GUARD_COLORS.length]).getHexString();
+  const c = makeCanvas(128, 128), g = c.getContext('2d'); g.strokeStyle = col; g.lineWidth = 7; g.beginPath(); g.moveTo(64, 12); g.lineTo(98, 46); g.lineTo(64, 80); g.lineTo(30, 46); g.closePath(); g.stroke();
+  g.fillStyle = col; g.font = 'bold 22px Helvetica, Arial, sans-serif'; g.textAlign = 'center'; g.fillText(name.slice(0, 10).split('').reverse().join(''), 64, 114);
+  const spr = new T.Sprite(new T.SpriteMaterial({ map: mkTex(c, false), transparent: true, depthWrite: false, depthTest: false, sizeAttenuation: false, fog: false }));
+  spr.scale.set(0.07, 0.07, 1); spr.position.set(x, 1.2, z); spr.renderOrder = 997; scene.add(spr);
+  Net.pings.push({ spr, x, z, col, until: performance.now() + 7000 }); while (Net.pings.length > 6) { const o = Net.pings.shift(); scene.remove(o.spr); o.spr.material.map.dispose(); o.spr.material.dispose(); }
+  Sound.ping(_xv.set(x, 1.2, z)); if (Net.active && id !== Net.myId) UI.msg(name + ' marked a spot.', '', 2);
+}
+// (host) the Dormant wakes: the door, its power, its stability
+function cbWakeDormant(why, by) {
+  const M = CB_M; if (!M.host() || M.st.dorm === 1) return;
+  M.set(s => { s.dorm = 1; s.contained = 0; s.stab = 0; });
+  const d = XB.door(CB_LV, 24, 8); if (d) { d.unlocked = true; d.updateLeds(); d.open(); Game.syncDoor(d, true, true); } // (the field fails: the door blows)
+  Dormant.wake(50, 936, 2); M.note(why === 'door' ? '{who} opened C-3. Something enormous unfolds inside it.' : 'C-3\'s containment field has FAILED.', 'warn', 6, by ? Game.idOf(by) : -9);
+}
+/* ---- what you use ---- */
+function cbCarrying(a) { const s = CB_M.st, id = Game.idOf(a); return s.mods.findIndex(m => m.s === 2 && m.by === id); }
+function cbPoints() {
+  const M = CB_M, st = () => M.st, pts = [];
+  pts.push({ id: 'brief', x: 8, z: 962.6, y: 0.95, r: 2.0, prompt: 'Read: BREACH PROTOCOL 7', local: () => { UI.readNote('cb_brief'); if (!st().read) { if (Net.isClient) Net.request('xbu', 0, ['breach', 'readack']); else M.hostUse('readack', player); } return false; } });
+  pts.push({ id: 'readack', x: 8, z: 962.6, y: -9, r: 2.2, ok: () => false, use: (M2) => { if (!M2.st.read) M2.set(s => { s.read = 1; }); } });
+  pts.push({ id: 'badge', get x() { return CB_BADGE[st().badge][0]; }, get z() { return CB_BADGE[st().badge][2]; }, y: () => CB_BADGE[st().badge][1], r: 1.8, ok: () => !st().badgeGot, prompt: 'Take the L2 badge',
+    use: (M2, who) => { M2.set(s => { s.badgeGot = 1; }); M2.fx('take', { b: Game.idOf(who) }); M2.note('{who} found an L2 BADGE: Server & Comms, Chamber C-4 and Restricted Research.', 'good', 4.5, Game.idOf(who)); } });
+  // the data modules: where they lie (or were dropped), one at a time
+  [0, 1, 2, 3, 4].forEach(i => pts.push({ id: 'mod' + i, get x() { const m = st().mods[i]; return m ? (m.s === 3 ? m.x : CB_MODS[m.k][0]) : -99; }, get z() { const m = st().mods[i]; return m ? (m.s === 3 ? m.z : CB_MODS[m.k][2]) : -99; }, y: () => { const m = st().mods[i]; return m && m.s === 3 ? 0.3 : m ? CB_MODS[m.k][1] : -9; }, r: 1.9, wide: true,
+    ok: (M2, who) => { const m = st().mods[i]; return !!m && (m.s === 0 || m.s === 3) && (m.k !== 4 || st().c4); }, prompt: () => 'Take the data module (one at a time — it\'s heavy)',
+    use: (M2, who) => { if (cbCarrying(who) >= 0) { M2.tell(who, 'You\'re already carrying a module. Upload it at Server & Comms first.', 'warn', 4); return; } M2.set(s => { const m = s.mods[i]; m.s = 2; m.by = Game.idOf(who); }); M2.fx('take', { b: Game.idOf(who) }); M2.note('{who} picked up a data module. Take it to the uplink in Server & Comms.', 'good', 4, Game.idOf(who)); } }));
+  pts.push({ id: 'uplink', x: 77, z: 961.4, y: 1.3, r: 2.2, wide: true, ok: () => !!st().comms,
+    prompt: (M2, who) => { const s = st(); if (s.up >= s.need) return 'Uplink: all the data is out — EXTRACT'; return cbCarrying(who) >= 0 ? 'Upload the data module (' + s.up + ' / ' + s.need + ') — loud' : 'Uplink (' + s.up + ' / ' + s.need + ') — bring a data module'; },
+    work: 6, noise: 24, wr: 2.8,
+    can: (M2, who) => { if (st().up >= st().need) return false; if (cbCarrying(who) < 0) { M2.tell(who, 'Bring a data module from the labs. You can carry one at a time.', 'hint', 4); return false; } return true; },
+    begin: (M2, who) => { M2.upBy = Game.idOf(who); M2.note('{who} is uploading a module. The racks scream with fans — stay close.', 'warn', 4, Game.idOf(who)); },
+    done: (M2, who) => { const id = M2.upBy; M2.set(s => { const k = s.mods.findIndex(m => m.s === 2 && m.by === id); if (k >= 0) { s.mods[k].s = 4; s.up++; } }); M2.fx('up'); M2.note('Data module uploaded (' + M2.st.up + ' / ' + M2.st.need + ').' + (M2.st.up >= M2.st.need ? ' That\'s all of it — EXTRACTION AUTHORISED. Call the freight lift in the Loading Dock.' : ''), 'good', 6); } });
+  // the power panel: one spare unit
+  ['C', 'S', 'L'].forEach((r, i) => pts.push({ id: 'pw' + r, x: 2.7, z: 966.6 + i * 1.4, y: 1.6, r: 1.7, prompt: () => st().route === r ? { C: 'Power: CONTAINMENT (on)', S: 'Power: DOOR SEALS (on)', L: 'Power: LAB LIGHTS (on)' }[r] : 'Route the spare unit to ' + { C: 'CONTAINMENT (C-3 holds)', S: 'DOOR SEALS (seal panels work)', L: 'LAB LIGHTS (labs lit — the Mimic can\'t hide in them)' }[r],
+    work: 3, noise: 14, can: () => st().route !== r, done: (M2, who) => { M2.set(s => { s.route = r; if (r !== 'S') s.seal = [0, 0, 0, 0]; }); M2.fx('route', { r }); M2.note('The spare unit is routed to ' + { C: 'CONTAINMENT. C-3 holds — for now.', S: 'the DOOR SEALS. Use the panels beside the lab doors.', L: 'the LAB LIGHTS. The labs and the corridor come up.' }[r] + (r !== 'C' ? ' C-3\'s field is on its own reserve now.' : ''), 'warn', 5.5, Game.idOf(who)); } }));
+  // the seals: a panel each side of four doors
+  CB_SEALS.forEach((S, i) => [S[2], S[3]].forEach((p, j) => pts.push({ id: 'seal' + i + (j ? 'b' : 'a'), x: p[0], z: p[1], y: 1.35, r: 1.7, prompt: () => st().route !== 'S' ? 'Seal panel — no power (route the spare unit to DOOR SEALS)' : st().seal[i] ? 'Unseal the door (' + S[4] + ')' : 'Seal the door (' + S[4] + ') — nothing gets through',
+    use: (M2, who) => { if (M2.st.route !== 'S') { M2.tell(who, 'Dead. The seals need the spare power unit (Security panel).', 'warn', 4, 'beep0'); return; } M2.set(s => { s.seal[i] = s.seal[i] ? 0 : 1; }); M2.fx('seal', { i }); } })));
+  // C-3's console: re-engage the field (with the Dormant home, the door shut, containment powered)
+  pts.push({ id: 'c3', x: 49, z: 947.2, y: 1.2, r: 2.0, wide: true, ok: () => st().dorm === 1,
+    prompt: () => { const s = st(), inC = Dormant.active && Dormant.pos.x > CB_C3.x0 && Dormant.pos.x < CB_C3.x1 && Dormant.pos.z > CB_C3.z0 && Dormant.pos.z < CB_C3.z1, d = XB.door(CB_LV, 24, 8); return s.route !== 'C' ? 'C-3 field — needs CONTAINMENT power' : !inC ? 'C-3 field — the subject is not in C-3' : d && d.t > 0.2 ? 'C-3 field — shut the C-3 door first' : 'RE-ENGAGE THE C-3 FIELD'; },
+    work: 5, noise: 18, can: (M2, who) => { const s = st(), inC = Dormant.active && Dormant.pos.x > CB_C3.x0 && Dormant.pos.x < CB_C3.x1 && Dormant.pos.z > CB_C3.z0 && Dormant.pos.z < CB_C3.z1, d = XB.door(CB_LV, 24, 8); if (s.route !== 'C' || !inC || (d && d.t > 0.2)) { M2.tell(who, s.route !== 'C' ? 'No power to the field: route the spare unit to CONTAINMENT.' : !inC ? 'It has to be IN C-3. Lure it in.' : 'Shut the C-3 door first.', 'warn', 4.5); return false; } return true; },
+    done: (M2) => { Dormant.sleep(); Dormant.pos.set(50, 0, 936); M2.set(s => { s.dorm = 0; s.contained = 1; s.stab = 60; }); M2.fx('c3', { on: 1 }); const d = XB.door(CB_LV, 24, 8); if (d) { d.close(); d.unlocked = false; d.updateLeds(); Game.syncDoor(d, true, true); } } });
+  // the optional things: the specimen (it sets off the alarm), the Restricted file
+  pts.push({ id: 'spec', x: CB.spec.x, z: CB.spec.z, y: 1.05, r: 1.8, ok: () => !st().spec && !!st().rwing, prompt: 'Take the specimen sample (it\'s alarmed)',
+    use: (M2, who) => { M2.set(s => { s.spec = 1; }); M2.fx('rare', { r: 'alarm' }); Game.noise(_xv.set(76, 1, 977), 60, 'event'); M2.note('{who} took the specimen sample — and the alarm went off.', 'warn', 4.5, Game.idOf(who)); } });
+  pts.push({ id: 'rfile', x: 70, z: 981.6, y: 1.3, r: 1.9, ok: () => !st().rfile && !!st().rwing, prompt: 'Take the PROJECT VESSEL file', use: (M2, who) => { M2.set(s => { s.rfile = 1; }); M2.fx('take', { b: Game.idOf(who) }); M2.note('{who} took the PROJECT VESSEL file. The pages describe all three subjects — and a fourth, unnamed, "for the surface".', 'story', 6, Game.idOf(who)); } });
+  pts.push({ id: 'dock', x: 100, z: 960.9, y: 1.25, r: 2.0, ok: () => st().up >= st().need, prompt: () => st().arrived ? 'The lift is here — GET ON' : st().call >= 0 ? 'Freight lift coming · ' + Math.floor(st().call / XB.dv(CB_LIFT) * 100) + '%' : 'Call the freight lift',
+    use: (M2, who) => { if (M2.st.call >= 0) return; M2.set(s => { s.call = 0; }); M2.fx('call'); M2.note('{who} called the freight lift. It\'s a long way up — HOLD THE DOCK.', 'warn', 5, Game.idOf(who)); } });
+  return pts;
+}
+{ const hu0 = CB_M.hostUse; CB_M.hostUse = function (id, who) { if (id === 'readack') { const pt = this.pt(id); if (pt && this.on()) pt.use(this, who); return; } return hu0.apply(this, arguments); }; }
+function cbTick(M, dt, host) {
+  const st = M.st; M.secT -= dt; if (M.secT <= 0) { M.secT = 0.4; XB.relight(CB.light); } M.light = CB.light;
+  if (Game.state !== 'playing') return;
+  CB.gateK = damp(CB.gateK || 0, st.arrived ? 1 : 0, 1.4, dt); CB.gate.position.y = CB.gateK * 2.9;
+  CB.c3.field.material.opacity = (st.dorm ? 0 : 0.06 + 0.06 * (st.route === 'C' ? 1 : st.stab / 100)) * (0.8 + 0.2 * Math.sin(Game.time * 3));
+  for (const k in CB.mods) { const P = CB.mods[k]; if (P.m.visible) P.m.rotation.y += dt * 0.6; }
+  if (!host || Game.ending) return;
+  const t = Game.time;
+  if (!st.wakeS && t > 14) { M.set(s => { s.wakeS = 1; }); Stalker.wake(10, 937, 4); }
+  if (!st.wakeM && t > 40) { M.set(s => { s.wakeM = 1; }); Mimic.wake(28, 937, 6); }
+  // C-3 without its power: the stability runs down (and with it, back up)
+  if (!st.dorm) { const ds = st.route === 'C' ? 1.2 : -XB.dv(CB_DRAIN); M.stabAcc = (M.stabAcc || 0) + ds * dt; if (Math.abs(M.stabAcc) >= 1) { const v = Math.trunc(M.stabAcc); M.stabAcc -= v; M.set(s => { s.stab = clamp(s.stab + v, 0, 100); }); if (M.st.stab <= 0) cbWakeDormant('stab'); else if (M.st.stab === 25 && v < 0) M.note('C-3 STABILITY 25%. Route CONTAINMENT power back, or it wakes.', 'warn', 5); } }
+  // the dropped module: a guard who goes down drops what they carry, right there
+  for (const m of st.mods) if (m.s === 2) { const a = XB.actor(m.by); if (!a || a.dead || a.downed) { const x = a ? a.pos.x : CB_MODS[m.k][0], z = a ? a.pos.z : CB_MODS[m.k][2]; M.set(s => { const q = s.mods.find(q => q.k === m.k); q.s = 3; q.x = +x.toFixed(1); q.z = +z.toFixed(1); q.by = -1; }); M.note('A data module was dropped.', 'warn', 3.5); break; } }
+  // the lift: it comes while the dock holds; the alarm calls them
+  if (st.call >= 0 && !st.arrived) { M.callAcc = (M.callAcc || 0) + dt; if (M.callAcc >= 1) { M.callAcc -= 1; M.set(s => { s.call++; if (s.call >= XB.dv(CB_LIFT)) s.arrived = 1; }); if (M.st.arrived) { M.fx('arrive'); M.note('THE FREIGHT LIFT IS HERE. Everyone on — the platform at the south end of the dock.', 'good', 6); } } M.alarmT -= dt; if (M.alarmT <= 0) { M.alarmT = 3; Game.noise(_xv.set(100, 1.5, 970), 44, 'event'); } }
+  if (st.rare && !st.rareDone && t > st.rareT) { M.set(s => { s.rareDone = 1; }); M.fx('rare', { r: st.rare }); if (st.rare === 'alarm') Game.noise(_xv.set(50, 2, 949), 50, 'event'); }
+}
+function cbSync(M, old, st) {
+  // the modules and the badge: where they lie
+  CB.mods.forEach((P, i) => { const m = st.mods[i]; const show = !!m && (m.s === 0 || m.s === 3) && (m.k !== 4 || st.c4 || true); P.m.visible = P.gl.visible = show; if (show) { const p = m.s === 3 ? [m.x, 0.12, m.z] : CB_MODS[m.k]; P.m.position.set(p[0], p[1] + 0.07, p[2]); P.gl.position.set(p[0], p[1] + 0.2, p[2]); } });
+  const B0 = CB_BADGE[st.badge]; CB.badge.m.visible = CB.badge.gl.visible = !st.badgeGot; if (!st.badgeGot) { CB.badge.m.position.set(B0[0], B0[1] + 0.01, B0[2]); CB.badge.gl.position.set(B0[0], B0[1] + 0.1, B0[2]); }
+  CB.panel.forEach(P => { P.led.material = st.route === P.r ? MAT.ledGreen : MAT.ledOff; });
+  CB.uplink.scr.material = st.comms ? MAT.screen : MAT.screenOff; CB.uplink.slots.forEach((s, i) => { s.material = i < st.up ? MAT.ledGreen : i < st.need ? MAT.ledAmber : MAT.ledOff; });
+  CB.c3.con.material = st.dorm ? MAT.ledRed : st.route === 'C' ? MAT.ledGreen : st.stab < 30 ? MAT.ledRed : MAT.ledAmber;
+  CB.dock.material = st.arrived ? MAT.ledGreen : st.call >= 0 ? MAT.ledAmber : st.up >= st.need ? MAT.ledAmber : MAT.ledRed;
+  CB.spec.m.visible = !st.spec;
+  // the doors: badge doors, the seals (a sealed door is locked to everything; unsealing reopens it)
+  const unlock = (u, v) => { const d = XB.door(CB_LV, u, v); if (d && !d.unlocked) { d.unlocked = true; d.updateLeds(); if (M.host()) { d.open(); Game.syncDoor(d, false, true); } } };
+  if (st.comms) unlock(38, 15); if (st.rwing) unlock(38, 23); if (st.c4) unlock(35, 8);
+  CB_SEALS.forEach((S, i) => { const d = XB.door(CB_LV, S[0], S[1]); if (!d) return; const sealed = !!st.seal[i] && st.route === 'S'; CB.seals[i].forEach(m => { m.material = st.route !== 'S' ? MAT.ledOff : sealed ? MAT.ledRed : MAT.ledGreen; });
+    if (sealed && !d.xlock) { d.xlock = true; d.unlocked = false; d.close(); d.updateLeds(); } else if (!sealed && d.xlock) { d.xlock = false; d.unlocked = true; d.updateLeds(); } });
+  // the C-1 and C-2 doors: torn open from the start
+  for (const [u, v] of [[4, 8], [13, 8]]) { const d = XB.door(CB_LV, u, v); if (d && !d.broken) { d.unlocked = true; d.broken = true; d.target = 1; d.t = 1; d.place(); d.updateLeds(); } }
+  if (old && old.route !== st.route) { const msgs = { C: 'C-3 holds.', S: 'The seal panels light green.', L: 'The lab lights come up.' }; if (!M.host()) UI.msg('Power: ' + msgs[st.route], '', 3); }
+}
+/* ---- the HUD ---- */
+function cbObjectives(M) {
+  const s = M.st, out = [];
+  out.push({ id: 'cbr', text: 'Read the breach protocol (the Security desk)', done: !!s.read });
+  out.push({ id: 'cbb', text: 'Find an L2 badge', done: !!s.badgeGot });
+  out.push({ id: 'cbc', text: 'Open Server & Comms (L2)', done: !!s.comms });
+  out.push({ id: 'cbu', text: 'Upload data modules (' + s.up + ' / ' + s.need + ') — one at a time' + (cbCarrying(player) >= 0 ? ' · you are carrying one' : ''), done: s.up >= s.need });
+  out.push({ id: 'cbs', text: s.dorm ? (s.contained ? 'The Dormant is back in C-3' : 'THE DORMANT IS AWAKE — lure it into C-3, shut the door, re-engage the field') : 'Keep C-3 stable (' + s.stab + '%)', done: !s.dorm || !!s.contained });
+  out.push({ id: 'cbl', text: s.call >= 0 && !s.arrived ? 'Hold the Loading Dock: the lift is ' + Math.floor(s.call / XB.dv(CB_LIFT) * 100) + '% of the way' : 'Call the freight lift (Loading Dock)', done: !!s.arrived });
+  out.push({ id: 'escape', text: Net.active ? 'Everyone onto the freight lift' : 'Get onto the freight lift', done: Game.ending });
+  return out;
+}
+function cbBonus(M) {
+  const s = M.st; return [{ id: 'cbb-sp', text: s.spec ? 'The specimen sample: taken' : 'The specimen sample (Restricted Research — alarmed)', done: !!s.spec },
+    { id: 'cbb-rf', text: s.rfile ? 'PROJECT VESSEL: taken' : 'The PROJECT VESSEL file (Restricted Research)', done: !!s.rfile },
+    { id: 'cbb-q', text: s.dorm ? 'C-3 woke' : 'Never let C-3 wake', done: false }];
+}
+function cbHud(M) {
+  const s = M.st, t = Game.time; let goal, bar, mission, sub, cls = '';
+  if (s.arrived) { goal = 'GET ON THE LIFT · ' + Math.round(Math.hypot(player.pos.x - 101, player.pos.z - 980)) + ' M'; bar = 1; mission = 'GET ON THE LIFT!'; sub = 'The platform at the south end of the Loading Dock.'; cls = 'dawn'; }
+  else if (s.call >= 0) { const L = XB.dv(CB_LIFT); goal = 'FREIGHT LIFT · ' + fmtClock(L - s.call); bar = s.call / L; mission = 'Hold the dock'; sub = 'The alarm is calling all of them to you.'; cls = 'late'; }
+  else if (s.up >= s.need) { goal = 'CALL THE FREIGHT LIFT · LOADING DOCK'; bar = 0.85; mission = 'Extraction authorised'; sub = 'The dock is east, off the Laboratory Corridor.'; }
+  else { goal = !s.badgeGot ? 'FIND AN L2 BADGE' : !s.comms ? 'OPEN SERVER & COMMS' : 'DATA ' + s.up + ' / ' + s.need; bar = (s.badgeGot ? 0.1 : 0) + (s.comms ? 0.1 : 0) + s.up / s.need * 0.6; mission = cbCarrying(player) >= 0 ? 'Get the module to the uplink' : 'Upload the research'; sub = (s.dorm && !s.contained ? 'THE DORMANT IS LOOSE · ' : s.route !== 'C' ? 'C-3 ' + s.stab + '% · ' : '') + 'Power: ' + { C: 'containment', S: 'seals', L: 'lab lights' }[s.route]; cls = s.dorm && !s.contained ? 'surge' : s.stab < 30 ? 'late' : ''; }
+  return { clock: fmtClock(t), goal, cls, bar, mission, sub };
+}
+function cbHint(M) {
+  const s = M.st, P = (x, y, z, label, key, tip, done) => ({ pos: new T.Vector3(x, y, z), label, key, tip, done });
+  if (s.arrived) return P(101, 1.2, 980, 'Freight lift', 'cbh-lift', 'Everyone onto the platform at the south end of the dock.', () => Game.ending);
+  if (s.call >= 0) return { tip: 'Hold out in the Loading Dock until the lift comes. Keep together — and keep moving.' };
+  if (s.dorm === 1 && !s.contained && s.route !== 'C') return P(2.7, 1.6, 966.6, 'Power: containment', 'cbh-pc', 'To put the Dormant back you\'ll need CONTAINMENT power (the Security panel), then lure it into C-3 and shut the door.', () => M.st.route === 'C');
+  if (s.up >= s.need) return P(100, 1.3, 961, 'Freight lift call', 'cbh-dock', 'In the Loading Dock, on the north wall.', () => M.st.call >= 0);
+  if (!s.read) return P(8, 1.0, 962.6, 'Breach protocol', 'cbh-read', 'The protocol is on the Security desk — it tells you what each of them does.', () => M.st.read);
+  if (!s.badgeGot) { const B0 = CB_BADGE[s.badge]; return P(B0[0], B0[1], B0[2], 'L2 badge', 'cbh-b', 'There\'s an L2 badge ' + B0[3] + '.', () => M.st.badgeGot); }
+  if (!s.comms) return P(77, 1.2, 959, 'Server & Comms', 'cbh-c', 'Swipe the badge at the Server & Comms door (the Laboratory Corridor).', () => M.st.comms);
+  if (cbCarrying(player) >= 0) return P(77, 1.3, 961.4, 'The uplink', 'cbh-up', 'Take the module to the uplink in Server & Comms and upload it.', () => cbCarrying(player) < 0);
+  const m = s.mods.find(q => (q.s === 0 || q.s === 3) && (q.k !== 4 || s.c4)); if (m) { const p = m.s === 3 ? [m.x, 0.3, m.z, 'where it was dropped'] : CB_MODS[m.k]; return P(p[0], p[1], p[2], 'Data module', 'cbh-m' + m.k, 'A data module: ' + p[3] + '.', () => m.s !== 0 && m.s !== 3); }
+  const c4 = s.mods.find(q => q.k === 4 && q.s === 0); if (c4 && !s.c4) return P(71, 1.2, 945, 'Chamber C-4', 'cbh-c4', 'The last module is in Chamber C-4 — the badge opens it.', () => M.st.c4);
+  return { tip: 'Find the data modules in the labs and upload them one at a time.' };
+}
+// carrying a module slows you; the HUD says so
+{ const sm0 = Chars.speedMul; Chars.speedMul = function () { const r = sm0.apply(this, arguments); return XB.on('breach') && cbCarrying(player) >= 0 ? r * 0.86 : r; }; }
+
+DIFF_TEXT.breach = {
+  easy: 'Two modules. C-3 drains slowly without its power; the lift comes quickly.',
+  normal: 'Three modules. C-3 lasts a couple of minutes without containment. Choose your power carefully.',
+  hard: 'Three modules, a quicker drain, a slower lift — and they hear more.',
+  nightmare: 'Four modules. C-3 fails fast. Everything is listening.',
+};
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -46519,7 +46978,7 @@ if (DEBUG) {
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
   Object.assign(window.LS, { Laser, Poop, Fly, FLY, hz37Trace, hz37Foe, Imm, IM_FOG, IMM_MODE, ImmHud, ImmBody, ImmWorld, ImmMotes, ImmFlies, ImmCam, ImmShafts, ImmSparks, ImmBreath, ImmClaws, dustMat, Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
-  Object.assign(window.LS, { XB, XK, XMode, XFoe, XPack, xSee, LC_M, LC, Lineman, LC_GENS, LC_KEY, LC_REL, LC_COIL, LC_KIT, LC_CAGE, lcPower, lcSecOn, LC_LV, IH_LV, CB_LV, CN_LV, ATTACK, NOTES, IH_M, IH, Housekeeper, IH_ROOMS, IH_THEMES, IH_FUSE, IH_CAR, IH_EXIT, ihRide, ihCheckSafe, ihInCar, ihChange }); // (Build 39)
+  Object.assign(window.LS, { XB, XK, XMode, XFoe, XPack, xSee, LC_M, LC, Lineman, LC_GENS, LC_KEY, LC_REL, LC_COIL, LC_KIT, LC_CAGE, lcPower, lcSecOn, LC_LV, IH_LV, CB_LV, CN_LV, ATTACK, NOTES, IH_M, IH, Housekeeper, IH_ROOMS, IH_THEMES, IH_FUSE, IH_CAR, IH_EXIT, ihRide, ihCheckSafe, ihInCar, ihChange, CB_M, CB, Stalker, Mimic, Dormant, CB_PACK, CB_MODS, CB_BADGE, CB_SEALS, CB_LIFTBOX, CB_C3, cbCarrying, cbWakeDormant, cbFakePing }); // (Build 39)
   Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Post, RZT, ROOM_LOOK, genPaper, genPlanks, genTilesHQ, genPlasterCeil, genTrimWood, genPortraits, genWoodLeaf, get RZ_GEN_MS() { return RZ_GEN_MS; }, get instLamp() { return instLamp; }, RzContact, RzPBR, RzTorch, RzBody, RzAmb, RZ_SURF, flash, floorKey, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
