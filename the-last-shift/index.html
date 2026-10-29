@@ -1214,6 +1214,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <p class="p">Site Kestrel's Deep Research wing has lost containment. <b>Three subjects</b> are out — and each one plays by its own rules. <b>THE STALKER</b> hunts by sound and sight and goes to where it last had you: break its line of sight. <b>THE MIMIC</b> lies — footsteps, a beeping terminal, a door, even a teammate's <b>mark</b> on the floor, always where it is waiting. Learn its tell (a wet double-click just before; a mark with the name spelled <b>backwards</b>). It only goes for a guard who is <b>alone</b>. <b>THE DORMANT</b> sleeps in C-3 — until its containment fails. Then it walks. Lure it home, shut the door, re-engage the field.</p>
     <p class="p">The job: an <b>L2 badge</b>, then the research <b>DATA MODULES</b> — one at a time (they're heavy) — uploaded at the <b>Server & Comms uplink</b>; then the <b>freight lift</b> in the Loading Dock, and hold the dock until it comes. The Security power panel has <b>one spare unit</b>: <b>CONTAINMENT</b> (C-3 holds), <b>DOOR SEALS</b> (shut four lab doors to everything) or <b>LAB LIGHTS</b> (the Mimic can't hide in them — but the Stalker sees you further). The quick way is the dark Emergency Passage. Restricted Research has things worth the risk. Solo or online, up to four.</p>
     </div>
+    <div id="brief-carnival" hidden>
+    <p class="p"><b>Lantern Hollow Carnival</b> closed forty years ago. Tonight it's open — and the turnstile has locked behind you. The <b>EXIT GATE</b> at the east end of the midway takes <b>brass rings</b>, and every ring is won at an attraction: <b>five prize tokens</b> for the Prize Hall; the <b>Funhouse</b> mirror maze (a new one every night — some mirrors are doors, some gaps are glass); the <b>Carousel</b>'s four animals in the order its poster gives (and a trapdoor if you get it right); the <b>Backstage</b> padlock, from three coloured <b>ticket stubs</b>; and the <b>Ferris wheel</b> — throw the breaker in the shed, run the motor (it's loud) and the car with the ring comes down.</p>
+    <p class="p"><b>THE BARKER</b> walks the midway on stilts. You'll hear it calling out — and when it calls out at you, it has seen you. It's too tall for the <b>Underpass</b> under the road, and it won't go in among the mirrors. The rules are posted in the Ticket Hall. Solo or online, up to four.</p>
+    </div>
     <div id="brief-endless" hidden>
     <p class="p">The day shift is never coming. There is no lift, no keycard, no way out — only the night, and <b>how long you can last in it</b>.</p>
     <p class="p">Every hour (about a minute and a half) you get a spare battery — and you must <b>choose one of two curses</b>. They stack: a faster Warden, sharper ears, brownouts, open vents, phantoms everywhere… Every run is different. Beat your longest night.</p>
@@ -1245,6 +1249,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div class="modes xm" id="modes-x">
       <button class="mode xm ihotel" data-mode="ihotel"><b>THE INFINITE HOTEL<i class="new">NEW</i></b><span>An old hotel that changes whatever nobody is looking at. Four guests who never checked out, rooms you know only by what's in them, a hall that doesn't end — and the Housekeeper, making her rounds. Solo or online.</span><em data-best="ihotel"></em></button>
       <button class="mode xm breach" data-mode="breach"><b>CONTAINMENT BREACH<i class="new">NEW</i></b><span>Three subjects loose in a research wing: one hunts by sound and sight, one lies with your own sounds and goes for whoever is alone, one sleeps — until its containment fails. Upload the data, choose where the power goes, get to the lift. Solo or online.</span><em data-best="breach"></em></button>
+      <button class="mode xm carnival" data-mode="carnival"><b>THE CARNIVAL OF LOST SOULS<i class="new">NEW</i></b><span>A dead carnival, open one night. Win brass rings at the attractions — the Prize Hall, a mirror maze, the carousel, backstage, the Ferris wheel — to open the exit gate, while the Barker walks the midway on stilts. Solo or online.</span><em data-best="carnival"></em></button>
       <button class="mode xm circuit" data-mode="circuit"><b>THE LAST CIRCUIT<i class="new">NEW</i></b><span>A power research plant, dark. Keycard, relays, three generators, a panel to wire and an evacuation route to pick. Every generator you start is noise — and something walks the lines. Solo or online.</span><em data-best="circuit"></em></button>
     </div>
     <div class="kicker" style="margin-top:14px">The Anomaly · Desk B · the camera network</div>
@@ -1465,7 +1470,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
     <div id="mp-lobby" hidden>
       <div class="kicker" style="margin-top:14px">Guards on shift</div>
       <ul id="mp-players"></ul>
-      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="descent">THE DESCENT</button><button data-mode="anomaly">THE ANOMALY</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="doors">100 DOORS</button><button data-mode="woods">HOLLOW WOODS</button><button data-mode="escape">ESCAPE PROTOCOL</button><button data-mode="circuit">THE LAST CIRCUIT</button><button data-mode="ihotel">THE INFINITE HOTEL</button><button data-mode="breach">CONTAINMENT BREACH</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
+      <div class="mp-modes" id="mp-modes" hidden><button data-mode="night">NIGHT SHIFT</button><button data-mode="descent">THE DESCENT</button><button data-mode="anomaly">THE ANOMALY</button><button data-mode="photos">POLAROIDS</button><button data-mode="endless">ENDLESS NIGHT</button><button data-mode="watch">THE WATCH</button><button data-mode="hunt">THE HUNT</button><button data-mode="camo">MECHA CAMO</button><button data-mode="doors">100 DOORS</button><button data-mode="woods">HOLLOW WOODS</button><button data-mode="escape">ESCAPE PROTOCOL</button><button data-mode="circuit">THE LAST CIRCUIT</button><button data-mode="ihotel">THE INFINITE HOTEL</button><button data-mode="breach">CONTAINMENT BREACH</button><button data-mode="carnival">THE CARNIVAL</button><button data-mode="gallery">THE GALLERY</button><button data-mode="blackout">THE BLACKOUT</button><button data-mode="hive">THE HIVE</button><button data-mode="root">THE ROOT</button><button data-daily="1">DAILY PHOTOS</button><span class="mp-wip live" title="A monster made for online co-op: it wears one of your team and goes for whoever is alone. Keep your light on it.">THE INFESTANT · ONLINE ONLY · NOW IN THE GAME</span></div>
       <div class="mp-modes mp-cmaps" id="mp-cmaps" hidden><span>MECHA CAMO MAP:</span><button data-cmap="s6">SUBLEVEL 6</button><button data-cmap="works">THE COLOUR WORKS</button></div>
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
@@ -6999,6 +7004,15 @@ const Sound = (function () {
     const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.25); o.connect(g); g.connect(out); env(g.gain, t, 0.004, 0.4 + 0.6 * clamp(k, 0, 1), 0.3); o.start(t); o.stop(t + 0.35);
     noise(out, t, 0.18, 'lowpass', 700, 0.7, 0.35 + 0.3 * clamp(k, 0, 1), 0.003, brown);
   });
+  // ---- Build 39: the new floors ----
+  // the Housekeeper's key ring: a handful of small bright metal clinks
+  S.xKeys = safe(function (pos, k) { const t = ctx.currentTime, out = here(pos, 0.2, 0.32 * (k || 1)); for (let i = 0; i < 5; i++) { const t0 = t + i * rand(0.03, 0.07), f = rand(2400, 4200); tone(out, t0, 'triangle', f, f * 0.98, 0.09, 0.4, 0.001); tone(out, t0, 'sine', f * 1.51, f * 1.5, 0.06, 0.15, 0.001); } noise(out, t, 0.12, 'highpass', 5000, 0.7, 0.2, 0.002); });
+  // the Barker's megaphone: a voice-shaped buzz, words you can almost make out (n syllables), a squeal of feedback
+  S.xMega = safe(function (pos, k, n) { const t = ctx.currentTime, out = dest(pos, 0.6, true); out.gain.value = 0.75 * (k || 1); const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1600; bp.Q.value = 2.2; const ws = ctx.createWaveShaper(); const cv = new Float32Array(256); for (let i = 0; i < 256; i++) { const x = i / 128 - 1; cv[i] = Math.tanh(x * 4); } ws.curve = cv; bp.connect(ws); ws.connect(out);
+    const m = Math.max(2, n || 3); for (let i = 0; i < m; i++) { const t0 = t + i * 0.26, f = rand(140, 220) * (i === m - 1 ? 0.8 : 1), o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t0); o.frequency.linearRampToValueAtTime(f * rand(0.8, 1.3), t0 + 0.22); o.connect(g); g.connect(bp); env(g.gain, t0, 0.02, 0.9, 0.2); o.start(t0); o.stop(t0 + 0.26); }
+    tone(out, t + m * 0.26, 'sine', 2900, 3300, 0.35, 0.12, 0.05); });
+  // one note of the carousel's calliope: breathy, a little out of tune, an octave of pipe on top
+  S.xCalliope = safe(function (pos, f) { const t = ctx.currentTime, out = dest(pos, 0.5, true); out.gain.value = 0.36; const w = 1 + rand(-0.012, 0.012); tone(out, t, 'square', f * w, f * w * 0.995, 0.32, 0.18, 0.02); tone(out, t, 'triangle', f * 2 * w, f * 2 * w, 0.3, 0.12, 0.02); noise(out, t, 0.3, 'bandpass', f * 2, 3, 0.06, 0.03); });
   return S;
 })();
 
@@ -45958,6 +45972,438 @@ DIFF_TEXT.breach = {
   hard: 'Three modules, a quicker drain, a slower lift — and they hear more.',
   nightmare: 'Four modules. C-3 fails fast. Everything is listening.',
 };
+/* ================================================================== */
+/* Build 39: THE CARNIVAL OF LOST SOULS — Lantern Hollow               */
+/*  An outdoor carnival, closed for forty years, open tonight. The     */
+/*  turnstile you came through has locked behind you. The EXIT GATE    */
+/*  takes brass RINGS — and every ring is won at an attraction:        */
+/*   · the PRIZE HALL pays a ring for five prize tokens (they're lying */
+/*     about the fairground, somewhere new every night);               */
+/*   · the FUNHOUSE is a mirror maze (a new one every night: some      */
+/*     mirrors are doors, some gaps are glass) with a ring at its      */
+/*     heart;                                                          */
+/*   · the CAROUSEL wants its four animals in the order the poster in  */
+/*     the Ticket Hall gives — and opens a trapdoor when it gets it;   */
+/*   · BACKSTAGE is padlocked: three coloured ticket stubs blown about */
+/*     the place give the three dials;                                  */
+/*   · the FERRIS WHEEL has a ring in a car at the very top: throw the */
+/*     breaker in the shed and run the motor (loud) to bring it down.  */
+/*  THE BARKER walks the midway on stilts, and calls out when it has   */
+/*  you. It is too tall for the Underpass, and it will not go into the */
+/*  Funhouse: it doesn't like what it sees in there.                   */
+/* ================================================================== */
+const CNZ0 = LEVELS[CN_LV].z0;
+const CN_NEED = { easy: 2, normal: 3, hard: 3, nightmare: 4 };
+const CN_WAKE = { easy: 45, normal: 28, hard: 18, nightmare: 10 };
+const CN_SPAWNS = [[10, 1037, -Math.PI / 2], [10, 1040, -Math.PI / 2], [13, 1037, -Math.PI / 2], [13, 1040, -Math.PI / 2], [7, 1038.5, -Math.PI / 2], [16, 1038.5, -Math.PI / 2]];
+const CN_TOKENS = [[6, 1030.5], [22, 1032.5], [36, 1025.6], [48, 1031.6], [60, 1027.2], [76, 1032.6], [90, 1026.4], [100, 1030], [44, 1008.4], [62, 1019.6], [56, 1001.4], [98, 1014.6], [64, 1009.4], [30, 1028.6]];
+const CN_TICKETS = [[18, 1027.4], [40, 1031.4], [70, 1025.4], [96, 1032], [100, 1010.4], [48, 1004.2], [8, 1040.6], [58, 1015.2]];
+const CN_ANIMALS = ['horse', 'swan', 'lion', 'rooster'], CN_ACOL = ['RED', 'GREEN', 'BLUE'], CN_CSS = ['#c83a2e', '#3aa85a', '#3a6ad0'];
+const CN_EXIT = { x0: 99.5, x1: 105.8, z0: 1035.2, z1: 1041.4 };
+const CN_PATROL = [[10, 1029], [26, 1029], [42, 1029], [58, 1029], [74, 1029], [90, 1029], [102, 1028], [46, 1014], [60, 1012], [66, 998], [56, 996], [100, 1014], [30, 996], [95, 1038], [12, 1038], [30, 1014], [10, 1014]];
+const CN_CAR = { x: 53, z: 1014 }, CN_WHEEL = { x: 67, z: 997.6, y: 9.6, r: 8 };
+const CN = { fix: [], light: null, tokens: [], tickets: [], rings: {}, car: null, wheel: null, maze: null, mazeCols: [], gate: null, lockDials: [], sky: null, strings: [] };
+// ---- the textures: striped canvas, painted planks, the ground, a poster face ----
+const CNT = {
+  stripes(a, b, n) { const c = makeCanvas(256, 256), g = c.getContext('2d'), r = mulberry32(strHash(a + b)); for (let i = 0; i < n; i++) { g.fillStyle = i % 2 ? b : a; g.fillRect(i * 256 / n, 0, 256 / n + 1, 256); } for (let i = 0; i < 240; i++) { g.fillStyle = 'rgba(30,20,10,' + r() * 0.12 + ')'; g.fillRect(r() * 256, r() * 256, r() * 40, r() * 6); } const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(40,24,10,.45)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); return c; },
+  planks(base) { const c = makeCanvas(256, 256), g = c.getContext('2d'), r = mulberry32(strHash(base)); g.fillStyle = base; g.fillRect(0, 0, 256, 256); for (let x = 0; x < 256; x += 32) { g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x, 0, 2, 256); for (let i = 0; i < 18; i++) { g.fillStyle = 'rgba(' + (r() < 0.5 ? '255,240,220' : '20,10,0') + ',' + r() * 0.08 + ')'; g.fillRect(x + 2, r() * 256, 30, r() * 18); } } for (let i = 0; i < 30; i++) { g.fillStyle = 'rgba(0,0,0,' + r() * 0.2 + ')'; g.beginPath(); g.arc(r() * 256, r() * 256, r() * 3, 0, TAU); g.fill(); } return c; },
+  ground() { const c = makeCanvas(512, 512), g = c.getContext('2d'), r = mulberry32(4401); g.fillStyle = '#3a3122'; g.fillRect(0, 0, 512, 512); for (let i = 0; i < 4000; i++) { const v = r(); g.fillStyle = v < 0.5 ? 'rgba(70,58,40,' + r() * 0.35 + ')' : v < 0.8 ? 'rgba(20,16,10,' + r() * 0.4 + ')' : 'rgba(40,52,26,' + r() * 0.3 + ')'; g.fillRect(r() * 512, r() * 512, 1 + r() * 4, 1 + r() * 4); } for (let i = 0; i < 40; i++) { g.fillStyle = 'rgba(12,10,6,' + (0.1 + r() * 0.2) + ')'; g.beginPath(); g.ellipse(r() * 512, r() * 512, 10 + r() * 60, 6 + r() * 30, r() * 3, 0, TAU); g.fill(); } return c; },
+  sawdust() { const c = makeCanvas(256, 256), g = c.getContext('2d'), r = mulberry32(77); g.fillStyle = '#6a5434'; g.fillRect(0, 0, 256, 256); for (let i = 0; i < 3000; i++) { g.fillStyle = 'rgba(' + (r() < 0.5 ? '150,120,70' : '40,30,16') + ',' + r() * 0.5 + ')'; g.fillRect(r() * 256, r() * 256, 1 + r() * 2, 1); } return c; },
+  fun() { const c = makeCanvas(256, 256), g = c.getContext('2d'); const cols = ['#7a2a6a', '#2a6a7a', '#c89a2a', '#3a2a6a']; for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) { g.fillStyle = cols[(x + y) % 4]; g.fillRect(x * 64, y * 64, 64, 64); } g.strokeStyle = 'rgba(255,240,200,.35)'; g.lineWidth = 4; for (let k = 0; k < 6; k++) { g.beginPath(); g.arc(128, 128, 20 + k * 22, 0, TAU); g.stroke(); } g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(0, 0, 256, 256); return c; },
+  sky() { const S = 256, rr = mulberry32(5150), faces = []; for (let f = 0; f < 6; f++) { const c = makeCanvas(S, S), g = c.getContext('2d'); if (f === 2) { g.fillStyle = '#06050a'; g.fillRect(0, 0, S, S); } else if (f === 3) { g.fillStyle = '#0c0a0a'; g.fillRect(0, 0, S, S); } else { const gr = g.createLinearGradient(0, 0, 0, S); gr.addColorStop(0, '#06050a'); gr.addColorStop(0.45, '#0e0a10'); gr.addColorStop(0.52, '#1a1214'); gr.addColorStop(1, '#0c0a0a'); g.fillStyle = gr; g.fillRect(0, 0, S, S); } if (f !== 3) for (let i = 0; i < (f === 2 ? 160 : 60); i++) { const b = rr(); g.fillStyle = 'rgba(230,220,255,' + (0.05 + b * b * 0.5) + ')'; g.fillRect(rr() * S | 0, (f === 2 ? rr() * S : rr() * S * 0.45) | 0, 1, 1); } if (f === 1) { const x = S * 0.4, y = S * 0.28; const gr = g.createRadialGradient(x, y, 2, x, y, 70); gr.addColorStop(0, 'rgba(240,200,170,.5)'); gr.addColorStop(1, 'rgba(60,30,30,0)'); g.fillStyle = gr; g.fillRect(0, 0, S, S); g.fillStyle = '#ecd8c4'; g.beginPath(); g.arc(x, y, 9, 0, TAU); g.fill(); } faces.push(c); } const t = new T.CubeTexture(faces); t.needsUpdate = true; return t; },
+  poster(lines, bg, fg) { return XK.plate(lines, { w: 512, h: 640, bg, fg, font: 'Georgia, serif', size: 64, size2: 34 }); },
+};
+const CNM = (() => { const tx = (c, rx, ry) => { const t = mkTex(c); t.repeat.set(rx || 1, ry || 1); return t; };
+  return { tent: phong({ map: tx(CNT.stripes('#8a1c18', '#d8c8a8', 8), 2, 1), shininess: 6 }), tent2: phong({ map: tx(CNT.stripes('#1c3a6a', '#d8c8a8', 6), 2, 1), shininess: 6 }), plank: phong({ map: tx(CNT.planks('#4a3624'), 1, 1), shininess: 8 }),
+    plankR: phong({ map: tx(CNT.planks('#6a2a22'), 1, 1), shininess: 8 }), plankG: phong({ map: tx(CNT.planks('#2a4a34'), 1, 1), shininess: 8 }), ground: phong({ map: tx(CNT.ground(), 26, 14), shininess: 2 }), dust: phong({ map: tx(CNT.sawdust(), 8, 4), shininess: 2 }),
+    fun: phong({ map: tx(CNT.fun(), 1, 1), shininess: 30 }), gold: phong({ color: 0x9a7a2a, shininess: 80, specular: 0xb08a4a }), white: phong({ color: 0xd8d0c0, shininess: 20 }), red: phong({ color: 0x8a1a14, shininess: 30 }), dark: phong({ color: 0x141012, shininess: 10 }),
+    iron: phong({ color: 0x2a2a2c, shininess: 40, specular: 0x333333 }), mirror: new T.MeshPhongMaterial({ color: 0xa8b4bc, shininess: 160, specular: 0xffffff, reflectivity: 1 }), glass: new T.MeshPhongMaterial({ color: 0xb8d0d8, transparent: true, opacity: 0.16, shininess: 140, specular: 0xffffff, depthWrite: false }),
+    concrete: MAT.floor.concrete, bulb: (col) => new T.MeshBasicMaterial({ color: col }), ring: phong({ color: 0xc8a040, emissive: 0x3a2808, shininess: 120, specular: 0xffe0a0 }), token: phong({ color: 0xb88a30, emissive: 0x2a1a04, shininess: 90 }) }; })();
+const CN_BULBS = [0xff5040, 0xffc040, 0x60ff80, 0x50a0ff, 0xff70d0];
+
+/* ---------------- the world ---------------- */
+(function buildCarnival() {
+  const lv = CN_LV, F = CN.fix, z0 = CNZ0;
+  const IN = { cn_back: [CNM.plank, 4.2], cn_tent: [CNM.tent, 9], cn_shed: [CNM.plank, 4], cn_ticket: [CNM.plankR, 3.8], cn_prize: [CNM.plankG, 4.2], cn_fun: [CNM.fun, 3.6], cn_under: [MAT.wall.rough || CNM.plank, 2.5] };
+  // the walls: a building's own walls where they belong to one; the fairground fence everywhere else; the midway's booths where a wall stands on its own
+  for (let v = 0; v < 29; v++) for (let u = 0; u < W; u++) {
+    const c = cellAt(u, z0 + v); if (c.kind !== 'wall') continue;
+    const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dz]) => cellAt(u + dx, z0 + v + dz)).filter(n => n !== WALL_CELL && n.kind !== 'wall');
+    const x = cc(u), z = cc(z0 + v); let best = null;
+    for (const n of nb) { const r = n.kind === 'door' ? null : n.room; if (r && IN[r] && (!best || IN[r][1] > best[1])) best = IN[r]; }
+    const edge = u === 0 || u === W - 1 || v === 0 || v === 28;
+    if (best) addStatic(GEO.box, best[0], x, best[1] / 2, z, CELL, best[1], CELL);
+    else if (!edge && nb.length && nb.every(n => n.room === 'cn_midway')) { // (a booth on the midway: counter, posts, a striped awning, a game behind)
+      addStatic(GEO.box, CNM.plankR, x, 0.55, z, CELL * 0.98, 1.1, CELL * 0.98); addStatic(GEO.box, CNM.dark, x, 1.6, z, CELL * 0.9, 1.0, CELL * 0.9);
+      addStatic(GEO.box, (u + v) % 2 ? CNM.tent : CNM.tent2, x, 2.45, z, CELL * 1.08, 0.12, CELL * 1.08, 0, 0.12, 0); for (const [ox, oz] of [[-0.9, -0.9], [0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]]) addStatic(GEO.cyl8, CNM.white, x + ox, 1.2, z + oz, 0.08, 2.4, 0.08);
+      for (let k = 0; k < 4; k++) addStatic(GEO.box, CN_BULBS[k] ? CNM.white : CNM.white, x - 0.6 + k * 0.4, 1.4, z, 0.16, 0.2, 0.16);
+    } else { // (the fence: boards along the line it runs, a post at every joint)
+      const wl = cellAt(u - 1, z0 + v).kind === 'wall' || cellAt(u + 1, z0 + v).kind === 'wall', wv = cellAt(u, z0 + v - 1).kind === 'wall' || cellAt(u, z0 + v + 1).kind === 'wall';
+      if (wl || !wv) addStatic(GEO.box, CNM.plank, x, 1.3, z, CELL, 2.6, CELL * 0.22); if (wv) addStatic(GEO.box, CNM.plank, x, 1.3, z, CELL * 0.22, 2.6, CELL);
+      addStatic(GEO.cyl8, CNM.iron, x, 1.5, z, 0.16, 3.0, 0.16); if ((u + v) % 3 === 0) addStatic(GEO.box, CNM.iron, x, 2.7, z, wl || !wv ? CELL : 0.1, 0.06, wv ? CELL : 0.1);
+    }
+  }
+  // the ground: dirt and trodden grass outside, sawdust in the Big Top, boards in the booths, concrete under the road
+  addStatic(GEO.plane, CNM.ground, 54, 0.002, CNZ0 * CELL + 29, 108, 58, 1, 0, -Math.PI / 2, 0, false);
+  const floor = (id, mat) => { const B = XB.box(id); addStatic(GEO.plane, mat, B.cx, 0.006, B.cz, B.x1 - B.x0, B.z1 - B.z0, 1, 0, -Math.PI / 2, 0, false); };
+  floor('cn_tent', CNM.dust); floor('cn_back', CNM.plank); floor('cn_ticket', MAT.floor.planks || CNM.plank); floor('cn_prize', MAT.floor.planks || CNM.plank); floor('cn_shed', MAT.floor.concrete); floor('cn_fun', MAT.floor.checker || CNM.plank); floor('cn_under', MAT.floor.concrete);
+  // the roofs: the buildings get a ceiling inside and a roof outside; the Big Top a great striped cone
+  const roof = (id, h, mat) => { const B = XB.box(id); addStatic(GEO.plane, CNM.dark, B.cx, h - 0.01, B.cz, B.x1 - B.x0, B.z1 - B.z0, 1, 0, Math.PI / 2, 0, false); addStatic(GEO.box, mat || CNM.iron, B.cx, h + 0.15, B.cz, B.x1 - B.x0 + 2.4, 0.3, B.z1 - B.z0 + 2.4); };
+  roof('cn_back', 4.2); roof('cn_shed', 4.0); roof('cn_ticket', 3.8, CNM.red); roof('cn_prize', 4.2, CNM.red); roof('cn_fun', 3.6, CNM.dark); roof('cn_under', 2.5, MAT.floor.concrete);
+  { const B = XB.box('cn_tent'); addStatic(GEO.plane, CNM.dark, B.cx, 8.99, B.cz, B.x1 - B.x0, B.z1 - B.z0, 1, 0, Math.PI / 2, 0, false); const cone = new T.Mesh(new T.ConeGeometry(20, 9, 20, 1, true), CNM.tent); cone.position.set(B.cx, 13.6, B.cz); cone.userData.lvl = lv; scene.add(cone); const fl = new T.Mesh(GEO.cyl8, CNM.iron); fl.scale.set(0.2, 4, 0.2); fl.position.set(B.cx, 19.5, B.cz); fl.userData.lvl = lv; scene.add(fl); const flag = new T.Mesh(GEO.box, CNM.red); flag.scale.set(1.6, 0.8, 0.04); flag.position.set(B.cx + 0.8, 21, B.cz); flag.userData.lvl = lv; scene.add(flag); CN.flag = flag;
+    // inside: the ring, the bleachers, the trapeze
+    XK.cyl(CNM.red, B.cx, 0.25, B.cz, 6, 0.5); XK.cyl(CNM.dust, B.cx, 0.51, B.cz, 5.6, 0.02); for (let k = 0; k < 3; k++) XK.box(CNM.plank, B.cx, 0.4 + k * 0.5, B.z0 + 1 + k * 0.9, B.x1 - B.x0 - 6, 0.12, 0.7);
+    addCollider(B.cx - 6, B.cz - 6, B.cx + 6, B.cz + 6, { low: true }); XK.box(CNM.iron, B.cx, 7.5, B.cz, 0.06, 3, 0.06); XK.box(CNM.white, B.cx, 6, B.cz, 1.2, 0.06, 0.06); }
+  // ---- the Carousel (it turns when it has its sequence; its music box plays on its own sometimes)
+  { const g = XK.group(CN_CAR.x, 0, CN_CAR.z, 0, lv), rot = new T.Group(); g.add(rot);
+    const base = new T.Mesh(GEO.cyl, CNM.gold); base.scale.set(10, 0.4, 10); base.position.y = 0.2; g.add(base);
+    const top = new T.Mesh(new T.ConeGeometry(5.6, 2.2, 16, 1, true), CNM.tent); top.position.y = 4.6; rot.add(top); const cap = new T.Mesh(GEO.cyl, CNM.tent2); cap.scale.set(11.2, 0.4, 11.2); cap.position.y = 3.5; rot.add(cap);
+    const pole = new T.Mesh(GEO.cyl, CNM.gold); pole.scale.set(1.0, 3.2, 1.0); pole.position.y = 2; g.add(pole);
+    const animal = (kind, a) => { const ag = new T.Group(); const col = { horse: 0xd8c8b0, swan: 0xf0f0f0, lion: 0xc8902a, rooster: 0xb03020 }[kind], m = phong({ color: col, shininess: 50 });
+      const body = new T.Mesh(GEO.box, m); body.scale.set(0.5, 0.5, 1.2); body.position.y = 1.1; ag.add(body);
+      const head = new T.Mesh(GEO.box, m); head.scale.set(0.34, kind === 'swan' ? 0.9 : 0.5, kind === 'swan' ? 0.25 : 0.5); head.position.set(0, kind === 'swan' ? 1.7 : 1.55, 0.6); head.rotation.x = kind === 'horse' ? -0.5 : 0; ag.add(head);
+      if (kind === 'lion') { const mane = new T.Mesh(GEO.box, phong({ color: 0x7a4a14 })); mane.scale.set(0.6, 0.6, 0.3); mane.position.set(0, 1.55, 0.45); ag.add(mane); }
+      if (kind === 'rooster') { const comb = new T.Mesh(GEO.box, phong({ color: 0xe02020 })); comb.scale.set(0.08, 0.2, 0.3); comb.position.set(0, 1.9, 0.6); ag.add(comb); }
+      for (const [lx, lz] of [[-0.18, -0.4], [0.18, -0.4], [-0.18, 0.4], [0.18, 0.4]]) { const l = new T.Mesh(GEO.box, m); l.scale.set(0.1, 0.5, 0.1); l.position.set(lx, 0.65, lz); ag.add(l); }
+      const p2 = new T.Mesh(GEO.cyl8, CNM.gold); p2.scale.set(0.05, 3.2, 0.05); p2.position.y = 1.9; ag.add(p2);
+      ag.position.set(Math.cos(a) * 3.6, 0, Math.sin(a) * 3.6); ag.rotation.y = -a; rot.add(ag); return ag; };
+    CN_ANIMALS.forEach((k, i) => { animal(k, i * Math.PI / 2); animal(k, i * Math.PI / 2 + Math.PI / 4); });
+    CN.carBulbs = []; for (let k = 0; k < 24; k++) { const a = k / 24 * TAU, b = new T.Mesh(GEO.sphere, CNM.bulb(CN_BULBS[k % 5])); b.scale.setScalar(0.12); b.position.set(Math.cos(a) * 5.55, 3.4, Math.sin(a) * 5.55); rot.add(b); CN.carBulbs.push(b); }
+    XK.layer(g, lv); CN.car = { g, rot, w: 0 }; addCollider(CN_CAR.x - 4.6, CN_CAR.z - 4.6, CN_CAR.x + 4.6, CN_CAR.z + 4.6);
+    // the four lever posts round it, one for each animal
+    CN.posts = CN_ANIMALS.map((k, i) => { const a = i * Math.PI / 2, x = CN_CAR.x + Math.cos(a) * 6.2, z = CN_CAR.z + Math.sin(a) * 6.2; XK.box(CNM.iron, x, 0.6, z, 0.3, 1.2, 0.3); const c = XK.plate([k.toUpperCase()], { w: 128, h: 64, bg: '#2a1a0a', fg: '#e8c870', font: 'Georgia, serif' }); const s = XK.sign(c, 0.5, 0.25, x, 1.35, z, -a + Math.PI / 2, lv); s.material.side = T.DoubleSide; const lev = XK.mesh(GEO.box, CNM.red, x, 1.25, z, 0.06, 0.4, 0.06, 0, lv); return { x, z, a, lev, k }; });
+    // the trapdoor (it opens when the carousel is right)
+    CN.trap = XK.mesh(GEO.box, CNM.plank, CN_CAR.x + 6.2, 0.03, CN_CAR.z + 3.4, 1.4, 0.05, 1.4, 0, lv); }
+  // ---- the Ferris wheel: a rim of lights, spokes, eight cars (one of them has the ring)
+  { const g = XK.group(CN_WHEEL.x, CN_WHEEL.y, CN_WHEEL.z, 0, lv), wh = new T.Group(); g.add(wh); const R = CN_WHEEL.r;
+    for (const s of [-0.7, 0.7]) { const rim = new T.Mesh(new T.TorusGeometry(R, 0.12, 6, 48), CNM.iron); rim.position.z = s; wh.add(rim); for (let k = 0; k < 16; k++) { const sp = new T.Mesh(GEO.box, CNM.iron); sp.scale.set(0.08, R, 0.08); sp.position.set(Math.cos(k / 16 * TAU) * R / 2, Math.sin(k / 16 * TAU) * R / 2, s); sp.rotation.z = k / 16 * TAU - Math.PI / 2; wh.add(sp); } }
+    CN.wheelBulbs = []; for (let k = 0; k < 32; k++) { const a = k / 32 * TAU, b = new T.Mesh(GEO.sphere, CNM.bulb(CN_BULBS[k % 5])); b.scale.setScalar(0.18); b.position.set(Math.cos(a) * R, Math.sin(a) * R, 0.75); wh.add(b); CN.wheelBulbs.push(b); }
+    CN.cars = []; for (let k = 0; k < 8; k++) { const cg = new T.Group(), box = new T.Mesh(GEO.box, k % 2 ? CNM.plankR : CNM.plankG); box.scale.set(1.4, 0.9, 1.2); box.position.y = -0.9; cg.add(box); const bar = new T.Mesh(GEO.cyl8, CNM.iron); bar.scale.set(0.05, 0.8, 0.05); bar.position.y = -0.3; cg.add(bar); wh.add(cg); CN.cars.push(cg); }
+    for (const s of [-1, 1]) for (const sx of [-1, 1]) { const leg = new T.Mesh(GEO.box, CNM.iron); leg.scale.set(0.3, CN_WHEEL.y + 1, 0.3); leg.position.set(sx * 3.4, -CN_WHEEL.y / 2 + 0.2, s * 1.2); leg.rotation.z = -sx * 0.36; g.add(leg); }
+    XK.layer(g, lv); CN.wheel = { g, wh, w: 0, a: 0 }; addCollider(CN_WHEEL.x - 4.2, CN_WHEEL.z - 1.8, CN_WHEEL.x + 4.2, CN_WHEEL.z + 1.8);
+    XK.box(CNM.plankR, 60, 1.1, 1002.6, 1.6, 2.2, 1.4, 0, true); CN.motorLed = XK.mesh(GEO.box, MAT.ledRed, 60, 1.6, 1003.32, 0.3, 0.1, 0.04, 0, lv); }
+  // ---- the Shed: the wheel's breaker, tools; the Back Lot: trailers
+  XK.box(MAT.metalDark, 86, 1.4, 996, 0.4, 1.4, 1.2, 0, true); CN.breaker = XK.mesh(GEO.box, MAT.ledRed, 86.24, 1.7, 996, 0.04, 0.12, 0.3, 0, lv);
+  XK.shelf(100, 989.2, 8, 0); XK.crate(92, 1001, 1.1, 0.3, true); XK.barrel(104.5, 1002.6, MAT.rust);
+  for (const [x, z] of [[99, 1012], [99, 1018]]) { XK.box(CNM.white, x, 1.4, z, 2.6, 2.4, 4.2, Math.PI / 2, true); XK.box(CNM.dark, x, 0.25, z, 2.8, 0.5, 4.4, Math.PI / 2); }
+  // ---- the Ticket Hall: the window, the carousel poster, a counter; the Prize Hall: shelves of prizes, the counter
+  XK.box(CNM.plank, 10, 0.55, 1012, 6, 1.1, 0.9, 0, true); XK.box(CNM.dark, 10, 1.6, 1012, 6, 1.0, 0.1);
+  XK.box(CNM.plank, 28, 0.55, 1011, 0.9, 1.1, 7, 0, true); for (let z = 1008; z < 1021; z += 2.6) XK.shelf(34.2, z, 2.4, Math.PI / 2, CNM.plank, [CNM.red, CNM.gold, CNM.white]);
+  for (let k = 0; k < 6; k++) XK.box(k % 2 ? CNM.red : CNM.gold, 21 + k * 0.5, 2.2, 1006.4, 0.4, 0.5, 0.4, k);
+  // ---- the Funhouse: its painted front; the maze inside is built for each night
+  { const c = XK.plate(['THE FUNHOUSE', '★ HALL OF MIRRORS ★'], { w: 512, h: 160, bg: '#3a1040', fg: '#ffd060', font: 'Georgia, serif' }); XK.sign(c, 6, 1.9, 81, 3.0, 1023.95, Math.PI, lv); }
+  // the Funhouse's own lights: coloured, and not to be trusted
+  for (const [x, z, col] of [[74, 1009, 0xff60c0], [86, 1009, 0x60c0ff], [80, 1015, 0xffd060], [74, 1020, 0x80ff90], [88, 1020, 0xff7050]]) XK.lamp(F, x, 3.5, z, 'x', 'cn_fun', { sec: 'F', col, pc: [((col >> 16) & 255) / 255, ((col >> 8) & 255) / 255, (col & 255) / 255], i: 0.55, r: 7, mode: 'flicker' });
+  // ---- the Entrance: the turnstiles you came through (locked now), the ticket booth
+  for (let k = 0; k < 3; k++) { XK.box(CNM.iron, 2.8, 0.5, 1036 + k * 2, 0.6, 1.0, 0.3); XK.cyl(CNM.gold, 3.2, 0.9, 1036 + k * 2, 0.06, 0.6, Math.PI / 2, 0, 0); }
+  XK.box(CNM.plankR, 20, 1.3, 1036, 2.2, 2.6, 2.2, 0, true); { const c = XK.plate(['LANTERN HOLLOW', 'CARNIVAL · EST. 1931'], { w: 512, h: 160, bg: '#2a1408', fg: '#f0c870', font: 'Georgia, serif' }); XK.sign(c, 5, 1.6, 2.05, 3.4, 1038.5, Math.PI / 2, lv); }
+  // ---- the Exit Gate: an iron arch, three ring locks
+  { const g = XK.group(105.6, 0, 1038.3, 0, lv); for (const s of [-1, 1]) { const p = new T.Mesh(GEO.box, CNM.iron); p.scale.set(0.5, 5, 0.5); p.position.set(0, 2.5, s * 3.2); g.add(p); } const arch = new T.Mesh(new T.TorusGeometry(3.2, 0.2, 6, 20, Math.PI), CNM.iron); arch.position.set(0, 5, 0); arch.rotation.y = Math.PI / 2; g.add(arch);
+    CN.gateL = new T.Group(); CN.gateR = new T.Group(); CN.gateL.position.set(0, 0, -3.0); CN.gateR.position.set(0, 0, 3.0); g.add(CN.gateL, CN.gateR);
+    for (const [G, s] of [[CN.gateL, 1], [CN.gateR, -1]]) for (let k = 0; k < 6; k++) { const b = new T.Mesh(GEO.box, CNM.iron); b.scale.set(0.08, 3.6, 0.08); b.position.set(0, 1.8, s * (0.25 + k * 0.5)); G.add(b); const tb = new T.Mesh(GEO.box, CNM.gold); tb.scale.set(0.1, 0.1, 3); tb.position.set(0, 3.4, s * 1.5); G.add(tb); }
+    const sign = XK.plate(['EXIT', 'THREE RINGS · THREE LOCKS'], { w: 256, h: 128, bg: '#1a0c08', fg: '#f0c870', font: 'Georgia, serif' }); const sm = XK.sign(sign, 2.4, 1.2, 0, 5.6, 0, -Math.PI / 2, lv); scene.remove(sm); sm.position.set(-0.2, 5.4, 0); g.add(sm);
+    CN.lockDials = [0, 1, 2, 3].map(i => { const m = new T.Mesh(GEO.cyl, CNM.iron); m.scale.set(0.34, 0.08, 0.34); m.rotation.z = Math.PI / 2; m.position.set(-0.3, 1.5, -1.0 + i * 0.66); g.add(m); return m; });
+    XK.layer(g, lv); CN.gate = g; CN.gateCol = addCollider(105.3, 1035.1, 105.9, 1041.5, { dyn: () => !(CN_M && CN_M.st && CN_M.st.open) }); }
+  // ---- the Underpass: concrete, a drip, the bolted door to the exit yard; and the trapdoor's ladder down
+  for (let x = 32; x < 82; x += 10) XK.lamp(F, x, 2.3, 1038, 'x', 'cn_under', { emerg: true, sec: 'U', i: 0.5, r: 5, col: 0xffb070, pc: [1, 0.7, 0.4] });
+  // ---- the light: lamp posts along the midway, strings of bulbs, a lamp for each attraction (faded colours, pools of them in the dark)
+  const post = (x, z, col, room, sec) => { addStatic(GEO.cyl8, CNM.iron, x, 2.2, z, 0.14, 4.4, 0.14); addStatic(GEO.box, CNM.iron, x, 4.45, z, 0.5, 0.12, 0.5); return XK.lamp(F, x, 4.3, z, 'x', room, { sec: sec || 'M', col, pc: [((col >> 16) & 255) / 255, ((col >> 8) & 255) / 255, (col & 255) / 255], i: 0.8, r: 11, flick: 0.25 }); };
+  [[8, 1026, 0xffb070], [24, 1031.6, 0xff8060], [40, 1026, 0xffd090], [56, 1031.6, 0x90c0ff], [72, 1026, 0xffb070], [88, 1031.6, 0xff70b0], [102, 1026, 0xffd090]].forEach(([x, z, c]) => post(x, z, c, 'cn_midway'));
+  post(44, 1008, 0xffc080, 'cn_plaza'); post(64, 1020, 0xff90c0, 'cn_plaza'); post(58, 1004.5, 0x90b0ff, 'cn_wheel'); post(8, 1040, 0xffd0a0, 'cn_gate'); post(96, 1036, 0xffd0a0, 'cn_exit', 'X');
+  for (const [id, x, z, h, col] of [['cn_ticket', 10, 1014, 3.8, 0xffd8a0], ['cn_prize', 26, 1014, 4.2, 0xfff0c0], ['cn_back', 10, 996, 4.2, 0xffc080], ['cn_shed', 95, 996, 4.0, 0xe8ecf4], ['cn_tent', 35, 996, 9, 0xffd090]]) XK.lamp(F, x, h - 0.1, z, 'x', id, { sec: id, col, pc: [1, 0.86, 0.66], i: 0.8, r: id === 'cn_tent' ? 16 : 10 });
+  { const g = new T.Group(); g.userData.lvl = lv; scene.add(g); // (the strings of bulbs over the midway: sprites that glow)
+    const spr = CN_BULBS.map(c => new T.SpriteMaterial({ map: XGLOW_TEX, color: c, transparent: true, opacity: 0.7, depthWrite: false, blending: T.AdditiveBlending }));
+    for (let i = 0; i < 7; i++) { const x0 = 8 + i * 16 - 8, x1 = x0 + 16; for (let k = 0; k <= 16; k++) { const t = k / 16, x = lerp(x0, x1, t), y = 4.1 - Math.sin(t * Math.PI) * 0.9, z = lerp(1026, 1031.6, (i % 2 ? 1 - t : t)); const s = new T.Sprite(spr[(i + k) % 5]); s.scale.setScalar(0.35); s.position.set(x, y, z); g.add(s); CN.strings.push(s); } }
+    XK.layer(g, lv); CN.stringG = g; }
+  // ---- the pickups (moved each night)
+  const pk = (mat, s, col) => ({ m: XK.mesh(GEO.cyl, mat, 0, -10, 0, s, 0.03, s, 0, lv), gl: xGlow(col, 0.7, 0, -10, 0, lv, 0.4) });
+  for (let k = 0; k < 6; k++) CN.tokens.push(pk(CNM.token, 0.14, 0xffd070));
+  for (let k = 0; k < 3; k++) { const c = makeCanvas(64, 96), t = new T.CanvasTexture(c), m = XK.mesh(GEO.plane, new T.MeshPhongMaterial({ map: t, side: T.DoubleSide, emissive: 0x181410 }), 0, -10, 0, 0.18, 0.27, 1, 0, lv); m.rotation.x = -Math.PI / 2; CN.tickets.push({ m, c, t, gl: xGlow(0xffe0c0, 0.5, 0, -10, 0, lv, 0.3) }); }
+  for (const id of ['prize', 'fun', 'car', 'back', 'wheel']) { const m = XK.mesh(GEO.torus, CNM.ring, 0, -10, 0, 0.5, 0.5, 0.5, 0, lv); CN.rings[id] = { m, gl: xGlow(0xffd070, 0.5, 0, -10, 0, lv, 0.35) }; }
+  flushStatic(); xLockersFix();
+  CN.light = XB.lightMap(lv, F);
+  CN.sky = CNT.sky();
+})();
+
+/* ---------------- THE BARKER ---------------- */
+function buildBarker() {
+  const root = new T.Group(), P = {};
+  const coat = ORG.mat('barkerCoat', { tex: 'cloth', shine: 12, spec: 0x1a1010, ns: 1.2 }), skin = ORG.mat('barkerSkin', { tex: 'skin', shine: 40, spec: 0x2a2424, ns: 0.8 });
+  const cc0 = ORG.skinCol(0x5a1a18, 0x1a0606, { scale: 6, ends: 0.2, blot: 0.4 }), tr = (u, v) => (Math.floor(u * 12) % 2 ? [0.12, 0.1, 0.1] : [0.52, 0.48, 0.42]), wc = ORG.skinCol(0xe8e4dc, 0x8a8478, { scale: 6 });
+  const B = (p, x, y, z) => ORG.bone(p, x, y, z);
+  P.hips = B(root, 0, 2.1, 0); P.sp1 = B(P.hips, 0, 0.08, 0); P.chest = B(P.sp1, 0, 0.42, 0);
+  ORG.mesh(ORG.tube([[0, 0.05, 0], [0, -0.35, 0.02], [0, -0.7, 0.05]], [[0.2, 0.16], [0.26, 0.2], [0.3, 0.22]], { seg: 14, sub: 3, col: cc0, cap1: false }), coat, P.hips, true); // (the coat's tails)
+  ORG.mesh(ORG.tube([[0, 0, 0], [0, 0.22, -0.01], [0, 0.44, 0]], [[0.16, 0.12], [0.18, 0.13], [0.22, 0.13]], { seg: 14, sub: 3, col: cc0 }), coat, P.sp1, true);
+  ORG.mesh(ORG.tube([[0, -0.02, 0.1], [0, 0.18, 0.13], [0, 0.32, 0.1]], [[0.1, 0.02], [0.08, 0.02], [0.05, 0.02]], { seg: 8, sub: 3, col: wc, cap0: false, cap1: false }), coat, P.sp1, true); // (the shirt front)
+  P.neck = B(P.chest, 0, 0.08, 0.02); P.head = B(P.neck, 0, 0.22, 0.04);
+  ORG.mesh(ORG.tube([[0, 0, 0], [0, 0.11, 0.02], [0, 0.22, 0.04]], [0.06, 0.055, 0.06], { seg: 10, sub: 3, col: wc }), skin, P.neck, true);
+  ORG.mesh(ORG.tube([[0, -0.1, 0], [0, 0.04, 0.03], [0, 0.16, 0]], [[0.11, 0.12], [0.12, 0.13], [0.09, 0.1]], { seg: 14, sub: 4, col: wc }), skin, P.head, true);
+  // the face: painted on — a grin far too wide, and eyes that are only paint
+  { const c = makeCanvas(128, 128), g = c.getContext('2d'); g.clearRect(0, 0, 128, 128); g.fillStyle = '#0c0808'; for (const s of [-1, 1]) { g.beginPath(); g.ellipse(64 + s * 24, 46, 10, 14, s * 0.3, 0, TAU); g.fill(); } g.fillStyle = '#8a0c10'; g.beginPath(); g.moveTo(16, 74); g.quadraticCurveTo(64, 118, 112, 74); g.quadraticCurveTo(64, 92, 16, 74); g.fill(); g.fillStyle = '#e8e0d0'; for (let k = 0; k < 9; k++) g.fillRect(28 + k * 8, 80 + Math.sin(k / 8 * Math.PI) * 8, 5, 6); const t = new T.CanvasTexture(c); const f = new T.Mesh(GEO.plane, new T.MeshPhongMaterial({ map: t, transparent: true, shininess: 30 })); f.scale.set(0.24, 0.24, 1); f.position.set(0, 0.03, 0.132); P.head.add(f); }
+  const hat = new T.Mesh(GEO.cyl, phong({ color: 0x0e0c0c, shininess: 30 })); hat.scale.set(0.24, 0.36, 0.24); hat.position.set(0, 0.34, -0.01); P.head.add(hat); const brim = new T.Mesh(GEO.cyl, phong({ color: 0x0e0c0c, shininess: 30 })); brim.scale.set(0.42, 0.02, 0.42); brim.position.set(0, 0.16, 0); P.head.add(brim); const band = new T.Mesh(GEO.cyl, CNM.red); band.scale.set(0.245, 0.05, 0.245); band.position.set(0, 0.2, -0.01); P.head.add(band);
+  // the legs: stilts in striped trousers — far too long
+  const leg = s => { const L = {}; L.hip = B(P.hips, s * 0.12, -0.04, 0); L.knee = B(L.hip, 0, -1.0, 0); L.ank = B(L.knee, 0, -1.0, 0);
+    ORG.mesh(ORG.tube([[0, 0.04, 0], [0, -0.5, 0.02], [0, -1.0, 0]], [0.07, 0.055, 0.045], { seg: 10, sub: 4, col: tr }), coat, L.hip, true);
+    ORG.mesh(ORG.tube([[0, 0.02, 0], [0, -0.5, 0], [0, -1.0, 0]], [0.045, 0.04, 0.03], { seg: 9, sub: 4, col: tr }), coat, L.knee, true);
+    ORG.mesh(ORG.tube([[0, 0, -0.03], [0, -0.04, 0.06], [0, -0.05, 0.14]], [[0.05, 0.035], [0.05, 0.03], [0.04, 0.025]], { seg: 8, sub: 3, col: ORG.skinCol(0x141010, 0x060404, {}) }), coat, L.ank, true);
+    return L; };
+  P.legs = [leg(-1), leg(1)];
+  const arm = s => { const A = {}; A.sh = B(P.chest, s * 0.24, 0.06, 0); A.el = B(A.sh, 0, -0.62, 0); A.wr = B(A.el, 0, -0.6, 0);
+    ORG.mesh(ORG.tube([[0, 0.04, 0], [0, -0.31, 0.01], [0, -0.62, 0]], [0.06, 0.05, 0.042], { seg: 9, sub: 3, col: cc0 }), coat, A.sh, true);
+    ORG.mesh(ORG.tube([[0, 0.02, 0], [0, -0.3, 0], [0, -0.6, 0]], [0.042, 0.036, 0.03], { seg: 8, sub: 3, col: cc0 }), coat, A.el, true);
+    ORG.mesh(ORG.tube([[0, 0, 0], [0, -0.07, 0.02], [0, -0.14, 0.01]], [[0.045, 0.028], [0.05, 0.026], [0.035, 0.02]], { seg: 8, sub: 3, col: wc }), skin, A.wr, true); // (white gloves)
+    return A; };
+  P.arms = [arm(-1), arm(1)];
+  ORG.skinify(root, { reach: 3.4 });
+  // the megaphone in its left hand, the cane in its right
+  const mega = new T.Mesh(new T.ConeGeometry(0.16, 0.5, 12, 1, true), CNM.white); mega.rotation.x = -Math.PI / 2; mega.position.set(0, -0.2, 0.22); P.arms[0].wr.add(mega); P.mega = mega;
+  const cane = new T.Mesh(GEO.cyl8, CNM.dark); cane.scale.set(0.03, 1.4, 0.03); cane.position.set(0, -0.7, 0.05); P.arms[1].wr.add(cane); const knob = new T.Mesh(GEO.sphere, CNM.gold); knob.scale.setScalar(0.07); knob.position.set(0, -0.04, 0.05); P.arms[1].wr.add(knob);
+  root.userData.P = P; return root;
+}
+const CN_LINES = ['STEP RIGHT UP', 'ONE MORE RIDE', 'NOBODY LEAVES EARLY', 'THE SHOW MUST GO ON', 'I SEE YOU', 'TICKETS, PLEASE'];
+const Barker = XFoe({
+  key: 'XB', name: 'THE BARKER', lv: CN_LV, kind: 'barker', build: buildBarker, hp: 120, goneT: 30, height: 3.4, eyeH: 3.0, r: 0.42,
+  speed: { patrol: 1.6, invest: 2.7, search: 2.0, hunt: 4.3 }, sight: { dark: 7, lit: 24, flash: 28, fov: 1.15 }, hear: 1.0, memory: 1.8,
+  pass(F, x, z) { const c = cellAt(x, z); return c.room !== 'cn_fun' && c.room !== 'cn_under'; }, // (too tall for the Underpass; it won't go in among the mirrors)
+  patrol() { return CN_PATROL[Math.floor(Math.random() * CN_PATROL.length)]; },
+  onSpot(F) { CN_M.fx('bark', { x: +F.pos.x.toFixed(1), z: +F.pos.z.toFixed(1), l: Math.floor(Math.random() * CN_LINES.length), s: 1 }); },
+  speedK(F) { return CN_M.st.final ? 1.18 : 1; },
+  think(F, dt) { F.bkT = (F.bkT === undefined ? rand(8, 14) : F.bkT) - dt; if (F.bkT <= 0 && (F.state === 'PATROL' || F.state === 'WAIT' || F.state === 'SEARCH')) { F.bkT = rand(12, 22); CN_M.fx('bark', { x: +F.pos.x.toFixed(1), z: +F.pos.z.toFixed(1), l: Math.floor(Math.random() * 4), s: 0 }); } return false; },
+  anim(F, dt) {
+    const P = F.P; if (!P || !P.legs) return; const t = Game.time, sp = F.speed, run = clamp(sp / 4.3, 0, 1);
+    F.ph = (F.ph || 0) + dt * (1.1 + sp * 0.75);
+    const sw = Math.sin(F.ph) * (0.12 + run * 0.4), hunt = F.state === 'HUNT' || F.state === 'WIND' ? 1 : 0;
+    F.lean = damp(F.lean || 0, hunt * 0.25 + run * 0.08, 4, dt);
+    P.hips.position.y = 2.1 - Math.abs(Math.sin(F.ph)) * 0.08 * (0.3 + run);
+    P.sp1.rotation.x = F.lean * 0.5; P.chest.rotation.y = Math.sin(F.ph) * 0.08;
+    P.legs.forEach((L, i) => { const s = i ? -1 : 1, a = sw * s; L.hip.rotation.x = -a; L.knee.rotation.x = Math.max(0, a) * 0.5 + 0.04; });
+    const reach = F.att, mega = (F.megaT || 0) > 0 ? 1 : 0; F.megaT = Math.max(0, (F.megaT || 0) - dt);
+    P.arms[0].sh.rotation.set(-mega * 1.7 + sw * 0.4, 0, 0.1 + mega * 0.2); P.arms[0].el.rotation.x = -0.2 - mega * 0.9;
+    P.arms[1].sh.rotation.set(-reach * 2.4 - sw * 0.4 - hunt * 0.3, 0, -0.12); P.arms[1].el.rotation.x = -0.15 - reach * 0.3;
+    F.tilt = damp(F.tilt || 0, F.state === 'WAIT' ? Math.sin(t * 0.9) * 0.5 : hunt ? -0.2 : 0, 2, dt);
+    P.neck.rotation.set(-F.lean * 0.4, F.tilt * 0.6, F.tilt * 0.6);
+  },
+  sfx(F, dt) { const d = Math.hypot(F.pos.x - player.pos.x, F.pos.z - player.pos.z); if (d > 30) return; F.sD = (F.sD || 0) + F.speed * dt; if (F.sD > 1.5) { F.sD = 0; Sound.tap(_xv3.set(F.pos.x, 0.1, F.pos.z), 0.5 + clamp(F.speed / 4, 0, 1) * 0.5); Sound.creak(_xv3.set(F.pos.x, 1.0, F.pos.z)); } },
+  onWind(F) { Sound.xMega ? Sound.xMega(_xv3.set(F.pos.x, 3, F.pos.z), 1, 4) : Sound.laugh(_xv3.set(F.pos.x, 3, F.pos.z)); },
+  hitSfx(F, at) { Sound.thud(at); },
+});
+
+/* ---------------- the mode ---------------- */
+const CN_STORE = XB.store('carnival');
+NOTES.cn_poster = { title: 'THE GRAND CAROUSEL', body: '' };
+NOTES.cn_rules = { title: 'A NOTICE IN THE TICKET HALL', body: 'LANTERN HOLLOW CARNIVAL — RULES OF THE GROUNDS\n\n1. The EXIT GATE opens for guests with three brass rings. Rings are won at the attractions.\n2. The Prize Hall pays a ring for five prize tokens.\n3. The Funhouse keeps its ring among the mirrors. Not every mirror is a mirror.\n4. The Carousel rides in the order on the poster. Pull each animal\'s lever in turn.\n5. Backstage is for staff. The combination is on the tickets: one colour, one number.\n6. The Ferris wheel runs from the shed. It is loud.\n7. The Barker does not go below the road, and does not go among the mirrors.\n8. NOBODY LEAVES EARLY.' };
+const CN_M = XMode({
+  key: 'carnival', lv: CN_LV, salt: 0xca2141, name: 'The Carnival of Lost Souls', tag: 'THE CARNIVAL OF LOST SOULS', title: 'THE CARNIVAL OF LOST SOULS', sub: 'Lantern Hollow · open one night only',
+  scareScene: 'jumpscare', spawns: CN_SPAWNS, foe: Barker, store: CN_STORE, ranks: [720, 960, 1260, 1620],
+  briefH1: 'Win your way out of the carnival', briefKicker: 'The Carnival of Lost Souls · Lantern Hollow · the attractions are open',
+  respawnText: 'You wake by the turnstiles to calliope music. Your team still needs you.',
+  introMsgs: [[2600, 'LANTERN HOLLOW CARNIVAL. The turnstile has locked behind you. The EXIT GATE (the far east end of the midway) takes brass RINGS — won at the attractions. The rules are posted in the Ticket Hall. [H] for a hint.', 'story', 8],
+    [12000, 'You\'ll hear the Barker before you see it. When it calls out, it has seen someone.', 'hint', 6]],
+  fresh(M, r) {
+    const tk = XB.shuffle(CN_TOKENS.map((p, i) => i), r).slice(0, 6), ti = XB.shuffle(CN_TICKETS.map((p, i) => i), r).slice(0, 3);
+    return { tok: tk, tokGot: [0, 0, 0, 0, 0, 0], tokIn: 0, tix: ti, tixGot: [0, 0, 0], combo: [0, 1, 2].map(() => Math.floor(r() * 10)), dial: [0, 0, 0], back: 0,
+      seq: XB.shuffle([0, 1, 2, 3], r), seqAt: 0, car: 0, trap: 0, breaker: 0, wheel: 0, maze: Math.floor(r() * 1e6), rings: { prize: 0, fun: 0, car: 0, back: 0, wheel: 0 }, got: [], lock: 0, open: 0, final: 0, wake: 0, rare: XB.pick(['music', 'lights', 'laugh', ''], r), rareT: 130 + Math.floor(r() * 160), rareDone: 0 };
+  },
+  reset(M, r) { M.wakeAt = XB.dv(CN_WAKE); M.secT = 0; M.read = new Set(); cnBuildMaze(M.st.maze); CN_M.pts = cnPoints(); M.musicT = 4; },
+  show(M, on) {
+    if (on) { if (scene.background !== CN.sky) M._bg = scene.background; scene.background = CN.sky; M._fog = M._fog || scene.fog.color.clone(); scene.fog.color.setHex(0x120c10); M._hemi = M._hemi || [hemi.color.clone(), hemi.groundColor.clone()]; hemi.color.setHex(0x2a2236); hemi.groundColor.setHex(0x0c0806); }
+    else { if (scene.background === CN.sky) scene.background = M._bg || null; if (M._fog) scene.fog.color.copy(M._fog); if (M._hemi) { hemi.color.copy(M._hemi[0]); hemi.groundColor.copy(M._hemi[1]); } }
+  },
+  tick(M, dt, host) { cnTick(M, dt, host); },
+  sync(M, old, st) { cnSync(M, old, st); },
+  fx: {
+    foeWake(M) { Sound.laugh(_xv.set(30, 3, 1000)); if (LVL === CN_LV) UI.msg('From the Big Top, a long, delighted laugh through a megaphone. The show has started.', 'warn', 5); },
+    foeGone(M, ev) { Sound.laugh(_xv.set(+ev.x || 0, 3, +ev.z || 0)); UI.msg('The Barker staggers off its stilts into the dark, laughing. Intermission.', 'good', 4.5); M.flags.banished = (M.flags.banished | 0) + 1; },
+    foeBack() { }, foeStun() { }, foeHit() { },
+    bark(M, ev) { const p = _xv.set(+ev.x || 0, 3, +ev.z || 0), d = Math.hypot(p.x - player.pos.x, p.z - player.pos.z); Barker.megaT = 1.6; if (Sound.xMega) Sound.xMega(p, ev.s ? 1.2 : 0.8, (ev.l | 0) + 1); else Sound.laugh(p); if (d < 40) UI.msg('"' + CN_LINES[ev.l | 0] + '!"' + (ev.s ? ' — it has seen someone.' : ''), ev.s ? 'warn' : '', 3); },
+    take(M, ev) { if ((ev.b | 0) === Net.myId) Sound.pickup(); },
+    ring(M, ev) { Sound.musicBox(_xv.set(player.pos.x, 2, player.pos.z), 880); Sound.coin && Sound.coin(); Game.shake(0.15); },
+    lever(M, ev) { Sound.breaker(_xv.set(CN.posts[ev.i | 0].x, 1.2, CN.posts[ev.i | 0].z)); if (ev.ok === 0) { Sound.locked(_xv.set(CN_CAR.x, 1, CN_CAR.z)); } },
+    carousel(M) { Sound.sting(true); },
+    wheel(M) { Sound.turbineStart(_xv.set(60, 1.2, 1002.6), 0); },
+    gate(M) { Sound.sealOpen(_xv.set(105, 2, 1038)); Game.shake(0.5); },
+    rare(M, ev) {
+      if (ev.r === 'music') { M.musicBurst = 18; UI.msg('The calliope starts up by itself. Every light on the carousel comes on — and the Barker turns to look.', 'story', 5); }
+      if (ev.r === 'lights') { M.lightsOut = 12; UI.msg('Every light on the midway goes out at once. In the dark, something laughs.', 'warn', 4.5); }
+      if (ev.r === 'laugh') { Sound.laugh(_xv.set(player.pos.x + rand(-4, 4), 2, player.pos.z + rand(-4, 4))); UI.msg('A child\'s laugh, right behind you.', 'story', 3.5); }
+    },
+  },
+  exitOpen(M) { return M.st.open === 1; },
+  inExit(M, a) { return a.pos.x > CN_EXIT.x0 && a.pos.x < CN_EXIT.x1 && a.pos.z > CN_EXIT.z0 && a.pos.z < CN_EXIT.z1; },
+  doorPrompt(M, d) {
+    const st = M.st;
+    if (d.x === 9 && d.z === CNZ0 + 4 && d.locked()) return 'Backstage — padlocked (three coloured dials beside it)';
+    if (d.x === 41 && d.z === CNZ0 + 25 && d.locked()) return player.pos.x < d.cx ? 'Slide back the bolt' : 'A steel door in the road bank — bolted from the other side';
+    return null;
+  },
+  doorUse(M, d, by) {
+    if (d.x === 41 && d.z === CNZ0 + 25) { if (by.pos.x < d.cx) { M.set(s => { s.ubolt = 1; }); M.note('{who} slid back the bolt: the Underpass opens on the exit yard.', 'good', 4, Game.idOf(by)); } else M.tell(by, 'Bolted from the other side.', 'warn', 3.5, 'locked'); return; }
+    if (d.x === 9 && d.z === CNZ0 + 4) { M.tell(by, 'Padlocked. Set the three coloured dials beside the door — the tickets have the numbers.', 'hint', 4.5, 'locked'); return; }
+  },
+  objectives: cnObjectives, bonus: cnBonus, hud: cnHud, hint: cnHint,
+  fixOn(M, f) { if (M.lightsOut > 0 && f.sec === 'M') { f.on = false; return; } f.on = f.type === 'emerg' || f.mode !== 'dead'; },
+  dim(M, f, b, t) { const F = Barker; if (F.active && !F.isDown() && Math.abs(f.pos.x - F.pos.x) + Math.abs(f.pos.z - F.pos.z) < 8 && Math.random() < (settings.noFlash ? 0 : 0.06)) b *= rand(0.3, 0.7); if (M.st.final && f.sec === 'M') b *= settings.noFlash ? 0.7 : 0.6 + 0.4 * Math.pow(Math.max(0, Math.sin(t * 3 + f.pos.x)), 2); return b; },
+  ambient(M) { return [0.34, FOG_BASE * 0.9]; },
+  hurtText(M, hp) { return hp > 35 ? 'The cane cracks across your back. Off the midway — into a booth, a hall, the mirrors.' : 'One more and you\'re part of the show. The Funhouse — it won\'t follow you in there.'; },
+  startEnding(M) { Sound.sealOpen(_xv.set(105, 2, 1038)); $('fx-white').style.transition = 'opacity 3.5s'; $('fx-white').style.opacity = 0.6; },
+  result(M, won) {
+    const st = M.st, n = cnRings(st), rows = [['Rings won', n + ' / ' + XB.dv(CN_NEED)], ['Attractions', st.got.join(', ') || '—'], ['The Barker was driven off', (M.flags.banished | 0) + '']];
+    if (!won) return { title: Net.active && crew().length > 1 ? 'The carnival kept all of you' : 'The carnival kept you', sub: 'The Carnival of Lost Souls · ' + n + ' ring' + (n === 1 ? '' : 's') + ' won', rows };
+    return { title: Net.active && crew().length > 1 ? 'You all left early' : 'You left early', sub: 'The Carnival of Lost Souls · ' + fmtClock(Game.time), rows,
+      score: ['prize', 'fun', 'car', 'back', 'wheel'].map(k => [{ prize: 'The Prize Hall', fun: 'The Funhouse', car: 'The Carousel', back: 'Backstage', wheel: 'The Ferris Wheel' }[k], st.rings[k] ? 'ring' : '—']),
+      epilogue: 'The gate swings shut behind you with a sound like applause. When you look back from the road, the carnival is dark and fenced and forty years dead — except for the Ferris wheel, turning slowly, one car lit.' };
+  },
+  pay(M, won) { const st = M.st, n = cnRings(st), out = []; if (n) out.push(['Rings won', 35 * n]); if (st.tokIn) out.push(['Prize tokens', 4 * Math.min(5, st.tokGot.filter(Boolean).length)]); if (won) out.push(['Left the carnival', 165]); if (n >= 5) out.push(['Every attraction', 90]); if (M.flags.banished) out.push(['The Barker driven off', 45 * Math.min(3, M.flags.banished)]); return out; },
+  paid(M, won) { if (won) { Goals.unlock('cn_out'); if (cnRings(M.st) >= 5) Goals.unlock('cn_all'); if (typeof NGShop !== 'undefined') NGShop.earn('cn'); } },
+});
+ACH.push({ id: 'cn_out', name: 'Leaving Early', desc: 'Get out of Lantern Hollow Carnival (The Carnival of Lost Souls).' });
+ACH.push({ id: 'cn_all', name: 'Ride Them All', desc: 'The Carnival of Lost Souls: win a ring at all five attractions.' });
+const cnRings = st => Object.values(st.rings).filter(Boolean).length;
+
+/* ---- the Funhouse: a new maze every night (2 m cells; some mirrors are doors, some gaps are glass) ---- */
+const CN_MZ = { x0: 70, z0: 1006, nx: 11, nz: 8 };
+function cnBuildMaze(seed) {
+  for (const b of CN.mazeCols) removeCollider(b); CN.mazeCols = [];
+  if (CN.maze) { scene.remove(CN.maze); CN.maze.traverse(o => { if (o.geometry && o.geometry !== GEO.box) o.geometry.dispose(); }); }
+  const r = XB.rnd(seed), nx = CN_MZ.nx, nz = CN_MZ.nz, vis = new Uint8Array(nx * nz), H = [], V = []; // H[z][x]: wall below cell; V[z][x]: wall right of cell
+  for (let z = 0; z < nz; z++) { H.push(new Array(nx).fill(1)); V.push(new Array(nx).fill(1)); }
+  const st = [[5, nz - 1]]; vis[(nz - 1) * nx + 5] = 1;
+  while (st.length) { const [x, z] = st[st.length - 1], nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dz]) => [x + dx, z + dz, dx, dz]).filter(([a, b]) => a >= 0 && b >= 0 && a < nx && b < nz && !vis[b * nx + a]);
+    if (!nb.length) { st.pop(); continue; } const [a, b, dx, dz] = nb[Math.floor(r() * nb.length)];
+    if (dx === 1) V[z][x] = 0; else if (dx === -1) V[z][a] = 0; else if (dz === 1) H[z][x] = 0; else H[b][x] = 0; vis[b * nx + a] = 1; st.push([a, b]); }
+  const g = new T.Group(); g.userData.lvl = CN_LV; const walls = [];
+  const wall = (x, z, horiz, kind) => { const L = 2.0, cx = horiz ? CN_MZ.x0 + x * 2 + 1 : CN_MZ.x0 + x * 2 + 2, cz = horiz ? CN_MZ.z0 + z * 2 + 2 : CN_MZ.z0 + z * 2 + 1; walls.push([cx, cz, horiz, kind]); };
+  // the walls the maze kept: mirrors — one in eight of them only a reflection you can walk through; a few more knocked through — and some of those are glass
+  for (let z = 0; z < nz; z++) for (let x = 0; x < nx; x++) {
+    if (z < nz - 1 && H[z][x]) { const q = r(); if (q < 0.1) { if (r() < 0.5) wall(x, z, true, 'glass'); } else wall(x, z, true, q < 0.22 ? 'fake' : 'mirror'); }
+    if (x < nx - 1 && V[z][x]) { const q = r(); if (q < 0.1) { if (r() < 0.5) wall(x, z, false, 'glass'); } else wall(x, z, false, q < 0.22 ? 'fake' : 'mirror'); }
+  }
+  for (const [cx, cz, horiz, kind] of walls) {
+    const m = new T.Mesh(GEO.box, kind === 'glass' ? CNM.glass : CNM.mirror); m.scale.set(horiz ? 1.96 : 0.08, 2.9, horiz ? 0.08 : 1.96); m.position.set(cx, 1.45, cz); m.castShadow = kind !== 'glass'; g.add(m);
+    if (kind !== 'glass') { const fr = new T.Mesh(GEO.box, CNM.gold); fr.scale.set(horiz ? 2.0 : 0.12, 0.12, horiz ? 0.12 : 2.0); fr.position.set(cx, 2.95, cz); g.add(fr); }
+    if (kind !== 'fake') CN.mazeCols.push(addCollider(cx - (horiz ? 1.0 : 0.06), cz - (horiz ? 0.06 : 1.0), cx + (horiz ? 1.0 : 0.06), cz + (horiz ? 0.06 : 1.0), { nav: false }));
+  }
+  // the heart of it: the laughing clown (and the ring)
+  const clown = new T.Group(); const box = new T.Mesh(GEO.box, CNM.red); box.scale.set(0.9, 1.4, 0.6); box.position.y = 0.7; clown.add(box); const head = new T.Mesh(GEO.sphere, CNM.white); head.scale.setScalar(0.5); head.position.y = 1.7; clown.add(head); const nose = new T.Mesh(GEO.sphere, CNM.red); nose.scale.setScalar(0.12); nose.position.set(0, 1.7, 0.25); clown.add(nose);
+  const hz = Math.floor(nz / 2) - 1, hx = Math.floor(nx / 2); clown.position.set(CN_MZ.x0 + hx * 2 + 1, 0, CN_MZ.z0 + hz * 2 + 1); g.add(clown); CN.clown = { x: clown.position.x, z: clown.position.z };
+  XK.layer(g, CN_LV); scene.add(g); CN.maze = g;
+}
+
+/* ---- what you use ---- */
+function cnPoints() {
+  const M = CN_M, st = () => M.st, pts = [];
+  pts.push({ id: 'rules', x: 4.5, z: 1007.2, y: 1.6, r: 2.0, prompt: 'Read the notice on the wall', local: () => { UI.readNote('cn_rules'); M.read.add('rules'); return false; } });
+  pts.push({ id: 'poster', x: 15.5, z: 1007.2, y: 1.6, r: 2.0, prompt: 'Read the carousel poster', local: () => { cnWritePoster(); UI.readNote('cn_poster'); M.read.add('poster'); return false; } });
+  // the tokens: five of them win a ring at the Prize Hall
+  [0, 1, 2, 3, 4, 5].forEach(k => pts.push({ id: 'tok' + k, get x() { return CN_TOKENS[st().tok[k]][0]; }, get z() { return CN_TOKENS[st().tok[k]][1]; }, y: 0.06, r: 2.5, wide: true, ok: () => !st().tokGot[k], prompt: 'Pick up the prize token',
+    use: (M2, who) => { M2.set(s => { s.tokGot[k] = 1; }); M2.fx('take', { b: Game.idOf(who) }); const n = M2.st.tokGot.filter(Boolean).length; M2.note('{who} found a prize token (' + Math.min(n, 5) + ' / 5).' + (n === 5 ? ' Take them to the Prize Hall counter.' : ''), 'good', 3.5, Game.idOf(who)); } }));
+  pts.push({ id: 'prize', x: 27.2, z: 1011, y: 1.15, r: 2.0, wide: true, ok: () => !st().rings.prize, prompt: () => { const n = st().tokGot.filter(Boolean).length; return n >= 5 ? 'Hand in five prize tokens' : 'The Prize Hall counter — five tokens for a ring (' + n + ' / 5)'; },
+    use: (M2, who) => { const n = M2.st.tokGot.filter(Boolean).length; if (n < 5) { M2.tell(who, 'The sign says FIVE TOKENS. You have ' + n + '.', 'hint', 3.5); return; } cnWin(M2, 'prize', who, 'The prize clerk\'s window slams up: a brass RING rolls out across the counter.'); M2.set(s => { s.tokIn = 1; }); } });
+  // the Funhouse: the clown at its heart
+  pts.push({ id: 'clown', get x() { return CN.clown ? CN.clown.x : 0; }, get z() { return CN.clown ? CN.clown.z + 0.6 : 0; }, y: 1.2, r: 2.0, wide: true, ok: () => !st().rings.fun, prompt: 'Pull the laughing clown\'s lever',
+    use: (M2, who) => { Sound.laugh(_xv.set(CN.clown.x, 1.8, CN.clown.z)); cnWin(M2, 'fun', who, 'The clown\'s head spins and laughs and laughs — and spits out a brass RING.'); } });
+  // the Carousel: its four levers, in the poster's order
+  CN.posts.forEach((P, i) => pts.push({ id: 'lev' + i, x: P.x, z: P.z, y: 1.2, r: 1.7, ok: () => !st().rings.car, prompt: () => 'Pull the ' + CN_ANIMALS[i].toUpperCase() + ' lever' + (st().seqAt ? ' (' + st().seqAt + ' / 4 so far)' : ''),
+    use: (M2, who) => { const s = M2.st, want = s.seq[s.seqAt]; if (want === i) { M2.set(x => { x.seqAt++; }); M2.fx('lever', { i, ok: 1 }); if (M2.st.seqAt >= 4) { M2.set(x => { x.car = 1; x.trap = 1; }); M2.fx('carousel'); cnWin(M2, 'car', who, 'The carousel lurches and turns, the calliope wheezing into a waltz. A brass RING drops from the lion\'s mouth — and a trapdoor bangs open by the east lever.'); } else M2.note('Clunk. The carousel shivers (' + M2.st.seqAt + ' / 4).', '', 2.5); } else { M2.set(x => { x.seqAt = 0; }); M2.fx('lever', { i, ok: 0 }); M2.note('Wrong animal. Every lever snaps back up — start again. (The poster in the Ticket Hall has the order.)', 'warn', 4); Game.noise(_xv.set(CN_CAR.x, 1, CN_CAR.z), 26, 'event'); } } }));
+  pts.push({ id: 'trap', x: CN_CAR.x + 6.2, z: CN_CAR.z + 3.4, y: 0.2, r: 1.8, wide: true, ok: () => !!st().trap, prompt: 'Climb down the trapdoor (the Underpass)',
+    use: (M2, who) => { M2.fx('down', { a: Game.idOf(who) }); } });
+  // Backstage: three coloured dials; the tickets have the numbers
+  [0, 1, 2].forEach(k => pts.push({ id: 'tix' + k, get x() { return CN_TICKETS[st().tix[k]][0]; }, get z() { return CN_TICKETS[st().tix[k]][1]; }, y: 0.05, r: 2.5, wide: true, ok: () => !st().tixGot[k], prompt: 'Pick up the ticket stub',
+    use: (M2, who) => { M2.set(s => { s.tixGot[k] = 1; }); M2.fx('take', { b: Game.idOf(who) }); M2.note('{who} found a ' + CN_ACOL[k] + ' ticket stub: ADMIT ONE · ' + M2.st.combo[k] + '.', 'good', 5, Game.idOf(who)); } }));
+  [0, 1, 2].forEach(k => pts.push({ id: 'bd' + k, x: 20.4, z: 993.6 + k * 0.7, y: 1.3, r: 1.7, ok: () => !st().back, prompt: () => 'Turn the ' + CN_ACOL[k] + ' dial (now ' + st().dial[k] + ')',
+    use: (M2) => { M2.set(s => { s.dial[k] = (s.dial[k] + 1) % 10; }); Sound.tap(_xv.set(20.4, 1.3, 993.6 + k * 0.7), 0.6); if (M2.st.dial.every((d, i) => d === M2.st.combo[i])) { M2.set(s => { s.back = 1; }); const d = XB.door(CN_LV, 9, 4); if (d) { d.unlocked = true; d.updateLeds(); d.open(); Game.syncDoor(d, false, true); } M2.note('The padlock falls open. BACKSTAGE.', 'good', 4); } } }));
+  pts.push({ id: 'trunk', x: 6, z: 991.4, y: 0.8, r: 1.9, wide: true, ok: () => !!st().back && !st().rings.back, prompt: 'Open the ringmaster\'s trunk',
+    use: (M2, who) => { cnWin(M2, 'back', who, 'Inside the ringmaster\'s trunk, wrapped in a faded programme: a brass RING. The programme\'s last page lists tonight\'s guests. Your name is on it.'); } });
+  // the Ferris wheel: the shed's breaker, then the motor (loud) brings the car with the ring down
+  pts.push({ id: 'breaker', x: 86.6, z: 996, y: 1.6, r: 1.8, ok: () => !st().breaker, prompt: 'Throw the Ferris wheel breaker', use: (M2, who) => { M2.set(s => { s.breaker = 1; }); Sound.breaker(_xv.set(86.3, 1.6, 996)); M2.note('{who} threw the wheel\'s breaker. Its motor booth by the wheel has power.', 'good', 4, Game.idOf(who)); } });
+  pts.push({ id: 'motor', x: 60, z: 1003.6, y: 1.3, r: 2.0, wide: true, ok: () => !st().wheel, prompt: () => st().breaker ? 'Run the Ferris wheel motor — LOUD' : 'The motor booth — dead (the breaker is in the shed)',
+    work: 12, noise: 34, wr: 3,
+    can: (M2, who) => { if (!M2.st.breaker) { M2.tell(who, 'Dead. The breaker for the wheel is in the Maintenance Shed.', 'hint', 4); return false; } return true; },
+    begin: (M2, who) => { M2.fx('wheel'); M2.note('{who} started the wheel. It groans round, every bulb on it lit — the whole carnival can hear it.', 'warn', 5, Game.idOf(who)); },
+    done: (M2) => { M2.set(s => { s.wheel = 1; }); M2.note('The car with the ring is at the bottom of the wheel — take it.', 'good', 4.5); } });
+  pts.push({ id: 'wring', x: CN_WHEEL.x, z: CN_WHEEL.z + 1.6, y: 0.9, r: 2.0, wide: true, ok: () => !!st().wheel && !st().rings.wheel, prompt: 'Take the ring from the car', use: (M2, who) => { cnWin(M2, 'wheel', who, 'The ring was tied to the car\'s safety bar with a child\'s hair ribbon.'); } });
+  // the exit gate's locks
+  pts.push({ id: 'gate', x: 104.4, z: 1038.3, y: 1.5, r: 2.2, wide: true, ok: () => !st().open, prompt: () => { const n = cnRings(st()), need = XB.dv(CN_NEED); return n >= need ? 'Set the rings in the gate\'s locks (' + n + ')' : 'The exit gate — ' + need + ' rings (' + n + ' won)'; },
+    use: (M2, who) => { const n = cnRings(M2.st), need = XB.dv(CN_NEED); if (n < need) { M2.tell(who, 'The locks want ' + need + ' rings. You have ' + n + '. Win them at the attractions.', 'hint', 4); return; } M2.set(s => { s.open = 1; s.final = 1; s.lock = n; }); M2.fx('gate'); M2.note('The rings turn in the locks. THE GATE IS OPENING — everyone to it!', 'good', 6); Game.noise(_xv.set(104, 1.5, 1038), 60, 'event'); } });
+  return pts;
+}
+function cnWin(M, k, who, text) { if (M.st.rings[k]) return; M.set(s => { s.rings[k] = 1; s.got.push(k); }); M.fx('ring'); M.note('{who} won a RING! ' + text + ' (' + cnRings(M.st) + ' / ' + XB.dv(CN_NEED) + ')', 'good', 6.5, Game.idOf(who)); }
+function cnWritePoster() { const s = CN_M.st; NOTES.cn_poster.body = 'THE GRAND CAROUSEL\n\nRide in the proper order, and the carousel will carry you down below the road.\n\n' + s.seq.map((k, i) => (i + 1) + '. the ' + CN_ANIMALS[k].toUpperCase()).join('\n') + '\n\n(Pull each animal\'s lever in turn. The wrong one and they all snap back.)'; }
+// (every screen) the trapdoor: whoever went down is in the Underpass
+CN_M.def.fx.down = (M, ev) => { if ((ev.a | 0) !== Net.myId) return; const f = $('fx-fade'); f.style.transition = 'opacity .35s'; f.style.opacity = 1; setTimeout(() => { player.pos.set(31, 0, 1038); player.yaw = -Math.PI / 2; f.style.transition = 'opacity 1.4s'; f.style.opacity = 0; UI.msg('A ladder down into the Underpass, under the road. It\'s too low for anything tall. At the far end, a steel door — bolted on this side.', 'story', 6); }, 400); };
+function cnTick(M, dt, host) {
+  const st = M.st; M.secT -= dt; if (M.secT <= 0) { M.secT = 0.4; XB.relight(CN.light); } M.light = CN.light;
+  if (Game.state !== 'playing') return;
+  // the rides: the carousel turns when it's had its sequence (and sometimes on its own), the wheel once its motor has run
+  const carW = st.car || (M.musicBurst > 0) ? 0.5 : 0; CN.car.w = damp(CN.car.w, carW, 0.6, dt); CN.car.rot.rotation.y += CN.car.w * dt;
+  CN.carBulbs.forEach((b, i) => { b.visible = CN.car.w > 0.05 || (i + Math.floor(Game.time * 2)) % 6 === 0; });
+  const J = M.jobs.motor, wW = st.wheel ? 0.08 : J ? 0.25 : 0.005; CN.wheel.w = damp(CN.wheel.w, wW, 0.8, dt); CN.wheel.a += CN.wheel.w * dt; CN.wheel.wh.rotation.z = CN.wheel.a;
+  CN.cars.forEach((c, k) => { const a = CN.wheel.a + k / 8 * TAU; c.position.set(Math.cos(a) * CN_WHEEL.r, Math.sin(a) * CN_WHEEL.r, 0); c.rotation.z = -CN.wheel.a; });
+  CN.wheelBulbs.forEach((b, i) => { b.visible = st.breaker ? true : (i % 5 === Math.floor(Game.time) % 5); });
+  CN.motorLed.material = st.wheel ? MAT.ledGreen : J ? MAT.ledAmber : st.breaker ? MAT.ledAmber : MAT.ledRed; CN.breaker.material = st.breaker ? MAT.ledGreen : MAT.ledRed;
+  CN.flag.rotation.y = Math.sin(Game.time * 1.3) * 0.3; CN.stringG.children.forEach((s, i) => { s.material.opacity = (M.lightsOut > 0 ? 0.05 : 0.55) + 0.15 * Math.sin(Game.time * 2 + i * 0.7); });
+  // the music: the calliope, in pieces, from the carousel
+  M.musicT -= dt; if (M.musicT <= 0) { const d = Math.hypot(CN_CAR.x - player.pos.x, CN_CAR.z - player.pos.z); M.musicT = M.musicBurst > 0 || st.car ? 0.32 : rand(5, 11); if (d < 46) { const tune = [523, 659, 784, 659, 587, 698, 880, 698, 523, 659, 784, 1047]; M.mI = ((M.mI | 0) + 1) % tune.length; (Sound.xCalliope || Sound.musicBox)(_xv.set(CN_CAR.x, 3, CN_CAR.z), tune[M.mI] * (M.musicBurst > 0 || st.car ? 1 : 0.5)); } }
+  if (M.musicBurst > 0) M.musicBurst -= dt; if (M.lightsOut > 0) M.lightsOut -= dt;
+  // the gate swings open
+  const gk = st.open ? 1 : 0; CN.gateK = damp(CN.gateK || 0, gk, 1.2, dt); CN.gateL.rotation.y = CN.gateK * 1.5; CN.gateR.rotation.y = -CN.gateK * 1.5;
+  CN.lockDials.forEach((m, i) => { m.material = i < st.lock ? CNM.ring : CNM.iron; });
+  if (!host || Game.ending) return;
+  const t = Game.time;
+  if (!st.wake && t > M.wakeAt) { M.set(s => { s.wake = 1; }); Barker.wake(35, 996, 3); }
+  if (st.rare && !st.rareDone && t > st.rareT) { M.set(s => { s.rareDone = 1; }); M.fx('rare', { r: st.rare }); if (st.rare === 'music') Game.noise(_xv.set(CN_CAR.x, 2, CN_CAR.z), 50, 'event'); }
+  if (M.musicBurst > 0 && Math.random() < dt * 0.5) Game.noise(_xv.set(CN_CAR.x, 2, CN_CAR.z), 30, 'event');
+}
+function cnSync(M, old, st) {
+  st.tok.forEach((i, k) => { const P = CN.tokens[k], p = CN_TOKENS[i], show = !st.tokGot[k]; P.m.visible = P.gl.visible = show; if (show) { P.m.position.set(p[0], 0.03, p[1]); P.gl.position.set(p[0], 0.25, p[1]); } });
+  st.tix.forEach((i, k) => { const P = CN.tickets[k], p = CN_TICKETS[i], show = !st.tixGot[k]; P.m.visible = P.gl.visible = show; if (show) { P.m.position.set(p[0], 0.02, p[1]); P.m.rotation.z = i; P.gl.position.set(p[0], 0.2, p[1]); }
+    if (P.key !== st.combo[k]) { P.key = st.combo[k]; const g = P.c.getContext('2d'); g.fillStyle = '#e8dcc0'; g.fillRect(0, 0, 64, 96); g.fillStyle = CN_CSS[k]; g.fillRect(0, 0, 64, 20); g.fillStyle = '#2a1a0a'; g.font = 'bold 10px Georgia, serif'; g.textAlign = 'center'; g.fillText('ADMIT ONE', 32, 38); g.font = 'bold 36px Georgia, serif'; g.fillText(String(st.combo[k]), 32, 80); P.t.needsUpdate = true; } });
+  CN.trap.position.y = st.trap ? -0.5 : 0.03;
+  const ub = XB.door(CN_LV, 41, 25); if (st.ubolt && ub && !ub.unlocked) { ub.unlocked = true; ub.updateLeds(); if (M.host()) { ub.open(); Game.syncDoor(ub, false, true); } }
+  const bd = XB.door(CN_LV, 9, 4); if (st.back && bd && !bd.unlocked) { bd.unlocked = true; bd.updateLeds(); if (M.host()) { bd.open(); Game.syncDoor(bd, false, true); } }
+  // where the rings are on show (the one you can take, glowing)
+  for (const k in CN.rings) { const R = CN.rings[k]; R.m.visible = R.gl.visible = false; }
+  if (st.wheel && !st.rings.wheel) { const R = CN.rings.wheel; R.m.visible = R.gl.visible = true; R.m.position.set(CN_WHEEL.x, 0.9, CN_WHEEL.z + 1.6); R.gl.position.copy(R.m.position); }
+  if (CN.clown && !st.rings.fun) { const R = CN.rings.fun; R.m.visible = R.gl.visible = true; R.m.position.set(CN.clown.x, 2.4, CN.clown.z); R.gl.position.copy(R.m.position); }
+}
+/* ---- the HUD ---- */
+function cnObjectives(M) {
+  const s = M.st, need = XB.dv(CN_NEED), n = cnRings(s), tok = s.tokGot.filter(Boolean).length, tix = s.tixGot.filter(Boolean).length, out = [];
+  out.push({ id: 'cnr', text: 'Win ' + need + ' brass rings at the attractions (' + n + ' / ' + need + ')', done: n >= need });
+  out.push({ id: 'cn1', text: 'THE PRIZE HALL: five prize tokens (' + Math.min(tok, 5) + ' / 5)', done: !!s.rings.prize });
+  out.push({ id: 'cn2', text: 'THE FUNHOUSE: the clown at the heart of the mirrors', done: !!s.rings.fun });
+  out.push({ id: 'cn3', text: 'THE CAROUSEL: four levers in the poster\'s order' + (s.seqAt && !s.rings.car ? ' (' + s.seqAt + ' / 4)' : ''), done: !!s.rings.car });
+  out.push({ id: 'cn4', text: 'BACKSTAGE: three ticket stubs for the padlock (' + tix + ' / 3)', done: !!s.rings.back });
+  out.push({ id: 'cn5', text: 'THE FERRIS WHEEL: the shed breaker, then the motor', done: !!s.rings.wheel });
+  out.push({ id: 'escape', text: s.open ? (Net.active ? 'Everyone out through the exit gate' : 'Out through the exit gate') : 'Open the EXIT GATE (the east end of the midway)', done: Game.ending });
+  return out;
+}
+function cnBonus(M) { const s = M.st; return [{ id: 'cnb-all', text: 'Win at all five attractions (' + cnRings(s) + ' / 5)', done: cnRings(s) >= 5 }, { id: 'cnb-bk', text: 'Drive the Barker off (' + Math.min(1, M.flags.banished | 0) + ' / 1)', done: (M.flags.banished | 0) >= 1 }, { id: 'cnb-up', text: s.trap ? 'The trapdoor under the road: open' : 'Somewhere there is a way under the road', done: !!s.trap }]; }
+function cnHud(M) {
+  const s = M.st, t = Game.time, need = XB.dv(CN_NEED), n = cnRings(s); let goal, bar, mission, sub, cls = '';
+  if (s.open) { goal = 'THE EXIT GATE · ' + Math.round(Math.hypot(player.pos.x - 104, player.pos.z - 1038)) + ' M'; bar = 1; mission = 'LEAVE — NOW'; sub = 'The far east end of the midway.'; cls = 'dawn'; }
+  else if (n >= need) { goal = 'THE EXIT GATE · SET THE RINGS'; bar = 0.9; mission = 'You have enough rings'; sub = 'The gate is at the east end of the midway.'; }
+  else { goal = 'RINGS ' + n + ' / ' + need; bar = n / need * 0.85; mission = 'Win rings at the attractions'; sub = 'Prize Hall · Funhouse · Carousel · Backstage · Ferris wheel'; }
+  return { clock: fmtClock(t), goal, cls, bar, mission, sub };
+}
+function cnHint(M) {
+  const s = M.st, need = XB.dv(CN_NEED), n = cnRings(s), P = (x, y, z, label, key, tip, done) => ({ pos: new T.Vector3(x, y, z), label, key, tip, done });
+  if (s.open) return P(103, 1.2, 1038.3, 'The exit gate', 'cnh-out', 'Everyone through the gate at the east end of the midway.', () => Game.ending);
+  if (n >= need) return P(104.4, 1.5, 1038.3, 'The exit gate', 'cnh-gate', 'Set the rings in the gate\'s locks.', () => M.st.open);
+  if (!M.read.has('rules')) return P(4.5, 1.6, 1007.2, 'The rules', 'cnh-rules', 'The rules of the grounds are posted in the Ticket Hall (off the west end of the midway).', () => M.read.has('rules'));
+  if (!s.rings.prize) { const k = s.tokGot.findIndex(v => !v); if (s.tokGot.filter(Boolean).length < 5 && k >= 0) { const p = CN_TOKENS[s.tok[k]]; return P(p[0], 0.2, p[1], 'Prize token', 'cnh-t' + k, 'Prize tokens glint on the ground about the fairground.', () => M.st.tokGot[k]); } return P(27.2, 1.15, 1011, 'Prize counter', 'cnh-prize', 'Hand in the five tokens at the Prize Hall counter.', () => M.st.rings.prize); }
+  if (!s.rings.car) return !M.read.has('poster') ? P(15.5, 1.6, 1007.2, 'The carousel poster', 'cnh-poster', 'The poster in the Ticket Hall gives the carousel\'s order.', () => M.read.has('poster')) : { tip: 'The carousel\'s order: ' + s.seq.map(k => CN_ANIMALS[k]).join(', ') + '. Pull the levers round it in that order.' };
+  if (!s.rings.fun) return P(81, 1.2, 1023, 'The Funhouse', 'cnh-fun', 'Through the mirror maze to the clown at its heart. Not every mirror is a wall — and not every gap is open.', () => M.st.rings.fun);
+  if (!s.rings.wheel) return !s.breaker ? P(86.6, 1.6, 996, 'Wheel breaker', 'cnh-br', 'The breaker for the Ferris wheel is in the Maintenance Shed (through the Back Lot).', () => M.st.breaker) : P(60, 1.3, 1003.6, 'Wheel motor', 'cnh-mo', 'Run the motor in the booth by the wheel. It\'s loud — the Barker will come.', () => M.st.wheel);
+  if (!s.rings.back) { const k = s.tixGot.findIndex(v => !v); if (k >= 0) { const p = CN_TICKETS[s.tix[k]]; return P(p[0], 0.2, p[1], 'Ticket stub', 'cnh-x' + k, 'A ' + CN_ACOL[k] + ' ticket stub, blown about the grounds.', () => M.st.tixGot[k]); } return P(20.4, 1.3, 994.3, 'Backstage padlock', 'cnh-bd', 'In the Big Top, by the Backstage door: set RED ' + s.combo[0] + ', GREEN ' + s.combo[1] + ', BLUE ' + s.combo[2] + '.', () => M.st.back); }
+  return { tip: 'Win the rings at the attractions, then set them in the exit gate.' };
+}
+DIFF_TEXT.carnival = {
+  easy: 'Two rings open the gate. The Barker wakes late.',
+  normal: 'Three rings of the five. The Barker is out within half a minute.',
+  hard: 'Three rings, a sharper Barker that hears more and sees further.',
+  nightmare: 'Four rings. The show starts at once.',
+};
 
 /* ------------------------------------------------------------------ */
 /* CHARACTERS: portraits, icons, the roster, the roll                  */
@@ -46978,7 +47424,7 @@ if (DEBUG) {
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
   Object.assign(window.LS, { Laser, Poop, Fly, FLY, hz37Trace, hz37Foe, Imm, IM_FOG, IMM_MODE, ImmHud, ImmBody, ImmWorld, ImmMotes, ImmFlies, ImmCam, ImmShafts, ImmSparks, ImmBreath, ImmClaws, dustMat, Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
-  Object.assign(window.LS, { XB, XK, XMode, XFoe, XPack, xSee, LC_M, LC, Lineman, LC_GENS, LC_KEY, LC_REL, LC_COIL, LC_KIT, LC_CAGE, lcPower, lcSecOn, LC_LV, IH_LV, CB_LV, CN_LV, ATTACK, NOTES, IH_M, IH, Housekeeper, IH_ROOMS, IH_THEMES, IH_FUSE, IH_CAR, IH_EXIT, ihRide, ihCheckSafe, ihInCar, ihChange, CB_M, CB, Stalker, Mimic, Dormant, CB_PACK, CB_MODS, CB_BADGE, CB_SEALS, CB_LIFTBOX, CB_C3, cbCarrying, cbWakeDormant, cbFakePing }); // (Build 39)
+  Object.assign(window.LS, { XB, XK, XMode, XFoe, XPack, xSee, LC_M, LC, Lineman, LC_GENS, LC_KEY, LC_REL, LC_COIL, LC_KIT, LC_CAGE, lcPower, lcSecOn, LC_LV, IH_LV, CB_LV, CN_LV, ATTACK, NOTES, IH_M, IH, Housekeeper, IH_ROOMS, IH_THEMES, IH_FUSE, IH_CAR, IH_EXIT, ihRide, ihCheckSafe, ihInCar, ihChange, CB_M, CB, Stalker, Mimic, Dormant, CB_PACK, CB_MODS, CB_BADGE, CB_SEALS, CB_LIFTBOX, CB_C3, cbCarrying, cbWakeDormant, cbFakePing, CN_M, CN, Barker, CN_TOKENS, CN_TICKETS, CN_CAR, CN_WHEEL, CN_EXIT, CN_MZ, cnRings, cnBuildMaze, cnWin }); // (Build 39)
   Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Post, RZT, ROOM_LOOK, genPaper, genPlanks, genTilesHQ, genPlasterCeil, genTrimWood, genPortraits, genWoodLeaf, get RZ_GEN_MS() { return RZ_GEN_MS; }, get instLamp() { return instLamp; }, RzContact, RzPBR, RzTorch, RzBody, RzAmb, RZ_SURF, flash, floorKey, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
