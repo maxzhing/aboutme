@@ -11559,7 +11559,7 @@ const Cine = {
 /* messages), with test.mosquitto.org tried first.                    */
 /* ------------------------------------------------------------------ */
 const NET_PROTO = 34, BUILD = 38, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const RELAYS = ['wss://test.mosquitto.org:8081/mqtt', 'wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt']; // (Build 38: co-op is Build 30's again, as asked — test.mosquitto.org first)
+const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
 const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.';
