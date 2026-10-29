@@ -1359,6 +1359,8 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div>
         <h4>Surviving the Warden</h4>
         <ul class="tips">
+          <li><b>Build 39 — four new modes</b> (New Game, solo or online). <b>THE LAST CIRCUIT:</b> a power plant gone dark. Find the keycard for the Control Room, two spare relays and (maybe) a starter coil, and start the three generators — but power is noise: starting one is loud, a running one hums, and every one running makes the <b>Lineman</b> quicker. In a lit wing it sees you from far off; in the dark it hears you better. The lift only comes while the power holds. <b>THE INFINITE HOTEL:</b> the hotel remembers — whatever nobody is looking at can change (portraits, door numbers, furniture, open doors), but it never shuts you in for good. The register's room numbers lie, and they're different on each player's screen; what's in a room doesn't. Find each guest's luggage tag, take a fuse to the service lift, read the night manager's ledger in the Basement, set the safe's four dials, and run for the front doors while the <b>Housekeeper</b> hunts you by sight and sound (she walks; she never teleports). <b>CONTAINMENT BREACH:</b> three subjects, three rule-sets: the <b>Stalker</b> hunts by sound and sight and goes where it last had you (break its line of sight); the <b>Mimic</b> fakes footsteps, terminals, doors and even a teammate's mark (learn its tell); the <b>Dormant</b> is asleep (keep it that way). Get an L2 badge, carry the data modules one at a time to the uplink, choose where the one spare power unit goes, then hold the Loading Dock until the freight lift comes. <b>THE CARNIVAL OF LOST SOULS:</b> outdoors, at night. The exit gate takes brass rings, and every ring is won at an attraction — the Prize Hall, the Funhouse mirror maze, the Carousel, the Backstage padlock and the Ferris wheel — while the <b>Barker</b> walks the midway on stilts (it can't follow you into the Underpass or the mirrors).</li>
+          <li><b>Night Guard Shop</b> (title screen): 105 outfit pieces for the NIGHT GUARD in six rarities — Common 250, Rare 750, Epic 2,000, Legendary 6,000, Mythic 15,000 and ULTIMATE sets at 40,000 coins. Every price is printed: nothing is random. Pick a piece to try it on, confirm to buy (coins come off once, and you can't buy the same thing twice), then wear it. Five pieces can't be bought: each new mode gives you one when you get out, and all four give you the fifth. <b>Collection</b> shows what you own and what you're wearing. Looks only — it never changes your speed, your noise or what the monsters see — and your friends see your outfit in co-op.</li>
           <li><b>Daily Contracts.</b> Three jobs a day (title screen → <b>Daily Contracts</b>) from all over the game — survive the Night Shift, reach door 30, win a round of MECHA CAMO… Each pays coins at the end of the run that does it; all three in a day pays a bonus that grows with your streak. One free swap a day for a job you don't fancy.</li>
           <li><b>Survivors (Night Shift).</b> Three of the people on the voice logs are still alive, hiding where their tapes say: <b>Rosa Ortiz</b> in the vent behind Storage, <b>Pete Doyle</b> in the Generator Hall, <b>Dr. Adebayo</b> in a morgue drawer (listen for the knocking). Found a tape? <b data-key="hint">H</b> points to its owner. <b data-key="interact">E</b> on one to talk; <b data-key="interact">E</b> again: <b>"follow me"</b> or <b>"wait here"</b>. Rosa's radio warns you when it's coming your way; ask Doyle in the Generator Hall and he gets the power on (after 4:00, the emergency lights); Dr. Adebayo stitches you up (every 60 s) and gets a downed teammate back up. They freeze when it's near — but it hears them walk, and if it walks into one of them, they're gone. Whoever is with you when the lift leaves gets out: coins, rank points and three achievements.</li>
           <li><b>Characters.</b> Everyone starts as the <b>Night Guard</b>. <b>Character Roll</b> (title screen) spins for one of 36 characters in seven rarities — Common 39.99%, Rare 27%, Epic 16%, Legendary 10%, Mythic 5%, <b>Special 2%</b> and <b>ULTIMATE 0.01%</b> (the odds are on the roll screen). Three of the <b>Specials</b> change what you carry: the <b>Tarnished</b> starts with a sword (three clean cuts stun it) and a shield that blocks standing still and charges on the run; <b>Glitch</b> fights with a glitching fist that leaves the monster weaker to every blow, can't hold any weapon but the shotgun, and skips 8 m untouchable; the <b>Demolitionist</b> carries frag and stun grenades in slots 1 and 2, turns a shotgun into a grenade launcher, has no melee at all — and his breach charge throws anything away from him, at the cost of 30 health. Your first spin is free; after that each costs 100 coins, earned only by playing: escaping, staying alive, completing objectives, reviving and healing teammates, achievements. Harder difficulties pay more. Rarity is how rare a character is — not how strong: each has a real strength, a real weakness and one ability on <b data-key="ability">F</b>.</li>
@@ -33705,6 +33707,7 @@ const Cos = {
       for (const k of ['rounds', 'escapes', 'freed', 'close', 'nmw', 'tools']) d.st[k] = Number.isFinite(+st[k]) ? clamp(Math.floor(+st[k]), 0, 1e6) : 0;
       d.st.colours = Array.isArray(st.colours) ? st.colours.filter(x => typeof x === 'string' && /^[a-z0-9]{1,8}$/.test(x)).slice(0, 16) : [];
       d.recent = Array.isArray(o.recent) ? o.recent.filter(id => d.own[id]).slice(0, 6) : [];
+      if (o.ng && typeof o.ng === 'object' && !Array.isArray(o.ng)) d.ng = o.ng; // (Build 39: the Night Guard Shop's part of this save — checked, item by item, by NGShop.clean)
       d.rolls = Number.isFinite(+o.rolls) ? clamp(Math.floor(+o.rolls), 0, 1e6) : 0; d.seen = Number.isFinite(+o.seen) ? +o.seen : 0; if (typeof o.seenTop === 'string' && COS[o.seenTop]) d.seenTop = o.seenTop;
     }
     this.d = d; return d;
@@ -47329,6 +47332,975 @@ const Mastery = {
     + '.cc.ms3{box-shadow:0 0 0 1px #a8703a inset}.cc.ms4{box-shadow:0 0 0 1px #c9cdd6 inset}.cc.ms5{box-shadow:0 0 0 2px #e8c060 inset}.cc.ms6 .cc-lv{color:#ffd27a}';
   document.head.appendChild(st);
 }
+/* ================================================================== */
+/* Build 39: THE NIGHT GUARD SHOP                                      */
+/* Outfits for the Night Guard: uniforms, headwear, faces, hair, vests, */
+/* gloves, trousers, footwear, gear, capes and wings, auras — and six   */
+/* ULTIMATE sets — in six rarities, bought with the coins you already   */
+/* earn (one price per rarity, printed on every item: nothing random). */
+/* Five pieces can't be bought at all: the four new modes hand them    */
+/* over when you get out, and the fifth comes with all four.           */
+/* Everything is the same sculpted person as before (People.build),    */
+/* dressed from a recipe — so a piece is a real change to the model:   */
+/* its cut, its colours, what is hanging off it — plus, for the rarer  */
+/* ones, things the old model never had (capes, wings, crowns, horns, */
+/* halos of light, auras), hung on its bones so they move with it.     */
+/* LOOKS ONLY: no piece changes your hitbox, your speed, your noise or */
+/* what any monster can see (glow is paint, not light).                */
+/* Saved inside the Cosmetic Locker's save (lastshift.cosmetics.v1, as  */
+/* its `ng` part); coins come off Chars.data, once, and only after the */
+/* item is safely written down. In co-op your outfit goes to everyone  */
+/* through the host (one small 'ngc' message at the start of a run),   */
+/* so your friends see what you see.                                   */
+/* ================================================================== */
+const NG_RAR = {
+  common: { n: 'COMMON', c: RARITY.common.col, p: 250 }, rare: { n: 'RARE', c: RARITY.rare.col, p: 750 }, epic: { n: 'EPIC', c: RARITY.epic.col, p: 2000 },
+  legendary: { n: 'LEGENDARY', c: RARITY.legendary.col, p: 6000 }, mythic: { n: 'MYTHIC', c: RARITY.mythic.col, p: 15000 }, ultimate: { n: 'ULTIMATE', c: RARITY.ultimate.col, p: 40000 },
+};
+const NG_RIDS = ['common', 'rare', 'epic', 'legendary', 'mythic', 'ultimate'];
+// [id, name, icon] — in the order a recipe is put together (later slots win where two touch the same thing)
+const NG_SLOTS = [['set', 'Ultimate Sets', '👑'], ['uniform', 'Uniforms', '🧥'], ['legs', 'Trousers', '👖'], ['feet', 'Footwear', '🥾'], ['hands', 'Gloves', '🧤'], ['vest', 'Vests & Armour', '🦺'],
+  ['hair', 'Hair & Beard', '💈'], ['head', 'Headwear', '🧢'], ['face', 'Face', '🥽'], ['gear', 'Gear', '🎒'], ['back', 'Capes & Wings', '🦇'], ['aura', 'Auras', '✨']];
+const NG_SLOT_IDS = NG_SLOTS.map(s => s[0]), NG_SLOT = {}; NG_SLOTS.forEach(s => { NG_SLOT[s[0]] = { n: s[1], i: s[2] }; });
+const NG_EARN = {
+  lc: 'Escape THE LAST CIRCUIT (any difficulty, solo or co-op)', ih: 'Check out of THE INFINITE HOTEL', cb: 'Get out of CONTAINMENT BREACH',
+  cn: 'Leave THE CARNIVAL OF LOST SOULS through the gate', all4: 'Earn all four rewards above',
+};
+const NG_EARN_KEYS = Object.keys(NG_EARN);
+const NG_ITEMS = [];
+// L: the look recipe it changes · x / rx: pieces it adds / takes away · fx: what the old model never had · earn: not for sale
+const ng = (id, n, s, r, i, d, L, o) => NG_ITEMS.push(Object.assign({ id, n, s, r, i, d, L: L || {} }, o || {}));
+const NG_BARE = ['radio', 'badge', 'epaul']; // (the standard kit: off for anything that isn't a shirt)
+/* ---- uniforms ---- */
+ng('u_blue', 'Night Shift Blues', 'uniform', 'common', '👔', 'The standard shirt, a shade brighter. Easier to pick out on the cameras.', { tc: 0x2e4a78 });
+ng('u_olive', 'Groundskeeper Olive', 'uniform', 'common', '👕', 'Sleeves rolled, ready for the outside rounds.', { tc: 0x3e4a2c, slv: 'rolled' });
+ng('u_grey', 'Overnight Grey', 'uniform', 'common', '👔', 'The colour of four in the morning.', { tc: 0x595e66 });
+ng('u_hoodie', 'Off-Duty Hoodie', 'uniform', 'common', '🧥', 'Technically not uniform. Nobody is checking at this hour.', { top: 'hoodie', tc: 0x3a3f4a }, { rx: ['badge', 'epaul'] });
+ng('u_tank', 'Heatwave Tank', 'uniform', 'common', '🎽', 'The boiler room is warm. Very warm.', { top: 'tank' }, { rx: NG_BARE });
+ng('u_track', 'Patrol Tracksuit', 'uniform', 'rare', '🏃', 'Navy with gold stripes down the sides. Built for running away.', { top: 'track', tc: 0x1c2a4a, tc2: 0xf2c230 }, { rx: ['badge', 'epaul'] });
+ng('u_bomber', 'Bomber Jacket', 'uniform', 'rare', '🧥', 'Brown leather, zipped to the chin.', { top: 'jacket', tc: 0x4a3524 });
+ng('u_scrubs', 'Infirmary Scrubs', 'uniform', 'rare', '🩺', 'Borrowed from the first-aid room on Sublevel 2.', { top: 'scrubs', tc: 0x3a7a8a }, { rx: ['epaul'] });
+ng('u_jersey', 'Kestrel Kestrels Jersey', 'uniform', 'rare', '🏈', 'The staff team, number 7. Short sleeves, big number.', { top: 'jersey', tc: 0x1f4aa0, slv: 'short' }, { x: ['number'], rx: NG_BARE });
+ng('u_greatcoat', 'Watch Commander Greatcoat', 'uniform', 'epic', '🧥', 'A long dark coat with brass buttons, for the guard in charge.', { top: 'coat', tc: 0x1a2030 }, { x: ['buttons'] });
+ng('u_labcoat', 'Site Kestrel Lab Coat', 'uniform', 'epic', '🥼', 'White coat, blue shirt, a tie and two pens. You look qualified.', { top: 'labcoat', tc: 0xeef0f2 }, { x: ['tie', 'pens'], rx: ['epaul'] });
+ng('u_hazmat', 'Hazmat Suit', 'uniform', 'epic', '☣️', 'Yellow, sealed, with reflective bands. For the floors nobody cleans.', { top: 'firesuit', tc: 0xe8d23a }, { rx: ['badge', 'epaul'] });
+ng('u_gambeson', 'Knight-Errant Gambeson', 'uniform', 'legendary', '🛡️', 'A quilted padded coat, the kind worn under armour.', { top: 'gambeson', tc: 0x6a3a2a });
+ng('u_vigil', 'Vigil Robe', 'uniform', 'legendary', '🕯️', 'A long robe in deep violet, for a very long night.', { top: 'robe', tc: 0x2a1a3a }, { rx: NG_BARE });
+ng('u_porter', 'Grand Hotel Porter', 'uniform', 'epic', '🛎️', 'Burgundy tailcoat, gold trim and buttons. The hotel insists you keep it.', { top: 'coat', tc: 0x6a1a2a, tc2: 0xd9a83a }, { x: ['buttons', 'goldtrim'], earn: 'ih' });
+/* ---- headwear ---- */
+ng('h_red', 'Red Ball Cap', 'head', 'common', '🧢', 'The regulation cap, in red.', { hat: 'cap', hatc: 0x8a1e1e });
+ng('h_beanie', 'Watch Beanie', 'head', 'common', '🧶', 'Knitted, dark, warm.', { hat: 'beanie', hatc: 0x2a2f3a });
+ng('h_band', 'Sweatband', 'head', 'common', '🎾', 'White with a blue stripe.', { hat: 'band', hatc: 0xe8e8e8, hatc2: 0x2a6ad0 });
+ng('h_bandage', 'Field Dressing', 'head', 'common', '🩹', 'Somebody wrapped your head. You don\'t remember why.', { hat: 'bandage' });
+ng('h_hood', 'Rain Hood', 'head', 'rare', '🌧️', 'A dark green hood, up.', { hat: 'hood', hatc: 0x2a3a2a });
+ng('h_hardhat', 'Maintenance Hard Hat', 'head', 'rare', '⛑️', 'Yellow, dented, safety-rated for nothing in particular.', { hat: 'hardhat', hatc: 0xf2c230 });
+ng('h_brim', 'Ranger\'s Brim', 'head', 'rare', '🤠', 'A wide brown brim for the outdoor rounds.', { hat: 'brim', hatc: 0x5a4430 });
+ng('h_officer', 'Peaked Officer\'s Cap', 'head', 'epic', '🎖️', 'A stiff peaked cap with a badge on the front.', { hat: 'officer', hatc: 0x121826 });
+ng('h_riot', 'Riot Helmet', 'head', 'epic', '🪖', 'Black, padded, full cover.', { hat: 'helmet', hatc: 0x1a1c20 });
+ng('h_wrap', 'Desert Wrap', 'head', 'epic', '🧕', 'A sand-coloured wrap around the head and neck.', { hat: 'wrap', hatc: 0xd8c8a0 });
+ng('h_greathelm', 'Great Helm', 'head', 'legendary', '⚔️', 'Steel, closed, with a slit to see through.', { hat: 'helm', hatc: 0x8a8e96 });
+ng('h_horns', 'Ram Horns', 'head', 'legendary', '🐏', 'Two curled ivory horns. They grow on you.', { hat: 'none' }, { fx: [{ k: 'horns', kind: 'ram', c: 0xd8ccb0 }] });
+ng('h_crown', 'Night King\'s Crown', 'head', 'mythic', '👑', 'A gold crown with seven points and three stones that catch the light.', { hat: 'none' }, { fx: [{ k: 'crown' }] });
+ng('h_circuit', 'Lineman\'s Hard Hat', 'head', 'epic', '🔦', 'Safety orange, with a lamp on the front. The plant gives it to whoever gets the lift running.', { hat: 'hardhat', hatc: 0xff7a1a, glow: 0xfff3a8 }, { x: ['headlamp'], earn: 'lc' });
+ng('h_tophat', 'Ringmaster\'s Top Hat', 'head', 'legendary', '🎩', 'Tall, black, with a red band. It was waiting by the gate.', { hat: 'none' }, { fx: [{ k: 'tophat' }], earn: 'cn' });
+/* ---- face ---- */
+ng('f_glasses', 'Reading Glasses', 'face', 'common', '👓', 'Thin dark frames.', { face: 'glasses', facec: 0x222428 });
+ng('f_gold', 'Gold Frames', 'face', 'rare', '🧐', 'Round gold glasses with a faint shine on the lenses.', { face: 'glasses', facec: 0xd9a83a, glow: 0xffe08a }, { x: ['lensglow'] });
+ng('f_mask', 'Balaclava', 'face', 'rare', '🥷', 'Black, eyes only.', { face: 'mask', facec: 0x111317 });
+ng('f_goggles', 'Night-Vision Goggles', 'face', 'rare', '🥽', 'Green lenses. (They don\'t actually work.)', { face: 'goggles', facec: 0x4aff7a });
+ng('f_gas', 'Gas Mask', 'face', 'epic', '😷', 'Twin filters, sealed tight.', { face: 'gas', facec: 0x2a2a24 });
+ng('f_blind', 'Blindfold', 'face', 'epic', '🙈', 'A strip of pale cloth over the eyes. Some things are better not seen.', { face: 'blind', facec: 0xe8e0d0 });
+ng('f_visor', 'Tactical Visor', 'face', 'epic', '🕶️', 'A glowing blue band across the eyes.', { face: 'visor', glow: 0x5fd1ff });
+ng('f_shield', 'Riot Faceshield', 'face', 'legendary', '🛡️', 'A full clear shield over the face.', { face: 'shield' });
+ng('f_bone', 'Bone Mask', 'face', 'mythic', '💀', 'A pale mask, and two red points of light where the eyes should be.', { face: 'mask', facec: 0xe8e2d2, glow: 0xff3a2a }, { x: ['eyesglow'] });
+/* ---- hair & beard ---- */
+ng('r_buzz', 'Buzz Cut', 'hair', 'common', '💈', 'Clipped short all over, and a clean-shaven jaw.', { hs: 'buzz', beard: 'none' });
+ng('r_messy', 'Bedhead', 'hair', 'common', '😴', 'Chestnut and sticking out everywhere. You slept in the break room again.', { hs: 'messy', hair: 0x6a4024 });
+ng('r_slick', 'Slicked Back', 'hair', 'common', '💇', 'Jet black and combed straight back.', { hs: 'slick', hair: 0x0c0b0a });
+ng('r_clean', 'Clean Shave', 'hair', 'common', '🪒', 'No hair, no stubble.', { hs: 'bald', beard: 'none' });
+ng('r_beard', 'Full Beard', 'hair', 'common', '🧔', 'A long night, a long beard.', { beard: 'full' });
+ng('r_goatee', 'Goatee', 'hair', 'common', '🐐', 'Just the chin.', { beard: 'goatee' });
+ng('r_long', 'Long Hair', 'hair', 'rare', '💁', 'Down past the shoulders.', { hs: 'long', beard: 'none' });
+ng('r_pony', 'Ponytail', 'hair', 'rare', '🎀', 'Tied back, out of the way.', { hs: 'pony', beard: 'none' });
+ng('r_spiky', 'Electric Blue Spikes', 'hair', 'rare', '⚡', 'Spiked up and dyed bright blue.', { hs: 'spiky', hair: 0x2a6ad0 });
+ng('r_plat', 'Platinum', 'hair', 'epic', '🤍', 'Slicked back and bleached nearly white.', { hs: 'slick', hair: 0xe8e2d0, beard: 'none' });
+ng('r_flame', 'Flame Hair', 'hair', 'legendary', '🔥', 'Hair that goes from red at the roots to gold at the tips, standing up like fire.', { hs: 'flame', beard: 'none' });
+/* ---- vests & armour ---- */
+ng('v_hivis', 'Hi-Vis Vest', 'vest', 'common', '🦺', 'Orange with silver bands.', { vest: 'hivis', vestc: 0xf28c2e });
+ng('v_lime', 'Lime Hi-Vis', 'vest', 'common', '🦺', 'Lime, the colour you can see from orbit.', { vest: 'hivis', vestc: 0xc8e830 });
+ng('v_tac', 'Tactical Carrier', 'vest', 'rare', '🎽', 'A dark plate carrier with three pouches.', { vest: 'tac', vestc: 0x2a2e24 });
+ng('v_desert', 'Desert Carrier', 'vest', 'rare', '🏜️', 'The same carrier, in sand.', { vest: 'tac', vestc: 0x8a7a5a });
+ng('v_bandolier', 'Bandolier', 'vest', 'epic', '🎗️', 'A leather strap across the chest.', {}, { x: ['bandolier'] });
+ng('v_plate', 'Steel Breastplate', 'vest', 'epic', '🛡️', 'A steel breastplate and shoulder guards.', { vest: 'plate', vestc: 0x6a6e76 }, { x: ['pauld'] });
+ng('v_tabard', 'Order Tabard', 'vest', 'legendary', '🏰', 'A long brown tabard with a gold cross, over everything.', {}, { x: ['tabard'] });
+ng('v_gold', 'Gilded Cuirass', 'vest', 'legendary', '✨', 'A breastplate and shoulder guards, in gold.', { vest: 'plate', vestc: 0xc8a040 }, { x: ['pauld'] });
+/* ---- gloves ---- */
+ng('g_black', 'Black Leather Gloves', 'hands', 'common', '🧤', 'Smooth black leather.', { gloves: 0x141518 });
+ng('g_work', 'Work Gloves', 'hands', 'common', '🧤', 'Tan and scuffed.', { gloves: 0x6a5238 });
+ng('g_white', 'Dress Gloves', 'hands', 'common', '🤍', 'White, for ceremonies and crime scenes.', { gloves: 0xe8e4d8 });
+ng('g_red', 'Driving Gloves', 'hands', 'rare', '🏎️', 'Red leather.', { gloves: 0x8a1a1a });
+ng('g_wraps', 'Hand Wraps', 'hands', 'rare', '🥊', 'White wraps around the hands and wrists.', {}, { x: ['wraps'] });
+ng('g_steel', 'Steel Gauntlets', 'hands', 'epic', '🦾', 'Armoured hands.', { gloves: 'metal' });
+/* ---- trousers ---- */
+ng('l_khaki', 'Khaki Trousers', 'legs', 'common', '👖', 'Sand-coloured cargo trousers.', { pants: 0x8a7a5a });
+ng('l_black', 'Black Cargo', 'legs', 'common', '👖', 'All black, all pockets.', { pants: 0x111214 });
+ng('l_olive', 'Olive Cargo', 'legs', 'common', '👖', 'Olive drab.', { pants: 0x3a4228 });
+ng('l_shorts', 'Patrol Shorts', 'legs', 'rare', '🩳', 'Navy shorts. Bold.', { pk: 'shorts', pants: 0x2a3550 });
+ng('l_white', 'Parade Whites', 'legs', 'rare', '🤍', 'Spotless white trousers.', { pants: 0xe8e6e0 });
+/* ---- footwear ---- */
+ng('b_brown', 'Brown Work Boots', 'feet', 'common', '🥾', 'Brown leather, steel toes.', { boots: 0x4a3020 });
+ng('b_white', 'White Sneakers', 'feet', 'common', '👟', 'Clean white trainers.', { bk: 'sneaker', snk: 0xf2f2f2, snk2: 0x2a2a2a });
+ng('b_red', 'Red High-Tops', 'feet', 'rare', '👟', 'Red with white soles.', { bk: 'sneaker', snk: 0xc8302a, snk2: 0xf2f2f2 });
+ng('b_neon', 'Neon Runners', 'feet', 'epic', '👟', 'Black with neon green trim.', { bk: 'sneaker', snk: 0x1a1a1a, snk2: 0x3dff8a });
+ng('b_gold', 'Golden Kicks', 'feet', 'legendary', '🥇', 'Gold trainers with cream trim.', { bk: 'sneaker', snk: 0xd9a83a, snk2: 0xfff0c0 });
+ng('b_sabaton', 'Sabatons', 'feet', 'legendary', '🦿', 'Armoured steel boots and greaves.', { bk: 'sabaton' });
+/* ---- gear ---- */
+ng('k_pack', 'Patrol Backpack', 'gear', 'common', '🎒', 'Snacks, a spare battery, a map you never read.', {}, { x: ['pack'] });
+ng('k_satchel', 'Shoulder Satchel', 'gear', 'common', '👜', 'A leather satchel on the hip.', {}, { x: ['satchel'] });
+ng('k_scarf', 'Wool Scarf', 'gear', 'common', '🧣', 'Red wool, wrapped twice.', { scarf: 0xa3261c }, { x: ['scarf'] });
+ng('k_antenna', 'Long-Range Radio Pack', 'gear', 'rare', '📡', 'A backpack radio with a tall antenna.', {}, { x: ['pack', 'antenna'] });
+ng('k_tools', 'Tool Belt', 'gear', 'rare', '🔧', 'Wrench, screwdriver, tape.', {}, { x: ['tools'] });
+ng('k_phones', 'Headphones', 'gear', 'rare', '🎧', 'Big padded headphones round the neck.', {}, { x: ['phones'] });
+ng('k_watch', 'Pocket Watch', 'gear', 'rare', '⌚', 'A gold watch with a glowing face.', { glow: 0xffd27a }, { x: ['watch'] });
+ng('k_lantern', 'Hip Lantern', 'gear', 'epic', '🏮', 'An old brass lantern hanging from your belt. It sways when you walk. (It lights nothing.)', {}, { fx: [{ k: 'lantern' }] });
+ng('k_medals', 'Service Medals', 'gear', 'epic', '🏅', 'Three medals and gold shoulder boards.', {}, { x: ['medals', 'epaulgold'], rx: ['epaul'] });
+ng('k_chains', 'Spectral Chains', 'gear', 'legendary', '⛓️', 'Glowing chains wound across the body.', { glow: 0x79e3e0 }, { x: ['chains'] });
+ng('k_four', 'Four Shifts Medal', 'gear', 'mythic', '🌟', 'A gold star on the chest that glows. Only for those who got out of all four.', {}, { fx: [{ k: 'medal' }], x: ['epaulgold'], rx: ['epaul'], earn: 'all4' });
+/* ---- capes & wings ---- */
+ng('c_tatter', 'Tattered Cloak', 'back', 'rare', '🧶', 'A grey cloak, torn along the bottom.', {}, { fx: [{ k: 'cape', c: 0x45443e, torn: 1 }] });
+ng('c_midnight', 'Midnight Cape', 'back', 'epic', '🌙', 'A long navy cape with a pale blue edge.', {}, { fx: [{ k: 'cape', c: 0x141c34, t: 0x6a7aa8 }] });
+ng('c_crimson', 'Crimson Mantle', 'back', 'legendary', '🟥', 'A deep red cape trimmed in gold.', {}, { fx: [{ k: 'cape', c: 0x7a1020, t: 0xd9a83a }] });
+ng('c_seraph', 'Seraph Wings', 'back', 'mythic', '🪽', 'Two white feathered wings that breathe as you do.', {}, { fx: [{ k: 'wings', kind: 'angel', c: 0xf4f0ff, glow: 0xb8c8ff }] });
+ng('c_nightwing', 'Nightwing', 'back', 'mythic', '🦇', 'Leathery black wings with clawed tips.', {}, { fx: [{ k: 'wings', kind: 'bat', c: 0x1e1218 }] });
+/* ---- auras ---- */
+ng('a_eyes', 'Ember Eyes', 'aura', 'epic', '👁️', 'Your eyes glow orange.', { glow: 0xff6a2a, eye: 0xff6a2a }, { x: ['eyesglow'] });
+ng('a_spark', 'Static Charge', 'aura', 'epic', '⚡', 'Little blue sparks crackle around you.', {}, { fx: [{ k: 'aura', a: 'spark', c: 0x7fd8ff }] });
+ng('a_halo', 'Halo', 'aura', 'legendary', '😇', 'A ring of warm light over your head.', { glow: 0xffe08a }, { x: ['halo'] });
+ng('a_embers', 'Ember Aura', 'aura', 'legendary', '🔥', 'Embers rise off you and drift up into the dark.', {}, { fx: [{ k: 'aura', a: 'embers', c: 0xff7a2a }] });
+ng('a_frost', 'Frost Aura', 'aura', 'legendary', '❄️', 'Flakes of frost fall slowly around you.', {}, { fx: [{ k: 'aura', a: 'frost', c: 0xbfe6ff }] });
+ng('a_void', 'Void Aura', 'aura', 'mythic', '🌀', 'Violet motes spiral into you, and your eyes glow the same colour.', { glow: 0x9a6cff, eye: 0x9a6cff }, { x: ['eyesglow'], fx: [{ k: 'aura', a: 'void', c: 0x9a6cff }] });
+ng('a_orbit', 'Orbiting Lights', 'aura', 'mythic', '💫', 'Three small lights circle you, slow and patient.', {}, { fx: [{ k: 'orbit', c: [0xfff0a8, 0x9fd4ff, 0xffa8e8] }] });
+ng('a_specimen', 'Specimen Glow', 'aura', 'epic', '🧪', 'Green bubbles rise around you. Containment would like a word.', {}, { fx: [{ k: 'aura', a: 'bubbles', c: 0x7dff6a }], earn: 'cb' });
+/* ---- ULTIMATE sets: a whole look, each with something nothing else has ---- */
+const NG_ALL = ['radio', 'badge', 'epaul'];
+ng('s_eclipse', 'The Eclipse Warden', 'set', 'ultimate', '🌑', 'Black from collar to boots, gold at every edge, and behind your head the sun going out.',
+  { top: 'coat', tc: 0x0d0d14, tc2: 0xd9a83a, hat: 'none', hs: 'slick', hair: 0x0b0b0e, beard: 'none', gloves: 0x0d0d14, pants: 0x0d0d14, boots: 0x0a0a0c, glow: 0xffc85a, eye: 0xffc85a },
+  { x: ['goldtrim', 'buttons', 'eyesglow'], rx: NG_ALL, fx: [{ k: 'eclipse' }, { k: 'cape', c: 0x0a0a10, t: 0xd9a83a }, { k: 'aura', a: 'motes', c: 0xffc85a }],
+    parts: ['Black greatcoat with gold trim', 'Eclipse behind the head (a black sun with a gold corona)', 'Black cape, gold edge', 'Golden eyes', 'Drifting gold motes'] });
+ng('s_solar', 'Solar Sentinel', 'set', 'ultimate', '☀️', 'Gold plate over white, a white cape, and a crown of sunlight that turns behind you.',
+  { top: 'gambeson', tc: 0xe8dcc0, vest: 'plate', vestc: 0xd9a83a, hat: 'none', hs: 'long', hair: 0xf2d88a, beard: 'none', gloves: 'metal', bk: 'sabaton', pants: 0xe8dcc0, glow: 0xffd060, eye: 0xffd060 },
+  { x: ['pauld'], rx: NG_ALL, fx: [{ k: 'sunhalo' }, { k: 'cape', c: 0xf4efe2, t: 0xd9a83a }, { k: 'aura', a: 'embers', c: 0xffd060 }],
+    parts: ['Gold breastplate and shoulder guards', 'Steel gauntlets and sabatons', 'Turning sun-ray halo', 'White cape, gold edge', 'Rising golden embers'] });
+ng('s_neon', 'Neon Phantom', 'set', 'ultimate', '🌐', 'Black on black with neon seams, a glowing visor, and three lights that never stop circling.',
+  { top: 'track', tc: 0x0c0c10, tc2: 0x2dffd0, hat: 'hood', hatc: 0x0c0c10, face: 'visor', glow: 0x2dffd0, gloves: 0x0c0c10, pants: 0x0c0c10, bk: 'sneaker', snk: 0x111111, snk2: 0x2dffd0 },
+  { rx: NG_ALL, fx: [{ k: 'orbit', c: [0x2dffd0, 0xff3ad0, 0x2dffd0] }, { k: 'aura', a: 'spark', c: 0x2dffd0 }],
+    parts: ['Black tracksuit with neon stripes', 'Hood and a neon visor', 'Neon-trimmed runners', 'Three orbiting lights', 'Neon sparks'] });
+ng('s_celestial', 'Celestial Guardian', 'set', 'ultimate', '🌌', 'A robe full of stars, a halo, white wings and a slow fall of starlight.',
+  { top: 'robe', tc: 0x141a4a, hs: 'long', hair: 0xe8e0ff, hat: 'none', beard: 'none', glow: 0xc9a8ff, eye: 0xb98cff, pants: 0x141a4a, boots: 0x141a4a },
+  { x: ['halo', 'stars'], rx: NG_ALL, fx: [{ k: 'wings', kind: 'angel', c: 0xf4f0ff, glow: 0xc9a8ff }, { k: 'aura', a: 'stars', c: 0xe8dcff }],
+    parts: ['Star-flecked night-blue robe', 'Halo of violet light', 'Feathered wings', 'Twinkling starlight'] });
+ng('s_nightmare', 'The Nightmare King', 'set', 'ultimate', '😈', 'Horns, bat wings, red eyes and the dark pulling in towards you. The monsters think you\'re one of them. (They don\'t. Looks only.)',
+  { top: 'robe', tc: 0x120a0e, hat: 'none', hs: 'bald', beard: 'none', glow: 0xff2a1a, eye: 0xff2a1a, skin: 0x9a8a84, gloves: 0x120a0e, pants: 0x120a0e, boots: 0x0a0a0a },
+  { x: ['eyesglow'], rx: NG_ALL, fx: [{ k: 'horns', kind: 'devil', c: 0x2a1414 }, { k: 'wings', kind: 'bat', c: 0x1a0c10 }, { k: 'aura', a: 'void', c: 0xff3a2a }],
+    parts: ['Black robe, ashen skin', 'Devil horns', 'Bat wings', 'Burning red eyes', 'A red spiral of embers'] });
+ng('s_lord', 'Lord of the Last Shift', 'set', 'ultimate', '🎖️', 'The Night Guard, as the night itself would dress him: medals, gold, a crimson mantle and a sigil burning under his feet.',
+  { top: 'coat', tc: 0x121826, tc2: 0xd9a83a, hat: 'officer', hatc: 0x121826, hs: 'slick', beard: 'full', gloves: 0xe8e4d8, pants: 0x121826, boots: 0x0a0a0c, glow: 0xffd27a },
+  { x: ['epaulgold', 'medals', 'buttons', 'goldtrim', 'emblem'], rx: NG_ALL, fx: [{ k: 'cape', c: 0x6a0c18, t: 0xd9a83a }, { k: 'sigil', c: 0xffc85a }, { k: 'aura', a: 'motes', c: 0xffd27a }],
+    parts: ['Commander\'s greatcoat, gold trim, medals', 'Peaked cap and white gloves', 'Crimson mantle', 'A burning sigil on the floor beneath you', 'Gold motes'] });
+const NG_ITEM = {}; NG_ITEMS.forEach(it => { NG_ITEM[it.id] = it; });
+const NG_EARN_ITEM = {}; NG_ITEMS.forEach(it => { if (it.earn) NG_EARN_ITEM[it.earn] = it; });
+const NG_ACH = [
+  { id: 'ng_first', name: 'Off the Rack', desc: 'Buy something in the Night Guard Shop.' },
+  { id: 'ng_dressed', name: 'Dressed for the Shift', desc: 'Wear Night Guard Shop pieces in eight different slots at once.' },
+  { id: 'ng_ult', name: 'Ultimate Night Guard', desc: 'Own an ULTIMATE set from the Night Guard Shop.' },
+  { id: 'ng_four', name: 'Four Shifts', desc: 'Earn all four rewards from the four new modes.' },
+];
+ACH.push(...NG_ACH);
+// the main colour of a piece, for the little swatch on its card
+function ngSwatch(it) {
+  const L = it.L, f = it.fx && it.fx[0];
+  const c = L.tc !== undefined ? L.tc : L.hatc !== undefined ? L.hatc : L.vestc !== undefined ? L.vestc : L.facec !== undefined ? L.facec : L.hair !== undefined ? L.hair : typeof L.gloves === 'number' ? L.gloves
+    : L.pants !== undefined ? L.pants : L.snk !== undefined ? L.snk : L.boots !== undefined ? L.boots : f && typeof f.c === 'number' ? f.c : f && Array.isArray(f.c) ? f.c[0] : L.glow !== undefined ? L.glow : L.scarf;
+  return c === undefined ? null : '#' + c.toString(16).padStart(6, '0');
+}
+
+/* ================= the new pieces, on the bones ================= */
+const NGFX = (() => {
+  const PI = Math.PI;
+  let _dot = null;
+  const dot = () => { if (_dot) return _dot; try { if (typeof COS_TEX === 'function') return (_dot = COS_TEX().dot); } catch (e) { } const c = document.createElement('canvas'); c.width = c.height = 32; const x = c.getContext('2d'), g = x.createRadialGradient(16, 16, 0, 16, 16, 16); g.addColorStop(0, '#fff'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 32, 32); return (_dot = new T.CanvasTexture(c)); };
+  const hex = c => new T.Color(c);
+  // the feathers and the membrane, painted once (the wing's own outline gives the scalloped edge)
+  const _wt = {};
+  const wingTex = kind => {
+    if (_wt[kind]) return _wt[kind];
+    const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+    if (kind === 'angel') {
+      const g = x.createLinearGradient(0, 0, 256, 256); g.addColorStop(0, '#9da2b6'); g.addColorStop(1, '#e8eaf2'); x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+      const fan = (n, L, w, t0, t1, c0, c1) => { for (let i = n - 1; i >= 0; i--) { const t = t0 + (t1 - t0) * i / (n - 1), dx = Math.cos(t), dy = Math.sin(t), ex = 16 + dx * L, ey = 14 + dy * L, nx = -dy * w, ny = dx * w;
+        const gr = x.createLinearGradient(16, 14, ex, ey); gr.addColorStop(0, c0); gr.addColorStop(1, c1); x.fillStyle = gr;
+        x.beginPath(); x.moveTo(16 + nx * 0.3, 14 + ny * 0.3); x.lineTo(ex + nx, ey + ny); x.quadraticCurveTo(ex + dx * w * 1.4, ey + dy * w * 1.4, ex - nx, ey - ny); x.lineTo(16 - nx * 0.3, 14 - ny * 0.3); x.closePath(); x.fill();
+        x.strokeStyle = 'rgba(70,74,100,.75)'; x.lineWidth = 1.8; x.stroke(); x.strokeStyle = 'rgba(110,112,140,.65)'; x.lineWidth = 1; x.beginPath(); x.moveTo(16, 14); x.lineTo(ex, ey); x.stroke(); } };
+      fan(15, 300, 15, 0.05, 1.62, '#b4b8c8', '#f4f5fa');   // the long flight feathers, fanned from the shoulder
+      fan(13, 150, 12, 0.1, 1.5, '#c6c9d6', '#fbfbfd');    // the coverts over them
+      fan(10, 70, 9, 0.15, 1.4, '#dadce6', '#ffffff');      // the small feathers along the top
+    } else {
+      const g = x.createRadialGradient(0, 0, 10, 0, 0, 340); g.addColorStop(0, '#4a2230'); g.addColorStop(1, '#1c0a12'); x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+      for (let i = 0; i < 900; i++) { x.fillStyle = 'rgba(' + (Math.random() < 0.5 ? '90,40,55' : '10,4,8') + ',' + (0.08 + Math.random() * 0.12) + ')'; x.fillRect(Math.random() * 256, Math.random() * 256, 2 + Math.random() * 5, 2 + Math.random() * 5); }
+      x.strokeStyle = 'rgba(120,60,75,.55)'; x.lineWidth = 1.4;
+      for (let i = 0; i < 26; i++) { const t = 0.05 + i / 25 * 1.5; x.beginPath(); x.moveTo(6, 10); let px = 6, py = 10; for (let k = 1; k <= 6; k++) { const r = k * 48, a = t + Math.sin(i * 3.1 + k) * 0.08; const nx = 6 + Math.cos(a) * r, ny = 10 + Math.sin(a) * r; x.quadraticCurveTo(px + (nx - px) / 2 + 6, py + (ny - py) / 2 + 4, nx, ny); px = nx; py = ny; } x.stroke(); }
+    }
+    const t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.ClampToEdgeWrapping; return (_wt[kind] = t);
+  };
+  function kit(g) {
+    const U = g.userData;
+    const solid = (o) => { const m = new T.MeshPhongMaterial(o); m.userData.glow = true; if (U.mat && U.mat.list) U.mat.list.push(m); return m; }; // (fades with the body; keeps its own glow when the body is tinted)
+    const glow = (c, op, o) => { const m = new T.MeshBasicMaterial(Object.assign({ color: c, transparent: true, opacity: op, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }, o || {})); m.userData.base = op; U.ngGlow.push(m); return m; };
+    const sprite = (c, op, s) => { const m = new T.SpriteMaterial({ map: dot(), color: c, transparent: true, opacity: op, blending: T.AdditiveBlending, depthWrite: false }); m.userData.base = op; U.ngGlow.push(m); const sp = new T.Sprite(m); sp.scale.setScalar(s); return sp; };
+    return { U, R: U.rig, solid, glow, sprite };
+  }
+  const vcol = (geo, fn) => { const p = geo.attributes.position, c = new Float32Array(p.count * 3); for (let i = 0; i < p.count; i++) { const k = fn(p.getX(i), p.getY(i), p.getZ(i), i); c[i * 3] = k[0]; c[i * 3 + 1] = k[1]; c[i * 3 + 2] = k[2]; } geo.setAttribute('color', new T.BufferAttribute(c, 3)); return geo; };
+  const B = {
+    // a cape from the shoulders to the backs of the knees: one cloth, curved, swinging back as you move
+    cape(K, o, look) {
+      const cols = 10, rows = 16, H = 0.94, pos = [], col = [], idx = [], base = hex(o.c), trim = o.t !== undefined ? hex(o.t) : null;
+      const rnd = i => { const s = Math.sin(i * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+      for (let r = 0; r <= rows; r++) for (let c = 0; c <= cols; c++) {
+        const u = c / cols * 2 - 1, v = r / rows, w = 0.17 + 0.14 * v;
+        let y = -v * H; if (o.torn && r === rows) y += 0.05 + rnd(c) * 0.13; else if (o.torn && r === rows - 1) y += rnd(c + 40) * 0.04;
+        pos.push(u * w, y, 0.012 + 0.05 * v + 0.05 * v * v + 0.03 * (1 - u * u) * (0.25 + v));
+        const edge = trim && (v > 0.95 || Math.abs(u) > 0.93), sh = 0.78 + 0.22 * (1 - v) - 0.08 * Math.abs(u), k = edge ? trim : base;
+        col.push(k.r * (edge ? 1 : sh), k.g * (edge ? 1 : sh), k.b * (edge ? 1 : sh));
+      }
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const a = r * (cols + 1) + c, b = a + cols + 1; idx.push(a, b, a + 1, a + 1, b, b + 1); }
+      const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); geo.setAttribute('color', new T.Float32BufferAttribute(col, 3)); geo.setIndex(idx); geo.computeVertexNormals();
+      const m = new T.Mesh(geo, K.solid({ color: 0xffffff, vertexColors: true, side: T.DoubleSide, shininess: o.t !== undefined ? 22 : 6, specular: 0x222222 }));
+      const piv = new T.Group(), packed = look.x.some(e => e === 'pack' || e === 'tanks' || e === 'antenna');
+      piv.position.set(0, 0.175, packed ? 0.2 : 0.118); piv.add(m); K.R.chest.add(piv);
+      // a clasp at each shoulder
+      if (trim) for (const sd of [-1, 1]) { const cl = new T.Mesh(new T.SphereGeometry(0.014, 10, 8), K.solid({ color: o.t, shininess: 90, specular: 0xffffff })); cl.position.set(sd * 0.16, 0.172, 0.06); K.R.chest.add(cl); }
+      return { o: piv, fp: false, dead: true, a: 0, up(e, t, dt, sp) { const s = Math.min(6, sp), want = -(0.05 + s * 0.07) - (0.02 + s * 0.012) * Math.sin(t * (1.6 + s * 0.5)); e.a += (want - e.a) * Math.min(1, dt * 6); piv.rotation.x = e.a; } };
+    },
+    // two wings from between the shoulder blades
+    wings(K, o) {
+      const sh = new T.Shape(), angel = o.kind !== 'bat';
+      if (angel) {
+        sh.moveTo(0, 0); sh.quadraticCurveTo(0.12, 0.26, 0.36, 0.44); sh.quadraticCurveTo(0.56, 0.56, 0.72, 0.48);
+        const tips = [[0.7, 0.36], [0.66, 0.22], [0.6, 0.08], [0.52, -0.06], [0.42, -0.2], [0.31, -0.32], [0.19, -0.4], [0.08, -0.3]];
+        let px = 0.72, py = 0.48; for (const [x, y] of tips) { sh.quadraticCurveTo((px + x) / 2 + 0.035, (py + y) / 2 - 0.02, x, y); px = x; py = y; }
+        sh.quadraticCurveTo(0.02, -0.12, 0, 0);
+      } else {
+        sh.moveTo(0, 0.04); sh.quadraticCurveTo(0.2, 0.3, 0.46, 0.4); sh.lineTo(0.74, 0.5); sh.lineTo(0.68, 0.36);
+        sh.quadraticCurveTo(0.6, 0.22, 0.62, 0.06); sh.quadraticCurveTo(0.5, 0.12, 0.44, -0.04); sh.quadraticCurveTo(0.34, 0.04, 0.28, -0.16);
+        sh.quadraticCurveTo(0.18, -0.06, 0.12, -0.24); sh.quadraticCurveTo(0.06, -0.08, 0, -0.06); sh.lineTo(0, 0.04);
+      }
+      const geo = new T.ShapeGeometry(sh, 12), uv = geo.attributes.uv, y0 = angel ? -0.42 : -0.26, yh = angel ? 1.0 : 0.78;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / 0.76, (uv.getY(i) - y0) / yh); // (the painted wing laid over the outline: root at the body, tips outward)
+      const tex = wingTex(angel ? 'angel' : 'bat'); tex.flipY = true;
+      const mat = K.solid({ color: angel ? hex(o.c).multiplyScalar(0.82) : o.c, map: tex, side: T.DoubleSide, shininess: angel ? 8 : 36, specular: angel ? 0x1a1a22 : 0x442233, emissive: angel ? (o.glow || 0x000000) : 0x000000, emissiveIntensity: angel ? 0.07 : 0 });
+      // (the bones of a bat wing: dark ribs out to each point)
+      const ribs = angel ? null : [[0.46, 0.4], [0.74, 0.5], [0.62, 0.06], [0.28, -0.16], [0.12, -0.24]];
+      const root = new T.Group(); root.position.set(0, 0.02, 0.13); root.scale.setScalar(0.92); K.R.chest.add(root);
+      const side = [];
+      for (const sd of [-1, 1]) {
+        const piv = new T.Group(); piv.position.set(sd * 0.045, 0, 0); root.add(piv);
+        const w = new T.Mesh(geo, mat); w.scale.set(sd, 1, 1); piv.add(w);
+        if (angel) { const w2 = new T.Mesh(geo, mat); w2.scale.set(sd * 0.62, 0.62, 1); w2.position.set(sd * 0.02, 0.1, 0.006); piv.add(w2); }
+        else for (const [x, y] of ribs) { const L = Math.hypot(x, y), rb = new T.Mesh(new T.CylinderGeometry(0.006, 0.01, L, 5), K.solid({ color: 0x0c0608, shininess: 30 })); rb.position.set(sd * x / 2, y / 2, 0.003); rb.rotation.z = -Math.atan2(x, y) * sd; piv.add(rb); }
+        side.push([sd, piv]);
+      }
+      return { o: root, fp: false, dead: true, f: 0, up(e, t, dt, sp) { const run = Math.min(1, sp / 4); e.f += ((angel ? 0.34 : 0.5) + run * 0.55 - e.f) * Math.min(1, dt * 4); const flap = (angel ? 0.1 : 0.14) * Math.sin(t * (angel ? 1.4 : 2.1)) * (1 - run * 0.6); for (const [sd, p] of side) { p.rotation.y = -sd * (e.f + flap); p.rotation.z = sd * 0.06 * Math.sin(t * 1.4); } } };
+    },
+    horns(K, o) {
+      const g = new T.Group(), ram = o.kind !== 'devil', c = hex(o.c);
+      const P = ram ? [[-0.05, 0.135, 0.0], [-0.085, 0.185, 0.03], [-0.125, 0.198, 0.065], [-0.152, 0.16, 0.092], [-0.152, 0.108, 0.072], [-0.128, 0.082, 0.032], [-0.116, 0.098, -0.008]]
+        : [[-0.042, 0.148, -0.03], [-0.062, 0.198, -0.036], [-0.07, 0.24, -0.018], [-0.062, 0.272, 0.01]];
+      const Rr = ram ? [0.024, 0.022, 0.019, 0.016, 0.013, 0.01, 0.005] : [0.017, 0.013, 0.008, 0.002];
+      for (const sd of [-1, 1]) {
+        const geo = ORG.tube(P.map(p => [p[0] * sd, p[1], p[2]]), Rr, { seg: 10, sub: 5, cap0: false, capK: 0.6, col: (u, v) => { const r = ram ? 0.82 + 0.18 * Math.abs(Math.sin(v * 70)) : 0.6 + 0.4 * v; return [c.r * r, c.g * r, c.b * r]; } });
+        g.add(new T.Mesh(geo, K.solid({ color: 0xffffff, vertexColors: true, shininess: ram ? 24 : 70, specular: 0x444444 })));
+      }
+      K.R.head.add(g); return { o: g, dead: true };
+    },
+    crown(K) {
+      const g = new T.Group(), gold = K.solid({ color: 0xe2b443, shininess: 110, specular: 0xfff2c0, emissive: 0x3a2600, side: T.DoubleSide });
+      const band = new T.Mesh(new T.CylinderGeometry(0.084, 0.08, 0.046, 32, 1, true), gold); g.add(band);
+      for (let i = 0; i < 7; i++) {
+        const a = i / 7 * PI * 2 + PI / 2, tall = i % 2 === 0, sp = new T.Mesh(new T.ConeGeometry(0.016, tall ? 0.062 : 0.042, 6), gold);
+        sp.position.set(Math.cos(a) * 0.08, 0.023 + (tall ? 0.031 : 0.021), Math.sin(a) * 0.08); g.add(sp);
+        const ball = new T.Mesh(new T.SphereGeometry(0.008, 8, 6), gold); ball.position.set(Math.cos(a) * 0.08, 0.023 + (tall ? 0.064 : 0.044), Math.sin(a) * 0.08); g.add(ball);
+      }
+      [[0xd0213a, -PI / 2], [0x2a6ad0, -PI / 2 - 0.9], [0x2ab05a, -PI / 2 + 0.9]].forEach(([c, a]) => { const gem = new T.Mesh(new T.SphereGeometry(0.0115, 10, 8), K.solid({ color: c, shininess: 140, specular: 0xffffff, emissive: c, emissiveIntensity: 0.25 })); gem.position.set(Math.cos(a) * 0.085, 0.002, Math.sin(a) * 0.085); g.add(gem); });
+      g.scale.set(1, 1, 1.16); g.position.set(0, 0.165, 0.008); K.R.head.add(g);
+      const sp = K.sprite(0xffe9a0, 0.22, 0.16); sp.position.set(0, 0.2, -0.06); K.R.head.add(sp);
+      return { o: g, s: sp, dead: true, up(e, t) { sp.material.userData.k = 0.6 + 0.4 * Math.sin(t * 2.3); } };
+    },
+    tophat(K) {
+      const g = new T.Group(), blk = K.solid({ color: 0x141416, shininess: 46, specular: 0x333333 }), red = K.solid({ color: 0x9a1a1e, shininess: 30 });
+      const brim = new T.Mesh(new T.CylinderGeometry(0.128, 0.128, 0.008, 32), blk); g.add(brim);
+      const cr = new T.Mesh(new T.CylinderGeometry(0.076, 0.072, 0.17, 28), blk); cr.position.y = 0.088; g.add(cr);
+      const bd = new T.Mesh(new T.CylinderGeometry(0.0745, 0.0735, 0.028, 28), red); bd.position.y = 0.02; bd.scale.setScalar(1.02); g.add(bd);
+      g.scale.set(1, 1, 1.13); g.position.set(0, 0.158, 0.0); g.rotation.z = 0.07; K.R.head.add(g); return { o: g, dead: true };
+    },
+    // a brass lantern on the belt: it swings as you walk, and its flame flickers (paint, not light)
+    lantern(K) {
+      const g = new T.Group(), brass = K.solid({ color: 0xb08a3a, shininess: 90, specular: 0xffe0a0 });
+      const top = new T.Mesh(new T.ConeGeometry(0.04, 0.03, 8), brass); top.position.y = 0.05; g.add(top);
+      const bot = new T.Mesh(new T.CylinderGeometry(0.038, 0.04, 0.012, 8), brass); bot.position.y = -0.046; g.add(bot);
+      for (let i = 0; i < 4; i++) { const a = i / 4 * PI * 2 + PI / 4, rd = new T.Mesh(new T.CylinderGeometry(0.003, 0.003, 0.09, 4), brass); rd.position.set(Math.cos(a) * 0.033, 0, Math.sin(a) * 0.033); g.add(rd); }
+      const hd = new T.Mesh(new T.TorusGeometry(0.022, 0.003, 4, 12, PI), brass); hd.position.y = 0.07; g.add(hd);
+      const core = new T.Mesh(new T.CylinderGeometry(0.024, 0.024, 0.06, 10), new T.MeshBasicMaterial({ color: 0xffc46a })); K.U.ngGlow.push(core.material); core.material.userData.base = 1; core.material.transparent = true; g.add(core);
+      const sp = K.sprite(0xffa040, 0.55, 0.26); g.add(sp);
+      const piv = new T.Group(); piv.position.set(0.205, -0.07, 0.0); piv.add(g); g.position.y = -0.07; K.R.hips.add(piv);
+      return { o: piv, up(e, t, dt, sp2) { const w = Math.min(1, sp2 / 3), ph = K.U.phase || 0; piv.rotation.x = Math.sin(ph) * 0.35 * w + 0.04 * Math.sin(t * 1.3); piv.rotation.z = 0.08 + 0.05 * Math.sin(t * 1.1); sp.material.userData.k = 0.75 + 0.25 * Math.sin(t * 17) * Math.sin(t * 7.3); } };
+    },
+    // a glowing gold star on the chest
+    medal(K) {
+      const sh = new T.Shape(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 0.012 : 0.03, a = PI / 2 + i * PI / 5, x = Math.cos(a) * r, y = Math.sin(a) * r; if (i) sh.lineTo(x, y); else sh.moveTo(x, y); }
+      const g = new T.Group(), st = new T.Mesh(new T.ExtrudeGeometry(sh, { depth: 0.006, bevelEnabled: false }), K.solid({ color: 0xf2c44a, shininess: 120, specular: 0xffffff, emissive: 0x8a5a00, emissiveIntensity: 0.6 }));
+      st.rotation.y = PI; g.add(st);
+      const rb = new T.Mesh(new T.BoxGeometry(0.026, 0.03, 0.004), K.solid({ color: 0x2a3a9a, shininess: 20 })); rb.position.set(0, 0.044, 0.002); g.add(rb);
+      const sp = K.sprite(0xffd060, 0.5, 0.14); sp.position.z = -0.01; g.add(sp);
+      g.position.set(0.075, 0.04, -0.124); K.R.chest.add(g);
+      return { o: g, dead: true, up(e, t) { sp.material.userData.k = 0.6 + 0.4 * Math.sin(t * 2.6); } };
+    },
+    // a sun of rays behind the head, turning
+    sunhalo(K) {
+      const pos = [], n = 18;
+      for (let i = 0; i < n; i++) { const a = i / n * PI * 2, w = PI / n * 0.42, L = i % 2 ? 0.2 : 0.27; pos.push(Math.cos(a - w) * 0.125, Math.sin(a - w) * 0.125, 0, Math.cos(a) * L, Math.sin(a) * L, 0, Math.cos(a + w) * 0.125, Math.sin(a + w) * 0.125, 0); }
+      const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(pos, 3));
+      const g = new T.Group(), rays = new T.Mesh(geo, K.glow(0xffc850, 0.6)); g.add(rays);
+      const ring = new T.Mesh(new T.RingGeometry(0.105, 0.128, 40), K.glow(0xfff0b0, 0.8)); g.add(ring);
+      const sp = K.sprite(0xffd070, 0.35, 0.5); g.add(sp);
+      g.position.set(0, 0.095, 0.16); K.R.head.add(g);
+      return { o: g, fp: false, up(e, t) { rays.rotation.z = t * 0.25; sp.material.userData.k = 0.8 + 0.2 * Math.sin(t * 1.7); } };
+    },
+    // a black sun behind the head, its corona flickering
+    eclipse(K) {
+      const g = new T.Group();
+      const disc = new T.Mesh(new T.CircleGeometry(0.15, 40), K.solid({ color: 0x020203, shininess: 0, specular: 0x000000, side: T.DoubleSide })); disc.position.z = 0.004; g.add(disc);
+      const cor = new T.RingGeometry(0.148, 0.26, 48, 3); vcol(cor, (x, y) => { const r = Math.hypot(x, y), k = 1 - (r - 0.148) / 0.112; return [1 * k, 0.78 * k, 0.32 * k]; });
+      const cm = K.glow(0xffffff, 0.9, { vertexColors: true }), corona = new T.Mesh(cor, cm); g.add(corona);
+      const sp = K.sprite(0xffb040, 0.3, 0.7); sp.position.z = 0.01; g.add(sp);
+      g.position.set(0, 0.095, 0.17); K.R.head.add(g);
+      return { o: g, fp: false, up(e, t) { corona.rotation.z = t * 0.12; const f = 1 + 0.05 * Math.sin(t * 3.1) + 0.03 * Math.sin(t * 7.7); corona.scale.set(f, f, 1); cm.userData.k = 0.85 + 0.15 * Math.sin(t * 2.2); } };
+    },
+    // a burning sigil on the floor beneath you
+    sigil(K, o) {
+      const g = new T.Group(), c = o.c || 0xffc85a;
+      const r1 = new T.Mesh(new T.RingGeometry(0.44, 0.48, 56), K.glow(c, 0.55)); g.add(r1);
+      const r2 = new T.Mesh(new T.RingGeometry(0.33, 0.35, 56), K.glow(c, 0.45)); g.add(r2);
+      const tri = []; for (let i = 0; i < 6; i++) { const a = i / 6 * PI * 2, b = a + PI * 2 / 3; tri.push(Math.cos(a) * 0.43, Math.sin(a) * 0.43, 0, Math.cos(b) * 0.43, Math.sin(b) * 0.43, 0, Math.cos(b) * 0.41, Math.sin(b) * 0.41, 0, Math.cos(a) * 0.43, Math.sin(a) * 0.43, 0, Math.cos(b) * 0.41, Math.sin(b) * 0.41, 0, Math.cos(a) * 0.41, Math.sin(a) * 0.41, 0); }
+      const tg = new T.BufferGeometry(); tg.setAttribute('position', new T.Float32BufferAttribute(tri, 3)); const star = new T.Mesh(tg, K.glow(c, 0.5)); g.add(star);
+      g.rotation.x = -PI / 2; g.position.y = 0.025; K.U.root.parent.add(g);
+      return { o: g, fp: false, up(e, t) { r2.rotation.z = -t * 0.4; star.rotation.z = t * 0.2; r1.material.userData.k = 0.75 + 0.25 * Math.sin(t * 2); } };
+    },
+    // three little lights going round you
+    orbit(K, o) {
+      const g = new T.Group(), L = []; K.U.root.parent.add(g);
+      o.c.forEach((c, i) => { const b = new T.Mesh(new T.SphereGeometry(0.034, 12, 10), K.glow(c, 1, { blending: T.NormalBlending })); const s = K.sprite(c, 0.8, 0.4); b.add(s); g.add(b); L.push(b); });
+      return { o: g, fp: false, up(e, t) { L.forEach((b, i) => { const a = t * 1.15 + i * PI * 2 / L.length; b.position.set(Math.cos(a) * 0.52, 1.12 + 0.32 * Math.sin(t * 0.9 + i * 2.1), Math.sin(a) * 0.52); }); } };
+    },
+    // particles round the body: embers rise, frost falls, the void spirals in, sparks crackle, stars twinkle, bubbles float, motes drift
+    aura(K, o) {
+      const n = { spark: 26, stars: 34, motes: 24 }[o.a] || 30, P = new Float32Array(n * 3), C = new Float32Array(n * 3), S = [], c = hex(o.c);
+      const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(P, 3)); geo.setAttribute('color', new T.BufferAttribute(C, 3));
+      const size = { spark: 0.06, frost: 0.08, bubbles: 0.075, stars: 0.075, void: 0.095, motes: 0.07 }[o.a] || 0.09;
+      const m = new T.PointsMaterial({ size, map: dot(), vertexColors: true, transparent: true, opacity: 1, depthWrite: false, blending: T.AdditiveBlending, sizeAttenuation: true }); m.userData.base = 1; K.U.ngGlow.push(m);
+      const pts = new T.Points(geo, m); pts.frustumCulled = false; K.U.root.parent.add(pts);
+      pts.onBeforeRender = (r, sc, cam) => { m.size = size / (cam && cam.isPerspectiveCamera ? Math.tan(cam.fov * Math.PI / 360) : 1); }; // (a point's size follows the camera's field of view: this keeps it the same size in the world on every camera)
+      const halo = K.sprite(o.c, 0.24, 1); halo.scale.set(1.25, 2.3, 1); halo.position.y = 1.0; pts.add(halo); // (a faint glow round you, in the aura's colour)
+      halo.onBeforeRender = (r, sc, cam) => { // (drawn just behind you from wherever it's seen, so it rims you instead of cutting through you)
+        const e = halo.matrixWorld.elements, c = cam.matrixWorld.elements, dx = c[12] - e[12], dz = c[14] - e[14], L = Math.hypot(dx, dz) || 1;
+        e[12] -= dx / L * 0.45; e[14] -= dz / L * 0.45;
+      };
+      const R = Math.random;
+      const spawn = (s, fresh) => {
+        s.a = R() * PI * 2; s.r = 0.22 + R() * 0.26; s.l = 0; s.v = 0.5 + R() * 0.6; s.ph = R() * 10;
+        if (o.a === 'embers' || o.a === 'bubbles') { s.y = fresh ? R() * 1.9 : 0.05 + R() * 0.2; s.L = (2 - s.y) / (o.a === 'bubbles' ? 0.3 : 0.55) / s.v; }
+        else if (o.a === 'frost') { s.y = fresh ? R() * 2 : 1.9 + R() * 0.3; s.L = 9; }
+        else if (o.a === 'void') { s.r = 0.62 + R() * 0.12; s.y = 0.25 + R() * 1.5; s.L = 2.2 + R(); }
+        else if (o.a === 'spark') { s.r = 0.2 + R() * 0.12; s.y = 0.15 + R() * 1.65; s.L = 0.12 + R() * 0.18; }
+        else if (o.a === 'stars') { s.r = 0.4 + R() * 0.25; s.y = 0.1 + R() * 1.95; s.L = 1.5 + R() * 2.5; }
+        else { s.r = 0.3 + R() * 0.3; s.y = 0.3 + R() * 1.6; s.L = 3 + R() * 2; }
+        if (fresh) s.l = R() * s.L;
+      };
+      for (let i = 0; i < n; i++) { const s = {}; spawn(s, true); S.push(s); }
+      return { o: pts, fp: false, up(e, t, dt) {
+        for (let i = 0; i < n; i++) {
+          const s = S[i]; s.l += dt; if (s.l > s.L) spawn(s, false);
+          const f = s.l / s.L; let x, y = s.y, z, b = Math.sin(Math.min(1, f) * PI);
+          switch (o.a) {
+            case 'embers': s.y += dt * 0.55 * s.v; s.a += dt * 0.6; y = s.y; b *= 0.9; break;
+            case 'bubbles': s.y += dt * 0.3 * s.v; y = s.y; s.a += dt * 0.25; break;
+            case 'frost': s.y -= dt * 0.22 * s.v; y = s.y; s.a += dt * 0.15 * Math.sin(s.ph + t); if (s.y < 0.02) spawn(s, false); b = Math.min(1, s.y * 2) * 0.85; break;
+            case 'void': s.r = Math.max(0.08, 0.7 * (1 - f)); s.a += dt * (1.2 + 1.4 * f); y = s.y + 0.08 * Math.sin(s.ph + t * 2); b = f * (1 - f) * 4 * 0.9; break;
+            case 'spark': b = Math.random() < 0.5 ? 1 : 0.2; break;
+            case 'stars': b = 0.25 + 0.75 * Math.max(0, Math.sin(t * 3 * s.v + s.ph)) * Math.sin(Math.min(1, f) * PI); s.a += dt * 0.08; break;
+            default: s.a += dt * 0.35 * s.v; y = s.y + 0.1 * Math.sin(t * 0.8 + s.ph); b *= 0.8;
+          }
+          const wob = o.a === 'bubbles' ? 0.04 * Math.sin(t * 3 + s.ph) : 0;
+          x = Math.cos(s.a) * s.r + wob; z = Math.sin(s.a) * s.r;
+          P[i * 3] = x; P[i * 3 + 1] = y; P[i * 3 + 2] = z; C[i * 3] = c.r * b; C[i * 3 + 1] = c.g * b; C[i * 3 + 2] = c.b * b;
+        }
+        geo.attributes.position.needsUpdate = true; geo.attributes.color.needsUpdate = true;
+        halo.material.userData.k = 0.75 + 0.25 * Math.sin(t * 1.6);
+      } };
+    },
+  };
+  return {
+    attach(g, list, look) {
+      const U = g.userData; U.ngFx = []; U.ngGlow = [];
+      const K = kit(g);
+      for (const f of list) { const fn = B[f.k]; if (!fn) continue; try { const e = fn(K, f, look); if (e) U.ngFx.push(e); } catch (err) { console.warn('ngshop: ' + f.k, err); } }
+      if (U.mat) U.mat.ngExtra = U.ngGlow.slice();
+      // (everything new is drawn like the rest of the person: no shadows, and on every camera layer the person is on)
+      for (const e of U.ngFx) e.o.traverse(o => { o.castShadow = false; o.receiveShadow = false; });
+      return U.ngFx.length;
+    },
+    animate(g, sp, dead, dt) {
+      const U = g.userData, L = U.ngFx; if (!L) return;
+      const t = (U.ngT = (U.ngT || 0) + dt), op = U.mat && typeof U.mat._op === 'number' ? U.mat._op : 1, fp = !!U.fpBody;
+      for (const e of L) {
+        const on = !(fp && e.fp === false) && (!dead || e.dead) && op > 0.02;
+        e.o.visible = on; if (on && e.up) e.up(e, t, dt, sp);
+      }
+      for (const m of U.ngGlow) m.opacity = m.userData.base * (m.userData.k === undefined ? 1 : m.userData.k) * op;
+    },
+  };
+})();
+
+/* ================= the shop: what you own, what you wear ================= */
+const NGShop = {
+  ctx: null, loads: new Map(), ver: 0, _busy: false,
+  fresh() { return { own: {}, eq: {}, earned: {}, spent: 0, buys: 0, recent: [], opened: 0 }; },
+  // whatever was saved, made safe: only pieces that exist, only worn if owned and in the right slot
+  clean(o) {
+    const d = this.fresh(); if (!o || typeof o !== 'object' || Array.isArray(o)) return d;
+    const num = v => Number.isFinite(+v) ? clamp(Math.floor(+v), 0, 1e9) : 0;
+    if (o.own && typeof o.own === 'object' && !Array.isArray(o.own)) for (const id in o.own) if (NG_ITEM[id] && o.own[id]) d.own[id] = 1;
+    if (o.earned && typeof o.earned === 'object' && !Array.isArray(o.earned)) for (const k of NG_EARN_KEYS) if (o.earned[k]) { d.earned[k] = 1; if (NG_EARN_ITEM[k]) d.own[NG_EARN_ITEM[k].id] = 1; }
+    if (o.eq && typeof o.eq === 'object' && !Array.isArray(o.eq)) for (const s of NG_SLOT_IDS) { const id = o.eq[s]; if (typeof id === 'string' && d.own[id] && NG_ITEM[id].s === s) d.eq[s] = id; }
+    d.spent = num(o.spent); d.buys = num(o.buys); d.opened = o.opened ? 1 : 0;
+    d.recent = Array.isArray(o.recent) ? o.recent.filter((id, i, a) => typeof id === 'string' && d.own[id] && a.indexOf(id) === i).slice(0, 8) : [];
+    return d;
+  },
+  d() { const C = Cos.ensure(); if (!C.ng || !C.ng.own || !C.ng.eq) C.ng = this.clean(C.ng); return C.ng; },
+  save() { Cos.save(); },
+  owns(id) { return !!this.d().own[id]; },
+  price(it) { return NG_RAR[it.r].p; },
+  coins() { return Chars.data ? Chars.data.coins : 0; },
+  count() { const d = this.d(); return { have: NG_ITEMS.filter(it => d.own[it.id]).length, all: NG_ITEMS.length }; },
+  // ---- buying: written down first, then paid for — and never twice ----
+  buy(id) {
+    const it = NG_ITEM[id], d = this.d(), C = Chars.data;
+    if (!it) return { ok: false, msg: 'That piece doesn\'t exist.' };
+    if (it.earn) return { ok: false, msg: 'This one can\'t be bought: ' + NG_EARN[it.earn] + '.' };
+    if (d.own[id]) return { ok: false, msg: 'You already own the ' + it.n + '.' };
+    if (!C) return { ok: false, msg: 'Your save can\'t be read right now.' };
+    const p = this.price(it); if (C.coins < p) return { ok: false, msg: 'You need ' + (p - C.coins).toLocaleString('en-US') + ' more coins.' };
+    if (this._busy) return { ok: false, msg: '' }; this._busy = true;
+    try {
+      d.own[id] = 1; d.spent += p; d.buys++; d.recent = [id].concat(d.recent.filter(x => x !== id)).slice(0, 8);
+      this.save();
+      let kept = false; try { const o = JSON.parse(localStorage.getItem(COS_KEY) || 'null'); kept = !!(o && o.ng && o.ng.own && o.ng.own[id]); } catch (e) { kept = false; }
+      if (!kept) { delete d.own[id]; d.spent -= p; d.buys--; d.recent = d.recent.filter(x => x !== id); this.save(); return { ok: false, msg: 'Your save can\'t be written right now (storage full or blocked), so nothing was bought and no coins were taken.' }; }
+      const before = C.coins; C.coins = before - p; Chars.save();
+      if (!Chars.storageOk) { C.coins = before; delete d.own[id]; d.spent -= p; d.buys--; d.recent = d.recent.filter(x => x !== id); this.save(); return { ok: false, msg: 'Your coins can\'t be saved right now, so nothing was bought and no coins were taken.' }; }
+      Goals.unlock('ng_first'); if (it.r === 'ultimate') Goals.unlock('ng_ult');
+      try { CharUI.refresh(); } catch (e) { }
+      return { ok: true, msg: it.n + ' is yours. ' + p.toLocaleString('en-US') + ' coins spent.' };
+    } finally { this._busy = false; }
+  },
+  // ---- earning: the four new modes ----
+  earn(key) {
+    if (!NG_EARN[key] || key === 'all4') return null;
+    const d = this.d(); if (d.earned[key]) return null;
+    const got = []; const give = k => { d.earned[k] = 1; const it = NG_EARN_ITEM[k]; if (it && !d.own[it.id]) { d.own[it.id] = 1; d.recent = [it.id].concat(d.recent.filter(x => x !== it.id)).slice(0, 8); got.push(it); } };
+    give(key);
+    if (['lc', 'ih', 'cb', 'cn'].every(k => d.earned[k]) && !d.earned.all4) { give('all4'); Goals.unlock('ng_four'); }
+    this.save();
+    if (got.length) try { UI.msg('Night Guard Shop: you earned the ' + got.map(it => it.n).join(' and the ') + '. Wear it from the shop.', 'good', 5); } catch (e) { }
+    NGUI.badge();
+    return got;
+  },
+  // ---- wearing ----
+  equip(id) {
+    const it = NG_ITEM[id], d = this.d(); if (!it || !d.own[id]) return false;
+    if (it.s === 'set') d.eq = { set: id }; else d.eq[it.s] = id; // (a set is the whole look: put on over nothing; pieces can go back on over it)
+    this.changed(); return true;
+  },
+  unequip(slot) { const d = this.d(); if (!d.eq[slot]) return; delete d.eq[slot]; this.changed(); },
+  strip() { this.d().eq = {}; this.changed(); },
+  changed() {
+    this.ver++; this.save();
+    if (Object.keys(this.d().eq).filter(s => s !== 'set').length >= 8) Goals.unlock('ng_dressed');
+    try { if (typeof Game !== 'undefined' && Game.state === 'playing' && Chars.run === 'guard' && Arms.restyle) Arms.restyle('guard'); } catch (e) { }
+    this.share();
+  },
+  // whose outfit: 'me' (or your own id), another player's id, or an outfit itself (the shop's preview)
+  eqOf(who) {
+    if (who && typeof who === 'object') return who;
+    if (who === 'me' || (typeof Net !== 'undefined' && (!Net.active || who === Net.myId))) return this.d().eq;
+    return this.loads.get(who) || {};
+  },
+  keyOf(eq) { return NG_SLOT_IDS.filter(s => eq && typeof eq[s] === 'string' && NG_ITEM[eq[s]]).map(s => s + ':' + eq[s]).join(','); },
+  // the look recipe for an outfit: the Night Guard as he is, then the set, then every piece in slot order
+  recipe(eq) {
+    const B = NG_BASE, R = Object.assign({}, B, { x: B.x.slice() }), fx = {};
+    const add = it => {
+      if (!it) return; for (const k in it.L) R[k] = it.L[k];
+      if (it.rx) R.x = R.x.filter(e => it.rx.indexOf(e) < 0); if (it.x) for (const e of it.x) if (R.x.indexOf(e) < 0) R.x.push(e);
+      if (it.fx) for (const f of it.fx) fx[f.k === 'aura' || f.k === 'orbit' ? 'aura' : f.k === 'wings' || f.k === 'cape' ? 'back' : f.k === 'horns' || f.k === 'crown' || f.k === 'tophat' ? 'top' : f.k] = f;
+    };
+    for (const s of NG_SLOT_IDS) add(NG_ITEM[eq && eq[s]]);
+    // (a hat that covers the head clears whatever was on top of it, and the reverse)
+    if (eq && eq.head && NG_ITEM[eq.head] && !(NG_ITEM[eq.head].fx || []).some(f => f.k === 'horns' || f.k === 'crown' || f.k === 'tophat')) delete fx.top;
+    return { R, fx: Object.values(fx) };
+  },
+  // build a Night Guard in an outfit (buildGuard's own fallback still applies)
+  dress(bg0, color, name, eq) {
+    const key = this.keyOf(eq);
+    if (!key) { const g = bg0(color, name, 'guard'); if (g && g.userData) g.userData.ngKey = ''; return g; }
+    const rc = this.recipe(eq), L = People.LOOKS, was = L.guard; let g;
+    L.guard = rc.R;
+    try { g = bg0(color, name, 'guard'); } finally { L.guard = was; }
+    if (g && g.userData) { g.userData.ngKey = key; if (g.userData.rig && rc.fx.length) { try { NGFX.attach(g, rc.fx, rc.R); } catch (e) { console.warn('ngshop fx', e); } } }
+    return g;
+  },
+  // ---- co-op: your outfit goes to everyone through the host ----
+  share() {
+    if (typeof Net === 'undefined' || !Net.active || !Net.inGame) return;
+    const eq = this.cleanEq(this.d().eq);
+    if (Net.isClient) Net.request('ngc', 0, eq); else Game.emit({ k: 'ngc', id: Net.myId, eq });
+  },
+  cleanEq(x) { const o = {}; if (!x || typeof x !== 'object' || Array.isArray(x)) return o; for (const s of NG_SLOT_IDS) { const id = x[s]; if (typeof id === 'string' && NG_ITEM[id] && NG_ITEM[id].s === s) o[s] = id; } return o; },
+  // (the host passes a friend's outfit on at most every 0.4 s: a burst of changes is held back, and the latest one goes out when the wait is over — never dropped)
+  remote(r, x) {
+    if (!r) return; r._ngPend = this.cleanEq(x);
+    const wait = (r._ngAt || 0) + 400 - performance.now();
+    if (wait > 0) { if (!r._ngT) r._ngT = setTimeout(() => { r._ngT = 0; this.flushRemote(r); }, wait); return; }
+    this.flushRemote(r);
+  },
+  flushRemote(r) { const eq = r._ngPend; if (!eq) return; r._ngPend = null; r._ngAt = performance.now(); if (Net.active && Net.remotes.get(r.id) === r) Game.emit({ k: 'ngc', id: r.id, eq }); },
+  event(ev) {
+    const id = ev.id | 0; if (typeof Net !== 'undefined' && id === Net.myId) return;
+    const eq = this.cleanEq(ev.eq); this.loads.set(id, eq); this.refreshRemote(id);
+  },
+  refreshRemote(id) {
+    const r = Net.remotes && Net.remotes.get(id); if (!r || !r.avatar || r.charId !== 'guard') return;
+    if (r.avatar.userData.ngKey === this.keyOf(this.eqOf(id))) return;
+    const vis = r.avatar.visible; r.dropAvatar(); const was = this.ctx; this.ctx = id;
+    try { r.avatar = buildGuard(r.color, r.name, 'guard'); } finally { this.ctx = was; }
+    r.avatar.visible = vis;
+  },
+  runStart() {
+    setTimeout(() => this.share(), 450);
+    setTimeout(() => { if (typeof Net !== 'undefined' && Net.active && Net.isHost && Net.inGame) for (const [id, eq] of this.loads) if (Net.remotes.get(id)) Game.emit({ k: 'ngc', id, eq }); }, 1400);
+  },
+  // your own first-person arms: the sleeve of your uniform, and your gloves
+  tintArm(g, torch) {
+    const eq = this.eqOf('me'); if (!this.keyOf(eq)) return;
+    const R = this.recipe(eq).R, mesh = g && g.children && g.children.find(o => o.isMesh); if (!mesh) return;
+    const col = mesh.geometry.attributes.color, nBox = torch ? 6 : 3; if (!col || col.count % nBox) return;
+    const n = col.count / nBox, bare = R.top === 'tank' || R.slv === 'short' || R.slv === 'rolled', cut = R.tc !== undefined || R.top !== NG_BASE.top || R.slv !== NG_BASE.slv;
+    const skin = new T.Color(R.skin !== undefined ? R.skin : NG_BASE_LOOK[0]);
+    const sleeve = bare ? skin : new T.Color(R.tc !== undefined ? R.tc : NG_BASE_LOOK[1]), cuff = bare ? skin.clone().multiplyScalar(0.92) : sleeve.clone().multiplyScalar(0.72);
+    const hand = R.gloves === 'metal' ? new T.Color(0x8a9098) : R.gloves !== undefined ? new T.Color(R.gloves) : null;
+    if (!bare && R.top === 'hoodie') cuff.copy(sleeve).multiplyScalar(0.85);
+    const paint = (b, c) => { for (let i = b * n; i < (b + 1) * n; i++) col.setXYZ(i, c.r, c.g, c.b); };
+    if (cut) { paint(0, sleeve); paint(1, cuff); } if (hand) paint(2, hand); col.needsUpdate = true; // (an outfit that doesn't touch the shirt leaves the sleeve as it always was)
+  },
+};
+// the Night Guard as he was before the shop (every outfit starts from him)
+const NG_BASE = Object.assign({}, People.LOOKS.guard, { x: (People.LOOKS.guard.x || []).slice() });
+const NG_BASE_LOOK = (typeof CHAR_LOOK !== 'undefined' && CHAR_LOOK.guard) ? CHAR_LOOK.guard.slice() : ['#c39878', '#1f2b3d', '#2a2119'];
+/* ================================================================== */
+/* Build 39: THE NIGHT GUARD SHOP — the screen, and the hooks          */
+/* Categories down the side, the racks in the middle, you on the right */
+/* (turning, trying on whatever you pick), search, sort, filters, a    */
+/* purchase you confirm, a showcase for the ULTIMATE sets, and the     */
+/* Collection: what you own, what you're wearing, what's left.         */
+/* ================================================================== */
+const NG_CSS = '.ng-panel{max-width:min(1300px,97vw);width:min(1300px,97vw);padding:20px 24px 16px;max-height:95vh}'
+  + '.ng-top{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}.ng-top .h1{margin-bottom:4px}.ng-top .kicker{margin-bottom:6px}'
+  + '.ng-tabs{display:flex;gap:6px;margin-left:auto}.ng-tabs button{font:600 11px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;padding:9px 14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:#cfd5de;cursor:pointer}.ng-tabs button.on{background:#f0e6c8;color:#111;border-color:#f0e6c8}'
+  + '.ng-coins{display:flex;align-items:baseline;gap:8px;padding:8px 14px;border:1px solid rgba(217,168,58,.45);background:rgba(217,168,58,.08);white-space:nowrap}.ng-coins b{font:700 20px/1 var(--mono);color:#ffd77a;letter-spacing:.04em}.ng-coins small{font:600 9px/1 var(--mono);letter-spacing:.24em;color:#bfae80}'
+  + '.ng-sub{color:#a9a396;font-size:12.5px;line-height:1.5;margin:6px 0 10px}'
+  + '.ng-body{display:grid;grid-template-columns:176px minmax(0,1fr) 340px;gap:16px}'
+  + '.ng-side{display:flex;flex-direction:column;gap:3px;overflow:auto;max-height:64vh;padding-right:2px}.ng-side button{display:flex;align-items:center;gap:8px;text-align:left;font:600 12px/1.2 var(--sans);padding:8px 9px;border:1px solid transparent;background:rgba(255,255,255,.03);color:#cfd5de;cursor:pointer}'
+  + '.ng-side button:hover{background:rgba(255,255,255,.07)}.ng-side button.on{border-color:rgba(240,230,200,.6);background:rgba(240,230,200,.1);color:#fff}.ng-side button i{font-style:normal;width:20px;text-align:center}.ng-side button small{margin-left:auto;font:600 10px/1 var(--mono);color:#8a93a3}'
+  + '.ng-main{display:flex;flex-direction:column;min-width:0}.ng-tools{display:flex;gap:8px;margin-bottom:6px}.ng-tools input{flex:1 1 auto;min-width:0;font:13px var(--sans);padding:8px 10px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.16);color:#fff;outline:none;user-select:text;-webkit-user-select:text}.ng-tools input:focus{border-color:#f0e6c8}'
+  + '.ng-tools select{font:600 11px var(--mono);letter-spacing:.04em;padding:7px 8px;background:#14161b;border:1px solid rgba(255,255,255,.16);color:#dfe4ea}'
+  + '.ng-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}.ng-chips button{font:600 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:6px 9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#cfd5de;cursor:pointer}.ng-chips button.on{background:#f0e6c8;color:#111;border-color:#f0e6c8}.ng-chips button.ngrc.on{background:rgba(255,255,255,.06);color:inherit;box-shadow:inset 0 0 0 2px currentColor}'
+  + '.ng-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:8px;overflow:auto;max-height:52vh;padding:3px 5px 5px 3px;align-content:start}'
+  + '.ng-card{position:relative;border:1px solid var(--rc);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));padding:10px 7px 8px;cursor:pointer;text-align:center;min-height:120px;transition:transform .12s,background .12s;box-shadow:inset 0 -3px 0 var(--rc)}'
+  + '.ng-card:hover,.ng-card:focus-visible{transform:translateY(-2px);background:rgba(255,255,255,.09);outline:none}.ng-card.sel{outline:2px solid #fff;outline-offset:1px}'
+  + '.ng-card .ic{font-size:30px;line-height:40px;display:block}.ng-card b{display:block;font:600 11.5px/1.25 var(--sans);color:#eef1f5;min-height:29px}.ng-card .rn{display:block;font:700 8.5px/1.6 var(--mono);letter-spacing:.16em;color:var(--rc)}'
+  + '.ng-card .pr{display:block;margin-top:2px;font:700 11px/1.3 var(--mono);color:#ffd77a}.ng-card .pr.no{color:#d08a7a}.ng-card .pr.ok{color:#9fe0a8}.ng-card .pr.ea{color:#ffd77a;font-size:9px;letter-spacing:.08em}'
+  + '.ng-card .tag{position:absolute;top:5px;left:5px;font:700 8.5px/1 var(--mono);letter-spacing:.08em;padding:3px 4px;background:#7dff9a;color:#0c1a10}.ng-card .tag.own{background:#cfd5de;color:#111}.ng-card .tag.ea{background:#ffd77a;color:#1a1408}'
+  + '.ng-card .sw{position:absolute;top:6px;right:6px;width:10px;height:10px;border-radius:50%;border:1px solid rgba(255,255,255,.55)}'
+  + '.ng-card.ngr-epic{box-shadow:inset 0 -3px 0 var(--rc),0 0 10px rgba(182,108,255,.2)}.ng-card.ngr-legendary{box-shadow:inset 0 -3px 0 var(--rc),0 0 14px rgba(255,182,60,.28)}'
+  + '.ng-card.ngr-mythic{box-shadow:inset 0 -3px 0 var(--rc),0 0 16px rgba(255,61,110,.32);background:linear-gradient(160deg,rgba(255,61,110,.16),rgba(255,255,255,.02))}'
+  + '.ng-card.ngr-ultimate{border:2px solid transparent;background:linear-gradient(#16131f,#0f0d15) padding-box,linear-gradient(120deg,#ff4fd8,#4fd6ff,#ffd23a,#8aff4f,#ff4fd8) border-box;background-size:auto,300% 300%;animation:ngU 5s linear infinite;box-shadow:0 0 18px rgba(200,170,255,.38)}@keyframes ngU{to{background-position:0 0,300% 0}}'
+  + '.ng-card.ngr-ultimate .rn{background:linear-gradient(90deg,#ff4fd8,#4fd6ff,#ffd23a,#ff4fd8);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ngU2 4s linear infinite}@keyframes ngU2{to{background-position:300% 0}}'
+  + '.ng-empty{grid-column:1/-1;padding:30px;text-align:center;color:#8a93a3;font:13px var(--sans)}'
+  + '.ng-right{display:flex;flex-direction:column;min-width:0}.ng-view{position:relative;height:340px;background:radial-gradient(ellipse at 50% 72%,#2d323e,#0c0e13 72%);border:1px solid rgba(255,255,255,.1);cursor:grab;overflow:hidden}.ng-view canvas{position:relative;width:100%!important;height:100%!important;display:block}'
+  + '.ng-view.ult{background:radial-gradient(ellipse at 50% 60%,rgba(120,80,200,.45),#0a0810 70%)}.ng-view .rays{position:absolute;left:50%;top:48%;width:760px;height:760px;margin:-380px 0 0 -380px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(233,220,255,.1) 0 5deg,transparent 5deg 15deg);animation:ngSpin 30s linear infinite;pointer-events:none;display:none}.ng-view.ult .rays{display:block}@keyframes ngSpin{to{transform:rotate(360deg)}}'
+  + '.ng-vt{position:absolute;z-index:2;top:8px;left:10px;font:700 9px/1 var(--mono);letter-spacing:.2em;color:#ffd77a}.ng-hint{position:absolute;z-index:2;top:8px;right:10px;font:600 9px/1 var(--mono);letter-spacing:.14em;color:#8a93a3}'
+  + '.ng-vb{position:absolute;z-index:2;bottom:8px;left:8px;right:8px;display:flex;gap:5px;flex-wrap:wrap}.ng-vb button{font:600 9.5px/1 var(--mono);letter-spacing:.08em;padding:6px 7px;background:rgba(0,0,0,.6);color:#dfe4ea;border:1px solid rgba(255,255,255,.2);cursor:pointer;text-transform:uppercase}.ng-vb button.on{background:#f0e6c8;color:#111}'
+  + '.ng-info{margin-top:8px;overflow:auto;max-height:30vh}.ng-info .rr{font:700 10px/1 var(--mono);letter-spacing:.18em}.ng-info h3{margin:4px 0 2px;font:700 18px/1.2 var(--sans);color:#fff}.ng-info p{margin:5px 0;color:#c2c8d2;font-size:12.5px;line-height:1.45}.ng-info .note{color:#a9b2c0;font-size:11.5px}.ng-info .req{color:#ffd77a}'
+  + '.ng-info ul{margin:4px 0 6px 16px;padding:0;color:#d8d2c4;font-size:12px;line-height:1.5}.ng-info .bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.ng-info .bt .btn,.ng-mbox .btn,.ng-sinfo .btn{padding:9px 13px;font-size:11px;letter-spacing:.16em;cursor:pointer}.btn.ng-buy{border-color:#d9a83a;color:#ffd77a}.btn.ng-buy:disabled{opacity:.45;cursor:default}'
+  + '.ng-info .bigp{font:700 15px/1 var(--mono);color:#ffd77a;margin-top:6px}.ng-info .bigp.no{color:#d08a7a}'
+  + '.ng-modal{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;background:rgba(3,4,6,.8)}.ng-modal[hidden],.ng-show[hidden]{display:none!important}'
+  + '.ng-mbox{width:min(420px,92vw);background:linear-gradient(180deg,#1a1d26,#0d0f14);border:1px solid var(--rc);box-shadow:0 0 60px rgba(0,0,0,.7),0 0 34px var(--rg);padding:22px 22px 18px;text-align:center}.ng-mbox .ic{font-size:52px;line-height:64px;display:block}.ng-mbox h3{font:700 20px/1.2 var(--sans);color:#fff;margin:4px 0 10px}.ng-mbox .rr{font:700 10px/1 var(--mono);letter-spacing:.2em;color:var(--rc)}'
+  + '.ng-mbox .ln{display:flex;justify-content:space-between;font:600 12px/1.9 var(--mono);letter-spacing:.06em;color:#cfd5de;border-top:1px solid rgba(255,255,255,.08);padding:3px 2px}.ng-mbox .ln b{color:#ffd77a}.ng-mbox .note{font-size:12px;color:#d0a890;min-height:16px;margin:8px 0 0;line-height:1.4}.ng-mbox .bt{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}'
+  + '.ng-mbox.got{animation:ngPop .55s cubic-bezier(.2,1.4,.4,1) both}@keyframes ngPop{from{transform:scale(.6);opacity:0}}.ng-mbox.got p{color:#d8d2c4;font-size:13px}'
+  + '.ng-show{position:fixed;inset:0;z-index:65;display:flex;align-items:stretch;background:radial-gradient(ellipse at 38% 55%,#261b3a 0%,#07060b 70%);overflow:hidden}'
+  + '.ng-show .rays{position:absolute;left:36%;top:54%;width:1500px;height:1500px;margin:-750px 0 0 -750px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(233,220,255,.1) 0 4deg,transparent 4deg 13deg);animation:ngSpin 46s linear infinite;pointer-events:none}'
+  + '.ng-sv{position:relative;flex:1 1 auto;min-width:0;cursor:grab}.ng-sv canvas{width:100%!important;height:100%!important;display:block}'
+  + '.ng-sinfo{position:relative;width:min(440px,42vw);padding:6vh 34px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(90deg,transparent,rgba(5,5,9,.86) 16%)}'
+  + '.ng-sinfo small{font:700 11px/1 var(--mono);letter-spacing:.5em;background:linear-gradient(90deg,#ff4fd8,#4fd6ff,#ffd23a,#8aff4f,#ff4fd8);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ngU2 4s linear infinite}'
+  + '.ng-sinfo h2{font:300 38px/1.12 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#fff;margin:12px 0 10px;text-shadow:0 0 24px rgba(200,170,255,.55);animation:ngIn 1.2s cubic-bezier(.2,.9,.3,1) both}@keyframes ngIn{from{letter-spacing:.5em;opacity:0;filter:blur(6px)}}'
+  + '.ng-sinfo p{color:#cfc8dc;font-size:14px;line-height:1.55;margin:0 0 6px}.ng-sinfo ul{color:#e8e0f4;font-size:13px;line-height:1.7;margin:8px 0 14px 18px;padding:0}.ng-sinfo .bt{display:flex;gap:8px;flex-wrap:wrap}.ng-sinfo .pp{font:700 16px/1 var(--mono);color:#ffd77a;margin:4px 0 14px}'
+  + '.ng-colw{overflow:auto;max-height:68vh}.ng-cs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}.ng-stat{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);padding:12px}.ng-stat b{display:block;font:700 24px/1 var(--mono);color:#fff}.ng-stat small{font:600 9.5px/1.5 var(--mono);letter-spacing:.18em;color:#9aa3b2;text-transform:uppercase}'
+  + '.ng-two{display:grid;grid-template-columns:1fr 1fr;gap:20px}.ng-h{font:700 11px/1 var(--mono);letter-spacing:.24em;color:#f0e6c8;margin:14px 0 8px;text-transform:uppercase}'
+  + '.ng-bar{display:grid;grid-template-columns:132px 1fr 60px;gap:8px;align-items:center;font:600 11px/1.7 var(--mono);color:#cfd5de}.ng-bar i{display:block;height:7px;background:rgba(255,255,255,.08);position:relative}.ng-bar i em{position:absolute;left:0;top:0;bottom:0;background:var(--bc,#d9a83a)}.ng-bar span:last-child{text-align:right;color:#9aa3b2}'
+  + '.ng-wear{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}.ng-wr{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02);font-size:12px;color:#9aa3b2}.ng-wr b{color:#fff;font-weight:600}.ng-wr em{font-style:normal;color:#cfd5de}'
+  + '.ng-wr button,.ng-small{margin-left:auto;font:600 9px/1 var(--mono);letter-spacing:.1em;padding:5px 7px;background:transparent;border:1px solid rgba(255,255,255,.22);color:#cfd5de;cursor:pointer;text-transform:uppercase}'
+  + '.ng-earn{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid rgba(255,215,122,.25);background:rgba(255,215,122,.05);margin-bottom:6px;font-size:12.5px;color:#d8d2c4;cursor:pointer}.ng-earn.done{border-color:rgba(125,255,154,.35);background:rgba(125,255,154,.06)}.ng-earn .ic{font-size:22px}.ng-earn b{color:#fff}.ng-earn small{display:block;color:#a9a396;font-size:11.5px}'
+  + '.ng-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:4px}.ng-wall span{display:flex;align-items:center;justify-content:center;height:40px;font-size:20px;border:1px solid var(--rc);background:rgba(255,255,255,.04);cursor:pointer}.ng-wall span.no{filter:grayscale(1) brightness(.42);border-color:rgba(255,255,255,.1)}.ng-wall span:hover{transform:scale(1.08)}'
+  + '@media (max-width:1060px){.ng-body{grid-template-columns:150px minmax(0,1fr)}.ng-right{grid-column:1/-1}.ng-view{height:300px}.ng-info{max-height:none}}'
+  + '@media (max-width:700px){.ng-body{grid-template-columns:1fr}.ng-side{flex-direction:row;flex-wrap:wrap;max-height:none}.ng-side button{flex:1 1 44%}.ng-two{grid-template-columns:1fr}.ng-grid{max-height:none}.ng-show{flex-direction:column}.ng-sinfo{width:auto;padding:16px 20px;background:rgba(5,5,9,.88)}.ng-sv{min-height:50vh}.ng-sinfo h2{font-size:26px}}';
+
+const NGUI = {
+  built: false, tab: 'shop', cat: 'all', own: 'all', rar: '', q: '', sort: 'rar', sel: null, view: 'auto', mine: false, walk: false,
+  r: null, scn: null, cam: null, fig: null, figKey: null, yaw: Math.PI + 0.45, drag: null, raf: 0, last: 0, t: 0, showOn: false, showT: 0, _bt: 0, _cp: null, _cl: null,
+  build() {
+    if (this.built) return; this.built = true;
+    const st = document.createElement('style'); st.textContent = NG_CSS; document.head.appendChild(st);
+    const ch = $('btn-chars');
+    if (ch && !$('btn-ngshop')) { const b = document.createElement('button'); b.className = 'mbtn'; b.id = 'btn-ngshop'; b.innerHTML = 'Night Guard Shop<i class="free" id="ng-badge" hidden>NEW</i>'; ch.after(b); b.addEventListener('click', () => this.open()); }
+    const sc = document.createElement('div'); sc.id = 'screen-ngshop'; sc.className = 'screen shade';
+    sc.innerHTML = '<div class="panel ng-panel"><div class="ng-top"><div><div class="kicker">The Night Guard · Outfitters</div><div class="h1">Night Guard Shop <span id="ng-count" class="ct-count"></span></div></div>'
+      + '<div class="ng-tabs"><button data-t="shop" class="on">Shop</button><button data-t="col">Collection</button></div><div class="ng-coins"><span>🪙</span><b id="ng-coins">0</b><small>COINS</small></div></div>'
+      + '<p class="ng-sub" id="ng-sub">Looks only: nothing here changes how loud you are, how fast you move or what any monster sees. You wear it whenever you play the NIGHT GUARD, and your friends see it in co-op.</p>'
+      + '<div class="ng-body" id="ng-shop"><nav class="ng-side" id="ng-side" aria-label="Categories"></nav>'
+      + '<section class="ng-main"><div class="ng-tools"><input id="ng-q" type="search" placeholder="Search the shop…" autocomplete="off" spellcheck="false" aria-label="Search"><select id="ng-sort" aria-label="Sort">'
+      + '<option value="rar">Rarity: low → high</option><option value="rard">Rarity: high → low</option><option value="pr">Price: low → high</option><option value="prd">Price: high → low</option><option value="name">Name: A → Z</option></select></div>'
+      + '<div class="ng-chips" id="ng-own"></div><div class="ng-chips" id="ng-rar"></div><div class="ng-grid" id="ng-grid" role="list"></div></section>'
+      + '<aside class="ng-right"><div class="ng-view" id="ng-view"><div class="rays"></div><div class="ng-vt" id="ng-vt">TRYING ON</div><span class="ng-hint">DRAG TO TURN</span><div class="ng-vb" id="ng-vb">'
+      + '<button data-v="auto" class="on">Auto</button><button data-v="full">Full</button><button data-v="close">Close-up</button><button data-v="walk">Walk</button><button data-v="mine">My outfit</button></div></div><div class="ng-info" id="ng-info"></div></aside></div>'
+      + '<div class="ng-colw" id="ng-col" hidden></div>'
+      + '<div class="row" style="margin-top:12px"><button class="btn" id="btn-ng-back">Back</button></div></div>'
+      + '<div class="ng-modal" id="ng-modal" hidden></div>'
+      + '<div class="ng-show" id="ng-show" hidden><div class="rays"></div><div class="ng-sv" id="ng-sv"></div><div class="ng-sinfo" id="ng-sinfo"></div></div>';
+    document.body.appendChild(sc);
+    sc.querySelectorAll('.ng-tabs button').forEach(b => b.addEventListener('click', () => { this.tab = b.dataset.t; this.draw(); Sound.ui(); }));
+    const q = $('ng-q'); q.addEventListener('input', () => { this.q = q.value; this.drawGrid(); });
+    q.addEventListener('keydown', e => { if (e.key !== 'Escape') e.stopPropagation(); });
+    $('ng-sort').addEventListener('change', e => { this.sort = e.target.value; this.drawGrid(); });
+    $('btn-ng-back').addEventListener('click', () => UI.back());
+    $('ng-vb').querySelectorAll('button').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); this.setView(b.dataset.v); }));
+    for (const id of ['ng-view', 'ng-sv']) {
+      const v = $(id);
+      v.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; this.drag = { x: e.clientX, y: this.yaw }; try { v.setPointerCapture(e.pointerId); } catch (er) { } });
+      v.addEventListener('pointermove', e => { if (this.drag) this.yaw = this.drag.y + (e.clientX - this.drag.x) * 0.012; });
+      v.addEventListener('pointerup', () => { this.drag = null; }); v.addEventListener('pointercancel', () => { this.drag = null; });
+    }
+    $('ng-modal').addEventListener('click', e => { if (e.target.id === 'ng-modal') this.closeModal(); });
+    this.badge();
+  },
+  open() {
+    this.build(); const d = NGShop.d();
+    if (!this.sel) this.sel = (d.recent[0]) || 'u_blue';
+    if (!d.opened) { d.opened = 1; NGShop.save(); }
+    this.tab = 'shop'; this.draw(); UI.goto('screen-ngshop'); this.badge(); this.start3d();
+  },
+  badge() { const b = $('ng-badge'); if (b) b.hidden = !!NGShop.d().opened; },
+  worn(id) { const it = NG_ITEM[id]; return !!it && NGShop.d().eq[it.s] === id; },
+  fmt(n) { return Math.max(0, Math.floor(n)).toLocaleString('en-US'); },
+  draw() {
+    const cnt = NGShop.count(); $('ng-count').textContent = cnt.have + ' / ' + cnt.all; $('ng-coins').textContent = this.fmt(NGShop.coins());
+    document.querySelectorAll('#screen-ngshop .ng-tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === this.tab));
+    $('ng-shop').hidden = this.tab !== 'shop'; $('ng-col').hidden = this.tab !== 'col';
+    if (this.tab === 'col') { this.drawCol(); return; }
+    this.drawSide(); this.drawChips(); this.drawGrid(); this.drawInfo();
+  },
+  drawSide() {
+    const d = NGShop.d(), side = $('ng-side'); side.innerHTML = '';
+    const row = (k, n, i) => { const L = k === 'all' ? NG_ITEMS : NG_ITEMS.filter(it => it.s === k), b = document.createElement('button'); b.className = this.cat === k ? 'on' : ''; b.innerHTML = '<i></i><span></span><small></small>'; b.querySelector('i').textContent = i; b.querySelector('span').textContent = n; b.querySelector('small').textContent = L.filter(it => d.own[it.id]).length + '/' + L.length; b.addEventListener('click', () => { this.cat = k; this.draw(); Sound.ui(); }); side.appendChild(b); };
+    row('all', 'Everything', '🛍️'); for (const [k, n, i] of NG_SLOTS) row(k, n, i);
+  },
+  drawChips() {
+    const own = $('ng-own'); own.innerHTML = '';
+    for (const [k, n] of [['all', 'All'], ['own', 'Owned'], ['not', 'Not owned'], ['worn', 'Wearing']]) { const b = document.createElement('button'); b.textContent = n; b.className = this.own === k ? 'on' : ''; b.addEventListener('click', () => { this.own = k; this.drawChips(); this.drawGrid(); }); own.appendChild(b); }
+    const rar = $('ng-rar'); rar.innerHTML = '';
+    for (const r of [''].concat(NG_RIDS)) { const b = document.createElement('button'); b.textContent = r ? NG_RAR[r].n : 'Any rarity'; if (r) { b.style.color = NG_RAR[r].c; b.classList.add('ngrc'); } if (this.rar === r) b.classList.add('on'); b.addEventListener('click', () => { this.rar = r; this.drawChips(); this.drawGrid(); }); rar.appendChild(b); }
+  },
+  list() {
+    const d = NGShop.d(), q = this.q.trim().toLowerCase(), ri = it => NG_RIDS.indexOf(it.r), pr = it => it.earn ? 1e9 : NGShop.price(it), si = it => NG_SLOT_IDS.indexOf(it.s);
+    const L = NG_ITEMS.filter(it => (this.cat === 'all' || it.s === this.cat) && (!this.rar || it.r === this.rar)
+      && (this.own === 'all' || (this.own === 'own' ? d.own[it.id] : this.own === 'not' ? !d.own[it.id] : this.worn(it.id)))
+      && (!q || (it.n + ' ' + it.d + ' ' + NG_SLOT[it.s].n + ' ' + NG_RAR[it.r].n + (it.earn ? ' earned reward' : '')).toLowerCase().indexOf(q) >= 0));
+    const by = { rar: (a, b) => ri(a) - ri(b) || si(a) - si(b), rard: (a, b) => ri(b) - ri(a) || si(a) - si(b), pr: (a, b) => pr(a) - pr(b) || a.n.localeCompare(b.n), prd: (a, b) => (b.earn ? -1 : pr(b)) - (a.earn ? -1 : pr(a)) || a.n.localeCompare(b.n), name: (a, b) => a.n.localeCompare(b.n) }[this.sort] || ((a, b) => 0);
+    return L.slice().sort(by);
+  },
+  drawGrid() {
+    const grid = $('ng-grid'); if (!grid) return; grid.innerHTML = '';
+    const L = this.list();
+    if (!L.length) { const e = document.createElement('div'); e.className = 'ng-empty'; e.textContent = this.q ? 'Nothing in the shop matches “' + this.q.trim() + '”.' : this.own === 'worn' ? 'You aren\'t wearing anything from this rack yet.' : this.own === 'own' ? 'You don\'t own anything from this rack yet.' : 'Nothing here.'; grid.appendChild(e); return; }
+    for (const it of L) grid.appendChild(this.card(it));
+  },
+  card(it) {
+    const d = NGShop.d(), own = !!d.own[it.id], worn = this.worn(it.id), p = NGShop.price(it), afford = NGShop.coins() >= p;
+    const el = document.createElement('div'); el.className = 'ng-card ngr-' + it.r + (this.sel === it.id ? ' sel' : ''); el.tabIndex = 0; el.setAttribute('role', 'listitem'); el.dataset.id = it.id; el.style.setProperty('--rc', NG_RAR[it.r].c);
+    el.innerHTML = '<span class="ic"></span><b></b><span class="rn"></span><span class="pr"></span>';
+    el.querySelector('.ic').textContent = it.i; el.querySelector('b').textContent = it.n; el.querySelector('.rn').textContent = NG_RAR[it.r].n;
+    const pe = el.querySelector('.pr');
+    if (own) { pe.textContent = worn ? 'WEARING' : 'OWNED'; pe.className = 'pr ok'; } else if (it.earn) { pe.textContent = 'EARNED IN PLAY'; pe.className = 'pr ea'; } else { pe.textContent = '🪙 ' + this.fmt(p); if (!afford) pe.className = 'pr no'; }
+    if (worn || own || it.earn) { const t = document.createElement('span'); t.className = 'tag' + (worn ? '' : own ? ' own' : ' ea'); t.textContent = worn ? 'ON' : own ? 'OWNED' : 'REWARD'; el.appendChild(t); }
+    const sw = ngSwatch(it); if (sw) { const s = document.createElement('span'); s.className = 'sw'; s.style.background = sw; el.appendChild(s); }
+    el.title = it.n + ' — ' + NG_RAR[it.r].n + ' ' + NG_SLOT[it.s].n.toLowerCase();
+    el.addEventListener('click', () => this.select(it.id));
+    el.addEventListener('dblclick', () => { if (NGShop.owns(it.id)) { if (!this.worn(it.id)) { NGShop.equip(it.id); this.afterWear(it); } } else if (!it.earn) this.confirmBuy(it.id); });
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.select(it.id); } });
+    return el;
+  },
+  select(id) {
+    if (!NG_ITEM[id]) return;
+    this.sel = id; this.mine = false;
+    const it = NG_ITEM[id]; if (it.s === 'back' && this.view === 'auto') this.yaw = 0.55; // (a cape or wings: turn round to show them)
+    $('ng-grid').querySelectorAll('.ng-card').forEach(c => c.classList.toggle('sel', c.dataset.id === id));
+    $('ng-vb').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === this.view || (b.dataset.v === 'walk' && this.walk)));
+    this.drawInfo(); Sound.ui();
+  },
+  setView(v) {
+    if (v === 'walk') this.walk = !this.walk; else if (v === 'mine') this.mine = !this.mine; else this.view = v;
+    $('ng-vb').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === 'walk' ? this.walk : b.dataset.v === 'mine' ? this.mine : b.dataset.v === this.view));
+    this.drawInfo(); Sound.ui();
+  },
+  previewEq() {
+    const d = NGShop.d(), it = NG_ITEM[this.sel];
+    if (this.mine || !it) return Object.assign({}, d.eq);
+    if (it.s === 'set') return { set: it.id };
+    const eq = Object.assign({}, d.eq); eq[it.s] = it.id; return eq;
+  },
+  drawInfo() {
+    const box = $('ng-info'); if (!box) return;
+    const it = NG_ITEM[this.sel] || NG_ITEMS[0], d = NGShop.d(), own = !!d.own[it.id], worn = this.worn(it.id), p = NGShop.price(it), coins = NGShop.coins();
+    const vt = $('ng-vt'); vt.textContent = this.mine ? 'YOUR OUTFIT' : worn ? 'WEARING' : own ? 'TRYING ON · OWNED' : 'TRYING ON';
+    $('ng-view').classList.toggle('ult', !this.mine && it.r === 'ultimate');
+    box.innerHTML = '<span class="rr"></span><h3></h3><p class="ds"></p><div class="ex"></div><div class="bt"></div>';
+    const rr = box.querySelector('.rr'); rr.textContent = NG_RAR[it.r].n + ' · ' + NG_SLOT[it.s].n.toUpperCase(); rr.style.color = NG_RAR[it.r].c;
+    box.querySelector('h3').textContent = it.n; box.querySelector('.ds').textContent = it.d;
+    const ex = box.querySelector('.ex'), P = (cls, txt) => { const e = document.createElement('p'); e.className = cls; e.textContent = txt; ex.appendChild(e); return e; };
+    if (it.parts) { const ul = document.createElement('ul'); for (const t of it.parts) { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); } ex.appendChild(ul); }
+    if (it.earn) P(own ? 'note' : 'req', (own ? '🏆 Earned: ' : '🏆 Not for sale — ') + NG_EARN[it.earn] + (own ? '.' : ' to earn it.'));
+    else if (!own) { const e = document.createElement('div'); e.className = 'bigp' + (coins < p ? ' no' : ''); e.textContent = '🪙 ' + this.fmt(p) + (coins < p ? '  ·  ' + this.fmt(p - coins) + ' more needed' : ''); ex.appendChild(e); }
+    if (it.s === 'set') P('note', 'Wearing a set replaces your whole outfit. You can still put single pieces back on over it.');
+    if (Chars.data && Chars.equipped && Chars.equipped() !== 'guard') { const C = CHARS[Chars.equipped()]; P('note', 'You\'re playing as ' + (C ? C.name : 'someone else') + ' right now: your outfit shows when you play the NIGHT GUARD.'); }
+    const bt = box.querySelector('.bt'), mk = (txt, fn, cls) => { const b = document.createElement('button'); b.className = 'btn' + (cls ? ' ' + cls : ''); b.textContent = txt; b.addEventListener('click', fn); bt.appendChild(b); return b; };
+    if (!own && !it.earn) { const b = mk(coins >= p ? 'Buy — 🪙 ' + this.fmt(p) : 'Not enough coins', () => this.confirmBuy(it.id), 'ng-buy'); b.disabled = coins < p; }
+    if (own && !worn) mk(it.s === 'set' ? 'Wear the set' : 'Wear it', () => { NGShop.equip(it.id); this.afterWear(it); });
+    if (worn) mk('Take it off', () => { NGShop.unequip(it.s); this.draw(); Sound.ui(); });
+    if (it.r === 'ultimate') mk('▶ Showcase', () => this.openShow(it.id));
+    if (Chars.data && Chars.equipped && Chars.equipped() !== 'guard' && (own || worn)) mk('Play as the Night Guard', () => { if (Chars.equip('guard')) { try { CharUI.refresh(); } catch (e) { } UI.msg('You\'re the NIGHT GUARD again, in your outfit.', 'good', 3); this.drawInfo(); } });
+  },
+  afterWear(it) {
+    Sound.ui(); if (typeof Sound.powerUp === 'function' && NG_RIDS.indexOf(it.r) >= 3) Sound.powerUp();
+    this.mine = false; this.draw();
+  },
+  /* ---- buying: always asked first ---- */
+  confirmBuy(id) {
+    const it = NG_ITEM[id]; if (!it || it.earn || NGShop.owns(id)) return;
+    const p = NGShop.price(it), c = NGShop.coins(), m = $('ng-modal'), R = NG_RAR[it.r];
+    m.hidden = false; this.modalOpen = true;
+    m.innerHTML = '<div class="ng-mbox"><span class="rr"></span><span class="ic"></span><h3></h3><div class="ln"><span>PRICE</span><b></b></div><div class="ln"><span>YOU HAVE</span><span class="hv"></span></div><div class="ln"><span>AFTER</span><span class="af"></span></div><p class="note"></p><div class="bt"><button class="btn ng-buy" id="ng-yes">Buy it</button><button class="btn" id="ng-no">Cancel</button></div></div>';
+    const bx = m.firstChild; bx.style.setProperty('--rc', R.c); bx.style.setProperty('--rg', RARITY[it.r] ? RARITY[it.r].glow : R.c);
+    bx.querySelector('.rr').textContent = R.n + ' · ' + NG_SLOT[it.s].n.toUpperCase(); bx.querySelector('.ic').textContent = it.i; bx.querySelector('h3').textContent = it.n;
+    bx.querySelector('b').textContent = '🪙 ' + this.fmt(p); bx.querySelector('.hv').textContent = this.fmt(c); bx.querySelector('.af').textContent = c >= p ? this.fmt(c - p) : '—';
+    const note = bx.querySelector('.note'), yes = $('ng-yes');
+    if (c < p) { yes.disabled = true; note.textContent = 'You need ' + this.fmt(p - c) + ' more coins. Every mode pays coins at the end of a run.'; }
+    yes.addEventListener('click', () => { if (yes.disabled) return; yes.disabled = true; const r = NGShop.buy(id); if (r.ok) this.bought(it); else { note.textContent = r.msg; if (typeof Sound.abDeny === 'function') Sound.abDeny(); } });
+    $('ng-no').addEventListener('click', () => this.closeModal());
+    setTimeout(() => { try { $('ng-no').focus({ preventScroll: true }); } catch (e) { } }, 20);
+  },
+  bought(it) {
+    const m = $('ng-modal'), R = NG_RAR[it.r];
+    m.innerHTML = '<div class="ng-mbox got"><span class="rr"></span><span class="ic"></span><h3></h3><p>is yours.</p><div class="ln"><span>COINS LEFT</span><b></b></div><div class="bt"><button class="btn ng-buy" id="ng-wear"></button><button class="btn" id="ng-ok">Later</button></div></div>';
+    const bx = m.firstChild; bx.style.setProperty('--rc', R.c); bx.style.setProperty('--rg', RARITY[it.r] ? RARITY[it.r].glow : R.c);
+    bx.querySelector('.rr').textContent = R.n; bx.querySelector('.ic').textContent = it.i; bx.querySelector('h3').textContent = it.n; bx.querySelector('b').textContent = '🪙 ' + this.fmt(NGShop.coins());
+    $('ng-wear').textContent = it.s === 'set' ? 'Wear the set now' : 'Wear it now';
+    $('ng-wear').addEventListener('click', () => { NGShop.equip(it.id); this.closeModal(); this.afterWear(it); });
+    $('ng-ok').addEventListener('click', () => this.closeModal());
+    if (typeof Sound.coin === 'function') Sound.coin(); if (NG_RIDS.indexOf(it.r) >= 2 && typeof Sound.powerUp === 'function') Sound.powerUp(); if (it.r === 'ultimate' && typeof Sound.ascend === 'function') Sound.ascend();
+    this.draw(); setTimeout(() => { try { $('ng-wear').focus({ preventScroll: true }); } catch (e) { } }, 20);
+  },
+  closeModal() { const m = $('ng-modal'); if (m) { m.hidden = true; m.innerHTML = ''; } this.modalOpen = false; if (this.showOn) this.drawShow(); },
+  /* ---- the ULTIMATE showcase ---- */
+  openShow(id) {
+    const it = NG_ITEM[id]; if (!it) return; this.sel = id; this.mine = false; this.showOn = true; this.showT = 0; this.show0 = performance.now(); this.yaw = Math.PI + 0.35;
+    $('ng-show').hidden = false; this.drawShow(); if (typeof Sound.ascend === 'function') Sound.ascend(); else if (typeof Sound.powerUp === 'function') Sound.powerUp();
+  },
+  drawShow() {
+    const it = NG_ITEM[this.sel], box = $('ng-sinfo'); if (!it || !box) return;
+    const own = NGShop.owns(it.id), worn = this.worn(it.id), p = NGShop.price(it), c = NGShop.coins();
+    box.innerHTML = '<small></small><h2></h2><p></p><ul></ul><div class="pp"></div><div class="bt"></div>';
+    box.querySelector('small').textContent = NG_RAR[it.r].n + ' SET'; box.querySelector('h2').textContent = it.n; box.querySelector('p').textContent = it.d;
+    const ul = box.querySelector('ul'); for (const t of it.parts || []) { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); }
+    box.querySelector('.pp').textContent = own ? (worn ? 'YOU\'RE WEARING IT' : 'YOU OWN IT') : '🪙 ' + this.fmt(p) + (c < p ? '  ·  you have ' + this.fmt(c) : '');
+    const bt = box.querySelector('.bt'), mk = (t, fn, cls) => { const b = document.createElement('button'); b.className = 'btn' + (cls ? ' ' + cls : ''); b.textContent = t; b.addEventListener('click', fn); bt.appendChild(b); return b; };
+    if (!own) { const b = mk('Buy — 🪙 ' + this.fmt(p), () => this.confirmBuy(it.id), 'ng-buy'); b.disabled = c < p; }
+    else if (!worn) mk('Wear the set', () => { NGShop.equip(it.id); this.afterWear(it); this.drawShow(); });
+    mk('Close', () => this.closeShow());
+  },
+  closeShow() { this.showOn = false; const s = $('ng-show'); if (s) s.hidden = true; this.drawInfo(); },
+  /* ---- the Collection ---- */
+  drawCol() {
+    const box = $('ng-col'), d = NGShop.d(), cnt = NGShop.count(); box.innerHTML = '';
+    const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+    const cs = el('div', 'ng-cs'); box.appendChild(cs);
+    const stat = (v, l) => { const s = el('div', 'ng-stat'); s.appendChild(el('b', '', v)); s.appendChild(el('small', '', l)); cs.appendChild(s); };
+    stat(cnt.have + ' / ' + cnt.all, 'pieces owned · ' + Math.round(cnt.have / cnt.all * 100) + '%');
+    stat(NG_ITEMS.filter(it => it.r === 'ultimate' && d.own[it.id]).length + ' / ' + NG_ITEMS.filter(it => it.r === 'ultimate').length, 'ultimate sets');
+    stat(NG_EARN_KEYS.filter(k => d.earned[k]).length + ' / ' + NG_EARN_KEYS.length, 'rewards earned in play');
+    stat(Object.keys(d.eq).length + ' / ' + NG_SLOT_IDS.length, 'slots worn now');
+    stat(this.fmt(d.spent), 'coins spent here');
+    const two = el('div', 'ng-two'); box.appendChild(two); const L = el('div'), Rt = el('div'); two.appendChild(L); two.appendChild(Rt);
+    const bar = (host, name, have, all, col) => { const b = el('div', 'ng-bar'); b.appendChild(el('span', '', name)); const i = el('i'), em = el('em'); em.style.width = (all ? have / all * 100 : 0) + '%'; if (col) em.style.setProperty('--bc', col); i.appendChild(em); b.appendChild(i); b.appendChild(el('span', '', have + ' / ' + all)); host.appendChild(b); };
+    L.appendChild(el('div', 'ng-h', 'By rarity'));
+    for (const r of NG_RIDS) { const A = NG_ITEMS.filter(it => it.r === r); bar(L, NG_RAR[r].n + ' · ' + (A.some(it => !it.earn) ? this.fmt(NG_RAR[r].p) : ''), A.filter(it => d.own[it.id]).length, A.length, NG_RAR[r].c); }
+    L.appendChild(el('div', 'ng-h', 'By category'));
+    for (const [k, n] of NG_SLOTS) { const A = NG_ITEMS.filter(it => it.s === k); bar(L, n, A.filter(it => d.own[it.id]).length, A.length); }
+    Rt.appendChild(el('div', 'ng-h', 'Earned in play — not for sale'));
+    for (const k of NG_EARN_KEYS) {
+      const it = NG_EARN_ITEM[k], done = !!d.earned[k], e = el('div', 'ng-earn' + (done ? ' done' : '')), ic = el('span', 'ic', it ? it.i : '🏆'), t = el('div');
+      t.appendChild(el('b', '', (done ? '✓ ' : '') + (it ? it.n : k))); t.appendChild(el('small', '', NG_EARN[k])); e.appendChild(ic); e.appendChild(t);
+      if (it) e.addEventListener('click', () => this.jump(it.id)); Rt.appendChild(e);
+    }
+    Rt.appendChild(el('div', 'ng-h', 'What you\'re wearing'));
+    const wr = el('div', 'ng-wear'); Rt.appendChild(wr);
+    for (const [k, n, i] of NG_SLOTS) {
+      const id = d.eq[k], it = NG_ITEM[id], r = el('div', 'ng-wr'); r.appendChild(el('span', '', i));
+      const t = el('span'); t.appendChild(el('em', '', n + ': ')); t.appendChild(el('b', '', it ? it.n : k === 'set' ? 'none' : 'standard issue')); r.appendChild(t);
+      if (it) { const b = el('button', '', 'Take off'); b.addEventListener('click', () => { NGShop.unequip(k); this.drawCol(); Sound.ui(); }); r.appendChild(b); }
+      wr.appendChild(r);
+    }
+    if (Object.keys(d.eq).length) { const b = el('button', 'ng-small', 'Take everything off'); b.style.margin = '8px 0 0'; b.addEventListener('click', () => { NGShop.strip(); this.drawCol(); Sound.ui(); }); Rt.appendChild(b); }
+    box.appendChild(el('div', 'ng-h', 'The whole collection'));
+    const wall = el('div', 'ng-wall'); box.appendChild(wall);
+    for (const [k] of NG_SLOTS) for (const it of NG_ITEMS.filter(x => x.s === k).sort((a, b) => NG_RIDS.indexOf(a.r) - NG_RIDS.indexOf(b.r))) {
+      const s = el('span', d.own[it.id] ? '' : 'no', it.i); s.style.setProperty('--rc', NG_RAR[it.r].c); s.title = it.n + ' · ' + NG_RAR[it.r].n + (d.own[it.id] ? ' · owned' : ''); s.addEventListener('click', () => this.jump(it.id)); wall.appendChild(s);
+    }
+  },
+  jump(id) { this.tab = 'shop'; this.cat = 'all'; this.own = 'all'; this.rar = ''; this.q = ''; const q = $('ng-q'); if (q) q.value = ''; this.sel = id; this.draw(); const c = $('ng-grid').querySelector('[data-id="' + id + '"]'); if (c) c.scrollIntoView({ block: 'nearest' }); Sound.ui(); },
+  /* ---- you, in the shop's own little renderer (only while it's open) ---- */
+  start3d() {
+    if (!this.r) {
+      try { const cv = document.createElement('canvas'); $('ng-view').prepend(cv); this.r = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, preserveDrawingBuffer: true }); this.r.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); this.r.shadowMap.enabled = false; }
+      catch (e) { this.r = null; $('ng-view').insertAdjacentHTML('afterbegin', '<p style="padding:20px;color:#999">No 3D preview on this device — the pieces still work in the game.</p>'); return; }
+      try { this.r.outputEncoding = renderer.outputEncoding; this.r.toneMapping = renderer.toneMapping; this.r.toneMappingExposure = renderer.toneMappingExposure; } catch (e) { }
+      const s = this.scn = new T.Scene(); this.cam = new T.PerspectiveCamera(30, 1, 0.05, 30); this._cp = new T.Vector3(0, 1.08, 3.5); this._cl = new T.Vector3(0, 0.98, 0); this.cam.position.copy(this._cp); this.cam.lookAt(this._cl);
+      s.add(new T.HemisphereLight(0xdfe8ff, 0x2a2420, 0.85)); const k = new T.DirectionalLight(0xffffff, 0.95); k.position.set(1.5, 2.6, 2.2); s.add(k);
+      const rim = this.rim = new T.DirectionalLight(0x88aaff, 0.6); rim.position.set(-2, 1.6, -2.2); s.add(rim); const fill = new T.DirectionalLight(0xffe0c0, 0.28); fill.position.set(-1.6, 1, 2); s.add(fill);
+      const fl = new T.Mesh(new T.CircleGeometry(0.95, 48), new T.MeshPhongMaterial({ color: 0x262a33, shininess: 10 })); fl.rotation.x = -Math.PI / 2; s.add(fl);
+      const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(0,0,0,.65)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+      const sh = new T.Mesh(new T.PlaneGeometry(1, 1), new T.MeshBasicMaterial({ map: new T.CanvasTexture(c), transparent: true, depthWrite: false })); sh.rotation.x = -Math.PI / 2; sh.position.y = 0.004; s.add(sh);
+    }
+    cancelAnimationFrame(this.raf); this.last = performance.now();
+    const loop = now => { if (UI.current !== 'screen-ngshop') { this.raf = 0; this.dropFig(); return; } this.raf = requestAnimationFrame(loop); this.frame(Math.min(0.05, (now - this.last) / 1000)); this.last = now; };
+    this.raf = requestAnimationFrame(loop);
+  },
+  dropFig() {
+    const g = this.fig; if (!g) return; this.fig = null; this.figKey = null;
+    if (g.parent) g.parent.remove(g);
+    g.traverse(o => { if (o.isMesh || o.isPoints) { if (o.geometry && !(typeof WGEO !== 'undefined' && Object.values(WGEO).indexOf(o.geometry) >= 0)) o.geometry.dispose(); } });
+    if (g.userData.mat && g.userData.mat.dispose) g.userData.mat.dispose();
+  },
+  rebuild() {
+    const eq = this.previewEq(), key = NGShop.keyOf(eq); this._bt = performance.now();
+    this.dropFig();
+    const was = NGShop.ctx; NGShop.ctx = eq; let g = null;
+    try { g = buildGuard(GUARD_COLORS[0], '', 'guard'); } catch (e) { console.warn('ngshop preview', e); } finally { NGShop.ctx = was; }
+    if (!g) return; this.scn.add(g); g.userData.ngT = 0; this.fig = g; this.figKey = key;
+    g.traverse(o => { o.frustumCulled = false; });
+    this.lastBuildMs = performance.now() - this._bt;
+  },
+  frame(dt) {
+    if (!this.r) return;
+    const host = this.showOn ? $('ng-sv') : $('ng-view');
+    if (this.r.domElement.parentNode !== host) host.prepend(this.r.domElement);
+    const w = host.clientWidth || 300, h = host.clientHeight || 300;
+    if (this._w !== w || this._h !== h) { this._w = w; this._h = h; this.r.setSize(w, h, false); this.cam.aspect = w / h; this.cam.updateProjectionMatrix(); }
+    const key = NGShop.keyOf(this.previewEq());
+    if ((key !== this.figKey || !this.fig) && performance.now() - this._bt > 90) this.rebuild();
+    this.t += dt; if (this.showOn) this.showT = (performance.now() - this.show0) / 1000; // (real time: the push-in takes as long on a slow machine)
+    if (!this.drag) this.yaw += dt * (this.showOn ? 0.4 : 0.3);
+    const g = this.fig; if (g) poseGuard(g, { x: 0, z: 0 }, this.yaw, this.walk ? 1.7 : 0, false, false, false, dt, false, null, 0);
+    // the camera: where the piece you picked is (a hat → the head; boots → the feet), or a slow push-in for a showcase
+    const it = NG_ITEM[this.sel]; let v = this.view;
+    if (v === 'auto') v = !it || this.mine ? 'full' : ['head', 'face', 'hair'].indexOf(it.s) >= 0 ? 'close' : it.s === 'feet' ? 'feet' : 'full';
+    let P, L;
+    if (this.showOn) { const k = Math.min(1, this.showT / 3.2), e = 1 - Math.pow(1 - k, 3); P = [0, 1.6 - 0.45 * e, 1.25 + 2.55 * e]; L = [0, 1.55 - 0.55 * e, 0]; }
+    else if (v === 'close') { P = [0, 1.7, 1.45]; L = [0, 1.62, 0]; }
+    else if (v === 'feet') { P = [0, 0.55, 1.7]; L = [0, 0.28, 0]; }
+    else { P = [0, 1.02, 3.75]; L = [0, 0.93, 0]; }
+    const kk = this.snap ? 1 : Math.min(1, dt * 5); this._cp.lerp(_ngV.set(P[0], P[1], P[2]), kk); this._cl.lerp(_ngV.set(L[0], L[1], L[2]), kk);
+    this.cam.position.copy(this._cp); this.cam.lookAt(this._cl);
+    const ult = (it && it.r === 'ultimate' && !this.mine) || this.showOn; this.rim.color.setHex(ult ? 0xc8a0ff : 0x88aaff); this.rim.intensity = ult ? 0.95 + 0.25 * Math.sin(this.t * 1.3) : 0.6;
+    this.r.render(this.scn, this.cam);
+  },
+};
+const _ngV = new T.Vector3();
+
+/* ================= the hooks ================= */
+{
+  // the save: the shop's part, checked on every load
+  const cl0 = Cos.load; Cos.load = function () { const d = cl0.apply(this, arguments); d.ng = NGShop.clean(d.ng); return d; };
+  if (Cos.d) Cos.d.ng = NGShop.clean(Cos.d.ng);
+  // every Night Guard built for a player: dressed in that player's outfit (anyone else — the survivors, the campers, the Hunt's guards — as he always was)
+  const bg0 = buildGuard; buildGuard = function (color, name, charId) {
+    const who = NGShop.ctx;
+    if (who === null || who === undefined || (CHARS[charId] ? charId : 'guard') !== 'guard') return bg0.apply(this, arguments);
+    return NGShop.dress(bg0, color, name, NGShop.eqOf(who));
+  };
+  const ctxCall = (who, fn, self, args) => { const was = NGShop.ctx; NGShop.ctx = who; try { return fn.apply(self, args); } finally { NGShop.ctx = was; } };
+  // your friends' models (and rebuilt when the outfit they told us about isn't the one they're wearing)
+  const rsc0 = RemotePlayer.prototype.setChar; RemotePlayer.prototype.setChar = function () { return ctxCall(this.id, rsc0, this, arguments); };
+  const rrg0 = RemotePlayer.prototype.resetForGame; RemotePlayer.prototype.resetForGame = function () {
+    if (this.avatar && this.avatar.userData.charId === 'guard' && this.charId === 'guard' && this.avatar.userData.ngKey !== NGShop.keyOf(NGShop.eqOf(this.id))) this.dropAvatar();
+    return ctxCall(this.id, rrg0, this, arguments);
+  };
+  // you, on the security cameras
+  const nsa0 = Net.selfAvatar; Net.selfAvatar = function (on) {
+    if (on && this.self && this.self.userData.charId === 'guard' && this.self.userData.ngKey !== NGShop.keyOf(NGShop.eqOf('me'))) this.self.userData.charId = '~'; // (the old one goes, the way a new character's does)
+    return ctxCall('me', nsa0, this, arguments);
+  };
+  // you, looking down at yourself
+  const ibb0 = ImmBody.build; ImmBody.build = function () { return ctxCall('me', ibb0, this, arguments); };
+  const ibf0 = ImmBody.frame; ImmBody.frame = function (dt) { if (this.g && this.cid === 'guard' && this.g.userData.ngKey !== NGShop.keyOf(NGShop.eqOf('me'))) this.cid = '~'; return ibf0.apply(this, arguments); };
+  // the new pieces move with the pose (and hide in first person where they'd be in your eyes)
+  const pg0 = poseGuard; poseGuard = function (g, pos, yaw, speed, crouch, dead, flashOn, dt) { const r = pg0.apply(this, arguments); if (g && g.userData && g.userData.ngFx) { try { NGFX.animate(g, speed || 0, !!dead, dt || 0.016); } catch (e) { } } return r; };
+  const mgd0 = People.MatGroup.prototype.dispose; People.MatGroup.prototype.dispose = function () { mgd0.apply(this, arguments); if (this.ngExtra) { for (const m of this.ngExtra) m.dispose(); this.ngExtra = null; } };
+  // your own first-person arms: your sleeves and gloves
+  const bva0 = buildVmArm; buildVmArm = function (side, torch, id) { const g = bva0.apply(this, arguments); try { if ((id || (typeof Chars !== 'undefined' && Chars.run) || 'guard') === 'guard') NGShop.tintArm(g, torch); } catch (e) { } return g; };
+  const ars0 = Arms.restyle; Arms.restyle = function (id) { if (id === 'guard') { const k = NGShop.keyOf(NGShop.eqOf('me')); if (this.style === 'guard' && this._ngk !== k) this.style = '~'; this._ngk = k; } return ars0.apply(this, arguments); };
+  // a run starts: tell everyone what you're wearing (and the host passes on what everyone else is)
+  const crs0 = Chars.reset; Chars.reset = function () { const r = crs0.apply(this, arguments); try { NGShop.runStart(); } catch (e) { } return r; };
+  const ae0 = Game.applyEvent; Game.applyEvent = function (ev) { if (ev && ev.k === 'ngc') { try { NGShop.event(ev); } catch (e) { console.warn('ngshop', e); } return; } return ae0.apply(this, arguments); };
+  const ra0 = Game.remoteAction; Game.remoteAction = function (r, a, i, x) { if (a === 'ngc') { if (!Net.isClient) NGShop.remote(r, x); return; } return ra0.apply(this, arguments); };
+  const ub0 = UI.back; UI.back = function () {
+    if (this.current === 'screen-ngshop') {
+      if (NGUI.modalOpen) { NGUI.closeModal(); return; }
+      if (NGUI.showOn) { NGUI.closeShow(); return; }
+      const q = $('ng-q'); if (q && document.activeElement === q && q.value) { q.value = ''; NGUI.q = ''; NGUI.drawGrid(); q.blur(); return; }
+      const p = this.prev.pop() || 'screen-title'; this.show(p); Sound.ui(); return;
+    }
+    return ub0.apply(this, arguments);
+  };
+  NGUI.build();
+}
 
 /* ------------------------------------------------------------------ */
 /* Boot                                                                */
@@ -47424,7 +48396,7 @@ if (DEBUG) {
     info() { return { state: Game.state, t: Game.time, pos: [player.pos.x, player.pos.z], hp: player.health, m: { state: Monster.state, active: Monster.active, pos: [Monster.pos.x, Monster.pos.z], aw: Monster.awareness, seeing: Monster.seeing, charging: Monster.charging, pose: Monster.cine ? Monster.cine.pose : null }, power: Game.power, logs: Game.logs, cine: Cine.cur ? Cine.cur.id : null, pip: Cine.pip ? Cine.pip.id : null, hint: Hints.active ? Hints.active.tg.key : null, net: { role: Net.role, id: Net.myId, inGame: Net.inGame, remotes: Net.remotes.size } }; },
   };
   Object.assign(window.LS, { Laser, Poop, Fly, FLY, hz37Trace, hz37Foe, Imm, IM_FOG, IMM_MODE, ImmHud, ImmBody, ImmWorld, ImmMotes, ImmFlies, ImmCam, ImmShafts, ImmSparks, ImmBreath, ImmClaws, dustMat, Escape, EPWater, EP_ROOMS, EP_SLOTS, EP_SECRET, EP_LIFT, EpSecret, EpStore, EpFx, EP_LV, ESCAPE, EP_PAY, epKD, Chonk, CHARS, ABIL, FOG_BASE, FW, FWG, FWC, FW_LV, FW_CAMP, FW_CABINS, FW_NODE, Hollow, HOLLOW_DIFF, HL_STATES, hd, Woods, FwNoise, Nights, NIGHTS, NIGHT_RECIPES, NIGHT_GOALS, NIGHT_CAMPERS, NIGHT_ITEMS, hideLockers, Chars, CODES, Modes, DIFF_TEXT, syncModeCards: () => syncModeCards() });
-  Object.assign(window.LS, { XB, XK, XMode, XFoe, XPack, xSee, LC_M, LC, Lineman, LC_GENS, LC_KEY, LC_REL, LC_COIL, LC_KIT, LC_CAGE, lcPower, lcSecOn, LC_LV, IH_LV, CB_LV, CN_LV, ATTACK, NOTES, IH_M, IH, Housekeeper, IH_ROOMS, IH_THEMES, IH_FUSE, IH_CAR, IH_EXIT, ihRide, ihCheckSafe, ihInCar, ihChange, CB_M, CB, Stalker, Mimic, Dormant, CB_PACK, CB_MODS, CB_BADGE, CB_SEALS, CB_LIFTBOX, CB_C3, cbCarrying, cbWakeDormant, cbFakePing, CN_M, CN, Barker, CN_TOKENS, CN_TICKETS, CN_CAR, CN_WHEEL, CN_EXIT, CN_MZ, cnRings, cnBuildMaze, cnWin }); // (Build 39)
+  Object.assign(window.LS, { XB, XK, XMode, XFoe, XPack, xSee, LC_M, LC, Lineman, LC_GENS, LC_KEY, LC_REL, LC_COIL, LC_KIT, LC_CAGE, lcPower, lcSecOn, LC_LV, IH_LV, CB_LV, CN_LV, ATTACK, NOTES, IH_M, IH, Housekeeper, IH_ROOMS, IH_THEMES, IH_FUSE, IH_CAR, IH_EXIT, ihRide, ihCheckSafe, ihInCar, ihChange, CB_M, CB, Stalker, Mimic, Dormant, CB_PACK, CB_MODS, CB_BADGE, CB_SEALS, CB_LIFTBOX, CB_C3, cbCarrying, cbWakeDormant, cbFakePing, CN_M, CN, Barker, CN_TOKENS, CN_TICKETS, CN_CAR, CN_WHEEL, CN_EXIT, CN_MZ, cnRings, cnBuildMaze, cnWin, NGShop, NGUI, NGFX, NG_ITEMS, NG_ITEM, NG_RAR, NG_RIDS, NG_SLOTS, NG_SLOT_IDS, NG_EARN, NG_EARN_ITEM, NG_BASE, ngSwatch, RemotePlayer, Net, COS_KEY }); // (Build 39)
   Object.assign(window.LS, { rooms, CELL, ROOM_NAMES, Anomaly, AnWorld, AnUI, AnAudio, AnFeedCap, AN_CATS, AN_CAT, AN_CAMS, AN_CAM, AN_ROOMS, AN_TPL, AN_SHIFTS, AN_DIFF, AN_CFG, AN_FAULTS, AN_CLUES, AN_WALKS, AN_KEY, pool, Post, RZT, ROOM_LOOK, genPaper, genPlanks, genTilesHQ, genPlasterCeil, genTrimWood, genPortraits, genWoodLeaf, get RZ_GEN_MS() { return RZ_GEN_MS; }, get instLamp() { return instLamp; }, RzContact, RzPBR, RzTorch, RzBody, RzAmb, RZ_SURF, flash, floorKey, Expedition, DX_CFG, DX_SUB, DX_MODS, HumanWarden, Halloween, LiveMap, LM_EVENTS, LM_TINTS, Panic, Emote, EMOTES, Cos, COS, COSMETICS, COS_RAR, Locker, Contracts, CONTRACTS, CT_IDS, Survivors, SV_DEF, ACH, Hints, guardPass, bodyOverlaps: typeof bodyOverlaps !== 'undefined' ? bodyOverlaps : undefined, Hotel, HEnt, Puzzle, HT, HOTEL, HKIND, doors, hideLockers, interactables, People, buildGuard, poseGuard, guardWeapon, T, vmScene, vmCam, buildMannequin, buildShade, buildSleeper, Chrono, Traps, FlameJet, TimeFx, Roster18, Powers, POWERS, ABIL, CHARS, CHAR_IDS, Chars, Fires, Health, Infestant, SW, crew, PITY, PITY_IDS, Polish, Watch, WT_CAMS, WT_W, WT_M, WT_B, WATCH_DIFF, WATCH_DRAIN, Beam20, Hunt, HUNT_DIFF, Camo, CamoWorld, CamoColor, CAMO_DIFF, CAMO_CHAR, cmDefPaint, cmNewPaint, cmClonePaint, cmEncodePaint, cmDecodePaint, cmPatCol, cmFromV1, CM_PIECES, CM_G, CM_G0, CM_N, CM_MID, CM_SIZE, CM_BRUSH, CM_BRUSH_N, buildMech, poseMech, paintMech, staticBoxes, MODES, cellAt, cc, hideLockers, doors, guardPass, astar, CharUI, RARITY, RARITY_IDS, ECON, ROLL_IDS, ROSTER_IDS, R22, hit22, CODES, CQ, CQ_TEMPERS, CQ_EVENTS, CQ_BONUS, CQ_UNLOCKS, CQ_KEY, hemi, FOG_BASE, ROOMDEF }); // (Build 18) // (Build 18: the sculpted people) // (Build 22: R22)
 }
 };
