@@ -50774,6 +50774,7 @@ const MV = {
     d.place(); d.updateLeds();
   },
   unjam(J) { const d = J.d; if (J.locked) d.locked = J.locked; else delete d.locked; if (J.close) d.close = J.close; else delete d.close; d.mvShut = false; d.mvOpen = false; },
+  release() { for (const J of this.doorsJ) if (J.k === 'shut') { this.unjam(J); J.k = 'freed'; J.d.updateLeds(); } }, // (06:00, the last photo: every lock on the floor gives way — the jammed ones too)
   /* ---- the light: outages, emergency red, flicker ---- */
   lights(r, N) {
     const zone = (x, z, room) => { const id = room || cellOf(x, z).room || '?'; return isCorr(id) ? id + '@' + Math.floor(x / 16) + ',' + Math.floor(z / 16) : id; }; // (a corridor goes out a stretch at a time, not the whole floor's)
@@ -51101,13 +51102,16 @@ ACH.push({ id: 'mv_seed', name: 'Same Night Twice', desc: 'Play a map variant fr
     }
     return ud0.apply(this, arguments);
   };
+  // when the game releases every lock (the day shift at 06:00, the last photo found), a jammed door gives way with the rest: the way out is never in doubt
+  const sd0 = Night.startDawn; Night.startDawn = function () { if (!this.dawn && MV.on) MV.release(); return sd0.apply(this, arguments); };
+  const af0 = Photos.allFound; Photos.allFound = function () { if (MV.on) MV.release(); return af0.apply(this, arguments); };
   // the end screens: the map variant with the rest
   const addRow = id => { const el = $(id); if (!el || el.querySelector('.mv-row')) return; const a = document.createElement('span'); a.textContent = 'Map variant'; a.className = 'mv-row'; const b = document.createElement('b'); b.textContent = MV.lastSum; el.appendChild(a); el.appendChild(b); };
   const endRow = id => { MV.lastSum = MV.on ? MV.summary() : ''; if (!MV.lastSum) return; addRow(id); setTimeout(() => { try { addRow(id); } catch (e) { } }, 60); };
   const sv0 = Game.showVictory; Game.showVictory = function () { const on = MV.on, r = sv0.apply(this, arguments); try { if (on) endRow('win-stats'); } catch (e) { } return r; };
   const sg0 = Game.showGameOver; Game.showGameOver = function () { const on = MV.on, r = sg0.apply(this, arguments); try { if (on) endRow('go-stats'); } catch (e) { } return r; };
   const up0 = UI.updatePause; UI.updatePause = function () { const r = up0.apply(this, arguments); if (MV.on) { const d = document.createElement('div'); d.className = 'mv-pause'; d.textContent = 'MAP VARIANT ' + MV.summary(); $('pause-obj').appendChild(d); } return r; };
-  const css = document.createElement('style'); css.textContent = '#mv-tag{font-family:var(--mono,monospace);font-size:9px;letter-spacing:.22em;color:rgba(220,200,170,.42);margin-top:4px;text-align:right}.mv-pause{margin-top:8px;color:#9a8a6a;font-family:var(--mono,monospace);font-size:11px;letter-spacing:.1em}';
+  const css = document.createElement('style'); css.textContent = '#mv-tag{font-family:var(--mono,monospace);font-size:9px;letter-spacing:.22em;color:rgba(220,200,170,.42);margin-top:4px;text-align:right}@media (max-width:1000px){#mv-tag{display:none!important}}.mv-pause{margin-top:8px;color:#9a8a6a;font-family:var(--mono,monospace);font-size:11px;letter-spacing:.1em}';
   document.head.appendChild(css);
 }
 // Settings: the floors vary, or keep their classic layout; a seed of your own
