@@ -50902,7 +50902,8 @@ const MV = {
   buildNook(H, r) {
     const { stub, mouth } = H, S = mouth.s, J = mouth.j, ox = mouth.ox, oz = mouth.oz; // (o: from the nook out to the corridor)
     const bx = cc(S.x) + ox * CELL / 2, bz = cc(S.z) + oz * CELL / 2, hh = Math.min(S.h || WALL_H, J.h || WALL_H), ww = CELL + 0.08; // (the boundary between them)
-    const base = MAT.wall[wallKey(J)] || MAT.wall.corridor || MAT.metalDark, wm = base.clone(); wm.userData = {}; if (wm.color) wm.color.multiplyScalar(1.07); // (newer paint: a shade too clean)
+    const base = MAT.wall[wallKey(J)] || MAT.wall.corridor || MAT.metalDark, ud = base.userData; base.userData = {}; const wm = base.clone(); base.userData = ud; // (clone() copies userData through JSON: it would turn the relief map into a data URL — seconds)
+    if (wm.color) wm.color.multiplyScalar(1.07); // (newer paint: a shade too clean)
     const geo = new T.PlaneGeometry(ww, hh), uv = geo.attributes.uv, along = ox ? bz : bx, flip = (ox ? ox : -oz) < 0 ? -1 : 1, u0 = flip * (along - ww / 2) / 4, u1 = flip * (along + ww / 2) / 4;
     for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) > 0.5 ? u1 : u0, uv.getY(i) > 0.5 ? hh / WALL_H : 0);
     const g = new T.Group(), pw = new T.Mesh(geo, wm); pw.receiveShadow = true; pw.position.set(bx + ox * 0.01, hh / 2, bz + oz * 0.01); pw.rotation.y = Math.atan2(ox, oz); g.add(pw);
