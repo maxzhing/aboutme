@@ -11790,10 +11790,12 @@ const Cine = {
 /* The host runs the Warden and the world; everyone runs their own     */
 /* guard and sends its position ~12 times a second.                    */
 /* Build 38: this is Build 30's co-op again (4-letter codes, unsigned */
-/* messages), with test.mosquitto.org tried first.                    */
+/* messages). Build 40: test.mosquitto.org is the relay it uses — a   */
+/* friend joins through it whenever it has the room, and only falls   */
+/* back to the others when this network can't reach it.               */
 /* ------------------------------------------------------------------ */
 const NET_PROTO = 35, BUILD = 40, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const RELAYS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
+const RELAYS = ['wss://test.mosquitto.org:8081/mqtt', 'wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt']; // (Build 40: test.mosquitto.org is the relay co-op uses — friends join through it whenever it has the room; the others are backups for a network that blocks it)
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
 const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
 const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.';
@@ -12245,30 +12247,51 @@ const Net = {
     this.rel(h, { k: 'hello', v: NET_PROTO, b: BUILD, name: this.myName, c: Chars.idx() });
     this.lobbyUpdate();
   },
-  findRoom(exclude) { // client: ask every relay at once; the first one that has the room wins
+  findRoom(exclude) { // client: ask every relay at once; of those that have the room, the first in the list wins (test.mosquitto.org), not just the fastest
     const T = this.T(), cur = this.relay && this.relay.ok ? this.relay : null, hid = this.hid;
     const list = this.relayUrls().filter(u => u !== exclude).map(u => (cur && cur.url === u ? cur : new Relay(u)));
     return new Promise((res, rej) => {
-      let left = list.length, reached = 0, done = false, timer = 0;
+      let left = list.length, reached = 0, done = false, timer = 0, grace = 0;
+      const hits = new Map(), settled = new Set(), conn = new Set(); // (a relay's place in the list → what it had; which ones we're connected to)
+      const best = () => hits.get(Math.min(...hits.keys()));
       const finish = (err, hit) => {
-        if (done) return; done = true; clearTimeout(timer);
+        if (done) return; done = true; clearTimeout(timer); clearTimeout(grace);
         for (const r of list) { r.finder = null; if (r !== cur && (!hit || r !== hit.relay)) r.close(); }
         if (err) rej(err); else res(hit);
       };
-      const nothing = () => finish(new Error(!reached ? NO_NET : 'No room with the code ' + this.code + ' is open right now. Check the code, and make sure the host still has the Multiplayer screen open. (You both need Build ' + BUILD + ' — it says on the title screen. If not, refresh with Cmd+Shift+R.)'));
-      const settle = () => { if (--left <= 0) nothing(); };
-      timer = setTimeout(nothing, 15000);
+      const nothing = () => {
+        if (hits.size) { finish(null, best()); return; }
+        finish(new Error(!reached ? NO_NET : 'No room with the code ' + this.code + ' is open right now. Check the code, and make sure the host still has the Multiplayer screen open. (You both need Build ' + BUILD + ' — it says on the title screen. If not, refresh with Cmd+Shift+R.)'));
+      };
+      const ready = () => { // done as soon as nothing better can still turn up (every relay before the best one so far has answered)
+        if (done || !hits.size) return;
+        const bi = Math.min(...hits.keys());
+        for (let i = 0; i < bi; i++) if (!settled.has(i)) return;
+        finish(null, best());
+      };
+      const settle = i => { if (settled.has(i)) return; settled.add(i); if (--left <= 0) nothing(); else ready(); };
+      const waited = () => { // the grace is up: a better relay we're already connected to finishes looking; one we couldn't even reach yet is passed over
+        if (done || !hits.size) return;
+        const bi = Math.min(...hits.keys());
+        for (let i = 0; i < bi; i++) if (conn.has(i) && !settled.has(i)) { grace = setTimeout(waited, 300); return; }
+        finish(null, best());
+      };
+      timer = setTimeout(nothing, 16000);
       if (!list.length) { nothing(); return; }
-      for (const r of list) {
+      list.forEach((r, i) => {
         r.finder = (t, s) => {
-          if (done || t !== T + 'p' || !s) return;
+          if (done || t !== T + 'p' || !s || hits.has(i)) return;
           let p = null; try { p = JSON.parse(s); } catch (e) { }
-          if (p && p.h && (!hid || p.h === hid)) finish(null, { relay: r, pres: p });
+          if (!(p && p.h && (!hid || p.h === hid))) return;
+          hits.set(i, { relay: r, pres: p });
+          if (!grace) grace = setTimeout(waited, 4000); // (test.mosquitto.org, if it's slower to answer than a backup, gets a few seconds to catch up)
+          settle(i);
         };
+        // the relay hands over the room's notice (kept for us) straight after subscribing
         (r.ok ? Promise.resolve() : r.connect(null))
-          .then(() => { reached++; return r.sub(T + 'p'); })
-          .then(() => setTimeout(settle, 2500), settle); // the relay hands over the room's notice straight after subscribing
-      }
+          .then(() => { reached++; conn.add(i); return r.sub(T + 'p'); })
+          .then(() => setTimeout(() => settle(i), 2500), () => settle(i));
+      });
     });
   },
   async useRelay(r) { // client: talk to the host through this relay
