@@ -495,6 +495,10 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
 #mp-players span.connected,#mp-players span.ready{color:var(--green)}
 .mp-status{min-height:20px;margin-top:12px;font-size:13px;color:#bdb7aa;line-height:1.5}
 .mp-status.ok{color:#b9e0b3}.mp-status.err{color:#f0a19a}
+.mp-checkrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}.mp-checkrow .mp-note{margin:0}
+.mp-check{margin-top:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(0,0,0,.25);font-size:12.5px;line-height:1.5}
+.mpc-h{color:#cfc8b8;margin-bottom:4px}.mpc-row{display:flex;justify-content:space-between;gap:12px;color:#bdb7aa}.mpc-row.ok .mpc-s{color:#b9e0b3}.mpc-row.bad .mpc-s{color:#f0a19a}
+.mpc-v{margin-top:8px;font-weight:600}.mpc-v.ok{color:#b9e0b3}.mpc-v.bad{color:#f0a19a}
 .mp-note{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:#77726a;margin-top:6px}
 @media (max-height:740px){.pv-feat{display:none}.title-side{width:min(430px,34vw);gap:9px}.pv-caption{min-height:44px}.pv-caption span{font-size:12px}.controls-card{padding:10px 14px}.ctl.two{gap:4px 10px;font-size:11.5px}}
 @media (max-height:620px){.title-side{width:min(360px,30vw)}.pv-caption span{display:none}.pv-caption{min-height:0}}
@@ -1328,6 +1332,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <label>Film grain</label><div class="set-ctl"><button class="tog" id="set-grain"></button></div>
       <label>Cinematic look</label><div class="set-ctl"><button class="tog" id="set-cinema"></button><span class="mp-note">lamp glow, film colour, lens</span></div>
       <label>Next-gen lighting</label><div class="set-ctl"><button class="tog" id="set-rx"></button><span class="mp-note">shadow in every corner, light in the air, smooth edges (Medium/High)</span></div>
+      <label>Lens droplets</label><div class="set-ctl"><button class="tog" id="set-lens"></button><span class="mp-note">drips, spray and blood on the lens (needs Cinematic look)</span></div>
       <label>HUD</label><div class="seg" id="set-hud" title="Immersive: the screen is the world — the HUD appears when something changes, when it matters, or while you hold Tab"><button data-v="immersive">Immersive</button><button data-v="full">Full</button><button data-v="minimal">Minimal</button></div>
       <label>Motion blur</label><div class="set-ctl"><button class="tog" id="set-mblur"></button><span class="mp-note">a fast turn smears like a real camera (Medium/High)</span></div>
       <label>Your body</label><div class="set-ctl"><button class="tog" id="set-body"></button><span class="mp-note">look down: your legs, your feet (Medium/High)</span></div>
@@ -1383,7 +1388,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
         <h4>Surviving the Warden</h4>
         <ul class="tips">
           <li><b>Build 41 — THE LAST EPILEPSY</b> (New Game, solo · <b>⚠ photosensitivity warning</b>). A meme mode: the Night Shift on a short night with every light strobing in colour, the Warden taking your picture, strobe storms and colour spins, and eight Party Boxes — disco, paparazzi, flashbang, lightning, rainbow torch, glitter bomb, flash sale, a party hat for the Warden. A warning is shown every time it starts; every light and flash shares one budget of at most three flashes a second (never full brightness, no light or flash coloured deep red), Esc pauses it and stops everything, and Settings → Reduce Flashing plays a no-flash version.</li>
-          <li><b>Build 41 — REAL.</b> On Medium and High (Settings → <b>Next-gen lighting</b>) the picture is finished from the depth of every pixel: <b>shadow in every corner</b> — where walls meet, under doors, round furniture and bodies; your <b>torch beam hangs in the dusty air</b> and is cut by everything that casts a shadow — a door frame throws a dark wedge through the haze, so does the Warden; <b>polished floors reflect</b> the lamps and doorways (tiles, varnished boards, a puddle is a mirror); and <b>smooth edges</b> everywhere. The walls and floors carry their <b>wear</b>: dirt where they meet, water stains, streaks from the ceiling, mould, cracks, scuffs by the doors. You <b>hear your body</b> — a heel and then the toe, trousers brushing, the keys on your belt when you run, your own breathing in the quiet (and you hold it when it's right outside your locker). A gunshot or a blast close by leaves your <b>ears ringing</b> and the world muffled; badly hurt, everything sounds far away. Far off, the building lives: pipes knock, doors slam, metal groans, water drips, a fault arcs. Footfalls <b>land</b> (a small dip, foot to foot); badly hurt you <b>limp</b>; spent, you sway (Head bob). Your <b>breath shows</b> in the cold, dust kicks up off concrete when you run, and where you're hit you <b>bleed on the floor</b> — badly hurt, you leave a trail.</li>
+          <li><b>Build 41 — REAL.</b> On Medium and High (Settings → <b>Next-gen lighting</b>) the picture is finished from the depth of every pixel: <b>shadow in every corner</b> — where walls meet, under doors, round furniture and bodies; your <b>torch beam hangs in the dusty air</b> and is cut by everything that casts a shadow — a door frame throws a dark wedge through the haze, so does the Warden; <b>polished floors reflect</b> the lamps and doorways (tiles, varnished boards, a puddle is a mirror); and <b>smooth edges</b> everywhere. The walls and floors carry their <b>wear</b>: dirt where they meet, water stains, streaks from the ceiling, mould, cracks, scuffs by the doors. You <b>hear your body</b> — a heel and then the toe, trousers brushing, the keys on your belt when you run, your own breathing in the quiet (and you hold it when it's right outside your locker). A gunshot or a blast close by leaves your <b>ears ringing</b> and the world muffled; badly hurt, everything sounds far away. Far off, the building lives: pipes knock, doors slam, metal groans, water drips, a fault arcs. Footfalls <b>land</b> (a small dip, foot to foot); badly hurt you <b>limp</b>; spent, you sway (Head bob). Your <b>breath shows</b> in the cold, dust kicks up off concrete when you run, and where you're hit you <b>bleed on the floor</b> — badly hurt, you leave a trail. <b>Water on the lens</b> (Settings → Lens droplets): stand under a leak and it drips on you, wade or swim through the flood water and it splashes up — each drop bends the world behind it, the big ones run down and leave a trail, and they dry; something hits you, and there's blood on the lens.</li>
           <li><b>Build 40 — BOSS RUSH</b> (New Game, solo or online). Ten bosses in ten arenas of the Proving Grounds, one after another, each harder than the last: the <b>Lineman</b>, the <b>Housekeeper</b>, the <b>Barker</b>, the <b>Mimic</b>, the <b>Stalker</b>, the <b>Mannequin</b>, the <b>Shade</b>, the <b>Hollow</b>, the <b>Dormant</b> and, last, the <b>Warden</b>. Break the seal in the antechamber to begin. Every one telegraphs its blows (red on the floor: get out of it), changes how it fights as its health drops, and has a rule of its own — some can't be hurt until you do something about them first (the breakers, the copies, your light, the bells…). At its last stand it throws everything at you; survive it and there's a moment where it takes double. Each stage after the first comes with <b>modifiers</b> (Nightmare, Darkness, Unstable, Regeneration, Frenzy, No Escape — more on Nightmare, fewer on Easy). Clear a stage: you're patched up, a fallen guard is back, and a better weapon may be waiting. Beating bosses pays coins, mastery XP and <b>boss fragments</b> — forge each boss's trophy from them in the <b>Boss Dossier</b> (the Boss Rush card); the Dossier also has what you've learned about each of them, your best times, titles, and <b>practice</b> of any boss you've beaten. Somewhere in each arena there is a strange mark. Nobody says what they are for.</li>
           <li><b>Build 40 — MAP VARIATIONS.</b> The floors you know stay where they are — every room, landmark and objective — but each run lays a variation over them from a seed: corridors <b>barricaded</b> (the long way round), clutter in the big rooms, doors <b>jammed shut</b>, <b>jammed open</b> or torn off their runners, rooms in an <b>outage</b>, on <b>emergency red</b> or flickering, a <b>storm</b> overhead (thunder; the lights dip), fog, leaks, sparking fixtures, <b>steam leaks</b> (a hiss, then a burst) and <b>live water</b> (step round it). Harder difficulties block more and leave fewer batteries; easier ones leave extra. Before the run starts every piece is checked: from where you start, everything you could reach before must still be reachable (however many locked doors you've opened), or that piece is left out. Look for <b>loose vent covers</b> (supplies, sometimes a memo) and a stretch of wall where <b>the paint is newer</b> — push it. Very rarely, a night is different altogether. The seed is under the clock, on the pause screen and on the end screen; type one in <b>Settings → Map variations</b> to play that layout again, or pick <b>CLASSIC</b> for the floors as built. Online, everyone gets the host's.</li>
           <li><b>Build 40 — CHARACTER MASTERY.</b> Every character has 50 mastery levels, earned by playing them: time actually playing, finishing and winning, objectives, their ability, monsters put down, close calls, Boss Rush stages, secrets found, and three challenges each (harder difficulties pay more). Every fifth level is a reward — badge, emote, nameplate, ability effect, skins, aura, victory animation, elimination effect — and titles along the way; wear them from the character's <b>MASTERY</b> screen. At 50 you can <b>prestige</b> (up to five times) and keep everything. Looks only: nothing here changes how anyone plays. Older mastery progress carried over.</li>
@@ -1490,6 +1495,8 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="row"><button class="btn primary" id="btn-mp-host">Host a game</button><button class="btn" id="btn-mp-back">Back</button></div>
       <div class="mp-or">or join a friend's room</div>
       <div class="mp-joinrow"><input id="mp-code" size="5" placeholder="CODE" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn primary" id="btn-mp-join">Join</button></div>
+      <div class="mp-checkrow"><button class="btn small" id="btn-mp-check">Check my network</button><span class="mp-note">On school or work Wi-Fi? This shows which co-op servers get through.</span></div>
+      <div id="mp-check" class="mp-check" hidden></div>
     </div>
     <div id="mp-hostbox" hidden>
       <div class="kicker">Your room code</div>
@@ -1505,7 +1512,7 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ambe
       <div class="mp-note" id="mp-diff-note"></div>
       <div class="row"><button class="btn primary" id="btn-mp-start" hidden>Start game</button><button class="btn danger" id="btn-mp-leave">Leave</button></div>
     </div>
-    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored). · Build 14 — everyone needs the same build (if in doubt, refresh with Cmd+Shift+R).</p>
+    <p class="mp-note" style="margin-top:16px">Works between any internet connections — different Wi-Fi, different cities. The game talks through free public relay servers (no accounts, nothing stored) — test.mosquitto.org first, and servers on port 443 for school or work Wi-Fi that blocks it. · Everyone needs the same build — it says on the title screen (if in doubt, refresh with Cmd+Shift+R).</p>
   </div>
 </div>
 
@@ -1643,7 +1650,7 @@ const DEFAULTS = { sensitivity: 1, invertY: false, fov: 72, volume: 0.8, muted: 
   quality: 'medium', brightness: 1, headBob: true, grain: true, showFps: false, hints: true, playerName: '', mode: 'night', daily: false, dynRes: 'on', camoMap: 's6', camoWarden: 'ai',
   panicFx: 'full', shake: true, heartbeat: true, noFlash: false, director: true, volSfx: 1, volAmb: 1, volMus: 1, volUi: 1, // (Build 27: Panic Mode's screen effects, camera shake, the heartbeat, and REDUCE FLASHING)
   cinema: true, anFeedFx: 'full', anCaptions: false, anFeedVol: 0.8, anRun: 'campaign', woodsLen: 'normal',
-  hudMode: 'immersive', motionBlur: true, fpBody: true, mapVar: true, mapSeed: '', rx: true }; // (Build 40: the floors vary from run to run — or keep their classic layout; a seed of your own) // (Build 31: THE HOLLOW WOODS — how long the night is) // (Build 29: THE ANOMALY — the camera picture's effects, the microphones' captions and volume, a week or ENDLESS)
+  hudMode: 'immersive', motionBlur: true, fpBody: true, mapVar: true, mapSeed: '', rx: true, lens: true }; // (Build 40: the floors vary from run to run — or keep their classic layout; a seed of your own) // (Build 31: THE HOLLOW WOODS — how long the night is) // (Build 29: THE ANOMALY — the camera picture's effects, the microphones' captions and volume, a week or ENDLESS)
 const settings = Object.assign({}, DEFAULTS);
 (function loadSettings() {
   try {
@@ -1656,7 +1663,7 @@ const settings = Object.assign({}, DEFAULTS);
     num('sensitivity', 0.2, 3); num('fov', 60, 95); num('volume', 0, 1); num('brightness', 0.6, 1.8); num('volSfx', 0, 1); num('volAmb', 0, 1); num('volMus', 0, 1); num('volUi', 0, 1);
     bool('invertY'); bool('muted'); bool('headBob'); bool('grain'); bool('showFps'); bool('hints'); bool('daily'); bool('shake'); bool('heartbeat'); bool('noFlash'); bool('director'); oneOf('panicFx', ['full', 'reduced', 'off']); oneOf('anFeedFx', ['full', 'reduced', 'off']); bool('anCaptions'); bool('cinema'); num('anFeedVol', 0, 1); oneOf('anRun', ['campaign', 'endless']); oneOf('hudMode', ['immersive', 'full', 'minimal']); bool('motionBlur'); bool('fpBody'); // (Build 36: IMMERSION — the HUD that steps aside, the shutter, your own body)
     oneOf('mode', ['night', 'photos', 'endless', 'gallery', 'blackout', 'hive', 'root', 'watch', 'hunt', 'camo', 'doors', 'descent', 'anomaly', 'woods', 'escape', 'circuit', 'ihotel', 'breach', 'carnival', 'bossrush']); oneOf('camoMap', ['s6', 'works']); oneOf('woodsLen', ['short', 'normal', 'long']); oneOf('camoWarden', ['ai', 'host']);
-    bool('mapVar'); bool('rx'); if (typeof o.mapSeed === 'string') settings.mapSeed = o.mapSeed.toUpperCase().replace(/[^0-9A-Z-]/g, '').slice(0, 10);
+    bool('mapVar'); bool('rx'); bool('lens'); if (typeof o.mapSeed === 'string') settings.mapSeed = o.mapSeed.toUpperCase().replace(/[^0-9A-Z-]/g, '').slice(0, 10);
     if (typeof o.playerName === 'string') settings.playerName = o.playerName.replace(/[^\w .'-]/g, '').slice(0, 16);
     oneOf('difficulty', ['easy', 'normal', 'hard', 'nightmare']); oneOf('quality', ['low', 'medium', 'high']); // (a literal list: DIFF_IDS isn't defined yet when settings load)
   } catch (e) { /* storage blocked or corrupt: keep defaults */ }
@@ -11809,9 +11816,9 @@ const Cine = {
 /* back to the others when this network can't reach it.               */
 /* ------------------------------------------------------------------ */
 const NET_PROTO = 35, BUILD = 41, MAX_GUARDS = 4, NET_DELAY = 200, CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const RELAYS = ['wss://test.mosquitto.org:8081/mqtt', 'wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt']; // (Build 40: test.mosquitto.org is the relay co-op uses — friends join through it whenever it has the room; the others are backups for a network that blocks it)
+const RELAYS = ['wss://test.mosquitto.org:8081/mqtt', 'wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://mqtt.eclipseprojects.io/mqtt', 'wss://demo.tbmq.io/mqtt#u=demo']; // (Build 41: a second relay on port 443 — the TBMQ demo, user name "demo", no password — for school and work Wi-Fi that only lets 443 through) // (Build 40: test.mosquitto.org is the relay co-op uses — friends join through it whenever it has the room; the others are backups for a network that blocks it)
 const TOPIC = code => 'the-last-shift-coop/' + code + '/'; // + p: the room's notice (kept by the relay) · h: to the host · a: to everyone · c/<id>: to one friend
-const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — a phone hotspot works.)';
+const NO_NET = 'Can\'t reach the online servers. Check your internet connection and try again. (Some school or work networks block online games — press "Check my network" to see which servers get through; a phone hotspot works.)';
 const OLD_MSG = 'That is a code from the OLD version of the game. Refresh the page (Cmd+Shift+R / Ctrl+Shift+R) — the new version uses 4-letter room codes.';
 const GUARD_COLORS = [0xffc65a, 0x5ac8ff, 0xff7aa8, 0x8dff7a];
 const cleanName = s => String(s || '').replace(/[^\w .'-]/g, '').trim().slice(0, 16);
@@ -11833,7 +11840,8 @@ function mqPack(head, parts) { // fixed header + remaining length + the parts
 }
 class Relay {
   constructor(url) {
-    this.url = url; this.name = url.replace(/^wss?:\/\//, '').replace(/[:/].*$/, '');
+    this.url = url; this.wsUrl = String(url).replace(/#.*$/, ''); const um = /#u=([^&]*)/.exec(String(url)); this.user = um ? decodeURIComponent(um[1]) : ''; // (Build 41: a relay that wants a user name — no password — carries it after a #)
+    this.name = this.wsUrl.replace(/^wss?:\/\//, '').replace(/[:/].*$/, ''); const pm = /^wss?:\/\/[^/:]+:(\d+)/.exec(this.wsUrl); this.port = pm ? +pm[1] : /^wss:/.test(this.wsUrl) ? 443 : 80;
     this.ws = null; this.ok = false; this.up = false; this.closed = false; this.connecting = false; this.will = null; this.abort = null; this.connack = null;
     this.pid = 0; this.subs = new Map(); this.onmsg = null; this.onlost = null; this.finder = null; this.buf = null;
     this.heard = 0; this.said = 0; this.pinged = 0; this.retryIn = 0; this.retryTimer = 0;
@@ -11854,11 +11862,11 @@ class Relay {
       this.abort = () => end(new Error('closed'));
       this.connack = rc => end(rc ? new Error('refused (' + rc + ')') : null);
       timer = setTimeout(() => end(new Error('timeout')), 9000);
-      try { ws = this.ws = new WebSocket(this.url, 'mqtt'); } catch (e) { end(e); return; }
+      try { ws = this.ws = new WebSocket(this.wsUrl, 'mqtt'); } catch (e) { end(e); return; }
       ws.binaryType = 'arraybuffer';
       ws.onopen = () => { // CONNECT: clean session, keep-alive 30 s, and a "will" the server publishes if we vanish
-        const w = this.will;
-        this.send(mqPack(0x10, [mqStr('MQTT'), [4, w ? 0x26 : 0x02, 0, 30], mqStr('ls' + rid(14))].concat(w ? [mqStr(w.t), mqStr(w.p)] : [])));
+        const w = this.will, u = this.user;
+        this.send(mqPack(0x10, [mqStr('MQTT'), [4, (w ? 0x26 : 0x02) | (u ? 0x80 : 0), 0, 30], mqStr('ls' + rid(14))].concat(w ? [mqStr(w.t), mqStr(w.p)] : [], u ? [mqStr(u)] : [])));
       };
       ws.onmessage = e => { if (this.ws === ws && e.data instanceof ArrayBuffer) this.data(new Uint8Array(e.data)); };
       ws.onerror = () => { };
@@ -12228,13 +12236,13 @@ const Net = {
     r.onmsg = (t, s) => this.onRelayMsg(r, t, s);
     try { await r.sub(this.T() + 'h'); } catch (e) { if (r.ok) r.drop(); else this.relayLost(r); return; }
     if (!this.isHost || this.relays.indexOf(r) < 0) return;
-    r.retryIn = 0; r.up = true; this.presence(r); this.lobbyUpdate();
+    r.retryIn = 0; r.fails = 0; r.up = true; this.presence(r); this.lobbyUpdate();
   },
   presence(r) { if (r.ok) r.pub(this.T() + 'p', JSON.stringify({ v: NET_PROTO, b: BUILD, h: this.hid, n: this.myName, g: this.inGame ? 1 : 0 }), true); },
   relayLost(r) {
     if (this.isClient) { if (r === this.relay) this.recover('relay'); return; }
     if (!this.isHost || this.relays.indexOf(r) < 0 || r.retryTimer || r.closed) return;
-    r.up = false; this.lobbyUpdate();
+    r.up = false; r.fails = (r.fails || 0) + 1; this.lobbyUpdate();
     r.retryIn = Math.min(30000, (r.retryIn || 750) * 2); // try again: 1.5 s, 3 s, 6 s … 30 s
     r.retryTimer = setTimeout(() => {
       r.retryTimer = 0;
@@ -12745,7 +12753,8 @@ const Net = {
     $('mp-choose').hidden = this.active; $('mp-lobby').hidden = !this.active; $('mp-hostbox').hidden = !(this.isHost && this.code);
     if (this.isHost) { const link = this.inviteLink(); $('mp-room').textContent = this.code || '····'; $('mp-link').value = link; $('mp-link').hidden = !link; $('btn-mp-copylink').hidden = !link; }
     $('btn-mp-start').hidden = !this.isHost; $('btn-mp-start').disabled = ready === 0;
-    const via = this.isHost ? (up ? ' · online through ' + up + ' relay server' + (up > 1 ? 's' : '') : '') : this.relay && this.welcomed ? ' · online through ' + this.relay.name : '';
+    const upR = this.isHost ? this.relays.filter(r => r.up) : [], r0 = this.isHost ? this.relays[0] : null;
+    const via = this.isHost ? (up ? ' · online through ' + upR[0].name + (up > 1 ? ' + ' + (up - 1) + ' more' : '') + (r0 && !r0.up && r0.fails ? ' (' + r0.name + ' is blocked on this network — friends get in through the others)' : '') : '') : this.relay && this.welcomed ? ' · online through ' + this.relay.name : '';
     const mode = this.isClient ? this.sessionMode : settings.mode, daily = this.isClient ? this.sessionDaily : settings.daily;
     $('mp-diff-note').textContent = 'Mode: ' + (MODES[mode] ? MODES[mode].tag + (mode === 'photos' && daily ? ' (DAILY)' : '') : '…') + ' · Difficulty: ' + (this.isClient ? (this.sessionDiff || '…') : settings.difficulty).toUpperCase() + (this.isHost ? ' (difficulty in Settings)' : ' (set by the host)') + via;
     const mm = $('mp-modes'); mm.hidden = !this.isHost;
@@ -12756,6 +12765,39 @@ const Net = {
       if (!up) this.lobbyStatus('Lost the connection to the online servers — reconnecting… (keep this screen open)', 'err');
       else this.lobbyStatus(ready ? ready + ' guard' + (ready > 1 ? 's' : '') + ' joined. Press Start when everyone is in.' : 'Room ready! Send the invite link (or the code) to up to 3 friends — they can be anywhere. Keep this screen open.', 'ok');
     }
+  },
+  // Build 41: which relay servers get through from here — school and work Wi-Fi often block some (most let port 443 through)
+  async checkNet() {
+    const box = $('mp-check'); if (!box || this.checking) return null; this.checking = true;
+    box.hidden = false; box.innerHTML = '';
+    const head = document.createElement('div'); head.className = 'mpc-h'; head.textContent = 'Checking every co-op server from this network…'; box.appendChild(head);
+    const list = this.relayUrls().map(u => new Relay(u));
+    const rows = list.map(r => {
+      const d = document.createElement('div'); d.className = 'mpc-row';
+      const n = document.createElement('span'); n.className = 'mpc-n'; n.textContent = r.name + ' · port ' + r.port;
+      const st = document.createElement('span'); st.className = 'mpc-s'; st.textContent = 'checking…';
+      d.append(n, st); box.appendChild(d); return { r, d, st };
+    });
+    const res = await Promise.all(rows.map(async ({ r, d, st }) => {
+      const t0 = performance.now(); let ok = false;
+      try {
+        await r.connect(null);
+        const topic = 'lastshift/chk/' + rid(12);
+        const echo = new Promise(res => { const t = setTimeout(() => res(false), 4000); r.finder = tp => { if (tp === topic) { clearTimeout(t); res(true); } }; });
+        await r.sub(topic); r.pub(topic, 'ping', false); ok = await echo; // (a message there and back: the server really carries ours)
+      } catch (e) { ok = false; }
+      const ms = Math.round(performance.now() - t0); r.close();
+      d.classList.add(ok ? 'ok' : 'bad'); st.textContent = ok ? '✓ gets through (' + ms + ' ms)' : '✗ blocked or down';
+      return ok;
+    }));
+    const okN = res.filter(Boolean).length, first = list[0], via = list.find((r, i) => res[i]), p443 = list.filter(r => r.port === 443).map(r => r.name);
+    const v = document.createElement('div'); v.className = 'mpc-v ' + (okN ? 'ok' : 'bad');
+    v.textContent = !list.length ? '' : res[0] ? '✓ Co-op works on this network — through ' + first.name + '.'
+      : okN ? '✓ Co-op works on this network. ' + first.name + ' is blocked here (port ' + first.port + ' — school Wi-Fi often blocks it), so the game goes through ' + via.name + ' instead: hosting and joining both work.'
+      : '✗ This network blocks every co-op server (school and work Wi-Fi often do). A phone hotspot works — or ask whoever runs the network to allow ' + (p443.join(' or ') || 'the servers above') + ' on port 443.';
+    head.textContent = 'Co-op servers from this network:'; box.appendChild(v); this.checking = false;
+    try { v.scrollIntoView({ block: 'nearest' }); } catch (e) { }
+    return res;
   },
   bindLobby() {
     const busy = async (btn, fn) => {
@@ -12779,6 +12821,7 @@ const Net = {
     $('btn-mp-host').addEventListener('click', e => busy(e.currentTarget, async () => { Sound.ui(); saveName(); this.lobbyStatus('Connecting to the online servers…'); await this.host(); }));
     $('btn-mp-join').addEventListener('click', e => busy(e.currentTarget, async () => { Sound.ui(); saveName(); this.lobbyStatus('Looking for room ' + cleanCode(codeFrom(codeIn.value)) + '…'); await this.join(codeIn.value); }));
     $('btn-mp-back').addEventListener('click', () => { Sound.ui(); this.leave(); UI.back(); });
+    const chk = $('btn-mp-check'); if (chk) chk.addEventListener('click', () => { Sound.ui(); this.checkNet(); });
     $('btn-mp-copylink').addEventListener('click', () => copy(this.inviteLink(), 'Invite link'));
     $('btn-mp-copycode').addEventListener('click', () => copy(this.code, 'Room code'));
     $('btn-mp-start').addEventListener('click', () => { if (this.isHost) { Sound.ui(); this.startGame(); } });
@@ -37092,7 +37135,7 @@ const RZ_LAMPS_OFF = { watch: 1, camo: 1 };
 
 const _pv2 = new T.Vector2(), _pv3 = new T.Vector2();
 const Post = {
-  ok: null, w: 0, h: 0, tex: null, src: null, rt: [], scene: null, cam: null, quad: null, M: {}, ran: 0, lum: null,
+  ok: null, w: 0, h: 0, tex: null, src: null, lens: null, rt: [], scene: null, cam: null, quad: null, M: {}, ran: 0, lum: null,
   FX0: { ex: [0.1, 0, 0.8, 1.4], mb: [0, 0], hurt: [0, 0, 0], reset: false }, fx: null, // (Build 36: what the eye, the shutter and your injuries do to the picture — set each frame by Imm)
   // (shared by every pass: a full-screen triangle pair)
   VS: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
@@ -37123,28 +37166,39 @@ const Post = {
       // ex: the eye (key, how strongly it adapts, the darkest and brightest it will make the picture); mb: the camera's swing while the shutter is open (motion blur);
       // hurt: badly hurt (how much, the heartbeat's pulse, double vision)
       this.M.comp = mk(PK + `uniform sampler2D tS; uniform sampler2D tA; uniform sampler2D tB; uniform sampler2D tL; uniform float time; uniform float bloom; uniform float grain; uniform float vig; uniform float ca; uniform float grade;
-        uniform vec4 ex; uniform vec2 mb; uniform vec3 hurt; varying vec2 vUv;
+        uniform vec4 ex; uniform vec2 mb; uniform vec3 hurt; uniform sampler2D tD; uniform float drop; varying vec2 vUv;
         float hash(vec2 p) { p = fract(p * vec2(443.897, 441.423)); p += dot(p, p.yx + 19.19); return fract((p.x + p.y) * p.x); }
         vec3 scn(vec2 uv, vec2 o) { return vec3(texture2D(tS, uv + o).r, texture2D(tS, uv).g, texture2D(tS, uv - o).b); }
         void main() {
           vec2 d = vUv - 0.5; float r2 = dot(d, d); vec2 o = d * ca * r2 * 0.012;
+          vec2 uv = vUv, dn = vec2(0.0); float dw = 0.0, db = 0.0; // (Build 41.1: a drop on the lens bends the picture behind it — a tiny upside-down world)
+          if (drop > 0.0) { vec4 dd = texture2D(tD, vUv); dw = dd.a * drop; if (dw > 0.003) { dn = vec2(dd.r - 0.5, 0.5 - dd.g) * 2.0; uv -= dn * 0.045 * dw; db = dd.b; } else dw = 0.0; }
           vec3 c;
-          if (dot(mb, mb) > 1e-8) { c = vec3(0.0); float j = hash(gl_FragCoord.xy) - 0.5; for (int i = 0; i < 8; i++) c += scn(vUv + mb * ((float(i) + 0.5 + j) / 8.0 - 0.5), o); c *= 0.125; }
-          else c = scn(vUv, o);
-          if (hurt.z > 0.001) c = mix(c, scn(vUv + vec2(0.007, 0.0025) * hurt.z, o), 0.32 * hurt.z);
-          c += (texture2D(tA, vUv).rgb * 0.55 + texture2D(tB, vUv).rgb * 0.9) * bloom * vec3(1.0, 0.84, 0.66);
+          if (dot(mb, mb) > 1e-8) { c = vec3(0.0); float j = hash(gl_FragCoord.xy) - 0.5; for (int i = 0; i < 8; i++) c += scn(uv + mb * ((float(i) + 0.5 + j) / 8.0 - 0.5), o); c *= 0.125; }
+          else c = scn(uv, o);
+          if (dw > 0.0) { vec2 e = vec2(0.0022, 0.0); c = mix(c, (c + scn(uv + e, o) + scn(uv - e, o) + scn(uv + e.yx * 1.6, o)) * 0.25, dw); } // (seen through water: a little soft)
+          if (hurt.z > 0.001) c = mix(c, scn(uv + vec2(0.007, 0.0025) * hurt.z, o), 0.32 * hurt.z);
+          c += (texture2D(tA, uv).rgb * 0.55 + texture2D(tB, uv).rgb * 0.9) * bloom * vec3(1.0, 0.84, 0.66);
           if (ex.y > 0.0) { float La = upk(texture2D(tL, vec2(0.5))); c *= clamp(pow(ex.x / max(La, 0.002), ex.y), ex.z, ex.w); }
           float L = dot(c, vec3(0.2126, 0.7152, 0.0722));
           vec3 g = c * mix(vec3(0.88, 1.0, 1.07), vec3(1.08, 0.99, 0.84), smoothstep(0.03, 0.45, L));
           g += vec3(0.0, 0.007, 0.011) * (1.0 - smoothstep(0.0, 0.1, L));
           g = mix(vec3(L), g, 1.1); g = clamp(g, 0.0, 1.0); g = mix(g, g * g * (3.0 - 2.0 * g), 0.24);
           c = mix(c, g, grade);
+          if (dw > 0.0) { // the drop itself: clear, gathering light; a thin dark edge where its surface turns away; light caught on its lower inside edge; a glint on top — and blood is a dark red film
+            float lean = length(dn);
+            c *= 1.0 + 0.16 * dw * (1.0 - lean);
+            c *= 1.0 - 0.55 * smoothstep(0.86, 1.0, lean) * dw;
+            vec3 Nd = normalize(vec3(dn * 1.6, 1.0)); float glint = pow(max(dot(Nd, normalize(vec3(-0.35, 0.6, 0.72))), 0.0), 60.0);
+            float caust = smoothstep(0.55, 0.9, lean) * smoothstep(0.0, 0.6, -dn.y) * (1.0 - smoothstep(0.93, 1.0, lean));
+            c += vec3(0.95, 0.97, 1.0) * (glint * 0.55 + caust * 0.1) * dw * (0.25 + 0.6 * L);
+            c = mix(c, c * vec3(0.55, 0.08, 0.06) + vec3(0.09, 0.0, 0.0), db * dw * 0.9); }
           if (hurt.x > 0.001) { float e = smoothstep(0.06, 0.5, r2 * 1.7); c = mix(c, vec3(dot(c, vec3(0.2126, 0.7152, 0.0722))) * vec3(1.06, 0.95, 0.9), hurt.x * 0.55);
             c *= 1.0 - hurt.x * e * (0.42 + 0.3 * hurt.y); c += vec3(0.15, 0.0, 0.012) * hurt.x * e * hurt.y; }
           c *= 1.0 - vig * smoothstep(0.1, 0.6, r2 * 1.5);
           c += (hash(gl_FragCoord.xy + fract(time) * 917.0) - 0.5) * grain * (1.0 - 0.5 * L);
           gl_FragColor = vec4(c, 1.0); }`, { tS: { value: null }, tA: { value: null }, tB: { value: null }, tL: { value: null }, time: { value: 0 }, bloom: { value: 0.9 }, grain: { value: 0.03 }, vig: { value: 0.28 }, ca: { value: 1 }, grade: { value: 1 },
-        ex: { value: new T.Vector4(0.1, 0, 0.8, 1.4) }, mb: { value: new T.Vector2() }, hurt: { value: new T.Vector3() } });
+        ex: { value: new T.Vector4(0.1, 0, 0.8, 1.4) }, mb: { value: new T.Vector2() }, hurt: { value: new T.Vector3() }, tD: { value: null }, drop: { value: 0 } });
       const o1 = { minFilter: T.NearestFilter, magFilter: T.NearestFilter, format: T.RGBAFormat, depthBuffer: false, stencilBuffer: false, generateMipmaps: false };
       this.lum = [new T.WebGLRenderTarget(1, 1, o1), new T.WebGLRenderTarget(1, 1, o1), new T.WebGLRenderTarget(1, 1, o1)]; // (now · the eye · the eye last frame)
       this.quad = new T.Mesh(new T.PlaneGeometry(2, 2), this.M.comp); this.quad.frustumCulled = false; this.scene.add(this.quad);
@@ -37194,6 +37248,7 @@ const Post = {
       const U = M.comp.uniforms; U.tS.value = S; U.tA.value = A.texture; U.tB.value = C.texture; U.time.value = (performance.now() / 1000) % 100;
       U.bloom.value = low ? 0 : q === 'high' ? 0.95 : 0.8; U.ca.value = low ? 0 : q === 'high' ? 1 : 0.6; U.grain.value = settings.grain ? 0.028 : 0; U.vig.value = 0.26; U.grade.value = 1;
       U.tL.value = this.lum[1].texture; U.ex.value.fromArray(F.ex); U.mb.value.fromArray(F.mb); U.hurt.value.fromArray(F.hurt);
+      const LN = this.lens; U.drop.value = LN && LN.tex && LN.k > 0 ? LN.k : 0; U.tD.value = LN && LN.tex ? LN.tex : null; // (Build 41.1: drops on the lens, when there are any)
       renderer.setRenderTarget(null); renderer.setScissorTest(false); const cs = renderer.getSize(_pv3); renderer.setViewport(0, 0, cs.x, cs.y);
       this.pass(M.comp, null);
       renderer.setScissorTest(sc); renderer.info.autoReset = ar; this.ran++;
@@ -51776,6 +51831,113 @@ RxFX.init();
   // each floor's wear, when you arrive on it
   const ng2 = Game.newGame;
   Game.newGame = function () { const r = ng2.apply(this, arguments); try { Grime.ensure(); } catch (e) { console.warn('wear', e); } return r; };
+}
+/* =====================================================================
+   Build 41.1 — LENS. Water on the lens: a drip when you stand under a
+   leak, spray when you wade or swim through the flood water — and blood,
+   when something hits you. Each drop bends the picture behind it (a tiny
+   upside-down world, a little soft), has a dark rim and a glint of light
+   on top; the big ones slide down and leave a trail; they all dry.
+   The drops are drawn into one small map (which way each drop's surface
+   leans, how much blood, how much drop) that the final picture reads
+   through — when there are none, nothing is drawn at all.
+   Settings → Lens droplets (it needs Cinematic look).
+   ===================================================================== */
+const LENS_W = 256, LENS_MAX = 90;
+const Lens = {
+  drops: [], cv: null, g: null, tex: null, spr: null, h: 144, live: false, lk: new Map(), wetT: 0,
+  on() { return settings.lens !== false && settings.cinema !== false && Post.ok !== false; },
+  init() {
+    if (this.cv) return true;
+    try {
+      const c = document.createElement('canvas'); c.width = LENS_W; c.height = this.h; this.cv = c; this.g = c.getContext('2d');
+      this.spr = [this.sprite(false), this.sprite(true)];
+      const t = new T.CanvasTexture(c); t.minFilter = t.magFilter = T.LinearFilter; t.generateMipmaps = false; t.wrapS = t.wrapT = T.ClampToEdgeWrapping; this.tex = t;
+      return true;
+    } catch (e) { this.cv = null; return false; }
+  },
+  // one drop, as a little map: red/green = which way its surface leans, blue = blood, alpha = how much drop
+  sprite(blood) {
+    const N = 48, c = document.createElement('canvas'); c.width = c.height = N;
+    const g = c.getContext('2d'), im = g.createImageData(N, N), d = im.data;
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const u = (x + 0.5) / N * 2 - 1, v = (y + 0.5) / N * 2 - 1, r = Math.hypot(u, v), i = (y * N + x) * 4;
+      if (r >= 1) continue;
+      const k = Math.sin(r * Math.PI / 2), m = 1 / Math.max(r, 1e-3); // (a dome: flat on top, leaning hard at its edge)
+      d[i] = 128 + u * m * k * 127; d[i + 1] = 128 + v * m * k * 127; d[i + 2] = blood ? 255 : 0;
+      d[i + 3] = 255 * (1 - smooth(0.8, 1.0, r));
+    }
+    g.putImageData(im, 0, 0); return c;
+  },
+  fit() { // the map keeps the screen's shape (square pixels on screen)
+    const w = innerWidth || 16, hh = innerHeight || 9, h = clamp(Math.round(LENS_W * hh / w), 64, 256);
+    if (h !== this.h) { this.h = h; if (this.cv) { this.cv.height = h; this.tex.needsUpdate = true; } }
+  },
+  // n drops: o.x / o.y (0–1, from the top-left) and o.spread place them; o.big scales them; o.blood stains them
+  add(n, o) {
+    if (!this.on() || !this.init()) return 0;
+    o = o || {}; let k = 0;
+    for (; k < n && this.drops.length < LENS_MAX; k++) {
+      const r = o.r || (1.5 + Math.pow(Math.random(), 2.3) * 5.4) * (o.big || 1), s = o.spread === undefined ? 1 : o.spread; // (o.r: exactly this size)
+      const x = o.x === undefined ? Math.random() : o.x + (Math.random() - 0.5) * s, y = o.y === undefined ? Math.random() * 0.92 : o.y + (Math.random() - 0.5) * s * 0.7;
+      this.drops.push({ x: clamp(x, 0.01, 0.99), y: clamp(y, 0.01, 0.97), r, vy: 0, age: 0, life: (o.blood ? 8 : 4.5) + Math.random() * (o.blood ? 6 : 5), blood: o.blood ? 1 : 0, trT: 0.1, a: 1, asp: 0.85 + Math.random() * 0.4 }); // (no two drops quite the same shape)
+    }
+    if (k) this.live = true;
+    return k;
+  },
+  // what puts them there
+  hit(dmg) { const n = Math.round(clamp(dmg / 7, 2, 8)); return this.add(n, { blood: true, x: 0.5, y: 0.55, spread: 0.85, big: 1.15 }); }, // (a blow: blood across the lens)
+  drip(k) { return this.add(1 + Math.round(Math.random() * 2 * (k || 1)), { x: 0.3 + Math.random() * 0.4, y: 0.18, spread: 0.45, big: 1.25 }); }, // (a leak overhead)
+  splash(k) { return this.add(Math.round(2 + 6 * k), { x: 0.5, y: 0.8, spread: 1.1, big: 0.8 + 0.4 * k }); }, // (spray from the water at your feet)
+  clear() { this.drops.length = 0; this.live = false; if (this.g) { this.g.clearRect(0, 0, LENS_W, this.h); this.tex.needsUpdate = true; } Post.lens = null; },
+  frame(dt) {
+    if (!(dt > 0)) return;
+    if (!this.on()) { if (this.live || this.drops.length) this.clear(); return; }
+    // a leak overhead: when its drop lands and you're under it
+    if (typeof MV !== 'undefined' && MV.leaks && MV.leaks.length && MV.lv === LVL && Game.state === 'playing' && !player.hidden) {
+      for (const L of MV.leaks) {
+        const d = Math.hypot(L.x - player.pos.x, L.z - player.pos.z); if (d > 1.2) continue;
+        const t = (this.lk.get(L) || 0) + dt; this.lk.set(L, t % 1.6);
+        if (t >= 1.6) { if (d < 0.7) this.drip(player.pitch > 0.35 ? 2 : 1); else if (Math.random() < 0.3) this.add(1, { y: 0.15, big: 0.7 }); }
+      }
+    }
+    if (!this.drops.length) { if (this.live) this.clear(); return; }
+    this.fit();
+    const H = this.h, D = this.drops;
+    for (let i = D.length - 1; i >= 0; i--) {
+      const d = D[i]; d.age += dt;
+      if (d.age >= d.life || d.y > 1.08) { D.splice(i, 1); continue; }
+      if (d.r > 4.3) { // a big drop runs: its weight beats its grip on the glass — and it leaves a trail
+        d.vy = Math.min(0.32, d.vy + dt * 0.11 * (d.r - 4.3)); d.y += d.vy * dt; d.r -= dt * 0.4;
+        d.trT -= dt; if (d.trT <= 0 && D.length < LENS_MAX) { d.trT = 0.1 + Math.random() * 0.18; D.push({ x: d.x + (Math.random() - 0.5) * 0.004, y: d.y - d.r / H, r: Math.max(0.9, d.r * 0.33), vy: 0, age: 0, life: 1.1 + Math.random() * 1.6, blood: d.blood, trT: 9, a: 1, asp: 1 + Math.random() * 0.3 }); }
+      }
+      const k = d.age / d.life; d.a = k < 0.7 ? 1 : 1 - (k - 0.7) / 0.3; d.r = Math.max(0.7, d.r - dt * 0.06); // (and every drop dries: slowly, then all at once)
+    }
+    const g = this.g; g.clearRect(0, 0, LENS_W, H);
+    for (const d of D) { g.globalAlpha = clamp(d.a, 0, 1); const s = d.r * 2, h = s * (d.asp || 1) * (d.vy > 0.02 ? 1 + Math.min(0.5, d.vy * 3) : 1); g.drawImage(this.spr[d.blood], d.x * LENS_W - d.r, d.y * H - h / 2, s, h); } // (a running drop stretches)
+    g.globalAlpha = 1; this.tex.needsUpdate = true;
+    Post.lens = { k: 1, tex: this.tex };
+  },
+};
+/* ---------------- wiring ---------------- */
+{
+  // every frame, after the lights
+  const ul = Game.updateLights; Game.updateLights = function (dt) { const r = ul.apply(this, arguments); try { Lens.frame(dt || 0); } catch (e) { if (DEBUG) console.warn('lens', e); } return r; };
+  // a monster's blow: blood on the lens
+  const ph = Game.playerHit; Game.playerHit = function (dmg, o) { const r = ph.apply(this, arguments); try { if (r > 0 && o && o.foe && !o.self) Lens.hit(r); } catch (e) { } return r; };
+  // wading or swimming through the flood water: spray
+  if (typeof EPWater !== 'undefined' && EPWater.wade) { const wd = EPWater.wade; EPWater.wade = function (x, z, k) { const r = wd.apply(this, arguments); try { if (this.mat && this.shown >= 0.08 && Math.hypot(x - player.pos.x, z - player.pos.z) < 0.7) Lens.splash(clamp(k || 0.5, 0, 1) * (this.shown > 1.0 ? 1.4 : 1)); } catch (e) { } return r; }; }
+  // a new run, the title: a dry lens
+  const ng = Game.newGame; Game.newGame = function () { Lens.clear(); return ng.apply(this, arguments); };
+  const qt = Game.quitToTitle; Game.quitToTitle = function () { Lens.clear(); return qt.apply(this, arguments); };
+  // Settings → Lens droplets
+  const el = $('set-lens');
+  if (el) {
+    const draw = () => { el.textContent = settings.lens !== false ? 'ON' : 'OFF'; el.classList.toggle('on', settings.lens !== false); };
+    draw();
+    el.addEventListener('click', () => { settings.lens = settings.lens === false; draw(); saveSettings(); if (settings.lens === false) Lens.clear(); Sound.click && Sound.click(); });
+    const rs = $('btn-set-reset'); if (rs) rs.addEventListener('click', () => setTimeout(draw, 0));
+  }
 }
 /* =====================================================================
    Build 41 — THE LAST EPILEPSY. A meme mode.
