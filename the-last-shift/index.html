@@ -51346,6 +51346,10 @@ const RX = {
     this.ref = [new T.WebGLRenderTarget(hw, hh, Object.assign({ depthBuffer: false }, lin)), new T.WebGLRenderTarget(hw, hh, Object.assign({ depthBuffer: false }, lin))];
   },
   pass(mat, target) { this.quad.material = mat; renderer.setRenderTarget(target); renderer.render(this.scene, this.cam); },
+  prewarm() { // (while a floor fades in: every pass compiled now, so the first frame doesn't stop to do it)
+    if (settings.rx === false || settings.quality === 'low' || !this.init()) return;
+    try { const m0 = this.quad.material; for (const k in this.M) { this.quad.material = this.M[k]; renderer.compile(this.scene, this.cam); } this.quad.material = m0; } catch (e) { }
+  },
   show() { // our frame straight to the screen, as it is (the world, then your hands)
     this.drew = false;
     try { const c = this.M.cmb.uniforms; c.tS.value = this.rt.texture; c.tH.value = this.vm.texture; c.k.value.set(0, 0, this.vmDrew ? 1 : 0, 0); this.vmDrew = false; this.pass(this.M.cmb, null); } catch (e) { this.ok = false; renderer.setRenderTarget(null); }
@@ -51442,6 +51446,7 @@ const RX = {
     }
   },
 };
+{ const pw0 = Perf.prewarm; Perf.prewarm = function () { const r = pw0.apply(this, arguments); RX.prewarm(); return r; }; }
 // Post finishes our frame instead of copying the screen
 Post.src = () => RX.take();
 {
