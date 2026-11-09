@@ -175,7 +175,11 @@ label.fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--
 .hud-right{right:12px;top:12px;display:flex;flex-direction:column;gap:8px;width:250px}
 .hpanel{background:rgba(13,16,22,.88);border:1px solid var(--line);border-radius:12px;padding:10px 12px;backdrop-filter:blur(6px);display:flex;flex-direction:column;gap:8px;font-size:12px}
 .hpanel h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;gap:8px}
-.slots{display:flex;gap:6px}
+.slots{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lane{display:flex;gap:3px;align-items:center;padding-right:6px;border-right:1px solid var(--line-2)}
+.lane:last-child{border-right:0}
+.lane b{font:600 10.5px var(--f-mono);color:var(--muted);margin-right:2px;text-transform:uppercase}
+.frow.tgt{outline:1px solid var(--pollen);border-radius:4px}
 .slot{width:22px;height:22px;border-radius:50%;border:1.5px dashed var(--line-2)}
 .slot.pollen{background:radial-gradient(circle at 35% 35%,#ffe680,#e6aa10);border:0}
 .slot.nectar-red{background:radial-gradient(circle at 35% 35%,#ff9a9e,#c9303a);border:0}
@@ -378,8 +382,9 @@ table.brk td:last-child{text-align:right;font-family:var(--f-mono)}
         <span class="keyhint"><kbd>←</kbd><kbd>→</kbd> or <kbd>Q</kbd><kbd>E</kbd> turn</span>
         <span class="keyhint"><kbd>Shift</kbd> intake</span>
         <span class="keyhint"><kbd>Space</kbd> shoot</span>
-        <span class="keyhint"><kbd>F</kbd> NECTAR → FLOWER</span>
-        <span class="keyhint"><kbd>G</kbd> POLLEN → FLOWER</span>
+        <span class="keyhint"><kbd>F</kbd> target FLOWER / HIVE</span>
+        <span class="keyhint"><kbd>G</kbd> next FLOWER</span>
+        <span class="keyhint"><kbd>K</kbd> outtake</span>
         <span class="keyhint"><kbd>N</kbd> shoot incl. NECTAR</span>
         <span class="keyhint"><kbd>C</kbd> camera</span>
         <span class="keyhint"><kbd>H</kbd> shot map</span>
@@ -423,8 +428,8 @@ table.brk td:last-child{text-align:right;font-family:var(--f-mono)}
           <dt>Outtake</dt><dd>K · LB</dd>
           <dt>Shoot POLLEN</dt><dd>Space · RT</dd>
           <dt>Shoot, NECTAR too</dt><dd>N · A</dd>
-          <dt>Place in FLOWER (NECTAR first)</dt><dd>F · RB</dd>
-          <dt>Place POLLEN in FLOWER</dt><dd>G · D-pad down</dd>
+          <dt>Target nearest FLOWER / back to HIVE</dt><dd>F · RB</dd>
+          <dt>Next FLOWER</dt><dd>G · D-pad down</dd>
           <dt>Human player NECTAR (free)</dt><dd>Z · D-pad up</dd>
           <dt>Slow mode</dt><dd>Ctrl · B</dd>
           <dt>Camera</dt><dd>C · Y</dd>
@@ -3069,6 +3074,17 @@ const STATIC_BOXES = [
 const STATIC_CAPS = [];
 for (const sx of [-1, 1]) for (const sz of [-1, 1]) STATIC_CAPS.push({ a: [sx * HIVE.legFoot.x, HIVE.legFoot.y, sz * HIVE.legFoot.z], b: [sx * HIVE.legTop.x, HIVE.legTop.y, 0], r: HIVE.legR });
 STATIC_CAPS.push({ a: [-0.33, HIVE.pivotY, 0], b: [0.33, HIVE.pivotY, 0], r: 0.016 });
+/* FLOWER (physics and mesh share this): four corner posts, a clear tube from the seat ring up to the top, a seat ring
+   at the bottom of the tube that lets POLLEN drop through but holds NECTAR, a shallow cup lip on the base and a petal
+   funnel at the top. FLOWER_PROFILE = segments in (radius from the FLOWER axis, height) that are revolved around it. */
+const FLOWER = { postC: FIELD.flowerHalf - 0.012, postR: 0.0055, tubeR: 0.052, tubeY0: 0.095, ringR: 0.0445, ringY: 0.093, lipR: 0.048, lipH: 0.006, funnelR: 0.125, funnelH: 0.05, t: 0.0025 };
+const FLOWER_PROFILE = [
+  [[FLOWER.tubeR, FLOWER.tubeY0], [FLOWER.tubeR, FIELD.flowerTop]],
+  [[FLOWER.tubeR, FIELD.flowerTop], [FLOWER.funnelR, FIELD.flowerTop + FLOWER.funnelH]],
+  [[FLOWER.ringR, FLOWER.ringY], [FLOWER.tubeR, FLOWER.ringY]],
+  [[FLOWER.lipR, 0], [FLOWER.lipR, FLOWER.lipH]],
+];
+const FLOWER_AIM_Y = FIELD.flowerTop + 0.03;
 
 /* ---------------- ball flight (shared by sim + solver) ---------------- */
 function dragK(kind) { const B = BALL[kind]; return 0.5 * BALL.rho * BALL.cd * Math.PI * B.r * B.r / B.m; }
@@ -3107,6 +3123,8 @@ function traceShot(h, st, kind, opt = {}) {
     flyStep(s, dt, kd);
     if (path && ((t / dt) | 0) % 3 === 0) path.push([s.x, s.y, s.z]);
     const l = hiveToLocal(h, s.x, s.y, s.z), along = side * l[2];
+    // a ball that rises into the CELL can clip the front lip of its floor before it crosses the opening
+    if (Math.abs(l[0]) < HIVE.hw && Math.abs(along - HIVE.mouth) < r && Math.hypot(l[1] - HIVE.floorY, along - HIVE.mouth) < r * 1.02) { if (path) path.push([s.x, s.y, s.z]); return { code: 'lip', w: Math.min(l[1], HIVE.floorY), t, path, short: true }; }
     if (prevAlong !== null && prevAlong > HIVE.mouth && along <= HIVE.mouth && Math.abs(l[0]) < HIVE.hw + 0.4) {
       const u = (prevAlong - HIVE.mouth) / (prevAlong - along);
       const xx = prev[0] + (l[0] - prev[0]) * u, yy = prev[1] + (l[1] - prev[1]) * u;
@@ -3143,6 +3161,36 @@ function solveSpeed(h, ex, ey, ez, yaw, el, kind, vmin, vmax, rvx = 0, rvz = 0) 
   solveSpeed.why = '';
   for (let i = 0; i < 22; i++) { const m = (lo + hi) / 2; if (err(m) < 0) lo = m; else hi = m; }
   return (lo + hi) / 2;
+}
+/* Simulate a shot at a FLOWER. 'along' = how far past (+) or short (-) of the FLOWER axis the ball comes down
+   through the aim height, measured along the line from the launch point. */
+function traceFlower(f, st, kind, opt = {}) {
+  const r = BALL[kind].r, kd = dragK(kind), dt = opt.dt || 0.004, yA = FLOWER_AIM_Y;
+  const s = { ...st }, path = opt.path ? [[s.x, s.y, s.z]] : null;
+  const dx0 = f.x - st.x, dz0 = f.z - st.z, d0 = Math.hypot(dx0, dz0) || 1e-6;
+  for (let t = 0, i = 0; t < 2.6; t += dt, i++) {
+    const px = s.x, py = s.y, pz = s.z;
+    flyStep(s, dt, kd);
+    if (path && i % 3 === 0) path.push([s.x, s.y, s.z]);
+    if (py > yA && s.y <= yA) {
+      const u = (py - yA) / (py - s.y), x = px + (s.x - px) * u, z = pz + (s.z - pz) * u;
+      if (path) { path.push([x, yA, z]); let q = { ...s }; for (let k = 0; k < 40 && q.y > FIELD.flowerTop - 0.25; k++) { flyStep(q, 0.004, kd); if (k % 4 === 0) path.push([q.x, q.y, q.z]); } }
+      const along = ((x - st.x) * dx0 + (z - st.z) * dz0) / d0 - d0, miss = Math.hypot(x - f.x, z - f.z);
+      return { code: miss < FLOWER.tubeR - r * 0.4 ? 'in' : miss < FLOWER.funnelR - r * 0.5 ? 'funnel' : along > 0 ? 'long' : 'short', along, miss, t, path };
+    }
+    if (s.y < r) return { code: 'short', along: -d0, miss: 9, t, path, never: true };
+  }
+  return { code: 'short', along: -d0, miss: 9, t: 2.6, path, never: true };
+}
+function solveFlowerSpeed(f, ex, ey, ez, yaw, el, kind, vmin, vmax, rvx = 0, rvz = 0) {
+  const err = v => traceFlower(f, launchState(ex, ey, ez, yaw, el, v, kind, rvx, rvz), kind, { dt: 0.006 }).along;
+  let lo = vmin, hi = vmax;
+  if (err(hi) < 0) { solveFlowerSpeed.why = 'far'; return NaN; }
+  if (err(lo) > 0) { solveFlowerSpeed.why = 'close'; return NaN; }
+  for (let i = 0; i < 20; i++) { const m = (lo + hi) / 2; if (err(m) < 0) lo = m; else hi = m; }
+  const v = (lo + hi) / 2;
+  if (Math.abs(err(hi)) > 0.05) { solveFlowerSpeed.why = 'close'; return NaN; }   // only an arc that grazes the top reaches it
+  solveFlowerSpeed.why = ''; return v;
 }
 const yawTo = (x0, z0, x1, z1) => Math.atan2(-(z1 - z0), x1 - x0);   // world yaw (CCW from +X) toward a point
 
@@ -3340,13 +3388,8 @@ function exampleRawModel(onStatus) {
       exitHeightMM: 395, feed: 'roller → splitter → elevator → chute + 3 ladder rows → turret bore → flywheel & hood',
       notes: 'Tip-Sync: flywheel-dip shot counting + Limelight tip detection, fires exactly enough to TIP.',
       // ball path through the robot, from the team's section drawing (mm, CAD frame): roller -> splitter -> elevator -> column -> turret bore
-      slots: [[-104, 60, 342], [104, 60, 342], [-96, 60, 190], [96, 60, 190]],
-      lanes: [[0, 2], [1, 3]],
-      slotPaths: (() => {
-        const col = sx => [[sx * 58, 262, 36], [sx * 58, 192, 36], [sx * 58, 66, 60], [sx * 58, 60, 96], [sx * 83, 60, 150], [sx * 96, 60, 190]];
-        const full = sx => [...col(sx), [sx * 104, 60, 262], [sx * 104, 60, 342]];
-        return [full(-1), full(1), col(-1), col(1)];
-      })(),
+      feedEntry: [[0, 250, 36], [0, 192, 36], [0, 132, 40]],
+      feedLanes: [-1, 1].map(sx => [[0, 132, 40], [sx * 58, 66, 60], [sx * 58, 60, 96], [sx * 83, 60, 150], [sx * 96, 60, 190], [sx * 104, 60, 262], [sx * 104, 60, 342]]),
       cycle: 0.22,
     },
   };
@@ -3425,96 +3468,177 @@ function shapeOf(d) {
   if (c < 0.16 * b) return { kind: 'plate', axis: idx[2] };
   return { kind: 'box' };
 }
-/* choose units/up/front automatically and build robot-local parts */
+/* ---------- orientation from the drive wheels (works for any CAD rotation, not just 90° steps) ---------- */
+const dot3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const norm3 = a => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+const sub3 = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+function eig3(A) {   // Jacobi eigen-decomposition of a symmetric 3x3; returns [{val, vec}] sorted large -> small
+  const a = A.map(r => r.slice()), V = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  for (let sweep = 0; sweep < 24; sweep++) {
+    let off = 0; for (let p = 0; p < 3; p++) for (let q = p + 1; q < 3; q++) off += a[p][q] * a[p][q];
+    if (off < 1e-30) break;
+    for (let p = 0; p < 3; p++) for (let q = p + 1; q < 3; q++) {
+      if (Math.abs(a[p][q]) < 1e-30) continue;
+      const th = (a[q][q] - a[p][p]) / (2 * a[p][q]), t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)), c = 1 / Math.sqrt(t * t + 1), sn = t * c;
+      for (let k = 0; k < 3; k++) { const akp = a[k][p], akq = a[k][q]; a[k][p] = c * akp - sn * akq; a[k][q] = sn * akp + c * akq; }
+      for (let k = 0; k < 3; k++) { const apk = a[p][k], aqk = a[q][k]; a[p][k] = c * apk - sn * aqk; a[q][k] = sn * apk + c * aqk; }
+      for (let k = 0; k < 3; k++) { const vkp = V[k][p], vkq = V[k][q]; V[k][p] = c * vkp - sn * vkq; V[k][q] = sn * vkp + c * vkq; }
+    }
+  }
+  return [0, 1, 2].map(k => ({ val: a[k][k], vec: norm3([V[0][k], V[1][k], V[2][k]]) })).sort((x, y) => y.val - x.val);
+}
+function partPCA(P) {   // principal axes + extents of a part's vertices (raw units)
+  const n = P.length / 3; if (n < 3) return null;
+  const step = Math.max(1, Math.floor(n / 3000)); let c = [0, 0, 0], m = 0;
+  for (let i = 0; i < n; i += step) { c[0] += P[i * 3]; c[1] += P[i * 3 + 1]; c[2] += P[i * 3 + 2]; m++; }
+  c = c.map(v => v / m);
+  const C = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (let i = 0; i < n; i += step) { const d = [P[i * 3] - c[0], P[i * 3 + 1] - c[1], P[i * 3 + 2] - c[2]]; for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) C[r][q] += d[r] * d[q]; }
+  const E = eig3(C), ax = E.map(e => e.vec), lo = [1e30, 1e30, 1e30], hi = [-1e30, -1e30, -1e30];
+  for (let i = 0; i < n; i += step) { const v = [P[i * 3], P[i * 3 + 1], P[i * 3 + 2]]; for (let k = 0; k < 3; k++) { const t = dot3(v, ax[k]); if (t < lo[k]) lo[k] = t; if (t > hi[k]) hi[k] = t; } }
+  const mid = [0, 1, 2].map(k => (lo[k] + hi[k]) / 2);
+  return { c: [0, 1, 2].map(j => mid[0] * ax[0][j] + mid[1] * ax[1][j] + mid[2] * ax[2][j]), ax, ext: [0, 1, 2].map(k => hi[k] - lo[k]) };
+}
+function pcaShape(q, f) {
+  if (!q) return { kind: 'none' };
+  const e = q.ext.map(x => x * f);
+  if (e[1] / e[0] > 0.85 && e[2] < 0.75 * e[0]) return { kind: 'disk', axis: q.ax[2], diam: (e[0] + e[1]) / 2 };
+  if (e[0] > 2.2 * e[1] && e[2] / e[1] > 0.72) return { kind: 'rod', axis: q.ax[0], diam: (e[1] + e[2]) / 2 };
+  return { kind: 'other' };
+}
+/* Finds the drive wheels: 3+ disks of the same size with parallel axles whose centers span a real footprint.
+   Their plane gives "up", their axles give "sideways"; the robot stands on their lowest points. */
+function wheelFrame(parts, PC, idx, f, robotC) {
+  const cands = [];
+  for (const i of idx) {
+    const sh = pcaShape(PC[i], f); if (sh.kind !== 'disk' || sh.diam < 0.04 || sh.diam > 0.175) continue;
+    if (RX.odo.test(parts[i].name) || RX.fast.test(parts[i].name)) continue;
+    cands.push({ i, c: PC[i].c, ax: sh.axis, d: sh.diam, named: RX.mec.test(parts[i].name) || RX.omni.test(parts[i].name) || /wheel/i.test(parts[i].name) });
+  }
+  cands.sort((a, b) => b.d - a.d);
+  const groups = [];
+  for (const c of cands) {
+    const g = groups.find(g => { if (Math.abs(dot3(g.ax, c.ax)) < 0.95) return false; const dv = sub3(c.c, g.c), along = Math.abs(dot3(dv, g.ax)) * f, perp = Math.sqrt(Math.max(0, dot3(dv, dv) * f * f - along * along)); return perp < 0.012 && along < 0.07; });
+    if (g) { g.parts.push(c.i); g.named = g.named || c.named; } else groups.push({ ...c, parts: [c.i] });
+  }
+  let best = null;
+  for (const g0 of groups) {
+    const set = groups.filter(g => Math.abs(g.d - g0.d) < 0.12 * g0.d && Math.abs(dot3(g.ax, g0.ax)) > 0.94);
+    if (set.length < 3) continue;
+    // look along the axles: drive wheel centers sit on one line (same height); anything off it (a flywheel or an
+    // intake wheel of the same size) is an outlier. The line is "forward", its normal is "up".
+    const A = g0.ax, e1 = norm3(cross3(A, Math.abs(A[0]) < 0.9 ? [1, 0, 0] : [0, 1, 0])), e2 = cross3(A, e1);
+    const P2 = set.map(g => [dot3(g.c, e1) * f, dot3(g.c, e2) * f]), PA = set.map(g => dot3(g.c, A) * f);
+    let bl = null;
+    for (let a = 0; a < set.length; a++) for (let b = a + 1; b < set.length; b++) {
+      const dx = P2[b][0] - P2[a][0], dy = P2[b][1] - P2[a][1], len = Math.hypot(dx, dy); if (len < 0.08) continue;
+      const u = [dx / len, dy / len], nr = [-u[1], u[0]];
+      const inl = set.map((g, k) => k).filter(k => Math.abs((P2[k][0] - P2[a][0]) * nr[0] + (P2[k][1] - P2[a][1]) * nr[1]) < 0.012);
+      if (inl.length < 3) continue;
+      const along = inl.map(k => P2[k][0] * u[0] + P2[k][1] * u[1]), side = inl.map(k => PA[k]);
+      const span = Math.max(...along) - Math.min(...along), track = Math.max(...side) - Math.min(...side);
+      if (span < 0.1 || track < 0.1) continue;                                   // a row of rollers is not a drivetrain
+      const sc = Math.min(inl.length, 6) * span * track * (inl.some(k => set[k].named) ? 1.5 : 1);
+      if (!bl || sc > bl.sc) bl = { sc, inl, nr };
+    }
+    if (!bl) continue;
+    if (!best || bl.sc > best.sc) {
+      const wheels = bl.inl.map(k => set[k]), mean = [0, 1, 2].map(q => wheels.reduce((s0, g) => s0 + g.c[q], 0) / wheels.length);
+      best = { sc: bl.sc, set: wheels, n: norm3([bl.nr[0] * e1[0] + bl.nr[1] * e2[0], bl.nr[0] * e1[1] + bl.nr[1] * e2[1], bl.nr[0] * e1[2] + bl.nr[1] * e2[2]]), mean, ax: A };
+    }
+  }
+  if (!best) return null;
+  let U = best.n; if (dot3(sub3(robotC, best.mean), U) < 0) U = U.map(v => -v);
+  // CAD is almost always drawn square to its axes: snap a near-miss so fit noise doesn't tilt the robot
+  for (const a of Object.values(AXES)) if (dot3(U, a) > Math.cos(8 * DEG)) U = a.slice();
+  let A = norm3(sub3(best.ax, U.map(v => v * dot3(best.ax, U))));
+  for (const a of Object.values(AXES)) if (Math.abs(dot3(A, a)) > Math.cos(8 * DEG)) A = norm3(sub3(a, U.map(v => v * dot3(a, U))));
+  const ground = Math.min(...best.set.map(g => dot3(g.c, U) - g.d / 2 / f));
+  return { U, A, ground, wheels: best.set.reduce((n, g) => n + g.parts.length, 0), diam: best.set[0].d };
+}
+function axisLabel(v) { for (const [k, a] of Object.entries(AXES)) if (dot3(a, v) > 0.985) return k; return 'tilted'; }
+function rotAbout(v, U, ang) { const c = Math.cos(ang), s = Math.sin(ang), x = cross3(U, v); return norm3([v[0] * c + x[0] * s, v[1] * c + x[1] * s, v[2] * c + x[2] * s]); }
+
+/* choose units / up / front automatically and build robot-local parts.
+   ov: { units, up: axis key or undefined (auto), turn: quarter turns of the front about up } */
 function normalizeModel(raw, ov = {}) {
   const parts = raw.parts;
   if (!raw._stats) raw._stats = parts.map(partStats);
-  const RS = raw._stats;
+  if (!raw._pca) raw._pca = parts.map(p => partPCA(p.pos));
+  const RS = raw._stats, PC = raw._pca;
   const robotIdx = parts.map((p, i) => i).filter(i => !RX.piece.test(parts[i].name) || /bearing/i.test(parts[i].name));
   let mn = [1e30, 1e30, 1e30], mx = [-1e30, -1e30, -1e30];
   for (const i of robotIdx) for (let k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], RS[i].mn[k]); mx[k] = Math.max(mx[k], RS[i].mx[k]); }
   const maxRaw = Math.max(mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2]);
   const units = ov.units && ov.units !== 'auto' ? ov.units : (raw.frame && raw.frame.units) || detectUnits(maxRaw, raw.unitHint);
   const f = UNIT_F[units];
-  // ---- up axis ----
-  const defUp = raw.frame ? raw.frame.up : (['gltf', 'obj'].includes(raw.format) ? '+Y' : '+Z');
-  let up = ov.up || (raw.frame && !raw.ignoreFrame ? raw.frame.up : null), upScores = {};
-  if (!up) {
+  let vol = 0; const robotC = [0, 0, 0];
+  for (const i of robotIdx) { const w = RS[i].vol + 1e-12; vol += w; for (let k = 0; k < 3; k++) robotC[k] += RS[i].c[k] * w; }
+  for (let k = 0; k < 3; k++) robotC[k] /= vol || 1;
+  const useDesign = raw.frame && !raw.ignoreFrame && !ov.up;
+  const WF = wheelFrame(parts, PC, robotIdx, f, robotC);
+  // ---- up ----
+  let U, how;
+  if (useDesign) { U = AXES[raw.frame.up]; how = 'design'; }
+  else if (ov.up) { U = AXES[ov.up]; how = 'manual'; }
+  else if (WF) { U = WF.U; how = 'wheels'; }
+  else {   // no drivetrain found: fall back to the most plausible axis
+    const defUp = ['gltf', 'obj'].includes(raw.format) ? '+Y' : '+Z', sc = {};
     for (const key of Object.keys(AXES)) {
-      const ax = AXES[key], k = ax.findIndex(v => v !== 0), sg = ax[k], h = [0, 1, 2].filter(q => q !== k);
-      const ground = sg > 0 ? mn[k] : -mx[k];
-      const pts = []; let named = 0;
-      for (const i of robotIdx) {
-        const s = RS[i], d = s.d.map(x => x * f), sh = shapeOf(d);
-        const lo = (sg > 0 ? s.mn[k] : -s.mx[k]) - ground, ctr = (sg > 0 ? s.c[k] : -s.c[k]) - ground;
-        const isWheel = sh.kind === 'disk' && sh.axis !== k && sh.diam > 0.035 && sh.diam < 0.17 && lo * f < 0.012 && Math.abs(ctr * f - sh.diam / 2) < 0.014;
-        const nmW = (RX.mec.test(parts[i].name) || RX.omni.test(parts[i].name) || /drive.?wheel|traction/i.test(parts[i].name)) && lo * f < 0.012;
-        if (isWheel || nmW) { pts.push([s.c[h[0]] * f, s.c[h[1]] * f]); if (nmW) named++; }
-      }
-      // wheels must hold the robot up: several separate contact spots spread over a real footprint
-      const cl = [];
-      for (const p of pts) if (!cl.some(c => Math.hypot(c[0] - p[0], c[1] - p[1]) < 0.06)) cl.push(p);
-      const area = hullArea(cl);
-      let sc = key === defUp ? 1.6 : 0;
-      sc += cl.length >= 3 && area > 0.012 ? 10 + Math.min(cl.length, 6) + area * 40 + named * 0.5 : cl.length * 0.3;
-      upScores[key] = +sc.toFixed(2);
+      const ax = AXES[key], k = ax.findIndex(v => v !== 0), sg = ax[k], ground = sg > 0 ? mn[k] : -mx[k];
+      let s0 = key === defUp ? 1.6 : 0;
+      for (const i of robotIdx) { const sh = pcaShape(PC[i], f); if (sh.kind !== 'disk' || sh.diam < 0.035 || sh.diam > 0.17 || Math.abs(dot3(sh.axis, ax)) > 0.3) continue; const lo = (sg > 0 ? RS[i].mn[k] : -RS[i].mx[k]) - ground; if (lo * f < 0.012) s0 += 1; }
+      sc[key] = s0;
     }
-    up = Object.keys(upScores).sort((a, b) => upScores[b] - upScores[a])[0];
+    U = AXES[Object.keys(sc).sort((a, b) => sc[b] - sc[a])[0]]; how = 'guess';
   }
-  const U = AXES[up], ku = U.findIndex(v => v !== 0);
-  // ---- front ----
-  const horiz = Object.keys(AXES).filter(k => AXES[k].findIndex(v => v !== 0) !== ku);
-  const defFront = raw.frame ? raw.frame.front : (ku === 2 ? '+Y' : ku === 1 ? '-Z' : '+Y');
-  let front = ov.front && horiz.includes(ov.front) ? ov.front : (raw.frame && !raw.ignoreFrame && !ov.up ? raw.frame.front : null), frontScores = {};
-  const height = (ku >= 0 ? (mx[ku] - mn[ku]) : 0) * f;
-  if (!front) {
-    for (const key of horiz) {
-      const F = AXES[key], kf = F.findIndex(v => v !== 0), sg = F[kf];
-      const span = (mx[kf] - mn[kf]) * f, mid = (mx[kf] + mn[kf]) / 2;
-      const gU = U[ku] > 0 ? mn[ku] : -mx[ku];
-      let sc = key === defFront ? 1 : 0;
-      for (const i of robotIdx) {
-        const s = RS[i], nm = parts[i].name + ' ' + (parts[i].path || '');
-        const along = sg * (s.c[kf] - mid) * f / (span / 2 || 1);   // -1 .. 1 toward this side
-        const h = ((U[ku] > 0 ? s.c[ku] : -s.c[ku]) - gU) * f;
-        const d = s.d.map(x => x * f), sh = shapeOf(d);
-        if (RX.intake.test(nm) && along > 0.25) sc += 2;
-        if ((sh.kind === 'disk' || sh.kind === 'rod') && sh.axis !== ku && sh.axis !== kf && along > 0.45 && h < 0.45 * height && h > 0.02) sc += 0.8;
-        if (RX.piece.test(parts[i].name) && along > 0.3 && h < 0.12) sc += 1.5;
-      }
-      frontScores[key] = sc;
+  const wheelsAgree = !!WF && dot3(WF.U, U) > 0.9;
+  // ---- front: perpendicular to the drive axles, on the intake side ----
+  let Fcands;
+  if (useDesign) Fcands = [AXES[raw.frame.front]];
+  else if (wheelsAgree) { const f0 = norm3(cross3(U, WF.A)); Fcands = [f0, f0.map(v => -v)]; }
+  else Fcands = Object.values(AXES).filter(a => Math.abs(dot3(a, U)) < 0.5);
+  const proj = (i, v) => dot3(RS[i].c, v);
+  const gU = wheelsAgree ? WF.ground : Math.min(...robotIdx.map(i => Math.min(...corners(RS[i]).map(c => dot3(c, U)))));
+  const height = (Math.max(...robotIdx.map(i => Math.max(...corners(RS[i]).map(c => dot3(c, U))))) - gU) * f;
+  const frontScores = Fcands.map(F => {
+    const vals = robotIdx.map(i => proj(i, F)), lo = Math.min(...vals), hi = Math.max(...vals), mid = (lo + hi) / 2, half = (hi - lo) / 2 || 1;
+    let sc = 0;
+    for (const i of robotIdx) {
+      const nm = parts[i].name + ' ' + (parts[i].path || ''), along = (proj(i, F) - mid) / half, h = (proj(i, U) - gU) * f, sh = pcaShape(PC[i], f);
+      if (RX.intake.test(nm) && along > 0.25) sc += 2;
+      if ((sh.kind === 'disk' || sh.kind === 'rod') && Math.abs(dot3(sh.axis, F)) < 0.3 && Math.abs(dot3(sh.axis, U)) < 0.3 && along > 0.45 && h < 0.45 * height && h > 0.02 && sh.diam < 0.12) sc += 0.8;
+      if (RX.piece.test(parts[i].name) && along > 0.3 && h < 0.12) sc += 1.5;
     }
-    front = Object.keys(frontScores).sort((a, b) => frontScores[b] - frontScores[a])[0];
-  }
-  const F = AXES[front], R = cross3(F, U);
-  // ---- transform ----
+    return sc;
+  });
+  let F = Fcands[frontScores.indexOf(Math.max(...frontScores))];
+  if (ov.turn) F = rotAbout(F, U, (ov.turn % 4) * Math.PI / 2);
+  F = norm3(sub3(F, U.map(v => v * dot3(F, U))));
+  const R = cross3(F, U);
+  // ---- transform: robot frame x forward, y up (wheels on the floor), z right ----
   const center = [(mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2];
-  const gnd = U[ku] > 0 ? mn[ku] : -mx[ku];
-  const dotr = (v, A) => v[0] * A[0] + v[1] * A[1] + v[2] * A[2];
+  const cU = dot3(center, U);
   const out = parts.map((p, i) => {
     const P = p.pos, n = P.length / 3, pos = new Float32Array(P.length), N = p.nrm, nrm = N ? new Float32Array(N.length) : null;
     for (let j = 0; j < n; j++) {
-      const x = P[j * 3] - center[0], y = P[j * 3 + 1] - center[1], z = P[j * 3 + 2] - center[2];
-      const v = [x, y, z];
-      pos[j * 3] = dotr(v, F) * f; pos[j * 3 + 1] = (dotr(v, U) - (gnd - dotr(center, U))) * f; pos[j * 3 + 2] = dotr(v, R) * f;
-      if (N) { const w = [N[j * 3], N[j * 3 + 1], N[j * 3 + 2]]; nrm[j * 3] = dotr(w, F); nrm[j * 3 + 1] = dotr(w, U); nrm[j * 3 + 2] = dotr(w, R); }
+      const v = [P[j * 3] - center[0], P[j * 3 + 1] - center[1], P[j * 3 + 2] - center[2]];
+      pos[j * 3] = dot3(v, F) * f; pos[j * 3 + 1] = (dot3(v, U) + cU - gU) * f; pos[j * 3 + 2] = dot3(v, R) * f;
+      if (N) { const w = [N[j * 3], N[j * 3 + 1], N[j * 3 + 2]]; nrm[j * 3] = dot3(w, F); nrm[j * 3 + 1] = dot3(w, U); nrm[j * 3 + 2] = dot3(w, R); }
     }
     const q = { ...p, pos, nrm, idx: i };
     q.s = partStats(q);
     return q;
   });
-  // re-center footprint on the robot (not game pieces) bbox
   let a = [1e30, 1e30], b = [-1e30, -1e30];
   out.forEach(p => { if (RX.piece.test(p.name) && !/bearing/i.test(p.name)) return; a[0] = Math.min(a[0], p.s.mn[0]); b[0] = Math.max(b[0], p.s.mx[0]); a[1] = Math.min(a[1], p.s.mn[2]); b[1] = Math.max(b[1], p.s.mx[2]); });
   const ox = (a[0] + b[0]) / 2, oz = (a[1] + b[1]) / 2;
-  if (Math.abs(ox) > 1e-6 || Math.abs(oz) > 1e-6) out.forEach(p => {
-    for (let j = 0; j < p.pos.length; j += 3) { p.pos[j] -= ox; p.pos[j + 2] -= oz; }
-    p.s = partStats(p);
-  });
-  // transform helper for raw-unit points given in the CAD frame (used for example design facts)
-  const toLocal = v => { const x = v[0] - center[0], y = v[1] - center[1], z = v[2] - center[2], w = [x, y, z]; return [dotr(w, F) * f - ox, (dotr(w, U) - (gnd - dotr(center, U))) * f, dotr(w, R) * f - oz]; };
-  return { parts: out, units, up, front, upScores, frontScores, f, toLocal, autoUp: !ov.up, autoFront: !ov.front, autoUnits: !(ov.units && ov.units !== 'auto') };
+  if (Math.abs(ox) > 1e-6 || Math.abs(oz) > 1e-6) out.forEach(p => { for (let j = 0; j < p.pos.length; j += 3) { p.pos[j] -= ox; p.pos[j + 2] -= oz; } p.s = partStats(p); });
+  const toLocal = v => { const w = [v[0] - center[0], v[1] - center[1], v[2] - center[2]]; return [dot3(w, F) * f - ox, (dot3(w, U) + cU - gU) * f, dot3(w, R) * f - oz]; };
+  return { parts: out, units, up: axisLabel(U), front: axisLabel(F), how, wheels: wheelsAgree ? WF.wheels : 0, frontScores, f, toLocal,
+    autoUp: !ov.up, turn: ov.turn || 0, autoUnits: !(ov.units && ov.units !== 'auto') };
 }
+function corners(s) { const o = []; for (const x of [s.mn[0], s.mx[0]]) for (const y of [s.mn[1], s.mx[1]]) for (const z of [s.mn[2], s.mx[2]]) o.push([x, y, z]); return o; }
 
 /* =====================================================================================
    Analysis engine: classify parts, find subsystems, estimate mass/CoG/performance,
@@ -3767,7 +3891,7 @@ function analyzeRobot(norm, raw, over = {}) {
     if ((shp[i].kind === 'disk') && shp[i].diam > 0.025 && shp[i].diam < 0.11 && RX.rubber.test(nm[i])) { role[i] = 'index'; spin[i] = { axis: shp[i].axis, group: 'index', c: p.s.c.slice() }; }
   });
   parts.forEach((p, i) => { if (role[i] === 'frame' && robot[i] && (RX.motor.test(nm[i]) || RX.servo.test(p.name))) role[i] = 'elec'; });
-  const capacityPhysical = design && design.slots ? 10 : idx.length >= 3 ? 6 : idx.length ? 4 : turrets.length ? 3 : 2;
+  const capacityPhysical = design && design.feedLanes ? 10 : idx.length >= 3 ? 6 : idx.length ? 4 : turrets.length ? 3 : 2;
   const capacity = over.capacity || Math.min(RULES.control, capacityPhysical);
 
   // ---------- mass & CoG ----------
@@ -3876,33 +4000,43 @@ function makeSpec(A, over) {
     exitH: s.exitH, exitOff: s.exitOff, elev: s.elev, vmax: s.vmax, kV: s.kV, rpmMax: s.rpmMotor * 0.92, sag: s.sag, recover: s.recover,
     sig: { v: s.sigV, el: s.sigEl, yaw: s.sigYaw },
   }));
-  // ball storage: each shooter has a lane of slots (staged first); every slot has a path from the intake mouth
-  const D = A.design;
-  let slots, lanes, slotPaths;
-  if (D && D.slots && D.slotPaths) {
-    slots = D.slots.map(p => A.norm.toLocal(p)).slice(0, A.capacity);
-    lanes = D.lanes.map(l => l.filter(j => j < slots.length));
-    slotPaths = D.slotPaths.map(path => path.map(p => A.norm.toLocal(p)));
+  // ---- intake roller as a physical, spinning, squeezable cylinder ----
+  const I = A.intake, e = I.end, zc = (I.z0 + I.z1) / 2, rr = Math.max(0.018, I.rollerD / 2);
+  const ax = e * (Math.abs(I.frontEdge) - rr), ay = I.assumed ? 0.084 : I.axisY;
+  const roller = { end: e, x: ax, y: ay, r: rr, z0: I.z0, z1: I.z1, zc, comp: I.compliant ? 0.2 : 0.08, float: I.floating ? I.liftNeed + 0.004 : 0, surf: Math.max(1.5, I.surf || 3) };
+  // ---- ball path through the robot: entry (mouth -> splitter), then one lane per shooter ending at its staging point ----
+  const D = A.design, P = A.norm.parts;
+  let entry, lanes;
+  if (D && D.feedEntry) {
+    entry = D.feedEntry.map(p => A.norm.toLocal(p));
+    lanes = D.feedLanes.map((path, k) => ({ shooter: k, path: path.map(p => A.norm.toLocal(p)) }));
   } else {
-    const nL = Math.min(sh.length, 2), cap = A.capacity, e = A.intake.end;
-    lanes = Array.from({ length: nL }, () => []);
-    for (let j = 0; j < cap; j++) lanes[j % nL].push(j);
-    const mouth = [e * (A.L / 2 - 0.01), 0.05, (A.intake.z0 + A.intake.z1) / 2], inside = [e * (A.L / 2 - 0.09), 0.09, mouth[2] * 0.5];
-    slots = []; slotPaths = [];
-    for (let j = 0; j < cap; j++) {
-      const li = j % nL, depth = lanes[li].indexOf(j), S = sh[li];
-      const top = [S.pivot[0], Math.max(0.12, S.exitH - 0.05), S.pivot[1]], t = depth * 0.24;
-      const p = [lerp(top[0], inside[0], t), lerp(top[1], inside[1] + 0.05, t), lerp(top[2], inside[2], t)];
-      slots.push(p);
-      slotPaths.push([mouth, inside, [lerp(inside[0], p[0], 0.5), lerp(inside[1], p[1], 0.3), lerp(inside[2], p[2], 0.5)], p]);
-    }
+    entry = [[e * (Math.abs(ax) + rr + 0.05), 0.036, zc], [ax, 0.036, zc], [ax - e * 0.07, 0.05, zc * 0.6]];
+    const split = entry[entry.length - 1];
+    const nodes = P.map((p, i) => i).filter(i => (A.role[i] === 'index' || (A.role[i] === 'intake' && !A.spin[i])) && Math.abs(P[i].s.c[0]) < A.L / 2 && P[i].s.c[1] < A.H).map(i => P[i].s.c);
+    const zMid = sh.length > 1 ? sh.reduce((a, S) => a + S.pivot[1], 0) / sh.length : null;
+    lanes = sh.map((S, k) => {
+      const st = S.turret ? [S.pivot[0], Math.max(0.1, S.exitH - 0.07), S.pivot[1]] : [S.pivot[0] - Math.cos(S.facing) * 0.05, Math.max(0.1, S.exitH - 0.06), S.pivot[1] + Math.sin(S.facing) * 0.05];
+      const mine = nodes.filter(n => zMid === null || Math.sign(n[2] - zMid) === Math.sign(S.pivot[1] - zMid) || Math.abs(n[2] - zMid) < 0.02);
+      const d = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+      const path = [split]; let cur = split; const used = new Set();
+      for (let guard = 0; guard < 20; guard++) {
+        let best = -1, bd = 1e9;
+        mine.forEach((n, q) => { if (used.has(q) || d(n, st) > d(cur, st) - 0.015) return; const dd = d(cur, n); if (dd < bd) { bd = dd; best = q; } });
+        if (best < 0) break; used.add(best); cur = mine[best]; path.push(cur);
+      }
+      path.push(st);
+      let len = 0; for (let q = 1; q < path.length; q++) len += d(path[q - 1], path[q]);
+      return { shooter: k, path: len > 2.2 * d(split, st) ? [split, [lerp(split[0], st[0], 0.5), lerp(split[1], st[1], 0.3) + 0.05, lerp(split[2], st[2], 0.5)], st] : path };
+    });
   }
+  const sorter = P.some(p => /colou?r.?sensor/i.test(p.name)) && lanes.length > 1;
   return {
     name: A.name, L: A.L, W: A.W, H: A.H, mass: A.mass,
     drive: { type: A.drive.type, holo: A.drive.holo, vMax: A.drive.vMax, vStrafe: A.drive.vStrafe, aMax: A.drive.aMax, wMax: A.drive.wMax, alpha: A.drive.aMax / Math.max(0.15, (A.drive.wheelbase + A.drive.track) / 2), wheelD: A.drive.wheelD, rEff: A.drive.holo ? (A.drive.wheelbase + A.drive.track) / 2 : A.drive.track / 2 },
     intake: { ends: A.intake.all.map(i => i.end), width: Math.min(A.intake.width, A.W), reach: clamp(A.intake.reach, 0.0, 0.12) + 0.03, p: A.intake.p, pNectar: A.intake.pNectar, nectar: A.intake.nectarOK, floating: A.intake.floating, lift: A.intake.floating ? A.intake.liftNeed : 0, gap: A.intake.gap },
     capacity: A.capacity, shooters: sh, cycle: A.cycle, autoAim: A.autoAim, autoRange: A.hasCam || !!over.autoRange,
-    slots, lanes, slotPaths,
+    roller, feed: { entry, lanes, sorter, speed: 1.4 },
   };
 }
 
@@ -3927,15 +4061,21 @@ async function computeShotMap(spec, alliance, raised, onProgress) {
     for (let i = 0; i < n; i++) {
       const x = -half + (i + 0.5) * cell, z = -half + (j + 0.5) * cell, k = j * n + i;
       if (blocked(x, z)) { p[k] = -1; continue; }
-      const yaw = yawTo(x, z, mc[0], mc[2]);
-      const ex = x + Math.cos(yaw) * S.exitOff, ez = z - Math.sin(yaw) * S.exitOff;
+      // where the ball really leaves: the shooter's pivot on the robot (the robot turns so it faces the target)
+      let yaw = yawTo(x, z, mc[0], mc[2]), ex = x, ez = z;
+      const mid = S.turret ? (S.range[0] + S.range[1]) / 2 : 0, pv = S.pivot || [0, 0];
+      for (let it = 0; it < 3; it++) {
+        const psi = yaw - S.facing - mid, c = Math.cos(psi), sn = Math.sin(psi);
+        const px = x + pv[0] * c + pv[1] * sn, pz = z - pv[0] * sn + pv[1] * c;
+        yaw = yawTo(px, pz, mc[0], mc[2]); ex = px + Math.cos(yaw) * S.exitOff; ez = pz - Math.sin(yaw) * S.exitOff;
+      }
       const v = fixedV || solveSpeed(h, ex, S.exitH, ez, yaw, S.elev, 'pollen', 2.0, S.vmax);
       if (!(v > 0)) { p[k] = 0; continue; }
       vreq[k] = v;
       let hit = 0;
       for (let s = 0; s < K; s++) {
         const g1 = gauss(), g2 = gauss(), g3 = gauss();
-        const st = launchState(ex + gauss() * 0.01, S.exitH, ez + gauss() * 0.01, yaw + g3 * S.sig.yaw, S.elev + g2 * S.sig.el, v * (1 + g1 * S.sig.v), 'pollen');
+        const st = launchState(ex + gauss() * 0.01, S.exitH, ez + gauss() * 0.01, yaw + g3 * S.sig.yaw, S.elev + g2 * S.sig.el, v * (1 + g1 * S.sig.v * (spec.autoRange ? 1 : 1.6)), 'pollen');
         if (traceShot(h, st, 'pollen', { dt: 0.005 }).code === 'in') hit++;
       }
       p[k] = hit / K;
@@ -4484,16 +4624,21 @@ function buildField(scene) {
 }
 function buildFlower(F, f) {
   const g = new THREE.Group(); g.position.set(f.x, 0, f.z); F.add(g);
-  const h = FIELD.flowerHalf, top = FIELD.flowerTop;
+  const h = FIELD.flowerHalf, top = FIELD.flowerTop, L = FLOWER;
   const metal = new THREE.MeshStandardMaterial({ color: 0x5f7a3a, metalness: 0.3, roughness: 0.5 });
   const petal = new THREE.MeshStandardMaterial({ color: 0xf2d24a, roughness: 0.55, side: THREE.DoubleSide });
-  const base = new THREE.Mesh(new THREE.BoxGeometry(2 * h, 0.012, 2 * h), new THREE.MeshStandardMaterial({ color: 0x3d4a2a, roughness: 0.8 })); base.position.y = 0.006; base.receiveShadow = true; g.add(base);
-  for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.0055, 0.0055, top, 8), metal); p.position.set(sx * (h - 0.012), top / 2, sz * (h - 0.012)); p.castShadow = true; g.add(p); }
-  for (const y of [0.095, 0.3, top]) { const r = new THREE.Mesh(new THREE.TorusGeometry(0.052, 0.0045, 8, 28), metal); r.rotation.x = Math.PI / 2; r.position.y = y; g.add(r); }
-  for (let k = 0; k < 6; k++) {
-    const p = new THREE.Mesh(new THREE.CircleGeometry(0.045, 18), petal); p.scale.set(1, 0.55, 1);
-    const a = k / 6 * TAU; p.position.set(Math.cos(a) * 0.075, top + 0.004, Math.sin(a) * 0.075); p.rotation.set(-Math.PI / 2 + 0.35, 0, -a + Math.PI / 2); p.castShadow = true; g.add(p);
-  }
+  const clear = new THREE.MeshPhysicalMaterial({ color: 0xdfeee0, transparent: true, opacity: 0.16, roughness: 0.05, side: THREE.DoubleSide, depthWrite: false });
+  const base = new THREE.Mesh(new THREE.BoxGeometry(2 * h, 0.004, 2 * h), new THREE.MeshStandardMaterial({ color: 0x3d4a2a, roughness: 0.8 })); base.position.y = 0.002; base.receiveShadow = true; g.add(base);
+  const lip = new THREE.Mesh(new THREE.CylinderGeometry(L.lipR + 0.002, L.lipR + 0.002, L.lipH, 28, 1, true), metal); lip.position.y = L.lipH / 2; g.add(lip);
+  for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(L.postR, L.postR, top, 8), metal); p.position.set(sx * L.postC, top / 2, sz * L.postC); p.castShadow = true; g.add(p); }
+  // seat ring: POLLEN drops through, NECTAR sits on it
+  const seat = new THREE.Mesh(new THREE.RingGeometry(L.ringR, L.tubeR + 0.004, 32), metal); seat.rotation.x = -Math.PI / 2; seat.position.y = L.ringY; g.add(seat);
+  const tube = new THREE.Mesh(new THREE.CylinderGeometry(L.tubeR + 0.002, L.tubeR + 0.002, top - L.tubeY0, 28, 1, true), clear); tube.position.y = (top + L.tubeY0) / 2; tube.renderOrder = 3; g.add(tube);
+  for (const y of [0.3, top]) { const r = new THREE.Mesh(new THREE.TorusGeometry(L.tubeR + 0.004, 0.0035, 8, 28), metal); r.rotation.x = Math.PI / 2; r.position.y = y; g.add(r); }
+  // posts to tube brackets
+  for (const y of [0.3, top - 0.01]) for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) { const d = Math.hypot(L.postC, L.postC) - L.tubeR; const m = new THREE.Mesh(new THREE.BoxGeometry(d, 0.006, 0.006), metal); m.position.set(sx * (L.postC - d / 2 / Math.SQRT2), y, sz * (L.postC - d / 2 / Math.SQRT2)); m.rotation.y = Math.atan2(-sz, sx); g.add(m); }
+  // petal funnel
+  const fun = new THREE.Mesh(new THREE.CylinderGeometry(L.funnelR, L.tubeR, L.funnelH, 6, 1, true), petal); fun.position.y = top + L.funnelH / 2; fun.castShadow = true; g.add(fun);
   return { def: f, group: g, petal };
 }
 function buildHiveMesh(F, alliance) {
@@ -4552,6 +4697,7 @@ class Sim {
   setRobot(spec, robotObj) {
     if (this.robotObj) { this.scene.remove(this.robotObj.root); this.robotObj.root.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
     this.spec = spec; this.robotObj = robotObj;
+    this.feed = buildFeed(spec); this.laneFor = spec.shooters.map((S, k) => this.feed.lanes.findIndex(L => L.shooter === k));
     this.scene.add(robotObj.root);
     // shadow proxy (cheap): the real robot mesh can be 500k triangles
     if (this.shadowProxy) this.scene.remove(this.shadowProxy);
@@ -4574,20 +4720,20 @@ class Sim {
       blue: { alliance: 'blue', px: HIVE.pivotX.blue, phi: HIVE.tilt, omega: 0, stable: 1, tipping: false, tips: 0, autoTips: 0, threshold: thr(), load: 0, count: 0, settle: 0 },
     };
     this.stash = { red: FIELD.nectarStash, blue: FIELD.nectarStash }; this.owed = { red: [], blue: [] };
-    this.flowers = FIELD.flowers.map(f => ({ ...f, stack: [] }));
+    this.flowers = FIELD.flowers.map(f => ({ ...f })); this.flowerStats = this.flowers.map(() => ({ owner: null, bottom: null, scored: 0, n: 0 }));
     this.stats = { shots: 0, makes: 0, intakes: 0, dist: 0, maxV: 0, tips: 0, flower: 0, firstShot: null, cycleT: [], lastTipT: 0 };
     this.score = { red: emptyScore(), blue: emptyScore() };
     this.final = null; this.autoState = null; this.drillT = 0;
     this.field.flowers.forEach(F => { F.owner = undefined; if (F.petal) F.petal.color.setHex(0xf2d24a); });
     // field elements
     for (const a of ['red', 'blue']) for (const p of STAGED.hiveNectar[a]) this.addBall('nectar', a, p[0], p[1], p[2]);
-    for (const f of this.flowers) for (let k = 0; k < 4; k++) { const b = this.addBall('pollen', null, f.x, 0.1, f.z); b.state = 'flower'; f.stack.push(b); }
-    this.layoutFlowers();
+    // every FLOWER starts with 4 POLLEN stacked in its tube (real balls: they can be pulled out of the bottom)
+    for (const f of this.flowers) for (let k = 0; k < 4; k++) this.addBall('pollen', null, f.x + gauss() * 0.002, BALL.pollen.r * (1 + 2 * k) + 0.002 * k, f.z + gauss() * 0.002);
     for (const a of ['red', 'blue']) for (const p of STAGED.garden[a]) this.addBall('pollen', null, p[0], BALL.pollen.r, p[1]);
     // robot
     const R = this.robotState(); this.robot = R;
-    const cap = this.spec.capacity, pre = Math.min(4, cap);
-    for (let k = 0; k < pre; k++) this.stow(this.addBall('pollen', null, R.x, 0.2, R.z), false);
+    let pre = 0;
+    for (let k = 0; k < Math.min(4, this.spec.capacity); k++) { const b = this.addBall('pollen', null, R.x, 0.2, R.z); if (this.preload(b)) pre++; else this.removeBall(b); }
     // preloads that don't fit + partner and opponents' preloads go to the LOADING ZONES (solo practice)
     this.dropInZone(this.alliance, 4 - pre + 4);
     this.dropInZone(this.alliance === 'red' ? 'blue' : 'red', 8);
@@ -4602,15 +4748,15 @@ class Sim {
     if (this.opts.startPos === 'side') { x = sx * 1.05; z = sx * (FIELD.half - s.W / 2 - 0.004); psi = sx < 0 ? 0 : Math.PI; }
     else { x = sx * edge; z = sx * -0.12; psi = sx < 0 ? 0 : Math.PI; }
     return {
-      x, z, psi, vx: 0, vz: 0, w: 0, start: { x, z, psi }, carried: [], slot: new Array(s.slots.length).fill(null), split: 0, lift: 0, lastShotT: -9,
-      intake: 0, flowerReady: 0, placing: null, lastFwd: 0,
+      x, z, psi, vx: 0, vz: 0, w: 0, start: { x, z, psi }, carried: [], split: 0, lift: 0, liftT: -9, jamT: -9, full: false, conveyor: 0, lastShotT: -9,
+      intake: 0, lastFwd: 0, target: -1, prevF: false, prevG: false,
       shooters: s.shooters.map(sh => ({ yaw: 0, rpm: sh.rpmMax * 0.55, rpmT: sh.rpmMax * 0.55, readyAt: 0, aimed: false, inRange: true, vCmd: 0 })),
       rr: 0, nextShooter: 0, outtakeAt: 0,
     };
   }
   addBall(kind, color, x, y, z) {
     const B = BALL[kind];
-    const b = { kind, color, r: B.r, m: B.m, x, y, z, vx: 0, vy: 0, vz: 0, lift: 0, ax: 0, az: 0, state: 'free', sleep: false, shot: null, cool: 0, mesh: ballMesh(kind, color), id: this.balls.length, outT: 0, noRobot: 0 };
+    const b = { kind, color, r: B.r, m: B.m, x, y, z, px: x, py: y, pz: z, vx: 0, vy: 0, vz: 0, lift: 0, ax: 0, az: 0, state: 'free', sleep: false, shot: null, cool: 0, mesh: ballMesh(kind, color), id: this.balls.length, outT: 0, noRobot: 0, fl: -1, still: 0 };
     b.mesh.position.set(x, y, z); this.ballLayer.add(b.mesh); this.balls.push(b);
     return b;
   }
@@ -4622,17 +4768,8 @@ class Sim {
       this.addBall('pollen', null, x, BALL.pollen.r + 0.002, Math.min(z, Z[3] - 0.04));
     }
   }
+  removeBall(b) { this.ballLayer.remove(b.mesh); const i = this.balls.indexOf(b); if (i >= 0) this.balls.splice(i, 1); b.state = 'gone'; }
   settleBalls(sec) { const dt = 1 / 360; for (let t = 0; t < sec; t += dt) this.ballStep(dt, false); }
-  layoutFlowers() {
-    for (const f of this.flowers) {
-      let h = 0;
-      for (const b of f.stack) {
-        const bot = b.kind === 'pollen' ? h : Math.max(h, FIELD.flowerNectarSeat);
-        b.fh = bot; h = bot + 2 * b.r;
-        b.x = f.x; b.z = f.z; b.y = bot + b.r; b.vx = b.vy = b.vz = 0; b.mesh.position.set(b.x, b.y, b.z);
-      }
-    }
-  }
   get flowersUnlocked() { return this.mode !== 'match' || (this.phase === 'teleop' && this.clock <= MATCH.flowerUnlock) || this.phase === 'post'; }
   /* ---------------- main step ---------------- */
   step(dt, input) {
@@ -4646,9 +4783,11 @@ class Sim {
     R.intake = inp.intake ? 1 : inp.outtake ? -1 : 0;
     R.lastFwd = inp.fwd;
     const h = dt / SUB;
-    for (let s = 0; s < SUB; s++) { this.robotStep(h, inp); this.hiveStep(h); this.ballStep(h, true); }
+    R.full = R.carried.length >= this.spec.capacity;
+    for (let s = 0; s < SUB; s++) { this.robotStep(h, inp); this.hiveStep(h); this.flowerPull(h); this.ballStep(h, true); }
+    this.feedStep(dt);
+    this.targetKeys(inp);
     this.turretsAndShooting(dt, inp);
-    this.flowerActions(dt, inp);
     this.humanPlayer();
     if (this.mode === 'drill' && live) this.drillRefill(dt);
     this.updateScore();
@@ -4796,6 +4935,8 @@ class Sim {
     const kdP = dragK('pollen'), kdN = dragK('nectar');
     const cpsi = Math.cos(R.psi), spsi = Math.sin(R.psi), hl = s.L / 2, hw = s.W / 2;
     const free = this.balls.filter(b => b.state === 'free');
+    // a floating roller drops back down when nothing holds it up
+    if (withRobot && this.time - R.liftT > 0.05) R.lift = Math.max(0, R.lift - 0.45 * dt);
     // 1) integrate flight
     for (const b of free) { if (b.sleep) continue; b.px = b.x; b.py = b.y; b.pz = b.z; flyStep(b, dt, b.kind === 'pollen' ? kdP : kdN); }
     // 2) ball-ball contacts first, so walls and the robot always get the last word
@@ -4809,7 +4950,7 @@ class Sim {
         const d = Math.sqrt(d2), nx = dx / d, ny = dy / d, nz = dz / d, pen = rr - d, ma = a.m, mb = b.m, wa = mb / (ma + mb), wb = ma / (ma + mb);
         a.x -= nx * pen * wa; a.y -= ny * pen * wa; a.z -= nz * pen * wa; b.x += nx * pen * wb; b.y += ny * pen * wb; b.z += nz * pen * wb;
         const rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny + (b.vz - a.vz) * nz;
-        if (rv < 0) { const jimp = -(1 + (a.inCell || b.inCell ? 0.08 : 0.35)) * rv / (1 / ma + 1 / mb); a.vx -= jimp / ma * nx; a.vy -= jimp / ma * ny; a.vz -= jimp / ma * nz; b.vx += jimp / mb * nx; b.vy += jimp / mb * ny; b.vz += jimp / mb * nz; a.sleep = b.sleep = false; a.lift = b.lift = 0; }
+        if (rv < 0) { const jimp = -(1 + (a.inCell || b.inCell || a.fl >= 0 || b.fl >= 0 ? 0.08 : 0.35)) * rv / (1 / ma + 1 / mb); a.vx -= jimp / ma * nx; a.vy -= jimp / ma * ny; a.vz -= jimp / ma * nz; b.vx += jimp / mb * nx; b.vy += jimp / mb * ny; b.vz += jimp / mb * nz; a.sleep = b.sleep = false; a.lift = b.lift = 0; }
       }
     }
     // 3) world contacts
@@ -4840,6 +4981,7 @@ class Sim {
       }
       // static boxes
       for (const B of STATIC_BOXES) {
+        if (B.kind === 'flower') continue;            // FLOWERS have their own real shape below
         const qx = clamp(b.x, B.c[0] - B.h[0], B.c[0] + B.h[0]), qy = clamp(b.y, B.c[1] - B.h[1], B.c[1] + B.h[1]), qz = clamp(b.z, B.c[2] - B.h[2], B.c[2] + B.h[2]);
         this.resolveBall(b, qx, qy, qz, 0, 0, 0, 0.4);
       }
@@ -4848,6 +4990,8 @@ class Sim {
         const dx = b.x - q[0], dy = b.y - q[1], dz = b.z - q[2], d = Math.hypot(dx, dy, dz);
         if (d < r + C.r && d > 1e-9) { const n = [dx / d, dy / d, dz / d], pen = r + C.r - d; b.x += n[0] * pen; b.y += n[1] * pen; b.z += n[2] * pen; const vn = b.vx * n[0] + b.vy * n[1] + b.vz * n[2]; if (vn < 0) { b.vx -= 1.4 * vn * n[0]; b.vy -= 1.4 * vn * n[1]; b.vz -= 1.4 * vn * n[2]; } b.lift = 0; }
       }
+      // FLOWERS: posts, tube, seat ring, cup lip and petal funnel
+      for (const f of this.flowers) if (Math.abs(b.x - f.x) < 0.2 && Math.abs(b.z - f.z) < 0.2 && b.y < FIELD.flowerTop + 0.2) flowerCollide(f, b);
       // HIVEs (moving walls)
       for (const a of ['red', 'blue']) this.hiveCollide(this.hives[a], b, dt);
       // robot body (kinematic box)
@@ -4855,7 +4999,9 @@ class Sim {
         const dx = b.x - R.x, dz = b.z - R.z;
         if (Math.abs(dx) < hl + hw + r && Math.abs(dz) < hl + hw + r && b.y < s.H + r) {
           const lx = dx * cpsi - dz * spsi, lz = dx * spsi + dz * cpsi;
-          if (this.tryIntake(b, lx, lz)) continue;
+          const m = this.mouth(b, lx, lz, dt);
+          if (m === 2) continue;                       // the roller pulled it in
+          if (m === 1) continue;                       // inside the intake mouth: roller and tiles only
           const qx = clamp(lx, -hl, hl), qy = clamp(b.y, 0, s.H), qz = clamp(lz, -hw, hw);
           const wx = R.x + qx * cpsi + qz * spsi, wz = R.z - qx * spsi + qz * cpsi;
           // surface velocity of the robot at the contact point
@@ -4870,16 +5016,53 @@ class Sim {
         }
       }
     }
-    // sleep + shot outcome tracking
-    for (const b of free) {
-      b.inCell = !b.sleep && b.y > 0.7 && (inCellVolume(this.hives.red, b) || inCellVolume(this.hives.blue, b));
-      if (!b.sleep && b.y <= b.r + 1e-4 && Math.hypot(b.vx, b.vy, b.vz) < 0.02) { b.sleep = true; b.vx = b.vy = b.vz = 0; }
-      if (b.shot && !b.shot.done) {
-        const h = this.hives[this.alliance];
-        if (inRaisedCell(h, b.x, b.y, b.z, b.r)) { b.shot.done = true; this.stats.makes++; this.emit('make', b); this.toast('IN', 'good'); }
-        else if ((b.y < b.r + 0.004 && this.time - b.shot.t > 0.2) || this.time - b.shot.t > 3) { b.shot.done = true; this.emit('miss', b); this.toast(b.shot.short ? 'SHORT' : 'MISS', 'bad'); }
+    // 4) columns in FLOWER tubes: extra relaxation passes so a stack rests on itself without sinking or jittering
+    for (const f of this.flowers) {
+      const col = free.filter(b => Math.abs(b.x - f.x) < 0.075 && Math.abs(b.z - f.z) < 0.075 && b.y < FIELD.flowerTop + 0.12);
+      if (col.length < 2 || col.every(b => b.sleep)) continue;
+      col.sort((a, c) => a.y - c.y);
+      for (let it = 0; it < 4; it++) {
+        for (let i = 0; i < col.length; i++) for (let j = i + 1; j < col.length; j++) {
+          const a = col[i], b = col[j]; if (a.sleep && b.sleep) continue;
+          const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z, rr = a.r + b.r, d2 = dx * dx + dy * dy + dz * dz;
+          if (d2 >= rr * rr || d2 < 1e-12) continue;
+          const d = Math.sqrt(d2), nx = dx / d, ny = dy / d, nz = dz / d, pen = rr - d;
+          // the lower ball is held up by what's under it, so the upper one takes most of the correction
+          const wa = a.sleep ? 0 : b.sleep ? 1 : ny > 0.5 ? 0.15 : 0.5, wb = 1 - wa;
+          a.x -= nx * pen * wa; a.y -= ny * pen * wa; a.z -= nz * pen * wa; b.x += nx * pen * wb; b.y += ny * pen * wb; b.z += nz * pen * wb;
+          const rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny + (b.vz - a.vz) * nz;
+          if (rv < 0) { const ia = a.sleep ? 0 : 1 / a.m, ib = b.sleep ? 0 : 1 / b.m, jimp = -rv / (ia + ib); a.vx -= jimp * ia * nx; a.vy -= jimp * ia * ny; a.vz -= jimp * ia * nz; b.vx += jimp * ib * nx; b.vy += jimp * ib * ny; b.vz += jimp * ib * nz; }
+        }
+        for (const b of col) { if (b.sleep) continue; if (b.y < b.r) { b.y = b.r; if (b.vy < 0) b.vy = 0; } flowerCollide(f, b); }
       }
     }
+    // sleep + shot outcome tracking
+    const fw = this.flowers.map(() => false);
+    for (const b of free) {
+      b.inCell = !b.sleep && b.y > 0.7 && (inCellVolume(this.hives.red, b) || inCellVolume(this.hives.blue, b));
+      b.fl = -1;
+      for (let i = 0; i < this.flowers.length; i++) { const f = this.flowers[i], dx = b.x - f.x, dz = b.z - f.z; if (Math.abs(dx) < 0.07 && Math.abs(dz) < 0.07 && Math.hypot(dx, dz) < FLOWER.tubeR + 0.004 && b.y < FIELD.flowerTop + 0.06) { b.fl = i; if (!b.sleep && (b.pullT === this.time || Math.hypot(b.vx, b.vy, b.vz) > 0.15)) fw[i] = true; } }
+      const sp = Math.hypot(b.vx, b.vy, b.vz);
+      if (b.fl >= 0 && !b.sleep && b.pullT !== this.time) {
+        const k = Math.max(0, 1 - (sp < 0.25 ? 12 : 2.5) * dt); b.vx *= k; b.vz *= k; if (sp < 0.25) b.vy *= k;   // foam rubbing on the tube and on its neighbours
+        b.still = sp < 0.09 ? b.still + dt : 0;
+        if (b.still > 0.3) { b.sleep = true; b.vx = b.vy = b.vz = 0; }
+      } else if (!b.sleep && b.y <= b.r + 1e-4 && sp < 0.02) { b.sleep = true; b.vx = b.vy = b.vz = 0; }
+      if (b.shot && !b.shot.done) {
+        const T = b.shot.tgt, age = this.time - b.shot.t;
+        if (T >= 0) {
+          const f = this.flowers[T];
+          if (Math.hypot(b.x - f.x, b.z - f.z) < FLOWER.tubeR && b.y < FIELD.flowerTop - 0.02) { b.shot.done = true; this.stats.makes++; this.stats.flower++; this.emit('make', b); this.toast(`${b.kind === 'nectar' ? 'NECTAR' : 'POLLEN'} into the ${f.id} FLOWER`, 'good'); }
+          else if ((b.y < b.r + 0.004 && age > 0.2) || age > 3) { b.shot.done = true; this.emit('miss', b); this.toast('MISSED THE FLOWER', 'bad'); }
+        } else {
+          const h = this.hives[this.alliance];
+          if (inRaisedCell(h, b.x, b.y, b.z, b.r)) { b.shot.done = true; this.stats.makes++; this.emit('make', b); this.toast('IN', 'good'); }
+          else if ((b.y < b.r + 0.004 && age > 0.2) || age > 3) { b.shot.done = true; this.emit('miss', b); this.toast(b.shot.short ? 'SHORT' : 'MISS', 'bad'); }
+        }
+      }
+    }
+    // a moving element in a FLOWER wakes the whole stack (so it drops when the bottom POLLEN is pulled out)
+    for (const b of free) if (b.fl >= 0 && b.sleep && fw[b.fl]) { b.sleep = false; b.still = 0; }
   }
   resolveBall(b, qx, qy, qz, svx, svy, svz, e) {
     const dx = b.x - qx, dy = b.y - qy, dz = b.z - qz, d2 = dx * dx + dy * dy + dz * dz;
@@ -4941,63 +5124,170 @@ class Sim {
     b.vx = b.vy = b.vz = 0; b.outT = 0; b.lift = 0;
     if (b.shot && !b.shot.done) { b.shot.done = true; this.toast('OUT OF FIELD', 'bad'); }
   }
-  /* ---------------- intake ---------------- */
-  tryIntake(b, lx, lz) {
-    const R = this.robot, s = this.spec, I = s.intake;
-    if (R.intake <= 0 || R.carried.length >= s.capacity || b.y > 0.15 || this.time < b.cool) return false;
-    if (b.kind === 'nectar' && b.color !== this.alliance) return false;          // G408
-    for (const e of I.ends) {
-      const ahead = e * lx;
-      if (ahead < s.L / 2 - 0.03 || ahead > s.L / 2 + I.reach + b.r || Math.abs(lz) > I.width / 2) continue;
-      const p = b.kind === 'nectar' ? (I.pNectar !== undefined ? I.pNectar : I.p * 0.2) : I.p;
-      if (rand() < p) { this.capture(b); return true; }
-      b.cool = this.time + 0.35; return false;
-    }
-    return false;
-  }
-  capture(b) {
-    b.sleep = false; b.shot = null; b.cool = 0;
-    if (!this.stow(b, true)) return false;
-    this.stats.intakes++; this.emit('intake', b); return true;
-  }
-  /* storage: every shooter feeds from a lane of slots (staged slot first). POLLEN fills from the front of a lane,
-     NECTAR from the back, the way a color sensor + sorter keeps NECTAR for the FLOWERS. */
-  stow(b, animate) {
-    const R = this.robot, s = this.spec; let best = null;
-    s.lanes.forEach((lane, li) => {
-      const free = lane.filter(j => !R.slot[j]); if (!free.length) return;
-      const j = b.kind === 'nectar' ? free[free.length - 1] : free[0];
-      const st = R.shooters && R.shooters[li], canAim = !st || st.inRange !== false;
-      const sc = (canAim ? 0 : 20) + (lane.length - free.length) * 10 + (li === R.split % s.lanes.length ? 0 : 1);
-      if (!best || sc < best.sc) best = { j, sc };
-    });
-    if (!best) return false;
-    R.split++; R.slot[best.j] = b; b.slotIdx = best.j; b.state = 'carried'; R.carried.push(b);
-    b.anim = animate ? { pts: [this.ballLocal(b), ...s.slotPaths[best.j]], i: 0, u: 0, speed: 1.35, nectar: b.kind === 'nectar' } : null;
-    return true;
-  }
-  unstow(b) {
-    const R = this.robot, j = b.slotIdx;
-    if (j !== undefined && R.slot[j] === b) R.slot[j] = null;
-    const k = R.carried.indexOf(b); if (k >= 0) R.carried.splice(k, 1);
-    b.slotIdx = undefined; b.anim = null; this.compact();
-  }
-  compact() {
-    const R = this.robot, s = this.spec;
-    for (const lane of s.lanes) for (let i = 0; i < lane.length; i++) {
-      if (R.slot[lane[i]]) continue;
-      for (let k = i + 1; k < lane.length; k++) {
-        const b = R.slot[lane[k]]; if (!b) continue;
-        R.slot[lane[k]] = null; R.slot[lane[i]] = b; b.slotIdx = lane[i];
-        b.anim = { pts: [b.anim ? this.ballLocal(b) : s.slots[lane[k]], s.slots[lane[i]]], i: 0, u: 0, speed: 1.1 };
-        break;
+  /* ---------------- intake: a real roller over an open mouth ---------------- */
+  /* Free balls inside the mouth (the slot under the roller at the intake end) don't hit the frame. They hit the
+     roller: a hard core plus a compliant shell that grips. A spinning roller drags the ball under itself against the
+     tiles, so the ball rolls in at about half the roller's surface speed. A floating roller rides up over a big ball.
+     Once the ball's center passes under the roller axis it belongs to the conveyor, if the conveyor has room. */
+  mouth(b, lx, lz, dt) {
+    const Ro = this.spec.roller, R = this.robot, r = b.r;
+    if (!Ro || lz < Ro.z0 + r * 0.3 || lz > Ro.z1 - r * 0.3) return 0;
+    const e = Ro.end; let ay = Ro.y + R.lift;
+    if (b.y > ay + Ro.r * 0.6 + r * 0.3) return 0;                 // above the roller: that's the frame
+    const thr = e * Ro.x - r * 0.15;
+    if (e * lx < thr - r) return 0;
+    const c = Math.cos(R.psi), sn = Math.sin(R.psi);
+    const wx = b.x - R.x, wz = b.z - R.z, svx = R.vx + R.w * wz, svz = R.vz - R.w * wx;
+    const rvx = b.vx - svx, rvz = b.vz - svz;
+    let vlx = rvx * c - rvz * sn, vlz = rvx * sn + rvz * c, vy = b.vy, px = lx, py = b.y, touching = false;
+    const comp = Ro.comp * 2 * r;
+    let dx = px - Ro.x, dy = py - ay, d = Math.hypot(dx, dy);
+    if (d < Ro.r + r + 0.003 && d > 1e-9) {
+      touching = true;
+      let pen = Ro.r + r - comp - d;
+      if (pen > 0 && Ro.float > R.lift && dy < Ro.r * 0.5) {         // floating roller: the ball pushes the arm up
+        const up = Math.min(pen * 1.3, Ro.float - R.lift); R.lift += up; ay += up; dy = py - ay; d = Math.hypot(dx, dy); pen = Ro.r + r - comp - d;
+      }
+      if (dy < Ro.r * 0.5) R.liftT = this.time;
+      const nx = dx / d, ny = dy / d;
+      if (pen > 0) { px += nx * pen; py += ny * pen; const vn = vlx * nx + vy * ny; if (vn < 0) { vlx -= 1.25 * vn * nx; vy -= 1.25 * vn * ny; } }
+      const spin = R.intake > 0 ? (R.full ? 0 : 1) : R.intake < 0 ? -1 : 0;
+      if (spin) {
+        // roller surface direction where it touches the ball (the bottom of the roller moves into the robot)
+        const tx = e * ny * spin, ty = -e * nx * spin, vt = vlx * tx + vy * ty, grip = Math.min(1, 55 * dt);
+        const dv = (0.55 * Ro.surf - vt) * grip; vlx += dv * tx; vy += dv * ty;
+        vlz *= 1 - Math.min(1, 6 * dt);
       }
     }
+    if (py < r) { py = r; if (vy < 0) vy = 0; }
+    // throat: past the roller axis the ball is handed to the conveyor, or held there when there is no room
+    if (e * px < thr) {
+      if (R.intake > 0 && !R.full && this.canCapture(b)) { this.capture(b, px, py, lz); return 2; }
+      px = e * thr; if (e * vlx < 0) vlx = 0; R.jamT = this.time;
+    }
+    const rx = vlx * c + vlz * sn, rz = -vlx * sn + vlz * c;
+    b.vx = rx + svx; b.vz = rz + svz; b.vy = vy;
+    b.x = R.x + px * c + lz * sn; b.y = py; b.z = R.z - px * sn + lz * c;
+    if (touching) { b.sleep = false; b.lift = 0; }
+    return 1;
   }
-  ballLocal(b) { const [lx, lz] = this.toLocal(b.x, b.z); return [lx, b.y, lz]; }
-  staged(k) { const s = this.spec, lane = s.lanes[Math.min(k, s.lanes.length - 1)]; return lane ? this.robot.slot[lane[0]] : null; }
+  canCapture(b) {
+    const R = this.robot, F = this.feed;
+    if (R.carried.length >= this.spec.capacity) return false;
+    for (const c of R.carried) if (c.lane < 0 && c.u < F.uRoll + c.r + b.r - 0.004) return false;
+    return true;
+  }
+  capture(b, lx, ly, lz) {
+    const R = this.robot, F = this.feed, p = pathAt(F.entry, F.uRoll);
+    Object.assign(b, { state: 'carried', lane: -1, u: F.uRoll, off: [lx - p[0], ly - p[1], lz - p[2]], atStop: false, sleep: false, shot: null, vx: 0, vy: 0, vz: 0, fl: -1 });
+    R.carried.push(b); R.full = R.carried.length >= this.spec.capacity;
+    this.stats.intakes++; this.emit('intake', b);
+    if (b.kind === 'nectar' && b.color !== this.alliance) this.toast('G408: that is the other alliance’s NECTAR. Outtake it (K)', 'bad');
+    else if (R.full) this.toast(`Holding ${R.carried.length}: intake stops (control limit)`);
+  }
+  /* ---------------- conveyor ---------------- */
+  /* Balls ride the robot's ball path: the entry (roller -> splitter), then one lane per shooter ending at its staging
+     stop. It's a 1-D queue: each ball moves at belt speed until it touches the ball ahead or its stop. The indexer runs
+     on its own (beam break) until every ball is packed against the one ahead. */
+  feedStep(dt) {
+    const R = this.robot, F = this.feed, C = R.carried, v = F.speed * dt;
+    R.conveyor = 0;
+    if (!C.length) return;
+    let moved = false;
+    if (R.intake >= 0) {
+      F.lanes.forEach((L, k) => {
+        const q = C.filter(b => b.lane === k).sort((a, b) => b.u - a.u);
+        let lim = L.len;
+        for (let i = 0; i < q.length; i++) { const b = q[i], nu = Math.min(b.u + v, lim); if (nu > b.u + 1e-6) { b.u = nu; moved = true; } b.atStop = b.u >= lim - 1e-4; if (q[i + 1]) lim = b.u - b.r - q[i + 1].r; }
+      });
+      const q = C.filter(b => b.lane < 0).sort((a, b) => b.u - a.u);
+      let lim = F.entry.len;
+      for (let i = 0; i < q.length; i++) {
+        const b = q[i], nu = Math.min(b.u + v, lim);
+        if (i === 0 && nu >= F.entry.len - 1e-6) {
+          const k = this.route(b);                               // splitter: sorter or flipper picks a lane
+          if (k >= 0) { const over = b.u + v - F.entry.len; b.lane = k; b.u = clamp(over, 0, Math.max(0, this.laneBack(k, b.r, b))); b.atStop = false; moved = true; if (q[i + 1]) lim = F.entry.len + b.u - b.r - q[i + 1].r; continue; }
+        }
+        if (nu > b.u + 1e-6) { b.u = nu; moved = true; }
+        b.atStop = b.u >= lim - 1e-4;
+        if (q[i + 1]) lim = b.u - b.r - q[i + 1].r;
+      }
+    } else {
+      // outtake: belts run backwards, lanes drain back through the splitter, the entry spits balls out of the mouth
+      const q = C.filter(b => b.lane < 0).sort((a, b) => a.u - b.u);
+      let lim = -Infinity;
+      for (let i = 0; i < q.length; i++) {
+        const b = q[i]; b.u = Math.max(b.u - v, lim); moved = true;
+        if (i === 0 && b.u <= 0 && this.time >= R.outtakeAt) { this.eject(b); R.outtakeAt = this.time + 0.12; continue; }
+        b.u = Math.max(b.u, 0); if (q[i + 1]) lim = b.u + b.r + q[i + 1].r;
+      }
+      let top = null; for (const b of C) if (b.lane < 0 && (!top || b.u > top.u)) top = b;
+      F.lanes.forEach((L, k) => {
+        const ql = C.filter(b => b.lane === k).sort((a, b) => a.u - b.u);
+        let lim = -Infinity;
+        for (let i = 0; i < ql.length; i++) {
+          const b = ql[i]; b.u = Math.max(b.u - v, lim); b.atStop = false; moved = true;
+          if (i === 0 && b.u < 0) {
+            if (!top || top.u + top.r + b.r <= F.entry.len + b.u) { b.lane = -1; b.u = F.entry.len + b.u; top = b; continue; }
+            b.u = 0;
+          }
+          if (ql[i + 1]) lim = b.u + b.r + ql[i + 1].r;
+        }
+      });
+    }
+    R.conveyor = moved ? (R.intake < 0 ? -1 : 1) : 0;
+  }
+  laneBack(k, r, except) { const L = this.feed.lanes[k]; let u = L.len; for (const c of this.robot.carried) if (c.lane === k && c !== except) u = Math.min(u, c.u - c.r - r); return u; }
+  entryBack(r) { let u = this.feed.entry.len; for (const c of this.robot.carried) if (c.lane < 0) u = Math.min(u, c.u - c.r - r); return u; }
+  /* the splitter. With a color sensor (sorter) NECTAR is kept together in one lane so POLLEN keeps the other
+     lanes shooting; without one a passive flipper alternates lanes and only falls to the other when one is full. */
+  route(b) {
+    const F = this.feed, R = this.robot, n = F.lanes.length;
+    const ks = F.lanes.map((L, k) => k).filter(k => this.laneBack(k, b.r) >= 0);
+    if (!ks.length) return -1;
+    if (n === 1) return ks[0];
+    const cnt = k => R.carried.filter(c => c.lane === k).length, hasN = k => R.carried.some(c => c.lane === k && c.kind === 'nectar');
+    if (F.sorter) {
+      const reach = k => { const st = R.shooters[F.lanes[k].shooter]; return st && st.inRange === false ? 2 : 0; };
+      const score = k => b.kind === 'nectar' ? (hasN(k) ? -3 : 0) + (k === n - 1 ? -1 : 0) + cnt(k) * 0.5 : (hasN(k) ? 6 : 0) + cnt(k) + reach(k);
+      return ks.sort((a, c) => score(a) - score(c))[0];
+    }
+    const want = R.split++ % n; return ks.includes(want) ? want : ks[0];
+  }
+  eject(b) {
+    const R = this.robot, e = this.spec.roller.end, i = R.carried.indexOf(b); if (i >= 0) R.carried.splice(i, 1);
+    const p = pathAt(this.feed.entry, 0), [wx, wz] = this.toWorld(p[0], p[2]), c = Math.cos(R.psi), sn = Math.sin(R.psi);
+    Object.assign(b, { state: 'free', lane: undefined, off: null, x: wx, y: Math.max(b.r, p[1]), z: wz, vy: 0, sleep: false, noRobot: this.time + 0.3, cool: 0 });
+    b.px = b.x; b.py = b.y; b.pz = b.z; b.vx = R.vx + e * 1.1 * c; b.vz = R.vz - e * 1.1 * sn;
+    R.full = R.carried.length >= this.spec.capacity;
+  }
+  /* load a ball straight into the robot (match preloads, drill reloads): lanes from the shooter end back, then the entry */
+  preload(b) {
+    const R = this.robot, F = this.feed, cnt = k => R.carried.filter(x => x.lane === k).length;
+    const order = F.lanes.map((L, k) => k).sort((a, c) => cnt(a) - cnt(c));
+    let lane = null, u = -1;
+    for (const k of order) { const uu = this.laneBack(k, b.r); if (uu >= 0) { lane = k; u = uu; break; } }
+    if (lane === null) { const ue = this.entryBack(b.r); if (ue < F.uRoll) return false; lane = -1; u = ue; }
+    Object.assign(b, { state: 'carried', lane, u, off: null, atStop: true, sleep: false, shot: null, vx: 0, vy: 0, vz: 0 });
+    R.carried.push(b); R.full = R.carried.length >= this.spec.capacity; return true;
+  }
+  carriedLocal(b) {
+    const F = this.feed, p = pathAt(b.lane < 0 ? F.entry : F.lanes[b.lane], b.u), o = b.off;
+    return o ? [p[0] + o[0], p[1] + o[1], p[2] + o[2]] : p;
+  }
+  /* the ball sitting at shooter k's staging stop, ready to fire */
+  staged(k) {
+    const li = this.laneFor ? this.laneFor[k] : -1; if (li < 0) return null;
+    const L = this.feed.lanes[li]; let best = null;
+    for (const b of this.robot.carried) if (b.lane === li && b.u >= L.len - 0.004) best = b;
+    return best;
+  }
   /* ---------------- turrets & shooters ---------------- */
-  aimTarget() { return mouthCenter(this.hives[this.alliance]); }
+  aimTarget() {
+    const R = this.robot;
+    if (R && R.target >= 0) { const f = this.flowers[R.target]; return [f.x, FLOWER_AIM_Y, f.z]; }
+    return mouthCenter(this.hives[this.alliance]);
+  }
   shooterExit(k) {
     const R = this.robot, S = this.spec.shooters[k], st = R.shooters[k];
     const a = S.facing + (S.turret ? st.yaw : 0);
@@ -5005,7 +5295,7 @@ class Sim {
     const [wx, wz] = this.toWorld(lx, lz);
     return { x: wx, y: S.exitH, z: wz, yaw: R.psi + a };
   }
-  /* robot heading that puts the raised CELL in the middle of the best shooter's aim window */
+  /* robot heading that puts the target in the middle of the best shooter's aim window */
   bestHeading(loadedOnly = false) {
     const R = this.robot, tgt = this.aimTarget(); let best = null;
     const ok = k => { const b = this.staged(k); return !!b && (loadedOnly === 'any' || b.kind === 'pollen'); };
@@ -5017,10 +5307,10 @@ class Sim {
       const psi = wrapPi(want - S.facing - mid), cost = Math.abs(wrapPi(psi - R.psi));
       if (!best || cost < best.cost) best = { psi, cost, k };
     });
-    return best;
+    return best || { psi: R.psi, cost: 0, k: 0 };
   }
   turretsAndShooting(dt, inp) {
-    const R = this.robot, spec = this.spec, h = this.hives[this.alliance], tgt = this.aimTarget();
+    const R = this.robot, spec = this.spec, h = this.hives[this.alliance], tgt = this.aimTarget(), toFlower = R.target >= 0, FL = toFlower ? this.flowers[R.target] : null;
     const assist = this.opts.assist && spec.autoAim;
     spec.shooters.forEach((S, k) => {
       const st = R.shooters[k];
@@ -5034,107 +5324,97 @@ class Sim {
         st.inRange = inR; st.aimed = assist && inR && Math.abs(goal - st.yaw) < 2.5 * DEG;
       } else {
         const ex = this.shooterExit(k), want = yawTo(ex.x, ex.z, tgt[0], tgt[2]);
-        st.aimed = Math.abs(wrapPi(want - ex.yaw)) < 3 * DEG; st.inRange = true;
+        const err = Math.abs(wrapPi(want - ex.yaw)); st.aimed = err < 3 * DEG; st.inRange = err < 14 * DEG;   // a fixed shooter only gets fired when it roughly faces the target
       }
-      // flywheel command: auto-range from the camera or a fixed setpoint
-      const ex = this.shooterExit(k);
+      // flywheel command: auto-range from the camera (or the driver's preset), solved for the ball that is staged
+      const ex = this.shooterExit(k), sb = this.staged(k), kind = sb ? sb.kind : 'pollen', kf = kind === 'nectar' ? 0.93 : 1;
+      const yawS = S.turret ? yawTo(ex.x, ex.z, tgt[0], tgt[2]) : ex.yaw;
       let v = NaN;
-      if (spec.autoRange) v = solveSpeed(h, ex.x, ex.y, ex.z, S.turret ? yawTo(ex.x, ex.z, tgt[0], tgt[2]) : ex.yaw, S.elev, 'pollen', 2.0, S.vmax, R.vx, R.vz);
-      st.solve = spec.autoRange ? (v > 0 ? 'ok' : solveSpeed.why || 'far') : 'fixed';
-      if (!(v > 0)) v = spec.vSet || (st.solve === 'close' ? 2.2 : st.solve === 'behind' ? 5.5 : Math.min(S.vmax, 6.2));
+      if (toFlower) v = solveFlowerSpeed(FL, ex.x, ex.y, ex.z, yawS, S.elev, kind, 1.2, S.vmax * kf, R.vx, R.vz);
+      else v = solveSpeed(h, ex.x, ex.y, ex.z, yawS, S.elev, kind, 2.0, S.vmax * kf, R.vx, R.vz);
+      const why = toFlower ? solveFlowerSpeed.why : solveSpeed.why;
+      st.solve = v > 0 ? 'ok' : why || 'far';   // camera ranging, or odometry pose + a speed table when there is no camera
+      if (v > 0) v /= kf;
+      else v = (!toFlower && spec.vSet) || (st.solve === 'close' ? (toFlower ? 2.6 : 2.2) : st.solve === 'behind' ? 5.5 : Math.min(S.vmax, 6.2));
       st.vCmd = v; st.rpmT = clamp(v / S.kV, 0, S.rpmMax);
       const dr = st.rpmT - st.rpm; st.rpm += clamp(dr, -S.recover * 1.4 * dt, S.recover * dt);
     });
     // drivetrain heading assist while the trigger is held: fixed shooters always, turrets only when none can reach
-    const turretBot = spec.shooters.some(S => S.turret), loaded = k => { const b = this.staged(k); return !!b && (inp.shootNectar || b.kind === 'pollen'); };
+    const nectarOK = inp.shootNectar || (toFlower && this.flowersUnlocked);
+    const turretBot = spec.shooters.some(S => S.turret), loaded = k => { const b = this.staged(k); return !!b && (nectarOK || b.kind === 'pollen'); };
     const noneReach = turretBot && !R.shooters.some((st, k) => st.inRange && loaded(k));
     if (assist && (inp.shoot || inp.shootNectar) && (!turretBot || noneReach)) {
-      const b = this.bestHeading(inp.shootNectar ? 'any' : 'pollen'); this.assistTurn = clamp(-wrapPi(b.psi - R.psi) * 2.2, -0.7, 0.7);
+      const b = this.bestHeading(nectarOK ? 'any' : 'pollen'); this.assistTurn = clamp(-wrapPi(b.psi - R.psi) * 2.2, -0.7, 0.7);
     } else this.assistTurn = 0;
     if ((!inp.shoot && !inp.shootNectar) || R.carried.length === 0) return;
     const n = spec.shooters.length; let nectarBlocks = false, fired = false;
     for (let tries = 0; tries < n; tries++) {
       const k = (R.rr + tries) % n, S = spec.shooters[k], st = R.shooters[k], b = this.staged(k);
-      if (!b || b.anim) continue;                                   // nothing staged yet (still feeding)
-      if (!(inp.shootNectar || b.kind === 'pollen')) { nectarBlocks = true; continue; }
+      if (!b) continue;                                             // nothing at the staging stop yet (still indexing)
+      if (b.kind === 'nectar' && !nectarOK) { nectarBlocks = true; continue; }
       if (this.time < st.readyAt) continue;
       if (S.turret && assist && !st.aimed) continue;
+      if (!S.turret && n > 1 && !st.inRange) continue;              // two fixed shooters: fire the one facing the target
       if (Math.abs(st.rpm - st.rpmT) > st.rpmT * 0.02) continue;    // wait for flywheel speed (2% ready band)
       this.fire(k, b); R.rr = (k + 1) % n; fired = true; break;
     }
-    if (nectarBlocks && !fired && inp.shoot && (!this._nxWarn || this.time - this._nxWarn > 3)) { this._nxWarn = this.time; this.toast('NECTAR is staged: N shoots it, F places it in a FLOWER'); }
-    if (!fired && R.carried.length && !R.carried.some(b => b.anim) && spec.shooters.every((S, k) => !this.staged(k) || !R.shooters[k].inRange) && turretBot && !assist && (!this._trWarn || this.time - this._trWarn > 3)) { this._trWarn = this.time; this.toast('The loaded turret can’t reach: turn the robot'); }
+    if (nectarBlocks && !fired && inp.shoot && (!this._nxWarn || this.time - this._nxWarn > 3)) { this._nxWarn = this.time; this.toast(toFlower ? 'G410: NECTAR goes into FLOWERS only in the last 60 s (N forces it)' : 'NECTAR is staged: F targets a FLOWER, N shoots it at the HIVE'); }
+    if (!fired && R.carried.length && spec.shooters.every((S, k) => !this.staged(k) || !R.shooters[k].inRange) && turretBot && !assist && (!this._trWarn || this.time - this._trWarn > 3)) { this._trWarn = this.time; this.toast('The loaded turret can’t reach: turn the robot'); }
   }
   fire(k, b) {
     const R = this.robot, S = this.spec.shooters[k], st = R.shooters[k];
-    if (!b) return; this.unstow(b); R.lastShotT = this.time;
+    if (!b) return;
+    const i = R.carried.indexOf(b); if (i >= 0) R.carried.splice(i, 1);
+    R.full = R.carried.length >= this.spec.capacity; R.lastShotT = this.time;
     const ex = this.shooterExit(k), tgt = this.aimTarget();
     const yaw0 = S.turret && st.aimed ? yawTo(ex.x, ex.z, tgt[0], tgt[2]) : ex.yaw;
-    const vReal = st.rpm * S.kV * (1 + gauss() * S.sig.v) * (b.kind === 'nectar' ? 0.93 : 1);
+    const vReal = st.rpm * S.kV * (1 + gauss() * S.sig.v * (this.spec.autoRange ? 1 : 1.6)) * (b.kind === 'nectar' ? 0.93 : 1);
     const st0 = launchState(ex.x, ex.y, ex.z, yaw0 + gauss() * S.sig.yaw, S.elev + gauss() * S.sig.el, vReal, b.kind, R.vx, R.vz);
-    Object.assign(b, st0); b.state = 'free'; b.sleep = false; b.anim = null; b.noRobot = this.time + 0.35; b.px = b.x; b.py = b.y; b.pz = b.z;
-    b.shot = { t: this.time, done: false };
+    Object.assign(b, st0, { state: 'free', lane: undefined, off: null, sleep: false, noRobot: this.time + 0.35, fl: -1, still: 0 }); b.px = b.x; b.py = b.y; b.pz = b.z;
+    b.shot = { t: this.time, done: false, tgt: R.target };
+    if (b.kind === 'nectar' && R.target >= 0 && !this.flowersUnlocked) this.toast('G410: NECTAR into a FLOWER before 1:00 is a foul', 'bad');
     st.rpm *= 1 - S.sag; st.readyAt = this.time + this.spec.cycle;
     this.stats.shots++; if (this.stats.firstShot === null) this.stats.firstShot = this.time;
     this.emit('shot', { k, b });
   }
-  /* ---------------- FLOWERS ---------------- */
-  nearFlower(maxD = 0.34) {
-    const R = this.robot, s = this.spec;
-    let best = null;
-    for (const f of this.flowers) {
-      const [lx, lz] = this.toLocal(f.x, f.z);
-      const d = lx - s.L / 2 - FIELD.flowerHalf;
-      if (lx > 0 && d < maxD - s.L / 2 + 0.2 && Math.abs(Math.atan2(lz, lx)) < 32 * DEG) { if (!best || d < best.d) best = { f, d, lx, lz }; }
-    }
-    return best;
+  /* the line the staged ball would fly right now (trajectory preview) */
+  previewShot() {
+    const R = this.robot, n = this.spec.shooters.length; if (!R.carried.length) return null;
+    let k = R.rr % n; for (let t = 0; t < n; t++) if (this.staged((R.rr + t) % n)) { k = (R.rr + t) % n; break; }
+    const S = this.spec.shooters[k], st = R.shooters[k], ex = this.shooterExit(k), tgt = this.aimTarget(), b = this.staged(k), kind = b ? b.kind : 'pollen';
+    const yaw = S.turret && st.aimed ? yawTo(ex.x, ex.z, tgt[0], tgt[2]) : ex.yaw, v = st.rpmT * S.kV * (kind === 'nectar' ? 0.93 : 1);
+    const ls = launchState(ex.x, ex.y, ex.z, yaw, S.elev, v, kind, R.vx, R.vz);
+    if (R.target >= 0) { const res = traceFlower(this.flowers[R.target], ls, kind, { path: true, dt: 0.006 }); return { path: res.path, ok: res.code === 'in' || res.code === 'funnel' }; }
+    const res = traceShot(this.hives[this.alliance], ls, kind, { path: true, dt: 0.006 }); return { path: res.path, ok: res.code === 'in' };
   }
-  flowerActions(dt, inp) {
-    const R = this.robot, s = this.spec;
-    // place the next carried element on top of a FLOWER (F / RB)
-    if (R.placing) {
-      if (this.time >= R.placing.until) {
-        const { f, b } = R.placing; R.placing = null;
-        b.state = 'flower'; b.anim = null; f.stack.push(b); this.layoutFlowers(); this.stats.flower++;
-        this.toast(`${b.kind === 'nectar' ? 'NECTAR' : 'POLLEN'} into the ${f.id} FLOWER`, 'good');
-      }
-    } else if ((inp.flower || inp.flowerPollen) && R.carried.length && this.time >= R.flowerReady) {
-      const nf = this.nearFlower();
-      if (nf) {
-        const canNectar = this.flowersUnlocked;
-        let b = null;
-        if (inp.flower && canNectar) b = R.carried.find(x => x.kind === 'nectar' && !x.anim) || null;
-        if (!b) b = R.carried.find(x => x.kind === 'pollen' && !x.anim) || null;
-        const top = stackTopH(nf.f.stack);
-        if (top > FIELD.flowerPlaceLimit) { this.toast('This FLOWER is full', 'bad'); R.flowerReady = this.time + 0.8; }
-        else if (!b) { this.toast(R.carried.some(x => x.kind === 'nectar') && !canNectar ? 'G410: NECTAR goes into FLOWERS only in the last 60 s' : 'Still feeding, try again', 'bad'); R.flowerReady = this.time + 0.8; }
-        else {
-          this.unstow(b); b.state = 'placing';
-          const bot = b.kind === 'pollen' ? top : Math.max(top, FIELD.flowerNectarSeat);
-          b.anim = { world: true, from: [b.x, b.y, b.z], to: [nf.f.x, bot + b.r, nf.f.z], peak: FIELD.flowerTop + 0.14, t: 0, dur: 0.65 };
-          R.placing = { f: nf.f, b, until: this.time + 0.65 }; R.flowerReady = this.time + 0.95;
-        }
-      } else if (!this._nfWarn || this.time - this._nfWarn > 1.5) { this._nfWarn = this.time; this.toast('Drive the front of the robot up to a FLOWER first', 'bad'); }
+  /* ---------------- FLOWERS ---------------- */
+  /* F: target the nearest FLOWER (press again for the HIVE). G: step to the next FLOWER. Scoring is a real shot. */
+  targetKeys(inp) {
+    const R = this.robot;
+    if (inp.flower && !R.prevF) {
+      if (R.target >= 0) { R.target = -1; this.toast('Target: your HIVE'); }
+      else { R.target = this.nearestFlower(); this.toast(`Target: ${this.flowers[R.target].id} FLOWER. Shoot to drop elements in`); }
     }
-    // pull POLLEN out of the bottom of a FLOWER with the intake (G418.B)
-    if (R.intake > 0 && R.carried.length < s.capacity && R.lastFwd > 0.12 && this.time >= R.flowerReady) {
-      for (const f of this.flowers) {
-        const [lx, lz] = this.toLocal(f.x, f.z);
-        if (lx < 0 || lx > s.L / 2 + 0.13 + FIELD.flowerHalf || Math.abs(lz) > s.intake.width / 2) continue;
-        if (!s.intake.ends.includes(1)) continue;
-        if (f.stack.length && f.stack[0].kind === 'pollen' && f.stack[0].fh < 0.02) {
-          const b = f.stack.shift(); this.layoutFlowers(); b.x = f.x; b.y = BALL.pollen.r; b.z = f.z; this.capture(b);
-          R.flowerReady = this.time + 0.35; break;
-        }
+    if (inp.nextFlower && !R.prevG) { R.target = R.target < 0 ? this.nearestFlower() : (R.target + 1) % this.flowers.length; this.toast(`Target: ${this.flowers[R.target].id} FLOWER`); }
+    R.prevF = !!inp.flower; R.prevG = !!inp.nextFlower;
+  }
+  nearestFlower() { const R = this.robot; let bi = 0, bd = 1e9; this.flowers.forEach((f, i) => { const d = Math.hypot(f.x - R.x, f.z - R.z); if (d < bd) { bd = d; bi = i; } }); return bi; }
+  flowerBalls(f) { return this.balls.filter(b => b.state === 'free' && Math.abs(b.x - f.x) < 0.07 && Math.abs(b.z - f.z) < 0.07 && Math.hypot(b.x - f.x, b.z - f.z) < FLOWER.tubeR + 0.004 && b.y < FIELD.flowerTop + 0.02).sort((a, c) => a.y - c.y); }
+  /* G418.B: with the intake running and pressed against a FLOWER, the roller's flaps reach under the cup lip and
+     roll the bottom POLLEN out between the posts; the stack above drops one ball. */
+  flowerPull(dt) {
+    const R = this.robot, s = this.spec, Ro = s.roller;
+    if (R.intake <= 0 || R.full || !Ro) return;
+    for (const f of this.flowers) {
+      const [lx, lz] = this.toLocal(f.x, f.z), e = Ro.end;
+      if (e * lx < 0 || e * lx - s.L / 2 - FIELD.flowerHalf > 0.035 || lz < Ro.z0 || lz > Ro.z1) continue;
+      const [mx, mz] = this.toWorld(Ro.x, lz);
+      for (const b of this.balls) {
+        if (b.state !== 'free' || b.kind !== 'pollen' || b.y > b.r + 0.006 || Math.abs(b.x - f.x) > 0.09 || Math.abs(b.z - f.z) > 0.09) continue;
+        const tx = mx - b.x, tz = mz - b.z, tl = Math.hypot(tx, tz) || 1, va = (b.vx * tx + b.vz * tz) / tl;
+        if (va < 0.7) { b.vx += tx / tl * 40 * dt; b.vz += tz / tl * 40 * dt; }
+        b.sleep = false; b.still = 0; b.pullT = this.time;
       }
-    }
-    // outtake (K / LB): spit the last element out of the intake end
-    if (R.intake < 0 && R.carried.length && this.time > R.outtakeAt) {
-      const b = R.carried[R.carried.length - 1]; this.unstow(b);
-      const e = s.intake.ends[0], [wx, wz] = this.toWorld(e * (s.L / 2 + b.r + 0.02), 0);
-      b.state = 'free'; b.anim = null; b.x = wx; b.y = b.r + 0.01; b.z = wz; const c = Math.cos(R.psi), sn = Math.sin(R.psi);
-      b.vx = R.vx + e * 1.2 * c; b.vz = R.vz - e * 1.2 * sn; b.vy = 0; b.cool = this.time + 0.8; b.noRobot = this.time + 0.3; b.px = b.x; b.py = b.y; b.pz = b.z;
-      R.outtakeAt = this.time + 0.35;
     }
   }
   spawnPollenAhead() {
@@ -5164,10 +5444,10 @@ class Sim {
   }
   drillRefill(dt) {
     const R = this.robot;
-    if (R.carried.length === 0) { this.drillT += dt; if (this.drillT > 0.9) { this.drillT = 0; for (let k = 0; k < this.spec.capacity; k++) this.stow(this.addBall('pollen', null, R.x, 0.3, R.z), false); this.toast('Reloaded', ''); } }
+    if (R.carried.length === 0) { this.drillT += dt; if (this.drillT > 0.9) { this.drillT = 0; for (let k = 0; k < this.spec.capacity; k++) { const b = this.addBall('pollen', null, R.x, 0.3, R.z); if (!this.preload(b)) this.removeBall(b); } this.toast('Reloaded', ''); } }
     else this.drillT = 0;
     // keep the field tidy: drop old spilled balls
-    if (this.balls.length > 70) { const old = this.balls.find(b => b.state === 'free' && b.sleep && Math.abs(b.x) < 1.2); if (old) { old.state = 'gone'; this.ballLayer.remove(old.mesh); this.balls.splice(this.balls.indexOf(old), 1); } }
+    if (this.balls.length > 70) { const old = this.balls.find(b => b.state === 'free' && b.sleep && b.fl < 0 && Math.abs(b.x) < 1.2 && Math.abs(b.z) < 1.5 && b.y < 0.1); if (old) { old.state = 'gone'; this.ballLayer.remove(old.mesh); this.balls.splice(this.balls.indexOf(old), 1); } }
   }
   /* ---------------- scripted AUTO ---------------- */
   autoPilot(dt) {
@@ -5189,7 +5469,7 @@ class Sim {
     if (!st) return out;
     A.t += dt;
     const holo = s.drive.holo;
-    const faceTarget = () => this.bestHeading().psi;
+    const faceTarget = () => this.bestHeading(R.carried.length ? 'pollen' : false).psi;
     const steer = psiWant => { if (psiWant === null || psiWant === undefined) return 0; return clamp(-wrapPi(psiWant - R.psi) * 2.4, -1, 1); };
     if (st.go) {
       if (st.plan && !st.path) st.path = planPath([R.x, R.z], P(st.go[0], st.go[1]), Math.hypot(s.L, s.W) / 2 + 0.03);
@@ -5224,13 +5504,14 @@ class Sim {
   /* ---------------- scoring ---------------- */
   updateScore(final = false) {
     this.computeLoads();
+    this.flowerStats = this.flowers.map(f => flowerStatus(this.flowerBalls(f)));
     for (const a of ['red', 'blue']) {
       const S = this.score[a], h = this.hives[a], mine = a === this.alliance;
       const auto = this.phase === 'auto' || this.phase === 'pre' ? h.tips : h.autoTips;
       S.autoTips = auto * POINTS.tip; S.teleTips = (h.tips - auto) * POINTS.tip;
       S.cell = h.count * POINTS.cell;
       let flower = 0, bottom = 0;
-      for (const f of this.flowers) { const st = flowerStatus(f.stack); if (st.owner === a) flower += st.scored * POINTS.flower; if (st.bottom === a) bottom += POINTS.bottomNectar; }
+      for (const st of this.flowerStats) { if (st.owner === a) flower += st.scored * POINTS.flower; if (st.bottom === a) bottom += POINTS.bottomNectar; }
       S.flower = flower; S.bottomNectar = bottom;
       let garden = 0; const G = FIELD.garden[a];
       for (const b of this.balls) if (b.state === 'free' && b.y < 0.12 && b.x >= G[0] - b.r && b.x <= G[1] + b.r && b.z >= G[2] - b.r && b.z <= G[3] + b.r) garden += POINTS.garden;
@@ -5252,15 +5533,8 @@ class Sim {
     const c = Math.cos(R.psi), sn = Math.sin(R.psi), vf = R.vx * c - R.vz * sn, vs = R.vx * sn + R.vz * c, rw = s.drive.wheelD / 2, rE = s.drive.rEff || 0.2;
     // each wheel turns at its own speed: mecanum mixes forward, strafe and turn per corner
     const wheel = p => { const fr = p[0] >= 0 ? 1 : -1, sd = p[2] < 0 ? -1 : 1; return (s.drive.holo ? vf - fr * sd * vs + sd * R.w * rE : vf + sd * R.w * rE) / rw; };
-    // floating intake roller rises when a NECTAR reaches it
-    const I = s.intake; let liftT = 0;
-    if (I.floating && I.lift > 0) {
-      if (R.carried.some(b => b.kind === 'nectar' && b.anim && !b.anim.world && b.anim.i <= 1)) liftT = I.lift;
-      else if (R.intake > 0) for (const b of this.balls) if (b.state === 'free' && b.kind === 'nectar' && b.color === this.alliance && b.y < 0.1) { const [lx, lz] = this.toLocal(b.x, b.z); if (I.ends.some(e => e * lx > s.L / 2 - 0.05 && e * lx < s.L / 2 + I.reach + 0.12) && Math.abs(lz) < I.width / 2 + 0.03) { liftT = I.lift; break; } }
-    }
-    R.lift += (liftT - R.lift) * Math.min(1, 16 * dt);
-    const feeding = R.carried.some(b => b.anim);
-    spinRobot(O, { wheel, intake: R.intake * 40 + (feeding && R.intake >= 0 ? 12 : 0), index: R.intake > 0 || feeding ? 34 : 0, shooter: R.shooters.map(st => st.rpm * TAU / 60 * 0.25), lift: I.floating ? R.lift : undefined }, dt);
+    // roller lift comes from the ball contacts (ballStep); the indexer spins while the belts move
+    spinRobot(O, { wheel, intake: R.intake * 40, index: R.conveyor * 34, shooter: R.shooters.map(st => st.rpm * TAU / 60 * 0.25), lift: s.roller && s.roller.float > 0 ? R.lift : undefined }, dt);
     // status light: the team's Tip-Sync colors
     if (O.lights && O.lights.length) {
       const h = this.hives[this.alliance], n2 = Math.ceil(TIP.max - h.load - 1e-6);
@@ -5271,30 +5545,14 @@ class Sim {
       if (col !== R.lightCol) { R.lightCol = col; setRobotLight(O, col); }
     }
     for (const a of ['red', 'blue']) this.field.hives[a].group.rotation.x = this.hives[a].phi;
-    // carried balls travel the robot's ball path, then ride in their slots
+    // carried balls sit where the conveyor has them (a just-captured ball funnels from where it was grabbed to the path)
     for (const b of R.carried) {
-      let L;
-      const A = b.anim;
-      if (A && !A.world) {
-        let dist = A.speed * dt;
-        while (dist > 0 && A.i < A.pts.length - 1) {
-          const p = A.pts[A.i], q = A.pts[A.i + 1], segL = Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]) || 1e-6, rem = segL * (1 - A.u);
-          if (dist >= rem) { dist -= rem; A.i++; A.u = 0; } else { A.u += dist / segL; dist = 0; }
-        }
-        if (A.i >= A.pts.length - 1) { L = A.pts[A.pts.length - 1]; b.anim = null; }
-        else { const p = A.pts[A.i], q = A.pts[A.i + 1]; L = [lerp(p[0], q[0], A.u), lerp(p[1], q[1], A.u), lerp(p[2], q[2], A.u)]; }
-      } else L = s.slots[b.slotIdx] || [0, s.H * 0.6, 0];
-      const [wx, wz] = this.toWorld(L[0], L[2]); b.x = wx; b.y = L[1]; b.z = wz;
-    }
-    // element being placed arcs onto the top of the FLOWER
-    if (R.placing && R.placing.b.anim) {
-      const A = R.placing.b.anim, b = R.placing.b; A.t = Math.min(1, A.t + dt / A.dur); const t = A.t;
-      b.x = lerp(A.from[0], A.to[0], t); b.z = lerp(A.from[2], A.to[2], t);
-      b.y = t < 0.6 ? lerp(A.from[1], A.peak, Math.sin(t / 0.6 * Math.PI / 2)) : lerp(A.peak, A.to[1], ((t - 0.6) / 0.4) ** 2);
+      if (b.off) { const k = Math.max(0, 1 - 10 * dt); b.off[0] *= k; b.off[1] *= k; b.off[2] *= k; if (Math.abs(b.off[0]) + Math.abs(b.off[1]) + Math.abs(b.off[2]) < 2e-4) b.off = null; }
+      const L = this.carriedLocal(b), [wx, wz] = this.toWorld(L[0], L[2]); b.x = wx; b.y = L[1]; b.z = wz;
     }
     // FLOWER ownership: tint the petals and call out changes
     this.field.flowers.forEach((F, k) => {
-      const st = flowerStatus(this.flowers[k].stack), own = st.owner || 'none';
+      const st = this.flowerStats[k], own = st.owner || 'none';
       if (F.owner !== own) {
         const before = F.owner; F.owner = own;
         if (F.petal) F.petal.color.setHex(own === 'red' ? 0xe0393f : own === 'blue' ? 0x2f6df0 : 0xf2d24a);
@@ -5339,25 +5597,74 @@ function inCellVolume(h, b) {
   const l = hiveToLocal(h, b.x, b.y, b.z), a = Math.abs(l[2]);
   return Math.abs(l[0]) < HIVE.hw && a > HIVE.back - 0.01 && a < HIVE.mouth + 0.02 && l[1] > HIVE.floorY - 0.01 && l[1] < roofY(l[0]) + 0.01;
 }
-const NO_INPUT = { fwd: 0, strafe: 0, turn: 0, intake: false, outtake: false, shoot: false, shootNectar: false, flower: false, flowerPollen: false, slow: false };
+const NO_INPUT = { fwd: 0, strafe: 0, turn: 0, intake: false, outtake: false, shoot: false, shootNectar: false, flower: false, nextFlower: false, slow: false };
 function emptyScore() { return { autoTips: 0, teleTips: 0, cell: 0, flower: 0, bottomNectar: 0, garden: 0, leave: 0, autoPark: 0, park: 0, total: 0, tips: 0 }; }
-function stackTopH(stack) { let h = 0; for (const b of stack) { const bot = b.kind === 'pollen' ? h : Math.max(h, FIELD.flowerNectarSeat); h = bot + 2 * b.r; } return h; }
-function flowerStatus(stack) {
-  let h = 0, owner = null, bottom = null, scored = 0;
-  for (const b of stack) {
-    const bot = b.kind === 'pollen' ? h : Math.max(h, FIELD.flowerNectarSeat); h = bot + 2 * b.r;
-    if (h <= FIELD.flowerScoreBottom || bot >= FIELD.flowerTop) continue;
+/* what's in a FLOWER right now, from the real balls in its tube (bottom first). Elements whose top is under the
+   scoring line or that stick out of the top don't count; the top-most NECTAR owns it; the lowest NECTAR is the bottom bonus. */
+function flowerStatus(list) {
+  let owner = null, bottom = null, scored = 0;
+  for (const b of list) {
+    if (b.y + b.r <= FIELD.flowerScoreBottom || b.y - b.r >= FIELD.flowerTop) continue;
     scored++;
     if (b.kind === 'nectar') { if (!bottom) bottom = b.color; owner = b.color; }
   }
-  return { owner, bottom, scored };
+  return { owner, bottom, scored, n: list.length };
+}
+
+/* ---------------- robot ball path helpers ---------------- */
+function mkPath(pts) { const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1], pts[i][2] - pts[i - 1][2])); return { pts, cum, len: Math.max(1e-3, cum[cum.length - 1]) }; }
+function pathAt(P, u) {
+  u = clamp(u, 0, P.len); let i = 1; while (i < P.pts.length - 1 && P.cum[i] < u) i++;
+  if (P.pts.length < 2) return P.pts[0].slice();
+  const a = P.pts[i - 1], b = P.pts[i], seg = P.cum[i] - P.cum[i - 1] || 1e-9, t = clamp((u - P.cum[i - 1]) / seg, 0, 1);
+  return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+}
+function buildFeed(spec) {
+  const F = spec.feed, Ro = spec.roller, entry = mkPath(F.entry), e = Ro.end;
+  // where the entry path passes under the roller axis: the roller hands balls to the conveyor there
+  let uRoll = 0;
+  for (let i = 1; i < entry.pts.length; i++) {
+    const a = entry.pts[i - 1], b = entry.pts[i], da = e * (a[0] - Ro.x), db = e * (b[0] - Ro.x);
+    if (i === 1 && da < 0) break;
+    if (da >= 0 && db < 0) { uRoll = entry.cum[i - 1] + (entry.cum[i] - entry.cum[i - 1]) * da / (da - db); break; }
+  }
+  return { entry, uRoll: Math.min(uRoll, entry.len), lanes: F.lanes.map(l => ({ ...mkPath(l.path), shooter: l.shooter })), sorter: F.sorter, speed: F.speed };
+}
+/* FLOWER collider: the revolved profile (tube, seat ring, cup lip, petal funnel) plus the four corner posts */
+function flowerCollide(f, b) {
+  const r = b.r; let dx = b.x - f.x, dz = b.z - f.z, rho = Math.hypot(dx, dz);
+  const ux = rho > 1e-7 ? dx / rho : 1, uz = rho > 1e-7 ? dz / rho : 0;
+  let y = b.y, hit = false;
+  for (const [A, B] of FLOWER_PROFILE) {
+    const ex = B[0] - A[0], ey = B[1] - A[1], l2 = ex * ex + ey * ey;
+    const t = clamp(((rho - A[0]) * ex + (y - A[1]) * ey) / l2, 0, 1), qr = A[0] + ex * t, qy = A[1] + ey * t;
+    const ddr = rho - qr, ddy = y - qy, d = Math.hypot(ddr, ddy), lim = r + FLOWER.t;
+    if (d >= lim || d < 1e-9) continue;
+    const nr = ddr / d, ny = ddy / d, pen = lim - d;
+    rho += nr * pen; y += ny * pen; hit = true;
+    const n = [nr * ux, ny, nr * uz], vn = b.vx * n[0] + b.vy * n[1] + b.vz * n[2];
+    if (vn < 0) {
+      const e = vn < -0.8 ? 0.3 : 0.05;
+      b.vx -= (1 + e) * vn * n[0]; b.vy -= (1 + e) * vn * n[1]; b.vz -= (1 + e) * vn * n[2];
+      const tvx = b.vx - (b.vx * n[0] + b.vy * n[1] + b.vz * n[2]) * n[0], tvz = b.vz - (b.vx * n[0] + b.vy * n[1] + b.vz * n[2]) * n[2];
+      b.vx -= 0.06 * tvx; b.vz -= 0.06 * tvz;
+    }
+  }
+  if (hit) { b.x = f.x + ux * rho; b.z = f.z + uz * rho; b.y = y; b.lift = 0; }
+  if (b.y - r < FIELD.flowerTop) for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+    const px = f.x + sx * FLOWER.postC, pz = f.z + sz * FLOWER.postC, qx = b.x - px, qz = b.z - pz, d = Math.hypot(qx, qz), lim = r + FLOWER.postR;
+    if (d >= lim || d < 1e-9) continue;
+    const nx = qx / d, nz = qz / d; b.x = px + nx * lim; b.z = pz + nz * lim;
+    const vn = b.vx * nx + b.vz * nz; if (vn < 0) { b.vx -= 1.4 * vn * nx; b.vz -= 1.4 * vn * nz; }
+    b.lift = 0;
+  }
 }
 
 /* =====================================================================================
    App: tabs, lab viewer, analysis pipeline, simulator view, input, cameras, HUD, rules page
    ===================================================================================== */
 const APP = window.APP = { raw: null, norm: null, A: null, map: null, tmpl: null, over: {}, view: 'lab' };
-APP.fn = { SIM: () => SIM, normalizeModel, analyzeRobot, computeShotMap, solveSpeed, traceShot, virtualHive, launchState, mouthCenter, speedCurve, parseCadFile, splitComponents };
+APP.fn = { SIM: () => SIM, normalizeModel, analyzeRobot, computeShotMap, solveSpeed, traceShot, traceFlower, solveFlowerSpeed, virtualHive, launchState, mouthCenter, speedCurve, parseCadFile, splitComponents };
 
 /* ---------------- renderers ---------------- */
 function makeRenderer(canvas, alpha = false) {
@@ -5495,19 +5802,17 @@ async function runAnalysis(ovFrame = {}) {
 const tick = () => new Promise(r => setTimeout(r, 30));
 function initials(n) { const w = n.replace(/[#\d]/g, ' ').trim().split(/\s+/).filter(Boolean); return ((w[0] || 'R')[0] + (w[1] || 'B')[0]).toUpperCase(); }
 function fillOrient() {
-  const N = APP.norm;
-  $('#segUp').innerHTML = Object.keys(AXES).map(k => `<button type="button" data-k="${k}" aria-pressed="${k === N.up}">${k}</button>`).join('');
-  const ku = AXES[N.up].findIndex(v => v !== 0);
-  $('#segFront').innerHTML = Object.keys(AXES).filter(k => AXES[k].findIndex(v => v !== 0) !== ku).map(k => `<button type="button" data-k="${k}" aria-pressed="${k === N.front}">${k}</button>`).join('');
+  const N = APP.norm, ov = APP.frameOv || {};
+  $('#segUp').innerHTML = [['auto', 'Auto'], ...Object.keys(AXES).map(k => [k, k])].map(([k, l]) => `<button type="button" data-k="${k}" aria-pressed="${(k === 'auto' && !ov.up) || k === ov.up}">${l}</button>`).join('');
+  $('#segFront').innerHTML = [['0', 'Auto'], ['1', 'Turn 90°'], ['2', 'Flip 180°'], ['3', 'Turn −90°']].map(([k, l]) => `<button type="button" data-k="${k}" aria-pressed="${String(ov.turn || 0) === k}">${l}</button>`).join('');
   $('#selUnits').value = N.autoUnits ? 'auto' : N.units;
-  $('#orientMsg').textContent = `${N.autoUp ? 'Detected' : 'Set'}: ${N.up} up, front ${N.front}, units ${N.units}${N.autoUnits ? ' (auto)' : ''}. Fix it here if the robot looks sideways or the intake isn't at the green box.`;
-  const go = (k, v) => runAnalysisWithFrame({ ...APP.frameOv, [k]: v });
-  $$('#segUp button').forEach(b => b.onclick = () => go('up', b.dataset.k));
-  $$('#segFront button').forEach(b => b.onclick = () => go('front', b.dataset.k));
-  $('#selUnits').onchange = e => go('units', e.target.value);
+  const how = { wheels: `Stood the robot on its ${N.wheels} drive wheels`, design: 'From the design sheet', manual: 'Up axis set by you', guess: 'No drivetrain found, so this is a best guess' }[N.how];
+  $('#orientMsg').textContent = `${how}. Up ${N.up === 'tilted' ? 'is tilted in the CAD (handled)' : N.up}, units ${N.units}${N.autoUnits ? ' (auto)' : ''}. If the intake isn't at the green box, turn the front.`;
+  $$('#segUp button').forEach(b => b.onclick = () => runAnalysisWithFrame({ ...ov, up: b.dataset.k === 'auto' ? undefined : b.dataset.k, turn: 0 }));
+  $$('#segFront button').forEach(b => b.onclick = () => runAnalysisWithFrame({ ...ov, turn: +b.dataset.k }));
+  $('#selUnits').onchange = e => runAnalysisWithFrame({ ...ov, units: e.target.value });
 }
 async function runAnalysisWithFrame(ov) {
-  if (ov.up && APP.frameOv && ov.up !== APP.frameOv.up) delete ov.front;
   APP.frameOv = ov; setLoading(true, 'Re-analyzing', 'Applying orientation…'); await tick(); await runAnalysis(ov);
 }
 const SPEC_FIELDS = [
@@ -5779,14 +6084,14 @@ function readInput() {
   if (KEYS.has('d')) right += 1; if (KEYS.has('a')) right -= 1;
   if (KEYS.has('e') || KEYS.has('arrowright') || KEYS.has('l')) turn += 1; if (KEYS.has('q') || KEYS.has('arrowleft') || KEYS.has('j')) turn -= 1;
   intake = KEYS.has('shift') || KEYS.has('i'); outtake = KEYS.has('k'); shoot = KEYS.has(' '); flower = KEYS.has('f'); slow = KEYS.has('control');
-  let shootNectar = KEYS.has('n'), flowerPollen = KEYS.has('g');
+  let shootNectar = KEYS.has('n'), nextFlower = KEYS.has('g');
   const pads = navigator.getGamepads ? [...navigator.getGamepads()].filter(Boolean) : [];
   if (pads.length) {
     const g = pads[0], dz = v => (Math.abs(v) < 0.08 ? 0 : Math.sign(v) * ((Math.abs(v) - 0.08) / 0.92) ** 1.6);
     up += -dz(g.axes[1] || 0); right += dz(g.axes[0] || 0); turn += dz(g.axes[2] || 0);
     const btn = i => g.buttons[i] && (g.buttons[i].pressed || g.buttons[i].value > 0.35);
     intake = intake || btn(6); shoot = shoot || btn(7); flower = flower || btn(5); outtake = outtake || btn(4); slow = slow || btn(1);
-    shootNectar = shootNectar || btn(0); flowerPollen = flowerPollen || btn(13);
+    shootNectar = shootNectar || btn(0); nextFlower = nextFlower || btn(13);
     if (btn(12) && !padPrev[12]) SIM.sim.callNectar();
     const edge = i => btn(i) && !padPrev[i];
     if (edge(3)) { const order = ['driver', 'chase', 'closeup', 'overhead', 'pov']; setCam(order[(order.indexOf(SIM.camMode) + 1) % order.length]); }
@@ -5808,7 +6113,7 @@ function readInput() {
     fwd = wx * c - wz * sn; strafe = wx * sn + wz * c;
   }
   if (s.assistTurn && Math.abs(turn) < 0.2) turn = clamp(turn + s.assistTurn, -1, 1);
-  return { fwd, strafe, turn, intake, outtake, shoot, shootNectar, flower, flowerPollen, slow };
+  return { fwd, strafe, turn, intake, outtake, shoot, shootNectar, flower, nextFlower, slow };
 }
 function bindTouch() {
   const pad = (el, key) => {
@@ -5837,19 +6142,23 @@ function updateHUD() {
   $('#hudTipHint').textContent = h.tipping ? 'Hold fire: the HIVE is tipping and dumping.' : n2 <= 1 ? 'The next element should tip it.' : `${n1 === n2 ? n1 : n1 + '–' + n2} more POLLEN should tip it (NECTAR counts 1.65).`;
   $('#hudTips').textContent = h.tips; $('#hudStash').textContent = s.stash[s.alliance];
   $('#hudFlowers').textContent = s.flowersUnlocked ? 'NECTAR allowed' : 'POLLEN only until 1:00';
-  $('#hudFlowerList').innerHTML = s.flowers.map(f => {
-    const st = flowerStatus(f.stack), own = st.owner, pts = own === s.alliance ? st.scored * POINTS.flower + (st.bottom === s.alliance ? POINTS.bottomNectar : 0) : 0;
-    return `<div class="frow"><span class="fdot ${own || 'none'}"></span><span>${f.id}</span><span class="mono">${f.stack.length} in</span><span class="mono" style="text-align:right">${own ? (own === s.alliance ? '+' + pts : own.toUpperCase()) : '—'}</span></div>`;
+  $('#hudFlowerList').innerHTML = s.flowers.map((f, i) => {
+    const st = s.flowerStats[i] || { n: 0 }, own = st.owner, pts = own === s.alliance ? st.scored * POINTS.flower + (st.bottom === s.alliance ? POINTS.bottomNectar : 0) : 0;
+    return `<div class="frow${R.target === i ? ' tgt' : ''}"><span class="fdot ${own || 'none'}"></span><span>${R.target === i ? '◎ ' : ''}${f.id}</span><span class="mono">${st.n} in</span><span class="mono" style="text-align:right">${own ? (own === s.alliance ? '+' + pts : own.toUpperCase()) : '—'}</span></div>`;
   }).join('');
   const nN = R.carried.filter(b => b.kind === 'nectar').length;
-  $('#hudNectarHint').textContent = nN ? (s.flowersUnlocked ? `Holding ${nN} NECTAR: drive to a FLOWER and press F (RB).` : `Holding ${nN} NECTAR: FLOWERS open at 1:00, or N shoots it for a TIP.`) : (s.mode === 'free' ? 'Z: human player rolls you a NECTAR.' : 'NECTAR enters your LOADING ZONE after each TIP.');
+  $('#hudNectarHint').textContent = nN ? (s.flowersUnlocked ? `Holding ${nN} NECTAR: F targets the nearest FLOWER, then shoot it in (Space).` : `Holding ${nN} NECTAR: FLOWERS open at 1:00, or N shoots it for a TIP.`) : (s.mode === 'free' ? 'Z: human player rolls you a NECTAR.' : 'NECTAR enters your LOADING ZONE after each TIP.');
   $('#hudAcc').textContent = `${s.stats.makes}/${s.stats.shots}`;
-  const slots = []; for (let k = 0; k < sp.slots.length; k++) { const b = R.slot[k]; slots.push(`<div class="slot ${b ? (b.kind === 'pollen' ? 'pollen' : 'nectar-' + b.color) : ''}" title="slot ${k + 1}${sp.lanes.findIndex(l => l[0] === k) >= 0 ? ' (staged at ' + sp.shooters[sp.lanes.findIndex(l => l[0] === k)].label + ')' : ''}"></div>`); }
-  $('#hudSlots').innerHTML = slots.join('');
-  $('#hudIntake').textContent = R.placing ? 'PLACING…' : R.intake > 0 ? 'INTAKE ON' : R.intake < 0 ? 'OUTTAKE' : 'INTAKE OFF';
-  $('#hudIntake').style.color = R.intake > 0 ? 'var(--good)' : '';
+  // what is in the robot, lane by lane (staged ball first), then the entry
+  const ball = b => `<div class="slot ${b ? (b.kind === 'pollen' ? 'pollen' : 'nectar-' + b.color) : ''}"></div>`, FD = s.feed;
+  const lanesH = FD.lanes.map((L, k) => { const q = R.carried.filter(b => b.lane === k).sort((a, c) => c.u - a.u), S = sp.shooters[L.shooter]; return `<span class="lane" title="${esc(S ? S.label : 'lane ' + (k + 1))}: staged ball on the left"><b>${FD.lanes.length > 1 ? (S && /left|\bL\b/i.test(S.label) ? 'L' : S && /right|\bR\b/i.test(S.label) ? 'R' : k + 1) : '▸'}</b>${q.length ? q.map(ball).join('') : ball(null)}</span>`; }).join('');
+  const ent = R.carried.filter(b => b.lane < 0);
+  $('#hudSlots').innerHTML = lanesH + (ent.length ? `<span class="lane" title="in the intake / splitter"><b>in</b>${ent.map(ball).join('')}</span>` : '') + (FD.sorter ? '<span class="lane" title="color sensor at the splitter sorts NECTAR"><b>sort</b></span>' : '');
+  const jam = s.time - R.jamT < 0.25 && R.intake > 0;
+  $('#hudIntake').textContent = R.full ? `FULL ${R.carried.length}/${sp.capacity}` : jam ? 'BACKED UP' : R.intake > 0 ? 'INTAKE ON' : R.intake < 0 ? 'OUTTAKE' : 'INTAKE OFF';
+  $('#hudIntake').style.color = R.full || jam ? 'var(--warn)' : R.intake > 0 ? 'var(--good)' : '';
   $('#hudSpeed').textContent = `${(Math.hypot(R.vx, R.vz) / IN).toFixed(0)} in/s`;
-  const tgt0 = s.aimTarget(), wrongSide = upSide(h) * (R.z - tgt0[2]) < 0.1;
+  const tgt0 = s.aimTarget(), wrongSide = R.target < 0 && upSide(h) * (R.z - tgt0[2]) < 0.1;
   $('#hudShooters').innerHTML = sp.shooters.map((S, k) => {
     const st = R.shooters[k], pct = st.rpm / S.rpmMax * 100, tp = st.rpmT / S.rpmMax * 100;
     let tag = S.turret ? (st.inRange ? (st.aimed ? 'LOCKED' : 'aiming') : 'turn robot') : (st.aimed ? 'on target' : 'turn to aim');
@@ -5858,7 +6167,10 @@ function updateHUD() {
   }).join('');
   const tgt = s.aimTarget(), d = Math.hypot(R.x - tgt[0], R.z - tgt[2]), side = upSide(h);
   let rng;
-  if (side * (R.z - tgt[2]) < 0.1) rng = `The raised CELL opens toward the ${side > 0 ? 'audience' : 'rear'} wall. Drive around to that side of the HIVE to shoot.`;
+  if (R.target >= 0) {
+    const f = s.flowers[R.target], ok = R.shooters.some(st => st.solve === 'ok'), cl = R.shooters.every(st => st.solve === 'close');
+    rng = `Target: ${f.id} FLOWER, ${(d / 0.3048).toFixed(1)} ft. ` + (ok ? 'Shot solved: fire to drop it in the top.' : cl ? 'Too close for your hood angle: back up.' : 'Out of range: move closer.') + ' F = back to the HIVE, G = next FLOWER.';
+  } else if (side * (R.z - tgt[2]) < 0.1) rng = `The raised CELL opens toward the ${side > 0 ? 'audience' : 'rear'} wall. Drive around to that side of the HIVE to shoot.`;
   else {
     rng = `${(d / 0.3048).toFixed(1)} ft from the raised CELL.`;
     if (APP.map && APP.map.dmin !== null) rng += d >= APP.map.dmin - 0.05 && d <= APP.map.dmax + 0.2 ? ' In your scoring window.' : d < APP.map.dmin ? ` Back up: you score from ${(APP.map.dmin / 0.3048).toFixed(1)} ft out.` : ` Move closer: best under ${(APP.map.dmax / 0.3048 + 0.6).toFixed(1)} ft.`;
@@ -5869,13 +6181,11 @@ function updateHUD() {
 function updateTrajectory() {
   const s = SIM.sim, R = s.robot;
   if (!SIM.showTraj || !R || !R.carried.length) { SIM.traj.visible = false; return; }
-  const k = R.rr % s.spec.shooters.length, S = s.spec.shooters[k], st = R.shooters[k], ex = s.shooterExit(k), tgt = s.aimTarget();
-  const yaw = S.turret && st.aimed ? yawTo(ex.x, ex.z, tgt[0], tgt[2]) : ex.yaw;
-  const v = st.rpmT * S.kV;
-  const res = traceShot(s.hives[s.alliance], launchState(ex.x, ex.y, ex.z, yaw, S.elev, v, 'pollen', R.vx, R.vz), 'pollen', { path: true, dt: 0.006 });
+  const res = s.previewShot();
+  if (!res || !res.path || res.path.length < 2) { SIM.traj.visible = false; return; }
   const pts = res.path.map(p => new THREE.Vector3(p[0], p[1], p[2]));
   SIM.traj.geometry.setFromPoints(pts); SIM.traj.computeLineDistances();
-  SIM.traj.material.color.set(res.code === 'in' ? 0x45c58d : 0xf0a43a); SIM.traj.visible = true;
+  SIM.traj.material.color.set(res.ok ? 0x45c58d : 0xf0a43a); SIM.traj.visible = true;
 }
 function simFrame(dt) {
   ensureSimRobot();
@@ -5963,10 +6273,11 @@ function initFieldTab() {
       <li>In AUTO, stay on your own half (G402). Pins are limited (G421).</li></ul></div>
     <div class="card"><h4>Scoring a FLOWER in the simulator</h4><ol style="margin:0;padding-left:18px;font-size:13px;line-height:1.6">
       <li>Get your NECTAR: the human player rolls one into your LOADING ZONE after each TIP, all of them at 1:00 (press <b>Z</b> in free practice).</li>
-      <li>Drive over it with the intake on (<b>Shift</b> / LT). It is sorted to the back of the robot so <b>Space</b> keeps shooting POLLEN.</li>
-      <li>In the last minute, nose up to a FLOWER and press <b>F</b> (RB). The top-most NECTAR owns the FLOWER: 2 pts per element in it, plus 5 for the bottom NECTAR.</li>
-      <li><b>G</b> adds POLLEN to a FLOWER any time; the intake pulls POLLEN out of a FLOWER's bottom.</li></ol>
-      <p class="muted" style="margin:0;font-size:12px">The simulator moves the element from the robot to the top of the FLOWER in 0.65 s. Your CAD needs a real way to do that (a lift, a lob from the shooter, or a placer arm).</p></div>
+      <li>Drive over it with the intake on (<b>Shift</b> / LT). The roller has to squeeze it under itself: a floating or compliant roller can, a stiff low roller bounces it away. With a color sensor the splitter keeps NECTAR in one lane, so <b>Space</b> keeps shooting POLLEN from the other.</li>
+      <li>Press <b>F</b> (RB) to target the nearest FLOWER (<b>G</b> / D-pad down steps to the next one). Turrets swing to it and the flywheels re-solve for a drop into the top. Fire with <b>Space</b>: the ball flies, hits the petal funnel and drops down the tube. NECTAR only after 1:00.</li>
+      <li>The top-most NECTAR owns the FLOWER: 2 pts per element in it, plus 5 for the bottom NECTAR. Elements that bounce out don't count.</li>
+      <li>Press against a FLOWER with the intake running to roll the bottom POLLEN out between its posts; the stack drops one.</li></ol>
+      <p class="muted" style="margin:0;font-size:12px">Every FLOWER is modelled: four posts, a cup lip, a seat ring that POLLEN falls through and NECTAR sits on, a clear tube and a petal funnel. Whether your shooter can drop into it depends on its hood angle and how far away you are.</p></div>
     <p class="note">Unofficial practice tool made for FTC teams. Not affiliated with or endorsed by <i>FIRST</i>®. Sources: BIOBUZZ Competition Manual (FIRST, Sections 9–10, TU-era versions), field positions from the official field CAD as published in the open-source <a href="https://github.com/caryden/ftc-biobuzz-sim" target="_blank" rel="noopener">NCSSM BIOBUZZ simulator</a>, CELL geometry cross-checked with <a href="https://github.com/Raptoria25068/hive-shot-planner" target="_blank" rel="noopener">Raptoria 25068's HIVE Shot Planner</a>. Rules change with Team Updates: always check the current manual at ftc.game before an event.</p>`;
 }
 
