@@ -48,4 +48,4 @@ export function tokenize(src: string): Token[] {
 
 /** Plain-text rendering for search indexes, AI prompts and aria labels. */
 export const plain = (src: string) =>
-  tokenize(src).map((t) => (t.t === 'blank' ? '______' : t.t === 'br' ? ' ' : t.v)).join('');
+  tokenize(src).map((t) => ('v' in t ? t.v : t.t === 'blank' ? '______' : ' ')).join('');
