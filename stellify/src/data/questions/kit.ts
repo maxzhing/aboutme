@@ -57,3 +57,10 @@ export const sameSet = (a: number[], b: number[]) =>
 /** Exactly one of the candidate values satisfies the predicate, and it is the keyed one. */
 export const only = (candidates: number[], keyed: number, pred: (v: number) => boolean) =>
   pred(keyed) && candidates.filter((c) => pred(c)).length === 1;
+
+/**
+ * Marker for the few math questions that are purely conceptual (study design, interpretation)
+ * and therefore have no numeric fact to verify by computation. They are keyed by reasoning
+ * and reviewed by hand; the validation report counts them separately.
+ */
+export const CONCEPTUAL = () => true;
