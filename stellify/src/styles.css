@@ -4,15 +4,15 @@
 
 :root {
   --bg: 245 246 251; --surface: 255 255 255; --raised: 239 241 250; --line: 221 225 240;
-  --ink: 20 24 48; --muted: 78 88 124; --faint: 104 114 148;
-  --brand: 99 70 235; --brand2: 24 112 232;
-  --ok: 4 135 95; --warn: 180 110 4; --bad: 208 36 36; --gold: 190 128 4; --shadow: 30 40 90;
+  --ink: 20 24 48; --muted: 72 82 118; --faint: 90 100 134;
+  --brand: 92 62 228; --brand2: 16 92 204;
+  --ok: 3 110 76; --warn: 140 82 0; --bad: 190 30 30; --gold: 132 88 0; --shadow: 30 40 90;
   color-scheme: light;
 }
 :root.dark {
   --bg: 9 13 28; --surface: 16 22 44; --raised: 24 32 61; --line: 40 50 88;
-  --ink: 236 240 255; --muted: 166 176 210; --faint: 122 133 172;
-  --brand: 139 110 255; --brand2: 70 160 255;
+  --ink: 236 240 255; --muted: 170 180 214; --faint: 140 151 190;
+  --brand: 160 138 255; --brand2: 86 170 255;
   --ok: 52 211 153; --warn: 251 191 36; --bad: 251 120 120; --gold: 250 204 21; --shadow: 0 0 0;
   color-scheme: dark;
 }
@@ -31,7 +31,7 @@
 @layer components {
   .card { @apply rounded-2xl border border-line bg-surface shadow-card; }
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primary { @apply btn text-white bg-gradient-to-r from-brand to-brand2 hover:brightness-110; }
+  .btn-primary { @apply btn text-white bg-gradient-to-r from-[#6A4BF0] to-[#1F6FE5] hover:brightness-110; }
   .btn-ghost { @apply btn border border-line bg-surface text-ink hover:bg-raised; }
   .btn-quiet { @apply btn text-muted hover:bg-raised hover:text-ink; }
   .chip { @apply inline-flex items-center gap-1 rounded-full border border-line bg-raised px-2.5 py-0.5 text-xs font-medium text-muted; }

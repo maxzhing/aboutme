@@ -75,7 +75,7 @@ export function TutorChat({ qid, answer, threadId: initialThread, compact, sugge
         )}
         {messages.map((m, i) => (
           <div key={i} className={cn('flex', m.role === 'student' ? 'justify-end' : 'justify-start')}>
-            <div className={cn('max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed', m.role === 'student' ? 'bg-gradient-to-r from-brand to-brand2 text-white' : 'border border-line bg-surface')}>
+            <div className={cn('max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed', m.role === 'student' ? 'bg-gradient-to-r from-[#6A4BF0] to-[#1F6FE5] text-white' : 'border border-line bg-surface')}>
               {m.role === 'tutor' ? md(m.text) : m.text}
               {m.role === 'tutor' && m.source === 'gemini' && <div className="mt-1.5 text-[10px] uppercase tracking-wide text-faint">AI-generated · check against the explanation</div>}
             </div>

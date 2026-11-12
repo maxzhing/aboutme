@@ -58,7 +58,7 @@ export function PetPage() {
           </Card>
           <Card>
             <h2 className="font-bold">Evolution</h2>
-            <ol className="mt-2 space-y-2">{LEVEL_TIERS.map((t) => <li key={t.level} className="flex items-center gap-3 text-sm"><span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold', level.level >= t.level ? 'bg-gradient-to-br from-brand to-brand2 text-white' : 'bg-raised text-faint')}>{level.level >= t.level ? <Check size={14} /> : t.level}</span><span className={level.level >= t.level ? '' : 'text-muted'}>Level {t.level}: {t.title} <span className="text-faint">({t.form})</span></span><span className="ml-auto text-xs tabular-nums text-faint">{xpForLevel(t.level)} XP</span></li>)}</ol>
+            <ol className="mt-2 space-y-2">{LEVEL_TIERS.map((t) => <li key={t.level} className="flex items-center gap-3 text-sm"><span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold', level.level >= t.level ? 'bg-gradient-to-br from-[#6A4BF0] to-[#1F6FE5] text-white' : 'bg-raised text-faint')}>{level.level >= t.level ? <Check size={14} /> : t.level}</span><span className={level.level >= t.level ? '' : 'text-muted'}>Level {t.level}: {t.title} <span className="text-faint">({t.form})</span></span><span className="ml-auto text-xs tabular-nums text-faint">{xpForLevel(t.level)} XP</span></li>)}</ol>
           </Card>
         </div>
       </div>
@@ -120,7 +120,7 @@ export function AchievementsPage() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {ACHIEVEMENTS.map((a) => { const at = got[a.id]; const Icon = ICON[a.icon] ?? Award; return (
           <Card key={a.id} className={cn('flex gap-3 !p-4', !at && 'opacity-70')} data-testid={`ach-${a.id}`} data-unlocked={!!at}>
-            <span className={cn('grid h-11 w-11 shrink-0 place-items-center rounded-xl', at ? 'bg-gradient-to-br from-brand to-brand2 text-white' : 'bg-raised text-faint')}><Icon size={22} /></span>
+            <span className={cn('grid h-11 w-11 shrink-0 place-items-center rounded-xl', at ? 'bg-gradient-to-br from-[#6A4BF0] to-[#1F6FE5] text-white' : 'bg-raised text-faint')}><Icon size={22} /></span>
             <div className="min-w-0"><h2 className="font-semibold leading-tight">{a.title}</h2><p className="mt-0.5 text-xs text-muted">{a.desc}</p><p className="mt-1 text-xs">{at ? <span className="text-ok">Unlocked {new Date(at).toLocaleDateString()}</span> : <span className="text-faint">Locked</span>} · <span className="text-gold">+{a.coins} Stardust</span></p></div>
           </Card>
         ); })}

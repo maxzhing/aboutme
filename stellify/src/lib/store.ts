@@ -75,14 +75,15 @@ const pure = (s: Store): AppState => {
   void _h; void _e;
   return Object.fromEntries(Object.entries(rest).filter(([, v]) => typeof v !== 'function')) as unknown as AppState;
 };
-const withKeys = (events: GameEvent[]) => events.filter((e) => e.type !== 'mistake').map((e) => ({ ...e, key: uid() }));
+/** Only moments worth interrupting for become pop-ups; reaching the first mastery step is not one of them. */
+const withKeys = (events: GameEvent[]) => events.filter((e) => e.type !== 'mistake' && !(e.type === 'mastery' && e.level < 2)).map((e) => ({ ...e, key: uid() }));
 
 export const useStore = create<Store>()(
   persist(
     (setState, getState) => {
       const apply = (fn: (s: AppState) => { state: AppState; events?: GameEvent[] }) => {
         const r = fn(pure(getState()));
-        setState({ ...r.state, events: [...getState().events, ...withKeys(r.events ?? [])].slice(-6) });
+        setState({ ...r.state, events: [...getState().events, ...withKeys(r.events ?? [])].slice(-3) });
         return r;
       };
       const post = (s: AppState, now: number) => unlockAchievements(s, getQ, now);
@@ -94,7 +95,7 @@ export const useStore = create<Store>()(
 
         answer: (input) => {
           const r = applyAttempt(pure(getState()), input, Date.now(), getQ);
-          setState({ ...r.state, events: [...getState().events, ...withKeys(r.events)].slice(-6) });
+          setState({ ...r.state, events: [...getState().events, ...withKeys(r.events)].slice(-3) });
           return { correct: r.correct, events: r.events };
         },
         setProfile: (p) => setState({ profile: { ...getState().profile, ...p } }),
@@ -230,7 +231,7 @@ export const useStore = create<Store>()(
           st = { ...st, mocks: [...st.mocks, done], activeMock: undefined };
           const g = grant(st, done.kind === 'full' ? XP_REWARD.mockFull : XP_REWARD.mockSection, now, 'Completed a mock exam');
           const a = post(g.state, now);
-          setState({ ...a.state, activeMock: undefined, events: [...getState().events, ...withKeys([...events, ...g.events, ...a.events])].slice(-6) });
+          setState({ ...a.state, activeMock: undefined, events: [...getState().events, ...withKeys([...events, ...g.events, ...a.events])].slice(-3) });
           return { finished: true, id: done.id };
         },
         abandonMock: () => setState({ activeMock: undefined }),

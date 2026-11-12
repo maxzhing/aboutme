@@ -19,11 +19,11 @@ export function Toasts() {
     return () => timers.forEach(clearTimeout);
   }, [events, dismiss]);
   return (
-    <div className="pointer-events-none fixed bottom-4 right-4 z-[60] flex w-[min(92vw,340px)] flex-col gap-2" role="status" aria-live="polite">
+    <div className="pointer-events-none fixed left-1/2 top-16 z-[60] flex w-[min(92vw,340px)] -translate-x-1/2 flex-col gap-2" role="status" aria-live="polite">
       <AnimatePresence>
-        {events.map((e) => (
-          <motion.div key={e.key} layout initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, x: 30 }}
-            className="pointer-events-auto card flex items-center gap-3 p-3 shadow-glow" onClick={() => dismiss(e.key)}>
+        {events.slice(-2).map((e) => (
+          <motion.div key={e.key} layout initial={{ opacity: 0, y: -12, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, x: 30 }}
+            className="card flex items-center gap-3 p-3 shadow-glow [&_a]:pointer-events-auto">
             {e.type === 'xp' && <><Sparkles className="shrink-0 text-gold" size={20} /><div className="text-sm"><b>+{e.xp} XP</b> <span className="text-muted">· +{e.coins} Stardust</span>{e.note && <div className="text-xs text-muted">{e.note}</div>}</div></>}
             {e.type === 'level' && <><Pet mood="levelup" level={e.level} equipped={equipped} size={64} /><div><div className="font-display font-bold">Level {e.level}!</div><div className="text-xs text-muted">Lumi is now {e.title}.</div></div></>}
             {e.type === 'achievement' && <><Award className="shrink-0 text-gold" size={26} /><div className="text-sm"><div className="font-semibold">Achievement unlocked</div><Link href="/achievements" className="text-brand2 underline-offset-2 hover:underline">{e.title}</Link></div></>}

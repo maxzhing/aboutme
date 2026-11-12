@@ -55,7 +55,7 @@ export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, 
                   className={cn('flex min-h-[48px] flex-1 items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left text-[15px] transition-colors',
                     right ? 'border-ok bg-ok/10' : wrong ? 'border-bad bg-bad/10' : selected ? 'border-brand bg-brand/10 ring-1 ring-brand' : 'border-line bg-surface hover:border-brand/50',
                     out && 'opacity-45', locked && !right && !wrong && !selected && 'opacity-80')}>
-                  <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full border text-sm font-bold', right ? 'border-ok bg-ok text-white' : wrong ? 'border-bad bg-bad text-white' : selected ? 'border-brand bg-brand text-white' : 'border-line text-muted')}>
+                  <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full border text-sm font-bold', right ? 'border-ok bg-ok text-white' : wrong ? 'border-bad bg-bad text-white' : selected ? 'border-brand bg-[#6A4BF0] text-white' : 'border-line text-muted')}>
                     {right ? <Check size={15} /> : wrong ? <X size={15} /> : LETTERS[i]}
                   </span>
                   <span className={cn('min-w-0', out && 'line-through')}><RichText text={c} /></span>

@@ -85,7 +85,7 @@ export interface Weakness { skill: SkillId; accuracy: number; n: number; message
 /** Biggest opportunities among skills with enough data to judge. */
 export function findWeaknesses(s: AppState, getQ: (id: string) => Question | undefined, max = 3): Weakness[] {
   const stats = computeAllSkillStats(s.attempts, getQ);
-  return SKILLS.map((k) => stats[k.id]).filter((st) => st.n >= 4 && st.level < 3)
+  return SKILLS.map((k) => stats[k.id]).filter((st) => st.n >= 4 && st.level < 3 && st.correct / st.n < 0.7)
     .sort((a, b) => a.score - b.score).slice(0, max)
     .map((st) => ({
       skill: st.skill, accuracy: pct(st.correct, st.n), n: st.n, href: `/learn/${st.skill}`,
