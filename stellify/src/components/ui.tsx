@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { clsx, type ClassValue } from 'clsx';
 import { X } from 'lucide-react';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 
 export const cn = (...a: ClassValue[]) => clsx(a);
 
@@ -34,13 +34,14 @@ export function Progress({ value, className, tone = 'brand', label }: { value: n
 }
 
 export function Ring({ value, size = 72, stroke = 7, children, label }: { value: number; size?: number; stroke?: number; children?: ReactNode; label?: string }) {
+  const gid = `rg${useId().replace(/:/g, '')}`;
   const r = (size - stroke) / 2, c = 2 * Math.PI * r, v = Math.max(0, Math.min(100, value));
   return (
     <div className="relative inline-grid place-items-center" style={{ width: size, height: size }} role="img" aria-label={label ?? `${Math.round(v)} percent`}>
       <svg width={size} height={size} className="-rotate-90">
-        <defs><linearGradient id="ring-g" x1="0" x2="1"><stop offset="0" stopColor="rgb(var(--brand))" /><stop offset="1" stopColor="rgb(var(--brand2))" /></linearGradient></defs>
+        <defs><linearGradient id={gid} x1="0" x2="1"><stop offset="0" stopColor="rgb(var(--brand))" /><stop offset="1" stopColor="rgb(var(--brand2))" /></linearGradient></defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgb(var(--raised))" strokeWidth={stroke} />
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="url(#ring-g)" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - v / 100)} style={{ transition: 'stroke-dashoffset .6s' }} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={`url(#${gid})`} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - v / 100)} style={{ transition: 'stroke-dashoffset .6s' }} />
       </svg>
       <div className="absolute inset-0 grid place-items-center text-sm font-bold">{children}</div>
     </div>

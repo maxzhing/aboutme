@@ -1,5 +1,5 @@
 import { Minus, Plus, RotateCcw } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import type { GraphDemo } from '@/data/desmos';
 import { affineInY, expFit, findExtrema, findRoots, fmt, linearFit, parseRelation, quadFit, type Relation } from '@/lib/mathexpr';
 
@@ -21,6 +21,7 @@ export function Grapher({ demo, editable = true }: { demo: GraphDemo; editable?:
   const [view, setView] = useState(demo.view);
   const [fit, setFit] = useState(demo.regression ?? 'linear');
   const [picked, setPicked] = useState<number | null>(null);
+  const clip = `plot${useId().replace(/:/g, '')}`;
   const [xmin, xmax, ymin, ymax] = view;
   const X = (x: number) => PAD + ((x - xmin) / (xmax - xmin)) * (W - PAD - 8);
   const Y = (y: number) => H - PAD - ((y - ymin) / (ymax - ymin)) * (H - PAD - 8);
@@ -94,10 +95,10 @@ export function Grapher({ demo, editable = true }: { demo: GraphDemo; editable?:
     <div className="grid gap-4 lg:grid-cols-[1fr_250px]">
       <div className="overflow-hidden rounded-2xl border border-line bg-surface">
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={`Graph of ${exprs.filter(Boolean).join('; ') || 'data points'}. ${model.pois.map((p) => `${p.kind} at (${fmt(p.x)}, ${fmt(p.y)})`).join('. ')}`}>
-          <defs><clipPath id="plot"><rect x={PAD} y={8} width={W - PAD - 8} height={H - PAD - 8} /></clipPath></defs>
+          <defs><clipPath id={clip}><rect x={PAD} y={8} width={W - PAD - 8} height={H - PAD - 8} /></clipPath></defs>
           {ticks(xmin, xmax, sx).map((t) => <g key={`x${t}`}><line x1={X(t)} x2={X(t)} y1={8} y2={H - PAD} stroke="rgb(var(--line))" strokeWidth={t === 0 ? 0 : 1} opacity="0.7" /><text x={X(t)} y={H - PAD + 14} textAnchor="middle" fontSize="10" fill="rgb(var(--muted))">{fmt(t)}</text></g>)}
           {ticks(ymin, ymax, sy).map((t) => <g key={`y${t}`}><line y1={Y(t)} y2={Y(t)} x1={PAD} x2={W - 8} stroke="rgb(var(--line))" strokeWidth={t === 0 ? 0 : 1} opacity="0.7" /><text x={PAD - 5} y={Y(t) + 3} textAnchor="end" fontSize="10" fill="rgb(var(--muted))">{fmt(t)}</text></g>)}
-          <g clipPath="url(#plot)">
+          <g clipPath={`url(#${clip})`}>
             {ymin <= 0 && ymax >= 0 && <line x1={PAD} x2={W - 8} y1={Y(0)} y2={Y(0)} stroke="rgb(var(--ink))" strokeWidth="1.3" opacity="0.6" />}
             {xmin <= 0 && xmax >= 0 && <line y1={8} y2={H - PAD} x1={X(0)} x2={X(0)} stroke="rgb(var(--ink))" strokeWidth="1.3" opacity="0.6" />}
             {paths.filter((p) => p.c.op !== '=').map(({ c }) => {

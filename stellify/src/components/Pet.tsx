@@ -133,20 +133,21 @@ export function Pet({ mood = 'idle', level = 1, equipped = {}, size = 180, class
 
 /** Habitat backdrop for the companion. */
 export function Habitat({ id = 'habitat-nook', className, children }: { id?: string; className?: string; children?: React.ReactNode }) {
+  const u = useId().replace(/:/g, '');
   const stars = [[40, 30], [90, 60], [150, 22], [210, 48], [280, 26], [330, 64], [370, 34], [250, 82], [120, 90], [20, 78]];
   return (
     <div className={cn('relative overflow-hidden rounded-2xl', className)}>
       <svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" aria-hidden="true">
         <defs>
-          <linearGradient id="h-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0B1030" /><stop offset="1" stopColor="#1E1B4B" /></linearGradient>
-          <linearGradient id="h-dawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#312E81" /><stop offset="0.6" stopColor="#9D4EDD" /><stop offset="1" stopColor="#FDBA74" /></linearGradient>
-          <linearGradient id="h-warm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#1E1B4B" /><stop offset="1" stopColor="#3B2A6B" /></linearGradient>
+          <linearGradient id={`h-night${u}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0B1030" /><stop offset="1" stopColor="#1E1B4B" /></linearGradient>
+          <linearGradient id={`h-dawn${u}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#312E81" /><stop offset="0.6" stopColor="#9D4EDD" /><stop offset="1" stopColor="#FDBA74" /></linearGradient>
+          <linearGradient id={`h-warm${u}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#1E1B4B" /><stop offset="1" stopColor="#3B2A6B" /></linearGradient>
         </defs>
         {id === 'habitat-summit' ? <>
-          <rect width="400" height="240" fill="url(#h-dawn)" /><circle cx="300" cy="150" r="34" fill="#FDE68A" opacity="0.85" />
+          <rect width="400" height="240" fill={`url(#h-dawn${u})`} /><circle cx="300" cy="150" r="34" fill="#FDE68A" opacity="0.85" />
           <path d="M0 240 L70 120 L130 190 L200 90 L270 180 L330 130 L400 210 L400 240 Z" fill="#1E1B4B" opacity="0.9" /><path d="M200 90 L218 116 L204 112 L196 122 L184 112 Z" fill="#E0E7FF" />
         </> : id === 'habitat-library' ? <>
-          <rect width="400" height="240" fill="url(#h-warm)" />
+          <rect width="400" height="240" fill={`url(#h-warm${u})`} />
           {[20, 78, 136].map((y) => <g key={y}><rect x="0" y={y + 44} width="400" height="6" fill="#78350F" />{Array.from({ length: 26 }, (_, i) => <rect key={i} x={6 + i * 15.2} y={y + 44 - (18 + ((i * 7 + y) % 22))} width="11" height={18 + ((i * 7 + y) % 22)} rx="1.5" fill={['#7C3AED', '#2563EB', '#DB2777', '#059669', '#D97706', '#475569'][(i + y) % 6]} opacity="0.85" />)}</g>)}
           <rect y="200" width="400" height="40" fill="#451A03" />
         </> : id === 'habitat-station' ? <>
@@ -154,10 +155,10 @@ export function Habitat({ id = 'habitat-nook', className, children }: { id?: str
           <circle cx="200" cy="420" r="250" fill="#1D4ED8" /><path d="M60 250 C120 190 200 200 260 240 C200 220 130 230 60 250Z" fill="#22C55E" opacity="0.8" /><circle cx="200" cy="420" r="250" fill="none" stroke="#93C5FD" strokeWidth="6" opacity="0.5" />
           <rect x="6" y="6" width="388" height="228" rx="26" fill="none" stroke="#334155" strokeWidth="12" />
         </> : id === 'habitat-observatory' ? <>
-          <rect width="400" height="240" fill="url(#h-night)" />{stars.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={1 + (i % 3) * 0.7} fill="#FDE68A" className="animate-twinkle" style={{ animationDelay: `${i * 0.25}s` }} />)}
+          <rect width="400" height="240" fill={`url(#h-night${u})`} />{stars.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={1 + (i % 3) * 0.7} fill="#FDE68A" className="animate-twinkle" style={{ animationDelay: `${i * 0.25}s` }} />)}
           <path d="M250 240 V190 A60 60 0 0 1 370 190 V240 Z" fill="#334155" /><path d="M300 150 L352 104 L362 116 L312 162 Z" fill="#94A3B8" /><rect y="218" width="400" height="22" fill="#0F172A" />
         </> : <>
-          <rect width="400" height="240" fill="url(#h-warm)" />
+          <rect width="400" height="240" fill={`url(#h-warm${u})`} />
           <rect x="250" y="30" width="110" height="90" rx="8" fill="#0B1030" stroke="#6D5BD0" strokeWidth="5" /><circle cx="330" cy="62" r="13" fill="#FDE68A" /><path d="M305 30 V120 M250 75 H360" stroke="#6D5BD0" strokeWidth="4" />
           <rect y="196" width="400" height="44" fill="#2E1F5E" /><rect x="34" y="150" width="8" height="46" fill="#A78BFA" /><path d="M20 150 H58 L50 124 H28 Z" fill="#FDE68A" /><circle cx="39" cy="196" r="34" fill="#FDE68A" opacity="0.12" />
           <g fill="#7C3AED"><rect x="80" y="184" width="46" height="8" rx="2" /><rect x="84" y="176" width="40" height="8" rx="2" fill="#2563EB" /></g>
