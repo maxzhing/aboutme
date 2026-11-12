@@ -2,7 +2,7 @@
   "name": "stellify",
   "version": "1.0.0",
   "private": true,
-  "description": "Stellify — a completely free, local-first Digital SAT preparation platform.",
+  "description": "Stellify \u2014 a completely free, local-first Digital SAT preparation platform.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,7 +14,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test --trace off",
-    "check": "npm run validate:questions && npm run typecheck && npm run test"
+    "check": "npm run validate:questions && npm run typecheck && npm run test",
+    "check:links": "tsx scripts/check-links.ts",
+    "prebuild": "npm run validate:questions"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
