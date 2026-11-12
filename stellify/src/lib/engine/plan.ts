@@ -7,7 +7,7 @@ import { dueIds } from './srs';
 const lesson = (skill: SkillId, minutes: number): PlanTask => ({ id: '', kind: 'lesson', skill, section: SKILL[skill].section, minutes, title: `Lesson: ${SKILL[skill].short}`, detail: 'Read the lesson, then try the guided examples.', href: `/learn/${skill}` });
 const practice = (skill: SkillId, minutes: number, hard = false): PlanTask => ({ id: '', kind: 'practice', skill, section: SKILL[skill].section, minutes, title: `${hard ? 'Hard practice' : 'Practice'}: ${SKILL[skill].short}`, detail: `${Math.max(4, Math.round(minutes / 1.6))} targeted questions`, href: `/practice/session?mode=skill&skill=${skill}&n=${Math.max(4, Math.round(minutes / 1.6))}${hard ? '&diff=hard,very-hard' : ''}` });
 const T = {
-  diagnostic: (): PlanTask => ({ id: '', kind: 'diagnostic', minutes: 40, title: 'Diagnostic', detail: '24 questions across every domain', href: '/diagnostic' }),
+  diagnostic: (): PlanTask => ({ id: '', kind: 'diagnostic', minutes: 40, title: 'Diagnostic', detail: '28 questions across every domain', href: '/diagnostic' }),
   mistakes: (m: number): PlanTask => ({ id: '', kind: 'mistakes', minutes: m, title: 'Mistake Bucket review', detail: 'Redo missed questions and related practice', href: '/practice/session?mode=mistakes&n=8' }),
   review: (m: number): PlanTask => ({ id: '', kind: 'review', minutes: m, title: 'Spaced review', detail: 'Questions scheduled to come back today', href: '/practice/session?mode=review&n=8' }),
   mixed: (m: number): PlanTask => ({ id: '', kind: 'mixed', minutes: m, title: 'Mixed challenge', detail: 'Smart practice across your weakest skills', href: `/practice/session?mode=smart&n=${Math.max(5, Math.round(m / 1.5))}` }),

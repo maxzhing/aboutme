@@ -258,6 +258,9 @@ export interface Settings {
   showTimer: boolean;
   aiEnabled: boolean;
   aiConsent: boolean;
+  /** optional, student-supplied free Gemini key; stored only on this device */
+  geminiKey?: string;
+  geminiModel?: string;
   shareIncludeMistakes: boolean;
 }
 
