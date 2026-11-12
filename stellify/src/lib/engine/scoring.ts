@@ -13,7 +13,7 @@ import { clamp, round10 } from '../util';
  * test-takers; treat it as a rough guide and use Bluebook practice tests for real scores.
  */
 const A = 1.15;
-const B: Record<Difficulty, number> = { medium: 0, hard: 1.1, 'very-hard': 2.2 };
+const B: Record<Difficulty, number> = { medium: 0, hard: 1.1, 'very-hard': 2.2, elite: 3.1 };
 const guess = (t: QuestionType) => (t === 'mcq' ? 0.22 : 0.02);
 
 export interface Response { difficulty: Difficulty; type: QuestionType; correct: boolean }

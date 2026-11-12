@@ -63,6 +63,7 @@ export function SettingsPage() {
           <div><span className="label">Daily study time</span><div className="flex flex-wrap gap-1.5">{[15, 30, 45, 60, 90, 120].map((m) => <button key={m} aria-pressed={p.dailyMinutes === m} onClick={() => s.setProfile({ dailyMinutes: m })} className={`chip !px-3 !py-1 ${p.dailyMinutes === m ? 'border-brand bg-brand/15 text-ink' : ''}`}>{m} min</button>)}</div></div>
           <div><span className="label">Rest days</span><div className="flex flex-wrap gap-1.5">{DAYS.map((d, i) => <button key={d} aria-pressed={p.restDays.includes(i)} onClick={() => s.setProfile({ restDays: p.restDays.includes(i) ? p.restDays.filter((x) => x !== i) : [...p.restDays, i] })} className={`chip !px-3 !py-1 ${p.restDays.includes(i) ? 'border-brand bg-brand/15 text-ink' : ''}`}>{d}</button>)}</div></div>
         </div>
+        <div className="mt-4"><span className="label">Challenge level for Smart Practice</span><div className="flex flex-wrap gap-1.5">{([['high', 'High: skip medium questions'], ['standard', 'Standard: include medium']] as const).map(([v, l]) => <button key={v} aria-pressed={s.settings.challenge === v} onClick={() => s.setSettings({ challenge: v })} className={`chip !px-3 !py-1 ${s.settings.challenge === v ? 'border-brand bg-brand/15 text-ink' : ''}`}>{l}</button>)}</div></div>
         <p className="mt-3 text-xs text-faint">After changing your time, rest days or exam date, rebuild your plan in the <Link href="/calendar" className="underline">Study Calendar</Link>.</p>
       </Card>
 

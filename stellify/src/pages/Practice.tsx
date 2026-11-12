@@ -71,7 +71,7 @@ export function BankPage() {
             <Link href={`/practice/session?mode=single&ids=${q.id}`} className="card flex items-center gap-3 p-3.5 hover:border-brand/50">
               {last.get(q.id) === true ? <CheckCircle2 className="shrink-0 text-ok" size={18} aria-label="Answered correctly" /> : last.get(q.id) === false ? <XCircle className="shrink-0 text-bad" size={18} aria-label="Answered incorrectly" /> : <Circle className="shrink-0 text-faint" size={18} aria-label="Not attempted" />}
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-1.5 text-xs"><Badge tone="brand">{SKILL[q.skill].short}</Badge><Badge tone={q.difficulty === 'very-hard' ? 'bad' : q.difficulty === 'hard' ? 'warn' : 'ok'}>{DIFFICULTY_NAME[q.difficulty]}</Badge><span className="text-faint">{q.sub} · {q.type === 'spr' ? 'Student-produced' : 'Multiple choice'}</span></div>
+                <div className="flex flex-wrap items-center gap-1.5 text-xs"><Badge tone="brand">{SKILL[q.skill].short}</Badge><Badge tone={(q.difficulty === 'very-hard' || q.difficulty === 'elite') ? 'bad' : q.difficulty === 'hard' ? 'warn' : 'ok'}>{DIFFICULTY_NAME[q.difficulty]}</Badge><span className="text-faint">{q.sub} · {q.type === 'spr' ? 'Student-produced' : 'Multiple choice'}</span></div>
                 <p className="mt-1 truncate text-sm text-muted">{plain(q.passage ?? q.notes?.join(' ') ?? q.stem).slice(0, 150)}</p>
               </div>
               <span className="hidden text-xs text-faint sm:block">{q.id}</span>
@@ -112,9 +112,9 @@ export function SmartPage() {
         <Card>
           <h2 className="font-semibold">How difficulty adapts</h2>
           <ul className="mt-2 space-y-1.5 text-sm text-muted">
-            <li>• Under 50% recent accuracy in a skill: medium first.</li>
-            <li>• 50–78%: hard questions.</li>
-            <li>• Above 78%: very hard questions.</li>
+            <li>• High challenge is on by default: smart sets skip medium questions and start at hard.</li>
+            <li>• 50–78% recent accuracy in a skill: hard, then very hard.</li>
+            <li>• Above 78%: very hard. Above 90%: Beyond SAT.</li>
             <li>• Anything you miss or need hints for returns after 1 day, then at growing intervals.</li>
           </ul>
         </Card>
@@ -138,17 +138,19 @@ export function HardPage() {
   const solved = useMemo(() => new Set(attempts.filter((a) => a.correct).map((a) => a.qid)), [attempts]);
   return (
     <div>
-      <PageHeader eyebrow="Practice" title="Hardest Questions" subtitle="The very hard tier: multi-step reasoning, parameters, subtle distractors. These are the questions that separate 1450 from 1550+. Unsolved questions come first." />
+      <PageHeader eyebrow="Practice" title="Hardest Questions" subtitle="Very hard questions at the top of real-test difficulty, plus a Beyond SAT tier that is deliberately harder than anything on the exam, so the real thing feels manageable. Unsolved questions come first." />
       <div className="grid gap-4 md:grid-cols-2">
         {(['math', 'rw'] as Section[]).map((sec) => {
-          const pool = QUESTIONS.filter((q) => q.section === sec && q.difficulty === 'very-hard');
+          const pool = QUESTIONS.filter((q) => q.section === sec && (q.difficulty === 'very-hard' || q.difficulty === 'elite'));
+          const elite = pool.filter((q) => q.difficulty === 'elite');
           const done = pool.filter((q) => solved.has(q.id)).length;
           return (
             <Card key={sec}>
               <h2 className="flex items-center gap-2 text-lg font-bold"><Zap size={18} className="text-warn" />{SECTION_NAME[sec]}</h2>
-              <p className="mt-1 text-sm text-muted">{done} of {pool.length} very hard questions solved</p>
+              <p className="mt-1 text-sm text-muted">{done} of {pool.length} solved · includes {elite.length} Beyond SAT questions, written to be harder than the real test</p>
               <Progress value={pct(done, pool.length)} className="mt-2" />
               <div className="mt-4 flex flex-wrap gap-2">{[5, 8, 15].map((n) => <Link key={n} href={`/practice/session?mode=hard&section=${sec}&n=${n}`} className={n === 8 ? 'btn-primary' : 'btn-ghost'}>{n} questions</Link>)}</div>
+              <Link href={`/practice/session?mode=bank&section=${sec}&diff=elite&n=${elite.length}`} className="btn-ghost mt-2" data-testid={`elite-${sec}`}>Beyond SAT only ({elite.length})</Link>
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {DOMAINS.filter((d) => d.section === sec).map((d) => <Link key={d.id} href={`/practice/session?mode=bank&domain=${d.id}&diff=very-hard&n=8`} className="chip hover:text-ink">{d.name}</Link>)}
               </div>

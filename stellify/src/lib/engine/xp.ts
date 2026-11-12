@@ -23,7 +23,7 @@ export function levelFromXp(xp: number) {
   return { level, into: xp - base, span: next - base, progress: (xp - base) / (next - base), tier, nextTier };
 }
 
-const BASE: Record<Difficulty, number> = { medium: 10, hard: 16, 'very-hard': 24 };
+const BASE: Record<Difficulty, number> = { medium: 10, hard: 16, 'very-hard': 24, elite: 34 };
 
 export interface XpContext {
   correct: boolean;

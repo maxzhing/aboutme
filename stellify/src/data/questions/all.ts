@@ -13,6 +13,8 @@ import { RW_CS_2 } from './rw-cs-2';
 import { RW_EOI } from './rw-eoi';
 import { RW_SEC_1 } from './rw-sec-1';
 import { RW_SEC_2 } from './rw-sec-2';
+import { MATH_ELITE } from './math-elite';
+import { RW_ELITE } from './rw-elite';
 
 /** Every authored question. Add new batch files here; nothing else needs to change. */
 export const ALL_RAW: RawQuestion[] = [
@@ -30,4 +32,6 @@ export const ALL_RAW: RawQuestion[] = [
   ...RW_EOI,
   ...RW_SEC_1,
   ...RW_SEC_2,
+  ...MATH_ELITE,
+  ...RW_ELITE,
 ];

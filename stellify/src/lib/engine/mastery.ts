@@ -23,7 +23,7 @@ export interface SkillStats {
   next: string;
 }
 
-const W: Record<Difficulty, number> = { medium: 1, hard: 1.4, 'very-hard': 1.8 };
+const W: Record<Difficulty, number> = { medium: 1, hard: 1.4, 'very-hard': 1.8, elite: 2.2 };
 const WINDOW = 12;
 
 /**
@@ -36,7 +36,7 @@ export function computeSkillStats(skill: SkillId, attempts: Attempt[], getQ: (id
     .filter((a) => !a.abandoned)
     .map((a) => ({ a, q: getQ(a.qid) }))
     .filter((r): r is { a: Attempt; q: Question } => !!r.q && r.q.skill === skill);
-  const byDiff: SkillStats['byDiff'] = { medium: { n: 0, correct: 0 }, hard: { n: 0, correct: 0 }, 'very-hard': { n: 0, correct: 0 } };
+  const byDiff: SkillStats['byDiff'] = { medium: { n: 0, correct: 0 }, hard: { n: 0, correct: 0 }, 'very-hard': { n: 0, correct: 0 }, elite: { n: 0, correct: 0 } };
   let wn = 0, wc = 0, ms = 0, hints = 0;
   const ok = (r: { a: Attempt }) => r.a.correct && r.a.hints < 3;
   for (const r of rows) {
@@ -52,8 +52,8 @@ export function computeSkillStats(skill: SkillId, attempts: Attempt[], getQ: (id
   const recent = rows.slice(-WINDOW);
   const recentAcc = recent.length ? recent.filter(ok).length / recent.length : 0;
   const days = new Set(rows.map((r) => dateKey(r.a.at))).size;
-  const hardPlus = byDiff.hard.correct + byDiff['very-hard'].correct;
-  const vh = byDiff['very-hard'].correct;
+  const vh = byDiff['very-hard'].correct + byDiff.elite.correct;
+  const hardPlus = byDiff.hard.correct + vh;
 
   let level: MasteryLevel = 0;
   let next = 'Answer your first question in this skill.';

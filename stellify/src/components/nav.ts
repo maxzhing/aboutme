@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, type LucideIcon } from 'lucide-react';
+import { Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, type LucideIcon } from 'lucide-react';
 
 export interface NavItem { href: string; label: string; icon: LucideIcon }
 export const NAV: { group: string; items: NavItem[] }[] = [
@@ -7,6 +7,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     { href: '/learn', label: 'Complete Curriculum', icon: GraduationCap },
     { href: '/learn/math', label: 'Math Academy', icon: Sigma },
     { href: '/learn/rw', label: 'Reading & Writing Academy', icon: BookOpen },
+    { href: '/hacks', label: 'SAT Hacks', icon: Lightbulb },
     { href: '/grammar', label: 'Grammar Masterclass', icon: PenLine },
     { href: '/desmos', label: 'Desmos Masterclass', icon: LineChart },
   ] },

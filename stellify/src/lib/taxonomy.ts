@@ -9,8 +9,8 @@ export const BRAND = {
 };
 
 export const SECTION_NAME: Record<Section, string> = { math: 'Math', rw: 'Reading & Writing' };
-export const DIFFICULTY_NAME: Record<Difficulty, string> = { medium: 'Medium', hard: 'Hard', 'very-hard': 'Very Hard' };
-export const DIFFICULTIES: Difficulty[] = ['medium', 'hard', 'very-hard'];
+export const DIFFICULTY_NAME: Record<Difficulty, string> = { medium: 'Medium', hard: 'Hard', 'very-hard': 'Very Hard', elite: 'Beyond SAT' };
+export const DIFFICULTIES: Difficulty[] = ['medium', 'hard', 'very-hard', 'elite'];
 
 export interface DomainInfo {
   id: DomainId;
@@ -104,6 +104,6 @@ export const SAT_STRUCTURE = {
 
 /** Default expected solving time in seconds */
 export const DEFAULT_TIME: Record<Section, Record<Difficulty, number>> = {
-  rw: { medium: 60, hard: 75, 'very-hard': 90 },
-  math: { medium: 75, hard: 100, 'very-hard': 130 },
+  rw: { medium: 60, hard: 75, 'very-hard': 90, elite: 110 },
+  math: { medium: 75, hard: 100, 'very-hard': 130, elite: 170 },
 };

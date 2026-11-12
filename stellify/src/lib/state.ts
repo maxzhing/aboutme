@@ -21,6 +21,6 @@ export const initialState = (): AppState => ({
   daily: {},
   arena: {},
   tutor: [],
-  settings: { theme: 'dark', reducedMotion: false, showTimer: true, aiEnabled: true, aiConsent: false, shareIncludeMistakes: false },
+  settings: { theme: 'dark', reducedMotion: false, showTimer: true, aiEnabled: true, aiConsent: false, shareIncludeMistakes: false, challenge: 'high' },
   seenLevel: 1,
 });

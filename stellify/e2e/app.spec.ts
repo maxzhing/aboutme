@@ -156,6 +156,16 @@ test('study plan, lessons, tutor fallback, vocabulary, notes, search, theme and 
   await page.getByTestId('lesson-practice-very-hard').click();
   await expect(page.getByTestId('question-card')).toContainText('Very Hard');
 
+  await go(page, '/practice/session?mode=single&ids=r-bnd-02'); // concept card on demand
+  await page.getByTestId('show-hack').click();
+  await expect(page.getByTestId('hack-card')).toContainText('Non-Essential Information');
+  await go(page, '/hacks');
+  await page.getByLabel('Search hacks').fill('discriminant');
+  await expect(page.getByTestId('hack-card')).toHaveCount(1);
+  await go(page, '/practice/hard');
+  await page.getByTestId('elite-math').click();
+  await expect(page.getByTestId('question-card')).toContainText('Beyond SAT');
+
   await go(page, '/tutor'); // no AI key: the built-in tutor answers
   await expect(page.getByText('Offline tutor')).toBeVisible();
   await page.getByRole('button', { name: 'When do I use a semicolon?' }).click();
@@ -194,7 +204,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(27);
+  expect(links.length).toBe(28);
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();

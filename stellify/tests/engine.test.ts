@@ -349,3 +349,26 @@ describe('sessions, search and utilities', () => {
     expect(r.questions).toBe(8); expect(r.accuracy).toBe(63); expect(r.nextSteps.length).toBeGreaterThan(0);
   });
 });
+
+describe('Beyond SAT tier, challenge level and hacks', () => {
+  it('has a Beyond SAT tier in both sections, kept out of mock exams', async () => {
+    const elite = QUESTIONS.filter((q) => q.difficulty === 'elite');
+    expect(elite.filter((q) => q.section === 'math').length).toBeGreaterThanOrEqual(20);
+    expect(elite.filter((q) => q.section === 'rw').length).toBeGreaterThanOrEqual(16);
+    for (const kind of ['m1', 'upper', 'lower'] as const) for (const sec of ['rw', 'math'] as const) expect(buildModule(sec, kind, 'z', QUESTIONS, new Set()).some((id) => getQuestion(id)!.difficulty === 'elite')).toBe(false);
+    expect(buildSession({ mode: 'bank', section: 'math', diff: 'elite', n: '40' }, initialState(), QUESTIONS, getQuestion, T0).qids.every((id) => getQuestion(id)!.difficulty === 'elite')).toBe(true);
+  });
+  it('skips medium questions in smart practice at high challenge, and includes them at standard', () => {
+    const hi = initialState();
+    expect(pickSmartSet(hi, QUESTIONS, getQuestion, 20, T0, { seed: 'a' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(false);
+    const std: AppState = { ...hi, settings: { ...hi.settings, challenge: 'standard' } };
+    expect(pickSmartSet(std, QUESTIONS, getQuestion, 20, T0, { seed: 'a' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(true);
+  });
+  it('has a hack card for every skill that questions can show', async () => {
+    const { HACKS, hacksFor } = await import('@/data/hacks');
+    expect(HACKS.length).toBeGreaterThanOrEqual(30);
+    expect(new Set(HACKS.map((h) => h.id)).size).toBe(HACKS.length);
+    expect(hacksFor('bnd', 'Nonessential and essential clauses')[0].title).toBe('Non-Essential Information');
+    for (const h of HACKS) { expect(h.what.length).toBeGreaterThan(60); expect(h.test.length).toBeGreaterThan(40); }
+  });
+});

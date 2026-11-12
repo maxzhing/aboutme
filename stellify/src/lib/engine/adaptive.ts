@@ -28,9 +28,10 @@ export function rankSkills(s: AppState, getQ: (id: string) => Question | undefin
 
 /** Difficulty to aim for, most preferred first, based on recent performance in the skill. */
 export function targetDifficulties(st: SkillStats): Difficulty[] {
-  if (st.n < 3 || st.recentAcc < 0.5) return ['medium', 'hard', 'very-hard'];
-  if (st.recentAcc < 0.78) return ['hard', 'medium', 'very-hard'];
-  return ['very-hard', 'hard', 'medium'];
+  if (st.n < 3 || st.recentAcc < 0.5) return ['medium', 'hard', 'very-hard', 'elite'];
+  if (st.recentAcc < 0.78) return ['hard', 'very-hard', 'medium', 'elite'];
+  if (st.recentAcc < 0.9) return ['very-hard', 'elite', 'hard', 'medium'];
+  return ['elite', 'very-hard', 'hard', 'medium'];
 }
 
 export interface Pick { qid: string; reason: string }
@@ -45,7 +46,9 @@ export function pickSmartSet(
   opts: { section?: Section; skill?: SkillId; seed?: string } = {},
 ): Pick[] {
   const rand = rng(opts.seed ?? `${now}`);
-  const pool = bank.filter((q) => (!opts.section || q.section === opts.section) && (!opts.skill || q.skill === opts.skill));
+  // High challenge (the default): medium questions are left out, so every set starts at hard
+  const high = s.settings.challenge !== 'standard';
+  const pool = bank.filter((q) => (!opts.section || q.section === opts.section) && (!opts.skill || q.skill === opts.skill) && !(high && q.difficulty === 'medium'));
   const last = new Map<string, { at: number; correct: boolean }>();
   for (const a of s.attempts) if (!a.abandoned) last.set(a.qid, { at: a.at, correct: a.correct });
   const fresh = (q: Question) => { const l = last.get(q.id); return !l ? 2 : l.correct && now - l.at < 14 * DAY ? 0 : 1; };
@@ -58,7 +61,7 @@ export function pickSmartSet(
 
   const ranked = rankSkills(s, getQ, now, opts.section).filter((r) => !opts.skill || r.skill === opts.skill);
   const fromSkill = (r: SkillPriority, reason: string) => {
-    const prefs = targetDifficulties(r.stats);
+    const prefs = targetDifficulties(r.stats).filter((d) => !(high && d === 'medium'));
     const cands = shuffle(pool.filter((q) => q.skill === r.skill && !used.has(q.id)), rand)
       .sort((a, b) => fresh(b) - fresh(a) || prefs.indexOf(a.difficulty) - prefs.indexOf(b.difficulty));
     return take(cands[0], reason);

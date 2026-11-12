@@ -14,7 +14,7 @@ export function validateQuestion(q: RawQuestion, renderMath?: (tex: string) => v
   const skill = SKILL[q.skill];
   if (!/^[a-z0-9-]+$/.test(q.id)) e.push('id must be lowercase alphanumeric/hyphen');
   if (!skill) return [...e, `unknown skill "${q.skill}"`];
-  if (!['M', 'H', 'V'].includes(q.d)) e.push('invalid difficulty');
+  if (!['M', 'H', 'V', 'E'].includes(q.d)) e.push('invalid difficulty');
   if (!q.sub || q.sub.length < 3) e.push('missing subskill');
   if (!q.stem || q.stem.length < 12) e.push('missing stem');
 
@@ -101,14 +101,17 @@ export function validateBank(all: RawQuestion[], opts: { minPerSection?: number 
     stems.set(key, q.id);
   }
   for (const section of ['math', 'rw'] as const) {
-    const qs = all.filter((q) => SKILL[q.skill]?.section === section);
+    const every = all.filter((q) => SKILL[q.skill]?.section === section);
+    // the 20/40/40 mix applies to the SAT-level tiers; Beyond SAT questions are an extra tier on top
+    const qs = every.filter((q) => q.d !== 'E');
+    if (every.length - qs.length < 16) e.push(`${section}: only ${every.length - qs.length} Beyond SAT questions (need 16)`);
     if (qs.length < min) e.push(`${section}: ${qs.length} questions (need ${min})`);
     const share = (d: string) => qs.filter((q) => q.d === d).length / Math.max(1, qs.length);
     const target = { M: 0.2, H: 0.4, V: 0.4 } as const;
     for (const d of ['M', 'H', 'V'] as const) {
       if (Math.abs(share(d) - target[d]) > 0.04) e.push(`${section}: difficulty ${d} share ${(share(d) * 100).toFixed(1)}% (target ${target[d] * 100}%)`);
     }
-    const mcq = qs.filter((q) => q.choices);
+    const mcq = every.filter((q) => q.choices);
     for (let i = 0; i < 4; i++) {
       const p = mcq.filter((q) => q.answer === i).length / Math.max(1, mcq.length);
       if (p < 0.19 || p > 0.31) e.push(`${section}: correct answer in position ${'ABCD'[i]} ${(p * 100).toFixed(1)}% of the time (want 19–31%)`);

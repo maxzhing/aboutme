@@ -7,6 +7,8 @@ import { LETTERS, correctAnswerLabel, displayAnswer, isCorrect } from '@/lib/ans
 import { ERROR_CATEGORIES } from '@/lib/engine/mistakes';
 import { questionsBySkill } from '@/data/questions';
 import { RichText } from './RichText';
+import { HackCard } from './HackCard';
+import { hacksFor } from '@/data/hacks';
 import { Figure } from './Figure';
 import { Badge, cn } from './ui';
 
@@ -16,7 +18,7 @@ export function QuestionMeta({ q }: { q: Question }) {
       <Badge tone="brand">{SECTION_NAME[q.section]}</Badge>
       <Badge>{DOMAIN[q.domain].name}</Badge>
       <Link href={`/learn/${q.skill}`} className="chip hover:text-ink">{SKILL[q.skill].short}</Link>
-      <Badge tone={q.difficulty === 'very-hard' ? 'bad' : q.difficulty === 'hard' ? 'warn' : 'ok'}>{DIFFICULTY_NAME[q.difficulty]}</Badge>
+      <Badge tone={(q.difficulty === 'very-hard' || q.difficulty === 'elite') ? 'bad' : q.difficulty === 'hard' ? 'warn' : 'ok'}>{DIFFICULTY_NAME[q.difficulty]}</Badge>
       <span className="text-xs text-faint">{q.sub}</span>
     </div>
   );
@@ -156,6 +158,8 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
         <Block title="Common trap" tone="bad"><RichText text={q.trap} /></Block>
         <Block title="What to remember"><span className="inline-flex gap-2"><Lightbulb size={16} className="mt-1 shrink-0 text-gold" /><RichText text={q.remember} /></span></Block>
       </div>
+
+      {hacksFor(q.skill, q.sub).slice(0, 1).map((h) => <HackCard key={h.id} hack={h} />)}
 
       <Block title="Recommended next">
         <div className="flex flex-wrap gap-2">

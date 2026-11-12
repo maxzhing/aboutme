@@ -6,10 +6,11 @@ import { REFERENCE } from '@/data/reference';
 import { VOCAB } from '@/data/vocabulary';
 import { DESMOS_LESSONS } from '@/data/desmos';
 import { RESOURCES } from '@/data/resources';
+import { HACKS } from '@/data/hacks';
 import { DIFFICULTY_NAME, SKILL, SKILLS } from './taxonomy';
 import { plain } from './richtext';
 
-export interface SearchHit { kind: 'Question' | 'Lesson' | 'Topic' | 'Grammar rule' | 'Formula' | 'Vocabulary' | 'Mistake' | 'Note' | 'Desmos' | 'Official resource'; title: string; snippet: string; href: string; score: number }
+export interface SearchHit { kind: 'Hack' | 'Question' | 'Lesson' | 'Topic' | 'Grammar rule' | 'Formula' | 'Vocabulary' | 'Mistake' | 'Note' | 'Desmos' | 'Official resource'; title: string; snippet: string; href: string; score: number }
 
 interface Doc { kind: SearchHit['kind']; title: string; body: string; href: string; boost?: number }
 let STATIC: Doc[] | null = null;
@@ -20,6 +21,7 @@ function staticDocs(): Doc[] {
   for (const q of QUESTIONS) d.push({ kind: 'Question', title: `${SKILL[q.skill].short} · ${DIFFICULTY_NAME[q.difficulty]} · ${q.sub}`, body: plain(`${q.passage ?? ''} ${(q.notes ?? []).join(' ')} ${q.stem} ${q.concept}`), href: `/practice/session?mode=single&ids=${q.id}` });
   for (const l of LESSONS) d.push({ kind: 'Lesson', title: SKILL[l.skill].name, body: plain(`${l.intro} ${l.detail.join(' ')} ${l.rules.join(' ')}`), href: `/learn/${l.skill}`, boost: 2 });
   for (const s of SKILLS) for (const t of s.topics) d.push({ kind: 'Topic', title: t, body: `${s.name} ${t}`, href: `/learn/${s.id}`, boost: 1.5 });
+  for (const h of HACKS) d.push({ kind: 'Hack', title: h.title, body: plain(`${h.what} ${h.test}`), href: `/hacks#${h.id}`, boost: 2.5 });
   for (const g of GRAMMAR) d.push({ kind: 'Grammar rule', title: g.title, body: `${g.rule} ${g.why} ${g.trap} ${g.subs.join(' ')}`, href: `/grammar#${g.id}`, boost: 1.5 });
   for (const e of REFERENCE) d.push({ kind: 'Formula', title: e.title, body: plain(`${e.cat} ${e.body}`), href: `/reference#${e.id}`, boost: 1.5 });
   for (const v of VOCAB) d.push({ kind: 'Vocabulary', title: v.w, body: `${v.def} ${v.syn.join(' ')}`, href: `/vocabulary?word=${v.w}` });

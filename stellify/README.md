@@ -5,10 +5,10 @@ browser. That is the whole product: no install, no server, no account, no intern
 
 ## What is inside
 
-- 300 original, SAT-calibrated questions (150 Math, 150 Reading & Writing; 20% medium, 40% hard,
-  40% very hard), each with a step-by-step solution, a rationale for every answer choice, the concept,
+- 340 original questions: 300 SAT-calibrated (150 Math, 150 Reading & Writing; 20% medium, 40% hard,
+  40% very hard) plus a 40-question Beyond SAT tier that is deliberately harder than the real test. Each has a step-by-step solution, a rationale for every answer choice, the concept,
   the fastest method, the common trap, a takeaway and three levels of hints.
-- 30 lessons covering every official skill, a 28-rule Grammar Masterclass, a Desmos-style graphing
+- 35 one-idea "hack" cards shown on lessons and questions, 30 lessons covering every official skill, a 28-rule Grammar Masterclass, a Desmos-style graphing
   academy, a formula/grammar/transition reference, 123 vocabulary words with spaced repetition.
 - Smart (adaptive) practice, spaced review, Mistake Bucket with pattern detection and earned
   resolution, mastery levels, score-range estimates, analytics, weekly report.
@@ -41,7 +41,7 @@ npm run test:e2e
 
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
-- `npm run test` — 37 unit tests of the learning engine.
+- `npm run test` — 40 unit tests of the learning engine.
 - `npm run test:e2e` — 7 browser tests against the built file opened from disk.
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 

@@ -23,8 +23,8 @@ export const LOWER_ROUTE_CAP = 650;
 
 type Kind = 'm1' | 'upper' | 'lower';
 const QUOTA: Record<Section, Record<Kind, Record<Difficulty, number>>> = {
-  rw: { m1: { medium: 9, hard: 12, 'very-hard': 6 }, upper: { medium: 2, hard: 10, 'very-hard': 15 }, lower: { medium: 11, hard: 13, 'very-hard': 3 } },
-  math: { m1: { medium: 7, hard: 10, 'very-hard': 5 }, upper: { medium: 2, hard: 8, 'very-hard': 12 }, lower: { medium: 9, hard: 10, 'very-hard': 3 } },
+  rw: { m1: { medium: 9, hard: 12, 'very-hard': 6, elite: 0 }, upper: { medium: 2, hard: 10, 'very-hard': 15, elite: 0 }, lower: { medium: 11, hard: 13, 'very-hard': 3, elite: 0 } },
+  math: { m1: { medium: 7, hard: 10, 'very-hard': 5, elite: 0 }, upper: { medium: 2, hard: 8, 'very-hard': 12, elite: 0 }, lower: { medium: 9, hard: 10, 'very-hard': 3, elite: 0 } },
 };
 const rep = (k: SkillId, n: number) => Array<SkillId>(n).fill(k);
 /** Skill slots per module, following the official domain proportions and (for R&W) domain order. */
@@ -38,7 +38,8 @@ export function buildModule(section: Section, kind: Kind, seed: string, bank: Qu
   const slots: SkillId[] = section === 'rw' ? [...RW_SLOTS] : [...MATH_FIXED, ...MATH_CHOICE.map((c) => c[Math.floor(rand() * c.length)])];
   const quota = { ...QUOTA[section][kind] };
   const used = new Set(exclude);
-  const pool = shuffle(bank.filter((q) => q.section === section), rand);
+  // mock exams stay at real-test difficulty: Beyond SAT questions are for practice only
+  const pool = shuffle(bank.filter((q) => q.section === section && q.difficulty !== 'elite'), rand);
   if (seen) pool.sort((a, b) => Number(seen.has(a.id)) - Number(seen.has(b.id)));
   const chosen: { slot: number; q: Question }[] = [];
   const order = shuffle(slots.map((_, i) => i), rand);

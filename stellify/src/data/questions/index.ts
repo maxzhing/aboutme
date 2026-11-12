@@ -6,7 +6,7 @@ import { contentHash } from './hash';
 
 export { contentHash };
 
-const DIFF: Record<RawQuestion['d'], Difficulty> = { M: 'medium', H: 'hard', V: 'very-hard' };
+const DIFF: Record<RawQuestion['d'], Difficulty> = { M: 'medium', H: 'hard', V: 'very-hard', E: 'elite' };
 
 export function normalize(q: RawQuestion, validated: boolean): Question {
   const skill = SKILL[q.skill];

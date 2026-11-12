@@ -12,6 +12,8 @@ import { Explanation, QuestionMeta, QuestionView } from './Question';
 import { TutorChat } from './TutorChat';
 import { Pet } from './Pet';
 import { RichText } from './RichText';
+import { HackCard } from './HackCard';
+import { hacksFor } from '@/data/hacks';
 import { Badge, Card, Modal, Progress, cn } from './ui';
 
 export interface SessionRow { qid: string; answer: string | null; correct: boolean; ms: number; hints: number }
@@ -53,6 +55,7 @@ export function SessionRunner(cfg: SessionConfig) {
   const [done, setDone] = useState<SessionResult | null>(null);
   const [panel, setPanel] = useState<'tutor' | 'report' | 'note' | null>(null);
   const [reviewId, setReviewId] = useState<string | null>(null);
+  const [hackFor, setHackFor] = useState<string | null>(null);
   const [, setTick] = useState(0);
   const spent = useRef<Record<string, number>>({});
   const enterAt = useRef(Date.now());
@@ -252,6 +255,7 @@ export function SessionRunner(cfg: SessionConfig) {
           onAnswer={(v) => setAnswers((s) => ({ ...s, [q.id]: v }))}
           eliminated={elim[q.id]} onEliminate={(i) => setElim((e) => ({ ...e, [q.id]: (e[q.id] ?? []).includes(i) ? e[q.id].filter((x) => x !== i) : [...(e[q.id] ?? []), i] }))} />
 
+        {hintsOn && hackFor === q.id && !submitted[q.id] && hacksFor(q.skill, q.sub).slice(0, 1).map((h) => <HackCard key={h.id} hack={h} compact />)}
         {hintsOn && used > 0 && !submitted[q.id] && (
           <div className="space-y-2" aria-live="polite">
             {q.hints.slice(0, used).map((h, i) => (
@@ -265,6 +269,7 @@ export function SessionRunner(cfg: SessionConfig) {
             <>
               <button className="btn-primary" onClick={check} disabled={a === null || a === ''} data-testid="check">Check answer</button>
               {hintsOn && <button className="btn-ghost" onClick={() => setHints((h) => ({ ...h, [q.id]: Math.min(3, used + 1) }))} disabled={used >= 3} title="Reveal the next hint (H)"><Lightbulb size={16} />{used >= 3 ? 'No more hints' : `Hint ${used + 1} of 3`}</button>}
+              {hintsOn && <button className="btn-ghost" onClick={() => setHackFor(hackFor === q.id ? null : q.id)} aria-pressed={hackFor === q.id} title="Show the concept card for this kind of question (free)" data-testid="show-hack">Hack</button>}
               <button className="btn-quiet" onClick={next} title="Skip without answering"><SkipForward size={16} />Skip</button>
             </>
           ) : (

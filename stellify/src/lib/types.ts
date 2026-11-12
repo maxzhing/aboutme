@@ -4,7 +4,7 @@
  */
 
 export type Section = 'math' | 'rw';
-export type Difficulty = 'medium' | 'hard' | 'very-hard';
+export type Difficulty = 'medium' | 'hard' | 'very-hard' | 'elite';
 export type QuestionType = 'mcq' | 'spr';
 
 export type DomainId =
@@ -33,7 +33,8 @@ export interface RawQuestion {
   skill: SkillId;
   /** Subskill / granular topic tag, e.g. "Nonessential clauses" */
   sub: string;
-  d: 'M' | 'H' | 'V';
+  /** M medium · H hard · V very hard · E beyond SAT (deliberately harder than the real test) */
+  d: 'M' | 'H' | 'V' | 'E';
   passage?: string;
   /** Bulleted research notes for Rhetorical Synthesis questions */
   notes?: string[];
@@ -262,6 +263,8 @@ export interface Settings {
   geminiKey?: string;
   geminiModel?: string;
   shareIncludeMistakes: boolean;
+  /** 'high' keeps medium questions out of smart practice */
+  challenge: 'standard' | 'high';
 }
 
 export interface AppState {

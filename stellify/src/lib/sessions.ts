@@ -7,7 +7,7 @@ import { dueIds } from './engine/srs';
 export interface BuiltSession { qids: string[]; title: string; mode: PracticeMode; reasons?: Record<string, string>; empty?: string }
 export type Params = Record<string, string | undefined>;
 
-const DIFF_OK = new Set(['medium', 'hard', 'very-hard']);
+const DIFF_OK = new Set(['medium', 'hard', 'very-hard', 'elite']);
 const parseDiff = (s?: string) => (s ? (s.split(',').filter((d) => DIFF_OK.has(d)) as Difficulty[]) : []);
 
 export interface BankFilter { section?: Section; domain?: DomainId; skill?: SkillId; diff?: Difficulty[]; type?: 'mcq' | 'spr'; status?: 'unseen' | 'wrong' | 'correct' | 'saved'; text?: string }
@@ -47,7 +47,7 @@ export function buildSession(p: Params, s: AppState, bank: Question[], getQ: (id
       return { qids: picks.map((x) => x.qid), mode: 'smart', title: SKILL[skill].short, reasons: Object.fromEntries(picks.map((x) => [x.qid, x.reason])) };
     }
     case 'hard': {
-      const pool = bank.filter((q) => q.difficulty === 'very-hard' && (!section || q.section === section));
+      const pool = bank.filter((q) => (q.difficulty === 'very-hard' || q.difficulty === 'elite') && (!section || q.section === section));
       return { qids: unseenFirst(pool).slice(0, n).map((q) => q.id), mode: 'hard', title: `Hardest questions${section ? ` · ${SECTION_NAME[section]}` : ''}` };
     }
     case 'mistakes': {
@@ -84,7 +84,7 @@ export function buildSession(p: Params, s: AppState, bank: Question[], getQ: (id
 
 /** The same challenging question for everyone on a given calendar day. */
 export function dailyQuestion(bank: Question[], day = dateKey()): Question {
-  const pool = bank.filter((q) => q.difficulty !== 'medium');
+  const pool = bank.filter((q) => q.difficulty === 'very-hard' || q.difficulty === 'elite');
   return pool[Math.floor(rng(`daily-${day}`)() * pool.length)];
 }
 

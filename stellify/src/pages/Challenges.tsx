@@ -31,7 +31,7 @@ export function DailyPage() {
         <Stat label="Personal best" value={Number.isFinite(best) ? fmtDuration(best) : '—'} sub="fastest correct solve" icon={<Trophy size={15} className="text-gold" />} />
       </div>
       <Card className="mt-4">
-        <div className="flex flex-wrap items-center gap-2"><Badge tone="brand">{SECTION_NAME[q.section]}</Badge><Badge>{SKILL[q.skill].short}</Badge><Badge tone={q.difficulty === 'very-hard' ? 'bad' : 'warn'}>{DIFFICULTY_NAME[q.difficulty]}</Badge></div>
+        <div className="flex flex-wrap items-center gap-2"><Badge tone="brand">{SECTION_NAME[q.section]}</Badge><Badge>{SKILL[q.skill].short}</Badge><Badge tone={(q.difficulty === 'very-hard' || q.difficulty === 'elite') ? 'bad' : 'warn'}>{DIFFICULTY_NAME[q.difficulty]}</Badge></div>
         {done ? (
           <div className="mt-3"><p className="font-semibold">{done.correct ? 'Solved today' : 'Attempted today'} in {fmtDuration(done.ms)}. A new challenge unlocks tomorrow.</p>
             <div className="mt-3 flex gap-2"><Link href={`/practice/session?mode=single&ids=${done.qid}&back=/daily`} className="btn-ghost">Review today&apos;s question</Link><Link href="/practice/session?mode=smart&n=5" className="btn-primary">Keep going: 5 smart questions</Link></div></div>

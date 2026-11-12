@@ -11,6 +11,8 @@ import { DIFFICULTIES, DIFFICULTY_NAME, DOMAIN, DOMAINS, SECTION_NAME, SKILL, SK
 import { pct } from '@/lib/util';
 import type { Section, SkillId } from '@/lib/types';
 import { RichText } from '@/components/RichText';
+import { HackCard } from '@/components/HackCard';
+import { hacksFor } from '@/data/hacks';
 import { Badge, Card, Empty, PageHeader, Progress, Tabs, toneForPct } from '@/components/ui';
 
 const LEVEL_TONE = ['default', 'bad', 'warn', 'brand', 'ok'] as const;
@@ -70,6 +72,7 @@ export function LessonPage({ skill }: { skill: string }) {
       <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
         <div className="space-y-4">
           <Section_ n={1} title="Start here"><p><RichText text={l.intro} /></p></Section_>
+          {hacksFor(info.id).length > 0 && <div className="grid gap-3 md:grid-cols-2">{hacksFor(info.id).map((h) => <HackCard key={h.id} hack={h} />)}</div>}
           <Section_ n={2} title="The full explanation">{l.detail.map((p, i) => <p key={i}><RichText text={p} /></p>)}</Section_>
           <Section_ n={3} title="Important rules"><ul className="space-y-2">{l.rules.map((r, i) => <li key={i} className="flex gap-2.5"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" /><span><RichText text={r} /></span></li>)}</ul></Section_>
           <Section_ n={4} title="Worked examples">
@@ -87,8 +90,8 @@ export function LessonPage({ skill }: { skill: string }) {
           <Card>
             <h2 className="mb-1 text-lg font-bold">Practice by difficulty</h2>
             <p className="text-sm text-muted">Work upward. Mastery requires success on hard and very hard questions, not just medium ones.</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-3">
-              {DIFFICULTIES.map((d) => { const n = bank.filter((q) => q.difficulty === d).length; const b = st.byDiff[d]; return (
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {DIFFICULTIES.map((d) => { const n = bank.filter((q) => q.difficulty === d).length; const b = st.byDiff[d]; if (!n) return null; return (
                 <Link key={d} href={`/practice/session?mode=lesson&skill=${info.id}&diff=${d}&n=${Math.min(n, 8)}`} className="rounded-xl border border-line p-3.5 hover:border-brand/60" data-testid={`lesson-practice-${d}`}>
                   <div className="font-semibold">{DIFFICULTY_NAME[d]}</div><div className="text-xs text-muted">{n} question{n === 1 ? '' : 's'}</div>
                   <div className="mt-2 text-xs">{b.n ? <Badge tone={toneForPct(pct(b.correct, b.n))}>{b.correct}/{b.n} correct</Badge> : <span className="text-faint">Not attempted</span>}</div>
