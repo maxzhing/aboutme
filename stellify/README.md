@@ -34,6 +34,27 @@ npm run build
 
 `npm run build` validates the question bank, then inlines JavaScript, CSS, fonts and data into one file.
 
+## Test-day mode and your own official questions
+
+Every timed exam starts with a lock-in prompt: allow full screen (the test then covers the whole
+screen, keeps it awake, and counts each time you leave) or start without it. A web page cannot
+truly lock a device; leaving is always possible and is shown in the report.
+
+If you have a College Board question-bank PDF of your own, you can make a personal copy of the app
+that includes those questions as a timed practice test:
+
+```bash
+python3 scripts/make-pack.py path/to/export.pdf private/pack.json
+```
+
+```bash
+node scripts/build.mjs --pack private/pack.json
+```
+
+This writes `private/stellify-personal.html`. Official questions are the College Board's copyrighted
+work, so `private/` is git-ignored: the pack and the personal copy are for your own study and are
+never committed or published. The public `stellify.html` contains none of them.
+
 ## Checks
 
 ```bash

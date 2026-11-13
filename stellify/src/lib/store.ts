@@ -5,7 +5,7 @@ import { createJSONStorage, persist, type StateStorage } from 'zustand/middlewar
 import { del, get, set } from 'idb-keyval';
 import type { AppState, ErrorCategory, MockAttempt, Note, PetSlot, Profile, Question, QuestionReport, Settings, TutorMessage } from './types';
 import { initialState, STATE_VERSION } from './state';
-import { getQuestion, QUESTIONS } from '@/data/questions';
+import { getQuestion, OFFICIAL, QUESTIONS } from '@/data/questions';
 import { applyAttempt, grant, resolveMistake, unlockAchievements, type AttemptInput, type GameEvent } from './engine/attempt';
 import { generatePlan } from './engine/plan';
 import { advanceMock, scoreMock, stagesFor, startMock as buildMock } from './engine/mock';
@@ -62,7 +62,7 @@ interface Actions {
   tutorAppend: (threadId: string | null, msg: TutorMessage, meta?: { title?: string; qid?: string }) => string;
   tutorDelete: (id: string) => void;
   startMock: (formId: string, kind: MockAttempt['kind']) => void;
-  mockUpdate: (patch: { answer?: [string, string | null]; flag?: string; index?: number; msLeft?: number; addMs?: [string, number]; breakMsLeft?: number }) => void;
+  mockUpdate: (patch: { answer?: [string, string | null]; flag?: string; index?: number; msLeft?: number; addMs?: [string, number]; breakMsLeft?: number; addBreak?: boolean; locked?: boolean }) => void;
   mockNext: () => { finished: boolean; id: string };
   abandonMock: () => void;
   finishDiagnostic: () => void;
@@ -212,7 +212,7 @@ export const useStore = create<Store>()(
 
         startMock: (formId, kind) => {
           const seen = new Set(getState().attempts.map((a) => a.qid));
-          setState({ activeMock: buildMock(uid(), formId, kind, QUESTIONS, Date.now(), seen) });
+          setState({ activeMock: buildMock(uid(), formId, kind, QUESTIONS, Date.now(), seen, OFFICIAL) });
         },
         mockUpdate: (p) => {
           const m = getState().activeMock;
@@ -227,13 +227,13 @@ export const useStore = create<Store>()(
           if (p.msLeft !== undefined) { cursor.msLeft = p.msLeft; cur.msUsed = cur.msAllowed - p.msLeft; }
           if (p.breakMsLeft !== undefined) cursor.breakMsLeft = p.breakMsLeft;
           if (stagesFor(m.kind)[cursor.stage] !== 'break') modules[modules.length - 1] = cur;
-          setState({ activeMock: { ...m, modules, cursor } });
+          setState({ activeMock: { ...m, modules, cursor, ...(p.addBreak ? { breaks: (m.breaks ?? 0) + 1 } : {}), ...(p.locked !== undefined ? { locked: p.locked } : {}) } });
         },
         mockNext: () => {
           const m = getState().activeMock;
           if (!m) return { finished: true, id: '' };
           const seen = new Set(getState().attempts.map((a) => a.qid));
-          const r = advanceMock(m, QUESTIONS, getQ, seen);
+          const r = advanceMock(m, QUESTIONS, getQ, seen, OFFICIAL);
           if (!r.finished) { setState({ activeMock: r.mock }); return { finished: false, id: m.id }; }
           const now = Date.now();
           const done: MockAttempt = { ...r.mock, completedAt: now };
@@ -247,7 +247,7 @@ export const useStore = create<Store>()(
             events.push(...a.events.filter((e) => e.type === 'achievement' || e.type === 'level' || e.type === 'mastery'));
           }
           st = { ...st, mocks: [...st.mocks, done], activeMock: undefined };
-          const g = grant(st, done.kind === 'full' ? XP_REWARD.mockFull : XP_REWARD.mockSection, now, 'Completed a mock exam');
+          const g = grant(st, done.kind === 'full' ? XP_REWARD.mockFull : XP_REWARD.mockSection, now, 'Completed a practice test');
           const a = post(g.state, now);
           setState({ ...a.state, activeMock: undefined, events: [...getState().events, ...withKeys([...events, ...g.events, ...a.events])].slice(-3) });
           return { finished: true, id: done.id };

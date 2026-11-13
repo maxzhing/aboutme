@@ -210,7 +210,11 @@ export interface MockAttempt {
   scores?: { rw: ScoreRange; math: ScoreRange; total: ScoreRange };
   /** in-progress pointer */
   cursor?: { stage: number; index: number; msLeft: number; breakMsLeft?: number };
-  kind: 'full' | 'section-rw' | 'section-math';
+  kind: 'full' | 'section-rw' | 'section-math' | 'module-rw';
+  /** times the student left full screen or the test window during this attempt */
+  breaks?: number;
+  /** whether the student chose full-screen lock-in for this attempt */
+  locked?: boolean;
 }
 
 export interface Note {

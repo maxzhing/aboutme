@@ -6,7 +6,7 @@
 import { build } from 'esbuild';
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -27,10 +27,14 @@ if (katex.includes('url(fonts/')) throw new Error('KaTeX font inlining missed a 
 // 2. Tailwind
 const tailwind = execFileSync('npx', ['tailwindcss', '-c', 'tailwind.config.ts', '-i', 'src/styles.css', '--minify'], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 });
 
-// 3. application bundle
+// 3. application bundle. `--pack file.json` inlines a private question pack (see scripts/make-pack.py)
+//    and writes a personal build next to the pack instead of the public file.
+const packArg = process.argv.indexOf('--pack');
+const packFile = packArg > -1 ? resolve(process.argv[packArg + 1]) : null;
+const pack = packFile ? JSON.stringify(JSON.parse(readFileSync(packFile, 'utf8'))) : 'null';
 await build({
   entryPoints: [at('src/main.tsx')], bundle: true, minify: true, format: 'iife', target: ['es2020'], outfile: at('.build/app.js'),
-  jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"' }, legalComments: 'none', logLevel: 'warning', tsconfig: at('tsconfig.json'),
+  jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"', __PACK__: pack }, legalComments: 'none', logLevel: 'warning', tsconfig: at('tsconfig.json'),
 });
 const js = readFileSync(at('.build/app.js'), 'utf8').replace(/<\/script/gi, '<\\/script').replace(/<!--/g, '<\\!--');
 
@@ -53,6 +57,12 @@ const html = `<!doctype html>
 </body>
 </html>
 `;
-writeFileSync(at('dist/stellify.html'), html);
-copyFileSync(at('dist/stellify.html'), join(root, '..', 'stellify.html'));
-console.log(`Built dist/stellify.html (${(html.length / 1024 / 1024).toFixed(2)} MB) and copied it to the repository root.`);
+if (packFile) {
+  const out = join(dirname(packFile), 'stellify-personal.html');
+  writeFileSync(out, html);
+  console.log(`Built a personal copy with ${JSON.parse(pack).length} pack questions: ${out} (${(html.length / 1024 / 1024).toFixed(2)} MB). Keep it private.`);
+} else {
+  writeFileSync(at('dist/stellify.html'), html);
+  copyFileSync(at('dist/stellify.html'), join(root, '..', 'stellify.html'));
+  console.log(`Built dist/stellify.html (${(html.length / 1024 / 1024).toFixed(2)} MB) and copied it to the repository root.`);
+}

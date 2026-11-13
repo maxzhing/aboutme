@@ -3,6 +3,9 @@ import { DEFAULT_TIME, SKILL } from '@/lib/taxonomy';
 import manifest from './validated.json';
 import { ALL_RAW } from './all';
 import { contentHash } from './hash';
+import { PACK_RAW } from '@/data/pack';
+import { LESSON } from '@/data/lessons';
+import { hacksFor } from '@/data/hacks';
 
 export { contentHash };
 
@@ -42,7 +45,30 @@ export const ALL_QUESTIONS: Question[] = ALL_RAW.map((q) => normalize(q, VALID[q
 /** Production bank: only questions whose current content passed validation. */
 export const QUESTIONS: Question[] = ALL_QUESTIONS.filter((q) => q.validation === 'validated');
 
-const BY_ID = new Map(QUESTIONS.map((q) => [q.id, q]));
+/**
+ * Official College Board questions from the student's own private pack (personal builds only; empty
+ * in the public build). They resolve by id for tests, review and the Mistake Bucket, but are kept
+ * out of QUESTIONS so the original bank, its statistics and adaptive practice stay unchanged.
+ */
+export const OFFICIAL: Question[] = PACK_RAW.map((p) => {
+  const skill = SKILL[p.skill], lesson = LESSON[p.skill], hack = hacksFor(p.skill)[0];
+  const concept = lesson.intro, strategy = hack ? `${hack.title}: ${hack.test}` : lesson.shortcuts[0];
+  const letter = 'ABCD'[p.answer];
+  const difficulty: Difficulty = p.d === 'M' ? 'medium' : 'hard';
+  return {
+    id: p.id, skill: p.skill, sub: 'Official question', passage: p.passage, figure: p.figure, stem: p.stem, choices: p.choices, answer: p.answer,
+    steps: [p.why[p.answer], ...(p.note ? [p.note] : []), `The answer is choice ${letter}.`], why: p.why,
+    concept, strategy, trap: lesson.mistakes[0], remember: lesson.shortcuts[0],
+    section: skill.section, domain: skill.domain, difficulty, type: 'mcq', time: DEFAULT_TIME[skill.section][difficulty],
+    hints: [concept, strategy, 'Eliminate the choices you can rule out for a definite reason, then compare what is left word by word.'],
+    source: `Official College Board question (${p.cbDifficulty ?? 'rated'} difficulty), from your own practice file · rationale by the College Board`,
+    license: 'Copyright College Board. For your personal study only; do not share or publish.',
+    validation: 'validated', created: '2026-11-13',
+  };
+});
+export const hasOfficial = OFFICIAL.length > 0;
+
+const BY_ID = new Map([...QUESTIONS, ...OFFICIAL].map((q) => [q.id, q]));
 export const getQuestion = (id: string): Question | undefined => BY_ID.get(id);
 export const questionsBySkill = (skill: SkillId) => QUESTIONS.filter((q) => q.skill === skill);
 export const questionsBySection = (section: Section) => QUESTIONS.filter((q) => q.section === section);

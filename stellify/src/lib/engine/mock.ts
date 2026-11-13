@@ -10,6 +10,30 @@ export const MOCK_FORMS = [
   { id: 'mix', name: 'Fresh Mix', blurb: 'Assembled on the spot, preferring questions you have never seen.' },
 ];
 
+/** Forms built from the student's own private question pack (personal builds only). No routing: the pack decides the questions. */
+export const OFFICIAL_FORMS = [
+  { id: 'cb1', kind: 'section-rw' as const, name: 'Official Questions · Practice Test' },
+  { id: 'cb2', kind: 'module-rw' as const, name: 'Official Questions · Extra Module' },
+];
+export const isOfficialForm = (formId: string) => formId.startsWith('cb');
+export const formName = (formId: string) => [...MOCK_FORMS, ...OFFICIAL_FORMS].find((f) => f.id === formId)?.name ?? 'Practice Test';
+const DOMAIN_RANK: Record<string, number> = { cs: 0, ii: 1, sec: 2, eoi: 3 };
+/**
+ * Deals the pack into three modules of near-equal size and mix. Questions are sorted into the
+ * real test's order (Craft and Structure, Information and Ideas, Standard English Conventions,
+ * Expression of Ideas; easier first within a skill) and dealt out one at a time, so every module
+ * keeps that order and gets a proportional share of each skill.
+ */
+export function officialModules(pack: Question[]): string[][] {
+  const rank = (d: Difficulty) => ['medium', 'hard', 'very-hard', 'elite'].indexOf(d);
+  const sorted = [...pack].sort((a, b) => DOMAIN_RANK[a.domain] - DOMAIN_RANK[b.domain] || a.skill.localeCompare(b.skill) || rank(a.difficulty) - rank(b.difficulty) || a.id.localeCompare(b.id));
+  const mods: string[][] = [[], [], []];
+  sorted.forEach((q, i) => mods[i % 3].push(q.id));
+  return mods;
+}
+/** Official modules keep the real pace: 32 minutes per 27 questions, rounded to the minute. */
+const officialMs = (n: number) => Math.round((n * 32) / 27) * 60_000;
+
 /**
  * ROUTING MODEL (Stellify's own; not the College Board's proprietary algorithm).
  * Module 1 of each section is a broad mix of difficulty. If you answer at least 60% of it
@@ -65,7 +89,7 @@ export function buildModule(section: Section, kind: Kind, seed: string, bank: Qu
 
 export type StageId = 'rw1' | 'rw2' | 'break' | 'math1' | 'math2';
 export const stagesFor = (kind: MockAttempt['kind']): StageId[] =>
-  kind === 'full' ? ['rw1', 'rw2', 'break', 'math1', 'math2'] : kind === 'section-rw' ? ['rw1', 'rw2'] : ['math1', 'math2'];
+  kind === 'full' ? ['rw1', 'rw2', 'break', 'math1', 'math2'] : kind === 'section-rw' ? ['rw1', 'rw2'] : kind === 'module-rw' ? ['rw1'] : ['math1', 'math2'];
 export const stageSection = (st: StageId): Section => (st.startsWith('rw') ? 'rw' : 'math');
 export const moduleMs = (section: Section) => SAT_STRUCTURE[section].minutesPerModule * 60_000;
 export const BREAK_MS = SAT_STRUCTURE.breakMinutes * 60_000;
@@ -76,7 +100,13 @@ const emptyModule = (section: Section, module: 1 | 2, qids: string[], route?: 'u
 
 export function seedFor(formId: string, startedAt: number) { return formId === 'mix' ? `mix-${startedAt}` : `stellify-form-${formId}`; }
 
-export function startMock(id: string, formId: string, kind: MockAttempt['kind'], bank: Question[], now: number, seen: Set<string>): MockAttempt {
+export function startMock(id: string, formId: string, kind: MockAttempt['kind'], bank: Question[], now: number, seen: Set<string>, official: Question[] = []): MockAttempt {
+  if (isOfficialForm(formId)) {
+    const mods = officialModules(official);
+    const qids = formId === 'cb2' ? mods[2] : mods[0];
+    const ms = officialMs(qids.length);
+    return { id, formId, kind, startedAt: now, modules: [{ ...emptyModule('rw', 1, qids), msAllowed: ms }], cursor: { stage: 0, index: 0, msLeft: ms } };
+  }
   const first = stageSection(stagesFor(kind)[0]);
   const qids = buildModule(first, 'm1', seedFor(formId, now), bank, new Set(), formId === 'mix' ? seen : undefined);
   return { id, formId, kind, startedAt: now, modules: [emptyModule(first, 1, qids)], cursor: { stage: 0, index: 0, msLeft: moduleMs(first) } };
@@ -88,13 +118,18 @@ export function routeFor(m1: MockModuleResult, getQ: (id: string) => Question | 
 }
 
 /** Advances to the next stage after a module (or the break) ends. Returns the updated attempt and whether it is finished. */
-export function advanceMock(mock: MockAttempt, bank: Question[], getQ: (id: string) => Question | undefined, seen: Set<string>): { mock: MockAttempt; finished: boolean } {
+export function advanceMock(mock: MockAttempt, bank: Question[], getQ: (id: string) => Question | undefined, seen: Set<string>, official: Question[] = []): { mock: MockAttempt; finished: boolean } {
   const stages = stagesFor(mock.kind);
   const cur = mock.cursor!;
   const nextStage = cur.stage + 1;
   if (nextStage >= stages.length) return { mock: { ...mock, cursor: undefined }, finished: true };
   const next = stages[nextStage];
   if (next === 'break') return { mock: { ...mock, cursor: { stage: nextStage, index: 0, msLeft: 0, breakMsLeft: BREAK_MS } }, finished: false };
+  if (isOfficialForm(mock.formId)) {
+    const qids = officialModules(official)[1];
+    const ms = officialMs(qids.length);
+    return { mock: { ...mock, modules: [...mock.modules, { ...emptyModule('rw', 2, qids), msAllowed: ms }], cursor: { stage: nextStage, index: 0, msLeft: ms } }, finished: false };
+  }
   const section = stageSection(next);
   const used = new Set(mock.modules.flatMap((m) => m.qids));
   const seed = seedFor(mock.formId, mock.startedAt);

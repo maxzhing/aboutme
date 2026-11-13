@@ -1,4 +1,5 @@
 'use client';
+import { hasOfficial } from '@/data/questions';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Flame, Menu, Moon, Search, Settings, Sparkles, Sun, X } from 'lucide-react';
@@ -140,7 +141,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <main id="main" className={cn('mx-auto w-full', focus ? 'max-w-6xl p-3 sm:p-6' : 'max-w-6xl px-3 py-6 sm:px-6')}>
             <Suspense fallback={<div className="py-20 text-center text-sm text-muted">Loading…</div>}>{children}</Suspense>
           </main>
-          {!focus && <footer className="no-print mx-auto max-w-6xl px-6 pb-8 pt-2 text-xs leading-relaxed text-faint">{BRAND.disclaimer} Passages are written for practice; the researchers, studies and data they describe are illustrative.</footer>}
+          {!focus && <footer className="no-print mx-auto max-w-6xl px-6 pb-8 pt-2 text-xs leading-relaxed text-faint">{BRAND.disclaimer} {hasOfficial && 'Exception: questions labelled Official are College Board questions from your own practice file, included in this personal copy for your study only. '}Passages are written for practice; the researchers, studies and data they describe are illustrative.</footer>}
         </div>
       </div>
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />

@@ -2,10 +2,10 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Calculator, Clock, Coffee, Flag, LayoutGrid } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getQuestion } from '@/data/questions';
+import { getQuestion, hasOfficial, OFFICIAL } from '@/data/questions';
 import { REFERENCE } from '@/data/reference';
 import { useStore } from '@/lib/store';
-import { LOWER_ROUTE_CAP, MOCK_FORMS, ROUTE_THRESHOLD, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
+import { formName, isOfficialForm, LOWER_ROUTE_CAP, MOCK_FORMS, OFFICIAL_FORMS, officialModules, ROUTE_THRESHOLD, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
 import { fmtRange } from '@/lib/engine/scoring';
 import { DOMAIN, DOMAINS, SAT_STRUCTURE, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { fmtClock, fmtDuration, pct } from '@/lib/util';
@@ -13,9 +13,10 @@ import type { MockAttempt, Section, SkillId } from '@/lib/types';
 import { Explanation, QuestionMeta, QuestionView } from '@/components/Question';
 import { Grapher } from '@/components/Grapher';
 import { RichText } from '@/components/RichText';
+import { TestShell } from '@/components/TestShell';
 import { Badge, Card, Empty, Modal, PageHeader, Progress, Stat, cn, toneForPct } from '@/components/ui';
 
-const KIND_NAME: Record<MockAttempt['kind'], string> = { full: 'Full-length', 'section-rw': 'Reading & Writing only', 'section-math': 'Math only' };
+const KIND_NAME: Record<MockAttempt['kind'], string> = { full: 'Full-length', 'section-rw': 'Reading & Writing only', 'section-math': 'Math only', 'module-rw': 'One Reading & Writing module' };
 
 export function MocksPage() {
   const router = useRouter();
@@ -31,10 +32,11 @@ export function MocksPage() {
       {active && (
         <Card className="border-brand/50">
           <h2 className="font-bold">Exam in progress</h2>
-          <p className="mt-1 text-sm text-muted">{MOCK_FORMS.find((f) => f.id === active.formId)?.name} · {KIND_NAME[active.kind]} · your answers and remaining time are saved.</p>
+          <p className="mt-1 text-sm text-muted">{formName(active.formId)} · {KIND_NAME[active.kind]} · your answers and remaining time are saved.</p>
           <div className="mt-3 flex gap-2"><Link href="/mocks/run" className="btn-primary">Resume</Link><button className="btn-ghost" onClick={() => { if (confirm('Discard this exam? Your answers so far will not be saved.')) abandon(); }}>Discard</button></div>
         </Card>
       )}
+      {hasOfficial && <OfficialCard begin={begin} />}
       <div className="grid gap-4 md:grid-cols-3">
         {MOCK_FORMS.map((f) => (
           <Card key={f.id} className="flex flex-col">
@@ -61,7 +63,7 @@ export function MocksPage() {
           <ul className="mt-2 divide-y divide-line">
             {done.map((m, i) => { const prev = done.slice(i + 1).find((x) => x.kind === m.kind); const delta = prev?.scores && m.scores ? m.scores.total.mid - prev.scores.total.mid : null; return (
               <li key={m.id} className="flex flex-wrap items-center gap-3 py-2.5">
-                <div className="min-w-0 flex-1"><div className="text-sm font-semibold">{MOCK_FORMS.find((f) => f.id === m.formId)?.name} · {KIND_NAME[m.kind]}</div><div className="text-xs text-muted">{new Date(m.completedAt!).toLocaleString()}</div></div>
+                <div className="min-w-0 flex-1"><div className="text-sm font-semibold">{formName(m.formId)} · {KIND_NAME[m.kind]}</div><div className="text-xs text-muted">{new Date(m.completedAt!).toLocaleString()}</div></div>
                 {m.scores && <Badge tone="brand">{m.kind === 'full' ? fmtRange(m.scores.total) : fmtRange(m.kind === 'section-rw' ? m.scores.rw : m.scores.math)}</Badge>}
                 {delta !== null && <Badge tone={delta >= 0 ? 'ok' : 'warn'}>{delta >= 0 ? '+' : ''}{delta} vs previous</Badge>}
                 <Link href={`/mocks/results?id=${m.id}`} className="btn-ghost !py-1.5">Report</Link>
@@ -71,6 +73,30 @@ export function MocksPage() {
         ) : <p className="mt-2 text-sm text-muted">No completed exams yet. Your first one becomes the baseline for measuring improvement.</p>}
       </Card>
     </div>
+  );
+}
+
+/** Shown only in a personal build that carries the student's own official question pack. */
+function OfficialCard({ begin }: { begin: (form: string, kind: MockAttempt['kind']) => void }) {
+  const attempts = useStore((s) => s.attempts);
+  const mods = useMemo(() => officialModules(OFFICIAL), []);
+  const solved = new Set(attempts.filter((a) => a.correct).map((a) => a.qid));
+  const mins = (n: number) => Math.round((n * 32) / 27);
+  const groups: [string, string[]][] = [['Boundaries', ['bnd']], ['Form, structure & sense', ['fss']], ['Command of evidence', ['coet', 'coeq']], ['Central ideas', ['cid']], ['Inferences', ['inf']], ['Craft & structure', ['wic', 'tsp', 'ctc']]];
+  return (
+    <Card className="border-gold/50" data-testid="official-card">
+      <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Official College Board questions</h2><Badge tone="gold">from your own file</Badge></div>
+      <p className="mt-1 text-sm text-muted">{OFFICIAL.length} real Reading &amp; Writing questions from the practice file you supplied, in real test order with the College Board&apos;s own answer explanations. {OFFICIAL.filter((q) => solved.has(q.id)).length} of {OFFICIAL.length} answered correctly so far.</p>
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <button className="btn-primary" onClick={() => begin('cb1', 'section-rw')} data-testid="start-official">Practice test · {mods[0].length + mods[1].length} questions · {mins(mods[0].length) + mins(mods[1].length)} min</button>
+        <button className="btn-ghost" onClick={() => begin('cb2', 'module-rw')} data-testid="start-official-extra">Extra module · {mods[2].length} questions · {mins(mods[2].length)} min</button>
+      </div>
+      <p className="mt-4 text-xs font-bold uppercase tracking-wide text-faint">Or practice untimed, with the explanation after each question</p>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {groups.map(([label, ks]) => { const ids = OFFICIAL.filter((q) => ks.includes(q.skill)).sort((a, b) => Number(solved.has(a.id)) - Number(solved.has(b.id))).map((q) => q.id); return ids.length ? <Link key={label} href={`/practice/session?mode=custom&ids=${ids.slice(0, 12).join(',')}&back=/mocks`} className="chip !py-1 hover:text-ink">{label} ({ids.length})</Link> : null; })}
+      </div>
+      <p className="mt-3 text-xs text-faint">These questions are the College Board&apos;s copyrighted work. They are in this copy of the app for your own study only; please do not share or publish this file. The score range shown after a test is still Stellify&apos;s unofficial estimate.</p>
+    </Card>
   );
 }
 
@@ -109,7 +135,7 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
   return (
     <div className="space-y-3">
       <header className="card flex flex-wrap items-center gap-3 !rounded-xl p-3">
-        <div className="min-w-0 flex-1"><div className="font-display font-bold">{SECTION_NAME[mod.section]} · Module {mod.module} of 2</div><div className="text-xs text-muted">Question {idx + 1} of {mod.qids.length} · {answered} answered</div></div>
+        <div className="min-w-0 flex-1"><div className="font-display font-bold">{SECTION_NAME[mod.section]} · Module {mod.module} of {stagesFor(mock.kind).filter((st) => st !== 'break' && stageSection(st) === mod.section).length}</div><div className="text-xs text-muted">Question {idx + 1} of {mod.qids.length} · {answered} answered</div></div>
         <button onClick={() => setSettings({ showTimer: !showTimer })} className={cn('chip !py-1.5 font-mono text-sm', ms < 5 * 60_000 && 'border-bad text-bad')} aria-label="Time remaining (click to hide or show)"><Clock size={14} />{showTimer || ms < 5 * 60_000 ? fmtClock(ms) : 'Hidden'}</button>
         {mod.section === 'math' && <><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('calc')}><Calculator size={15} />Graphing</button><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('ref')}>Reference</button></>}
         <button className="btn-ghost !px-2.5 !py-1.5" onClick={() => { flush(); router.push('/mocks'); }}>Save &amp; exit</button>
@@ -164,7 +190,11 @@ export function MockRunPage() {
   useEffect(() => { if (!mock) router.replace('/mocks'); }, [mock, router]);
   if (!mock?.cursor) return null;
   const stage = stagesFor(mock.kind)[mock.cursor.stage];
-  return stage === 'break' ? <BreakStage key="break" mock={mock} /> : <ModuleStage key={`${mock.id}-${mock.cursor.stage}`} mock={mock} />;
+  return (
+    <TestShell key={mock.id} title={`${formName(mock.formId)} · ${KIND_NAME[mock.kind]}`} official={isOfficialForm(mock.formId)}>
+      {stage === 'break' ? <BreakStage key="break" mock={mock} /> : <ModuleStage key={`${mock.id}-${mock.cursor.stage}`} mock={mock} />}
+    </TestShell>
+  );
 }
 
 export function MockResultsPage() {
@@ -185,7 +215,7 @@ export function MockResultsPage() {
   const rows = sum.rows.filter((r) => !only || !r.correct);
   return (
     <div className="space-y-4" data-testid="mock-results">
-      <PageHeader eyebrow="Mock exam report" title={`${MOCK_FORMS.find((f) => f.id === mock.formId)?.name} · ${KIND_NAME[mock.kind]}`} subtitle={mock.completedAt ? `Completed ${new Date(mock.completedAt).toLocaleString()}` : undefined} actions={<Link href="/mocks" className="btn-ghost">All mock exams</Link>} />
+      <PageHeader eyebrow="Mock exam report" title={`${formName(mock.formId)} · ${KIND_NAME[mock.kind]}`} subtitle={mock.completedAt ? `Completed ${new Date(mock.completedAt).toLocaleString()}` : undefined} actions={<Link href="/mocks" className="btn-ghost">All mock exams</Link>} />
       <div className="grid gap-3 sm:grid-cols-3">
         {mock.kind === 'full' && sc && <div className="card border-brand/40 bg-brand/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Estimated total range</div><div className="mt-1 font-display text-3xl font-bold" data-testid="mock-total">{fmtRange(sc.total)}</div><div className="text-xs text-muted">Unofficial estimate{prev?.scores ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div></div>}
         {sections.map((sec) => { const b = sum.bySection[sec]; const route = mock.modules.find((m) => m.section === sec && m.module === 2)?.route; return (
@@ -198,7 +228,8 @@ export function MockResultsPage() {
         <Stat label="Time used" value={fmtDuration(sum.msUsed)} sub={`of ${fmtDuration(sum.msAllowed)}`} />
         <Stat label="Flagged" value={sum.rows.filter((r) => r.flagged).length} sub="marked for review" />
       </div>
-      <p className="text-xs text-faint">Ranges come from Stellify&apos;s own model and original questions. They are not College Board scores.</p>
+      <p className="text-xs text-faint" data-testid="lock-report">{mock.locked ? 'Taken locked in (full screen)' : 'Taken without full screen'} · {mock.breaks ? `left the test window ${mock.breaks} time${mock.breaks === 1 ? '' : 's'}` : 'never left the test window'}.</p>
+      <p className="text-xs text-faint">{isOfficialForm(mock.formId) ? 'The questions are official College Board questions from your own file, but the range is Stellify’s own estimate from this set, not a College Board score.' : 'Ranges come from Stellify’s own model and original questions. They are not College Board scores.'}</p>
       <div className="grid gap-4 md:grid-cols-2">
         <Card><h2 className="font-semibold">Domain performance</h2><ul className="mt-3 space-y-2.5">{DOMAINS.filter((d) => sum.byDomain[d.id]).map((d) => { const x = sum.byDomain[d.id]; const p = pct(x.correct, x.total); return <li key={d.id}><div className="mb-1 flex justify-between text-sm"><span>{d.name}</span><span className="text-muted">{x.correct}/{x.total}</span></div><Progress value={p} tone={toneForPct(p)} label={d.name} /></li>; })}</ul></Card>
         <Card><h2 className="font-semibold">Recommended study priorities</h2>{priorities.length ? <ul className="mt-2 divide-y divide-line">{priorities.map((s) => <li key={s.skill} className="flex items-center gap-3 py-2 text-sm"><span className="min-w-0 flex-1 truncate">{SKILL[s.skill].short}</span><Badge tone={toneForPct(s.p)}>{s.correct}/{s.total}</Badge><Link href={`/learn/${s.skill}`} className="text-brand2 hover:underline">Lesson</Link><Link href={`/practice/session?mode=skill&skill=${s.skill}&n=6`} className="text-brand2 hover:underline">Practice</Link></li>)}</ul> : <p className="mt-2 text-sm text-muted">A perfect paper. Try Fresh Mix or the Hardest Questions set.</p>}<Link href="/mistakes" className="mt-3 inline-block text-sm font-semibold text-brand2 hover:underline">Every miss is now in your Mistake Bucket →</Link></Card>

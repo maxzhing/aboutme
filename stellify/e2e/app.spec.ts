@@ -118,6 +118,11 @@ test('mock exam: timer, module routing, results report', async ({ page }) => {
   await boot(page);
   await go(page, '/mocks');
   await page.getByRole('button', { name: /Math · 70 min/ }).first().click();
+  // the lock-in gate comes first; the clock has not started, and the rest of the app is covered
+  await expect(page.getByTestId('lock-gate')).toContainText('Lock in for this test?');
+  await expect(page.getByTestId('mock-question')).toHaveCount(0);
+  await page.getByTestId('lock-go').click(); // asks the browser for full screen; falls back to focus view if refused
+  await expect(page.getByTestId('lock-status')).toBeVisible();
   await expect(page.getByText('Math · Module 1 of 2')).toBeVisible();
   await expect(page.getByLabel(/Time remaining/)).toContainText(/3[45]:\d\d/);
   for (let i = 0; i < 22; i++) {
@@ -127,15 +132,22 @@ test('mock exam: timer, module routing, results report', async ({ page }) => {
   await expect(page.getByText('0 unanswered')).toBeVisible();
   await page.getByTestId('submit-module').click();
   await expect(page.getByText('Math · Module 2 of 2')).toBeVisible();
-  await page.reload(); // an exam in progress survives a reload
+  await page.waitForTimeout(600); // let the save to browser storage finish
+  await page.reload(); // an exam in progress survives a reload, and asks again before resuming
+  await page.getByTestId('lock-skip').click();
+  await expect(page.getByTestId('lock-status')).toContainText('Focus view');
   await expect(page.getByText('Math · Module 2 of 2')).toBeVisible();
   await page.getByRole('button', { name: 'All questions' }).click();
   await page.getByTestId('submit-module').click(); // leaves module 2 blank (confirm dialog accepted)
   await expect(page.getByTestId('mock-results')).toBeVisible();
   await expect(page.getByTestId('mock-results')).toContainText('Module 2: harder set'); // 22/22 in module 1 routes upward
   await expect(page.getByTestId('mock-results')).toContainText('22/44 correct');
+  await expect(page.getByTestId('lock-report')).toContainText(/Taken (locked in|without full screen)/);
+  await expect(page.getByTestId('test-shell')).toHaveCount(0); // the shell is gone once the test ends
   await expect(page.getByText('Domain performance')).toBeVisible();
   await expect(page.getByText('Answer key and explanations')).toBeVisible();
+  await go(page, '/mocks');
+  await expect(page.getByTestId('official-card')).toHaveCount(0); // the public build carries no official questions
   await go(page, '/mistakes');
   await expect(page.getByTestId('unresolved-count')).toHaveText('22');
   expect(errors).toEqual([]);
