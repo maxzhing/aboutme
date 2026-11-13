@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Bot, Brain, CheckCircle2, ChevronDown, Circle, ClipboardList, Flame, Target } from 'lucide-react';
+import { ArrowRight, Brain, CheckCircle2, ChevronDown, Circle, Coins, Flame, Gift, Play, Star, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { getQuestion } from '@/data/questions';
@@ -9,10 +9,14 @@ import { useLevel, useOverview, useSkillStats, useStreak } from '@/lib/hooks';
 import { accuracyBlocks, weekMinutes } from '@/lib/engine/analytics';
 import { findWeaknesses } from '@/lib/engine/adaptive';
 import { todaysMission } from '@/lib/engine/plan';
+import { CHEST, dailyQuests } from '@/lib/engine/quests';
+import { VISUAL_LESSONS } from '@/data/visual-lessons';
+import { sfx } from '@/lib/sfx';
+import { Confetti } from '@/components/Confetti';
 import { fmtRange } from '@/lib/engine/scoring';
 import { MASTERY_LEVELS } from '@/lib/engine/mastery';
 import { ACHIEVEMENT } from '@/lib/engine/achievements';
-import { DIFFICULTIES, DIFFICULTY_NAME, SKILLS } from '@/lib/taxonomy';
+import { DIFFICULTIES, DIFFICULTY_NAME, SKILL, SKILLS } from '@/lib/taxonomy';
 import { clamp, dateKey, daysBetween } from '@/lib/util';
 import { Habitat, Pet, type PetMood } from '@/components/Pet';
 import { Card, Progress, Ring } from '@/components/ui';
@@ -20,16 +24,18 @@ import { Card, Progress, Ring } from '@/components/ui';
 export const chartTip = { contentStyle: { background: 'rgb(var(--surface))', border: '1px solid rgb(var(--line))', borderRadius: 12, fontSize: 12, color: 'rgb(var(--ink))' }, labelStyle: { color: 'rgb(var(--muted))' }, cursor: { fill: 'rgb(var(--raised))', opacity: 0.5 } };
 export const axis = { tick: { fill: 'rgb(var(--muted))', fontSize: 11 }, axisLine: { stroke: 'rgb(var(--line))' }, tickLine: false as const };
 
-const SHORTCUTS = [
-  { href: '/practice/session?mode=smart&n=10', label: 'Smart Practice', icon: Brain },
-  { href: '/mistakes', label: 'Mistake Bucket', icon: Target },
-  { href: '/mocks', label: 'Mock Exam', icon: ClipboardList },
-  { href: '/tutor', label: 'Ask the Tutor', icon: Bot },
+const MODES = [
+  { href: '/practice/session?mode=smart&n=10', label: 'Smart Practice', icon: '🧠', sub: 'Picks what you need' },
+  { href: '/practice/hard', label: 'Boss Rush', icon: '🔥', sub: 'Hard and beyond' },
+  { href: '/speed', label: 'Speed Run', icon: '⚡', sub: 'Beat the clock' },
+  { href: '/arena', label: 'Arena', icon: '🏟️', sub: 'Chase a high score' },
+  { href: '/mistakes', label: 'Mistake Bucket', icon: '🧹', sub: 'Turn misses into wins' },
+  { href: '/mocks', label: 'Mock Exam', icon: '📝', sub: 'Full adaptive test' },
 ];
 
 /**
- * Homebase. One clear next step first; everything else is a glance or a click away.
- * Detailed charts stay folded until asked for, and live in full on the Analytics page.
+ * Home hub. Lumi up top, one clear next step, three daily quests, and the next stop on the
+ * lesson map. Game modes sit below; detailed charts stay folded until asked for.
  */
 export function DashboardPage() {
   const router = useRouter();
@@ -40,6 +46,8 @@ export function DashboardPage() {
   const level = useLevel();
   const [more, setMore] = useState(false);
   const [allTasks, setAllTasks] = useState(false);
+  const [poked, setPoked] = useState(0);
+  const [fire, setFire] = useState(0);
   const now = Date.now();
   const today = dateKey(now);
 
@@ -55,6 +63,16 @@ export function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [s.attempts.length, more]);
 
+  const quests = useMemo(() => dailyQuests(snapshot(), getQuestion, now),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [s.attempts.length, s.activity, s.quests, s.daily, s.mistakes, today]);
+  const claimedToday = s.quests?.[today] ?? [];
+  const chestReady = quests.every((q) => q.claimed) && !claimedToday.includes(CHEST.id);
+  const chestOpen = claimedToday.includes(CHEST.id);
+  const claim = (id: string) => { if (s.claimQuest(id)) { setFire(Date.now()); sfx(id === CHEST.id ? 'win' : 'combo'); } };
+  const starMap = s.lessonStars ?? {};
+  const totalStars = SKILLS.reduce((n, k) => n + (starMap[k.id] ?? 0), 0);
+
   const est = ov.estimate.total;
   const target = s.profile.targetScore;
   const base = s.profile.currentScore ?? (est ? Math.min(est.mid, target - 10) : undefined);
@@ -65,7 +83,7 @@ export function DashboardPage() {
   const lastDay = Object.keys(s.activity).sort().pop();
   const away = lastDay ? daysBetween(lastDay, today) : 0;
   const hour = new Date(now).getHours();
-  const petMood: PetMood = s.pet.lastEvent && now - s.pet.lastEvent.at < 20000 ? 'celebrate' : hour >= 23 || hour < 6 || away >= 3 ? 'sleep' : streak.studiedToday ? 'happy' : 'idle';
+  const petMood: PetMood = now - poked < 1400 ? 'celebrate' : s.pet.lastEvent && now - s.pet.lastEvent.at < 20000 ? 'celebrate' : hour >= 23 || hour < 6 || away >= 3 ? 'sleep' : streak.studiedToday ? 'happy' : 'idle';
   const recent = Object.entries(s.achievements).sort((a, b) => b[1] - a[1])[0];
   const tasks = mission.rest ? [] : mission.tasks;
   const nextTask = tasks.find((t) => !t.done);
@@ -75,16 +93,40 @@ export function DashboardPage() {
   const diffData = DIFFICULTIES.map((d) => ({ name: DIFFICULTY_NAME[d], accuracy: ov.byDifficulty[d].pct, n: ov.byDifficulty[d].n }));
   const greeting = `${away >= 3 ? 'Good to see you again' : 'Welcome back'}${s.profile.name ? `, ${s.profile.name}` : ''}!`;
 
+  const pathSkills = (() => {
+    const order = weak && !starMap[weak.skill] ? [SKILL[weak.skill], ...SKILLS.filter((k) => k.id !== weak.skill)] : SKILLS;
+    const open = order.filter((k) => !starMap[k.id]);
+    return (open.length ? open : order.filter((k) => (starMap[k.id] ?? 0) < 3)).slice(0, 3);
+  })();
+  const questsLeft = quests.filter((q) => !q.done).length;
+  const say = away >= 3 ? 'I missed you! Let’s warm up with one quick lesson.'
+    : chestReady ? 'All three quests done. Your chest is ready!'
+    : mission.rest ? 'Rest day. I’ll be here if you want a bonus round.'
+    : streak.studiedToday ? (questsLeft ? `Nice work today. ${questsLeft} quest${questsLeft === 1 ? '' : 's'} to go!` : 'Everything done today. You are on fire!')
+    : nextTask ? `Ready? First up: ${nextTask.title}.` : 'Ready when you are!';
+  const poke = () => { setPoked(Date.now()); sfx('tap'); s.carePet('pet'); };
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold sm:text-3xl" data-testid="greeting">{greeting} <span className="grad-text">Let&apos;s work toward {target}.</span></h1>
-        <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
-          <span className="inline-flex items-center gap-1"><Flame size={14} className="text-warn" />{streak.current}-day streak</span>
-          {daysLeft !== null && daysLeft >= 0 && <span>· {daysLeft === 0 ? 'Test day is today' : `${daysLeft} days to your SAT`}</span>}
-          <span>· {todayMin >= goal ? 'Daily goal done' : `${todayMin} of ${goal} min today`}</span>
-        </p>
-      </header>
+      <Confetti fire={fire} />
+      <section className="card overflow-hidden p-0" data-testid="pet-card">
+        <Habitat id={s.pet.equipped.habitat} className="!rounded-none">
+          <div className="flex h-40 items-end gap-2 px-4 sm:px-8">
+            <button type="button" onClick={poke} className="shrink-0 transition-transform active:scale-95" aria-label={`Pat ${s.pet.name}`} title={`Pat ${s.pet.name}`}><Pet mood={petMood} level={level.level} equipped={s.pet.equipped} size={132} /></button>
+            <p className="mb-14 max-w-xs rounded-2xl rounded-bl-sm bg-surface px-4 py-2.5 text-sm font-semibold text-ink shadow-card" data-testid="lumi-says">{say}</p>
+          </div>
+        </Habitat>
+        <div className="p-5">
+          <h1 className="text-2xl font-bold sm:text-3xl" data-testid="greeting">{greeting} <span className="grad-text">Let&apos;s work toward {target}.</span></h1>
+          <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+            <div className="rounded-xl border border-line p-3"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Flame size={14} className="text-warn" />Streak</div><div className="font-display text-xl font-bold">{streak.current} day{streak.current === 1 ? '' : 's'}</div></div>
+            <Link href="/pet" className="rounded-xl border border-line p-3 hover:border-brand/60"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Zap size={14} className="text-brand" />Level {level.level}</div><Progress value={level.progress * 100} className="mt-2.5" label="XP to next level" /></Link>
+            <Link href="/rewards" className="rounded-xl border border-line p-3 hover:border-brand/60"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Coins size={14} className="text-gold" />Stardust</div><div className="font-display text-xl font-bold">{s.pet.coins}</div></Link>
+            <Link href="/learn" className="rounded-xl border border-line p-3 hover:border-brand/60"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Star size={14} className="fill-gold text-gold" />Lesson stars</div><div className="font-display text-xl font-bold">{totalStars}<span className="text-sm text-muted"> / {SKILLS.length * 3}</span></div></Link>
+          </div>
+          <p className="mt-3 text-xs text-muted">{daysLeft !== null && daysLeft >= 0 ? `${daysLeft === 0 ? 'Test day is today' : `${daysLeft} days to your SAT`} · ` : ''}{todayMin >= goal ? 'Daily goal done' : `${todayMin} of ${goal} min today`}</p>
+        </div>
+      </section>
 
       {/* The one thing to do next */}
       <section className="card overflow-hidden p-0" data-testid="mission">
@@ -123,29 +165,50 @@ export function DashboardPage() {
         )}
       </section>
 
-      {/* Where you stand, at a glance */}
-      <div className="grid gap-4 md:grid-cols-[1fr_260px]">
-        <Card>
-          <div className="flex items-baseline justify-between"><h2 className="font-bold">Your progress</h2><Link href="/analytics" className="text-sm font-semibold text-brand2 hover:underline">Analytics →</Link></div>
-          <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-            <div><div className="font-display text-2xl font-bold" data-testid="estimate">{est ? fmtRange(est) : '—'}</div><div className="text-xs text-muted">estimated range</div></div>
-            <div><div className="font-display text-2xl font-bold">{ov.total ? `${ov.all.pct}%` : '—'}</div><div className="text-xs text-muted">accuracy</div></div>
-            <div><div className="font-display text-2xl font-bold" data-testid="stat-questions">{ov.total}</div><div className="text-xs text-muted">questions</div></div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card data-testid="quests">
+          <div className="flex items-baseline justify-between"><h2 className="font-bold">Daily quests</h2><span className="text-xs text-muted">new ones every day</span></div>
+          <ul className="mt-3 space-y-3">
+            {quests.map((q) => (
+              <li key={q.id} className="flex items-center gap-3" data-testid={`quest-${q.id}`}>
+                <span className="text-2xl" aria-hidden>{q.icon}</span>
+                <div className="min-w-0 flex-1"><div className="flex justify-between gap-2 text-sm font-semibold"><span className="truncate">{q.title}</span><span className="shrink-0 tabular-nums text-muted">{q.progress}/{q.goal}</span></div><Progress value={(q.progress / q.goal) * 100} tone={q.done ? 'ok' : 'brand'} className="mt-1.5" label={q.title} /></div>
+                {q.claimed ? <CheckCircle2 className="shrink-0 text-ok" size={22} aria-label="Claimed" /> : q.done ? <button className="btn-primary shrink-0 !px-3 !py-1.5 text-sm" onClick={() => claim(q.id)}>+{q.xp} XP</button> : <Link href={q.href} className="btn-ghost shrink-0 !px-3 !py-1.5 text-sm">Go</Link>}
+              </li>
+            ))}
+          </ul>
+          <div className={`mt-4 flex items-center gap-3 rounded-xl border p-3 ${chestReady ? 'border-gold bg-gold/10' : 'border-line'}`}>
+            <Gift size={22} className={chestOpen || chestReady ? 'text-gold' : 'text-faint'} aria-hidden />
+            <span className="min-w-0 flex-1 text-sm">{chestOpen ? 'Daily chest opened. See you tomorrow!' : chestReady ? 'Daily chest unlocked!' : 'Claim all three to open the daily chest.'}</span>
+            {chestReady && <button className="btn-primary !px-3 !py-1.5 text-sm" onClick={() => claim(CHEST.id)} data-testid="chest">Open +{CHEST.xp} XP</button>}
           </div>
-          <div className="mt-5"><div className="mb-1.5 flex justify-between text-xs text-muted"><span>{base !== undefined ? `Start ${base}` : 'Start'}</span><span>Target {target}</span></div><Progress value={progress} label="Progress from starting score to target" /></div>
-          <p className="mt-2 text-xs text-faint">{est ? 'An unofficial Stellify estimate, not a College Board score.' : 'Your estimate appears after the diagnostic or about 8 questions per section.'}{!s.profile.diagnosticAt && <> <Link href="/diagnostic" className="font-semibold text-brand2 hover:underline">Take the diagnostic</Link></>}</p>
         </Card>
-        <Card className="!p-0 overflow-hidden" data-testid="pet-card">
-          <Link href="/pet" aria-label={`Visit ${s.pet.name}`}>
-            <Habitat id={s.pet.equipped.habitat} className="!rounded-none"><div className="flex h-32 items-end justify-center"><Pet mood={petMood} level={level.level} equipped={s.pet.equipped} size={116} /></div></Habitat>
-            <div className="p-4">
-              <div className="flex items-center justify-between text-sm"><span className="font-bold">{s.pet.name}</span><span className="text-muted">Level {level.level}</span></div>
-              <Progress value={level.progress * 100} className="mt-2" label="XP to next level" />
-              <p className="mt-2 line-clamp-2 text-xs text-muted">{recent ? `Latest: ${ACHIEVEMENT[recent[0]]?.title}` : away >= 3 ? 'Was napping while you were away.' : 'Ready to study with you.'}</p>
-            </div>
-          </Link>
+        <Card data-testid="path">
+          <div className="flex items-baseline justify-between"><h2 className="font-bold">Your lesson path</h2><Link href="/learn" className="text-sm font-semibold text-brand2 hover:underline">Whole map →</Link></div>
+          <ul className="mt-3 space-y-2">
+            {pathSkills.map((k, i) => (
+              <li key={k.id}>
+                <Link href={`/learn/${k.id}`} className={`flex items-center gap-3 rounded-xl border p-2.5 transition-transform hover:-translate-y-0.5 ${i === 0 ? 'border-brand/50 bg-brand/10' : 'border-line'}`}>
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-raised text-2xl" aria-hidden>{VISUAL_LESSONS[k.id].icon}</span>
+                  <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{k.short}</span><span className="block truncate text-xs text-muted">{i === 0 && weak?.skill === k.id ? 'Your biggest opportunity right now' : `5-min interactive lesson · ${MASTERY_LEVELS[stats[k.id].level]}`}</span></span>
+                  {i === 0 ? <span className="btn-primary !px-3 !py-1.5 text-sm"><Play size={14} />Play</span> : <span className="flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= (starMap[k.id] ?? 0) ? 'fill-gold text-gold' : 'text-line'} />)}</span>}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </Card>
       </div>
+
+      <Card>
+        <div className="flex items-baseline justify-between"><h2 className="font-bold">Your progress</h2><Link href="/analytics" className="text-sm font-semibold text-brand2 hover:underline">Analytics →</Link></div>
+        <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+          <div><div className="font-display text-2xl font-bold" data-testid="estimate">{est ? fmtRange(est) : '—'}</div><div className="text-xs text-muted">estimated range</div></div>
+          <div><div className="font-display text-2xl font-bold">{ov.total ? `${ov.all.pct}%` : '—'}</div><div className="text-xs text-muted">accuracy</div></div>
+          <div><div className="font-display text-2xl font-bold" data-testid="stat-questions">{ov.total}</div><div className="text-xs text-muted">questions</div></div>
+        </div>
+        <div className="mt-5"><div className="mb-1.5 flex justify-between text-xs text-muted"><span>{base !== undefined ? `Start ${base}` : 'Start'}</span><span>Target {target}</span></div><Progress value={progress} label="Progress from starting score to target" /></div>
+        <p className="mt-2 text-xs text-faint">{est ? 'An unofficial Stellify estimate, not a College Board score.' : 'Your estimate appears after the diagnostic or about 8 questions per section.'}{!s.profile.diagnosticAt && <> <Link href="/diagnostic" className="font-semibold text-brand2 hover:underline">Take the diagnostic</Link></>}</p>
+      </Card>
 
       {/* One insight, not a wall of them */}
       {weak && (
@@ -156,8 +219,8 @@ export function DashboardPage() {
         </section>
       )}
 
-      <nav aria-label="Shortcuts" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {SHORTCUTS.map((q) => <Link key={q.label} href={q.href} className="card flex items-center gap-2.5 p-4 text-sm font-semibold transition-colors hover:border-brand/60"><q.icon size={18} className="text-brand" aria-hidden />{q.label}</Link>)}
+      <nav aria-label="Game modes" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {MODES.map((q) => <Link key={q.label} href={q.href} className="card flex items-center gap-3 p-4 transition-all hover:-translate-y-0.5 hover:border-brand/60"><span className="text-2xl" aria-hidden>{q.icon}</span><span className="min-w-0"><span className="block text-sm font-semibold">{q.label}</span><span className="block truncate text-xs text-muted">{q.sub}</span></span></Link>)}
       </nav>
 
       {/* Details on request */}

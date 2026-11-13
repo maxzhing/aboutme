@@ -265,6 +265,8 @@ export interface Settings {
   shareIncludeMistakes: boolean;
   /** 'high' keeps medium questions out of smart practice */
   challenge: 'standard' | 'high';
+  /** short sound effects for correct answers, combos and rewards */
+  sound: boolean;
 }
 
 export interface AppState {
@@ -278,6 +280,10 @@ export interface AppState {
   achievements: Record<string, number>;
   activity: Record<string, DayActivity>;
   lessonsDone: Record<string, number>;
+  /** best star rating (1–3) earned in each interactive lesson */
+  lessonStars: Record<string, number>;
+  /** daily quest rewards already claimed, keyed by date */
+  quests: Record<string, string[]>;
   plan?: StudyPlan;
   planDone: Record<string, number>;
   mocks: MockAttempt[];

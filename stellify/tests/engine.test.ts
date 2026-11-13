@@ -371,4 +371,40 @@ describe('Beyond SAT tier, challenge level and hacks', () => {
     expect(hacksFor('bnd', 'Nonessential and essential clauses')[0].title).toBe('Non-Essential Information');
     for (const h of HACKS) { expect(h.what.length).toBeGreaterThan(60); expect(h.test.length).toBeGreaterThan(40); }
   });
+  it('gives every skill a picture lesson with at least three ideas and two quick checks', async () => {
+    const { VISUAL_LESSONS } = await import('@/data/visual-lessons');
+    const { CHECKS } = await import('@/data/checks');
+    for (const k of SKILLS) {
+      const v = VISUAL_LESSONS[k.id];
+      expect(v.ideas.length, k.id).toBeGreaterThanOrEqual(3);
+      expect(v.hook.length, k.id).toBeGreaterThan(30);
+      for (const idea of v.ideas) { expect(idea.title.length).toBeGreaterThan(8); expect(idea.text.split(/\s+/).length, `${k.id}: ${idea.title}`).toBeLessThanOrEqual(45); }
+      expect(CHECKS[k.id].length, k.id).toBeGreaterThanOrEqual(2);
+      for (const c of CHECKS[k.id]) { expect(c.answer).toBeLessThan(c.options.length); expect(c.why.length).toBeGreaterThan(15); }
+    }
+  });
+  it('builds three daily quests from real activity and pays each reward once', async () => {
+    const { dailyQuests, CHEST } = await import('@/lib/engine/quests');
+    let s = initialState();
+    const board = dailyQuests(s, getQuestion, T0);
+    expect(board).toHaveLength(3);
+    expect(board.every((q) => !q.done && q.progress === 0)).toBe(true);
+    expect(dailyQuests(s, getQuestion, T0).map((q) => q.id)).toEqual(board.map((q) => q.id)); // stable within a day
+    const hard = QUESTIONS.filter((q) => q.difficulty === 'hard' && q.type === 'mcq').slice(0, 12);
+    for (const [i, q] of hard.entries()) s = applyAttempt(s, { qid: q.id, answer: String(q.answer), ms: 60_000, hints: 0, mode: 'smart', sessionId: 'q' }, T0 + i * 1000, getQuestion).state;
+    s = { ...s, lessonsDone: { lin1: T0 }, activity: { ...s.activity, [dateKey(T0)]: { ...s.activity[dateKey(T0)], lessons: 1 } }, daily: { [dateKey(T0)]: { qid: hard[0].id, correct: true, ms: 1 } } };
+    const after = dailyQuests(s, getQuestion, T0 + 60_000);
+    expect(after.every((q) => q.done)).toBe(true);
+    expect(dailyQuests({ ...s, quests: { [dateKey(T0)]: [after[0].id] } }, getQuestion, T0 + 60_000)[0].claimed).toBe(true);
+    expect(dailyQuests(s, getQuestion, T0 + 2 * DAY).every((q) => q.progress === 0 || q.id === 'fix1')).toBe(true); // a new day starts empty
+    expect(CHEST.xp).toBeGreaterThan(0);
+  });
+  it('ships the official-pattern set with full explanations and balanced answer positions', () => {
+    const set = ALL_RAW.filter((q) => q.id.startsWith('r-cb-'));
+    expect(set.length).toBe(40);
+    const pos = [0, 1, 2, 3].map((i) => set.filter((q) => q.answer === i).length);
+    expect(Math.max(...pos) - Math.min(...pos)).toBeLessThanOrEqual(2);
+    for (const q of set) { expect(validateQuestion(q), q.id).toEqual([]); expect(q.steps.length, q.id).toBeGreaterThanOrEqual(3); expect(Math.min(...q.why.map((w) => w.length)), q.id).toBeGreaterThan(40); }
+    expect(set.filter((q) => q.d === 'M').length).toBeLessThanOrEqual(2);
+  });
 });

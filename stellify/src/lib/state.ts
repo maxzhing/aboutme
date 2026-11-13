@@ -13,6 +13,8 @@ export const initialState = (): AppState => ({
   achievements: {},
   activity: {},
   lessonsDone: {},
+  lessonStars: {},
+  quests: {},
   planDone: {},
   mocks: [],
   saved: [],
@@ -21,6 +23,6 @@ export const initialState = (): AppState => ({
   daily: {},
   arena: {},
   tutor: [],
-  settings: { theme: 'dark', reducedMotion: false, showTimer: true, aiEnabled: true, aiConsent: false, shareIncludeMistakes: false, challenge: 'high' },
+  settings: { theme: 'dark', reducedMotion: false, showTimer: true, aiEnabled: true, aiConsent: false, shareIncludeMistakes: false, challenge: 'high', sound: true },
   seenLevel: 1,
 });

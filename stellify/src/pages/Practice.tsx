@@ -133,6 +133,26 @@ export function SmartPage() {
   );
 }
 
+/** The set modelled on the structures of the hardest released Digital SAT Reading & Writing items. */
+function PatternSet({ solved }: { solved: Set<string> }) {
+  const set = QUESTIONS.filter((q) => q.id.startsWith('r-cb-'));
+  const done = set.filter((q) => solved.has(q.id)).length;
+  const part = (pre: string) => shuffle(set.filter((q) => pre.split(',').some((p) => q.id.startsWith(`r-cb-${p}`))).sort((a, b) => Number(solved.has(a.id)) - Number(solved.has(b.id))).slice(0, 10).map((q) => q.id)).join(',');
+  const groups: [string, string][] = [['Punctuation (15)', 'bnd'], ['Verbs, modifiers, apostrophes (9)', 'fss'], ['Evidence and inference (11)', 'coet,coeq,inf'], ['Reading (5)', 'cid,tsp,wic']];
+  return (
+    <Card className="mt-4 border-brand/40" data-testid="pattern-set">
+      <h2 className="text-lg font-bold">🎯 Official-pattern set · Reading &amp; Writing</h2>
+      <p className="mt-1 text-sm text-muted">{set.length} original questions built on the structures the hardest released Digital SAT questions use (stacked punctuation decisions, buried subjects, two-part evidence claims), each pushed a step harder. {done} of {set.length} solved.</p>
+      <Progress value={pct(done, set.length)} className="mt-2" />
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link href={`/practice/session?mode=custom&ids=${part('')}&back=/practice/hard`} className="btn-primary">Start 10 questions</Link>
+        {groups.map(([label, pre]) => <Link key={pre} href={`/practice/session?mode=custom&ids=${part(pre)}&back=/practice/hard`} className="btn-ghost">{label}</Link>)}
+      </div>
+      <p className="mt-3 text-xs text-faint">These are Stellify originals, not College Board questions. For official practice, use Bluebook and the College Board question bank (see Resources).</p>
+    </Card>
+  );
+}
+
 export function HardPage() {
   const attempts = useStore((s) => s.attempts);
   const solved = useMemo(() => new Set(attempts.filter((a) => a.correct).map((a) => a.qid)), [attempts]);
@@ -158,6 +178,7 @@ export function HardPage() {
           );
         })}
       </div>
+      <PatternSet solved={solved} />
       <Card className="mt-4"><p className="text-sm text-muted">Tip: on very hard questions, spend the first ten seconds deciding what is really being asked. The explanation for each one shows the fastest reliable method and the trap built into the wrong answers.</p></Card>
     </div>
   );

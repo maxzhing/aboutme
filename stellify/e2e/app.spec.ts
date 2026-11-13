@@ -149,7 +149,7 @@ test('study plan, lessons, tutor fallback, vocabulary, notes, search, theme and 
   await expect(page.getByText(/Your 30-day plan/)).toBeVisible();
   await expect(page.getByText('Week 4')).toBeVisible();
 
-  await go(page, '/learn/bnd');
+  await go(page, '/learn/bnd?view=notes');
   for (const h of ['Start here', 'The full explanation', 'Important rules', 'Worked examples', 'Common mistakes', 'SAT shortcuts', 'Practice by difficulty', 'Mastery']) await expect(page.getByRole('heading', { name: h })).toBeVisible();
   await page.getByTestId('complete-lesson').click();
   await expect(page.getByTestId('complete-lesson')).toContainText('Completed');
@@ -237,4 +237,62 @@ test('works on a phone-sized screen', async ({ browser }) => {
   await expect(page.getByTestId('verdict')).toHaveText('Correct');
   expect(errors).toEqual([]);
   await ctx.close();
+});
+
+test('interactive lesson: pictures, quick checks, boss question, stars; quests and the skill map', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/learn');
+  await expect(page.getByTestId('next-lesson')).toContainText('Linear equations');
+  await page.getByTestId('skill-bnd').click();
+  await expect(page.getByTestId('lesson-player')).toContainText('Boundaries');
+  await page.getByTestId('lesson-next').click(); // intro → idea 1
+  await expect(page.getByTestId('lesson-player')).toContainText('Extra information gets a matching pair');
+  await page.getByRole('button', { name: 'Lift it out' }).click();
+  await expect(page.getByText('What is left still works as a sentence.')).toBeVisible();
+  await page.getByTestId('lesson-next').click(); // → quick check 1
+  await expect(page.getByTestId('lesson-next')).toBeDisabled(); // must answer first
+  await page.getByTestId('check-option-0').click(); // "a comma" is right
+  await expect(page.getByTestId('check-feedback')).toContainText('Yes!');
+  await page.getByTestId('lesson-next').click(); // → idea 2
+  await page.getByTestId('lesson-next').click(); // → quick check 2
+  await page.getByTestId('check-option-0').click(); // "a period" is wrong
+  await expect(page.getByTestId('check-feedback')).toContainText('Not quite.');
+  for (let i = 0; i < 12 && !(await page.getByTestId('boss-submit').count()); i++) { await page.getByTestId('lesson-next').click(); await page.waitForTimeout(450); } // let each slide settle
+  const qid = await page.locator('[id^="stem-"]').first().getAttribute('id');
+  const boss = KEY[qid!.replace('stem-', '')];
+  expect(boss.skill).toBe('bnd');
+  await page.locator(`[data-choice="${'ABCD'[boss.answer as number]}"]`).click();
+  await page.getByTestId('boss-submit').click();
+  await expect(page.getByTestId('boss-feedback')).toContainText('Boss defeated!');
+  await page.getByTestId('lesson-next').click();
+  await expect(page.getByTestId('lesson-done')).toBeVisible();
+  await expect(page.getByTestId('lesson-stars')).toHaveAttribute('data-stars', '2'); // one check + the boss
+
+  // a graph lesson renders and responds to its slider
+  await go(page, '/learn/linf');
+  await page.getByTestId('lesson-next').click();
+  await expect(page.getByRole('img', { name: 'Interactive graph: line' })).toBeVisible();
+  const slope = page.getByLabel('slope m =');
+  await slope.focus(); await page.keyboard.press('ArrowLeft');
+  await expect(page.getByTestId('lesson-player')).toContainText('changes by 1 for every +1');
+
+  // home: the lesson quest is done and pays out once; stars show on the map
+  await go(page, '/');
+  await expect(page.getByTestId('lumi-says')).toBeVisible();
+  await expect(page.getByTestId('quests').locator('li')).toHaveCount(3);
+  const lessonQuest = page.getByTestId('quest-lesson1');
+  if (await lessonQuest.count()) {
+    await lessonQuest.getByRole('button', { name: /XP/ }).click();
+    await expect(lessonQuest.getByLabel('Claimed')).toBeVisible();
+  }
+  await go(page, '/learn/rw');
+  await expect(page.getByTestId('skill-bnd')).toHaveAttribute('aria-label', /2 of 3 stars/);
+
+  // the official-pattern set opens a session of its own questions
+  await go(page, '/practice/hard');
+  await expect(page.getByTestId('pattern-set')).toContainText('40 original questions');
+  await page.getByTestId('pattern-set').getByRole('link', { name: 'Punctuation (15)' }).click();
+  await expect(page.getByTestId('question-card')).toHaveAttribute('data-qid', /^r-cb-bnd-/);
+  expect(errors).toEqual([]);
 });

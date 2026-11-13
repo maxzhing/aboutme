@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Bot, CheckCircle2, ChevronDown, NotebookPen, Search } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ArrowRight, Bot, CheckCircle2, ChevronDown, NotebookPen, Play, Search, Star } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { LESSON } from '@/data/lessons';
 import { GRAMMAR } from '@/data/grammar';
@@ -13,7 +14,9 @@ import type { Section, SkillId } from '@/lib/types';
 import { RichText } from '@/components/RichText';
 import { HackCard } from '@/components/HackCard';
 import { hacksFor } from '@/data/hacks';
-import { Badge, Card, Empty, PageHeader, Progress, Tabs, toneForPct } from '@/components/ui';
+import { LessonPlayer } from '@/components/LessonPlayer';
+import { VISUAL_LESSONS } from '@/data/visual-lessons';
+import { Badge, Card, Empty, PageHeader, Ring, Tabs, cn, toneForPct } from '@/components/ui';
 
 const LEVEL_TONE = ['default', 'bad', 'warn', 'brand', 'ok'] as const;
 
@@ -23,33 +26,62 @@ export function CurriculumPage({ section }: { section?: Section }) {
   const domains = DOMAINS.filter((d) => !section || d.section === section);
   const skills = SKILLS.filter((k) => !section || k.section === section);
   const mastered = skills.filter((k) => stats[k.id].level >= 3).length;
+  const stars = useStore((s) => s.lessonStars) ?? {};
+  const earned = skills.reduce((n, k) => n + (stars[k.id] ?? 0), 0);
+  const nextUp = skills.find((k) => !stars[k.id]) ?? skills.find((k) => (stars[k.id] ?? 0) < 3);
   return (
     <div>
       <PageHeader eyebrow="Learn" title={section ? `${SECTION_NAME[section]} Academy` : 'Complete Curriculum'}
-        subtitle={`Every skill on the Digital SAT, organized by the official domains. Each lesson has a plain-language start, the full rules, worked examples, common mistakes, shortcuts, and practice at three difficulty levels. ${mastered} of ${skills.length} skills at Proficient or higher.`}
+        subtitle={`Every skill on the Digital SAT as a map. Each stop is a 5-minute interactive lesson: pictures you can play with, quick checks, and a boss question. ⭐ ${earned} of ${skills.length * 3} stars · ${mastered} of ${skills.length} skills at Proficient or higher.`}
         actions={<>{section !== 'math' && <Link href="/learn/math" className="btn-ghost">Math Academy</Link>}{section !== 'rw' && <Link href="/learn/rw" className="btn-ghost">Reading &amp; Writing Academy</Link>}{section && <Link href="/learn" className="btn-ghost">All</Link>}</>} />
-      <div className="space-y-6">
-        {domains.map((d) => (
-          <section key={d.id} aria-label={d.name}>
-            <div className="mb-2 flex flex-wrap items-baseline gap-x-3"><h2 className="text-lg font-bold">{d.name}</h2><span className="text-xs text-muted">{SECTION_NAME[d.section]} · about {Math.round(d.weight * 100)}% of the section · {d.blurb}</span></div>
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {skillsOfDomain(d.id).map((k) => { const st = stats[k.id]; const total = questionsBySkill(k.id).length; return (
-                <Link key={k.id} href={`/learn/${k.id}`} className="card flex flex-col p-4 hover:border-brand/60" data-testid={`skill-${k.id}`}>
-                  <div className="flex items-start justify-between gap-2"><h3 className="font-semibold leading-snug">{k.name}</h3>{lessonsDone[k.id] && <CheckCircle2 size={17} className="shrink-0 text-ok" aria-label="Lesson completed" />}</div>
-                  <div className="mt-2 flex items-center gap-2"><Badge tone={LEVEL_TONE[st.level]}>{MASTERY_LEVELS[st.level]}</Badge><span className="text-xs text-muted">{st.n ? `${pct(st.correct, st.n)}% over ${st.n}` : `${total} questions`}</span></div>
-                  <Progress value={st.n ? st.score : 0} className="mt-2.5" tone={st.level >= 3 ? 'ok' : 'brand'} label={`${k.short} mastery`} />
-                  <p className="mt-2.5 line-clamp-2 text-xs text-muted">{k.topics.join(' · ')}</p>
+      {nextUp && (
+        <Link href={`/learn/${nextUp.id}`} className="mb-5 flex flex-wrap items-center gap-4 rounded-2xl border-2 border-brand/50 bg-brand/10 p-4 transition-transform hover:-translate-y-0.5" data-testid="next-lesson">
+          <span className="text-4xl" aria-hidden>{VISUAL_LESSONS[nextUp.id].icon}</span>
+          <span className="min-w-0 flex-1"><span className="block text-xs font-bold uppercase tracking-widest text-brand2">{stars[nextUp.id] ? 'Go for 3 stars' : 'Next stop'}</span><span className="block text-lg font-bold">{nextUp.name}</span><span className="block text-sm text-muted">{VISUAL_LESSONS[nextUp.id].hook}</span></span>
+          <span className="btn-primary"><Play size={16} />Play</span>
+        </Link>
+      )}
+      <div className="space-y-5">
+        {domains.map((d) => { const ks = skillsOfDomain(d.id); const got = ks.reduce((n, k) => n + (stars[k.id] ?? 0), 0); return (
+          <section key={d.id} aria-label={d.name} className="card overflow-hidden p-0">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 border-b border-line bg-raised/40 px-5 py-3"><h2 className="text-lg font-bold">{d.name}</h2><span className="text-xs text-muted">{SECTION_NAME[d.section]} · about {Math.round(d.weight * 100)}% of the section · <b className="text-gold">⭐ {got}/{ks.length * 3}</b></span></div>
+            <div className="flex flex-wrap justify-center gap-x-3 gap-y-5 px-3 py-6">
+              {ks.map((k, i) => { const st = stats[k.id]; const n = stars[k.id] ?? 0; const isNext = nextUp?.id === k.id; return (
+                <Link key={k.id} href={`/learn/${k.id}`} className={cn('group flex w-[112px] flex-col items-center text-center', i % 2 === 1 && 'sm:translate-y-5')} data-testid={`skill-${k.id}`} aria-label={`${k.name}: ${n} of 3 stars, ${MASTERY_LEVELS[st.level]}`}>
+                  <span className={cn('relative rounded-full transition-transform duration-200 group-hover:-translate-y-1 group-hover:scale-105', isNext && 'ring-4 ring-brand/40 ring-offset-2 ring-offset-surface')}>
+                    <Ring value={st.n ? st.score : 0} size={78} stroke={6} label={`${k.short} mastery`}><span className={cn('grid h-[58px] w-[58px] place-items-center rounded-full text-3xl', n ? 'bg-gold/20' : isNext ? 'bg-brand/20' : 'bg-raised')} aria-hidden>{VISUAL_LESSONS[k.id].icon}</span></Ring>
+                    {isNext && <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-[#6A4BF0] px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white">Start</span>}
+                    {lessonsDone[k.id] && <CheckCircle2 size={18} className="absolute -right-1 -top-1 rounded-full bg-surface text-ok" aria-hidden />}
+                  </span>
+                  <span className="mt-1.5 flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= n ? 'fill-gold text-gold' : 'text-line'} />)}</span>
+                  <span className="mt-1 text-xs font-semibold leading-tight">{k.short}</span>
+                  <span className="text-[10px] text-muted">{st.n ? `${MASTERY_LEVELS[st.level]} · ${pct(st.correct, st.n)}%` : `${questionsBySkill(k.id).length} questions`}</span>
                 </Link>
               ); })}
             </div>
           </section>
-        ))}
+        ); })}
       </div>
     </div>
   );
 }
 
+/** A lesson opens as the interactive player; the long-form notes are one click away. */
 export function LessonPage({ skill }: { skill: string }) {
+  const params = useSearchParams();
+  const router = useRouter();
+  const info = SKILL[skill as SkillId];
+  if (!info) return <Empty title="Lesson not found" body="That skill does not exist." action={{ label: 'Back to the curriculum', href: '/learn' }} />;
+  if (params.get('view') === 'notes') return <LessonNotes skill={skill} />;
+  return (
+    <div>
+      <LessonPlayer key={info.id} skill={info.id} onExit={() => router.push(`/learn/${info.id}?view=notes`)} />
+      <p className="mt-5 text-center text-sm text-muted">Prefer to read? <Link href={`/learn/${info.id}?view=notes`} className="font-semibold text-brand2 hover:underline" data-testid="open-notes">Open the full notes</Link> · <Link href={info.section === 'math' ? '/learn/math' : '/learn/rw'} className="font-semibold text-brand2 hover:underline">Back to the map</Link></p>
+    </div>
+  );
+}
+
+function LessonNotes({ skill }: { skill: string }) {
   const stats = useSkillStats();
   const done = useStore((s) => s.lessonsDone[skill]);
   const complete = useStore((s) => s.completeLesson);
@@ -68,7 +100,7 @@ export function LessonPage({ skill }: { skill: string }) {
   return (
     <div>
       <PageHeader eyebrow={`${SECTION_NAME[info.section]} · ${DOMAIN[info.domain].name}`} title={info.name}
-        actions={<><Link href={`/practice/session?mode=skill&skill=${info.id}&n=8`} className="btn-primary">Practice this skill</Link><Link href={info.section === 'math' ? '/learn/math' : '/learn/rw'} className="btn-ghost">All {SECTION_NAME[info.section]} skills</Link></>} />
+        actions={<><Link href={`/learn/${info.id}`} className="btn-primary" data-testid="play-lesson"><Play size={16} />Interactive lesson</Link><Link href={`/practice/session?mode=skill&skill=${info.id}&n=8`} className="btn-ghost">Practice this skill<ArrowRight size={16} /></Link><Link href={info.section === 'math' ? '/learn/math' : '/learn/rw'} className="btn-ghost">All {SECTION_NAME[info.section]} skills</Link></>} />
       <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
         <div className="space-y-4">
           <Section_ n={1} title="Start here"><p><RichText text={l.intro} /></p></Section_>

@@ -1,5 +1,6 @@
 'use client';
 import { create } from 'zustand';
+import { CHEST, dailyQuests } from './engine/quests';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 import { del, get, set } from 'idb-keyval';
 import type { AppState, ErrorCategory, MockAttempt, Note, PetSlot, Profile, Question, QuestionReport, Settings, TutorMessage } from './types';
@@ -43,6 +44,8 @@ interface Actions {
   resolve: (qid: string) => boolean;
   toggleSaved: (qid: string) => void;
   completeLesson: (skill: string) => void;
+  setLessonStars: (skill: string, stars: number) => void;
+  claimQuest: (id: string) => boolean;
   makePlan: () => void;
   togglePlanTask: (id: string) => void;
   saveNote: (n: Partial<Note> & { title: string; body: string }) => string;
@@ -121,6 +124,21 @@ export const useStore = create<Store>()(
           const a = post(st, now);
           return { state: a.state, events: [...g.events, ...a.events] };
         }),
+        setLessonStars: (skill, stars) => { const cur = getState().lessonStars ?? {}; if ((cur[skill] ?? 0) < stars) setState({ lessonStars: { ...cur, [skill]: stars } }); },
+        claimQuest: (id) => {
+          let ok = false;
+          apply((s) => {
+            const now = Date.now(), day = dateKey(now), claimed = s.quests?.[day] ?? [];
+            const board = dailyQuests(s, getQ, now);
+            const reward = id === CHEST.id ? (board.every((q) => claimed.includes(q.id)) ? CHEST.xp : 0) : board.find((q) => q.id === id && q.done)?.xp ?? 0;
+            if (!reward || claimed.includes(id)) return { state: s };
+            ok = true;
+            const g = grant({ ...s, quests: { [day]: [...claimed, id] } }, reward, now, id === CHEST.id ? 'Daily chest opened' : 'Quest complete');
+            const a = post(g.state, now);
+            return { state: a.state, events: [...g.events, ...a.events] };
+          });
+          return ok;
+        },
         makePlan: () => setState({ plan: generatePlan(pure(getState()), getQ, Date.now()), planDone: {} }),
         togglePlanTask: (id) => { const d = { ...getState().planDone }; if (d[id]) delete d[id]; else d[id] = Date.now(); setState({ planDone: d }); },
         saveNote: (n) => {

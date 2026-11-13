@@ -1,6 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Bot, Clock, Flag, Lightbulb, NotebookPen, SkipForward, TriangleAlert } from 'lucide-react';
+import { sfx } from '@/lib/sfx';
+import { Confetti } from './Confetti';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PracticeMode, Question } from '@/lib/types';
 import { getQuestion } from '@/data/questions';
@@ -56,6 +58,8 @@ export function SessionRunner(cfg: SessionConfig) {
   const [panel, setPanel] = useState<'tutor' | 'report' | 'note' | null>(null);
   const [reviewId, setReviewId] = useState<string | null>(null);
   const [hackFor, setHackFor] = useState<string | null>(null);
+  const [combo, setCombo] = useState(0);
+  const [fire, setFire] = useState(0);
   const [, setTick] = useState(0);
   const spent = useRef<Record<string, number>>({});
   const enterAt = useRef(Date.now());
@@ -97,8 +101,11 @@ export function SessionRunner(cfg: SessionConfig) {
     bank();
     store.answer({ qid: q.id, answer: a, ms: spent.current[q.id] ?? 0, hints: hints[q.id] ?? 0, mode: cfg.mode, sessionId });
     setSubmitted((s) => ({ ...s, [q.id]: true }));
+    if (feedback === 'immediate') {
+      if (isCorrect(q, a)) { const c = combo + 1; setCombo(c); setFire(Date.now()); sfx(c >= 3 ? 'combo' : 'correct'); } else { setCombo(0); sfx('wrong'); }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q, submitted, done, answers, hints, cfg.mode, sessionId, bank]);
+  }, [q, submitted, done, answers, hints, cfg.mode, sessionId, bank, combo]);
 
   const next = useCallback(() => {
     if (idx >= questions.length - 1) { bank(); finish(submitted, answers); } else go(idx + 1);
@@ -214,6 +221,7 @@ export function SessionRunner(cfg: SessionConfig) {
 
   return (
     <div className="space-y-4">
+      <Confetti fire={fire} count={combo >= 3 ? 40 : 18} />
       <div className="flex flex-wrap items-center gap-3">
         <Link href={cfg.backHref ?? '/practice'} className="btn-quiet !px-2" aria-label="Leave session"><ArrowLeft size={18} /></Link>
         <div className="min-w-0 flex-1">
@@ -225,6 +233,7 @@ export function SessionRunner(cfg: SessionConfig) {
             <Clock size={14} />{!showTimer && totalLeft === null && qLeft === null ? 'Hidden' : totalLeft !== null ? fmtClock(totalLeft) : qLeft !== null ? fmtClock(qLeft) : fmtClock(liveMs(q.id))}
           </button>
         )}
+        {combo >= 2 && <span className="chip !border-warn !py-1.5 text-sm font-black text-warn" data-testid="combo" aria-live="polite">🔥 {combo} in a row</span>}
         <div className="hidden sm:block"><Pet mood={mood} equipped={store.pet.equipped} size={54} /></div>
       </div>
 
