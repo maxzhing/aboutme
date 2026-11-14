@@ -288,6 +288,10 @@ export interface AppState {
   lessonStars: Record<string, number>;
   /** daily quest rewards already claimed, keyed by date */
   quests: Record<string, string[]>;
+  /** best result in each course chapter */
+  chapters: Record<string, { best: number; total: number; at: number; passedAt?: number }>;
+  /** traps the student said caught them, by trap id */
+  traps: Record<string, { n: number; last: number; qids: string[] }>;
   plan?: StudyPlan;
   planDone: Record<string, number>;
   mocks: MockAttempt[];

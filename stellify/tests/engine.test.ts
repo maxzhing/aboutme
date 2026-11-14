@@ -401,10 +401,45 @@ describe('Beyond SAT tier, challenge level and hacks', () => {
   });
   it('ships the official-pattern set with full explanations and balanced answer positions', () => {
     const set = ALL_RAW.filter((q) => q.id.startsWith('r-cb-'));
-    expect(set.length).toBe(40);
+    expect(set.length).toBe(40); // the official-pattern set
     const pos = [0, 1, 2, 3].map((i) => set.filter((q) => q.answer === i).length);
     expect(Math.max(...pos) - Math.min(...pos)).toBeLessThanOrEqual(2);
     for (const q of set) { expect(validateQuestion(q), q.id).toEqual([]); expect(q.steps.length, q.id).toBeGreaterThanOrEqual(3); expect(Math.min(...q.why.map((w) => w.length)), q.id).toBeGreaterThan(40); }
     expect(set.filter((q) => q.d === 'M').length).toBeLessThanOrEqual(2);
+  });
+  it('has a full step-by-step course for every skill, backed by enough hard practice', async () => {
+    const { COURSES, CHAPTERS, TRAP, chapterFor } = await import('@/data/courses');
+    const { chapterQuestions, chapterSet } = await import('@/lib/course');
+    expect(CHAPTERS.length).toBeGreaterThanOrEqual(85);
+    for (const k of SKILLS) {
+      const ch = COURSES[k.id];
+      expect(ch.length, k.id).toBeGreaterThanOrEqual(2);
+      const subs = new Set(QUESTIONS.filter((q) => q.skill === k.id).map((q) => q.sub));
+      for (const sub of subs) expect(chapterFor(k.id, sub), `${k.id}/${sub}`).toBeDefined();
+      for (const c of ch) {
+        expect(c.teach.length, c.id).toBeGreaterThanOrEqual(1);
+        for (const t of c.teach) expect(t.text.split(/\s+/).length, `${c.id}: ${t.title}`).toBeLessThanOrEqual(55);
+        expect(c.method.length, c.id).toBeGreaterThanOrEqual(3);
+        expect(c.traps.length, c.id).toBeGreaterThanOrEqual(2);
+        for (const t of c.traps) { expect(t.looks.length).toBeGreaterThan(10); expect(t.fix.length).toBeGreaterThan(10); expect(TRAP[t.id]).toBe(t); }
+        const pool = chapterQuestions(c);
+        expect(pool.length, `${c.id} practice pool`).toBeGreaterThanOrEqual(2);
+        for (const sub of c.subs) expect(subs.has(sub), `${c.id} sub "${sub}" has no questions`).toBe(true);
+        const set = chapterSet(c, []);
+        expect(set.practice.length, c.id).toBe(3);
+        expect(new Set([set.walk?.id, ...set.practice.map((q) => q.id)]).size, c.id).toBe(4);
+      }
+    }
+  });
+  it('serves new questions when a chapter is retried, and passes at 2 of 3', async () => {
+    const { CHAPTER } = await import('@/data/courses');
+    const { chapterSet, passed } = await import('@/lib/course');
+    const c = CHAPTER['bnd-4'];
+    const first = chapterSet(c, []);
+    const solved = first.practice.map((q, i) => ({ id: String(i), qid: q.id, at: T0, answer: String(q.answer), correct: true, ms: 60000, hints: 0, mode: 'lesson' as const, sessionId: 's' }));
+    const second = chapterSet(c, solved);
+    expect(second.practice.some((q) => first.practice.includes(q))).toBe(false);
+    expect(passed(2, 3)).toBe(true);
+    expect(passed(1, 3)).toBe(false);
   });
 });

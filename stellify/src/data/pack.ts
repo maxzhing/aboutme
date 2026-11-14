@@ -7,7 +7,7 @@ import type { Figure, SkillId } from '@/lib/types';
  * labelled as such everywhere, used only for the student's own study, and never committed.
  */
 export interface PackItem {
-  id: string; skill: SkillId; d: 'M' | 'H'; cbDifficulty?: string; passage: string; figure?: Figure; stem: string;
+  id: string; skill: SkillId; sub?: string; d: 'M' | 'H'; cbDifficulty?: string; passage: string; figure?: Figure; stem: string;
   choices: string[]; answer: number; why: string[]; note?: string;
 }
 declare const __PACK__: PackItem[] | null | undefined;

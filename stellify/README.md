@@ -5,11 +5,15 @@ browser. That is the whole product: no install, no server, no account, no intern
 
 ## What is inside
 
-- 380 original questions: SAT-calibrated Math and Reading & Writing (about 20% medium, 40% hard,
+- 474 original questions: SAT-calibrated Math and Reading & Writing (about 20% medium, 40% hard,
   40% very hard), a Beyond SAT tier that is deliberately harder than the real test, and a 40-question
   official-pattern Reading & Writing set modelled on the structures of the hardest released items. Each has a step-by-step solution, a rationale for every answer choice, the concept,
   the fastest method, the common trap, a takeaway and three levels of hints.
-- 30 interactive lessons, one per official skill: a picture per idea (graphs with sliders, sentence
+- A full course for every one of the 30 skills: 88 step-by-step chapters. Each chapter has picture
+  lessons, a numbered method, a hard problem worked one step at a time, the traps (what each looks
+  like and the fix) and three hard practice questions; pass at 2 of 3. After any miss you name the trap,
+  and the Mistake Bucket keeps a trap list with a targeted drill for each.
+- 30 quick interactive lessons, one per official skill: a picture per idea (graphs with sliders, sentence
   diagrams, step reveals, tables that highlight), quick checks, a worked example and a boss question,
   with 1 to 3 stars each and a skill map. The long-form notes remain one click away.
 - 35 one-idea "hack" cards shown on lessons and questions, a 28-rule Grammar Masterclass, a Desmos-style graphing
@@ -67,8 +71,8 @@ npm run test:e2e
 
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
-- `npm run test` — 43 unit tests of the learning engine and content.
-- `npm run test:e2e` — 8 browser tests against the built file opened from disk.
+- `npm run test` — 45 unit tests of the learning engine and content.
+- `npm run test:e2e` — 9 browser tests against the built file opened from disk.
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
 ## Honest limits

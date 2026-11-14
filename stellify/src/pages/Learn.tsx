@@ -15,6 +15,8 @@ import { RichText } from '@/components/RichText';
 import { HackCard } from '@/components/HackCard';
 import { hacksFor } from '@/data/hacks';
 import { LessonPlayer } from '@/components/LessonPlayer';
+import { CoursePage } from './Course';
+import { COURSES } from '@/data/courses';
 import { VISUAL_LESSONS } from '@/data/visual-lessons';
 import { Badge, Card, Empty, PageHeader, Ring, Tabs, cn, toneForPct } from '@/components/ui';
 
@@ -27,12 +29,13 @@ export function CurriculumPage({ section }: { section?: Section }) {
   const skills = SKILLS.filter((k) => !section || k.section === section);
   const mastered = skills.filter((k) => stats[k.id].level >= 3).length;
   const stars = useStore((s) => s.lessonStars) ?? {};
+  const chaptersDone = useStore((s) => s.chapters) ?? {};
   const earned = skills.reduce((n, k) => n + (stars[k.id] ?? 0), 0);
   const nextUp = skills.find((k) => !stars[k.id]) ?? skills.find((k) => (stars[k.id] ?? 0) < 3);
   return (
     <div>
       <PageHeader eyebrow="Learn" title={section ? `${SECTION_NAME[section]} Academy` : 'Complete Curriculum'}
-        subtitle={`Every skill on the Digital SAT as a map. Each stop is a 5-minute interactive lesson: pictures you can play with, quick checks, and a boss question. ⭐ ${earned} of ${skills.length * 3} stars · ${mastered} of ${skills.length} skills at Proficient or higher.`}
+        subtitle={`Every skill on the Digital SAT as a map. Each stop is a full course: step-by-step chapters with pictures, a method, a worked hard problem, the traps, and hard practice. A 5-minute quick lesson is there too. ⭐ ${earned} of ${skills.length * 3} stars · ${mastered} of ${skills.length} skills at Proficient or higher.`}
         actions={<>{section !== 'math' && <Link href="/learn/math" className="btn-ghost">Math Academy</Link>}{section !== 'rw' && <Link href="/learn/rw" className="btn-ghost">Reading &amp; Writing Academy</Link>}{section && <Link href="/learn" className="btn-ghost">All</Link>}</>} />
       {nextUp && (
         <Link href={`/learn/${nextUp.id}`} className="mb-5 flex flex-wrap items-center gap-4 rounded-2xl border-2 border-brand/50 bg-brand/10 p-4 transition-transform hover:-translate-y-0.5" data-testid="next-lesson">
@@ -55,7 +58,7 @@ export function CurriculumPage({ section }: { section?: Section }) {
                   </span>
                   <span className="mt-1.5 flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= n ? 'fill-gold text-gold' : 'text-line'} />)}</span>
                   <span className="mt-1 text-xs font-semibold leading-tight">{k.short}</span>
-                  <span className="text-[10px] text-muted">{st.n ? `${MASTERY_LEVELS[st.level]} · ${pct(st.correct, st.n)}%` : `${questionsBySkill(k.id).length} questions`}</span>
+                  <span className="text-[10px] text-muted">{COURSES[k.id].filter((c) => chaptersDone[c.id]?.passedAt).length}/{COURSES[k.id].length} chapters{st.n ? ` · ${pct(st.correct, st.n)}%` : ''}</span>
                 </Link>
               ); })}
             </div>
@@ -73,10 +76,11 @@ export function LessonPage({ skill }: { skill: string }) {
   const info = SKILL[skill as SkillId];
   if (!info) return <Empty title="Lesson not found" body="That skill does not exist." action={{ label: 'Back to the curriculum', href: '/learn' }} />;
   if (params.get('view') === 'notes') return <LessonNotes skill={skill} />;
+  if (params.get('view') !== 'quick') return <CoursePage skill={info.id} />;
   return (
     <div>
-      <LessonPlayer key={info.id} skill={info.id} onExit={() => router.push(`/learn/${info.id}?view=notes`)} />
-      <p className="mt-5 text-center text-sm text-muted">Prefer to read? <Link href={`/learn/${info.id}?view=notes`} className="font-semibold text-brand2 hover:underline" data-testid="open-notes">Open the full notes</Link> · <Link href={info.section === 'math' ? '/learn/math' : '/learn/rw'} className="font-semibold text-brand2 hover:underline">Back to the map</Link></p>
+      <LessonPlayer key={info.id} skill={info.id} onExit={() => router.push(`/learn/${info.id}`)} />
+      <p className="mt-5 text-center text-sm text-muted">Want everything? <Link href={`/learn/${info.id}`} className="font-semibold text-brand2 hover:underline" data-testid="open-course">Open the full course ({COURSES[info.id].length} chapters)</Link> · <Link href={`/learn/${info.id}?view=notes`} className="font-semibold text-brand2 hover:underline" data-testid="open-notes">Full notes</Link></p>
     </div>
   );
 }

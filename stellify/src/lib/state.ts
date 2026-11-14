@@ -15,6 +15,8 @@ export const initialState = (): AppState => ({
   lessonsDone: {},
   lessonStars: {},
   quests: {},
+  chapters: {},
+  traps: {},
   planDone: {},
   mocks: [],
   saved: [],

@@ -11,6 +11,7 @@ import { findWeaknesses } from '@/lib/engine/adaptive';
 import { todaysMission } from '@/lib/engine/plan';
 import { CHEST, dailyQuests } from '@/lib/engine/quests';
 import { VISUAL_LESSONS } from '@/data/visual-lessons';
+import { COURSES } from '@/data/courses';
 import { sfx } from '@/lib/sfx';
 import { Confetti } from '@/components/Confetti';
 import { fmtRange } from '@/lib/engine/scoring';
@@ -190,7 +191,7 @@ export function DashboardPage() {
               <li key={k.id}>
                 <Link href={`/learn/${k.id}`} className={`flex items-center gap-3 rounded-xl border p-2.5 transition-transform hover:-translate-y-0.5 ${i === 0 ? 'border-brand/50 bg-brand/10' : 'border-line'}`}>
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-raised text-2xl" aria-hidden>{VISUAL_LESSONS[k.id].icon}</span>
-                  <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{k.short}</span><span className="block truncate text-xs text-muted">{i === 0 && weak?.skill === k.id ? 'Your biggest opportunity right now' : `5-min interactive lesson · ${MASTERY_LEVELS[stats[k.id].level]}`}</span></span>
+                  <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{k.short}</span><span className="block truncate text-xs text-muted">{i === 0 && weak?.skill === k.id ? 'Your biggest opportunity right now' : `Full course · ${COURSES[k.id].filter((c) => s.chapters?.[c.id]?.passedAt).length}/${COURSES[k.id].length} chapters · ${MASTERY_LEVELS[stats[k.id].level]}`}</span></span>
                   {i === 0 ? <span className="btn-primary !px-3 !py-1.5 text-sm"><Play size={14} />Play</span> : <span className="flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= (starMap[k.id] ?? 0) ? 'fill-gold text-gold' : 'text-line'} />)}</span>}
                 </Link>
               </li>

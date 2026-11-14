@@ -196,8 +196,9 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
         <p className="mt-3 text-sm text-muted">{checkPoints} of 2 quick checks right first time · boss {bossDone ? 'defeated' : 'not beaten yet'}{stars < 3 ? ' · replay any time for 3 stars' : ''}</p>
         <div className="mt-5 flex flex-wrap justify-center gap-2">
           <Link href={`/practice/session?mode=lesson&skill=${skill}&diff=hard&n=6`} className="btn-primary">Practice 6 Hard questions<ArrowRight size={16} /></Link>
-          {nextSkill && <Link href={`/learn/${nextSkill.id}`} className="btn-ghost">Next lesson: {nextSkill.short}</Link>}
-          <button type="button" className="btn-ghost" onClick={onExit}>Full notes</button>
+          <Link href={`/learn/${skill}/${skill}-1`} className="btn-ghost" data-testid="start-course">Start the full course</Link>
+          {nextSkill && <Link href={`/learn/${nextSkill.id}?view=quick`} className="btn-ghost">Next quick lesson: {nextSkill.short}</Link>}
+          
         </div>
       </div>
     );

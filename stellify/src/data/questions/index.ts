@@ -50,14 +50,20 @@ export const QUESTIONS: Question[] = ALL_QUESTIONS.filter((q) => q.validation ==
  * in the public build). They resolve by id for tests, review and the Mistake Bucket, but are kept
  * out of QUESTIONS so the original bank, its statistics and adaptive practice stay unchanged.
  */
+/** Splits the College Board's rationale for the right answer into sentences, so it can be revealed one step at a time. */
+function officialSteps(text: string): string[] {
+  const parts = text.replace(/^Choice [A-D] is the best answer(?: because)?[.,]?\s*/, '').split(/(?<=[.!?”"])\s+(?=[A-Z“"])/).map((x) => x.trim()).filter(Boolean);
+  return parts.length ? parts : [text];
+}
+
 export const OFFICIAL: Question[] = PACK_RAW.map((p) => {
   const skill = SKILL[p.skill], lesson = LESSON[p.skill], hack = hacksFor(p.skill)[0];
   const concept = lesson.intro, strategy = hack ? `${hack.title}: ${hack.test}` : lesson.shortcuts[0];
   const letter = 'ABCD'[p.answer];
   const difficulty: Difficulty = p.d === 'M' ? 'medium' : 'hard';
   return {
-    id: p.id, skill: p.skill, sub: 'Official question', passage: p.passage, figure: p.figure, stem: p.stem, choices: p.choices, answer: p.answer,
-    steps: [p.why[p.answer], ...(p.note ? [p.note] : []), `The answer is choice ${letter}.`], why: p.why,
+    id: p.id, skill: p.skill, sub: p.sub ?? 'Official question', passage: p.passage, figure: p.figure, stem: p.stem, choices: p.choices, answer: p.answer,
+    steps: [...officialSteps(p.why[p.answer]), ...(p.note ? [p.note] : []), `The answer is choice ${letter}.`], why: p.why,
     concept, strategy, trap: lesson.mistakes[0], remember: lesson.shortcuts[0],
     section: skill.section, domain: skill.domain, difficulty, type: 'mcq', time: DEFAULT_TIME[skill.section][difficulty],
     hints: [concept, strategy, 'Eliminate the choices you can rule out for a definite reason, then compare what is left word by word.'],

@@ -1,6 +1,7 @@
 'use client';
 import { create } from 'zustand';
 import { CHEST, dailyQuests } from './engine/quests';
+import { passed } from './course';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 import { del, get, set } from 'idb-keyval';
 import type { AppState, ErrorCategory, MockAttempt, Note, PetSlot, Profile, Question, QuestionReport, Settings, TutorMessage } from './types';
@@ -46,6 +47,8 @@ interface Actions {
   completeLesson: (skill: string) => void;
   setLessonStars: (skill: string, stars: number) => void;
   claimQuest: (id: string) => boolean;
+  finishChapter: (id: string, correct: number, total: number) => void;
+  logTrap: (trapId: string, qid: string) => void;
   makePlan: () => void;
   togglePlanTask: (id: string) => void;
   saveNote: (n: Partial<Note> & { title: string; body: string }) => string;
@@ -125,6 +128,27 @@ export const useStore = create<Store>()(
           return { state: a.state, events: [...g.events, ...a.events] };
         }),
         setLessonStars: (skill, stars) => { const cur = getState().lessonStars ?? {}; if ((cur[skill] ?? 0) < stars) setState({ lessonStars: { ...cur, [skill]: stars } }); },
+        finishChapter: (id, correct, total) => apply((s) => {
+          const now = Date.now();
+          const prev = s.chapters?.[id];
+          const ok = passed(correct, total);
+          const first = ok && !prev?.passedAt;
+          const better = !prev || correct / total > prev.best / prev.total;
+          const k = dateKey(now);
+          const day = s.activity[k] ?? { ms: 0, questions: 0, correct: 0, xp: 0, lessons: 0 };
+          let st: AppState = { ...s, chapters: { ...s.chapters, [id]: { ...(better ? { best: correct, total } : { best: prev!.best, total: prev!.total }), at: now, passedAt: prev?.passedAt ?? (ok ? now : undefined) } },
+            activity: first ? { ...s.activity, [k]: { ...day, lessons: day.lessons + 1 } } : s.activity };
+          const g = first ? grant(st, 50, now, 'Chapter passed') : { state: st, events: [] };
+          st = g.state;
+          const a = post(st, now);
+          return { state: a.state, events: [...g.events, ...a.events] };
+        }),
+        logTrap: (trapId, qid) => {
+          const cur = getState().traps ?? {};
+          const t = cur[trapId] ?? { n: 0, last: 0, qids: [] };
+          if (t.qids.includes(qid)) return;
+          setState({ traps: { ...cur, [trapId]: { n: t.n + 1, last: Date.now(), qids: [...t.qids, qid].slice(-20) } } });
+        },
         claimQuest: (id) => {
           let ok = false;
           apply((s) => {

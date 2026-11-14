@@ -257,6 +257,8 @@ test('interactive lesson: pictures, quick checks, boss question, stars; quests a
   await go(page, '/learn');
   await expect(page.getByTestId('next-lesson')).toContainText('Linear equations');
   await page.getByTestId('skill-bnd').click();
+  await expect(page.getByTestId('course')).toContainText('Boundaries');
+  await page.getByTestId('quick-lesson').click();
   await expect(page.getByTestId('lesson-player')).toContainText('Boundaries');
   await page.getByTestId('lesson-next').click(); // intro → idea 1
   await expect(page.getByTestId('lesson-player')).toContainText('Extra information gets a matching pair');
@@ -282,7 +284,7 @@ test('interactive lesson: pictures, quick checks, boss question, stars; quests a
   await expect(page.getByTestId('lesson-stars')).toHaveAttribute('data-stars', '2'); // one check + the boss
 
   // a graph lesson renders and responds to its slider
-  await go(page, '/learn/linf');
+  await go(page, '/learn/linf?view=quick');
   await page.getByTestId('lesson-next').click();
   await expect(page.getByRole('img', { name: 'Interactive graph: line' })).toBeVisible();
   const slope = page.getByLabel('slope m =');
@@ -306,5 +308,46 @@ test('interactive lesson: pictures, quick checks, boss question, stars; quests a
   await expect(page.getByTestId('pattern-set')).toContainText('40 original questions');
   await page.getByTestId('pattern-set').getByRole('link', { name: 'Punctuation (15)' }).click();
   await expect(page.getByTestId('question-card')).toHaveAttribute('data-qid', /^r-cb-bnd-/);
+  expect(errors).toEqual([]);
+});
+
+test('full course: chapter player teaches step by step, works a hard problem, tracks traps', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/learn/bnd');
+  await expect(page.getByTestId('course-progress')).toContainText('0 of 6 chapters passed');
+  await page.getByTestId('course-continue').click();
+  await expect(page.getByTestId('chapter-player')).toContainText('Chapter 1 of 6');
+  await page.getByTestId('chapter-next').click(); // → first picture lesson
+  const next = async () => { await page.getByTestId('chapter-next').click(); await page.waitForTimeout(350); }; // let each slide settle
+  while (!(await page.getByTestId('method').count())) await next();
+  await expect(page.getByTestId('chapter-next')).toBeDisabled(); // reveal every step first
+  while (await page.getByTestId('method-next').count()) await page.getByTestId('method-next').click();
+  await next(); // → worked example
+  await expect(page.getByTestId('chapter-next')).toBeDisabled();
+  while (await page.getByTestId('walk-next').count()) await page.getByTestId('walk-next').click();
+  await expect(page.getByTestId('walk-steps').locator('li').last()).toBeVisible();
+  await next(); // → traps
+  await expect(page.getByTestId('traps')).toContainText('Comma splice');
+  await next();
+  // three hard questions: two right, one wrong (and name the trap)
+  for (let i = 0; i < 3; i++) {
+    const qid = (await page.getByTestId('chapter-practice').getAttribute('data-qid'))!;
+    const q = KEY[qid]; const pick = i < 2 ? (q.answer as number) : ((q.answer as number) + 1) % 4;
+    await page.locator(`[data-testid="chapter-practice"] [data-choice="${'ABCD'[pick]}"]`).first().click();
+    await page.getByTestId('chapter-check').click();
+    await expect(page.getByTestId('explanation')).toBeVisible();
+    if (i === 2) { await page.getByTestId('trap-check').locator('button').first().click(); await expect(page.getByTestId('trap-check')).toContainText('Fix:'); }
+    await next();
+  }
+  await expect(page.getByTestId('chapter-score')).toContainText('2 of 3');
+  await expect(page.getByTestId('chapter-stars')).toHaveAttribute('data-stars', '2');
+  await page.getByTestId('next-chapter').click();
+  await expect(page.getByTestId('chapter-player')).toContainText('Chapter 2 of 6');
+  await go(page, '/learn/bnd');
+  await expect(page.getByTestId('course-progress')).toContainText('1 of 6 chapters passed');
+  await expect(page.getByTestId('course-traps')).toContainText('×1');
+  await go(page, '/mistakes');
+  await expect(page.getByTestId('trap-list')).toBeVisible();
   expect(errors).toEqual([]);
 });

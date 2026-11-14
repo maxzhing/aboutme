@@ -11,6 +11,8 @@ import { HackCard } from './HackCard';
 import { hacksFor } from '@/data/hacks';
 import { Figure } from './Figure';
 import { Badge, cn } from './ui';
+import { useStore } from '@/lib/store';
+import { chapterFor } from '@/data/courses';
 
 export function QuestionMeta({ q }: { q: Question }) {
   return (
@@ -89,6 +91,26 @@ export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, 
   );
 }
 
+/**
+ * After a miss: name the trap that caused it. The answer is saved, counted across questions, and shown
+ * with its fix on the Mistake Bucket, so the same trap can be drilled until it stops working on you.
+ */
+function TrapCheck({ q }: { q: Question }) {
+  const ch = chapterFor(q.skill, q.sub);
+  const log = useStore((s) => s.logTrap);
+  const traps = useStore((s) => s.traps) ?? {};
+  if (!ch) return null;
+  const picked = ch.traps.filter((t) => traps[t.id]?.qids.includes(q.id));
+  return (
+    <div className="rounded-xl border border-warn/40 bg-warn/5 p-3.5" data-testid="trap-check">
+      <div className="mb-2 text-xs font-bold uppercase tracking-wide text-warn">🪤 Which trap got you? Name it so it stops working on you</div>
+      <div className="flex flex-wrap gap-1.5">{ch.traps.map((t) => <button key={t.id} type="button" onClick={() => log(t.id, q.id)} aria-pressed={picked.includes(t)} className={cn('chip', picked.includes(t) && 'border-warn bg-warn/15 text-ink')} data-testid={`trap-${t.id}`}>{t.name}</button>)}</div>
+      {picked.map((t) => <p key={t.id} className="mt-2 text-sm"><b>Fix:</b> <RichText text={t.fix} /> <span className="text-muted">You have fallen for this {traps[t.id].n}×.</span></p>)}
+      <Link href={`/learn/${q.skill}/${ch.id}`} className="mt-2 inline-block text-sm font-semibold text-brand2 hover:underline">Re-learn chapter {ch.n}: {ch.title} →</Link>
+    </div>
+  );
+}
+
 const Block = ({ title, children, tone }: { title: string; children: React.ReactNode; tone?: 'ok' | 'bad' | 'brand' }) => (
   <section className={cn('rounded-xl border p-3.5', tone === 'ok' ? 'border-ok/30 bg-ok/5' : tone === 'bad' ? 'border-bad/30 bg-bad/5' : tone === 'brand' ? 'border-brand/30 bg-brand/5' : 'border-line bg-raised/40')}>
     <h4 className="mb-1.5 text-xs font-bold uppercase tracking-wide text-faint">{title}</h4>
@@ -123,6 +145,8 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
           {category && <p className="mt-2 text-xs text-muted">{ERROR_CATEGORIES.find((c) => c.id === category)?.tip}</p>}
         </div>
       )}
+
+      {!ok && <TrapCheck q={q} />}
 
       <Block title="Step-by-step solution">
         <ol className="list-decimal space-y-1.5 pl-5">{q.steps.map((s, i) => <li key={i}><RichText text={s} /></li>)}</ol>
@@ -164,7 +188,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
 
       <Block title="Recommended next">
         <div className="flex flex-wrap gap-2">
-          <Link href={`/learn/${q.skill}`} className="btn-ghost !py-1.5">Lesson: {SKILL[q.skill].short}</Link>
+          {chapterFor(q.skill, q.sub) && <Link href={`/learn/${q.skill}/${chapterFor(q.skill, q.sub)!.id}`} className="btn-ghost !py-1.5" data-testid="relearn">Re-learn: {chapterFor(q.skill, q.sub)!.title}</Link>}
           <Link href={`/practice/session?mode=skill&skill=${q.skill}&n=6`} className="btn-ghost !py-1.5">6 more {SKILL[q.skill].short} questions</Link>
           {related && <Link href={`/practice/session?mode=single&ids=${related.id}`} className="btn-ghost !py-1.5">Similar question ({DIFFICULTY_NAME[related.difficulty]})</Link>}
         </div>

@@ -9,9 +9,39 @@ import { DIFFICULTIES, DIFFICULTY_NAME, SECTION_NAME, SKILL } from '@/lib/taxono
 import { DAY, fmtDuration } from '@/lib/util';
 import type { Difficulty, ErrorCategory } from '@/lib/types';
 import { Explanation, QuestionView } from '@/components/Question';
+import { CHAPTER, TRAP } from '@/data/courses';
+import { chapterQuestions } from '@/lib/course';
 import { Badge, Card, Empty, PageHeader, Stat, Tabs } from '@/components/ui';
 
 type Filter = 'unresolved' | 'all' | 'recent' | 'repeated' | 'math' | 'rw' | 'resolved';
+
+/** The traps you have named after misses, worst first, each with its fix and a targeted drill. */
+function TrapList() {
+  const traps = useStore((s) => s.traps) ?? {};
+  const attempts = useStore((s) => s.attempts);
+  const list = Object.entries(traps).filter(([id]) => TRAP[id]).sort((a, b) => b[1].n - a[1].n || b[1].last - a[1].last).slice(0, 6);
+  if (!list.length) return null;
+  const solved = new Set(attempts.filter((a) => a.correct).map((a) => a.qid));
+  return (
+    <Card data-testid="trap-list">
+      <h2 className="font-bold">🪤 Your trap list</h2>
+      <p className="mt-0.5 text-sm text-muted">The traps you said caught you, worst first. Read the fix, then drill questions built on the same trap until it stops working.</p>
+      <ul className="mt-3 grid gap-3 md:grid-cols-2">
+        {list.map(([id, t]) => { const tr = TRAP[id]; const ch = CHAPTER[tr.chapter]; const drill = chapterQuestions(ch).filter((q) => !solved.has(q.id) && !t.qids.includes(q.id)).slice(0, 6).map((q) => q.id); return (
+          <li key={id} className="rounded-xl border border-line p-3">
+            <div className="flex items-baseline justify-between gap-2"><b>{tr.name}</b><Badge tone="bad">×{t.n}</Badge></div>
+            <p className="mt-1 text-xs text-muted">{SKILL[tr.skill].short} · {ch.title}</p>
+            <p className="mt-1.5 text-sm"><span className="font-semibold text-ok">Fix:</span> {tr.fix}</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Link href={`/learn/${tr.skill}/${ch.id}`} className="btn-ghost !py-1 text-sm">Re-learn the chapter</Link>
+              {drill.length > 0 && <Link href={`/practice/session?mode=custom&ids=${drill.join(',')}&back=/mistakes`} className="btn-primary !py-1 text-sm" data-testid={`drill-${id}`}>Drill it · {drill.length}</Link>}
+            </div>
+          </li>
+        ); })}
+      </ul>
+    </Card>
+  );
+}
 
 export function MistakesPage() {
   const mistakes = useStore((s) => s.mistakes);
@@ -37,6 +67,7 @@ export function MistakesPage() {
     <div className="space-y-4">
       <PageHeader eyebrow="Performance" title="Mistake Bucket" subtitle="Every miss is saved automatically. A mistake is resolved only after you answer the original question correctly without hints and get two new related questions right."
         actions={<Link href="/practice/session?mode=mistakes&n=8" className={`btn-primary ${open_.length ? '' : 'pointer-events-none opacity-50'}`} data-testid="daily-review">Start today&apos;s mistake review</Link>} />
+      <TrapList />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Unresolved" value={<span data-testid="unresolved-count">{open_.length}</span>} />
         <Stat label="Ready to resolve" value={ready.length} sub="practice completed" />

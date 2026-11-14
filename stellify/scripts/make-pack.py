@@ -93,7 +93,7 @@ def parse(text, overrides, ital=None):
         for a, b in ov.get('replace', []):
             for k in ('passage', 'stem'): item[k] = item[k].replace(a, b)
             item['choices'] = [c.replace(a, b) for c in item['choices']]
-        item.update({k: v for k, v in ov.items() if k in ('figure', 'passage', 'skill', 'note')})
+        item.update({k: v for k, v in ov.items() if k in ('figure', 'passage', 'skill', 'note', 'sub')})
         if item.get('figure') and item['skill'] == 'coet': item['skill'] = 'coeq'
         items.append(item)
     return items
