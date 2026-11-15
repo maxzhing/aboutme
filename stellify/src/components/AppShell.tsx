@@ -27,6 +27,8 @@ export function Logo({ size = 30 }: { size?: number }) {
 }
 
 const FOCUS_ROUTES = ['/mocks/run', '/onboarding'];
+/** Lessons and chapters run full-screen, without the sidebar, like a test-day screen. */
+const LESSON_FOCUS = /^\/learn\/[a-z0-9]+\/[a-z0-9]+-\d+$/;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname() ?? '/';
@@ -56,7 +58,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clean = path.replace(/\/$/, '') || '/';
-  const focus = FOCUS_ROUTES.some((r) => clean.startsWith(r));
+  const quick = typeof window !== 'undefined' && /[?&]view=quick/.test(window.location.hash);
+  const focus = FOCUS_ROUTES.some((r) => clean.startsWith(r)) || LESSON_FOCUS.test(clean) || (/^\/learn\/[a-z0-9]+$/.test(clean) && quick);
   const isDark = theme === 'dark';
 
   if (!hydrated) {
@@ -82,8 +85,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               return (
                 <li key={it.href}>
                   <Link href={it.href} aria-current={active ? 'page' : undefined}
-                    className={cn('flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm font-medium transition-colors', active ? 'bg-brand/15 text-ink ring-1 ring-brand/30' : 'text-muted hover:bg-raised hover:text-ink')}>
-                    <it.icon size={17} className={active ? 'text-brand' : undefined} aria-hidden />{it.label}
+                    className={cn('group relative flex items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-[13.5px] font-medium transition-all', active ? 'bg-gradient-to-r from-brand/20 via-brand/10 to-transparent text-ink' : 'text-muted hover:bg-raised/70 hover:text-ink')}>
+                    {active && <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-gradient-to-b from-[#8B6EFF] to-[#2F8BFF]" aria-hidden />}
+                    <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-lg transition-colors', active ? 'bg-gradient-to-br from-[#6A4BF0] to-[#1F6FE5] text-white shadow-[0_6px_14px_-6px_rgba(106,75,240,0.9)]' : 'bg-raised/60 group-hover:bg-raised')}><it.icon size={15} aria-hidden /></span>{it.label}
                   </Link>
                 </li>
               );
@@ -103,8 +107,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <MotionConfig reducedMotion={reduced ? 'always' : 'user'}>
       <div className="min-h-screen lg:flex">
         {!focus && (
-          <aside className="no-print sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-line bg-surface/60 lg:flex">
-            <Link href="/" className="flex items-center gap-2.5 px-5 py-4 font-display text-lg font-bold"><Logo />{BRAND.name}</Link>
+          <aside className="no-print glass sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col !border-y-0 !border-l-0 lg:flex">
+            <Link href="/" className="flex items-center gap-2.5 px-5 pb-3 pt-5 font-display text-xl font-bold tracking-tight"><Logo size={34} />{BRAND.name}</Link>
             {nav}
           </aside>
         )}
@@ -122,7 +126,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
         <div className="min-w-0 flex-1">
           {!focus && (
-            <div className="no-print sticky top-0 z-30 flex items-center gap-2 border-b border-line bg-bg/85 px-3 py-2.5 backdrop-blur sm:px-6">
+            <div className="no-print sticky top-0 z-30 flex items-center gap-2 border-b border-line/60 bg-bg/70 px-3 py-2.5 backdrop-blur-xl sm:px-6">
               <button className="btn-quiet !p-2 lg:hidden" onClick={() => setMenu(true)} aria-label="Open menu"><Menu size={20} /></button>
               <Link href="/" className="flex items-center gap-2 font-display font-bold lg:hidden"><Logo size={26} /><span className="hidden sm:inline">{BRAND.name}</span></Link>
               <button onClick={() => setSearchOpen(true)} className="ml-1 flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2 text-left text-sm text-faint hover:text-muted sm:max-w-md" aria-label="Search">
@@ -138,10 +142,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           )}
-          <main id="main" className={cn('mx-auto w-full', focus ? 'max-w-6xl p-3 sm:p-6' : 'max-w-6xl px-3 py-6 sm:px-6')}>
+          <main id="main" className={cn('mx-auto w-full', focus ? 'max-w-6xl p-3 sm:p-6' : 'max-w-6xl px-3 py-7 sm:px-8')}>
             <Suspense fallback={<div className="py-20 text-center text-sm text-muted">Loading…</div>}>{children}</Suspense>
           </main>
-          {!focus && <footer className="no-print mx-auto max-w-6xl px-6 pb-8 pt-2 text-xs leading-relaxed text-faint">{BRAND.disclaimer} {hasOfficial && 'Exception: questions labelled Official are College Board questions from your own practice file, included in this personal copy for your study only. '}Passages are written for practice; the researchers, studies and data they describe are illustrative.</footer>}
+          {!focus && <footer className="no-print mx-auto max-w-6xl px-6 pb-8 pt-2 text-xs leading-relaxed text-faint">{BRAND.disclaimer} {hasOfficial() && 'Exception: questions labelled Official are real College Board questions that you added yourself, kept on this device for your own study. '}Passages are written for practice; the researchers, studies and data they describe are illustrative.</footer>}
         </div>
       </div>
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />

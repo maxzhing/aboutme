@@ -17,7 +17,7 @@ export function chapterQuestions(ch: Chapter): Question[] {
  * Practice: questions not yet answered correctly come first, official questions before original ones,
  * hardest first; a short pool is topped up with other hard questions from the same skill.
  */
-export function chapterSet(ch: Chapter, attempts: Attempt[], n = 3): { walk?: Question; practice: Question[] } {
+export function chapterSet(ch: Chapter, attempts: Attempt[], n = 3): { walk?: Question; walk2?: Question; practice: Question[] } {
   const seen = new Set(attempts.map((a) => a.qid));
   const solved = new Set(attempts.filter((a) => a.correct).map((a) => a.qid));
   const pool = chapterQuestions(ch);
@@ -26,12 +26,15 @@ export function chapterSet(ch: Chapter, attempts: Attempt[], n = 3): { walk?: Qu
     .sort((a, b) => Number(seen.has(a.id)) - Number(seen.has(b.id)) || RANK[b.difficulty] - RANK[a.difficulty] || b.steps.length - a.steps.length || a.id.localeCompare(b.id))[0]
     ?? pool.find((q) => !official(q));
   const order = (a: Question, b: Question) => Number(solved.has(a.id)) - Number(solved.has(b.id)) || Number(official(b)) - Number(official(a)) || RANK[b.difficulty] - RANK[a.difficulty] || a.id.localeCompare(b.id);
-  const practice = pool.filter((q) => q.id !== walk?.id).sort(order).slice(0, n);
+  // a second worked example when the chapter has questions to spare, preferring the other kind (official vs original)
+  const rest = pool.filter((q) => q.id !== walk?.id && q.type === 'mcq' && q.steps.length >= 3);
+  const walk2 = pool.length >= n + 3 ? rest.filter((q) => official(q) !== (walk ? official(walk) : false)).sort((a, b) => Number(seen.has(a.id)) - Number(seen.has(b.id)) || RANK[b.difficulty] - RANK[a.difficulty])[0] ?? rest.sort((a, b) => Number(seen.has(a.id)) - Number(seen.has(b.id)))[0] : undefined;
+  const practice = pool.filter((q) => q.id !== walk?.id && q.id !== walk2?.id).sort(order).slice(0, n);
   if (practice.length < n) {
-    const extra = [...OFFICIAL, ...QUESTIONS].filter((q) => q.skill === ch.skill && q.difficulty !== 'medium' && q.id !== walk?.id && !practice.includes(q)).sort(order);
+    const extra = [...OFFICIAL, ...QUESTIONS].filter((q) => q.skill === ch.skill && q.difficulty !== 'medium' && q.id !== walk?.id && q.id !== walk2?.id && !practice.includes(q)).sort(order);
     practice.push(...extra.slice(0, n - practice.length));
   }
-  return { walk, practice };
+  return { walk, walk2, practice };
 }
 
 export const passed = (correct: number, total: number) => total > 0 && correct / total >= 2 / 3;

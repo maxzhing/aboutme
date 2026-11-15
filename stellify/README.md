@@ -38,6 +38,14 @@ npm run build
 
 `npm run build` validates the question bank, then inlines JavaScript, CSS, fonts and data into one file.
 
+## Official College Board questions
+
+Open **Official Questions** and drop in a PDF exported from the College Board's free SAT Suite
+Question Bank (with answers and explanations). The app reads it in the browser with pdf.js:
+Reading & Writing questions become text, while math and questions with tables, graphs or underlining
+keep the exact page image of the question and of the explanation. Imported questions are stored in
+that browser only (IndexedDB), lead the matching course chapters, and make up timed official tests.
+
 ## Test-day mode and your own official questions
 
 Every timed exam starts with a lock-in prompt: allow full screen (the test then covers the whole
@@ -72,7 +80,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — 45 unit tests of the learning engine and content.
-- `npm run test:e2e` — 9 browser tests against the built file opened from disk.
+- `npm run test:e2e` — 10 browser tests against the built file opened from disk.
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
 ## Honest limits

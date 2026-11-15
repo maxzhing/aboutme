@@ -46,7 +46,12 @@ export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, 
   const body = (
     <div>
       {!twoCol && stimulus && <div className="mb-4">{stim}</div>}
-      <div className="prose-q font-medium" id={`stem-${q.id}`}>{number !== undefined && <span className="mr-2 inline-grid h-6 min-w-6 place-items-center rounded-md bg-ink px-1 text-xs font-bold text-bg">{number}</span>}<RichText block={q.stem.includes('$$')} text={q.stem} /></div>
+      {q.image ? (
+        <figure className="mb-1" id={`stem-${q.id}`}>
+          <div className="overflow-hidden rounded-2xl border border-line bg-white p-2 shadow-card sm:p-3">{number !== undefined && <span className="mb-1 inline-grid h-6 min-w-6 place-items-center rounded-md bg-[#141830] px-1 text-xs font-bold text-white">{number}</span>}<img src={q.image} alt="Official College Board question, shown exactly as printed" className="mx-auto w-full max-w-3xl" /></div>
+          <figcaption className="mt-1.5 text-xs text-faint">Shown exactly as College Board printed it.{q.type === 'mcq' ? ' Pick the letter of your answer below.' : ' Type your answer below.'}</figcaption>
+        </figure>
+      ) : <div className="prose-q font-medium" id={`stem-${q.id}`}>{number !== undefined && <span className="mr-2 inline-grid h-6 min-w-6 place-items-center rounded-md bg-ink px-1 text-xs font-bold text-bg">{number}</span>}<RichText block={q.stem.includes('$$')} text={q.stem} /></div>}
       {q.type === 'mcq' ? (
         <div role="radiogroup" aria-labelledby={`stem-${q.id}`} className="mt-4 space-y-2">
           {q.choices!.map((c, i) => {
@@ -63,7 +68,7 @@ export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, 
                   <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full border text-sm font-bold', right ? 'border-ok bg-ok text-white' : wrong ? 'border-bad bg-bad text-white' : selected ? 'border-brand bg-[#6A4BF0] text-white' : 'border-line text-muted')}>
                     {right ? <Check size={15} /> : wrong ? <X size={15} /> : LETTERS[i]}
                   </span>
-                  <span className={cn('min-w-0', out && 'line-through')}><RichText text={c} /></span>
+                  <span className={cn('min-w-0', out && 'line-through')}>{q.image ? <span className="font-semibold">Choice {LETTERS[i]}</span> : <RichText text={c} />}</span>
                 </button>
                 {onEliminate && !locked && (
                   <button type="button" onClick={() => onEliminate(i)} className={cn('btn-quiet !px-2', eliminated?.includes(i) && 'text-bad')} aria-label={`${eliminated?.includes(i) ? 'Restore' : 'Cross out'} choice ${LETTERS[i]}`} title="Cross out this choice"><CircleSlash size={16} /></button>
@@ -148,6 +153,12 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
 
       {!ok && <TrapCheck q={q} />}
 
+      {q.rationaleImage ? (
+        <section className="rounded-xl border border-ok/30 bg-ok/5 p-3.5" data-testid="official-rationale">
+          <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-faint">College Board explanation · correct answer {correctAnswerLabel(q)}</h4>
+          <div className="overflow-hidden rounded-xl bg-white p-2"><img src={q.rationaleImage} alt="College Board explanation, shown exactly as printed" className="mx-auto w-full max-w-3xl" /></div>
+        </section>
+      ) : <>
       <Block title="Step-by-step solution">
         <ol className="list-decimal space-y-1.5 pl-5">{q.steps.map((s, i) => <li key={i}><RichText text={s} /></li>)}</ol>
       </Block>
@@ -160,7 +171,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
               {q.choices!.map((c, i) => i === q.answer ? null : (
                 <li key={i} className="flex gap-2.5">
                   <span className={cn('mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border text-xs font-bold', answer === String(i) ? 'border-bad bg-bad text-white' : 'border-line text-muted')}>{LETTERS[i]}</span>
-                  <span><span className="text-muted"><RichText text={c} /></span><span className="mx-1.5 text-faint">—</span><RichText text={q.why[i]} />{answer === String(i) && <span className="ml-1.5 text-xs font-semibold text-bad">(your choice)</span>}</span>
+                  <span>{!q.image && <><span className="text-muted"><RichText text={c} /></span><span className="mx-1.5 text-faint">—</span></>}<RichText text={q.why[i]} />{answer === String(i) && <span className="ml-1.5 text-xs font-semibold text-bad">(your choice)</span>}</span>
                 </li>
               ))}
             </ul>
@@ -172,6 +183,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
           <Block title="Common wrong answers and why they fail"><ul className="space-y-1.5">{q.why.map((w, i) => <li key={i} className="flex gap-2"><X size={15} className="mt-1 shrink-0 text-bad" /><RichText text={w} /></li>)}</ul></Block>
         </>
       )}
+      </>}
 
       <div className="grid gap-3 md:grid-cols-2">
         <Block title="The underlying concept"><RichText text={q.concept} /></Block>

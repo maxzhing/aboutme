@@ -15,6 +15,7 @@ import { RichText } from '@/components/RichText';
 import { HackCard } from '@/components/HackCard';
 import { hacksFor } from '@/data/hacks';
 import { LessonPlayer } from '@/components/LessonPlayer';
+import { SkillIcon } from '@/components/SkillIcon';
 import { CoursePage } from './Course';
 import { COURSES } from '@/data/courses';
 import { VISUAL_LESSONS } from '@/data/visual-lessons';
@@ -39,7 +40,7 @@ export function CurriculumPage({ section }: { section?: Section }) {
         actions={<>{section !== 'math' && <Link href="/learn/math" className="btn-ghost">Math Academy</Link>}{section !== 'rw' && <Link href="/learn/rw" className="btn-ghost">Reading &amp; Writing Academy</Link>}{section && <Link href="/learn" className="btn-ghost">All</Link>}</>} />
       {nextUp && (
         <Link href={`/learn/${nextUp.id}`} className="mb-5 flex flex-wrap items-center gap-4 rounded-2xl border-2 border-brand/50 bg-brand/10 p-4 transition-transform hover:-translate-y-0.5" data-testid="next-lesson">
-          <span className="text-4xl" aria-hidden>{VISUAL_LESSONS[nextUp.id].icon}</span>
+          <SkillIcon skill={nextUp.id} size={56} />
           <span className="min-w-0 flex-1"><span className="block text-xs font-bold uppercase tracking-widest text-brand2">{stars[nextUp.id] ? 'Go for 3 stars' : 'Next stop'}</span><span className="block text-lg font-bold">{nextUp.name}</span><span className="block text-sm text-muted">{VISUAL_LESSONS[nextUp.id].hook}</span></span>
           <span className="btn-primary"><Play size={16} />Play</span>
         </Link>
@@ -52,7 +53,7 @@ export function CurriculumPage({ section }: { section?: Section }) {
               {ks.map((k, i) => { const st = stats[k.id]; const n = stars[k.id] ?? 0; const isNext = nextUp?.id === k.id; return (
                 <Link key={k.id} href={`/learn/${k.id}`} className={cn('group flex w-[112px] flex-col items-center text-center', i % 2 === 1 && 'sm:translate-y-5')} data-testid={`skill-${k.id}`} aria-label={`${k.name}: ${n} of 3 stars, ${MASTERY_LEVELS[st.level]}`}>
                   <span className={cn('relative rounded-full transition-transform duration-200 group-hover:-translate-y-1 group-hover:scale-105', isNext && 'ring-4 ring-brand/40 ring-offset-2 ring-offset-surface')}>
-                    <Ring value={st.n ? st.score : 0} size={78} stroke={6} label={`${k.short} mastery`}><span className={cn('grid h-[58px] w-[58px] place-items-center rounded-full text-3xl', n ? 'bg-gold/20' : isNext ? 'bg-brand/20' : 'bg-raised')} aria-hidden>{VISUAL_LESSONS[k.id].icon}</span></Ring>
+                    <Ring value={st.n ? st.score : 0} size={82} stroke={5} label={`${k.short} mastery`}><SkillIcon skill={k.id} size={58} className="!rounded-full" /></Ring>
                     {isNext && <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-[#6A4BF0] px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white">Start</span>}
                     {lessonsDone[k.id] && <CheckCircle2 size={18} className="absolute -right-1 -top-1 rounded-full bg-surface text-ok" aria-hidden />}
                   </span>

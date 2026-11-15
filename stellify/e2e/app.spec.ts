@@ -5,6 +5,8 @@ import { ALL_RAW } from '../src/data/questions/all';
 const FILE = `file://${resolve(__dirname, '../dist/stellify.html')}`;
 const KEY = Object.fromEntries(ALL_RAW.map((q) => [q.id, q]));
 const go = (page: Page, route: string) => page.goto(`${FILE}#${route}`);
+/** A College Board Question Bank export used to test the importer; not part of the repository. */
+const PDF = process.env.CB_PDF ?? '/root/.claude/uploads/1f98cbb6-1f2d-5424-8d97-5669c564791c/3c77d1b8-MyPracticeForLaude.pdf';
 
 function watch(page: Page) {
   const errors: string[] = [];
@@ -216,7 +218,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(28);
+  expect(links.length).toBe(29);
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();
@@ -323,11 +325,15 @@ test('full course: chapter player teaches step by step, works a hard problem, tr
   while (!(await page.getByTestId('method').count())) await next();
   await expect(page.getByTestId('chapter-next')).toBeDisabled(); // reveal every step first
   while (await page.getByTestId('method-next').count()) await page.getByTestId('method-next').click();
-  await next(); // → worked example
+  await next(); // → cheat sheet
+  await expect(page.getByTestId('cheat-sheet')).toContainText('Everything to know');
+  await next(); // → worked example(s): each one must be revealed step by step before moving on
   await expect(page.getByTestId('chapter-next')).toBeDisabled();
-  while (await page.getByTestId('walk-next').count()) await page.getByTestId('walk-next').click();
-  await expect(page.getByTestId('walk-steps').locator('li').last()).toBeVisible();
-  await next(); // → traps
+  while (!(await page.getByTestId('traps').count())) {
+    while (await page.getByTestId('walk-next').count()) await page.getByTestId('walk-next').click();
+    await expect(page.getByTestId('walk-steps').locator('li').last()).toBeVisible();
+    await next();
+  }
   await expect(page.getByTestId('traps')).toContainText('Comma splice');
   await next();
   // three hard questions: two right, one wrong (and name the trap)
@@ -349,5 +355,38 @@ test('full course: chapter player teaches step by step, works a hard problem, tr
   await expect(page.getByTestId('course-traps')).toContainText('×1');
   await go(page, '/mistakes');
   await expect(page.getByTestId('trap-list')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('official questions: import a College Board Question Bank PDF in the app, practice it, take a timed test', async ({ page }) => {
+  test.skip(!require('node:fs').existsSync(PDF), 'needs a Question Bank PDF');
+  const errors = watch(page);
+  page.on('dialog', (d) => d.accept());
+  await boot(page);
+  await go(page, '/official');
+  await page.getByTestId('import-input').setInputFiles(PDF);
+  await expect(page.getByTestId('import-result')).toContainText('Found 80 questions: 80 new', { timeout: 60_000 });
+  await expect(page.getByTestId('official-rw')).toContainText('80 official');
+  await page.reload(); // saved on this device
+  await expect(page.getByTestId('official-rw')).toContainText('80 official');
+  // an exact-image question (table) and a text question both work
+  await go(page, '/practice/session?mode=single&ids=cb-d54126ab');
+  await expect(page.getByRole('img', { name: /Official College Board question/ })).toBeVisible();
+  await page.locator('[data-choice="B"]').click();
+  await page.getByTestId('check').click();
+  await expect(page.getByTestId('verdict')).toHaveText(/Correct/);
+  await go(page, '/practice/session?mode=single&ids=cb-e3b5bb66');
+  await expect(page.getByTestId('question-card')).toContainText('Sleep No More');
+  // official questions lead the matching course chapter
+  await go(page, '/learn/bnd/bnd-1');
+  await expect(page.getByTestId('chapter-player')).toBeVisible();
+  // timed test made only of official questions
+  await go(page, '/official');
+  await page.getByTestId('official-test-rw').click();
+  await page.getByTestId('lock-skip').click();
+  await expect(page.getByTestId('mock-question')).toHaveAttribute('data-qid', /^cb-/);
+  await go(page, '/official');
+  await page.getByTestId('clear-imported').click();
+  await expect(page.getByTestId('import-result')).toContainText('removed');
   expect(errors).toEqual([]);
 });

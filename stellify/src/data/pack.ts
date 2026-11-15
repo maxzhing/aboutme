@@ -8,7 +8,10 @@ import type { Figure, SkillId } from '@/lib/types';
  */
 export interface PackItem {
   id: string; skill: SkillId; sub?: string; d: 'M' | 'H'; cbDifficulty?: string; passage: string; figure?: Figure; stem: string;
-  choices: string[]; answer: number; why: string[]; note?: string;
+  /** four choices for multiple choice; empty for a student-produced response */
+  choices: string[]; answer: number | string[]; why: string[]; note?: string; notes?: string[];
+  /** questions imported in the app keep the exact page image for math, tables, graphs and underlining */
+  image?: string; rationaleImage?: string; rationale?: string; imported?: number;
 }
 declare const __PACK__: PackItem[] | null | undefined;
 export const PACK_RAW: PackItem[] = typeof __PACK__ !== 'undefined' && __PACK__ ? __PACK__ : [];

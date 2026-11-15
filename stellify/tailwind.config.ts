@@ -29,7 +29,7 @@ const config: Config = {
       },
       borderRadius: { xl2: '1.25rem' },
       boxShadow: {
-        card: '0 1px 2px rgb(var(--shadow) / 0.06), 0 8px 24px -12px rgb(var(--shadow) / 0.18)',
+        card: '0 1px 2px rgb(var(--shadow) / 0.08), 0 14px 34px -16px rgb(var(--shadow) / 0.38)',
         glow: '0 0 0 1px rgb(var(--brand) / 0.25), 0 8px 30px -8px rgb(var(--brand) / 0.45)',
       },
       keyframes: {

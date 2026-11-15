@@ -16,6 +16,7 @@ import { isCorrect } from '@/lib/answers';
 import { sfx } from '@/lib/sfx';
 import { uid } from '@/lib/util';
 import { VisualView } from './Visuals';
+import { SkillIcon } from './SkillIcon';
 import { QuestionView } from './Question';
 import { RichText } from './RichText';
 import { Pet } from './Pet';
@@ -119,7 +120,7 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
   if (step.t === 'intro') {
     body = (
       <div className="text-center">
-        <div className="mx-auto flex items-end justify-center gap-2"><Pet mood="study" level={level} equipped={equipped} size={110} /><span className="mb-6 text-6xl" aria-hidden>{vl.icon}</span></div>
+        <div className="mx-auto flex items-end justify-center gap-2"><Pet mood="study" level={level} equipped={equipped} size={110} /><SkillIcon skill={skill} size={72} className="mb-6" /></div>
         <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{info.name}</h2>
         <p className="mx-auto mt-2 max-w-lg text-muted">{vl.hook}</p>
         <div className="mt-5 flex flex-wrap justify-center gap-2 text-xs font-semibold">

@@ -76,6 +76,10 @@ export interface Question extends Omit<RawQuestion, 'd' | 'time'> {
   license: string;
   validation: 'validated' | 'unvalidated';
   created: string;
+  /** official College Board question kept as the exact page image (math, tables, graphs, underlining) */
+  image?: string;
+  rationaleImage?: string;
+  official?: boolean;
 }
 
 export type PracticeMode =

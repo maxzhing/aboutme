@@ -38,6 +38,9 @@ await build({
 });
 const js = readFileSync(at('.build/app.js'), 'utf8').replace(/<\/script/gi, '<\\/script').replace(/<!--/g, '<\\!--');
 
+// pdf.js worker for the in-app question importer, kept inert until the importer starts it from a Blob
+const worker = readFileSync(at('node_modules/pdfjs-dist/legacy/build/pdf.worker.min.js'), 'utf8').replace(/<\/script/gi, '<\\/script');
+
 const theme = `(function(){try{var t=localStorage.getItem('stellify-theme')||'dark';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){document.documentElement.classList.add('dark');}})();`;
 const html = `<!doctype html>
 <html lang="en" class="dark">
@@ -53,6 +56,7 @@ const html = `<!doctype html>
 <body>
 <noscript>Stellify needs JavaScript to run. Everything stays on your device.</noscript>
 <div id="root"></div>
+<script type="text/plain" id="pdf-worker">${worker}</script>
 <script>${js}</script>
 </body>
 </html>

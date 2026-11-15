@@ -1,4 +1,4 @@
-import { Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, type LucideIcon } from 'lucide-react';
+import { BadgeCheck, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, type LucideIcon } from 'lucide-react';
 
 export interface NavItem { href: string; label: string; icon: LucideIcon }
 export const NAV: { group: string; items: NavItem[] }[] = [
@@ -14,6 +14,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
   { group: 'Practice', items: [
     { href: '/practice', label: 'Question Bank', icon: LibraryBig },
     { href: '/practice/smart', label: 'Smart Practice', icon: Brain },
+    { href: '/official', label: 'Official Questions', icon: BadgeCheck },
     { href: '/practice/hard', label: 'Hard Questions', icon: Zap },
     { href: '/practice/timed', label: 'Timed Modules', icon: Timer },
     { href: '/daily', label: 'Daily Challenge', icon: Flame },

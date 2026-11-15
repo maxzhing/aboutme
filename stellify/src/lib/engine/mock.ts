@@ -12,19 +12,22 @@ export const MOCK_FORMS = [
 
 /** Forms built from the student's own private question pack (personal builds only). No routing: the pack decides the questions. */
 export const OFFICIAL_FORMS = [
-  { id: 'cb1', kind: 'section-rw' as const, name: 'Official Questions · Practice Test' },
+  { id: 'cb1', kind: 'section-rw' as const, name: 'Official Questions · Reading & Writing Test' },
   { id: 'cb2', kind: 'module-rw' as const, name: 'Official Questions · Extra Module' },
+  { id: 'cb3', kind: 'section-math' as const, name: 'Official Questions · Math Test' },
 ];
+const officialSection = (formId: string): Section => (formId === 'cb3' ? 'math' : 'rw');
 export const isOfficialForm = (formId: string) => formId.startsWith('cb');
 export const formName = (formId: string) => [...MOCK_FORMS, ...OFFICIAL_FORMS].find((f) => f.id === formId)?.name ?? 'Practice Test';
-const DOMAIN_RANK: Record<string, number> = { cs: 0, ii: 1, sec: 2, eoi: 3 };
+const DOMAIN_RANK: Record<string, number> = { cs: 0, ii: 1, sec: 2, eoi: 3, alg: 0, adv: 1, psda: 2, geo: 3 };
 /**
  * Deals the pack into three modules of near-equal size and mix. Questions are sorted into the
  * real test's order (Craft and Structure, Information and Ideas, Standard English Conventions,
  * Expression of Ideas; easier first within a skill) and dealt out one at a time, so every module
  * keeps that order and gets a proportional share of each skill.
  */
-export function officialModules(pack: Question[]): string[][] {
+export function officialModules(all: Question[], section: Section = 'rw'): string[][] {
+  const pack = all.filter((q) => q.section === section);
   const rank = (d: Difficulty) => ['medium', 'hard', 'very-hard', 'elite'].indexOf(d);
   const sorted = [...pack].sort((a, b) => DOMAIN_RANK[a.domain] - DOMAIN_RANK[b.domain] || a.skill.localeCompare(b.skill) || rank(a.difficulty) - rank(b.difficulty) || a.id.localeCompare(b.id));
   const mods: string[][] = [[], [], []];
@@ -32,7 +35,8 @@ export function officialModules(pack: Question[]): string[][] {
   return mods;
 }
 /** Official modules keep the real pace: 32 minutes per 27 questions, rounded to the minute. */
-const officialMs = (n: number) => Math.round((n * 32) / 27) * 60_000;
+/** Official modules keep the real pace: 32 minutes per 27 R&W questions, 35 per 22 Math questions. */
+const officialMs = (n: number, section: Section = 'rw') => Math.max(1, Math.round(section === 'math' ? (n * 35) / 22 : (n * 32) / 27)) * 60_000;
 
 /**
  * ROUTING MODEL (Stellify's own; not the College Board's proprietary algorithm).
@@ -102,10 +106,11 @@ export function seedFor(formId: string, startedAt: number) { return formId === '
 
 export function startMock(id: string, formId: string, kind: MockAttempt['kind'], bank: Question[], now: number, seen: Set<string>, official: Question[] = []): MockAttempt {
   if (isOfficialForm(formId)) {
-    const mods = officialModules(official);
+    const sec = officialSection(formId);
+    const mods = officialModules(official, sec);
     const qids = formId === 'cb2' ? mods[2] : mods[0];
-    const ms = officialMs(qids.length);
-    return { id, formId, kind, startedAt: now, modules: [{ ...emptyModule('rw', 1, qids), msAllowed: ms }], cursor: { stage: 0, index: 0, msLeft: ms } };
+    const ms = officialMs(qids.length, sec);
+    return { id, formId, kind, startedAt: now, modules: [{ ...emptyModule(sec, 1, qids), msAllowed: ms }], cursor: { stage: 0, index: 0, msLeft: ms } };
   }
   const first = stageSection(stagesFor(kind)[0]);
   const qids = buildModule(first, 'm1', seedFor(formId, now), bank, new Set(), formId === 'mix' ? seen : undefined);
@@ -126,9 +131,10 @@ export function advanceMock(mock: MockAttempt, bank: Question[], getQ: (id: stri
   const next = stages[nextStage];
   if (next === 'break') return { mock: { ...mock, cursor: { stage: nextStage, index: 0, msLeft: 0, breakMsLeft: BREAK_MS } }, finished: false };
   if (isOfficialForm(mock.formId)) {
-    const qids = officialModules(official)[1];
-    const ms = officialMs(qids.length);
-    return { mock: { ...mock, modules: [...mock.modules, { ...emptyModule('rw', 2, qids), msAllowed: ms }], cursor: { stage: nextStage, index: 0, msLeft: ms } }, finished: false };
+    const sec = officialSection(mock.formId);
+    const qids = officialModules(official, sec)[1];
+    const ms = officialMs(qids.length, sec);
+    return { mock: { ...mock, modules: [...mock.modules, { ...emptyModule(sec, 2, qids), msAllowed: ms }], cursor: { stage: nextStage, index: 0, msLeft: ms } }, finished: false };
   }
   const section = stageSection(next);
   const used = new Set(mock.modules.flatMap((m) => m.qids));

@@ -4,6 +4,7 @@ import { DashboardPage } from './pages/Dashboard';
 import { DiagnosticPage, OnboardingPage } from './pages/Onboarding';
 import { CurriculumPage, GrammarPage, LessonPage } from './pages/Learn';
 import { DesmosPage } from './pages/Desmos';
+import { OfficialPage } from './pages/Official';
 import { ChapterPage } from './pages/Course';
 import { HacksPage } from './pages/Hacks';
 import { BankPage, HardPage, SessionPage, SmartPage, TimedPage } from './pages/Practice';
@@ -39,6 +40,7 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/practice\/session$/, component: SessionPage },
   { pattern: /^\/practice\/smart$/, component: SmartPage },
   { pattern: /^\/practice\/hard$/, component: HardPage },
+  { pattern: /^\/official$/, component: OfficialPage },
   { pattern: /^\/practice\/timed$/, component: TimedPage },
   { pattern: /^\/daily$/, component: DailyPage },
   { pattern: /^\/speed$/, component: SpeedPage },

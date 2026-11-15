@@ -12,11 +12,11 @@ export function Card({ className, children, as: Tag = 'section', ...rest }: { cl
 
 export function PageHeader({ title, subtitle, actions, eyebrow }: { title: string; subtitle?: ReactNode; actions?: ReactNode; eyebrow?: string }) {
   return (
-    <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <header className="mb-7 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
-        {eyebrow && <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-brand2">{eyebrow}</p>}
-        <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
-        {subtitle && <p className="mt-1 max-w-2xl text-sm text-muted">{subtitle}</p>}
+        {eyebrow && <p className="eyebrow mb-2.5">{eyebrow}</p>}
+        <h1 className="text-[28px] font-bold leading-tight sm:text-4xl">{title}</h1>
+        {subtitle && <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </header>
@@ -27,7 +27,7 @@ export function Progress({ value, className, tone = 'brand', label }: { value: n
   const v = Math.max(0, Math.min(100, value));
   const bar = { brand: 'bg-gradient-to-r from-brand to-brand2', ok: 'bg-ok', warn: 'bg-warn', bad: 'bg-bad', gold: 'bg-gold' }[tone];
   return (
-    <div className={cn('h-2 w-full overflow-hidden rounded-full bg-raised', className)} role="progressbar" aria-valuenow={Math.round(v)} aria-valuemin={0} aria-valuemax={100} aria-label={label ?? 'Progress'}>
+    <div className={cn('h-2 w-full overflow-hidden rounded-full bg-raised ring-1 ring-inset ring-line/50', className)} role="progressbar" aria-valuenow={Math.round(v)} aria-valuemin={0} aria-valuemax={100} aria-label={label ?? 'Progress'}>
       <div className={cn('h-full rounded-full transition-[width] duration-500', bar)} style={{ width: `${v}%` }} />
     </div>
   );

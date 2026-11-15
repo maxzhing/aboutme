@@ -3,7 +3,7 @@ import { DEFAULT_TIME, SKILL } from '@/lib/taxonomy';
 import manifest from './validated.json';
 import { ALL_RAW } from './all';
 import { contentHash } from './hash';
-import { PACK_RAW } from '@/data/pack';
+import { PACK_RAW, type PackItem } from '@/data/pack';
 import { LESSON } from '@/data/lessons';
 import { hacksFor } from '@/data/hacks';
 
@@ -56,25 +56,48 @@ function officialSteps(text: string): string[] {
   return parts.length ? parts : [text];
 }
 
-export const OFFICIAL: Question[] = PACK_RAW.map((p) => {
-  const skill = SKILL[p.skill], lesson = LESSON[p.skill], hack = hacksFor(p.skill)[0];
+/** Turns one official College Board question (from a private pack or an in-app import) into an app question. */
+export function officialQuestion(p: PackItem): Question {
+  const skill = SKILL[p.skill], lesson = LESSON[p.skill], hack = hacksFor(p.skill, p.sub)[0];
   const concept = lesson.intro, strategy = hack ? `${hack.title}: ${hack.test}` : lesson.shortcuts[0];
-  const letter = 'ABCD'[p.answer];
+  const mcq = p.choices.length === 4 && typeof p.answer === 'number';
+  const key = mcq ? `choice ${'ABCD'[p.answer as number]}` : (p.answer as string[]).join(' or ');
   const difficulty: Difficulty = p.d === 'M' ? 'medium' : 'hard';
+  const why = mcq ? p.why : p.why.length >= 2 ? p.why : ['See the College Board explanation for this question.', 'Compare your work with each step of the explanation.'];
+  const body = p.rationaleImage ? ['Work it out yourself first, then compare with the College Board explanation below.'] : officialSteps(mcq ? p.why[p.answer as number] : p.rationale ?? p.why.join(' '));
   return {
-    id: p.id, skill: p.skill, sub: p.sub ?? 'Official question', passage: p.passage, figure: p.figure, stem: p.stem, choices: p.choices, answer: p.answer,
-    steps: [...officialSteps(p.why[p.answer]), ...(p.note ? [p.note] : []), `The answer is choice ${letter}.`], why: p.why,
+    id: p.id, skill: p.skill, sub: p.sub ?? 'Official question', passage: p.passage || undefined, notes: p.notes, figure: p.figure, stem: p.stem,
+    choices: mcq ? p.choices : undefined, answer: p.answer,
+    steps: [...body, ...(p.note ? [p.note] : []), `The answer is ${key}.`], why,
     concept, strategy, trap: lesson.mistakes[0], remember: lesson.shortcuts[0],
-    section: skill.section, domain: skill.domain, difficulty, type: 'mcq', time: DEFAULT_TIME[skill.section][difficulty],
+    section: skill.section, domain: skill.domain, difficulty, type: mcq ? 'mcq' : 'spr', time: DEFAULT_TIME[skill.section][difficulty],
     hints: [concept, strategy, 'Eliminate the choices you can rule out for a definite reason, then compare what is left word by word.'],
-    source: `Official College Board question (${p.cbDifficulty ?? 'rated'} difficulty), from your own practice file · rationale by the College Board`,
+    source: `Official College Board question (${p.cbDifficulty ?? 'rated'} difficulty)${p.imported ? ', imported by you' : ', from your own practice file'} · explanation by the College Board`,
     license: 'Copyright College Board. For your personal study only; do not share or publish.',
-    validation: 'validated', created: '2026-11-13',
+    validation: 'validated', created: '2026-11-15',
+    image: p.image, rationaleImage: p.rationaleImage, official: true,
   };
-});
-export const hasOfficial = OFFICIAL.length > 0;
+}
+
+/**
+ * Official College Board questions: the student's private pack (personal builds) plus any they import
+ * in the app. Kept apart from QUESTIONS so the original bank and its statistics stay unchanged.
+ */
+export const OFFICIAL: Question[] = PACK_RAW.map(officialQuestion);
+export const hasOfficial = () => OFFICIAL.length > 0;
 
 const BY_ID = new Map([...QUESTIONS, ...OFFICIAL].map((q) => [q.id, q]));
+/** Adds imported official questions to the running app. Returns how many were new. */
+export function registerOfficial(items: PackItem[]): number {
+  let n = 0;
+  for (const p of items) { if (BY_ID.has(p.id)) continue; const q = officialQuestion(p); OFFICIAL.push(q); BY_ID.set(q.id, q); n++; }
+  return n;
+}
+/** Removes questions imported in the app (pack questions stay). */
+export function unregisterImported(ids: string[]) {
+  const drop = new Set(ids);
+  for (let i = OFFICIAL.length - 1; i >= 0; i--) if (drop.has(OFFICIAL[i].id)) { BY_ID.delete(OFFICIAL[i].id); OFFICIAL.splice(i, 1); }
+}
 export const getQuestion = (id: string): Question | undefined => BY_ID.get(id);
 export const questionsBySkill = (skill: SkillId) => QUESTIONS.filter((q) => q.skill === skill);
 export const questionsBySection = (section: Section) => QUESTIONS.filter((q) => q.section === section);

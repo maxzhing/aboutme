@@ -2,7 +2,7 @@
   "name": "stellify",
   "version": "1.0.0",
   "private": true,
-  "description": "Stellify \u2014 a completely free, offline Digital SAT preparation platform in a single HTML file.",
+  "description": "Stellify — a completely free, offline Digital SAT preparation platform in a single HTML file.",
   "scripts": {
     "build": "npm run validate:questions && node scripts/build.mjs",
     "build:fast": "node scripts/build.mjs",
@@ -21,6 +21,7 @@
     "idb-keyval": "^6.3.0",
     "katex": "^0.19.1",
     "lucide-react": "^1.72.0",
+    "pdfjs-dist": "^3.11.174",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "recharts": "^3.10.1",

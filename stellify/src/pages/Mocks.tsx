@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getQuestion, hasOfficial, OFFICIAL } from '@/data/questions';
 import { REFERENCE } from '@/data/reference';
 import { useStore } from '@/lib/store';
+import { useOfficial } from '@/lib/officialStore';
 import { formName, isOfficialForm, LOWER_ROUTE_CAP, MOCK_FORMS, OFFICIAL_FORMS, officialModules, ROUTE_THRESHOLD, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
 import { fmtRange } from '@/lib/engine/scoring';
 import { DOMAIN, DOMAINS, SAT_STRUCTURE, SECTION_NAME, SKILL } from '@/lib/taxonomy';
@@ -36,7 +37,7 @@ export function MocksPage() {
           <div className="mt-3 flex gap-2"><Link href="/mocks/run" className="btn-primary">Resume</Link><button className="btn-ghost" onClick={() => { if (confirm('Discard this exam? Your answers so far will not be saved.')) abandon(); }}>Discard</button></div>
         </Card>
       )}
-      {hasOfficial && <OfficialCard begin={begin} />}
+      {hasOfficial() ? <OfficialCard begin={begin} /> : <Card className="border-gold/40"><h2 className="font-bold">Use real College Board questions</h2><p className="mt-1 text-sm text-muted">Add a PDF from the free SAT Question Bank and take timed tests made only of official questions.</p><Link href="/official" className="btn-primary mt-3">Add official questions</Link></Card>}
       <div className="grid gap-4 md:grid-cols-3">
         {MOCK_FORMS.map((f) => (
           <Card key={f.id} className="flex flex-col">
@@ -76,26 +77,21 @@ export function MocksPage() {
   );
 }
 
-/** Shown only in a personal build that carries the student's own official question pack. */
+/** Official College Board questions (from a private pack or imported in the app): timed tests by section. */
 function OfficialCard({ begin }: { begin: (form: string, kind: MockAttempt['kind']) => void }) {
-  const attempts = useStore((s) => s.attempts);
-  const mods = useMemo(() => officialModules(OFFICIAL), []);
-  const solved = new Set(attempts.filter((a) => a.correct).map((a) => a.qid));
-  const mins = (n: number) => Math.round((n * 32) / 27);
-  const groups: [string, string[]][] = [['Boundaries', ['bnd']], ['Form, structure & sense', ['fss']], ['Command of evidence', ['coet', 'coeq']], ['Central ideas', ['cid']], ['Inferences', ['inf']], ['Craft & structure', ['wic', 'tsp', 'ctc']]];
+  useOfficial((s) => s.v);
+  const rw = officialModules(OFFICIAL, 'rw'), math = officialModules(OFFICIAL, 'math');
+  const n = (m: string[][]) => m[0].length + m[1].length;
   return (
     <Card className="border-gold/50" data-testid="official-card">
-      <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Official College Board questions</h2><Badge tone="gold">from your own file</Badge></div>
-      <p className="mt-1 text-sm text-muted">{OFFICIAL.length} real Reading &amp; Writing questions from the practice file you supplied, in real test order with the College Board&apos;s own answer explanations. {OFFICIAL.filter((q) => solved.has(q.id)).length} of {OFFICIAL.length} answered correctly so far.</p>
-      <div className="mt-4 grid gap-2 sm:grid-cols-2">
-        <button className="btn-primary" onClick={() => begin('cb1', 'section-rw')} data-testid="start-official">Practice test · {mods[0].length + mods[1].length} questions · {mins(mods[0].length) + mins(mods[1].length)} min</button>
-        <button className="btn-ghost" onClick={() => begin('cb2', 'module-rw')} data-testid="start-official-extra">Extra module · {mods[2].length} questions · {mins(mods[2].length)} min</button>
+      <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Official College Board questions</h2><Badge tone="gold">{OFFICIAL.length} in your library</Badge></div>
+      <p className="mt-1 text-sm text-muted">Timed tests built only from real College Board questions, in real test order and at the real pace, with College Board&apos;s own explanations afterwards.</p>
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        {n(rw) >= 4 && <button className="btn-primary" onClick={() => begin('cb1', 'section-rw')} data-testid="start-official">Reading &amp; Writing · {n(rw)} questions</button>}
+        {rw[2].length >= 2 && <button className="btn-ghost" onClick={() => begin('cb2', 'module-rw')} data-testid="start-official-extra">Extra R&amp;W module · {rw[2].length}</button>}
+        {n(math) >= 4 && <button className="btn-primary" onClick={() => begin('cb3', 'section-math')} data-testid="start-official-math">Math · {n(math)} questions</button>}
       </div>
-      <p className="mt-4 text-xs font-bold uppercase tracking-wide text-faint">Or practice untimed, with the explanation after each question</p>
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        {groups.map(([label, ks]) => { const ids = OFFICIAL.filter((q) => ks.includes(q.skill)).sort((a, b) => Number(solved.has(a.id)) - Number(solved.has(b.id))).map((q) => q.id); return ids.length ? <Link key={label} href={`/practice/session?mode=custom&ids=${ids.slice(0, 12).join(',')}&back=/mocks`} className="chip !py-1 hover:text-ink">{label} ({ids.length})</Link> : null; })}
-      </div>
-      <p className="mt-3 text-xs text-faint">These questions are the College Board&apos;s copyrighted work. They are in this copy of the app for your own study only; please do not share or publish this file. The score range shown after a test is still Stellify&apos;s unofficial estimate.</p>
+      <Link href="/official" className="mt-3 inline-block text-sm font-semibold text-brand2 hover:underline">Add more official questions →</Link>
     </Card>
   );
 }
