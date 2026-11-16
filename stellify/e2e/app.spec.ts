@@ -396,13 +396,21 @@ test('AP Calculus BC: study plan, a full lesson with examples and checked practi
   await boot(page);
   await go(page, '/calc');
   await expect(page.getByTestId('calc-home')).toContainText('AP Calculus BC');
-  for (let u = 1; u <= 10; u++) await expect(page.getByTestId(`calc-unit-${u}`)).toBeVisible();
+  for (let u = 0; u <= 10; u++) await expect(page.getByTestId(`calc-unit-${u}`)).toBeVisible();
   await page.getByTestId('calc-exam').fill('2027-05-10');
   await expect(page.getByTestId('calc-pace')).toContainText('weeks until your exam');
+  // a beginner starts with the Math Toolkit
   await page.getByTestId('calc-continue').click();
+  await expect(page.getByTestId('calc-lesson')).toContainText('Negative numbers, fractions and the order of operations');
+  await go(page, '/calc/c1-1');
   await expect(page.getByTestId('calc-lesson')).toContainText('What a limit really is');
+  // the tutor layer: plain-words big idea, vocabulary, tools, a reason for every step
+  await expect(page.getByTestId('calc-bigidea')).toContainText('The big idea, in plain words');
+  await expect(page.getByTestId('calc-words')).toContainText('Indeterminate form');
+  await expect(page.getByTestId('calc-tools')).toContainText('Review 0.6');
   await page.getByTestId('calc-example-0').getByTestId('calc-step').click();
   await expect(page.getByTestId('calc-example-0')).toContainText('Step 1');
+  await expect(page.getByTestId('calc-example-0').getByTestId('calc-why')).toContainText('Why:');
   // answer every practice problem correctly
   const { CALC_LESSON } = await import('../src/data/calc');
   for (const p of CALC_LESSON['c1-1'].practice) {
@@ -413,6 +421,17 @@ test('AP Calculus BC: study plan, a full lesson with examples and checked practi
     await expect(box.getByTestId('calc-solution')).toContainText('Correct!');
   }
   await expect(page.getByTestId('calc-result')).toContainText('Lesson mastered!');
+  // every solution is a slow walk-through
+  await expect(page.getByTestId('calc-problem-c1-1-1').getByTestId('calc-walk')).toContainText('a hair above 1');
+  // teach it back: questions, a saved explanation and the key-point self-check
+  await page.getByTestId('calc-teach-q').first().locator('summary').click();
+  await expect(page.getByTestId('calc-teach-q').first()).toContainText('For nice functions');
+  await page.getByTestId('calc-teach-text').fill('A limit is where the function is heading, not where it is.');
+  await page.getByTestId('calc-teach-text').blur();
+  for (const box of await page.getByTestId('calc-teach-point').all()) await box.check();
+  await expect(page.getByTestId('calc-teach-done')).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId('calc-teach-text')).toHaveValue('A limit is where the function is heading, not where it is.');
   await go(page, '/calc');
   await expect(page.getByTestId('calc-unit-1')).toContainText('1/9 lessons mastered');
   // a wrong answer shows the solution and the right answer

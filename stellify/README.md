@@ -40,14 +40,26 @@ npm run build
 
 ## AP Calculus BC
 
-A self-study course under **AP Calculus BC**: all ten units in the College Board's order with exam
-weights, a pacing plan from your exam date, and teacher-style lessons (intro, goals, notes with
-definitions, tips and common mistakes, step-by-step worked examples, practice with hints and full
-solutions, a mastery check at 75%, and unit reviews). All ten units are written in full: 59 lessons,
-118 worked examples and 380 practice problems, from limits through series. Every computed answer is
-verified in the tests by an independent numerical calculation (limits, derivatives, Simpson's rule
-integrals, Runge–Kutta for differential equations, partial sums for series). Lessons and problems
-are original.
+A self-study course under **AP Calculus BC**, written so that a beginner can learn all of it from
+scratch and then teach it. It starts with a **Math Toolkit** unit (fractions, equations, functions,
+slope, exponents, logarithms and trig) and then covers all ten AP units in the College Board's order,
+with exam weights and a pacing plan from your exam date: 67 lessons, 134 worked examples and 428
+practice problems, from arithmetic through infinite series.
+
+Every lesson has a teacher's intro, goals and notes, plus a tutor layer for complete beginners:
+
+- **The big idea in plain words**, with an everyday picture that makes it stick
+- **Words to know** (292 terms explained simply) and **tools you will use**, each with a quick
+  refresher and a link to the lesson that teaches it
+- a **why** for every step of every worked example
+- a slow, step-by-step **walk-through for every practice problem**
+- **Now you teach it**: a mini lesson plan for teaching a friend, the questions a student will ask
+  (with answers), and a box to write your own explanation, checked against the key points
+
+Practice has hints, a mastery check at 75%, and unit reviews. Every computed answer is verified in the
+tests by an independent numerical calculation (limits, derivatives, Simpson's rule integrals,
+Runge–Kutta for differential equations, partial sums for series), and the tests check that every
+lesson has its full tutor layer. Lessons and problems are original.
 
 ## Official College Board questions
 
