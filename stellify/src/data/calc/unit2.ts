@@ -15,7 +15,7 @@ export const UNIT2: CalcLesson[] = [
       { k: 'formula', t: r`\text{Average rate of change on } [a, b] = \frac{f(b) - f(a)}{b - a}` },
       { k: 'rule', title: 'The derivative at a point', t: r`$f'(a) = \lim\limits_{h \to 0} \dfrac{f(a + h) - f(a)}{h}$, if this limit exists. Equivalent form: $f'(a) = \lim\limits_{x \to a} \dfrac{f(x) - f(a)}{x - a}$.` },
       { k: 'p', t: r`Geometrically, $f'(a)$ is the slope of the tangent line at $x = a$: the limit of slopes of secant lines through $(a, f(a))$ and a nearby point.` },
-      { k: 'formula', t: r`\text{Tangent line at } x = a: \quad y - f(a) = f'(a)(x - a)` },
+      { k: 'formula', t: r`\text{Tangent line at } x = a: \qquad y - f(a) = f'(a)(x - a)` },
       { k: 'tip', t: r`Working from the definition is Unit 1 algebra: you will always get $\frac{0}{0}$ at first. Expand, simplify, and the $h$ in the denominator cancels.` },
       { k: 'p', t: r`If $s(t)$ is position, then $s'(t)$ is velocity, the instantaneous rate of change of position. Units are (units of $s$) per (unit of $t$).` },
       { k: 'warn', t: r`Average rate of change uses two points; the derivative uses one point and a limit. AP questions test whether you can tell which one is being asked for.` },

@@ -13,7 +13,7 @@ export const UNIT1: CalcLesson[] = [
     notes: [
       { k: 'p', t: r`A limit asks a simple question: as $x$ gets closer and closer to some number $a$, what value is $f(x)$ getting closer and closer to? We never care what happens exactly at $x = a$, only what happens near it.` },
       { k: 'rule', title: 'Limit (informal definition)', t: r`We write $\lim\limits_{x \to a} f(x) = L$ if we can make $f(x)$ as close to $L$ as we like by taking $x$ close enough to $a$, from both sides, but not equal to $a$.` },
-      { k: 'formula', t: r`\lim_{x \to a} f(x) = L \quad\text{reads: “the limit of } f(x) \text{ as } x \text{ approaches } a \text{ is } L\text{”}` },
+      { k: 'rule', title: 'Notation', t: r`$\displaystyle\lim_{x \to a} f(x) = L$ reads: “the limit of $f(x)$ as $x$ approaches $a$ is $L$.”` },
       { k: 'p', t: r`Three ways to find a limit, which we will build on all unit: (1) look at a graph and follow the curve toward $x = a$; (2) build a table with $x$-values creeping toward $a$ from both sides; (3) use algebra (Lessons 3–5).` },
       { k: 'tip', t: r`On a table, use $x$-values that get closer to $a$ by factors of 10 (like $1.9, 1.99, 1.999$ and $2.1, 2.01, 2.001$). If both columns settle on the same number, that is your estimate.` },
       { k: 'warn', t: r`The limit and the function value are different things. $f(a)$ can be undefined, or a totally different number, and the limit can still exist. A hole in a graph does not stop a limit.` },

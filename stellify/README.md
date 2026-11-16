@@ -43,9 +43,11 @@ npm run build
 A self-study course under **AP Calculus BC**: all ten units in the College Board's order with exam
 weights, a pacing plan from your exam date, and teacher-style lessons (intro, goals, notes with
 definitions, tips and common mistakes, step-by-step worked examples, practice with hints and full
-solutions, a mastery check at 75%, and unit reviews). Units 1–2 are written in full (15 lessons,
-116 problems, every numeric answer verified by an independent calculation in the tests); Units 3–10
-are outlined topic by topic. Lessons and problems are original.
+solutions, a mastery check at 75%, and unit reviews). All ten units are written in full: 59 lessons,
+118 worked examples and 380 practice problems, from limits through series. Every computed answer is
+verified in the tests by an independent numerical calculation (limits, derivatives, Simpson's rule
+integrals, Runge–Kutta for differential equations, partial sums for series). Lessons and problems
+are original.
 
 ## Official College Board questions
 

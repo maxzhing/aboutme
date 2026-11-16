@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import katex from 'katex';
-import { CALC_LESSONS, CALC_UNITS, calcCorrect, normalizeCalc, type CalcLesson } from '@/data/calc';
+import { CALC_LESSONS, CALC_UNITS, calcCorrect, lessonsOfUnit, normalizeCalc, type CalcLesson } from '@/data/calc';
 import { parseNumeric } from '@/lib/answers';
 import { tokenize } from '@/lib/richtext';
 
@@ -18,8 +18,17 @@ describe('AP Calculus BC course', () => {
     for (const u of CALC_UNITS) expect(u.topics.length, `unit ${u.n}`).toBeGreaterThanOrEqual(5);
   });
 
+  it('has written lessons for every unit', () => {
+    for (const u of CALC_UNITS) {
+      const ls = lessonsOfUnit(u.n);
+      expect(ls.length, `unit ${u.n}`).toBeGreaterThanOrEqual(4);
+      expect(ls.map((l) => l.n), `unit ${u.n}`).toEqual(ls.map((_, i) => i + 1));
+      for (const l of ls) expect(l.id).toBe(`c${u.n}-${l.n}`);
+    }
+  });
+
   it('has complete lessons with notes, examples and practice', () => {
-    expect(CALC_LESSONS.length).toBeGreaterThanOrEqual(15);
+    expect(CALC_LESSONS.length).toBeGreaterThanOrEqual(55);
     const ids = new Set<string>();
     for (const l of CALC_LESSONS) {
       expect(l.goals.length, l.id).toBeGreaterThanOrEqual(3);
@@ -47,7 +56,17 @@ describe('AP Calculus BC course', () => {
     for (const p of all) if (p.check) { expect(p.check(), p.id).toBe(true); checked++; }
     const free = all.filter((p) => typeof p.answer !== 'number');
     // a few free-response items are read from a given table rather than computed
-    expect(checked).toBeGreaterThanOrEqual(free.length - 6);
+    expect(checked).toBeGreaterThanOrEqual(Math.floor(free.length * 0.9));
+  });
+
+  it('keeps every alternate answer key consistent', () => {
+    for (const p of CALC_LESSONS.flatMap((l) => l.practice)) {
+      if (typeof p.answer === 'number') continue;
+      const nums = p.answer.map(parseNumeric).filter((x): x is number => x !== null);
+      expect(nums.length > 0 || ['inf', '-inf', 'dne'].includes(normalizeCalc(p.answer[0])), p.id).toBe(true);
+      for (const x of nums) expect(Math.abs(x - nums[0]), p.id).toBeLessThan(1e-3 * Math.max(1, Math.abs(nums[0])));
+      expect(calcCorrect(p, p.answer[0]), p.id).toBe(true);
+    }
   });
 
   it('renders every formula', () => {

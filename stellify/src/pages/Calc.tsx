@@ -44,7 +44,7 @@ export function CalcHomePage() {
             <h1 className="mt-1 text-3xl font-bold leading-tight sm:text-4xl">AP Calculus BC</h1>
             <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-white/90">The whole course in ten units, in the College Board’s order: lessons with full notes, worked examples, and practice with hints and complete solutions. Pass each lesson at {Math.round(PASS * 100)}% before moving on.</p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {next ? <Link href={`/calc/${next.id}`} className="btn !bg-white !px-5 !py-3 text-[15px] !text-[#2A2470] shadow-[0_12px_30px_-12px_rgba(0,0,0,0.6)] hover:-translate-y-px" data-testid="calc-continue"><Play size={17} />{done.length ? 'Continue' : 'Start'}: {next.unit}.{next.n} {next.title}</Link> : <span className="rounded-xl bg-white/15 px-4 py-2.5 text-sm font-bold">All written lessons mastered ✓</span>}
+              {next ? <Link href={`/calc/${next.id}`} className="btn !bg-white !px-5 !py-3 text-[15px] !text-[#2A2470] shadow-[0_12px_30px_-12px_rgba(0,0,0,0.6)] hover:-translate-y-px" data-testid="calc-continue"><Play size={17} />{done.length ? 'Continue' : 'Start'}: {next.unit}.{next.n} {next.title}</Link> : <span className="rounded-xl bg-white/15 px-4 py-2.5 text-sm font-bold">All lessons mastered ✓</span>}
               <a href="#plan" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20"><CalendarDays size={16} />Study plan</a>
             </div>
           </div>
@@ -122,7 +122,12 @@ export function CalcHomePage() {
 
 function NoteBlock({ n }: { n: Note }) {
   if (n.k === 'p') return <p className="leading-relaxed"><RichText text={n.t} /></p>;
-  if (n.k === 'formula') return <div className="overflow-x-auto rounded-2xl border border-brand/30 bg-brand/5 px-4 py-3 text-center text-[17px]"><RichText block text={`$$${n.t}$$`} /></div>;
+  if (n.k === 'formula') return (
+    // formulas separated by \qquad wrap onto their own lines on narrow screens instead of scrolling
+    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-1 rounded-2xl border border-brand/30 bg-brand/5 px-3 py-3 text-center text-[15px] sm:px-4 sm:text-[17px]">
+      {n.t.split(/\\qquad/).map((f, i) => <div key={i} className="max-w-full overflow-x-auto"><RichText block text={`$$${f.trim()}$$`} /></div>)}
+    </div>
+  );
   if (n.k === 'rule') return <div className="rounded-2xl border-2 border-brand/40 bg-gradient-to-br from-brand/10 to-transparent p-4"><div className="text-[11px] font-black uppercase tracking-wide text-brand2">Definition / theorem</div><div className="mt-0.5 font-bold">{n.title}</div><p className="mt-1.5 leading-relaxed"><RichText text={n.t} /></p></div>;
   if (n.k === 'tip') return <div className="flex gap-3 rounded-2xl border border-gold/40 bg-gold/5 p-3.5"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" /><p className="leading-relaxed"><b className="text-gold">Teacher’s tip. </b><RichText text={n.t} /></p></div>;
   if (n.k === 'warn') return <div className="flex gap-3 rounded-2xl border border-bad/40 bg-bad/5 p-3.5"><TriangleAlert size={18} className="mt-0.5 shrink-0 text-bad" /><p className="leading-relaxed"><b className="text-bad">Common mistake. </b><RichText text={n.t} /></p></div>;

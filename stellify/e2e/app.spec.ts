@@ -423,5 +423,20 @@ test('AP Calculus BC: study plan, a full lesson with examples and checked practi
   await expect(box.getByTestId('calc-solution')).toContainText('The answer is −∞');
   await go(page, '/calc/review/1');
   await expect(page.getByTestId('calc-review')).toContainText('18 mixed problems');
+  // the last unit is written in full too: master its final lesson
+  await go(page, '/calc/c10-7');
+  await expect(page.getByTestId('calc-lesson')).toContainText('Maclaurin series and building new series');
+  for (const p of CALC_LESSON['c10-7'].practice) {
+    const box = page.getByTestId(`calc-problem-${p.id}`);
+    if (typeof p.answer === 'number') await box.locator(`[data-choice="${'ABCDE'[p.answer]}"]`).click();
+    else await box.getByTestId('calc-input').fill(p.answer[0]);
+    await box.getByTestId('calc-check').click();
+    await expect(box.getByTestId('calc-solution')).toContainText('Correct!');
+  }
+  await expect(page.getByTestId('calc-result')).toContainText('Lesson mastered!');
+  await go(page, '/calc');
+  await expect(page.getByTestId('calc-unit-10')).toContainText('1/7 lessons mastered');
+  await go(page, '/calc/review/10');
+  await expect(page.getByTestId('calc-review')).toContainText('14 mixed problems');
   expect(errors).toEqual([]);
 });

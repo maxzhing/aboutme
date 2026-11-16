@@ -74,3 +74,32 @@ export const limInf = (f: (x: number) => number, sign = 1) => f(sign * 1e7);
 /** central-difference derivative */
 export const d = (f: (x: number) => number, x: number, h = 1e-5) => (f(x + h) - f(x - h)) / (2 * h);
 export const BIG = 1e5;
+/** second derivative by central differences */
+export const d2 = (f: (x: number) => number, x: number, h = 1e-4) => (f(x + h) - 2 * f(x) + f(x - h)) / (h * h);
+/** definite integral by composite Simpson's rule */
+export function integ(f: (x: number) => number, a: number, b: number, n = 4000): number {
+  const h = (b - a) / n;
+  let s = f(a) + f(b);
+  for (let i = 1; i < n; i++) s += f(a + i * h) * (i % 2 ? 4 : 2);
+  return (s * h) / 3;
+}
+/** partial sum of a series term(n) for n = from..to */
+export const series = (term: (n: number) => number, from: number, to: number) => { let s = 0; for (let n = from; n <= to; n++) s += term(n); return s; };
+export const fact = (n: number): number => (n <= 1 ? 1 : n * fact(n - 1));
+/** y(x1) for y' = f(x, y), y(x0) = y0, by classical Runge–Kutta */
+export function ode(f: (x: number, y: number) => number, x0: number, y0: number, x1: number, n = 2000): number {
+  const h = (x1 - x0) / n;
+  let x = x0, y = y0;
+  for (let i = 0; i < n; i++) {
+    const k1 = f(x, y), k2 = f(x + h / 2, y + (h / 2) * k1), k3 = f(x + h / 2, y + (h / 2) * k2), k4 = f(x + h, y + h * k3);
+    y += (h / 6) * (k1 + 2 * k2 + 2 * k3 + k4);
+    x += h;
+  }
+  return y;
+}
+/** Euler's method with n steps of size h */
+export function euler(f: (x: number, y: number) => number, x0: number, y0: number, h: number, n: number): number {
+  let x = x0, y = y0;
+  for (let i = 0; i < n; i++) { y += h * f(x, y); x += h; }
+  return y;
+}
