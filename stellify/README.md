@@ -38,6 +38,15 @@ npm run build
 
 `npm run build` validates the question bank, then inlines JavaScript, CSS, fonts and data into one file.
 
+## AP Calculus BC
+
+A self-study course under **AP Calculus BC**: all ten units in the College Board's order with exam
+weights, a pacing plan from your exam date, and teacher-style lessons (intro, goals, notes with
+definitions, tips and common mistakes, step-by-step worked examples, practice with hints and full
+solutions, a mastery check at 75%, and unit reviews). Units 1–2 are written in full (15 lessons,
+116 problems, every numeric answer verified by an independent calculation in the tests); Units 3–10
+are outlined topic by topic. Lessons and problems are original.
+
 ## Official College Board questions
 
 Open **Official Questions** and drop in a PDF exported from the College Board's free SAT Suite
@@ -79,8 +88,8 @@ npm run test:e2e
 
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
-- `npm run test` — 45 unit tests of the learning engine and content.
-- `npm run test:e2e` — 10 browser tests against the built file opened from disk.
+- `npm run test` — 50 unit tests of the learning engine and content.
+- `npm run test:e2e` — 11 browser tests against the built file opened from disk.
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
 ## Honest limits

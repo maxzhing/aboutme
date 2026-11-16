@@ -218,7 +218,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(29);
+  expect(links.length).toBe(30);
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();
@@ -388,5 +388,40 @@ test('official questions: import a College Board Question Bank PDF in the app, p
   await go(page, '/official');
   await page.getByTestId('clear-imported').click();
   await expect(page.getByTestId('import-result')).toContainText('removed');
+  expect(errors).toEqual([]);
+});
+
+test('AP Calculus BC: study plan, a full lesson with examples and checked practice, unit review', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/calc');
+  await expect(page.getByTestId('calc-home')).toContainText('AP Calculus BC');
+  for (let u = 1; u <= 10; u++) await expect(page.getByTestId(`calc-unit-${u}`)).toBeVisible();
+  await page.getByTestId('calc-exam').fill('2027-05-10');
+  await expect(page.getByTestId('calc-pace')).toContainText('weeks until your exam');
+  await page.getByTestId('calc-continue').click();
+  await expect(page.getByTestId('calc-lesson')).toContainText('What a limit really is');
+  await page.getByTestId('calc-example-0').getByTestId('calc-step').click();
+  await expect(page.getByTestId('calc-example-0')).toContainText('Step 1');
+  // answer every practice problem correctly
+  const { CALC_LESSON } = await import('../src/data/calc');
+  for (const p of CALC_LESSON['c1-1'].practice) {
+    const box = page.getByTestId(`calc-problem-${p.id}`);
+    if (typeof p.answer === 'number') await box.locator(`[data-choice="${'ABCDE'[p.answer]}"]`).click();
+    else await box.getByTestId('calc-input').fill(p.answer[0] === 'e' ? '2.718' : p.answer[0]);
+    await box.getByTestId('calc-check').click();
+    await expect(box.getByTestId('calc-solution')).toContainText('Correct!');
+  }
+  await expect(page.getByTestId('calc-result')).toContainText('Lesson mastered!');
+  await go(page, '/calc');
+  await expect(page.getByTestId('calc-unit-1')).toContainText('1/9 lessons mastered');
+  // a wrong answer shows the solution and the right answer
+  await go(page, '/calc/c1-6');
+  const box = page.getByTestId('calc-problem-c1-6-3');
+  await box.getByRole('button', { name: '∞', exact: true }).click();
+  await box.getByTestId('calc-check').click();
+  await expect(box.getByTestId('calc-solution')).toContainText('The answer is −∞');
+  await go(page, '/calc/review/1');
+  await expect(page.getByTestId('calc-review')).toContainText('18 mixed problems');
   expect(errors).toEqual([]);
 });

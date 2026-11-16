@@ -49,6 +49,9 @@ interface Actions {
   claimQuest: (id: string) => boolean;
   finishChapter: (id: string, correct: number, total: number) => void;
   logTrap: (trapId: string, qid: string) => void;
+  calcAnswer: (pid: string, correct: boolean) => void;
+  calcFinish: (lessonId: string, score: number, total: number) => void;
+  setCalcExam: (date: string | undefined) => void;
   makePlan: () => void;
   togglePlanTask: (id: string) => void;
   saveNote: (n: Partial<Note> & { title: string; body: string }) => string;
@@ -143,6 +146,24 @@ export const useStore = create<Store>()(
           const a = post(st, now);
           return { state: a.state, events: [...g.events, ...a.events] };
         }),
+        calcAnswer: (pid, correct) => {
+          const c = getState().calc ?? { done: {}, answers: {} };
+          const prev = c.answers[pid];
+          // the first answer is what counts; later tries are practice
+          setState({ calc: { ...c, answers: { ...c.answers, [pid]: { correct: prev ? prev.correct : correct, at: Date.now(), tries: (prev?.tries ?? 0) + 1 } } } });
+        },
+        calcFinish: (lessonId, score, total) => apply((s) => {
+          const now = Date.now();
+          const c = s.calc ?? { done: {}, answers: {} };
+          const first = !c.done[lessonId];
+          const best = c.done[lessonId] && c.done[lessonId].score / c.done[lessonId].total >= score / total ? c.done[lessonId] : { at: now, score, total };
+          const k = dateKey(now);
+          const day = s.activity[k] ?? { ms: 0, questions: 0, correct: 0, xp: 0, lessons: 0 };
+          const st: AppState = { ...s, calc: { ...c, done: { ...c.done, [lessonId]: best } }, activity: first ? { ...s.activity, [k]: { ...day, lessons: day.lessons + 1, ms: day.ms + 25 * 60_000 } } : s.activity };
+          const g = first ? grant(st, 60, now, 'Calculus lesson mastered') : { state: st, events: [] };
+          return { state: g.state, events: g.events };
+        }),
+        setCalcExam: (date) => { const c = getState().calc ?? { done: {}, answers: {} }; setState({ calc: { ...c, examDate: date } }); },
         logTrap: (trapId, qid) => {
           const cur = getState().traps ?? {};
           const t = cur[trapId] ?? { n: 0, last: 0, qids: [] };

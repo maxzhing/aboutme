@@ -1,4 +1,4 @@
-import { BadgeCheck, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, type LucideIcon } from 'lucide-react';
+import { BadgeCheck, SquareFunction, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, type LucideIcon } from 'lucide-react';
 
 export interface NavItem { href: string; label: string; icon: LucideIcon }
 export const NAV: { group: string; items: NavItem[] }[] = [
@@ -20,6 +20,9 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     { href: '/daily', label: 'Daily Challenge', icon: Flame },
     { href: '/speed', label: 'Speed Training', icon: Gauge },
     { href: '/arena', label: 'Battle Arena', icon: Swords },
+  ] },
+  { group: 'Calculus', items: [
+    { href: '/calc', label: 'AP Calculus BC', icon: SquareFunction },
   ] },
   { group: 'Performance', items: [
     { href: '/analytics', label: 'Analytics', icon: BarChart3 },

@@ -1,0 +1,175 @@
+import type { CalcLesson, CalcProblem } from './types';
+import { d, lim, near } from './types';
+
+const r = String.raw;
+const P = (id: string, level: 1 | 2 | 3, q: string, answer: number | string[], hint: string, solution: string[], extra: Partial<CalcProblem> = {}): CalcProblem => ({ id, level, q, answer, hint, solution, ...extra });
+const sec = (x: number) => 1 / Math.cos(x);
+
+/** Unit 2 · Differentiation: Definition and Fundamental Properties. Original lessons and problems. */
+export const UNIT2: CalcLesson[] = [
+  {
+    id: 'c2-1', unit: 2, n: 1, title: 'Rates of change and the definition of the derivative',
+    intro: 'Here is where calculus starts doing its real job. Average rate of change is just slope between two points. Shrink the gap between those points to zero and you get the instantaneous rate of change: the derivative. Today you will compute derivatives straight from the definition, which builds the understanding the shortcuts rely on.',
+    goals: ['Compute average rates of change', 'Write and use the limit definition of the derivative', 'Find the slope and equation of a tangent line', 'Interpret the derivative as velocity'],
+    notes: [
+      { k: 'formula', t: r`\text{Average rate of change on } [a, b] = \frac{f(b) - f(a)}{b - a}` },
+      { k: 'rule', title: 'The derivative at a point', t: r`$f'(a) = \lim\limits_{h \to 0} \dfrac{f(a + h) - f(a)}{h}$, if this limit exists. Equivalent form: $f'(a) = \lim\limits_{x \to a} \dfrac{f(x) - f(a)}{x - a}$.` },
+      { k: 'p', t: r`Geometrically, $f'(a)$ is the slope of the tangent line at $x = a$: the limit of slopes of secant lines through $(a, f(a))$ and a nearby point.` },
+      { k: 'formula', t: r`\text{Tangent line at } x = a: \quad y - f(a) = f'(a)(x - a)` },
+      { k: 'tip', t: r`Working from the definition is Unit 1 algebra: you will always get $\frac{0}{0}$ at first. Expand, simplify, and the $h$ in the denominator cancels.` },
+      { k: 'p', t: r`If $s(t)$ is position, then $s'(t)$ is velocity, the instantaneous rate of change of position. Units are (units of $s$) per (unit of $t$).` },
+      { k: 'warn', t: r`Average rate of change uses two points; the derivative uses one point and a limit. AP questions test whether you can tell which one is being asked for.` },
+    ],
+    examples: [
+      { q: r`Use the definition to find $f'(x)$ for $f(x) = x^2 + 3x$.`, steps: [r`$f(x + h) - f(x) = (x + h)^2 + 3(x + h) - x^2 - 3x = 2xh + h^2 + 3h$.`, r`Divide by $h$: $2x + h + 3$.`, r`Let $h \to 0$: $f'(x) = 2x + 3$.`], a: '2x + 3' },
+      { q: r`Find the tangent line to $f(x) = x^2 + 3x$ at $x = 1$.`, steps: [r`$f(1) = 4$ and $f'(1) = 2(1) + 3 = 5$.`, r`$y - 4 = 5(x - 1)$, or $y = 5x - 1$.`], a: 'y = 5x − 1' },
+    ],
+    practice: [
+      P('c2-1-1', 1, r`Find the average rate of change of $f(x) = x^2 + 3x$ on $[1, 4]$.`, ['8'], 'Slope between (1, f(1)) and (4, f(4)).', [r`$f(4) = 28$ and $f(1) = 4$.`, r`$\frac{28 - 4}{4 - 1} = 8$.`], { check: () => near((16 + 12 - 4) / 3, 8) }),
+      P('c2-1-2', 1, r`Use the limit definition to find $f'(3)$ for $f(x) = x^2$.`, ['6'], 'Expand (3 + h)².', [r`$\frac{(3 + h)^2 - 9}{h} = \frac{6h + h^2}{h} = 6 + h$.`, r`$\to 6$.`], { check: () => near(d((x) => x * x, 3), 6) }),
+      P('c2-1-3', 2, r`Use the definition to find $f'(2)$ for $f(x) = \dfrac{1}{x}$.`, ['-1/4', '-0.25'], 'Combine 1/(2 + h) − 1/2 over a common denominator.', [r`$\frac{1}{2 + h} - \frac{1}{2} = \frac{-h}{2(2 + h)}$.`, r`Divide by $h$: $\frac{-1}{2(2 + h)} \to -\frac{1}{4}$.`], { check: () => near(d((x) => 1 / x, 2), -0.25) }),
+      P('c2-1-4', 2, r`Use the definition to find $f'(9)$ for $f(x) = \sqrt{x}$.`, ['1/6'], 'Multiply by the conjugate.', [r`$\frac{\sqrt{9 + h} - 3}{h} \cdot \frac{\sqrt{9 + h} + 3}{\sqrt{9 + h} + 3} = \frac{1}{\sqrt{9 + h} + 3}$.`, r`$\to \frac{1}{6}$.`], { check: () => near(d(Math.sqrt, 9), 1 / 6) }),
+      P('c2-1-5', 2, r`The tangent line to $f(x) = x^2 - 2x$ at $x = 3$ has what $y$-intercept?`, ['-9'], 'Find f(3), f′(3), then point-slope.', [r`$f(3) = 3$ and $f'(x) = 2x - 2$, so $f'(3) = 4$.`, r`$y - 3 = 4(x - 3)$ gives $y = 4x - 9$. The $y$-intercept is $-9$.`], { check: () => near(3 - d((x) => x * x - 2 * x, 3) * 3, -9) }),
+      P('c2-1-6', 2, r`Evaluate $\lim\limits_{h \to 0} \dfrac{(3 + h)^4 - 81}{h}$.`, ['108'], 'This is the derivative of x⁴ at some point.', [r`It is $f'(3)$ for $f(x) = x^4$, and $f'(x) = 4x^3$.`, r`$4 \cdot 27 = 108$.`], { check: () => near(lim((h) => ((3 + h) ** 4 - 81) / h, 0), 108) }),
+      P('c2-1-7', 3, r`A particle’s position is $s(t) = t^3 - 6t$ meters at time $t$ seconds. What is its velocity at $t = 2$, in meters per second?`, ['6'], 'Velocity is the derivative of position.', [r`$s'(t) = 3t^2 - 6$.`, r`$s'(2) = 12 - 6 = 6$ m/s.`], { check: () => near(d((t) => t ** 3 - 6 * t, 2), 6) }),
+    ],
+    remember: ["f'(a) = lim [f(a + h) − f(a)] / h.", 'Derivative = slope of the tangent = instantaneous rate.', 'Tangent line: y − f(a) = f′(a)(x − a).'],
+    checkIn: 'If you can derive the derivative of x² from the definition with your notes closed, you own this lesson. Next: derivatives from tables and graphs, and where derivatives fail.',
+  },
+  {
+    id: 'c2-2', unit: 2, n: 2, title: 'Estimating derivatives and differentiability',
+    intro: 'The AP exam loves to give you a table instead of a formula. Today you will estimate derivatives from data, recognize a limit that is secretly a derivative, and learn exactly when a derivative fails to exist. That last part connects straight back to continuity from Unit 1.',
+    goals: ['Estimate a derivative from a table', 'Recognize a limit as a derivative', 'Identify corners, cusps, vertical tangents and discontinuities', 'Know that differentiable implies continuous, but not the reverse'],
+    notes: [
+      { k: 'p', t: r`From a table, estimate $f'(a)$ with the slope between the two closest points around $a$: $f'(a) \approx \frac{f(b) - f(c)}{b - c}$ with $c < a < b$.` },
+      { k: 'p', t: r`Notation you must recognize: $f'(x)$, $\frac{dy}{dx}$, $y'$, $\frac{d}{dx}f(x)$, $Df(x)$. They all mean the derivative.` },
+      { k: 'rule', title: 'Differentiable ⇒ continuous', t: r`If $f$ is differentiable at $a$, then $f$ is continuous at $a$. The converse is false: continuous functions can fail to be differentiable.` },
+      { k: 'list', items: [r`**Corner:** different slopes from each side, like $|x|$ at 0.`, r`**Cusp:** slopes go to $+\infty$ on one side and $-\infty$ on the other, like $x^{2/3}$ at 0.`, r`**Vertical tangent:** slope is infinite, like $\sqrt[3]{x}$ at 0.`, r`**Discontinuity:** if it is not continuous, it is not differentiable.`] },
+      { k: 'tip', t: r`Spot a hidden derivative: $\lim\limits_{h \to 0} \frac{f(a + h) - f(a)}{h}$ IS $f'(a)$. Identify $f$ and $a$, then use derivative rules.` },
+      { k: 'warn', t: r`For a piecewise function to be differentiable at the break, it must be continuous there AND the two pieces must have the same slope there. Check both.` },
+    ],
+    examples: [
+      { q: r`$x$: 0, 2, 4, 6. $f(x)$: 1, 5, 11, 13. Estimate $f'(3)$.`, steps: [r`Use the closest points around 3: $x = 2$ and $x = 4$.`, r`$\frac{11 - 5}{4 - 2} = 3$.`], a: '3' },
+      { q: r`Evaluate $\lim\limits_{h \to 0} \dfrac{\cos(\pi + h) + 1}{h}$.`, steps: [r`$\cos\pi = -1$, so this is $\lim\limits_{h \to 0} \frac{\cos(\pi + h) - \cos\pi}{h}$.`, r`That is $f'(\pi)$ for $f = \cos$: $-\sin\pi = 0$.`], a: '0' },
+    ],
+    practice: [
+      P('c2-2-1', 1, r`$x$: 1, 3, 5, 7. $f(x)$: 4, 10, 13, 22. Estimate $f'(4)$.`, ['3/2', '1.5'], 'Use the two table values on either side of 4.', [r`$\frac{f(5) - f(3)}{5 - 3} = \frac{13 - 10}{2} = 1.5$.`], { check: () => near((13 - 10) / 2, 1.5) }),
+      P('c2-2-2', 1, r`At $x = 2$, the function $f(x) = |x - 2|$ is…`, 1, 'Is there a sharp point?', [r`$f$ is continuous at 2, but the slope is $-1$ from the left and $1$ from the right: a corner.`, r`So it is continuous but not differentiable.`], { choices: ['differentiable and continuous', 'continuous but not differentiable', 'differentiable but not continuous', 'neither continuous nor differentiable'] }),
+      P('c2-2-3', 2, r`Which statement is always true?`, 0, 'One direction of the relationship is a theorem.', [r`Differentiable at $a$ implies continuous at $a$. The reverse fails (for example $|x|$ at 0).`], { choices: ['If f is differentiable at a, then f is continuous at a.', 'If f is continuous at a, then f is differentiable at a.', 'If f is not differentiable at a, then f is not continuous at a.', 'If f(a) is defined, then f is differentiable at a.'] }),
+      P('c2-2-4', 2, r`Evaluate $\lim\limits_{h \to 0} \dfrac{\sin\left(\frac{\pi}{6} + h\right) - \frac{1}{2}}{h}$ to three decimal places.`, ['0.866', '0.8660', 'sqrt(3)/2'], r`$\sin\frac{\pi}{6} = \frac{1}{2}$. Which derivative is this?`, [r`It is $f'(\frac{\pi}{6})$ for $f = \sin$, and $\sin' = \cos$.`, r`$\cos\frac{\pi}{6} = \frac{\sqrt{3}}{2} \approx 0.866$.`], { check: () => near(lim((h) => (Math.sin(Math.PI / 6 + h) - 0.5) / h, 0), Math.sqrt(3) / 2) }),
+      P('c2-2-5', 2, r`Why is $f(x) = \sqrt[3]{x}$ not differentiable at $x = 0$?`, 2, 'Look at the slope of the curve at the origin.', [r`$f$ is continuous at 0, and the tangent line there is vertical: the slope is infinite.`], { choices: ['It is not continuous at 0', 'It has a corner at 0', 'It has a vertical tangent at 0', 'It is differentiable at 0'] }),
+      P('c2-2-6', 2, r`Evaluate $\lim\limits_{h \to 0} \dfrac{e^{2 + h} - e^2}{h}$ to three decimal places.`, ['7.389', 'e^2'], 'This is the derivative of eˣ at x = 2.', [r`It is $f'(2)$ for $f(x) = e^x$, and $f' = e^x$.`, r`$e^2 \approx 7.389$.`], { check: () => near(lim((h) => (Math.exp(2 + h) - Math.exp(2)) / h, 0), Math.exp(2)) }),
+      P('c2-2-7', 3, r`$f(x) = x^2$ for $x \le 1$ and $f(x) = ax + b$ for $x > 1$. If $f$ is differentiable at $x = 1$, what is $b$?`, ['-1'], 'Continuity gives one equation; matching slopes gives another.', [r`Continuity at 1: $a + b = 1$. Slopes: $2(1) = a$, so $a = 2$.`, r`$b = 1 - 2 = -1$.`], { check: () => 2 + -1 === 1 && near(d((x) => x * x, 1), 2) }),
+    ],
+    remember: ['Table: slope between the nearest points on either side.', 'Corners, cusps, vertical tangents and breaks are not differentiable.', 'Differentiable ⇒ continuous, not the other way.'],
+    checkIn: 'When you see lim h→0 [f(a + h) − f(a)]/h, your brain should shout "derivative!" If it does, you are ready for the shortcut rules.',
+  },
+  {
+    id: 'c2-3', unit: 2, n: 3, title: 'Power, constant multiple and sum rules',
+    intro: 'Time for the shortcuts. The power rule turns the long limit computations of the last two lessons into one line. The trick that separates strong students: rewrite roots and fractions as powers BEFORE you differentiate.',
+    goals: ['Apply the power rule for any real exponent', 'Use the constant multiple and sum rules', 'Rewrite roots and fractions as powers', 'Find horizontal tangents and tangent lines'],
+    notes: [
+      { k: 'formula', t: r`\frac{d}{dx}\,x^n = n x^{n - 1} \qquad \frac{d}{dx}\,c = 0 \qquad \frac{d}{dx}[c\,f] = c\,f' \qquad \frac{d}{dx}[f \pm g] = f' \pm g'` },
+      { k: 'p', t: r`The power rule works for every real exponent: positive, negative and fractional. That is why rewriting matters.` },
+      { k: 'list', items: [r`$\sqrt{x} = x^{1/2}$, $\sqrt[3]{x^2} = x^{2/3}$`, r`$\frac{1}{x^3} = x^{-3}$, $\frac{5}{\sqrt{x}} = 5x^{-1/2}$`, r`$\frac{x^2 + 1}{x} = x + x^{-1}$ (split the fraction when the bottom is a single term)`] },
+      { k: 'tip', t: r`Horizontal tangents happen where $f'(x) = 0$. Set the derivative equal to 0 and solve.` },
+      { k: 'warn', t: r`$\frac{d}{dx}\frac{1}{x^2}$ is NOT $\frac{1}{2x}$. Rewrite as $x^{-2}$ first: the derivative is $-2x^{-3}$.` },
+    ],
+    examples: [
+      { q: r`Differentiate $f(x) = 4x^3 - \dfrac{2}{x} + 3\sqrt{x}$.`, steps: [r`Rewrite: $4x^3 - 2x^{-1} + 3x^{1/2}$.`, r`$f'(x) = 12x^2 + 2x^{-2} + \frac{3}{2}x^{-1/2}$.`, r`$= 12x^2 + \frac{2}{x^2} + \frac{3}{2\sqrt{x}}$.`], a: '12x² + 2/x² + 3/(2√x)' },
+      { q: r`Where does $f(x) = x^3 - 3x^2$ have horizontal tangents?`, steps: [r`$f'(x) = 3x^2 - 6x = 3x(x - 2)$.`, r`$f'(x) = 0$ at $x = 0$ and $x = 2$.`], a: 'x = 0 and x = 2' },
+    ],
+    practice: [
+      P('c2-3-1', 1, r`$f(x) = 5x^4 - 3x^2 + 7$. Find $f'(1)$.`, ['14'], 'Power rule term by term.', [r`$f'(x) = 20x^3 - 6x$.`, r`$f'(1) = 20 - 6 = 14$.`], { check: () => near(d((x) => 5 * x ** 4 - 3 * x * x + 7, 1), 14) }),
+      P('c2-3-2', 1, r`$f(x) = 6\sqrt{x}$. Find $f'(4)$.`, ['3/2', '1.5'], 'Rewrite as 6x^(1/2).', [r`$f'(x) = 3x^{-1/2} = \frac{3}{\sqrt{x}}$.`, r`$f'(4) = \frac{3}{2}$.`], { check: () => near(d((x) => 6 * Math.sqrt(x), 4), 1.5) }),
+      P('c2-3-3', 2, r`$f(x) = \dfrac{4}{x^2}$. Find $f'(2)$.`, ['-1'], 'Rewrite as 4x^(−2).', [r`$f'(x) = -8x^{-3}$.`, r`$f'(2) = -\frac{8}{8} = -1$.`], { check: () => near(d((x) => 4 / (x * x), 2), -1) }),
+      P('c2-3-4', 2, r`$f(x) = x^{3/2} - \dfrac{2}{x}$. Find $f'(4)$.`, ['3.125', '25/8'], 'Rewrite 2/x as 2x^(−1).', [r`$f'(x) = \frac{3}{2}x^{1/2} + 2x^{-2}$.`, r`$f'(4) = \frac{3}{2}(2) + \frac{2}{16} = 3.125$.`], { check: () => near(d((x) => x ** 1.5 - 2 / x, 4), 3.125) }),
+      P('c2-3-5', 2, r`Find the slope of $y = \dfrac{x^2 + 1}{x}$ at $x = 2$.`, ['3/4', '0.75'], 'Split the fraction first.', [r`$y = x + x^{-1}$, so $y' = 1 - x^{-2}$.`, r`At $x = 2$: $1 - \frac{1}{4} = \frac{3}{4}$.`], { check: () => near(d((x) => (x * x + 1) / x, 2), 0.75) }),
+      P('c2-3-6', 2, r`$f(x) = x^3 - 12x$ has a horizontal tangent at a positive value of $x$. What is it?`, ['2'], "Solve f'(x) = 0.", [r`$f'(x) = 3x^2 - 12 = 0$ gives $x^2 = 4$.`, r`The positive value is $x = 2$.`], { check: () => near(d((x) => x ** 3 - 12 * x, 2), 0) }),
+      P('c2-3-7', 3, r`The tangent line to $y = x^3$ at $x = 1$ crosses the curve again at what $x$-value?`, ['-2'], 'Find the tangent line, set it equal to x³, and factor.', [r`Tangent: $y = 3x - 2$.`, r`$x^3 = 3x - 2$ gives $x^3 - 3x + 2 = (x - 1)^2(x + 2) = 0$.`, r`The other intersection is $x = -2$.`], { check: () => near((-2) ** 3, 3 * -2 - 2) }),
+    ],
+    remember: ['d/dx xⁿ = n·xⁿ⁻¹ for any real n.', 'Rewrite roots and 1/xᵏ as powers first.', "Horizontal tangent ⇔ f'(x) = 0."],
+    checkIn: 'Speed matters on the AP exam. If the power rule problems took you under a minute each, move on. Next: sin, cos, eˣ and ln x.',
+  },
+  {
+    id: 'c2-4', unit: 2, n: 4, title: 'Derivatives of sin x, cos x, eˣ and ln x',
+    intro: 'Four derivatives you will use in nearly every problem for the rest of the course. Memorize them today, including the signs, and understand where they come from: the special limits from Unit 1.',
+    goals: ['Know the derivatives of sin, cos, eˣ and ln x', 'Combine them with the earlier rules', 'Find higher derivatives of sin and cos'],
+    notes: [
+      { k: 'formula', t: r`\frac{d}{dx}\sin x = \cos x \qquad \frac{d}{dx}\cos x = -\sin x \qquad \frac{d}{dx}e^x = e^x \qquad \frac{d}{dx}\ln x = \frac{1}{x}` },
+      { k: 'p', t: r`Where they come from: $\frac{d}{dx}\sin x$ uses the limits $\frac{\sin h}{h} \to 1$ and $\frac{\cos h - 1}{h} \to 0$ from Lesson 1.5. $e$ is the special base whose exponential is its own derivative.` },
+      { k: 'tip', t: r`Derivatives of sine and cosine cycle every four steps: $\sin \to \cos \to -\sin \to -\cos \to \sin$.` },
+      { k: 'warn', t: r`The minus sign goes on the derivative of COSINE: $(\cos x)' = -\sin x$. Mixing this up is the most common Unit 2 sign error.` },
+      { k: 'p', t: r`$\ln x$ is only defined for $x > 0$, so its derivative $\frac{1}{x}$ is used for $x > 0$.` },
+    ],
+    examples: [
+      { q: r`$f(x) = 2\sin x + 3e^x$. Find $f'(0)$.`, steps: [r`$f'(x) = 2\cos x + 3e^x$.`, r`$f'(0) = 2 + 3 = 5$.`], a: '5' },
+      { q: r`Find the 27th derivative of $\sin x$.`, steps: [r`The pattern repeats every 4. $27 = 4 \cdot 6 + 3$.`, r`Third derivative of $\sin x$: $-\cos x$.`], a: '−cos x' },
+    ],
+    practice: [
+      P('c2-4-1', 1, r`$f(x) = 3\sin x - 2\cos x$. Find $f'(0)$.`, ['3'], "cos' = −sin.", [r`$f'(x) = 3\cos x + 2\sin x$.`, r`$f'(0) = 3$.`], { check: () => near(d((x) => 3 * Math.sin(x) - 2 * Math.cos(x), 0), 3) }),
+      P('c2-4-2', 1, r`$f(x) = e^x + \ln x$. Find $f'(1)$ to three decimal places.`, ['3.718', 'e+1'], 'Add the two derivatives.', [r`$f'(x) = e^x + \frac{1}{x}$.`, r`$f'(1) = e + 1 \approx 3.718$.`], { check: () => near(d((x) => Math.exp(x) + Math.log(x), 1), Math.E + 1) }),
+      P('c2-4-3', 1, r`$f(x) = 4\ln x$. Find $f'(2)$.`, ['2'], 'Constant times 1/x.', [r`$f'(x) = \frac{4}{x}$, so $f'(2) = 2$.`], { check: () => near(d((x) => 4 * Math.log(x), 2), 2) }),
+      P('c2-4-4', 1, r`Find the derivative of $\cos x$ at $x = \frac{\pi}{2}$.`, ['-1'], "Use (cos x)' = −sin x.", [r`$-\sin\frac{\pi}{2} = -1$.`], { check: () => near(d(Math.cos, Math.PI / 2), -1) }),
+      P('c2-4-5', 2, r`Find the second derivative of $\sin x$ at $x = \frac{\pi}{6}$.`, ['-1/2', '-0.5'], 'Differentiate twice.', [r`$(\sin x)'' = -\sin x$.`, r`$-\sin\frac{\pi}{6} = -\frac{1}{2}$.`], { check: () => near(d((x) => Math.cos(x), Math.PI / 6), -0.5) }),
+      P('c2-4-6', 2, r`$f(x) = 2e^x - x^2$. Find $f'(0)$.`, ['2'], 'Term by term.', [r`$f'(x) = 2e^x - 2x$, so $f'(0) = 2$.`], { check: () => near(d((x) => 2 * Math.exp(x) - x * x, 0), 2) }),
+      P('c2-4-7', 3, r`Evaluate $\lim\limits_{h \to 0} \dfrac{\ln(1 + h)}{h}$.`, ['1'], 'ln 1 = 0, so this is a derivative of ln x at some point.', [r`$\frac{\ln(1 + h) - \ln 1}{h}$ is the derivative of $\ln x$ at $x = 1$.`, r`$\frac{1}{1} = 1$.`], { check: () => near(lim((h) => Math.log(1 + h) / h, 0), 1) }),
+    ],
+    remember: ["(sin x)' = cos x, (cos x)' = −sin x.", "(eˣ)' = eˣ, (ln x)' = 1/x.", 'sin/cos derivatives repeat every 4.'],
+    checkIn: 'Write the four derivatives from memory on a sticky note and put it where you study. Next: products and quotients.',
+  },
+  {
+    id: 'c2-5', unit: 2, n: 5, title: 'Product and quotient rules',
+    intro: 'The derivative of a product is NOT the product of the derivatives. Today you learn the rules that handle products and quotients correctly, and the AP-style question that gives you only numbers for f, g and their derivatives.',
+    goals: ['Apply the product rule', 'Apply the quotient rule', 'Use tables of f, g, f′ and g′ values', 'Decide when to rewrite instead'],
+    notes: [
+      { k: 'formula', t: r`(fg)' = f'g + fg' \qquad \left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}` },
+      { k: 'tip', t: r`Quotient rule memory line: “low d-high minus high d-low, over the square of what’s below.” The order in the numerator matters because of the minus sign.` },
+      { k: 'p', t: r`If the bottom is a single term like $x^2$, it is often faster to rewrite: $\frac{x^3 + 1}{x^2} = x + x^{-2}$, then use the power rule.` },
+      { k: 'warn', t: r`$(fg)' \ne f'g'$ and $\left(\frac{f}{g}\right)' \ne \frac{f'}{g'}$. These are the two most common mistakes in this unit.` },
+      { k: 'p', t: r`AP questions often give a table of $f(a)$, $f'(a)$, $g(a)$, $g'(a)$ and ask for $(fg)'(a)$ or $\left(\frac{f}{g}\right)'(a)$. Just plug the numbers into the rule.` },
+    ],
+    examples: [
+      { q: r`Differentiate $y = x^2\sin x$.`, steps: [r`$f = x^2$, $g = \sin x$.`, r`$y' = 2x\sin x + x^2\cos x$.`], a: '2x sin x + x² cos x' },
+      { q: r`Differentiate $y = \dfrac{x}{x^2 + 1}$.`, steps: [r`$\frac{(1)(x^2 + 1) - x(2x)}{(x^2 + 1)^2}$.`, r`$= \frac{1 - x^2}{(x^2 + 1)^2}$.`], a: '(1 − x²)/(x² + 1)²' },
+    ],
+    practice: [
+      P('c2-5-1', 1, r`$f(x) = x^2 e^x$. Find $f'(1)$ to three decimal places.`, ['8.155', '3e'], 'Product rule.', [r`$f'(x) = 2xe^x + x^2e^x$.`, r`$f'(1) = 2e + e = 3e \approx 8.155$.`], { check: () => near(d((x) => x * x * Math.exp(x), 1), 3 * Math.E) }),
+      P('c2-5-2', 2, r`$f(x) = x\sin x$. Find $f'(\pi)$ to three decimal places.`, ['-3.142', '-3.1416', '-pi'], 'Product rule, then use sin π = 0 and cos π = −1.', [r`$f'(x) = \sin x + x\cos x$.`, r`$f'(\pi) = 0 + \pi(-1) = -\pi \approx -3.142$.`], { check: () => near(d((x) => x * Math.sin(x), Math.PI), -Math.PI) }),
+      P('c2-5-3', 2, r`$f(x) = \dfrac{x + 1}{x - 1}$. Find $f'(3)$.`, ['-1/2', '-0.5'], 'Quotient rule.', [r`$f'(x) = \frac{(1)(x - 1) - (x + 1)(1)}{(x - 1)^2} = \frac{-2}{(x - 1)^2}$.`, r`$f'(3) = -\frac{2}{4} = -\frac{1}{2}$.`], { check: () => near(d((x) => (x + 1) / (x - 1), 3), -0.5) }),
+      P('c2-5-4', 2, r`$f(x) = \dfrac{\ln x}{x}$. Find $f'(1)$.`, ['1'], 'Quotient rule with ln 1 = 0.', [r`$f'(x) = \frac{\frac{1}{x} \cdot x - \ln x}{x^2} = \frac{1 - \ln x}{x^2}$.`, r`$f'(1) = 1$.`], { check: () => near(d((x) => Math.log(x) / x, 1), 1) }),
+      P('c2-5-5', 2, r`$f(2) = 3$, $f'(2) = -1$, $g(2) = 4$, $g'(2) = 5$. Find the derivative of $f(x)g(x)$ at $x = 2$.`, ['11'], 'Product rule with numbers.', [r`$f'g + fg' = (-1)(4) + (3)(5)$.`, r`$= -4 + 15 = 11$.`], { check: () => -1 * 4 + 3 * 5 === 11 }),
+      P('c2-5-6', 3, r`With the same values, find the derivative of $\dfrac{f(x)}{g(x)}$ at $x = 2$.`, ['-19/16'], 'Quotient rule: (f′g − fg′)/g².', [r`$\frac{(-1)(4) - (3)(5)}{4^2} = \frac{-4 - 15}{16}$.`, r`$= -\frac{19}{16}$.`], { check: () => near((-1 * 4 - 3 * 5) / 16, -19 / 16) }),
+      P('c2-5-7', 3, r`$h(x) = x^2 f(x)$, where $f(3) = 2$ and $f'(3) = -1$. Find $h'(3)$.`, ['3'], 'Product rule with x² as one factor.', [r`$h'(x) = 2x f(x) + x^2 f'(x)$.`, r`$h'(3) = 6(2) + 9(-1) = 3$.`], { check: () => 2 * 3 * 2 + 9 * -1 === 3 }),
+    ],
+    remember: ["(fg)' = f'g + fg'.", "(f/g)' = (f'g − fg')/g².", 'Single-term denominator? Rewrite instead.'],
+    checkIn: 'Do problem 6 again tomorrow without notes: if the order in the quotient rule numerator is automatic, you are ready. Last lesson of Unit 2 next.',
+  },
+  {
+    id: 'c2-6', unit: 2, n: 6, title: 'Derivatives of tan, cot, sec and csc',
+    intro: 'The last four basic derivatives. You can derive all of them from sine and cosine with the quotient rule, and doing that once is the best way to remember the signs. After this you have every basic derivative the AP exam expects.',
+    goals: ['Know the derivatives of tan, cot, sec and csc', 'Derive them with the quotient rule', 'Use them in tangent line problems'],
+    notes: [
+      { k: 'formula', t: r`\frac{d}{dx}\tan x = \sec^2 x \qquad \frac{d}{dx}\cot x = -\csc^2 x \qquad \frac{d}{dx}\sec x = \sec x\tan x \qquad \frac{d}{dx}\csc x = -\csc x\cot x` },
+      { k: 'p', t: r`Derivation of $\tan x$: $\frac{\sin x}{\cos x}$ gives $\frac{\cos x \cos x - \sin x(-\sin x)}{\cos^2 x} = \frac{1}{\cos^2 x} = \sec^2 x$.` },
+      { k: 'tip', t: r`Pattern: the “co-” functions (cot, csc) have derivatives with a minus sign and the “co-” partner. If you know $\tan$ and $\sec$, swap to $\cot$ and $\csc$ and add a minus.` },
+      { k: 'list', items: [r`$\sec\frac{\pi}{4} = \sqrt{2}$, so $\sec^2\frac{\pi}{4} = 2$`, r`$\sec\frac{\pi}{3} = 2$ and $\tan\frac{\pi}{3} = \sqrt{3}$`, r`$\csc\frac{\pi}{2} = 1$ and $\cot\frac{\pi}{2} = 0$`] },
+      { k: 'warn', t: r`$\sec^2 x$ means $(\sec x)^2$, not $\sec(x^2)$.` },
+    ],
+    examples: [
+      { q: r`Find $f'(\frac{\pi}{4})$ for $f(x) = \tan x$.`, steps: [r`$f'(x) = \sec^2 x$.`, r`$\sec\frac{\pi}{4} = \sqrt{2}$, so $f'(\frac{\pi}{4}) = 2$.`], a: '2' },
+      { q: r`Find the tangent line to $y = \sec x$ at $x = 0$.`, steps: [r`$y(0) = 1$ and $y' = \sec x\tan x = 0$ at $x = 0$.`, r`The tangent line is horizontal: $y = 1$.`], a: 'y = 1' },
+    ],
+    practice: [
+      P('c2-6-1', 1, r`$f(x) = \tan x$. Find $f'\left(\frac{\pi}{4}\right)$.`, ['2'], 'tan′ = sec².', [r`$\sec^2\frac{\pi}{4} = (\sqrt{2})^2 = 2$.`], { check: () => near(d(Math.tan, Math.PI / 4), 2) }),
+      P('c2-6-2', 2, r`$f(x) = \sec x$. Find $f'\left(\frac{\pi}{3}\right)$ to three decimal places.`, ['3.464', '2sqrt(3)'], 'sec′ = sec·tan.', [r`$\sec\frac{\pi}{3}\tan\frac{\pi}{3} = 2\sqrt{3} \approx 3.464$.`], { check: () => near(d(sec, Math.PI / 3), 2 * Math.sqrt(3)) }),
+      P('c2-6-3', 2, r`$f(x) = x\tan x$. Find $f'\left(\frac{\pi}{4}\right)$ to three decimal places.`, ['2.571', '2.5708'], 'Product rule.', [r`$f'(x) = \tan x + x\sec^2 x$.`, r`$f'(\frac{\pi}{4}) = 1 + \frac{\pi}{4} \cdot 2 = 1 + \frac{\pi}{2} \approx 2.571$.`], { check: () => near(d((x) => x * Math.tan(x), Math.PI / 4), 1 + Math.PI / 2) }),
+      P('c2-6-4', 2, r`$f(x) = \csc x$. Find $f'\left(\frac{\pi}{2}\right)$.`, ['0'], 'csc′ = −csc·cot.', [r`$-\csc\frac{\pi}{2}\cot\frac{\pi}{2} = -1 \cdot 0 = 0$.`], { check: () => Math.abs(d((x) => 1 / Math.sin(x), Math.PI / 2)) < 1e-6 }),
+      P('c2-6-5', 1, r`Find the derivative of $\cot x$ at $x = \frac{\pi}{4}$.`, ['-2'], 'cot′ = −csc².', [r`$\csc\frac{\pi}{4} = \sqrt{2}$, so $-\csc^2\frac{\pi}{4} = -2$.`], { check: () => near(d((x) => 1 / Math.tan(x), Math.PI / 4), -2) }),
+      P('c2-6-6', 1, r`Which is the derivative of $\sec x$?`, 0, 'Derive it from 1/cos x if you are unsure.', [r`$\frac{d}{dx}(\cos x)^{-1} = -(\cos x)^{-2}(-\sin x) = \frac{\sin x}{\cos^2 x} = \sec x\tan x$.`], { choices: [r`$\sec x\tan x$`, r`$\sec^2 x$`, r`$-\sec x\tan x$`, r`$\tan^2 x$`] }),
+      P('c2-6-7', 3, r`The tangent line to $y = \tan x$ at $x = \frac{\pi}{4}$ has what $y$-intercept? Give three decimal places.`, ['-0.571', '-0.5708'], 'Point (π/4, 1), slope 2.', [r`$y - 1 = 2\left(x - \frac{\pi}{4}\right)$, so $y = 2x + 1 - \frac{\pi}{2}$.`, r`The $y$-intercept is $1 - \frac{\pi}{2} \approx -0.571$.`], { check: () => near(1 - d(Math.tan, Math.PI / 4) * (Math.PI / 4), 1 - Math.PI / 2) }),
+    ],
+    remember: ["(tan x)' = sec² x, (sec x)' = sec x tan x.", "(cot x)' = −csc² x, (csc x)' = −csc x cot x.", 'All derivable from sin and cos with the quotient rule.'],
+    checkIn: 'That completes Unit 2. Take the unit review. Then Unit 3 brings the chain rule, the single most important differentiation rule.',
+  },
+];

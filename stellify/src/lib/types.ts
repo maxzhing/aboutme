@@ -296,6 +296,8 @@ export interface AppState {
   chapters: Record<string, { best: number; total: number; at: number; passedAt?: number }>;
   /** traps the student said caught them, by trap id */
   traps: Record<string, { n: number; last: number; qids: string[] }>;
+  /** AP Calculus BC self-study progress */
+  calc: { done: Record<string, { at: number; score: number; total: number }>; answers: Record<string, { correct: boolean; at: number; tries: number }>; examDate?: string };
   plan?: StudyPlan;
   planDone: Record<string, number>;
   mocks: MockAttempt[];
