@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import katex from 'katex';
-import { COURSES, COURSE_LIST } from '@/data/apCourses';
+import { COURSES, COURSE_LIST, lessonById } from '@/data/apCourses';
 import { calcCorrect, type CalcLesson, type LessonTutor } from '@/data/calc';
 import { tokenize } from '@/lib/richtext';
 
@@ -56,9 +56,15 @@ describe.each(COURSE_LIST().filter((c) => c.id !== 'calc').map((c) => [c.name, c
       expect(t.bigIdea.length, l.id).toBeGreaterThanOrEqual(3);
       expect(t.words.length, l.id).toBeGreaterThanOrEqual(3);
       expect(t.tools.length, l.id).toBeGreaterThanOrEqual(1);
+      for (const x of t.tools) if (x.lesson) expect(lessonById(x.lesson), `${l.id} tool → ${x.lesson}`).toBeDefined();
       expect(t.why.map((w) => w.length), l.id).toEqual(l.examples.map((e) => e.steps.length));
       expect(Object.keys(t.walk).sort(), l.id).toEqual(l.practice.map((p) => p.id).sort());
       for (const [pid, w] of Object.entries(t.walk)) expect(w.length, pid).toBeGreaterThanOrEqual(3);
+      // a walk-through's verdict ("(choice C)", "the answer is C", "Choice C.") must name the keyed answer
+      const verdict = /\(choice ([A-D])\b|\banswer is (?:choice )?([A-D])\b|\bchoice ([A-D])\.(?:\s|$)/gi;
+      for (const p of l.practice) if (typeof p.answer === 'number') {
+        for (const m of t.walk[p.id].join(' ').matchAll(verdict)) expect((m[1] ?? m[2] ?? m[3]).toUpperCase(), p.id).toBe('ABCD'[p.answer]);
+      }
       expect(t.teach.plan.length, l.id).toBeGreaterThanOrEqual(4);
       expect(t.teach.questions.length, l.id).toBeGreaterThanOrEqual(2);
       expect(t.teach.keyPoints.length, l.id).toBeGreaterThanOrEqual(3);
@@ -77,4 +83,20 @@ it('lesson and problem ids are unique across all courses', () => {
   const problems = COURSE_LIST().flatMap((c) => c.lessons.flatMap((l) => l.practice.map((p) => p.id)));
   expect(new Set(lessons).size).toBe(lessons.length);
   expect(new Set(problems).size).toBe(problems.length);
+});
+
+it('never leaves a stray (unescaped, unpaired) dollar sign in any course text', () => {
+  const strs = (o: unknown, out: string[] = []): string[] => {
+    if (typeof o === 'string') out.push(o);
+    else if (Array.isArray(o)) o.forEach((x) => strs(x, out));
+    else if (o && typeof o === 'object') Object.values(o).forEach((x) => strs(x, out));
+    return out;
+  };
+  for (const c of COURSE_LIST()) {
+    const all = [...c.lessons.flatMap((l) => strs({ ...l, practice: l.practice.map(({ check: _c, ...p }) => p) })), ...strs(c.tutor)];
+    for (const s of all) {
+      const body = s.replace(/~~~[\s\S]*?~~~/g, '').replace(/⟦[^⟧]*⟧/g, '').replace(/\$\$/g, '');
+      expect((body.match(/(?<!\\)\$/g) ?? []).length % 2, `${c.id}: ${s.slice(0, 80)}`).toBe(0);
+    }
+  }
 });

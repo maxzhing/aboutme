@@ -1,6 +1,8 @@
 import type { CalcLesson, CalcUnit, LessonTutor } from './calc/types';
 import { CALC_LESSONS, CALC_TUTOR, CALC_UNITS } from './calc';
 import { CSA_LESSONS, CSA_TUTOR, CSA_UNITS } from './csa';
+import { MICRO_LESSONS, MICRO_TUTOR, MICRO_UNITS } from './micro';
+import { MACRO_LESSONS, MACRO_TUTOR, MACRO_UNITS } from './macro';
 
 /**
  * Registry of the AP self-study courses. Every course uses the same lesson model (notes, worked
@@ -43,6 +45,18 @@ export const COURSES: Record<string, ApCourse> = {
     blurb: 'Learn Java from your very first variable to recursion, in the four units of the current College Board course. Every lesson traces real code step by step, explains why it behaves the way it does, and ends with you teaching it back.',
     units: CSA_UNITS, lessons: CSA_LESSONS, tutor: CSA_TUTOR,
     answer: { placeholder: 'exact output, e.g. 3.0', chips: ['true', 'false'], help: 'Type exactly what the code prints or returns (3 and 3.0 are different answers; spaces and capital letters are ignored).', exact: true },
+  }),
+  micro: make({
+    id: 'micro', name: 'AP Microeconomics', short: 'Micro',
+    blurb: 'How people, firms and markets make choices: all six College Board units, from opportunity cost to monopoly, labor markets and externalities. Every lesson works through real numbers and graphs step by step, and ends with you teaching it back.',
+    units: MICRO_UNITS, lessons: MICRO_LESSONS, tutor: MICRO_TUTOR,
+    answer: { placeholder: 'e.g. 2.5', chips: [], help: 'Type a number. No $ or % signs needed (they are ignored if you type them).' },
+  }),
+  macro: make({
+    id: 'macro', name: 'AP Macroeconomics', short: 'Macro',
+    blurb: 'How whole economies work: all six College Board units, from GDP and unemployment to the AD-AS model, money and the Fed, the Phillips curve, growth and exchange rates. Every lesson works through real numbers step by step, and ends with you teaching it back.',
+    units: MACRO_UNITS, lessons: MACRO_LESSONS, tutor: MACRO_TUTOR,
+    answer: { placeholder: 'e.g. -60', chips: [], help: 'Type a number. Use a minus sign for decreases or deficits. No $ or % signs needed (they are ignored if you type them).' },
   }),
 };
 

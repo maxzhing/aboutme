@@ -218,7 +218,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(30);
+  expect(links.length).toBe(33);
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();
@@ -457,5 +457,46 @@ test('AP Calculus BC: study plan, a full lesson with examples and checked practi
   await expect(page.getByTestId('calc-unit-10')).toContainText('1/7 lessons mastered');
   await go(page, '/calc/review/10');
   await expect(page.getByTestId('calc-review')).toContainText('14 mixed problems');
+  expect(errors).toEqual([]);
+});
+
+test('AP CSA, Microeconomics and Macroeconomics: every unit, first and last lesson mastered, tutor layer, review', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  const { COURSES } = await import('../src/data/apCourses');
+  for (const id of ['csa', 'micro', 'macro']) {
+    const c = COURSES[id];
+    await go(page, `/${id}`);
+    await expect(page.getByTestId('calc-home')).toContainText(c.name);
+    for (const u of c.units) await expect(page.getByTestId(`calc-unit-${u.n}`)).toContainText(u.title);
+    for (const l of [c.lessons[0], c.lessons[c.lessons.length - 1]]) {
+      await go(page, `/${id}/${l.id}`);
+      await expect(page.getByTestId('calc-lesson')).toContainText(l.title);
+      await expect(page.getByTestId('calc-bigidea')).toBeVisible();
+      await expect(page.getByTestId('calc-words')).toContainText(c.tutor[l.id].words[0].term);
+      for (const p of l.practice) {
+        const box = page.getByTestId(`calc-problem-${p.id}`);
+        if (typeof p.answer === 'number') await box.locator(`[data-choice="${'ABCDE'[p.answer]}"]`).click();
+        else await box.getByTestId('calc-input').fill(p.answer[0]);
+        await box.getByTestId('calc-check').click();
+        await expect(box.getByTestId('calc-solution')).toContainText('Correct!');
+        await expect(box.getByTestId('calc-walk').locator('li')).toHaveCount(c.tutor[l.id].walk[p.id].length);
+      }
+      await expect(page.getByTestId('calc-result')).toContainText('Lesson mastered!');
+      await expect(page.getByTestId('calc-teach')).toBeVisible();
+    }
+    await go(page, `/${id}`);
+    await expect(page.getByTestId('calc-unit-1')).toContainText(`1/${c.lessonsOfUnit(1).length} lessons mastered`);
+    await go(page, `/${id}/review/1`);
+    await expect(page.getByTestId('calc-review')).toContainText('mixed problems');
+  }
+  // CSA grades program output exactly: 3 is not 3.0
+  const intDiv = COURSES.csa.lessons.flatMap((l) => l.practice).find((p) => Array.isArray(p.answer) && /^\d+\.0$/.test(p.answer[0]))!;
+  const lessonId = COURSES.csa.lessons.find((l) => l.practice.includes(intDiv))!.id;
+  await go(page, `/csa/${lessonId}`);
+  const box = page.getByTestId(`calc-problem-${intDiv.id}`);
+  await box.getByTestId('calc-input').fill((intDiv.answer as string[])[0].replace('.0', ''));
+  await box.getByTestId('calc-check').click();
+  await expect(box.getByTestId('calc-solution')).toContainText(`The answer is ${(intDiv.answer as string[])[0]}`);
   expect(errors).toEqual([]);
 });

@@ -38,28 +38,59 @@ npm run build
 
 `npm run build` validates the question bank, then inlines JavaScript, CSS, fonts and data into one file.
 
-## AP Calculus BC
+## AP courses: Calculus BC, Computer Science A, Microeconomics, Macroeconomics
 
-A self-study course under **AP Calculus BC**, written so that a beginner can learn all of it from
-scratch and then teach it. It starts with a **Math Toolkit** unit (fractions, equations, functions,
-slope, exponents, logarithms and trig) and then covers all ten AP units in the College Board's order,
-with exam weights and a pacing plan from your exam date: 67 lessons, 134 worked examples and 428
-practice problems, from arithmetic through infinite series.
+Four self-study AP courses, written so that a beginner can learn each subject from scratch and then
+teach it. Every course follows the College Board's current units in order, shows each unit's exam
+weight, and builds a pacing plan from your exam date.
+
+| Course | Units | Lessons | Worked examples | Practice problems |
+| --- | --- | --- | --- | --- |
+| AP Calculus BC (with a Math Toolkit unit 0) | 10 + toolkit | 67 | 134 | 428 |
+| AP Computer Science A (Java) | 4 | 19 | 38 | 114 |
+| AP Microeconomics | 6 | 15 | 30 | 90 |
+| AP Macroeconomics | 6 | 19 | 38 | 114 |
+
+- **Calculus BC** starts with fractions, equations, functions, slope, exponents, logarithms and trig,
+  then runs from limits through infinite series.
+- **Computer Science A** follows the four-unit course (Using Objects and Methods; Selection and
+  Iteration; Class Creation; Data Collections). Lessons trace real Java code line by line, and answers are
+  graded as exact program output, so `3` and `3.0` are different answers, just as on the exam.
+- **Microeconomics** covers scarcity and trade, supply and demand with elasticity and taxes, costs and
+  perfect competition, monopoly and game theory, factor markets and monopsony, and externalities,
+  public goods and inequality.
+- **Macroeconomics** covers GDP, unemployment and inflation, the AD-AS model and the multipliers,
+  fiscal policy, money and banking, the money market (both the limited and ample reserves
+  frameworks), loanable funds, the Phillips curve, the quantity theory, deficits and crowding out,
+  growth, the balance of payments and exchange rates.
 
 Every lesson has a teacher's intro, goals and notes, plus a tutor layer for complete beginners:
 
 - **The big idea in plain words**, with an everyday picture that makes it stick
-- **Words to know** (292 terms explained simply) and **tools you will use**, each with a quick
-  refresher and a link to the lesson that teaches it
+- **Words to know** (550 terms across the four courses) and **tools you will use**, each with a
+  quick refresher and a link to the lesson that teaches it, even if it is in another course
 - a **why** for every step of every worked example
-- a slow, step-by-step **walk-through for every practice problem**
+- a slow, step-by-step **walk-through for every practice problem** (746 in all)
 - **Now you teach it**: a mini lesson plan for teaching a friend, the questions a student will ask
   (with answers), and a box to write your own explanation, checked against the key points
 
-Practice has hints, a mastery check at 75%, and unit reviews. Every computed answer is verified in the
-tests by an independent numerical calculation (limits, derivatives, Simpson's rule integrals,
-Runge–Kutta for differential equations, partial sums for series), and the tests check that every
-lesson has its full tutor layer. Lessons and problems are original.
+Practice has hints, a mastery check at 75%, and unit reviews. The tests check every course
+automatically:
+
+- every typed-answer problem's answer is recomputed independently (calculus: limits, derivatives,
+  Simpson's rule integrals, Runge–Kutta, partial sums; CSA: a JavaScript model of each Java program
+  with Java's integer division, overflow and `compareTo` rules; economics: the tables and equations in
+  each lesson)
+- `npm run verify:csa-java` goes further for CSA: it turns all 93 typed-answer problems into real Java
+  programs (reusing the lesson's own code where a question refers to it), compiles and runs them with
+  `javac`, and checks that the output matches the key exactly. All 93 match.
+- where a table could produce a tie (two outputs with the same profit, for example), the check
+  requires a single best answer
+- every multiple-choice walk-through names the keyed letter, every link between lessons
+  resolves, every formula renders, and no stray dollar sign can turn into broken math
+- every lesson has its full tutor layer
+
+Lessons and problems are original.
 
 ## Official College Board questions
 
@@ -122,7 +153,8 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 11 browser tests against the built file opened from disk.
+- `npm run test:e2e` — 12 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface.
+- `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
 ## Honest limits
@@ -130,6 +162,9 @@ npm run test:e2e
 - Questions are original, not official College Board items (none are copied from official material), and Reading & Writing items have not been
   reviewed by an outside SAT expert. Score ranges are an unofficial model.
 - Official-resource links and the Gemini connection could not be tested from the build environment.
+- The AP courses are original study material, not official College Board content, and have not been
+  reviewed by an outside AP teacher. The CSA multiple-choice questions are conceptual and are checked
+  by review, not by running code. AP® is a trademark registered by the College Board.
 - Storage is the browser's local storage for this file; export a backup to move devices.
 - There is no cloud account or sync in the single-file version.
 
