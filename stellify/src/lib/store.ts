@@ -52,6 +52,7 @@ interface Actions {
   calcAnswer: (pid: string, correct: boolean) => void;
   calcFinish: (lessonId: string, score: number, total: number) => void;
   setCalcExam: (date: string | undefined) => void;
+  setCalcTeach: (lessonId: string, text: string) => void;
   makePlan: () => void;
   togglePlanTask: (id: string) => void;
   saveNote: (n: Partial<Note> & { title: string; body: string }) => string;
@@ -164,6 +165,7 @@ export const useStore = create<Store>()(
           return { state: g.state, events: g.events };
         }),
         setCalcExam: (date) => { const c = getState().calc ?? { done: {}, answers: {} }; setState({ calc: { ...c, examDate: date } }); },
+        setCalcTeach: (lessonId, text) => { const c = getState().calc ?? { done: {}, answers: {} }; setState({ calc: { ...c, teach: { ...(c.teach ?? {}), [lessonId]: text } } }); },
         logTrap: (trapId, qid) => {
           const cur = getState().traps ?? {};
           const t = cur[trapId] ?? { n: 0, last: 0, qids: [] };

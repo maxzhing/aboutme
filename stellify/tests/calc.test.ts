@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import katex from 'katex';
-import { CALC_LESSONS, CALC_UNITS, calcCorrect, lessonsOfUnit, normalizeCalc, type CalcLesson } from '@/data/calc';
+import { CALC_LESSONS, CALC_TUTOR, CALC_UNITS, calcCorrect, lessonsOfUnit, normalizeCalc, type CalcLesson, type LessonTutor } from '@/data/calc';
 import { parseNumeric } from '@/lib/answers';
 import { tokenize } from '@/lib/richtext';
 
@@ -11,10 +11,14 @@ const texts = (l: CalcLesson) => [
   ...l.practice.flatMap((p) => [p.q, p.hint, ...p.solution, ...(p.choices ?? [])]),
   ...l.remember, l.checkIn,
 ];
+const tutorTexts = (t: LessonTutor) => [
+  ...t.bigIdea, t.picture.title, t.picture.t, ...t.words.flatMap((w) => [w.term, w.means]), ...t.tools.flatMap((x) => [x.name, x.refresher]),
+  ...t.why.flat(), ...Object.values(t.walk).flat(), ...t.teach.plan, ...t.teach.questions.flatMap((q) => [q.q, q.a]), ...t.teach.keyPoints,
+];
 
 describe('AP Calculus BC course', () => {
-  it('outlines all ten units', () => {
-    expect(CALC_UNITS.map((u) => u.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  it('outlines the toolkit and all ten units', () => {
+    expect(CALC_UNITS.map((u) => u.n)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     for (const u of CALC_UNITS) expect(u.topics.length, `unit ${u.n}`).toBeGreaterThanOrEqual(5);
   });
 
@@ -28,7 +32,7 @@ describe('AP Calculus BC course', () => {
   });
 
   it('has complete lessons with notes, examples and practice', () => {
-    expect(CALC_LESSONS.length).toBeGreaterThanOrEqual(55);
+    expect(CALC_LESSONS.length).toBeGreaterThanOrEqual(65);
     const ids = new Set<string>();
     for (const l of CALC_LESSONS) {
       expect(l.goals.length, l.id).toBeGreaterThanOrEqual(3);
@@ -69,8 +73,29 @@ describe('AP Calculus BC course', () => {
     }
   });
 
+  it('gives every lesson a complete tutor layer', () => {
+    for (const l of CALC_LESSONS) {
+      const t = CALC_TUTOR[l.id];
+      expect(t, `${l.id} has no tutor layer`).toBeDefined();
+      expect(t.bigIdea.length, l.id).toBeGreaterThanOrEqual(3);
+      expect(t.words.length, l.id).toBeGreaterThanOrEqual(3);
+      expect(t.tools.length, l.id).toBeGreaterThanOrEqual(1);
+      for (const x of t.tools) if (x.lesson) expect(CALC_LESSONS.some((y) => y.id === x.lesson), `${l.id} tool → ${x.lesson}`).toBe(true);
+      // one reason for every step of every worked example
+      expect(t.why.map((w) => w.length), l.id).toEqual(l.examples.map((e) => e.steps.length));
+      // a slow walk-through for every practice problem, and nothing else
+      expect(Object.keys(t.walk).sort(), l.id).toEqual(l.practice.map((p) => p.id).sort());
+      for (const [id, w] of Object.entries(t.walk)) expect(w.length, id).toBeGreaterThanOrEqual(3);
+      expect(t.teach.plan.length, l.id).toBeGreaterThanOrEqual(4);
+      expect(t.teach.questions.length, l.id).toBeGreaterThanOrEqual(2);
+      expect(t.teach.keyPoints.length, l.id).toBeGreaterThanOrEqual(3);
+    }
+    for (const id of Object.keys(CALC_TUTOR)) expect(CALC_LESSONS.some((l) => l.id === id), `tutor for unknown lesson ${id}`).toBe(true);
+  });
+
   it('renders every formula', () => {
-    for (const l of CALC_LESSONS) for (const s of texts(l)) for (const t of tokenize(s)) {
+    const all = (l: CalcLesson) => [...texts(l), ...(CALC_TUTOR[l.id] ? tutorTexts(CALC_TUTOR[l.id]) : [])];
+    for (const l of CALC_LESSONS) for (const s of all(l)) for (const t of tokenize(s)) {
       if (t.t === 'math' || t.t === 'dmath') expect(() => katex.renderToString(t.v, { throwOnError: true, displayMode: t.t === 'dmath' }), `${l.id}: ${t.v}`).not.toThrow();
     }
   });

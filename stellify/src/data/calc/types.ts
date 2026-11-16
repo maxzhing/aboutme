@@ -43,6 +43,27 @@ export interface CalcLesson {
   checkIn: string;
 }
 
+/**
+ * The tutor layer: everything a complete beginner needs to truly understand a lesson, and then to teach it.
+ * Written for a student who is meeting the idea for the first time.
+ */
+export interface LessonTutor {
+  /** the big idea in everyday words, a few short paragraphs */
+  bigIdea: string[];
+  /** one everyday picture that makes the idea stick */
+  picture: { title: string; t: string };
+  /** new words, explained simply */
+  words: { term: string; means: string }[];
+  /** earlier math this lesson leans on, each with a quick refresher; lesson = id of a lesson that teaches it */
+  tools: { name: string; refresher: string; lesson?: string }[];
+  /** for each worked example, one plain-words reason per step (same lengths as the steps) */
+  why: string[][];
+  /** slow, complete walk-throughs for every practice problem, keyed by problem id */
+  walk: Record<string, string[]>;
+  /** teach it back: a mini lesson plan, questions a student will ask (with answers), and the key points to hit */
+  teach: { plan: string[]; questions: { q: string; a: string }[]; keyPoints: string[] };
+}
+
 export interface CalcUnit { n: number; title: string; weeks: number; examWeight: string; topics: string[]; summary: string }
 
 /* ── answer checking ── */

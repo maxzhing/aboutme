@@ -5,6 +5,8 @@ import type { CalcUnit } from './types';
  * a self-study pace that fits a school year. Topic lists are written in plain words for students.
  */
 export const CALC_UNITS: CalcUnit[] = [
+  { n: 0, title: 'Math Toolkit: Everything You Need Before Calculus', weeks: 3, examWeight: 'Foundation', summary: 'Start here if math has felt shaky. Numbers, equations, functions, slope, exponents, logarithms and trig, from the very beginning, so nothing in calculus catches you off guard.',
+    topics: ['Negative numbers, fractions and order of operations', 'Variables and solving equations', 'Functions and the coordinate plane', 'Slope and equations of lines', 'Exponents, roots, polynomials and factoring', 'A gallery of functions and their graphs', 'Exponentials and logarithms', 'Trigonometry and radians'] },
   { n: 1, title: 'Limits and Continuity', weeks: 3, examWeight: '4–7%', summary: 'What it means for a function to approach a value, how to compute limits, and what makes a function continuous.',
     topics: ['What a limit is: graphs, tables and notation', 'One-sided limits and limits that do not exist', 'Limit laws and direct substitution', 'Algebra for 0/0: factoring, conjugates, fractions', 'Squeeze theorem and special trig limits', 'Infinite limits and vertical asymptotes', 'Limits at infinity and horizontal asymptotes', 'Continuity and types of discontinuity', 'Intermediate Value Theorem'] },
   { n: 2, title: 'Differentiation: Definition and Fundamental Properties', weeks: 2, examWeight: '4–7%', summary: 'The derivative as a limit and a rate of change, and the basic rules for computing it.',
