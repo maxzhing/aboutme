@@ -90,6 +90,25 @@ This writes `private/stellify-personal.html`. Official questions are the College
 work, so `private/` is git-ignored: the pack and the personal copy are for your own study and are
 never committed or published. The public `stellify.html` contains none of them.
 
+## Reading & Writing questions written to the College Board specifications
+
+Every Reading & Writing question passes an automated review modeled on the College Board's
+item-development process before the app will serve it (`src/data/questions/rules.ts`):
+
+- **Skill alignment:** the stem must be the official wording for its skill (for example "Which choice
+  completes the text with the most logical transition?" for Transitions).
+- **Appropriate length:** each passage, or each text of a pair, is 25–150 words.
+- **One best answer and no unintentional clues:** four choices, one key, a rationale for every choice, and
+  the key may not stand out as by far the longest choice.
+- **Plausible distractors:** every wrong answer is tagged with the reasoning error it represents (goes beyond
+  the text, reverses the relationship, ignores a qualification, misuses the data, comma splice, and so on;
+  `distractors.ts`). The app shows that trap next to each wrong answer's explanation.
+- **Coverage:** the four content domains appear in Digital SAT proportions (about 26/28/20/26%), with a
+  20/40/40 medium/hard/very hard mix and correct answers spread evenly across A–D.
+
+Statistical pretesting, discrimination and differential item functioning analyses need responses from
+thousands of real test takers, so they are outside what an offline study app can do.
+
 ## Checks
 
 ```bash
@@ -102,7 +121,7 @@ npm run test:e2e
 
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
-- `npm run test` — 50 unit tests of the learning engine and content.
+- `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
 - `npm run test:e2e` — 11 browser tests against the built file opened from disk.
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 

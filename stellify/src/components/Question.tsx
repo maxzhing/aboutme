@@ -13,6 +13,7 @@ import { Figure } from './Figure';
 import { Badge, cn } from './ui';
 import { useStore } from '@/lib/store';
 import { chapterFor } from '@/data/courses';
+import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
 
 export function QuestionMeta({ q }: { q: Question }) {
   return (
@@ -171,7 +172,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
               {q.choices!.map((c, i) => i === q.answer ? null : (
                 <li key={i} className="flex gap-2.5">
                   <span className={cn('mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border text-xs font-bold', answer === String(i) ? 'border-bad bg-bad text-white' : 'border-line text-muted')}>{LETTERS[i]}</span>
-                  <span>{!q.image && <><span className="text-muted"><RichText text={c} /></span><span className="mx-1.5 text-faint">—</span></>}<RichText text={q.why[i]} />{answer === String(i) && <span className="ml-1.5 text-xs font-semibold text-bad">(your choice)</span>}</span>
+                  <span>{(() => { const t = DISTRACTORS[q.id]?.[i]; return t ? <span className="mb-0.5 block text-[11px] font-bold uppercase tracking-wide text-bad" title={TRAPS[t].tip} data-testid="trap-tag">Trap: {TRAPS[t].label}</span> : null; })()}{!q.image && <><span className="text-muted"><RichText text={c} /></span><span className="mx-1.5 text-faint">—</span></>}<RichText text={q.why[i]} />{answer === String(i) && <span className="ml-1.5 text-xs font-semibold text-bad">(your choice)</span>}</span>
                 </li>
               ))}
             </ul>

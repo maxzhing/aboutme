@@ -1,5 +1,5 @@
 import type { RawQuestion, SkillId } from '@/lib/types';
-import { SKILL, SKILLS } from '@/lib/taxonomy';
+import { DOMAINS, SKILL, SKILLS } from '@/lib/taxonomy';
 import { tokenize, plain } from '@/lib/richtext';
 import { parseNumeric } from '@/lib/answers';
 
@@ -7,6 +7,53 @@ const words = (s: string) => plain(s).trim().split(/\s+/).filter(Boolean).length
 const norm = (s: string) => plain(s).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
 const CLOZE: SkillId[] = ['tra', 'bnd', 'fss'];
+
+/**
+ * College Board Reading and Writing question specifications.
+ * Official stem wording for each skill, as used in the Student Question Bank and the Digital SAT.
+ */
+const Q = `["“'][^"”']+["”']`;
+export const OFFICIAL_STEMS: Partial<Record<SkillId, RegExp[]>> = {
+  cid: [/^Which choice best states the main idea of the text\?$/, /^According to the text, .+\?$/, /^Based on the text, .+\?$/],
+  coet: [/^Which quotation from .+ most effectively illustrates the claim\?$/, /^Which finding, if true, would most directly (support|weaken) .+\?$/],
+  coeq: [/^Which choice most effectively uses data from the (table|graph) to complete the (statement|text|example)\?$/, /^Which choice best describes data from the (table|graph) that support .+\?$/],
+  inf: [/^Which choice most logically completes the text\?$/],
+  wic: [/^Which choice completes the text with the most logical and precise word or phrase\?$/, new RegExp(`^As used in the text, what does the word ${Q} most nearly mean\\?$`)],
+  tsp: [/^Which choice best describes the function of the underlined (sentence|portion) in the text as a whole\?$/, /^Which choice best describes the overall structure of the text\?$/, /^Which choice best states the main purpose of the text\?$/],
+  ctc: [/^Based on the texts, .+(\?|\.\.\.|…)?$/],
+  tra: [/^Which choice completes the text with the most logical transition\?$/],
+  syn: [/^While researching a topic, a student has taken the following notes\. The student wants to .+\. Which choice most effectively uses relevant information from the notes to accomplish this goal\?$/],
+  bnd: [/^Which choice completes the text so that it conforms to the conventions of Standard English\?$/],
+  fss: [/^Which choice completes the text so that it conforms to the conventions of Standard English\?$/],
+};
+
+/** Passage length rule from the R&W section specifications: 25–150 words (each text of a pair). */
+export const PASSAGE_WORDS = { min: 25, max: 150 } as const;
+
+/** Checks every Reading and Writing question against the College Board question specifications. */
+export function cbSpecChecks(q: RawQuestion): string[] {
+  const e: string[] = [];
+  if (SKILL[q.skill]?.section !== 'rw') return e;
+  // 1. skill alignment: the stem must be the official wording for the tested skill
+  const stems = OFFICIAL_STEMS[q.skill];
+  if (stems && !stems.some((r) => r.test(q.stem.trim()))) e.push(`stem is not the official College Board wording for ${q.skill}: "${q.stem.slice(0, 70)}"`);
+  // 2. appropriate length: 25–150 words per text (rhetorical synthesis notes count as the text)
+  const texts = q.skill === 'syn' ? [(q.notes ?? []).join(' ')] : q.skill === 'ctc' ? (q.passage ?? '').split(/\*\*Text 2\*\*|Text 2\b/) : [q.passage ?? ''];
+  texts.forEach((t, i) => {
+    const n = words(t.replace(/\*\*Text 1\*\*|Text 1\b/, ''));
+    if (n < PASSAGE_WORDS.min || n > PASSAGE_WORDS.max) e.push(`${texts.length > 1 ? `text ${i + 1}` : 'passage'} is ${n} words (spec: ${PASSAGE_WORDS.min}–${PASSAGE_WORDS.max})`);
+  });
+  // 3. no unintentional clues: the key must not stand out as by far the longest choice
+  if (q.choices && typeof q.answer === 'number') {
+    const len = q.choices.map(words);
+    const others = len.filter((_, i) => i !== q.answer);
+    if (len[q.answer] > 1.6 * Math.max(...others) && len[q.answer] - Math.max(...others) >= 4) e.push('length clue: the correct choice is much longer than every distractor');
+    // answer-choice parallelism: all four choices should be the same kind of thing
+    if (q.skill === 'wic' && len.some((n) => n > 4)) e.push('words-in-context choices should be single words or short phrases');
+    if (Math.max(...len) > 4 * Math.max(1, Math.min(...len)) && Math.max(...len) - Math.min(...len) > 12) e.push('choices are not parallel in length or form');
+  }
+  return e;
+}
 
 /** Per-question validation. Returns a list of problems (empty = valid). */
 export function validateQuestion(q: RawQuestion, renderMath?: (tex: string) => void): string[] {
@@ -44,6 +91,7 @@ export function validateQuestion(q: RawQuestion, renderMath?: (tex: string) => v
   }
 
   if (skill.section === 'rw') {
+    e.push(...cbSpecChecks(q));
     if (q.skill === 'syn') {
       if (!q.notes || q.notes.length < 3) e.push('rhetorical synthesis needs at least 3 notes');
     } else {
@@ -116,6 +164,12 @@ export function validateBank(all: RawQuestion[], opts: { minPerSection?: number 
       const p = mcq.filter((q) => q.answer === i).length / Math.max(1, mcq.length);
       if (p < 0.19 || p > 0.31) e.push(`${section}: correct answer in position ${'ABCD'[i]} ${(p * 100).toFixed(1)}% of the time (want 19–31%)`);
     }
+  }
+  // the four R&W content domains should appear in roughly the proportions of the Digital SAT
+  const rw = all.filter((q) => SKILL[q.skill]?.section === 'rw');
+  for (const dom of DOMAINS.filter((x) => x.section === 'rw')) {
+    const share = rw.filter((q) => SKILL[q.skill].domain === dom.id).length / Math.max(1, rw.length);
+    if (Math.abs(share - dom.weight) > 0.03) e.push(`rw: ${dom.name} is ${(share * 100).toFixed(1)}% of the bank (Digital SAT ≈ ${dom.weight * 100}%)`);
   }
   for (const s of SKILLS) {
     const qs = all.filter((q) => q.skill === s.id);

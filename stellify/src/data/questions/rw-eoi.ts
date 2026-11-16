@@ -2,7 +2,7 @@ import type { RawQuestion } from '@/lib/types';
 import { r } from './kit';
 
 const T_STEM = 'Which choice completes the text with the most logical transition?';
-const S_STEM = (goal: string) => `While researching a topic, a student has taken the notes shown. ${goal} Which choice most effectively uses relevant information from the notes to accomplish this goal?`;
+const S_STEM = (goal: string) => `While researching a topic, a student has taken the following notes. ${goal} Which choice most effectively uses relevant information from the notes to accomplish this goal?`;
 
 /** Reading & Writing · Expression of Ideas — Transitions, Rhetorical Synthesis */
 export const RW_EOI: RawQuestion[] = [
@@ -29,7 +29,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-02', skill: 'tra', sub: 'Cause and effect', d: 'M',
-    passage: 'The town\'s only bridge across the river was closed for repairs throughout the summer. ______ ferry ridership tripled between June and August.',
+    passage: "The town's only bridge across the river was closed for repairs throughout the summer, forcing commuters to find another way to reach the city center. ______ ferry ridership tripled between June and August.",
     stem: T_STEM,
     choices: ['Consequently,', 'Nevertheless,', 'For instance,', 'Likewise,'], answer: 0,
     steps: [
@@ -134,7 +134,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-07', skill: 'tra', sub: 'Logical flow', d: 'H',
-    passage: 'The species is crepuscular; ______ it is most active at dawn and dusk rather than in full daylight or complete darkness.',
+    passage: "Field biologists have now described the daily activity pattern of the newly studied rodent. The species is crepuscular; ______ it is most active at dawn and dusk rather than in full daylight or complete darkness.",
     stem: T_STEM,
     choices: ['however,', 'that is,', 'in addition,', 'as a result,'], answer: 1,
     steps: [
@@ -197,7 +197,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-10', skill: 'tra', sub: 'Emphasis', d: 'V',
-    passage: 'Critics predicted that the low-budget film would attract little attention. They were wrong. ______ it became the most-watched release of the year.',
+    passage: "Critics predicted that the low-budget film would attract little attention. They were wrong. ______ it became the most-watched release of the year, and within a month theaters across the country had added extra screenings.",
     stem: T_STEM,
     choices: ['Nevertheless,', 'In fact,', 'For example,', 'Meanwhile,'], answer: 1,
     steps: [
@@ -574,12 +574,7 @@ export const RW_EOI: RawQuestion[] = [
       'Historians had no previous physical evidence of direct trade between the two regions in that period.',
     ],
     stem: S_STEM('The student wants to emphasize the significance of the shipwreck for historians.'),
-    choices: [
-      'The shipwreck, which divers found in 2019, dates to about 1450.',
-      'The ship\'s hull was built with overlapping planks, a northern European method.',
-      'The ship\'s cargo included ceramics that had been made in the eastern Mediterranean.',
-      'The wreck of a northern European ship carrying eastern Mediterranean ceramics offers the first physical evidence of direct trade between the two regions around 1450.',
-    ], answer: 3,
+    choices: ["In 2019, divers exploring the waters off the coast of a northern island found the wreck of a ship that dates to about 1450.", "The ship, which dates to about 1450, had a hull built with overlapping planks, a construction method used in northern Europe.", "The ship's cargo, found by divers in 2019, included ceramics that had been made far away in the eastern Mediterranean.", "The wreck of a northern European ship carrying eastern Mediterranean ceramics offers the first physical evidence of direct trade between the two regions around 1450."], answer: 3,
     steps: [
       'Significance means why the find matters, not merely what was found.',
       'The last note explains why: there was no earlier physical evidence of direct trade between the regions in that period.',
@@ -732,23 +727,13 @@ export const RW_EOI: RawQuestion[] = [
       'This strategy is known as sexual deception.',
     ],
     stem: S_STEM('The student wants to explain how *Ophrys* orchids achieve pollination without offering nectar.'),
-    choices: [
-      '*Ophrys* orchids, which produce no nectar, rely on a strategy known as sexual deception.',
-      '*Ophrys* flowers mimic the appearance and scent of female bees, attracting male bees that pick up pollen during mating attempts and carry it to the next flower.',
-      'Male bees attempt to mate with the flowers of *Ophrys* orchids.',
-      'Unlike many flowering plants, some orchids of the genus *Ophrys* produce no nectar.',
-    ], answer: 1,
+    choices: ["*Ophrys* orchids, a genus whose flowers produce no nectar, rely on a strategy known as sexual deception to move pollen from one flower to the next.", "*Ophrys* flowers mimic the appearance and scent of female bees, attracting male bees that pick up pollen during mating attempts and carry it to the next flower.", "Male bees attempt to mate with the flowers of *Ophrys* orchids, which resemble female bees in shape and color and give off a similar scent.", "Unlike many flowering plants, some orchids of the genus *Ophrys* produce no nectar, so they offer bees nothing to eat when the bees visit their flowers."], answer: 1,
     steps: [
       'The goal is to explain how pollination happens, that is, the mechanism step by step.',
       'The mechanism: the flower mimics a female bee → male bees try to mate → pollen sticks → the bees carry it to another flower.',
       'Choice B gives that full sequence.',
     ],
-    why: [
-      'This names the strategy but does not explain how it works. A label is not an explanation.',
-      'Correct. It describes each step from attraction to pollen transfer.',
-      'This gives one step only and never reaches pollination.',
-      'This restates that the orchids lack nectar. The goal is to explain what they do instead.',
-    ],
+    why: ["This names the strategy and its result but does not explain how it works. A label is not an explanation.", "Correct. It describes each step from attraction to pollen transfer.", "This explains why male bees visit the flowers but never says how pollen gets from one flower to another, so it does not explain pollination.", "This restates that the orchids lack nectar. The goal is to explain what they do instead."],
     concept: 'To explain how something works, a sentence must describe the process, not merely name it.',
     strategy: 'Ask whether a reader could describe the mechanism after reading the choice. If the choice only gives a term, the answer is no.',
     trap: 'A choice that sounds authoritative because it uses the technical name of the strategy.',

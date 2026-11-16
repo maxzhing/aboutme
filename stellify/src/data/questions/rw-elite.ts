@@ -14,12 +14,7 @@ export const RW_ELITE: RawQuestion[] = [
     id: 'r-x-inf-01', skill: 'inf', sub: 'Inference vs assumption', d: 'E',
     passage: 'Economists studying a city\'s new congestion charge found that the number of cars entering the charged zone fell by 18 percent, yet average travel speeds inside the zone rose only slightly. Road sensors showed that during the same period the city had converted several traffic lanes in the zone into bus lanes and pedestrian space. The economists therefore caution that the modest change in speeds ______',
     stem: LOG,
-    choices: [
-      'proves that congestion charges cannot meaningfully improve travel speeds.',
-      'shows that most former drivers switched to riding buses.',
-      'should not be read as evidence that the charge failed to reduce driving, since the road space available to cars shrank at the same time.',
-      'indicates that the reported decline in the number of cars was measured incorrectly.',
-    ], answer: 2,
+    choices: ["proves that congestion charges cannot meaningfully improve travel speeds, even in cities where far fewer cars enter the charged zone.", "shows that most of the drivers who stopped entering the zone switched to riding buses in the newly created bus lanes.", "should not be read as evidence that the charge failed to reduce driving, since the road space available to cars shrank at the same time.", "indicates that the road sensors measured the reported 18 percent decline in the number of cars entering the zone incorrectly."], answer: 2,
     steps: [
       'Two things changed at once: fewer cars entered (which should raise speeds) and fewer lanes were available to cars (which should lower speeds).',
       'So the small net change in speed is what one would expect if the two effects partly cancelled. Speed alone cannot tell us whether the charge worked.',
@@ -65,7 +60,7 @@ export const RW_ELITE: RawQuestion[] = [
   {
     id: 'r-x-coet-01', skill: 'coet', sub: 'Weakening a claim', d: 'E',
     passage: 'Several species of migratory songbirds that breed in a northern forest region have declined sharply. Ornithologist Imre Kovács hypothesizes that the declines are caused by the loss of the birds\' wintering habitat in the tropics rather than by any change in conditions on the northern breeding grounds.',
-    stem: 'Which finding, if true, would most seriously weaken Kovács\'s hypothesis?',
+    stem: "Which finding, if true, would most directly weaken Kovács's hypothesis?",
     choices: [
       'The declines have been steepest among species that winter in tropical areas with the most deforestation.',
       'Bird species that live in the northern forest region year-round have maintained stable populations.',
@@ -93,23 +88,13 @@ export const RW_ELITE: RawQuestion[] = [
     figure: { kind: 'table', title: 'Participants whose symptoms improved (%)', headers: ['Dose', 'Under age 40', 'Age 40 and older'], rows: [['Placebo', 22, 20], ['Low dose', 41, 24], ['High dose', 44, 43]] },
     passage: 'In a clinical trial of a new medication, participants in two age groups received a placebo, a low dose, or a high dose. The researchers concluded that younger participants obtained nearly the full benefit of the medication at the low dose, whereas older participants benefited substantially only at the high dose.',
     stem: 'Which choice best describes data from the table that support the researchers\' conclusion?',
-    choices: [
-      'At the high dose, the percentage of participants who improved was nearly the same in the two age groups (44% and 43%).',
-      'At the low dose, a greater percentage of participants under 40 improved than of participants 40 and older (41% versus 24%).',
-      'Among participants under 40, improvement rose from 22% with the placebo to 41% at the low dose and only to 44% at the high dose; among those 40 and older, it rose from 20% to just 24% at the low dose but to 43% at the high dose.',
-      'With the placebo, the percentage of participants who improved was similar in the two age groups (22% and 20%).',
-    ], answer: 2,
+    choices: ["At the high dose, the percentage of participants who improved was nearly the same in the two age groups (44% and 43%), and both percentages were roughly double the corresponding placebo percentages (22% and 20%).", "At the low dose, a greater percentage of participants under 40 improved than of participants 40 and older (41% versus 24%), a difference of 17 percentage points between the two age groups.", "Among participants under 40, improvement rose from 22% with the placebo to 41% at the low dose and only to 44% at the high dose; among those 40 and older, it rose from 20% to just 24% at the low dose but to 43% at the high dose.", "With the placebo, the percentage of participants who improved was similar in the two age groups (22% and 20%), which suggests that the two groups were comparable before any medication was given."], answer: 2,
     steps: [
       'The conclusion makes two claims, one for each age group, and each is about how improvement changes from placebo to low dose to high dose.',
       'Younger group: 22 → 41 → 44 (most of the gain arrives at the low dose). Older group: 20 → 24 → 43 (almost no gain until the high dose).',
       'Only choice C traces both groups across all three dose levels.',
     ],
-    why: [
-      'True, but a single dose level cannot show at which dose each group obtained its benefit.',
-      'True, and it hints at the difference, but without the placebo and high-dose figures it cannot show "nearly the full benefit" for the young or "only at the high dose" for the old.',
-      'Correct. It shows the low dose capturing almost all of the younger group\'s gain and almost none of the older group\'s.',
-      'True, but it describes only the baseline, before any medication effect.',
-    ],
+    why: ["True, but it compares only the high dose with the placebo. Without the low-dose figures, it cannot show at which dose each age group obtained its benefit.", "True, and it hints at the difference, but without the placebo and high-dose figures it cannot show \"nearly the full benefit\" for the young or \"only at the high dose\" for the old.", "Correct. It shows the low dose capturing almost all of the younger group's gain and almost none of the older group's.", "True, but it describes only the baseline, before any medication effect."],
     concept: 'A claim about a pattern across conditions (dose levels) for two groups needs every condition for both groups.',
     strategy: 'Count the comparisons the claim requires (here, three dose levels × two groups). Reject any choice that supplies fewer.',
     trap: 'A choice that is accurate and relevant but covers only one slice of the claim.',
@@ -286,7 +271,7 @@ export const RW_ELITE: RawQuestion[] = [
       'Where sea otters were hunted out, urchin populations grew and kelp forests collapsed.',
       'Kelp forests shelter many species of fish and invertebrates.',
     ],
-    stem: 'While researching a topic, a student has taken the notes shown. The student wants to explain to an audience unfamiliar with the term "keystone species" why the sea otter is considered one. Which choice most effectively uses relevant information from the notes to accomplish this goal?',
+    stem: 'While researching a topic, a student has taken the following notes. The student wants to explain to an audience unfamiliar with the term "keystone species" why the sea otter is considered one. Which choice most effectively uses relevant information from the notes to accomplish this goal?',
     choices: [
       'The sea otter is a keystone species: where otters were hunted out, urchin populations grew and kelp forests collapsed.',
       'A keystone species is one whose effect on its ecosystem is disproportionately large relative to its abundance, and kelp forests shelter many species of fish and invertebrates.',
@@ -374,7 +359,7 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-fss-02', skill: 'fss', sub: 'Modifiers', d: 'E',
-    passage: 'Historical records suggested that the region\'s great drought had lasted about a decade. Having analyzed sediment cores from forty lakes, ______',
+    passage: "Scholars have long linked the abandonment of several ancient towns to a severe drought. Historical records suggested that the region's great drought had lasted about a decade. Having analyzed sediment cores from forty lakes, ______",
     stem: SEC,
     choices: [
       'the conclusion of the researchers was that the drought had lasted far longer.',

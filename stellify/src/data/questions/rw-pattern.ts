@@ -583,7 +583,7 @@ export const RW_PATTERN: RawQuestion[] = [
   {
     id: 'r-cb-coet-02', skill: 'coet', sub: 'Supporting a claim', d: 'E',
     passage: 'Psycholinguist Oriol Ferrer and colleagues recorded the reading speeds of forty adults who speak both Catalan and Spanish. Half had learned both languages before the age of four; the other half had learned one of them after the age of ten. Each participant read three passages aloud: one in Catalan, one in Spanish, and one made of fragments of the first two, shuffled so that it was grammatical in neither language. The team concluded that learning a second language early affects how sharply a reader distinguishes grammatical text from ungrammatical text.',
-    stem: 'Which finding from the study, if true, would most directly support the team’s conclusion?',
+    stem: "Which finding, if true, would most directly support the team’s conclusion?",
     choices: [
       'Compared with the later learners, the early learners showed a larger gap between their reading speed on the Catalan passage and their reading speed on the Spanish passage.',
       'Compared with the later learners, the early learners showed a larger gap between their reading speed on the Catalan or Spanish passage and their reading speed on the shuffled passage.',
@@ -638,12 +638,7 @@ export const RW_PATTERN: RawQuestion[] = [
     id: 'r-cb-coet-04', skill: 'coet', sub: 'Supporting a claim', d: 'E',
     passage: 'The Old Norse word *víking* is usually rendered in modern English as “pirate raid,” and *víkingr* as “pirate.” Philologist Sunniva Dahl cautions that these renderings mislead: “pirate” implies a fixed occupation and an inherently criminal one, whereas, she contends, medieval Scandinavians used the terms for a temporary activity that a person might take up and set down, and one that carried no settled moral judgment.',
     stem: 'Which finding, if true, would most directly support Dahl’s contention?',
-    choices: [
-      'The earliest surviving written use of *víkingr* appears on a runestone raised several decades before the earliest saga manuscripts were produced.',
-      'Chronicles written in English monasteries consistently describe Scandinavian raiders as violent criminals.',
-      'In several sagas, men called *víkingar* are shown raiding the same stretch of coastline year after year throughout their adult lives.',
-      'Several sagas describe the same farmer as “going on *víking*” for two summers in his youth and later serving for decades as a respected local judge, with no suggestion that the first was held against him.',
-    ], answer: 3,
+    choices: ["The earliest surviving written use of *víkingr* appears on a runestone raised several decades before the earliest saga manuscripts were produced.", "Chronicles written in English monasteries during the same period consistently describe the Scandinavian raiders who attacked their communities as violent criminals and pagans.", "In several sagas, men called *víkingar* are shown raiding the same stretch of coastline year after year throughout their adult lives, returning home only in winter to repair their ships.", "Several sagas describe the same farmer as “going on *víking*” for two summers in his youth and later serving for decades as a respected local judge, with no suggestion that the first was held against him."], answer: 3,
     steps: [
       'Dahl’s contention has two parts about how Scandinavians themselves used the words: (1) the activity was temporary, something taken up and set down; (2) it carried no settled moral judgment.',
       'Supporting evidence should come from Scandinavian sources and should show both parts if possible.',
@@ -722,8 +717,8 @@ export const RW_PATTERN: RawQuestion[] = [
   {
     id: 'r-cb-coeq-03', skill: 'coeq', sub: 'Interpreting tables', d: 'H',
     figure: { kind: 'table', title: 'Percentage of Library Card Holders Who Borrowed Each Type of Item in 2023', headers: ['Type of item', 'Ages 13–17', 'Ages 18–34', 'Ages 35–59', 'Ages 60+'], rows: [['Print books', 71, 64, 69, 82], ['E-books', 48, 57, 44, 29], ['Audiobooks', 22, 41, 46, 33], ['Tools and equipment', 6, 19, 27, 21]] },
-    passage: 'A regional library system surveyed a random sample of its card holders about what they borrowed in 2023. About one in four residents of the region holds a library card. The table shows, for each age group, the percentage of card holders who borrowed at least one item of each type.',
-    stem: 'Which conclusion is best supported by the text and the table?',
+    passage: "A regional library system surveyed a random sample of its card holders about what they borrowed in 2023. About one in four residents of the region holds a library card. The table shows, for each age group, the percentage of card holders who borrowed at least one item of each type. The survey data support the following statement: ______",
+    stem: "Which choice most effectively uses data from the table to complete the statement?",
     choices: [
       'Card holders aged 60 and older were more likely than any other age group to borrow items of every type.',
       'Most residents of the region aged 60 and older borrowed a print book in 2023.',
@@ -862,7 +857,7 @@ export const RW_PATTERN: RawQuestion[] = [
   {
     id: 'r-cb-cid-01', skill: 'cid', sub: 'Implied ideas', d: 'H',
     passage: 'The latest staging of the audio work *Harbour Voices*, first presented in Bergen in 2015, sends listeners out alone onto a working ferry with headphones and no script. Because each of the forty recorded monologues is triggered by the listener’s position on deck, and because the ferry’s route shifts with the weather, no two listeners hear the same sequence, and none hears all forty. The work’s refusal to settle into a single story thus depends on the unpredictability of the vessel itself.',
-    stem: 'What does the text most strongly suggest about *Harbour Voices*?',
+    stem: "Based on the text, what can most reasonably be concluded about *Harbour Voices*?",
     choices: [
       'Listeners who stay in one place on deck come away with a clearer sense of the story than those who move around.',
       'Its creators chose Bergen because the city’s weather is unusually changeable.',
@@ -916,7 +911,7 @@ export const RW_PATTERN: RawQuestion[] = [
   {
     id: 'r-cb-cid-03', skill: 'cid', sub: 'Main idea', d: 'V',
     passage: 'Few forms of nineteenth-century writing are mocked as readily as the etiquette manual. Yet historians now argue that these books were far more than catalogues of fussy rules. Consider the manuals of Eliza Hartwell: they do dwell on forks and calling cards (matters, incidentally, that fill the pages of many admired novels of the period), but like other manuals written for newly arrived city dwellers, hers also explain how to open a bank account and how to read a lease. Such practical counsel runs through the genre’s most popular titles and is not hard to find.',
-    stem: 'What does the text most strongly suggest about nineteenth-century etiquette manuals?',
+    stem: "Based on the text, what can most reasonably be concluded about nineteenth-century etiquette manuals?",
     choices: [
       'They have been neglected by most historians despite the practical value of their advice.',
       'They began as guides to manners and only later came to include practical advice.',
@@ -945,7 +940,7 @@ export const RW_PATTERN: RawQuestion[] = [
   {
     id: 'r-cb-tsp-01', skill: 'tsp', sub: 'Function of a sentence', d: 'V',
     passage: 'Wondering how songbirds keep their bearings on overcast nights, Lucía Ferreyra and her team fitted migrating thrushes with tiny magnetic sensors. The birds could be reliably tracked from dusk onward; the team then compared each bird’s heading under clear and clouded skies. __The steadiness with which the thrushes held their course beneath thick cloud closely matched the steadiness of ships steering by compass rather than by the stars__, suggesting to the team that the birds were navigating by something other than what they could see.',
-    stem: 'Which choice best states the function of the underlined portion in the text as a whole?',
+    stem: "Which choice best describes the function of the underlined portion in the text as a whole?",
     choices: [
       'It offers a parallel case that lends support to the team’s interpretation.',
       'It presents a result that conflicts with the team’s initial assumption.',

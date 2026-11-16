@@ -61,12 +61,7 @@ export const RW_II_2: RawQuestion[] = [
     figure: { kind: 'table', title: 'Germination of prairie legume seeds', headers: ['Seed treatment', 'Germinated within 7 days (%)', 'Germinated within 21 days (%)'], rows: [['None', 12, 64], ['Soaked 24 hours', 38, 66], ['Scarified', 71, 93], ['Scarified and soaked', 74, 94]] },
     passage: 'Researchers tested whether treating the hard-coated seeds of a prairie legume would improve germination. Some seeds were soaked in water, some were scarified (their seed coats were scratched), and some received both treatments. The researchers concluded that soaking alone mainly speeds germination up rather than increasing the share of seeds that eventually germinate.',
     stem: 'Which choice best describes data from the table that support the researchers\' conclusion?',
-    choices: [
-      'Compared with untreated seeds, soaked seeds had a much higher germination rate at 7 days (38% versus 12%) but nearly the same rate at 21 days (66% versus 64%).',
-      'Scarified seeds had a germination rate of 71% at 7 days, compared with 12% for untreated seeds.',
-      'Seeds that were both scarified and soaked had the highest germination rate at 21 days, 94%.',
-      'Soaked seeds had a lower germination rate at 21 days than scarified seeds did (66% versus 93%).',
-    ], answer: 0,
+    choices: ["Compared with untreated seeds, soaked seeds had a much higher germination rate at 7 days (38% versus 12%) but nearly the same rate at 21 days (66% versus 64%).", "Scarified seeds had a germination rate of 71% at 7 days, compared with 12% for untreated seeds, and the gap between them remained large at 21 days (93% versus 64%).", "Seeds that were both scarified and soaked had the highest germination rate at 21 days, 94%, which was higher than the rate for any single treatment.", "Soaked seeds had a lower germination rate at 21 days than scarified seeds did (66% versus 93%), and also a lower rate at 7 days (38% versus 71%)."], answer: 0,
     steps: [
       'The conclusion is about soaking alone and has two parts: it speeds germination (early difference) but does not raise the eventual total (no late difference).',
       'So compare "Soaked" with "None" at both time points: 38% vs. 12% at 7 days; 66% vs. 64% at 21 days.',
@@ -169,12 +164,7 @@ export const RW_II_2: RawQuestion[] = [
     figure: { kind: 'table', title: 'River valley survey results', headers: ['Year', 'Elk counted', 'Mean willow height (cm)', 'Beaver colonies'], rows: [[2000, '1,700', 40, 1], [2005, '1,400', 55, 2], [2010, '950', 110, 6], [2015, '700', 180, 11], [2020, '680', 195, 12]] },
     passage: 'After predators were reintroduced to a river valley in 1999, ecologists tracked the number of elk, the height of the streamside willows that elk browse, and the number of beaver colonies, which depend on willows for food and building material. An ecologist hypothesizes that the recovery of beavers lagged behind the decline in elk because willows first had to grow tall enough to support the beavers.',
     stem: 'Which choice best describes data from the table that support the ecologist\'s hypothesis?',
-    choices: [
-      'The number of elk counted fell from 1,700 in 2000 to 680 in 2020.',
-      'Mean willow height increased in every five-year period shown in the table.',
-      'In 2020, there were 12 beaver colonies and the mean willow height was 195 centimeters.',
-      'From 2000 to 2005 the elk count fell by 300 while beaver colonies increased only from 1 to 2; the largest gains in beaver colonies came after 2005, as mean willow height rose above 100 centimeters.',
-    ], answer: 3,
+    choices: ["The number of elk counted fell from 1,700 in 2000 to 680 in 2020, with the largest five-year drop, 450 elk, occurring between 2005 and 2010.", "Mean willow height increased in every five-year period shown in the table, rising from 40 centimeters in 2000 to 195 centimeters in 2020.", "In 2020, there were 12 beaver colonies and the mean willow height was 195 centimeters, the highest values for both measures in the table.", "From 2000 to 2005 the elk count fell by 300 while beaver colonies increased only from 1 to 2; the largest gains in beaver colonies came after 2005, as mean willow height rose above 100 centimeters."], answer: 3,
     steps: [
       'The hypothesis describes a sequence: elk decline first, then willows grow tall, and only then do beavers recover (a lag).',
       'Evidence for a lag must show that early on elk fell but beavers barely changed, and that beavers increased later, once willows were taller.',
@@ -297,7 +287,7 @@ export const RW_II_2: RawQuestion[] = [
     remember: 'The word "but" in a study summary means the conclusion has two sides.',
   },
   {
-    id: 'r-inf-04', skill: 'inf', sub: 'Inference vs assumption', d: 'H',
+    id: 'r-inf-04', skill: 'cid', sub: 'Inference vs assumption', d: 'H',
     passage: 'The following text is from an original novel.\n\nWhen the letter came, Odile read it standing in the hall, then folded it along its creases and placed it in her apron pocket. At supper she asked her brother about the price of seed and laughed at the dog\'s begging. It was only later, when the lamp had been turned down and the house was quiet, that she took the letter out again, smoothed it flat upon her knee, and sat with it a long while.',
     stem: 'Based on the text, what can most reasonably be inferred about Odile?',
     choices: [
@@ -352,12 +342,7 @@ export const RW_II_2: RawQuestion[] = [
     id: 'r-inf-06', skill: 'inf', sub: 'Logical conclusions', d: 'H',
     passage: 'Some economists argue that raising a city\'s minimum wage will inevitably reduce employment in restaurants. Yet when the city of Port Avery raised its minimum wage, restaurant employment held steady while menu prices rose by about 3 percent. Since restaurant owners there apparently covered their higher labor costs through pricing, the Port Avery case suggests that ______',
     stem: 'Which choice most logically completes the text?',
-    choices: [
-      'minimum wage increases never reduce employment in restaurants.',
-      'the effect of a minimum wage increase on employment may depend on whether businesses can pass higher costs on to customers.',
-      'restaurants in Port Avery were more profitable than restaurants in other cities.',
-      'customers prefer to eat at restaurants that pay their workers higher wages.',
-    ], answer: 1,
+    choices: ["minimum wage increases never reduce employment in restaurants, regardless of how much the minimum wage is raised.", "the effect of a minimum wage increase on employment may depend on whether businesses can pass higher costs on to customers.", "restaurants in Port Avery were more profitable after the wage increase than restaurants in other cities were.", "customers in Port Avery prefer to eat at restaurants that pay their workers higher wages, even at higher prices."], answer: 1,
     steps: [
       'The claim being questioned says job losses are inevitable. In Port Avery, jobs held steady because owners raised prices to cover costs.',
       'One case cannot prove a universal rule, but it can show that the outcome depends on a condition: here, the ability to raise prices.',

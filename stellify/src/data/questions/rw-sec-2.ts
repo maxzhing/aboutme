@@ -48,7 +48,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-03', skill: 'fss', sub: 'Verb tense and forms', d: 'M',
-    passage: 'When the volcano erupted in 1815, ash ______ the sky for months, and crops failed across the Northern Hemisphere the following summer.',
+    passage: "When the volcano erupted in 1815, ash ______ the sky for months, and crops failed across the Northern Hemisphere the following summer. The year 1816 became known as the \"Year Without a Summer.\"",
     stem: STEM,
     choices: ['darkened', 'darkens', 'will darken', 'has darkened'], answer: 0,
     steps: [
@@ -242,7 +242,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-12', skill: 'fss', sub: 'Parallel structure', d: 'H',
-    passage: 'During her first year in the studio, the apprentice learned to mix pigments, to prepare canvases, and ______ the master\'s brushwork.',
+    passage: "During her first year in the studio, the apprentice learned to mix pigments, to prepare canvases, and ______ the master's brushwork. By the end of that year, she was trusted to paint the backgrounds of several portraits.",
     stem: STEM,
     choices: ['imitating', 'imitated', 'she imitated', 'to imitate'], answer: 3,
     steps: [
@@ -310,7 +310,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-15', skill: 'fss', sub: 'Verb tense and forms', d: 'V',
-    passage: 'The new community center remains only a set of drawings. If the committee had approved the proposal last year, construction ______ by now.',
+    passage: "The new community center remains only a set of drawings. If the committee had approved the proposal last year, construction ______ by now. Instead, the proposal is still waiting for a final vote.",
     stem: STEM,
     choices: ['will have begun', 'had begun', 'would begin', 'would have begun'], answer: 3,
     steps: [
@@ -331,7 +331,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-16', skill: 'fss', sub: 'Subject-verb agreement', d: 'V',
-    passage: 'The lead violinist, as well as the two cellists who joined the ensemble last season, ______ from the same conservatory.',
+    passage: "The lead violinist, as well as the two cellists who joined the ensemble last season, ______ from the same conservatory. Their shared training is evident in the group's precise, unified sound.",
     stem: STEM,
     choices: ['have graduated', 'are graduating', 'has graduated', 'graduating'], answer: 2,
     steps: [
@@ -399,7 +399,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-19', skill: 'fss', sub: 'Singular and plural', d: 'V',
-    passage: 'The number of languages spoken in the region ______ sharply over the past century. Linguists attribute the change mainly to migration toward cities.',
+    passage: "The number of languages spoken in the region ______ sharply over the past century. Linguists attribute the change mainly to migration toward cities, where many younger residents now speak only the national language.",
     stem: STEM,
     choices: ['have declined', 'are declining', 'were declining', 'has declined'], answer: 3,
     steps: [

@@ -291,7 +291,7 @@ export const RW_CS_2: RawQuestion[] = [
   {
     id: 'r-tsp-12', skill: 'tsp', sub: 'Rhetorical strategies', d: 'V',
     passage: 'The following text is from an original short story.\n\nEvery spring the river took something: a fence, a calf, once the corner of the Halvorsens\' barn. The valley people spoke of it without bitterness, __the way one speaks of a difficult relative__. They rebuilt on the same ground, planted to the same margins, and in dry Augusts stood on the bank admiring the very water that would, come April, be in their kitchens.',
-    stem: 'Which choice best describes the function of the underlined comparison?',
+    stem: "Which choice best describes the function of the underlined portion in the text as a whole?",
     choices: [
       'It emphasizes how dangerous the river is to people who live near it.',
       'It suggests that the valley people regard the river\'s destructiveness as a familiar burden to be tolerated rather than resented.',
@@ -344,12 +344,7 @@ export const RW_CS_2: RawQuestion[] = [
     id: 'r-ctc-01', skill: 'ctc', sub: 'How one author would respond', d: 'M',
     passage: 'Text 1\nMany city officials promote urban tree planting on the grounds that trees cool neighborhoods in summer. Trees provide shade and release water vapor, and measurements show that tree-lined streets can be several degrees cooler than bare ones.\n\nText 2\nUrban ecologist Hye-jin Park agrees that trees cool streets but notes that the benefit depends on maintenance. In a survey of recently planted street trees, she found that nearly a third had died within five years for lack of watering, providing no lasting shade.',
     stem: 'Based on the texts, how would Park (Text 2) most likely respond to the view of the city officials described in Text 1?',
-    choices: [
-      'By arguing that trees do not actually lower street temperatures',
-      'By agreeing that trees can cool neighborhoods while emphasizing that planting alone does not guarantee the benefit',
-      'By claiming that temperature measurements on tree-lined streets are unreliable',
-      'By recommending that cities stop planting trees along streets',
-    ], answer: 1,
+    choices: ["By arguing that trees do not actually lower street temperatures, even though they provide shade during the summer", "By agreeing that trees can cool neighborhoods while emphasizing that planting alone does not guarantee the benefit", "By claiming that temperature measurements on tree-lined streets are unreliable because the streets were measured on different days", "By recommending that cities stop planting new trees along streets until they can show that older trees are surviving"], answer: 1,
     steps: [
       'Text 1: officials promote planting because trees cool neighborhoods.',
       'Text 2: Park "agrees that trees cool streets" but says the benefit "depends on maintenance," since many planted trees die.',
@@ -421,7 +416,7 @@ export const RW_CS_2: RawQuestion[] = [
   {
     id: 'r-ctc-04', skill: 'ctc', sub: 'Relationships between passages', d: 'H',
     passage: 'Text 1\nOpen-plan offices were designed to encourage collaboration. Without walls and doors, the reasoning went, employees would talk to one another more often, and ideas would circulate freely.\n\nText 2\nWhen organizational researcher Leena Abadi tracked employees before and after their company moved to an open-plan layout, she found that face-to-face conversations dropped sharply while electronic messages increased. Workers, she observed, wore headphones and avoided eye contact to preserve some sense of privacy.',
-    stem: 'Which choice best describes the relationship between the two texts?',
+    stem: "Based on the texts, which choice best describes how Text 2 relates to Text 1?",
     choices: [
       'Text 2 offers a historical explanation for the trend described in Text 1.',
       'Text 2 provides additional support for the reasoning described in Text 1.',

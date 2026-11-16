@@ -188,12 +188,7 @@ export const RW_II_1: RawQuestion[] = [
     id: 'r-cid-08', skill: 'cid', sub: 'Identifying arguments', d: 'V',
     passage: 'For much of the twentieth century, museum curators classified quilts as "craft" rather than "art," a label that kept them out of fine-art galleries. Art historian Lena Whitcombe argues that the distinction says more about who made the objects than about the objects themselves. The bold asymmetry and improvised color fields of many quilts, she notes, anticipate qualities later praised in abstract painting. That the paintings hung in museums while the quilts stayed on beds, Whitcombe suggests, reflects assumptions about domestic work, not differences in visual ambition.',
     stem: 'Which choice best states the main idea of the text?',
-    choices: [
-      'Whitcombe argues that abstract painters borrowed their techniques directly from quilt makers.',
-      'Whitcombe claims that museums have recently begun to display quilts alongside abstract paintings.',
-      'Whitcombe maintains that quilts are more visually ambitious than most abstract paintings.',
-      'Whitcombe contends that quilts were labeled craft because of attitudes toward their makers and setting, not because of their artistic qualities.',
-    ], answer: 3,
+    choices: ["Whitcombe argues that abstract painters studied quilts closely and borrowed their bold asymmetry and improvised color fields directly from quilt makers.", "Whitcombe claims that museums have recently begun to move quilts out of storage and display them alongside abstract paintings in fine-art galleries.", "Whitcombe maintains that quilts are more visually ambitious than most abstract paintings and therefore deserve a more prominent place in museums.", "Whitcombe contends that quilts were labeled craft because of attitudes toward their makers and setting, not because of their artistic qualities."], answer: 3,
     steps: [
       'Whitcombe\'s thesis appears in the second sentence: the craft/art distinction "says more about who made the objects than about the objects themselves."',
       'Her support: quilts share visual qualities with celebrated abstract painting, so the different treatment "reflects assumptions about domestic work, not differences in visual ambition."',
@@ -240,12 +235,7 @@ export const RW_II_1: RawQuestion[] = [
     id: 'r-cid-10', skill: 'cid', sub: 'Summarizing', d: 'V',
     passage: 'Planting trees is widely promoted as a way to cool the planet, since trees absorb carbon dioxide. But climate scientist Ingrid Solheim cautions that location matters. In snowy northern regions, dark evergreen canopies absorb sunlight that white snow would have reflected back into space, and this warming effect can cancel out, or even exceed, the cooling benefit of the carbon the trees store. In the tropics, by contrast, forests both store carbon and release moisture that forms reflective clouds. Solheim concludes that tree-planting efforts should be concentrated where both effects point in the same direction.',
     stem: 'Which choice best states the main idea of the text?',
-    choices: [
-      'Solheim argues that planting trees does not help cool the planet.',
-      'Solheim has found that evergreen trees store less carbon than tropical trees do.',
-      'Solheim has shown that snow reflects more sunlight than clouds do.',
-      'Solheim holds that the climate benefit of planting trees depends on location, so planting should focus on regions where trees have a net cooling effect.',
-    ], answer: 3,
+    choices: ["Solheim argues that planting trees does not help cool the planet, because the sunlight absorbed by forest canopies always outweighs the carbon the trees store.", "Solheim has found that northern evergreen trees store less carbon than tropical trees do, so northern forests do less to slow climate change.", "Solheim has shown that snow reflects more sunlight than clouds do, so northern regions stay cooler than the tropics when trees are planted there.", "Solheim holds that the climate benefit of planting trees depends on location, so planting should focus on regions where trees have a net cooling effect."], answer: 3,
     steps: [
       'The pivot is "But ... location matters." The text then contrasts two regions: in the snowy north, darker canopies can cancel the carbon benefit; in the tropics, carbon storage and cloud formation both cool.',
       'The final sentence gives the conclusion: concentrate planting "where both effects point in the same direction."',
@@ -291,7 +281,7 @@ export const RW_II_1: RawQuestion[] = [
   {
     id: 'r-coet-02', skill: 'coet', sub: 'Illustrating a claim with a quotation', d: 'M',
     passage: 'A student is writing about an essay in which the author Lucía Marín reflects on her childhood. The student claims that, according to Marín, working in her grandmother\'s garden taught her to be patient.',
-    stem: 'Which quotation from the essay most effectively illustrates the student\'s claim?',
+    stem: "Which quotation from the essay most effectively illustrates the claim?",
     choices: [
       '"My grandmother\'s garden was the largest on our street, and neighbors often stopped to admire her roses."',
       '"I wanted tomatoes the week we planted them; my grandmother only laughed and handed me the watering can, and by August I had stopped asking when."',
@@ -369,7 +359,7 @@ export const RW_II_1: RawQuestion[] = [
   {
     id: 'r-coet-05', skill: 'coet', sub: 'Illustrating a claim with a quotation', d: 'H',
     passage: 'In the original poem "Low Tide," the speaker describes walking along a shoreline the morning after a storm in which a fishing boat was lost. A student claims that the speaker portrays the sea as indifferent to human loss.',
-    stem: 'Which quotation from the poem most effectively illustrates the student\'s claim?',
+    stem: "Which quotation from the poem most effectively illustrates the claim?",
     choices: [
       '"I gathered what the waves had left: / a shoe, a spoon, a child\'s blue cup."',
       '"The water kept its even breath, / folding and unfolding, as if nothing had been asked of it."',
@@ -421,7 +411,7 @@ export const RW_II_1: RawQuestion[] = [
   {
     id: 'r-coet-07', skill: 'coet', sub: 'Evaluating evidence', d: 'V',
     passage: 'Linguists Carmen Ibarra and Tomasz Zielinski analyzed recordings of bilingual speakers who switch between languages in the middle of a sentence. They concluded that such switching is not random: speakers tend to switch at points where the grammatical structures of the two languages align, so that the sentence remains well formed according to the rules of both languages.',
-    stem: 'Which finding, if true, would most strongly support the linguists\' conclusion?',
+    stem: "Which finding, if true, would most directly support the linguists' conclusion?",
     choices: [
       'Speakers switched languages more often when talking with other bilingual speakers than when talking with monolingual speakers.',
       'Speakers switched languages more often when discussing work than when discussing family.',
@@ -447,13 +437,8 @@ export const RW_II_1: RawQuestion[] = [
   {
     id: 'r-coet-08', skill: 'coet', sub: 'Weakening a claim', d: 'V',
     passage: 'Economist Bao Nguyen claims that the introduction of a bike-share program in the city of Larkfield caused a decline in downtown car traffic. As evidence, Nguyen points out that in the year after the program began, the number of cars entering downtown each weekday fell by 8 percent.',
-    stem: 'Which finding, if true, would most seriously undermine Nguyen\'s claim?',
-    choices: [
-      'Use of the bike-share program was highest during the summer months.',
-      'Most bike-share trips in Larkfield were shorter than two miles.',
-      'During the same year, weekday car traffic fell by a similar percentage in comparable nearby cities that had no bike-share programs.',
-      'A survey found that some bike-share users had previously walked to downtown destinations.',
-    ], answer: 2,
+    stem: "Which finding, if true, would most directly weaken Nguyen's claim?",
+    choices: ["Use of the bike-share program was highest during the summer months, when the weather was most comfortable for cycling downtown.", "Most bike-share trips in Larkfield were shorter than two miles and began or ended near downtown bus and train stations.", "During the same year, weekday car traffic fell by a similar percentage in comparable nearby cities that had no bike-share programs.", "A survey found that some bike-share users in Larkfield had previously walked, rather than driven, to their downtown destinations."], answer: 2,
     steps: [
       'Nguyen\'s argument: traffic fell after the program began, so the program caused the decline.',
       'A causal claim based on timing is undermined if the same effect appears where the supposed cause is absent, which points to another cause.',
@@ -473,13 +458,8 @@ export const RW_II_1: RawQuestion[] = [
   {
     id: 'r-coet-09', skill: 'coet', sub: 'Claims and evidence', d: 'V',
     passage: '"The Lamplighter\'s Daughter" is an original short story. In the story, Ines appears outwardly obedient to her father. A student claims, however, that Ines privately resists her father\'s plans for her future.',
-    stem: 'Which quotation from the story best supports the student\'s claim?',
-    choices: [
-      '"Ines set her father\'s supper before him and waited, as always, until he had finished before she sat."',
-      '"\'You will keep the lamps after me,\' he said, and Ines said, \'Yes, Father,\' and that night added another coin to the tin beneath the floorboard, where the fare to the city was slowly accumulating."',
-      '"Her father had tended the lamps of the quarter for thirty years, and his father before him."',
-      '"Ines knew every lamp on the route and could have lit them blindfolded."',
-    ], answer: 1,
+    stem: "Which quotation from the story most effectively illustrates the claim?",
+    choices: ["\"Ines set her father's supper before him and waited, as always, until he had finished before she sat. Then she cleared the plates without a word and swept the hearth.\"", "\"'You will keep the lamps after me,' he said, and Ines said, 'Yes, Father,' and that night added another coin to the tin beneath the floorboard, where the fare to the city was slowly accumulating.\"", "\"Her father had tended the lamps of the quarter for thirty years, and his father before him, and it was understood in the house that the pole and the ladder would pass to Ines.\"", "\"Ines knew every lamp on the route and could have lit them blindfolded, from the chapel steps down to the last post by the harbor wall.\""], answer: 1,
     steps: [
       'The claim needs three things: the father\'s plan for her future, outward obedience, and private resistance.',
       'Only one quotation shows a hidden action that works against the father\'s plan.',

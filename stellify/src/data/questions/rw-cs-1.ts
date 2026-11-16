@@ -69,7 +69,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-04', skill: 'wic', sub: 'Vocabulary in context', d: 'M',
-    passage: 'Because the two species look nearly identical, even experienced birdwatchers often ______ them, recording one when they have actually seen the other.',
+    passage: "Because the two species look nearly identical, even experienced birdwatchers often ______ them, recording one when they have actually seen the other. Only the shape of the tail feathers reliably tells them apart.",
     stem: BLANK_STEM,
     choices: ['ignore', 'confuse', 'admire', 'protect'], answer: 1,
     steps: [
@@ -132,7 +132,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-07', skill: 'wic', sub: 'Precision', d: 'H',
-    passage: 'The mayor\'s statement was deliberately ______: by praising "all reasonable proposals" without naming any, she avoided committing herself to either side of the debate.',
+    passage: "Reporters at Tuesday's press conference pressed the mayor about the zoning dispute. The mayor's statement was deliberately ______: by praising \"all reasonable proposals\" without naming any, she avoided committing herself to either side of the debate.",
     stem: BLANK_STEM,
     choices: ['candid', 'inflammatory', 'equivocal', 'redundant'], answer: 2,
     steps: [
@@ -174,7 +174,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-09', skill: 'wic', sub: 'Vocabulary in context', d: 'H',
-    passage: 'The mountain\'s weather is notoriously ______; a clear morning can give way to hail within the hour, and forecasts are of little use.',
+    passage: "The mountain's weather is notoriously ______; a clear morning can give way to hail within the hour, and forecasts are of little use. Experienced guides therefore tell hikers to carry rain gear even on cloudless days.",
     stem: BLANK_STEM,
     choices: ['temperate', 'predictable', 'stagnant', 'capricious'], answer: 3,
     steps: [

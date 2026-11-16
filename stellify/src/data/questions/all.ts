@@ -19,6 +19,7 @@ import { RW_PATTERN } from './rw-pattern';
 import { MATH_COURSE_1 } from './math-course-1';
 import { MATH_COURSE_2 } from './math-course-2';
 import { RW_COURSE } from './rw-course';
+import { RW_SPEC } from './rw-spec';
 
 /** Every authored question. Add new batch files here; nothing else needs to change. */
 export const ALL_RAW: RawQuestion[] = [
@@ -42,4 +43,5 @@ export const ALL_RAW: RawQuestion[] = [
   ...MATH_COURSE_1,
   ...MATH_COURSE_2,
   ...RW_COURSE,
+  ...RW_SPEC,
 ];

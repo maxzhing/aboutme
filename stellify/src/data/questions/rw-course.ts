@@ -128,12 +128,7 @@ export const RW_COURSE: RawQuestion[] = [
     id: 'r-c-coet-01', skill: 'coet', sub: 'Illustrating a claim with a quotation', d: 'V',
     passage: 'In her essay “The Patient Eye,” the painter Helena Varga argues that the value of sketching outdoors lies less in the drawings themselves than in the habit of attention that the practice builds.',
     stem: 'Which quotation from “The Patient Eye” most effectively illustrates the claim?',
-    choices: [
-      '“A drawing made in haste will rarely hang on any wall worth the name.”',
-      '“My sketchbooks from those summers are of little worth; what they gave me was the habit of looking at a hedge until it stopped being a hedge and became a hundred particular leaves.”',
-      '“Outdoor light changes so quickly that no painter can hope to capture it before it is gone.”',
-      '“I advise every student to buy the best paper they can afford, for cheap paper yellows within a decade.”',
-    ], answer: 1,
+    choices: ["“A drawing made in haste will rarely hang on any wall worth the name, and the painter who hurries through a landscape will have little to show for the afternoon.”", "“My sketchbooks from those summers are of little worth; what they gave me was the habit of looking at a hedge until it stopped being a hedge and became a hundred particular leaves.”", "“Outdoor light changes so quickly that no painter can hope to capture it before it is gone; by the time the sky is mixed on the palette, the clouds have moved on.”", "“I advise every student to buy the best paper they can afford, for cheap paper yellows within a decade, and a faded sketch is a poor record of a summer’s work.”"], answer: 1,
     steps: [
       'The claim has two parts: (1) the drawings themselves matter less, (2) the habit of attention matters more.',
       'Choice B says the sketchbooks are “of little worth” (part 1) and that they built “the habit of looking” closely (part 2).',
@@ -153,7 +148,7 @@ export const RW_COURSE: RawQuestion[] = [
   {
     id: 'r-c-coet-02', skill: 'coet', sub: 'Illustrating a claim', d: 'E',
     passage: 'Historian Kofi Mensah claims that many nineteenth-century letter writers used the mail for purposes that had little to do with conveying news. For them, he argues, a letter could function as a gift, valued as a physical object as much as a message.',
-    stem: 'Which quotation from a nineteenth-century letter would most directly support Mensah’s claim?',
+    stem: "Which quotation from a nineteenth-century letter most effectively illustrates the claim?",
     choices: [
       '“I have little news to share, but I pressed this violet from the garden between the pages so that you might hold a piece of our spring.”',
       '“The post is so slow this winter that your letter of March arrived only today.”',
@@ -181,12 +176,7 @@ export const RW_COURSE: RawQuestion[] = [
     figure: { kind: 'table', title: 'Average Nightly Foraging Time of Bats in Two Caves', headers: ['Season', 'North Cave temperature (°C)', 'North Cave foraging (minutes)', 'South Cave temperature (°C)', 'South Cave foraging (minutes)'], rows: [['Spring', 8, 95, 16, 140], ['Summer', 15, 150, 22, 142], ['Autumn', 7, 90, 15, 138]] },
     passage: 'Ecologist Marisol Peña compared how long bats roosting in two caves foraged each night across three seasons, recording the average air temperature outside each cave. She concluded that temperature strongly influenced foraging time for the bats in North Cave but had little effect on the bats in South Cave, since ______',
     stem: 'Which choice most effectively uses data from the table to complete the statement?',
-    choices: [
-      'in North Cave, foraging time rose from about 90 minutes to 150 minutes as temperatures rose, while in South Cave foraging time stayed near 140 minutes despite a similar rise in temperature.',
-      'South Cave was warmer than North Cave in every season.',
-      'bats in South Cave foraged longer than bats in North Cave in spring and in autumn.',
-      'foraging time in both caves was greatest in summer.',
-    ], answer: 0,
+    choices: ["in North Cave, foraging time rose from about 90 minutes to 150 minutes as temperatures rose, while in South Cave foraging time stayed near 140 minutes despite a similar rise in temperature.", "South Cave was warmer than North Cave in every season, by about 8 degrees in spring and autumn and by 7 degrees in summer.", "bats in South Cave foraged longer than bats in North Cave in spring and in autumn, by about 45 and 48 minutes, respectively.", "foraging time in both caves was greatest in summer, when each cave recorded its highest average temperature of the three seasons."], answer: 0,
     steps: [
       'The conclusion has two parts: temperature mattered in North Cave, and it did NOT matter much in South Cave.',
       'North Cave: temperatures 7–15 °C, foraging 90–150 minutes, rising together. South Cave: temperatures 15–22 °C (a similar 7-degree spread), foraging only 138–142 minutes.',
@@ -208,12 +198,7 @@ export const RW_COURSE: RawQuestion[] = [
     figure: { kind: 'line', title: 'Survival of Transplanted Seedlings', xLabel: 'Weeks after transplanting', yLabel: 'Seedlings surviving (%)', x: [0, 2, 4, 6, 8], series: [{ name: 'Mulched plots', values: [100, 96, 94, 93, 92] }, { name: 'Bare plots', values: [100, 88, 74, 61, 50] }] },
     passage: 'A horticulturist transplanted oak seedlings into plots that were either covered with mulch or left bare and tracked the percentage of seedlings that survived. She argues that the benefit of mulch grows the longer seedlings remain in the field, since ______',
     stem: 'Which choice most effectively uses data from the graph to complete the statement?',
-    choices: [
-      'survival in the mulched plots never fell below 90%.',
-      'both kinds of plots began with 100% survival at week 0.',
-      'survival in the bare plots fell by 50 percentage points over the eight weeks.',
-      'the difference in survival between mulched and bare plots widened from 8 percentage points at week 2 to 42 percentage points at week 8.',
-    ], answer: 3,
+    choices: ["survival in the mulched plots never fell below 90%, remaining at 92% or higher through all eight weeks.", "both kinds of plots began with 100% survival at week 0, when the seedlings were first transplanted into the field.", "survival in the bare plots fell by 50 percentage points over the eight weeks, from 100% at week 0 to 50% at week 8.", "the difference in survival between mulched and bare plots widened from 8 percentage points at week 2 to 42 percentage points at week 8."], answer: 3,
     steps: [
       'The argument is about the BENEFIT of mulch growing over time. The benefit is the gap between the two lines.',
       'Week 2: 96 − 88 = 8 points. Week 8: 92 − 50 = 42 points. The gap widens.',
@@ -344,12 +329,7 @@ export const RW_COURSE: RawQuestion[] = [
       'The object acting as the lens was a massive cluster of galaxies.',
     ],
     stem: `While researching a topic, a student has taken the following notes. The student wants to explain the discovery of Earendel to an audience unfamiliar with gravitational lensing. ${NOTES}`,
-    choices: [
-      'Earendel was observed via lensing by a foreground galaxy cluster, its light having left the star about 12.9 billion years ago.',
-      'A gravitational lens forms when a massive object bends the light of a more distant object behind it.',
-      'Astronomers detected Earendel, a star whose light left it about 12.9 billion years ago, because a massive galaxy cluster in front of it bent its light; without this effect, called gravitational lensing, the star would have been too faint to see.',
-      'Earendel is a nickname that astronomers gave to a very distant star in 2022.',
-    ], answer: 2,
+    choices: ["Earendel, a star whose light left it about 12.9 billion years ago, was observed in 2022 via lensing by a massive foreground cluster of galaxies, according to astronomers.", "A gravitational lens forms when a massive object, such as a cluster of galaxies, bends the light of a more distant object behind it, making that object easier to detect.", "Astronomers detected Earendel, a star whose light left it about 12.9 billion years ago, because a massive galaxy cluster in front of it bent its light; without this effect, called gravitational lensing, the star would have been too faint to see.", "Earendel is a nickname that astronomers gave in 2022 to a very distant star whose light left it about 12.9 billion years ago."], answer: 2,
     steps: [
       'Goal: explain the DISCOVERY to people who do NOT know what gravitational lensing is.',
       'So the answer must describe the discovery and explain lensing in plain terms.',

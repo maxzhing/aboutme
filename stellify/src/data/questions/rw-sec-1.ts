@@ -6,7 +6,7 @@ const STEM = 'Which choice completes the text so that it conforms to the convent
 export const RW_SEC_1: RawQuestion[] = [
   {
     id: 'r-bnd-01', skill: 'bnd', sub: 'Sentence boundaries', d: 'M',
-    passage: 'The axolotl is a salamander native to lakes near Mexico ______ unlike most amphibians, it keeps its gills and remains aquatic throughout its life.',
+    passage: "The axolotl is a salamander native to lakes near Mexico ______ unlike most amphibians, it keeps its gills and remains aquatic throughout its life. Its remarkable ability to regrow lost limbs has made it a favorite subject of scientific research.",
     stem: STEM,
     choices: ['City,', 'City', 'City;', 'City and'], answer: 2,
     steps: [
@@ -48,7 +48,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-03', skill: 'bnd', sub: 'Coordination and subordination', d: 'M',
-    passage: 'Sloths move so slowly that algae grow on their ______ this green coating helps the animals blend into the forest canopy.',
+    passage: "Sloths move so slowly that algae grow on their ______ this green coating helps the animals blend into the forest canopy. Some researchers suspect that the algae also provide the sloths with extra nutrients.",
     stem: STEM,
     choices: ['fur, and', 'fur and,', 'fur,', 'fur'], answer: 0,
     steps: [
@@ -90,7 +90,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-05', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'The expedition had three goals ______ to map the cave system, to collect water samples, and to photograph the bats that roost there.',
+    passage: "Before entering the newly discovered cave, the researchers agreed on a plan. The expedition had three goals ______ to map the cave system, to collect water samples, and to photograph the bats that roost there.",
     stem: STEM,
     choices: ['goals,', 'goals:', 'goals;', 'goals'], answer: 1,
     steps: [
@@ -132,7 +132,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-07', skill: 'bnd', sub: 'Dashes', d: 'H',
-    passage: 'The okapi—an animal that looks like a cross between a zebra and a ______ is actually the giraffe\'s closest living relative.',
+    passage: "The okapi—an animal that looks like a cross between a zebra and a ______ is actually the giraffe's closest living relative. Like a giraffe, it uses a long, dark tongue to strip leaves from branches.",
     stem: STEM,
     choices: ['deer,', 'deer', 'deer;', 'deer—'], answer: 3,
     steps: [
@@ -321,7 +321,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-16', skill: 'bnd', sub: 'Transition punctuation', d: 'V',
-    passage: 'Most seabirds avoid flying in storms. Frigatebirds, ______ have been tracked riding the updrafts inside storm clouds to altitudes of several thousand meters.',
+    passage: "Most seabirds avoid flying in storms. Frigatebirds, ______ have been tracked riding the updrafts inside storm clouds to altitudes of several thousand meters. Scientists think the birds use this lift to travel long distances while spending very little energy.",
     stem: STEM,
     choices: ['however,', 'however', 'however;', 'however:'], answer: 0,
     steps: [
@@ -342,7 +342,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-17', skill: 'bnd', sub: 'Colons', d: 'V',
-    passage: 'After a decade of excavation, the team\'s conclusion was ______ the tools had been made not by modern humans but by an earlier species.',
+    passage: "The researchers had expected the stone tools at the cave site to be relatively recent. After a decade of excavation, the team's conclusion was ______ the tools had been made not by modern humans but by an earlier species.",
     stem: STEM,
     choices: ['startling,', 'startling; that', 'startling', 'startling:'], answer: 3,
     steps: [
@@ -384,7 +384,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-19', skill: 'bnd', sub: 'Semicolons', d: 'V',
-    passage: 'Many desert plants have evolved ways to limit water ______ the creosote bush, for example, coats its leaves in a waxy resin.',
+    passage: "Many desert plants have evolved ways to limit water ______ the creosote bush, for example, coats its leaves in a waxy resin. Other plants, such as cacti, store water in thick, fleshy stems.",
     stem: STEM,
     choices: ['loss,', 'loss;', 'loss, and,', 'loss'], answer: 1,
     steps: [
@@ -405,7 +405,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-20', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'V',
-    passage: 'Wangari ______ founded the Green Belt Movement in 1977, became the first African woman to win the Nobel Peace Prize.',
+    passage: "Wangari ______ founded the Green Belt Movement in 1977, became the first African woman to win the Nobel Peace Prize. The movement, which began in Kenya, has since planted tens of millions of trees.",
     stem: STEM,
     choices: ['Maathai who', 'Maathai, she', 'Maathai; who', 'Maathai, who'], answer: 3,
     steps: [

@@ -1,4 +1,5 @@
 'use client';
+import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -242,7 +243,7 @@ function ChapterPlayer({ ch }: { ch: Chapter }) {
         {q.steps.slice(0, walkN).map((s, i) => <motion.li key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={cn('flex gap-3 rounded-xl border p-3 text-[15px]', i === q.steps.length - 1 ? 'border-ok/50 bg-ok/10' : 'border-line bg-raised/40')}><b className="shrink-0 text-brand2">Step {i + 1}</b><span><RichText text={s} /></span></motion.li>)}
       </ol>
       {!all_ ? <button type="button" className="btn-primary mt-3" onClick={() => setWalkN(walkN + 1)} data-testid="walk-next"><Eye size={16} />{walkN === 0 ? 'Show step 1' : `Show step ${walkN + 1} of ${q.steps.length}`}</button>
-        : q.type === 'mcq' && <div className="mt-3 rounded-xl border border-line p-3.5 text-sm"><b>Why the other choices fail</b><ul className="mt-1.5 space-y-1.5">{q.choices!.map((c, i) => i === q.answer ? null : <li key={i} className="flex gap-2"><span className="font-bold text-bad">{LETTERS[i]}</span><span><RichText text={q.why[i]} /></span></li>)}</ul>{guess !== null && <p className={cn('mt-2 font-semibold', isCorrect(q, guess) ? 'text-ok' : 'text-bad')}>Your guess was {LETTERS[Number(guess)]}: {isCorrect(q, guess) ? 'right!' : 'see why above.'}</p>}</div>}
+        : q.type === 'mcq' && <div className="mt-3 rounded-xl border border-line p-3.5 text-sm"><b>Why the other choices fail</b><ul className="mt-1.5 space-y-1.5">{q.choices!.map((c, i) => i === q.answer ? null : <li key={i} className="flex gap-2"><span className="font-bold text-bad">{LETTERS[i]}</span><span>{DISTRACTORS[q.id]?.[i] && <span className="mb-0.5 block text-[11px] font-bold uppercase tracking-wide text-bad" title={TRAPS[DISTRACTORS[q.id][i]!].tip}>Trap: {TRAPS[DISTRACTORS[q.id][i]!].label}</span>}<RichText text={q.why[i]} /></span></li>)}</ul>{guess !== null && <p className={cn('mt-2 font-semibold', isCorrect(q, guess) ? 'text-ok' : 'text-bad')}>Your guess was {LETTERS[Number(guess)]}: {isCorrect(q, guess) ? 'right!' : 'see why above.'}</p>}</div>}
     </div>
   ); }
   else if (step.t === 'traps') body = (
