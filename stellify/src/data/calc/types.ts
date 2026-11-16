@@ -69,13 +69,15 @@ export interface CalcUnit { n: number; title: string; weeks: number; examWeight:
 /* ── answer checking ── */
 const KEY: Record<string, string> = { infinity: 'inf', '∞': 'inf', '+inf': 'inf', '+∞': 'inf', '+infinity': 'inf', '-infinity': '-inf', '-∞': '-inf', '−∞': '-inf', 'doesnotexist': 'dne', dne: 'dne' };
 export function normalizeCalc(raw: string): string {
-  const s = raw.trim().toLowerCase().replace(/\s+/g, '').replace(/−/g, '-');
+  const s = raw.trim().toLowerCase().replace(/\s+/g, '').replace(/−/g, '-').replace(/[$%,]/g, '');
   return KEY[s] ?? s;
 }
-export function calcCorrect(p: CalcProblem, input: string | null): boolean {
+export function calcCorrect(p: CalcProblem, input: string | null, exact = false): boolean {
   if (input === null || input === '') return false;
   if (typeof p.answer === 'number') return input === String(p.answer);
   const got = normalizeCalc(input);
+  // exact mode (program output): 3 and 3.0 are different answers
+  if (exact) return p.answer.some((a) => normalizeCalc(a) === got);
   return p.answer.some((a) => {
     const want = normalizeCalc(a);
     if (want === got) return true;

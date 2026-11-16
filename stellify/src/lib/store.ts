@@ -51,7 +51,7 @@ interface Actions {
   logTrap: (trapId: string, qid: string) => void;
   calcAnswer: (pid: string, correct: boolean) => void;
   calcFinish: (lessonId: string, score: number, total: number) => void;
-  setCalcExam: (date: string | undefined) => void;
+  setCalcExam: (date: string | undefined, course?: string) => void;
   setCalcTeach: (lessonId: string, text: string) => void;
   makePlan: () => void;
   togglePlanTask: (id: string) => void;
@@ -164,7 +164,11 @@ export const useStore = create<Store>()(
           const g = first ? grant(st, 60, now, 'Calculus lesson mastered') : { state: st, events: [] };
           return { state: g.state, events: g.events };
         }),
-        setCalcExam: (date) => { const c = getState().calc ?? { done: {}, answers: {} }; setState({ calc: { ...c, examDate: date } }); },
+        setCalcExam: (date, course = 'calc') => {
+          const c = getState().calc ?? { done: {}, answers: {} };
+          if (course === 'calc') setState({ calc: { ...c, examDate: date } });
+          else { const dates = { ...(c.examDates ?? {}) }; if (date) dates[course] = date; else delete dates[course]; setState({ calc: { ...c, examDates: dates } }); }
+        },
         setCalcTeach: (lessonId, text) => { const c = getState().calc ?? { done: {}, answers: {} }; setState({ calc: { ...c, teach: { ...(c.teach ?? {}), [lessonId]: text } } }); },
         logTrap: (trapId, qid) => {
           const cur = getState().traps ?? {};

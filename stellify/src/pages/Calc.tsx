@@ -2,8 +2,13 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, Check, ChevronDown, Eye, GraduationCap, Image as ImageIcon, Languages, Lightbulb, Lock, MessageCircleQuestion, NotebookPen, Play, Presentation, RotateCcw, Sparkles, Sprout, Target, TriangleAlert, Wrench, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { CALC_LESSON, CALC_LESSONS, CALC_TUTOR, CALC_UNITS, CALC_WALK, PASS, answerLabel, calcCorrect, lessonsOfUnit, unitOf, type CalcLesson, type CalcProblem, type LessonTutor, type Note } from '@/data/calc';
+import { createContext, useContext, useMemo, useState } from 'react';
+import { PASS, answerLabel, calcCorrect, type CalcLesson, type CalcProblem, type LessonTutor, type Note } from '@/data/calc';
+import { COURSES, courseOfLesson, lessonById, walkOf, type ApCourse } from '@/data/apCourses';
+
+/** the course a page is showing; inner components read it instead of threading props */
+const CourseCtx = createContext<ApCourse>(COURSES.calc);
+const useCourse = () => useContext(CourseCtx);
 import { useStore } from '@/lib/store';
 import { useLevel } from '@/lib/hooks';
 import { sfx } from '@/lib/sfx';
@@ -18,19 +23,28 @@ const UnitTile = ({ n, size = 48 }: { n: number; size?: number }) => (
   <span className={cn('relative inline-grid shrink-0 place-items-center rounded-2xl bg-gradient-to-br font-display font-bold text-white ring-1 ring-inset ring-white/25 shadow-[0_8px_18px_-8px_rgba(0,0,0,0.6)]', UNIT_GRADIENT[n] ?? UNIT_GRADIENT[1])} style={{ width: size, height: size, fontSize: size * 0.42 }} aria-hidden>{n}</span>
 );
 
-/** AP Calculus BC home: the whole self-study plan, unit by unit, with progress and pacing. */
-export function CalcHomePage() {
+/** Course home: the whole self-study plan, unit by unit, with progress and pacing. */
+export function CourseHomePage({ course: cid }: { course: string }) {
+  const course = COURSES[cid];
+  if (!course) return <Empty title="Course not found" body="That course does not exist." action={{ label: 'Dashboard', href: '/' }} />;
+  return <CourseCtx.Provider value={course}><CourseHome /></CourseCtx.Provider>;
+}
+
+function CourseHome() {
+  const course = useCourse();
+  const { lessons, units } = course;
   const calc = useStore((s) => s.calc) ?? { done: {}, answers: {} };
   const setExam = useStore((s) => s.setCalcExam);
-  const done = CALC_LESSONS.filter((l) => calc.done[l.id] && calc.done[l.id].score / calc.done[l.id].total >= PASS);
-  const next = CALC_LESSONS.find((l) => !done.includes(l));
+  const examDate = course.id === 'calc' ? calc.examDate : calc.examDates?.[course.id];
+  const done = lessons.filter((l) => calc.done[l.id] && calc.done[l.id].score / calc.done[l.id].total >= PASS);
+  const next = lessons.find((l) => !done.includes(l));
   const [open, setOpen] = useState<number | null>(() => next?.unit ?? 1);
-  const totalWeeks = CALC_UNITS.reduce((s, u) => s + u.weeks, 0);
+  const totalWeeks = units.reduce((s, u) => s + u.weeks, 0);
   const today = dateKey();
-  const daysLeft = calc.examDate ? daysBetween(today, calc.examDate) : null;
+  const daysLeft = examDate ? daysBetween(today, examDate) : null;
   const weeksLeft = daysLeft !== null ? Math.max(1, Math.floor(daysLeft / 7)) : null;
   // weeks of material still ahead (written lessons count as done when mastered)
-  const unitsLeft = CALC_UNITS.filter((u) => { const ls = lessonsOfUnit(u.n); return !ls.length || ls.some((l) => !done.includes(l)); });
+  const unitsLeft = units.filter((u) => { const ls = course.lessonsOfUnit(u.n); return !ls.length || ls.some((l) => !done.includes(l)); });
   const weeksNeeded = unitsLeft.reduce((s, u) => s + u.weeks, 0) + 3; // + 3 weeks of full-exam review
   const answered = Object.values(calc.answers);
   return (
@@ -41,15 +55,15 @@ export function CalcHomePage() {
           <div className="hidden sm:block"><Pet mood="study" size={120} /></div>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/95">Self-study course · with your teacher</p>
-            <h1 className="mt-1 text-3xl font-bold leading-tight sm:text-4xl">AP Calculus BC</h1>
-            <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-white/90">Start from zero: a Math Toolkit unit, then all ten AP units in the College Board’s order. Every lesson explains the big idea in plain words, walks through every step and every problem, and ends with you teaching it back. Pass each lesson at {Math.round(PASS * 100)}% before moving on.</p>
+            <h1 className="mt-1 text-3xl font-bold leading-tight sm:text-4xl">{course.name}</h1>
+            <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-white/90">{course.blurb} Pass each lesson at {Math.round(PASS * 100)}% before moving on.</p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {next ? <Link href={`/calc/${next.id}`} className="btn !bg-white !px-5 !py-3 text-[15px] !text-[#2A2470] shadow-[0_12px_30px_-12px_rgba(0,0,0,0.6)] hover:-translate-y-px" data-testid="calc-continue"><Play size={17} />{done.length ? 'Continue' : 'Start'}: {next.unit}.{next.n} {next.title}</Link> : <span className="rounded-xl bg-white/15 px-4 py-2.5 text-sm font-bold">All lessons mastered ✓</span>}
+              {next ? <Link href={`/${course.id}/${next.id}`} className="btn !bg-white !px-5 !py-3 text-[15px] !text-[#2A2470] shadow-[0_12px_30px_-12px_rgba(0,0,0,0.6)] hover:-translate-y-px" data-testid="calc-continue"><Play size={17} />{done.length ? 'Continue' : 'Start'}: {next.unit}.{next.n} {next.title}</Link> : <span className="rounded-xl bg-white/15 px-4 py-2.5 text-sm font-bold">All lessons mastered ✓</span>}
               <a href="#plan" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20"><CalendarDays size={16} />Study plan</a>
             </div>
           </div>
           <div className="text-center">
-            <Ring value={pct(done.length, CALC_LESSONS.length)} size={104} stroke={8} label="Lessons mastered"><div className="leading-tight"><div className="font-display text-2xl font-bold">{done.length}/{CALC_LESSONS.length}</div><div className="text-[10px] font-semibold text-white/90">lessons</div></div></Ring>
+            <Ring value={pct(done.length, lessons.length)} size={104} stroke={8} label="Lessons mastered"><div className="leading-tight"><div className="font-display text-2xl font-bold">{done.length}/{lessons.length}</div><div className="text-[10px] font-semibold text-white/90">lessons</div></div></Ring>
             <p className="mt-2 text-xs font-semibold text-white/90">{answered.length ? `${pct(answered.filter((a) => a.correct).length, answered.length)}% first-try accuracy` : 'No problems yet'}</p>
           </div>
         </div>
@@ -61,15 +75,15 @@ export function CalcHomePage() {
             <h2 className="flex items-center gap-2 text-xl font-bold"><CalendarDays size={20} className="text-brand" />Your study plan</h2>
             <p className="mt-1 max-w-2xl text-sm text-muted">The course takes about {totalWeeks} weeks of lessons plus 3 weeks of full-exam review. Enter your AP exam date and the plan tells you how fast to go.</p>
           </div>
-          <label className="text-sm"><span className="label">AP exam date</span><input type="date" className="input !w-44" value={calc.examDate ?? ''} onChange={(e) => setExam(e.target.value || undefined)} data-testid="calc-exam" /></label>
+          <label className="text-sm"><span className="label">AP exam date</span><input type="date" className="input !w-44" value={examDate ?? ''} onChange={(e) => setExam(e.target.value || undefined, course.id)} data-testid="calc-exam" /></label>
         </div>
         {weeksLeft !== null && (
           <div className={cn('mt-4 rounded-2xl border p-4 text-sm', weeksNeeded <= weeksLeft ? 'border-ok/40 bg-ok/10' : 'border-warn/40 bg-warn/10')} data-testid="calc-pace">
-            <b>{weeksLeft} weeks until your exam.</b> You have about {weeksNeeded} weeks of work left (including review). {weeksNeeded <= weeksLeft ? `Comfortable pace: about ${Math.max(1, Math.ceil((CALC_LESSONS.length - done.length) / Math.max(1, weeksLeft - 3)))} lessons a week on the written units, and you will have spare weeks.` : `You need to speed up: plan about ${Math.ceil((weeksNeeded / weeksLeft) * 10) / 10}× the normal pace, or study 5–6 days a week.`}
+            <b>{weeksLeft} weeks until your exam.</b> You have about {weeksNeeded} weeks of work left (including review). {weeksNeeded <= weeksLeft ? `Comfortable pace: about ${Math.max(1, Math.ceil((lessons.length - done.length) / Math.max(1, weeksLeft - 3)))} lessons a week on the written units, and you will have spare weeks.` : `You need to speed up: plan about ${Math.ceil((weeksNeeded / weeksLeft) * 10) / 10}× the normal pace, or study 5–6 days a week.`}
           </div>
         )}
         <ol className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          {(() => { let w = 1; return CALC_UNITS.map((u) => { const from = w; w += u.weeks; return (
+          {(() => { let w = 1; return units.map((u) => { const from = w; w += u.weeks; return (
             <li key={u.n} className="rounded-xl border border-line bg-raised/40 p-3 text-xs"><div className="font-bold text-ink">Weeks {from}{u.weeks > 1 ? `–${w - 1}` : ''}</div><div className="mt-0.5 text-muted">{u.n ? `Unit ${u.n}` : 'Toolkit'}: {u.title}</div></li>
           ); }); })()}
           <li className="rounded-xl border border-gold/40 bg-gold/5 p-3 text-xs"><div className="font-bold text-ink">Weeks {totalWeeks + 1}–{totalWeeks + 3}</div><div className="mt-0.5 text-muted">Full practice exams and review of your weakest units</div></li>
@@ -77,7 +91,7 @@ export function CalcHomePage() {
       </Card>
 
       <div className="space-y-3">
-        {CALC_UNITS.map((u) => { const ls = lessonsOfUnit(u.n); const m = ls.filter((l) => done.includes(l)).length; const isOpen = open === u.n; return (
+        {units.map((u) => { const ls = course.lessonsOfUnit(u.n); const m = ls.filter((l) => done.includes(l)).length; const isOpen = open === u.n; return (
           <section key={u.n} className="card overflow-hidden p-0" data-testid={`calc-unit-${u.n}`}>
             <button type="button" className="flex w-full items-center gap-4 p-4 text-left sm:p-5" onClick={() => setOpen(isOpen ? null : u.n)} aria-expanded={isOpen}>
               <UnitTile n={u.n} />
@@ -95,14 +109,14 @@ export function CalcHomePage() {
                   <ol className="mt-4 space-y-2">
                     {ls.map((l) => { const r = calc.done[l.id]; const ok = done.includes(l); return (
                       <li key={l.id}>
-                        <Link href={`/calc/${l.id}`} className={cn('flex items-center gap-3 rounded-2xl border p-3 transition-all hover:-translate-y-0.5 hover:border-brand/60', next?.id === l.id ? 'border-brand/50 bg-brand/5' : 'border-line')} data-testid={`calc-lesson-${l.id}`}>
+                        <Link href={`/${course.id}/${l.id}`} className={cn('flex items-center gap-3 rounded-2xl border p-3 transition-all hover:-translate-y-0.5 hover:border-brand/60', next?.id === l.id ? 'border-brand/50 bg-brand/5' : 'border-line')} data-testid={`calc-lesson-${l.id}`}>
                           <span className={cn('grid h-10 w-10 shrink-0 place-items-center rounded-xl font-display text-sm font-bold', ok ? 'bg-gradient-to-br from-[#10B981] to-[#059669] text-white' : next?.id === l.id ? 'bg-gradient-to-br from-[#6A4BF0] to-[#1F6FE5] text-white' : 'bg-raised text-muted')}>{ok ? <Check size={18} /> : `${l.unit}.${l.n}`}</span>
                           <span className="min-w-0 flex-1"><span className="block font-semibold">{l.title}</span><span className="block truncate text-xs text-muted">{l.examples.length} worked examples · {l.practice.length} practice problems</span></span>
                           <span className="text-xs text-muted">{r ? `best ${r.score}/${r.total}` : next?.id === l.id ? 'Up next' : ''}</span>
                         </Link>
                       </li>
                     ); })}
-                    <li><Link href={`/calc/review/${u.n}`} className="flex items-center gap-3 rounded-2xl border border-dashed border-gold/50 p-3 hover:bg-gold/5" data-testid={`calc-review-${u.n}`}><span className="grid h-10 w-10 place-items-center rounded-xl bg-gold/15 text-gold"><Target size={18} /></span><span className="flex-1"><span className="block font-semibold">{u.n ? `Unit ${u.n}` : 'Toolkit'} review</span><span className="block text-xs text-muted">Mixed problems from every lesson, no hints until you answer</span></span><ArrowRight size={16} className="text-muted" /></Link></li>
+                    <li><Link href={`/${course.id}/review/${u.n}`} className="flex items-center gap-3 rounded-2xl border border-dashed border-gold/50 p-3 hover:bg-gold/5" data-testid={`calc-review-${u.n}`}><span className="grid h-10 w-10 place-items-center rounded-xl bg-gold/15 text-gold"><Target size={18} /></span><span className="flex-1"><span className="block font-semibold">{u.n ? `Unit ${u.n}` : 'Toolkit'} review</span><span className="block text-xs text-muted">Mixed problems from every lesson, no hints until you answer</span></span><ArrowRight size={16} className="text-muted" /></Link></li>
                   </ol>
                 ) : (
                   <div className="mt-4">
@@ -140,8 +154,8 @@ function TutorIntro({ t }: { t: LessonTutor }) {
         <Card data-testid="calc-tools">
           <h2 className="flex items-center gap-2 text-lg font-bold"><Wrench size={18} className="text-gold" />Tools you will use</h2>
           <p className="mt-1 text-xs text-muted">Math from before that this lesson leans on. If one looks unfamiliar, review it first.</p>
-          <ul className="mt-3 space-y-2.5">{t.tools.map((x) => { const ref = x.lesson ? CALC_LESSON[x.lesson] : undefined; return (
-            <li key={x.name} className="rounded-xl border border-line bg-raised/40 p-3"><div className="font-bold"><RichText text={x.name} /></div><p className="mt-0.5 text-sm leading-relaxed text-muted"><RichText text={x.refresher} /></p>{ref && <Link href={`/calc/${ref.id}`} className="mt-1 inline-block text-xs font-semibold text-brand2 hover:underline">Review {ref.unit}.{ref.n} {ref.title} →</Link>}</li>
+          <ul className="mt-3 space-y-2.5">{t.tools.map((x) => { const ref = x.lesson ? lessonById(x.lesson) : undefined; const refCourse = x.lesson ? courseOfLesson(x.lesson) : undefined; return (
+            <li key={x.name} className="rounded-xl border border-line bg-raised/40 p-3"><div className="font-bold"><RichText text={x.name} /></div><p className="mt-0.5 text-sm leading-relaxed text-muted"><RichText text={x.refresher} /></p>{ref && refCourse && <Link href={`/${refCourse.id}/${ref.id}`} className="mt-1 inline-block text-xs font-semibold text-brand2 hover:underline">Review {ref.unit}.{ref.n} {ref.title} →</Link>}</li>
           ); })}</ul>
         </Card>
       </div>
@@ -186,7 +200,7 @@ function TeachBack({ l, t }: { l: CalcLesson; t: LessonTutor }) {
 }
 
 function NoteBlock({ n }: { n: Note }) {
-  if (n.k === 'p') return <p className="leading-relaxed"><RichText text={n.t} /></p>;
+  if (n.k === 'p') return <div className="leading-relaxed"><RichText text={n.t} block={n.t.includes('~~~')} /></div>;
   if (n.k === 'formula') return (
     // formulas separated by \qquad wrap onto their own lines on narrow screens instead of scrolling
     <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-1 rounded-2xl border border-brand/30 bg-brand/5 px-3 py-3 text-center text-[15px] sm:px-4 sm:text-[17px]">
@@ -201,7 +215,8 @@ function NoteBlock({ n }: { n: Note }) {
 
 /** One practice problem: answer, optional hint, then the full solution. Records the first answer. */
 function Problem({ p, i, hints = true, onDone }: { p: CalcProblem; i: number; hints?: boolean; onDone?: (correct: boolean) => void }) {
-  const walk = CALC_WALK[p.id];
+  const walk = walkOf(p.id);
+  const course = useCourse();
   const record = useStore((s) => s.calcAnswer);
   const [val, setVal] = useState<string>('');
   const [checked, setChecked] = useState<null | boolean>(null);
@@ -209,7 +224,7 @@ function Problem({ p, i, hints = true, onDone }: { p: CalcProblem; i: number; hi
   const mcq = typeof p.answer === 'number';
   const submit = () => {
     if (!val || checked !== null) return;
-    const ok = calcCorrect(p, val);
+    const ok = calcCorrect(p, val, course.answer.exact);
     setChecked(ok); record(p.id, ok); onDone?.(ok); sfx(ok ? 'correct' : 'wrong');
   };
   return (
@@ -224,8 +239,8 @@ function Problem({ p, i, hints = true, onDone }: { p: CalcProblem; i: number; hi
         ); })}</div>
       ) : (
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <input className={cn('input !w-44 text-lg font-semibold', checked === true && 'border-ok bg-ok/10', checked === false && 'border-bad bg-bad/10')} value={val} disabled={checked !== null} onChange={(e) => setVal(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} placeholder="e.g. -1/4" aria-label="Your answer" data-testid="calc-input" />
-          {checked === null && ['∞', '−∞', 'DNE'].map((t) => <button key={t} type="button" className="chip !px-3 !py-1.5 text-sm hover:text-ink" onClick={() => setVal(t)}>{t}</button>)}
+          <input className={cn('input !w-44 text-lg font-semibold', checked === true && 'border-ok bg-ok/10', checked === false && 'border-bad bg-bad/10')} value={val} disabled={checked !== null} onChange={(e) => setVal(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} placeholder={course.answer.placeholder} aria-label="Your answer" data-testid="calc-input" />
+          {checked === null && course.answer.chips.map((t) => <button key={t} type="button" className="chip !px-3 !py-1.5 text-sm hover:text-ink" onClick={() => setVal(t)}>{t}</button>)}
         </div>
       )}
       <div className="mt-3 flex flex-wrap gap-2">
@@ -250,23 +265,26 @@ function Problem({ p, i, hints = true, onDone }: { p: CalcProblem; i: number; hi
 }
 
 /** A lesson taught like a class: the teacher’s intro, goals, notes, worked examples, practice, mastery check. */
-export function CalcLessonPage({ lesson }: { lesson: string }) {
-  const l = CALC_LESSON[lesson];
-  if (!l) return <Empty title="Lesson not found" body="That calculus lesson does not exist." action={{ label: 'AP Calculus BC', href: '/calc' }} />;
-  return <Lesson key={l.id} l={l} />;
+export function CourseLessonPage({ course: cid, lesson }: { course: string; lesson: string }) {
+  const course = COURSES[cid];
+  const l = course?.lesson[lesson];
+  if (!course || !l) return <Empty title="Lesson not found" body="That lesson does not exist." action={{ label: course?.name ?? 'Dashboard', href: course ? `/${course.id}` : '/' }} />;
+  return <CourseCtx.Provider value={course}><Lesson key={l.id} l={l} /></CourseCtx.Provider>;
 }
 
 function Lesson({ l }: { l: CalcLesson }) {
   const level = useLevel().level;
-  const tutor = CALC_TUTOR[l.id];
+  const course = useCourse();
+  const tutor = course.tutor[l.id];
+  const lessons = course.lessons;
   const finish = useStore((s) => s.calcFinish);
   const saveNote = useStore((s) => s.saveNote);
   const [shown, setShown] = useState<Record<number, number>>({});
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [saved, setSaved] = useState(false);
   const [fire, setFire] = useState(0);
-  const idx = CALC_LESSONS.findIndex((x) => x.id === l.id);
-  const prev = CALC_LESSONS[idx - 1], next = CALC_LESSONS[idx + 1];
+  const idx = lessons.findIndex((x) => x.id === l.id);
+  const prev = lessons[idx - 1], next = lessons[idx + 1];
   const score = Object.values(results).filter(Boolean).length, n = Object.keys(results).length, total = l.practice.length;
   const complete = n === total;
   const passed = complete && score / total >= PASS;
@@ -277,14 +295,14 @@ function Lesson({ l }: { l: CalcLesson }) {
   });
   const save = () => {
     const body = [...(tutor ? [`The big idea: ${tutor.bigIdea.join(' ')}`, tutor.words.map((w) => `• ${w.term}: ${w.means}`).join('\n')] : []), l.goals.map((g) => `• ${g}`).join('\n'), ...l.notes.map((x) => (x.k === 'list' ? x.items.map((i) => `• ${i}`).join('\n') : x.k === 'rule' ? `${x.title}: ${x.t}` : x.t)), `Remember:\n${l.remember.map((x) => `• ${x}`).join('\n')}`].join('\n\n');
-    saveNote({ title: `Calc BC ${l.unit}.${l.n}: ${l.title}`, body, topic: 'calc', kind: 'lesson' }); setSaved(true);
+    saveNote({ title: `${course.short} ${l.unit}.${l.n}: ${l.title}`, body, topic: course.id, kind: 'lesson' }); setSaved(true);
   };
   return (
     <div className="mx-auto max-w-3xl space-y-6" data-testid="calc-lesson">
       <Confetti fire={fire} count={60} />
-      <div className="flex items-center justify-between gap-2 text-sm"><Link href="/calc" className="btn-quiet !px-2"><ArrowLeft size={16} />AP Calculus BC</Link><span className="text-muted">{l.unit ? `Unit ${l.unit}` : 'Toolkit'} · Lesson {l.n} of {lessonsOfUnit(l.unit).length}</span></div>
+      <div className="flex items-center justify-between gap-2 text-sm"><Link href={`/${course.id}`} className="btn-quiet !px-2"><ArrowLeft size={16} />{course.name}</Link><span className="text-muted">{l.unit ? `Unit ${l.unit}` : 'Toolkit'} · Lesson {l.n} of {course.lessonsOfUnit(l.unit).length}</span></div>
       <header>
-        <p className="eyebrow">{l.unit ? `Unit ${l.unit}` : 'Start here'} · {unitOf(l.unit)?.title}</p>
+        <p className="eyebrow">{l.unit ? `Unit ${l.unit}` : 'Start here'} · {course.unitOf(l.unit)?.title}</p>
         <h1 className="mt-3 text-[30px] font-bold leading-tight sm:text-[40px]">{l.unit}.{l.n} {l.title}</h1>
       </header>
 
@@ -320,7 +338,7 @@ function Lesson({ l }: { l: CalcLesson }) {
       <section className="space-y-3">
         <div className="flex flex-wrap items-end justify-between gap-2"><h2 className="flex items-center gap-2 text-xl font-bold"><GraduationCap size={20} className="text-brand" />Practice</h2><span className="text-sm text-muted" data-testid="calc-score">{n}/{total} answered · {score} right first try</span></div>
         <Progress value={pct(n, total)} tone={passed ? 'ok' : 'brand'} label="Practice progress" />
-        <p className="text-sm text-muted">Type numbers, fractions like -1/4, or ∞, −∞, DNE. Your first answer to each problem is the one that counts.</p>
+        <p className="text-sm text-muted">{course.answer.help} Your first answer to each problem is the one that counts.</p>
         {l.practice.map((p, i) => <Problem key={p.id} p={p} i={i + 1} onDone={(ok) => onDone(p.id, ok)} />)}
       </section>
 
@@ -339,24 +357,31 @@ function Lesson({ l }: { l: CalcLesson }) {
       </div>
 
       <nav className="flex flex-wrap justify-between gap-2" aria-label="Lesson navigation">
-        {prev ? <Link href={`/calc/${prev.id}`} className="btn-ghost"><ArrowLeft size={16} />{prev.unit}.{prev.n} {prev.title}</Link> : <span />}
-        {next ? <Link href={`/calc/${next.id}`} className={passed ? 'btn-primary' : 'btn-ghost'} data-testid="calc-next">{next.unit}.{next.n} {next.title}<ArrowRight size={16} /></Link> : <Link href={`/calc/review/${l.unit}`} className="btn-primary">Unit {l.unit} review<ArrowRight size={16} /></Link>}
+        {prev ? <Link href={`/${course.id}/${prev.id}`} className="btn-ghost"><ArrowLeft size={16} />{prev.unit}.{prev.n} {prev.title}</Link> : <span />}
+        {next ? <Link href={`/${course.id}/${next.id}`} className={passed ? 'btn-primary' : 'btn-ghost'} data-testid="calc-next">{next.unit}.{next.n} {next.title}<ArrowRight size={16} /></Link> : <Link href={`/${course.id}/review/${l.unit}`} className="btn-primary">Unit {l.unit} review<ArrowRight size={16} /></Link>}
       </nav>
     </div>
   );
 }
 
 /** Unit review: two harder problems from every lesson, shuffled, hints off. */
-export function CalcReviewPage({ unit }: { unit: string }) {
-  const u = unitOf(Number(unit));
+export function CourseReviewPage({ course: cid, unit }: { course: string; unit: string }) {
+  const course = COURSES[cid];
+  if (!course) return <Empty title="Course not found" body="That course does not exist." action={{ label: 'Dashboard', href: '/' }} />;
+  return <CourseCtx.Provider value={course}><Review unit={unit} /></CourseCtx.Provider>;
+}
+
+function Review({ unit }: { unit: string }) {
+  const course = useCourse();
+  const u = course.unitOf(Number(unit));
   const [seed, setSeed] = useState(() => Date.now());
   const [res, setRes] = useState<Record<string, boolean>>({});
-  const set = useMemo(() => { const rand = rng(seed); return shuffle(lessonsOfUnit(Number(unit)).flatMap((l) => shuffle(l.practice.filter((p) => p.level >= 2), rand).slice(0, 2)), rand); }, [unit, seed]);
-  if (!u || !set.length) return <Empty title="No review yet" body="This unit’s lessons have not been written yet." action={{ label: 'AP Calculus BC', href: '/calc' }} />;
+  const set = useMemo(() => { const rand = rng(seed); return shuffle(course.lessonsOfUnit(Number(unit)).flatMap((l) => shuffle(l.practice.filter((p) => p.level >= 2), rand).slice(0, 2)), rand); }, [course, unit, seed]);
+  if (!u || !set.length) return <Empty title="No review yet" body="This unit’s lessons have not been written yet." action={{ label: course.name, href: `/${course.id}` }} />;
   const score = Object.values(res).filter(Boolean).length, n = Object.keys(res).length;
   return (
     <div className="mx-auto max-w-3xl space-y-5" data-testid="calc-review">
-      <Link href="/calc" className="btn-quiet !px-2 text-sm"><ArrowLeft size={16} />AP Calculus BC</Link>
+      <Link href={`/${course.id}`} className="btn-quiet !px-2 text-sm"><ArrowLeft size={16} />{course.name}</Link>
       <header className="flex flex-wrap items-center gap-4"><UnitTile n={u.n} size={60} /><div><p className="eyebrow">Unit review</p><h1 className="mt-2 text-3xl font-bold">{u.n ? `Unit ${u.n}` : 'Toolkit'}: {u.title}</h1></div></header>
       <p className="text-sm text-muted">{set.length} mixed problems, two from each lesson, in random order. No hints: answer first, then read the solution. Aim for 80% before moving to the next unit.</p>
       <Progress value={pct(n, set.length)} label="Review progress" />

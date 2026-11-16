@@ -5,7 +5,7 @@ import { DiagnosticPage, OnboardingPage } from './pages/Onboarding';
 import { CurriculumPage, GrammarPage, LessonPage } from './pages/Learn';
 import { DesmosPage } from './pages/Desmos';
 import { OfficialPage } from './pages/Official';
-import { CalcHomePage, CalcLessonPage, CalcReviewPage } from './pages/Calc';
+import { CourseHomePage, CourseLessonPage, CourseReviewPage } from './pages/Calc';
 import { ChapterPage } from './pages/Course';
 import { HacksPage } from './pages/Hacks';
 import { BankPage, HardPage, SessionPage, SmartPage, TimedPage } from './pages/Practice';
@@ -42,9 +42,10 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/practice\/smart$/, component: SmartPage },
   { pattern: /^\/practice\/hard$/, component: HardPage },
   { pattern: /^\/official$/, component: OfficialPage },
-  { pattern: /^\/calc$/, component: CalcHomePage },
-  { pattern: /^\/calc\/review\/(?<unit>\d+)$/, component: CalcReviewPage },
-  { pattern: /^\/calc\/(?<lesson>c\d+-\d+)$/, component: CalcLessonPage },
+  // AP self-study courses: /calc, /csa, /micro, /macro, their lessons and unit reviews
+  { pattern: /^\/(?<course>calc|csa|micro|macro)$/, component: CourseHomePage },
+  { pattern: /^\/(?<course>calc|csa|micro|macro)\/review\/(?<unit>\d+)$/, component: CourseReviewPage },
+  { pattern: /^\/(?<course>calc|csa|micro|macro)\/(?<lesson>[a-z]+\d+-\d+)$/, component: CourseLessonPage },
   { pattern: /^\/practice\/timed$/, component: TimedPage },
   { pattern: /^\/daily$/, component: DailyPage },
   { pattern: /^\/speed$/, component: SpeedPage },

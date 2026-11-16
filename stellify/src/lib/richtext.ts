@@ -1,6 +1,6 @@
 /** Tiny, dependency-free tokenizer for question/lesson text (math, emphasis, blanks). */
 export type Token =
-  | { t: 'text' | 'math' | 'dmath' | 'bold' | 'under' | 'ital'; v: string }
+  | { t: 'text' | 'math' | 'dmath' | 'bold' | 'under' | 'ital' | 'code'; v: string }
   | { t: 'blank' | 'br' };
 
 export function tokenize(src: string): Token[] {
@@ -24,6 +24,11 @@ export function tokenize(src: string): Token[] {
   while (i < src.length) {
     const c = src[i];
     if (c === '\\' && src[i + 1] === '$') { buf += '$'; i += 2; continue; }
+    // inline code: ⟦x = 5;⟧ (taken literally, no math or emphasis inside)
+    if (c === '⟦') {
+      const j = src.indexOf('⟧', i + 1);
+      if (j > i) { flushText(); out.push({ t: 'code', v: src.slice(i + 1, j) }); i = j + 1; continue; }
+    }
     if (c === '$') {
       const display = src[i + 1] === '$';
       const open = display ? 2 : 1;

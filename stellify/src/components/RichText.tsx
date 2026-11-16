@@ -17,11 +17,23 @@ export const RichText = memo(function RichText({ text, className, block }: { tex
       case 'bold': return <strong key={i} className="font-semibold">{t.v}</strong>;
       case 'under': return <span key={i} className="underline decoration-brand2 decoration-2 underline-offset-4">{t.v}</span>;
       case 'ital': return <em key={i}>{t.v}</em>;
+      case 'code': return <code key={i} className="rounded-md bg-ink/[0.07] px-1.5 py-0.5 font-mono text-[0.92em]">{t.v}</code>;
       case 'blank': return <span key={i} className="mx-0.5 inline-block w-16 translate-y-0.5 border-b-2 border-ink/70 align-baseline" role="img" aria-label="blank" />;
       case 'br': return <br key={i} />;
       default: return <Fragment key={i}>{t.v}</Fragment>;
     }
   });
+  // fenced code blocks (~~~ … ~~~) keep their line breaks and spacing exactly
+  if (text.includes('~~~')) {
+    const parts = text.split(/~~~[a-z]*\n?([\s\S]*?)\n?~~~/);
+    return (
+      <div className={className}>
+        {parts.map((seg, i) => (i % 2 ? (
+          <pre key={i} className="my-2 overflow-x-auto rounded-xl border border-line bg-ink/[0.05] p-3 font-mono text-[13px] leading-relaxed"><code>{seg}</code></pre>
+        ) : seg.trim() ? seg.trim().split(/\n\n+/).map((p, k) => <p key={`${i}-${k}`} className="mt-2 first:mt-0">{render(p)}</p>) : null))}
+      </div>
+    );
+  }
   if (!block && paras.length === 1) return <span className={className}>{render(paras[0])}</span>;
   return <div className={className}>{paras.map((p, i) => <p key={i} className={i ? 'mt-3' : undefined}>{render(p)}</p>)}</div>;
 });
