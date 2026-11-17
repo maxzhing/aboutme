@@ -3,6 +3,7 @@ import { CALC_LESSONS, CALC_TUTOR, CALC_UNITS } from './calc';
 import { CSA_LESSONS, CSA_TUTOR, CSA_UNITS } from './csa';
 import { MICRO_LESSONS, MICRO_TUTOR, MICRO_UNITS } from './micro';
 import { MACRO_LESSONS, MACRO_TUTOR, MACRO_UNITS } from './macro';
+import { STATS_LESSONS, STATS_TUTOR, STATS_UNITS } from './stats';
 
 /**
  * Registry of the AP self-study courses. Every course uses the same lesson model (notes, worked
@@ -57,6 +58,12 @@ export const COURSES: Record<string, ApCourse> = {
     blurb: 'How whole economies work: all six College Board units, from GDP and unemployment to the AD-AS model, money and the Fed, the Phillips curve, growth and exchange rates. Every lesson works through real numbers step by step, and ends with you teaching it back.',
     units: MACRO_UNITS, lessons: MACRO_LESSONS, tutor: MACRO_TUTOR,
     answer: { placeholder: 'e.g. -60', chips: [], help: 'Type a number. Use a minus sign for decreases or deficits. No $ or % signs needed (they are ignored if you type them).' },
+  }),
+  stats: make({
+    id: 'stats', name: 'AP Statistics', short: 'Stats',
+    blurb: 'Learn to reason with data: all nine College Board units, from describing distributions and designing studies to probability, confidence intervals, t tests, chi-square and regression inference. Every answer is double-checked by an independent statistics engine, every step is explained in plain words, and every lesson ends with you teaching it back.',
+    units: STATS_UNITS, lessons: STATS_LESSONS, tutor: STATS_TUTOR,
+    answer: { placeholder: 'e.g. 0.125', chips: [], help: 'Type a number, rounded as the question asks. Probabilities and proportions are decimals like 0.25 (a % sign is ignored if you type one).' },
   }),
 };
 

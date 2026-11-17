@@ -42,10 +42,10 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/practice\/smart$/, component: SmartPage },
   { pattern: /^\/practice\/hard$/, component: HardPage },
   { pattern: /^\/official$/, component: OfficialPage },
-  // AP self-study courses: /calc, /csa, /micro, /macro, their lessons and unit reviews
-  { pattern: /^\/(?<course>calc|csa|micro|macro)$/, component: CourseHomePage },
-  { pattern: /^\/(?<course>calc|csa|micro|macro)\/review\/(?<unit>\d+)$/, component: CourseReviewPage },
-  { pattern: /^\/(?<course>calc|csa|micro|macro)\/(?<lesson>[a-z]+\d+-\d+)$/, component: CourseLessonPage },
+  // AP self-study courses: /calc, /csa, /micro, /macro, /stats, their lessons and unit reviews
+  { pattern: /^\/(?<course>calc|csa|micro|macro|stats)$/, component: CourseHomePage },
+  { pattern: /^\/(?<course>calc|csa|micro|macro|stats)\/review\/(?<unit>\d+)$/, component: CourseReviewPage },
+  { pattern: /^\/(?<course>calc|csa|micro|macro|stats)\/(?<lesson>[a-z]+\d+-\d+)$/, component: CourseLessonPage },
   { pattern: /^\/practice\/timed$/, component: TimedPage },
   { pattern: /^\/daily$/, component: DailyPage },
   { pattern: /^\/speed$/, component: SpeedPage },

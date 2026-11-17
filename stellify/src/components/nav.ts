@@ -1,4 +1,4 @@
-import { BadgeCheck, Braces, Landmark, Store, SquareFunction, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, type LucideIcon } from 'lucide-react';
+import { BadgeCheck, Braces, ChartScatter, Landmark, Store, SquareFunction, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, type LucideIcon } from 'lucide-react';
 
 export interface NavItem { href: string; label: string; icon: LucideIcon }
 export const NAV: { group: string; items: NavItem[] }[] = [
@@ -26,6 +26,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     { href: '/csa', label: 'AP Computer Science A', icon: Braces },
     { href: '/micro', label: 'AP Microeconomics', icon: Store },
     { href: '/macro', label: 'AP Macroeconomics', icon: Landmark },
+    { href: '/stats', label: 'AP Statistics', icon: ChartScatter },
   ] },
   { group: 'Performance', items: [
     { href: '/analytics', label: 'Analytics', icon: BarChart3 },

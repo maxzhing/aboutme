@@ -218,7 +218,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(33);
+  expect(links.length).toBe(34);
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();
@@ -460,11 +460,11 @@ test('AP Calculus BC: study plan, a full lesson with examples and checked practi
   expect(errors).toEqual([]);
 });
 
-test('AP CSA, Microeconomics and Macroeconomics: every unit, first and last lesson mastered, tutor layer, review', async ({ page }) => {
+test('AP CSA, Microeconomics, Macroeconomics and Statistics: every unit, first and last lesson mastered, tutor layer, review', async ({ page }) => {
   const errors = watch(page);
   await boot(page);
   const { COURSES } = await import('../src/data/apCourses');
-  for (const id of ['csa', 'micro', 'macro']) {
+  for (const id of ['csa', 'micro', 'macro', 'stats']) {
     const c = COURSES[id];
     await go(page, `/${id}`);
     await expect(page.getByTestId('calc-home')).toContainText(c.name);
@@ -498,6 +498,49 @@ test('AP CSA, Microeconomics and Macroeconomics: every unit, first and last less
   await box.getByTestId('calc-input').fill((intDiv.answer as string[])[0].replace('.0', ''));
   await box.getByTestId('calc-check').click();
   await expect(box.getByTestId('calc-solution')).toContainText(`The answer is ${(intDiv.answer as string[])[0]}`);
+  // Statistics accepts a sensible rounding (0.1056 for 0.106) and a typed % sign, and still rejects a wrong value
+  await go(page, '/stats/st1-3');
+  for (const [pid, typed, ok] of [['st1-3-3', '0.1056', true], ['st1-3-2', '68%', true], ['st1-3-6', '0.75', false]] as const) {
+    const b = page.getByTestId(`calc-problem-${pid}`);
+    await b.getByTestId('calc-input').fill(typed);
+    await b.getByTestId('calc-check').click();
+    if (ok) await expect(b.getByTestId('calc-solution')).toContainText('Correct!');
+    else await expect(b.getByTestId('calc-solution')).not.toContainText('Correct!');
+  }
+  expect(errors).toEqual([]);
+});
+
+test('soft feel: night-sky backdrop, press ripples, sparkles for a right answer, and calm when motion is reduced', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  const sky = page.getByTestId('backdrop');
+  await expect(sky.locator('.aurora')).toHaveCount(3);
+  await expect(sky.locator('.star')).toHaveCount(64);
+  // count ripples as they are added (each one removes itself when its animation ends)
+  const watchRipples = () => page.evaluate(() => {
+    const w = window as unknown as { ripples: number };
+    w.ripples = 0;
+    new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => { if ((n as Element).classList?.contains('ripple')) w.ripples++; }))).observe(document.body, { childList: true, subtree: true });
+  });
+  const ripples = () => page.evaluate(() => (window as unknown as { ripples: number }).ripples);
+  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
+  await watchRipples();
+  await solve(page, true);
+  expect(await ripples()).toBeGreaterThanOrEqual(2); // the choice and the Check button both rippled
+  await expect(page.getByTestId('verdict')).toHaveClass(/pop-in/);
+  await expect(page.getByTestId('verdict').locator('.sparkles > span')).toHaveCount(10);
+  await go(page, '/practice/session?mode=single&ids=r-bnd-05');
+  await solve(page, false);
+  await expect(page.getByTestId('verdict')).toHaveClass(/shake/);
+  await expect(page.getByTestId('verdict').locator('.sparkles')).toHaveCount(0);
+  // with "Reduce motion" on: no ripples, and the sky holds still
+  await go(page, '/settings');
+  await page.getByLabel(/Reduce motion/).check();
+  await expect(sky).toHaveClass(/backdrop-still/);
+  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
+  await watchRipples();
+  await solve(page, true);
+  expect(await ripples()).toBe(0);
   expect(errors).toEqual([]);
 });
 

@@ -14,6 +14,7 @@ import { Badge, cn } from './ui';
 import { useStore } from '@/lib/store';
 import { chapterFor } from '@/data/courses';
 import { simpleExplanation } from '@/lib/plain';
+import { Sparkles } from './Feel';
 import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
 
 export function QuestionMeta({ q }: { q: Question }) {
@@ -162,7 +163,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
   return (
     <div className="space-y-3" data-testid="explanation">
       <div className={cn('flex flex-wrap items-center gap-x-5 gap-y-1 rounded-xl border p-3.5', ok ? 'border-ok/40 bg-ok/10' : 'border-bad/40 bg-bad/10')} role="status">
-        <span className={cn('inline-flex items-center gap-1.5 font-display text-lg font-bold', ok ? 'text-ok' : 'text-bad')} data-testid="verdict">{ok ? <Check size={20} /> : <X size={20} />}{ok ? 'Correct' : answer ? 'Incorrect' : 'Not answered'}</span>
+        <span className={cn('relative inline-flex items-center gap-1.5 font-display text-lg font-bold', ok ? 'text-ok pop-in' : 'text-bad shake')} data-testid="verdict">{ok && <Sparkles fire={1} />}{ok ? <Check size={20} /> : <X size={20} />}{ok ? 'Correct' : answer ? 'Incorrect' : 'Not answered'}</span>
         <span className="text-sm">Your answer: <b data-testid="your-answer">{displayAnswer(q, answer)}</b></span>
         <span className="text-sm">Correct answer: <b data-testid="correct-answer">{correctAnswerLabel(q)}</b></span>
       </div>

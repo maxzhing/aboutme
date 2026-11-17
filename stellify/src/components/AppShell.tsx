@@ -12,6 +12,7 @@ import { NAV } from './nav';
 import { Pet } from './Pet';
 import { Toasts } from './Toasts';
 import { SearchModal } from './SearchBox';
+import { Backdrop, SoftFeel } from './Feel';
 import { cn } from './ui';
 
 export function Logo({ size = 30 }: { size?: number }) {
@@ -87,7 +88,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Link href={it.href} aria-current={active ? 'page' : undefined}
                     className={cn('group relative flex items-center gap-2.5 rounded-xl px-2.5 py-[7px] text-[13.5px] font-medium transition-all', active ? 'bg-gradient-to-r from-brand/20 via-brand/10 to-transparent text-ink' : 'text-muted hover:bg-raised/70 hover:text-ink')}>
                     {active && <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-gradient-to-b from-[#8B6EFF] to-[#2F8BFF]" aria-hidden />}
-                    <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-lg transition-colors', active ? 'bg-gradient-to-br from-[#6A4BF0] to-[#1F6FE5] text-white shadow-[0_6px_14px_-6px_rgba(106,75,240,0.9)]' : 'bg-raised/60 group-hover:bg-raised')}><it.icon size={15} aria-hidden /></span>{it.label}
+                    <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-lg transition-[transform,background-color] duration-300 ease-[cubic-bezier(.34,1.56,.64,1)] group-hover:scale-110 group-active:scale-95', active ? 'bg-gradient-to-br from-[#6A4BF0] to-[#1F6FE5] text-white shadow-[0_6px_14px_-6px_rgba(106,75,240,0.9)]' : 'bg-raised/60 group-hover:bg-raised')}><it.icon size={15} aria-hidden /></span>{it.label}
                   </Link>
                 </li>
               );
@@ -105,6 +106,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <MotionConfig reducedMotion={reduced ? 'always' : 'user'}>
+      <Backdrop />
+      <SoftFeel />
       <div className="min-h-screen lg:flex">
         {!focus && (
           <aside className="no-print glass sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col !border-y-0 !border-l-0 lg:flex">

@@ -28,7 +28,7 @@ export function Progress({ value, className, tone = 'brand', label }: { value: n
   const bar = { brand: 'bg-gradient-to-r from-brand to-brand2', ok: 'bg-ok', warn: 'bg-warn', bad: 'bg-bad', gold: 'bg-gold' }[tone];
   return (
     <div className={cn('h-2 w-full overflow-hidden rounded-full bg-raised ring-1 ring-inset ring-line/50', className)} role="progressbar" aria-valuenow={Math.round(v)} aria-valuemin={0} aria-valuemax={100} aria-label={label ?? 'Progress'}>
-      <div className={cn('h-full rounded-full transition-[width] duration-500', bar)} style={{ width: `${v}%` }} />
+      <div className={cn('h-full rounded-full transition-[width] duration-700 ease-out', bar, v > 0 && v < 100 && 'bar-shimmer')} style={{ width: `${v}%` }} />
     </div>
   );
 }

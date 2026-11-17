@@ -23,6 +23,10 @@ browser. That is the whole product: no install, no server, no account, no intern
 - Diagnostic, timed modules, full-length mock exams with module routing, 30-day study plan and calendar.
 - Lumi the companion: XP, levels, shop, achievements, three daily quests with a chest, answer combos,
   optional sound effects, daily challenge, speed training, battle arena.
+- A soft, calm feel: every press gives a quiet synthesized "pop" (and a tiny vibration on phones), a ripple
+  spreads from where you touched, buttons spring back, right answers sparkle and wrong ones give a gentle
+  shake, and a slow aurora with twinkling stars sits behind every page. Sound can be turned off, and
+  "Reduce motion" stills all of it.
 - Offline tutor in seven modes, with an optional Gemini free-tier connection (student's own key).
 - Notebook, saved questions, search, progress sharing, data export / import / delete, dark and light themes.
 
@@ -38,9 +42,9 @@ npm run build
 
 `npm run build` validates the question bank, then inlines JavaScript, CSS, fonts and data into one file.
 
-## AP courses: Calculus BC, Computer Science A, Microeconomics, Macroeconomics
+## AP courses: Calculus BC, Computer Science A, Microeconomics, Macroeconomics, Statistics
 
-Four self-study AP courses, written so that a beginner can learn each subject from scratch and then
+Five self-study AP courses, written so that a beginner can learn each subject from scratch and then
 teach it. Every course follows the College Board's current units in order, shows each unit's exam
 weight, and builds a pacing plan from your exam date.
 
@@ -50,6 +54,7 @@ weight, and builds a pacing plan from your exam date.
 | AP Computer Science A (Java) | 4 | 19 | 38 | 114 |
 | AP Microeconomics | 6 | 15 | 30 | 90 |
 | AP Macroeconomics | 6 | 19 | 38 | 114 |
+| AP Statistics | 9 | 20 | 40 | 120 |
 
 - **Calculus BC** starts with fractions, equations, functions, slope, exponents, logarithms and trig,
   then runs from limits through infinite series.
@@ -63,14 +68,21 @@ weight, and builds a pacing plan from your exam date.
   fiscal policy, money and banking, the money market (both the limited and ample reserves
   frameworks), loanable funds, the Phillips curve, the quantity theory, deficits and crowding out,
   growth, the balance of payments and exchange rates.
+- **Statistics** follows all nine units: describing data (SOCS, boxplots and the 1.5 × IQR rule, z-scores
+  and normal curves), two-way tables, correlation and least-squares regression, sampling methods, bias
+  and experimental design, probability rules and tree diagrams, random variables, binomial and geometric
+  distributions, sampling distributions and the central limit theorem, confidence intervals and
+  significance tests for proportions and means (one-sample, paired and two-sample t), Type I and II errors
+  and power, chi-square tests, and inference for a regression slope from computer output. Answers are
+  typed as decimals, and sensible roundings (0.106 or 0.1056) are accepted.
 
 Every lesson has a teacher's intro, goals and notes, plus a tutor layer for complete beginners:
 
 - **The big idea in plain words**, with an everyday picture that makes it stick
-- **Words to know** (550 terms across the four courses) and **tools you will use**, each with a
+- **Words to know** (629 terms across the five courses) and **tools you will use**, each with a
   quick refresher and a link to the lesson that teaches it, even if it is in another course
 - a **why** for every step of every worked example
-- a slow, step-by-step **walk-through for every practice problem** (746 in all)
+- a slow, step-by-step **walk-through for every practice problem** (866 in all)
 - **Now you teach it**: a mini lesson plan for teaching a friend, the questions a student will ask
   (with answers), and a box to write your own explanation, checked against the key points
 
@@ -80,7 +92,9 @@ automatically:
 - every typed-answer problem's answer is recomputed independently (calculus: limits, derivatives,
   Simpson's rule integrals, Runge–Kutta, partial sums; CSA: a JavaScript model of each Java program
   with Java's integer division, overflow and `compareTo` rules; economics: the tables and equations in
-  each lesson)
+  each lesson; statistics: a small built-in statistics engine with normal, t and chi-square
+  distributions, binomial and geometric probabilities, AP-style quartiles and regression, whose results
+  are pinned in `tests/stats-lib.test.ts` to reference values from SciPy, to about seven decimal places)
 - `npm run verify:csa-java` goes further for CSA: it turns all 93 typed-answer problems into real Java
   programs (reusing the lesson's own code where a question refers to it), compiles and runs them with
   `javac`, and checks that the output matches the key exactly. All 93 match.
@@ -227,7 +241,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 14 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface.
+- `npm run test:e2e` — 15 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
