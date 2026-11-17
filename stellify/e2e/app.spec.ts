@@ -558,5 +558,19 @@ test('personal copy: all seven official practice tests, original remix tests and
   await page.getByTestId('start-fulltest-pt10').click();
   await page.getByTestId('lock-skip').click();
   await expect(page.getByTestId('mock-question')).toHaveAttribute('data-qid', 'pt10-rw1-01');
+  // explanations: "In simple words" first, then the College Board's own explanation
+  await page.goto(`${P}#/practice/session?mode=single&ids=pt4-rw1-22`);
+  await page.locator('[data-choice="A"]').click();
+  await page.getByTestId('check').click();
+  await expect(page.getByTestId('simple-explanation')).toContainText('The answer is D.');
+  await expect(page.getByTestId('simple-explanation')).toContainText('The subject “the triangle” is one thing');
+  await expect(page.getByTestId('simple-explanation')).toContainText('How to do this kind of question');
+  await expect(page.getByText('College Board explanation').first()).toBeVisible();
+  await page.goto(`${P}#/practice/session?mode=single&ids=pt4-math1-01`);
+  await page.locator('[data-choice="B"]').click();
+  await page.getByTestId('check').click();
+  await expect(page.getByTestId('verdict')).toHaveText(/Correct/);
+  await expect(page.getByTestId('simple-explanation')).toContainText('The answer is B.');
+  await expect(page.getByTestId('official-rationale')).toBeVisible();
   expect(errors).toEqual([]);
 });

@@ -147,6 +147,18 @@ domain, and the list shows each test's share of official questions. The Real SAT
 new combination every time), and **Blend** gives about half its slots to Stellify original questions written to the
 College Board specifications. The original Stellify mock exams (Practice Test A, B and Fresh Mix) remain alongside.
 
+**Explanations: checked, and in simple words.** Every explanation in the seven practice tests was checked against
+its own question (each fits its question better than its neighbors', with no page text from elsewhere and every key
+agreeing), and the Math explanation images were checked for completeness. Each official question now opens with
+**In simple words**: the answer, the reason, one line on why each other choice is wrong, and how to do that kind of
+question. For Reading & Writing, the reason is rewritten from the College Board's own explanation by fixed rules that
+keep its meaning: the formal opening goes, the evidence and conclusion stay, everyday words replace formal ones,
+grammar rules get a plain definition, and quotations from the passage are never changed. This makes the explanations
+about 40% shorter, but reasons for the harder reading questions still use the College Board's own sentences. Math
+explanations are not rewritten, because their text loses exponents and fractions when it is read from the PDF; they
+show the answer, a plain method for that kind of question (written at about a 6th-grade reading level) and the College
+Board's exact worked solution. The College Board's full explanation always follows.
+
 **A study plan from what you missed.** After any test, each missed skill is ranked by the points at stake
 (misses × the scaled points one more right answer is worth near your score, read from the conversion curve),
 with the trap you fell for where it is known, and notes on pacing (ran out of time, left blanks, or rushed).

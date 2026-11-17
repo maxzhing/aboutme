@@ -13,6 +13,7 @@ import { Figure } from './Figure';
 import { Badge, cn } from './ui';
 import { useStore } from '@/lib/store';
 import { chapterFor } from '@/data/courses';
+import { simpleExplanation } from '@/lib/plain';
 import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
 
 export function QuestionMeta({ q }: { q: Question }) {
@@ -129,6 +130,30 @@ const Block = ({ title, children, tone }: { title: string; children: React.React
  * why the right answer works, why each wrong answer fails, concept, fastest method, trap,
  * takeaway and what to practice next.
  */
+/** The plain-language version of an official explanation (see lib/plain.ts), shown first. */
+function SimpleExplanationBlock({ q }: { q: Question }) {
+  const s = simpleExplanation(q);
+  if (!s) return null;
+  return (
+    <section className="rounded-xl border border-brand/40 bg-brand/5 p-3.5" data-testid="simple-explanation">
+      <h4 className="mb-1.5 text-xs font-bold uppercase tracking-wide text-brand2">In simple words</h4>
+      <p className="leading-relaxed"><b>The answer is {s.answer}.</b>{s.right && <> <RichText text={s.right} /></>}</p>
+      {s.wrong.length > 0 && (
+        <ul className="mt-2 space-y-1 text-sm">
+          {s.wrong.map((w) => <li key={w.letter} className="flex gap-2"><X size={15} className="mt-0.5 shrink-0 text-bad" /><span><b>{w.letter} is wrong.</b> <RichText text={w.text} /></span></li>)}
+        </ul>
+      )}
+      {s.method.length > 0 && (
+        <div className="mt-3 border-t border-line pt-2.5 text-sm">
+          <div className="mb-1 font-semibold">How to do this kind of question</div>
+          <ol className="list-decimal space-y-0.5 pl-5 text-muted">{s.method.map((m) => <li key={m}>{m}</li>)}</ol>
+        </div>
+      )}
+      {!s.rewritten && q.rationaleImage && <p className="mt-2 text-xs text-faint">The College Board&apos;s complete worked solution, exactly as printed, is below.</p>}
+    </section>
+  );
+}
+
 export function Explanation({ q, answer, category, onCategory, extra }: {
   q: Question; answer: string | null; category?: ErrorCategory; onCategory?: (c: ErrorCategory) => void; extra?: React.ReactNode;
 }) {
@@ -154,20 +179,23 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
 
       {!ok && <TrapCheck q={q} />}
 
+      {q.official && <SimpleExplanationBlock q={q} />}
+
       {q.rationaleImage ? (
         <section className="rounded-xl border border-ok/30 bg-ok/5 p-3.5" data-testid="official-rationale">
           <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-faint">College Board explanation · correct answer {correctAnswerLabel(q)}</h4>
           <div className="overflow-hidden rounded-xl bg-white p-2"><img src={q.rationaleImage} alt="College Board explanation, shown exactly as printed" className="mx-auto block h-auto w-auto max-w-full" /></div>
         </section>
       ) : <>
-      <Block title="Step-by-step solution">
+      {/* official questions: the College Board's own notes below are the full explanation, so no repeated steps */}
+      {!q.official && <Block title="Step-by-step solution">
         <ol className="list-decimal space-y-1.5 pl-5">{q.steps.map((s, i) => <li key={i}><RichText text={s} /></li>)}</ol>
-      </Block>
+      </Block>}
 
       {q.type === 'mcq' ? (
         <>
-          <Block title={`Why ${LETTERS[q.answer as number]} is correct`} tone="ok"><RichText text={q.why[q.answer as number]} /></Block>
-          <Block title="Why each other choice fails">
+          <Block title={`Why ${LETTERS[q.answer as number]} is correct${q.official ? ' · College Board explanation' : ''}`} tone="ok"><RichText text={q.why[q.answer as number]} /></Block>
+          <Block title={`Why each other choice fails${q.official ? ' · College Board explanation' : ''}`}>
             <ul className="space-y-2">
               {q.choices!.map((c, i) => i === q.answer ? null : (
                 <li key={i} className="flex gap-2.5">
