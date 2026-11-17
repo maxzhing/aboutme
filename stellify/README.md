@@ -25,6 +25,12 @@ browser. That is the whole product: no install, no server, no account, no intern
   difficulty, hidden until a section has 20 such answers (it says how many more are needed), and labelled
   everywhere as an unofficial Stellify estimate, never an SAT score. Analytics shows how the estimate and its
   range changed day by day, and each recent session's result against what was expected for its difficulty.
+- A skill mastery heatmap: all 30 SAT skills by domain, colored by difficulty-weighted mastery, with sample size,
+  an 80% uncertainty (±), a confidence level (dashed when low) and the recent trend; tap one to practice it.
+  Next to it, "Where your points are" ranks the skills whose improvement would add the most points (questions
+  per test from the SAT blueprint × accuracy still to gain × points per question at your level), and a forecast
+  says whether the estimate is really moving: it needs 4+ days over 2+ weeks, calls a trend clear only when it is
+  bigger than twice its own noise, and only then projects it to your test date, as a widening range.
 - Diagnostic, timed modules, full-length mock exams with module routing, 30-day study plan and calendar.
 - Lumi the companion: XP, levels, shop, achievements, three daily quests with a chest, answer combos,
   optional sound effects, daily challenge, speed training, battle arena.

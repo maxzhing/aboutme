@@ -79,6 +79,10 @@ test('wrong answer: full explanation, saved mistake, persistence across reload, 
   await go(page, '/analytics');
   await expect(page.getByTestId('estimate-insufficient')).toContainText(/Not enough data yet: \d+ more first-try Reading & Writing answers and \d+ more first-try Math answers needed/);
   await expect(page.getByTestId('estimate-panel')).toContainText('Unofficial · not an SAT score');
+  // every SAT skill has a heatmap tile; with so few answers nothing is trusted yet and no trend is claimed
+  await expect(page.locator('[data-testid^="heat-"]')).toHaveCount(30);
+  expect(await page.locator('[data-testid^="heat-"][data-confidence="high"]').count()).toBe(0);
+  await expect(page.getByTestId('forecast')).toContainText('Too early to tell');
   expect(errors).toEqual([]);
 });
 

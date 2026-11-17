@@ -7,6 +7,8 @@ import { snapshot, useStore } from '@/lib/store';
 import { useOverview, useSkillStats, useStreak } from '@/lib/hooks';
 import { accuracyBlocks, dailySeries, scoreTrend, sessionHistory, weekMinutes } from '@/lib/engine/analytics';
 import { EstimatePanel } from '@/components/Estimate';
+import { PointsPanel, SkillHeatmap } from '@/components/Heatmap';
+import { forecast, opportunities, skillHeat } from '@/lib/engine/insights';
 import { weeklyReport } from '@/lib/engine/report';
 import { CONFIDENCE_NAME, fmtRange } from '@/lib/engine/scoring';
 import { MASTERY_LEVELS } from '@/lib/engine/mastery';
@@ -28,6 +30,9 @@ export function AnalyticsPage() {
   const blocks = useMemo(() => accuracyBlocks(snap, 20), [snap]);
   const trend = useMemo(() => scoreTrend(snap, getQuestion), [snap]);
   const sessions = useMemo(() => sessionHistory(snap, getQuestion), [snap]);
+  const heat = useMemo(() => skillHeat(snap.attempts, getQuestion), [snap]);
+  const ops = useMemo(() => opportunities(heat, { rw: ov.estimate.rw?.mid, math: ov.estimate.math?.mid }), [heat, ov.estimate.rw?.mid, ov.estimate.math?.mid]);
+  const fc = useMemo(() => forecast(trend, 'total', s.profile.examDate), [trend, s.profile.examDate]);
   const [series, setSeries] = useState<'total' | 'rw' | 'math'>('total');
   const trendData = trend.filter((t) => t[series]).map((t) => ({ label: t.label, band: [t[series]!.low, t[series]!.high] as [number, number], mid: t[series]!.mid, confidence: t.confidence }));
   const [lo, hi] = series === 'total' ? [400, 1600] : [200, 800];
@@ -48,6 +53,10 @@ export function AnalyticsPage() {
         <Stat label="Open mistakes" value={Object.values(s.mistakes).filter((m) => m.status === 'unresolved').length} sub={<Link href="/mistakes" className="text-brand2 hover:underline">Open bucket</Link>} />
       </div>
       <EstimatePanel />
+      <div className="grid gap-3 lg:grid-cols-3">
+        <Card className="lg:col-span-2"><h2 className="font-semibold">Skill mastery heatmap</h2><p className="mt-0.5 mb-3 text-xs text-muted">Every SAT skill: mastery weighted by difficulty, how many answers it rests on, how sure that is, and which way it is heading. Tap a skill to practice it.</p><SkillHeatmap heat={heat} /></Card>
+        <Card><h2 className="font-semibold">Where your points are</h2><p className="mt-0.5 mb-3 text-xs text-muted">The skills where more accuracy would add the most to your score.</p><PointsPanel ops={ops} unmeasured={heat.filter((h) => h.n < 4).length} fc={fc} /></Card>
+      </div>
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Card><h2 className="text-sm font-semibold">Study time, last 14 days (minutes)</h2><div className="mt-2 h-52"><ResponsiveContainer><BarChart data={days}><CartesianGrid stroke="rgb(var(--line))" vertical={false} /><XAxis dataKey="label" {...axis} interval={1} /><YAxis {...axis} width={30} /><Tooltip {...chartTip} formatter={(v, n) => [n === 'minutes' ? `${v} min` : v, n === 'minutes' ? 'Studied' : 'Questions']} /><Bar dataKey="minutes" fill="rgb(var(--brand2))" radius={[5, 5, 0, 0]} /></BarChart></ResponsiveContainer></div></Card>
@@ -76,8 +85,10 @@ export function AnalyticsPage() {
         </tbody></table></div> : <p className="mt-2 text-sm text-muted">No sessions yet.</p>}
       </Card>
 
-      <Card>
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="font-semibold">Every skill</h2><Tabs label="Sort skills" tabs={[{ id: 'weak', label: 'Weakest first' }, { id: 'strong', label: 'Strongest first' }, { id: 'order', label: 'Curriculum order' }]} value={sort} onChange={setSort} /></div>
+      <Card as="div">
+        <details>
+        <summary className="cursor-pointer font-semibold">Every skill in detail (table)</summary>
+        <div className="mb-3 mt-3 flex flex-wrap items-center justify-between gap-2"><h2 className="sr-only">Every skill</h2><Tabs label="Sort skills" tabs={[{ id: 'weak', label: 'Weakest first' }, { id: 'strong', label: 'Strongest first' }, { id: 'order', label: 'Curriculum order' }]} value={sort} onChange={setSort} /></div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead><tr className="text-left text-xs uppercase tracking-wide text-faint"><th className="pb-2 font-semibold">Skill</th><th className="pb-2 font-semibold">Mastery</th><th className="pb-2 font-semibold">Accuracy</th><th className="pb-2 font-semibold">Med / Hard / V. hard</th><th className="pb-2 font-semibold">Avg time</th><th /></tr></thead>
@@ -95,6 +106,7 @@ export function AnalyticsPage() {
             </tbody>
           </table>
         </div>
+        </details>
       </Card>
     </div>
   );
