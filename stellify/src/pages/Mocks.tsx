@@ -1,17 +1,18 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Calculator, Clock, Coffee, Flag, LayoutGrid } from 'lucide-react';
+import { BookOpenText, Calculator, ChevronUp, Clock, Coffee, Flag, LayoutGrid, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getQuestion, hasOfficial, OFFICIAL } from '@/data/questions';
 import { REFERENCE } from '@/data/reference';
 import { useStore } from '@/lib/store';
 import { useOfficial } from '@/lib/officialStore';
-import { formName, isOfficialForm, isOfficialLike, isCalibratedForm, LOWER_ROUTE_CAP, MOCK_FORMS, OFFICIAL_FORMS, officialModules, ROUTE_THRESHOLD, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
+import { formName, isOfficialForm, isOfficialLike, isCalibratedForm, LOWER_ROUTE_CAP, MOCK_FORMS, OFFICIAL_FORMS, officialModules, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
 import { fmtRange } from '@/lib/engine/scoring';
 import { DOMAIN, DOMAINS, SAT_STRUCTURE, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { fmtClock, fmtDuration, pct } from '@/lib/util';
 import type { MockAttempt, ScoreRange, Section, SkillId } from '@/lib/types';
 import { Explanation, QuestionMeta, QuestionView } from '@/components/Question';
+import { isCorrect } from '@/lib/answers';
 import { AnnotateButton } from '@/components/Highlight';
 import { Grapher } from '@/components/Grapher';
 import { RichText } from '@/components/RichText';
@@ -58,7 +59,7 @@ export function MocksPage() {
       <Card>
         <h2 className="font-semibold">How routing and scoring work here</h2>
         <ul className="mt-2 space-y-1.5 text-sm text-muted">
-          <li>• <b className="text-ink">Routing:</b> Module 1 mixes medium, hard and very hard questions. If you answer at least {Math.round(ROUTE_THRESHOLD * 100)}% of it correctly (17 of 27 in Reading &amp; Writing, 14 of 22 in Math), Module 2 is the harder set; otherwise it is the easier set.</li>
+          <li>• <b className="text-ink">Routing:</b> Module 1 mixes medium, hard and very hard questions. Your Module 1 answers are weighed by difficulty (a hard question right counts for more), and if that points to roughly a 570 section level or higher, Module 2 is the harder set; otherwise it is the easier set, which caps the section at {LOWER_ROUTE_CAP}. A simulation of thousands of test-takers checks that strong students are almost never sent to the easier set.</li>
           <li>• <b className="text-ink">Scores:</b> each section gets an estimated range from Stellify&apos;s own item-response model. The easier route is capped at {LOWER_ROUTE_CAP} for the section, as an easier second module limits the top of the scale on the real test.</li>
           <li>• <b className="text-ink">Honesty note:</b> this is Stellify&apos;s documented model, not the College Board&apos;s proprietary adaptive algorithm or scoring, and the questions are original rather than official. Forms draw on the same bank as regular practice, so questions you have already seen may appear (Fresh Mix avoids them where it can). For official scores, use <Link href="/resources" className="underline">Bluebook practice tests</Link>.</li>
         </ul>
@@ -101,6 +102,22 @@ function OfficialCard({ begin }: { begin: (form: string, kind: MockAttempt['kind
   );
 }
 
+/** Module directions, in Stellify's own words, covering what the test-day directions cover. */
+const DIRECTIONS: Record<Section, string[]> = {
+  rw: [
+    'Each question has a short passage (sometimes two passages, or a table or graph) and four answer choices. Choose the single best answer, based only on what the passage says.',
+    'Every question is multiple choice. There is no penalty for guessing, so answer every question.',
+    'You can move back and forth within this module, mark questions for review, cross out choices, and highlight words or add notes (select the words, or use Highlights & Notes in the top bar).',
+    'When time runs out, the module ends and your answers are saved. Answers from a finished module cannot be changed.',
+  ],
+  math: [
+    'Most questions are multiple choice. Some ask you to type your own answer: enter one correct answer as a number, fraction or decimal (a negative sign is fine). If a decimal does not fit, round or cut it off at the fourth digit; do not enter symbols such as % or $.',
+    'A graphing calculator and a reference sheet are open to you at any time from the top bar.',
+    'Unless a question says otherwise, figures are drawn to scale, all variables are real numbers, and a function is defined for every real number where it makes sense.',
+    'You can move back and forth within this module and mark questions for review. When time runs out, the module ends and your answers are saved.',
+  ],
+};
+
 function ModuleStage({ mock }: { mock: MockAttempt }) {
   const router = useRouter();
   const update = useStore((s) => s.mockUpdate);
@@ -111,6 +128,10 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
   const [idx, setIdx] = useState(Math.min(mock.cursor!.index, mod.qids.length - 1));
   const [review, setReview] = useState(false);
   const [tool, setTool] = useState<'ref' | 'calc' | null>(null);
+  const [dirs, setDirs] = useState(() => mod.module === 1 && mock.cursor!.index === 0 && mod.qids.every((id) => !mod.answers[id])); // at the start of each section
+  const [nav, setNav] = useState(false);
+  const [five, setFive] = useState(false);
+  const warned = useRef(mock.cursor!.msLeft <= 5 * 60_000);
   const [elim, setElim] = useState<Record<string, number[]>>({});
   const [, setTick] = useState(0);
   const base = useRef({ at: Date.now(), left: mock.cursor!.msLeft });
@@ -125,7 +146,11 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
   const go = (n: number) => { const t = Math.max(0, Math.min(mod.qids.length - 1, n)); flush(t); setIdx(t); setReview(false); };
 
   useEffect(() => {
-    const id = setInterval(() => { setTick((n) => n + 1); if (left() <= 0) submit(); else if (Date.now() - saved.current > 10_000) { update({ msLeft: left() }); saved.current = Date.now(); } }, 500);
+    const id = setInterval(() => {
+      setTick((n) => n + 1);
+      if (!warned.current && left() <= 5 * 60_000) { warned.current = true; setFive(true); }
+      if (left() <= 0) submit(); else if (Date.now() - saved.current > 10_000) { update({ msLeft: left() }); saved.current = Date.now(); }
+    }, 500);
     const onHide = () => update({ msLeft: Math.max(0, left()) });
     window.addEventListener('pagehide', onHide);
     return () => { clearInterval(id); window.removeEventListener('pagehide', onHide); };
@@ -138,10 +163,12 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
       <header className="card flex flex-wrap items-center gap-3 !rounded-xl p-3">
         <div className="min-w-[11rem] flex-1"><div className="font-display font-bold">{SECTION_NAME[mod.section]} · Module {mod.module} of {stagesFor(mock.kind).filter((st) => st !== 'break' && stageSection(st) === mod.section).length}</div><div className="text-xs text-muted">Question {idx + 1} of {mod.qids.length} · {answered} answered</div></div>
         <button onClick={() => setSettings({ showTimer: !showTimer })} className={cn('chip !py-1.5 font-mono text-sm', ms < 5 * 60_000 && 'border-bad text-bad')} aria-label="Time remaining (click to hide or show)"><Clock size={14} />{showTimer || ms < 5 * 60_000 ? fmtClock(ms) : 'Hidden'}</button>
-        {mod.section === 'math' && <><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('calc')}><Calculator size={15} />Graphing</button><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('ref')}>Reference</button></>}
+        <button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setDirs(true)} data-testid="open-directions"><BookOpenText size={15} />Directions</button>
+        {mod.section === 'math' && <><button className="btn-ghost !px-2.5 !py-1.5" aria-pressed={tool === 'calc'} onClick={() => setTool(tool === 'calc' ? null : 'calc')} data-testid="toggle-calc"><Calculator size={15} />Calculator</button><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('ref')}>Reference</button></>}
         <AnnotateButton />
         <button className="btn-ghost !px-2.5 !py-1.5" onClick={() => { flush(); router.push('/mocks'); }}>Save &amp; exit</button>
       </header>
+      {five && <div role="alert" className="flex items-center gap-3 rounded-xl border border-warn/50 bg-warn/10 p-3 text-sm" data-testid="five-minutes"><Clock size={16} className="text-warn" /><span className="flex-1"><b>5 minutes left in this module.</b> The timer stays visible now. Make sure every question has an answer: there is no penalty for guessing.</span><button className="btn-quiet !p-1" aria-label="Dismiss" onClick={() => setFive(false)}><X size={15} /></button></div>}
       {review ? (
         <Card>
           <h2 className="text-lg font-bold">Check your work</h2>
@@ -152,18 +179,45 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
           <div className="mt-5 flex flex-wrap gap-2 border-t border-line pt-4"><button className="btn-ghost" onClick={() => setReview(false)}>Back to questions</button><button className="btn-primary" data-testid="submit-module" onClick={() => { if (answered === mod.qids.length || confirm(`${mod.qids.length - answered} question(s) are unanswered. Submit this module anyway?`)) submit(); }}>Submit module {mod.module}</button></div>
         </Card>
       ) : (
+        <div className={cn(tool === 'calc' && 'grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]')}>
+        {tool === 'calc' && (
+          <Card className="lg:sticky lg:top-3" data-testid="calc-panel">
+            <div className="mb-2 flex items-center justify-between"><h2 className="flex items-center gap-1.5 text-sm font-semibold"><Calculator size={15} />Graphing calculator</h2><button className="btn-quiet !p-1" aria-label="Close calculator" onClick={() => setTool(null)}><X size={16} /></button></div>
+            <Grapher demo={{ exprs: ['y = x'], view: [-10, 10, -10, 10], show: ['intersections', 'roots', 'extrema'] }} />
+            <p className="mt-2 text-xs text-faint">Stellify&apos;s own graphing tool. On test day Bluebook has the Desmos calculator built in.</p>
+          </Card>
+        )}
         <Card className="space-y-4" data-testid="mock-question" data-qid={q.id}>
           <div className="flex items-center justify-between gap-2"><span className="text-xs text-faint">{mod.section === 'math' ? 'Math' : DOMAIN[q.domain].name}</span><button className={cn('btn-quiet !py-1', mod.flagged.includes(q.id) && 'text-warn')} aria-pressed={mod.flagged.includes(q.id)} onClick={() => update({ flag: q.id })}><Flag size={15} />Mark for review</button></div>
           <QuestionView q={q} number={idx + 1} hlScope={mock.id} answer={mod.answers[q.id] ?? null} onAnswer={(v) => update({ answer: [q.id, v] })} eliminated={elim[q.id]} onEliminate={(i) => setElim((e) => ({ ...e, [q.id]: (e[q.id] ?? []).includes(i) ? e[q.id].filter((x) => x !== i) : [...(e[q.id] ?? []), i] }))} />
           <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4">
             <button className="btn-ghost" disabled={idx === 0} onClick={() => go(idx - 1)}>Back</button>
             {idx < mod.qids.length - 1 ? <button className="btn-primary" onClick={() => go(idx + 1)} data-testid="mock-next">Next</button> : <button className="btn-primary" onClick={() => { flush(); setReview(true); }} data-testid="mock-review">Review &amp; submit</button>}
-            <button className="btn-quiet ml-auto" onClick={() => { flush(); setReview(true); }}><LayoutGrid size={15} />All questions</button>
+            <div className="relative ml-auto">
+              <button className="btn-ghost" aria-expanded={nav} aria-controls="q-nav" onClick={() => setNav(!nav)} data-testid="q-nav-toggle">Question {idx + 1} of {mod.qids.length}<ChevronUp size={15} className={cn('transition-transform', !nav && 'rotate-180')} /></button>
+              {nav && (
+                <div id="q-nav" className="absolute bottom-full right-0 z-20 mb-2 w-[min(92vw,360px)] rounded-2xl border border-line bg-surface p-3 shadow-card" data-testid="q-nav">
+                  <div className="mb-2 flex flex-wrap gap-3 text-xs text-muted"><span className="flex items-center gap-1"><span className="inline-block h-3 w-3 rounded border border-brand bg-brand/30" />Answered</span><span className="flex items-center gap-1"><span className="inline-block h-3 w-3 rounded border border-dashed border-line" />Unanswered</span><span className="flex items-center gap-1"><Flag size={11} className="fill-warn text-warn" />For review</span></div>
+                  <div className="grid grid-cols-7 gap-1.5">
+                    {mod.qids.map((id, i) => <button key={id} onClick={() => { go(i); setNav(false); }} className={cn('relative grid h-9 place-items-center rounded-lg border text-sm font-bold', mod.answers[id] ? 'border-brand bg-brand/20' : 'border-dashed border-line text-muted', i === idx && 'ring-2 ring-brand2 ring-offset-1 ring-offset-surface')} aria-label={`Question ${i + 1}, ${mod.answers[id] ? 'answered' : 'unanswered'}${mod.flagged.includes(id) ? ', marked for review' : ''}${i === idx ? ', current' : ''}`} aria-current={i === idx ? 'true' : undefined}>{i + 1}{mod.flagged.includes(id) && <Flag size={10} className="absolute -right-1 -top-1 fill-warn text-warn" />}</button>)}
+                  </div>
+                  <button className="btn-quiet mt-2 w-full justify-center text-sm" onClick={() => { flush(); setNav(false); setReview(true); }}><LayoutGrid size={15} />Go to the review page</button>
+                </div>
+              )}
+            </div>
           </div>
         </Card>
+        </div>
       )}
       <Modal open={tool === 'ref'} onClose={() => setTool(null)} title="Reference sheet" wide><ul className="space-y-2 text-sm">{REFERENCE.filter((e) => e.cat === 'Geometry' || e.cat === 'Trigonometry').map((e) => <li key={e.id}><b>{e.title}.</b> <RichText text={e.body} /></li>)}</ul></Modal>
-      <Modal open={tool === 'calc'} onClose={() => setTool(null)} title="Graphing calculator" wide><Grapher demo={{ exprs: ['y = x'], view: [-10, 10, -10, 10], show: ['intersections', 'roots', 'extrema'] }} /><p className="mt-2 text-xs text-faint">A basic four-function calculator on your device is also fine; the real test provides Desmos.</p></Modal>
+      <Modal open={dirs} onClose={() => setDirs(false)} title={`${SECTION_NAME[mod.section]} · Module ${mod.module}: directions`}>
+        <div data-testid="directions">
+          <p className="text-sm font-semibold">{mod.qids.length} questions · {Math.round(mod.msAllowed / 60_000)} minutes{mod.module === 2 ? ' · your Module 1 answers are saved and locked' : ''}</p>
+          <ul className="mt-2 space-y-2 text-sm text-muted">{DIRECTIONS[mod.section].map((d) => <li key={d}>• {d}</li>)}</ul>
+          <p className="mt-3 text-xs text-faint">The clock is already running, just as on test day. Reopen these from Directions in the top bar.</p>
+          <button className="btn-primary mt-3" onClick={() => setDirs(false)} data-testid="close-directions">Got it</button>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -245,6 +299,31 @@ export function MockResultsPage() {
         <Stat label="Time used" value={fmtDuration(sum.msUsed)} sub={`of ${fmtDuration(sum.msAllowed)}`} />
         <Stat label="Flagged" value={sum.rows.filter((r) => r.flagged).length} sub="marked for review" />
       </div>
+      <Card data-testid="module-report">
+        <h2 className="font-semibold">Module by module</h2>
+        <div className="mt-2 overflow-x-auto"><table className="w-full min-w-[560px] text-sm">
+          <thead><tr className="text-left text-xs uppercase tracking-wide text-faint"><th className="pb-1.5 font-semibold">Module</th><th className="pb-1.5 font-semibold">Set</th><th className="pb-1.5 font-semibold">Right</th><th className="pb-1.5 font-semibold">Blank</th><th className="pb-1.5 font-semibold">Time used</th><th className="pb-1.5 font-semibold">Pace per question</th><th className="pb-1.5 font-semibold">Flagged</th></tr></thead>
+          <tbody className="divide-y divide-line">
+            {mock.modules.map((m) => {
+              const right = m.qids.filter((id) => { const q = getQuestion(id); return q && isCorrect(q, m.answers[id] ?? null); }).length;
+              const blank = m.qids.filter((id) => !m.answers[id]).length;
+              const per = m.msUsed / Math.max(1, m.qids.length), allowed = m.msAllowed / Math.max(1, m.qids.length);
+              return (
+                <tr key={`${m.section}-${m.module}`}>
+                  <td className="py-1.5 pr-3 font-medium">{SECTION_NAME[m.section]} {m.module}</td>
+                  <td className="py-1.5 pr-3 text-muted">{m.module === 1 ? 'Mixed' : m.route === 'upper' ? 'Harder set' : m.route === 'lower' ? `Easier set (caps at ${LOWER_ROUTE_CAP})` : 'As printed'}</td>
+                  <td className="py-1.5 pr-3 tabular-nums">{right}/{m.qids.length}</td>
+                  <td className={cn('py-1.5 pr-3 tabular-nums', blank ? 'text-bad' : 'text-muted')}>{blank}</td>
+                  <td className="py-1.5 pr-3 tabular-nums">{fmtDuration(m.msUsed)} of {Math.round(m.msAllowed / 60_000)} min</td>
+                  <td className={cn('py-1.5 pr-3 tabular-nums', per > allowed * 1.05 ? 'text-warn' : 'text-muted')}>{fmtDuration(per)} vs {fmtDuration(allowed)} allowed</td>
+                  <td className="py-1.5 tabular-nums text-muted">{m.flagged.length}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table></div>
+        <p className="mt-1.5 text-xs text-faint">Module 2 is chosen from Module 1: the harder set opens the top of the scale; the easier set caps the section at {LOWER_ROUTE_CAP}.</p>
+      </Card>
       <p className="text-xs text-faint" data-testid="lock-report">{mock.locked ? 'Taken locked in (full screen)' : 'Taken without full screen'} · {mock.breaks ? `left the test window ${mock.breaks} time${mock.breaks === 1 ? '' : 's'}` : 'never left the test window'}.</p>
       <p className="text-xs text-faint" data-testid="score-note">{ft?.table ? `Scored exactly as the College Board scores ${ft.name}: your number of correct answers in each section, read from that test's official raw-score conversion table. The College Board reports practice-test scores as these ranges; the large number is the middle of the range.` : ft || isCalibratedForm(mock.formId) ? 'An unofficial estimate. Harder questions count for more (item-response scoring), and ability is placed on the College Board scale through the average conversion table of Practice Tests 4–10. On those seven official tests this method reproduces the College Board’s own tables to within about 30 points for the same answers, but it has never been checked against real SAT results, so read the 80% range rather than a single number.' : isOfficialForm(mock.formId) ? 'The questions are official College Board questions from your own file, but the range is Stellify’s own estimate from this set, not a College Board score.' : 'Ranges come from Stellify’s own model and original questions. They are not College Board scores.'}</p>
       <TestPlanPanel mock={mock} />

@@ -32,6 +32,12 @@ browser. That is the whole product: no install, no server, no account, no intern
   says whether the estimate is really moving: it needs 4+ days over 2+ weeks, calls a trend clear only when it is
   bigger than twice its own noise, and only then projects it to your test date, as a widening range.
 - Diagnostic, timed modules, full-length mock exams with module routing, 30-day study plan and calendar.
+- An exam simulator that follows the test-day workflow: a lock-in screen, directions at the start of each section
+  (reopenable), a "Question X of Y" navigator showing answered, unanswered and flagged questions, mark for review,
+  answer elimination, highlights and notes, a calculator docked beside Math questions instead of covering them, a
+  reference sheet, a hideable timer that stays visible with a one-time alert at 5 minutes left, a review page before
+  submitting, a 10-minute break, and a module-by-module report (set, right, blanks, time and pace per question).
+- Module 2 routing that weighs Module 1 answers by difficulty, checked by a simulation study (below).
 - Lumi the companion: XP, levels, shop, achievements, three daily quests with a chest, answer combos,
   optional sound effects, daily challenge, speed training, battle arena.
 - A soft, calm feel: every press gives a quiet synthesized "pop" (and a tiny vibration on phones), a ripple
@@ -244,6 +250,25 @@ item-development process before the app will serve it (`src/data/questions/rules
 Statistical pretesting, discrimination and differential item functioning analyses need responses from
 thousands of real test takers, so they are outside what an offline study app can do.
 
+## Validating routing and scoring (simulation study)
+
+`tests/simulation.test.ts` sends 300 simulated students per section through Practice Tests A and B, using the
+app's real engine (Module 1, routing, Module 2, scoring). Each student has a known true ability. Their answers come
+from a different model than the one the app scores with: every question gets its own random difficulty shift,
+discrimination and guessing rate. The test fails if routing or scoring gets worse than these limits.
+
+| | Before (raw 60% rule) | Now (difficulty-aware routing) |
+| --- | --- | --- |
+| Strong students (true 650+) sent to the easier Module 2 | 6–17% (17% on Form A Math) | 0–4% |
+| Weak students (true 450 or less) sent to the harder Module 2 | 0% | 0% |
+| Correlation of estimate with true score | 0.95–0.97 | 0.95–0.97 |
+| Typical error (RMSE) per section | 43–49 points | 44–49 points |
+| Share of true scores inside the "80%" range | 90–92% | 90–94% (ranges are cautious) |
+
+This checks internal validity only: that routing sends students the right way and that the estimates and their
+ranges behave as described when the world does not exactly match the model. It cannot show how Stellify's scale
+lines up with real SAT scores; that needs real students' score reports.
+
 ## Checks
 
 ```bash
@@ -257,7 +282,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 17 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
+- `npm run test:e2e` — 18 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 

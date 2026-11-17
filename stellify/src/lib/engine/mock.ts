@@ -2,7 +2,7 @@ import type { Difficulty, MockAttempt, MockModuleResult, Question, ScoreRange, S
 import { SAT_STRUCTURE } from '../taxonomy';
 import { isCorrect } from '../answers';
 import { rng, shuffle } from '../util';
-import { rangeFromResponses, totalRange } from './scoring';
+import { estimateTheta, rangeFromResponses, totalRange } from './scoring';
 import { fullTestOfForm, isFullTestForm, type FullTest } from '../fullTest/registry';
 import { buildSatModule, remixForms } from '../fullTest/assemble';
 import { calibratedScore, levelOf, tableScore } from '../fullTest/score';
@@ -58,13 +58,17 @@ const officialMs = (n: number, section: Section = 'rw') => Math.max(1, Math.roun
 
 /**
  * ROUTING MODEL (Stellify's own; not the College Board's proprietary algorithm).
- * Module 1 of each section is a broad mix of difficulty. If you answer at least 60% of it
- * correctly, Module 2 is the "upper" set (mostly hard and very hard questions); otherwise it is
- * the "lower" set (mostly medium and hard). Scores come from the IRT estimate in scoring.ts over
+ * Module 1 of each section is a broad mix of difficulty. Routing looks at ability estimated from
+ * Module 1 with each question's difficulty taken into account (the same item-response model as
+ * scoring), not at the raw share right: a hard Module 1 must not push a strong student down. If that
+ * ability is at or above ROUTE_THETA (about 570 on the section scale), Module 2 is the "upper" set
+ * (mostly hard and very hard questions); otherwise it is the "lower" set (mostly medium and hard).
+ * The simulation study in simulate.ts checks the result: strong students (650+) are almost never
+ * sent to the easier module, and weak ones (450 or less) almost never to the harder one. Scores come from the IRT estimate in scoring.ts over
  * both modules; the lower route is capped at 650 for the section, mirroring the fact that an
  * easier second module limits the top of the score range on the real test.
  */
-export const ROUTE_THRESHOLD = 0.6;
+export const ROUTE_THETA = 0.7;
 export const LOWER_ROUTE_CAP = 650;
 
 type Kind = 'm1' | 'upper' | 'lower';
@@ -153,8 +157,8 @@ export function startMock(id: string, formId: string, kind: MockAttempt['kind'],
 }
 
 export function routeFor(m1: MockModuleResult, getQ: (id: string) => Question | undefined): 'upper' | 'lower' {
-  const correct = m1.qids.filter((id) => { const q = getQ(id); return q && isCorrect(q, m1.answers[id] ?? null); }).length;
-  return correct / m1.qids.length >= ROUTE_THRESHOLD ? 'upper' : 'lower';
+  const rs = m1.qids.map((id) => getQ(id)).filter((q): q is Question => !!q).map((q) => ({ difficulty: q.difficulty, type: q.type, correct: isCorrect(q, m1.answers[q.id] ?? null) }));
+  return rs.length && estimateTheta(rs).theta >= ROUTE_THETA ? 'upper' : 'lower';
 }
 
 /** Advances to the next stage after a module (or the break) ends. Returns the updated attempt and whether it is finished. */

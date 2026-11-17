@@ -8,6 +8,9 @@ const go = (page: Page, route: string) => page.goto(`${FILE}#${route}`);
 /** A College Board Question Bank export used to test the importer; not part of the repository. */
 const PDF = process.env.CB_PDF ?? '/root/.claude/uploads/1f98cbb6-1f2d-5424-8d97-5669c564791c/3c77d1b8-MyPracticeForLaude.pdf';
 
+// the directions dialog opens at the start of each test section, as on test day; close it whenever it appears
+test.beforeEach(async ({ page }) => { await page.addLocatorHandler(page.getByTestId('close-directions'), async () => { await page.getByTestId('close-directions').click(); }); });
+
 function watch(page: Page) {
   const errors: string[] = [];
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
@@ -147,7 +150,7 @@ test('mock exam: timer, module routing, results report', async ({ page }) => {
   await page.getByTestId('lock-skip').click();
   await expect(page.getByTestId('lock-status')).toContainText('Focus view');
   await expect(page.getByText('Math · Module 2 of 2')).toBeVisible();
-  await page.getByRole('button', { name: 'All questions' }).click();
+  await page.getByTestId('q-nav-toggle').click(); await page.getByRole('button', { name: 'Go to the review page' }).click();
   await page.getByTestId('submit-module').click(); // leaves module 2 blank (confirm dialog accepted)
   await expect(page.getByTestId('mock-results')).toBeVisible();
   await expect(page.getByTestId('mock-results')).toContainText('Module 2: harder set'); // 22/22 in module 1 routes upward
@@ -569,7 +572,7 @@ test('official full practice test: import the three College Board PDFs, take it,
   // submit every module blank: the official table turns raw 0 into 200 + 200
   for (let i = 0; i < 4; i++) {
     if (i === 2) await page.getByTestId('end-break').click();
-    await page.getByRole('button', { name: 'All questions' }).click();
+    await page.getByTestId('q-nav-toggle').click(); await page.getByRole('button', { name: 'Go to the review page' }).click();
     await page.getByTestId('submit-module').click();
   }
   await expect(page.getByTestId('mock-total')).toHaveText('400');
@@ -735,5 +738,49 @@ test('personal copy: highlight an official page image by dragging across its pri
   await page.getByTestId('hl-note-save').click();
   await expect(img.locator('.hl-note-dot')).toHaveCount(1);
   await expect(page.getByTestId('hl-notes')).toContainText('the graph shows 2,600 to 2,800');
+  expect(errors).toEqual([]);
+});
+
+test('exam simulator: directions, question navigator, docked calculator, 5-minute alert, module-by-module report', async ({ page }) => {
+  await page.removeLocatorHandler(page.getByTestId('close-directions'));
+  const errors = watch(page);
+  page.on('dialog', (d) => d.accept());
+  await page.clock.install();
+  await boot(page);
+  await go(page, '/mocks');
+  await page.getByRole('button', { name: /Math · 70 min/ }).first().click();
+  await page.getByTestId('lock-skip').click();
+  await expect(page.getByTestId('directions')).toContainText('22 questions · 35 minutes');
+  await expect(page.getByTestId('directions')).toContainText('type your own answer');
+  await page.getByTestId('close-directions').click();
+  // the navigator shows where you are and jumps anywhere in the module
+  await page.getByTestId('q-nav-toggle').click();
+  await expect(page.getByTestId('q-nav').locator('[aria-current="true"]')).toHaveText('1');
+  await page.getByTestId('q-nav').getByRole('button', { name: /^Question 5,/ }).click();
+  await expect(page.getByTestId('q-nav-toggle')).toContainText('Question 5 of 22');
+  await page.getByRole('button', { name: 'Mark for review' }).click();
+  await page.getByTestId('q-nav-toggle').click();
+  await expect(page.getByTestId('q-nav').getByRole('button', { name: /^Question 5, unanswered, marked for review, current/ })).toBeVisible();
+  await page.getByTestId('q-nav-toggle').click();
+  // the calculator docks beside the question instead of covering it
+  await page.getByTestId('toggle-calc').click();
+  await expect(page.getByTestId('calc-panel')).toBeVisible();
+  await expect(page.getByTestId('mock-question')).toBeVisible();
+  await page.getByTestId('toggle-calc').click();
+  await expect(page.getByTestId('calc-panel')).toHaveCount(0);
+  // directions reopen from the top bar
+  await page.getByTestId('open-directions').click();
+  await page.getByTestId('close-directions').click();
+  // with 5 minutes left an alert appears once
+  await page.clock.fastForward('30:30');
+  await expect(page.getByTestId('five-minutes')).toContainText('5 minutes left in this module');
+  // answer one question, then let time run out on both modules; the report shows each module
+  await page.clock.fastForward('05:00');
+  await expect(page.getByTestId('directions')).toHaveCount(0); // Module 2 starts without the directions
+  await page.clock.fastForward('35:00');
+  await expect(page.getByTestId('module-report')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId('module-report').locator('tbody tr')).toHaveCount(2);
+  await expect(page.getByTestId('module-report')).toContainText('Math 1');
+  await expect(page.getByTestId('module-report')).toContainText(/Easier set|Harder set/);
   expect(errors).toEqual([]);
 });
