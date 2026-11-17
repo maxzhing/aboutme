@@ -27,6 +27,11 @@ browser. That is the whole product: no install, no server, no account, no intern
   spreads from where you touched, buttons spring back, right answers sparkle and wrong ones give a gentle
   shake, and a slow aurora with twinkling stars sits behind every page. Sound can be turned off, and
   "Reduce motion" stills all of it.
+- Highlights & Notes, as on test day: select any words in a passage or question and pick yellow, blue,
+  pink or underline, or attach a note; click a highlight to recolor or remove it. On official questions
+  shown as College Board page images, drag across the printed words: the image's pixels are scanned for
+  its printed lines, so the highlight snaps to them like a text selection. Every timed test attempt starts
+  with a clean slate (and keeps its highlights for the review afterwards); practice highlights are kept.
 - Offline tutor in seven modes, with an optional Gemini free-tier connection (student's own key).
 - Notebook, saved questions, search, progress sharing, data export / import / delete, dark and light themes.
 
@@ -241,7 +246,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 15 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
+- `npm run test:e2e` — 17 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
@@ -253,6 +258,8 @@ npm run test:e2e
 - The AP courses are original study material, not official College Board content, and have not been
   reviewed by an outside AP teacher. The CSA multiple-choice questions are conceptual and are checked
   by review, not by running code. AP® is a trademark registered by the College Board.
+- Text highlighting uses the browser's CSS Custom Highlight API (current Chrome, Edge, Safari and Firefox). In an
+  older browser, text cannot be highlighted; page-image highlighting still works.
 - Storage is the browser's local storage for this file; export a backup to move devices.
 - There is no cloud account or sync in the single-file version.
 - Scores on an imported official practice test come from that test's own College Board table. The Real SAT score

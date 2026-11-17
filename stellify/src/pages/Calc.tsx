@@ -14,6 +14,7 @@ import { useLevel } from '@/lib/hooks';
 import { sfx } from '@/lib/sfx';
 import { dateKey, daysBetween, pct, rng, shuffle } from '@/lib/util';
 import { RichText } from '@/components/RichText';
+import { HighlightText, MarkNotes } from '@/components/Highlight';
 import { Pet } from '@/components/Pet';
 import { Confetti } from '@/components/Confetti';
 import { Badge, Card, Empty, Progress, Ring, cn } from '@/components/ui';
@@ -230,7 +231,8 @@ function Problem({ p, i, hints = true, onDone }: { p: CalcProblem; i: number; hi
   return (
     <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5" data-testid={`calc-problem-${p.id}`}>
       <div className="mb-2 flex items-center gap-2"><span className="grid h-7 w-7 place-items-center rounded-lg bg-ink text-xs font-bold text-bg">{i}</span><Badge tone={p.level === 3 ? 'bad' : p.level === 2 ? 'warn' : 'ok'}>{p.level === 3 ? 'Hard' : p.level === 2 ? 'AP level' : 'Warm-up'}</Badge></div>
-      <div className="text-[16px] leading-relaxed"><RichText text={p.q} /></div>
+      <HighlightText hkey={`ap|${p.id}|q`} className="text-[16px] leading-relaxed"><RichText text={p.q} /></HighlightText>
+      <MarkNotes prefix={`ap|${p.id}|`} />
       {mcq ? (
         <div className="mt-3 grid gap-2">{p.choices!.map((c, k) => { const sel = val === String(k); const right = checked !== null && k === p.answer; const wrong = checked === false && sel; return (
           <button key={k} type="button" disabled={checked !== null} onClick={() => setVal(String(k))} data-choice={'ABCDE'[k]} className={cn('flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors', right ? 'border-ok bg-ok/10' : wrong ? 'border-bad bg-bad/10' : sel ? 'border-brand bg-brand/10 ring-1 ring-brand' : 'border-line hover:border-brand/50')}>

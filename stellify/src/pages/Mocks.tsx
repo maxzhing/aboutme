@@ -12,6 +12,7 @@ import { DOMAIN, DOMAINS, SAT_STRUCTURE, SECTION_NAME, SKILL } from '@/lib/taxon
 import { fmtClock, fmtDuration, pct } from '@/lib/util';
 import type { MockAttempt, Section, SkillId } from '@/lib/types';
 import { Explanation, QuestionMeta, QuestionView } from '@/components/Question';
+import { AnnotateButton } from '@/components/Highlight';
 import { Grapher } from '@/components/Grapher';
 import { RichText } from '@/components/RichText';
 import { TestShell } from '@/components/TestShell';
@@ -138,6 +139,7 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
         <div className="min-w-[11rem] flex-1"><div className="font-display font-bold">{SECTION_NAME[mod.section]} · Module {mod.module} of {stagesFor(mock.kind).filter((st) => st !== 'break' && stageSection(st) === mod.section).length}</div><div className="text-xs text-muted">Question {idx + 1} of {mod.qids.length} · {answered} answered</div></div>
         <button onClick={() => setSettings({ showTimer: !showTimer })} className={cn('chip !py-1.5 font-mono text-sm', ms < 5 * 60_000 && 'border-bad text-bad')} aria-label="Time remaining (click to hide or show)"><Clock size={14} />{showTimer || ms < 5 * 60_000 ? fmtClock(ms) : 'Hidden'}</button>
         {mod.section === 'math' && <><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('calc')}><Calculator size={15} />Graphing</button><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('ref')}>Reference</button></>}
+        <AnnotateButton />
         <button className="btn-ghost !px-2.5 !py-1.5" onClick={() => { flush(); router.push('/mocks'); }}>Save &amp; exit</button>
       </header>
       {review ? (
@@ -152,7 +154,7 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
       ) : (
         <Card className="space-y-4" data-testid="mock-question" data-qid={q.id}>
           <div className="flex items-center justify-between gap-2"><span className="text-xs text-faint">{mod.section === 'math' ? 'Math' : DOMAIN[q.domain].name}</span><button className={cn('btn-quiet !py-1', mod.flagged.includes(q.id) && 'text-warn')} aria-pressed={mod.flagged.includes(q.id)} onClick={() => update({ flag: q.id })}><Flag size={15} />Mark for review</button></div>
-          <QuestionView q={q} number={idx + 1} answer={mod.answers[q.id] ?? null} onAnswer={(v) => update({ answer: [q.id, v] })} eliminated={elim[q.id]} onEliminate={(i) => setElim((e) => ({ ...e, [q.id]: (e[q.id] ?? []).includes(i) ? e[q.id].filter((x) => x !== i) : [...(e[q.id] ?? []), i] }))} />
+          <QuestionView q={q} number={idx + 1} hlScope={mock.id} answer={mod.answers[q.id] ?? null} onAnswer={(v) => update({ answer: [q.id, v] })} eliminated={elim[q.id]} onEliminate={(i) => setElim((e) => ({ ...e, [q.id]: (e[q.id] ?? []).includes(i) ? e[q.id].filter((x) => x !== i) : [...(e[q.id] ?? []), i] }))} />
           <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4">
             <button className="btn-ghost" disabled={idx === 0} onClick={() => go(idx - 1)}>Back</button>
             {idx < mod.qids.length - 1 ? <button className="btn-primary" onClick={() => go(idx + 1)} data-testid="mock-next">Next</button> : <button className="btn-primary" onClick={() => { flush(); setReview(true); }} data-testid="mock-review">Review &amp; submit</button>}
@@ -250,7 +252,7 @@ export function MockResultsPage() {
                 <span className="min-w-0 flex-1 truncate text-sm">{SECTION_NAME[r.section]} M{r.module} · {SKILL[q.skill].short}</span>{isCalibratedForm(mock.formId) && <Badge tone={q.official ? 'gold' : 'default'}>{q.official ? 'Official' : 'Stellify'}</Badge>}
                 <span className="text-xs text-faint">{fmtDuration(r.ms)}</span><span className="text-xs font-semibold text-brand2">{open === r.qid ? 'Hide' : 'Explain'}</span>
               </button>
-              {open === r.qid && <div className="space-y-4 pb-4"><QuestionMeta q={q} /><QuestionView q={q} answer={r.answer} onAnswer={() => {}} locked reveal /><Explanation q={q} answer={r.answer} category={mistakes[q.id]?.category} onCategory={(c) => setCat(q.id, c)} /></div>}
+              {open === r.qid && <div className="space-y-4 pb-4"><QuestionMeta q={q} /><QuestionView q={q} answer={r.answer} onAnswer={() => {}} locked reveal hlScope={mock.id} /><Explanation q={q} answer={r.answer} category={mistakes[q.id]?.category} onCategory={(c) => setCat(q.id, c)} /></div>}
             </li>
           ); })}
         </ul>

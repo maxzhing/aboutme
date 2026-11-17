@@ -617,3 +617,115 @@ test('personal copy: all seven official practice tests, original remix tests and
   await expect(page.getByTestId('official-rationale')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+/** Drags the mouse across a phrase inside a highlightable block, the way a student selects words. */
+async function selectWords(page: Page, block: string, phrase: string) {
+  const box = await page.evaluate(([sel, ph]) => {
+    const host = document.querySelector(sel)!;
+    const w = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) {
+      const i = n.textContent!.indexOf(ph);
+      if (i < 0) continue;
+      const r = document.createRange(); r.setStart(n, i); r.setEnd(n, i + ph.length);
+      const rs = [...r.getClientRects()];
+      return { a: [rs[0].left + 1, rs[0].top + rs[0].height / 2], b: [rs[rs.length - 1].right - 1, rs[rs.length - 1].top + rs[rs.length - 1].height / 2] };
+    }
+    return null;
+  }, [block, phrase] as const);
+  expect(box, phrase).not.toBeNull();
+  await page.mouse.move(box!.a[0], box!.a[1]);
+  await page.mouse.down();
+  await page.mouse.move(box!.b[0], box!.b[1], { steps: 8 });
+  await page.mouse.up();
+  return box!;
+}
+/** waits until the app's saved data (IndexedDB) contains this text, so a reload cannot race the write */
+const stored = (page: Page, text: string) => expect.poll(() => page.evaluate(() => new Promise<string>((done) => {
+  const open = indexedDB.open('keyval-store');
+  open.onerror = () => done('');
+  open.onsuccess = () => { const get = open.result.transaction('keyval', 'readonly').objectStore('keyval').get('stellify-state-v1'); get.onsuccess = () => done(String(get.result ?? '')); get.onerror = () => done(''); };
+}))).toContain(text);
+const painted = (page: Page) => page.evaluate(() => Object.fromEntries(['yellow', 'blue', 'pink', 'underline', 'note'].map((c) => [c, [...(CSS.highlights.get(`hl-${c}`) ?? [])].map((r) => (r as Range).toString())])));
+
+test('highlights and notes: select words, pick a color, add a note, keep them, remove them; tests start clean', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
+  await expect(page.getByTestId('hl-tip')).toBeVisible();
+  const PASSAGE = '[data-hl$="|passage"]';
+  await selectWords(page, PASSAGE, 'Honeybees have brains');
+  await page.getByTestId('hl-yellow').click();
+  await selectWords(page, PASSAGE, 'trained the bees');
+  await page.getByTestId('hl-underline').click();
+  await expect.poll(() => painted(page)).toMatchObject({ yellow: ['Honeybees have brains'], underline: ['trained the bees'] });
+  await expect(page.getByTestId('hl-tip')).toHaveCount(0);
+  // a click on a highlight opens it: recolor it and attach a note
+  const at = await selectWords(page, PASSAGE, 'brains');
+  await page.mouse.click(at.a[0] + 4, at.a[1]); // a plain click (no drag) on the highlighted word
+  await expect(page.getByTestId('hl-yellow')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByTestId('hl-pink').click();
+  await page.mouse.click(at.a[0] + 4, at.a[1]);
+  await page.getByTestId('hl-note').click();
+  await page.getByTestId('hl-note-text').fill('Contrast: a tiny brain, yet it learns faces');
+  await page.getByTestId('hl-note-save').click();
+  await expect(page.getByTestId('hl-notes')).toContainText('Contrast: a tiny brain, yet it learns faces');
+  await expect(page.getByTestId('hl-summary')).toContainText('2 highlights · 1 note');
+  // saved on this device
+  await stored(page, 'Contrast: a tiny brain, yet it learns faces');
+  await page.reload();
+  await expect.poll(() => painted(page)).toMatchObject({ pink: ['Honeybees have brains'], underline: ['trained the bees'], note: ['Honeybees have brains'] });
+  // remove one, clear the rest
+  await page.mouse.click(at.a[0] + 4, at.a[1]);
+  await page.getByTestId('hl-remove').click();
+  await expect.poll(() => painted(page)).toMatchObject({ pink: [], underline: ['trained the bees'] });
+  await page.getByTestId('hl-clear').click();
+  await expect.poll(() => painted(page)).toMatchObject({ underline: [] });
+  // a timed test has its own clean slate, and the header's Highlights & Notes button works like Bluebook's
+  await go(page, '/mocks');
+  await page.getByRole('button', { name: /R&W · 64 min/ }).first().click();
+  await page.getByTestId('lock-skip').click();
+  const block = '[data-testid="mock-question"] [data-hl$="|passage"], [data-testid="mock-question"] [data-hl$="|stem"]';
+  await page.getByTestId('hl-annotate').click();
+  await expect(page.getByTestId('hl-hint')).toContainText('Select words in the question first');
+  expect((await painted(page)).yellow).toEqual([]);
+  const words = await page.evaluate((sel) => document.querySelector(sel)!.textContent!.trim().split(/\s+/).slice(0, 3).join(' '), block);
+  await selectWords(page, block, words);
+  await page.getByTestId('hl-annotate').click();
+  await page.getByTestId('hl-note-text').fill('main claim');
+  await page.getByTestId('hl-note-save').click();
+  await expect.poll(() => painted(page)).toMatchObject({ yellow: [words], note: [words] });
+  expect(errors).toEqual([]);
+});
+
+test('personal copy: highlight an official page image by dragging across its printed lines', async ({ page }) => {
+  const personal = resolve(__dirname, '../private/stellify-personal.html');
+  test.skip(!require('node:fs').existsSync(personal), 'needs the private personal build');
+  const errors = watch(page);
+  const P = `file://${personal}`;
+  await page.goto(`${P}#/onboarding`);
+  await page.getByRole('button', { name: 'Skip setup' }).click();
+  await page.goto(`${P}#/mocks`);
+  await page.getByTestId('start-fulltest-pt4').click();
+  await page.getByTestId('lock-skip').click();
+  for (let i = 0; i < 12; i++) await page.getByTestId('mock-next').click();
+  await expect(page.getByTestId('mock-question')).toHaveAttribute('data-qid', 'pt4-rw1-13'); // a graph question, printed as an image
+  const img = page.getByTestId('hl-image');
+  await expect.poll(async () => Number(await img.getAttribute('data-lines'))).toBeGreaterThan(15); // printed lines found in the pixels
+  await img.scrollIntoViewIfNeeded();
+  const b = (await img.boundingBox())!;
+  await page.mouse.move(b.x + 0.45 * b.width, b.y + 0.565 * b.height);
+  await page.mouse.down();
+  await page.mouse.move(b.x + 0.5 * b.width, b.y + 0.61 * b.height, { steps: 8 });
+  await page.mouse.up();
+  await page.getByTestId('hl-blue').click();
+  await expect(img.locator('.hl-box-blue')).toHaveCount(3); // the rest of one line, the next line, and part of the third, like a text selection
+  const first = (await img.locator('.hl-box-blue').first().boundingBox())!;
+  await page.mouse.click(first.x + first.width / 2, first.y + first.height / 2);
+  await expect(page.getByTestId('hl-remove')).toBeVisible();
+  await page.getByTestId('hl-note').click();
+  await page.getByTestId('hl-note-text').fill('the graph shows 2,600 to 2,800');
+  await page.getByTestId('hl-note-save').click();
+  await expect(img.locator('.hl-note-dot')).toHaveCount(1);
+  await expect(page.getByTestId('hl-notes')).toContainText('the graph shows 2,600 to 2,800');
+  expect(errors).toEqual([]);
+});

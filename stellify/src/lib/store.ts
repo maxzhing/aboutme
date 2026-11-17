@@ -4,6 +4,7 @@ import { CHEST, dailyQuests } from './engine/quests';
 import { passed } from './course';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 import { del, get, set } from 'idb-keyval';
+import type { Mark } from './highlight';
 import type { AppState, ErrorCategory, MockAttempt, Note, PetSlot, Profile, Question, QuestionReport, Settings, TutorMessage } from './types';
 import { initialState, STATE_VERSION } from './state';
 import { getQuestion, OFFICIAL, QUESTIONS } from '@/data/questions';
@@ -84,6 +85,10 @@ interface Actions {
   importState: (s: AppState) => void;
   resetAll: () => void;
   markLevelSeen: (level: number) => void;
+  /** replaces the highlights of one block of question text (or one page image) */
+  setMarks: (key: string, marks: Mark[]) => void;
+  /** clears every highlight whose key starts with this prefix */
+  clearMarks: (prefix: string) => void;
 }
 
 export type Store = AppState & Actions;
@@ -337,6 +342,15 @@ export const useStore = create<Store>()(
         importState: (s) => setState({ ...initialState(), ...s, version: STATE_VERSION }),
         resetAll: () => setState({ ...initialState(), events: [] }),
         markLevelSeen: (level) => setState({ seenLevel: level }),
+        setMarks: (key, marks) => {
+          const all = { ...(getState().highlights ?? {}) };
+          if (marks.length) all[key] = { at: Date.now(), marks }; else delete all[key];
+          // keep the most recent 600 blocks so storage stays small
+          const keys = Object.keys(all);
+          if (keys.length > 600) for (const k of keys.sort((a, b) => all[a].at - all[b].at).slice(0, keys.length - 600)) delete all[k];
+          setState({ highlights: all });
+        },
+        clearMarks: (prefix) => setState({ highlights: Object.fromEntries(Object.entries(getState().highlights ?? {}).filter(([k]) => !k.startsWith(prefix))) }),
       };
     },
     {

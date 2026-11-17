@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Check, CircleSlash, Lightbulb, X } from 'lucide-react';
+import { Check, CircleSlash, Highlighter, Lightbulb, X } from 'lucide-react';
 import type { ErrorCategory, Question } from '@/lib/types';
 import { DIFFICULTY_NAME, DOMAIN, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { LETTERS, correctAnswerLabel, displayAnswer, isCorrect } from '@/lib/answers';
@@ -15,6 +15,7 @@ import { useStore } from '@/lib/store';
 import { chapterFor } from '@/data/courses';
 import { simpleExplanation } from '@/lib/plain';
 import { Sparkles } from './Feel';
+import { canHighlightText, HighlightImage, HighlightText, MarkNotes, useHasHighlighted } from './Highlight';
 import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
 
 export function QuestionMeta({ q }: { q: Question }) {
@@ -31,18 +32,22 @@ export function QuestionMeta({ q }: { q: Question }) {
 }
 
 /** The question itself: passage or notes, figure, stem, and choices or a student-produced response field. */
-export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, onEliminate, number }: {
+export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, onEliminate, number, hlScope = 'practice' }: {
   q: Question; answer: string | null; onAnswer: (v: string) => void; locked?: boolean; reveal?: boolean;
   eliminated?: number[]; onEliminate?: (i: number) => void; number?: number;
+  /** whose highlights these are: each test attempt passes its own id, so a new attempt starts clean */
+  hlScope?: string;
 }) {
+  const hk = (part: string) => `${hlScope}|${q.id}|${part}`;
+  const tipped = useHasHighlighted();
   const stimulus = q.passage || q.notes || q.figure;
   const twoCol = q.section === 'rw' && !!stimulus;
   const stim = (
     <div className="space-y-3">
       {q.figure && <Figure figure={q.figure} />}
-      {q.passage && <RichText block text={q.passage} className="passage whitespace-pre-line" />}
+      {q.passage && <HighlightText hkey={hk('passage')}><RichText block text={q.passage} className="passage whitespace-pre-line" /></HighlightText>}
       {q.notes && (
-        <ul className="passage list-disc space-y-1.5 pl-5">{q.notes.map((n, i) => <li key={i}><RichText text={n} /></li>)}</ul>
+        <HighlightText hkey={hk('notes')}><ul className="passage list-disc space-y-1.5 pl-5">{q.notes.map((n, i) => <li key={i}><RichText text={n} /></li>)}</ul></HighlightText>
       )}
     </div>
   );
@@ -51,10 +56,10 @@ export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, 
       {!twoCol && stimulus && <div className="mb-4">{stim}</div>}
       {q.image ? (
         <figure className="mb-1" id={`stem-${q.id}`}>
-          <div className="overflow-hidden rounded-2xl border border-line bg-white p-2 shadow-card sm:p-3">{number !== undefined && <span className="mb-1 inline-grid h-6 min-w-6 place-items-center rounded-md bg-[#141830] px-1 text-xs font-bold text-white">{number}</span>}<img src={q.image} alt="Official College Board question, shown exactly as printed" className="mx-auto block h-auto w-auto max-w-full" /></div>
-          <figcaption className="mt-1.5 text-xs text-faint">Shown exactly as College Board printed it.{q.type === 'mcq' ? ' Pick the letter of your answer below.' : ' Type your answer below.'}</figcaption>
+          <div className="overflow-hidden rounded-2xl border border-line bg-white p-2 shadow-card sm:p-3">{number !== undefined && <span className="mb-1 inline-grid h-6 min-w-6 place-items-center rounded-md bg-[#141830] px-1 text-xs font-bold text-white">{number}</span>}<HighlightImage hkey={hk('image')} src={q.image} alt="Official College Board question, shown exactly as printed" /></div>
+          <figcaption className="mt-1.5 text-xs text-faint">Shown exactly as College Board printed it.{q.type === 'mcq' ? ' Pick the letter of your answer below.' : ' Type your answer below.'} Drag across the printed words to highlight them.</figcaption>
         </figure>
-      ) : <div className="prose-q font-medium" id={`stem-${q.id}`}>{number !== undefined && <span className="mr-2 inline-grid h-6 min-w-6 place-items-center rounded-md bg-ink px-1 text-xs font-bold text-bg">{number}</span>}<RichText block={q.stem.includes('$$')} text={q.stem} /></div>}
+      ) : <div className="prose-q font-medium" id={`stem-${q.id}`}>{number !== undefined && <span className="mr-2 inline-grid h-6 min-w-6 place-items-center rounded-md bg-ink px-1 text-xs font-bold text-bg">{number}</span>}<HighlightText hkey={hk('stem')} inline={!q.stem.includes('$$')}><RichText block={q.stem.includes('$$')} text={q.stem} /></HighlightText></div>}
       {q.type === 'mcq' ? (
         <div role="radiogroup" aria-labelledby={`stem-${q.id}`} className="mt-4 space-y-2">
           {q.choices!.map((c, i) => {
@@ -88,6 +93,8 @@ export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, 
           <p className="mt-1.5 text-xs text-faint">Enter a number, decimal or fraction. If a decimal does not fit, round or truncate at the fourth digit.</p>
         </div>
       )}
+      {!tipped && !q.image && canHighlightText() && <p className="mt-3 flex items-center gap-1.5 text-xs text-faint" data-testid="hl-tip"><Highlighter size={13} className="text-brand2" />Tip: select any words in the question to highlight them or add a note, just like on test day.</p>}
+      <MarkNotes prefix={`${hlScope}|${q.id}|`} />
     </div>
   );
   if (!twoCol) return body;

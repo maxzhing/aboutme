@@ -28,4 +28,5 @@ export const initialState = (): AppState => ({
   tutor: [],
   settings: { theme: 'dark', reducedMotion: false, showTimer: true, aiEnabled: true, aiConsent: false, shareIncludeMistakes: false, challenge: 'high', sound: true },
   seenLevel: 1,
+  highlights: {},
 });

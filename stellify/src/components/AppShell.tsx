@@ -13,6 +13,7 @@ import { Pet } from './Pet';
 import { Toasts } from './Toasts';
 import { SearchModal } from './SearchBox';
 import { Backdrop, SoftFeel } from './Feel';
+import { HighlightToolbar } from './Highlight';
 import { cn } from './ui';
 
 export function Logo({ size = 30 }: { size?: number }) {
@@ -108,6 +109,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <MotionConfig reducedMotion={reduced ? 'always' : 'user'}>
       <Backdrop />
       <SoftFeel />
+      <HighlightToolbar />
       <div className="min-h-screen lg:flex">
         {!focus && (
           <aside className="no-print glass sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col !border-y-0 !border-l-0 lg:flex">

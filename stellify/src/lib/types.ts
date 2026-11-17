@@ -1,3 +1,4 @@
+import type { Mark } from './highlight';
 /**
  * Core domain types. These mirror the Postgres schema in supabase/schema.sql so the
  * local-first store and the optional cloud database stay structurally identical.
@@ -314,4 +315,6 @@ export interface AppState {
   tutor: TutorThread[];
   settings: Settings;
   seenLevel: number;
+  /** highlights and their notes, by `scope|questionId|part` (each test attempt has its own scope, like a fresh Bluebook session) */
+  highlights?: Record<string, { at: number; marks: Mark[] }>;
 }
