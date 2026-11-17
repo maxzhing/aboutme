@@ -90,7 +90,7 @@ function DiagnosticResults() {
     const diag = attempts.filter((a) => a.mode === 'diagnostic');
     const lastSession = diag[diag.length - 1]?.sessionId;
     const rows = diag.filter((a) => a.sessionId === lastSession).map((a) => ({ a, q: getQuestion(a.qid)! })).filter((r) => r.q);
-    const sec = (s: Section) => { const x = rows.filter((r) => r.q.section === s); return { n: x.length, c: x.filter((r) => r.a.correct).length, ms: x.reduce((t, r) => t + r.a.ms, 0), target: x.reduce((t, r) => t + r.q.time * 1000, 0), range: rangeFromResponses(x.map((r) => ({ difficulty: r.q.difficulty, type: r.q.type, correct: r.a.correct }))) }; };
+    const sec = (s: Section) => { const x = rows.filter((r) => r.q.section === s); return { n: x.length, c: x.filter((r) => r.a.correct).length, ms: x.reduce((t, r) => t + r.a.ms, 0), target: x.reduce((t, r) => t + r.q.time * 1000, 0), range: rangeFromResponses(x.map((r) => ({ difficulty: r.q.difficulty, type: r.q.type, correct: r.a.correct && r.a.hints === 0 })), 800, 10) }; }; // a deliberate starting point, shown below the usual 20-answer minimum and labelled low confidence
     return { rows, math: sec('math'), rw: sec('rw') };
   }, [attempts]);
   if (!data.rows.length) return null;
@@ -108,7 +108,7 @@ function DiagnosticResults() {
           {([['Reading & Writing', rw], ['Math', math]] as const).map(([label, s]) => (
             <div key={label} className="rounded-xl border border-line p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{label}</div><div className="mt-1 font-display text-2xl font-bold">{s.c}/{s.n}</div><div className="text-sm text-muted">Estimated {fmtRange(s.range)}</div><div className="mt-1 text-xs text-faint">{fmtDuration(s.ms)} used</div></div>
           ))}
-          <div className="rounded-xl border border-brand/40 bg-brand/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Estimated total range</div><div className="mt-1 font-display text-2xl font-bold">{fmtRange(total)}</div><div className="text-xs text-muted">Unofficial</div></div>
+          <div className="rounded-xl border border-brand/40 bg-brand/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Rough starting range · low confidence</div><div className="mt-1 font-display text-2xl font-bold">{fmtRange(total)}</div><div className="text-xs text-muted">Unofficial</div></div>
         </div>
       </Card>
       <div className="grid gap-4 md:grid-cols-2">

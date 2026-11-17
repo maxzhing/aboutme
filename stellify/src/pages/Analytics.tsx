@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { Copy, Download, Printer, TrendingDown, TrendingUp } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, Bar, BarChart, CartesianGrid, ComposedChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { getQuestion } from '@/data/questions';
 import { snapshot, useStore } from '@/lib/store';
 import { useOverview, useSkillStats, useStreak } from '@/lib/hooks';
-import { accuracyBlocks, dailySeries, scoreTrend, weekMinutes } from '@/lib/engine/analytics';
+import { accuracyBlocks, dailySeries, scoreTrend, sessionHistory, weekMinutes } from '@/lib/engine/analytics';
+import { EstimatePanel } from '@/components/Estimate';
 import { weeklyReport } from '@/lib/engine/report';
-import { fmtRange } from '@/lib/engine/scoring';
+import { CONFIDENCE_NAME, fmtRange } from '@/lib/engine/scoring';
 import { MASTERY_LEVELS } from '@/lib/engine/mastery';
 import { DIFFICULTIES, DIFFICULTY_NAME, DOMAINS, SECTION_NAME, SKILL, SKILLS } from '@/lib/taxonomy';
 import { fmtDuration, pct } from '@/lib/util';
@@ -26,6 +27,10 @@ export function AnalyticsPage() {
   const days = useMemo(() => dailySeries(snap, 14), [snap]);
   const blocks = useMemo(() => accuracyBlocks(snap, 20), [snap]);
   const trend = useMemo(() => scoreTrend(snap, getQuestion), [snap]);
+  const sessions = useMemo(() => sessionHistory(snap, getQuestion), [snap]);
+  const [series, setSeries] = useState<'total' | 'rw' | 'math'>('total');
+  const trendData = trend.filter((t) => t[series]).map((t) => ({ label: t.label, band: [t[series]!.low, t[series]!.high] as [number, number], mid: t[series]!.mid, confidence: t.confidence }));
+  const [lo, hi] = series === 'total' ? [400, 1600] : [200, 800];
   if (!ov.total) return <div><PageHeader eyebrow="Performance" title="Analytics" /><Empty title="No data yet" body="Analytics are built only from questions you actually answer. Take the diagnostic or a practice set to begin." action={{ label: 'Start Smart Practice', href: '/practice/smart' }} /></div>;
   const domainData = DOMAINS.map((d) => ({ name: d.name.replace('Problem-Solving and Data Analysis', 'Data Analysis').replace('Standard English Conventions', 'English Conventions').replace('Geometry and Trigonometry', 'Geometry & Trig'), accuracy: ov.byDomain[d.id].pct, n: ov.byDomain[d.id].n }));
   const rows = SKILLS.map((k) => stats[k.id]).sort((a, b) => (sort === 'order' ? 0 : sort === 'weak' ? (a.n === 0 ? 1 : b.n === 0 ? -1 : a.score - b.score) : b.score - a.score));
@@ -34,20 +39,24 @@ export function AnalyticsPage() {
     <div className="space-y-5">
       <PageHeader eyebrow="Performance" title="Analytics" subtitle="Everything here is computed from your own recorded attempts. Nothing is simulated." actions={<Link href="/report" className="btn-ghost">Weekly report</Link>} />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Stat label="Estimated total" value={fmtRange(ov.estimate.total)} sub="unofficial range" />
-        <Stat label="Reading & Writing" value={fmtRange(ov.estimate.rw)} sub={`${ov.bySection.rw.pct}% of ${ov.bySection.rw.n}`} />
-        <Stat label="Math" value={fmtRange(ov.estimate.math)} sub={`${ov.bySection.math.pct}% of ${ov.bySection.math.n}`} />
+        <Stat label="Reading & Writing accuracy" value={ov.bySection.rw.n ? `${ov.bySection.rw.pct}%` : '—'} sub={`${ov.bySection.rw.correct}/${ov.bySection.rw.n} answers`} />
+        <Stat label="Math accuracy" value={ov.bySection.math.n ? `${ov.bySection.math.pct}%` : '—'} sub={`${ov.bySection.math.correct}/${ov.bySection.math.n} answers`} />
         <Stat label="Overall accuracy" value={`${ov.all.pct}%`} sub={`${ov.total} questions · ${ov.unique} unique`} />
         <Stat label="Study time (7 days)" value={`${weekMinutes(snap)} min`} sub={`streak ${streak.current} · best ${streak.best}`} />
         <Stat label="Hint usage" value={`${Math.round(ov.hintRate * 100)}%`} sub="of questions" />
         <Stat label="Abandoned" value={ov.abandoned} sub="left unanswered" />
         <Stat label="Open mistakes" value={Object.values(s.mistakes).filter((m) => m.status === 'unresolved').length} sub={<Link href="/mistakes" className="text-brand2 hover:underline">Open bucket</Link>} />
       </div>
-      <p className="text-xs text-faint">Score ranges use Stellify&apos;s own item-response estimate (see Settings → About the estimate). They are not College Board scores and need at least 8 answered questions per section.</p>
+      <EstimatePanel />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Card><h2 className="text-sm font-semibold">Study time, last 14 days (minutes)</h2><div className="mt-2 h-52"><ResponsiveContainer><BarChart data={days}><CartesianGrid stroke="rgb(var(--line))" vertical={false} /><XAxis dataKey="label" {...axis} interval={1} /><YAxis {...axis} width={30} /><Tooltip {...chartTip} formatter={(v, n) => [n === 'minutes' ? `${v} min` : v, n === 'minutes' ? 'Studied' : 'Questions']} /><Bar dataKey="minutes" fill="rgb(var(--brand2))" radius={[5, 5, 0, 0]} /></BarChart></ResponsiveContainer></div></Card>
-        <Card><h2 className="text-sm font-semibold">Estimated total score over time</h2>{trend.length >= 2 ? <div className="mt-2 h-52"><ResponsiveContainer><AreaChart data={trend}><CartesianGrid stroke="rgb(var(--line))" vertical={false} /><XAxis dataKey="label" {...axis} /><YAxis domain={[(min: number) => Math.max(400, Math.floor(min / 50) * 50 - 50), (max: number) => Math.min(1600, Math.ceil(max / 50) * 50 + 50)]} {...axis} width={40} /><Tooltip {...chartTip} formatter={(v, n) => [v, n === 'mid' ? 'Estimate' : n === 'high' ? 'High' : 'Low']} /><Area type="monotone" dataKey="high" stroke="none" fill="rgb(var(--brand))" fillOpacity={0.15} /><Area type="monotone" dataKey="low" stroke="none" fill="rgb(var(--bg))" fillOpacity={1} /><Line type="monotone" dataKey="mid" stroke="rgb(var(--brand))" strokeWidth={2.5} dot={{ r: 3 }} /></AreaChart></ResponsiveContainer></div> : <p className="mt-6 text-sm text-muted">Appears after you have studied both sections on at least two different days.</p>}</Card>
+        <Card data-testid="estimate-trend">
+          <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-sm font-semibold">Estimate over time (80% range)</h2><Tabs label="Which estimate" tabs={[{ id: 'total', label: 'Total' }, { id: 'rw', label: 'R&W' }, { id: 'math', label: 'Math' }]} value={series} onChange={setSeries} /></div>
+          {trendData.length >= 2 ? <div className="mt-2 h-52"><ResponsiveContainer><ComposedChart data={trendData}><CartesianGrid stroke="rgb(var(--line))" vertical={false} /><XAxis dataKey="label" {...axis} /><YAxis domain={[(min: number) => Math.max(lo, Math.floor(min / 50) * 50 - 50), (max: number) => Math.min(hi, Math.ceil(max / 50) * 50 + 50)]} {...axis} width={40} /><Tooltip {...chartTip} formatter={(v, n) => (n === 'band' ? [`${(v as number[])[0]}–${(v as number[])[1]}`, '80% range'] : [v, 'Most likely'])} /><Area type="monotone" dataKey="band" stroke="none" fill="rgb(var(--brand))" fillOpacity={0.18} isAnimationActive={false} /><Line type="monotone" dataKey="mid" stroke="rgb(var(--brand))" strokeWidth={2.5} dot={{ r: 3 }} /></ComposedChart></ResponsiveContainer></div>
+            : <p className="mt-6 text-sm text-muted">Appears once {series === 'total' ? 'both sections have' : 'this section has'} enough data on at least two different days.</p>}
+          {trendData.length >= 2 && <p className="mt-1 text-xs text-faint">Shaded: the 80% range on each study day; it narrows as evidence builds. {trendData[trendData.length - 1].confidence ? `Latest: ${CONFIDENCE_NAME[trendData[trendData.length - 1].confidence!].toLowerCase()}.` : ''} Overlapping ranges mean a change is not yet clear.</p>}
+        </Card>
         <Card><h2 className="text-sm font-semibold">Accuracy by domain</h2><div className="mt-2 h-64"><ResponsiveContainer><BarChart data={domainData} layout="vertical" margin={{ left: 10 }}><CartesianGrid stroke="rgb(var(--line))" horizontal={false} /><XAxis type="number" domain={[0, 100]} {...axis} /><YAxis type="category" dataKey="name" {...axis} width={128} /><Tooltip {...chartTip} formatter={(v, _n, p) => [`${v}% of ${(p.payload as { n: number }).n}`, 'Accuracy']} /><Bar dataKey="accuracy" fill="rgb(var(--brand))" radius={[0, 5, 5, 0]} /></BarChart></ResponsiveContainer></div></Card>
         <Card><h2 className="text-sm font-semibold">Improvement over time (accuracy per 20 questions)</h2>{blocks.length >= 2 ? <div className="mt-2 h-64"><ResponsiveContainer><LineChart data={blocks}><CartesianGrid stroke="rgb(var(--line))" vertical={false} /><XAxis dataKey="label" {...axis} /><YAxis domain={[0, 100]} {...axis} width={30} /><Tooltip {...chartTip} formatter={(v) => [`${v}%`, 'Accuracy']} labelFormatter={(l) => `Questions ${l}`} /><Line type="monotone" dataKey="accuracy" stroke="rgb(var(--ok))" strokeWidth={2.5} dot={{ r: 3 }} /></LineChart></ResponsiveContainer></div> : <p className="mt-6 text-sm text-muted">Appears after 40 questions.</p>}</Card>
       </div>
@@ -56,6 +65,16 @@ export function AnalyticsPage() {
         <Card><h2 className="text-sm font-semibold">Accuracy by difficulty</h2><ul className="mt-3 space-y-3">{DIFFICULTIES.map((d) => { const x = ov.byDifficulty[d]; return <li key={d}><div className="mb-1 flex justify-between text-sm"><span>{DIFFICULTY_NAME[d]}</span><span className="text-muted">{x.n ? `${x.correct}/${x.n} · ${x.pct}%` : 'no attempts'}</span></div><Progress value={x.pct} tone={toneForPct(x.pct)} label={DIFFICULTY_NAME[d]} /></li>; })}</ul></Card>
         <Card><h2 className="text-sm font-semibold">Time per question</h2><ul className="mt-3 space-y-3 text-sm">{(['rw', 'math'] as const).map((sec) => { const t = ov.time[sec]; return <li key={sec}><div className="flex justify-between"><span>{SECTION_NAME[sec]}</span><span className="text-muted">{pace(sec)}</span></div>{t.avg > 0 && <><Progress value={Math.min(100, t.ratio * 66)} tone={t.ratio > 1.25 ? 'warn' : 'ok'} className="mt-1" label={`${SECTION_NAME[sec]} pace`} /><p className="mt-1 text-xs text-muted">{t.ratio > 1.25 ? 'Slower than the target pace. Add timed modules once accuracy is solid.' : t.ratio < 0.5 ? 'Much faster than target. If accuracy is low here, slow down.' : 'Within a healthy range of the target pace.'}</p></>}</li>; })}</ul></Card>
       </div>
+
+      <Card data-testid="session-history">
+        <h2 className="font-semibold">Recent sessions, adjusted for difficulty</h2>
+        <p className="mt-0.5 text-xs text-muted">“Expected” is how many a student at your current estimate would get right on those exact questions, so a hard set and an easy set can be compared fairly.</p>
+        {sessions.length ? <div className="mt-2 overflow-x-auto"><table className="w-full min-w-[480px] text-sm"><thead><tr className="text-left text-xs uppercase tracking-wide text-faint"><th className="pb-1.5 font-semibold">When</th><th className="pb-1.5 font-semibold">Type</th><th className="pb-1.5 font-semibold">Right</th><th className="pb-1.5 font-semibold">Expected</th><th className="pb-1.5 font-semibold">Versus expected</th></tr></thead><tbody className="divide-y divide-line">
+          {sessions.map((r) => { const d = r.expected === null ? null : Math.round((r.correct - r.expected) * 10) / 10; return (
+            <tr key={r.id}><td className="py-1.5 pr-3">{new Date(r.at).toLocaleDateString()}</td><td className="py-1.5 pr-3 capitalize text-muted">{r.mode.replace(/-/g, ' ')}</td><td className="py-1.5 pr-3 tabular-nums">{r.correct}/{r.n}</td><td className="py-1.5 pr-3 tabular-nums text-muted">{r.expected ?? '—'}</td><td className="py-1.5 tabular-nums">{d === null ? <span className="text-faint">needs an estimate first</span> : <span className={d >= 0 ? 'text-ok' : 'text-bad'}>{d >= 0 ? '+' : ''}{d}</span>}</td></tr>
+          ); })}
+        </tbody></table></div> : <p className="mt-2 text-sm text-muted">No sessions yet.</p>}
+      </Card>
 
       <Card>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="font-semibold">Every skill</h2><Tabs label="Sort skills" tabs={[{ id: 'weak', label: 'Weakest first' }, { id: 'strong', label: 'Strongest first' }, { id: 'order', label: 'Curriculum order' }]} value={sort} onChange={setSort} /></div>

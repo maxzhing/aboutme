@@ -6,7 +6,7 @@ import { isCorrect, sprMatches } from '@/lib/answers';
 import { initialState } from '@/lib/state';
 import { applyAttempt, resolveMistake } from '@/lib/engine/attempt';
 import { computeSkillStats } from '@/lib/engine/mastery';
-import { rangeFromResponses, sectionEstimate } from '@/lib/engine/scoring';
+import { confidenceOf, MIN_RESPONSES, rangeFromResponses, sectionEstimate, sectionStatus, totalRange } from '@/lib/engine/scoring';
 import { schedule } from '@/lib/engine/srs';
 import { pickSmartSet, rankSkills } from '@/lib/engine/adaptive';
 import { generatePlan, todaysMission } from '@/lib/engine/plan';
@@ -154,14 +154,39 @@ describe('score estimate', () => {
     expect(rangeFromResponses(mk(true, 'very-hard', 30), LOWER_ROUTE_CAP)!.high).toBeLessThanOrEqual(LOWER_ROUTE_CAP);
   });
   it('gives a narrower range with more data', () => {
-    const few = rangeFromResponses([...mk(true, 'hard', 5), ...mk(false, 'hard', 5)])!, many = rangeFromResponses([...mk(true, 'hard', 40), ...mk(false, 'hard', 40)])!;
-    expect(many.high - many.low).toBeLessThanOrEqual(few.high - few.low);
+    const few = rangeFromResponses([...mk(true, 'hard', 10), ...mk(false, 'hard', 10)])!, many = rangeFromResponses([...mk(true, 'hard', 40), ...mk(false, 'hard', 40)])!;
+    expect(many.high - many.low).toBeLessThan(few.high - few.low);
+    // but never narrower than the model's own uncertainty allows (about ±50 points at 80%)
+    expect(many.high - many.low).toBeGreaterThanOrEqual(100);
   });
-  it('estimates a section from practice history', () => {
+  it('estimates a section only from enough independent first tries', () => {
     let s = initialState();
-    QUESTIONS.filter((x) => x.section === 'math').slice(0, 12).forEach((x, i) => { s = answer(s, x, i % 3 !== 0, T0 + i * 1000).state; });
-    expect(sectionEstimate('math', s.attempts, getQuestion)).not.toBeNull();
+    const math = QUESTIONS.filter((x) => x.section === 'math');
+    math.slice(0, 12).forEach((x, i) => { s = answer(s, x, i % 3 !== 0, T0 + i * 1000).state; });
+    let st = sectionStatus('math', s.attempts, getQuestion);
+    expect(st.range).toBeNull(); expect(st.need).toBe(MIN_RESPONSES - 12);
+    // answering the same questions again does not count: only first tries measure skill
+    math.slice(0, 12).forEach((x, i) => { s = answer(s, x, true, T0 + 50_000 + i * 1000).state; });
+    expect(sectionStatus('math', s.attempts, getQuestion).n).toBe(12);
+    math.slice(12, 25).forEach((x, i) => { s = answer(s, x, i % 3 !== 0, T0 + 90_000 + i * 1000).state; });
+    st = sectionStatus('math', s.attempts, getQuestion);
+    expect(st.range).not.toBeNull(); expect(st.need).toBe(0);
+    expect(st.confidence).toBe('low'); // all on one day
     expect(sectionEstimate('rw', s.attempts, getQuestion)).toBeNull();
+  });
+  it('does not count a hint-assisted answer as right', () => {
+    const base = initialState();
+    const qs = QUESTIONS.filter((x) => x.section === 'rw').slice(0, 24);
+    const run = (hints: number) => { let s = base; qs.forEach((x, i) => { s = answer(s, x, true, T0 + i * 1000, { hints }).state; }); return sectionStatus('rw', s.attempts, getQuestion).range!.mid; };
+    expect(run(1)).toBeLessThan(run(0));
+  });
+  it('combines section uncertainties as independent errors', () => {
+    const r = { low: 550, mid: 600, high: 650 }, m = { low: 520, mid: 580, high: 640 };
+    const t = totalRange(r, m)!;
+    expect(t.mid).toBe(1180);
+    expect(t.high - t.low).toBeLessThan((r.high - r.low) + (m.high - m.low)); // narrower than adding the ranges end to end
+    expect(t.low).toBe(1100); expect(t.high).toBe(1260);
+    expect(confidenceOf(70, 4)).toBe('high'); expect(confidenceOf(40, 2)).toBe('medium'); expect(confidenceOf(40, 1)).toBe('low');
   });
 });
 

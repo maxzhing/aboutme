@@ -5,7 +5,7 @@ browser. That is the whole product: no install, no server, no account, no intern
 
 ## What is inside
 
-- 474 original questions: SAT-calibrated Math and Reading & Writing (about 20% medium, 40% hard,
+- 474 original questions: SAT-style Math and Reading & Writing (about 20% medium, 40% hard,
   40% very hard), a Beyond SAT tier that is deliberately harder than the real test, and a 40-question
   official-pattern Reading & Writing set modelled on the structures of the hardest released items. Each has a step-by-step solution, a rationale for every answer choice, the concept,
   the fastest method, the common trap, a takeaway and three levels of hints.
@@ -19,7 +19,12 @@ browser. That is the whole product: no install, no server, no account, no intern
 - 35 one-idea "hack" cards shown on lessons and questions, a 28-rule Grammar Masterclass, a Desmos-style graphing
   academy, a formula/grammar/transition reference, 123 vocabulary words with spaced repetition.
 - Smart (adaptive) practice, spaced review, Mistake Bucket with pattern detection and earned
-  resolution, mastery levels, score-range estimates, analytics, weekly report.
+  resolution, mastery levels, analytics, weekly report.
+- An honest score estimate: separate Math and Reading & Writing estimates shown as 80% ranges with a
+  confidence level (low, medium, high), built only from first tries without hints, weighted by question
+  difficulty, hidden until a section has 20 such answers (it says how many more are needed), and labelled
+  everywhere as an unofficial Stellify estimate, never an SAT score. Analytics shows how the estimate and its
+  range changed day by day, and each recent session's result against what was expected for its difficulty.
 - Diagnostic, timed modules, full-length mock exams with module routing, 30-day study plan and calendar.
 - Lumi the companion: XP, levels, shop, achievements, three daily quests with a chest, answer combos,
   optional sound effects, daily challenge, speed training, battle arena.
@@ -119,7 +124,7 @@ Reading & Writing questions become text, while math and questions with tables, g
 keep the exact page image of the question and of the explanation. Imported questions are stored in
 that browser only (IndexedDB), lead the matching course chapters, and make up timed official tests.
 
-## Official full practice tests, a Real SAT, real scores and a study plan
+## Official full practice tests, an adaptive SAT-style test, scores and a study plan
 
 **Import a full College Board practice test.** The College Board publishes its practice tests
 free as PDFs for students taking the SAT on paper. On **Official Questions**, drop in one test's
@@ -146,23 +151,23 @@ is scored the way the College Board scores it: the number right in each section 
 that test's own conversion table, which gives the section score range (the large number shown is
 its middle), and the two add up to the total.
 
-**Real SAT from your official questions.** An adaptive test built the way the digital SAT is built:
+**Adaptive SAT-style test from your official questions.** An adaptive test built the way the digital SAT is built:
 27 + 27 Reading & Writing and 22 + 22 Math questions in the official skill proportions and order,
 with Module 2 harder or easier depending on Module 1, at the real time limits (32 and 35 minutes per
 module). Every slot takes an official question (Question Bank imports and full tests), preferring ones
 you have not seen and saving questions from full tests you have not taken yet. Only when a skill has no
 official question left is the slot filled with a Stellify hard or very hard question for that skill; the
 report labels each question Official or Stellify, and the Mock Exams page shows how much of each section
-your library covers. It is scored with item-response scoring tied to the College Board scale: harder
-questions count for more, and ability is converted through the average of the official conversion tables
-of Practice Tests 4–10.
+your library covers. It gives an unofficial estimated range on the College Board scale, not an SAT
+score: harder questions count for more (item-response scoring), and ability is converted through the average of
+the official conversion tables of Practice Tests 4–10.
 
 **Original remix tests.** From the whole official library (every imported practice test and Question Bank
 question), the app builds new full-length adaptive SATs, "Original Remix Test 1, 2, …", on the same blueprint,
 order, routing and timing. Each has its own Module 1 and both possible Module 2s, and no question appears in two
 remix tests, so each one is new to you even after the official tests. A remix is fixed for a given library, so it
 can be retaken to measure progress; when official questions run low for a skill, a slot borrows from the same
-domain, and the list shows each test's share of official questions. The Real SAT above is the shuffled version (a
+domain, and the list shows each test's share of official questions. The adaptive SAT-style test above is the shuffled version (a
 new combination every time), and **Blend** gives about half its slots to Stellify original questions written to the
 College Board specifications. The original Stellify mock exams (Practice Test A, B and Fresh Mix) remain alongside.
 
@@ -253,7 +258,10 @@ npm run test:e2e
 ## Honest limits
 
 - Questions are original, not official College Board items (none are copied from official material), and Reading & Writing items have not been
-  reviewed by an outside SAT expert. Score ranges are an unofficial model.
+  reviewed by an outside SAT expert.
+- Score estimates are an unofficial model with hand-set item settings. They have never been checked against real
+  students' SAT results, so no claim is made about how well they predict an actual score; the ranges include an
+  explicit allowance for that. Validating them would need real score reports from real students.
 - Official-resource links and the Gemini connection could not be tested from the build environment.
 - The AP courses are original study material, not official College Board content, and have not been
   reviewed by an outside AP teacher. The CSA multiple-choice questions are conceptual and are checked
@@ -262,8 +270,8 @@ npm run test:e2e
   older browser, text cannot be highlighted; page-image highlighting still works.
 - Storage is the browser's local storage for this file; export a backup to move devices.
 - There is no cloud account or sync in the single-file version.
-- Scores on an imported official practice test come from that test's own College Board table. The Real SAT score
-  is a calibrated estimate, not a College Board score: the College Board's digital scoring uses item parameters it
+- Scores on an imported official practice test come from that test's own College Board table. The adaptive SAT-style
+  test's score is an estimate, not a College Board score: the College Board's digital scoring uses item parameters it
   does not publish, and the seven official tables themselves differ by about 25–40 points at the same raw score.
 - Skills and difficulty for questions read from a practice-test booklet are inferred, not printed by the College
   Board: on the seven free tests the Math domain shares come out at about 35% Algebra, 28% Advanced Math, 19% Data,

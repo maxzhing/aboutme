@@ -10,7 +10,7 @@ import { formName, isOfficialForm, isOfficialLike, isCalibratedForm, LOWER_ROUTE
 import { fmtRange } from '@/lib/engine/scoring';
 import { DOMAIN, DOMAINS, SAT_STRUCTURE, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { fmtClock, fmtDuration, pct } from '@/lib/util';
-import type { MockAttempt, Section, SkillId } from '@/lib/types';
+import type { MockAttempt, ScoreRange, Section, SkillId } from '@/lib/types';
 import { Explanation, QuestionMeta, QuestionView } from '@/components/Question';
 import { AnnotateButton } from '@/components/Highlight';
 import { Grapher } from '@/components/Grapher';
@@ -199,6 +199,13 @@ export function MockRunPage() {
   );
 }
 
+/** Is the difference between two estimates bigger than their uncertainty? */
+function changeNote(now: ScoreRange, before: ScoreRange) {
+  const d = now.mid - before.mid;
+  const noise = Math.hypot((now.high - now.low) / 2, (before.high - before.low) / 2);
+  return `${d >= 0 ? '+' : ''}${d} vs your previous exam${Math.abs(d) < noise ? ' (within the uncertainty, so not a clear change yet)' : ''}`;
+}
+
 export function MockResultsPage() {
   const id = useSearchParams().get('id');
   const mocks = useStore((s) => s.mocks);
@@ -222,10 +229,14 @@ export function MockResultsPage() {
       <PageHeader eyebrow="Mock exam report" title={`${formName(mock.formId)} · ${KIND_NAME[mock.kind]}`} subtitle={mock.completedAt ? `Completed ${new Date(mock.completedAt).toLocaleString()}` : undefined} actions={<Link href="/mocks" className="btn-ghost">All mock exams</Link>} />
       <div className="grid gap-3 sm:grid-cols-3">
         {mock.kind === 'full' && sc && (scored ? (
-          <div className="card border-gold/50 bg-gold/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{ft?.table ? 'Total score · College Board conversion' : 'Total score · calibrated to College Board'}</div><div className="mt-1 font-display text-4xl font-bold" data-testid="mock-total">{sc.total.mid}</div><div className="text-xs text-muted" data-testid="mock-total-range">Range {sc.total.low}–{sc.total.high} of 400–1600{prev?.scores ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div></div>
+          ft?.table ? (
+            <div className="card border-gold/50 bg-gold/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Practice-test score · College Board conversion table</div><div className="mt-1 font-display text-4xl font-bold" data-testid="mock-total">{sc.total.mid}</div><div className="text-xs text-muted" data-testid="mock-total-range">Range {sc.total.low}–{sc.total.high} of 400–1600{prev?.scores ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div><div className="mt-1 text-xs text-faint">A practice-test score, not an official SAT score.</div></div>
+          ) : (
+            <div className="card border-brand/40 bg-brand/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Estimated total · unofficial 80% range</div><div className="mt-1 font-display text-3xl font-bold" data-testid="mock-total">{fmtRange(sc.total)}</div><div className="text-xs text-muted" data-testid="mock-total-range">Most likely near {sc.total.mid} of 400–1600{prev?.scores ? ` · ${changeNote(sc.total, prev.scores.total)}` : ''}</div><div className="mt-1 text-xs text-faint">A Stellify estimate on the College Board scale, not an SAT score.</div></div>
+          )
         ) : <div className="card border-brand/40 bg-brand/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Estimated total range</div><div className="mt-1 font-display text-3xl font-bold" data-testid="mock-total">{fmtRange(sc.total)}</div><div className="text-xs text-muted">Unofficial estimate{prev?.scores ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div></div>)}
         {sections.map((sec) => { const b = sum.bySection[sec]; const route = mock.modules.find((m) => m.section === sec && m.module === 2)?.route; return (
-          <div key={sec} className="card p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{SECTION_NAME[sec]}</div><div className="mt-1 font-display text-2xl font-bold" data-testid={`mock-score-${sec}`}>{sc ? (scored ? (sec === 'rw' ? sc.rw : sc.math).mid : fmtRange(sec === 'rw' ? sc.rw : sc.math)) : '—'}</div>{sc && scored && <div className="text-xs text-muted">Range {(sec === 'rw' ? sc.rw : sc.math).low}–{(sec === 'rw' ? sc.rw : sc.math).high} of 200–800</div>}<div className="text-xs text-muted">{b.correct}/{b.total} correct · {b.unanswered} unanswered</div><div className="mt-1 text-xs text-muted">Module 2: {route === 'upper' ? 'harder set' : route === 'lower' ? 'easier set' : ft ? 'as printed' : '—'} · {fmtDuration(b.msUsed)} of {Math.round(b.msAllowed / 60_000)} min used</div></div>
+          <div key={sec} className="card p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{SECTION_NAME[sec]}</div><div className="mt-1 font-display text-2xl font-bold" data-testid={`mock-score-${sec}`}>{sc ? (ft?.table ? (sec === 'rw' ? sc.rw : sc.math)?.mid : fmtRange(sec === 'rw' ? sc.rw : sc.math)) : '—'}</div>{sc && ft?.table && <div className="text-xs text-muted">Range {(sec === 'rw' ? sc.rw : sc.math)?.low}–{(sec === 'rw' ? sc.rw : sc.math)?.high} of 200–800</div>}{sc && !ft?.table && <div className="text-xs text-muted">{scored ? 'Estimated 80% range' : 'Stellify estimate'} of 200–800</div>}<div className="text-xs text-muted">{b.correct}/{b.total} correct · {b.unanswered} unanswered</div><div className="mt-1 text-xs text-muted">Module 2: {route === 'upper' ? 'harder set' : route === 'lower' ? 'easier set' : ft ? 'as printed' : '—'} · {fmtDuration(b.msUsed)} of {Math.round(b.msAllowed / 60_000)} min used</div></div>
         ); })}
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -235,7 +246,7 @@ export function MockResultsPage() {
         <Stat label="Flagged" value={sum.rows.filter((r) => r.flagged).length} sub="marked for review" />
       </div>
       <p className="text-xs text-faint" data-testid="lock-report">{mock.locked ? 'Taken locked in (full screen)' : 'Taken without full screen'} · {mock.breaks ? `left the test window ${mock.breaks} time${mock.breaks === 1 ? '' : 's'}` : 'never left the test window'}.</p>
-      <p className="text-xs text-faint" data-testid="score-note">{ft?.table ? `Scored exactly as the College Board scores ${ft.name}: your number of correct answers in each section, read from that test's official raw-score conversion table. The College Board reports practice-test scores as these ranges; the large number is the middle of the range.` : ft || isCalibratedForm(mock.formId) ? 'Scored with item-response scoring tied to the College Board scale: harder questions count for more, and ability is converted through the average official conversion table of Practice Tests 4–10. Expect it to be within about 30–40 points of a College Board score.' : isOfficialForm(mock.formId) ? 'The questions are official College Board questions from your own file, but the range is Stellify’s own estimate from this set, not a College Board score.' : 'Ranges come from Stellify’s own model and original questions. They are not College Board scores.'}</p>
+      <p className="text-xs text-faint" data-testid="score-note">{ft?.table ? `Scored exactly as the College Board scores ${ft.name}: your number of correct answers in each section, read from that test's official raw-score conversion table. The College Board reports practice-test scores as these ranges; the large number is the middle of the range.` : ft || isCalibratedForm(mock.formId) ? 'An unofficial estimate. Harder questions count for more (item-response scoring), and ability is placed on the College Board scale through the average conversion table of Practice Tests 4–10. On those seven official tests this method reproduces the College Board’s own tables to within about 30 points for the same answers, but it has never been checked against real SAT results, so read the 80% range rather than a single number.' : isOfficialForm(mock.formId) ? 'The questions are official College Board questions from your own file, but the range is Stellify’s own estimate from this set, not a College Board score.' : 'Ranges come from Stellify’s own model and original questions. They are not College Board scores.'}</p>
       <TestPlanPanel mock={mock} />
       <div className="grid gap-4 md:grid-cols-2">
         <Card><h2 className="font-semibold">Domain performance</h2><ul className="mt-3 space-y-2.5">{DOMAINS.filter((d) => sum.byDomain[d.id]).map((d) => { const x = sum.byDomain[d.id]; const p = pct(x.correct, x.total); return <li key={d.id}><div className="mb-1 flex justify-between text-sm"><span>{d.name}</span><span className="text-muted">{x.correct}/{x.total}</span></div><Progress value={p} tone={toneForPct(p)} label={d.name} /></li>; })}</ul></Card>

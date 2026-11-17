@@ -9,7 +9,7 @@ import { calibratedScore, levelOf, tableScore } from '../fullTest/score';
 
 /** The adaptive SAT assembled from the student's official questions (see fullTest/assemble.ts). */
 export const REAL_SAT = 'realsat';
-/** The Real SAT with about half of the slots given to Stellify original questions. */
+/** The adaptive SAT-style test with about half of the slots given to Stellify original questions. */
 export const REAL_SAT_BLEND = 'realsat-blend';
 /** Original remix test n (fixed form built from the official library): "remix-3". */
 export const REMIX = 'remix-';
@@ -33,7 +33,7 @@ export const OFFICIAL_FORMS = [
 ];
 const officialSection = (formId: string): Section => (formId === 'cb3' ? 'math' : 'rw');
 export const isOfficialForm = (formId: string) => formId.startsWith('cb');
-export const formName = (formId: string) => (formId === REAL_SAT ? 'Real SAT from official questions' : formId === REAL_SAT_BLEND ? 'Real SAT: official + Stellify originals' : formId.startsWith(REMIX) ? `Original Remix Test ${formId.slice(REMIX.length)}` : fullTestOfForm(formId)?.name ?? [...MOCK_FORMS, ...OFFICIAL_FORMS].find((f) => f.id === formId)?.name ?? 'Practice Test');
+export const formName = (formId: string) => (formId === REAL_SAT ? 'Adaptive SAT-style test (official questions)' : formId === REAL_SAT_BLEND ? 'Adaptive SAT-style test (official + Stellify questions)' : formId.startsWith(REMIX) ? `Original Remix Test ${formId.slice(REMIX.length)}` : fullTestOfForm(formId)?.name ?? [...MOCK_FORMS, ...OFFICIAL_FORMS].find((f) => f.id === formId)?.name ?? 'Practice Test');
 /** Forms whose questions are (mostly) official: shown with the College Board look and labels. */
 export const isOfficialLike = (formId: string) => isOfficialForm(formId) || isFullTestForm(formId) || isCalibratedForm(formId);
 const fullModule = (t: FullTest, st: StageId) => t.modules.find((m) => m.mod === st);

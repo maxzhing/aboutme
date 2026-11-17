@@ -68,7 +68,7 @@ export function FullTestImport() {
   );
 }
 
-/** Official full tests and the adaptive Real SAT, with how each will be scored. */
+/** Official full tests and the adaptive SAT-style test, with how each will be scored. */
 export function OfficialTestsCard({ begin }: { begin: (form: string, kind: MockAttempt['kind']) => void }) {
   useOfficial((s) => s.v);
   const mocks = useStore((s) => s.mocks);
@@ -112,7 +112,7 @@ export function OfficialTestsCard({ begin }: { begin: (form: string, kind: MockA
       )}
       {OFFICIAL.length > 0 && (
         <Card className="border-brand/50" data-testid="realsat-card">
-          <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Real SAT: a brand-new test every time</h2><Badge tone="brand"><Sparkles size={13} />Adaptive</Badge></div>
+          <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Adaptive SAT-style test: new every time</h2><Badge tone="brand"><Sparkles size={13} />Adaptive</Badge></div>
           <p className="mt-1 text-sm text-muted">Shuffled fresh each time you start, preferring official questions you have not seen yet. Built the way the College Board builds the digital SAT: 27 + 27 Reading &amp; Writing and 22 + 22 Math questions in the official skill proportions and order, with Module 2 harder or easier depending on how Module 1 went. Real time limits (32 and 35 minutes per module, 10-minute break).</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {(['rw', 'math'] as Section[]).map((sec) => { const c = cover[sec]; const p = pct(c.fromOfficial, c.total); return (
@@ -132,7 +132,7 @@ export function OfficialTestsCard({ begin }: { begin: (form: string, kind: MockA
             <p className="min-w-[14rem] flex-1 text-sm text-muted"><b className="text-ink">Blend:</b> about half official College Board questions and half Stellify original questions written to the same specifications, for even more variety.</p>
             <button className="btn-ghost" onClick={() => begin(REAL_SAT_BLEND, 'full')} data-testid="start-blend"><Shuffle size={15} />Blended full test</button>
           </div>
-          <p className="mt-3 text-xs text-faint">Scored with item-response scoring tied to the College Board&apos;s scale: harder questions count for more, and the score is read through the average of the official conversion tables of Practice Tests 4–10. Expect it to be within about 30–40 points of a College Board score.</p>
+          <p className="mt-3 text-xs text-faint">Gives an <b>unofficial estimated range</b>, not an SAT score: harder questions count for more, and ability is placed on the College Board scale through the average conversion table of Practice Tests 4–10. It reproduces those official tables closely for the same answers, but it has never been checked against real SAT results.</p>
         </Card>
       )}
     </div>

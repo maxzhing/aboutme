@@ -1,7 +1,8 @@
 import type { AppState, Attempt, Difficulty, DomainId, Question, Section } from '../types';
 import { DIFFICULTIES, DOMAINS } from '../taxonomy';
 import { addDays, dateKey, pct } from '../util';
-import { sectionEstimate, totalRange } from './scoring';
+import { estimateTheta, expectedCorrect, lowerConfidence, sectionStatus, totalRange, type Confidence } from './scoring';
+import type { ScoreRange } from '../types';
 
 const scored = (a: Attempt[]) => a.filter((x) => !x.abandoned);
 
@@ -17,14 +18,14 @@ export function overview(s: AppState, getQ: (id: string) => Question | undefined
     const expected = x.length ? x.reduce((t, r) => t + r.q.time * 1000, 0) / x.length : 0;
     return { avg, expected, ratio: expected ? avg / expected : 0 };
   };
-  const rw = sectionEstimate('rw', s.attempts, getQ);
-  const math = sectionEstimate('math', s.attempts, getQ);
+  const rwS = sectionStatus('rw', s.attempts, getQ), mathS = sectionStatus('math', s.attempts, getQ);
+  const rw = rwS.range, math = mathS.range;
   return {
     total: rows.length, all: acc(() => true), bySection, byDifficulty, byDomain,
     time: { math: time('math'), rw: time('rw') },
     hintRate: rows.length ? rows.filter((r) => r.a.hints > 0).length / rows.length : 0,
     abandoned: s.attempts.filter((a) => a.abandoned).length,
-    estimate: { rw, math, total: totalRange(rw, math) },
+    estimate: { rw, math, total: totalRange(rw, math), status: { rw: rwS, math: mathS }, confidence: lowerConfidence(rwS.confidence, mathS.confidence) },
     unique: new Set(rows.map((r) => r.q.id)).size,
   };
 }
@@ -51,14 +52,42 @@ export function accuracyBlocks(s: AppState, size = 20) {
   return out;
 }
 
-/** Estimated total score after each study day (needs enough data in both sections). */
-export function scoreTrend(s: AppState, getQ: (id: string) => Question | undefined) {
+export interface TrendPoint { date: string; label: string; total?: ScoreRange; rw?: ScoreRange; math?: ScoreRange; confidence: Confidence | null }
+/** The estimate as it stood at the end of each study day (last 12 days with practice). A section appears once it has enough data. */
+export function scoreTrend(s: AppState, getQ: (id: string) => Question | undefined): TrendPoint[] {
   const days = [...new Set(scored(s.attempts).map((a) => dateKey(a.at)))].sort().slice(-12);
-  const out: { date: string; label: string; low: number; mid: number; high: number }[] = [];
+  const out: TrendPoint[] = [];
   for (const d of days) {
     const upTo = s.attempts.filter((a) => dateKey(a.at) <= d);
-    const t = totalRange(sectionEstimate('rw', upTo, getQ), sectionEstimate('math', upTo, getQ));
-    if (t) out.push({ date: d, label: d.slice(5).replace('-', '/'), ...t });
+    const rw = sectionStatus('rw', upTo, getQ), math = sectionStatus('math', upTo, getQ);
+    if (!rw.range && !math.range) continue;
+    out.push({ date: d, label: d.slice(5).replace('-', '/'), rw: rw.range ?? undefined, math: math.range ?? undefined, total: totalRange(rw.range, math.range) ?? undefined, confidence: lowerConfidence(rw.confidence, math.confidence) ?? rw.confidence ?? math.confidence });
   }
   return out;
+}
+
+export interface SessionRow { id: string; at: number; mode: string; n: number; correct: number; expected: number | null }
+/**
+ * Recent practice sessions with a difficulty-adjusted result: how many you got right compared with how
+ * many your current estimate predicts for those exact questions (harder sets predict fewer).
+ */
+export function sessionHistory(s: AppState, getQ: (id: string) => Question | undefined, limit = 8): SessionRow[] {
+  const rows = scored(s.attempts).map((a) => ({ a, q: getQ(a.qid) })).filter((r): r is { a: Attempt; q: Question } => !!r.q);
+  const theta = (sec: Section) => {
+    const st = sectionStatus(sec, s.attempts, getQ);
+    if (!st.range) return null;
+    const first = new Map<string, { difficulty: Difficulty; type: Question['type']; correct: boolean }>();
+    for (const r of rows) if (r.q.section === sec && !first.has(r.q.id)) first.set(r.q.id, { difficulty: r.q.difficulty, type: r.q.type, correct: r.a.correct && r.a.hints === 0 });
+    return estimateTheta([...first.values()].slice(-80)).theta;
+  };
+  const th = { rw: theta('rw'), math: theta('math') };
+  const by = new Map<string, typeof rows>();
+  for (const r of rows) { const k = r.a.sessionId ?? dateKey(r.a.at); by.set(k, [...(by.get(k) ?? []), r]); }
+  return [...by.entries()].map(([id, rs]) => {
+    const known = rs.every((r) => th[r.q.section] !== null);
+    return {
+      id, at: rs[rs.length - 1].a.at, mode: rs[0].a.mode ?? 'practice', n: rs.length, correct: rs.filter((r) => r.a.correct).length,
+      expected: known ? Math.round(rs.reduce((t, r) => t + expectedCorrect(th[r.q.section]!, [{ difficulty: r.q.difficulty, type: r.q.type }]), 0) * 10) / 10 : null,
+    };
+  }).sort((x, y) => y.at - x.at).slice(0, limit);
 }

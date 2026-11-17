@@ -8,7 +8,7 @@ import { clamp, round10 } from '../util';
  *    College Board scores it: the number of correct answers in a section (its raw score) is looked
  *    up in that test's own raw-score conversion table, which gives a lower and upper section score.
  *
- * 2. The adaptive "Real SAT" built from your official questions has no printed table (no one has
+ * 2. The adaptive SAT-style test built from your official questions has no printed table (no one has
  *    ever taken that exact combination), so it uses an item-response model tied to the College
  *    Board's scale: ability is estimated from which questions you got right and how hard they
  *    are (harder questions count for more, as on the digital SAT), converted to the raw score you
@@ -74,7 +74,10 @@ export function calibratedScore(section: Section, responses: Resp[], cap = 800):
   if (responses.length < 8) return null;
   if (responses.every((r) => r.correct) && cap >= 800) return { low: 790, mid: 800, high: 800 };
   const { theta, se } = ability(responses);
-  const half = Math.max(0.12, se * 0.6);
+  // an 80% range: statistical uncertainty plus an allowance for the method itself. On the seven official
+  // tests this method reproduces the College Board's own tables to within about 30 points for the same
+  // answers, but it has never been checked against real SAT results, so the allowance stays generous.
+  const half = 1.2816 * Math.hypot(se, 0.25);
   const mid = Math.min(cap, scaleAt(section, theta));
   return { mid, low: Math.min(mid, Math.max(200, scaleAt(section, theta - half))), high: Math.max(mid, Math.min(cap, scaleAt(section, theta + half))) };
 }

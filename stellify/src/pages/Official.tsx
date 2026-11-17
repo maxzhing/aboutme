@@ -53,7 +53,7 @@ export function OfficialPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-5">
-      <PageHeader eyebrow="Practice" title="Official College Board Questions" subtitle="Real SAT questions from the College Board's free Question Bank, with College Board's own explanations, inside your lessons, practice and timed tests." />
+      <PageHeader eyebrow="Practice" title="Official College Board Questions" subtitle="Official College Board questions from the free SAT Suite Question Bank, with College Board's own explanations, inside your lessons, practice and timed tests." />
 
       <section className={cn('relative overflow-hidden rounded-3xl border-2 border-dashed p-6 transition-colors sm:p-8', drag ? 'border-brand bg-brand/10' : 'border-line bg-surface')}
         onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); void run(e.dataTransfer.files); }} data-testid="import-zone">

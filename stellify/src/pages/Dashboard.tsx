@@ -16,6 +16,7 @@ import { SkillIcon } from '@/components/SkillIcon';
 import { sfx } from '@/lib/sfx';
 import { Confetti } from '@/components/Confetti';
 import { fmtRange } from '@/lib/engine/scoring';
+import { ConfidenceBadge, needLine } from '@/components/Estimate';
 import { MASTERY_LEVELS } from '@/lib/engine/mastery';
 import { ACHIEVEMENT } from '@/lib/engine/achievements';
 import { DIFFICULTIES, DIFFICULTY_NAME, SKILL, SKILLS } from '@/lib/taxonomy';
@@ -204,12 +205,12 @@ export function DashboardPage() {
       <Card>
         <div className="flex items-baseline justify-between"><h2 className="font-bold">Your progress</h2><Link href="/analytics" className="text-sm font-semibold text-brand2 hover:underline">Analytics →</Link></div>
         <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-          <div><div className="font-display text-2xl font-bold" data-testid="estimate">{est ? fmtRange(est) : '—'}</div><div className="text-xs text-muted">estimated range</div></div>
+          <div><div className="font-display text-2xl font-bold" data-testid="estimate">{est ? fmtRange(est) : '—'}</div><div className="text-xs text-muted">{est ? 'Stellify estimate' : 'estimate: needs data'}</div>{est && <div className="mt-1"><ConfidenceBadge c={ov.estimate.confidence} /></div>}</div>
           <div><div className="font-display text-2xl font-bold">{ov.total ? `${ov.all.pct}%` : '—'}</div><div className="text-xs text-muted">accuracy</div></div>
           <div><div className="font-display text-2xl font-bold" data-testid="stat-questions">{ov.total}</div><div className="text-xs text-muted">questions</div></div>
         </div>
         <div className="mt-5"><div className="mb-1.5 flex justify-between text-xs text-muted"><span>{base !== undefined ? `Start ${base}` : 'Start'}</span><span>Target {target}</span></div><Progress value={progress} label="Progress from starting score to target" /></div>
-        <p className="mt-2 text-xs text-faint">{est ? 'An unofficial Stellify estimate, not a College Board score.' : 'Your estimate appears after the diagnostic or about 8 questions per section.'}{!s.profile.diagnosticAt && <> <Link href="/diagnostic" className="font-semibold text-brand2 hover:underline">Take the diagnostic</Link></>}</p>
+        <p className="mt-2 text-xs text-faint">{est ? 'An unofficial 80% range from your first tries, not an SAT score. See Analytics for how it works.' : needLine(ov.estimate.status.rw, ov.estimate.status.math)}{!s.profile.diagnosticAt && <> <Link href="/diagnostic" className="font-semibold text-brand2 hover:underline">Take the diagnostic</Link></>}</p>
       </Card>
 
       {/* One insight, not a wall of them */}

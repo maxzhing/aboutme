@@ -5,7 +5,7 @@ import { levelOf, type Level } from './score';
 import { SKILL } from '../taxonomy';
 
 /**
- * Builds the modules of a "Real SAT": the digital SAT's structure (Reading & Writing 2 × 27
+ * Builds the modules of an adaptive SAT-style test: the digital SAT's structure (Reading & Writing 2 × 27
  * questions, Math 2 × 22), the College Board's domain blueprint (the same skill slots as every
  * Stellify mock), the real test's order, and multistage routing (Module 2 is harder or easier
  * depending on Module 1).
@@ -83,7 +83,7 @@ export function buildSatModule(section: Section, route: Route, seed: string, poo
   return chosen.sort((a, b) => (slots[a.slot] === slots[b.slot] ? r(a.q) - r(b.q) || a.slot - b.slot : a.slot - b.slot)).map((c) => c.q.id);
 }
 
-/** How a Real SAT section would be made up from what you have: official questions per skill vs the blueprint. */
+/** How an adaptive SAT-style test section would be made up from what you have: official questions per skill vs the blueprint. */
 export function satCoverage(section: Section, official: Question[]) {
   const need = new Map<SkillId, number>();
   const rand = rng('coverage');

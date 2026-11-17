@@ -75,6 +75,10 @@ test('wrong answer: full explanation, saved mistake, persistence across reload, 
   await expect(page.getByTestId('unresolved-count')).toHaveText('0');
   await go(page, '/achievements');
   await expect(page.getByTestId('ach-fix-1')).toHaveAttribute('data-unlocked', 'true');
+  // with only a few answers there is no score estimate yet: it says exactly how much more data it needs
+  await go(page, '/analytics');
+  await expect(page.getByTestId('estimate-insufficient')).toContainText(/Not enough data yet: \d+ more first-try Reading & Writing answers and \d+ more first-try Math answers needed/);
+  await expect(page.getByTestId('estimate-panel')).toContainText('Unofficial · not an SAT score');
   expect(errors).toEqual([]);
 });
 
@@ -544,7 +548,7 @@ test('soft feel: night-sky backdrop, press ripples, sparkles for a right answer,
   expect(errors).toEqual([]);
 });
 
-test('official full practice test: import the three College Board PDFs, take it, official score, study plan, Real SAT', async ({ page }) => {
+test('official full practice test: import the three College Board PDFs, take it, official score, study plan, adaptive SAT-style test', async ({ page }) => {
   const dir = require('node:path').join(__dirname, '..', 'private', 'cb', 't4');
   test.skip(!require('node:fs').existsSync(dir), 'needs a local copy of Practice Test 4');
   const errors = watch(page);
