@@ -4,11 +4,19 @@ import { isCorrect } from '../answers';
 import { rng, shuffle } from '../util';
 import { rangeFromResponses, totalRange } from './scoring';
 import { fullTestOfForm, isFullTestForm, type FullTest } from '../fullTest/registry';
-import { buildSatModule } from '../fullTest/assemble';
+import { buildSatModule, remixForms } from '../fullTest/assemble';
 import { calibratedScore, levelOf, tableScore } from '../fullTest/score';
 
 /** The adaptive SAT assembled from the student's official questions (see fullTest/assemble.ts). */
 export const REAL_SAT = 'realsat';
+/** The Real SAT with about half of the slots given to Stellify original questions. */
+export const REAL_SAT_BLEND = 'realsat-blend';
+/** Original remix test n (fixed form built from the official library): "remix-3". */
+export const REMIX = 'remix-';
+const isShuffle = (formId: string) => formId === REAL_SAT || formId === REAL_SAT_BLEND;
+const remixOf = (formId: string, official: Question[], bank: Question[]) => (formId.startsWith(REMIX) ? remixForms(official, bank)[Number(formId.slice(REMIX.length)) - 1] : undefined);
+/** Forms scored on the calibrated College Board scale (no printed table). */
+export const isCalibratedForm = (formId: string) => isShuffle(formId) || formId.startsWith(REMIX);
 export interface MockOpts { untakenTests?: Set<string> }
 
 export const MOCK_FORMS = [
@@ -25,9 +33,9 @@ export const OFFICIAL_FORMS = [
 ];
 const officialSection = (formId: string): Section => (formId === 'cb3' ? 'math' : 'rw');
 export const isOfficialForm = (formId: string) => formId.startsWith('cb');
-export const formName = (formId: string) => (formId === REAL_SAT ? 'Real SAT from official questions' : fullTestOfForm(formId)?.name ?? [...MOCK_FORMS, ...OFFICIAL_FORMS].find((f) => f.id === formId)?.name ?? 'Practice Test');
+export const formName = (formId: string) => (formId === REAL_SAT ? 'Real SAT from official questions' : formId === REAL_SAT_BLEND ? 'Real SAT: official + Stellify originals' : formId.startsWith(REMIX) ? `Original Remix Test ${formId.slice(REMIX.length)}` : fullTestOfForm(formId)?.name ?? [...MOCK_FORMS, ...OFFICIAL_FORMS].find((f) => f.id === formId)?.name ?? 'Practice Test');
 /** Forms whose questions are (mostly) official: shown with the College Board look and labels. */
-export const isOfficialLike = (formId: string) => isOfficialForm(formId) || isFullTestForm(formId) || formId === REAL_SAT;
+export const isOfficialLike = (formId: string) => isOfficialForm(formId) || isFullTestForm(formId) || isCalibratedForm(formId);
 const fullModule = (t: FullTest, st: StageId) => t.modules.find((m) => m.mod === st);
 const DOMAIN_RANK: Record<string, number> = { cs: 0, ii: 1, sec: 2, eoi: 3, alg: 0, adv: 1, psda: 2, geo: 3 };
 /**
@@ -122,9 +130,14 @@ export function startMock(id: string, formId: string, kind: MockAttempt['kind'],
     const ms = m.minutes * 60_000;
     return { id, formId, kind, startedAt: now, modules: [{ ...emptyModule(m.section, m.module, m.qids), msAllowed: ms }], cursor: { stage: 0, index: 0, msLeft: ms } };
   }
-  if (formId === REAL_SAT) {
+  const remix = remixOf(formId, official, bank);
+  if (remix) {
     const sec = stageSection(firstStage);
-    const qids = buildSatModule(sec, 'm1', `sat-${now}`, { official, bank, seen, untakenTests: opts.untakenTests ?? new Set() }, new Set());
+    return { id, formId, kind, startedAt: now, modules: [emptyModule(sec, 1, remix.modules[sec].m1)], cursor: { stage: 0, index: 0, msLeft: moduleMs(sec) } };
+  }
+  if (isShuffle(formId)) {
+    const sec = stageSection(firstStage);
+    const qids = buildSatModule(sec, 'm1', `sat-${now}`, { official, bank, seen, untakenTests: opts.untakenTests ?? new Set(), mixOriginal: formId === REAL_SAT_BLEND ? 0.5 : 0 }, new Set());
     return { id, formId, kind, startedAt: now, modules: [emptyModule(sec, 1, qids)], cursor: { stage: 0, index: 0, msLeft: moduleMs(sec) } };
   }
   if (isOfficialForm(formId)) {
@@ -158,10 +171,17 @@ export function advanceMock(mock: MockAttempt, bank: Question[], getQ: (id: stri
     const ms = m.minutes * 60_000;
     return { mock: { ...mock, modules: [...mock.modules, { ...emptyModule(m.section, m.module, m.qids), msAllowed: ms }], cursor: { stage: nextStage, index: 0, msLeft: ms } }, finished: false };
   }
-  if (mock.formId === REAL_SAT) {
+  const remix = remixOf(mock.formId, official, bank);
+  if (remix) {
+    const section = stageSection(next);
+    const mod = next.endsWith('1') ? emptyModule(section, 1, remix.modules[section].m1)
+      : (() => { const route = routeFor(mock.modules.find((m) => m.section === section && m.module === 1)!, getQ); return emptyModule(section, 2, remix.modules[section][route], route); })();
+    return { mock: { ...mock, modules: [...mock.modules, mod], cursor: { stage: nextStage, index: 0, msLeft: moduleMs(section) } }, finished: false };
+  }
+  if (isShuffle(mock.formId)) {
     const section = stageSection(next);
     const used = new Set(mock.modules.flatMap((m) => m.qids));
-    const pools = { official, bank, seen, untakenTests: opts.untakenTests ?? new Set<string>() };
+    const pools = { official, bank, seen, untakenTests: opts.untakenTests ?? new Set<string>(), mixOriginal: mock.formId === REAL_SAT_BLEND ? 0.5 : 0 };
     const seed = `sat-${mock.startedAt}`;
     let mod: MockModuleResult;
     if (next.endsWith('1')) mod = emptyModule(section, 1, buildSatModule(section, 'm1', seed, pools, used));
@@ -200,7 +220,7 @@ export function scoreMock(mock: MockAttempt, getQ: (id: string) => Question | un
     // an official practice test taken whole is scored with its own College Board conversion table
     const fullTest = fullTestOfForm(mock.formId);
     if (fullTest?.table && mods.length === 2) return tableScore(fullTest.table[sec], responses.filter((r) => r.correct).length);
-    if (fullTest || mock.formId === REAL_SAT) {
+    if (fullTest || isCalibratedForm(mock.formId)) {
       const rs = mods.flatMap((m) => m.qids.map((id) => ({ q: getQ(id), a: m.answers[id] ?? null }))).filter((r) => r.q)
         .map((r) => ({ level: levelOf(r.q!), type: r.q!.type, correct: isCorrect(r.q!, r.a) }));
       return calibratedScore(sec, rs, lower ? LOWER_ROUTE_CAP : 800);

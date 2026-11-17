@@ -533,3 +533,30 @@ test('official full practice test: import the three College Board PDFs, take it,
   await expect(page.getByTestId('mock-question')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('personal copy: all seven official practice tests, original remix tests and the blend are built in', async ({ page }) => {
+  const personal = resolve(__dirname, '../private/stellify-personal.html');
+  test.skip(!require('node:fs').existsSync(personal) || !require('node:fs').existsSync(resolve(__dirname, '../private/cb')), 'needs the private personal build');
+  const errors = watch(page);
+  page.on('dialog', (d) => d.accept());
+  const P = `file://${personal}`;
+  await page.goto(`${P}#/onboarding`);
+  await page.getByRole('button', { name: 'Skip setup' }).click();
+  await page.goto(`${P}#/mocks`);
+  for (const n of [4, 5, 6, 7, 8, 9, 10]) await expect(page.getByTestId(`fulltest-pt${n}`)).toContainText(`SAT Practice Test ${n}`);
+  await expect(page.getByTestId('remix-card')).toContainText('Original Remix Test 1');
+  expect(await page.getByTestId('remix-card').locator('li').count()).toBeGreaterThanOrEqual(4);
+  await page.getByTestId('start-remix-1').click();
+  await page.getByTestId('lock-skip').click();
+  await expect(page.getByTestId('mock-question')).toBeVisible();
+  await expect(page.getByText('Reading & Writing · Module 1 of 2')).toBeVisible();
+  await page.goto(`${P}#/mocks`);
+  await page.getByTestId('start-blend').click();
+  await page.getByTestId('lock-skip').click();
+  await expect(page.getByTestId('mock-question')).toBeVisible();
+  await page.goto(`${P}#/mocks`);
+  await page.getByTestId('start-fulltest-pt10').click();
+  await page.getByTestId('lock-skip').click();
+  await expect(page.getByTestId('mock-question')).toHaveAttribute('data-qid', 'pt10-rw1-01');
+  expect(errors).toEqual([]);
+});

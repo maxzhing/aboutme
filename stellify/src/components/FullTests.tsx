@@ -1,16 +1,16 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BadgeCheck, CalendarCheck, CheckCircle2, Clock, FileStack, Gauge, Loader2, Lock, Sparkles, Target, Upload } from 'lucide-react';
+import { BadgeCheck, CalendarCheck, CheckCircle2, Clock, FileStack, Gauge, Loader2, Lock, Shuffle, Sparkles, Target, Upload } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { OFFICIAL } from '@/data/questions';
 import { useStore } from '@/lib/store';
 import { useOfficial, saveFullTest } from '@/lib/officialStore';
 import { FULL_FORM, FULL_TESTS } from '@/lib/fullTest/registry';
-import { satCoverage } from '@/lib/fullTest/assemble';
-import { REAL_SAT } from '@/lib/engine/mock';
+import { remixForms, satCoverage } from '@/lib/fullTest/assemble';
+import { REAL_SAT, REAL_SAT_BLEND, REMIX } from '@/lib/engine/mock';
 import { analyzeTest } from '@/lib/engine/testPlan';
-import { getQuestion } from '@/data/questions';
+import { getQuestion, QUESTIONS } from '@/data/questions';
 import { SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { fmtDuration, pct } from '@/lib/util';
 import type { MockAttempt, Section } from '@/lib/types';
@@ -73,6 +73,8 @@ export function OfficialTestsCard({ begin }: { begin: (form: string, kind: MockA
   useOfficial((s) => s.v);
   const mocks = useStore((s) => s.mocks);
   const cover = useMemo(() => ({ rw: satCoverage('rw', OFFICIAL), math: satCoverage('math', OFFICIAL) }), [OFFICIAL.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  const remixes = useMemo(() => remixForms(OFFICIAL, QUESTIONS), [OFFICIAL.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  const taken = (formId: string) => mocks.some((m) => m.formId === formId && m.completedAt);
   const best = (formId: string) => mocks.filter((m) => m.formId === formId && m.completedAt && m.kind === 'full' && m.scores).sort((a, b) => b.scores!.total.mid - a.scores!.total.mid)[0];
   return (
     <div className="space-y-4" data-testid="official-tests">
@@ -92,10 +94,26 @@ export function OfficialTestsCard({ begin }: { begin: (form: string, kind: MockA
           </ul>
         </Card>
       )}
+      {remixes.length > 0 && (
+        <Card className="border-ok/50" data-testid="remix-card">
+          <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Original practice tests</h2><Badge tone="ok"><Shuffle size={13} />{remixes.length} new tests</Badge></div>
+          <p className="mt-1 text-sm text-muted">New full-length SATs made by remixing every official question you have (all the practice tests and your Question Bank questions) the way the College Board builds the digital SAT: official skill mix and order, a harder or easier Module 2 depending on Module 1, real time limits. No question appears in two of these tests, so each one is new to you, even after the official tests.</p>
+          <ul className="mt-3 divide-y divide-line">
+            {remixes.map((f) => { const id = REMIX + f.n; const b = best(id); return (
+              <li key={id} className="flex flex-wrap items-center gap-3 py-3" data-testid={`remix-${f.n}`}>
+                <div className="w-full sm:w-auto sm:min-w-0 sm:flex-1"><div className="font-semibold">Original Remix Test {f.n}{taken(id) && <span className="ml-2 text-xs font-normal text-ok">taken</span>}</div><div className="text-xs text-muted">98 questions · 2 h 24 min · {Math.round(f.officialShare * 100)}% official College Board questions{b ? ` · best ${b.scores!.total.mid}` : ''}</div></div>
+                <button className="btn-primary" onClick={() => begin(id, 'full')} data-testid={`start-remix-${f.n}`}><Lock size={15} />Take the full test</button>
+                <button className="btn-ghost !px-3" onClick={() => begin(id, 'section-rw')}>R&amp;W only</button>
+                <button className="btn-ghost !px-3" onClick={() => begin(id, 'section-math')}>Math only</button>
+              </li>
+            ); })}
+          </ul>
+        </Card>
+      )}
       {OFFICIAL.length > 0 && (
         <Card className="border-brand/50" data-testid="realsat-card">
-          <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Real SAT from your official questions</h2><Badge tone="brand"><Sparkles size={13} />Adaptive</Badge></div>
-          <p className="mt-1 text-sm text-muted">Built the way the College Board builds the digital SAT: 27 + 27 Reading &amp; Writing and 22 + 22 Math questions in the official skill proportions and order, with Module 2 harder or easier depending on how Module 1 went. Real time limits (32 and 35 minutes per module, 10-minute break).</p>
+          <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Real SAT: a brand-new test every time</h2><Badge tone="brand"><Sparkles size={13} />Adaptive</Badge></div>
+          <p className="mt-1 text-sm text-muted">Shuffled fresh each time you start, preferring official questions you have not seen yet. Built the way the College Board builds the digital SAT: 27 + 27 Reading &amp; Writing and 22 + 22 Math questions in the official skill proportions and order, with Module 2 harder or easier depending on how Module 1 went. Real time limits (32 and 35 minutes per module, 10-minute break).</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {(['rw', 'math'] as Section[]).map((sec) => { const c = cover[sec]; const p = pct(c.fromOfficial, c.total); return (
               <div key={sec} className="rounded-xl border border-line p-3" data-testid={`realsat-cover-${sec}`}>
@@ -109,6 +127,10 @@ export function OfficialTestsCard({ begin }: { begin: (form: string, kind: MockA
             <button className="btn-primary" onClick={() => begin(REAL_SAT, 'full')} data-testid="start-realsat"><Lock size={15} />Full test · 2 h 24 min</button>
             <button className="btn-ghost" onClick={() => begin(REAL_SAT, 'section-rw')}>R&amp;W · 64 min</button>
             <button className="btn-ghost" onClick={() => begin(REAL_SAT, 'section-math')}>Math · 70 min</button>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl bg-raised/60 p-3">
+            <p className="min-w-[14rem] flex-1 text-sm text-muted"><b className="text-ink">Blend:</b> about half official College Board questions and half Stellify original questions written to the same specifications, for even more variety.</p>
+            <button className="btn-ghost" onClick={() => begin(REAL_SAT_BLEND, 'full')} data-testid="start-blend"><Shuffle size={15} />Blended full test</button>
           </div>
           <p className="mt-3 text-xs text-faint">Scored with item-response scoring tied to the College Board&apos;s scale: harder questions count for more, and the score is read through the average of the official conversion tables of Practice Tests 4–10. Expect it to be within about 30–40 points of a College Board score.</p>
         </Card>

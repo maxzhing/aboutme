@@ -29,6 +29,13 @@ export interface PackTest {
 }
 type Pack = PackItem[] | { items: PackItem[]; tests?: PackTest[] };
 declare const __PACK__: Pack | null | undefined;
-const PACK: Pack = typeof __PACK__ !== 'undefined' && __PACK__ ? __PACK__ : [];
+/** A personal build embeds the pack as a JSON block in the page (fast to parse); see scripts/build.mjs. */
+function packFromPage(): Pack | null {
+  try {
+    const el = typeof document !== 'undefined' ? document.getElementById('stellify-pack') : null;
+    return el?.textContent ? (JSON.parse(el.textContent) as Pack) : null;
+  } catch { return null; }
+}
+const PACK: Pack = (typeof __PACK__ !== 'undefined' && __PACK__) || packFromPage() || [];
 export const PACK_RAW: PackItem[] = Array.isArray(PACK) ? PACK : PACK.items;
 export const PACK_TESTS: PackTest[] = Array.isArray(PACK) ? [] : PACK.tests ?? [];

@@ -6,8 +6,8 @@ import type { MockAttempt, Question } from '@/lib/types';
 import { initialState } from '@/lib/state';
 import { classifyMath, classifyRW, keyAgrees, parseKeyCell, positionalDifficulty, parseAnswerKey, parseBooklet, parseExplanations, parseScoreTable, docKind, testNumber, MOD_KEYS, type PPage } from '@/lib/fullTest/parse';
 import { calibratedScore, CB_CURVE, curveAt, pointsPerQuestion, tableScore, type Resp } from '@/lib/fullTest/score';
-import { buildSatModule, satCoverage } from '@/lib/fullTest/assemble';
-import { RW_SLOTS, advanceMock, scoreMock, startMock, REAL_SAT } from '@/lib/engine/mock';
+import { buildSatModule, remixForms, satCoverage } from '@/lib/fullTest/assemble';
+import { RW_SLOTS, advanceMock, scoreMock, startMock, REAL_SAT, REMIX, formName } from '@/lib/engine/mock';
 import { registerFullTests, FULL_TESTS } from '@/lib/fullTest/registry';
 import { analyzeTest, planFromTest } from '@/lib/engine/testPlan';
 import { isCorrect } from '@/lib/answers';
@@ -154,6 +154,46 @@ describe('the Real SAT built from official questions', () => {
     const sc = scoreMock(mock, getQ);
     expect(sc.rw!.mid).toBe(800);
     expect(sc.total!.mid).toBe(1600);
+  });
+});
+
+describe('original remix tests and the blend', () => {
+  const official = fakeOfficial(700);
+  const byId = new Map([...official, ...QUESTIONS].map((q) => [q.id, q]));
+  it('builds complete, non-overlapping full-length forms from the official library', () => {
+    const forms = remixForms(official, QUESTIONS);
+    expect(forms.length).toBeGreaterThanOrEqual(2);
+    const all: string[] = [];
+    for (const f of forms) {
+      for (const sec of ['rw', 'math'] as const) for (const r of ['m1', 'upper', 'lower'] as const) {
+        expect(f.modules[sec][r], `${f.n} ${sec} ${r}`).toHaveLength(sec === 'rw' ? 27 : 22);
+        all.push(...f.modules[sec][r]);
+      }
+      expect(f.officialShare).toBeGreaterThanOrEqual(0.75);
+    }
+    expect(new Set(all).size).toBe(all.length);
+    // the same library always gives the same forms, so a remix can be retaken
+    expect(remixForms([...official], QUESTIONS).map((f) => f.modules.rw.m1)).toEqual(forms.map((f) => f.modules.rw.m1));
+    expect(formName(REMIX + '2')).toBe('Original Remix Test 2');
+  });
+
+  it('runs a remix test with routing into its own harder Module 2', () => {
+    const f = remixForms(official, QUESTIONS)[0];
+    let mock = startMock('r', REMIX + '1', 'section-math', QUESTIONS, 1, new Set(), official);
+    expect(mock.modules[0].qids).toEqual(f.modules.math.m1);
+    const mod = mock.modules[0];
+    for (const id of mod.qids) { const q = byId.get(id)!; mod.answers[id] = q.type === 'mcq' ? String(q.answer) : (q.answer as string[])[0]; }
+    mock = advanceMock(mock, QUESTIONS, (id) => byId.get(id), new Set(), official).mock;
+    expect(mock.modules[1].route).toBe('upper');
+    expect(mock.modules[1].qids).toEqual(f.modules.math.upper);
+  });
+
+  it('blends Stellify original questions into about half of a module', () => {
+    const ids = buildSatModule('rw', 'm1', 'b', { official, bank: QUESTIONS, seen: new Set(), untakenTests: new Set(), mixOriginal: 0.5 }, new Set());
+    expect(ids).toHaveLength(27);
+    const originals = ids.filter((id) => !byId.get(id)!.official).length;
+    expect(originals).toBeGreaterThanOrEqual(6);
+    expect(originals).toBeLessThanOrEqual(21);
   });
 });
 

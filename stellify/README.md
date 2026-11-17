@@ -138,6 +138,15 @@ your library covers. It is scored with item-response scoring tied to the College
 questions count for more, and ability is converted through the average of the official conversion tables
 of Practice Tests 4–10.
 
+**Original remix tests.** From the whole official library (every imported practice test and Question Bank
+question), the app builds new full-length adaptive SATs, "Original Remix Test 1, 2, …", on the same blueprint,
+order, routing and timing. Each has its own Module 1 and both possible Module 2s, and no question appears in two
+remix tests, so each one is new to you even after the official tests. A remix is fixed for a given library, so it
+can be retaken to measure progress; when official questions run low for a skill, a slot borrows from the same
+domain, and the list shows each test's share of official questions. The Real SAT above is the shuffled version (a
+new combination every time), and **Blend** gives about half its slots to Stellify original questions written to the
+College Board specifications. The original Stellify mock exams (Practice Test A, B and Fresh Mix) remain alongside.
+
 **A study plan from what you missed.** After any test, each missed skill is ranked by the points at stake
 (misses × the scaled points one more right answer is worth near your score, read from the conversion curve),
 with the trap you fell for where it is known, and notes on pacing (ran out of time, left blanks, or rushed).
@@ -162,6 +171,14 @@ python3 scripts/make-pack.py path/to/export.pdf private/pack.json
 node scripts/build.mjs --pack private/pack.json
 ```
 
+To build full practice tests into a personal copy, import them in the app, export them from the browser, and
+merge them (images are shrunk on the way: grayscale question scans, sharp 8-shade explanation images):
+
+```bash
+python3 scripts/pack-tests.py private/pack-qb-only.json export.json -o private/pack.json
+```
+
+The build embeds the pack as a JSON block, which phones parse much faster than a large script.
 This writes `private/stellify-personal.html`. Official questions are the College Board's copyrighted
 work, so `private/` is git-ignored: the pack and the personal copy are for your own study and are
 never committed or published. The public `stellify.html` contains none of them.
@@ -198,7 +215,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 13 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface.
+- `npm run test:e2e` — 14 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 

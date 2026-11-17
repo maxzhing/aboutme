@@ -6,7 +6,7 @@ import { getQuestion, hasOfficial, OFFICIAL } from '@/data/questions';
 import { REFERENCE } from '@/data/reference';
 import { useStore } from '@/lib/store';
 import { useOfficial } from '@/lib/officialStore';
-import { formName, isOfficialForm, isOfficialLike, REAL_SAT, LOWER_ROUTE_CAP, MOCK_FORMS, OFFICIAL_FORMS, officialModules, ROUTE_THRESHOLD, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
+import { formName, isOfficialForm, isOfficialLike, isCalibratedForm, LOWER_ROUTE_CAP, MOCK_FORMS, OFFICIAL_FORMS, officialModules, ROUTE_THRESHOLD, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
 import { fmtRange } from '@/lib/engine/scoring';
 import { DOMAIN, DOMAINS, SAT_STRUCTURE, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { fmtClock, fmtDuration, pct } from '@/lib/util';
@@ -16,7 +16,7 @@ import { Grapher } from '@/components/Grapher';
 import { RichText } from '@/components/RichText';
 import { TestShell } from '@/components/TestShell';
 import { OfficialTestsCard, TestPlanPanel } from '@/components/FullTests';
-import { fullTestOfForm } from '@/lib/fullTest/registry';
+import { FULL_TESTS, fullTestOfForm } from '@/lib/fullTest/registry';
 import { Badge, Card, Empty, Modal, PageHeader, Progress, Stat, cn, toneForPct } from '@/components/ui';
 
 const KIND_NAME: Record<MockAttempt['kind'], string> = { full: 'Full-length', 'section-rw': 'Reading & Writing only', 'section-math': 'Math only', 'module-rw': 'One Reading & Writing module' };
@@ -40,7 +40,8 @@ export function MocksPage() {
         </Card>
       )}
       <OfficialTestsCard begin={begin} />
-      {hasOfficial() ? <OfficialCard begin={begin} /> : <Card className="border-gold/40"><h2 className="font-bold">Use real College Board questions</h2><p className="mt-1 text-sm text-muted">Add a PDF from the free SAT Question Bank and take timed tests made only of official questions.</p><Link href="/official" className="btn-primary mt-3">Add official questions</Link></Card>}
+      {/* the whole-library official tests only make sense before full practice tests are available */}
+      {FULL_TESTS.length ? null : hasOfficial() ? <OfficialCard begin={begin} /> : <Card className="border-gold/40"><h2 className="font-bold">Use real College Board questions</h2><p className="mt-1 text-sm text-muted">Add a PDF from the free SAT Question Bank and take timed tests made only of official questions.</p><Link href="/official" className="btn-primary mt-3">Add official questions</Link></Card>}
       <div className="grid gap-4 md:grid-cols-3">
         {MOCK_FORMS.map((f) => (
           <Card key={f.id} className="flex flex-col">
@@ -213,7 +214,7 @@ export function MockResultsPage() {
   const priorities = skills.filter((s) => s.correct < s.total).slice(0, 5);
   const rows = sum.rows.filter((r) => !only || !r.correct);
   const ft = fullTestOfForm(mock.formId);
-  const scored = !!ft || mock.formId === REAL_SAT;
+  const scored = !!ft || isCalibratedForm(mock.formId);
   return (
     <div className="space-y-4" data-testid="mock-results">
       <PageHeader eyebrow="Mock exam report" title={`${formName(mock.formId)} · ${KIND_NAME[mock.kind]}`} subtitle={mock.completedAt ? `Completed ${new Date(mock.completedAt).toLocaleString()}` : undefined} actions={<Link href="/mocks" className="btn-ghost">All mock exams</Link>} />
@@ -232,7 +233,7 @@ export function MockResultsPage() {
         <Stat label="Flagged" value={sum.rows.filter((r) => r.flagged).length} sub="marked for review" />
       </div>
       <p className="text-xs text-faint" data-testid="lock-report">{mock.locked ? 'Taken locked in (full screen)' : 'Taken without full screen'} · {mock.breaks ? `left the test window ${mock.breaks} time${mock.breaks === 1 ? '' : 's'}` : 'never left the test window'}.</p>
-      <p className="text-xs text-faint" data-testid="score-note">{ft?.table ? `Scored exactly as the College Board scores ${ft.name}: your number of correct answers in each section, read from that test's official raw-score conversion table. The College Board reports practice-test scores as these ranges; the large number is the middle of the range.` : ft || mock.formId === REAL_SAT ? 'Scored with item-response scoring tied to the College Board scale: harder questions count for more, and ability is converted through the average official conversion table of Practice Tests 4–10. Expect it to be within about 30–40 points of a College Board score.' : isOfficialForm(mock.formId) ? 'The questions are official College Board questions from your own file, but the range is Stellify’s own estimate from this set, not a College Board score.' : 'Ranges come from Stellify’s own model and original questions. They are not College Board scores.'}</p>
+      <p className="text-xs text-faint" data-testid="score-note">{ft?.table ? `Scored exactly as the College Board scores ${ft.name}: your number of correct answers in each section, read from that test's official raw-score conversion table. The College Board reports practice-test scores as these ranges; the large number is the middle of the range.` : ft || isCalibratedForm(mock.formId) ? 'Scored with item-response scoring tied to the College Board scale: harder questions count for more, and ability is converted through the average official conversion table of Practice Tests 4–10. Expect it to be within about 30–40 points of a College Board score.' : isOfficialForm(mock.formId) ? 'The questions are official College Board questions from your own file, but the range is Stellify’s own estimate from this set, not a College Board score.' : 'Ranges come from Stellify’s own model and original questions. They are not College Board scores.'}</p>
       <TestPlanPanel mock={mock} />
       <div className="grid gap-4 md:grid-cols-2">
         <Card><h2 className="font-semibold">Domain performance</h2><ul className="mt-3 space-y-2.5">{DOMAINS.filter((d) => sum.byDomain[d.id]).map((d) => { const x = sum.byDomain[d.id]; const p = pct(x.correct, x.total); return <li key={d.id}><div className="mb-1 flex justify-between text-sm"><span>{d.name}</span><span className="text-muted">{x.correct}/{x.total}</span></div><Progress value={p} tone={toneForPct(p)} label={d.name} /></li>; })}</ul></Card>
@@ -246,7 +247,7 @@ export function MockResultsPage() {
             <li key={r.qid}>
               <button className="flex w-full items-center gap-3 py-2.5 text-left hover:bg-raised/50" onClick={() => setOpen(open === r.qid ? null : r.qid)} aria-expanded={open === r.qid}>
                 <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold text-white', r.correct ? 'bg-ok' : r.answer ? 'bg-bad' : 'bg-faint')}>{n}</span>
-                <span className="min-w-0 flex-1 truncate text-sm">{SECTION_NAME[r.section]} M{r.module} · {SKILL[q.skill].short}</span>{mock.formId === REAL_SAT && <Badge tone={q.official ? 'gold' : 'default'}>{q.official ? 'Official' : 'Stellify'}</Badge>}
+                <span className="min-w-0 flex-1 truncate text-sm">{SECTION_NAME[r.section]} M{r.module} · {SKILL[q.skill].short}</span>{isCalibratedForm(mock.formId) && <Badge tone={q.official ? 'gold' : 'default'}>{q.official ? 'Official' : 'Stellify'}</Badge>}
                 <span className="text-xs text-faint">{fmtDuration(r.ms)}</span><span className="text-xs font-semibold text-brand2">{open === r.qid ? 'Hide' : 'Explain'}</span>
               </button>
               {open === r.qid && <div className="space-y-4 pb-4"><QuestionMeta q={q} /><QuestionView q={q} answer={r.answer} onAnswer={() => {}} locked reveal /><Explanation q={q} answer={r.answer} category={mistakes[q.id]?.category} onCategory={(c) => setCat(q.id, c)} /></div>}

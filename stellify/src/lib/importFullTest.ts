@@ -22,7 +22,7 @@ export interface FullTestImport { test: FullTest; items: PackItem[]; warnings: s
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Doc = any;
 const MOD_NAME: Record<ModKey, string> = { rw1: 'Reading and Writing Module 1', rw2: 'Reading and Writing Module 2', math1: 'Math Module 1', math2: 'Math Module 2' };
-const RENDER = 2;
+const RENDER = 1.7;
 
 async function readPages(doc: Doc): Promise<PPage[]> {
   const pages: PPage[] = [];
@@ -92,7 +92,7 @@ function cropper(doc: Doc, scale: number) {
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, out.width, out.height);
     let y = 0;
     for (const p of pieces) { ctx.drawImage(p, 0, y); y += p.height; }
-    return out.toDataURL('image/jpeg', 0.8);
+    return out.toDataURL('image/jpeg', 0.74);
   };
 }
 
@@ -130,7 +130,7 @@ export async function importFullTest(files: File[], onProgress?: (step: string, 
   const name = number ? `SAT Practice Test ${number}` : 'SAT Practice Test';
 
   const crop = cropper(booklet.doc, RENDER);
-  const cropExpl = answers ? cropper(answers.doc, 1.7) : null;
+  const cropExpl = answers ? cropper(answers.doc, 1.55) : null;
   const items: PackItem[] = [];
   const modules: FullTest['modules'] = [];
   const total = book.modules.reduce((s, m) => s + m.questions.length, 0);

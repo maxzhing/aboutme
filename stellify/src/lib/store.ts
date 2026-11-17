@@ -9,8 +9,9 @@ import { initialState, STATE_VERSION } from './state';
 import { getQuestion, OFFICIAL, QUESTIONS } from '@/data/questions';
 import { applyAttempt, grant, resolveMistake, unlockAchievements, type AttemptInput, type GameEvent } from './engine/attempt';
 import { generatePlan } from './engine/plan';
-import { advanceMock, formName, REAL_SAT, scoreMock, stagesFor, startMock as buildMock } from './engine/mock';
+import { advanceMock, formName, REAL_SAT, REMIX, scoreMock, stagesFor, startMock as buildMock } from './engine/mock';
 import { analyzeTest, planFromTest } from './engine/testPlan';
+import { remixForms } from './fullTest/assemble';
 import { FULL_FORM, FULL_TESTS } from './fullTest/registry';
 
 /** Full practice tests the student has not completed yet (their questions are saved for those tests). */
@@ -318,7 +319,9 @@ export const useStore = create<Store>()(
           const report = analyzeTest(m, getQ, m.scores ? { rw: m.scores.rw.mid ? m.scores.rw : null, math: m.scores.math.mid ? m.scores.math : null } : undefined);
           const solved = new Set(s.attempts.filter((a) => a.correct).map((a) => a.qid));
           const untaken = FULL_TESTS.filter((t) => untakenTests(s).has(t.id) && FULL_FORM + t.id !== m.formId);
+          const remix = remixForms(OFFICIAL, QUESTIONS).map((f) => REMIX + f.n).find((id) => id !== m.formId && !s.mocks.some((x) => x.formId === id && x.completedAt));
           const next = untaken.length ? { href: '/mocks', title: `Full test: ${untaken[0].name} (official)` }
+            : remix ? { href: '/mocks', title: `Full test: ${formName(remix)}` }
             : OFFICIAL.length ? { href: '/mocks', title: `Full test: ${formName(REAL_SAT)}` } : { href: '/mocks', title: 'Full-length mock exam' };
           setState({ plan: planFromTest(report, s.profile, OFFICIAL, solved, next, formName(m.formId), Date.now()), planDone: {} });
         },

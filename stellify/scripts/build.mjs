@@ -34,12 +34,15 @@ const packFile = packArg > -1 ? resolve(process.argv[packArg + 1]) : null;
 const pack = packFile ? JSON.stringify(JSON.parse(readFileSync(packFile, 'utf8'))) : 'null';
 await build({
   entryPoints: [at('src/main.tsx')], bundle: true, minify: true, format: 'iife', target: ['es2020'], outfile: at('.build/app.js'),
-  jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"', __PACK__: pack }, legalComments: 'none', logLevel: 'warning', tsconfig: at('tsconfig.json'),
+  jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"', __PACK__: 'null' }, legalComments: 'none', logLevel: 'warning', tsconfig: at('tsconfig.json'),
 });
 const js = readFileSync(at('.build/app.js'), 'utf8').replace(/<\/script/gi, '<\\/script').replace(/<!--/g, '<\\!--');
 
 // pdf.js worker for the in-app question importer, kept inert until the importer starts it from a Blob
 const worker = readFileSync(at('node_modules/pdfjs-dist/legacy/build/pdf.worker.min.js'), 'utf8').replace(/<\/script/gi, '<\\/script');
+
+// the pack is embedded as a JSON block (read by src/data/pack.ts): browsers parse JSON far faster than a huge JS literal
+const packBlock = packFile ? `<script type="application/json" id="stellify-pack">${pack.replace(/</g, '\\u003c')}</script>\n` : '';
 
 const theme = `(function(){try{var t=localStorage.getItem('stellify-theme')||'dark';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){document.documentElement.classList.add('dark');}})();`;
 const html = `<!doctype html>
@@ -57,7 +60,7 @@ const html = `<!doctype html>
 <noscript>Stellify needs JavaScript to run. Everything stays on your device.</noscript>
 <div id="root"></div>
 <script type="text/plain" id="pdf-worker">${worker}</script>
-<script>${js}</script>
+${packBlock}<script>${js}</script>
 </body>
 </html>
 `;
