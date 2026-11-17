@@ -72,10 +72,11 @@ export function officialQuestion(p: PackItem): Question {
     concept, strategy, trap: lesson.mistakes[0], remember: lesson.shortcuts[0],
     section: skill.section, domain: skill.domain, difficulty, type: mcq ? 'mcq' : 'spr', time: DEFAULT_TIME[skill.section][difficulty],
     hints: [concept, strategy, 'Eliminate the choices you can rule out for a definite reason, then compare what is left word by word.'],
-    source: `Official College Board question (${p.cbDifficulty ?? 'rated'} difficulty)${p.imported ? ', imported by you' : ', from your own practice file'} · explanation by the College Board`,
+    source: p.source ? `Official College Board question · ${p.source}${p.estimated ? '' : ` (${p.cbDifficulty ?? 'rated'} difficulty)`} · explanation by the College Board` : `Official College Board question (${p.cbDifficulty ?? 'rated'} difficulty)${p.imported ? ', imported by you' : ', from your own practice file'} · explanation by the College Board`,
     license: 'Copyright College Board. For your personal study only; do not share or publish.',
     validation: 'validated', created: '2026-11-15',
-    image: p.image, rationaleImage: p.rationaleImage, official: true,
+    image: p.image, rationaleImage: p.rationaleImage, official: true, test: p.test,
+    cbDifficulty: p.cbDifficulty === 'Easy' || p.cbDifficulty === 'Medium' || p.cbDifficulty === 'Hard' ? p.cbDifficulty : p.d === 'H' ? 'Hard' : 'Medium',
   };
 }
 

@@ -500,3 +500,36 @@ test('AP CSA, Microeconomics and Macroeconomics: every unit, first and last less
   await expect(box.getByTestId('calc-solution')).toContainText(`The answer is ${(intDiv.answer as string[])[0]}`);
   expect(errors).toEqual([]);
 });
+
+test('official full practice test: import the three College Board PDFs, take it, official score, study plan, Real SAT', async ({ page }) => {
+  const dir = require('node:path').join(__dirname, '..', 'private', 'cb', 't4');
+  test.skip(!require('node:fs').existsSync(dir), 'needs a local copy of Practice Test 4');
+  const errors = watch(page);
+  page.on('dialog', (d) => d.accept());
+  await boot(page);
+  await go(page, '/official');
+  await page.getByTestId('fulltest-input').setInputFiles(['sat-practice-test-4-digital.pdf', 'scoring-sat-practice-test-4-digital.pdf', 'sat-practice-test-4-answers-digital.pdf'].map((f) => `${dir}/${f}`));
+  await expect(page.getByTestId('fulltest-result')).toContainText('Imported SAT Practice Test 4: 66 Reading & Writing and 54 Math questions, with the College Board score conversion table', { timeout: 120_000 });
+  await page.reload(); // saved on this device
+  await go(page, '/mocks');
+  await page.getByTestId('start-fulltest-pt4').click();
+  await page.getByTestId('lock-skip').click();
+  await expect(page.getByTestId('mock-question')).toHaveAttribute('data-qid', 'pt4-rw1-01');
+  // submit every module blank: the official table turns raw 0 into 200 + 200
+  for (let i = 0; i < 4; i++) {
+    if (i === 2) await page.getByTestId('end-break').click();
+    await page.getByRole('button', { name: 'All questions' }).click();
+    await page.getByTestId('submit-module').click();
+  }
+  await expect(page.getByTestId('mock-total')).toHaveText('400');
+  await expect(page.getByTestId('score-note')).toContainText('official raw-score conversion table');
+  await expect(page.getByTestId('plan-focus').first()).toBeVisible();
+  await page.getByTestId('adopt-plan').click();
+  await expect(page.getByTestId('plan-adopted')).toBeVisible();
+  await go(page, '/mocks');
+  await expect(page.getByTestId('realsat-cover-math')).toContainText('% official');
+  await page.getByTestId('start-realsat').click();
+  await page.getByTestId('lock-skip').click();
+  await expect(page.getByTestId('mock-question')).toBeVisible();
+  expect(errors).toEqual([]);
+});

@@ -10,6 +10,7 @@ import { DOMAINS, SECTION_NAME, SKILL, skillsOfDomain } from '@/lib/taxonomy';
 import { officialModules } from '@/lib/engine/mock';
 import type { MockAttempt, Section } from '@/lib/types';
 import { Badge, Card, PageHeader, Progress, cn } from '@/components/ui';
+import { FullTestImport, OfficialTestsCard } from '@/components/FullTests';
 import { pct } from '@/lib/util';
 
 /** Real College Board questions: import Question Bank PDFs, practice them by skill, and take official-question tests. */
@@ -75,6 +76,9 @@ export function OfficialPage() {
         {busy && <div className="mt-5"><div className="mb-1 flex justify-between text-xs text-muted"><span>{busy.name}</span><span>{pct(busy.done, busy.total)}%</span></div><Progress value={pct(busy.done, busy.total)} label="Import progress" /></div>}
         {last && !busy && <p className="mt-5 flex items-start gap-2 rounded-xl border border-ok/40 bg-ok/10 p-3 text-sm" role="status" data-testid="import-result"><CheckCircle2 size={17} className="mt-0.5 shrink-0 text-ok" />{last}</p>}
       </section>
+
+      <FullTestImport />
+      <OfficialTestsCard begin={begin} />
 
       {OFFICIAL.length > 0 ? (
         <>

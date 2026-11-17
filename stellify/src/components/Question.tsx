@@ -49,7 +49,7 @@ export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, 
       {!twoCol && stimulus && <div className="mb-4">{stim}</div>}
       {q.image ? (
         <figure className="mb-1" id={`stem-${q.id}`}>
-          <div className="overflow-hidden rounded-2xl border border-line bg-white p-2 shadow-card sm:p-3">{number !== undefined && <span className="mb-1 inline-grid h-6 min-w-6 place-items-center rounded-md bg-[#141830] px-1 text-xs font-bold text-white">{number}</span>}<img src={q.image} alt="Official College Board question, shown exactly as printed" className="mx-auto w-full max-w-3xl" /></div>
+          <div className="overflow-hidden rounded-2xl border border-line bg-white p-2 shadow-card sm:p-3">{number !== undefined && <span className="mb-1 inline-grid h-6 min-w-6 place-items-center rounded-md bg-[#141830] px-1 text-xs font-bold text-white">{number}</span>}<img src={q.image} alt="Official College Board question, shown exactly as printed" className="mx-auto block h-auto w-auto max-w-full" /></div>
           <figcaption className="mt-1.5 text-xs text-faint">Shown exactly as College Board printed it.{q.type === 'mcq' ? ' Pick the letter of your answer below.' : ' Type your answer below.'}</figcaption>
         </figure>
       ) : <div className="prose-q font-medium" id={`stem-${q.id}`}>{number !== undefined && <span className="mr-2 inline-grid h-6 min-w-6 place-items-center rounded-md bg-ink px-1 text-xs font-bold text-bg">{number}</span>}<RichText block={q.stem.includes('$$')} text={q.stem} /></div>}
@@ -157,7 +157,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
       {q.rationaleImage ? (
         <section className="rounded-xl border border-ok/30 bg-ok/5 p-3.5" data-testid="official-rationale">
           <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-faint">College Board explanation · correct answer {correctAnswerLabel(q)}</h4>
-          <div className="overflow-hidden rounded-xl bg-white p-2"><img src={q.rationaleImage} alt="College Board explanation, shown exactly as printed" className="mx-auto w-full max-w-3xl" /></div>
+          <div className="overflow-hidden rounded-xl bg-white p-2"><img src={q.rationaleImage} alt="College Board explanation, shown exactly as printed" className="mx-auto block h-auto w-auto max-w-full" /></div>
         </section>
       ) : <>
       <Block title="Step-by-step solution">

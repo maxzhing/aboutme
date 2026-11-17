@@ -9,7 +9,12 @@ import { initialState, STATE_VERSION } from './state';
 import { getQuestion, OFFICIAL, QUESTIONS } from '@/data/questions';
 import { applyAttempt, grant, resolveMistake, unlockAchievements, type AttemptInput, type GameEvent } from './engine/attempt';
 import { generatePlan } from './engine/plan';
-import { advanceMock, scoreMock, stagesFor, startMock as buildMock } from './engine/mock';
+import { advanceMock, formName, REAL_SAT, scoreMock, stagesFor, startMock as buildMock } from './engine/mock';
+import { analyzeTest, planFromTest } from './engine/testPlan';
+import { FULL_FORM, FULL_TESTS } from './fullTest/registry';
+
+/** Full practice tests the student has not completed yet (their questions are saved for those tests). */
+const untakenTests = (s: { mocks: MockAttempt[] }) => new Set(FULL_TESTS.map((t) => t.id).filter((id) => !s.mocks.some((m) => m.completedAt && m.formId === FULL_FORM + id)));
 import { schedule } from './engine/srs';
 import { XP_REWARD } from './engine/xp';
 import { SHOP_ITEM } from '@/data/shop';
@@ -72,6 +77,8 @@ interface Actions {
   mockUpdate: (patch: { answer?: [string, string | null]; flag?: string; index?: number; msLeft?: number; addMs?: [string, number]; breakMsLeft?: number; addBreak?: boolean; locked?: boolean }) => void;
   mockNext: () => { finished: boolean; id: string };
   abandonMock: () => void;
+  /** replaces the study plan with one built from a completed test's results */
+  adoptTestPlan: (mockId: string) => void;
   finishDiagnostic: () => void;
   importState: (s: AppState) => void;
   resetAll: () => void;
@@ -263,7 +270,7 @@ export const useStore = create<Store>()(
 
         startMock: (formId, kind) => {
           const seen = new Set(getState().attempts.map((a) => a.qid));
-          setState({ activeMock: buildMock(uid(), formId, kind, QUESTIONS, Date.now(), seen, OFFICIAL) });
+          setState({ activeMock: buildMock(uid(), formId, kind, QUESTIONS, Date.now(), seen, OFFICIAL, { untakenTests: untakenTests(getState()) }) });
         },
         mockUpdate: (p) => {
           const m = getState().activeMock;
@@ -284,7 +291,7 @@ export const useStore = create<Store>()(
           const m = getState().activeMock;
           if (!m) return { finished: true, id: '' };
           const seen = new Set(getState().attempts.map((a) => a.qid));
-          const r = advanceMock(m, QUESTIONS, getQ, seen, OFFICIAL);
+          const r = advanceMock(m, QUESTIONS, getQ, seen, OFFICIAL, { untakenTests: untakenTests(getState()) });
           if (!r.finished) { setState({ activeMock: r.mock }); return { finished: false, id: m.id }; }
           const now = Date.now();
           const done: MockAttempt = { ...r.mock, completedAt: now };
@@ -304,6 +311,17 @@ export const useStore = create<Store>()(
           return { finished: true, id: done.id };
         },
         abandonMock: () => setState({ activeMock: undefined }),
+        adoptTestPlan: (mockId) => {
+          const s = getState();
+          const m = s.mocks.find((x) => x.id === mockId);
+          if (!m) return;
+          const report = analyzeTest(m, getQ, m.scores ? { rw: m.scores.rw.mid ? m.scores.rw : null, math: m.scores.math.mid ? m.scores.math : null } : undefined);
+          const solved = new Set(s.attempts.filter((a) => a.correct).map((a) => a.qid));
+          const untaken = FULL_TESTS.filter((t) => untakenTests(s).has(t.id) && FULL_FORM + t.id !== m.formId);
+          const next = untaken.length ? { href: '/mocks', title: `Full test: ${untaken[0].name} (official)` }
+            : OFFICIAL.length ? { href: '/mocks', title: `Full test: ${formName(REAL_SAT)}` } : { href: '/mocks', title: 'Full-length mock exam' };
+          setState({ plan: planFromTest(report, s.profile, OFFICIAL, solved, next, formName(m.formId), Date.now()), planDone: {} });
+        },
         finishDiagnostic: () => apply((s) => {
           const now = Date.now();
           if (s.profile.diagnosticAt) return { state: s };

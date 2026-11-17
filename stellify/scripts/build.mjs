@@ -64,7 +64,8 @@ const html = `<!doctype html>
 if (packFile) {
   const out = join(dirname(packFile), 'stellify-personal.html');
   writeFileSync(out, html);
-  console.log(`Built a personal copy with ${JSON.parse(pack).length} pack questions: ${out} (${(html.length / 1024 / 1024).toFixed(2)} MB). Keep it private.`);
+  const pk = JSON.parse(pack); const nItems = Array.isArray(pk) ? pk.length : pk.items.length; const nTests = Array.isArray(pk) ? 0 : (pk.tests ?? []).length;
+  console.log(`Built a personal copy with ${nItems} pack questions${nTests ? ` and ${nTests} full practice test${nTests === 1 ? '' : 's'}` : ''}: ${out} (${(html.length / 1024 / 1024).toFixed(2)} MB). Keep it private.`);
 } else {
   writeFileSync(at('dist/stellify.html'), html);
   copyFileSync(at('dist/stellify.html'), join(root, '..', 'stellify.html'));

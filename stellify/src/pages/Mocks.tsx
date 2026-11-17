@@ -6,7 +6,7 @@ import { getQuestion, hasOfficial, OFFICIAL } from '@/data/questions';
 import { REFERENCE } from '@/data/reference';
 import { useStore } from '@/lib/store';
 import { useOfficial } from '@/lib/officialStore';
-import { formName, isOfficialForm, LOWER_ROUTE_CAP, MOCK_FORMS, OFFICIAL_FORMS, officialModules, ROUTE_THRESHOLD, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
+import { formName, isOfficialForm, isOfficialLike, REAL_SAT, LOWER_ROUTE_CAP, MOCK_FORMS, OFFICIAL_FORMS, officialModules, ROUTE_THRESHOLD, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
 import { fmtRange } from '@/lib/engine/scoring';
 import { DOMAIN, DOMAINS, SAT_STRUCTURE, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { fmtClock, fmtDuration, pct } from '@/lib/util';
@@ -15,6 +15,8 @@ import { Explanation, QuestionMeta, QuestionView } from '@/components/Question';
 import { Grapher } from '@/components/Grapher';
 import { RichText } from '@/components/RichText';
 import { TestShell } from '@/components/TestShell';
+import { OfficialTestsCard, TestPlanPanel } from '@/components/FullTests';
+import { fullTestOfForm } from '@/lib/fullTest/registry';
 import { Badge, Card, Empty, Modal, PageHeader, Progress, Stat, cn, toneForPct } from '@/components/ui';
 
 const KIND_NAME: Record<MockAttempt['kind'], string> = { full: 'Full-length', 'section-rw': 'Reading & Writing only', 'section-math': 'Math only', 'module-rw': 'One Reading & Writing module' };
@@ -37,6 +39,7 @@ export function MocksPage() {
           <div className="mt-3 flex gap-2"><Link href="/mocks/run" className="btn-primary">Resume</Link><button className="btn-ghost" onClick={() => { if (confirm('Discard this exam? Your answers so far will not be saved.')) abandon(); }}>Discard</button></div>
         </Card>
       )}
+      <OfficialTestsCard begin={begin} />
       {hasOfficial() ? <OfficialCard begin={begin} /> : <Card className="border-gold/40"><h2 className="font-bold">Use real College Board questions</h2><p className="mt-1 text-sm text-muted">Add a PDF from the free SAT Question Bank and take timed tests made only of official questions.</p><Link href="/official" className="btn-primary mt-3">Add official questions</Link></Card>}
       <div className="grid gap-4 md:grid-cols-3">
         {MOCK_FORMS.map((f) => (
@@ -131,7 +134,7 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
   return (
     <div className="space-y-3">
       <header className="card flex flex-wrap items-center gap-3 !rounded-xl p-3">
-        <div className="min-w-0 flex-1"><div className="font-display font-bold">{SECTION_NAME[mod.section]} · Module {mod.module} of {stagesFor(mock.kind).filter((st) => st !== 'break' && stageSection(st) === mod.section).length}</div><div className="text-xs text-muted">Question {idx + 1} of {mod.qids.length} · {answered} answered</div></div>
+        <div className="min-w-[11rem] flex-1"><div className="font-display font-bold">{SECTION_NAME[mod.section]} · Module {mod.module} of {stagesFor(mock.kind).filter((st) => st !== 'break' && stageSection(st) === mod.section).length}</div><div className="text-xs text-muted">Question {idx + 1} of {mod.qids.length} · {answered} answered</div></div>
         <button onClick={() => setSettings({ showTimer: !showTimer })} className={cn('chip !py-1.5 font-mono text-sm', ms < 5 * 60_000 && 'border-bad text-bad')} aria-label="Time remaining (click to hide or show)"><Clock size={14} />{showTimer || ms < 5 * 60_000 ? fmtClock(ms) : 'Hidden'}</button>
         {mod.section === 'math' && <><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('calc')}><Calculator size={15} />Graphing</button><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('ref')}>Reference</button></>}
         <button className="btn-ghost !px-2.5 !py-1.5" onClick={() => { flush(); router.push('/mocks'); }}>Save &amp; exit</button>
@@ -187,7 +190,7 @@ export function MockRunPage() {
   if (!mock?.cursor) return null;
   const stage = stagesFor(mock.kind)[mock.cursor.stage];
   return (
-    <TestShell key={mock.id} title={`${formName(mock.formId)} · ${KIND_NAME[mock.kind]}`} official={isOfficialForm(mock.formId)}>
+    <TestShell key={mock.id} title={`${formName(mock.formId)} · ${KIND_NAME[mock.kind]}`} official={isOfficialLike(mock.formId)}>
       {stage === 'break' ? <BreakStage key="break" mock={mock} /> : <ModuleStage key={`${mock.id}-${mock.cursor.stage}`} mock={mock} />}
     </TestShell>
   );
@@ -209,13 +212,17 @@ export function MockResultsPage() {
   const skills = Object.entries(sum.bySkill).map(([k, v]) => ({ skill: k as SkillId, ...v, p: pct(v.correct, v.total) })).sort((a, b) => a.p - b.p);
   const priorities = skills.filter((s) => s.correct < s.total).slice(0, 5);
   const rows = sum.rows.filter((r) => !only || !r.correct);
+  const ft = fullTestOfForm(mock.formId);
+  const scored = !!ft || mock.formId === REAL_SAT;
   return (
     <div className="space-y-4" data-testid="mock-results">
       <PageHeader eyebrow="Mock exam report" title={`${formName(mock.formId)} · ${KIND_NAME[mock.kind]}`} subtitle={mock.completedAt ? `Completed ${new Date(mock.completedAt).toLocaleString()}` : undefined} actions={<Link href="/mocks" className="btn-ghost">All mock exams</Link>} />
       <div className="grid gap-3 sm:grid-cols-3">
-        {mock.kind === 'full' && sc && <div className="card border-brand/40 bg-brand/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Estimated total range</div><div className="mt-1 font-display text-3xl font-bold" data-testid="mock-total">{fmtRange(sc.total)}</div><div className="text-xs text-muted">Unofficial estimate{prev?.scores ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div></div>}
+        {mock.kind === 'full' && sc && (scored ? (
+          <div className="card border-gold/50 bg-gold/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{ft?.table ? 'Total score · College Board conversion' : 'Total score · calibrated to College Board'}</div><div className="mt-1 font-display text-4xl font-bold" data-testid="mock-total">{sc.total.mid}</div><div className="text-xs text-muted" data-testid="mock-total-range">Range {sc.total.low}–{sc.total.high} of 400–1600{prev?.scores ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div></div>
+        ) : <div className="card border-brand/40 bg-brand/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Estimated total range</div><div className="mt-1 font-display text-3xl font-bold" data-testid="mock-total">{fmtRange(sc.total)}</div><div className="text-xs text-muted">Unofficial estimate{prev?.scores ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div></div>)}
         {sections.map((sec) => { const b = sum.bySection[sec]; const route = mock.modules.find((m) => m.section === sec && m.module === 2)?.route; return (
-          <div key={sec} className="card p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{SECTION_NAME[sec]}</div><div className="mt-1 font-display text-2xl font-bold">{sc ? fmtRange(sec === 'rw' ? sc.rw : sc.math) : '—'}</div><div className="text-xs text-muted">{b.correct}/{b.total} correct · {b.unanswered} unanswered</div><div className="mt-1 text-xs text-muted">Module 2: {route === 'upper' ? 'harder set' : route === 'lower' ? 'easier set' : '—'} · {fmtDuration(b.msUsed)} of {SAT_STRUCTURE[sec].minutesPerModule * 2} min used</div></div>
+          <div key={sec} className="card p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{SECTION_NAME[sec]}</div><div className="mt-1 font-display text-2xl font-bold" data-testid={`mock-score-${sec}`}>{sc ? (scored ? (sec === 'rw' ? sc.rw : sc.math).mid : fmtRange(sec === 'rw' ? sc.rw : sc.math)) : '—'}</div>{sc && scored && <div className="text-xs text-muted">Range {(sec === 'rw' ? sc.rw : sc.math).low}–{(sec === 'rw' ? sc.rw : sc.math).high} of 200–800</div>}<div className="text-xs text-muted">{b.correct}/{b.total} correct · {b.unanswered} unanswered</div><div className="mt-1 text-xs text-muted">Module 2: {route === 'upper' ? 'harder set' : route === 'lower' ? 'easier set' : ft ? 'as printed' : '—'} · {fmtDuration(b.msUsed)} of {Math.round(b.msAllowed / 60_000)} min used</div></div>
         ); })}
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -225,7 +232,8 @@ export function MockResultsPage() {
         <Stat label="Flagged" value={sum.rows.filter((r) => r.flagged).length} sub="marked for review" />
       </div>
       <p className="text-xs text-faint" data-testid="lock-report">{mock.locked ? 'Taken locked in (full screen)' : 'Taken without full screen'} · {mock.breaks ? `left the test window ${mock.breaks} time${mock.breaks === 1 ? '' : 's'}` : 'never left the test window'}.</p>
-      <p className="text-xs text-faint">{isOfficialForm(mock.formId) ? 'The questions are official College Board questions from your own file, but the range is Stellify’s own estimate from this set, not a College Board score.' : 'Ranges come from Stellify’s own model and original questions. They are not College Board scores.'}</p>
+      <p className="text-xs text-faint" data-testid="score-note">{ft?.table ? `Scored exactly as the College Board scores ${ft.name}: your number of correct answers in each section, read from that test's official raw-score conversion table. The College Board reports practice-test scores as these ranges; the large number is the middle of the range.` : ft || mock.formId === REAL_SAT ? 'Scored with item-response scoring tied to the College Board scale: harder questions count for more, and ability is converted through the average official conversion table of Practice Tests 4–10. Expect it to be within about 30–40 points of a College Board score.' : isOfficialForm(mock.formId) ? 'The questions are official College Board questions from your own file, but the range is Stellify’s own estimate from this set, not a College Board score.' : 'Ranges come from Stellify’s own model and original questions. They are not College Board scores.'}</p>
+      <TestPlanPanel mock={mock} />
       <div className="grid gap-4 md:grid-cols-2">
         <Card><h2 className="font-semibold">Domain performance</h2><ul className="mt-3 space-y-2.5">{DOMAINS.filter((d) => sum.byDomain[d.id]).map((d) => { const x = sum.byDomain[d.id]; const p = pct(x.correct, x.total); return <li key={d.id}><div className="mb-1 flex justify-between text-sm"><span>{d.name}</span><span className="text-muted">{x.correct}/{x.total}</span></div><Progress value={p} tone={toneForPct(p)} label={d.name} /></li>; })}</ul></Card>
         <Card><h2 className="font-semibold">Recommended study priorities</h2>{priorities.length ? <ul className="mt-2 divide-y divide-line">{priorities.map((s) => <li key={s.skill} className="flex items-center gap-3 py-2 text-sm"><span className="min-w-0 flex-1 truncate">{SKILL[s.skill].short}</span><Badge tone={toneForPct(s.p)}>{s.correct}/{s.total}</Badge><Link href={`/learn/${s.skill}`} className="text-brand2 hover:underline">Lesson</Link><Link href={`/practice/session?mode=skill&skill=${s.skill}&n=6`} className="text-brand2 hover:underline">Practice</Link></li>)}</ul> : <p className="mt-2 text-sm text-muted">A perfect paper. Try Fresh Mix or the Hardest Questions set.</p>}<Link href="/mistakes" className="mt-3 inline-block text-sm font-semibold text-brand2 hover:underline">Every miss is now in your Mistake Bucket →</Link></Card>
@@ -238,7 +246,7 @@ export function MockResultsPage() {
             <li key={r.qid}>
               <button className="flex w-full items-center gap-3 py-2.5 text-left hover:bg-raised/50" onClick={() => setOpen(open === r.qid ? null : r.qid)} aria-expanded={open === r.qid}>
                 <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold text-white', r.correct ? 'bg-ok' : r.answer ? 'bg-bad' : 'bg-faint')}>{n}</span>
-                <span className="min-w-0 flex-1 truncate text-sm">{SECTION_NAME[r.section]} M{r.module} · {SKILL[q.skill].short}</span>
+                <span className="min-w-0 flex-1 truncate text-sm">{SECTION_NAME[r.section]} M{r.module} · {SKILL[q.skill].short}</span>{mock.formId === REAL_SAT && <Badge tone={q.official ? 'gold' : 'default'}>{q.official ? 'Official' : 'Stellify'}</Badge>}
                 <span className="text-xs text-faint">{fmtDuration(r.ms)}</span><span className="text-xs font-semibold text-brand2">{open === r.qid ? 'Hide' : 'Explain'}</span>
               </button>
               {open === r.qid && <div className="space-y-4 pb-4"><QuestionMeta q={q} /><QuestionView q={q} answer={r.answer} onAnswer={() => {}} locked reveal /><Explanation q={q} answer={r.answer} category={mistakes[q.id]?.category} onCategory={(c) => setCat(q.id, c)} /></div>}

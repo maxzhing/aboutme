@@ -80,6 +80,10 @@ export interface Question extends Omit<RawQuestion, 'd' | 'time'> {
   image?: string;
   rationaleImage?: string;
   official?: boolean;
+  /** College Board difficulty rating for official questions (estimated from position for full practice tests) */
+  cbDifficulty?: 'Easy' | 'Medium' | 'Hard';
+  /** id of the official full practice test this question belongs to */
+  test?: string;
 }
 
 export type PracticeMode =

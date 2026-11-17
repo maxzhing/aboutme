@@ -12,6 +12,23 @@ export interface PackItem {
   choices: string[]; answer: number | string[]; why: string[]; note?: string; notes?: string[];
   /** questions imported in the app keep the exact page image for math, tables, graphs and underlining */
   image?: string; rationaleImage?: string; rationale?: string; imported?: number;
+  /** where the question comes from, e.g. "SAT Practice Test 4 · Math Module 1 · Question 13" */
+  source?: string;
+  /** the full practice test this question belongs to (see FullTest) */
+  test?: string;
+  /** difficulty estimated from the question's position (the printed tests do not label difficulty) */
+  estimated?: boolean;
 }
-declare const __PACK__: PackItem[] | null | undefined;
-export const PACK_RAW: PackItem[] = typeof __PACK__ !== 'undefined' && __PACK__ ? __PACK__ : [];
+/** A complete official practice test: its modules in order and the College Board's score conversion table. */
+export interface PackTest {
+  id: string; number: number | null; name: string;
+  modules: { mod: 'rw1' | 'rw2' | 'math1' | 'math2'; section: 'rw' | 'math'; module: 1 | 2; minutes: number; qids: string[] }[];
+  /** index = raw score (number correct in the section); value = [lower, upper] section score */
+  table?: { rw: [number, number][]; math: [number, number][] };
+  imported?: number;
+}
+type Pack = PackItem[] | { items: PackItem[]; tests?: PackTest[] };
+declare const __PACK__: Pack | null | undefined;
+const PACK: Pack = typeof __PACK__ !== 'undefined' && __PACK__ ? __PACK__ : [];
+export const PACK_RAW: PackItem[] = Array.isArray(PACK) ? PACK : PACK.items;
+export const PACK_TESTS: PackTest[] = Array.isArray(PACK) ? [] : PACK.tests ?? [];

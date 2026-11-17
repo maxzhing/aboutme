@@ -14,7 +14,7 @@ import type { PackItem } from '@/data/pack';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PDFJS = any;
 let lib: PDFJS | null = null;
-async function pdfjs(): Promise<PDFJS> {
+export async function pdfjs(): Promise<PDFJS> {
   if (lib) return lib;
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore no bundled types for the legacy entry

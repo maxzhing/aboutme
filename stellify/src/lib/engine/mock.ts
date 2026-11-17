@@ -3,6 +3,13 @@ import { SAT_STRUCTURE } from '../taxonomy';
 import { isCorrect } from '../answers';
 import { rng, shuffle } from '../util';
 import { rangeFromResponses, totalRange } from './scoring';
+import { fullTestOfForm, isFullTestForm, type FullTest } from '../fullTest/registry';
+import { buildSatModule } from '../fullTest/assemble';
+import { calibratedScore, levelOf, tableScore } from '../fullTest/score';
+
+/** The adaptive SAT assembled from the student's official questions (see fullTest/assemble.ts). */
+export const REAL_SAT = 'realsat';
+export interface MockOpts { untakenTests?: Set<string> }
 
 export const MOCK_FORMS = [
   { id: 'A', name: 'Practice Test A', blurb: 'Fixed form. Retake it later to measure improvement on identical questions.' },
@@ -18,7 +25,10 @@ export const OFFICIAL_FORMS = [
 ];
 const officialSection = (formId: string): Section => (formId === 'cb3' ? 'math' : 'rw');
 export const isOfficialForm = (formId: string) => formId.startsWith('cb');
-export const formName = (formId: string) => [...MOCK_FORMS, ...OFFICIAL_FORMS].find((f) => f.id === formId)?.name ?? 'Practice Test';
+export const formName = (formId: string) => (formId === REAL_SAT ? 'Real SAT from official questions' : fullTestOfForm(formId)?.name ?? [...MOCK_FORMS, ...OFFICIAL_FORMS].find((f) => f.id === formId)?.name ?? 'Practice Test');
+/** Forms whose questions are (mostly) official: shown with the College Board look and labels. */
+export const isOfficialLike = (formId: string) => isOfficialForm(formId) || isFullTestForm(formId) || formId === REAL_SAT;
+const fullModule = (t: FullTest, st: StageId) => t.modules.find((m) => m.mod === st);
 const DOMAIN_RANK: Record<string, number> = { cs: 0, ii: 1, sec: 2, eoi: 3, alg: 0, adv: 1, psda: 2, geo: 3 };
 /**
  * Deals the pack into three modules of near-equal size and mix. Questions are sorted into the
@@ -56,9 +66,9 @@ const QUOTA: Record<Section, Record<Kind, Record<Difficulty, number>>> = {
 };
 const rep = (k: SkillId, n: number) => Array<SkillId>(n).fill(k);
 /** Skill slots per module, following the official domain proportions and (for R&W) domain order. */
-const RW_SLOTS: SkillId[] = [...rep('wic', 4), ...rep('tsp', 3), 'ctc', ...rep('cid', 2), ...rep('coet', 2), 'coeq', ...rep('inf', 2), ...rep('bnd', 4), ...rep('fss', 3), ...rep('tra', 3), ...rep('syn', 2)];
-const MATH_FIXED: SkillId[] = ['lin1', 'linf', 'linf', 'lin2', 'sys', 'sys', 'ineq', 'ineq', 'equiv', 'equiv', 'nleq', 'nleq', 'nleq', 'nlf', 'nlf', 'nlf', 'trig', 'circ'];
-const MATH_CHOICE: SkillId[][] = [['ratio', 'pct'], ['data1', 'data2'], ['prob', 'infer', 'claims'], ['area', 'lines']];
+export const RW_SLOTS: SkillId[] = [...rep('wic', 4), ...rep('tsp', 3), 'ctc', ...rep('cid', 2), ...rep('coet', 2), 'coeq', ...rep('inf', 2), ...rep('bnd', 4), ...rep('fss', 3), ...rep('tra', 3), ...rep('syn', 2)];
+export const MATH_FIXED: SkillId[] = ['lin1', 'linf', 'linf', 'lin2', 'sys', 'sys', 'ineq', 'ineq', 'equiv', 'equiv', 'nleq', 'nleq', 'nleq', 'nlf', 'nlf', 'nlf', 'trig', 'circ'];
+export const MATH_CHOICE: SkillId[][] = [['ratio', 'pct'], ['data1', 'data2'], ['prob', 'infer', 'claims'], ['area', 'lines']];
 const ORDER: Difficulty[] = ['medium', 'hard', 'very-hard'];
 
 export function buildModule(section: Section, kind: Kind, seed: string, bank: Question[], exclude: Set<string>, seen?: Set<string>): string[] {
@@ -104,7 +114,19 @@ const emptyModule = (section: Section, module: 1 | 2, qids: string[], route?: 'u
 
 export function seedFor(formId: string, startedAt: number) { return formId === 'mix' ? `mix-${startedAt}` : `stellify-form-${formId}`; }
 
-export function startMock(id: string, formId: string, kind: MockAttempt['kind'], bank: Question[], now: number, seen: Set<string>, official: Question[] = []): MockAttempt {
+export function startMock(id: string, formId: string, kind: MockAttempt['kind'], bank: Question[], now: number, seen: Set<string>, official: Question[] = [], opts: MockOpts = {}): MockAttempt {
+  const firstStage = stagesFor(kind)[0];
+  const fullTest = fullTestOfForm(formId);
+  if (fullTest) {
+    const m = fullModule(fullTest, firstStage)!;
+    const ms = m.minutes * 60_000;
+    return { id, formId, kind, startedAt: now, modules: [{ ...emptyModule(m.section, m.module, m.qids), msAllowed: ms }], cursor: { stage: 0, index: 0, msLeft: ms } };
+  }
+  if (formId === REAL_SAT) {
+    const sec = stageSection(firstStage);
+    const qids = buildSatModule(sec, 'm1', `sat-${now}`, { official, bank, seen, untakenTests: opts.untakenTests ?? new Set() }, new Set());
+    return { id, formId, kind, startedAt: now, modules: [emptyModule(sec, 1, qids)], cursor: { stage: 0, index: 0, msLeft: moduleMs(sec) } };
+  }
   if (isOfficialForm(formId)) {
     const sec = officialSection(formId);
     const mods = officialModules(official, sec);
@@ -123,13 +145,32 @@ export function routeFor(m1: MockModuleResult, getQ: (id: string) => Question | 
 }
 
 /** Advances to the next stage after a module (or the break) ends. Returns the updated attempt and whether it is finished. */
-export function advanceMock(mock: MockAttempt, bank: Question[], getQ: (id: string) => Question | undefined, seen: Set<string>, official: Question[] = []): { mock: MockAttempt; finished: boolean } {
+export function advanceMock(mock: MockAttempt, bank: Question[], getQ: (id: string) => Question | undefined, seen: Set<string>, official: Question[] = [], opts: MockOpts = {}): { mock: MockAttempt; finished: boolean } {
   const stages = stagesFor(mock.kind);
   const cur = mock.cursor!;
   const nextStage = cur.stage + 1;
   if (nextStage >= stages.length) return { mock: { ...mock, cursor: undefined }, finished: true };
   const next = stages[nextStage];
   if (next === 'break') return { mock: { ...mock, cursor: { stage: nextStage, index: 0, msLeft: 0, breakMsLeft: BREAK_MS } }, finished: false };
+  const fullTest = fullTestOfForm(mock.formId);
+  if (fullTest) {
+    const m = fullModule(fullTest, next)!;
+    const ms = m.minutes * 60_000;
+    return { mock: { ...mock, modules: [...mock.modules, { ...emptyModule(m.section, m.module, m.qids), msAllowed: ms }], cursor: { stage: nextStage, index: 0, msLeft: ms } }, finished: false };
+  }
+  if (mock.formId === REAL_SAT) {
+    const section = stageSection(next);
+    const used = new Set(mock.modules.flatMap((m) => m.qids));
+    const pools = { official, bank, seen, untakenTests: opts.untakenTests ?? new Set<string>() };
+    const seed = `sat-${mock.startedAt}`;
+    let mod: MockModuleResult;
+    if (next.endsWith('1')) mod = emptyModule(section, 1, buildSatModule(section, 'm1', seed, pools, used));
+    else {
+      const route = routeFor(mock.modules.find((m) => m.section === section && m.module === 1)!, getQ);
+      mod = emptyModule(section, 2, buildSatModule(section, route, seed, pools, used), route);
+    }
+    return { mock: { ...mock, modules: [...mock.modules, mod], cursor: { stage: nextStage, index: 0, msLeft: moduleMs(section) } }, finished: false };
+  }
   if (isOfficialForm(mock.formId)) {
     const sec = officialSection(mock.formId);
     const qids = officialModules(official, sec)[1];
@@ -156,6 +197,14 @@ export function scoreMock(mock: MockAttempt, getQ: (id: string) => Question | un
     const responses = mods.flatMap((m) => m.qids.map((id) => ({ q: getQ(id), a: m.answers[id] ?? null })))
       .filter((r) => r.q).map((r) => ({ difficulty: r.q!.difficulty, type: r.q!.type, correct: isCorrect(r.q!, r.a) }));
     const lower = mods.some((m) => m.module === 2 && m.route === 'lower');
+    // an official practice test taken whole is scored with its own College Board conversion table
+    const fullTest = fullTestOfForm(mock.formId);
+    if (fullTest?.table && mods.length === 2) return tableScore(fullTest.table[sec], responses.filter((r) => r.correct).length);
+    if (fullTest || mock.formId === REAL_SAT) {
+      const rs = mods.flatMap((m) => m.qids.map((id) => ({ q: getQ(id), a: m.answers[id] ?? null }))).filter((r) => r.q)
+        .map((r) => ({ level: levelOf(r.q!), type: r.q!.type, correct: isCorrect(r.q!, r.a) }));
+      return calibratedScore(sec, rs, lower ? LOWER_ROUTE_CAP : 800);
+    }
     return rangeFromResponses(responses, lower ? LOWER_ROUTE_CAP : 800);
   };
   const rw = section('rw'), math = section('math');

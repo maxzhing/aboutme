@@ -100,6 +100,51 @@ Reading & Writing questions become text, while math and questions with tables, g
 keep the exact page image of the question and of the explanation. Imported questions are stored in
 that browser only (IndexedDB), lead the matching course chapters, and make up timed official tests.
 
+## Official full practice tests, a Real SAT, real scores and a study plan
+
+**Import a full College Board practice test.** The College Board publishes its practice tests
+free as PDFs for students taking the SAT on paper. On **Official Questions**, drop in one test's
+three files (the practice test, its scoring guide and its answer explanations). pdf.js reads them
+in the browser, with no API key and nothing uploaded, in about five seconds:
+
+- every question in all four modules, in the printed order (Reading & Writing questions as text
+  when the scan reads cleanly; Math, figures and underlining as exact page images)
+- the answer key from the scoring guide (every accepted form of each student-produced answer), cross-checked
+  against the College Board's explanation for every question
+- the College Board's explanation for every question (Math explanations as exact images, so the
+  math stays typeset)
+- the test's raw-score conversion table and its real time limits (39 and 43 minutes per module)
+- each question sorted into its official skill: Reading & Writing from the College Board's fixed question
+  wording, Math from the wording of the question and its explanation. Difficulty is estimated from position,
+  because these booklets do not print it.
+
+All seven free tests (Practice Tests 4–10, 840 questions) are checked in the tests whenever a local copy is
+present: every question found in order, every key complete and agreeing with its explanation, every table read.
+
+**Take it as the real thing.** The official test runs exactly as printed: two Reading & Writing
+modules, a 10-minute break, two Math modules, with the graphing calculator and reference sheet. It
+is scored the way the College Board scores it: the number right in each section is looked up in
+that test's own conversion table, which gives the section score range (the large number shown is
+its middle), and the two add up to the total.
+
+**Real SAT from your official questions.** An adaptive test built the way the digital SAT is built:
+27 + 27 Reading & Writing and 22 + 22 Math questions in the official skill proportions and order,
+with Module 2 harder or easier depending on Module 1, at the real time limits (32 and 35 minutes per
+module). Every slot takes an official question (Question Bank imports and full tests), preferring ones
+you have not seen and saving questions from full tests you have not taken yet. Only when a skill has no
+official question left is the slot filled with a Stellify hard or very hard question for that skill; the
+report labels each question Official or Stellify, and the Mock Exams page shows how much of each section
+your library covers. It is scored with item-response scoring tied to the College Board scale: harder
+questions count for more, and ability is converted through the average of the official conversion tables
+of Practice Tests 4–10.
+
+**A study plan from what you missed.** After any test, each missed skill is ranked by the points at stake
+(misses × the scaled points one more right answer is worth near your score, read from the conversion curve),
+with the trap you fell for where it is known, and notes on pacing (ran out of time, left blanks, or rushed).
+One click turns it into your day-by-day plan until your exam date: a lesson for each focus skill, official
+practice you have not solved, redoing your own misses, timed modules if time was the problem, and a full test
+each week.
+
 ## Test-day mode and your own official questions
 
 Every timed exam starts with a lock-in prompt: allow full screen (the test then covers the whole
@@ -153,7 +198,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 12 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface.
+- `npm run test:e2e` — 13 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
@@ -167,5 +212,13 @@ npm run test:e2e
   by review, not by running code. AP® is a trademark registered by the College Board.
 - Storage is the browser's local storage for this file; export a backup to move devices.
 - There is no cloud account or sync in the single-file version.
+- Scores on an imported official practice test come from that test's own College Board table. The Real SAT score
+  is a calibrated estimate, not a College Board score: the College Board's digital scoring uses item parameters it
+  does not publish, and the seven official tables themselves differ by about 25–40 points at the same raw score.
+- Skills and difficulty for questions read from a practice-test booklet are inferred, not printed by the College
+  Board: on the seven free tests the Math domain shares come out at about 35% Algebra, 28% Advanced Math, 19% Data,
+  19% Geometry, against the official 35/35/15/15.
+- Official practice tests are the College Board's copyrighted work: imported tests stay in your browser, and a
+  personal copy that includes them must stay private.
 
 SAT® is a trademark registered by the College Board, which is not affiliated with and does not endorse Stellify.
