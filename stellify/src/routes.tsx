@@ -17,6 +17,7 @@ import { CalendarPage } from './pages/Calendar';
 import { AchievementsPage, PetPage, RewardsPage } from './pages/Companion';
 import { NotesPage, ReferencePage, ResourcesPage, TutorPage, VocabularyPage } from './pages/Tools';
 import { SettingsPage } from './pages/Settings';
+import { QcPage } from './pages/Qc';
 
 function NotFound() {
   return <div className="card p-10 text-center"><h1 className="text-2xl font-bold">Page not found</h1><p className="mt-2 text-sm text-muted">That page does not exist.</p><Link href="/" className="btn-primary mt-4">Back to the dashboard</Link></div>;
@@ -65,6 +66,7 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/reference$/, component: ReferencePage },
   { pattern: /^\/notes$/, component: NotesPage },
   { pattern: /^\/resources$/, component: ResourcesPage },
+  { pattern: /^\/qc$/, component: QcPage },
   { pattern: /^\/settings$/, component: SettingsPage },
   { pattern: /^.*$/, component: NotFound },
 ];

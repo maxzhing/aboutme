@@ -117,6 +117,7 @@ export function SettingsPage() {
           <li>• <b className="text-ink">Passages:</b> written for practice. Researchers, studies and figures in them are illustrative.</li>
           <li>• {BRAND.disclaimer}</li>
         </ul>
+        <p className="mt-3 text-sm"><Link href="/qc" className="font-semibold text-brand2 hover:underline" data-testid="qc-link">For reviewers: question quality control →</Link></p>
       </Card>
     </div>
   );

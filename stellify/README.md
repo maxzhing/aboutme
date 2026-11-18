@@ -258,6 +258,20 @@ item-development process before the app will serve it (`src/data/questions/rules
 Statistical pretesting, discrimination and differential item functioning analyses need responses from
 thousands of real test takers, so they are outside what an offline study app can do.
 
+## Question quality control
+
+`/qc` (linked from Settings, "For reviewers") checks every Stellify question and lists flags to look at: possible
+duplicates (shared words and math), near-identical answer choices in reading questions, identical choices anywhere,
+a key that stands out by length (weak distractors), reading-question distractors with no named reasoning error,
+difficulty labels whose results on your own first tries disagree with the model by more than 20 points (15+
+answers), and student reports. Each flag links to the question and can be marked reviewed with a note.
+
+The first review (2026-11-18) found and fixed three real problems: a near-duplicate circle question (the same
+equation with flipped signs, rewritten as a different challenge that requires dividing out a coefficient first)
+and two questions whose key was the only long, careful choice (their distractors were rewritten to match). The
+other six flags were kept with reasons, recorded in `src/data/qcReviewed.ts`. `tests/qc.test.ts` fails if a new
+flag appears that no one has reviewed, or if a recorded review no longer matches a flag.
+
 ## Validating routing and scoring (simulation study)
 
 `tests/simulation.test.ts` sends 300 simulated students per section through Practice Tests A and B, using the
@@ -290,7 +304,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 19 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
+- `npm run test:e2e` — 20 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 

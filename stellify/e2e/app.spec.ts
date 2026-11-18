@@ -808,3 +808,26 @@ test('confidence: a sure wrong answer is diagnosed as a likely misconception, wi
   await expect(page.getByTestId('diagnosis')).toContainText('trap');
   expect(errors).toEqual([]);
 });
+
+test('quality control: a student report shows up as an open flag, and a reviewer can mark it reviewed', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/settings');
+  await page.getByTestId('qc-link').click();
+  await expect(page.getByTestId('qc-page')).toContainText('Question quality control');
+  await expect(page.getByTestId('qc-page')).toContainText('No open flags.'); // every automatic flag on the bank has been reviewed
+  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
+  await page.getByRole('button', { name: 'Report a problem with this question' }).click();
+  await page.locator('form textarea').fill('Choice C looks defensible too.');
+  await page.getByRole('button', { name: 'Save report' }).click();
+  await go(page, '/qc');
+  const flag = page.getByTestId('qc-flag').filter({ hasText: 'r-bnd-06' });
+  await expect(flag).toHaveAttribute('data-kind', 'reported');
+  await expect(flag).toContainText('Choice C looks defensible too.');
+  await flag.getByRole('textbox').fill('Checked: C splits a clause with a semicolon wrongly; key stands.');
+  await flag.getByTestId('qc-mark').click();
+  await expect(page.getByTestId('qc-page')).toContainText('No open flags.');
+  await page.getByRole('tab', { name: 'Reviewed' }).click();
+  await expect(page.getByTestId('qc-flags')).toContainText('key stands');
+  expect(errors).toEqual([]);
+});

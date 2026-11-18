@@ -89,6 +89,7 @@ interface Actions {
   setMarks: (key: string, marks: Mark[]) => void;
   /** clears every highlight whose key starts with this prefix */
   clearMarks: (prefix: string) => void;
+  reviewFlag: (key: string, note: string | null) => void;
 }
 
 export type Store = AppState & Actions;
@@ -350,6 +351,7 @@ export const useStore = create<Store>()(
           if (keys.length > 600) for (const k of keys.sort((a, b) => all[a].at - all[b].at).slice(0, keys.length - 600)) delete all[k];
           setState({ highlights: all });
         },
+        reviewFlag: (key, note) => { const r = { ...(getState().qcReviewed ?? {}) }; if (note === null) delete r[key]; else r[key] = { at: Date.now(), note }; setState({ qcReviewed: r }); },
         clearMarks: (prefix) => setState({ highlights: Object.fromEntries(Object.entries(getState().highlights ?? {}).filter(([k]) => !k.startsWith(prefix))) }),
       };
     },

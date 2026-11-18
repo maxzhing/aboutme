@@ -328,4 +328,6 @@ export interface AppState {
   seenLevel: number;
   /** highlights and their notes, by `scope|questionId|part` (each test attempt has its own scope, like a fresh Bluebook session) */
   highlights?: Record<string, { at: number; marks: Mark[] }>;
+  /** quality-control flags this reviewer marked as checked, with a note */
+  qcReviewed?: Record<string, { at: number; note: string }>;
 }
