@@ -18,6 +18,7 @@ import { AchievementsPage, PetPage, RewardsPage } from './pages/Companion';
 import { NotesPage, ReferencePage, ResourcesPage, TutorPage, VocabularyPage } from './pages/Tools';
 import { SettingsPage } from './pages/Settings';
 import { QcPage } from './pages/Qc';
+import { RemixPage } from './pages/Remix';
 
 function NotFound() {
   return <div className="card p-10 text-center"><h1 className="text-2xl font-bold">Page not found</h1><p className="mt-2 text-sm text-muted">That page does not exist.</p><Link href="/" className="btn-primary mt-4">Back to the dashboard</Link></div>;
@@ -42,6 +43,7 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/practice\/session$/, component: SessionPage },
   { pattern: /^\/practice\/smart$/, component: SmartPage },
   { pattern: /^\/practice\/hard$/, component: HardPage },
+  { pattern: /^\/remix$/, component: RemixPage },
   { pattern: /^\/official$/, component: OfficialPage },
   // AP self-study courses: /calc, /csa, /micro, /macro, /stats, their lessons and unit reviews
   { pattern: /^\/(?<course>calc|csa|micro|macro|stats)$/, component: CourseHomePage },

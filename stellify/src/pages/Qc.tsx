@@ -8,6 +8,7 @@ import { useStore } from '@/lib/store';
 import { DIFFICULTY_NAME, DOMAINS, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { formatOf, genreOf, GENRE_NAME, type Genre } from '@/data/questions/genres';
 import { Badge, Card, PageHeader, Stat, Tabs, cn } from '@/components/ui';
+import { RemixReview } from '@/components/RemixReview';
 
 const keyOf = (f: Flag) => `${f.kind}|${f.qid}|${f.other ?? ''}`;
 
@@ -99,6 +100,7 @@ export function QcPage() {
           </table></div>
         ) : <p className="mt-2 text-sm text-muted">Answer some questions first.</p>}
       </Card>
+      <RemixReview />
     </div>
   );
 }

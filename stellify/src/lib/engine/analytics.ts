@@ -4,7 +4,8 @@ import { addDays, dateKey, pct } from '../util';
 import { estimateTheta, expectedCorrect, lowerConfidence, sectionStatus, totalRange, type Confidence } from './scoring';
 import type { ScoreRange } from '../types';
 
-const scored = (a: Attempt[]) => a.filter((x) => !x.abandoned);
+/** bank and official questions; Remix Studio variations are reported on their own (see remixSummary) */
+const scored = (a: Attempt[]) => a.filter((x) => !x.abandoned && !x.qid.startsWith('gx-'));
 
 export function overview(s: AppState, getQ: (id: string) => Question | undefined) {
   const rows = scored(s.attempts).map((a) => ({ a, q: getQ(a.qid) })).filter((r): r is { a: Attempt; q: Question } => !!r.q);

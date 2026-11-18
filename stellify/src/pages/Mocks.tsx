@@ -14,7 +14,7 @@ import type { MockAttempt, ScoreRange, Section, SkillId } from '@/lib/types';
 import { Explanation, QuestionMeta, QuestionView } from '@/components/Question';
 import { isCorrect } from '@/lib/answers';
 import { AnnotateButton } from '@/components/Highlight';
-import { Grapher } from '@/components/Grapher';
+import { CalcPanel } from '@/components/Calculators';
 import { RichText } from '@/components/RichText';
 import { TestShell } from '@/components/TestShell';
 import { OfficialTestsCard, TestPlanPanel } from '@/components/FullTests';
@@ -112,7 +112,7 @@ const DIRECTIONS: Record<Section, string[]> = {
   ],
   math: [
     'Most questions are multiple choice. Some ask you to type your own answer: enter one correct answer as a number, fraction or decimal (a negative sign is fine). If a decimal does not fit, round or cut it off at the fourth digit; do not enter symbols such as % or $.',
-    'A graphing calculator and a reference sheet are open to you at any time from the top bar.',
+    'A calculator (Desmos graphing and scientific when you are online, Stellify\'s built-in tools offline) and a reference sheet are open to you at any time from the top bar.',
     'Unless a question says otherwise, figures are drawn to scale, all variables are real numbers, and a function is defined for every real number where it makes sense.',
     'You can move back and forth within this module and mark questions for review. When time runs out, the module ends and your answers are saved.',
   ],
@@ -182,9 +182,9 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
         <div className={cn(tool === 'calc' && 'grid items-start gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]')}>
         {tool === 'calc' && (
           <Card className="lg:sticky lg:top-3" data-testid="calc-panel">
-            <div className="mb-2 flex items-center justify-between"><h2 className="flex items-center gap-1.5 text-sm font-semibold"><Calculator size={15} />Graphing calculator</h2><button className="btn-quiet !p-1" aria-label="Close calculator" onClick={() => setTool(null)}><X size={16} /></button></div>
-            <Grapher demo={{ exprs: ['y = x'], view: [-10, 10, -10, 10], show: ['intersections', 'roots', 'extrema'] }} />
-            <p className="mt-2 text-xs text-faint">Stellify&apos;s own graphing tool. On test day Bluebook has the Desmos calculator built in.</p>
+            <div className="mb-2 flex items-center justify-between"><h2 className="flex items-center gap-1.5 text-sm font-semibold"><Calculator size={15} />Calculator</h2><button className="btn-quiet !p-1" aria-label="Close calculator" onClick={() => setTool(null)}><X size={16} /></button></div>
+            {/* the panel stays mounted while open, so Desmos keeps its expressions as the student moves between questions */}
+            <CalcPanel height={520} />
           </Card>
         )}
         <Card className="space-y-4" data-testid="mock-question" data-qid={q.id}>

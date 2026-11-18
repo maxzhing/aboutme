@@ -89,7 +89,7 @@ export interface Question extends Omit<RawQuestion, 'd' | 'time'> {
 
 export type PracticeMode =
   | 'smart' | 'bank' | 'hard' | 'timed' | 'daily' | 'speed' | 'arena'
-  | 'mistakes' | 'review' | 'diagnostic' | 'mock' | 'lesson' | 'tutor' | 'mission';
+  | 'mistakes' | 'review' | 'diagnostic' | 'mock' | 'lesson' | 'tutor' | 'mission' | 'remix';
 
 export interface Attempt {
   id: string;
@@ -332,4 +332,6 @@ export interface AppState {
   highlights?: Record<string, { at: number; marks: Mark[] }>;
   /** quality-control flags this reviewer marked as checked, with a note */
   qcReviewed?: Record<string, { at: number; note: string }>;
+  /** Remix Studio: generated questions and the chains they belong to (versioned; see lib/remix/store.ts) */
+  remix?: import('./remix/types').RemixState;
 }

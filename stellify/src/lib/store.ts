@@ -7,7 +7,9 @@ import { del, get, set } from 'idb-keyval';
 import type { Mark } from './highlight';
 import type { AppState, ErrorCategory, MockAttempt, Note, PetSlot, Profile, Question, QuestionReport, Settings, TutorMessage } from './types';
 import { initialState, STATE_VERSION } from './state';
-import { getQuestion, OFFICIAL, QUESTIONS } from '@/data/questions';
+import { getQuestion, OFFICIAL, QUESTIONS, setExtraResolver } from '@/data/questions';
+import * as RX from './remix/store';
+import { emptyRemix, type RemixQuestion, type ReviewStatus } from './remix/types';
 import { applyAttempt, grant, resolveMistake, unlockAchievements, type AttemptInput, type GameEvent } from './engine/attempt';
 import { generatePlan } from './engine/plan';
 import { advanceMock, formName, REAL_SAT, REMIX, scoreMock, stagesFor, startMock as buildMock } from './engine/mock';
@@ -93,9 +95,17 @@ interface Actions {
   /** clears every highlight whose key starts with this prefix */
   clearMarks: (prefix: string) => void;
   reviewFlag: (key: string, note: string | null) => void;
+  /** Remix Studio */
+  remixNewChain: (originId: string) => string;
+  remixAdd: (q: RemixQuestion) => { ok: boolean; reason?: string };
+  remixReview: (id: string, status: ReviewStatus, note: string, flags: string[]) => void;
+  remixSaveChain: (id: string, saved: boolean) => void;
+  remixDeleteChain: (id: string) => void;
 }
 
 export type Store = AppState & Actions;
+/** generated questions something still points at (never pruned) */
+const remixRefs = (s: AppState) => new Set([...s.saved, ...Object.keys(s.mistakes), ...Object.keys(s.srs)].filter((id) => id.startsWith('gx-')));
 const getQ = (id: string): Question | undefined => getQuestion(id);
 const pure = (s: Store): AppState => {
   const { hydrated: _h, events: _e, ...rest } = s as Store & Record<string, unknown>;
@@ -343,7 +353,7 @@ export const useStore = create<Store>()(
           const a = post(st, now);
           return { state: a.state, events: [...g.events, ...a.events] };
         }),
-        importState: (s) => { void safetyBackup(pure(getState()), 'restoring a backup'); setState({ ...initialState(), ...s, version: STATE_VERSION }); },
+        importState: (s) => { void safetyBackup(pure(getState()), 'restoring a backup'); setState({ ...initialState(), ...s, remix: RX.sanitize(s.remix), version: STATE_VERSION }); },
         resetAll: () => { void safetyBackup(pure(getState()), 'deleting all data'); setState({ ...initialState(), events: [] }); },
         markLevelSeen: (level) => setState({ seenLevel: level }),
         setMarks: (key, marks) => {
@@ -355,6 +365,11 @@ export const useStore = create<Store>()(
           setState({ highlights: all });
         },
         reviewFlag: (key, note) => { const r = { ...(getState().qcReviewed ?? {}) }; if (note === null) delete r[key]; else r[key] = { at: Date.now(), note }; setState({ qcReviewed: r }); },
+        remixNewChain: (originId) => { const r = RX.newChain(getState().remix ?? emptyRemix(), originId, Date.now()); setState({ remix: RX.prune(r.state, remixRefs(getState())) }); return r.id; },
+        remixAdd: (q) => { const r = RX.addItem(getState().remix ?? emptyRemix(), q, Date.now()); if (r.ok) setState({ remix: r.state }); return { ok: r.ok, reason: r.reason }; },
+        remixReview: (id, status, note, flags) => setState({ remix: RX.review(getState().remix ?? emptyRemix(), id, status, note, flags, Date.now()) }),
+        remixSaveChain: (id, saved) => setState({ remix: RX.setChainSaved(getState().remix ?? emptyRemix(), id, saved) }),
+        remixDeleteChain: (id) => setState({ remix: RX.deleteChain(getState().remix ?? emptyRemix(), id, remixRefs(getState())) }),
         clearMarks: (prefix) => setState({ highlights: Object.fromEntries(Object.entries(getState().highlights ?? {}).filter(([k]) => !k.startsWith(prefix))) }),
       };
     },
@@ -369,7 +384,7 @@ export const useStore = create<Store>()(
         try { if (p.settings.geminiKey) sessionStorage.setItem(KEY_SESSION, p.settings.geminiKey); else sessionStorage.removeItem(KEY_SESSION); } catch { /* unavailable */ }
         return { ...p, settings: { ...p.settings, geminiKey: undefined } } as unknown as Store;
       },
-      merge: (persisted, current) => ({ ...current, ...initialState(), ...(persisted as Partial<AppState>), settings: { ...initialState().settings, ...((persisted as Partial<AppState>)?.settings ?? {}), ...sessionKey((persisted as Partial<AppState>)?.settings) }, profile: { ...initialState().profile, ...((persisted as Partial<AppState>)?.profile ?? {}) }, pet: { ...initialState().pet, ...((persisted as Partial<AppState>)?.pet ?? {}) } }),
+      merge: (persisted, current) => ({ ...current, ...initialState(), ...(persisted as Partial<AppState>), settings: { ...initialState().settings, ...((persisted as Partial<AppState>)?.settings ?? {}), ...sessionKey((persisted as Partial<AppState>)?.settings) }, profile: { ...initialState().profile, ...((persisted as Partial<AppState>)?.profile ?? {}) }, pet: { ...initialState().pet, ...((persisted as Partial<AppState>)?.pet ?? {}) }, remix: RX.sanitize((persisted as Partial<AppState>)?.remix) }),
       onRehydrateStorage: () => () => { useStore.setState({ hydrated: true }); void dailyBackup(pure(useStore.getState())); },
     },
   ),
@@ -386,3 +401,6 @@ useStore.subscribe((s, prev) => {
 
 /** Plain snapshot of the student's data (for export, sharing and cloud sync). */
 export const snapshot = (): AppState => pure(useStore.getState());
+
+// generated Remix Studio questions resolve by id everywhere (review, Mistake Bucket, saved questions, analytics)
+setExtraResolver((id) => (id.startsWith('gx-') ? useStore.getState().remix?.items[id] : undefined));

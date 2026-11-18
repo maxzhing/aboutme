@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { Check, CircleSlash, Highlighter, Lightbulb, X } from 'lucide-react';
+import { Check, CircleSlash, Highlighter, Lightbulb, Wand2, X } from 'lucide-react';
+import { remixable } from '@/lib/remix/engine';
 import type { ErrorCategory, Question } from '@/lib/types';
 import { DIFFICULTY_NAME, DOMAIN, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { LETTERS, correctAnswerLabel, displayAnswer, isCorrect } from '@/lib/answers';
@@ -21,7 +22,7 @@ import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
 export function QuestionMeta({ q }: { q: Question }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      {q.official || q.id.startsWith('cb-') ? <Badge tone="gold">Official College Board question</Badge> : <Badge>Stellify original</Badge>}
+      {q.official || q.id.startsWith('cb-') ? <Badge tone="gold">Official College Board question</Badge> : q.id.startsWith('gx-') ? <Badge tone="brand">Remix Studio · generated</Badge> : <Badge>Stellify original</Badge>}
       <Badge tone="brand">{SECTION_NAME[q.section]}</Badge>
       <Badge>{DOMAIN[q.domain].name}</Badge>
       <Link href={`/learn/${q.skill}`} className="chip hover:text-ink">{SKILL[q.skill].short}</Link>
@@ -248,6 +249,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
           {chapterFor(q.skill, q.sub) && <Link href={`/learn/${q.skill}/${chapterFor(q.skill, q.sub)!.id}`} className="btn-ghost !py-1.5" data-testid="relearn">Re-learn: {chapterFor(q.skill, q.sub)!.title}</Link>}
           <Link href={`/practice/session?mode=skill&skill=${q.skill}&n=6`} className="btn-ghost !py-1.5">6 more {SKILL[q.skill].short} questions</Link>
           {related && <Link href={`/practice/session?mode=single&ids=${related.id}`} className="btn-ghost !py-1.5">Similar question ({DIFFICULTY_NAME[related.difficulty]})</Link>}
+          {!q.id.startsWith('gx-') && remixable(q).ok && <Link href={`/remix?q=${encodeURIComponent(q.id)}`} className="btn-ghost !py-1.5" data-testid="remix-this"><Wand2 size={14} />Remix this question</Link>}
         </div>
       </Block>
       {extra}

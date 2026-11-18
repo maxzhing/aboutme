@@ -4,18 +4,21 @@ import { DAY, pct } from '../util';
 import { rankSkills } from './adaptive';
 import { computeAllSkillStats, MASTERY_LEVELS } from './mastery';
 import { detectPatterns } from './mistakes';
+import { remixSummary, type RemixSummary } from '../remix/analytics';
 
 export interface WeeklyReport {
   from: number; to: number; questions: number; accuracy: number; prevQuestions: number; prevAccuracy: number; minutes: number;
   improved: { skill: SkillId; from: number; to: number }[];
   declined: { skill: SkillId; from: number; to: number }[];
   mastered: SkillId[]; weak: SkillId[]; patterns: string[]; nextSteps: string[]; headline: string;
+  /** Remix Studio this week (reported separately from the bank's accuracy) */
+  remix: RemixSummary;
 }
 
 /** Deterministic weekly report built only from the student's recorded attempts. */
 export function weeklyReport(s: AppState, getQ: (id: string) => Question | undefined, now: number): WeeklyReport {
   const from = now - 7 * DAY, prevFrom = now - 14 * DAY;
-  const inRange = (a: number, b: number) => s.attempts.filter((x) => !x.abandoned && x.at >= a && x.at < b);
+  const inRange = (a: number, b: number) => s.attempts.filter((x) => !x.abandoned && !x.qid.startsWith('gx-') && x.at >= a && x.at < b);
   const cur = inRange(from, now + 1), prev = inRange(prevFrom, from);
   const acc = (rows: typeof cur, skill?: SkillId) => {
     const r = skill ? rows.filter((x) => getQ(x.qid)?.skill === skill) : rows;
@@ -48,5 +51,5 @@ export function weeklyReport(s: AppState, getQ: (id: string) => Question | undef
     : p.n >= 5 && c.pct > p.pct ? `Accuracy rose from ${p.pct}% to ${c.pct}% on ${c.n} questions.`
     : p.n >= 5 && c.pct < p.pct ? `You answered ${c.n} questions at ${c.pct}% (last week: ${p.pct}%). Harder questions often cause a dip; check the weak skills below.`
     : `You answered ${c.n} questions this week at ${c.pct}% accuracy.`;
-  return { from, to: now, questions: c.n, accuracy: c.pct, prevQuestions: p.n, prevAccuracy: p.pct, minutes, improved, declined, mastered, weak, patterns, nextSteps, headline };
+  return { remix: remixSummary(s.attempts, getQ, from, now + 1), from, to: now, questions: c.n, accuracy: c.pct, prevQuestions: p.n, prevAccuracy: p.pct, minutes, improved, declined, mastered, weak, patterns, nextSteps, headline };
 }

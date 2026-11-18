@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import { AlertTriangle, CheckCircle2, ChevronDown, Circle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ChevronDown, Circle, Wand2 } from 'lucide-react';
+import { remixable } from '@/lib/remix/engine';
+import { isRemix } from '@/lib/remix/types';
 import { useMemo, useState } from 'react';
 import { getQuestion } from '@/data/questions';
 import { useStore } from '@/lib/store';
@@ -103,6 +105,7 @@ export function MistakesPage() {
                 {m.status === 'unresolved' && (p.ready
                   ? <button className="btn-primary !py-1.5" onClick={() => resolve(m.qid)} data-testid="resolve">Mark resolved</button>
                   : <Link href={`/practice/session?mode=mistakes&ids=${m.qid}&n=3`} className="btn-primary !py-1.5" data-testid="fix-it">Fix it</Link>)}
+                {remixable(q).ok && <Link href={`/remix?q=${encodeURIComponent(isRemix(q) ? q.remix.originId : q.id)}`} className="btn-ghost !py-1.5" data-testid="remix-mistake" title="Practice the same idea in new questions"><Wand2 size={15} />Remix</Link>}
                 <button className="btn-ghost !py-1.5" onClick={() => setOpen(open === m.qid ? null : m.qid)} aria-expanded={open === m.qid}>Explanation<ChevronDown size={15} className={open === m.qid ? 'rotate-180' : ''} /></button>
               </div>
             </div>

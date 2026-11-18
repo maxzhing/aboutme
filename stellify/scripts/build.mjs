@@ -50,7 +50,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' blob:; worker-src blob:; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; connect-src https://generativelanguage.googleapis.com data: blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' blob:; worker-src blob:; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; connect-src https://generativelanguage.googleapis.com data: blob:; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src https://www.desmos.com">
 <meta name="description" content="Stellify: free, offline Digital SAT preparation in a single file.">
 <meta name="theme-color" content="#090D1C">
 <title>Stellify — free Digital SAT prep</title>

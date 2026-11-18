@@ -34,6 +34,10 @@ export interface SessionConfig {
   onComplete?: (r: SessionResult) => void;
   completeLabel?: string;
   completeHref?: string;
+  /** shown under the explanation once a question is checked (Remix Studio puts its next steps here) */
+  afterExplanation?: (q: Question, answer: string | null) => React.ReactNode;
+  /** called right after an answer is checked */
+  onAnswered?: (qid: string, correct: boolean) => void;
 }
 
 const REPORT_REASONS = ['The answer key seems wrong', 'More than one answer seems correct', 'Typo or formatting problem', 'The explanation is unclear', 'Something else'];
@@ -103,6 +107,7 @@ export function SessionRunner(cfg: SessionConfig) {
     bank();
     store.answer({ qid: q.id, answer: a, ms: spent.current[q.id] ?? 0, hints: hints[q.id] ?? 0, mode: cfg.mode, sessionId, confidence: sure[q.id] });
     setSubmitted((s) => ({ ...s, [q.id]: true }));
+    cfg.onAnswered?.(q.id, isCorrect(q, a));
     if (feedback === 'immediate') {
       if (isCorrect(q, a)) { const c = combo + 1; setCombo(c); setFire(Date.now()); sfx(c >= 3 ? 'combo' : 'correct'); } else { setCombo(0); sfx('wrong'); }
     }
@@ -307,6 +312,7 @@ export function SessionRunner(cfg: SessionConfig) {
         <Card>
           <Explanation q={q} answer={a} category={store.mistakes[q.id]?.category} onCategory={(c) => store.setMistakeCategory(q.id, c)}
             extra={<div className="flex flex-wrap gap-2"><button className="btn-ghost !py-1.5" onClick={() => setPanel('tutor')}><Bot size={15} />Discuss with the tutor</button><button className="btn-ghost !py-1.5" onClick={() => setPanel('note')}><NotebookPen size={15} />Add to my notebook</button></div>} />
+          {cfg.afterExplanation?.(q, a)}
         </Card>
       )}
       <p className="text-center text-xs text-faint">Shortcuts: A–D choose · Enter check / next · H hint · F flag</p>

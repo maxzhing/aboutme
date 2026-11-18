@@ -99,7 +99,13 @@ export function unregisterImported(ids: string[]) {
   const drop = new Set(ids);
   for (let i = OFFICIAL.length - 1; i >= 0; i--) if (drop.has(OFFICIAL[i].id)) { BY_ID.delete(OFFICIAL[i].id); OFFICIAL.splice(i, 1); }
 }
-export const getQuestion = (id: string): Question | undefined => BY_ID.get(id);
+/**
+ * Questions that live outside the bank (Remix Studio's generated "gx-" items, kept in the student's saved
+ * state). The store registers the lookup so this module never imports the store.
+ */
+let extra: ((id: string) => Question | undefined) | null = null;
+export const setExtraResolver = (fn: ((id: string) => Question | undefined) | null) => { extra = fn; };
+export const getQuestion = (id: string): Question | undefined => BY_ID.get(id) ?? (extra ? extra(id) : undefined);
 export const questionsBySkill = (skill: SkillId) => QUESTIONS.filter((q) => q.skill === skill);
 export const questionsBySection = (section: Section) => QUESTIONS.filter((q) => q.section === section);
 

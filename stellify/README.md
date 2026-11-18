@@ -287,6 +287,60 @@ and two questions whose key was the only long, careful choice (their distractors
 other six flags were kept with reasons, recorded in `src/data/qcReviewed.ts`. `tests/qc.test.ts` fails if a new
 flag appears that no one has reviewed, or if a recorded review no longer matches a flag.
 
+## Remix Studio
+
+`/remix` turns a question into new questions that test the same concept in a different way. It opens from the
+explanation of any question (practice, Smart Practice, mock-exam review), from the Question Bank, the Mistake
+Bucket and saved questions.
+
+- **Six transformations.** Number (new values), Context (a new situation or subject area), Representation (graph,
+  table, equation or another official question form), Reverse (work backward), Reasoning (find the error, judge a
+  claim, near-miss distractors) and Challenge (a harder application). Where a transformation does not make sense
+  for a skill (Reverse for transitions, for example) it is shown disabled with the reason, never faked.
+- **Five levels**, Foundation to Advanced SAT Challenge, with Preserve or Increase difficulty.
+- **Smart Remix** chooses the transformation and level from the student's last answer, confidence, diagnosed
+  mistake cause, skill record and the chain so far, and says why ("you got this right but said you were guessing…").
+- **Chains** of up to 8 steps, each generated from the one before and validated on its own; chains can be saved,
+  revisited, restarted and deleted.
+- **Math**: 10 concept families cover all 19 math skills (six are mapped to the closest family and say so).
+  Distractors come from named misconceptions. **Reading & Writing**: generators for all 11 skills in all four
+  domains, built from an original content bank (`src/lib/remix/rwBank.ts`): studies, debates, data cards, research
+  notes, transition pairs, punctuation and grammar frames, and words in context. Researchers, places and works in
+  it are invented for practice.
+- **Independent validation, every time** (`src/lib/remix/validate.ts`). Math is re-solved from a machine-checkable
+  spec (root finding, Cramer's rule, substitution) and the validator counts how many choices are actually correct.
+  Each R&W choice is tagged with what it is (supported, too broad, reversed, unrelated…). Data statements are
+  checked against the table, synthesis sentences against the notes, and punctuation against the sentence structure.
+  Also checked:
+  - the College Board item rules (official stem, 25–150 words, no length clue, parallel choices)
+  - clarity and unfilled template slots
+  - hints that would give away the answer
+  - originality (no 8-word run copied from the bank or official material on the device, and a passage that is not
+    the original with words swapped)
+  - duplicates
+
+  The engine retries up to 6 times. If nothing passes, the student sees a clear message, not a weak question.
+- **Optional AI** (the student's own Gemini key) asks for structured output and runs it through the same
+  validator, falling back to the built-in generators on any problem. AI-written Reading & Writing is marked "Needs
+  review".
+- **Integration.** Remix questions use the normal practice flow (hints, confidence, explanations, tutor, saving,
+  reporting) and enter the Mistake Bucket and spaced review. They count toward skill mastery at most once per
+  original per day, and never toward score estimates or bank accuracy, because they have no calibrated difficulty.
+  Analytics and the weekly report show them separately. They are saved with the rest of the data (versioned,
+  sanitized on import, old unsaved chains pruned).
+- **Copyright.** Remixes of an official College Board question reuse none of its text; only its skill is used.
+  Generated questions are labelled "Remix Studio · generated"; official and original questions keep their own labels.
+- **Reviewers** (`/qc`, "Generated questions") see each item's status, full validation report, origin and chain,
+  rejected attempts and near duplicates, and can approve, reject or mark it for review with notes and flags. A
+  rejected item stops counting toward mastery; its content is never edited.
+
+## Calculators
+
+Mock exams (Math modules) and the Desmos Masterclass embed Desmos's College Board graphing and scientific
+calculators (the versions in Bluebook) from desmos.com, with a 10-step guided tour on the Masterclass page. Desmos
+needs internet; offline, or if it does not load, Stellify's own grapher and scientific calculator (degrees or
+radians, `ans`, history) take over. The page's security policy allows frames from www.desmos.com only.
+
 ## Validating routing and scoring (simulation study)
 
 `tests/simulation.test.ts` sends 300 simulated students per section through Practice Tests A and B, using the
@@ -335,8 +389,8 @@ npm run test:e2e
 
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
-- `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 24 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
+- `npm run test` — unit tests of the learning engine and content, including the College Board specification checks and Remix Studio (every generator swept through the validator, mutation tests proving the validator rejects corrupted keys, failure cases and integration).
+- `npm run test:e2e` — 30 browser tests (including Remix Studio and the calculators) against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
@@ -355,6 +409,11 @@ npm run test:e2e
   by review, not by running code. AP® is a trademark registered by the College Board.
 - Text highlighting uses the browser's CSS Custom Highlight API (current Chrome, Edge, Safari and Firefox). In an
   older browser, text cannot be highlighted; page-image highlighting still works.
+- Remix Studio's Reading & Writing generators draw on a finite original content bank (12 studies, 4 debates, 4 data
+  sets, 4 note sets, 24 transition pairs and dozens of grammar and vocabulary frames), so long sessions will
+  revisit the same passages with different questions. The validator checks structure, not literary quality;
+  generated questions have not been reviewed by an outside SAT expert.
+- The embedded Desmos calculators need an internet connection and are Desmos's service, not Stellify's.
 - Storage is the browser's local storage for this file; export a backup to move devices.
 - There is no cloud account or sync in the single-file version.
 - Scores on an imported official practice test come from that test's own College Board table. The adaptive SAT-style

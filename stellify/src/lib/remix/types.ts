@@ -95,4 +95,9 @@ export interface RemixMeta {
 }
 /** A generated question, stored and served like any other question (id starts with "gx-"). */
 export type RemixQuestion = Question & { remix: RemixMeta };
+/** A remix chain: one original and the variations made from it, in order. */
+export interface RemixChain { id: string; originId: string; steps: string[]; createdAt: number; updatedAt: number; saved?: boolean }
+/** Everything Remix Studio keeps in the student's saved state. Version 1. */
+export interface RemixState { v: 1; items: Record<string, RemixQuestion>; chains: Record<string, RemixChain> }
+export const emptyRemix = (): RemixState => ({ v: 1, items: {}, chains: {} });
 export const isRemix = (q: Question | undefined): q is RemixQuestion => !!q && 'remix' in q && !!(q as RemixQuestion).remix;

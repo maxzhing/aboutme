@@ -10,6 +10,8 @@ import { EstimatePanel } from '@/components/Estimate';
 import { PointsPanel, SkillHeatmap } from '@/components/Heatmap';
 import { forecast, opportunities, skillHeat } from '@/lib/engine/insights';
 import { weeklyReport } from '@/lib/engine/report';
+import { remixSummary } from '@/lib/remix/analytics';
+import { RemixCard } from '@/components/RemixCard';
 import { CONFIDENCE_NAME, fmtRange } from '@/lib/engine/scoring';
 import { MASTERY_LEVELS } from '@/lib/engine/mastery';
 import { DIFFICULTIES, DIFFICULTY_NAME, DOMAINS, SECTION_NAME, SKILL, SKILLS } from '@/lib/taxonomy';
@@ -31,6 +33,7 @@ export function AnalyticsPage() {
   const trend = useMemo(() => scoreTrend(snap, getQuestion), [snap]);
   const sessions = useMemo(() => sessionHistory(snap, getQuestion), [snap]);
   const heat = useMemo(() => skillHeat(snap.attempts, getQuestion), [snap]);
+  const rx = useMemo(() => remixSummary(snap.attempts, getQuestion), [snap]);
   const ops = useMemo(() => opportunities(heat, { rw: ov.estimate.rw?.mid, math: ov.estimate.math?.mid }), [heat, ov.estimate.rw?.mid, ov.estimate.math?.mid]);
   const fc = useMemo(() => forecast(trend, 'total', s.profile.examDate), [trend, s.profile.examDate]);
   const [series, setSeries] = useState<'total' | 'rw' | 'math'>('total');
@@ -74,6 +77,8 @@ export function AnalyticsPage() {
         <Card><h2 className="text-sm font-semibold">Accuracy by difficulty</h2><ul className="mt-3 space-y-3">{DIFFICULTIES.map((d) => { const x = ov.byDifficulty[d]; return <li key={d}><div className="mb-1 flex justify-between text-sm"><span>{DIFFICULTY_NAME[d]}</span><span className="text-muted">{x.n ? `${x.correct}/${x.n} · ${x.pct}%` : 'no attempts'}</span></div><Progress value={x.pct} tone={toneForPct(x.pct)} label={DIFFICULTY_NAME[d]} /></li>; })}</ul></Card>
         <Card><h2 className="text-sm font-semibold">Time per question</h2><ul className="mt-3 space-y-3 text-sm">{(['rw', 'math'] as const).map((sec) => { const t = ov.time[sec]; return <li key={sec}><div className="flex justify-between"><span>{SECTION_NAME[sec]}</span><span className="text-muted">{pace(sec)}</span></div>{t.avg > 0 && <><Progress value={Math.min(100, t.ratio * 66)} tone={t.ratio > 1.25 ? 'warn' : 'ok'} className="mt-1" label={`${SECTION_NAME[sec]} pace`} /><p className="mt-1 text-xs text-muted">{t.ratio > 1.25 ? 'Slower than the target pace. Add timed modules once accuracy is solid.' : t.ratio < 0.5 ? 'Much faster than target. If accuracy is low here, slow down.' : 'Within a healthy range of the target pace.'}</p></>}</li>; })}</ul></Card>
       </div>
+
+      <RemixCard r={rx} />
 
       <Card data-testid="session-history">
         <h2 className="font-semibold">Recent sessions, adjusted for difficulty</h2>
@@ -128,6 +133,7 @@ export function ReportPage() {
     r.improved.length ? `Improved: ${r.improved.map((x) => `${SKILL[x.skill].short} (${x.from}% → ${x.to}%)`).join('; ')}` : 'Improved: no skill changed by 10 points or more with enough data to compare',
     r.mastered.length ? `Newly mastered: ${r.mastered.map((k) => SKILL[k].short).join(', ')}` : '',
     r.weak.length ? `Needs work: ${r.weak.map((k) => SKILL[k].short).join(', ')}` : '',
+    r.remix.n ? `Remix Studio: ${r.remix.n} generated questions from ${r.remix.originals} originals, ${r.remix.pct}% right on the first try${r.remix.afterMiss.n ? `; after missing a question, got its first remix right ${r.remix.afterMiss.fixed} of ${r.remix.afterMiss.n} times` : ''}` : '',
     ...(include ? ['', `Unresolved mistakes: ${Object.values(s.mistakes).filter((m) => m.status === 'unresolved').length}`, ...r.patterns] : []),
     '', 'Next steps:', ...r.nextSteps.map((x) => `- ${x}`), '', 'Shared by the student from Stellify. Private notes and tutor conversations are never included.',
   ].filter((x) => x !== '').join('\n');
@@ -141,6 +147,7 @@ export function ReportPage() {
         <Card><h2 className="font-semibold">What improved</h2><Trend items={r.improved} up /></Card>
         <Card><h2 className="font-semibold">What did not improve</h2><Trend items={r.declined} up={false} />{r.weak.length > 0 && <div className="mt-3"><div className="text-xs font-bold uppercase tracking-wide text-faint">Weak skills</div><div className="mt-1.5 flex flex-wrap gap-1.5">{r.weak.map((k) => <Link key={k} href={`/learn/${k}`} className="chip hover:text-ink">{SKILL[k].short}</Link>)}</div></div>}</Card>
         <Card><h2 className="font-semibold">Recurring errors</h2>{r.patterns.length ? <ul className="mt-2 space-y-2 text-sm text-muted">{r.patterns.map((p) => <li key={p}>• {p}</li>)}</ul> : <p className="mt-2 text-sm text-muted">No recurring pattern detected among unresolved mistakes.</p>}</Card>
+        <RemixCard r={r.remix} title="Remix Studio this week" />
         <Card><h2 className="font-semibold">Suggested next steps</h2><ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm">{r.nextSteps.map((x) => <li key={x}>{x}</li>)}</ol>{r.mastered.length > 0 && <p className="mt-3 text-sm">Mastered this week: {r.mastered.map((k) => SKILL[k].short).join(', ')}.</p>}</Card>
       </div>
       <Card id="share">

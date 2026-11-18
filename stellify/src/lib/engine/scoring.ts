@@ -89,7 +89,8 @@ export interface SectionStatus {
  */
 export function sectionStatus(section: Section, attempts: Attempt[], getQ: (id: string) => Question | undefined): SectionStatus {
   const first = new Map<string, Attempt>();
-  for (const a of attempts) if (!a.abandoned && !first.has(a.qid)) first.set(a.qid, a);
+  // generated Remix Studio questions (gx-) have no calibrated difficulty, so they never feed a score estimate
+  for (const a of attempts) if (!a.abandoned && !a.qid.startsWith('gx-') && !first.has(a.qid)) first.set(a.qid, a);
   const rows = [...first.values()].sort((x, y) => x.at - y.at)
     .map((a) => ({ a, q: getQ(a.qid) })).filter((r): r is { a: Attempt; q: Question } => !!r.q && r.q.section === section).slice(-80);
   const byDifficulty = { medium: { n: 0, correct: 0 }, hard: { n: 0, correct: 0 }, 'very-hard': { n: 0, correct: 0 }, elite: { n: 0, correct: 0 } } as SectionStatus['byDifficulty'];

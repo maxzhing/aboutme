@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Brain, CheckCircle2, Circle, Timer, XCircle, Zap } from 'lucide-react';
+import { Brain, CheckCircle2, Circle, Timer, XCircle, Zap, Wand2 } from 'lucide-react';
+import { remixable } from '@/lib/remix/engine';
 import { useMemo, useState } from 'react';
 import { BANK_STATS, getQuestion, QUESTIONS } from '@/data/questions';
 import { snapshot, useStore } from '@/lib/store';
@@ -67,8 +68,8 @@ export function BankPage() {
       </Card>
       <ul className="space-y-2">
         {list.slice(0, shown).map((q) => (
-          <li key={q.id}>
-            <Link href={`/practice/session?mode=single&ids=${q.id}`} className="card flex items-center gap-3 p-3.5 hover:border-brand/50">
+          <li key={q.id} className="flex items-stretch gap-2">
+            <Link href={`/practice/session?mode=single&ids=${q.id}`} className="card flex min-w-0 flex-1 items-center gap-3 p-3.5 hover:border-brand/50">
               {last.get(q.id) === true ? <CheckCircle2 className="shrink-0 text-ok" size={18} aria-label="Answered correctly" /> : last.get(q.id) === false ? <XCircle className="shrink-0 text-bad" size={18} aria-label="Answered incorrectly" /> : <Circle className="shrink-0 text-faint" size={18} aria-label="Not attempted" />}
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-1.5 text-xs"><Badge tone="brand">{SKILL[q.skill].short}</Badge><Badge tone={(q.difficulty === 'very-hard' || q.difficulty === 'elite') ? 'bad' : q.difficulty === 'hard' ? 'warn' : 'ok'}>{DIFFICULTY_NAME[q.difficulty]}</Badge><span className="text-faint">{q.sub} · {q.type === 'spr' ? 'Student-produced' : 'Multiple choice'}</span></div>
@@ -76,6 +77,7 @@ export function BankPage() {
               </div>
               <span className="hidden text-xs text-faint sm:block">{q.id}</span>
             </Link>
+            {remixable(q).ok && <Link href={`/remix?q=${q.id}`} className="card grid w-11 shrink-0 place-items-center text-muted hover:border-brand/50 hover:text-brand" aria-label={`Remix question ${q.id}`} title="Remix this question"><Wand2 size={16} /></Link>}
           </li>
         ))}
       </ul>

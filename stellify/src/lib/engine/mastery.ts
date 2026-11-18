@@ -31,11 +31,29 @@ const WINDOW = 12;
  * very hard questions, and work on more than one day. One lucky answer never grants mastery.
  * An attempt that needed all three hints counts as not yet independent.
  */
+/**
+ * Remix Studio variations count toward mastery, but never more than one per original question per day (and
+ * only ones that passed validation and were not rejected by a reviewer), so remixing one question many times
+ * cannot inflate a skill.
+ */
+export function remixOnce() {
+  const seen = new Set<string>();
+  return (r: { a: Attempt; q: Question }) => {
+    const m = (r.q as Question & { remix?: { originId: string; validation: { ok: boolean }; status: string } }).remix;
+    if (!m) return true;
+    if (!m.validation.ok || m.status === 'rejected') return false;
+    const key = `${m.originId}|${dateKey(r.a.at)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  };
+}
 export function computeSkillStats(skill: SkillId, attempts: Attempt[], getQ: (id: string) => Question | undefined): SkillStats {
   const rows = attempts
     .filter((a) => !a.abandoned)
     .map((a) => ({ a, q: getQ(a.qid) }))
-    .filter((r): r is { a: Attempt; q: Question } => !!r.q && r.q.skill === skill);
+    .filter((r): r is { a: Attempt; q: Question } => !!r.q && r.q.skill === skill)
+    .filter(remixOnce());
   const byDiff: SkillStats['byDiff'] = { medium: { n: 0, correct: 0 }, hard: { n: 0, correct: 0 }, 'very-hard': { n: 0, correct: 0 }, elite: { n: 0, correct: 0 } };
   let wn = 0, wc = 0, ms = 0, hints = 0;
   const ok = (r: { a: Attempt }) => r.a.correct && r.a.hints < 3;
