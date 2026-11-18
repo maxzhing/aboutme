@@ -54,7 +54,7 @@ export function CurriculumPage({ section }: { section?: Section }) {
                 <Link key={k.id} href={`/learn/${k.id}`} className={cn('group flex w-[112px] flex-col items-center text-center', i % 2 === 1 && 'sm:translate-y-5')} data-testid={`skill-${k.id}`} aria-label={`${k.name}: ${n} of 3 stars, ${MASTERY_LEVELS[st.level]}`}>
                   <span className={cn('relative rounded-full transition-transform duration-200 group-hover:-translate-y-1 group-hover:scale-105', isNext && 'ring-4 ring-brand/40 ring-offset-2 ring-offset-surface')}>
                     <Ring value={st.n ? st.score : 0} size={82} stroke={5} label={`${k.short} mastery`}><SkillIcon skill={k.id} size={58} className="!rounded-full" /></Ring>
-                    {isNext && <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-[#6A4BF0] px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white">Start</span>}
+                    {isNext && <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-brand-solid px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white">Start</span>}
                     {lessonsDone[k.id] && <CheckCircle2 size={18} className="absolute -right-1 -top-1 rounded-full bg-surface text-ok" aria-hidden />}
                   </span>
                   <span className="mt-1.5 flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= n ? 'fill-gold text-gold' : 'text-line'} />)}</span>
@@ -81,7 +81,7 @@ export function LessonPage({ skill }: { skill: string }) {
   return (
     <div>
       <LessonPlayer key={info.id} skill={info.id} onExit={() => router.push(`/learn/${info.id}`)} />
-      <p className="mt-5 text-center text-sm text-muted">Want everything? <Link href={`/learn/${info.id}`} className="font-semibold text-brand2 hover:underline" data-testid="open-course">Open the full course ({COURSES[info.id].length} chapters)</Link> · <Link href={`/learn/${info.id}?view=notes`} className="font-semibold text-brand2 hover:underline" data-testid="open-notes">Full notes</Link></p>
+      <p className="mt-5 text-center text-sm text-muted">Want everything? <Link href={`/learn/${info.id}`} className="font-semibold text-accent hover:underline" data-testid="open-course">Open the full course ({COURSES[info.id].length} chapters)</Link> · <Link href={`/learn/${info.id}?view=notes`} className="font-semibold text-accent hover:underline" data-testid="open-notes">Full notes</Link></p>
     </div>
   );
 }
@@ -129,7 +129,7 @@ function LessonNotes({ skill }: { skill: string }) {
             <p className="text-sm text-muted">Work upward. Mastery requires success on hard and very hard questions, not just medium ones.</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {DIFFICULTIES.map((d) => { const n = bank.filter((q) => q.difficulty === d).length; const b = st.byDiff[d]; if (!n) return null; return (
-                <Link key={d} href={`/practice/session?mode=lesson&skill=${info.id}&diff=${d}&n=${Math.min(n, 8)}`} className="rounded-xl border border-line p-3.5 hover:border-brand/60" data-testid={`lesson-practice-${d}`}>
+                <Link key={d} href={`/practice/session?mode=lesson&skill=${info.id}&diff=${d}&n=${Math.min(n, 8)}`} className="rounded-xl border border-line p-3.5 hover:border-accent/50" data-testid={`lesson-practice-${d}`}>
                   <div className="font-semibold">{DIFFICULTY_NAME[d]}</div><div className="text-xs text-muted">{n} question{n === 1 ? '' : 's'}</div>
                   <div className="mt-2 text-xs">{b.n ? <Badge tone={toneForPct(pct(b.correct, b.n))}>{b.correct}/{b.n} correct</Badge> : <span className="text-faint">Not attempted</span>}</div>
                 </Link>
@@ -183,7 +183,7 @@ export function GrammarPage() {
             </div>
             <p className="mt-3 text-sm"><b>On the SAT.</b> <span className="text-muted">{g.sat}</span></p>
             <p className="mt-1 text-sm"><b className="text-bad">Trap.</b> <span className="text-muted">{g.trap}</span></p>
-            {ids.length > 0 && <Link href={`/practice/session?mode=custom&ids=${ids.slice(0, 8).join(',')}&back=/grammar`} className="mt-3 inline-block text-sm font-semibold text-brand2 hover:underline">Practice this rule ({Math.min(8, ids.length)} questions) →</Link>}
+            {ids.length > 0 && <Link href={`/practice/session?mode=custom&ids=${ids.slice(0, 8).join(',')}&back=/grammar`} className="mt-3 inline-block text-sm font-semibold text-accent hover:underline">Practice this rule ({Math.min(8, ids.length)} questions) →</Link>}
           </Card>
         ); })}
         {!list.length && <Empty title="No rules match" body="Try a different word, such as “comma” or “pronoun.”" />}

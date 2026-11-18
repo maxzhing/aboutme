@@ -94,7 +94,7 @@ export function Grapher({ demo, editable = true }: { demo: GraphDemo; editable?:
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_250px]">
       <div className="overflow-hidden rounded-2xl border border-line bg-surface">
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={`Graph of ${exprs.filter(Boolean).join('; ') || 'data points'}. ${model.pois.map((p) => `${p.kind} at (${fmt(p.x)}, ${fmt(p.y)})`).join('. ')}`}>
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="group" aria-label={`Graph of ${exprs.filter(Boolean).join('; ') || 'data points'}. ${model.pois.map((p) => `${p.kind} at (${fmt(p.x)}, ${fmt(p.y)})`).join('. ')}`}>
           <defs><clipPath id={clip}><rect x={PAD} y={8} width={W - PAD - 8} height={H - PAD - 8} /></clipPath></defs>
           {ticks(xmin, xmax, sx).map((t) => <g key={`x${t}`}><line x1={X(t)} x2={X(t)} y1={8} y2={H - PAD} stroke="rgb(var(--line))" strokeWidth={t === 0 ? 0 : 1} opacity="0.7" /><text x={X(t)} y={H - PAD + 14} textAnchor="middle" fontSize="10" fill="rgb(var(--muted))">{fmt(t)}</text></g>)}
           {ticks(ymin, ymax, sy).map((t) => <g key={`y${t}`}><line y1={Y(t)} y2={Y(t)} x1={PAD} x2={W - 8} stroke="rgb(var(--line))" strokeWidth={t === 0 ? 0 : 1} opacity="0.7" /><text x={PAD - 5} y={Y(t) + 3} textAnchor="end" fontSize="10" fill="rgb(var(--muted))">{fmt(t)}</text></g>)}

@@ -135,7 +135,7 @@ export function ReferencePage() {
       </div>
       {(cat === 'All' ? REF_CATS : [cat]).map((c) => { const items = list.filter((e) => e.cat === c); if (!items.length) return null; return (
         <section key={c} className="mb-5"><h2 className="mb-2 text-lg font-bold">{c}</h2>
-          <div className="grid gap-2 md:grid-cols-2">{items.map((e) => <Card key={e.id} id={e.id} className="scroll-mt-20 !p-3.5"><div className="flex items-start justify-between gap-2"><h3 className="font-semibold">{e.title}</h3><button className="no-print text-xs text-brand2 hover:underline" disabled={saved.includes(e.id)} onClick={() => { saveNote({ title: e.title, body: e.body, topic: e.cat, kind: 'formula' }); setSaved((s) => [...s, e.id]); }}>{saved.includes(e.id) ? 'Saved' : 'Save to notes'}</button></div><div className="mt-1 text-[15px] leading-relaxed"><RichText text={e.body} /></div></Card>)}</div>
+          <div className="grid gap-2 md:grid-cols-2">{items.map((e) => <Card key={e.id} id={e.id} className="scroll-mt-20 !p-3.5"><div className="flex items-start justify-between gap-2"><h3 className="font-semibold">{e.title}</h3><button className="no-print text-xs text-accent hover:underline" disabled={saved.includes(e.id)} onClick={() => { saveNote({ title: e.title, body: e.body, topic: e.cat, kind: 'formula' }); setSaved((s) => [...s, e.id]); }}>{saved.includes(e.id) ? 'Saved' : 'Save to notes'}</button></div><div className="mt-1 text-[15px] leading-relaxed"><RichText text={e.body} /></div></Card>)}</div>
         </section>
       ); })}
       {!list.length && <Empty title="Nothing found" body="Try a simpler keyword." />}
@@ -186,7 +186,7 @@ export function NotesPage() {
           </Card>
           <Card>
             <h2 className="font-semibold">Saved questions ({savedQ.length})</h2>
-            {savedQ.length ? <><ul className="mt-2 divide-y divide-line">{savedQ.map((qid) => { const x = getQuestion(qid); if (!x) return null; return <li key={qid} className="flex items-center gap-3 py-2 text-sm"><span className="min-w-0 flex-1 truncate">{SKILL[x.skill].short} · <span className="text-muted">{x.sub}</span></span><Link href={`/practice/session?mode=single&ids=${qid}&back=/notes`} className="text-brand2 hover:underline">Open</Link><button className="text-faint hover:text-bad" onClick={() => toggleSaved(qid)} aria-label="Remove saved question"><Trash2 size={14} /></button></li>; })}</ul><Link href="/practice/session?mode=saved&back=/notes" className="btn-ghost mt-3">Practice all saved</Link></> : <p className="mt-1 text-sm text-muted">Use the bookmark icon on any question to save it here.</p>}
+            {savedQ.length ? <><ul className="mt-2 divide-y divide-line">{savedQ.map((qid) => { const x = getQuestion(qid); if (!x) return null; return <li key={qid} className="flex items-center gap-3 py-2 text-sm"><span className="min-w-0 flex-1 truncate">{SKILL[x.skill].short} · <span className="text-muted">{x.sub}</span></span><Link href={`/practice/session?mode=single&ids=${qid}&back=/notes`} className="text-accent hover:underline">Open</Link><button className="text-faint hover:text-bad" onClick={() => toggleSaved(qid)} aria-label="Remove saved question"><Trash2 size={14} /></button></li>; })}</ul><Link href="/practice/session?mode=saved&back=/notes" className="btn-ghost mt-3">Practice all saved</Link></> : <p className="mt-1 text-sm text-muted">Use the bookmark icon on any question to save it here.</p>}
           </Card>
         </div>
       </div>

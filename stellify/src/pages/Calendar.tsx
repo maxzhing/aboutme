@@ -32,7 +32,7 @@ export function CalendarPage() {
       <PageHeader eyebrow="Performance" title="Study Calendar" subtitle="Your plan, your history and your exam date in one place. Missed a day? Nothing breaks. Pick up where you are."
         actions={<button className="btn-primary" data-testid="make-plan" onClick={() => { if (!s.plan || confirm('Build a new plan from today? Your current plan and its checkmarks will be replaced.')) s.makePlan(); }}>{s.plan ? 'Rebuild my plan' : 'Build my 30-day plan'}</button>} />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Stat label="Exam countdown" value={daysLeft === null ? 'No date set' : daysLeft < 0 ? 'Passed' : `${daysLeft} days`} sub={<Link href="/settings" className="text-brand2 hover:underline">{s.profile.examDate ? new Date(parseDateKey(s.profile.examDate)).toLocaleDateString() : 'Set a date'}</Link>} />
+        <Stat label="Exam countdown" value={daysLeft === null ? 'No date set' : daysLeft < 0 ? 'Passed' : `${daysLeft} days`} sub={<Link href="/settings" className="text-accent hover:underline">{s.profile.examDate ? new Date(parseDateKey(s.profile.examDate)).toLocaleDateString() : 'Set a date'}</Link>} />
         <Stat label="This week" value={`${Math.round(weekMin)} min`} sub={<><span>goal {weekGoal} min</span><Progress value={(weekMin / weekGoal) * 100} className="mt-1.5" label="Weekly goal" /></>} />
         <Stat label="Streak" value={`${streak.current} days`} sub={`best ${streak.best} · rest days never break it`} />
         <Stat label="Plan progress" value={s.plan ? `${planDone}/${planTotal}` : '—'} sub={s.plan ? 'tasks completed' : 'no plan yet'} />
@@ -74,7 +74,7 @@ export function CalendarPage() {
                   <li key={t.id} className="flex items-center gap-2.5 py-2">
                     <button onClick={() => s.togglePlanTask(t.id)} aria-pressed={!!s.planDone[t.id]} aria-label={`Mark ${t.title} done`}>{s.planDone[t.id] ? <CheckCircle2 size={18} className="text-ok" /> : <Circle size={18} className="text-faint" />}</button>
                     <div className="min-w-0 flex-1"><div className="truncate text-sm">{t.title}</div><div className="text-xs text-muted">{t.minutes} min{t.detail ? ` · ${t.detail}` : ''}</div></div>
-                    <Link href={t.href} className="text-sm font-semibold text-brand2 hover:underline">Start</Link>
+                    <Link href={t.href} className="text-sm font-semibold text-accent hover:underline">Start</Link>
                   </li>
                 ))}
               </ul>

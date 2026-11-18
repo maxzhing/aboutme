@@ -67,7 +67,7 @@ export function TutorChat({ qid, answer, threadId: initialThread, compact, sugge
           <div className="mt-2 flex gap-2"><button className="btn-primary !px-3 !py-1.5 !text-xs" onClick={() => setSettings({ aiConsent: true })}>Turn on AI replies</button><button className="btn-ghost !px-3 !py-1.5 !text-xs" onClick={() => setSettings({ aiEnabled: false })}>Keep offline</button></div>
         </div>
       )}
-      <div className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-line bg-raised/40 p-3" role="log" aria-live="polite" aria-label="Tutor conversation">
+      <div className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-line bg-raised/40 p-3" role="log" aria-live="polite" aria-label="Tutor conversation" tabIndex={0}>
         {!messages.length && (
           <div className="grid h-full place-items-center text-center text-sm text-muted">
             <div><Bot className="mx-auto mb-2 text-brand" size={30} />{qid ? 'Pick a mode below, or ask anything about this question.' : 'Ask about any rule, formula, word or strategy, or ask what you should study next.'}</div>
@@ -75,7 +75,7 @@ export function TutorChat({ qid, answer, threadId: initialThread, compact, sugge
         )}
         {messages.map((m, i) => (
           <div key={i} className={cn('flex', m.role === 'student' ? 'justify-end' : 'justify-start')}>
-            <div className={cn('max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed', m.role === 'student' ? 'bg-gradient-to-r from-[#6A4BF0] to-[#1F6FE5] text-white' : 'border border-line bg-surface')}>
+            <div className={cn('max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed', m.role === 'student' ? 'bg-gradient-to-r from-brand-solid to-brand2-solid text-white' : 'border border-line bg-surface')}>
               {m.role === 'tutor' ? md(m.text) : m.text}
               {m.role === 'tutor' && m.source === 'gemini' && <div className="mt-1.5 text-[10px] uppercase tracking-wide text-faint">AI-generated · check against the explanation</div>}
             </div>

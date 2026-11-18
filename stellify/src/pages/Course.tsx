@@ -72,8 +72,8 @@ export function CoursePage({ skill }: { skill: SkillId }) {
       <ol className="relative space-y-3 before:absolute before:bottom-8 before:left-[42px] before:top-8 before:w-0.5 before:bg-gradient-to-b before:from-brand/50 before:via-line before:to-line">
         {chapters.map((c) => { const r = done[c.id]; const pool = chapterQuestions(c).length; const isNext = next?.id === c.id; return (
           <li key={c.id}>
-            <Link href={`/learn/${skill}/${c.id}`} className={cn('card flex items-center gap-4 p-4 transition-all hover:-translate-y-0.5 hover:border-brand/60', isNext && 'border-brand/60 bg-brand/5')} data-testid={`chapter-${c.id}`}>
-              <span className={cn('relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-2xl font-display text-lg font-bold ring-4 ring-surface', r?.passedAt ? 'bg-gradient-to-br from-[#10B981] to-[#059669] text-white' : isNext ? 'bg-gradient-to-br from-[#6A4BF0] to-[#1F6FE5] text-white shadow-[0_8px_20px_-8px_rgba(106,75,240,0.9)]' : 'bg-raised text-muted')}>{r?.passedAt ? <Check size={22} /> : c.n}</span>
+            <Link href={`/learn/${skill}/${c.id}`} className={cn('card flex items-center gap-4 p-4 transition-all hover:-translate-y-0.5 hover:border-accent/50', isNext && 'border-brand/60 bg-brand/5')} data-testid={`chapter-${c.id}`}>
+              <span className={cn('relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-2xl font-display text-lg font-bold ring-4 ring-surface', r?.passedAt ? 'bg-gradient-to-br from-[#10B981] to-[#059669] text-white' : isNext ? 'bg-gradient-to-br from-brand-solid to-brand2-solid text-white shadow-[0_8px_20px_-8px_rgba(106,75,240,0.9)]' : 'bg-raised text-muted')}>{r?.passedAt ? <Check size={22} /> : c.n}</span>
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">{c.title}</span>
                 <span className="block text-sm text-muted">{c.goal}</span>
@@ -97,7 +97,7 @@ export function CoursePage({ skill }: { skill: SkillId }) {
           <h2 className="flex items-center gap-2 font-bold"><Target size={18} className="text-warn" />Traps that have caught you here</h2>
           {mine.length ? <ul className="mt-2 space-y-2">{mine.slice(0, 4).map(([id, t]) => <li key={id} className="text-sm"><b>{TRAP[id].name}</b> <span className="text-muted">×{t.n}</span><div className="text-xs text-muted">Fix: {TRAP[id].fix}</div></li>)}</ul>
             : <p className="mt-1 text-sm text-muted">None yet. When you miss a question, tell Stellify which trap got you and it will keep track, so you can drill exactly that.</p>}
-          <Link href="/mistakes" className="mt-3 inline-block text-sm font-semibold text-brand2 hover:underline">All your traps →</Link>
+          <Link href="/mistakes" className="mt-3 inline-block text-sm font-semibold text-accent hover:underline">All your traps →</Link>
         </Card>
       </div>
     </div>
@@ -202,7 +202,7 @@ function ChapterPlayer({ ch }: { ch: Chapter }) {
       <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">Do it in this order, every time</h2>
       <p className="mt-1 text-sm text-muted">Read each step, then reveal the next. You will use exactly these steps on the hard problem next.</p>
       <ol className="mt-4 space-y-2" data-testid="method">
-        {ch.method.slice(0, methodSeen).map((m, i) => <motion.li key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 rounded-xl border border-line bg-surface p-3"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#6A4BF0] text-sm font-bold text-white">{i + 1}</span><span className="pt-0.5"><RichText text={m} /></span></motion.li>)}
+        {ch.method.slice(0, methodSeen).map((m, i) => <motion.li key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 rounded-xl border border-line bg-surface p-3"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand-solid text-sm font-bold text-white">{i + 1}</span><span className="pt-0.5"><RichText text={m} /></span></motion.li>)}
       </ol>
       {methodSeen < ch.method.length && <button type="button" className="btn-ghost mt-3" onClick={() => setMethodSeen(methodSeen + 1)} data-testid="method-next">Next step ({methodSeen}/{ch.method.length})</button>}
     </div>

@@ -21,6 +21,10 @@ const config: Config = {
         warn: v('warn'),
         bad: v('bad'),
         gold: v('gold'),
+        accent: v('accent'),
+        accent2: v('accent2'),
+        'brand-solid': v('brand-solid'),
+        'brand2-solid': v('brand2-solid'),
       },
       fontFamily: {
         sans: ['"Inter Variable"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],

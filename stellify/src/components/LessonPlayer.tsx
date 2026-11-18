@@ -147,7 +147,7 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
         <div className="mt-4 grid gap-2.5" role="radiogroup" aria-label="Quick check choices">
           {c.options.map((o, k) => (
             <button key={k} type="button" role="radio" aria-checked={mine === k} disabled={answered} onClick={() => pick(step.n, k, c.answer)} data-testid={`check-option-${k}`}
-              className={cn('flex min-h-[52px] items-center gap-3 rounded-xl border-2 px-4 py-3 text-left text-[15px] font-medium transition-all', !answered && 'border-line bg-surface hover:-translate-y-0.5 hover:border-brand/60',
+              className={cn('flex min-h-[52px] items-center gap-3 rounded-xl border-2 px-4 py-3 text-left text-[15px] font-medium transition-all', !answered && 'border-line bg-surface hover:-translate-y-0.5 hover:border-accent/50',
                 answered && k === c.answer && 'border-ok bg-ok/10', answered && mine === k && k !== c.answer && 'border-bad bg-bad/10', answered && k !== c.answer && mine !== k && 'border-line opacity-55')}>
               <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full border text-sm font-bold', answered && k === c.answer ? 'border-ok bg-ok text-white' : answered && mine === k ? 'border-bad bg-bad text-white' : 'border-line text-muted')}>{answered && k === c.answer ? <Check size={15} /> : answered && mine === k ? <X size={15} /> : String.fromCharCode(65 + k)}</span>
               <RichText text={o} />

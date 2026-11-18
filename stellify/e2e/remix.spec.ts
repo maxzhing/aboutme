@@ -86,6 +86,8 @@ test('Reading & Writing: every offered transformation generates a validated ques
   await go(page, `/remix?q=${CID.id}`);
   for (const mode of ['number', 'context', 'representation', 'reverse', 'reasoning', 'challenge']) {
     await page.getByTestId(`remix-mode-${mode}`).click();
+    // wait for THIS remix (its mode name), not the previous one still on screen
+    await expect(page.getByTestId('remix-info')).toContainText(`${mode[0].toUpperCase()}${mode.slice(1)} Remix`);
     await expect(page.getByTestId('remix-info')).toContainText('Automatically validated');
     await expect(page.getByTestId('question-card')).toBeVisible();
   }

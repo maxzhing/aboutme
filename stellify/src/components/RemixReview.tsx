@@ -66,7 +66,7 @@ export function RemixReview() {
             </button>
             {open === q.id && (
               <div className="mt-3 space-y-3 rounded-xl border border-line p-3">
-                <p className="text-xs text-muted">From <Link className="font-mono text-brand2 hover:underline" href={`/practice/session?mode=single&ids=${m.originId}`}>{m.originId}</Link>{origin ? ` (${SKILL[origin.skill]?.short} · ${origin.sub})` : ' (original not on this device)'}{m.parentId ? <>, via <span className="font-mono">{m.parentId}</span></> : ''} · {stepOf(q)} · made {new Date(m.createdAt).toLocaleString()} · family {m.family}</p>
+                <p className="text-xs text-muted">From <Link className="font-mono text-accent hover:underline" href={`/practice/session?mode=single&ids=${m.originId}`}>{m.originId}</Link>{origin ? ` (${SKILL[origin.skill]?.short} · ${origin.sub})` : ' (original not on this device)'}{m.parentId ? <>, via <span className="font-mono">{m.parentId}</span></> : ''} · {stepOf(q)} · made {new Date(m.createdAt).toLocaleString()} · family {m.family}</p>
                 <p className="text-sm"><b>How it differs:</b> {m.differs}</p>
                 {m.smart && <p className="text-sm text-muted"><b className="text-ink">Smart Remix reason:</b> {m.smart}</p>}
                 <QuestionView q={q} answer={typeof q.answer === 'number' ? String(q.answer) : q.answer[0]} onAnswer={() => {}} locked reveal hlScope="qc" />

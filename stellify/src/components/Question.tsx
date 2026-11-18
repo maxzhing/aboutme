@@ -74,7 +74,7 @@ export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, 
                   className={cn('flex min-h-[48px] flex-1 items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left text-[15px] transition-colors',
                     right ? 'border-ok bg-ok/10' : wrong ? 'border-bad bg-bad/10' : selected ? 'border-brand bg-brand/10 ring-1 ring-brand' : 'border-line bg-surface hover:border-brand/50',
                     out && 'opacity-45', locked && !right && !wrong && !selected && 'opacity-80')}>
-                  <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full border text-sm font-bold', right ? 'border-ok bg-ok text-white' : wrong ? 'border-bad bg-bad text-white' : selected ? 'border-brand bg-[#6A4BF0] text-white' : 'border-line text-muted')}>
+                  <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full border text-sm font-bold', right ? 'border-ok bg-ok text-white' : wrong ? 'border-bad bg-bad text-white' : selected ? 'border-brand bg-brand-solid text-white' : 'border-line text-muted')}>
                     {right ? <Check size={15} /> : wrong ? <X size={15} /> : LETTERS[i]}
                   </span>
                   <span className={cn('min-w-0', out && 'line-through')}>{q.image ? <span className="font-semibold">Choice {LETTERS[i]}</span> : <RichText text={c} />}</span>
@@ -122,7 +122,7 @@ function TrapCheck({ q }: { q: Question }) {
       <div className="mb-2 text-xs font-bold uppercase tracking-wide text-warn">🪤 Which trap got you? Name it so it stops working on you</div>
       <div className="flex flex-wrap gap-1.5">{ch.traps.map((t) => <button key={t.id} type="button" onClick={() => log(t.id, q.id)} aria-pressed={picked.includes(t)} className={cn('chip', picked.includes(t) && 'border-warn bg-warn/15 text-ink')} data-testid={`trap-${t.id}`}>{t.name}</button>)}</div>
       {picked.map((t) => <p key={t.id} className="mt-2 text-sm"><b>Fix:</b> <RichText text={t.fix} /> <span className="text-muted">You have fallen for this {traps[t.id].n}×.</span></p>)}
-      <Link href={`/learn/${q.skill}/${ch.id}`} className="mt-2 inline-block text-sm font-semibold text-brand2 hover:underline">Re-learn chapter {ch.n}: {ch.title} →</Link>
+      <Link href={`/learn/${q.skill}/${ch.id}`} className="mt-2 inline-block text-sm font-semibold text-accent hover:underline">Re-learn chapter {ch.n}: {ch.title} →</Link>
     </div>
   );
 }

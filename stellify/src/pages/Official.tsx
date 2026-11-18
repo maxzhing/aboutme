@@ -59,7 +59,7 @@ export function OfficialPage() {
         onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); void run(e.dataTransfer.files); }} data-testid="import-zone">
         <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
           <div>
-            <div className="flex items-center gap-2"><span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-[#6A4BF0] to-[#1F6FE5] text-white"><FileUp size={20} /></span><h2 className="text-xl font-bold">Add questions from a Question Bank PDF</h2></div>
+            <div className="flex items-center gap-2"><span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-brand-solid to-brand2-solid text-white"><FileUp size={20} /></span><h2 className="text-xl font-bold">Add questions from a Question Bank PDF</h2></div>
             <ol className="mt-4 space-y-2 text-sm text-muted">
               <li><b className="text-ink">1.</b> Open the College Board&apos;s free SAT Suite Question Bank and choose SAT, a section, and the skills you want.</li>
               <li><b className="text-ink">2.</b> Select questions and export them as a PDF <b className="text-ink">with answers and explanations included</b>.</li>
@@ -108,7 +108,7 @@ export function OfficialPage() {
                       <li key={k.id} className="flex items-center gap-3 py-2 text-sm">
                         <span className="min-w-0 flex-1 truncate">{SKILL[k.id].short}</span>
                         <span className="tabular-nums text-muted">{r}/{qs.length}</span>
-                        <Link href={`/practice/session?mode=custom&ids=${qs.map((q) => q.id).slice(0, 15).join(',')}&back=/official`} className="font-semibold text-brand2 hover:underline">Practice</Link>
+                        <Link href={`/practice/session?mode=custom&ids=${qs.map((q) => q.id).slice(0, 15).join(',')}&back=/official`} className="font-semibold text-accent hover:underline">Practice</Link>
                         <Link href={`/learn/${k.id}`} className="text-muted hover:text-ink">Course</Link>
                       </li>
                     ); })}

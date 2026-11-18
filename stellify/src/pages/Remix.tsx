@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useRef, useState } from 'react';
-import { ArrowUp, Bookmark, BookmarkCheck, Check, ChevronRight, Info, Loader2, RefreshCw, RotateCcw, Shuffle, Sparkles, Trash2, Wand2, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowUp, BarChart3, Bookmark, BookmarkCheck, Check, ChevronRight, Globe2, Hash, Info, Loader2, Mountain, RefreshCw, RotateCcw, SearchCheck, Shuffle, Sparkles, Trash2, Undo2, Wand2, X, type LucideIcon } from 'lucide-react';
 import { getQuestion, OFFICIAL, QUESTIONS, questionsBySkill } from '@/data/questions';
 import { useStore } from '@/lib/store';
 import { useSkillStats } from '@/lib/hooks';
@@ -17,6 +17,8 @@ import { Explanation, QuestionMeta, QuestionView } from '@/components/Question';
 import { SessionRunner } from '@/components/SessionRunner';
 import { Badge, Card, Empty, Modal, PageHeader, cn } from '@/components/ui';
 
+/** an icon for each transformation (visual only) */
+const MODE_ICON: Record<RemixMode, LucideIcon> = { number: Hash, context: Globe2, representation: BarChart3, reverse: Undo2, reasoning: SearchCheck, challenge: Mountain };
 let CORPUS: Set<string> | null = null;
 /** built once per visit: every passage in the bank and on this device that a remix must not copy */
 const corpus = () => (CORPUS ??= buildCorpus([...QUESTIONS, ...OFFICIAL]));
@@ -47,13 +49,13 @@ function Home() {
       {items.length ? <ul className="mt-2 space-y-1.5">{items.map((q) => (
         <li key={q.id}><Link href={href(q.id)} className="flex items-center gap-2 rounded-lg border border-line p-2.5 text-sm hover:border-brand/50" data-testid="remix-source">
           <span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-brand2">{label(q)}</span><span className="block truncate text-muted">{snippet(q)}</span></span><Wand2 size={15} className="shrink-0 text-brand" /></Link></li>
-      ))}</ul> : <p className="mt-2 text-sm text-muted">{empty}</p>}
+      ))}</ul> : <p className="mt-3 rounded-xl border border-dashed border-line px-4 py-5 text-center text-sm text-muted">{empty}</p>}
     </Card>
   );
   return (
     <div className="space-y-5">
       <PageHeader eyebrow="Practice" title="Remix Studio" subtitle="Turn any question into new ones that test the same idea in a different way: new numbers, a new situation, another representation, working backward, spotting an error, or a harder application. Every remix is checked by an independent validator before you see it." />
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid items-start gap-4 md:grid-cols-3">
         <List title="From your Mistake Bucket" items={mistakes} empty="No unresolved mistakes. Remixing a missed question is the best way to fix it." />
         <List title="From your saved questions" items={saved} empty="Bookmark questions while you practice to remix them here." />
         <List title="Recently answered" items={recent} empty="Answer a few questions first, or pick a skill below." />
@@ -89,7 +91,7 @@ function ModeGuide() {
     <Card>
       <h2 className="font-semibold">The six transformations</h2>
       <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {(Object.keys(MODE_INFO) as RemixMode[]).map((m) => <div key={m} className="rounded-xl border border-line p-3"><div className="font-semibold">{MODE_INFO[m].name}</div><p className="mt-0.5 text-sm text-muted">{MODE_INFO[m].blurb}</p><p className="mt-1 font-mono text-[11px] text-faint">{MODE_INFO[m].example}</p></div>)}
+        {(Object.keys(MODE_INFO) as RemixMode[]).map((m) => { const I = MODE_ICON[m]; return <div key={m} className="rounded-2xl border border-line/80 p-3.5"><div className="flex items-center gap-2 font-semibold"><span className="grid h-8 w-8 place-items-center rounded-lg bg-accent/10 text-accent"><I size={16} aria-hidden /></span>{MODE_INFO[m].name}</div><p className="mt-0.5 text-sm text-muted">{MODE_INFO[m].blurb}</p><p className="mt-1 font-mono text-[11px] text-faint">{MODE_INFO[m].example}</p></div>; })}
       </div>
       <p className="mt-3 text-xs text-faint">Levels: {([1, 2, 3, 4, 5] as RemixLevel[]).map((l) => `${l} ${LEVEL_NAME[l]}`).join(' · ')}. Remixes count toward skill mastery (at most one per original question per day) but never toward your score estimate, because generated questions have no calibrated difficulty.</p>
     </Card>
@@ -112,6 +114,9 @@ function Workspace({ originId, chainId, at }: { originId: string; chainId?: stri
   const [useAi, setUseAi] = useState(false);
   const [showOrig, setShowOrig] = useState(false);
   const modesRef = useRef<HTMLDivElement>(null);
+  // a generation that finishes after the student has moved on must not pull them back to this question
+  const alive = useRef(true);
+  useEffect(() => () => { alive.current = false; }, []);
   const can = remixable(origin);
   if (!origin || !can.ok) return <div><PageHeader eyebrow="Practice" title="Remix Studio" /><Empty title="This question cannot be remixed" body={can.reason ?? 'It could not be found.'} action={{ label: 'Back to Remix Studio', href: '/remix' }} /></div>;
 
@@ -134,13 +139,18 @@ function Workspace({ originId, chainId, at }: { originId: string; chainId?: stri
     await new Promise((r) => setTimeout(r, 20)); // let the button show it is working
     let ai: Candidate | null | undefined;
     if (useAi && aiReady(s.settings)) { const o = await aiCandidate(s.settings, from, mode, level); ai = o.candidate; if (o.notice) setNotice(o.notice); }
+    if (!alive.current) return;
     const cid = chain?.id ?? s.remixNewChain(origin.id);
     const previous = Object.values(useStore.getState().remix?.items ?? {}).filter((x) => x.remix.originId === origin.id).map(signature);
     const r = generate({ parent: from, originId: origin.id, chainId: cid, mode, level, previous, corpus: corpus(), smart: why, aiCandidate: ai, seed: `${cid}-${Date.now()}` });
     if (!r.ok) { setErr({ reason: r.reason, rejected: r.rejected }); setBusy(false); return; }
     const add = useStore.getState().remixAdd(r.question);
     if (!add.ok) { setErr({ reason: add.reason!, rejected: [] }); setBusy(false); return; }
+    if (!alive.current) return;
     setBusy(false);
+    // only move to the new step if the student is still on this question (they may have navigated away meanwhile)
+    const here = new URLSearchParams((window.location.hash.split('?')[1] ?? '')).get('q');
+    if (here !== origin.id) return;
     router.replace(href(origin.id, cid, r.question.id));
   };
   const nextPick = current ? smartPick({ question: current, last: lastTry(current.id) ? { correct: lastTry(current.id)!.correct, confidence: lastTry(current.id)!.confidence } : undefined, mistake: s.mistakes[current.id]?.category, chain: chainInfo }) : null;
@@ -151,33 +161,34 @@ function Workspace({ originId, chainId, at }: { originId: string; chainId?: stri
       <PageHeader eyebrow="Remix Studio" title={label(origin)} subtitle={current ? `Step ${steps.indexOf(current) + 1} of this chain. Each step is generated from the one before it and validated on its own.` : 'Choose how to transform this question. Smart Remix picks for you, using your answers, confidence and mistakes.'}
         actions={<Link href="/remix" className="btn-ghost">All remixes</Link>} />
 
-      <nav aria-label="Remix chain" className="flex flex-wrap items-center gap-1.5 text-sm" data-testid="remix-chain-nav">
+      <nav aria-label="Remix chain" className="card-soft flex flex-wrap items-center gap-1.5 p-2 text-sm" data-testid="remix-chain-nav">
         <Link href={href(origin.id, chain?.id, undefined)} onClick={(e) => { e.preventDefault(); setShowOrig(true); }} className="chip">Original</Link>
         {steps.map((q, i) => { const c = chainInfo[i].correct; return (
           <span key={q.id} className="flex items-center gap-1.5"><ChevronRight size={13} className="text-faint" />
-            <Link href={href(origin.id, chain!.id, q.id)} className={cn('chip !py-1', q.id === current?.id && 'border-brand bg-brand/15 text-ink')} aria-current={q.id === current?.id ? 'step' : undefined}>
+            <Link href={href(origin.id, chain!.id, q.id)} className={cn('chip !py-1', q.id === current?.id && 'border-accent/60 bg-accent/[.14] text-ink shadow-[0_0_0_3px_rgb(var(--accent)/.12)]')} aria-current={q.id === current?.id ? 'step' : undefined}>
               {i + 1}. {MODE_INFO[q.remix.mode].name.replace(' Remix', '')}{c === true ? <Check size={12} className="text-ok" /> : c === false ? <X size={12} className="text-bad" /> : null}</Link></span>); })}
         {chain && <button className="btn-quiet ml-auto !py-1" onClick={() => s.remixSaveChain(chain.id, !chain.saved)} data-testid="remix-save-chain">{chain.saved ? <BookmarkCheck size={15} className="text-brand" /> : <Bookmark size={15} />}{chain.saved ? 'Chain saved' : 'Save chain'}</button>}
       </nav>
 
       <div ref={modesRef} id="remix-modes">
-        <Card className="space-y-3">
-          <div className="flex flex-wrap items-start gap-3">
+        <Card className="card-glow space-y-4">
+          <div className="-mx-5 -mt-5 flex flex-wrap items-center gap-3 rounded-t-[22px] border-b border-line/60 bg-gradient-to-r from-accent/[.10] via-accent2/[.05] to-transparent px-5 py-4">
             <button className="btn-primary" disabled={busy || full} onClick={() => run(smart.mode, smart.level, parent, smart.reason)} data-testid="remix-smart">{busy ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}Smart Remix</button>
             <p className="min-w-[14rem] flex-1 text-sm text-muted"><b className="text-ink">{MODE_INFO[smart.mode].name}, {LEVEL_NAME[smart.level]}.</b> {smart.reason}</p>
           </div>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="group" aria-label="Transformations">
             {modes.map((m) => (
-              <button key={m.mode} disabled={!m.ok || busy || full} onClick={() => run(m.mode, MODE_INFO[m.mode].effect === 'increase' ? bump(base, 1) : base, parent)} className={cn('rounded-xl border border-line p-3 text-left transition', m.ok ? 'hover:border-brand/60 hover:bg-brand/5' : 'cursor-not-allowed opacity-55')} data-testid={`remix-mode-${m.mode}`} title={m.ok ? undefined : m.note}>
-                <div className="font-semibold">{MODE_INFO[m.mode].name}</div><p className="mt-0.5 text-xs text-muted">{m.note}</p>
+              <button key={m.mode} disabled={!m.ok || busy || full} onClick={() => run(m.mode, MODE_INFO[m.mode].effect === 'increase' ? bump(base, 1) : base, parent)} className={cn('group flex gap-3 rounded-2xl border border-line/80 bg-surface p-3 text-left transition-[border-color,box-shadow,transform]', m.ok ? 'hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-[0_12px_28px_-18px_rgb(var(--accent)/.7)]' : 'cursor-not-allowed opacity-50')} data-testid={`remix-mode-${m.mode}`} title={m.ok ? undefined : m.note}>
+                {(() => { const I = MODE_ICON[m.mode]; return <span className={cn('grid h-9 w-9 shrink-0 place-items-center rounded-xl transition-colors', m.ok ? 'bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white' : 'bg-raised text-faint')}><I size={17} aria-hidden /></span>; })()}
+                <span className="min-w-0"><span className="flex items-center gap-1.5 font-semibold">{MODE_INFO[m.mode].name}{MODE_INFO[m.mode].effect === 'increase' && <ArrowUp size={13} className="text-accent" aria-label="raises difficulty" />}</span><span className="mt-0.5 block text-xs leading-snug text-muted">{m.note}</span></span>
               </button>
             ))}
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-sm" role="radiogroup" aria-label="Difficulty">
-            <span className="mr-1 text-xs font-semibold text-muted">Difficulty</span>
-            <button role="radio" aria-checked={levelChoice === null} className={cn('chip !py-1', levelChoice === null && 'border-brand bg-brand/15 text-ink')} onClick={() => setLevelChoice(null)}>Preserve ({LEVEL_NAME[levelFor(parent)]})</button>
+            <span className="mr-1 text-[11px] font-bold uppercase tracking-[0.08em] text-faint">Difficulty</span>
+            <button role="radio" aria-checked={levelChoice === null} className={cn('chip !py-1', levelChoice === null && 'border-accent/60 bg-accent/[.12] text-ink')} onClick={() => setLevelChoice(null)}>Preserve ({LEVEL_NAME[levelFor(parent)]})</button>
             <button role="radio" aria-checked={levelChoice === bump(levelFor(parent), 1) && levelFor(parent) < 5} className="chip !py-1" onClick={() => setLevelChoice(bump(levelFor(parent), 1))} disabled={levelFor(parent) >= 5}><ArrowUp size={12} />Increase</button>
-            {([1, 2, 3, 4, 5] as RemixLevel[]).map((l) => <button key={l} role="radio" aria-checked={levelChoice === l} title={LEVEL_MEANS[l]} className={cn('chip !py-1', levelChoice === l && 'border-brand bg-brand/15 text-ink')} onClick={() => setLevelChoice(l)}>{l}. {LEVEL_NAME[l]}</button>)}
+            {([1, 2, 3, 4, 5] as RemixLevel[]).map((l) => <button key={l} role="radio" aria-checked={levelChoice === l} title={LEVEL_MEANS[l]} className={cn('chip !py-1', levelChoice === l && 'border-accent/60 bg-accent/[.12] text-ink')} onClick={() => setLevelChoice(l)}>{l}. {LEVEL_NAME[l]}</button>)}
           </div>
           {aiReady(s.settings) && <label className="flex items-center gap-2 text-xs text-muted"><input type="checkbox" checked={useAi} onChange={(e) => setUseAi(e.target.checked)} className="h-4 w-4 accent-[rgb(var(--brand))]" />Try your Gemini key first (still validated; falls back to the built-in generators; AI-written Reading &amp; Writing is marked for review)</label>}
           {full && <p className="text-sm text-warn">This chain has reached {MAX_CHAIN} steps. <Link className="underline" href={href(origin.id)}>Start a new chain</Link> from the original.</p>}

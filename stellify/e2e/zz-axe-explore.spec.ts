@@ -2,9 +2,9 @@ import { test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { resolve } from 'node:path';
 const FILE = `file://${resolve(__dirname, '../dist/stellify.html')}`;
-const ROUTES = ['/', '/learn', '/learn/math', '/practice', '/practice/session?mode=single&ids=r-bnd-06', '/practice/smart', '/official', '/mocks', '/analytics', '/mistakes', '/calendar', '/report', '/pet', '/rewards', '/achievements', '/settings', '/resources', '/qc', '/stats', '/stats/st4-2', '/calc/c1-1', '/hacks'];
+const ROUTES = ['/', '/learn', '/learn/math', '/practice', '/practice/session?mode=single&ids=r-bnd-06', '/practice/smart', '/official', '/mocks', '/analytics', '/mistakes', '/calendar', '/report', '/pet', '/rewards', '/achievements', '/settings', '/resources', '/qc', '/stats', '/stats/st4-2', '/calc/c1-1', '/hacks', '/remix', '/remix?q=m-lin1-01', '/csa', '/micro', '/macro', '/tutor', '/notes', '/vocabulary', '/desmos', '/grammar', '/reference'];
 /**
- * Full accessibility audit (opt-in): lists every serious or critical axe violation on 22 pages in both themes.
+ * Full accessibility audit (opt-in): lists every serious or critical axe violation on 33 pages in both themes.
  * The regular suite runs a faster pass/fail version. Run with: AXE_FULL=1 npx playwright test e2e/zz-axe-explore.spec.ts
  */
 test('full axe audit report', async ({ page }) => {
@@ -17,6 +17,7 @@ test('full axe audit report', async ({ page }) => {
     if (theme === 'light') { await page.goto(`${FILE}#/settings`); await page.getByTestId('theme-light').click(); }
     for (const r of ROUTES) {
       await page.goto(`${FILE}#${r}`); await page.waitForTimeout(500);
+      await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity));
       const res = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).exclude('.backdrop').analyze();
       for (const v of res.violations) {
         if (!['serious', 'critical'].includes(v.impact ?? '')) continue;

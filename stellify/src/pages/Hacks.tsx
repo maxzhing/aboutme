@@ -22,7 +22,7 @@ export function HacksPage() {
         {list.map((h) => (
           <div key={h.id}>
             <HackCard hack={h} />
-            <div className="mt-1.5 flex gap-4 px-1 text-sm"><Link href={`/learn/${h.skill}`} className="text-brand2 hover:underline">Lesson: {SKILL[h.skill].short}</Link><Link href={`/practice/session?mode=skill&skill=${h.skill}&n=6`} className="text-brand2 hover:underline">Practice it →</Link></div>
+            <div className="mt-1.5 flex gap-4 px-1 text-sm"><Link href={`/learn/${h.skill}`} className="text-accent hover:underline">Lesson: {SKILL[h.skill].short}</Link><Link href={`/practice/session?mode=skill&skill=${h.skill}&n=6`} className="text-accent hover:underline">Practice it →</Link></div>
           </div>
         ))}
       </div>

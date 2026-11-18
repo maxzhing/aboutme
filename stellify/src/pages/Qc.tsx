@@ -58,12 +58,12 @@ export function QcPage() {
                 <li key={k} className="py-2.5 text-sm" data-testid="qc-flag" data-kind={f.kind}>
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge tone={done ? 'ok' : 'warn'}>{FLAG_NAME[f.kind]}</Badge>
-                    <Link href={`/practice/session?mode=single&ids=${f.qid}`} className="font-mono text-xs text-brand2 hover:underline">{f.qid}</Link>
-                    {f.other && <><span className="text-faint">and</span><Link href={`/practice/session?mode=single&ids=${f.other}`} className="font-mono text-xs text-brand2 hover:underline">{f.other}</Link></>}
+                    <Link href={`/practice/session?mode=single&ids=${f.qid}`} className="font-mono text-xs text-accent hover:underline">{f.qid}</Link>
+                    {f.other && <><span className="text-faint">and</span><Link href={`/practice/session?mode=single&ids=${f.other}`} className="font-mono text-xs text-accent hover:underline">{f.other}</Link></>}
                   </div>
                   <p className="mt-1 text-muted">{f.detail}</p>
                   {done ? (
-                    <p className="mt-1 text-xs"><span className="font-semibold text-ok">Reviewed:</span> {done}{mine[k] && <button type="button" className="ml-2 text-brand2 hover:underline" onClick={() => review(k, null)}>Reopen</button>}</p>
+                    <p className="mt-1 text-xs"><span className="font-semibold text-ok">Reviewed:</span> {done}{mine[k] && <button type="button" className="ml-2 text-accent hover:underline" onClick={() => review(k, null)}>Reopen</button>}</p>
                   ) : (
                     <div className="mt-1.5 flex flex-wrap gap-2">
                       <input className="input !h-8 min-w-[12rem] flex-1 !py-1 text-xs" placeholder="Why it is fine (or what you fixed)" value={note[k] ?? ''} onChange={(e) => setNote((n) => ({ ...n, [k]: e.target.value }))} aria-label={`Review note for ${f.qid}`} />

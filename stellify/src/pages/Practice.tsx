@@ -127,7 +127,7 @@ export function SmartPage() {
           <Card key={r.skill} className="!p-4">
             <div className="flex items-center justify-between gap-2"><Link href={`/learn/${r.skill}`} className="font-semibold hover:underline">{SKILL[r.skill].short}</Link><Badge>{MASTERY_LEVELS[r.stats.level]}</Badge></div>
             <p className="mt-1 text-sm text-muted">{r.reason}</p>
-            <Link href={`/practice/session?mode=skill&skill=${r.skill}&n=6`} className="mt-2 inline-block text-sm font-semibold text-brand2 hover:underline">Practice 6 →</Link>
+            <Link href={`/practice/session?mode=skill&skill=${r.skill}&n=6`} className="mt-2 inline-block text-sm font-semibold text-accent hover:underline">Practice 6 →</Link>
           </Card>
         ))}
       </div>
@@ -204,7 +204,7 @@ export function TimedPage() {
           </Card>
         ))}
       </div>
-      <Card className="mt-4 text-sm text-muted">Ready for the full experience? <Link href="/mocks" className="font-semibold text-brand2 hover:underline">Take a full-length mock exam</Link> with two modules per section and adaptive routing.</Card>
+      <Card className="mt-4 text-sm text-muted">Ready for the full experience? <Link href="/mocks" className="font-semibold text-accent hover:underline">Take a full-length mock exam</Link> with two modules per section and adaptive routing.</Card>
     </div>
   );
 }

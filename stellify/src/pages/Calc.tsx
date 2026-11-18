@@ -110,8 +110,8 @@ function CourseHome() {
                   <ol className="mt-4 space-y-2">
                     {ls.map((l) => { const r = calc.done[l.id]; const ok = done.includes(l); return (
                       <li key={l.id}>
-                        <Link href={`/${course.id}/${l.id}`} className={cn('flex items-center gap-3 rounded-2xl border p-3 transition-all hover:-translate-y-0.5 hover:border-brand/60', next?.id === l.id ? 'border-brand/50 bg-brand/5' : 'border-line')} data-testid={`calc-lesson-${l.id}`}>
-                          <span className={cn('grid h-10 w-10 shrink-0 place-items-center rounded-xl font-display text-sm font-bold', ok ? 'bg-gradient-to-br from-[#10B981] to-[#059669] text-white' : next?.id === l.id ? 'bg-gradient-to-br from-[#6A4BF0] to-[#1F6FE5] text-white' : 'bg-raised text-muted')}>{ok ? <Check size={18} /> : `${l.unit}.${l.n}`}</span>
+                        <Link href={`/${course.id}/${l.id}`} className={cn('flex items-center gap-3 rounded-2xl border p-3 transition-all hover:-translate-y-0.5 hover:border-accent/50', next?.id === l.id ? 'border-brand/50 bg-brand/5' : 'border-line')} data-testid={`calc-lesson-${l.id}`}>
+                          <span className={cn('grid h-10 w-10 shrink-0 place-items-center rounded-xl font-display text-sm font-bold', ok ? 'bg-gradient-to-br from-[#10B981] to-[#059669] text-white' : next?.id === l.id ? 'bg-gradient-to-br from-brand-solid to-brand2-solid text-white' : 'bg-raised text-muted')}>{ok ? <Check size={18} /> : `${l.unit}.${l.n}`}</span>
                           <span className="min-w-0 flex-1"><span className="block font-semibold">{l.title}</span><span className="block truncate text-xs text-muted">{l.examples.length} worked examples · {l.practice.length} practice problems</span></span>
                           <span className="text-xs text-muted">{r ? `best ${r.score}/${r.total}` : next?.id === l.id ? 'Up next' : ''}</span>
                         </Link>
@@ -156,7 +156,7 @@ function TutorIntro({ t }: { t: LessonTutor }) {
           <h2 className="flex items-center gap-2 text-lg font-bold"><Wrench size={18} className="text-gold" />Tools you will use</h2>
           <p className="mt-1 text-xs text-muted">Math from before that this lesson leans on. If one looks unfamiliar, review it first.</p>
           <ul className="mt-3 space-y-2.5">{t.tools.map((x) => { const ref = x.lesson ? lessonById(x.lesson) : undefined; const refCourse = x.lesson ? courseOfLesson(x.lesson) : undefined; return (
-            <li key={x.name} className="rounded-xl border border-line bg-raised/40 p-3"><div className="font-bold"><RichText text={x.name} /></div><p className="mt-0.5 text-sm leading-relaxed text-muted"><RichText text={x.refresher} /></p>{ref && refCourse && <Link href={`/${refCourse.id}/${ref.id}`} className="mt-1 inline-block text-xs font-semibold text-brand2 hover:underline">Review {ref.unit}.{ref.n} {ref.title} →</Link>}</li>
+            <li key={x.name} className="rounded-xl border border-line bg-raised/40 p-3"><div className="font-bold"><RichText text={x.name} /></div><p className="mt-0.5 text-sm leading-relaxed text-muted"><RichText text={x.refresher} /></p>{ref && refCourse && <Link href={`/${refCourse.id}/${ref.id}`} className="mt-1 inline-block text-xs font-semibold text-accent hover:underline">Review {ref.unit}.{ref.n} {ref.title} →</Link>}</li>
           ); })}</ul>
         </Card>
       </div>
@@ -192,7 +192,7 @@ function TeachBack({ l, t }: { l: CalcLesson; t: LessonTutor }) {
         <textarea className="input mt-2 min-h-[120px] w-full leading-relaxed" value={text} onChange={(e) => setText(e.target.value)} onBlur={() => setTeach(l.id, text)} placeholder="Write your explanation as if your friend has never heard of this. Use an example." data-testid="calc-teach-text" />
         <p className="mt-3 text-sm font-semibold">Check yourself: did your explanation…</p>
         <ul className="mt-1.5 space-y-1.5">{t.teach.keyPoints.map((k, i) => (
-          <li key={i}><label className="flex cursor-pointer gap-2.5 text-sm"><input type="checkbox" className="mt-0.5 h-4 w-4 accent-[#6A4BF0]" checked={ticks[i]} onChange={() => setTicks(ticks.map((v, j) => (j === i ? !v : v)))} data-testid="calc-teach-point" /><span className="leading-relaxed"><RichText text={k} /></span></label></li>
+          <li key={i}><label className="flex cursor-pointer gap-2.5 text-sm"><input type="checkbox" className="mt-0.5 h-4 w-4 accent-[rgb(var(--brand-solid))]" checked={ticks[i]} onChange={() => setTicks(ticks.map((v, j) => (j === i ? !v : v)))} data-testid="calc-teach-point" /><span className="leading-relaxed"><RichText text={k} /></span></label></li>
         ))}</ul>
         {all && <p className="mt-3 rounded-xl border border-ok/40 bg-ok/10 p-3 text-sm font-semibold text-ok" data-testid="calc-teach-done">You hit every key point. You could teach this lesson.</p>}
       </div>
@@ -355,7 +355,7 @@ function Lesson({ l }: { l: CalcLesson }) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card><h2 className="font-bold">What you must remember</h2><ul className="mt-2 space-y-1.5">{l.remember.map((x) => <li key={x} className="flex gap-2 text-sm"><span className="font-bold text-gold">★</span><RichText text={x} /></li>)}</ul></Card>
-        <Card className="border-brand/30"><h2 className="font-bold">Teacher’s check-in</h2><p className="mt-2 text-sm leading-relaxed text-muted">{l.checkIn}</p><Link href="/tutor" className="mt-3 inline-block text-sm font-semibold text-brand2 hover:underline">Stuck? Ask the tutor →</Link></Card>
+        <Card className="border-brand/30"><h2 className="font-bold">Teacher’s check-in</h2><p className="mt-2 text-sm leading-relaxed text-muted">{l.checkIn}</p><Link href="/tutor" className="mt-3 inline-block text-sm font-semibold text-accent hover:underline">Stuck? Ask the tutor →</Link></Card>
       </div>
 
       <nav className="flex flex-wrap justify-between gap-2" aria-label="Lesson navigation">

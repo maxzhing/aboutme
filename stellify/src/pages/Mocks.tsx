@@ -97,7 +97,7 @@ function OfficialCard({ begin }: { begin: (form: string, kind: MockAttempt['kind
         {rw[2].length >= 2 && <button className="btn-ghost" onClick={() => begin('cb2', 'module-rw')} data-testid="start-official-extra">Extra R&amp;W module · {rw[2].length}</button>}
         {n(math) >= 4 && <button className="btn-primary" onClick={() => begin('cb3', 'section-math')} data-testid="start-official-math">Math · {n(math)} questions</button>}
       </div>
-      <Link href="/official" className="mt-3 inline-block text-sm font-semibold text-brand2 hover:underline">Add more official questions →</Link>
+      <Link href="/official" className="mt-3 inline-block text-sm font-semibold text-accent hover:underline">Add more official questions →</Link>
     </Card>
   );
 }
@@ -329,7 +329,7 @@ export function MockResultsPage() {
       <TestPlanPanel mock={mock} />
       <div className="grid gap-4 md:grid-cols-2">
         <Card><h2 className="font-semibold">Domain performance</h2><ul className="mt-3 space-y-2.5">{DOMAINS.filter((d) => sum.byDomain[d.id]).map((d) => { const x = sum.byDomain[d.id]; const p = pct(x.correct, x.total); return <li key={d.id}><div className="mb-1 flex justify-between text-sm"><span>{d.name}</span><span className="text-muted">{x.correct}/{x.total}</span></div><Progress value={p} tone={toneForPct(p)} label={d.name} /></li>; })}</ul></Card>
-        <Card><h2 className="font-semibold">Recommended study priorities</h2>{priorities.length ? <ul className="mt-2 divide-y divide-line">{priorities.map((s) => <li key={s.skill} className="flex items-center gap-3 py-2 text-sm"><span className="min-w-0 flex-1 truncate">{SKILL[s.skill].short}</span><Badge tone={toneForPct(s.p)}>{s.correct}/{s.total}</Badge><Link href={`/learn/${s.skill}`} className="text-brand2 hover:underline">Lesson</Link><Link href={`/practice/session?mode=skill&skill=${s.skill}&n=6`} className="text-brand2 hover:underline">Practice</Link></li>)}</ul> : <p className="mt-2 text-sm text-muted">A perfect paper. Try Fresh Mix or the Hardest Questions set.</p>}<Link href="/mistakes" className="mt-3 inline-block text-sm font-semibold text-brand2 hover:underline">Every miss is now in your Mistake Bucket →</Link></Card>
+        <Card><h2 className="font-semibold">Recommended study priorities</h2>{priorities.length ? <ul className="mt-2 divide-y divide-line">{priorities.map((s) => <li key={s.skill} className="flex items-center gap-3 py-2 text-sm"><span className="min-w-0 flex-1 truncate">{SKILL[s.skill].short}</span><Badge tone={toneForPct(s.p)}>{s.correct}/{s.total}</Badge><Link href={`/learn/${s.skill}`} className="text-accent hover:underline">Lesson</Link><Link href={`/practice/session?mode=skill&skill=${s.skill}&n=6`} className="text-accent hover:underline">Practice</Link></li>)}</ul> : <p className="mt-2 text-sm text-muted">A perfect paper. Try Fresh Mix or the Hardest Questions set.</p>}<Link href="/mistakes" className="mt-3 inline-block text-sm font-semibold text-accent hover:underline">Every miss is now in your Mistake Bucket →</Link></Card>
       </div>
       <Card><h2 className="font-semibold">Skill performance</h2><div className="mt-2 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">{skills.map((s) => <div key={s.skill} className="flex items-center gap-2 text-sm"><span className="min-w-0 flex-1 truncate">{SKILL[s.skill].short}</span><Progress value={s.p} tone={toneForPct(s.p)} className="!w-24" label={SKILL[s.skill].short} /><span className="w-10 text-right tabular-nums text-muted">{s.correct}/{s.total}</span></div>)}</div></Card>
       <Card>

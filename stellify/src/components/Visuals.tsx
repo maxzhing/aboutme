@@ -29,7 +29,7 @@ function Slider({ label, value, min, max, step = 1, onChange, show }: { label: s
   return (
     <label className="flex items-center gap-3 text-xs font-semibold text-muted">
       <span className="w-28 shrink-0">{label} <b className="text-ink">{show ?? n2(value)}</b></span>
-      <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="h-2 min-w-0 flex-1 cursor-pointer accent-[#6A4BF0]" aria-label={label} />
+      <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="h-2 min-w-0 flex-1 cursor-pointer accent-[rgb(var(--brand-solid))]" aria-label={label} />
     </label>
   );
 }

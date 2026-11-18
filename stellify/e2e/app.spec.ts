@@ -843,6 +843,8 @@ test('accessibility: no serious or critical axe violations on key pages, in both
     for (const r of routes) {
       await go(page, r);
       await page.waitForTimeout(300);
+      // measure the settled page, not one caught mid-fade (looping background animations are ignored)
+      await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity));
       const res = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).exclude('.backdrop').analyze();
       for (const v of res.violations) if (v.impact === 'serious' || v.impact === 'critical') found.push(`${theme} ${r}: ${v.id} (${v.nodes.length}) ${v.help}`);
     }
