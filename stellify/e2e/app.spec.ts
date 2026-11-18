@@ -239,6 +239,12 @@ test('every navigation item opens a working page with no console errors', async 
   const urls = await page.getByTestId('resource').locator('a[target=_blank]').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).href));
   expect(urls.length).toBeGreaterThanOrEqual(15);
   for (const u of urls) expect(u).toMatch(/^https:\/\/([a-z]+\.)*(collegeboard\.org|khanacademy\.org|desmos\.com)\//);
+  // every link carries the result of its check, and every source is categorized
+  await expect(page.getByTestId('resource-check')).toHaveCount(urls.length);
+  await expect(page.getByTestId('resource-status')).toContainText('Every link was opened on');
+  expect(await page.locator('[data-testid="resource"][data-kind="bluebook"]').count()).toBe(1);
+  expect(await page.locator('[data-testid="resource"][data-kind="third-party"]').count()).toBe(3);
+  await expect(page.locator('[data-testid="resource"][data-check="partial"]').first()).toContainText('Partly verified');
   expect(errors).toEqual([]);
 });
 
@@ -316,7 +322,7 @@ test('interactive lesson: pictures, quick checks, boss question, stars; quests a
   await go(page, '/learn/rw');
   await expect(page.getByTestId('skill-bnd')).toHaveAttribute('aria-label', /2 of 3 stars/);
 
-  // the official-pattern set opens a session of its own questions
+  // the hardest-pattern set (Stellify originals) opens a session of its own questions
   await go(page, '/practice/hard');
   await expect(page.getByTestId('pattern-set')).toContainText('40 original questions');
   await page.getByTestId('pattern-set').getByRole('link', { name: 'Punctuation (15)' }).click();
@@ -663,6 +669,7 @@ test('highlights and notes: select words, pick a color, add a note, keep them, r
   await boot(page);
   await go(page, '/practice/session?mode=single&ids=r-bnd-06');
   await expect(page.getByTestId('hl-tip')).toBeVisible();
+  await expect(page.getByText('Stellify original', { exact: true })).toBeVisible(); // original questions are labelled as such
   const PASSAGE = '[data-hl$="|passage"]';
   await selectWords(page, PASSAGE, 'Honeybees have brains');
   await page.getByTestId('hl-yellow').click();

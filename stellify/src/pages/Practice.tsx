@@ -40,7 +40,7 @@ export function BankPage() {
   const skills = SKILLS.filter((k) => (!f.section || k.section === f.section) && (!f.domain || k.domain === f.domain));
   return (
     <div>
-      <PageHeader eyebrow="Practice" title="Question Bank" subtitle={`${BANK_STATS.total} original, SAT-calibrated questions (${BANK_STATS.math} Math, ${BANK_STATS.rw} Reading & Writing). Every one has a validated answer and a full explanation for each choice. These are not official College Board questions.`}
+      <PageHeader eyebrow="Practice" title="Question Bank" subtitle={`${BANK_STATS.total} original SAT-style questions (${BANK_STATS.math} Math, ${BANK_STATS.rw} Reading & Writing). Every one has a validated answer and a full explanation for each choice. These are not official College Board questions.`}
         actions={<Link href="/resources" className="btn-ghost">Official practice resources</Link>} />
       <Card className="mb-4">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -141,7 +141,7 @@ function PatternSet({ solved }: { solved: Set<string> }) {
   const groups: [string, string][] = [['Punctuation (15)', 'bnd'], ['Verbs, modifiers, apostrophes (9)', 'fss'], ['Evidence and inference (11)', 'coet,coeq,inf'], ['Reading (5)', 'cid,tsp,wic']];
   return (
     <Card className="mt-4 border-brand/40" data-testid="pattern-set">
-      <h2 className="text-lg font-bold">🎯 Official-pattern set · Reading &amp; Writing</h2>
+      <h2 className="text-lg font-bold">🎯 Hardest-pattern set · Reading &amp; Writing (Stellify originals)</h2>
       <p className="mt-1 text-sm text-muted">{set.length} original questions built on the structures the hardest released Digital SAT questions use (stacked punctuation decisions, buried subjects, two-part evidence claims), each pushed a step harder. {done} of {set.length} solved.</p>
       <Progress value={pct(done, set.length)} className="mt-2" />
       <div className="mt-4 flex flex-wrap gap-2">

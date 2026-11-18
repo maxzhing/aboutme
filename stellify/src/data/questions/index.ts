@@ -30,7 +30,7 @@ export function normalize(q: RawQuestion, validated: boolean): Question {
       q.strategy,
       `${body.join(' ')} Now carry out the final step yourself.`,
     ],
-    source: 'Stellify Original (SAT-calibrated, not an official College Board question)',
+    source: 'Stellify original (written in the SAT style; not an official College Board question)',
     license: 'Original work — free for personal educational use',
     validation: validated ? 'validated' : 'unvalidated',
     created: '2026-11-12',

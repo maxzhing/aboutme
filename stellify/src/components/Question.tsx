@@ -21,7 +21,7 @@ import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
 export function QuestionMeta({ q }: { q: Question }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      {q.id.startsWith('cb-') && <Badge tone="gold">Official College Board question</Badge>}
+      {q.official || q.id.startsWith('cb-') ? <Badge tone="gold">Official College Board question</Badge> : <Badge>Stellify original</Badge>}
       <Badge tone="brand">{SECTION_NAME[q.section]}</Badge>
       <Badge>{DOMAIN[q.domain].name}</Badge>
       <Link href={`/learn/${q.skill}`} className="chip hover:text-ink">{SKILL[q.skill].short}</Link>

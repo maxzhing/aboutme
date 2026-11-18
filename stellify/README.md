@@ -7,7 +7,7 @@ browser. That is the whole product: no install, no server, no account, no intern
 
 - 474 original questions: SAT-style Math and Reading & Writing (about 20% medium, 40% hard,
   40% very hard), a Beyond SAT tier that is deliberately harder than the real test, and a 40-question
-  official-pattern Reading & Writing set modelled on the structures of the hardest released items. Each has a step-by-step solution, a rationale for every answer choice, the concept,
+  Reading & Writing set whose structures mirror the hardest College Board-released items (original questions, not official ones). Each has a step-by-step solution, a rationale for every answer choice, the concept,
   the fastest method, the common trap, a takeaway and three levels of hints.
 - A full course for every one of the 30 skills: 88 step-by-step chapters. Each chapter has picture
   lessons, a numbered method, a hard problem worked one step at a time, the traps (what each looks
@@ -293,7 +293,9 @@ npm run test:e2e
 - Score estimates are an unofficial model with hand-set item settings. They have never been checked against real
   students' SAT results, so no claim is made about how well they predict an actual score; the ranges include an
   explicit allowance for that. Validating them would need real score reports from real students.
-- Official-resource links and the Gemini connection could not be tested from the build environment.
+- Resource links were opened and checked on 2026-11-18 (`npm run check:links` repeats it). Three were only partly confirmed: the
+  Student Question Bank search now asks for a College Board sign-in, and Khan Academy's course content could not be loaded by
+  the check. The Gemini connection could not be tested from the build environment.
 - The AP courses are original study material, not official College Board content, and have not been
   reviewed by an outside AP teacher. The CSA multiple-choice questions are conceptual and are checked
   by review, not by running code. AP® is a trademark registered by the College Board.

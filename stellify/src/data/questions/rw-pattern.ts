@@ -4,7 +4,7 @@ const SEC = 'Which choice completes the text so that it conforms to the conventi
 const LOG = 'Which choice most logically completes the text?';
 
 /**
- * Reading & Writing · OFFICIAL-PATTERN SET. Original questions built on the structures that the
+ * Reading & Writing · HARDEST-PATTERN SET. Original (not official) questions built on the structures that the
  * hardest released Digital SAT items use (stacked punctuation decisions, subjects buried behind
  * long interruptions, two-part evidence claims, scope traps), each pushed one step further.
  * Every passage, name, study and number here is written for practice and is illustrative.

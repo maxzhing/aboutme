@@ -8,7 +8,7 @@
     "build:fast": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "validate:questions": "tsx scripts/validate-questions.ts --strict",
-    "check:links": "tsx scripts/check-links.ts",
+    "check:links": "NODE_USE_ENV_PROXY=1 tsx scripts/check-links.ts",
     "verify:csa-java": "tsx scripts/verify-csa-java.ts",
     "test": "vitest run",
     "test:e2e": "playwright test --trace off",

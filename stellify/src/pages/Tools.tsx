@@ -3,7 +3,7 @@ import { useSearchParams } from 'next/navigation';
 import { ExternalLink, Plus, Search, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { REF_CATS, REFERENCE } from '@/data/reference';
-import { RESOURCES } from '@/data/resources';
+import { KIND_NAME, RESOURCES, type ResourceKind } from '@/data/resources';
 import { VOCAB, type VocabWord } from '@/data/vocabulary';
 import { getQuestion } from '@/data/questions';
 import { useStore } from '@/lib/store';
@@ -198,22 +198,37 @@ export function ResourcesPage() {
   const [q, setQ] = useState('');
   const [sec, setSec] = useState<'All' | 'Math' | 'Reading & Writing' | 'Both'>('All');
   const list = RESOURCES.filter((r) => (sec === 'All' || r.section === sec) && (!q.trim() || `${r.name} ${r.domain ?? ''} ${r.provider} ${r.opens}`.toLowerCase().includes(q.toLowerCase())));
+  const full = RESOURCES.filter((r) => r.check === 'full').length;
+  const date = RESOURCES[0]?.verifiedOn ? new Date(`${RESOURCES[0].verifiedOn}T12:00:00`).toLocaleDateString(undefined, { dateStyle: 'long' }) : null;
   return (
     <div className="space-y-4">
-      <PageHeader eyebrow="Tools" title="Official SAT Resources" subtitle="Stellify's questions are original. For official questions and official scores, use the sources below. Stellify links to them and never copies or republishes College Board material." />
-      <Card className="border-warn/40 text-sm text-muted"><b className="text-ink">Verification status.</b> These addresses were compiled from the College Board&apos;s and Khan Academy&apos;s published site structure, but the environment that built this file had no access to those sites, so the links were not opened and checked. Each entry therefore shows “not yet verified.” If one has moved, start from satsuite.collegeboard.org/practice.</Card>
-      <div className="flex flex-wrap items-center gap-3"><div className="relative min-w-[220px] flex-1"><Search size={16} className="pointer-events-none absolute left-3 top-3.5 text-faint" /><input className="input pl-9" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search resources or domains" aria-label="Search resources" /></div><Tabs label="Section" value={sec} onChange={setSec} tabs={(['All', 'Both', 'Reading & Writing', 'Math'] as const).map((s) => ({ id: s, label: s }))} /></div>
-      <div className="grid gap-3 md:grid-cols-2">
-        {list.map((r) => (
-          <Card key={r.id} className="!p-4" data-testid="resource">
-            <div className="flex flex-wrap items-center gap-1.5"><Badge tone="brand">{r.section}</Badge>{r.domain && <Badge>{r.domain}</Badge>}<span className="text-xs text-faint">{r.provider}</span></div>
-            <h2 className="mt-2 font-semibold">{r.name}</h2>
-            <dl className="mt-1.5 space-y-1 text-sm text-muted"><div><dt className="inline font-semibold text-ink">Opens: </dt><dd className="inline">{r.opens}</dd></div><div><dt className="inline font-semibold text-ink">Access: </dt><dd className="inline">{r.access}</dd></div>{r.difficulty && <div><dt className="inline font-semibold text-ink">Difficulty: </dt><dd className="inline">{r.difficulty}</dd></div>}<div><dt className="inline font-semibold text-ink">Link verified: </dt><dd className="inline">{r.verifiedOn ?? 'not yet verified'}</dd></div></dl>
-            <a href={r.url} target="_blank" rel="noopener noreferrer" className="btn-ghost mt-3 !py-1.5">Open official site<ExternalLink size={14} /></a>
-            <div className="mt-1 break-all text-[11px] text-faint">{r.url}</div>
-          </Card>
-        ))}
-      </div>
+      <PageHeader eyebrow="Tools" title="Official SAT Resources" subtitle="Where to find official College Board questions, official practice tests and trusted free tools. Stellify links to them and never republishes College Board material." />
+      <Card className="text-sm text-muted" data-testid="resource-status">
+        <p><b className="text-ink">Link check.</b> {date ? `Every link was opened on ${date} in a real browser.` : 'These links have not been checked yet.'} {full} of {RESOURCES.length} were confirmed to open the intended page (by its title); {RESOURCES.length - full} opened but their content could not be fully confirmed, and each says why. Two addresses had moved and were updated.</p>
+        <p className="mt-2"><b className="text-ink">Who made what.</b> <Badge tone="gold">Official College Board</Badge> questions and tests come from the College Board. <Badge tone="brand">Bluebook</Badge> practice tests run only in the College Board&apos;s Bluebook app. <Badge>Third party</Badge> resources are made by others. Everything else in Stellify, including its question bank, is <b className="text-ink">original Stellify material</b>, written in the SAT style but not made or endorsed by the College Board.</p>
+      </Card>
+      <div className="flex flex-wrap items-center gap-3"><div className="relative min-w-[220px] flex-1"><Search size={16} className="pointer-events-none absolute left-3 top-3.5 text-faint" /><input className="input pl-9" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search resources or domains" aria-label="Search resources" /></div><Tabs label="Section" value={sec} onChange={setSec} tabs={[{ id: 'All', label: 'All' }, { id: 'Math', label: 'Math' }, { id: 'Reading & Writing', label: 'R&W' }, { id: 'Both', label: 'Both' }]} /></div>
+      {(Object.keys(KIND_NAME) as ResourceKind[]).map((kind) => {
+        const items = list.filter((r) => r.kind === kind);
+        if (!items.length) return null;
+        return (
+          <section key={kind} aria-labelledby={`kind-${kind}`} className="space-y-2">
+            <h2 id={`kind-${kind}`} className="text-sm font-bold uppercase tracking-wide text-faint">{KIND_NAME[kind]}</h2>
+            <div className="grid gap-3 md:grid-cols-2">
+              {items.map((r) => (
+                <Card key={r.id} className="!p-4" data-testid="resource" data-kind={r.kind} data-check={r.check}>
+                  <div className="flex flex-wrap items-center gap-1.5"><Badge tone={r.kind === 'official' ? 'gold' : r.kind === 'bluebook' ? 'brand' : 'default'}>{r.kind === 'official' ? 'Official College Board' : r.kind === 'bluebook' ? 'Bluebook' : 'Third party'}</Badge><Badge>{r.section}</Badge>{r.domain && <Badge>{r.domain}</Badge>}<span className="text-xs text-faint">{r.provider}</span></div>
+                  <h3 className="mt-2 font-semibold">{r.name}</h3>
+                  <dl className="mt-1.5 space-y-1 text-sm text-muted"><div><dt className="inline font-semibold text-ink">Opens: </dt><dd className="inline">{r.opens}</dd></div><div><dt className="inline font-semibold text-ink">Access: </dt><dd className="inline">{r.access}</dd></div>{r.difficulty && <div><dt className="inline font-semibold text-ink">Difficulty: </dt><dd className="inline">{r.difficulty}</dd></div>}</dl>
+                  <p className={cn('mt-2 rounded-lg px-2.5 py-1.5 text-xs', r.check === 'full' ? 'bg-ok/10 text-ink' : 'bg-warn/10 text-ink')} data-testid="resource-check">{r.check === 'full' ? '✓ Verified' : '◐ Partly verified'}{r.verifiedOn ? ` ${r.verifiedOn}` : ''}: opened “{r.seen}”.{r.note ? ` ${r.note}` : ''}</p>
+                  <a href={r.url} target="_blank" rel="noopener noreferrer" className="btn-ghost mt-3 !py-1.5">Open {r.kind === 'third-party' ? 'site' : 'official site'}<ExternalLink size={14} /></a>
+                  <div className="mt-1 break-all text-[11px] text-faint">{r.url}</div>
+                </Card>
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
