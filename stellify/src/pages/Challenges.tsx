@@ -84,7 +84,7 @@ export function SpeedPage() {
           <Card key={sec}>
             <h2 className="flex items-center gap-2 text-lg font-bold"><Gauge size={18} className="text-brand2" />{SECTION_NAME[sec]}</h2>
             <p className="mt-1 text-sm text-muted">{rec ? `Best: ${rec.best}/10 correct and on pace · ${h.length} session${h.length === 1 ? '' : 's'}` : 'No sessions yet'}</p>
-            {lastN.length > 0 && <div className="mt-3 flex items-end gap-1.5" aria-label="Recent pace scores">{lastN.map((x, i) => <div key={i} className="flex flex-col items-center gap-1 text-[10px] text-muted"><div className="w-7 rounded-t bg-gradient-to-t from-brand to-brand2" style={{ height: 6 + x.score * 6 }} />{x.score}</div>)}<span className="ml-2 text-xs text-faint">average time {fmtDuration(lastN[lastN.length - 1].ms / 10)} last session</span></div>}
+            {lastN.length > 0 && <div className="mt-3 flex items-end gap-1.5" aria-label="Recent pace scores">{lastN.map((x, i) => <div key={i} className="flex flex-col items-center gap-1 text-[10px] text-muted"><div className="w-7 rounded-t bg-brand" style={{ height: 6 + x.score * 6 }} />{x.score}</div>)}<span className="ml-2 text-xs text-faint">average time {fmtDuration(lastN[lastN.length - 1].ms / 10)} last session</span></div>}
             <button className="btn-primary mt-4" onClick={() => { setResult(null); setSection(sec); }}>Start</button>
           </Card>
         ); })}

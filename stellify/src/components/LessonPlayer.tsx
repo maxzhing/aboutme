@@ -211,7 +211,7 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
       <div className="mb-4 flex items-center gap-3">
         <button type="button" className="btn-quiet !px-2" onClick={onExit} aria-label="Leave the lesson"><X size={20} /></button>
         <div className="flex flex-1 gap-1" role="progressbar" aria-valuemin={0} aria-valuemax={steps.length - 1} aria-valuenow={i} aria-label="Lesson progress">
-          {steps.slice(1).map((s, k) => <span key={k} className={cn('h-2.5 flex-1 rounded-full transition-colors duration-300', k < i ? (s.t === 'check' ? 'bg-gold' : s.t === 'boss' ? 'bg-bad' : 'bg-gradient-to-r from-brand to-brand2') : 'bg-raised')} />)}
+          {steps.slice(1).map((s, k) => <span key={k} className={cn('h-2.5 flex-1 rounded-full transition-colors duration-300', k < i ? (s.t === 'check' ? 'bg-gold' : s.t === 'boss' ? 'bg-bad' : 'bg-brand') : 'bg-raised')} />)}
         </div>
         <span className="inline-flex items-center gap-1 text-sm font-bold text-gold" aria-label={`${points} points so far`}><Star size={16} className="fill-gold" />{points}</span>
       </div>

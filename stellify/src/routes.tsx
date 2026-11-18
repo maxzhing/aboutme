@@ -19,6 +19,7 @@ import { NotesPage, ReferencePage, ResourcesPage, TutorPage, VocabularyPage } fr
 import { SettingsPage } from './pages/Settings';
 import { QcPage } from './pages/Qc';
 import { RemixPage } from './pages/Remix';
+import { StudioPage } from './pages/Studio';
 
 function NotFound() {
   return <div className="card p-10 text-center"><h1 className="text-2xl font-bold">Page not found</h1><p className="mt-2 text-sm text-muted">That page does not exist.</p><Link href="/" className="btn-primary mt-4">Back to the dashboard</Link></div>;
@@ -45,10 +46,11 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/practice\/hard$/, component: HardPage },
   { pattern: /^\/remix$/, component: RemixPage },
   { pattern: /^\/official$/, component: OfficialPage },
-  // AP self-study courses: /calc, /csa, /micro, /macro, /stats, their lessons and unit reviews
-  { pattern: /^\/(?<course>calc|csa|micro|macro|stats)$/, component: CourseHomePage },
-  { pattern: /^\/(?<course>calc|csa|micro|macro|stats)\/review\/(?<unit>\d+)$/, component: CourseReviewPage },
-  { pattern: /^\/(?<course>calc|csa|micro|macro|stats)\/(?<lesson>[a-z]+\d+-\d+)$/, component: CourseLessonPage },
+  { pattern: /^\/music\/studio$/, component: StudioPage },
+  // AP self-study courses: /calc, /csa, /micro, /macro, /stats, /music, their lessons and unit reviews
+  { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)$/, component: CourseHomePage },
+  { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)\/review\/(?<unit>\d+)$/, component: CourseReviewPage },
+  { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)\/(?<lesson>[a-z]+\d+-\d+)$/, component: CourseLessonPage },
   { pattern: /^\/practice\/timed$/, component: TimedPage },
   { pattern: /^\/daily$/, component: DailyPage },
   { pattern: /^\/speed$/, component: SpeedPage },

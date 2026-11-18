@@ -69,11 +69,11 @@ export function CoursePage({ skill }: { skill: SkillId }) {
         </div>
         <p className="relative mt-5 text-sm text-white/80" data-testid="course-progress">{passedN} of {chapters.length} chapters passed · every chapter: pictures → method → cheat sheet → worked examples → traps → 3 hard questions</p>
       </section>
-      <ol className="relative space-y-3 before:absolute before:bottom-8 before:left-[42px] before:top-8 before:w-0.5 before:bg-gradient-to-b before:from-brand/50 before:via-line before:to-line">
+      <ol className="relative space-y-3 before:absolute before:bottom-8 before:left-[42px] before:top-8 before:w-0.5 before:bg-line">
         {chapters.map((c) => { const r = done[c.id]; const pool = chapterQuestions(c).length; const isNext = next?.id === c.id; return (
           <li key={c.id}>
             <Link href={`/learn/${skill}/${c.id}`} className={cn('card flex items-center gap-4 p-4 transition-all hover:-translate-y-0.5 hover:border-accent/50', isNext && 'border-brand/60 bg-brand/5')} data-testid={`chapter-${c.id}`}>
-              <span className={cn('relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-2xl font-display text-lg font-bold ring-4 ring-surface', r?.passedAt ? 'bg-gradient-to-br from-[#10B981] to-[#059669] text-white' : isNext ? 'bg-gradient-to-br from-brand-solid to-brand2-solid text-white shadow-[0_8px_20px_-8px_rgba(106,75,240,0.9)]' : 'bg-raised text-muted')}>{r?.passedAt ? <Check size={22} /> : c.n}</span>
+              <span className={cn('relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-2xl font-display text-lg font-bold ring-4 ring-surface', r?.passedAt ? 'bg-[#047857] text-white' : isNext ? 'bg-brand-solid text-white' : 'bg-raised text-muted')}>{r?.passedAt ? <Check size={22} /> : c.n}</span>
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">{c.title}</span>
                 <span className="block text-sm text-muted">{c.goal}</span>
@@ -192,7 +192,7 @@ function ChapterPlayer({ ch }: { ch: Chapter }) {
       <p className="eyebrow">🖼️ Lesson {step.i + 1} of {ch.teach.length}</p>
       <h2 className="mt-2 font-display text-2xl font-bold leading-tight sm:text-[32px]">{idea.title}</h2>
       <p className="mt-2.5 max-w-3xl text-base leading-relaxed text-muted sm:text-[17px]"><RichText text={idea.text} /></p>
-      <div className="mt-5 rounded-3xl border border-line bg-gradient-to-b from-raised/60 to-raised/20 p-3 shadow-inner sm:p-6"><VisualView v={idea.visual} /></div>
+      <div className="mt-5 rounded-3xl border border-line bg-raised/40 p-3 shadow-inner sm:p-6"><VisualView v={idea.visual} /></div>
       {idea.try && <p className="mt-3 text-center text-sm font-semibold text-brand2">👆 {idea.try}</p>}
     </div>
   ); }
@@ -292,7 +292,7 @@ function ChapterPlayer({ ch }: { ch: Chapter }) {
       <div className="mb-3 flex items-center gap-3">
         <button type="button" className="btn-quiet !px-2" onClick={() => router.push(`/learn/${ch.skill}`)} aria-label="Back to the course"><X size={20} /></button>
         <div className="flex flex-1 gap-1" role="progressbar" aria-valuemin={0} aria-valuemax={steps.length - 1} aria-valuenow={k} aria-label="Chapter progress">
-          {steps.slice(1).map((s, i) => <span key={i} title={label[s.t]} className={cn('h-2.5 flex-1 rounded-full transition-colors', i < k ? (s.t === 'practice' ? 'bg-bad' : s.t === 'traps' ? 'bg-warn' : s.t === 'walk' ? 'bg-ok' : 'bg-gradient-to-r from-brand to-brand2') : 'bg-raised')} />)}
+          {steps.slice(1).map((s, i) => <span key={i} title={label[s.t]} className={cn('h-2.5 flex-1 rounded-full transition-colors', i < k ? (s.t === 'practice' ? 'bg-bad' : s.t === 'traps' ? 'bg-warn' : s.t === 'walk' ? 'bg-ok' : 'bg-brand') : 'bg-raised')} />)}
         </div>
         <span className="hidden text-xs font-semibold text-muted sm:inline">{label[step.t]}</span>
       </div>

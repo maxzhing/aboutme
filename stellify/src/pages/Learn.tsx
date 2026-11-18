@@ -141,7 +141,7 @@ function LessonNotes({ skill }: { skill: string }) {
           <Card>
             <h2 className="font-bold">Mastery</h2>
             <div className="mt-2 flex items-center gap-2"><Badge tone={LEVEL_TONE[st.level]}>{MASTERY_LEVELS[st.level]}</Badge><span className="text-sm text-muted">{st.n ? `${pct(st.correct, st.n)}% over ${st.n}` : 'No attempts yet'}</span></div>
-            <ol className="mt-3 flex gap-1" aria-label="Mastery levels">{MASTERY_LEVELS.map((m, i) => <li key={m} className={`h-2 flex-1 rounded-full ${i <= st.level && st.level > 0 ? 'bg-gradient-to-r from-brand to-brand2' : 'bg-raised'}`} title={m} />)}</ol>
+            <ol className="mt-3 flex gap-1" aria-label="Mastery levels">{MASTERY_LEVELS.map((m, i) => <li key={m} className={`h-2 flex-1 rounded-full ${i <= st.level && st.level > 0 ? 'bg-brand' : 'bg-raised'}`} title={m} />)}</ol>
             <p className="mt-3 text-sm"><b>Next:</b> <span className="text-muted">{st.next}</span></p>
             <p className="mt-2 text-xs text-faint">Based on your last 12 attempts in this skill. Answers that needed all three hints do not count as independent.</p>
           </Card>

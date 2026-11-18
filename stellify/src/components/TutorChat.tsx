@@ -75,13 +75,13 @@ export function TutorChat({ qid, answer, threadId: initialThread, compact, sugge
         )}
         {messages.map((m, i) => (
           <div key={i} className={cn('flex', m.role === 'student' ? 'justify-end' : 'justify-start')}>
-            <div className={cn('max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed', m.role === 'student' ? 'bg-gradient-to-r from-brand-solid to-brand2-solid text-white' : 'border border-line bg-surface')}>
+            <div className={cn('max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed', m.role === 'student' ? 'bg-brand-solid text-white' : 'border border-line bg-surface')}>
               {m.role === 'tutor' ? md(m.text) : m.text}
               {m.role === 'tutor' && m.source === 'gemini' && <div className="mt-1.5 text-[10px] uppercase tracking-wide text-faint">AI-generated · check against the explanation</div>}
             </div>
           </div>
         ))}
-        {busy && <div className="text-xs text-muted">Lumi is thinking…</div>}
+        {busy && <div className="text-xs text-muted">Your tutor is thinking…</div>}
         {!busy && links.length > 0 && <div className="flex flex-wrap gap-2">{links.map((l) => <Link key={l.href + l.label} href={l.href} className="chip hover:text-ink">{l.label} →</Link>)}</div>}
         {notice && <p className="text-xs text-warn">{notice}</p>}
         <div ref={end} />

@@ -172,7 +172,7 @@ function Workspace({ originId, chainId, at }: { originId: string; chainId?: stri
 
       <div ref={modesRef} id="remix-modes">
         <Card className="card-glow space-y-4">
-          <div className="-mx-5 -mt-5 flex flex-wrap items-center gap-3 rounded-t-[22px] border-b border-line/60 bg-gradient-to-r from-accent/[.10] via-accent2/[.05] to-transparent px-5 py-4">
+          <div className="-mx-5 -mt-5 flex flex-wrap items-center gap-3 rounded-t-[22px] border-b border-line/60 bg-accent/[.07] px-5 py-4">
             <button className="btn-primary" disabled={busy || full} onClick={() => run(smart.mode, smart.level, parent, smart.reason)} data-testid="remix-smart">{busy ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}Smart Remix</button>
             <p className="min-w-[14rem] flex-1 text-sm text-muted"><b className="text-ink">{MODE_INFO[smart.mode].name}, {LEVEL_NAME[smart.level]}.</b> {smart.reason}</p>
           </div>

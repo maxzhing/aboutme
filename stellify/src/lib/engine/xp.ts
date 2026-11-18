@@ -1,12 +1,12 @@
 import type { Difficulty, Question } from '../types';
 
 export const LEVEL_TIERS = [
-  { level: 1, title: 'Beginner', form: 'Stardust' },
-  { level: 5, title: 'Growing', form: 'Spark' },
-  { level: 10, title: 'Advanced', form: 'Flare' },
-  { level: 20, title: 'Expert', form: 'Comet' },
-  { level: 30, title: 'Legendary', form: 'Nova' },
-  { level: 50, title: 'Ultimate', form: 'Supernova' },
+  { level: 1, title: 'Beginner', form: 'Hatchling' },
+  { level: 5, title: 'Growing', form: 'Sparkle cheeks' },
+  { level: 10, title: 'Advanced', form: 'Star pin' },
+  { level: 20, title: 'Expert', form: 'Explorer' },
+  { level: 30, title: 'Legendary', form: 'Star crown' },
+  { level: 50, title: 'Ultimate', form: 'Golden outline' },
 ];
 export const MAX_LEVEL = 60;
 

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { clsx, type ClassValue } from 'clsx';
 import { X } from 'lucide-react';
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
 export const cn = (...a: ClassValue[]) => clsx(a);
 
@@ -37,23 +37,21 @@ export function Constellation({ className }: { className?: string }) {
 
 export function Progress({ value, className, tone = 'brand', label }: { value: number; className?: string; tone?: 'brand' | 'ok' | 'warn' | 'bad' | 'gold'; label?: string }) {
   const v = Math.max(0, Math.min(100, value));
-  const bar = { brand: 'bg-gradient-to-r from-accent to-accent2', ok: 'bg-ok', warn: 'bg-warn', bad: 'bg-bad', gold: 'bg-gold' }[tone];
+  const bar = { brand: 'bg-accent', ok: 'bg-ok', warn: 'bg-warn', bad: 'bg-bad', gold: 'bg-gold' }[tone];
   return (
     <div className={cn('h-2 w-full overflow-hidden rounded-full bg-ink/[.07] dark:bg-white/[.07]', className)} role="progressbar" aria-valuenow={Math.round(v)} aria-valuemin={0} aria-valuemax={100} aria-label={label ?? 'Progress'}>
-      <div className={cn('h-full rounded-full transition-[width] duration-700 ease-out', bar, v > 0 && v < 100 && 'bar-shimmer')} style={{ width: `${v}%` }} />
+      <div className={cn('h-full rounded-full transition-[width] duration-700 ease-out', bar)} style={{ width: `${v}%` }} />
     </div>
   );
 }
 
 export function Ring({ value, size = 72, stroke = 7, children, label }: { value: number; size?: number; stroke?: number; children?: ReactNode; label?: string }) {
-  const gid = `rg${useId().replace(/:/g, '')}`;
   const r = (size - stroke) / 2, c = 2 * Math.PI * r, v = Math.max(0, Math.min(100, value));
   return (
     <div className="relative inline-grid place-items-center" style={{ width: size, height: size }} role="img" aria-label={label ?? `${Math.round(v)} percent`}>
       <svg width={size} height={size} className="-rotate-90">
-        <defs><linearGradient id={gid} x1="0" x2="1"><stop offset="0" stopColor="rgb(var(--accent))" /><stop offset="1" stopColor="rgb(var(--accent2))" /></linearGradient></defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgb(var(--ink) / .08)" strokeWidth={stroke} />
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={`url(#${gid})`} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - v / 100)} style={{ transition: 'stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1)' }} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgb(var(--accent))" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - v / 100)} style={{ transition: 'stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1)' }} />
       </svg>
       <div className="absolute inset-0 grid place-items-center text-sm font-bold">{children}</div>
     </div>

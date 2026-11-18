@@ -13,17 +13,16 @@ const ICON: Record<SkillId, LucideIcon> = {
   tra: ArrowRightLeft, syn: Layers,
   bnd: Scissors, fss: Wrench,
 };
-/** One gradient per content domain, so every skill reads at a glance as part of its area. */
-export const DOMAIN_GRADIENT: Record<DomainId, string> = {
-  alg: 'from-[#3B82F6] to-[#06B6D4]', adv: 'from-[#6366F1] to-[#A855F7]', psda: 'from-[#14B8A6] to-[#22C55E]', geo: 'from-[#F59E0B] to-[#F97316]',
-  ii: 'from-[#8B5CF6] to-[#D946EF]', cs: 'from-[#EC4899] to-[#F43F5E]', eoi: 'from-[#0EA5E9] to-[#6366F1]', sec: 'from-[#10B981] to-[#0EA5E9]',
+/** One flat colour per content domain, so every skill reads at a glance as part of its area. */
+export const DOMAIN_COLOR: Record<DomainId, string> = {
+  alg: 'bg-[#3B82F6]', adv: 'bg-[#6366F1]', psda: 'bg-[#14B8A6]', geo: 'bg-[#F59E0B]',
+  ii: 'bg-[#8B5CF6]', cs: 'bg-[#EC4899]', eoi: 'bg-[#0EA5E9]', sec: 'bg-[#10B981]',
 };
 
 export function SkillIcon({ skill, size = 44, className, dim }: { skill: SkillId; size?: number; className?: string; dim?: boolean }) {
   const Icon = ICON[skill] ?? Inf;
   return (
-    <span className={cn('relative inline-grid shrink-0 place-items-center rounded-[30%] bg-gradient-to-br text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)] ring-1 ring-inset ring-white/20', DOMAIN_GRADIENT[SKILL[skill].domain], dim && 'opacity-45 grayscale-[40%]', className)} style={{ width: size, height: size }} aria-hidden>
-      <span className="absolute inset-0 rounded-[30%] bg-gradient-to-b from-white/25 to-transparent" />
+    <span className={cn('relative inline-grid shrink-0 place-items-center rounded-[30%] text-white shadow-[0_6px_14px_-8px_rgba(0,0,0,0.45)] ring-1 ring-inset ring-black/10', DOMAIN_COLOR[SKILL[skill].domain], dim && 'opacity-45 grayscale-[40%]', className)} style={{ width: size, height: size }} aria-hidden>
       <Icon size={Math.round(size * 0.5)} strokeWidth={2.2} className="relative drop-shadow-sm" />
     </span>
   );

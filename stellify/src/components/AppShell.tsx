@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Flame, Menu, Moon, Search, Settings, Sparkles, Sun, X } from 'lucide-react';
 import { MotionConfig } from 'framer-motion';
-import { Suspense, useEffect, useId, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useStore } from '@/lib/store';
 import { useLevel, useStreak } from '@/lib/hooks';
 import { BRAND } from '@/lib/taxonomy';
@@ -17,13 +17,11 @@ import { HighlightToolbar } from './Highlight';
 import { cn } from './ui';
 
 export function Logo({ size = 30 }: { size?: number }) {
-  const id = `lg${useId().replace(/:/g, '')}`;
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" role="img" aria-label={`${BRAND.name} logo`}>
-      <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#9070FF" /><stop offset=".55" stopColor="#5B5CF6" /><stop offset="1" stopColor="#2F8BFF" /></linearGradient></defs>
-      <rect width="40" height="40" rx="11" fill={`url(#${id})`} />
-      <path d="M20 7 L23.2 16.8 L33 20 L23.2 23.2 L20 33 L16.8 23.2 L7 20 L16.8 16.8 Z" fill="#fff" />
-      <path d="M8 30 C14 36 26 36 32 30" fill="none" stroke="#fff" strokeOpacity="0.55" strokeWidth="2" strokeLinecap="round" />
+      <rect width="40" height="40" rx="11" fill="#1F2A44" />
+      <path d="M20 6.5 L23.4 16.6 L33.5 20 L23.4 23.4 L20 33.5 L16.6 23.4 L6.5 20 L16.6 16.6 Z" fill="#FFD23F" />
+      <circle cx="30.5" cy="9.5" r="2.2" fill="#FF8FA3" /><circle cx="9.5" cy="30.5" r="1.6" fill="#7BD88F" />
     </svg>
   );
 }
@@ -35,7 +33,7 @@ const GROUP_SECTION: Record<string, Section> = { Home: 'home', Learn: 'learn', P
 export function sectionOf(path: string): Section {
   if (path === '/') return 'home';
   if (/^\/(settings|qc)\b/.test(path)) return 'settings';
-  if (/^\/(calc|csa|micro|macro|stats)\b/.test(path)) return 'ap';
+  if (/^\/(calc|csa|micro|macro|stats|music)\b/.test(path)) return 'ap';
   if (/^\/(learn|grammar|hacks|desmos|diagnostic)\b/.test(path)) return 'learn';
   if (/^\/(practice|remix|official|daily|speed|arena)\b/.test(path)) return 'practice';
   if (/^\/(analytics|mistakes|mocks|calendar|report)\b/.test(path)) return 'performance';
@@ -43,7 +41,7 @@ export function sectionOf(path: string): Section {
   if (/^\/(tutor|vocabulary|reference|notes|resources)\b/.test(path)) return 'tools';
   return 'home';
 }
-const courseOf = (path: string) => path.match(/^\/(calc|csa|micro|macro|stats)\b/)?.[1];
+const courseOf = (path: string) => path.match(/^\/(calc|csa|micro|macro|stats|music)\b/)?.[1];
 /** Lessons and chapters run full-screen, without the sidebar, like a test-day screen. */
 const LESSON_FOCUS = /^\/learn\/[a-z0-9]+\/[a-z0-9]+-\d+$/;
 

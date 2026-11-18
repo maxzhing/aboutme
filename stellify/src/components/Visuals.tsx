@@ -192,7 +192,7 @@ function Meter({ left, right, words, zone }: { left: string; right: string; word
   return (
     <div className="px-2">
       <div className="relative h-36">
-        <div className="absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 rounded-full bg-gradient-to-r from-brand2/60 via-gold/60 to-bad/70" />
+        <div className="absolute inset-x-0 top-1/2 flex h-3 -translate-y-1/2 overflow-hidden rounded-full"><span className="flex-1 bg-brand2/60" /><span className="flex-1 bg-gold/60" /><span className="flex-1 bg-bad/70" /></div>
         {zone && <div className="absolute top-1/2 h-9 -translate-y-1/2 rounded-lg border-2 border-ok bg-ok/15" style={{ left: `${zone[0]}%`, width: `${zone[1] - zone[0]}%` }} />}
         {words.map(([w, v], i) => <div key={w} className="absolute -translate-x-1/2 text-center" style={{ left: `${v}%`, top: i % 2 ? '66%' : '2%' }}><div className={cn('whitespace-nowrap rounded-md border bg-surface px-1.5 py-0.5 text-xs font-bold', zone && v >= zone[0] && v <= zone[1] ? 'border-ok text-ok' : 'border-line')}>{w}</div><div className={cn('mx-auto h-4 w-px bg-faint', i % 2 && 'hidden')} /></div>)}
       </div>

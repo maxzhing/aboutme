@@ -45,7 +45,7 @@ export function FullTestImport() {
       onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); void run(e.dataTransfer.files); }} data-testid="fulltest-zone">
       <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
         <div>
-          <div className="flex items-center gap-2"><span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-brand2-solid to-[#0EA5A4] text-white"><FileStack size={20} /></span><h2 className="text-xl font-bold">Add a full official practice test</h2></div>
+          <div className="flex items-center gap-2"><span className="grid h-10 w-10 place-items-center rounded-xl bg-brand2-solid text-white"><FileStack size={20} /></span><h2 className="text-xl font-bold">Add a full official practice test</h2></div>
           <ol className="mt-4 space-y-2 text-sm text-muted">
             <li><b className="text-ink">1.</b> On the College Board&apos;s SAT paper practice tests page, download one test&apos;s three PDFs: the <b className="text-ink">practice test</b>, its <b className="text-ink">scoring guide</b> and its <b className="text-ink">answer explanations</b>.</li>
             <li><b className="text-ink">2.</b> Drop all three here at once. They are read on this device, with no API key and nothing uploaded.</li>

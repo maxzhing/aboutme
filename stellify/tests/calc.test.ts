@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import katex from 'katex';
-import { CALC_LESSONS, CALC_TUTOR, CALC_UNITS, calcCorrect, lessonsOfUnit, normalizeCalc, type CalcLesson, type LessonTutor } from '@/data/calc';
+import { CALC_LESSONS, CALC_TUTOR, CALC_UNITS, calcCorrect, lessonsOfUnit, normalizeCalc, noteText, type CalcLesson, type LessonTutor } from '@/data/calc';
 import { parseNumeric } from '@/lib/answers';
 import { tokenize } from '@/lib/richtext';
 
 const texts = (l: CalcLesson) => [
   l.intro, ...l.goals,
-  ...l.notes.flatMap((n) => (n.k === 'list' ? n.items : n.k === 'rule' ? [n.title, n.t] : n.k === 'formula' ? [`$$${n.t}$$`] : [n.t])),
+  ...l.notes.flatMap((n) => (n.k === 'list' ? n.items : n.k === 'rule' ? [n.title, n.t] : n.k === 'formula' ? [`$$${n.t}$$`] : [noteText(n)])),
   ...l.examples.flatMap((e) => [e.q, ...e.steps, e.a]),
   ...l.practice.flatMap((p) => [p.q, p.hint, ...p.solution, ...(p.choices ?? [])]),
   ...l.remember, l.checkIn,

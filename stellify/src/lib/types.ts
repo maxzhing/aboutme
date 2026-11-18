@@ -169,6 +169,12 @@ export interface PetState {
   owned: string[];
   equipped: Partial<Record<PetSlot, string>>;
   lastEvent?: { kind: string; at: number; text: string };
+  /** the active companion (undefined while the first egg has not hatched) */
+  species?: string;
+  /** every companion hatched so far, with the name the student gave it */
+  collection?: { id: string; at: number; name?: string }[];
+  /** the current egg's starting point: study is counted from here */
+  egg?: { xp0: number; lessons0: number; pattern: number };
 }
 
 export interface DayActivity {

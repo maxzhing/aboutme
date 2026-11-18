@@ -46,11 +46,14 @@ browser. That is the whole product: no install, no server, no account, no intern
   reference sheet, a hideable timer that stays visible with a one-time alert at 5 minutes left, a review page before
   submitting, a 10-minute break, and a module-by-module report (set, right, blanks, time and pace per question).
 - Module 2 routing that weighs Module 1 answers by difficulty, checked by a simulation study (below).
-- Lumi the companion: XP, levels, shop, achievements, three daily quests with a chest, answer combos,
-  optional sound effects, daily challenge, speed training, battle arena.
+- A companion that hatches from an egg: every student starts with an egg, and finishing lessons and earning XP
+  warms it until it hatches into one of ten companions, chosen at random and weighted by rarity (five common,
+  four rare, one legendary). Each hatch brings a new egg, so students can collect the whole set and switch
+  between them. Plus XP, levels, a shop, achievements, three daily quests with a chest, answer combos, optional
+  sound effects, daily challenge, speed training and battle arena.
 - A soft, calm feel: every press gives a quiet synthesized "pop" (and a tiny vibration on phones), a ripple
   spreads from where you touched, buttons spring back, right answers sparkle and wrong ones give a gentle
-  shake, and a slow aurora with twinkling stars sits behind every page. Sound can be turned off, and
+  shake, and quiet twinkling stars sit behind every page. Sound can be turned off, and
   "Reduce motion" stills all of it.
 - Highlights & Notes, as on test day: select any words in a passage or question and pick yellow, blue,
   pink or underline, or attach a note; click a highlight to recolor or remove it. On official questions
@@ -72,11 +75,11 @@ npm run build
 
 `npm run build` validates the question bank, then inlines JavaScript, CSS, fonts and data into one file.
 
-## AP courses: Calculus BC, Computer Science A, Microeconomics, Macroeconomics, Statistics
+## AP courses: Calculus BC, Computer Science A, Microeconomics, Macroeconomics, Statistics, Music Theory
 
-Five self-study AP courses, written so that a beginner can learn each subject from scratch and then
+Six self-study AP courses, written so that a beginner can learn each subject from scratch and then
 teach it. Every course follows the College Board's current units in order, shows each unit's exam
-weight, and builds a pacing plan from your exam date.
+weight (where the College Board publishes one), and builds a pacing plan from your exam date.
 
 | Course | Units | Lessons | Worked examples | Practice problems |
 | --- | --- | --- | --- | --- |
@@ -85,6 +88,7 @@ weight, and builds a pacing plan from your exam date.
 | AP Microeconomics | 6 | 15 | 30 | 90 |
 | AP Macroeconomics | 6 | 19 | 38 | 114 |
 | AP Statistics | 9 | 20 | 40 | 120 |
+| AP Music Theory | 8 | 28 | 56 | 224 |
 
 - **Calculus BC** starts with fractions, equations, functions, slope, exponents, logarithms and trig,
   then runs from limits through infinite series.
@@ -135,6 +139,37 @@ automatically:
 - every lesson has its full tutor layer
 
 Lessons and problems are original.
+
+## AP Music Theory and the Music Studio
+
+All eight College Board units, in the College Board's order (intervals sit in Unit 2, as in the course framework).
+The College Board weights this exam by skill rather than by unit, so no unit percentages are shown.
+
+- **Real notation.** Staves, clefs (treble, bass, alto), key and time signatures, accidentals, ledger lines,
+  stems, flags, beams, dots and grand-staff SATB are drawn as SVG from the Bravura music font's outlines
+  (SIL Open Font License), so they work offline and stay sharp at any size. Accidentals follow engraving
+  rules: the key signature applies to every octave, an accidental lasts until the bar line, and naturals cancel it.
+- **Hands-on writing.** 44 practice problems and 19 "try it yourself" boxes are answered by writing on a staff:
+  single notes, intervals, triads and seventh chords in any inversion, Roman numerals, scales and modes,
+  key signatures (in the right order and positions), melodies, and 12 four-part (SATB) progressions. Everything
+  works with a mouse, a touch screen, or the keyboard alone (arrows, Enter, and S/F/N/X/D for accidentals).
+- **A music-theory engine checks every answer** (`src/lib/music/theory.ts`): spelled pitches, intervals by size and
+  quality, scales and modes, all 30 key signatures, triad and seventh-chord identification, Roman numerals
+  (including secondary dominants and leading-tone chords), and a voice-leading checker for SATB writing:
+  chord spelling, missing root or third, inversion, doubling (leading tone, chordal seventh), ranges, spacing,
+  crossing, overlap, parallel and contrary fifths and octaves, direct fifths and octaves in the outer voices,
+  augmented seconds, large leaps, and the resolution of the leading tone and the chordal seventh. Wrong answers
+  get specific feedback ("Right size, wrong quality: C♯ makes a major 6th…").
+- **Listening.** Every example plays through a small built-in synthesizer (Web Audio, no samples, no network).
+  24 aural questions cover intervals, chord qualities, cadences, meter, texture, scales and dictation.
+- **Content.** 28 lessons, 56 worked examples and 224 practice problems, each with the same tutor layer as the
+  other courses (plain-words big idea, words to know, why behind every step, a walk-through for every problem,
+  and teach-it-back). 147 problems carry an engine check, and every staff-writing task's model answer must pass
+  its own grader in the tests. A test scans the lesson text for written interval statements (over 60 of them) and checks each one with the engine.
+- **The Music Studio** (`/music/studio`): write anything and the studio names it (interval, chord, inversion,
+  figured bass and Roman numeral in any key); endless generated ear training (intervals, triads, seventh chords,
+  cadences, scales and modes); a part-writing workshop of 8 progressions checked rule by rule; and a scale explorer
+  on a playable keyboard. Correct ear-training rounds and finished part-writing exercises earn XP.
 
 ## Official College Board questions
 
@@ -342,7 +377,7 @@ consistent:
 - **Each area has its own accent:**
   - Learn: teal
   - Practice: violet to fuchsia
-  - AP Courses: amber, with a distinct colour per course
+  - AP Courses: amber, with a distinct colour per course (Music Theory: crimson)
   - Performance: blue
   - Companion: pink
   - Tools: cyan
@@ -350,14 +385,17 @@ consistent:
 
   The accent is set by route (`data-section` and `data-course` on the app shell) and colours the sidebar group,
   the page header, links, tabs, progress bars, rings and charts. The brand violet stays for primary actions.
+- **Flat colour, no gradients anywhere.** Buttons, heroes, progress bars, rings, icon tiles, the sidebar, the
+  backdrop, the logo, the companions and their habitats are all solid colours. A browser test walks 22 pages in
+  both themes and fails if any element, pseudo-element or SVG uses a gradient.
 - **Hierarchy.**
-  - Default cards are crisp; featured and clickable cards get the glowing edge.
+  - Default cards are crisp; featured cards get a flat accent edge, and clickable cards pick up the accent on hover.
   - A card inside a card becomes a quiet panel.
   - Statistics are metric tiles.
-  - Page headers carry a soft accent glow and a small constellation motif.
+  - Page headers carry a small constellation motif.
 - **Motion** is short and purposeful: a fade between pages (opacity only, so text never shifts under a selection),
   dialog and drawer entrances, and press feedback. The in-app or system reduced-motion setting turns it all off.
-- All text colours meet WCAG AA contrast in both themes (checked with axe on 33 pages).
+- All text colours meet WCAG AA contrast in both themes (checked with axe on 38 pages).
 
 ## Calculators
 
@@ -415,7 +453,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks and Remix Studio (every generator swept through the validator, mutation tests proving the validator rejects corrupted keys, failure cases and integration).
-- `npm run test:e2e` — 27 browser tests (including Remix Studio, the calculators, and an accessibility pass in both themes); `AXE_FULL=1 npx playwright test e2e/zz-axe-explore.spec.ts` runs the full accessibility audit on 33 pages against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
+- `npm run test:e2e` — 32 browser tests; four need the private personal files and are skipped without them, and the full audit is opt-in (including Remix Studio, the calculators, AP Music Theory staff writing by keyboard, the Music Studio's part-writing checker, hatching a companion, the no-gradient check, and an accessibility pass in both themes); `AXE_FULL=1 npx playwright test e2e/zz-axe-explore.spec.ts` runs the full accessibility audit on 38 pages against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
@@ -432,6 +470,14 @@ npm run test:e2e
 - The AP courses are original study material, not official College Board content, and have not been
   reviewed by an outside AP teacher. The CSA multiple-choice questions are conceptual and are checked
   by review, not by running code. AP® is a trademark registered by the College Board.
+- AP Music Theory is original study material, not official College Board content, and has not been reviewed by an
+  outside AP teacher. The voice-leading checker follows the common-practice rules AP part-writing questions are
+  scored on, but it is not the College Board's scoring rubric, and it judges rules, not musical taste. The notation
+  renderer draws what the course needs (no ties, tuplets or lyrics). Listening examples use a simple synthesized
+  piano, not recordings of real instruments; there is no microphone input, so sight-singing is practised by
+  following the lesson routine, not graded by the app. Exam-format details should be checked against the
+  College Board's current Course and Exam Description.
+- Companion eggs are random (weighted by rarity) and earned only by studying; they are never sold.
 - Text highlighting uses the browser's CSS Custom Highlight API (current Chrome, Edge, Safari and Firefox). In an
   older browser, text cannot be highlighted; page-image highlighting still works.
 - Remix Studio's Reading & Writing generators draw on a finite original content bank (12 studies, 4 debates, 4 data

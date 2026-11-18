@@ -1,4 +1,6 @@
 import { parseNumeric } from '../../lib/answers';
+import type { ListenSpec, StaffSpec } from '../../lib/music/score';
+import type { MusicTask } from '../../lib/music/tasks';
 
 /**
  * AP Calculus BC self-study course. Original lessons and problems, organized by the ten units of
@@ -10,9 +12,16 @@ export type Note =
   | { k: 'formula'; t: string }  // display formula (LaTeX)
   | { k: 'tip'; t: string }      // teacher's tip
   | { k: 'warn'; t: string }     // common mistake
-  | { k: 'list'; items: string[] };
+  | { k: 'list'; items: string[] }
+  /* music notation, sound and hands-on practice (AP Music Theory) */
+  | { k: 'staff'; staff: StaffSpec; caption?: string; listen?: ListenSpec }
+  | { k: 'keys'; notes: string[]; caption: string }
+  | { k: 'try'; prompt: string; task: MusicTask };
 
-export interface Example { q: string; steps: string[]; a: string }
+/** the plain text of a note, for saving to the notebook and for searching */
+export const noteText = (n: Note): string => (n.k === 'list' ? n.items.join(' ') : n.k === 'rule' ? `${n.title}: ${n.t}` : n.k === 'staff' ? n.caption ?? n.staff.label : n.k === 'keys' ? n.caption : n.k === 'try' ? n.prompt : n.t);
+
+export interface Example { q: string; steps: string[]; a: string; staff?: StaffSpec; listen?: ListenSpec }
 
 export interface CalcProblem {
   id: string;
@@ -25,6 +34,12 @@ export interface CalcProblem {
   /** independent numerical verification of the keyed answer */
   check?: () => boolean;
   level: 1 | 2 | 3; // 1 warm-up, 2 standard AP, 3 hard
+  /** notation shown with the question */
+  staff?: StaffSpec;
+  /** something to listen to (aural questions) */
+  listen?: ListenSpec;
+  /** a hands-on task: the student writes the answer on a staff and the music engine grades it */
+  task?: MusicTask;
 }
 
 export interface CalcLesson {

@@ -44,9 +44,9 @@ export function OnboardingPage() {
       <Card>
         {step === 0 && (
           <div className="space-y-4">
-            <div className="flex items-center gap-4"><Pet mood="happy" size={110} /><div><h1 className="text-2xl font-bold">Meet Lumi, your study companion</h1><p className="mt-1 text-sm text-muted">Four quick questions, then a diagnostic that finds exactly what to work on. Every question here is optional.</p></div></div>
+            <div className="flex items-center gap-4"><Pet mood="happy" size={110} /><div><h1 className="text-2xl font-bold">Meet your study companion</h1><p className="mt-1 text-sm text-muted">It is still an egg! Finish your first lesson and it hatches into one of ten companions, picked at random. First, four quick questions, then a diagnostic that finds exactly what to work on. Every question here is optional.</p></div></div>
             <div className="flex gap-2 rounded-xl border border-ok/30 bg-ok/5 p-3 text-sm"><ShieldCheck className="mt-0.5 shrink-0 text-ok" size={18} /><span>No account needed. Your progress is stored only in this browser on this device. No ads, no tracking, nothing sold. You can export or erase everything in Settings.</span></div>
-            <div><label className="label" htmlFor="ob-name">What should Lumi call you? (optional, a nickname is fine)</label><input id="ob-name" className="input" value={name} onChange={(e) => setName(e.target.value)} maxLength={24} placeholder="Leave blank to stay anonymous" /></div>
+            <div><label className="label" htmlFor="ob-name">What should your companion call you? (optional, a nickname is fine)</label><input id="ob-name" className="input" value={name} onChange={(e) => setName(e.target.value)} maxLength={24} placeholder="Leave blank to stay anonymous" /></div>
           </div>
         )}
         {step === 1 && (

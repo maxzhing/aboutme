@@ -22,6 +22,7 @@ const untakenTests = (s: { mocks: MockAttempt[] }) => new Set(FULL_TESTS.map((t)
 import { schedule } from './engine/srs';
 import { dailyBackup, safetyBackup } from './backup';
 import { XP_REWARD } from './engine/xp';
+import { collectionOf, eggOf, rollSpecies, speciesById, totalLessons } from './engine/companions';
 import { SHOP_ITEM } from '@/data/shop';
 import { clamp, dateKey, uid } from './util';
 
@@ -73,6 +74,10 @@ interface Actions {
   buy: (itemId: string) => boolean;
   equip: (slot: PetSlot, itemId: string | undefined) => void;
   renamePet: (name: string) => void;
+  /** hatch the current egg if it is ready; returns the new companion's species id */
+  hatchEgg: () => string | null;
+  /** make another hatched companion the active one */
+  setCompanion: (id: string) => void;
   carePet: (kind: 'pet' | 'treat' | 'play') => boolean;
   recordDaily: (qid: string, correct: boolean, ms: number) => void;
   recordArena: (id: string, r: { score: number; correct: number; total: number; ms: number }) => boolean;
@@ -188,7 +193,7 @@ export const useStore = create<Store>()(
           const k = dateKey(now);
           const day = s.activity[k] ?? { ms: 0, questions: 0, correct: 0, xp: 0, lessons: 0 };
           const st: AppState = { ...s, calc: { ...c, done: { ...c.done, [lessonId]: best } }, activity: first ? { ...s.activity, [k]: { ...day, lessons: day.lessons + 1, ms: day.ms + 25 * 60_000 } } : s.activity };
-          const g = first ? grant(st, 60, now, 'Calculus lesson mastered') : { state: st, events: [] };
+          const g = first ? grant(st, 60, now, 'AP lesson finished') : { state: st, events: [] };
           return { state: g.state, events: g.events };
         }),
         setCalcExam: (date, course = 'calc') => {
@@ -245,7 +250,27 @@ export const useStore = create<Store>()(
           if (itemId) equipped[slot] = itemId; else delete equipped[slot];
           setState({ pet: { ...s.pet, equipped } });
         },
-        renamePet: (name) => setState({ pet: { ...getState().pet, name: name.trim().slice(0, 16) || 'Lumi' } }),
+        renamePet: (name) => { const p = getState().pet; const n = name.trim().slice(0, 16) || speciesById(p.species)?.name || ''; setState({ pet: { ...p, name: n, collection: collectionOf(p).map((c) => (c.id === p.species ? { ...c, name: n } : c)) } }); },
+        hatchEgg: () => {
+          const s = getState();
+          const e = eggOf(s);
+          if (!e?.ready) return null;
+          const col = collectionOf(s.pet);
+          const sp = rollSpecies(col.map((c) => c.id));
+          const first = !s.pet.species;
+          const collection = [...col, { id: sp.id, at: Date.now(), name: sp.name }];
+          const name = first ? (s.pet.name && s.pet.name !== 'Lumi' ? s.pet.name : sp.name) : s.pet.name;
+          setState({ pet: { ...s.pet, species: first ? sp.id : s.pet.species, name, collection: first ? collection.map((c) => (c.id === sp.id ? { ...c, name } : c)) : collection, egg: { xp0: s.pet.xp, lessons0: totalLessons(s), pattern: collection.length % 4 }, happiness: clamp(s.pet.happiness + 10, 0, 100), lastEvent: { kind: 'hatch', at: Date.now(), text: `${sp.name} the ${sp.kind} hatched!` } } });
+          return sp.id;
+        },
+        setCompanion: (id) => {
+          const p = getState().pet;
+          const col = collectionOf(p);
+          const next = col.find((c) => c.id === id);
+          if (!next || id === p.species) return;
+          const saved = col.map((c) => (c.id === p.species ? { ...c, name: p.name } : c));
+          setState({ pet: { ...p, species: id, name: next.name ?? speciesById(id)?.name ?? '', collection: saved } });
+        },
         carePet: (kind) => {
           const s = getState();
           const cost = kind === 'treat' ? 5 : 0;

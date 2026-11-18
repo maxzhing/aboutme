@@ -9,7 +9,7 @@ export const initialState = (): AppState => ({
   mistakes: {},
   srs: {},
   vocabSrs: {},
-  pet: { name: 'Lumi', xp: 0, coins: 0, happiness: 70, lastCare: 0, owned: ['habitat-nook'], equipped: { habitat: 'habitat-nook' } },
+  pet: { name: '', xp: 0, coins: 0, happiness: 70, lastCare: 0, owned: ['habitat-nook'], equipped: { habitat: 'habitat-nook' }, egg: { xp0: 0, lessons0: 0, pattern: 0 } },
   achievements: {},
   activity: {},
   lessonsDone: {},

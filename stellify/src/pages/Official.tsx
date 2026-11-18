@@ -59,7 +59,7 @@ export function OfficialPage() {
         onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); void run(e.dataTransfer.files); }} data-testid="import-zone">
         <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
           <div>
-            <div className="flex items-center gap-2"><span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-brand-solid to-brand2-solid text-white"><FileUp size={20} /></span><h2 className="text-xl font-bold">Add questions from a Question Bank PDF</h2></div>
+            <div className="flex items-center gap-2"><span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-solid text-white"><FileUp size={20} /></span><h2 className="text-xl font-bold">Add questions from a Question Bank PDF</h2></div>
             <ol className="mt-4 space-y-2 text-sm text-muted">
               <li><b className="text-ink">1.</b> Open the College Board&apos;s free SAT Suite Question Bank and choose SAT, a section, and the skills you want.</li>
               <li><b className="text-ink">2.</b> Select questions and export them as a PDF <b className="text-ink">with answers and explanations included</b>.</li>

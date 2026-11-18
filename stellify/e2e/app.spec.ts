@@ -38,8 +38,8 @@ async function solve(page: Page, correct: boolean, thinkMs = 0) { const id = awa
 test('onboarding collects goals and leads to the dashboard', async ({ page }) => {
   const errors = watch(page);
   await go(page, '/');
-  await expect(page.getByRole('heading', { name: /Meet Lumi/ })).toBeVisible(); // first visit is redirected to onboarding
-  await page.getByLabel(/What should Lumi call you/).fill('Sam');
+  await expect(page.getByRole('heading', { name: /Meet your study companion/ })).toBeVisible(); // first visit is redirected to onboarding
+  await page.getByLabel(/What should your companion call you/).fill('Sam');
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByLabel(/Current SAT/).fill('1200');
   await page.getByRole('button', { name: 'Continue' }).click();
@@ -116,9 +116,10 @@ test('multiple-choice question: every distractor is explained; XP, coins, shop a
   await expect(page.getByTestId('item-hat-cap')).toContainText('Owned');
   expect(Number(await page.getByTestId('coins').innerText())).toBe(coins - 60);
   await go(page, '/pet');
-  await expect(page.getByText(/Level [2-9]/).first()).toBeVisible(); // the pet levelled up from real work
-  await page.getByTestId('pet-pet').click();
-  await expect(page.getByText(/loves that/)).toBeVisible();
+  // no lesson finished yet, so the companion is still an egg, but the XP from real work warms it
+  await expect(page.getByTestId('egg-progress')).toContainText('XP earned');
+  await expect(page.getByTestId('egg-progress')).toContainText('60/60');
+  await expect(page.getByTestId('egg-progress')).toContainText('0/1');
   await go(page, '/achievements');
   await expect(page.getByTestId('ach-first-10')).toHaveAttribute('data-unlocked', 'false'); // 9 answered so far
   await go(page, '/analytics');
@@ -232,7 +233,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(35);
+  expect(links.length).toBe(37);
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();
@@ -534,7 +535,7 @@ test('soft feel: night-sky backdrop, press ripples, sparkles for a right answer,
   const errors = watch(page);
   await boot(page);
   const sky = page.getByTestId('backdrop');
-  await expect(sky.locator('.aurora')).toHaveCount(3);
+  await expect(sky.locator('.aurora')).toHaveCount(0); // flat design: no glowing gradient blobs
   await expect(sky.locator('.star')).toHaveCount(64);
   // count ripples as they are added (each one removes itself when its animation ends)
   const watchRipples = () => page.evaluate(() => {
@@ -836,7 +837,7 @@ test('accessibility: no serious or critical axe violations on key pages, in both
   test.setTimeout(240_000);
   const AxeBuilder = (await import('@axe-core/playwright')).default;
   await boot(page);
-  const routes = ['/', '/learn', '/practice', '/practice/session?mode=single&ids=r-bnd-06', '/mocks', '/analytics', '/mistakes', '/settings', '/resources', '/qc', '/stats/st4-2', '/calc/c1-1'];
+  const routes = ['/', '/learn', '/practice', '/practice/session?mode=single&ids=r-bnd-06', '/mocks', '/analytics', '/mistakes', '/settings', '/resources', '/qc', '/stats/st4-2', '/calc/c1-1', '/music', '/music/mt3-1', '/music/studio', '/pet'];
   const found: string[] = [];
   for (const theme of ['dark', 'light']) {
     if (theme === 'light') { await go(page, '/settings'); await page.getByTestId('theme-light').click(); }

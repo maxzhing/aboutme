@@ -21,6 +21,7 @@ import { MASTERY_LEVELS } from '@/lib/engine/mastery';
 import { ACHIEVEMENT } from '@/lib/engine/achievements';
 import { DIFFICULTIES, DIFFICULTY_NAME, SKILL, SKILLS } from '@/lib/taxonomy';
 import { clamp, dateKey, daysBetween } from '@/lib/util';
+import { eggOf, petName } from '@/lib/engine/companions';
 import { Habitat, Pet, type PetMood } from '@/components/Pet';
 import { Card, Progress, Ring } from '@/components/ui';
 
@@ -37,7 +38,7 @@ const MODES = [
 ];
 
 /**
- * Home hub. Lumi up top, one clear next step, three daily quests, and the next stop on the
+ * Home hub. The companion up top, one clear next step, three daily quests, and the next stop on the
  * lesson map. Game modes sit below; detailed charts stay folded until asked for.
  */
 export function DashboardPage() {
@@ -102,7 +103,9 @@ export function DashboardPage() {
     return (open.length ? open : order.filter((k) => (starMap[k.id] ?? 0) < 3)).slice(0, 3);
   })();
   const questsLeft = quests.filter((q) => !q.done).length;
-  const say = away >= 3 ? 'I missed you! Let’s warm up with one quick lesson.'
+  const egg = s.pet.species ? null : eggOf(s);
+  const say = egg ? (egg.ready ? 'Your egg is wiggling! Tap it to hatch your companion.' : `Your egg is ${Math.round(egg.pct * 100)}% warm. ${egg.lessons < egg.need.lessons ? 'Finish a lesson' : 'Answer a few questions'} to help it hatch!`)
+    : away >= 3 ? 'I missed you! Let’s warm up with one quick lesson.'
     : chestReady ? 'All three quests done. Your chest is ready!'
     : mission.rest ? 'Rest day. I’ll be here if you want a bonus round.'
     : streak.studiedToday ? (questsLeft ? `Nice work today. ${questsLeft} quest${questsLeft === 1 ? '' : 's'} to go!` : 'Everything done today. You are on fire!')
@@ -115,12 +118,13 @@ export function DashboardPage() {
       <section className="card overflow-hidden p-0" data-testid="pet-card">
         <Habitat id={s.pet.equipped.habitat} className="!rounded-none">
           <div className="flex h-40 items-end gap-2 px-4 sm:px-8">
-            <button type="button" onClick={poke} className="shrink-0 transition-transform active:scale-95" aria-label={`Pat ${s.pet.name}`} title={`Pat ${s.pet.name}`}><Pet mood={petMood} level={level.level} equipped={s.pet.equipped} size={132} /></button>
+            {egg ? <Link href="/pet" className="shrink-0 transition-transform active:scale-95" aria-label={egg.ready ? 'Hatch your egg' : 'See your egg'} data-testid="dash-egg"><Pet size={132} /></Link>
+              : <button type="button" onClick={poke} className="shrink-0 transition-transform active:scale-95" aria-label={`Pat ${petName(s.pet)}`} title={`Pat ${petName(s.pet)}`}><Pet mood={petMood} level={level.level} equipped={s.pet.equipped} size={132} /></button>}
             <p className="mb-14 max-w-xs rounded-2xl rounded-bl-sm bg-surface px-4 py-2.5 text-sm font-semibold text-ink shadow-card" data-testid="lumi-says">{say}</p>
           </div>
         </Habitat>
         <div className="p-5">
-          <h1 className="text-2xl font-bold sm:text-3xl" data-testid="greeting">{greeting} <span className="grad-text">Let&apos;s work toward {target}.</span></h1>
+          <h1 className="text-2xl font-bold sm:text-3xl" data-testid="greeting">{greeting} <span className="text-accent">Let&apos;s work toward {target}.</span></h1>
           <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
             <div className="metric !p-3.5"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Flame size={14} className="text-warn" />Streak</div><div className="font-display text-xl font-bold">{streak.current} day{streak.current === 1 ? '' : 's'}</div></div>
             <Link href="/pet" className="metric !p-3.5 transition-colors hover:border-accent/50"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Zap size={14} className="text-brand" />Level {level.level}</div><Progress value={level.progress * 100} className="mt-2.5" label="XP to next level" /></Link>

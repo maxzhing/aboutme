@@ -35,7 +35,7 @@ export function SoftFeel() {
   return null;
 }
 
-/** The night sky behind the app: slow aurora light and softly twinkling stars. */
+/** The quiet backdrop behind the app: softly twinkling stars on a flat background. */
 export function Backdrop() {
   const reduced = useStore((s) => s.settings.reducedMotion);
   // fixed, deterministic star positions (no layout shift between renders)
@@ -46,9 +46,6 @@ export function Backdrop() {
   }, []);
   return (
     <div className={`backdrop ${reduced ? 'backdrop-still' : ''}`} aria-hidden data-testid="backdrop">
-      <div className="aurora aurora-a" />
-      <div className="aurora aurora-b" />
-      <div className="aurora aurora-c" />
       {stars.map((st, i) => <span key={i} className="star" style={{ left: `${st.x}%`, top: `${st.y}%`, width: st.s, height: st.s, animationDelay: `${st.d}s`, animationDuration: `${st.t}s` }} />)}
     </div>
   );

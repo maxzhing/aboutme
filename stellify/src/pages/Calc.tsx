@@ -1,9 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, Check, ChevronDown, Eye, GraduationCap, Image as ImageIcon, Languages, Lightbulb, Lock, MessageCircleQuestion, NotebookPen, Play, Presentation, RotateCcw, Sparkles, Sprout, Target, TriangleAlert, Wrench, X } from 'lucide-react';
+import { Piano, ArrowLeft, ArrowRight, BookOpen, CalendarDays, Check, ChevronDown, Eye, GraduationCap, Image as ImageIcon, Languages, Lightbulb, Lock, MessageCircleQuestion, NotebookPen, Play, Presentation, RotateCcw, Sparkles, Sprout, Target, TriangleAlert, Wrench, X } from 'lucide-react';
 import { createContext, useContext, useMemo, useState } from 'react';
-import { PASS, answerLabel, calcCorrect, type CalcLesson, type CalcProblem, type LessonTutor, type Note } from '@/data/calc';
+import { PASS, answerLabel, calcCorrect, noteText, type CalcLesson, type CalcProblem, type LessonTutor, type Note } from '@/data/calc';
+import { KeysNote, ListenButton, Score, TaskView, TryIt } from '@/components/music/MusicBits';
 import { COURSES, courseOfLesson, lessonById, walkOf, type ApCourse } from '@/data/apCourses';
 
 /** the course a page is showing; inner components read it instead of threading props */
@@ -19,9 +20,9 @@ import { Pet } from '@/components/Pet';
 import { Confetti } from '@/components/Confetti';
 import { Badge, Card, Empty, Progress, Ring, cn } from '@/components/ui';
 
-const UNIT_GRADIENT = ['from-[#64748B] to-[#0EA5E9]', 'from-[#3B82F6] to-[#06B6D4]', 'from-[#6366F1] to-[#A855F7]', 'from-[#8B5CF6] to-[#D946EF]', 'from-[#EC4899] to-[#F43F5E]', 'from-[#F59E0B] to-[#F97316]', 'from-[#10B981] to-[#14B8A6]', 'from-[#0EA5E9] to-[#6366F1]', 'from-[#22C55E] to-[#0EA5E9]', 'from-[#A855F7] to-[#EC4899]', 'from-[#F43F5E] to-[#F59E0B]'];
+const UNIT_COLOR = ['#475569', '#1D4ED8', '#4338CA', '#6D28D9', '#BE185D', '#B45309', '#047857', '#0369A1', '#15803D', '#7E22CE', '#B91C1C'];
 const UnitTile = ({ n, size = 48 }: { n: number; size?: number }) => (
-  <span className={cn('relative inline-grid shrink-0 place-items-center rounded-2xl bg-gradient-to-br font-display font-bold text-white ring-1 ring-inset ring-white/25 shadow-[0_8px_18px_-8px_rgba(0,0,0,0.6)]', UNIT_GRADIENT[n] ?? UNIT_GRADIENT[1])} style={{ width: size, height: size, fontSize: size * 0.42 }} aria-hidden>{n}</span>
+  <span className={cn('relative inline-grid shrink-0 place-items-center rounded-2xl font-display font-bold text-white')} style={{ width: size, height: size, fontSize: size * 0.42, background: UNIT_COLOR[n] ?? UNIT_COLOR[1] }} aria-hidden>{n}</span>
 );
 
 /** Course home: the whole self-study plan, unit by unit, with progress and pacing. */
@@ -61,6 +62,7 @@ function CourseHome() {
             <div className="mt-5 flex flex-wrap gap-2">
               {next ? <Link href={`/${course.id}/${next.id}`} className="btn !bg-white !px-5 !py-3 text-[15px] !text-[#2A2470] shadow-[0_12px_30px_-12px_rgba(0,0,0,0.6)] hover:-translate-y-px" data-testid="calc-continue"><Play size={17} />{done.length ? 'Continue' : 'Start'}: {next.unit}.{next.n} {next.title}</Link> : <span className="rounded-xl bg-white/15 px-4 py-2.5 text-sm font-bold">All lessons mastered ✓</span>}
               <a href="#plan" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20"><CalendarDays size={16} />Study plan</a>
+              {course.id === 'music' && <Link href="/music/studio" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20" data-testid="open-studio"><Piano size={16} />Music Studio</Link>}
             </div>
           </div>
           <div className="text-center">
@@ -98,7 +100,7 @@ function CourseHome() {
               <UnitTile n={u.n} />
               <span className="min-w-0 flex-1">
                 <span className="block text-lg font-bold leading-snug">{u.title}</span>
-                <span className="mt-0.5 block text-xs text-muted">{u.n ? `${u.examWeight} of the exam` : 'Start here if you are new · not on the exam'} · about {u.weeks} week{u.weeks > 1 ? 's' : ''} · {ls.length ? `${m}/${ls.length} lessons mastered` : `${u.topics.length} topics`}</span>
+                <span className="mt-0.5 block text-xs text-muted">{u.n ? (u.examWeight ? `${u.examWeight} of the exam` : 'On the AP exam') : 'Start here if you are new · not on the exam'} · about {u.weeks} week{u.weeks > 1 ? 's' : ''} · {ls.length ? `${m}/${ls.length} lessons mastered` : `${u.topics.length} topics`}</span>
               </span>
               {ls.length ? <Progress value={pct(m, ls.length)} className="!w-24 hidden sm:block" tone={m === ls.length ? 'ok' : 'brand'} label={`Unit ${u.n} progress`} /> : <Badge>Lessons coming</Badge>}
               <ChevronDown size={18} className={cn('shrink-0 text-muted transition-transform', isOpen && 'rotate-180')} />
@@ -111,7 +113,7 @@ function CourseHome() {
                     {ls.map((l) => { const r = calc.done[l.id]; const ok = done.includes(l); return (
                       <li key={l.id}>
                         <Link href={`/${course.id}/${l.id}`} className={cn('flex items-center gap-3 rounded-2xl border p-3 transition-all hover:-translate-y-0.5 hover:border-accent/50', next?.id === l.id ? 'border-brand/50 bg-brand/5' : 'border-line')} data-testid={`calc-lesson-${l.id}`}>
-                          <span className={cn('grid h-10 w-10 shrink-0 place-items-center rounded-xl font-display text-sm font-bold', ok ? 'bg-gradient-to-br from-[#10B981] to-[#059669] text-white' : next?.id === l.id ? 'bg-gradient-to-br from-brand-solid to-brand2-solid text-white' : 'bg-raised text-muted')}>{ok ? <Check size={18} /> : `${l.unit}.${l.n}`}</span>
+                          <span className={cn('grid h-10 w-10 shrink-0 place-items-center rounded-xl font-display text-sm font-bold', ok ? 'bg-[#047857] text-white' : next?.id === l.id ? 'bg-brand-solid text-white' : 'bg-raised text-muted')}>{ok ? <Check size={18} /> : `${l.unit}.${l.n}`}</span>
                           <span className="min-w-0 flex-1"><span className="block font-semibold">{l.title}</span><span className="block truncate text-xs text-muted">{l.examples.length} worked examples · {l.practice.length} practice problems</span></span>
                           <span className="text-xs text-muted">{r ? `best ${r.score}/${r.total}` : next?.id === l.id ? 'Up next' : ''}</span>
                         </Link>
@@ -201,6 +203,9 @@ function TeachBack({ l, t }: { l: CalcLesson; t: LessonTutor }) {
 }
 
 function NoteBlock({ n }: { n: Note }) {
+  if (n.k === 'staff') return <Score spec={n.staff} listen={n.listen} caption={n.caption} />;
+  if (n.k === 'keys') return <KeysNote notes={n.notes} caption={n.caption} />;
+  if (n.k === 'try') return <TryIt prompt={n.prompt} task={n.task} />;
   if (n.k === 'p') return <div className="leading-relaxed"><RichText text={n.t} block={n.t.includes('~~~')} /></div>;
   if (n.k === 'formula') return (
     // formulas separated by \qquad wrap onto their own lines on narrow screens instead of scrolling
@@ -208,7 +213,7 @@ function NoteBlock({ n }: { n: Note }) {
       {n.t.split(/\\qquad/).map((f, i) => <div key={i} className="max-w-full overflow-x-auto rounded-md" tabIndex={0} role="group" aria-label="Formula (scroll sideways if it is cut off)"><RichText block text={`$$${f.trim()}$$`} /></div>)}
     </div>
   );
-  if (n.k === 'rule') return <div className="rounded-2xl border-2 border-brand/40 bg-gradient-to-br from-brand/10 to-transparent p-4"><div className="text-[11px] font-black uppercase tracking-wide text-brand2">Definition / theorem</div><div className="mt-0.5 font-bold">{n.title}</div><p className="mt-1.5 leading-relaxed"><RichText text={n.t} /></p></div>;
+  if (n.k === 'rule') return <div className="rounded-2xl border-2 border-brand/40 bg-brand/[.07] p-4"><div className="text-[11px] font-black uppercase tracking-wide text-brand2">Definition / theorem</div><div className="mt-0.5 font-bold">{n.title}</div><p className="mt-1.5 leading-relaxed"><RichText text={n.t} /></p></div>;
   if (n.k === 'tip') return <div className="flex gap-3 rounded-2xl border border-gold/40 bg-gold/5 p-3.5"><Lightbulb size={18} className="mt-0.5 shrink-0 text-gold" /><p className="leading-relaxed"><b className="text-gold">Teacher’s tip. </b><RichText text={n.t} /></p></div>;
   if (n.k === 'warn') return <div className="flex gap-3 rounded-2xl border border-bad/40 bg-bad/5 p-3.5"><TriangleAlert size={18} className="mt-0.5 shrink-0 text-bad" /><p className="leading-relaxed"><b className="text-bad">Common mistake. </b><RichText text={n.t} /></p></div>;
   return <ul className="space-y-1.5 pl-1">{n.items.map((it, i) => <li key={i} className="flex gap-2.5"><span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" /><span className="leading-relaxed"><RichText text={it} /></span></li>)}</ul>;
@@ -233,7 +238,11 @@ function Problem({ p, i, hints = true, onDone }: { p: CalcProblem; i: number; hi
       <div className="mb-2 flex items-center gap-2"><span className="grid h-7 w-7 place-items-center rounded-lg bg-ink text-xs font-bold text-bg">{i}</span><Badge tone={p.level === 3 ? 'bad' : p.level === 2 ? 'warn' : 'ok'}>{p.level === 3 ? 'Hard' : p.level === 2 ? 'AP level' : 'Warm-up'}</Badge></div>
       <HighlightText hkey={`ap|${p.id}|q`} className="text-[16px] leading-relaxed"><RichText text={p.q} /></HighlightText>
       <MarkNotes prefix={`ap|${p.id}|`} />
-      {mcq ? (
+      {p.staff && <div className="mt-3"><Score spec={p.staff} listen={p.listen} play={!p.task} /></div>}
+      {!p.staff && p.listen && <div className="mt-3"><ListenButton spec={p.listen} label="Listen" /></div>}
+      {p.task ? (
+        <div className="mt-3"><TaskView key={p.id} task={p.task} quiet onDone={(ok) => { if (checked !== null) return; setChecked(ok); record(p.id, ok); onDone?.(ok); sfx(ok ? 'correct' : 'wrong'); }} /></div>
+      ) : mcq ? (
         <div className="mt-3 grid gap-2">{p.choices!.map((c, k) => { const sel = val === String(k); const right = checked !== null && k === p.answer; const wrong = checked === false && sel; return (
           <button key={k} type="button" disabled={checked !== null} onClick={() => setVal(String(k))} data-choice={'ABCDE'[k]} className={cn('flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors', right ? 'border-ok bg-ok/10' : wrong ? 'border-bad bg-bad/10' : sel ? 'border-brand bg-brand/10 ring-1 ring-brand' : 'border-line hover:border-brand/50')}>
             <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full border text-sm font-bold', right ? 'border-ok bg-ok text-white' : wrong ? 'border-bad bg-bad text-white' : 'border-line text-muted')}>{right ? <Check size={14} /> : wrong ? <X size={14} /> : 'ABCDE'[k]}</span><span><RichText text={c} /></span>
@@ -246,20 +255,20 @@ function Problem({ p, i, hints = true, onDone }: { p: CalcProblem; i: number; hi
         </div>
       )}
       <div className="mt-3 flex flex-wrap gap-2">
-        {checked === null && <button type="button" className="btn-primary" disabled={!val} onClick={submit} data-testid="calc-check">Check</button>}
+        {checked === null && !p.task && <button type="button" className="btn-primary" disabled={!val} onClick={submit} data-testid="calc-check">Check</button>}
         {checked === null && hints && !hint && <button type="button" className="btn-ghost" onClick={() => setHint(true)}><Lightbulb size={15} />Hint</button>}
       </div>
       {hint && checked === null && <p className="mt-3 rounded-xl border border-gold/40 bg-gold/5 p-3 text-sm"><b className="text-gold">Hint: </b><RichText text={p.hint} /></p>}
       {checked !== null && (
         <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={cn('mt-3 rounded-xl border p-3.5 text-[15px]', checked ? 'border-ok/40 bg-ok/10' : 'border-bad/40 bg-bad/10')} data-testid="calc-solution">
-          <b className={checked ? 'text-ok' : 'text-bad'}>{checked ? 'Correct!' : `Not quite. The answer is ${answerLabel(p)}.`}</b>
+          <b className={checked ? 'text-ok' : 'text-bad'}>{checked ? (p.task ? 'Correct! The engine checked every note.' : 'Correct!') : p.task ? 'Here is how to work it out (keep fixing your staff above until it is right).' : `Not quite. The answer is ${answerLabel(p)}.`}</b>
           {walk ? (
             <>
               <div className="mt-2 text-xs font-bold uppercase tracking-wide text-faint">Step by step with your tutor</div>
               <ol className="mt-1.5 space-y-2" data-testid="calc-walk">{walk.map((s, k) => <li key={k} className="flex gap-2.5"><span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink/10 text-xs font-bold">{k + 1}</span><span className="leading-relaxed"><RichText text={s} /></span></li>)}</ol>
             </>
           ) : <ol className="mt-2 list-decimal space-y-1 pl-5">{p.solution.map((s, k) => <li key={k}><RichText text={s} /></li>)}</ol>}
-          {!checked && <button type="button" className="btn-quiet mt-2 !px-2 text-sm" onClick={() => { setVal(''); setChecked(null); setHint(false); }}><RotateCcw size={14} />Try it again (your first answer still counts)</button>}
+          {!checked && !p.task && <button type="button" className="btn-quiet mt-2 !px-2 text-sm" onClick={() => { setVal(''); setChecked(null); setHint(false); }}><RotateCcw size={14} />Try it again (your first answer still counts)</button>}
         </motion.div>
       )}
     </div>
@@ -296,7 +305,7 @@ function Lesson({ l }: { l: CalcLesson }) {
     return nr;
   });
   const save = () => {
-    const body = [...(tutor ? [`The big idea: ${tutor.bigIdea.join(' ')}`, tutor.words.map((w) => `• ${w.term}: ${w.means}`).join('\n')] : []), l.goals.map((g) => `• ${g}`).join('\n'), ...l.notes.map((x) => (x.k === 'list' ? x.items.map((i) => `• ${i}`).join('\n') : x.k === 'rule' ? `${x.title}: ${x.t}` : x.t)), `Remember:\n${l.remember.map((x) => `• ${x}`).join('\n')}`].join('\n\n');
+    const body = [...(tutor ? [`The big idea: ${tutor.bigIdea.join(' ')}`, tutor.words.map((w) => `• ${w.term}: ${w.means}`).join('\n')] : []), l.goals.map((g) => `• ${g}`).join('\n'), ...l.notes.map((x) => (x.k === 'list' ? x.items.map((i) => `• ${i}`).join('\n') : noteText(x))), `Remember:\n${l.remember.map((x) => `• ${x}`).join('\n')}`].join('\n\n');
     saveNote({ title: `${course.short} ${l.unit}.${l.n}: ${l.title}`, body, topic: course.id, kind: 'lesson' }); setSaved(true);
   };
   return (
@@ -308,7 +317,7 @@ function Lesson({ l }: { l: CalcLesson }) {
         <h1 className="mt-3 text-[30px] font-bold leading-tight sm:text-[40px]">{l.unit}.{l.n} {l.title}</h1>
       </header>
 
-      <section className="flex gap-4 rounded-3xl border border-brand/30 bg-gradient-to-br from-brand/10 to-brand2/5 p-4 sm:p-5">
+      <section className="flex gap-4 rounded-3xl border border-brand/30 bg-brand/[.07] p-4 sm:p-5">
         <div className="shrink-0"><Pet mood="study" level={level} size={72} /></div>
         <div><div className="text-xs font-bold uppercase tracking-wide text-brand2">Your teacher says</div><p className="mt-1 text-[15px] leading-relaxed">{l.intro}</p></div>
       </section>
@@ -331,6 +340,8 @@ function Lesson({ l }: { l: CalcLesson }) {
         {l.examples.map((e, k) => { const s = shown[k] ?? 0; const why = tutor?.why[k]; return (
           <div key={k} className="card p-4 sm:p-5" data-testid={`calc-example-${k}`}>
             <div className="text-[16px] leading-relaxed"><b className="text-brand2">Example {k + 1}. </b><RichText text={e.q} /></div>
+            {e.staff && <div className="mt-3"><Score spec={e.staff} listen={e.listen} /></div>}
+            {!e.staff && e.listen && <div className="mt-3"><ListenButton spec={e.listen} /></div>}
             <ol className="mt-3 space-y-2">{e.steps.slice(0, s).map((st, j) => <motion.li key={j} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={cn('flex gap-3 rounded-xl border p-3', j === e.steps.length - 1 ? 'border-ok/40 bg-ok/10' : 'border-line bg-raised/40')}><b className="shrink-0 text-brand2">Step {j + 1}</b><span className="min-w-0"><RichText text={st} />{why?.[j] && <span className="mt-1.5 block text-[14px] leading-relaxed text-muted" data-testid="calc-why"><b className="text-gold">Why: </b><RichText text={why[j]} /></span>}</span></motion.li>)}</ol>
             {s < e.steps.length ? <button type="button" className="btn-ghost mt-3 !py-1.5 text-sm" onClick={() => setShown({ ...shown, [k]: s + 1 })} data-testid="calc-step"><Eye size={15} />{s === 0 ? 'Show step 1' : `Show step ${s + 1} of ${e.steps.length}`}</button> : <p className="mt-2 text-sm font-semibold text-ok">Answer: <RichText text={e.a} /></p>}
           </div>
