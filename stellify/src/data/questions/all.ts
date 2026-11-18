@@ -11,6 +11,7 @@ import { RW_II_2 } from './rw-ii-2';
 import { RW_CS_1 } from './rw-cs-1';
 import { RW_CS_2 } from './rw-cs-2';
 import { RW_EOI } from './rw-eoi';
+import { RW_BREADTH } from './rw-breadth';
 import { RW_SEC_1 } from './rw-sec-1';
 import { RW_SEC_2 } from './rw-sec-2';
 import { MATH_ELITE } from './math-elite';
@@ -35,6 +36,7 @@ export const ALL_RAW: RawQuestion[] = [
   ...RW_CS_1,
   ...RW_CS_2,
   ...RW_EOI,
+  ...RW_BREADTH,
   ...RW_SEC_1,
   ...RW_SEC_2,
   ...MATH_ELITE,

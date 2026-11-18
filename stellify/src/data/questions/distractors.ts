@@ -37,6 +37,20 @@ export const TRAPS: Record<TrapCode, { label: string; tip: string }> = {
 
 /* generated from the reviewed distractor analysis; one tag per answer choice, null for the key */
 export const DISTRACTORS: Record<string, (TrapCode | null)[]> = {
+  // breadth set
+  'r-br-tra-01': [null, 'logic', 'logic', 'logic'],
+  'r-br-tra-02': [null, 'logic', 'logic', 'logic'],
+  'r-br-tra-03': [null, 'logic', 'logic', 'logic'],
+  'r-br-tra-04': [null, 'logic', 'logic', 'logic'],
+  'r-br-syn-01': [null, 'goal', 'goal', 'goal'],
+  'r-br-syn-02': [null, 'goal', 'goal', 'goal'],
+  'r-br-bnd-01': [null, 'run-on', 'run-on', 'punctuation'],
+  'r-br-bnd-02': [null, 'punctuation', 'punctuation', 'punctuation'],
+  'r-br-fss-01': [null, 'agreement', 'agreement', 'agreement'],
+  'r-br-fss-02': [null, 'tense', 'tense', 'tense'],
+  'r-br-coeq-01': [null, 'data', 'data', 'off-target'],
+  'r-br-coet-01': ['detail', null, 'detail', 'detail'],
+  'r-br-ctc-01': [null, 'reversed', 'beyond', 'beyond'],
   'r-bnd-01': ['run-on', 'run-on', null, 'punctuation'],
   'r-bnd-02': ['punctuation', null, 'punctuation', 'punctuation'],
   'r-bnd-03': [null, 'punctuation', 'run-on', 'run-on'],

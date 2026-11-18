@@ -5,7 +5,8 @@ import { ALL_QUESTIONS, QUESTIONS, getQuestion } from '@/data/questions';
 import { QC_REVIEWED } from '@/data/qcReviewed';
 import { choiceFlags, duplicates, FLAG_NAME, labelCheck, type Flag, type FlagKind } from '@/lib/engine/qc';
 import { useStore } from '@/lib/store';
-import { DIFFICULTY_NAME, SECTION_NAME } from '@/lib/taxonomy';
+import { DIFFICULTY_NAME, DOMAINS, SECTION_NAME, SKILL } from '@/lib/taxonomy';
+import { formatOf, genreOf, GENRE_NAME, type Genre } from '@/data/questions/genres';
 import { Badge, Card, PageHeader, Stat, Tabs, cn } from '@/components/ui';
 
 const keyOf = (f: Flag) => `${f.kind}|${f.qid}|${f.other ?? ''}`;
@@ -73,6 +74,18 @@ export function QcPage() {
             })}
           </ul>
         ) : <p className="mt-3 text-sm text-muted">{show === 'open' ? 'No open flags.' : 'Nothing here.'}</p>}
+      </Card>
+      <Card>
+        <h2 className="font-semibold">Reading &amp; Writing passage coverage</h2>
+        <p className="mt-0.5 text-xs text-muted">Questions per domain and subject area (the College Board&apos;s four areas). Subject areas come from hand tags where a person placed them and keyword rules elsewhere (a spot check found the rules right about 85–90% of the time), so counts are approximate. Aim: no empty or thin cells.</p>
+        <div className="mt-2 overflow-x-auto"><table className="w-full min-w-[520px] text-sm" data-testid="qc-coverage">
+          <thead><tr className="text-left text-xs uppercase tracking-wide text-faint"><th className="pb-1.5 font-semibold">Domain</th>{(Object.keys(GENRE_NAME) as Genre[]).map((g) => <th key={g} className="pb-1.5 font-semibold">{GENRE_NAME[g]}</th>)}<th className="pb-1.5 font-semibold">Formats</th></tr></thead>
+          <tbody className="divide-y divide-line">{DOMAINS.filter((d) => d.section === 'rw').map((d) => {
+            const qs = QUESTIONS.filter((q) => q.section === 'rw' && SKILL[q.skill].domain === d.id);
+            const fm = (f: string) => qs.filter((q) => formatOf(q) === f).length;
+            return <tr key={d.id}><td className="py-1.5 pr-3">{d.name}</td>{(Object.keys(GENRE_NAME) as Genre[]).map((g) => { const n = qs.filter((q) => genreOf(q) === g).length; return <td key={g} className={cn('py-1.5 pr-3 tabular-nums', n < 3 ? 'font-semibold text-warn' : '')}>{n}</td>; })}<td className="py-1.5 text-xs text-muted">{[fm('paired') && `${fm('paired')} paired`, fm('data') && `${fm('data')} table/graph`, fm('notes') && `${fm('notes')} notes`].filter(Boolean).join(' · ') || 'single texts'}</td></tr>;
+          })}</tbody>
+        </table></div>
       </Card>
       <Card>
         <h2 className="font-semibold">Do the difficulty labels behave?</h2>

@@ -5,7 +5,7 @@ browser. That is the whole product: no install, no server, no account, no intern
 
 ## What is inside
 
-- 474 original questions: SAT-style Math and Reading & Writing (about 20% medium, 40% hard,
+- 517 original questions: SAT-style Math and Reading & Writing (about 20% medium, 40% hard,
   40% very hard), a Beyond SAT tier that is deliberately harder than the real test, and a 40-question
   Reading & Writing set whose structures mirror the hardest College Board-released items (original questions, not official ones). Each has a step-by-step solution, a rationale for every answer choice, the concept,
   the fastest method, the common trap, a takeaway and three levels of hints.
@@ -257,6 +257,21 @@ item-development process before the app will serve it (`src/data/questions/rules
 
 Statistical pretesting, discrimination and differential item functioning analyses need responses from
 thousands of real test takers, so they are outside what an offline study app can do.
+
+## Reading & Writing breadth
+
+Every Reading & Writing passage is tagged with one of the College Board's four subject areas (literature,
+history/social studies, humanities, science) and a format (single text, paired texts, table or graph, research
+notes). `tests/rw-coverage.test.ts` requires every domain to draw on all four subject areas (at least 3 passages
+each) and every format to be well represented; the quality-control page shows the full table. The first check
+(2026-11-18) found literature almost absent from Expression of Ideas and Standard English Conventions and no
+humanities data questions, so 13 questions were written to fill those cells, each a different reasoning move:
+transitions that signal contrast, support, specification and response (Willa Cather, Emily Dickinson, Salisbury
+Cathedral, the Tennessee Valley Authority), notes synthesis that must explain a cause or a significance (Phillis
+Wheatley, Florence Price), boundaries and form in literary contexts (Zora Neale Hurston, Gwendolyn Brooks, Sarah Orne
+Jewett, the Erie Canal), a humanities data table, a quotation from Christina Rossetti's "Up-Hill", and a paired-text
+debate about *Frankenstein*. Subject areas come from hand tags where a person placed them and keyword rules elsewhere;
+a spot check found the rules right about 85–90% of the time, so the counts are approximate.
 
 ## Question quality control
 
