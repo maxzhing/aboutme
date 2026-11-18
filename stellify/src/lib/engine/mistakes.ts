@@ -1,4 +1,5 @@
-import type { ErrorCategory, Mistake, Question, SkillId } from '../types';
+import type { AnswerConfidence, ErrorCategory, Mistake, Question, SkillId } from '../types';
+import { DISTRACTORS, TRAPS, type TrapCode } from '@/data/questions/distractors';
 import { SKILL } from '../taxonomy';
 import { parseNumeric } from '../answers';
 
@@ -16,23 +17,67 @@ export const CATEGORY_LABEL = Object.fromEntries(ERROR_CATEGORIES.map((c) => [c.
 
 const INFERENCE_SKILLS: SkillId[] = ['inf', 'cid', 'coet', 'coeq', 'ctc', 'tsp'];
 
-/** First guess at why a question was missed. The student can always re-label it. */
-export function autoCategory(q: Question, ms: number, answer: string | null): ErrorCategory {
-  if (answer === null || answer === '') return 'time';
-  if (ms < q.time * 1000 * 0.3) return 'careless';
-  if (ms > q.time * 1000 * 1.9) return 'time';
-  if (q.section === 'rw') {
-    if (q.domain === 'sec') return 'grammar';
-    if (INFERENCE_SKILLS.includes(q.skill)) return 'inference';
-    return q.skill === 'wic' ? 'concept' : 'strategy';
-  }
-  if (q.type === 'spr' && answer) {
-    const v = parseNumeric(answer);
-    const k = parseNumeric((q.answer as string[])[0]);
-    if (v !== null && k !== null && (Math.abs(v + k) < 1e-9 || Math.abs(v - k) <= Math.max(1, Math.abs(k) * 0.1))) return 'calculation';
-  }
-  return 'concept';
+/** The four plain causes students see; each detailed category belongs to one. */
+export type Cause = 'Conceptual gap' | 'Misreading' | 'Careless or calculation slip' | 'Time pressure';
+export const CAUSE: Record<ErrorCategory, Cause> = {
+  concept: 'Conceptual gap', grammar: 'Conceptual gap', inference: 'Conceptual gap', strategy: 'Conceptual gap',
+  misread: 'Misreading', calculation: 'Careless or calculation slip', careless: 'Careless or calculation slip', time: 'Time pressure',
+};
+const GRAMMAR_TRAPS: TrapCode[] = ['run-on', 'fragment', 'punctuation', 'agreement', 'tense', 'pronoun', 'possessive', 'modifier', 'parallelism'];
+const TRAP_CAUSE: Partial<Record<TrapCode, ErrorCategory>> = {
+  'main-idea': 'misread', detail: 'misread', purpose: 'misread', 'wrong-text': 'misread',
+  beyond: 'inference', reversed: 'inference', qualifier: 'inference', causation: 'inference', 'off-target': 'inference', data: 'inference',
+  literal: 'concept', meaning: 'concept', logic: 'concept', goal: 'strategy',
+  ...Object.fromEntries(GRAMMAR_TRAPS.map((t) => [t, 'grammar'])),
+};
+
+export interface DiagnoseInput {
+  ms: number; answer: string | null;
+  confidence?: AnswerConfidence;
+  /** the student's record on this skill before this answer */
+  skill?: { n: number; acc: number };
 }
+const secs = (ms: number) => `${Math.round(ms / 1000)} s`;
+
+/**
+ * Why was this question missed? A rule-based diagnosis from the evidence the app has: time spent against
+ * the typical time, how sure the student said they were, their record on this skill, a near-miss numeric
+ * answer, and which trap the chosen wrong answer represents. It returns the most likely cause and the
+ * reasons, in plain words; the student can always relabel it.
+ */
+export function diagnose(q: Question, d: DiagnoseInput): { category: ErrorCategory; why: string[] } {
+  const typical = q.time * 1000;
+  const knows = d.skill && d.skill.n >= 4 && d.skill.acc >= 0.7;
+  const struggling = d.skill && d.skill.n >= 4 && d.skill.acc < 0.5;
+  const skillLine = d.skill && d.skill.n >= 4 ? `you get ${Math.round(d.skill.acc * 100)}% of ${SKILL[q.skill].short} questions right` : '';
+  if (d.answer === null || d.answer === '') return { category: 'time', why: ['You left it blank: on test day, always guess (there is no penalty).'] };
+  if (d.ms > typical * 1.9) return { category: 'time', why: [`You spent ${secs(d.ms)}; a typical solve takes about ${secs(typical)}.`, 'Long struggles cost time for other questions: flag it and come back.'] };
+  if (q.type === 'spr') {
+    const v = parseNumeric(d.answer), k = parseNumeric((q.answer as string[])[0]);
+    if (v !== null && k !== null && (Math.abs(v + k) < 1e-9 || Math.abs(v - k) <= Math.max(1, Math.abs(k) * 0.1))) return { category: 'calculation', why: [Math.abs(v + k) < 1e-9 ? 'Your answer has the right size but the wrong sign.' : `Your answer (${d.answer}) is close to the right one: the method was likely fine, with a slip along the way.`] };
+  }
+  const trap = q.type === 'mcq' ? DISTRACTORS[q.id]?.[Number(d.answer)] : null;
+  if (d.confidence === 'sure') {
+    const why = ['You were sure, so this looks like a rule or idea that needs fixing, not a slip.'];
+    if (trap) why.push(`Your choice is a classic “${TRAPS[trap].label}” trap: ${TRAPS[trap].tip}`);
+    return { category: trap ? TRAP_CAUSE[trap] ?? 'concept' : 'concept', why };
+  }
+  if (d.ms < typical * 0.35) {
+    if (knows) return { category: 'careless', why: [`You answered in ${secs(d.ms)} (typical: ${secs(typical)})`, `and ${skillLine}, so this was most likely a slip, not a gap.`] };
+    return { category: 'concept', why: [`You answered in ${secs(d.ms)} (typical: ${secs(typical)})${d.confidence === 'guess' ? ' and said you guessed' : ''}.`, skillLine ? `Since ${skillLine}, it is most likely a gap to learn, not a slip.` : 'A very fast miss on a skill you are still building usually means a guess.'] };
+  }
+  if (trap) {
+    const cat = TRAP_CAUSE[trap] ?? 'concept';
+    return { category: knows && cat !== 'grammar' ? 'misread' : cat, why: [`Your choice is a “${TRAPS[trap].label}” trap: ${TRAPS[trap].tip}`, ...(knows ? [`Since ${skillLine}, re-reading carefully is the likely fix.`] : [])] };
+  }
+  if (struggling) return { category: 'concept', why: [`Right now ${skillLine}: review the lesson before more practice.`] };
+  if (knows) return { category: q.section === 'math' ? 'calculation' : 'misread', why: [`${skillLine[0].toUpperCase()}${skillLine.slice(1)}, so a slip or a misread question is more likely than a gap.`] };
+  if (q.section === 'rw') return { category: q.domain === 'sec' ? 'grammar' : INFERENCE_SKILLS.includes(q.skill) ? 'inference' : q.skill === 'wic' ? 'concept' : 'strategy', why: ['Not enough history on this skill yet to say more; based on what the question tests.'] };
+  return { category: 'concept', why: ['Not enough history on this skill yet to say more.'] };
+}
+
+/** First guess at why a question was missed (kept for callers that only have timing). */
+export const autoCategory = (q: Question, ms: number, answer: string | null): ErrorCategory => diagnose(q, { ms, answer }).category;
 
 export const RELATED_NEEDED = 2;
 

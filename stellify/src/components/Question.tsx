@@ -4,7 +4,7 @@ import { Check, CircleSlash, Highlighter, Lightbulb, X } from 'lucide-react';
 import type { ErrorCategory, Question } from '@/lib/types';
 import { DIFFICULTY_NAME, DOMAIN, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { LETTERS, correctAnswerLabel, displayAnswer, isCorrect } from '@/lib/answers';
-import { ERROR_CATEGORIES } from '@/lib/engine/mistakes';
+import { CAUSE, ERROR_CATEGORIES } from '@/lib/engine/mistakes';
 import { questionsBySkill } from '@/data/questions';
 import { RichText } from './RichText';
 import { HackCard } from './HackCard';
@@ -166,6 +166,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
   q: Question; answer: string | null; category?: ErrorCategory; onCategory?: (c: ErrorCategory) => void; extra?: React.ReactNode;
 }) {
   const ok = isCorrect(q, answer);
+  const mistake = useStore((s) => s.mistakes[q.id]);
   const related = questionsBySkill(q.skill).filter((x) => x.id !== q.id && x.sub === q.sub)[0] ?? questionsBySkill(q.skill).find((x) => x.id !== q.id);
   return (
     <div className="space-y-3" data-testid="explanation">
@@ -177,6 +178,13 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
 
       {!ok && onCategory && (
         <div className="rounded-xl border border-line p-3.5">
+          {mistake?.why && mistake.categoryBy === 'auto' && (
+            <div className="mb-3 rounded-lg bg-warn/10 p-2.5 text-sm" data-testid="diagnosis">
+              <div className="font-semibold">Likely cause: {CAUSE[mistake.category]} <span className="font-normal text-muted">({ERROR_CATEGORIES.find((c) => c.id === mistake.category)?.label.toLowerCase()})</span></div>
+              <ul className="mt-1 space-y-0.5 text-muted">{mistake.why.map((w) => <li key={w}>• {w}</li>)}</ul>
+              <p className="mt-1 text-[11px] text-faint">A rule-based read of your timing, confidence, record on this skill and the trap you chose. If it is wrong, pick the real reason below.</p>
+            </div>
+          )}
           <div className="mb-2 text-xs font-bold uppercase tracking-wide text-faint">What went wrong? (saved with this mistake)</div>
           <div className="flex flex-wrap gap-1.5">
             {ERROR_CATEGORIES.map((c) => <button key={c.id} onClick={() => onCategory(c.id)} aria-pressed={category === c.id} className={cn('chip', category === c.id && 'border-brand bg-brand/15 text-ink')}>{c.label}</button>)}

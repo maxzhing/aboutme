@@ -103,7 +103,12 @@ export interface Attempt {
   mode: PracticeMode;
   sessionId: string;
   abandoned?: boolean;
+  /** how sure the student said they were before checking (practice only) */
+  confidence?: AnswerConfidence;
 }
+
+/** How sure a student was of an answer: drives review scheduling and mistake diagnosis. */
+export type AnswerConfidence = 'sure' | 'unsure' | 'guess';
 
 export type ErrorCategory =
   | 'concept' | 'calculation' | 'misread' | 'grammar' | 'inference' | 'time' | 'careless' | 'strategy';
@@ -118,6 +123,8 @@ export interface Mistake {
   lastMs: number;
   category: ErrorCategory;
   categoryBy: 'auto' | 'student';
+  /** the evidence behind an automatic category, in plain words */
+  why?: string[];
   status: 'unresolved' | 'resolved';
   resolvedAt?: number;
   /** original question re-answered correctly, without hints, after the last miss */
@@ -132,6 +139,10 @@ export interface SrsCard {
   ease: number;
   reps: number;
   lapses: number;
+  /** last few outcomes, oldest first: S sure-right, U unsure-right, G guessed-right, x wrong, X wrong while sure */
+  hist?: string;
+  /** answered wrong while sure: a likely misconception, reviewed first until it is answered right with confidence twice */
+  misconception?: boolean;
 }
 
 export interface Profile {

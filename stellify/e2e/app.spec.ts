@@ -98,8 +98,11 @@ test('multiple-choice question: every distractor is explained; XP, coins, shop a
   await expect(page.getByRole('heading', { name: 'Why B is correct' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Why each other choice fails' })).toBeVisible();
   await expect(page.getByText('(your choice)')).toBeVisible();
-  // answered in under a second, so the engine suggests "careless"; the student can relabel it
-  await expect(page.getByRole('button', { name: 'Careless mistake' })).toHaveAttribute('aria-pressed', 'true');
+  // answered in under a second with no history on this skill: most likely a guess, so a gap rather than a slip;
+  // the diagnosis shows its evidence and the student can relabel it
+  await expect(page.getByTestId('diagnosis')).toContainText('Likely cause: Conceptual gap');
+  await expect(page.getByTestId('diagnosis')).toContainText(/You answered in \d+ s \(typical: \d+ s\)/);
+  await expect(page.getByRole('button', { name: 'Conceptual misunderstanding' })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'Grammar confusion' }).click();
   await expect(page.getByRole('button', { name: 'Grammar confusion' })).toHaveAttribute('aria-pressed', 'true');
 
@@ -789,5 +792,19 @@ test('exam simulator: directions, question navigator, docked calculator, 5-minut
   await expect(page.getByTestId('module-report').locator('tbody tr')).toHaveCount(2);
   await expect(page.getByTestId('module-report')).toContainText('Math 1');
   await expect(page.getByTestId('module-report')).toContainText(/Easier set|Harder set/);
+  expect(errors).toEqual([]);
+});
+
+test('confidence: a sure wrong answer is diagnosed as a likely misconception, with the trap it fell for', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
+  await expect(page.getByTestId('confidence')).toHaveCount(0); // asked only once an answer is chosen
+  await answerCurrent(page, false);
+  await page.getByTestId('conf-sure').click();
+  await expect(page.getByTestId('conf-sure')).toHaveAttribute('aria-checked', 'true');
+  await page.getByTestId('check').click();
+  await expect(page.getByTestId('diagnosis')).toContainText('You were sure');
+  await expect(page.getByTestId('diagnosis')).toContainText('trap');
   expect(errors).toEqual([]);
 });

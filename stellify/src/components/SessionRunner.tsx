@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Bot, Clock, Flag, Light
 import { sfx } from '@/lib/sfx';
 import { Confetti } from './Confetti';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { PracticeMode, Question } from '@/lib/types';
+import type { AnswerConfidence, PracticeMode, Question } from '@/lib/types';
 import { getQuestion } from '@/data/questions';
 import { useStore } from '@/lib/store';
 import { isCorrect } from '@/lib/answers';
@@ -54,6 +54,8 @@ export function SessionRunner(cfg: SessionConfig) {
   const [hints, setHints] = useState<Record<string, number>>({});
   const [flagged, setFlagged] = useState<string[]>([]);
   const [elim, setElim] = useState<Record<string, number[]>>({});
+  // how sure the student is, asked before checking (optional): feeds review scheduling and mistake diagnosis
+  const [sure, setSure] = useState<Record<string, AnswerConfidence>>({});
   const [done, setDone] = useState<SessionResult | null>(null);
   const [panel, setPanel] = useState<'tutor' | 'report' | 'note' | null>(null);
   const [reviewId, setReviewId] = useState<string | null>(null);
@@ -99,13 +101,13 @@ export function SessionRunner(cfg: SessionConfig) {
     const a = answers[q.id] ?? null;
     if (a === null || a === '') return;
     bank();
-    store.answer({ qid: q.id, answer: a, ms: spent.current[q.id] ?? 0, hints: hints[q.id] ?? 0, mode: cfg.mode, sessionId });
+    store.answer({ qid: q.id, answer: a, ms: spent.current[q.id] ?? 0, hints: hints[q.id] ?? 0, mode: cfg.mode, sessionId, confidence: sure[q.id] });
     setSubmitted((s) => ({ ...s, [q.id]: true }));
     if (feedback === 'immediate') {
       if (isCorrect(q, a)) { const c = combo + 1; setCombo(c); setFire(Date.now()); sfx(c >= 3 ? 'combo' : 'correct'); } else { setCombo(0); sfx('wrong'); }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q, submitted, done, answers, hints, cfg.mode, sessionId, bank, combo]);
+  }, [q, submitted, done, answers, hints, cfg.mode, sessionId, bank, combo, sure]);
 
   const next = useCallback(() => {
     if (idx >= questions.length - 1) { bank(); finish(submitted, answers); } else go(idx + 1);
@@ -263,6 +265,15 @@ export function SessionRunner(cfg: SessionConfig) {
         <QuestionView q={q} answer={a} locked={isSubmitted} reveal={feedback === 'immediate' && !!submitted[q.id]} number={idx + 1}
           onAnswer={(v) => setAnswers((s) => ({ ...s, [q.id]: v }))}
           eliminated={elim[q.id]} onEliminate={(i) => setElim((e) => ({ ...e, [q.id]: (e[q.id] ?? []).includes(i) ? e[q.id].filter((x) => x !== i) : [...(e[q.id] ?? []), i] }))} />
+        {!isSubmitted && a && (
+          <div className="flex flex-wrap items-center gap-1.5 text-sm" role="radiogroup" aria-label="How sure are you?" data-testid="confidence">
+            <span className="mr-1 text-xs font-semibold text-muted">How sure are you?</span>
+            {([['sure', 'Sure'], ['unsure', 'Not sure'], ['guess', 'Guessing']] as const).map(([k, l]) => (
+              <button key={k} type="button" role="radio" aria-checked={sure[q.id] === k} onClick={() => setSure((c) => ({ ...c, [q.id]: c[q.id] === k ? (undefined as unknown as AnswerConfidence) : k }))} className={cn('chip !py-1', sure[q.id] === k && 'border-brand bg-brand/15 text-ink')} data-testid={`conf-${k}`}>{l}</button>
+            ))}
+            <span className="text-[11px] text-faint">optional · helps schedule your reviews</span>
+          </div>
+        )}
 
         {hintsOn && hackFor === q.id && !submitted[q.id] && hacksFor(q.skill, q.sub).slice(0, 1).map((h) => <HackCard key={h.id} hack={h} compact />)}
         {hintsOn && used > 0 && !submitted[q.id] && (

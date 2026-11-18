@@ -1,9 +1,9 @@
-import type { AppState, Attempt, PracticeMode, Question } from '../types';
+import type { AnswerConfidence, AppState, Attempt, PracticeMode, Question } from '../types';
 import { isCorrect } from '../answers';
 import { clamp, dateKey, DAY, uid } from '../util';
 import { ACHIEVEMENT, newAchievements } from './achievements';
 import { computeSkillStats, MASTERY_LEVELS } from './mastery';
-import { autoCategory, resolveProgress } from './mistakes';
+import { diagnose, resolveProgress } from './mistakes';
 import { schedule } from './srs';
 import { attemptXp, coinsFor, levelFromXp, XP_REWARD } from './xp';
 
@@ -15,6 +15,7 @@ export interface AttemptInput {
   mode: PracticeMode;
   sessionId: string;
   abandoned?: boolean;
+  confidence?: AnswerConfidence;
 }
 
 export type GameEvent =
@@ -77,7 +78,7 @@ export function applyAttempt(
 
   const attempt: Attempt = {
     id: uid(), qid: q.id, at: now, answer: input.answer, correct, ms: Math.max(0, Math.round(input.ms)),
-    hints: input.hints, mode: input.mode, sessionId: input.sessionId, ...(input.abandoned ? { abandoned: true } : {}),
+    hints: input.hints, mode: input.mode, sessionId: input.sessionId, ...(input.abandoned ? { abandoned: true } : {}), ...(input.confidence ? { confidence: input.confidence } : {}),
   };
   let s: AppState = { ...s0, attempts: [...s0.attempts, attempt] };
 
@@ -91,9 +92,11 @@ export function applyAttempt(
   const existing = mistakes[q.id];
   let redemption = false;
   if (!input.abandoned && !correct) {
+    const before = computeSkillStats(q.skill, s0.attempts, getQ);
+    const dx = diagnose(q, { ms: attempt.ms, answer: input.answer, confidence: input.confidence, skill: { n: before.n, acc: before.acc } });
     mistakes[q.id] = existing
-      ? { ...existing, lastAt: now, count: existing.count + 1, answers: [...existing.answers, input.answer], lastMs: attempt.ms, status: 'unresolved', resolvedAt: undefined, redoCorrect: false, relatedCorrect: [], category: existing.categoryBy === 'student' ? existing.category : autoCategory(q, attempt.ms, input.answer) }
-      : { qid: q.id, firstAt: now, lastAt: now, count: 1, answers: [input.answer], lastMs: attempt.ms, category: autoCategory(q, attempt.ms, input.answer), categoryBy: 'auto', status: 'unresolved', redoCorrect: false, relatedCorrect: [] };
+      ? { ...existing, lastAt: now, count: existing.count + 1, answers: [...existing.answers, input.answer], lastMs: attempt.ms, status: 'unresolved', resolvedAt: undefined, redoCorrect: false, relatedCorrect: [], ...(existing.categoryBy === 'student' ? {} : { category: dx.category, why: dx.why }) }
+      : { qid: q.id, firstAt: now, lastAt: now, count: 1, answers: [input.answer], lastMs: attempt.ms, category: dx.category, why: dx.why, categoryBy: 'auto', status: 'unresolved', redoCorrect: false, relatedCorrect: [] };
     events.push({ type: 'mistake', qid: q.id });
   } else if (clean) {
     if (existing && existing.status === 'unresolved' && !existing.redoCorrect) {
@@ -114,8 +117,9 @@ export function applyAttempt(
   s = { ...s, mistakes };
 
   // spaced repetition: anything missed or needing hints enters the review queue
-  if (!input.abandoned && (s.srs[q.id] || !clean)) {
-    s = { ...s, srs: { ...s.srs, [q.id]: schedule(s.srs[q.id], correct, clean, now) } };
+  // a right answer that was only a guess (or unsure) also enters review: it is not yet known
+  if (!input.abandoned && (s.srs[q.id] || !clean || input.confidence === 'guess' || input.confidence === 'unsure')) {
+    s = { ...s, srs: { ...s.srs, [q.id]: schedule(s.srs[q.id], correct, clean, now, input.confidence) } };
   }
 
   // XP

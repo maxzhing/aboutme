@@ -18,6 +18,14 @@ browser. That is the whole product: no install, no server, no account, no intern
   with 1 to 3 stars each and a skill map. The long-form notes remain one click away.
 - 35 one-idea "hack" cards shown on lessons and questions, a 28-rule Grammar Masterclass, a Desmos-style graphing
   academy, a formula/grammar/transition reference, 123 vocabulary words with spaced repetition.
+- Confidence-aware review: before checking an answer you can say how sure you are (sure, not sure, guessing).
+  Review timing then follows correctness, confidence and consistency: a sure right answer waits longest, a lucky guess
+  comes back in two days, a wrong answer you were sure of is flagged as a likely misconception and reviewed first
+  until you get it right with confidence twice, and a card you get right only some of the time stays within 4 days.
+- Mistake diagnosis with its evidence: each miss is classified as a conceptual gap, misreading, careless or calculation
+  slip, or time pressure, from your time against the typical time, your confidence, your record on that skill, a
+  numeric near miss, and the trap your chosen answer represents; the reasons are shown in plain words. It is
+  rule-based (no AI), and you can relabel it.
 - Smart (adaptive) practice, spaced review, Mistake Bucket with pattern detection and earned
   resolution, mastery levels, analytics, weekly report.
 - An honest score estimate: separate Math and Reading & Writing estimates shown as 80% ranges with a
@@ -282,7 +290,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 18 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
+- `npm run test:e2e` — 19 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 
