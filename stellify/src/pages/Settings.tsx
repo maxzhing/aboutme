@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { Download, ShieldCheck, Trash2, Upload } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BANK_STATS } from '@/data/questions';
 import manifest from '@/data/questions/validated.json';
+import { listBackups, readBackup, type BackupInfo } from '@/lib/backup';
 import { snapshot, useStore } from '@/lib/store';
 import { DEFAULT_MODEL, testGeminiKey } from '@/lib/tutorClient';
 import { BRAND } from '@/lib/taxonomy';
@@ -81,11 +82,12 @@ export function SettingsPage() {
         <p className="mt-2 text-sm text-muted">Stellify works completely without AI: every question has a validated explanation, and the built-in tutor teaches, hints and explains from that material. If you want more conversational replies, you can connect Google&apos;s Gemini API using its free tier.</p>
         <ul className="mt-2 space-y-1 text-sm text-muted">
           <li>• Because this is a single offline file, there is no server to keep a shared key. You create your own free key at <a className="underline" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com</a> (no payment details needed) and paste it here.</li>
-          <li>• The key is stored only in this browser and sent only to Google. It is left out of backups.</li>
+          <li>• The key is sent only to Google, never included in backups or exports, and the page itself is only allowed to connect to Google&apos;s AI service. It is saved in this browser unless you choose to forget it when the tab closes.</li>
           <li>• What is sent: the open question, your answer choice, your message and the names of your weakest skills. Never your nickname, notes or history.</li>
           <li>• Google may use free-tier requests to improve its products, and free quotas are limited and can change. Stellify limits itself to 60 AI replies a day and falls back to built-in explanations on any error.</li>
         </ul>
         <div className="mt-3 flex flex-wrap gap-2"><input className="input max-w-md font-mono" type="password" autoComplete="off" value={key} onChange={(e) => setKey(e.target.value)} placeholder="Paste a Gemini API key" aria-label="Gemini API key" /><button className="btn-primary" disabled={!key.trim() || testing} onClick={test}>{testing ? 'Checking…' : 'Check and save key'}</button>{s.settings.geminiKey && <button className="btn-ghost" onClick={() => { s.setSettings({ geminiKey: undefined, aiConsent: false }); setKey(''); setModels([]); setAiMsg('Key removed from this device.'); }}>Remove key</button>}</div>
+        <label className="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" className="h-4 w-4 accent-[rgb(var(--brand))]" checked={!!s.settings.keySessionOnly} onChange={(e) => s.setSettings({ keySessionOnly: e.target.checked })} data-testid="key-session" />Forget the key when this tab closes (do not save it on this device)</label>
         {models.length > 0 && <div className="mt-2"><label className="label" htmlFor="st-model">Model</label><select id="st-model" className="input max-w-md" value={s.settings.geminiModel ?? DEFAULT_MODEL} onChange={(e) => s.setSettings({ geminiModel: e.target.value })}>{models.map((m) => <option key={m}>{m}</option>)}</select></div>}
         {s.settings.geminiKey && <label className="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" className="h-4 w-4 accent-[rgb(var(--brand))]" checked={s.settings.aiEnabled && s.settings.aiConsent} onChange={(e) => s.setSettings({ aiEnabled: e.target.checked, aiConsent: e.target.checked })} />Use AI replies in the tutor (I understand what is sent to Google)</label>}
         <p className="mt-2 min-h-5 text-sm text-muted" aria-live="polite">{aiMsg}</p>
@@ -103,9 +105,10 @@ export function SettingsPage() {
           <button className="btn-primary" onClick={exportData} data-testid="export"><Download size={15} />Export my data</button>
           <button className="btn-ghost" onClick={() => file.current?.click()}><Upload size={15} />Import a backup</button>
           <input ref={file} type="file" accept="application/json,.json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) importData(f); e.target.value = ''; }} aria-label="Backup file" />
-          <button className="btn-ghost text-bad" data-testid="reset" onClick={() => { if (confirm('Delete all Stellify data on this device? This cannot be undone.') && confirm('Last check: erase progress, notes, pet and settings?')) { s.resetAll(); setKey(''); setMsg('Everything has been erased.'); } }}><Trash2 size={15} />Delete everything</button>
+          <button className="btn-ghost text-bad" data-testid="reset" onClick={() => { if (confirm('Delete all Stellify data on this device? A safety copy is kept under Automatic backups for a while, but clearing the browser removes it too.') && confirm('Last check: erase progress, notes, pet and settings?')) { s.resetAll(); setKey(''); setMsg('Everything has been erased.'); } }}><Trash2 size={15} />Delete everything</button>
         </div>
         <p className="mt-2 min-h-5 text-sm text-muted" aria-live="polite">{msg}</p>
+        <AutoBackups onRestored={(m) => setMsg(m)} />
         <p className="text-xs text-faint">Stored now: {s.attempts.length} answered questions · {Object.keys(s.mistakes).length} mistakes · {s.notes.length} notes · {s.tutor.length} tutor conversations · {s.reports.length} question reports.</p>
       </Card>
 
@@ -119,6 +122,37 @@ export function SettingsPage() {
         </ul>
         <p className="mt-3 text-sm"><Link href="/qc" className="font-semibold text-brand2 hover:underline" data-testid="qc-link">For reviewers: question quality control →</Link></p>
       </Card>
+    </div>
+  );
+}
+
+/** The automatic backups kept on this device, newest first, each restorable in one step. */
+function AutoBackups({ onRestored }: { onRestored: (msg: string) => void }) {
+  const s = useStore();
+  const [list, setList] = useState<BackupInfo[] | null>(null);
+  const load = () => { void listBackups().then(setList); };
+  useEffect(load, [s.attempts.length]);
+  return (
+    <div className="mt-4 rounded-xl border border-line p-3" data-testid="auto-backups">
+      <h3 className="text-sm font-semibold">Automatic backups on this device</h3>
+      <p className="mt-0.5 text-xs text-muted">One snapshot per day (last 7 days) and a safety copy before every import or reset. They stay on this device and never include your AI key; exporting a file is still the way to move your data.</p>
+      {list === null ? <p className="mt-2 text-xs text-faint">Loading…</p> : list.length === 0 ? <p className="mt-2 text-xs text-faint">None yet: the first one is made once you answer a question.</p> : (
+        <ul className="mt-2 divide-y divide-line text-sm">
+          {list.map((b) => (
+            <li key={b.key} className="flex flex-wrap items-center gap-2 py-1.5" data-testid="auto-backup">
+              <span className="min-w-0 flex-1">{b.label} <span className="text-xs text-muted">· {new Date(b.at).toLocaleString()} · {b.attempts} answers</span></span>
+              <button type="button" className="btn-quiet !px-2 !py-1 text-xs" onClick={async () => {
+                if (!confirm(`Restore "${b.label}" (${b.attempts} answers)? Your current data is saved as a safety copy first.`)) return;
+                const st = await readBackup(b.key);
+                if (!st) { onRestored('That backup could not be read.'); return; }
+                s.importState({ ...st, settings: { ...st.settings, geminiKey: s.settings.geminiKey } });
+                onRestored(`Restored: ${b.label}.`);
+                load();
+              }}>Restore</button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

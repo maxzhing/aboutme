@@ -306,6 +306,23 @@ This checks internal validity only: that routing sends students the right way an
 ranges behave as described when the world does not exactly match the model. It cannot show how Stellify's scale
 lines up with real SAT scores; that needs real students' score reports.
 
+## Safety, speed and accessibility
+
+- **Backups and recovery.** Besides export/import, the app keeps automatic backups on the device: one per day (last
+  7 days) and a safety copy before every import or reset (last 3), each restorable from Settings in one step. They
+  never include the AI key.
+- **Security.** The built file carries a content security policy: the page can connect only to Google's Gemini API
+  (when the student turns the AI tutor on), loads nothing from elsewhere, and cannot submit forms or embed objects.
+  The AI key is sent only to Google, is left out of exports and backups, and can be kept for the current tab only.
+  Imported files and question text are rendered as text, never as HTML.
+- **Large histories.** `tests/perf.test.ts` builds a 20,000-answer history: every analytics view computes in about a
+  tenth of a second or less, recording an answer takes well under one, and the saved data is about 2.8 MB.
+- **Accessibility.** A browser test runs axe-core (WCAG 2.1 A and AA) on 12 key pages in both themes and fails on
+  any serious or critical problem; another answers and checks a question with the keyboard only. Earlier
+  pixel-level contrast checks cover both themes too.
+- **Phones and tablets.** Browser tests check every page for sideways overflow on a phone and on a tablet in both
+  orientations.
+
 ## Checks
 
 ```bash
@@ -319,7 +336,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks.
-- `npm run test:e2e` — 20 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
+- `npm run test:e2e` — 24 browser tests against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 

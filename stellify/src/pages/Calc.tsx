@@ -205,7 +205,7 @@ function NoteBlock({ n }: { n: Note }) {
   if (n.k === 'formula') return (
     // formulas separated by \qquad wrap onto their own lines on narrow screens instead of scrolling
     <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-1 rounded-2xl border border-brand/30 bg-brand/5 px-3 py-3 text-center text-[15px] sm:px-4 sm:text-[17px]">
-      {n.t.split(/\\qquad/).map((f, i) => <div key={i} className="max-w-full overflow-x-auto"><RichText block text={`$$${f.trim()}$$`} /></div>)}
+      {n.t.split(/\\qquad/).map((f, i) => <div key={i} className="max-w-full overflow-x-auto rounded-md" tabIndex={0} role="group" aria-label="Formula (scroll sideways if it is cut off)"><RichText block text={`$$${f.trim()}$$`} /></div>)}
     </div>
   );
   if (n.k === 'rule') return <div className="rounded-2xl border-2 border-brand/40 bg-gradient-to-br from-brand/10 to-transparent p-4"><div className="text-[11px] font-black uppercase tracking-wide text-brand2">Definition / theorem</div><div className="mt-0.5 font-bold">{n.title}</div><p className="mt-1.5 leading-relaxed"><RichText text={n.t} /></p></div>;

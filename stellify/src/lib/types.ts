@@ -285,6 +285,8 @@ export interface Settings {
   aiConsent: boolean;
   /** optional, student-supplied free Gemini key; stored only on this device */
   geminiKey?: string;
+  /** keep the AI key only for this browser tab (never written to this device's storage) */
+  keySessionOnly?: boolean;
   geminiModel?: string;
   shareIncludeMistakes: boolean;
   /** 'high' keeps medium questions out of smart practice */

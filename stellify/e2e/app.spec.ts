@@ -831,3 +831,73 @@ test('quality control: a student report shows up as an open flag, and a reviewer
   await expect(page.getByTestId('qc-flags')).toContainText('key stands');
   expect(errors).toEqual([]);
 });
+
+test('accessibility: no serious or critical axe violations on key pages, in both themes', async ({ page }) => {
+  test.setTimeout(240_000);
+  const AxeBuilder = (await import('@axe-core/playwright')).default;
+  await boot(page);
+  const routes = ['/', '/learn', '/practice', '/practice/session?mode=single&ids=r-bnd-06', '/mocks', '/analytics', '/mistakes', '/settings', '/resources', '/qc', '/stats/st4-2', '/calc/c1-1'];
+  const found: string[] = [];
+  for (const theme of ['dark', 'light']) {
+    if (theme === 'light') { await go(page, '/settings'); await page.getByTestId('theme-light').click(); }
+    for (const r of routes) {
+      await go(page, r);
+      await page.waitForTimeout(300);
+      const res = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).exclude('.backdrop').analyze();
+      for (const v of res.violations) if (v.impact === 'serious' || v.impact === 'critical') found.push(`${theme} ${r}: ${v.id} (${v.nodes.length}) ${v.help}`);
+    }
+  }
+  expect(found).toEqual([]);
+});
+
+test('keyboard only: choose an answer, check it and keep going without a mouse', async ({ page }) => {
+  await boot(page);
+  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
+  const b = page.getByTestId('question-card').locator('[data-choice="B"]');
+  await b.focus();
+  await page.keyboard.press('Enter');
+  await expect(b).toHaveAttribute('aria-checked', 'true');
+  await page.keyboard.press('Tab'); // focus moves on: no keyboard trap
+  await expect.poll(() => page.evaluate(() => document.activeElement?.getAttribute('data-choice'))).not.toBe('B');
+  await page.getByTestId('check').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByTestId('explanation')).toBeVisible();
+  await page.keyboard.press('Tab'); // keyboard focus is always visible
+  expect(await page.evaluate(() => getComputedStyle(document.activeElement as Element).outlineStyle)).not.toBe('none');
+});
+
+test('tablet: every navigation page fits a tablet screen in both orientations', async ({ browser }) => {
+  test.setTimeout(180_000);
+  for (const viewport of [{ width: 820, height: 1180 }, { width: 1180, height: 820 }]) {
+    const page = await (await browser.newContext({ viewport, hasTouch: true })).newPage();
+    await boot(page);
+    const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
+    const wide: string[] = [];
+    for (const href of [...links, '/qc', '/stats/st4-2']) {
+      await go(page, href);
+      await expect(page.locator('main h1').first()).toBeVisible();
+      const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      if (over > 1) wide.push(`${viewport.width}px ${href}: ${over}px too wide`);
+    }
+    expect(wide).toEqual([]);
+    await page.context().close();
+  }
+});
+
+test('safety: automatic backups undo a reset, and the page may only connect to the AI service', async ({ page }) => {
+  page.on('dialog', (d) => d.accept());
+  await boot(page);
+  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
+  await solve(page, true);
+  await go(page, '/settings');
+  await expect(page.getByTestId('auto-backup').first()).toContainText('1 answers');
+  await page.getByTestId('reset').click(); // both confirmations accepted
+  await go(page, '/settings');
+  await expect(page.getByText('Stored now: 0 answered questions')).toBeVisible();
+  const safety = page.getByTestId('auto-backup').filter({ hasText: 'Before deleting all data' });
+  await expect(safety).toContainText('1 answers');
+  await safety.getByRole('button', { name: 'Restore' }).click();
+  await expect(page.getByText('Stored now: 1 answered questions')).toBeVisible();
+  // the content security policy blocks any other connection (so nothing can be sent elsewhere)
+  expect(await page.evaluate(() => fetch('https://example.com/').then(() => 'connected', () => 'blocked'))).toBe('blocked');
+});

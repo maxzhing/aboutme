@@ -48,6 +48,8 @@
 
 .katex { font-size: 1.05em; }
 .katex-display { margin: 0.6em 0; overflow-x: auto; overflow-y: hidden; }
+/* inside a keyboard-focusable formula box, the box does the scrolling (so keyboard users can scroll it too) */
+[role="group"][tabindex] .katex-display { overflow: visible; }
 
 /* reduced motion: system preference or the in-app setting */
 @media (prefers-reduced-motion: reduce) {

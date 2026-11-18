@@ -19,7 +19,7 @@ describe('skill heatmap', () => {
   });
   it('reports sample size, confidence and a trend only when there is enough data', () => {
     const qs = QUESTIONS.filter((q) => q.skill === 'bnd').slice(0, 14);
-    const at = (i: number, correct: boolean): Attempt => ({ id: `a${i}`, qid: qs[i].id, at: 1_700_000_000_000 + i * 60_000, correct, ms: 40_000, hints: 0, mode: 'practice', sessionId: 's', answer: '0' } as unknown as Attempt);
+    const at = (i: number, correct: boolean): Attempt => ({ id: `a${i}`, qid: qs[i].id, at: 1_700_000_000_000 + i * 60_000, correct, ms: 40_000, hints: 0, mode: 'bank', sessionId: 's', answer: '0' } as unknown as Attempt);
     // early misses, then a run of right answers: improving
     const attempts = qs.map((_, i) => at(i, i >= 6));
     const h = skillHeat(attempts, getQuestion).find((x) => x.skill === 'bnd')!;

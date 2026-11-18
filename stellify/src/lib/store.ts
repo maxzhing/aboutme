@@ -18,6 +18,7 @@ import { FULL_FORM, FULL_TESTS } from './fullTest/registry';
 /** Full practice tests the student has not completed yet (their questions are saved for those tests). */
 const untakenTests = (s: { mocks: MockAttempt[] }) => new Set(FULL_TESTS.map((t) => t.id).filter((id) => !s.mocks.some((m) => m.completedAt && m.formId === FULL_FORM + id)));
 import { schedule } from './engine/srs';
+import { dailyBackup, safetyBackup } from './backup';
 import { XP_REWARD } from './engine/xp';
 import { SHOP_ITEM } from '@/data/shop';
 import { clamp, dateKey, uid } from './util';
@@ -40,6 +41,8 @@ const idbStorage: StateStorage = {
 };
 
 export const STORAGE_KEY = 'stellify-state-v1';
+const KEY_SESSION = 'stellify-ai-key';
+const sessionKey = (st?: Partial<Settings>) => { if (!st?.keySessionOnly) return {}; try { const k = sessionStorage.getItem(KEY_SESSION); return k ? { geminiKey: k } : {}; } catch { return {}; } };
 
 interface Actions {
   hydrated: boolean;
@@ -340,8 +343,8 @@ export const useStore = create<Store>()(
           const a = post(st, now);
           return { state: a.state, events: [...g.events, ...a.events] };
         }),
-        importState: (s) => setState({ ...initialState(), ...s, version: STATE_VERSION }),
-        resetAll: () => setState({ ...initialState(), events: [] }),
+        importState: (s) => { void safetyBackup(pure(getState()), 'restoring a backup'); setState({ ...initialState(), ...s, version: STATE_VERSION }); },
+        resetAll: () => { void safetyBackup(pure(getState()), 'deleting all data'); setState({ ...initialState(), events: [] }); },
         markLevelSeen: (level) => setState({ seenLevel: level }),
         setMarks: (key, marks) => {
           const all = { ...(getState().highlights ?? {}) };
@@ -359,12 +362,27 @@ export const useStore = create<Store>()(
       name: STORAGE_KEY,
       version: STATE_VERSION,
       storage: createJSONStorage(() => idbStorage),
-      partialize: (s) => pure(s) as unknown as Store,
-      merge: (persisted, current) => ({ ...current, ...initialState(), ...(persisted as Partial<AppState>), settings: { ...initialState().settings, ...((persisted as Partial<AppState>)?.settings ?? {}) }, profile: { ...initialState().profile, ...((persisted as Partial<AppState>)?.profile ?? {}) }, pet: { ...initialState().pet, ...((persisted as Partial<AppState>)?.pet ?? {}) } }),
-      onRehydrateStorage: () => () => { useStore.setState({ hydrated: true }); },
+      // a key marked session-only lives in sessionStorage (gone when the tab closes), never in the saved state
+      partialize: (s) => {
+        const p = pure(s);
+        if (!p.settings.keySessionOnly) return p as unknown as Store;
+        try { if (p.settings.geminiKey) sessionStorage.setItem(KEY_SESSION, p.settings.geminiKey); else sessionStorage.removeItem(KEY_SESSION); } catch { /* unavailable */ }
+        return { ...p, settings: { ...p.settings, geminiKey: undefined } } as unknown as Store;
+      },
+      merge: (persisted, current) => ({ ...current, ...initialState(), ...(persisted as Partial<AppState>), settings: { ...initialState().settings, ...((persisted as Partial<AppState>)?.settings ?? {}), ...sessionKey((persisted as Partial<AppState>)?.settings) }, profile: { ...initialState().profile, ...((persisted as Partial<AppState>)?.profile ?? {}) }, pet: { ...initialState().pet, ...((persisted as Partial<AppState>)?.pet ?? {}) } }),
+      onRehydrateStorage: () => () => { useStore.setState({ hydrated: true }); void dailyBackup(pure(useStore.getState())); },
     },
   ),
 );
+
+let lastAuto = 0;
+useStore.subscribe((s, prev) => {
+  if (!s.hydrated || s.attempts === prev.attempts) return;
+  const now = Date.now();
+  if (now - lastAuto < 120_000) return;
+  lastAuto = now;
+  void dailyBackup(pure(s), now);
+});
 
 /** Plain snapshot of the student's data (for export, sharing and cloud sync). */
 export const snapshot = (): AppState => pure(useStore.getState());
