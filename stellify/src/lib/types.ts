@@ -156,6 +156,8 @@ export interface Profile {
   onboardedAt?: number;
   diagnosticAt?: number;
   restDays: number[]; // 0=Sun … 6=Sat
+  /** answers to the start-up questions (lib/model/intake.ts) */
+  intake?: import('./model/intake').Intake;
 }
 
 export type PetSlot = 'hat' | 'face' | 'neck' | 'back' | 'habitat' | 'effect';

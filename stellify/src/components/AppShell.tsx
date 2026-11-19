@@ -28,7 +28,7 @@ export function Logo({ size = 30 }: { size?: number }) {
 const FOCUS_ROUTES = ['/mocks/run', '/onboarding'];
 /** Which area a route belongs to: each area has its own accent colour. */
 export type Section = 'home' | 'learn' | 'practice' | 'ap' | 'performance' | 'companion' | 'tools' | 'settings';
-const GROUP_SECTION: Record<string, Section> = { Home: 'home', Learn: 'learn', Practice: 'practice', 'AP Courses': 'ap', Performance: 'performance', Companion: 'companion', Tools: 'tools' };
+const GROUP_SECTION: Record<string, Section> = { Home: 'home', Learn: 'learn', Practice: 'practice', Challenges: 'practice', 'AP Courses': 'ap', Progress: 'performance', Performance: 'performance', Companion: 'companion', Tools: 'tools' };
 export function sectionOf(path: string): Section {
   if (path === '/') return 'home';
   if (/^\/(settings|qc)\b/.test(path)) return 'settings';
@@ -88,23 +88,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const nav = (
     <nav aria-label="Main" className="flex h-full flex-col gap-5 overflow-y-auto px-3 pb-4 pt-1">
-      {NAV.map((g) => (
-        <div key={g.group} data-section={GROUP_SECTION[g.group] ?? 'home'}>
-          <div className="nav-group-label">{g.group}</div>
+      {NAV.map((g) => {
+        const isActive = (href: string) => href === '/' ? clean === '/' : href === '/path' ? clean.startsWith('/path') : href === '/learn' ? clean.startsWith('/learn') : clean === href || (href !== '/practice' && href !== '/desmos' && clean.startsWith(href + '/'));
+        const list = (
           <ul className="space-y-0.5">
-            {g.items.map((it) => {
-              const active = it.href === '/' ? clean === '/' : it.href === '/path' ? clean.startsWith('/path') : clean === it.href || (it.href !== '/learn' && it.href !== '/practice' && it.href !== '/desmos' && clean.startsWith(it.href + '/'));
-              return (
-                <li key={it.href} data-course={courseOf(it.href)}>
-                  <Link href={it.href} aria-current={active ? 'page' : undefined} className="nav-item">
-                    <span className="nav-icon"><it.icon size={15} aria-hidden /></span><span className="truncate">{it.label}</span>
-                  </Link>
-                </li>
-              );
-            })}
+            {g.items.map((it) => (
+              <li key={it.href} data-course={courseOf(it.href)}>
+                <Link href={it.href} aria-current={isActive(it.href) ? 'page' : undefined} className="nav-item">
+                  <span className="nav-icon"><it.icon size={15} aria-hidden /></span><span className="truncate">{it.label}</span>
+                </Link>
+              </li>
+            ))}
           </ul>
-        </div>
-      ))}
+        );
+        return (
+          <div key={g.group} data-section={GROUP_SECTION[g.group] ?? 'home'}>
+            {g.folded ? (
+              <details open={g.items.some((it) => isActive(it.href)) || undefined} className="group/nav">
+                <summary className="nav-group-label flex cursor-pointer list-none items-center justify-between rounded hover:text-ink">{g.group}<span aria-hidden className="text-[10px] transition-transform group-open/nav:rotate-90">▸</span></summary>
+                {list}
+              </details>
+            ) : <><div className="nav-group-label">{g.group}</div>{list}</>}
+          </div>
+        );
+      })}
       <div className="mt-auto border-t border-line/70 pt-3" data-section="settings">
         <Link href="/settings" aria-current={clean === '/settings' ? 'page' : undefined} className="nav-item">
           <span className="nav-icon"><Settings size={15} aria-hidden /></span>Settings &amp; account

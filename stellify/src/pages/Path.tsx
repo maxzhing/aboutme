@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { LessonPath, Stars, type HexInfo } from '@/components/HexMap';
 import { LeverChart } from '@/components/LeverChart';
 import { SessionRunner } from '@/components/SessionRunner';
-import { TodayPanel } from '@/components/TodayPanel';
+import { CoachToday, useCoach } from '@/components/Coach';
 import { Card, Empty, Modal, PageHeader, cn } from '@/components/ui';
 import { getQuestion, QUESTIONS } from '@/data/questions';
 import { WORKED_BY_SKILL } from '@/data/worked';
@@ -48,7 +48,8 @@ export function PathPage({ section = 'math' }: { section?: Section }) {
   const lastSet = useStore((s) => s.path?.sets[s.path.sets.length - 1]);
   const week = useWeekRhythm();
   useEffect(() => { syncPath(); }, [syncPath]);
-  const { input, next, today, upcoming } = usePathModel(section);
+  const { input, next, upcoming } = usePathModel(section);
+  const coach = useCoach(1);
   const [view, setView] = useState<'map' | 'list'>(readView);
   const selected = (sp.get('skill') as SkillId | null) ?? undefined;
   // a step opens its actual lesson (the same course pages as Learn)
@@ -66,7 +67,7 @@ export function PathPage({ section = 'math' }: { section?: Section }) {
           {(['math', 'rw'] as const).map((sec) => <Link key={sec} href={sec === 'math' ? '/path' : '/path/rw'} aria-current={sec === section ? 'page' : undefined} className={cn('rounded-full px-3.5 py-1.5 text-[14px] font-medium', sec === section ? 'bg-ink text-bg' : 'text-muted hover:text-ink')}>{SECTION_NAME[sec]}</Link>)}
         </nav>} />
       {recent && <SetResultNote r={recent} />}
-      <TodayPanel items={today} weekDone={week.done} weekPlanned={week.planned} className="mb-6" />
+      <CoachToday plan={coach} className="mb-6" />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section aria-labelledby="map-h">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">

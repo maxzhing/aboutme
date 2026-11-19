@@ -3,6 +3,7 @@ import { DOMAIN, SKILL, SKILLS, skillsOfDomain } from '../taxonomy';
 import { DAY, pct, rng, shuffle } from '../util';
 import { computeAllSkillStats, type SkillStats } from './mastery';
 import { dueIds } from './srs';
+import { TIER_B, estimateAbilities, pKnow, withinReach } from '../model/ability';
 
 export interface SkillPriority { skill: SkillId; priority: number; stats: SkillStats; reason: string }
 
@@ -46,9 +47,14 @@ export function pickSmartSet(
   opts: { section?: Section; skill?: SkillId; seed?: string } = {},
 ): Pick[] {
   const rand = rng(opts.seed ?? `${now}`);
-  // High challenge (the default): medium questions are left out, so every set starts at hard
+  // Difficulty follows the student: each skill's questions are aimed at about a 70% chance of knowing how, from
+  // the student model. "High challenge" (the default) only leaves out medium questions the student would almost
+  // certainly get right; it no longer hands a beginner nothing but hard questions.
   const high = s.settings.challenge !== 'standard';
-  const pool = bank.filter((q) => (!opts.section || q.section === opts.section) && (!opts.skill || q.skill === opts.skill) && !(high && q.difficulty === 'medium'));
+  const ab = estimateAbilities(s.attempts, getQ, now, s.profile.intake);
+  const tooEasy = (q: Question) => high && q.difficulty === 'medium' && pKnow(ab.skills[q.skill].theta, TIER_B.medium) > 0.92;
+  // a set can end short: a few questions at the right level teach more than a full set padded with impossible ones
+  const pool = bank.filter((q) => (!opts.section || q.section === opts.section) && (!opts.skill || q.skill === opts.skill) && !tooEasy(q) && withinReach(ab, q));
   const last = new Map<string, { at: number; correct: boolean }>();
   for (const a of s.attempts) if (!a.abandoned) last.set(a.qid, { at: a.at, correct: a.correct });
   const fresh = (q: Question) => { const l = last.get(q.id); return !l ? 2 : l.correct && now - l.at < 14 * DAY ? 0 : 1; };
@@ -61,9 +67,13 @@ export function pickSmartSet(
 
   const ranked = rankSkills(s, getQ, now, opts.section).filter((r) => !opts.skill || r.skill === opts.skill);
   const fromSkill = (r: SkillPriority, reason: string) => {
-    const prefs = targetDifficulties(r.stats).filter((d) => !(high && d === 'medium'));
+    const th = ab.skills[r.skill].theta;
+    const prefs = (['medium', 'hard', 'very-hard', 'elite'] as Difficulty[]).sort((a, b) => Math.abs(pKnow(th, TIER_B[a]) - 0.7) - Math.abs(pKnow(th, TIER_B[b]) - 0.7));
+    // the right level matters more than novelty: a missed easy question beats an unseen one that is far too hard,
+    // but a question answered correctly in the last two weeks only comes back when nothing else fits
+    const cost = (q: Question) => Math.abs(pKnow(th, TIER_B[q.difficulty]) - 0.7) + (fresh(q) === 0 ? 1 : fresh(q) === 1 ? 0.12 : 0);
     const cands = shuffle(pool.filter((q) => q.skill === r.skill && !used.has(q.id)), rand)
-      .sort((a, b) => fresh(b) - fresh(a) || prefs.indexOf(a.difficulty) - prefs.indexOf(b.difficulty));
+      .sort((a, b) => cost(a) - cost(b) || prefs.indexOf(a.difficulty) - prefs.indexOf(b.difficulty));
     return take(cands[0], reason);
   };
   const weak = ranked.slice(0, Math.max(3, Math.ceil(ranked.length / 3)));
@@ -78,6 +88,13 @@ export function pickSmartSet(
   while (picks.length < n && strong.length && guard++ < n * 4) {
     const r = strong[(guard - 1) % strong.length];
     if (!fromSkill(r, `Keeping ${SKILL[r.skill].short} sharp.`)) { if (strong.every((w) => !pool.some((q) => q.skill === w.skill && !used.has(q.id)))) break; }
+  }
+  // practising one skill on purpose always gives something to work on: if everything in it is above the student's
+  // level, use its most reachable questions (at least four), so the estimate can move and the student is never stuck
+  if (opts.skill && picks.length < Math.min(n, 4)) {
+    const th = ab.skills[opts.skill].theta;
+    const extra = bank.filter((q) => q.skill === opts.skill && !used.has(q.id) && !q.official).sort((a, b) => pKnow(th, TIER_B[b.difficulty]) - pKnow(th, TIER_B[a.difficulty]) || fresh(b) - fresh(a));
+    for (const q of extra) { if (picks.length >= Math.min(n, 4)) break; take(q, `The most approachable ${SKILL[opts.skill].short} questions: work through each explanation, even when you miss.`); }
   }
   for (const q of shuffle(pool, rand).sort((a, b) => fresh(b) - fresh(a))) { if (picks.length >= n) break; take(q, 'Mixed practice.'); }
   return picks;

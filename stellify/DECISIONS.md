@@ -78,3 +78,23 @@ Each entry records what was decided, why, and the alternatives considered.
     lesson page, which shows the same Path card (stars, next step, practice set, hard set, skip check). Learn and the
     dashboard show the Path's stars and next step. Finishing the 5-minute quick lesson with 2 or more of its stars
     now counts toward ★1, so earlier quick-lesson progress still shows.
+22. **One custom plan per student: the coach (owner request, 2026-11-19).** The template calendar plan and the Path's
+    separate Today list are replaced by one plan (`lib/engine/coach.ts`). It comes from a per-skill student model,
+    start-up questions and an adaptive placement check. The dashboard, the Path and My plan all show the same Today
+    list. The Path's highlighted step follows the coach once it knows something about the student; with nothing known,
+    the route starts at the beginning. The old 28-question diagnostic address now runs the placement check. The old
+    `plan` field stays in saved data but is no longer used. Alternative: keep the template and reorder it more cleverly.
+    Rejected: in the simulation, the template gave 17 different openings for 400 students, and the Path gave 1.
+23. **Questions far above a student's level are held back** from practice, review and mistake redos until the skill
+    catches up (under 25% chance of knowing how, allowing one standard deviation for uncertainty). Practising one skill
+    on purpose always gets at least four questions. The "High challenge" setting now only skips medium questions the
+    student would almost certainly get right. Alternative: keep serving everything. Rejected: beginners were getting
+    80–85% questions they had almost no chance with.
+24. **The menu is ordered by the daily loop, and extras are folded** (Challenges, Tools, Companion, AP Courses). Nothing
+    was deleted. The two Academies stay reachable from Lessons.
+25. **No Easy tier (owner decision, 2026-11-19).** An Easy tier of original questions was written and then removed at
+    the owner's request. The bank's lowest tier stays medium. Consequence, stated in CRITIQUE.md: students starting
+    below about 900 run out of practice at their level sooner and are sent to lessons instead.
+26. **Speed Training and the Blitz modes use only medium and hard questions**, as their descriptions always said. They
+    had been including Beyond SAT questions.
+

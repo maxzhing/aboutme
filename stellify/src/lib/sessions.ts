@@ -3,6 +3,7 @@ import { SECTION_NAME, SKILL } from './taxonomy';
 import { dateKey, rng, shuffle } from './util';
 import { pickSmartSet } from './engine/adaptive';
 import { dueIds } from './engine/srs';
+import { estimateAbilities, withinReach } from './model/ability';
 
 export interface BuiltSession { qids: string[]; title: string; mode: PracticeMode; reasons?: Record<string, string>; empty?: string }
 export type Params = Record<string, string | undefined>;
@@ -51,7 +52,11 @@ export function buildSession(p: Params, s: AppState, bank: Question[], getQ: (id
       return { qids: unseenFirst(pool).slice(0, n).map((q) => q.id), mode: 'hard', title: `Hardest questions${section ? ` · ${SECTION_NAME[section]}` : ''}` };
     }
     case 'mistakes': {
-      const open = Object.values(s.mistakes).filter((m) => m.status === 'unresolved').sort((a, b) => b.count - a.count || a.lastAt - b.lastAt);
+      // a missed question far above the student's level waits until the skill catches up
+      const ab = estimateAbilities(s.attempts, getQ, now, s.profile.intake);
+      const unresolved = Object.values(s.mistakes).filter((m) => m.status === 'unresolved');
+      const open = unresolved.filter((m) => { const mq = getQ(m.qid); return !mq || withinReach(ab, mq); }).sort((a, b) => b.count - a.count || a.lastAt - b.lastAt);
+      const parked = unresolved.length - open.length;
       const only = p.ids ? new Set(p.ids.split(',')) : null;
       const qids: string[] = [];
       const reasons: Record<string, string> = {};
@@ -61,13 +66,14 @@ export function buildSession(p: Params, s: AppState, bank: Question[], getQ: (id
         if (!mq || qids.length >= n) continue;
         if (!m.redoCorrect && !qids.includes(m.qid)) { qids.push(m.qid); reasons[m.qid] = `You missed this ${m.count > 1 ? `${m.count} times` : 'before'}. Answer it correctly without hints to clear the redo step.`; }
         const need = Math.max(0, 2 - m.relatedCorrect.length);
-        const related = unseenFirst(bank.filter((q) => q.skill === mq.skill && q.id !== m.qid && !m.relatedCorrect.includes(q.id) && !qids.includes(q.id) && !s.mistakes[q.id])).slice(0, need);
+        const related = unseenFirst(bank.filter((q) => q.skill === mq.skill && q.id !== m.qid && !m.relatedCorrect.includes(q.id) && !qids.includes(q.id) && !s.mistakes[q.id] && withinReach(ab, q))).slice(0, need);
         for (const r of related) { if (qids.length < n + 2) { qids.push(r.id); reasons[r.id] = `New related practice for a ${SKILL[mq.skill].short} mistake.`; } }
       }
-      return { qids, mode: 'mistakes', title: 'Mistake review', reasons, empty: 'No unresolved mistakes. Every miss you make is saved here automatically.' };
+      return { qids, mode: 'mistakes', title: 'Mistake review', reasons, empty: parked ? `Your ${parked} open mistake${parked === 1 ? ' is' : 's are'} well above your current level in ${parked === 1 ? 'its skill' : 'their skills'}. They are saved and come back once the skill catches up: the lessons and practice in your plan get you there.` : 'No unresolved mistakes. Every miss you make is saved here automatically.' };
     }
     case 'review': {
-      const due = dueIds(s.srs, now).filter((id) => getQ(id)).slice(0, n);
+      const ab = estimateAbilities(s.attempts, getQ, now, s.profile.intake);
+      const due = dueIds(s.srs, now).filter((id) => { const q = getQ(id); return !!q && withinReach(ab, q); }).slice(0, n);
       return { qids: due, mode: 'review', title: 'Spaced review', reasons: Object.fromEntries(due.map((id) => [id, 'Scheduled review: this question is due to come back today.'])), empty: 'Nothing is due for review right now. Questions you miss come back here at growing intervals.' };
     }
     case 'saved':

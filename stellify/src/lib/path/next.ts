@@ -39,6 +39,8 @@ export interface EngineInput {
   quickStars?: Partial<Record<SkillId, number>>;
   lever: Lever[];
   examDate?: string;
+  /** the coach's skill order for this student (lib/engine/coach.ts), best first */
+  priority?: SkillId[];
 }
 
 export const REVIEW_CAP = 8;
@@ -140,7 +142,16 @@ export function nextStep(i: EngineInput, opts: { skipReview?: boolean; skipQueue
         reason: `You have finished ${passed} of ${ch.length} chapters of ${s.title}. Finishing it earns ★1.` };
     }
   }
-  // 4. the highest Score Lever skill with prerequisites met
+  // 4. the coach's order, from the student model (works from the first answers, unlike the Score Lever's 6-answer minimum)
+  if (i.priority?.length) {
+    const pick = i.priority.map((k) => PATH[k]).find((p) => p && inSection(i, p.id) && !ex.has(p.id) && skillStars(i, p.id).count < 3);
+    if (pick) {
+      const f = formatFor(i, pick.id);
+      return { ...f, skill: pick.id, section: pick.section, priority: 4,
+        reason: f.why ? `Recommended because of ${f.why} on ${pick.title}.` : `Your plan’s focus: ${pick.title} is where an hour of work should add the most points for you right now.` };
+    }
+  }
+  // 4b. the highest Score Lever skill with prerequisites met
   const daysLeft = i.examDate ? daysBetween(t, i.examDate) : null;
   const ranked = i.lever
     .filter((l) => !l.needsDiagnostic && l.perHour && l.perHour.mid > 0 && inSection(i, l.skill) && !ex.has(l.skill))

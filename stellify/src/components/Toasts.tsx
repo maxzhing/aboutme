@@ -16,7 +16,8 @@ export function Toasts() {
   const dismiss = useStore((s) => s.dismissEvent);
   const equipped = useStore((s) => s.pet.equipped);
   const pet = useStore((s) => s.pet);
-  // inside lessons and practice the top of the screen holds the question, so pop-ups sit at the bottom
+  // inside lessons and practice the top of the screen holds the question, so pop-ups sit at the bottom; on phones they
+  // always do, since at the top they covered the page heading
   const low = /^\/(learn\/|practice\/session|daily|speed|arena)/.test(usePathname());
   useEffect(() => {
     if (!events.length) return;
@@ -24,7 +25,7 @@ export function Toasts() {
     return () => timers.forEach(clearTimeout);
   }, [events, dismiss]);
   return (
-    <div className={`pointer-events-none fixed left-1/2 ${low ? 'bottom-4' : 'top-16'} z-[60] flex w-[min(92vw,340px)] -translate-x-1/2 flex-col gap-2`} role="status" aria-live="polite">
+    <div className={`pointer-events-none fixed left-1/2 ${low ? 'bottom-4' : 'bottom-4 sm:bottom-auto sm:top-16'} z-[60] flex w-[min(92vw,340px)] -translate-x-1/2 flex-col gap-2`} role="status" aria-live="polite">
       <AnimatePresence>
         {events.slice(-2).map((e) => (
           <motion.div key={e.key} layout initial={{ opacity: 0, y: -12, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, x: 30 }}

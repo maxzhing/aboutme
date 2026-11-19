@@ -1,7 +1,7 @@
 import { lazy, type ComponentType } from 'react';
 import Link from 'next/link';
 import { DashboardPage } from './pages/Dashboard';
-import { DiagnosticPage, OnboardingPage } from './pages/Onboarding';
+import { DiagnosticPage, OnboardingPage, PlanReadyPage } from './pages/Onboarding';
 const CurriculumPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m.CurriculumPage })));
 const GrammarPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m.GrammarPage })));
 const LessonPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m.LessonPage })));
@@ -69,6 +69,7 @@ const Rw = () => <CurriculumPage section="rw" />;
 export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/$/, component: DashboardPage },
   { pattern: /^\/onboarding$/, component: OnboardingPage },
+  { pattern: /^\/onboarding\/plan$/, component: PlanReadyPage },
   { pattern: /^\/path$/, component: PathMath },
   { pattern: /^\/path\/rw$/, component: PathRw },
   { pattern: /^\/path\/set$/, component: PathSetPage },

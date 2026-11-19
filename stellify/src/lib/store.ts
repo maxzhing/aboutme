@@ -390,10 +390,11 @@ export const useStore = create<Store>()(
         },
         finishDiagnostic: () => apply((s) => {
           const now = Date.now();
-          if (s.profile.diagnosticAt) return { state: s };
+          // a retake moves the time forward, so today's plan is rebuilt from the new results (XP only the first time)
+          if (s.profile.diagnosticAt) return { state: { ...s, profile: { ...s.profile, diagnosticAt: now } } };
           let st: AppState = { ...s, profile: { ...s.profile, diagnosticAt: now } };
-          const g = grant(st, XP_REWARD.diagnostic, now, 'Completed the diagnostic');
-          st = { ...g.state, plan: generatePlan(g.state, getQ, now), planDone: {} };
+          const g = grant(st, XP_REWARD.diagnostic, now, 'Completed the placement check');
+          st = { ...g.state };
           const a = post(st, now);
           return { state: a.state, events: [...g.events, ...a.events] };
         }),

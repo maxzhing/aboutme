@@ -48,7 +48,7 @@ export function SpeedPage() {
   const recordArena = useStore((s) => s.recordArena);
   const [section, setSection] = useState<Section | null>(null);
   const [result, setResult] = useState<SessionResult | null>(null);
-  const qids = useMemo(() => (section ? shuffle(QUESTIONS.filter((q) => q.section === section && q.difficulty !== 'very-hard'), rng(`speed-${Date.now()}`)).slice(0, 10).map((q) => q.id) : []), [section]);
+  const qids = useMemo(() => (section ? shuffle(QUESTIONS.filter((q) => q.section === section && (q.difficulty === 'medium' || q.difficulty === 'hard')), rng(`speed-${Date.now()}`)).slice(0, 10).map((q) => q.id) : []), [section]);
   const analyze = (r: SessionResult) => {
     const rows = r.rows.map((x) => ({ ...x, q: getQuestion(x.qid)! }));
     const fast = rows.filter((x) => x.ms <= x.q.time * 1000), slow = rows.filter((x) => x.ms > x.q.time * 1000);
@@ -94,8 +94,8 @@ export function SpeedPage() {
 }
 
 const ARENA = [
-  { id: 'blitz-math', name: 'Math Blitz', desc: 'As many Math questions as you can in 8 minutes.', n: 12, ms: 8 * 60_000, pick: () => QUESTIONS.filter((q) => q.section === 'math' && q.difficulty !== 'very-hard') },
-  { id: 'blitz-rw', name: 'Reading Blitz', desc: 'As many Reading & Writing questions as you can in 8 minutes.', n: 12, ms: 8 * 60_000, pick: () => QUESTIONS.filter((q) => q.section === 'rw' && q.difficulty !== 'very-hard') },
+  { id: 'blitz-math', name: 'Math Blitz', desc: 'As many Math questions as you can in 8 minutes.', n: 12, ms: 8 * 60_000, pick: () => QUESTIONS.filter((q) => q.section === 'math' && (q.difficulty === 'medium' || q.difficulty === 'hard')) },
+  { id: 'blitz-rw', name: 'Reading Blitz', desc: 'As many Reading & Writing questions as you can in 8 minutes.', n: 12, ms: 8 * 60_000, pick: () => QUESTIONS.filter((q) => q.section === 'rw' && (q.difficulty === 'medium' || q.difficulty === 'hard')) },
   { id: 'gauntlet', name: 'Hardest-Question Gauntlet', desc: 'Ten very hard questions from both sections. No clock.', n: 10, ms: 0, pick: () => QUESTIONS.filter((q) => q.difficulty === 'very-hard') },
   { id: 'sprint', name: 'Mixed Sprint', desc: 'Fifteen mixed questions in 18 minutes, like the end of a module.', n: 15, ms: 18 * 60_000, pick: () => QUESTIONS },
 ];

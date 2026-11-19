@@ -19,6 +19,17 @@ Status: todo / in progress / done / blocked. Updated after every commit.
 - [x] done: 10a. Hosted web build (../sat): landing 96/100/100/100, app Path page 89 (median of 3)/100/100/100 on Lighthouse mobile (uncompressed local server); offline after one visit (e2e/web.spec.ts)
 - [x] done: 10b. CI (.github/workflows/stellify.yml), content linter (e2e/content-lint.spec.ts), README, DESIGN.md, METHODOLOGY.md, CONTRIBUTING.md
 
+## Phase 4: critique and custom plan (owner request, 2026-11-19)
+- [x] done: Harsh critique of every feature (`CRITIQUE.md`): a walk-through on a phone and 400 synthetic students run through the app's own code (`scripts/sim/`)
+- [x] done: Start-up questions before anything else (grade, math class, scores, test date, goal, time, what feels hard, situation), all used by the plan
+- [x] done: Adaptive 16-question placement check (replaces the fixed 28-question diagnostic)
+- [x] done: Student model for every skill; the coach builds one custom plan per student, re-planned every morning; one Today list on the dashboard, the Path and My plan
+- [x] done: Practice, review and redos aimed at the student's level; out-of-reach questions held back
+- [x] done: Menu reordered, extras folded (nothing deleted)
+- [ ] owner decision: no Easy tier (written, then removed on request)
+- [x] done: pop-ups no longer cover headings on phones
+- [ ] not done: a contents list for Grammar and Hacks; a level-aware hard-questions quest; real students
+
 ## Phase 3: QA
 - [x] done: Lighthouse (landing 96/100/100/100; app Path 86–90/100/100/100, local uncompressed), axe 0 serious/critical on 49 routes × 2 themes, keyboard tests, no overflow or console errors at 320 and 640 px (200% zoom), reduced motion (global rule; not separately re-tested on the new Path animation), offline (web build e2e), migration (unit tests), export/import (existing e2e)
 - [x] done: Personal copy rebuilt and pushed to `satstudy` branch claude/sweet-gates-ev8uj4 (privacy checked twice right before)

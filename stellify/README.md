@@ -58,7 +58,7 @@ New in this release (details in DESIGN.md, METHODOLOGY.md and DECISIONS.md):
   per test from the SAT blueprint × accuracy still to gain × points per question at your level), and a forecast
   says whether the estimate is really moving: it needs 4+ days over 2+ weeks, calls a trend clear only when it is
   bigger than twice its own noise, and only then projects it to your test date, as a widening range.
-- Diagnostic, timed modules, full-length mock exams with module routing, 30-day study plan and calendar.
+- Start-up questions, an adaptive placement check and a custom plan per student (re-planned daily; see CRITIQUE.md), timed modules, full-length mock exams with module routing.
 - An exam simulator that follows the test-day workflow: a lock-in screen, directions at the start of each section
   (reopenable), a "Question X of Y" navigator showing answered, unanswered and flagged questions, mark for review,
   answer elimination, highlights and notes, a calculator docked beside Math questions instead of covering them, a

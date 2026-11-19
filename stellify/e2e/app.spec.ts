@@ -35,22 +35,48 @@ async function answerCurrent(page: Page, correct: boolean, card = 'question-card
 /** `thinkMs` simulates real thinking time: answers given in under five seconds are treated as guesses and earn almost no XP. */
 async function solve(page: Page, correct: boolean, thinkMs = 0) { const id = await answerCurrent(page, correct); if (thinkMs) await page.clock.fastForward(thinkMs); await page.getByTestId('check').click(); await expect(page.getByTestId('explanation')).toBeVisible(); return id; }
 
-test('onboarding collects goals and leads to the Path, and the dashboard greets by name', async ({ page }) => {
+test('start-up questions and the adaptive placement check build a plan for this student, and the dashboard follows it', async ({ page }) => {
   const errors = watch(page);
   await go(page, '/');
-  await expect(page.getByRole('heading', { name: /Meet your study companion/ })).toBeVisible(); // first visit is redirected to onboarding
-  await page.getByLabel(/What should your companion call you/).fill('Sam');
-  await page.getByRole('button', { name: 'Continue' }).click();
-  await page.getByLabel(/Current SAT/).fill('1200');
-  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByTestId('intake-welcome')).toBeVisible(); // first visit is redirected to the start-up questions
+  await page.getByTestId('intake-next').click();
+  await page.getByRole('button', { name: '9th grade' }).click();
+  await page.getByRole('button', { name: /^Algebra 1/ }).click();
+  await page.getByTestId('intake-next').click();
+  await page.getByRole('button', { name: 'The PSAT' }).click();
+  await page.getByLabel(/Math score/).fill('420');
+  await page.getByLabel(/Reading .*score/).fill('560');
+  await page.getByRole('button', { name: 'In 1 to 3 months' }).click();
+  await page.getByTestId('intake-next').click();
+  await expect(page.getByText('Goal score: 1080')).toBeVisible(); // about 100 above the PSAT total
   await page.getByRole('button', { name: '30 min' }).click();
-  await page.getByRole('button', { name: 'Continue' }).click();
-  await page.getByRole('button', { name: 'Go to my Path' }).click();
-  await expect(page.getByTestId('path-page')).toBeVisible();
-  await expect(page.getByTestId('today')).toBeVisible();
+  await page.getByTestId('intake-next').click();
+  await page.getByTestId('hard-geometry').click();
+  await page.getByTestId('intake-next').click();
+  await page.getByRole('button', { name: /I run out of time/ }).click();
+  await page.getByLabel(/nickname/).fill('Sam');
+  await page.getByTestId('intake-to-placement').click();
+  // placement: no skill or difficulty labels, an honest "not learned yet", and it can stop early
+  await expect(page.getByTestId('placement')).toBeVisible();
+  await expect(page.getByTestId('placement')).not.toContainText('Very Hard');
+  for (let n = 0; n < 5; n++) {
+    const qid = (await page.getByTestId('question-card').getAttribute('data-qid'))!;
+    const q = KEY[qid];
+    if (q.choices) await page.locator(`[data-testid="question-card"] [data-choice="${'ABCD'[q.answer as number]}"]`).click();
+    else await page.locator(`#spr-${qid}`).fill((q.answer as string[])[0]);
+    await page.getByTestId('placement-next').click();
+    await expect(page.getByTestId('question-card')).not.toHaveAttribute('data-qid', qid);
+  }
+  await page.getByTestId('placement-not-learned').click();
+  await page.getByTestId('placement-stop').click();
+  await expect(page.getByTestId('plan-ready')).toBeVisible();
+  await expect(page.getByTestId('focus-list')).toBeVisible();
+  await expect(page.getByTestId('today-item').first()).toBeVisible();
   await go(page, '/');
   await expect(page.getByTestId('greeting')).toContainText('Sam');
-  await expect(page.getByTestId('mission')).toContainText('Diagnostic');
+  await expect(page.getByTestId('stage-line')).toContainText('goal 1080');
+  await expect(page.getByTestId('today')).toBeVisible();
+  await expect(page.getByTestId('mission')).toHaveCount(0); // one list of what to do, not two
   await expect(page.getByTestId('pet-card')).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -177,9 +203,8 @@ test('study plan, lessons, tutor fallback, vocabulary, notes, search, theme and 
   const errors = watch(page);
   await boot(page);
   await go(page, '/calendar');
-  await page.getByTestId('make-plan').click();
-  await expect(page.getByText(/Your 30-day plan/)).toBeVisible();
-  await expect(page.getByText('Week 4')).toBeVisible();
+  await expect(page.getByTestId('why-plan')).toBeVisible();
+  await expect(page.getByTestId('day-plan')).toBeVisible();
 
   await go(page, '/learn/bnd?view=notes');
   for (const h of ['Start here', 'The full explanation', 'Important rules', 'Worked examples', 'Common mistakes', 'SAT shortcuts', 'Practice by difficulty', 'Mastery']) await expect(page.getByRole('heading', { name: h })).toBeVisible();
@@ -236,7 +261,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(42);
+  expect(links.length).toBe(40); // 39 menu items (extras in folded groups, still in the page) plus Settings
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();

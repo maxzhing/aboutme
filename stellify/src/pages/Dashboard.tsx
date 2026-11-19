@@ -7,12 +7,8 @@ import { getQuestion } from '@/data/questions';
 import { snapshot, useStore } from '@/lib/store';
 import { useLevel, useOverview, useSkillStats, useStreak, useWeekRhythm } from '@/lib/hooks';
 import { accuracyBlocks, weekMinutes } from '@/lib/engine/analytics';
-import { findWeaknesses } from '@/lib/engine/adaptive';
-import { todaysMission } from '@/lib/engine/plan';
 import { CHEST, dailyQuests } from '@/lib/engine/quests';
 import { VISUAL_LESSONS } from '@/data/visual-lessons';
-import { COURSES } from '@/data/courses';
-import { SkillIcon } from '@/components/SkillIcon';
 import { sfx } from '@/lib/sfx';
 import { Confetti } from '@/components/Confetti';
 import { fmtRange } from '@/lib/engine/scoring';
@@ -25,8 +21,7 @@ import { eggOf, petName } from '@/lib/engine/companions';
 import { Habitat, Pet, type PetMood } from '@/components/Pet';
 import { Card, Progress, Ring } from '@/components/ui';
 import { Glyph } from '@/components/Glyph';
-import { TodayPanel } from '@/components/TodayPanel';
-import { usePathModel, usePathStars } from './Path';
+import { CoachToday, FocusList, StageLine, useCoach } from '@/components/Coach';
 
 export const chartTip = { contentStyle: { background: 'rgb(var(--surface))', border: '1px solid rgb(var(--line))', borderRadius: 14, fontSize: 12, color: 'rgb(var(--ink))', boxShadow: '0 12px 30px -14px rgb(var(--shadow) / .45)', padding: '8px 12px' }, labelStyle: { color: 'rgb(var(--muted))' }, cursor: { fill: 'rgb(var(--raised))', opacity: 0.5 } };
 export const axis = { tick: { fill: 'rgb(var(--faint))', fontSize: 11 }, axisLine: { stroke: 'rgb(var(--line))' }, tickLine: false as const };
@@ -51,7 +46,7 @@ export function DashboardPage() {
   const stats = useSkillStats();
   const streak = useStreak();
   const level = useLevel();
-  const pathModel = usePathModel();
+  const coach = useCoach(1);
   const week = useWeekRhythm();
   const [more, setMore] = useState(false);
   const [allTasks, setAllTasks] = useState(false);
@@ -62,12 +57,6 @@ export function DashboardPage() {
 
   useEffect(() => { if (!s.profile.onboardedAt && s.attempts.length === 0) router.replace('/onboarding'); }, [s.profile.onboardedAt, s.attempts.length, router]);
 
-  const mission = useMemo(() => todaysMission(snapshot(), getQuestion, now),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [s.attempts.length, s.plan, s.planDone, today]);
-  const weak = useMemo(() => findWeaknesses(snapshot(), getQuestion, 1)[0],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [s.attempts.length]);
   const blocks = useMemo(() => (more ? accuracyBlocks(snapshot(), 15) : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [s.attempts.length, more]);
@@ -79,14 +68,11 @@ export function DashboardPage() {
   const chestReady = quests.every((q) => q.claimed) && !claimedToday.includes(CHEST.id);
   const chestOpen = claimedToday.includes(CHEST.id);
   const claim = (id: string) => { if (s.claimQuest(id)) { setFire(Date.now()); sfx(id === CHEST.id ? 'win' : 'combo'); } };
-  const { stars: starMap, rec: pathRec } = usePathStars();
-  const totalStars = SKILLS.reduce((n, k) => n + (starMap[k.id] ?? 0), 0);
 
   const est = ov.estimate.total;
   const target = s.profile.targetScore;
   const base = s.profile.currentScore ?? (est ? Math.min(est.mid, target - 10) : undefined);
   const progress = est && base !== undefined ? clamp(((est.mid - Math.min(base, est.mid)) / Math.max(10, target - Math.min(base, est.mid))) * 100, 0, 100) : 0;
-  const daysLeft = s.profile.examDate ? daysBetween(today, s.profile.examDate) : null;
   const todayMin = Math.round((s.activity[today]?.ms ?? 0) / 60000);
   const goal = s.profile.dailyMinutes || 45;
   const lastDay = Object.keys(s.activity).sort().pop();
@@ -94,26 +80,19 @@ export function DashboardPage() {
   const hour = new Date(now).getHours();
   const petMood: PetMood = now - poked < 1400 ? 'celebrate' : s.pet.lastEvent && now - s.pet.lastEvent.at < 20000 ? 'celebrate' : hour >= 23 || hour < 6 || away >= 3 ? 'sleep' : streak.studiedToday ? 'happy' : 'idle';
   const recent = Object.entries(s.achievements).sort((a, b) => b[1] - a[1])[0];
-  const tasks = mission.rest ? [] : mission.tasks;
-  const nextTask = tasks.find((t) => !t.done);
-  const others = tasks.filter((t) => t !== nextTask);
-  const doneCount = tasks.filter((t) => t.done).length;
+  const coachDay = coach.days[0];
+  const restDay = !!coachDay?.rest;
+  const nextTask = coachDay?.tasks.find((t) => !t.done);
   const levels = [0, 1, 2, 3, 4].map((l) => SKILLS.filter((k) => stats[k.id].level === l).length);
   const diffData = DIFFICULTIES.map((d) => ({ name: DIFFICULTY_NAME[d], accuracy: ov.byDifficulty[d].pct, n: ov.byDifficulty[d].n }));
   const greeting = `${away >= 3 ? 'Good to see you again' : 'Welcome back'}${s.profile.name ? `, ${s.profile.name}` : ''}.`;
 
-  // the next lessons, in Path order, starting at the Path's recommended step
-  const pathSkills = (() => {
-    const math = SKILLS.filter((k) => k.section === 'math');
-    const start = Math.max(0, math.findIndex((k) => k.id === pathRec.math));
-    return [...math.slice(start), ...math.slice(0, start)].filter((k) => (starMap[k.id] ?? 0) < 3).slice(0, 3);
-  })();
   const questsLeft = quests.filter((q) => !q.done).length;
   const egg = s.pet.species ? null : eggOf(s);
   const say = egg ? (egg.ready ? 'Your egg is wiggling! Tap it to hatch your companion.' : `Your egg is ${Math.round(egg.pct * 100)}% warm. ${egg.lessons < egg.need.lessons ? 'Finish a lesson' : 'Answer a few questions'} to help it hatch!`)
     : away >= 3 ? 'I missed you! Let’s warm up with one quick lesson.'
     : chestReady ? 'All three quests done. Your chest is ready!'
-    : mission.rest ? 'Rest day. I’ll be here if you want a bonus round.'
+    : restDay ? 'Rest day. I’ll be here if you want a bonus round.'
     : streak.studiedToday ? (questsLeft ? `Nice work today. ${questsLeft} quest${questsLeft === 1 ? '' : 's'} to go!` : 'Everything done today. You are on fire!')
     : nextTask ? `Ready? First up: ${nextTask.title}.` : 'Ready when you are!';
   const poke = () => { setPoked(Date.now()); sfx('tap'); s.carePet('pet'); };
@@ -123,47 +102,9 @@ export function DashboardPage() {
       <Confetti fire={fire} />
       <header className="page-head">
         <h1 className="text-[32px] leading-tight sm:text-[40px]" data-testid="greeting">{greeting}</h1>
-        <p className="mt-2 text-[15px] text-muted" data-num>{daysLeft !== null && daysLeft >= 0 ? `${daysLeft === 0 ? 'Test day is today' : `${daysLeft} days to your SAT`} · ` : ''}target {target} · {todayMin} of {goal} min today</p>
+        <div className="mt-2"><StageLine plan={coach} /></div>
       </header>
-      <TodayPanel items={pathModel.today} weekDone={week.done} weekPlanned={week.planned} />
-      <p className="-mt-3 text-[14px] text-muted">The <Link href="/path" className="text-accent underline">Path</Link> shows every skill and why this is next.</p>
-
-      {/* the study plan's next task */}
-      <section className="card overflow-hidden p-0" data-testid="mission">
-        <div className="grid sm:grid-cols-[1fr_auto]">
-          <div className="p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-accent">{mission.rest ? 'Study plan · rest day' : nextTask ? `Study plan · ${doneCount} of ${tasks.length} done today` : 'Study plan · today is complete'}</p>
-            {mission.rest ? (
-              <><h2 className="mt-1.5 text-xl font-bold">Take the day off</h2><p className="mt-1 text-sm text-muted">Recovery is part of the plan. Anything you do today is a bonus.</p><Link href="/practice/session?mode=smart&n=5" className="btn-ghost mt-4">Optional: 5 light questions</Link></>
-            ) : nextTask ? (
-              <><h2 className="mt-1.5 text-xl font-bold">{nextTask.title}</h2><p className="mt-1 text-sm text-muted">{nextTask.detail ? `${nextTask.detail} · ` : ''}about {nextTask.minutes} min</p>
-                <div className="mt-4 flex flex-wrap items-center gap-2"><Link href={nextTask.href} className="btn-primary !px-5 !py-3 text-base">Start<ArrowRight size={18} /></Link><button className="btn-quiet" onClick={() => s.togglePlanTask(nextTask.id)}>Mark as done</button></div></>
-            ) : (
-              <><h2 className="mt-1.5 text-xl font-bold">You finished today’s mission</h2><p className="mt-1 text-sm text-muted">Stop here with a clear conscience, or keep the momentum going.</p><Link href="/practice/session?mode=smart&n=10" className="btn-primary mt-4">Keep practicing<ArrowRight size={16} /></Link></>
-            )}
-          </div>
-          <div className="flex items-center justify-center border-t border-line bg-raised/40 px-8 py-5 sm:border-l sm:border-t-0">
-            <Ring value={clamp((todayMin / goal) * 100, 0, 100)} size={96} stroke={8} label={`Daily goal: ${todayMin} of ${goal} minutes`}><div className="text-center leading-tight"><div className="font-display text-xl">{todayMin}</div><div className="text-[10px] font-medium text-muted">of {goal} min</div></div></Ring>
-          </div>
-        </div>
-        {others.length > 0 && (
-          <div className="border-t border-line">
-            <button className="flex w-full items-center justify-between px-6 py-3 text-sm text-muted hover:text-ink" onClick={() => setAllTasks(!allTasks)} aria-expanded={allTasks}><span>{allTasks ? 'Hide' : 'See'} the rest of today ({others.length} more)</span><ChevronDown size={16} className={allTasks ? 'rotate-180' : ''} /></button>
-            {allTasks && (
-              <ul className="divide-y divide-line px-6 pb-2">
-                {others.map((t) => (
-                  <li key={t.id} className="flex items-center gap-3 py-2.5">
-                    <button onClick={() => s.togglePlanTask(t.id)} aria-pressed={!!t.done} aria-label={`Mark "${t.title}" ${t.done ? 'not done' : 'done'}`} className="shrink-0">{t.done ? <CheckCircle2 className="text-ok" size={19} /> : <Circle className="text-faint" size={19} />}</button>
-                    <span className={`min-w-0 flex-1 truncate text-sm ${t.done ? 'text-muted line-through' : ''}`}>{t.title}</span>
-                    <span className="text-xs tabular-nums text-muted">{t.minutes} min</span>
-                    <Link href={t.href} className="text-sm font-semibold text-accent hover:underline">Start</Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-      </section>
+      <CoachToday plan={coach} />
       <section className="card overflow-hidden p-0" data-testid="pet-card" aria-label="Your companion">
         <Habitat id={s.pet.equipped.habitat} className="!rounded-none">
           <div className="flex h-28 items-end gap-2 px-4 sm:px-8">
@@ -192,19 +133,9 @@ export function DashboardPage() {
             {chestReady && <button className="btn-primary !px-3 !py-1.5 text-sm" onClick={() => claim(CHEST.id)} data-testid="chest">Open +{CHEST.xp} XP</button>}
           </div>
         </Card>
-        <Card data-testid="path">
-          <div className="flex items-baseline justify-between"><h2 className="font-bold">Your lesson path</h2><Link href="/learn" className="text-sm font-semibold text-accent hover:underline">Whole map →</Link></div>
-          <ul className="mt-3 space-y-2">
-            {pathSkills.map((k, i) => (
-              <li key={k.id}>
-                <Link href={`/learn/${k.id}`} className={`flex items-center gap-3 rounded-2xl border p-2.5 transition-[transform,border-color] hover:-translate-y-0.5 ${i === 0 ? 'border-accent/45 bg-accent/[.08]' : 'border-line hover:border-accent/40'}`}>
-                  <SkillIcon skill={k.id} size={44} />
-                  <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{k.short}</span><span className="block truncate text-xs text-muted">{i === 0 && weak?.skill === k.id ? 'Your biggest opportunity right now' : `Full course · ${COURSES[k.id].filter((c) => s.chapters?.[c.id]?.passedAt).length}/${COURSES[k.id].length} chapters · ${MASTERY_LEVELS[stats[k.id].level]}`}</span></span>
-                  {i === 0 ? <span className="btn-primary !px-3 !py-1.5 text-sm"><Play size={14} />Play</span> : <span className="flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= (starMap[k.id] ?? 0) ? 'fill-star text-[rgb(var(--star-edge))]' : 'text-line'} />)}</span>}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <Card data-testid="focus">
+          <div className="flex items-baseline justify-between"><h2 className="font-bold">What your plan is working on</h2><Link href="/calendar" className="text-sm font-semibold text-accent hover:underline">Why →</Link></div>
+          <div className="mt-3">{coach.focus.length ? <FocusList plan={coach} max={3} /> : <p className="text-sm text-muted">Take the placement check and this fills in with the skills that matter most for you.</p>}</div>
         </Card>
       </div>
 
@@ -218,15 +149,6 @@ export function DashboardPage() {
         <div className="mt-5"><div className="mb-1.5 flex justify-between text-xs text-muted"><span>{base !== undefined ? `Start ${base}` : 'Start'}</span><span>Target {target}</span></div><Progress value={progress} label="Progress from starting score to target" /></div>
         <p className="mt-2 text-xs text-faint">{est ? 'An unofficial 80% range from your first tries, not an SAT score. See Analytics for how it works.' : needLine(ov.estimate.status.rw, ov.estimate.status.math)}{!s.profile.diagnosticAt && <> <Link href="/diagnostic" className="font-semibold text-accent hover:underline">Take the diagnostic</Link></>}</p>
       </Card>
-
-      {/* One insight, not a wall of them */}
-      {weak && (
-        <section aria-label="Biggest opportunity" className="flex flex-wrap items-center gap-4 rounded-2xl border border-warn/30 bg-warn/5 p-5">
-          <Brain className="shrink-0 text-warn" size={22} />
-          <p className="min-w-0 flex-1 text-sm">{weak.message}</p>
-          <div className="flex gap-2"><Link href={weak.href} className="btn-primary !py-2">Open lesson</Link><Link href={`/practice/session?mode=skill&skill=${weak.skill}&n=6`} className="btn-ghost !py-2">Practice</Link></div>
-        </section>
-      )}
 
       <nav aria-label="Game modes" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {MODES.map((q) => <Link key={q.label} href={q.href} className="card flex items-center gap-3 p-4 transition-all hover:-translate-y-0.5 hover:border-accent/50"><span className="icon-tile h-9 w-9" aria-hidden><Glyph e={q.icon} size={18} /></span><span className="min-w-0"><span className="block text-sm font-semibold">{q.label}</span><span className="block truncate text-xs text-muted">{q.sub}</span></span></Link>)}

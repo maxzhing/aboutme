@@ -115,9 +115,9 @@ export function SmartPage() {
         <Card>
           <h2 className="font-semibold">How difficulty adapts</h2>
           <ul className="mt-2 space-y-1.5 text-sm text-muted">
-            <li>• High challenge is on by default: smart sets skip medium questions and start at hard.</li>
-            <li>• 50–78% recent accuracy in a skill: hard, then very hard.</li>
-            <li>• Above 78%: very hard. Above 90%: Beyond SAT.</li>
+            <li>• Each question is picked so you have about a 70% chance of knowing how: hard enough to learn from, not so hard it teaches nothing.</li>
+            <li>• Your level in each skill comes from every first try, your placement check and what you told us at the start, newest answers counting most.</li>
+            <li>• Questions far above your level wait until the skill catches up; questions far below it are skipped.</li>
             <li>• Anything you miss or need hints for returns after 1 day, then at growing intervals.</li>
           </ul>
         </Card>

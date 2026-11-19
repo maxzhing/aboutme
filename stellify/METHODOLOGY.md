@@ -94,6 +94,64 @@ ceiling   = headroom × questions per test × points per question
 - **Pacing targets:** 71 s per Reading & Writing question and 95 s per Math question (32 min ÷ 27 and 35 min ÷ 22,
   from the published structure; marked as needing verification in the test-day hub).
 
+## Student model (`src/lib/model/ability.ts`)
+
+Every skill gets an ability estimate on a logit scale (0 ≈ a 500 section score, 1 unit ≈ 110 points) with an
+uncertainty. Each first try counts by how surprising it was for its difficulty tier (medium −0.5, hard 0.3, very hard
+1.0, Beyond SAT 1.8; slope 1.6; a 25% guessing floor on four-choice questions). Answers lose half their weight every 21
+days, a hinted correct answer counts half, and a wrong answer in under 4 seconds is ignored. A skill borrows strength
+from its section (prior: section estimate plus the skill's offset, spread 0.6), so one or two answers already give a
+sensible estimate. Start-up answers set the starting point: a past section score (spread 0.5), grade, a topic that
+"feels hard" (−0.45), a topic the student's math class has not reached or that they marked "not learned yet" (−0.9),
+English as an additional language (−0.25 on three reading skills). Evidence quickly outweighs all of these.
+
+**Within reach.** A question is held back from practice, review and mistake redos when the chance of knowing how is
+under 25%, even after adding one standard deviation to the estimate, so nothing is held back after one or two
+answers. A set aimed at one skill always contains at least four of its most approachable questions.
+
+## Placement check (`src/lib/model/placement.ts`)
+
+Sixteen questions: two per SAT domain, alternating Reading and Writing and Math, never Beyond SAT. Within a domain it
+asks first about skills the student said feel hard, then the most tested. Each question's tier is the one closest to
+a 65% chance of knowing it at the current estimate. It can be stopped at any point.
+
+## Coach (`src/lib/engine/coach.ts`)
+
+- **Stage** from the estimated total: Foundations (under 950), Building (under 1200), Sharpening (under 1400),
+  Polishing. The stage sets the share of time for review (12–14%) and timing work (3–22%, +6 points for "I run out of
+  time").
+- **Allocation:** the study minutes up to the test (at most 6 weeks ahead) go out 30 minutes at a time, each to the
+  skill with the highest expected points for that half hour:
+  questions per test × (accuracy after − accuracy before) × 10 points. Learning per half hour is
+  0.02 + 0.35 × (accuracy still missing), 30% slower for the first hour of a topic not yet taught, and smaller as a
+  skill gets more time. A skill clearly below the student's own level in its section is boosted
+  (× up to 2.6). A skill whose prerequisite is much weaker waits, and a weak prerequisite is moved ahead of the skill
+  that builds on it.
+- **Days:** inside the student's minutes and rest days. Teaching comes first for a topic not yet learned, a weak
+  skill, or a student who said they do not know where to start. Practice is sized to the questions within reach.
+  Worked examples come after 2 or more conceptual misses. Timed modules come later in the plan (from the start for
+  "I run out of time"). Full practice tests only with 90 or more minutes a day. The last two days before the test are
+  light, and there is nothing after test day.
+- **Stability:** today is planned from what was known at the start of the day (or just after a placement check), so
+  it does not change while the student works. Tasks are marked done from activity.
+- **Honesty:** when the goal is above the estimate plus the modelled gain, the plan says so and gives the daily
+  minutes that would make it realistic. The modelled gain is shown as a range (0.5× to 1.3× the model's figure).
+
+## Study simulator (`scripts/sim/`)
+
+`npx tsx scripts/sim/run.ts 400` runs 400 synthetic students through the app's own code (session building,
+answering, Path sets and stars, the plan or coach) for up to 28 days. Assumptions, all in `scripts/sim/model.ts`:
+- the score distribution roughly matches real test takers (median about 1040);
+- each student has two to four weak skills, and topics their math class has not reached are much weaker;
+- self-reports are imperfect: a third of students misname one weak area;
+- a practice question teaches most at about a 70% chance of knowing it, and almost nothing far above or below that;
+- seeing the same question again teaches 30% as much;
+- lessons help weak skills most;
+- the chance of quitting rises with the share of far-too-hard questions in a day.
+
+The results compare versions under the same assumptions. They are not predictions for real students. Results:
+CRITIQUE.md.
+
 ## Not verified
 
 College Board specifics in the test-day hub (device rules, arrival, setup timing, pretest items per module) link

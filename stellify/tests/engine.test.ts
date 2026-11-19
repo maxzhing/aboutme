@@ -1,3 +1,4 @@
+import { estimateAbilities, withinReach } from '@/lib/model/ability';
 import { describe, expect, it } from 'vitest';
 import { ALL_RAW } from '@/data/questions/all';
 import { getQuestion, QUESTIONS } from '@/data/questions';
@@ -212,8 +213,15 @@ describe('adaptive practice', () => {
     const picks = pickSmartSet(s, QUESTIONS, getQuestion, 10, now, { seed: 'x' });
     expect(picks).toHaveLength(10);
     expect(new Set(picks.map((p) => p.qid)).size).toBe(10);
-    expect(picks.some((p) => /Spaced review/.test(p.reason))).toBe(true);
-    expect(picks.filter((p) => getQuestion(p.qid)!.skill === 'bnd').length).toBeGreaterThan(0);
+    // missed every question, medium ones included: those wait for the lessons instead of coming straight back
+    const ab = estimateAbilities(s.attempts, getQuestion, now);
+    expect(picks.every((p) => withinReach(ab, getQuestion(p.qid)!))).toBe(true);
+    // practising that skill on purpose still gives its most approachable questions, so nobody is stuck
+    expect(pickSmartSet(s, QUESTIONS, getQuestion, 6, now, { seed: 'x', skill: 'bnd' }).length).toBeGreaterThanOrEqual(4);
+    // a missed question within reach comes back as spaced review
+    let s2 = initialState();
+    QUESTIONS.filter((x) => x.skill === 'tra').slice(0, 8).forEach((x, i) => { s2 = answer(s2, x, i !== 0, T0 + i * 1000).state; });
+    expect(pickSmartSet(s2, QUESTIONS, getQuestion, 10, now, { seed: 'x' }).some((p) => /Spaced review/.test(p.reason))).toBe(true);
     expect(picks.some((p) => /sharp/.test(p.reason))).toBe(true); // strong skills are not abandoned
     expect(pickSmartSet(s, QUESTIONS, getQuestion, 8, now, { section: 'math', seed: 'y' }).every((p) => getQuestion(p.qid)!.section === 'math')).toBe(true);
   });
@@ -383,11 +391,16 @@ describe('Beyond SAT tier, challenge level and hacks', () => {
     for (const kind of ['m1', 'upper', 'lower'] as const) for (const sec of ['rw', 'math'] as const) expect(buildModule(sec, kind, 'z', QUESTIONS, new Set()).some((id) => getQuestion(id)!.difficulty === 'elite')).toBe(false);
     expect(buildSession({ mode: 'bank', section: 'math', diff: 'elite', n: '40' }, initialState(), QUESTIONS, getQuestion, T0).qids.every((id) => getQuestion(id)!.difficulty === 'elite')).toBe(true);
   });
-  it('skips medium questions in smart practice at high challenge, and includes them at standard', () => {
-    const hi = initialState();
-    expect(pickSmartSet(hi, QUESTIONS, getQuestion, 20, T0, { seed: 'a' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(false);
+  it('skips medium questions only for students who would find them easy, and always includes them at standard', () => {
+    // a new student gets medium questions too: the old rule handed everyone hard questions from the first set
+    const fresh = initialState();
+    expect(pickSmartSet(fresh, QUESTIONS, getQuestion, 20, T0, { seed: 'a', skill: 'tra' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(true);
+    // a strong student at high challenge (the default) skips them; at standard they come back
+    let hi = initialState();
+    QUESTIONS.filter((x) => x.skill === 'tra' && x.difficulty !== 'medium').slice(0, 12).forEach((x, i) => { hi = answer(hi, x, true, T0 - 3 * DAY + i * 1000).state; });
+    expect(pickSmartSet(hi, QUESTIONS, getQuestion, 10, T0, { seed: 'a', skill: 'tra' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(false);
     const std: AppState = { ...hi, settings: { ...hi.settings, challenge: 'standard' } };
-    expect(pickSmartSet(std, QUESTIONS, getQuestion, 20, T0, { seed: 'a' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(true);
+    expect(pickSmartSet(std, QUESTIONS, getQuestion, 30, T0, { seed: 'a', skill: 'tra' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(true);
   });
   it('has a hack card for every skill that questions can show', async () => {
     const { HACKS, hacksFor } = await import('@/data/hacks');
