@@ -2,7 +2,7 @@ import { test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { resolve } from 'node:path';
 const FILE = `file://${resolve(__dirname, '../dist/stellify.html')}`;
-const ROUTES = ['/', '/learn', '/learn/math', '/practice', '/practice/session?mode=single&ids=r-bnd-06', '/practice/smart', '/official', '/mocks', '/analytics', '/mistakes', '/calendar', '/report', '/pet', '/rewards', '/achievements', '/settings', '/resources', '/qc', '/stats', '/stats/st4-2', '/calc/c1-1', '/hacks', '/remix', '/remix?q=m-lin1-01', '/csa', '/micro', '/macro', '/tutor', '/notes', '/vocabulary', '/desmos', '/grammar', '/reference', '/music', '/music/mt1-1', '/music/mt4-2', '/music/mt8-4', '/music/studio'];
+const ROUTES = ['/path', '/path/rw', '/test-day', '/worked', '/worked/lin1', '/predict', '/desmos/lab', '/maintainer', '/about', '/methodology', '/privacy', '/', '/learn', '/learn/math', '/practice', '/practice/session?mode=single&ids=r-bnd-06', '/practice/smart', '/official', '/mocks', '/analytics', '/mistakes', '/calendar', '/report', '/pet', '/rewards', '/achievements', '/settings', '/resources', '/qc', '/stats', '/stats/st4-2', '/calc/c1-1', '/hacks', '/remix', '/remix?q=m-lin1-01', '/csa', '/micro', '/macro', '/tutor', '/notes', '/vocabulary', '/desmos', '/grammar', '/reference', '/music', '/music/mt1-1', '/music/mt4-2', '/music/mt8-4', '/music/studio'];
 /**
  * Full accessibility audit (opt-in): lists every serious or critical axe violation on 33 pages in both themes.
  * The regular suite runs a faster pass/fail version. Run with: AXE_FULL=1 npx playwright test e2e/zz-axe-explore.spec.ts

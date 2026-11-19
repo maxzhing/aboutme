@@ -20,5 +20,7 @@ Status: todo / in progress / done / blocked. Updated after every commit.
 - [x] done: 10b. CI (.github/workflows/stellify.yml), content linter (e2e/content-lint.spec.ts), README, DESIGN.md, METHODOLOGY.md, CONTRIBUTING.md
 
 ## Phase 3: QA
-- [ ] todo: Lighthouse, axe, keyboard, 320 px, 200% zoom, reduced motion, offline, migration, export/import
-- [ ] todo: Personal copy rebuilt and pushed to `satstudy` (after verifying it is private)
+- [x] done: Lighthouse (landing 96/100/100/100; app Path 86–90/100/100/100, local uncompressed), axe 0 serious/critical on 49 routes × 2 themes, keyboard tests, no overflow or console errors at 320 and 640 px (200% zoom), reduced motion (global rule; not separately re-tested on the new Path animation), offline (web build e2e), migration (unit tests), export/import (existing e2e)
+- [x] done: Personal copy rebuilt and pushed to `satstudy` branch claude/sweet-gates-ev8uj4 (privacy checked twice right before)
+- [ ] blocked: Firefox, Safari, iOS Safari, Android Chrome: only Chromium is installed here
+- [ ] owner: see NEEDS-OWNER.md
