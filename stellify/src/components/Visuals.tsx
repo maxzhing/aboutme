@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import type { Seg, Tone, Visual } from '@/data/visual-lessons';
 import { RichText } from './RichText';
 import { cn } from './ui';
+import { Glyph } from './Glyph';
 
 /**
  * Lesson pictures. Every visual is drawn in SVG or styled HTML from a small data spec, so the
@@ -141,7 +142,7 @@ function Sentence({ segs, lift, liftLabel }: { segs: Seg[]; lift?: number[]; lif
         })}
       </p>
       {legend.length > 0 && <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">{legend.map(([label, tone]) => <span key={label} className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted"><span className={cn('h-2.5 w-2.5 rounded-full', DOT[tone])} />{label}</span>)}</div>}
-      {lift && <div className="text-center"><button type="button" className="btn-ghost !py-1.5 text-sm" onClick={() => setOut(!out)} aria-pressed={out}>{out ? 'Put it back' : liftLabel ?? 'Lift it out'}</button>{out && <p className="mt-2 text-sm font-semibold text-ok">What is left still works as a sentence. ✓</p>}</div>}
+      {lift && <div className="text-center"><button type="button" className="btn-ghost !py-1.5 text-sm" onClick={() => setOut(!out)} aria-pressed={out}>{out ? 'Put it back' : liftLabel ?? 'Lift it out'}</button>{out && <p className="mt-2 text-sm font-semibold text-ok">What is left still works as a sentence. <Glyph e="✓" /></p>}</div>}
     </div>
   );
 }
@@ -163,15 +164,15 @@ function Flow({ nodes }: { nodes: [string, string?, Tone?][] }) {
 function Compare({ bad, good, badLabel = 'Trap', goodLabel = 'Fix' }: { bad: string; good: string; badLabel?: string; goodLabel?: string }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
-      <div className="rounded-xl border-2 border-bad/40 bg-bad/5 p-3.5"><div className="mb-1 text-xs font-black uppercase tracking-wide text-bad">✗ {badLabel}</div><div className="text-[15px]"><RichText text={bad} /></div></div>
-      <div className="rounded-xl border-2 border-ok/40 bg-ok/5 p-3.5"><div className="mb-1 text-xs font-black uppercase tracking-wide text-ok">✓ {goodLabel}</div><div className="text-[15px]"><RichText text={good} /></div></div>
+      <div className="rounded-xl border-2 border-bad/40 bg-bad/5 p-3.5"><div className="mb-1 text-xs font-black uppercase tracking-wide text-bad"><Glyph e="✗" /> {badLabel}</div><div className="text-[15px]"><RichText text={bad} /></div></div>
+      <div className="rounded-xl border-2 border-ok/40 bg-ok/5 p-3.5"><div className="mb-1 text-xs font-black uppercase tracking-wide text-ok"><Glyph e="✓" /> {goodLabel}</div><div className="text-[15px]"><RichText text={good} /></div></div>
     </div>
   );
 }
 function Tiles({ items }: { items: [string, string, string][] }) {
   return (
     <div className={cn('grid gap-2.5', items.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2')}>
-      {items.map(([icon, title, text]) => <div key={title} className="rounded-xl border border-line bg-surface p-3 text-center"><div className="text-3xl leading-none" aria-hidden>{icon}</div><div className="mt-1.5 text-sm font-bold"><RichText text={title} /></div><div className="mt-0.5 text-xs text-muted"><RichText text={text} /></div></div>)}
+      {items.map(([icon, title, text]) => <div key={title} className="rounded-xl border border-line bg-surface p-3 text-center"><div className="grid place-items-center text-ink" aria-hidden><Glyph e={icon} size={26} /></div><div className="mt-1.5 text-sm font-bold"><RichText text={title} /></div><div className="mt-0.5 text-xs text-muted"><RichText text={text} /></div></div>)}
     </div>
   );
 }

@@ -31,3 +31,16 @@ export function computeStreak(activity: Record<string, DayActivity>, restDays: n
   }
   return { current, best: Math.max(best, current), studiedToday: active(activity[today]) };
 }
+
+/**
+ * The weekly rhythm shown instead of a daily streak: study days so far this week (Monday to Sunday) against
+ * the days the student planned to study (every day except their rest days). Missing a day is never a reset.
+ */
+export function weekRhythm(activity: Record<string, DayActivity>, restDays: number[], today = dateKey()) {
+  const t = new Date(parseDateKey(today));
+  const monday = addDays(today, -((t.getDay() + 6) % 7));
+  let done = 0;
+  for (let i = 0; i < 7; i++) if (active(activity[addDays(monday, i)])) done++;
+  const planned = Math.max(1, 7 - new Set(restDays.filter((d) => d >= 0 && d <= 6)).size);
+  return { done, planned, monday };
+}

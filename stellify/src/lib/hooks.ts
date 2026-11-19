@@ -4,7 +4,7 @@ import { useStore } from './store';
 import { getQuestion } from '@/data/questions';
 import { computeAllSkillStats } from './engine/mastery';
 import { overview } from './engine/analytics';
-import { computeStreak } from './engine/streak';
+import { computeStreak, weekRhythm } from './engine/streak';
 import { levelFromXp } from './engine/xp';
 import type { AppState } from './types';
 
@@ -28,6 +28,12 @@ export function useStreak() {
   const activity = useStore((s) => s.activity);
   const rest = useStore((s) => s.profile.restDays);
   return useMemo(() => computeStreak(activity, rest), [activity, rest]);
+}
+
+export function useWeekRhythm() {
+  const activity = useStore((s) => s.activity);
+  const rest = useStore((s) => s.profile.restDays);
+  return useMemo(() => weekRhythm(activity, rest), [activity, rest]);
 }
 
 export function useLevel() {

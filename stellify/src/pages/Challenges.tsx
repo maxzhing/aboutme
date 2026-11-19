@@ -33,7 +33,7 @@ export function DailyPage() {
       <Card className="mt-4">
         <div className="flex flex-wrap items-center gap-2"><Badge tone="brand">{SECTION_NAME[q.section]}</Badge><Badge>{SKILL[q.skill].short}</Badge><Badge tone={(q.difficulty === 'very-hard' || q.difficulty === 'elite') ? 'bad' : 'warn'}>{DIFFICULTY_NAME[q.difficulty]}</Badge></div>
         {done ? (
-          <div className="mt-3"><p className="font-semibold">{done.correct ? 'Solved today' : 'Attempted today'} in {fmtDuration(done.ms)}. A new challenge unlocks tomorrow.</p>
+          <div className="mt-3"><p className="font-semibold">{done.correct ? 'Solved today' : 'Attempted today'} in {fmtDuration(done.ms)}. A new challenge arrives tomorrow.</p>
             <div className="mt-3 flex gap-2"><Link href={`/practice/session?mode=single&ids=${done.qid}&back=/daily`} className="btn-ghost">Review today&apos;s question</Link><Link href="/practice/session?mode=smart&n=5" className="btn-primary">Keep going: 5 smart questions</Link></div></div>
         ) : (
           <div className="mt-3"><p className="text-sm text-muted">Today&apos;s challenge is ready. Bonus XP for a correct answer; hints are available but reduce the reward.</p><button className="btn-primary mt-3" onClick={() => setGo(true)} data-testid="start-daily">Start today&apos;s challenge</button></div>

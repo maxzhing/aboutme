@@ -15,9 +15,9 @@ import { Badge, cn } from './ui';
 import { useStore } from '@/lib/store';
 import { chapterFor } from '@/data/courses';
 import { simpleExplanation } from '@/lib/plain';
-import { Sparkles } from './Feel';
 import { canHighlightText, HighlightImage, HighlightText, MarkNotes, useHasHighlighted } from './Highlight';
 import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
+import { Glyph } from './Glyph';
 
 export function QuestionMeta({ q }: { q: Question }) {
   return (
@@ -119,7 +119,7 @@ function TrapCheck({ q }: { q: Question }) {
   const picked = ch.traps.filter((t) => traps[t.id]?.qids.includes(q.id));
   return (
     <div className="rounded-xl border border-warn/40 bg-warn/5 p-3.5" data-testid="trap-check">
-      <div className="mb-2 text-xs font-bold uppercase tracking-wide text-warn">🪤 Which trap got you? Name it so it stops working on you</div>
+      <div className="mb-2 text-xs font-bold uppercase tracking-wide text-warn"><Glyph e="🪤" /> Which trap got you? Name it so it stops working on you</div>
       <div className="flex flex-wrap gap-1.5">{ch.traps.map((t) => <button key={t.id} type="button" onClick={() => log(t.id, q.id)} aria-pressed={picked.includes(t)} className={cn('chip', picked.includes(t) && 'border-warn bg-warn/15 text-ink')} data-testid={`trap-${t.id}`}>{t.name}</button>)}</div>
       {picked.map((t) => <p key={t.id} className="mt-2 text-sm"><b>Fix:</b> <RichText text={t.fix} /> <span className="text-muted">You have fallen for this {traps[t.id].n}×.</span></p>)}
       <Link href={`/learn/${q.skill}/${ch.id}`} className="mt-2 inline-block text-sm font-semibold text-accent hover:underline">Re-learn chapter {ch.n}: {ch.title} →</Link>
@@ -172,7 +172,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
   return (
     <div className="space-y-3" data-testid="explanation">
       <div className={cn('flex flex-wrap items-center gap-x-5 gap-y-1 rounded-xl border p-3.5', ok ? 'border-ok/40 bg-ok/10' : 'border-bad/40 bg-bad/10')} role="status">
-        <span className={cn('relative inline-flex items-center gap-1.5 font-display text-lg font-bold', ok ? 'text-ok pop-in' : 'text-bad shake')} data-testid="verdict">{ok && <Sparkles fire={1} />}{ok ? <Check size={20} /> : <X size={20} />}{ok ? 'Correct' : answer ? 'Incorrect' : 'Not answered'}</span>
+        <span className={cn('relative inline-flex items-center gap-1.5 font-display text-lg font-bold', ok ? 'text-ok' : 'text-bad')} data-testid="verdict">{ok ? <Check size={20} /> : <X size={20} />}{ok ? 'Correct' : answer ? 'Incorrect' : 'Not answered'}</span>
         <span className="text-sm">Your answer: <b data-testid="your-answer">{displayAnswer(q, answer)}</b></span>
         <span className="text-sm">Correct answer: <b data-testid="correct-answer">{correctAnswerLabel(q)}</b></span>
       </div>

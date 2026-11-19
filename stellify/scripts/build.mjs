@@ -16,9 +16,13 @@ mkdirSync(at('.build'), { recursive: true });
 mkdirSync(at('dist'), { recursive: true });
 
 // 1. fonts (latin subsets only) and KaTeX styles with woff2 fonts inlined
-const face = (family, file) => `@font-face{font-family:'${family}';font-style:normal;font-display:swap;font-weight:100 900;src:url(data:font/woff2;base64,${b64(file)}) format('woff2')}`;
-const fonts = face('Inter Variable', 'node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
-  + face('Sora Variable', 'node_modules/@fontsource-variable/sora/files/sora-latin-wght-normal.woff2');
+const face = (family, file, weight = '100 900', style = 'normal') => `@font-face{font-family:'${family}';font-style:${style};font-display:swap;font-weight:${weight};src:url(data:font/woff2;base64,${b64(file)}) format('woff2')}`;
+// Source Serif 4 (headings, passages) and IBM Plex Sans (interface): see DESIGN.md
+const serif = 'node_modules/@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght';
+const plex = (w) => `node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-${w}-normal.woff2`;
+const fonts = face('Source Serif 4 Variable', `${serif}-normal.woff2`, '200 900')
+  + face('Source Serif 4 Variable', `${serif}-italic.woff2`, '200 900', 'italic')
+  + face('IBM Plex Sans', plex(400), '400') + face('IBM Plex Sans', plex(500), '500') + face('IBM Plex Sans', plex(600), '600');
 let katex = readFileSync(at('node_modules/katex/dist/katex.min.css'), 'utf8');
 katex = katex.replace(/src:url\(fonts\/([\w-]+)\.woff2\) format\("woff2"\)(?:,url\(fonts\/[\w-]+\.\w+\) format\("[\w]+"\))*/g,
   (_, name) => `src:url(data:font/woff2;base64,${b64(`node_modules/katex/dist/fonts/${name}.woff2`)}) format("woff2")`);
@@ -44,15 +48,16 @@ const worker = readFileSync(at('node_modules/pdfjs-dist/legacy/build/pdf.worker.
 // the pack is embedded as a JSON block (read by src/data/pack.ts): browsers parse JSON far faster than a huge JS literal
 const packBlock = packFile ? `<script type="application/json" id="stellify-pack">${pack.replace(/</g, '\\u003c')}</script>\n` : '';
 
-const theme = `(function(){try{var t=localStorage.getItem('stellify-theme')||'dark';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){document.documentElement.classList.add('dark');}})();`;
+const theme = `(function(){try{var t=localStorage.getItem('stellify-theme')||'light';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
 const html = `<!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' blob:; worker-src blob:; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; connect-src https://generativelanguage.googleapis.com data: blob:; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src https://www.desmos.com">
 <meta name="description" content="Stellify: free, offline Digital SAT preparation in a single file.">
-<meta name="theme-color" content="#090D1C">
+<meta name="theme-color" content="#F6F3EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14120E" media="(prefers-color-scheme: dark)">
 <title>Stellify — free Digital SAT prep</title>
 <script>${theme}</script>
 <style>${fonts}${katex}${tailwind}</style>

@@ -90,7 +90,7 @@ export function OfficialPage() {
                 {qs.length > 0 && <Progress value={pct(right, qs.length)} className="mt-2" tone="ok" label={`${SECTION_NAME[sec]} official progress`} />}
                 <div className="mt-4 flex flex-1 flex-col justify-end gap-2">
                   {can ? <button className="btn-primary" onClick={() => begin(sec === 'rw' ? 'cb1' : 'cb3', sec === 'rw' ? 'section-rw' : 'section-math')} data-testid={`official-test-${sec}`}><Lock size={15} />Timed test · {mods[0].length + mods[1].length} questions</button>
-                    : qs.length > 0 && <p className="text-xs text-faint">Add at least 6 questions to unlock a timed test.</p>}
+                    : qs.length > 0 && <p className="text-xs text-faint">Add at least 6 questions to make a timed test.</p>}
                   {qs.length > 0 && <Link href={`/practice/session?mode=custom&ids=${qs.filter((q) => !solved.has(q.id)).slice(0, 15).map((q) => q.id).join(',') || qs.slice(0, 15).map((q) => q.id).join(',')}&back=/official`} className="btn-ghost"><Play size={15} />Practice untimed with explanations</Link>}
                 </div>
               </Card>

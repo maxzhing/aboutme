@@ -20,6 +20,7 @@ import { CoursePage } from './Course';
 import { COURSES } from '@/data/courses';
 import { VISUAL_LESSONS } from '@/data/visual-lessons';
 import { Badge, Card, Empty, PageHeader, Ring, Tabs, cn, toneForPct } from '@/components/ui';
+import { Glyph } from '@/components/Glyph';
 
 const LEVEL_TONE = ['default', 'bad', 'warn', 'brand', 'ok'] as const;
 
@@ -36,7 +37,7 @@ export function CurriculumPage({ section }: { section?: Section }) {
   return (
     <div>
       <PageHeader eyebrow="Learn" title={section ? `${SECTION_NAME[section]} Academy` : 'Complete Curriculum'}
-        subtitle={`Every skill on the Digital SAT as a map. Each stop is a full course: step-by-step chapters with pictures, a method, a worked hard problem, the traps, and hard practice. A 5-minute quick lesson is there too. ⭐ ${earned} of ${skills.length * 3} stars · ${mastered} of ${skills.length} skills at Proficient or higher.`}
+        subtitle={`Every skill on the Digital SAT as a map. Each stop is a full course: step-by-step chapters with pictures, a method, a worked hard problem, the traps, and hard practice. A 5-minute quick lesson is there too. ${earned} of ${skills.length * 3} stars · ${mastered} of ${skills.length} skills at Proficient or higher.`}
         actions={<>{section !== 'math' && <Link href="/learn/math" className="btn-ghost">Math Academy</Link>}{section !== 'rw' && <Link href="/learn/rw" className="btn-ghost">Reading &amp; Writing Academy</Link>}{section && <Link href="/learn" className="btn-ghost">All</Link>}</>} />
       {nextUp && (
         <Link href={`/learn/${nextUp.id}`} className="mb-5 flex flex-wrap items-center gap-4 rounded-2xl border-2 border-brand/50 bg-brand/10 p-4 transition-transform hover:-translate-y-0.5" data-testid="next-lesson">
@@ -48,7 +49,7 @@ export function CurriculumPage({ section }: { section?: Section }) {
       <div className="space-y-5">
         {domains.map((d) => { const ks = skillsOfDomain(d.id); const got = ks.reduce((n, k) => n + (stars[k.id] ?? 0), 0); return (
           <section key={d.id} aria-label={d.name} className="card overflow-hidden p-0">
-            <div className="flex flex-wrap items-baseline justify-between gap-x-3 border-b border-line bg-raised/40 px-5 py-3"><h2 className="text-lg font-bold">{d.name}</h2><span className="text-xs text-muted">{SECTION_NAME[d.section]} · about {Math.round(d.weight * 100)}% of the section · <b className="text-gold">⭐ {got}/{ks.length * 3}</b></span></div>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 border-b border-line bg-raised/40 px-5 py-3"><h2 className="text-lg font-bold">{d.name}</h2><span className="text-xs text-muted">{SECTION_NAME[d.section]} · about {Math.round(d.weight * 100)}% of the section · <b className="text-gold"><Glyph e="⭐" /> {got}/{ks.length * 3}</b></span></div>
             <div className="flex flex-wrap justify-center gap-x-3 gap-y-5 px-3 py-6">
               {ks.map((k, i) => { const st = stats[k.id]; const n = stars[k.id] ?? 0; const isNext = nextUp?.id === k.id; return (
                 <Link key={k.id} href={`/learn/${k.id}`} className={cn('group flex w-[112px] flex-col items-center text-center', i % 2 === 1 && 'sm:translate-y-5')} data-testid={`skill-${k.id}`} aria-label={`${k.name}: ${n} of 3 stars, ${MASTERY_LEVELS[st.level]}`}>
@@ -59,7 +60,7 @@ export function CurriculumPage({ section }: { section?: Section }) {
                   </span>
                   <span className="mt-1.5 flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= n ? 'fill-gold text-gold' : 'text-line'} />)}</span>
                   <span className="mt-1 text-xs font-semibold leading-tight">{k.short}</span>
-                  <span className="text-[10px] text-muted">{COURSES[k.id].filter((c) => chaptersDone[c.id]?.passedAt).length}/{COURSES[k.id].length} chapters{st.n ? ` · ${pct(st.correct, st.n)}%` : ''}</span>
+                  <span className="text-[10px] text-muted">{COURSES[k.id].filter((c) => chaptersDone[c.id]?.passedAt).length} of {COURSES[k.id].length} chapters<br />{st.n ? `${st.correct} of ${st.n} right` : 'no answers yet'}</span>
                 </Link>
               ); })}
             </div>
@@ -122,7 +123,7 @@ function LessonNotes({ skill }: { skill: string }) {
             <p className="text-xs text-faint">Try each example yourself before opening the solution.</p>
           </Section_>
           <Section_ n={5} title="Common mistakes"><ul className="space-y-2">{l.mistakes.map((r, i) => <li key={i} className="flex gap-2.5"><span className="font-bold text-bad">✗</span><span><RichText text={r} /></span></li>)}</ul></Section_>
-          <Section_ n={6} title="SAT shortcuts"><ul className="space-y-2">{l.shortcuts.map((r, i) => <li key={i} className="flex gap-2.5"><span className="font-bold text-gold">★</span><span><RichText text={r} /></span></li>)}</ul></Section_>
+          <Section_ n={6} title="SAT shortcuts"><ul className="space-y-2">{l.shortcuts.map((r, i) => <li key={i} className="flex gap-2.5"><Star size={15} aria-hidden className="mt-1 shrink-0 fill-current text-accent" /><span><RichText text={r} /></span></li>)}</ul></Section_>
           {rules.length > 0 && <Card><h2 className="mb-2 text-lg font-bold">Related grammar rules</h2><div className="flex flex-wrap gap-2">{rules.map((g) => <Link key={g.id} href={`/grammar#${g.id}`} className="chip !py-1 hover:text-ink">{g.title}</Link>)}</div></Card>}
           <Card>
             <h2 className="mb-1 text-lg font-bold">Practice by difficulty</h2>
@@ -178,8 +179,8 @@ export function GrammarPage() {
             <p className="mt-2"><b>Rule.</b> {g.rule}</p>
             <p className="mt-1.5 text-sm text-muted"><b className="text-ink">Why.</b> {g.why}</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <div className="rounded-xl border border-ok/30 bg-ok/5 p-3"><div className="mb-1 text-xs font-bold uppercase tracking-wide text-ok">Correct</div><ul className="space-y-1 font-serif text-[15px]">{g.correct.map((c) => <li key={c}>✓ {c}</li>)}</ul></div>
-              <div className="rounded-xl border border-bad/30 bg-bad/5 p-3"><div className="mb-1 text-xs font-bold uppercase tracking-wide text-bad">Incorrect</div><ul className="space-y-1 font-serif text-[15px]">{g.incorrect.map((c) => <li key={c}>✗ {c}</li>)}</ul></div>
+              <div className="rounded-xl border border-ok/30 bg-ok/5 p-3"><div className="mb-1 text-xs font-bold uppercase tracking-wide text-ok">Correct</div><ul className="space-y-1 font-serif text-[15px]">{g.correct.map((c) => <li key={c}><Glyph e="✓" /> {c}</li>)}</ul></div>
+              <div className="rounded-xl border border-bad/30 bg-bad/5 p-3"><div className="mb-1 text-xs font-bold uppercase tracking-wide text-bad">Incorrect</div><ul className="space-y-1 font-serif text-[15px]">{g.incorrect.map((c) => <li key={c}><Glyph e="✗" /> {c}</li>)}</ul></div>
             </div>
             <p className="mt-3 text-sm"><b>On the SAT.</b> <span className="text-muted">{g.sat}</span></p>
             <p className="mt-1 text-sm"><b className="text-bad">Trap.</b> <span className="text-muted">{g.trap}</span></p>

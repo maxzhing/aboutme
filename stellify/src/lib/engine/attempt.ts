@@ -56,7 +56,7 @@ export function unlockAchievements(s: AppState, getQ: (id: string) => Question |
   }
   const last = ACHIEVEMENT[ids[ids.length - 1]];
   return {
-    state: { ...s, achievements, pet: { ...s.pet, coins: s.pet.coins + coins, lastEvent: { kind: 'achievement', at: now, text: `Unlocked “${last.title}”` } } },
+    state: { ...s, achievements, pet: { ...s.pet, coins: s.pet.coins + coins, lastEvent: { kind: 'achievement', at: now, text: `Earned “${last.title}”` } } },
     events,
   };
 }

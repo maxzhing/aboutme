@@ -235,7 +235,7 @@ export function RewardsPage() {
                 <button className="w-full text-left" onClick={() => setPreview(i)}><div className="flex items-center justify-between gap-2"><h3 className="font-semibold">{i.name}</h3>{owned ? <Badge tone="ok">Owned</Badge> : <Badge tone="gold"><Sparkles size={11} />{i.price}</Badge>}</div><p className="mt-1 text-xs text-muted">{i.desc}</p></button>
                 <div className="mt-3">
                   {owned ? <button className={on ? 'btn-ghost w-full !py-1.5' : 'btn-primary w-full !py-1.5'} onClick={() => equip(i.slot, on && i.slot !== 'habitat' ? undefined : i.id)}>{on ? (i.slot === 'habitat' ? 'In use' : 'Take off') : 'Equip'}</button>
-                    : locked ? <button className="btn-ghost w-full !py-1.5" disabled><Lock size={14} />Unlocks at level {i.minLevel}</button>
+                    : locked ? <button className="btn-ghost w-full !py-1.5" disabled><Lock size={14} />Available at level {i.minLevel}</button>
                     : <button className="btn-primary w-full !py-1.5" disabled={!afford} onClick={() => { if (buy(i.id)) setPreview(null); }} data-testid={`buy-${i.id}`}>{afford ? `Buy for ${i.price}` : `Need ${i.price - pet.coins} more`}</button>}
                 </div>
               </Card>
@@ -252,8 +252,8 @@ export function AchievementsPage() {
   const n = Object.keys(got).length;
   return (
     <div className="space-y-4">
-      <PageHeader eyebrow="Companion" title="Achievements" subtitle={`${n} of ${ACHIEVEMENTS.length} unlocked. Achievements are awarded automatically the moment you earn them, each with a Stardust bonus.`} />
-      <Progress value={(n / ACHIEVEMENTS.length) * 100} label="Achievements unlocked" />
+      <PageHeader eyebrow="Companion" title="Achievements" subtitle={`${n} of ${ACHIEVEMENTS.length} earned. Achievements are awarded automatically the moment you earn them, each with a Stardust bonus.`} />
+      <Progress value={(n / ACHIEVEMENTS.length) * 100} label="Achievements earned" />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {ACHIEVEMENTS.map((a) => { const at = got[a.id]; const Icon = ICON[a.icon] ?? Award; return (
           <Card key={a.id} className={cn('flex gap-3 !p-4', !at && 'border-dashed')} data-testid={`ach-${a.id}`} data-unlocked={!!at}>

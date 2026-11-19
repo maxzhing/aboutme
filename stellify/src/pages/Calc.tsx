@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Piano, ArrowLeft, ArrowRight, BookOpen, CalendarDays, Check, ChevronDown, Eye, GraduationCap, Image as ImageIcon, Languages, Lightbulb, Lock, MessageCircleQuestion, NotebookPen, Play, Presentation, RotateCcw, Sparkles, Sprout, Target, TriangleAlert, Wrench, X } from 'lucide-react';
+import { Piano, ArrowLeft, ArrowRight, BookOpen, CalendarDays, Check, ChevronDown, Eye, GraduationCap, Image as ImageIcon, Languages, Lightbulb, Lock, MessageCircleQuestion, NotebookPen, Play, Presentation, RotateCcw, Sparkles, Sprout, Target, TriangleAlert, Wrench, X, Star } from 'lucide-react';
 import { createContext, useContext, useMemo, useState } from 'react';
 import { PASS, answerLabel, calcCorrect, noteText, type CalcLesson, type CalcProblem, type LessonTutor, type Note } from '@/data/calc';
 import { KeysNote, ListenButton, Score, TaskView, TryIt } from '@/components/music/MusicBits';
@@ -19,6 +19,7 @@ import { HighlightText, MarkNotes } from '@/components/Highlight';
 import { Pet } from '@/components/Pet';
 import { Confetti } from '@/components/Confetti';
 import { Badge, Card, Empty, Progress, Ring, cn } from '@/components/ui';
+import { Glyph } from '@/components/Glyph';
 
 const UNIT_COLOR = ['#475569', '#1D4ED8', '#4338CA', '#6D28D9', '#BE185D', '#B45309', '#047857', '#0369A1', '#15803D', '#7E22CE', '#B91C1C'];
 const UnitTile = ({ n, size = 48 }: { n: number; size?: number }) => (
@@ -52,7 +53,6 @@ function CourseHome() {
   return (
     <div className="mx-auto max-w-5xl space-y-6" data-testid="calc-home">
       <section className="card-hero p-6 sm:p-8">
-        <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" aria-hidden />
         <div className="relative flex flex-wrap items-center gap-6">
           <div className="hidden sm:block"><Pet mood="study" size={120} /></div>
           <div className="min-w-0 flex-1">
@@ -60,7 +60,7 @@ function CourseHome() {
             <h1 className="mt-1 text-3xl font-bold leading-tight sm:text-4xl">{course.name}</h1>
             <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-white/90">{course.blurb} Pass each lesson at {Math.round(PASS * 100)}% before moving on.</p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {next ? <Link href={`/${course.id}/${next.id}`} className="btn !bg-white !px-5 !py-3 text-[15px] !text-[#2A2470] shadow-[0_12px_30px_-12px_rgba(0,0,0,0.6)] hover:-translate-y-px" data-testid="calc-continue"><Play size={17} />{done.length ? 'Continue' : 'Start'}: {next.unit}.{next.n} {next.title}</Link> : <span className="rounded-xl bg-white/15 px-4 py-2.5 text-sm font-bold">All lessons mastered ✓</span>}
+              {next ? <Link href={`/${course.id}/${next.id}`} className="btn !bg-[rgb(var(--surface))] !px-5 !py-3 text-[15px] !text-ink hover:!bg-[rgb(var(--raised))]" data-testid="calc-continue"><Play size={17} />{done.length ? 'Continue' : 'Start'}: {next.unit}.{next.n} {next.title}</Link> : <span className="rounded-xl bg-white/15 px-4 py-2.5 text-sm font-bold">All lessons mastered <Glyph e="✓" /></span>}
               <a href="#plan" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20"><CalendarDays size={16} />Study plan</a>
               {course.id === 'music' && <Link href="/music/studio" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20" data-testid="open-studio"><Piano size={16} />Music Studio</Link>}
             </div>
@@ -365,7 +365,7 @@ function Lesson({ l }: { l: CalcLesson }) {
       {tutor && <TeachBack l={l} t={tutor} />}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card><h2 className="font-bold">What you must remember</h2><ul className="mt-2 space-y-1.5">{l.remember.map((x) => <li key={x} className="flex gap-2 text-sm"><span className="font-bold text-gold">★</span><RichText text={x} /></li>)}</ul></Card>
+        <Card><h2 className="font-bold">What you must remember</h2><ul className="mt-2 space-y-1.5">{l.remember.map((x) => <li key={x} className="flex gap-2 text-sm"><Star size={15} aria-hidden className="mt-0.5 shrink-0 fill-current text-accent" /><RichText text={x} /></li>)}</ul></Card>
         <Card className="border-brand/30"><h2 className="font-bold">Teacher’s check-in</h2><p className="mt-2 text-sm leading-relaxed text-muted">{l.checkIn}</p><Link href="/tutor" className="mt-3 inline-block text-sm font-semibold text-accent hover:underline">Stuck? Ask the tutor →</Link></Card>
       </div>
 

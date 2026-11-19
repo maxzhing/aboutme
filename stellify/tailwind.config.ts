@@ -27,15 +27,21 @@ const config: Config = {
         'brand2-solid': v('brand2-solid'),
       },
       fontFamily: {
-        sans: ['"Inter Variable"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        display: ['"Sora Variable"', 'Sora', '"Inter Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        serif: ['Georgia', 'Cambria', '"Times New Roman"', 'serif'],
+        sans: ['"IBM Plex Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        display: ['"Source Serif 4 Variable"', '"Source Serif 4"', 'Georgia', 'Cambria', 'serif'],
+        serif: ['"Source Serif 4 Variable"', '"Source Serif 4"', 'Georgia', 'Cambria', 'serif'],
       },
-      borderRadius: { xl2: '1.25rem' },
+      /* two radii only (DESIGN.md): 6px for every box, and the pill */
+      borderRadius: { none: '0', sm: '6px', DEFAULT: '6px', md: '6px', lg: '6px', xl: '6px', '2xl': '6px', '3xl': '6px', xl2: '6px', full: '9999px' },
+      /* three weights: regular, medium, semibold (bold and heavier map to semibold) */
+      fontWeight: { normal: '400', medium: '500', semibold: '600', bold: '600', extrabold: '600', black: '600' },
       boxShadow: {
-        card: '0 1px 2px rgb(var(--shadow) / 0.08), 0 14px 34px -16px rgb(var(--shadow) / 0.38)',
-        glow: '0 0 0 1px rgb(var(--brand) / 0.25), 0 8px 30px -8px rgb(var(--brand) / 0.45)',
+        card: 'none',
+        glow: 'none',
+        float: '0 1px 2px rgb(var(--shadow) / .10), 0 8px 24px -12px rgb(var(--shadow) / .30)',
       },
+      transitionDuration: { DEFAULT: '160ms' },
+      transitionTimingFunction: { DEFAULT: 'cubic-bezier(0.2, 0, 0, 1)' },
       keyframes: {
         floaty: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } },
         blink: { '0%,92%,100%': { transform: 'scaleY(1)' }, '96%': { transform: 'scaleY(0.1)' } },

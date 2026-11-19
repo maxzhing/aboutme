@@ -14,6 +14,7 @@ import { Explanation, QuestionView } from '@/components/Question';
 import { CHAPTER, TRAP } from '@/data/courses';
 import { chapterQuestions } from '@/lib/course';
 import { Badge, Card, Empty, PageHeader, Stat, Tabs } from '@/components/ui';
+import { Glyph } from '@/components/Glyph';
 
 type Filter = 'unresolved' | 'all' | 'recent' | 'repeated' | 'math' | 'rw' | 'resolved';
 
@@ -26,7 +27,7 @@ function TrapList() {
   const solved = new Set(attempts.filter((a) => a.correct).map((a) => a.qid));
   return (
     <Card data-testid="trap-list">
-      <h2 className="font-bold">🪤 Your trap list</h2>
+      <h2 className="font-bold"><Glyph e="🪤" /> Your trap list</h2>
       <p className="mt-0.5 text-sm text-muted">The traps you said caught you, worst first. Read the fix, then drill questions built on the same trap until it stops working.</p>
       <ul className="mt-3 grid gap-3 md:grid-cols-2">
         {list.map(([id, t]) => { const tr = TRAP[id]; const ch = CHAPTER[tr.chapter]; const drill = chapterQuestions(ch).filter((q) => !solved.has(q.id) && !t.qids.includes(q.id)).slice(0, 6).map((q) => q.id); return (

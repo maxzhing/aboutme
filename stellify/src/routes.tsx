@@ -20,11 +20,17 @@ import { SettingsPage } from './pages/Settings';
 import { QcPage } from './pages/Qc';
 import { RemixPage } from './pages/Remix';
 import { StudioPage } from './pages/Studio';
+import { TypesetContext } from './components/RichText';
+import { AboutPage, ChangelogPage, HowWeWritePage, MethodologyPage, PrivacyPage } from './pages/Trust';
 
 function NotFound() {
   return <div className="card p-10 text-center"><h1 className="text-2xl font-bold">Page not found</h1><p className="mt-2 text-sm text-muted">That page does not exist.</p><Link href="/" className="btn-primary mt-4">Back to the dashboard</Link></div>;
 }
 const Math_ = () => <CurriculumPage section="math" />;
+/** AP Computer Science A prose is full of Java string literals: keep its quotes straight. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const course = (C: ComponentType<any>) => function CoursePage(p: { course: string }) { return <TypesetContext.Provider value={p.course !== 'csa'}><C {...p} /></TypesetContext.Provider>; };
+const CourseHome = course(CourseHomePage), CourseReview = course(CourseReviewPage), CourseLesson = course(CourseLessonPage);
 const Rw = () => <CurriculumPage section="rw" />;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,9 +54,9 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/official$/, component: OfficialPage },
   { pattern: /^\/music\/studio$/, component: StudioPage },
   // AP self-study courses: /calc, /csa, /micro, /macro, /stats, /music, their lessons and unit reviews
-  { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)$/, component: CourseHomePage },
-  { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)\/review\/(?<unit>\d+)$/, component: CourseReviewPage },
-  { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)\/(?<lesson>[a-z]+\d+-\d+)$/, component: CourseLessonPage },
+  { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)$/, component: CourseHome },
+  { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)\/review\/(?<unit>\d+)$/, component: CourseReview },
+  { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)\/(?<lesson>[a-z]+\d+-\d+)$/, component: CourseLesson },
   { pattern: /^\/practice\/timed$/, component: TimedPage },
   { pattern: /^\/daily$/, component: DailyPage },
   { pattern: /^\/speed$/, component: SpeedPage },
@@ -72,5 +78,10 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/resources$/, component: ResourcesPage },
   { pattern: /^\/qc$/, component: QcPage },
   { pattern: /^\/settings$/, component: SettingsPage },
+  { pattern: /^\/about$/, component: AboutPage },
+  { pattern: /^\/methodology$/, component: MethodologyPage },
+  { pattern: /^\/how-we-write$/, component: HowWeWritePage },
+  { pattern: /^\/privacy$/, component: PrivacyPage },
+  { pattern: /^\/changelog$/, component: ChangelogPage },
   { pattern: /^.*$/, component: NotFound },
 ];

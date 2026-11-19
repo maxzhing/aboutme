@@ -22,6 +22,7 @@ import { RichText } from './RichText';
 import { Pet } from './Pet';
 import { Confetti } from './Confetti';
 import { cn } from './ui';
+import { Glyph } from './Glyph';
 
 type Step =
   | { t: 'intro' }
@@ -124,7 +125,7 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
         <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{info.name}</h2>
         <p className="mx-auto mt-2 max-w-lg text-muted">{vl.hook}</p>
         <div className="mt-5 flex flex-wrap justify-center gap-2 text-xs font-semibold">
-          <span className="chip">🖼️ {ideaCount} picture ideas</span><span className="chip">⚡ 2 quick checks</span><span className="chip">✍️ 1 worked example</span><span className="chip">⚔️ 1 boss question</span><span className="chip">about 5 min</span>
+          <span className="chip"><Glyph e="🖼" /> {ideaCount} picture ideas</span><span className="chip"><Glyph e="⚡" /> 2 quick checks</span><span className="chip"><Glyph e="✍" /> 1 worked example</span><span className="chip"><Glyph e="⚔" /> 1 boss question</span><span className="chip">about 5 min</span>
         </div>
       </div>
     );
@@ -142,7 +143,7 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
     const c = step.check, mine = picked[step.n], answered = mine !== undefined, right = mine === c.answer;
     body = (
       <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-gold">⚡ Quick check</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-gold"><Glyph e="⚡" /> Quick check</p>
         <h2 className="mt-2 text-lg font-semibold sm:text-xl"><RichText text={c.q} /></h2>
         <div className="mt-4 grid gap-2.5" role="radiogroup" aria-label="Quick check choices">
           {c.options.map((o, k) => (
@@ -161,7 +162,7 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
     const e = lesson.examples[0];
     body = (
       <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-brand2">✍️ Your turn first</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-brand2"><Glyph e="✍" /> Your turn first</p>
         <h2 className="mt-2 text-lg font-semibold"><RichText text={e.q} /></h2>
         <p className="mt-1 text-sm text-muted">Work it out on paper or in your head. Then compare.</p>
         {shown

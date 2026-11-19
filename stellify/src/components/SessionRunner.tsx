@@ -17,6 +17,7 @@ import { RichText } from './RichText';
 import { HackCard } from './HackCard';
 import { hacksFor } from '@/data/hacks';
 import { Badge, Card, Modal, Progress, cn } from './ui';
+import { Glyph } from './Glyph';
 
 export interface SessionRow { qid: string; answer: string | null; correct: boolean; ms: number; hints: number }
 export interface SessionResult { rows: SessionRow[]; totalMs: number; correct: number; xp: number }
@@ -153,7 +154,7 @@ export function SessionRunner(cfg: SessionConfig) {
       if (i >= 0 && q.type === 'mcq' && !isSubmitted) setAnswers((a) => ({ ...a, [q.id]: String(i) }));
       else if (k === 'h' && hintsOn && !isSubmitted) setHints((h) => ({ ...h, [q.id]: Math.min(3, (h[q.id] ?? 0) + 1) }));
       else if (k === 'f') setFlagged((f) => (f.includes(q.id) ? f.filter((x) => x !== q.id) : [...f, q.id]));
-      else if (e.key === 'ArrowRight' && (feedback === 'end' || submitted[q.id])) next();
+      else if ((e.key === 'ArrowRight' || k === 'n') && (feedback === 'end' || submitted[q.id])) next();
       else if (e.key === 'ArrowLeft' && idx > 0) go(idx - 1);
     };
     window.addEventListener('keydown', onKey);
@@ -240,7 +241,7 @@ export function SessionRunner(cfg: SessionConfig) {
             <Clock size={14} />{!showTimer && totalLeft === null && qLeft === null ? 'Hidden' : totalLeft !== null ? fmtClock(totalLeft) : qLeft !== null ? fmtClock(qLeft) : fmtClock(liveMs(q.id))}
           </button>
         )}
-        {combo >= 2 && <span className="chip !border-warn !py-1.5 text-sm font-black text-warn" data-testid="combo" aria-live="polite">🔥 {combo} in a row</span>}
+        {combo >= 2 && <span className="chip !border-warn !py-1.5 text-sm font-black text-warn" data-testid="combo" aria-live="polite"><Glyph e="🔥" /> {combo} in a row</span>}
         <div className="hidden sm:block"><Pet mood={mood} equipped={store.pet.equipped} size={54} /></div>
       </div>
 
@@ -263,7 +264,7 @@ export function SessionRunner(cfg: SessionConfig) {
           <div className="flex gap-1">
             <button className={cn('btn-quiet !p-2', flagged.includes(q.id) && 'text-warn')} onClick={() => setFlagged((f) => (f.includes(q.id) ? f.filter((x) => x !== q.id) : [...f, q.id]))} aria-pressed={flagged.includes(q.id)} aria-label="Flag for review" title="Flag for review (F)"><Flag size={17} /></button>
             <button className={cn('btn-quiet !p-2', saved && 'text-brand')} onClick={() => store.toggleSaved(q.id)} aria-pressed={saved} aria-label={saved ? 'Remove from saved questions' : 'Save question'} title="Save question">{saved ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}</button>
-            <button className="btn-quiet !p-2" onClick={() => setPanel('report')} aria-label="Report a problem with this question" title="Report question"><TriangleAlert size={17} /></button>
+            <button className="btn-quiet !min-h-[40px] !px-2 text-[14px]" onClick={() => setPanel('report')} data-testid="report-error"><TriangleAlert size={17} aria-hidden /><span>Report an error</span></button>
           </div>
         </div>
         {cfg.reasons?.[q.id] && <p className="rounded-lg bg-brand/10 px-3 py-1.5 text-xs text-muted"><b className="text-ink">Why this question:</b> {cfg.reasons[q.id]}</p>}
@@ -332,7 +333,7 @@ function ReportModal({ open, onClose, qid }: { open: boolean; onClose: () => voi
   const [detail, setDetail] = useState('');
   const [sent, setSent] = useState(false);
   return (
-    <Modal open={open} onClose={() => { setSent(false); onClose(); }} title="Report this question">
+    <Modal open={open} onClose={() => { setSent(false); onClose(); }} title="Report an error in this question">
       {sent ? <p className="text-sm text-muted">Thank you. The report is saved with your data (Settings → Export) so it can be sent to whoever maintains your copy of Stellify.</p> : (
         <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); report({ qid, reason, detail }); setSent(true); setDetail(''); }}>
           <div><label className="label" htmlFor="rr">What is wrong?</label><select id="rr" className="input" value={reason} onChange={(e) => setReason(e.target.value)}>{REPORT_REASONS.map((r) => <option key={r}>{r}</option>)}</select></div>

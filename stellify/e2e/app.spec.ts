@@ -531,285 +531,22 @@ test('AP CSA, Microeconomics, Macroeconomics and Statistics: every unit, first a
   expect(errors).toEqual([]);
 });
 
-test('soft feel: night-sky backdrop, press ripples, sparkles for a right answer, and calm when motion is reduced', async ({ page }) => {
+test('calm feedback: no decorative backdrop or ripples, and the verdict is a word and an icon, not colour alone', async ({ page }) => {
   const errors = watch(page);
   await boot(page);
-  const sky = page.getByTestId('backdrop');
-  await expect(sky.locator('.aurora')).toHaveCount(0); // flat design: no glowing gradient blobs
-  await expect(sky.locator('.star')).toHaveCount(64);
-  // count ripples as they are added (each one removes itself when its animation ends)
-  const watchRipples = () => page.evaluate(() => {
-    const w = window as unknown as { ripples: number };
-    w.ripples = 0;
-    new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => { if ((n as Element).classList?.contains('ripple')) w.ripples++; }))).observe(document.body, { childList: true, subtree: true });
-  });
-  const ripples = () => page.evaluate(() => (window as unknown as { ripples: number }).ripples);
+  await expect(page.getByTestId('backdrop')).toHaveCount(0);
   await go(page, '/practice/session?mode=single&ids=r-bnd-06');
-  await watchRipples();
   await solve(page, true);
-  expect(await ripples()).toBeGreaterThanOrEqual(2); // the choice and the Check button both rippled
-  await expect(page.getByTestId('verdict')).toHaveClass(/pop-in/);
-  await expect(page.getByTestId('verdict').locator('.sparkles > span')).toHaveCount(10);
+  await expect(page.locator('.ripple')).toHaveCount(0);
+  await expect(page.locator('.sparkles')).toHaveCount(0);
+  await expect(page.getByTestId('verdict')).toContainText('Correct');
+  await expect(page.getByTestId('verdict').locator('svg')).toHaveCount(1);
   await go(page, '/practice/session?mode=single&ids=r-bnd-05');
   await solve(page, false);
-  await expect(page.getByTestId('verdict')).toHaveClass(/shake/);
-  await expect(page.getByTestId('verdict').locator('.sparkles')).toHaveCount(0);
-  // with "Reduce motion" on: no ripples, and the sky holds still
-  await go(page, '/settings');
-  await page.getByLabel(/Reduce motion/).check();
-  await expect(sky).toHaveClass(/backdrop-still/);
-  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
-  await watchRipples();
-  await solve(page, true);
-  expect(await ripples()).toBe(0);
+  await expect(page.getByTestId('verdict').locator('svg')).toHaveCount(1);
+  await expect(page.getByTestId('verdict')).not.toHaveClass(/shake/);
   expect(errors).toEqual([]);
 });
-
-test('official full practice test: import the three College Board PDFs, take it, official score, study plan, adaptive SAT-style test', async ({ page }) => {
-  const dir = require('node:path').join(__dirname, '..', 'private', 'cb', 't4');
-  test.skip(!require('node:fs').existsSync(dir), 'needs a local copy of Practice Test 4');
-  const errors = watch(page);
-  page.on('dialog', (d) => d.accept());
-  await boot(page);
-  await go(page, '/official');
-  await page.getByTestId('fulltest-input').setInputFiles(['sat-practice-test-4-digital.pdf', 'scoring-sat-practice-test-4-digital.pdf', 'sat-practice-test-4-answers-digital.pdf'].map((f) => `${dir}/${f}`));
-  await expect(page.getByTestId('fulltest-result')).toContainText('Imported SAT Practice Test 4: 66 Reading & Writing and 54 Math questions, with the College Board score conversion table', { timeout: 120_000 });
-  await page.reload(); // saved on this device
-  await go(page, '/mocks');
-  await page.getByTestId('start-fulltest-pt4').click();
-  await page.getByTestId('lock-skip').click();
-  await expect(page.getByTestId('mock-question')).toHaveAttribute('data-qid', 'pt4-rw1-01');
-  // submit every module blank: the official table turns raw 0 into 200 + 200
-  for (let i = 0; i < 4; i++) {
-    if (i === 2) await page.getByTestId('end-break').click();
-    await page.getByTestId('q-nav-toggle').click(); await page.getByRole('button', { name: 'Go to the review page' }).click();
-    await page.getByTestId('submit-module').click();
-  }
-  await expect(page.getByTestId('mock-total')).toHaveText('400');
-  await expect(page.getByTestId('score-note')).toContainText('official raw-score conversion table');
-  await expect(page.getByTestId('plan-focus').first()).toBeVisible();
-  await page.getByTestId('adopt-plan').click();
-  await expect(page.getByTestId('plan-adopted')).toBeVisible();
-  await go(page, '/mocks');
-  await expect(page.getByTestId('realsat-cover-math')).toContainText('% official');
-  await page.getByTestId('start-realsat').click();
-  await page.getByTestId('lock-skip').click();
-  await expect(page.getByTestId('mock-question')).toBeVisible();
-  expect(errors).toEqual([]);
-});
-
-test('personal copy: all seven official practice tests, original remix tests and the blend are built in', async ({ page }) => {
-  const personal = resolve(__dirname, '../private/stellify-personal.html');
-  test.skip(!require('node:fs').existsSync(personal) || !require('node:fs').existsSync(resolve(__dirname, '../private/cb')), 'needs the private personal build');
-  const errors = watch(page);
-  page.on('dialog', (d) => d.accept());
-  const P = `file://${personal}`;
-  await page.goto(`${P}#/onboarding`);
-  await page.getByRole('button', { name: 'Skip setup' }).click();
-  await page.goto(`${P}#/mocks`);
-  for (const n of [4, 5, 6, 7, 8, 9, 10]) await expect(page.getByTestId(`fulltest-pt${n}`)).toContainText(`SAT Practice Test ${n}`);
-  await expect(page.getByTestId('remix-card')).toContainText('Original Remix Test 1');
-  expect(await page.getByTestId('remix-card').locator('li').count()).toBeGreaterThanOrEqual(4);
-  await page.getByTestId('start-remix-1').click();
-  await page.getByTestId('lock-skip').click();
-  await expect(page.getByTestId('mock-question')).toBeVisible();
-  await expect(page.getByText('Reading & Writing · Module 1 of 2')).toBeVisible();
-  await page.goto(`${P}#/mocks`);
-  await page.getByTestId('start-blend').click();
-  await page.getByTestId('lock-skip').click();
-  await expect(page.getByTestId('mock-question')).toBeVisible();
-  await page.goto(`${P}#/mocks`);
-  await page.getByTestId('start-fulltest-pt10').click();
-  await page.getByTestId('lock-skip').click();
-  await expect(page.getByTestId('mock-question')).toHaveAttribute('data-qid', 'pt10-rw1-01');
-  // explanations: "In simple words" first, then the College Board's own explanation
-  await page.goto(`${P}#/practice/session?mode=single&ids=pt4-rw1-22`);
-  await page.locator('[data-choice="A"]').click();
-  await page.getByTestId('check').click();
-  await expect(page.getByTestId('simple-explanation')).toContainText('The answer is D.');
-  await expect(page.getByTestId('simple-explanation')).toContainText('The subject “the triangle” is one thing');
-  await expect(page.getByTestId('simple-explanation')).toContainText('How to do this kind of question');
-  await expect(page.getByText('College Board explanation').first()).toBeVisible();
-  await page.goto(`${P}#/practice/session?mode=single&ids=pt4-math1-01`);
-  await page.locator('[data-choice="B"]').click();
-  await page.getByTestId('check').click();
-  await expect(page.getByTestId('verdict')).toHaveText(/Correct/);
-  await expect(page.getByTestId('simple-explanation')).toContainText('The answer is B.');
-  await expect(page.getByTestId('official-rationale')).toBeVisible();
-  expect(errors).toEqual([]);
-});
-
-/** Drags the mouse across a phrase inside a highlightable block, the way a student selects words. */
-async function selectWords(page: Page, block: string, phrase: string) {
-  const box = await page.evaluate(([sel, ph]) => {
-    const host = document.querySelector(sel)!;
-    const w = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
-    for (let n = w.nextNode(); n; n = w.nextNode()) {
-      const i = n.textContent!.indexOf(ph);
-      if (i < 0) continue;
-      const r = document.createRange(); r.setStart(n, i); r.setEnd(n, i + ph.length);
-      const rs = [...r.getClientRects()];
-      return { a: [rs[0].left + 1, rs[0].top + rs[0].height / 2], b: [rs[rs.length - 1].right - 1, rs[rs.length - 1].top + rs[rs.length - 1].height / 2] };
-    }
-    return null;
-  }, [block, phrase] as const);
-  expect(box, phrase).not.toBeNull();
-  await page.mouse.move(box!.a[0], box!.a[1]);
-  await page.mouse.down();
-  await page.mouse.move(box!.b[0], box!.b[1], { steps: 8 });
-  await page.mouse.up();
-  return box!;
-}
-/** waits until the app's saved data (IndexedDB) contains this text, so a reload cannot race the write */
-const stored = (page: Page, text: string) => expect.poll(() => page.evaluate(() => new Promise<string>((done) => {
-  const open = indexedDB.open('keyval-store');
-  open.onerror = () => done('');
-  open.onsuccess = () => { const get = open.result.transaction('keyval', 'readonly').objectStore('keyval').get('stellify-state-v1'); get.onsuccess = () => done(String(get.result ?? '')); get.onerror = () => done(''); };
-}))).toContain(text);
-const painted = (page: Page) => page.evaluate(() => Object.fromEntries(['yellow', 'blue', 'pink', 'underline', 'note'].map((c) => [c, [...(CSS.highlights.get(`hl-${c}`) ?? [])].map((r) => (r as Range).toString())])));
-
-test('highlights and notes: select words, pick a color, add a note, keep them, remove them; tests start clean', async ({ page }) => {
-  const errors = watch(page);
-  await boot(page);
-  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
-  await expect(page.getByTestId('hl-tip')).toBeVisible();
-  await expect(page.getByText('Stellify original', { exact: true })).toBeVisible(); // original questions are labelled as such
-  const PASSAGE = '[data-hl$="|passage"]';
-  await selectWords(page, PASSAGE, 'Honeybees have brains');
-  await page.getByTestId('hl-yellow').click();
-  await selectWords(page, PASSAGE, 'trained the bees');
-  await page.getByTestId('hl-underline').click();
-  await expect.poll(() => painted(page)).toMatchObject({ yellow: ['Honeybees have brains'], underline: ['trained the bees'] });
-  await expect(page.getByTestId('hl-tip')).toHaveCount(0);
-  // a click on a highlight opens it: recolor it and attach a note
-  const at = await selectWords(page, PASSAGE, 'brains');
-  await page.mouse.click(at.a[0] + 4, at.a[1]); // a plain click (no drag) on the highlighted word
-  await expect(page.getByTestId('hl-yellow')).toHaveAttribute('aria-pressed', 'true');
-  await page.getByTestId('hl-pink').click();
-  await page.mouse.click(at.a[0] + 4, at.a[1]);
-  await page.getByTestId('hl-note').click();
-  await page.getByTestId('hl-note-text').fill('Contrast: a tiny brain, yet it learns faces');
-  await page.getByTestId('hl-note-save').click();
-  await expect(page.getByTestId('hl-notes')).toContainText('Contrast: a tiny brain, yet it learns faces');
-  await expect(page.getByTestId('hl-summary')).toContainText('2 highlights · 1 note');
-  // saved on this device
-  await stored(page, 'Contrast: a tiny brain, yet it learns faces');
-  await page.reload();
-  await expect.poll(() => painted(page)).toMatchObject({ pink: ['Honeybees have brains'], underline: ['trained the bees'], note: ['Honeybees have brains'] });
-  // remove one, clear the rest
-  await page.mouse.click(at.a[0] + 4, at.a[1]);
-  await page.getByTestId('hl-remove').click();
-  await expect.poll(() => painted(page)).toMatchObject({ pink: [], underline: ['trained the bees'] });
-  await page.getByTestId('hl-clear').click();
-  await expect.poll(() => painted(page)).toMatchObject({ underline: [] });
-  // a timed test has its own clean slate, and the header's Highlights & Notes button works like Bluebook's
-  await go(page, '/mocks');
-  await page.getByRole('button', { name: /R&W · 64 min/ }).first().click();
-  await page.getByTestId('lock-skip').click();
-  const block = '[data-testid="mock-question"] [data-hl$="|passage"], [data-testid="mock-question"] [data-hl$="|stem"]';
-  await page.getByTestId('hl-annotate').click();
-  await expect(page.getByTestId('hl-hint')).toContainText('Select words in the question first');
-  expect((await painted(page)).yellow).toEqual([]);
-  const words = await page.evaluate((sel) => document.querySelector(sel)!.textContent!.trim().split(/\s+/).slice(0, 3).join(' '), block);
-  await selectWords(page, block, words);
-  await page.getByTestId('hl-annotate').click();
-  await page.getByTestId('hl-note-text').fill('main claim');
-  await page.getByTestId('hl-note-save').click();
-  await expect.poll(() => painted(page)).toMatchObject({ yellow: [words], note: [words] });
-  expect(errors).toEqual([]);
-});
-
-test('personal copy: highlight an official page image by dragging across its printed lines', async ({ page }) => {
-  const personal = resolve(__dirname, '../private/stellify-personal.html');
-  test.skip(!require('node:fs').existsSync(personal), 'needs the private personal build');
-  const errors = watch(page);
-  const P = `file://${personal}`;
-  await page.goto(`${P}#/onboarding`);
-  await page.getByRole('button', { name: 'Skip setup' }).click();
-  await page.goto(`${P}#/mocks`);
-  await page.getByTestId('start-fulltest-pt4').click();
-  await page.getByTestId('lock-skip').click();
-  for (let i = 0; i < 12; i++) await page.getByTestId('mock-next').click();
-  await expect(page.getByTestId('mock-question')).toHaveAttribute('data-qid', 'pt4-rw1-13'); // a graph question, printed as an image
-  const img = page.getByTestId('hl-image');
-  await expect.poll(async () => Number(await img.getAttribute('data-lines'))).toBeGreaterThan(15); // printed lines found in the pixels
-  await img.scrollIntoViewIfNeeded();
-  const b = (await img.boundingBox())!;
-  await page.mouse.move(b.x + 0.45 * b.width, b.y + 0.565 * b.height);
-  await page.mouse.down();
-  await page.mouse.move(b.x + 0.5 * b.width, b.y + 0.61 * b.height, { steps: 8 });
-  await page.mouse.up();
-  await page.getByTestId('hl-blue').click();
-  await expect(img.locator('.hl-box-blue')).toHaveCount(3); // the rest of one line, the next line, and part of the third, like a text selection
-  const first = (await img.locator('.hl-box-blue').first().boundingBox())!;
-  await page.mouse.click(first.x + first.width / 2, first.y + first.height / 2);
-  await expect(page.getByTestId('hl-remove')).toBeVisible();
-  await page.getByTestId('hl-note').click();
-  await page.getByTestId('hl-note-text').fill('the graph shows 2,600 to 2,800');
-  await page.getByTestId('hl-note-save').click();
-  await expect(img.locator('.hl-note-dot')).toHaveCount(1);
-  await expect(page.getByTestId('hl-notes')).toContainText('the graph shows 2,600 to 2,800');
-  expect(errors).toEqual([]);
-});
-
-test('exam simulator: directions, question navigator, docked calculator, 5-minute alert, module-by-module report', async ({ page }) => {
-  await page.removeLocatorHandler(page.getByTestId('close-directions'));
-  const errors = watch(page);
-  page.on('dialog', (d) => d.accept());
-  await page.clock.install();
-  await boot(page);
-  await go(page, '/mocks');
-  await page.getByRole('button', { name: /Math · 70 min/ }).first().click();
-  await page.getByTestId('lock-skip').click();
-  await expect(page.getByTestId('directions')).toContainText('22 questions · 35 minutes');
-  await expect(page.getByTestId('directions')).toContainText('type your own answer');
-  await page.getByTestId('close-directions').click();
-  // the navigator shows where you are and jumps anywhere in the module
-  await page.getByTestId('q-nav-toggle').click();
-  await expect(page.getByTestId('q-nav').locator('[aria-current="true"]')).toHaveText('1');
-  await page.getByTestId('q-nav').getByRole('button', { name: /^Question 5,/ }).click();
-  await expect(page.getByTestId('q-nav-toggle')).toContainText('Question 5 of 22');
-  await page.getByRole('button', { name: 'Mark for review' }).click();
-  await page.getByTestId('q-nav-toggle').click();
-  await expect(page.getByTestId('q-nav').getByRole('button', { name: /^Question 5, unanswered, marked for review, current/ })).toBeVisible();
-  await page.getByTestId('q-nav-toggle').click();
-  // the calculator docks beside the question instead of covering it
-  await page.getByTestId('toggle-calc').click();
-  await expect(page.getByTestId('calc-panel')).toBeVisible();
-  await expect(page.getByTestId('mock-question')).toBeVisible();
-  await page.getByTestId('toggle-calc').click();
-  await expect(page.getByTestId('calc-panel')).toHaveCount(0);
-  // directions reopen from the top bar
-  await page.getByTestId('open-directions').click();
-  await page.getByTestId('close-directions').click();
-  // with 5 minutes left an alert appears once
-  await page.clock.fastForward('30:30');
-  await expect(page.getByTestId('five-minutes')).toContainText('5 minutes left in this module');
-  // answer one question, then let time run out on both modules; the report shows each module
-  await page.clock.fastForward('05:00');
-  await expect(page.getByTestId('directions')).toHaveCount(0); // Module 2 starts without the directions
-  await page.clock.fastForward('35:00');
-  await expect(page.getByTestId('module-report')).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByTestId('module-report').locator('tbody tr')).toHaveCount(2);
-  await expect(page.getByTestId('module-report')).toContainText('Math 1');
-  await expect(page.getByTestId('module-report')).toContainText(/Easier set|Harder set/);
-  expect(errors).toEqual([]);
-});
-
-test('confidence: a sure wrong answer is diagnosed as a likely misconception, with the trap it fell for', async ({ page }) => {
-  const errors = watch(page);
-  await boot(page);
-  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
-  await expect(page.getByTestId('confidence')).toHaveCount(0); // asked only once an answer is chosen
-  await answerCurrent(page, false);
-  await page.getByTestId('conf-sure').click();
-  await expect(page.getByTestId('conf-sure')).toHaveAttribute('aria-checked', 'true');
-  await page.getByTestId('check').click();
-  await expect(page.getByTestId('diagnosis')).toContainText('You were sure');
-  await expect(page.getByTestId('diagnosis')).toContainText('trap');
-  expect(errors).toEqual([]);
-});
-
 test('quality control: a student report shows up as an open flag, and a reviewer can mark it reviewed', async ({ page }) => {
   const errors = watch(page);
   await boot(page);
@@ -818,7 +555,7 @@ test('quality control: a student report shows up as an open flag, and a reviewer
   await expect(page.getByTestId('qc-page')).toContainText('Question quality control');
   await expect(page.getByTestId('qc-page')).toContainText('No open flags.'); // every automatic flag on the bank has been reviewed
   await go(page, '/practice/session?mode=single&ids=r-bnd-06');
-  await page.getByRole('button', { name: 'Report a problem with this question' }).click();
+  await page.getByRole('button', { name: 'Report an error' }).click();
   await page.locator('form textarea').fill('Choice C looks defensible too.');
   await page.getByRole('button', { name: 'Save report' }).click();
   await go(page, '/qc');

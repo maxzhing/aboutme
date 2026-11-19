@@ -2,26 +2,25 @@
 import { hasOfficial } from '@/data/questions';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Flame, Menu, Moon, Search, Settings, Sparkles, Sun, X } from 'lucide-react';
+import { CalendarCheck, Keyboard, Menu, Moon, Search, Settings, Sparkles, Sun, X } from 'lucide-react';
 import { MotionConfig } from 'framer-motion';
 import { Suspense, useEffect, useState } from 'react';
 import { useStore } from '@/lib/store';
-import { useLevel, useStreak } from '@/lib/hooks';
+import { useWeekRhythm } from '@/lib/hooks';
 import { BRAND } from '@/lib/taxonomy';
 import { NAV } from './nav';
-import { Pet } from './Pet';
 import { Toasts } from './Toasts';
 import { SearchModal } from './SearchBox';
-import { Backdrop, SoftFeel } from './Feel';
+import { SoftFeel } from './Feel';
+import { ShortcutSheet } from './Shortcuts';
 import { HighlightToolbar } from './Highlight';
 import { cn } from './ui';
 
 export function Logo({ size = 30 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" role="img" aria-label={`${BRAND.name} logo`}>
-      <rect width="40" height="40" rx="11" fill="#1F2A44" />
-      <path d="M20 6.5 L23.4 16.6 L33.5 20 L23.4 23.4 L20 33.5 L16.6 23.4 L6.5 20 L16.6 16.6 Z" fill="#FFD23F" />
-      <circle cx="30.5" cy="9.5" r="2.2" fill="#FF8FA3" /><circle cx="9.5" cy="30.5" r="1.6" fill="#7BD88F" />
+      <rect width="40" height="40" rx="6" style={{ fill: 'rgb(var(--ink))' }} />
+      <path d="M20 7 L23.5 16.2 L33.2 16.7 L25.6 22.8 L28.2 32.2 L20 26.8 L11.8 32.2 L14.4 22.8 L6.8 16.7 L16.5 16.2 Z" style={{ fill: 'rgb(var(--bg))' }} />
     </svg>
   );
 }
@@ -52,9 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const reduced = useStore((s) => s.settings.reducedMotion);
   const setSettings = useStore((s) => s.setSettings);
   const coins = useStore((s) => s.pet.coins);
-  const equipped = useStore((s) => s.pet.equipped);
-  const level = useLevel();
-  const streak = useStreak();
+  const week = useWeekRhythm();
   const [menu, setMenu] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -81,12 +78,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (!hydrated) {
     return (
-      <div className="grid min-h-screen place-items-center" aria-busy="true">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <Pet mood="idle" size={120} still />
-          <div className="flex items-center gap-2 font-display text-xl font-bold"><Logo />{BRAND.name}</div>
-          <p className="text-sm text-muted">Loading your progress…</p>
-        </div>
+      <div className="mx-auto max-w-3xl px-4 py-10" aria-busy="true" aria-label="Loading your progress">
+        <div className="flex items-center gap-2 font-display text-xl font-semibold"><Logo />{BRAND.name}</div>
+        <p className="mt-2 text-sm text-muted">Loading your progress from this device…</p>
+        <div className="mt-8 space-y-3" aria-hidden>{[70, 92, 84, 60].map((w) => <div key={w} className="h-4 rounded bg-raised" style={{ width: `${w}%` }} />)}</div>
       </div>
     );
   }
@@ -120,23 +115,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <MotionConfig reducedMotion={reduced ? 'always' : 'user'}>
-      <Backdrop />
       <SoftFeel />
+      <ShortcutSheet />
       <HighlightToolbar />
       <div className="min-h-screen lg:flex" data-section={section} data-course={course}>
         {!focus && (
-          <aside className="sidebar no-print sticky top-0 hidden h-screen w-[264px] shrink-0 flex-col border-r border-line/70 backdrop-blur-xl lg:flex">
+          <aside className="sidebar no-print sticky top-0 hidden h-screen w-[264px] shrink-0 flex-col border-r border-line lg:flex">
             <Link href="/" className="group flex items-center gap-3 px-5 pb-4 pt-5">
-              <span className="transition-transform duration-500 group-hover:rotate-[8deg] group-hover:scale-105"><Logo size={36} /></span>
-              <span className="min-w-0"><span className="block font-display text-[21px] font-bold leading-none tracking-tight">{BRAND.name}</span><span className="mt-1 block truncate text-[11px] text-faint">SAT &amp; AP study, offline</span></span>
+              <Logo size={34} />
+              <span className="min-w-0"><span className="block font-display text-[22px] font-semibold leading-none">{BRAND.name}</span><span className="mt-1 block truncate text-[12px] text-faint">Free SAT &amp; AP study</span></span>
             </Link>
             {nav}
           </aside>
         )}
         {menu && !focus && (
           <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
-            <div className="modal-backdrop absolute inset-0 bg-[rgb(4_6_20/.6)] backdrop-blur-sm" onClick={() => setMenu(false)} />
-            <div className="sidebar drawer-panel absolute inset-y-0 left-0 flex w-[290px] max-w-[86vw] flex-col border-r border-line bg-surface shadow-2xl">
+            <div className="modal-backdrop absolute inset-0 bg-ink/40" onClick={() => setMenu(false)} />
+            <div className="sidebar drawer-panel absolute inset-y-0 left-0 flex w-[290px] max-w-[86vw] flex-col border-r border-line bg-bg">
               <div className="flex items-center justify-between px-4 py-3.5">
                 <span className="flex items-center gap-2.5 font-display text-lg font-bold"><Logo />{BRAND.name}</span>
                 <button className="btn-quiet !p-2" onClick={() => setMenu(false)} aria-label="Close menu"><X size={18} /></button>
@@ -147,26 +142,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
         <div className="min-w-0 flex-1">
           {!focus && (
-            <div className="no-print sticky top-0 z-30 flex items-center gap-2 border-b border-line/50 bg-bg/65 px-3 py-2.5 backdrop-blur-xl sm:gap-3 sm:px-6">
+            <div className="no-print sticky top-0 z-30 flex items-center gap-2 border-b border-line bg-bg px-3 py-2 sm:gap-3 sm:px-6">
               <button className="btn-quiet !min-h-0 !p-2 lg:hidden" onClick={() => setMenu(true)} aria-label="Open menu"><Menu size={20} /></button>
               <Link href="/" className="flex items-center gap-2 font-display font-bold lg:hidden"><Logo size={26} /><span className="hidden sm:inline">{BRAND.name}</span></Link>
               <button onClick={() => setSearchOpen(true)} className="searchbar ml-1" aria-label="Search">
-                <Search size={15} className="shrink-0 text-accent" /><span className="truncate">Search lessons, questions, rules…</span><kbd className="ml-auto hidden rounded-md border border-line bg-raised/70 px-1.5 py-0.5 font-sans text-[10px] font-semibold text-faint sm:block">Ctrl K</kbd>
+                <Search size={15} className="shrink-0 text-accent" /><span className="truncate">Search lessons, questions, rules…</span><kbd className="kbd ml-auto hidden sm:inline-grid">Ctrl K</kbd>
               </button>
               <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
                 <div className="stat-cluster">
-                  <Link href="/calendar" title={`Current streak: ${streak.current} day${streak.current === 1 ? '' : 's'}`}><Flame size={14} className="text-warn" /><span className="font-bold tabular-nums text-ink">{streak.current}</span><span className="sr-only">day streak</span></Link>
-                  <Link href="/rewards" title="Stardust (earned by studying)"><Sparkles size={14} className="text-gold" /><span className="font-bold tabular-nums text-ink">{coins}</span><span className="sr-only">Stardust</span></Link>
-                  <Link href="/pet" className="!hidden !py-0.5 !pl-1 sm:!flex" title="Your companion"><Pet size={24} level={level.level} equipped={equipped} still /><span className="text-ink">Lv {level.level}</span></Link>
+                  <Link href="/calendar" title="Study days this week, against your plan" data-testid="week-rhythm"><CalendarCheck size={15} aria-hidden /><span className="font-medium tabular-nums text-ink">{week.done}/{week.planned}</span><span className="sr-only">study days this week</span><span className="hidden text-faint sm:inline">this week</span></Link>
+                  <Link href="/rewards" title="Stardust (earned by studying)"><Sparkles size={15} aria-hidden /><span className="font-medium tabular-nums text-ink">{coins}</span><span className="sr-only">Stardust</span></Link>
                 </div>
-                <button className="grid h-9 w-9 place-items-center rounded-full border border-line/80 bg-surface/80 text-muted transition-colors hover:border-accent/40 hover:text-ink" onClick={() => setSettings({ theme: isDark ? 'light' : 'dark' })} aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}>{isDark ? <Sun size={17} /> : <Moon size={17} />}</button>
+                <button className="hidden h-10 w-10 place-items-center rounded-full border border-line bg-surface text-muted hover:border-ink/40 hover:text-ink sm:grid" onClick={() => window.dispatchEvent(new Event('stellify:shortcuts'))} aria-label="Keyboard shortcuts"><Keyboard size={17} /></button>
+                <button className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-muted hover:border-ink/40 hover:text-ink" onClick={() => setSettings({ theme: isDark ? 'light' : 'dark' })} aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}>{isDark ? <Sun size={17} /> : <Moon size={17} />}</button>
               </div>
             </div>
           )}
           <main id="main" className={cn('mx-auto w-full', focus ? 'max-w-6xl p-3 sm:p-6' : 'max-w-6xl px-3 py-7 sm:px-8 sm:py-9')}>
             <Suspense fallback={<div className="py-20 text-center text-sm text-muted">Loading…</div>}><div key={clean} className="page-enter">{children}</div></Suspense>
           </main>
-          {!focus && <footer className="no-print mx-auto max-w-6xl border-t border-line/50 px-6 pb-8 pt-5 text-xs leading-relaxed text-faint">{BRAND.disclaimer} {hasOfficial() && 'Exception: questions labelled Official are real College Board questions that you added yourself, kept on this device for your own study. '}Passages are written for practice; the researchers, studies and data they describe are illustrative.</footer>}
+          {!focus && (
+            <footer className="no-print mx-auto max-w-6xl border-t border-line px-6 pb-8 pt-5 text-[13px] leading-relaxed text-faint">
+              <nav aria-label="About Stellify" className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-muted">
+                {[['/about', 'About'], ['/methodology', 'Methodology'], ['/how-we-write', 'How we write and check questions'], ['/privacy', 'Privacy'], ['/changelog', 'Changelog']].map(([h, l]) => <Link key={h} href={h} className="underline-offset-4 hover:text-ink hover:underline">{l}</Link>)}
+              </nav>
+              {BRAND.disclaimer} {hasOfficial() && 'Exception: questions labelled Official are real College Board questions that you added yourself, kept on this device for your own study. '}Passages are written for practice; the researchers, studies and data they describe are illustrative.
+            </footer>
+          )}
         </div>
       </div>
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />

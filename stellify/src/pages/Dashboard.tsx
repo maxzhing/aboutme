@@ -24,6 +24,7 @@ import { clamp, dateKey, daysBetween } from '@/lib/util';
 import { eggOf, petName } from '@/lib/engine/companions';
 import { Habitat, Pet, type PetMood } from '@/components/Pet';
 import { Card, Progress, Ring } from '@/components/ui';
+import { Glyph } from '@/components/Glyph';
 
 export const chartTip = { contentStyle: { background: 'rgb(var(--surface))', border: '1px solid rgb(var(--line))', borderRadius: 14, fontSize: 12, color: 'rgb(var(--ink))', boxShadow: '0 12px 30px -14px rgb(var(--shadow) / .45)', padding: '8px 12px' }, labelStyle: { color: 'rgb(var(--muted))' }, cursor: { fill: 'rgb(var(--raised))', opacity: 0.5 } };
 export const axis = { tick: { fill: 'rgb(var(--faint))', fontSize: 11 }, axisLine: { stroke: 'rgb(var(--line))' }, tickLine: false as const };
@@ -178,7 +179,7 @@ export function DashboardPage() {
           <ul className="mt-3 space-y-3">
             {quests.map((q) => (
               <li key={q.id} className="flex items-center gap-3" data-testid={`quest-${q.id}`}>
-                <span className="text-2xl" aria-hidden>{q.icon}</span>
+                <span className="icon-tile h-9 w-9" aria-hidden><Glyph e={q.icon} size={18} /></span>
                 <div className="min-w-0 flex-1"><div className="flex justify-between gap-2 text-sm font-semibold"><span className="truncate">{q.title}</span><span className="shrink-0 tabular-nums text-muted">{q.progress}/{q.goal}</span></div><Progress value={(q.progress / q.goal) * 100} tone={q.done ? 'ok' : 'brand'} className="mt-1.5" label={q.title} /></div>
                 {q.claimed ? <CheckCircle2 className="shrink-0 text-ok" size={22} aria-label="Claimed" /> : q.done ? <button className="btn-primary shrink-0 !px-3 !py-1.5 text-sm" onClick={() => claim(q.id)}>+{q.xp} XP</button> : <Link href={q.href} className="btn-ghost shrink-0 !px-3 !py-1.5 text-sm">Go</Link>}
               </li>
@@ -186,7 +187,7 @@ export function DashboardPage() {
           </ul>
           <div className={`mt-4 flex items-center gap-3 rounded-xl border p-3 ${chestReady ? 'border-gold bg-gold/10' : 'border-line'}`}>
             <Gift size={22} className={chestOpen || chestReady ? 'text-gold' : 'text-faint'} aria-hidden />
-            <span className="min-w-0 flex-1 text-sm">{chestOpen ? 'Daily chest opened. See you tomorrow!' : chestReady ? 'Daily chest unlocked!' : 'Claim all three to open the daily chest.'}</span>
+            <span className="min-w-0 flex-1 text-sm">{chestOpen ? 'Daily chest opened. See you tomorrow!' : chestReady ? 'Daily chest ready to open' : 'Claim all three to open the daily chest.'}</span>
             {chestReady && <button className="btn-primary !px-3 !py-1.5 text-sm" onClick={() => claim(CHEST.id)} data-testid="chest">Open +{CHEST.xp} XP</button>}
           </div>
         </Card>
@@ -227,7 +228,7 @@ export function DashboardPage() {
       )}
 
       <nav aria-label="Game modes" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {MODES.map((q) => <Link key={q.label} href={q.href} className="card flex items-center gap-3 p-4 transition-all hover:-translate-y-0.5 hover:border-accent/50"><span className="text-2xl" aria-hidden>{q.icon}</span><span className="min-w-0"><span className="block text-sm font-semibold">{q.label}</span><span className="block truncate text-xs text-muted">{q.sub}</span></span></Link>)}
+        {MODES.map((q) => <Link key={q.label} href={q.href} className="card flex items-center gap-3 p-4 transition-all hover:-translate-y-0.5 hover:border-accent/50"><span className="icon-tile h-9 w-9" aria-hidden><Glyph e={q.icon} size={18} /></span><span className="min-w-0"><span className="block text-sm font-semibold">{q.label}</span><span className="block truncate text-xs text-muted">{q.sub}</span></span></Link>)}
       </nav>
 
       {/* Details on request */}
