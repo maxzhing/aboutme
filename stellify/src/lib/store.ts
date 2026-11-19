@@ -120,7 +120,7 @@ interface Actions {
   finishWorked: (familyId: string) => void;
   /** Test-day checklist */
   tickTestDay: (id: string, on: boolean) => void;
-  setTestDaySchools: (ids: string[]) => void;
+  setTestDaySchools: (schools: import('./types').SchoolEntry[]) => void;
   /** Predict-First: one prediction and the student's own grade of it */
   addPrediction: (row: import('./types').PredictionRow) => void;
   /** research consent (collection itself is switched off in this build) */
@@ -442,7 +442,7 @@ export const useStore = create<Store>()(
           if (!path.worked[familyId]) { setState({ path: { ...path, worked: { ...path.worked, [familyId]: Date.now() } } }); getState().syncPath(); }
         },
         tickTestDay: (id, on) => { const t = { ...(getState().testDay?.ticks ?? {}) }; if (on) t[id] = Date.now(); else delete t[id]; setState({ testDay: { ...(getState().testDay ?? { ticks: {} }), ticks: t } }); },
-        setTestDaySchools: (ids) => setState({ testDay: { ...(getState().testDay ?? { ticks: {} }), schools: ids } }),
+        setTestDaySchools: (schools) => setState({ testDay: { ...(getState().testDay ?? { ticks: {} }), schools } }),
         addPrediction: (row) => setState({ predictions: [...(getState().predictions ?? []), row].slice(-2000) }),
         setResearchConsent: (consent) => setState({ research: { ...(getState().research ?? { consent: false }), consent, at: Date.now(), sessionId: consent ? (getState().research?.sessionId ?? uid()) : undefined } }),
         clearMarks: (prefix) => setState({ highlights: Object.fromEntries(Object.entries(getState().highlights ?? {}).filter(([k]) => !k.startsWith(prefix))) }),

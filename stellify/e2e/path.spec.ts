@@ -75,6 +75,7 @@ test('Path: a practice set passed on the first try earns stars, and the result i
   await page.getByTestId('view-map').click();
   await expect(page.getByTestId('hex-lin1')).toHaveAttribute('aria-label', /Linear equations, 2 of 3 stars/);
   // stars are kept after a reload
+  await page.waitForTimeout(600); // let the save to browser storage finish
   await page.reload();
   await expect(page.getByTestId('hex-lin1')).toHaveAttribute('aria-label', /2 of 3 stars/);
   expect(errors).toEqual([]);
@@ -127,5 +128,25 @@ test('item statistics: export anonymous item data and review it on the maintaine
   await page.getByTestId('maintainer-files').setInputFiles(file!);
   await expect(page.getByTestId('maintainer-summary')).toContainText('1 file · 1 people · 1 cleaned first attempts');
   await expect(page.getByTestId('no-flags')).toContainText('No item has 100 responses yet');
+  expect(errors).toEqual([]);
+});
+
+test('test-day hub: a dated checklist that is saved, sources marked "needs verification", and a school list', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/test-day');
+  await page.getByTestId('td-date').fill('2026-12-05');
+  await expect(page.getByTestId('phase-one-week')).toContainText('Nov 28');
+  await page.getByTestId('tick-id').click();
+  await expect(page.getByTestId('tick-id')).toHaveAttribute('aria-checked', 'true');
+  await page.waitForTimeout(600); // let the save to browser storage finish
+  await page.reload();
+  await expect(page.getByTestId('tick-id')).toHaveAttribute('aria-checked', 'true');
+  expect(await page.getByTestId('needs-verification').count()).toBeGreaterThan(5);
+  await expect(page.getByTestId('no-snapshot')).toBeVisible();
+  await page.getByLabel('School', { exact: true }).fill('Example State University');
+  await page.getByLabel('Policy you found there').selectOption('optional');
+  await page.getByTestId('add-school').click();
+  await expect(page.getByTestId('school-row')).toContainText('Test-optional');
   expect(errors).toEqual([]);
 });

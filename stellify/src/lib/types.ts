@@ -343,7 +343,7 @@ export interface AppState {
   /** the hex Path: earned stars (kept once earned), set results, worked-example ladders (state v2) */
   path?: PathState;
   /** test-day hub checklist, by item id: when it was ticked (state v2) */
-  testDay?: { ticks: Record<string, number>; schools?: string[] };
+  testDay?: { ticks: Record<string, number>; schools?: SchoolEntry[] };
   /** Predict-First mode: one row per prediction (state v2) */
   predictions?: PredictionRow[];
   /** consent for anonymous research data; collection itself stays off unless a build enables it */
@@ -374,4 +374,6 @@ export interface PathState {
   /** when a delayed retrieval check (a Gauntlet at least 7 days after ★2) succeeded, by skill */
   retained: Partial<Record<SkillId, number>>;
 }
+/** A school the student is tracking: their own notes from the school's official page, with the date they checked it. */
+export interface SchoolEntry { id: string; name: string; url: string; policy: 'required' | 'optional' | 'flexible' | 'blind' | 'unknown'; checked: string; low?: number; high?: number; unitId?: number }
 export interface PredictionRow { qid: string; at: number; prediction: string; self: 'matched' | 'close' | 'missed'; correct?: boolean }

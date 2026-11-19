@@ -11,7 +11,7 @@ Status: todo / in progress / done / blocked. Updated after every commit.
 - [x] done: 2. Hex Path (map, zigzag, list, keyboard; owner request: recommended hex rises tallest with a smooth animation and an arrow marker, the next two less), star rules, next-step engine, Today panel, Path sets, storage migration v1→v2 (tests: tests/path.test.ts, tests/migrate.test.ts, e2e/path.spec.ts)
 - [x] done: 3. Score Lever (N10): lib/engine/lever.ts, LeverChart on the Path; feeds the engine
 - [x] done: 4. Psychometrics: first-attempt events, cleaning rules, classical item statistics with flags, item lifecycle (calibrated difficulty feeds routing), anonymous item-data export, maintainer dashboard (#/maintainer), submission stub OFF (tests/psych.test.ts, e2e)
-- [ ] todo: 5. Test-day hub
+- [x] done: 5. Test-day hub (#/test-day): dated, saved, printable checklist; Bluebook steps; sleep and stress guide with a when-things-go-wrong playbook; policy explainer; "should I send?"; a school list with the student's own dated notes. College Board specifics link to their source and say "Needs verification" (CB site blocked here). College Scorecard snapshot: script ready, needs the owner's key.
 - [ ] todo: 6. Worked Examples mode (N11)
 - [ ] todo: 7. Predict-First mode (N8)
 - [ ] todo: 8. Fatigue and pacing curve (N6)
