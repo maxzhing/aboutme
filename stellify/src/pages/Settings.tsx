@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { Download, ShieldCheck, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { BANK_STATS } from '@/data/questions';
+import { BANK_STATS, getQuestion } from '@/data/questions';
+import { itemExport } from '@/lib/psych/export';
 import manifest from '@/data/questions/validated.json';
 import { listBackups, readBackup, type BackupInfo } from '@/lib/backup';
 import { snapshot, useStore } from '@/lib/store';
@@ -121,6 +122,14 @@ export function SettingsPage() {
           <li>• {BRAND.disclaimer}</li>
         </ul>
         <p className="mt-3 text-sm"><Link href="/qc" className="font-semibold text-accent hover:underline" data-testid="qc-link">For reviewers: question quality control →</Link></p>
+        <div className="mt-4 border-t border-line pt-4" data-testid="item-data">
+          <h3 className="font-sans text-[15px] font-semibold">Anonymous item data (for teachers and maintainers)</h3>
+          <p className="mt-1 text-[14px] text-muted">Saves a file of your first answers to Stellify’s own questions: which choice, right or wrong, and how long it took. No name, no profile, no notes, and a new random id in every file. Nothing is sent anywhere; you decide whether to give the file to anyone.</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button type="button" className="btn-ghost" data-testid="export-items" onClick={() => { const d = itemExport(snapshot(), getQuestion, window.innerWidth); const url = URL.createObjectURL(new Blob([JSON.stringify(d)], { type: 'application/json' })); const a = document.createElement('a'); a.href = url; a.download = `stellify-item-data-${new Date().toISOString().slice(0, 10)}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }}><Download size={16} aria-hidden />Export anonymous item data</button>
+            <Link href="/maintainer" className="btn-quiet">Item statistics →</Link>
+          </div>
+        </div>
       </Card>
     </div>
   );

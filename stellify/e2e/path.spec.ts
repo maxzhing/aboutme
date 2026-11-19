@@ -35,6 +35,11 @@ test('Path: the map, keyboard movement between neighbouring hexes, the skill pan
   const rec = page.locator('[data-recommended="true"]');
   await expect(rec).toHaveCount(1);
   await expect(rec).toHaveAttribute('aria-label', /recommended next/);
+  // height says order: the recommended hex rises tallest, the next two less
+  await expect(rec).toHaveAttribute('data-rank', '0');
+  const lift = (r: string) => page.locator(`[data-rank="${r}"]`).evaluate((el) => parseFloat(getComputedStyle(el).getPropertyValue('--lift')));
+  expect(await lift('0')).toBeGreaterThan(await lift('1'));
+  expect(await lift('1')).toBeGreaterThan(await lift('2'));
   // roving tabindex: one hex is in the tab order; arrow keys move to neighbours
   await expect(page.locator('#main [data-testid^="hex-"][tabindex="0"]')).toHaveCount(1);
   await page.getByTestId('hex-lin1').focus();
@@ -100,5 +105,27 @@ test('dashboard leads with Today, and the shortcut sheet opens with "?"', async 
   await expect(page.getByTestId('shortcut-sheet')).toContainText('next question');
   await page.keyboard.press('Escape');
   await expect(page.getByTestId('shortcut-sheet')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('item statistics: export anonymous item data and review it on the maintainer page, with no decisions under 100 responses', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await page.clock.install();
+  await go(page, '/practice/session?mode=single&ids=r-bnd-06');
+  await page.clock.fastForward(20_000); // a considered answer, not a rapid guess
+  await answer(page, true);
+  await go(page, '/settings');
+  const download = page.waitForEvent('download');
+  await page.getByTestId('export-items').click();
+  const file = await (await download).path();
+  const data = JSON.parse(require('node:fs').readFileSync(file!, 'utf8'));
+  expect(data.app).toBe('stellify-items');
+  expect(JSON.stringify(data)).not.toContain('profile');
+  expect(data.events[0]).toMatchObject({ item_id: 'r-bnd-06', correct: true, context: 'practice' });
+  await go(page, '/maintainer');
+  await page.getByTestId('maintainer-files').setInputFiles(file!);
+  await expect(page.getByTestId('maintainer-summary')).toContainText('1 file · 1 people · 1 cleaned first attempts');
+  await expect(page.getByTestId('no-flags')).toContainText('No item has 100 responses yet');
   expect(errors).toEqual([]);
 });

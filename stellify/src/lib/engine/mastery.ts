@@ -1,6 +1,7 @@
 import type { Attempt, Difficulty, Question, SkillId } from '../types';
 import { SKILLS } from '../taxonomy';
 import { dateKey } from '../util';
+import { countsForStudent } from '@/data/itemLifecycle';
 
 export const MASTERY_LEVELS = ['Not Started', 'Learning', 'Developing', 'Proficient', 'Mastered'] as const;
 export type MasteryLevel = 0 | 1 | 2 | 3 | 4;
@@ -52,7 +53,7 @@ export function computeSkillStats(skill: SkillId, attempts: Attempt[], getQ: (id
   const rows = attempts
     .filter((a) => !a.abandoned)
     .map((a) => ({ a, q: getQ(a.qid) }))
-    .filter((r): r is { a: Attempt; q: Question } => !!r.q && r.q.skill === skill)
+    .filter((r): r is { a: Attempt; q: Question } => !!r.q && r.q.skill === skill && countsForStudent(r.q.id))
     .filter(remixOnce());
   const byDiff: SkillStats['byDiff'] = { medium: { n: 0, correct: 0 }, hard: { n: 0, correct: 0 }, 'very-hard': { n: 0, correct: 0 }, elite: { n: 0, correct: 0 } };
   let wn = 0, wc = 0, ms = 0, hints = 0;

@@ -22,6 +22,7 @@ import { RemixPage } from './pages/Remix';
 import { StudioPage } from './pages/Studio';
 import { TypesetContext } from './components/RichText';
 import { PathPage, PathSetPage } from './pages/Path';
+import { MaintainerPage } from './pages/Maintainer';
 import { AboutPage, ChangelogPage, HowWeWritePage, MethodologyPage, PrivacyPage } from './pages/Trust';
 
 function NotFound() {
@@ -84,6 +85,7 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/resources$/, component: ResourcesPage },
   { pattern: /^\/qc$/, component: QcPage },
   { pattern: /^\/settings$/, component: SettingsPage },
+  { pattern: /^\/maintainer$/, component: MaintainerPage },
   { pattern: /^\/about$/, component: AboutPage },
   { pattern: /^\/methodology$/, component: MethodologyPage },
   { pattern: /^\/how-we-write$/, component: HowWeWritePage },

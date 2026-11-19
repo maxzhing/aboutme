@@ -12,7 +12,7 @@ import { getQuestion, QUESTIONS } from '@/data/questions';
 import { WORKED_BY_SKILL } from '@/data/worked';
 import { useOverview, useWeekRhythm } from '@/lib/hooks';
 import { engineInput, CHAPTER_IDS } from '@/lib/path/input';
-import { formatFor, hexState, nextStep, prereqsMet, skillStars, todayPlan } from '@/lib/path/next';
+import { formatFor, hexState, nextStep, prereqsMet, skillStars, todayPlan, upcomingSkills } from '@/lib/path/next';
 import { pickSet } from '@/lib/path/sets';
 import { PATH, pathOf } from '@/lib/path/skills';
 import { SET_RULES } from '@/lib/path/stars';
@@ -35,7 +35,8 @@ export function usePathModel(section?: Section) {
     const input = engineInput(snapshot(), now, section, level);
     const next = nextStep(input);
     const today = todayPlan(input);
-    return { input, next, today };
+    const upcoming = upcomingSkills(input, 3);
+    return { input, next, today, upcoming };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, section]);
 }
@@ -47,11 +48,11 @@ export function PathPage({ section = 'math' }: { section?: Section }) {
   const lastSet = useStore((s) => s.path?.sets[s.path.sets.length - 1]);
   const week = useWeekRhythm();
   useEffect(() => { syncPath(); }, [syncPath]);
-  const { input, next, today } = usePathModel(section);
+  const { input, next, today, upcoming } = usePathModel(section);
   const [view, setView] = useState<'map' | 'list'>(readView);
   const selected = (sp.get('skill') as SkillId | null) ?? undefined;
   const pick = (id: SkillId) => router.replace(`/path${section === 'rw' ? '/rw' : ''}?skill=${id}`);
-  const info: Record<string, HexInfo> = Object.fromEntries(pathOf(section).map((s) => { const h = hexState(input, s.id); return [s.id, { state: h.state, stars: h.stars.count, due: h.due, recommended: next.skill === s.id }]; }));
+  const info: Record<string, HexInfo> = Object.fromEntries(pathOf(section).map((s) => { const h = hexState(input, s.id); const rank = upcoming.indexOf(s.id); return [s.id, { state: h.state, stars: h.stars.count, due: h.due, recommended: rank === 0, rank: rank >= 0 ? rank : undefined }]; }));
   // on narrow screens the skill panel sits below the map: bring it into view when a skill is chosen
   useEffect(() => { if (selected && window.innerWidth < 1024) document.getElementById('skill-panel-anchor')?.scrollIntoView({ block: 'start' }); }, [selected]);
   const toggle = (v: 'map' | 'list') => { setView(v); try { localStorage.setItem(VIEW_KEY, v); } catch { /* storage unavailable */ } };

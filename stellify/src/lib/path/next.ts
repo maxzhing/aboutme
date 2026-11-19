@@ -108,12 +108,13 @@ export function formatFor(i: EngineInput, skill: SkillId): Pick<Step, 'kind' | '
   return { kind: 'practice', href: `/path/set?kind=practice&skill=${skill}`, title: `Practice set: ${name}`, minutes: 8 };
 }
 
-export function nextStep(i: EngineInput, opts: { skipReview?: boolean } = {}): Step {
+export function nextStep(i: EngineInput, opts: { skipReview?: boolean; skipQueues?: boolean; exclude?: SkillId[] } = {}): Step {
+  const ex = new Set(opts.exclude ?? []);
   const t = today(i);
   const reviewedToday = i.attempts.filter((a) => a.mode === 'review' && dateKey(a.at) === t).length;
   // 1. due reviews, capped at one block a day
   const due = dueIds(i);
-  if (!opts.skipReview && due.length >= 3 && reviewedToday < REVIEW_CAP) {
+  if (!opts.skipReview && !opts.skipQueues && due.length >= 3 && reviewedToday < REVIEW_CAP) {
     const n = Math.min(REVIEW_CAP, due.length);
     return { kind: 'review', section: i.section, href: `/practice/session?mode=review&n=${n}`, title: `Review ${n} question${n === 1 ? '' : 's'}`, minutes: Math.ceil(n * 1.3), priority: 1,
       reason: `${due.length} question${due.length === 1 ? ' is' : 's are'} due to come back today. Reviewing now is how they stick.` };
@@ -121,11 +122,11 @@ export function nextStep(i: EngineInput, opts: { skipReview?: boolean } = {}): S
   // 2. confident errors
   const ce = confidentErrors(i).slice(0, CONFIDENT_CAP);
   const fixedToday = i.attempts.filter((a) => a.mode === 'path' && dateKey(a.at) === t && ce.includes(a.qid)).length;
-  if (ce.length && fixedToday === 0) {
+  if (!opts.skipQueues && ce.length && fixedToday === 0) {
     return { kind: 'confident', section: i.section, href: `/path/set?kind=confident${i.section ? `&section=${i.section}` : ''}`, title: `Fix ${ce.length} confident error${ce.length === 1 ? '' : 's'}`, minutes: ce.length * 2, priority: 2,
       reason: `You were sure of ${ce.length === 1 ? 'an answer' : `${ce.length} answers`} that ${ce.length === 1 ? 'was' : 'were'} wrong. That usually means a misconception, so it comes first.` };
   }
-  const skills = (i.section ? pathOf(i.section) : [...pathOf('math'), ...pathOf('rw')]);
+  const skills = (i.section ? pathOf(i.section) : [...pathOf('math'), ...pathOf('rw')]).filter((s) => !ex.has(s.id));
   // 3. an unfinished chapter
   for (const s of skills) {
     const ch = i.chapterIds[s.id] ?? [];
@@ -139,7 +140,7 @@ export function nextStep(i: EngineInput, opts: { skipReview?: boolean } = {}): S
   // 4. the highest Score Lever skill with prerequisites met
   const daysLeft = i.examDate ? daysBetween(t, i.examDate) : null;
   const ranked = i.lever
-    .filter((l) => !l.needsDiagnostic && l.perHour && l.perHour.mid > 0 && inSection(i, l.skill))
+    .filter((l) => !l.needsDiagnostic && l.perHour && l.perHour.mid > 0 && inSection(i, l.skill) && !ex.has(l.skill))
     .map((l) => {
       const s = PATH[l.skill];
       const st = skillStars(i, l.skill);
@@ -201,4 +202,15 @@ export function hexState(i: EngineInput, skill: SkillId): { state: HexState; sta
   const started = stars.count > 0 || ch.some((c) => i.chapters[c]?.passedAt) || i.attempts.some((a) => i.getQ(a.qid)?.skill === skill);
   const state: HexState = stars.count >= 3 ? 'mastered' : stars.count >= 2 ? 'proficient' : started ? 'in-progress' : 'not-started';
   return { state, stars, due: dueBySkill(i)[skill] ?? 0, started };
+}
+
+/** The skills the Path should raise: the recommended one first, then the next steps after it (for the map's heights). */
+export function upcomingSkills(i: EngineInput, n = 3): SkillId[] {
+  const out: SkillId[] = [];
+  for (let k = 0; k < n; k++) {
+    const s = nextStep(i, { skipQueues: true, exclude: out });
+    if (!s.skill || out.includes(s.skill)) break;
+    out.push(s.skill);
+  }
+  return out;
 }

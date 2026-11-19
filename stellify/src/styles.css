@@ -203,8 +203,14 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 /* ─── The hex Path ──────────────────────────────────────────────────────────── */
 /* each hex takes its domain colour (--dom); the state sets how much of it shows, and every state also has words */
 .hex, .hex-btn { cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
-.hex .hex-face, .hex-btn .hex-face { transition: transform 160ms ease-out; }
-.hex:active .hex-face, .hex-btn:active .hex-face { transform: translateY(4px); }
+.hex .hex-press, .hex-btn .hex-press { transition: transform 160ms ease-out; }
+.hex:active .hex-press, .hex-btn:active .hex-press { transform: translateY(4px); }
+/* height says order: the recommended hex rises tallest out of the map, the next two less (LIFT in HexMap.tsx) */
+.hex-face { transform: translateY(calc(var(--lift, 0px) * -1)); transition: transform 600ms cubic-bezier(.2, .8, .2, 1); }
+.hex-lifted .hex-face { animation: hex-rise 900ms cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes hex-rise { from { transform: translateY(0); } to { transform: translateY(calc(var(--lift, 0px) * -1)); } }
+.hex-lifted .hex-base { fill: rgb(var(--dom) / .6); }
+.hex-under { fill: rgb(var(--surface)); }
 .hex-base { fill: rgb(var(--dom) / .45); }
 .hex-top { fill: rgb(var(--dom) / .14); stroke: rgb(var(--dom) / .65); stroke-width: 1.4; stroke-linejoin: round; }
 .hex-text { font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; font-size: 11.5px; font-weight: 500; fill: rgb(var(--ink)); pointer-events: none; }
@@ -225,8 +231,10 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 .hex-rec .hex-base { fill: rgb(var(--ink) / .75); }
 .hex-rec .hex-text { fill: rgb(var(--accent-ink)); }
 .hex-rec .hex-stars .off { stroke: rgb(var(--accent-ink) / .85); }
-.hex-rec .hex-face { animation: hex-breathe 2.4s ease-in-out infinite; }
-@keyframes hex-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
+.hex-rec .hex-face { animation: hex-rise 900ms cubic-bezier(.2, .8, .2, 1) both, hex-bob 2.8s 900ms ease-in-out infinite; }
+@keyframes hex-bob { 0%, 100% { transform: translateY(calc(var(--lift, 0px) * -1)); } 50% { transform: translateY(calc(var(--lift, 0px) * -1 + 3px)); } }
+.hex-marker circle { fill: rgb(var(--ink)); stroke: rgb(var(--bg)); stroke-width: 2; }
+.hex-marker-arrow { fill: none; stroke: rgb(var(--bg)); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .hex:focus-visible .hex-top, .hex-btn:focus-visible .hex-top { stroke: rgb(var(--ink)); stroke-width: 3; }
 .hex-btn:focus-visible { outline: none; }
 .hex-selected .hex-top { stroke: rgb(var(--ink)); stroke-width: 2.6; }

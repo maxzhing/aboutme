@@ -5,9 +5,12 @@ import { DIRS, hexCenter, neighbourFor, pathOf, PATH, type PathSkill } from '@/l
 import type { HexState } from '@/lib/path/next';
 import { cn } from './ui';
 
-export interface HexInfo { state: HexState; stars: number; due: number; recommended: boolean }
+export interface HexInfo { state: HexState; stars: number; due: number; recommended: boolean; /** 0 = recommended next, 1–2 = the steps after it (they stand less tall) */ rank?: number }
+/** How far each ranked hex rises out of the map, in SVG units: taller means sooner. */
+export const LIFT = [16, 8, 4];
 const SIZE = 50;
 const BASE = 6;
+const MARK = 24; // room above the map for the raised hex and its marker
 
 /** A pointy-top hexagon with softly rounded corners, as an SVG path. `rc` is the corner radius. */
 export function roundHex(cx: number, cy: number, r: number, rc = r * 0.2) {
@@ -35,16 +38,25 @@ function Hex({ s, h, cx, cy, selected, tabIndex, onPick, onKey, refFn }: { s: Pa
   const r = SIZE - 2;
   const ls = s.label.split('|');
   return (
-    <g ref={refFn} role="button" tabIndex={tabIndex} aria-label={hexLabel(s, h)} aria-pressed={selected} data-testid={`hex-${s.id}`} data-state={h.state} data-recommended={h.recommended || undefined}
-      className={cn('hex', `dom-${s.domain}`, `hex-${h.state}`, h.recommended && 'hex-rec', selected && 'hex-selected')} onClick={onPick} onKeyDown={onKey}>
+    <g ref={refFn} role="button" tabIndex={tabIndex} aria-label={hexLabel(s, h)} aria-pressed={selected} data-testid={`hex-${s.id}`} data-state={h.state} data-recommended={h.recommended || undefined} data-rank={h.rank}
+      className={cn('hex', `dom-${s.domain}`, `hex-${h.state}`, h.recommended && 'hex-rec', h.rank !== undefined && 'hex-lifted', selected && 'hex-selected')} onClick={onPick} onKeyDown={onKey}
+      style={{ ['--lift' as string]: `${h.rank !== undefined ? LIFT[h.rank] : 0}px` }}>
       <title>{hexLabel(s, h)}</title>
+      <path className="hex-under" d={roundHex(cx, cy + BASE, r)} />
       <path className="hex-base" d={roundHex(cx, cy + BASE, r)} />
-      <g className="hex-face">
+      <g className="hex-face"><g className="hex-press">
+        <path className="hex-under" d={roundHex(cx, cy, r)} />
         <path className="hex-top" d={roundHex(cx, cy, r)} />
         <text className="hex-text" x={cx} y={cy - (ls.length > 1 ? 13 : 6)} textAnchor="middle">{ls.map((l, i) => <tspan key={i} x={cx} dy={i ? 13 : 0}>{l}</tspan>)}</text>
         <g className="hex-stars" aria-hidden>{[0, 1, 2].map((i) => <path key={i} d={STAR} transform={`translate(${cx - 13 + i * 13},${cy + 19}) scale(.5)`} className={i < h.stars ? 'on' : 'off'} />)}</g>
         {h.due > 0 && <circle className="hex-due" cx={cx + 26} cy={cy - 26} r={5} aria-hidden />}
-      </g>
+        {h.recommended && (
+          <g className="hex-marker" aria-hidden transform={`translate(${cx},${cy - r - 9})`}>
+            <circle r={12} />
+            <path className="hex-marker-arrow" d="M0 -6 V5 M-4.5 0.5 L0 5.5 L4.5 0.5" />
+          </g>
+        )}
+      </g></g>
     </g>
   );
 }
@@ -58,7 +70,8 @@ export function HexMap({ section, info, selected, onSelect }: { section: Section
   const pts = skills.map((s) => ({ s, ...hexCenter(s.hex, SIZE) }));
   const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
   const pad = SIZE + 8;
-  const vb = [Math.min(...xs) - pad, Math.min(...ys) - pad, Math.max(...xs) - Math.min(...xs) + 2 * pad, Math.max(...ys) - Math.min(...ys) + 2 * pad + BASE];
+  const vb = [Math.min(...xs) - pad, Math.min(...ys) - pad - MARK, Math.max(...xs) - Math.min(...xs) + 2 * pad, Math.max(...ys) - Math.min(...ys) + 2 * pad + BASE + MARK];
+  const drawOrder = [...pts].sort((a, b) => (info[b.s.id]?.rank ?? 9) - (info[a.s.id]?.rank ?? 9) || a.y - b.y);
   const move = (from: PathSkill, e: KeyboardEvent<SVGGElement>) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(from.id); return; }
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
@@ -75,7 +88,7 @@ export function HexMap({ section, info, selected, onSelect }: { section: Section
   }
   return (
     <svg viewBox={vb.join(' ')} className="hexmap mx-auto block h-auto w-full max-w-[640px]" role="group" aria-label={`${section === 'math' ? 'Math' : 'Reading and Writing'} skills map. Use the arrow keys to move between neighbouring skills, Enter to open one.`} data-testid="hexmap">
-      {pts.map(({ s, x, y }) => <Hex key={s.id} s={s} h={info[s.id]} cx={x} cy={y} selected={selected === s.id} tabIndex={focusId === s.id ? 0 : -1}
+      {drawOrder.map(({ s, x, y }) => <Hex key={s.id} s={s} h={info[s.id]} cx={x} cy={y} selected={selected === s.id} tabIndex={focusId === s.id ? 0 : -1}
         onPick={() => { setFocusId(s.id); onSelect(s.id); }} onKey={(e) => move(s, e)} refFn={(el) => { refs.current[s.id] = el; }} />)}
       <g aria-hidden className="hex-constellation">{edges.map(([a, b]) => { const A = hexCenter(a.hex, SIZE), B = hexCenter(b.hex, SIZE); const t0 = 0.43, t1 = 0.57; return <line key={a.id + b.id} x1={A.x + (B.x - A.x) * t0} y1={A.y + (B.y - A.y) * t0} x2={A.x + (B.x - A.x) * t1} y2={A.y + (B.y - A.y) * t1} />; })}</g>
     </svg>
@@ -91,13 +104,14 @@ export function HexZigzag({ section, info, selected, onSelect }: { section: Sect
         const h = info[s.id];
         return (
           <li key={s.id} className={cn('flex items-center gap-3', i % 2 ? 'flex-row-reverse text-right' : '')}>
-            <button type="button" onClick={() => onSelect(s.id)} aria-label={hexLabel(s, h)} aria-pressed={selected === s.id} className={cn('hex-btn shrink-0', `dom-${s.domain}`, `hex-${h.state}`, h.recommended && 'hex-rec')} data-testid={`zig-${s.id}`}>
-              <svg viewBox="-30 -30 60 66" width="64" height="70" aria-hidden className="block">
-                <path className="hex-base" d={roundHex(0, BASE, 27)} />
-                <g className="hex-face"><path className="hex-top" d={roundHex(0, 0, 27)} />
+            <button type="button" onClick={() => onSelect(s.id)} aria-label={hexLabel(s, h)} aria-pressed={selected === s.id} className={cn('hex-btn shrink-0', `dom-${s.domain}`, `hex-${h.state}`, h.recommended && 'hex-rec', h.rank !== undefined && 'hex-lifted')} data-testid={`zig-${s.id}`}
+              style={{ ['--lift' as string]: `${h.rank !== undefined ? LIFT[h.rank] / 2 : 0}px` }}>
+              <svg viewBox="-30 -40 60 76" width="64" height="81" aria-hidden className="block overflow-visible">
+                <path className="hex-under" d={roundHex(0, BASE, 27)} /><path className="hex-base" d={roundHex(0, BASE, 27)} />
+                <g className="hex-face"><g className="hex-press"><path className="hex-under" d={roundHex(0, 0, 27)} /><path className="hex-top" d={roundHex(0, 0, 27)} />
                   <g className="hex-stars">{[0, 1, 2].map((k) => <path key={k} d={STAR} transform={`translate(${-11 + k * 11},4) scale(.45)`} className={k < h.stars ? 'on' : 'off'} />)}</g>
                   {h.due > 0 && <circle className="hex-due" cx={15} cy={-15} r={4} />}
-                </g>
+                </g></g>
               </svg>
             </button>
             <span className="min-w-0 py-2"><span className="block font-medium leading-tight">{PATH[s.id].title}</span><span className="block text-[13px] text-muted">{h.stars} of 3 stars{h.recommended ? ' · next' : ''}{h.due ? ` · ${h.due} due` : ''}</span></span>

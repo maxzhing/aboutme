@@ -3,6 +3,7 @@ import { SKILLS } from '../taxonomy';
 import { PER_TEST } from './insights';
 import { pointsPerQuestion } from '../fullTest/score';
 import { credit } from '../path/stars';
+import { countsForStudent } from '@/data/itemLifecycle';
 
 /**
  * Score Lever (N10): roughly how many scaled points an hour of study on each skill is worth.
@@ -54,7 +55,7 @@ export function scoreLever(attempts: Attempt[], getQ: (id: string) => Question |
   const by = new Map<SkillId, { c: number; n: number; missed: number }>();
   for (const a of firstTries(attempts)) {
     const q = getQ(a.qid);
-    if (!q || (q as Question & { remix?: unknown }).remix) continue;
+    if (!q || (q as Question & { remix?: unknown }).remix || !countsForStudent(q.id)) continue;
     const b = by.get(q.skill) ?? { c: 0, n: 0, missed: 0 };
     b.c += credit(a.correct, a.hints); b.n++; if (!a.correct) b.missed++;
     by.set(q.skill, b);

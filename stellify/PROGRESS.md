@@ -8,9 +8,9 @@ Status: todo / in progress / done / blocked. Updated after every commit.
 
 ## Phase 2: build
 - [x] done: 1. Design system: tokens, fonts, icons for emoji, SVG stars, typesetting, banned words, shortcut cheat sheet, trust pages. Then, at the owner's request, more colour (domain and area colours, gold stars) and rounder shapes.
-- [x] done: 2. Hex Path (map, zigzag, list, keyboard), star rules, next-step engine, Today panel, Path sets, storage migration v1→v2 (tests: tests/path.test.ts, tests/migrate.test.ts, e2e/path.spec.ts)
+- [x] done: 2. Hex Path (map, zigzag, list, keyboard; owner request: recommended hex rises tallest with a smooth animation and an arrow marker, the next two less), star rules, next-step engine, Today panel, Path sets, storage migration v1→v2 (tests: tests/path.test.ts, tests/migrate.test.ts, e2e/path.spec.ts)
 - [x] done: 3. Score Lever (N10): lib/engine/lever.ts, LeverChart on the Path; feeds the engine
-- [ ] todo: 4. Psychometrics: events, cleaning, item stats, lifecycle, maintainer dashboard, consent stub (OFF)
+- [x] done: 4. Psychometrics: first-attempt events, cleaning rules, classical item statistics with flags, item lifecycle (calibrated difficulty feeds routing), anonymous item-data export, maintainer dashboard (#/maintainer), submission stub OFF (tests/psych.test.ts, e2e)
 - [ ] todo: 5. Test-day hub
 - [ ] todo: 6. Worked Examples mode (N11)
 - [ ] todo: 7. Predict-First mode (N8)

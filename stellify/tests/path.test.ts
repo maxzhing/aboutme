@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { PATH, PATH_SKILLS, hexDistance, neighbourFor, pathOf, ring } from '../src/lib/path/skills';
 import { credit, deriveStars, keepStars, retentionFrom, scoreSet, RETENTION_DAYS } from '../src/lib/path/stars';
-import { nextStep, todayPlan, formatFor, skillStars, type EngineInput, REVIEW_CAP } from '../src/lib/path/next';
+import { nextStep, todayPlan, formatFor, skillStars, upcomingSkills, type EngineInput, REVIEW_CAP } from '../src/lib/path/next';
 import { scoreLever, firstTries, LEVER } from '../src/lib/engine/lever';
 import { getQuestion, QUESTIONS } from '../src/data/questions';
 import { emptyPath } from '../src/lib/path/stars';
@@ -163,6 +163,15 @@ describe('next-step engine', () => {
     expect(plan[0].kind).toBe('review');
     expect(plan.reduce((t, p) => t + p.minutes, 0)).toBeLessThanOrEqual(30);
     expect(plan.every((p) => p.reason.length > 10)).toBe(true);
+  });
+  it('upcoming skills: the recommended one first, then distinct next steps (the map raises them in this order)', () => {
+    const up = upcomingSkills(input({ section: 'math' }), 3);
+    expect(up[0]).toBe('lin1');
+    expect(new Set(up).size).toBe(up.length);
+    expect(up.length).toBe(3);
+    // reviews never take the map's spotlight: the raised hex is always a skill
+    const due = Object.fromEntries(QUESTIONS.slice(0, 5).map((q) => [q.id, { due: NOW - DAY, interval: 1, ease: 2.3, reps: 0, lapses: 1 }]));
+    expect(upcomingSkills(input({ section: 'math', srs: due }), 1)[0]).toBe('lin1');
   });
   it('is deterministic', () => {
     const i = input({ srs: due(math.slice(0, 2)) });

@@ -6,6 +6,7 @@ import { estimateTheta, rangeFromResponses, totalRange } from './scoring';
 import { fullTestOfForm, isFullTestForm, type FullTest } from '../fullTest/registry';
 import { buildSatModule, remixForms } from '../fullTest/assemble';
 import { calibratedScore, levelOf, tableScore } from '../fullTest/score';
+import { difficultyOf } from '@/data/itemLifecycle';
 
 /** The adaptive SAT assembled from the student's official questions (see fullTest/assemble.ts). */
 export const REAL_SAT = 'realsat';
@@ -157,7 +158,8 @@ export function startMock(id: string, formId: string, kind: MockAttempt['kind'],
 }
 
 export function routeFor(m1: MockModuleResult, getQ: (id: string) => Question | undefined): 'upper' | 'lower' {
-  const rs = m1.qids.map((id) => getQ(id)).filter((q): q is Question => !!q).map((q) => ({ difficulty: q.difficulty, type: q.type, correct: isCorrect(q, m1.answers[q.id] ?? null) }));
+  // routing uses measured difficulty once an item is calibrated, the author's tag until then (data/itemLifecycle.ts)
+  const rs = m1.qids.map((id) => getQ(id)).filter((q): q is Question => !!q).map((q) => ({ difficulty: difficultyOf(q), type: q.type, correct: isCorrect(q, m1.answers[q.id] ?? null) }));
   return rs.length && estimateTheta(rs).theta >= ROUTE_THETA ? 'upper' : 'lower';
 }
 
