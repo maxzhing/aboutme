@@ -3,7 +3,7 @@ import type { DomainId, SkillId } from '@/lib/types';
 import { SKILL } from '@/lib/taxonomy';
 import { cn } from './ui';
 
-const ICON: Record<SkillId, LucideIcon> = {
+export const SKILL_ICON: Record<SkillId, LucideIcon> = {
   lin1: Scale, linf: TrendingUp, lin2: Slash, sys: Crosshair, ineq: Diff,
   equiv: Puzzle, nleq: Parentheses, nlf: Rocket,
   ratio: ChartPie, pct: Percent, data1: ChartColumn, data2: ChartScatter, prob: Dice5, infer: Target, claims: FlaskConical,
@@ -17,7 +17,7 @@ const ICON: Record<SkillId, LucideIcon> = {
 export const DOMAIN_COLOR: Record<DomainId, string> = { alg: '', adv: '', psda: '', geo: '', ii: '', cs: '', eoi: '', sec: '' };
 
 export function SkillIcon({ skill, size = 44, className, dim }: { skill: SkillId; size?: number; className?: string; dim?: boolean }) {
-  const Icon = ICON[skill] ?? Inf;
+  const Icon = SKILL_ICON[skill] ?? Inf;
   return (
     <span className={cn('relative inline-grid shrink-0 place-items-center rounded-[28%]', `dom-${SKILL[skill].domain}`, dim && 'opacity-50', className)} data-domain={SKILL[skill].domain} style={{ width: size, height: size, color: 'rgb(var(--dom))', background: 'rgb(var(--dom) / .14)' }} aria-hidden>
       <Icon size={Math.round(size * 0.5)} strokeWidth={1.75} />

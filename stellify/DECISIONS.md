@@ -44,3 +44,10 @@ Each entry records what was decided, why, and the alternatives considered.
 15. **Path stars backfill.** On the first load after the update, skills that already meet a star's rule (for
     example Proficient) get that star dated at that moment. Their 7-day retention clock starts then, not
     retroactively. Recomputing the historical date was possible but slow on big histories, for little benefit.
+16. **The Path is a climb, not a honeycomb (owner requests, 2026-11-19).** The owner asked for a clear line in
+    lesson order, climbed like a ladder, zig-zagging, with each topic's hexagons grouped together and heading one
+    way. The result: each unit (one SAT domain) is a touching chain of tall 3D hexagons, climbed from the bottom
+    and drifting right, then left in the next unit. Each shared edge carries an arrow to the next step, and units
+    are joined through their floor labels. Lesson order is now unit by unit in the SAT's domain order, which still
+    puts every prerequisite earlier (tested). The radius-2 honeycomb coordinates stay in the data but are no
+    longer drawn. The recommended step stands taller, with one "Start here" tag.

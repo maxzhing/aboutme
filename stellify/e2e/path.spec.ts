@@ -25,34 +25,42 @@ async function answer(page: Page, correct: boolean) {
   await expect(page.getByTestId('explanation')).toBeVisible();
 }
 
-test('Path: the map, keyboard movement between neighbouring hexes, the skill panel and the list view', async ({ page }) => {
+test('Path: a ladder of 3D hexagon steps in lesson order, climbed with the arrow keys, with a skill panel and a list view', async ({ page }) => {
   const errors = watch(page);
   await boot(page);
   await go(page, '/path');
   await expect(page.getByTestId('today')).toBeVisible();
-  await expect(page.getByTestId('hexmap').locator('[data-testid^="hex-"]')).toHaveCount(19);
-  // exactly one recommended hex, and its label says so
+  const ladder = page.getByTestId('lesson-path');
+  await expect(ladder.locator('[data-testid^="node-"]')).toHaveCount(19);
+  // units in the SAT's domain order, with step 1 at the bottom of the ladder
+  await expect(page.getByTestId('unit-alg')).toContainText('Unit 1');
+  const y = async (id: string) => (await page.getByTestId(id).boundingBox())!.y;
+  expect(await y('node-lin2')).toBeLessThan(await y('node-lin1'));
+  expect(await y('unit-adv')).toBeLessThan(await y('unit-alg'));
+  // exactly one recommended step, the only one with a "Start here" tag, and it stands taller
   const rec = page.locator('[data-recommended="true"]');
   await expect(rec).toHaveCount(1);
-  await expect(rec).toHaveAttribute('aria-label', /recommended next/);
-  // height says order: the recommended hex rises tallest, the next two less
-  await expect(rec).toHaveAttribute('data-rank', '0');
-  const lift = (r: string) => page.locator(`[data-rank="${r}"]`).evaluate((el) => parseFloat(getComputedStyle(el).getPropertyValue('--lift')));
-  expect(await lift('0')).toBeGreaterThan(await lift('1'));
-  expect(await lift('1')).toBeGreaterThan(await lift('2'));
-  // roving tabindex: one hex is in the tab order; arrow keys move to neighbours
-  await expect(page.locator('#main [data-testid^="hex-"][tabindex="0"]')).toHaveCount(1);
-  await page.getByTestId('hex-lin1').focus();
-  await page.keyboard.press('ArrowLeft');
-  await expect(page.getByTestId('hex-lin2')).toBeFocused();
-  await page.keyboard.press('ArrowLeft');
-  await expect(page.getByTestId('hex-sys')).toBeFocused();
+  await expect(rec).toHaveAttribute('aria-label', /Step 1 of 19: Linear equations.*recommended next/);
+  await expect(page.getByTestId('start-bubble')).toHaveCount(1);
+  await expect(rec.locator('.node-riser')).toHaveCount(1);
+  // roving tabindex: one step is in the tab order; up climbs, down steps back
+  await expect(ladder.locator('[data-testid^="node-"][tabindex="0"]')).toHaveCount(1);
+  await page.getByTestId('node-lin1').focus();
+  await page.keyboard.press('ArrowUp');
+  await expect(page.getByTestId('node-lin2')).toBeFocused();
+  await page.keyboard.press('ArrowUp');
+  await page.keyboard.press('ArrowUp');
+  await page.keyboard.press('ArrowUp');
+  await expect(page.getByTestId('node-sys')).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowUp');
   await page.keyboard.press('Enter');
-  await expect(page.getByTestId('skill-panel')).toContainText('Linear systems');
   await expect(page.getByTestId('skill-panel')).toContainText('★1 Learned');
+  await expect(page.getByTestId('skill-panel')).toContainText('Linear systems');
   // list view: the same skills as plain rows; the choice is remembered
   await page.getByTestId('view-list').click();
   await expect(page.getByTestId('path-list').getByRole('button')).toHaveCount(19);
+  await page.waitForTimeout(400); // let saves to browser storage finish
   await page.reload();
   await expect(page.getByTestId('path-list')).toBeVisible();
   await go(page, '/path/rw');
@@ -73,26 +81,27 @@ test('Path: a practice set passed on the first try earns stars, and the result i
   await expect(page.getByTestId('set-result')).toContainText('Skip check: Linear equations');
   await expect(page.getByTestId('set-result')).toContainText('passed');
   await page.getByTestId('view-map').click();
-  await expect(page.getByTestId('hex-lin1')).toHaveAttribute('aria-label', /Linear equations, 2 of 3 stars/);
+  await expect(page.getByTestId('node-lin1')).toHaveAttribute('aria-label', /Linear equations, 2 of 3 stars/);
   // stars are kept after a reload
   await page.waitForTimeout(600); // let the save to browser storage finish
   await page.reload();
-  await expect(page.getByTestId('hex-lin1')).toHaveAttribute('aria-label', /2 of 3 stars/);
+  await expect(page.getByTestId('node-lin1')).toHaveAttribute('aria-label', /2 of 3 stars/);
   expect(errors).toEqual([]);
 });
 
-test('Path on a phone: a zigzag of the same hexes and a sticky next step', async ({ page }) => {
-  await page.setViewportSize({ width: 360, height: 760 });
+test('Path on a phone: the same ladder fits, steps are big enough to tap, a skill opens as a dialog, and the next step is always one tap away', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
   const errors = watch(page);
   await boot(page);
   await go(page, '/path');
-  await expect(page.getByTestId('hexzig')).toBeVisible();
-  await expect(page.getByTestId('hexmap')).toBeHidden();
+  await expect(page.getByTestId('lesson-path')).toBeVisible();
   await expect(page.getByTestId('sticky-next')).toBeVisible();
-  const box = await page.getByTestId('zig-lin1').boundingBox();
+  const box = await page.getByTestId('node-lin1').boundingBox();
   expect(box!.width).toBeGreaterThanOrEqual(44);
   expect(box!.height).toBeGreaterThanOrEqual(44);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
+  await page.getByTestId('node-lin1').click();
+  await expect(page.getByRole('dialog')).toContainText('★1 Learned');
   expect(errors).toEqual([]);
 });
 

@@ -33,40 +33,50 @@ const LABEL: Record<SkillId, string> = {
 const P = (id: SkillId, q: number, r: number, prereqs: SkillId[]): Omit<PathSkill, 'order'> =>
   ({ id, section: SKILL[id].section, domain: SKILL[id].domain, title: SKILL[id].short, label: LABEL[id], prereqs, hex: { q, r } });
 
+/* Ladder order (owner request: one clear line, climbed bottom-up): unit by unit in the SAT's own domain order,
+   and within a unit by prerequisites. Every prerequisite still comes earlier (tests/path.test.ts). */
 const MATH: Omit<PathSkill, 'order'>[] = [
+  // Algebra
   P('lin1', 0, 0, []),
   P('lin2', -1, 0, ['lin1']),
   P('ineq', -1, 1, ['lin1']),
-  P('equiv', 0, 1, ['lin1']),
-  P('ratio', 1, -1, []),
-  P('data1', 1, 0, []),
-  P('area', 0, -1, []),
   P('linf', -2, 1, ['lin2']),
   P('sys', -2, 0, ['lin2']),
-  P('lines', -1, -1, ['lin2']),
-  P('pct', 2, -2, ['ratio']),
-  P('prob', 1, -2, ['ratio']),
+  // Advanced Math
+  P('equiv', 0, 1, ['lin1']),
   P('nleq', -1, 2, ['equiv', 'sys']),
   P('nlf', -2, 2, ['linf', 'nleq']),
+  // Problem-Solving and Data Analysis
+  P('ratio', 1, -1, []),
+  P('pct', 2, -2, ['ratio']),
+  P('prob', 1, -2, ['ratio']),
+  P('data1', 1, 0, []),
   P('data2', 1, 1, ['linf', 'data1']),
   P('infer', 2, -1, ['data1', 'pct']),
   P('claims', 2, 0, ['infer']),
+  // Geometry and Trigonometry
+  P('area', 0, -1, []),
+  P('lines', -1, -1, ['lin2']),
   P('trig', 0, -2, ['lines']),
   P('circ', 0, 2, ['trig', 'equiv']),
 ];
 
 const RW: Omit<PathSkill, 'order'>[] = [
+  // Information and Ideas
   P('cid', 0, 0, []),
-  P('wic', 0, -1, []),
-  P('bnd', 1, 0, []),
   P('coet', -1, 1, ['cid']),
   P('coeq', 1, -1, ['cid']),
-  P('tra', 0, 1, ['cid']),
-  P('tsp', -1, 0, ['cid', 'wic']),
-  P('fss', 1, 1, ['bnd']),
   P('inf', -2, 1, ['coet']),
-  P('syn', -1, 2, ['tra', 'coet']),
+  // Craft and Structure
+  P('wic', 0, -1, []),
+  P('tsp', -1, 0, ['cid', 'wic']),
   P('ctc', -2, 0, ['tsp']),
+  // Expression of Ideas
+  P('tra', 0, 1, ['cid']),
+  P('syn', -1, 2, ['tra', 'coet']),
+  // Standard English Conventions
+  P('bnd', 1, 0, []),
+  P('fss', 1, 1, ['bnd']),
 ];
 
 export const PATH_SKILLS: PathSkill[] = [...MATH, ...RW].map((s, i, all) => ({ ...s, order: all.filter((x) => x.section === s.section).indexOf(s) }));

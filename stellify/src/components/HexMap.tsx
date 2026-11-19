@@ -1,16 +1,12 @@
 'use client';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import type { Section, SkillId } from '@/lib/types';
-import { DIRS, hexCenter, neighbourFor, pathOf, PATH, type PathSkill } from '@/lib/path/skills';
+import { pathOf, type PathSkill } from '@/lib/path/skills';
 import type { HexState } from '@/lib/path/next';
+import { DOMAIN } from '@/lib/taxonomy';
 import { cn } from './ui';
 
-export interface HexInfo { state: HexState; stars: number; due: number; recommended: boolean; /** 0 = recommended next, 1–2 = the steps after it (they stand less tall) */ rank?: number }
-/** How far each ranked hex rises out of the map, in SVG units: taller means sooner. */
-export const LIFT = [16, 8, 4];
-const SIZE = 50;
-const BASE = 6;
-const MARK = 24; // room above the map for the raised hex and its marker
+export interface HexInfo { state: HexState; stars: number; due: number; recommended: boolean; /** 0 = recommended next */ rank?: number }
 
 /** A pointy-top hexagon with softly rounded corners, as an SVG path. `rc` is the corner radius. */
 export function roundHex(cx: number, cy: number, r: number, rc = r * 0.2) {
@@ -25,100 +21,156 @@ export function roundHex(cx: number, cy: number, r: number, rc = r * 0.2) {
   }
   return `${d} Z`;
 }
-const STAR = 'M0-10 2.9-3.1 10-3.1 4.3 1.2 6.5 8.1 0 3.8-6.5 8.1-4.3 1.2-10-3.1-2.9-3.1Z';
-export { STAR as STAR_PATH };
 
-/** The words a screen reader hears for a hex (and the tooltip). */
-export function hexLabel(s: PathSkill, h: HexInfo) {
+/** The words a screen reader hears for a step (and its tooltip). */
+export function hexLabel(s: PathSkill, h: HexInfo, n: number, total: number) {
   const state = { 'not-started': 'not started', 'in-progress': 'in progress', proficient: 'proficient', mastered: 'mastered' }[h.state];
-  return `${s.title}, ${h.stars} of 3 stars, ${state}${h.due ? `, ${h.due} review${h.due === 1 ? '' : 's'} due` : ''}${h.recommended ? ', recommended next' : ''}`;
+  return `Step ${n} of ${total}: ${s.title}, ${h.stars} of 3 stars, ${state}${h.due ? `, ${h.due} review${h.due === 1 ? '' : 's'} due` : ''}${h.recommended ? ', recommended next' : ''}`;
 }
 
-function Hex({ s, h, cx, cy, selected, tabIndex, onPick, onKey, refFn }: { s: PathSkill; h: HexInfo; cx: number; cy: number; selected: boolean; tabIndex: number; onPick: () => void; onKey: (e: KeyboardEvent<SVGGElement>) => void; refFn: (el: SVGGElement | null) => void }) {
-  const r = SIZE - 2;
-  const ls = s.label.split('|');
-  return (
-    <g ref={refFn} role="button" tabIndex={tabIndex} aria-label={hexLabel(s, h)} aria-pressed={selected} data-testid={`hex-${s.id}`} data-state={h.state} data-recommended={h.recommended || undefined} data-rank={h.rank}
-      className={cn('hex', `dom-${s.domain}`, `hex-${h.state}`, h.recommended && 'hex-rec', h.rank !== undefined && 'hex-lifted', selected && 'hex-selected')} onClick={onPick} onKeyDown={onKey}
-      style={{ ['--lift' as string]: `${h.rank !== undefined ? LIFT[h.rank] : 0}px` }}>
-      <title>{hexLabel(s, h)}</title>
-      <path className="hex-under" d={roundHex(cx, cy + BASE, r)} />
-      <path className="hex-base" d={roundHex(cx, cy + BASE, r)} />
-      <g className="hex-face"><g className="hex-press">
-        <path className="hex-under" d={roundHex(cx, cy, r)} />
-        <path className="hex-top" d={roundHex(cx, cy, r)} />
-        <text className="hex-text" x={cx} y={cy - (ls.length > 1 ? 13 : 6)} textAnchor="middle">{ls.map((l, i) => <tspan key={i} x={cx} dy={i ? 13 : 0}>{l}</tspan>)}</text>
-        <g className="hex-stars" aria-hidden>{[0, 1, 2].map((i) => <path key={i} d={STAR} transform={`translate(${cx - 13 + i * 13},${cy + 19}) scale(.5)`} className={i < h.stars ? 'on' : 'off'} />)}</g>
-        {h.due > 0 && <circle className="hex-due" cx={cx + 26} cy={cy - 26} r={5} aria-hidden />}
-        {h.recommended && (
-          <g className="hex-marker" aria-hidden transform={`translate(${cx},${cy - r - 9})`}>
-            <circle r={12} />
-            <path className="hex-marker-arrow" d="M0 -6 V5 M-4.5 0.5 L0 5.5 L4.5 0.5" />
-          </g>
-        )}
-      </g></g>
-    </g>
-  );
-}
+/* ── geometry of the climb (CSS px) ──────────────────────────────────────── */
+const COL = 288;          // column width: fits a 320px phone
+const R = 48;             // hexagon circumradius
+const DX = Math.round(R * 0.866 * 10) / 10; // half a hexagon's width: the sideways step to a touching neighbour
+const DY = R * 1.5;       // the upward step to a touching neighbour
+const DEPTH = 16;         // how thick the 3D sides are
+const TOP = 20;           // room above the face for the recommended step to rise
+const LIFT = 14;          // how much higher the recommended step stands
+const NODE_W = Math.ceil(2 * DX) + 6, NODE_H = TOP + 2 * R + DEPTH;
+const FACE_Y = TOP + R;   // face centre inside a node box
+const XMIN = DX + 4, XMAX = COL - DX - 4;
+const STAR = 'M0-10 2.9-3.1 10-3.1 4.3 1.2 6.5 8.1 0 3.8-6.5 8.1-4.3 1.2-10-3.1-2.9-3.1Z';
 
-export function HexMap({ section, info, selected, onSelect }: { section: Section; info: Record<string, HexInfo>; selected?: SkillId; onSelect: (s: SkillId) => void }) {
-  const skills = pathOf(section);
-  const rec = skills.find((s) => info[s.id]?.recommended)?.id;
-  const [focusId, setFocusId] = useState<SkillId>(selected ?? rec ?? skills[0].id);
-  const refs = useRef<Record<string, SVGGElement | null>>({});
-  useEffect(() => { if (selected) setFocusId(selected); }, [selected]);
-  const pts = skills.map((s) => ({ s, ...hexCenter(s.hex, SIZE) }));
-  const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
-  const pad = SIZE + 8;
-  const vb = [Math.min(...xs) - pad, Math.min(...ys) - pad - MARK, Math.max(...xs) - Math.min(...xs) + 2 * pad, Math.max(...ys) - Math.min(...ys) + 2 * pad + BASE + MARK];
-  const drawOrder = [...pts].sort((a, b) => (info[b.s.id]?.rank ?? 9) - (info[a.s.id]?.rank ?? 9) || a.y - b.y);
-  const move = (from: PathSkill, e: KeyboardEvent<SVGGElement>) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(from.id); return; }
-    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
-    e.preventDefault();
-    const to = neighbourFor(from, e.key as 'ArrowLeft');
-    if (to) { setFocusId(to.id); refs.current[to.id]?.focus(); }
-  };
-  // faint constellation lines between neighbouring skills that both have ★2 or more
-  const lit = (id: SkillId) => (info[id]?.stars ?? 0) >= 2;
-  const edges: [PathSkill, PathSkill][] = [];
-  for (const s of skills) for (const [dq, dr] of DIRS) {
-    const n = skills.find((x) => x.hex.q === s.hex.q + dq && x.hex.r === s.hex.r + dr);
-    if (n && s.id < n.id && lit(s.id) && lit(n.id)) edges.push([s, n]);
+/**
+ * A unit is one touching chain of hexagons that climbs and drifts one way: Unit 1 up to the right, Unit 2 up to
+ * the left, and so on. Each step is a grid neighbour of the one before; at the edge of the column the chain
+ * doubles back one step, then carries on.
+ */
+export function unitXs(ui: number, n: number): number[] {
+  const dir = ui % 2 === 0 ? 1 : -1;
+  let x = dir > 0 ? XMIN : XMAX;
+  const xs = [x];
+  for (let k = 1; k < n; k++) {
+    x = x + dir * DX <= XMAX && x + dir * DX >= XMIN ? x + dir * DX : x - dir * DX;
+    xs.push(Math.round(x * 10) / 10);
   }
+  return xs;
+}
+
+/** One tall 3D hexagon step: thick solid walls under a top face that carries the step's number, name and stars. */
+function Node3D({ s, h, n }: { s: PathSkill; h: HexInfo; n: number }) {
+  const cx = NODE_W / 2;
+  const w = R * 0.866;
+  const lines = s.label.split('|');
+  const ty = FACE_Y - (lines.length > 1 ? 16 : 9);
   return (
-    <svg viewBox={vb.join(' ')} className="hexmap mx-auto block h-auto w-full max-w-[640px]" role="group" aria-label={`${section === 'math' ? 'Math' : 'Reading and Writing'} skills map. Use the arrow keys to move between neighbouring skills, Enter to open one.`} data-testid="hexmap">
-      {drawOrder.map(({ s, x, y }) => <Hex key={s.id} s={s} h={info[s.id]} cx={x} cy={y} selected={selected === s.id} tabIndex={focusId === s.id ? 0 : -1}
-        onPick={() => { setFocusId(s.id); onSelect(s.id); }} onKey={(e) => move(s, e)} refFn={(el) => { refs.current[s.id] = el; }} />)}
-      <g aria-hidden className="hex-constellation">{edges.map(([a, b]) => { const A = hexCenter(a.hex, SIZE), B = hexCenter(b.hex, SIZE); const t0 = 0.43, t1 = 0.57; return <line key={a.id + b.id} x1={A.x + (B.x - A.x) * t0} y1={A.y + (B.y - A.y) * t0} x2={A.x + (B.x - A.x) * t1} y2={A.y + (B.y - A.y) * t1} />; })}</g>
+    <svg width={NODE_W} height={NODE_H} viewBox={`0 0 ${NODE_W} ${NODE_H}`} aria-hidden className="node-svg block overflow-visible">
+      <g className="node-walls">
+        <path className="node-side" d={roundHex(cx, FACE_Y + DEPTH, R)} />
+        <rect className="node-side" x={cx - w} y={FACE_Y} width={2 * w} height={DEPTH} />
+        <path className="node-shade" d={roundHex(cx, FACE_Y + DEPTH, R)} />
+        <rect className="node-shade" x={cx - w} y={FACE_Y} width={2 * w} height={DEPTH} />
+        {h.recommended && <rect className="node-riser node-side" x={cx - w} y={FACE_Y - LIFT} width={2 * w} height={LIFT + 1} />}
+      </g>
+      <g className="node-face">
+        <path className="node-top" d={roundHex(cx, FACE_Y, R)} />
+        <path className="node-shine" d={roundHex(cx, FACE_Y - 1.5, R * 0.84)} />
+        <text className="node-num" x={cx} y={ty - 13} textAnchor="middle">{n}</text>
+        <text className="node-text" x={cx} y={ty + 3} textAnchor="middle">{lines.map((l, i) => <tspan key={i} x={cx} dy={i ? 13 : 0}>{l}</tspan>)}</text>
+        <g transform={`translate(${cx - 14},${FACE_Y + 24})`}>{[0, 1, 2].map((i) => <path key={i} d={STAR} transform={`translate(${i * 14},0) scale(.5)`} className={i < h.stars ? 'node-star on' : 'node-star off'} />)}</g>
+        {h.due > 0 && <circle className="node-due" cx={cx + R * 0.58} cy={FACE_Y - R * 0.6} r={6} />}
+      </g>
     </svg>
   );
 }
 
-/** Phones: the same hexes as a vertical zigzag in route order. */
-export function HexZigzag({ section, info, selected, onSelect }: { section: Section; info: Record<string, HexInfo>; selected?: SkillId; onSelect: (s: SkillId) => void }) {
+/**
+ * The Path as a climb: each unit (one SAT domain) is a touching chain of tall 3D hexagons, climbed from the
+ * bottom up and drifting one way, with a small arrow on every shared edge pointing to the next step. Units sit
+ * on their own floor label and are joined by a short trail. Started steps take their domain colour, unstarted
+ * ones stay grey, and only the recommended step stands taller, with one "Start here" tag. Arrow keys climb up
+ * and down; Enter opens a step. The climb scrolls inside its own box and opens at the current step.
+ */
+export function LessonPath({ section, info, selected, onSelect }: { section: Section; info: Record<string, HexInfo>; selected?: SkillId; onSelect: (s: SkillId) => void }) {
   const skills = [...pathOf(section)].sort((a, b) => a.order - b.order);
+  const rec = skills.find((s) => info[s.id]?.recommended)?.id;
+  const [focusId, setFocusId] = useState<SkillId>(selected ?? rec ?? skills[0].id);
+  const refs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (selected) setFocusId(selected); }, [selected]);
+  // open at the current step: scroll the climb's own box (never the page) so the recommended step is centred
+  useEffect(() => {
+    const el = refs.current[rec ?? skills[0].id], b = box.current;
+    if (!el || !b) return;
+    const r = el.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    b.scrollTop += r.top - rb.top - (rb.height - r.height) / 2;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section, rec]);
+  const move = (i: number, e: KeyboardEvent<HTMLButtonElement>) => {
+    const d = e.key === 'ArrowUp' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowDown' || e.key === 'ArrowLeft' ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    const to = skills[Math.max(0, Math.min(skills.length - 1, i + d))];
+    setFocusId(to.id); refs.current[to.id]?.focus();
+  };
+  const units: { domain: PathSkill['domain']; items: { s: PathSkill; i: number }[] }[] = [];
+  skills.forEach((s, i) => { const last = units[units.length - 1]; if (last?.domain === s.domain) last.items.push({ s, i }); else units.push({ domain: s.domain, items: [{ s, i }] }); });
   return (
-    <ol className="hexzig relative mx-auto max-w-[360px]" aria-label={`${section === 'math' ? 'Math' : 'Reading and Writing'} skills in route order`} data-testid="hexzig">
-      {skills.map((s, i) => {
-        const h = info[s.id];
-        return (
-          <li key={s.id} className={cn('flex items-center gap-3', i % 2 ? 'flex-row-reverse text-right' : '')}>
-            <button type="button" onClick={() => onSelect(s.id)} aria-label={hexLabel(s, h)} aria-pressed={selected === s.id} className={cn('hex-btn shrink-0', `dom-${s.domain}`, `hex-${h.state}`, h.recommended && 'hex-rec', h.rank !== undefined && 'hex-lifted')} data-testid={`zig-${s.id}`}
-              style={{ ['--lift' as string]: `${h.rank !== undefined ? LIFT[h.rank] / 2 : 0}px` }}>
-              <svg viewBox="-30 -40 60 76" width="64" height="81" aria-hidden className="block overflow-visible">
-                <path className="hex-under" d={roundHex(0, BASE, 27)} /><path className="hex-base" d={roundHex(0, BASE, 27)} />
-                <g className="hex-face"><g className="hex-press"><path className="hex-under" d={roundHex(0, 0, 27)} /><path className="hex-top" d={roundHex(0, 0, 27)} />
-                  <g className="hex-stars">{[0, 1, 2].map((k) => <path key={k} d={STAR} transform={`translate(${-11 + k * 11},4) scale(.45)`} className={k < h.stars ? 'on' : 'off'} />)}</g>
-                  {h.due > 0 && <circle className="hex-due" cx={15} cy={-15} r={4} />}
-                </g></g>
-              </svg>
-            </button>
-            <span className="min-w-0 py-2"><span className="block font-medium leading-tight">{PATH[s.id].title}</span><span className="block text-[13px] text-muted">{h.stars} of 3 stars{h.recommended ? ' · next' : ''}{h.due ? ` · ${h.due} due` : ''}</span></span>
-          </li>
-        );
-      })}
-    </ol>
+    <div ref={box} className="ladder-box" data-testid="ladder-box">
+      {/* DOM order is lesson order (step 1 first); the column is reversed so step 1 sits at the bottom */}
+      <div className="lesson-path mx-auto flex flex-col-reverse" style={{ maxWidth: COL }} role="group" aria-label={`${section === 'math' ? 'Math' : 'Reading and Writing'} path: ${skills.length} steps in lesson order, climbed from the bottom. Use the arrow keys to climb up or down, Enter to open a step.`} data-testid="lesson-path">
+        {units.map((u, ui) => {
+          const n = u.items.length;
+          const got = u.items.reduce((t, x) => t + (info[x.s.id]?.stars ?? 0), 0);
+          const xs = unitXs(ui, n);
+          const height = (n - 1) * DY + NODE_H;
+          const boxTop = (k: number) => (n - 1 - k) * DY;
+          const cy = (k: number) => boxTop(k) + FACE_Y;
+          const recK = u.items.findIndex((x) => info[x.s.id]?.recommended);
+          return (
+            <section key={u.domain} className="flex flex-col-reverse" aria-label={`Unit ${ui + 1}: ${DOMAIN[u.domain].name}`}>
+              <div className={cn('path-unit', `dom-${u.domain}`)} data-testid={`unit-${u.domain}`}>
+                <span className="min-w-0"><span className="block text-[12px] font-semibold uppercase tracking-[0.1em]">Unit {ui + 1}{ui === 0 ? ' · start at the bottom' : ''}</span><span className="block font-display text-[19px] leading-tight">{DOMAIN[u.domain].name}</span></span>
+                <span className="shrink-0 text-[13px]" data-num>{got} of {n * 3} stars</span>
+              </div>
+              <div className="relative mb-4 mt-1" style={{ height }}>
+                <div className={cn('path-unit-bg', `dom-${u.domain}`)} aria-hidden />
+                <svg className={cn('pointer-events-none absolute inset-0 overflow-visible', `dom-${u.domain}`)} width={COL} height={height} aria-hidden>
+                  {/* a short trail from the floor label up to the first step, and from the last step up to the next unit */}
+                  <path d={`M${xs[0]} ${height + 22} L${xs[0]} ${cy(0) + R}`} className={cn('path-trail', (info[u.items[0].s.id]?.stars ?? 0) >= 1 && 'path-trail-done')} />
+                  {ui < units.length - 1 && <path d={`M${xs[n - 1]} ${cy(n - 1) - R} L${xs[n - 1]} -26`} className={cn('path-trail', (info[u.items[n - 1].s.id]?.stars ?? 0) >= 1 && 'path-trail-done')} />}
+                </svg>
+                {u.items.map(({ s, i }, k) => {
+                  const h = info[s.id];
+                  return (
+                    <button key={s.id} ref={(el) => { refs.current[s.id] = el; }} type="button" tabIndex={focusId === s.id ? 0 : -1} onClick={() => { setFocusId(s.id); onSelect(s.id); }} onKeyDown={(e) => move(i, e)}
+                      aria-label={hexLabel(s, h, i + 1, skills.length)} aria-pressed={selected === s.id}
+                      className={cn('node absolute', `dom-${s.domain}`, `node-${h.state}`, h.recommended && 'node-rec', selected === s.id && 'node-selected')}
+                      style={{ position: "absolute", left: xs[k] - NODE_W / 2, top: boxTop(k), zIndex: n - k + 1 }}
+                      data-testid={`node-${s.id}`} data-state={h.state} data-recommended={h.recommended || undefined} data-rank={h.rank}>
+                      <Node3D s={s} h={h} n={i + 1} />
+                    </button>
+                  );
+                })}
+                {/* arrows on the shared edges, pointing to the next step; drawn above every step */}
+                <svg className="pointer-events-none absolute inset-0 overflow-visible" style={{ zIndex: n + 5 }} width={COL} height={height} aria-hidden>
+                  {u.items.slice(1).map((_, k) => {
+                    const x0 = xs[k], x1 = xs[k + 1], y0 = cy(k), y1 = cy(k + 1);
+                    const ang = (Math.atan2(y1 - y0, x1 - x0) * 180) / Math.PI;
+                    return <g key={k} transform={`translate(${(x0 + x1) / 2},${(y0 + y1) / 2}) rotate(${ang})`} className="path-step-arrow"><circle r={9.5} /><path d="M-3 -4.5 L2.5 0 L-3 4.5" /></g>;
+                  })}
+                </svg>
+                {recK >= 0 && (
+                  <span className={cn('path-bubble absolute', xs[recK] <= COL / 2 ? 'path-bubble-right' : 'path-bubble-left')} style={{ top: cy(recK) - LIFT - 14, zIndex: n + 6, ...(xs[recK] <= COL / 2 ? { left: xs[recK] + DX + 10 } : { right: COL - xs[recK] + DX + 10 }) }} aria-hidden data-testid="start-bubble">
+                    {info[u.items[recK].s.id].stars ? 'Continue' : 'Start here'}
+                  </span>
+                )}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

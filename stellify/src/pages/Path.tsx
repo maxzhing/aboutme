@@ -1,13 +1,13 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Check, List, Map as MapIcon } from 'lucide-react';
+import { ArrowRight, Check, List, Route } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { HexMap, HexZigzag, Stars, type HexInfo } from '@/components/HexMap';
+import { LessonPath, Stars, type HexInfo } from '@/components/HexMap';
 import { LeverChart } from '@/components/LeverChart';
 import { SessionRunner } from '@/components/SessionRunner';
 import { TodayPanel } from '@/components/TodayPanel';
-import { Card, Empty, PageHeader, cn } from '@/components/ui';
+import { Card, Empty, Modal, PageHeader, cn } from '@/components/ui';
 import { getQuestion, QUESTIONS } from '@/data/questions';
 import { WORKED_BY_SKILL } from '@/data/worked';
 import { useOverview, useWeekRhythm } from '@/lib/hooks';
@@ -53,8 +53,9 @@ export function PathPage({ section = 'math' }: { section?: Section }) {
   const selected = (sp.get('skill') as SkillId | null) ?? undefined;
   const pick = (id: SkillId) => router.replace(`/path${section === 'rw' ? '/rw' : ''}?skill=${id}`);
   const info: Record<string, HexInfo> = Object.fromEntries(pathOf(section).map((s) => { const h = hexState(input, s.id); const rank = upcoming.indexOf(s.id); return [s.id, { state: h.state, stars: h.stars.count, due: h.due, recommended: rank === 0, rank: rank >= 0 ? rank : undefined }]; }));
-  // on narrow screens the skill panel sits below the map: bring it into view when a skill is chosen
-  useEffect(() => { if (selected && window.innerWidth < 1024) document.getElementById('skill-panel-anchor')?.scrollIntoView({ block: 'start' }); }, [selected]);
+  const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1024);
+  useEffect(() => { const on = () => setNarrow(window.innerWidth < 1024); window.addEventListener('resize', on); return () => window.removeEventListener('resize', on); }, []);
+  const closePanel = () => router.replace(`/path${section === 'rw' ? '/rw' : ''}`);
   const toggle = (v: 'map' | 'list') => { setView(v); try { localStorage.setItem(VIEW_KEY, v); } catch { /* storage unavailable */ } };
   const recent = lastSet && Date.now() - lastSet.at < 15 * 60_000 && lastSet.section === section ? lastSet : undefined;
   return (
@@ -68,26 +69,26 @@ export function PathPage({ section = 'math' }: { section?: Section }) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section aria-labelledby="map-h">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h2 id="map-h" className="text-[22px]">Skills</h2>
+            <h2 id="map-h" className="text-[22px]">Your path</h2>
             <div className="flex gap-1" role="group" aria-label="Show the skills as">
-              <button type="button" className={cn('btn-quiet !min-h-[36px] !px-3 text-[14px]', view === 'map' && '!bg-raised !text-ink')} aria-pressed={view === 'map'} onClick={() => toggle('map')} data-testid="view-map"><MapIcon size={15} aria-hidden />Map</button>
+              <button type="button" className={cn('btn-quiet !min-h-[36px] !px-3 text-[14px]', view === 'map' && '!bg-raised !text-ink')} aria-pressed={view === 'map'} onClick={() => toggle('map')} data-testid="view-map"><Route size={15} aria-hidden />Path</button>
               <button type="button" className={cn('btn-quiet !min-h-[36px] !px-3 text-[14px]', view === 'list' && '!bg-raised !text-ink')} aria-pressed={view === 'list'} onClick={() => toggle('list')} data-testid="view-list"><List size={15} aria-hidden />List</button>
             </div>
           </div>
           {view === 'map' ? (
             <>
-              <div className="hidden sm:block"><HexMap section={section} info={info} selected={selected} onSelect={pick} /></div>
-              <div className="sm:hidden"><HexZigzag section={section} info={info} selected={selected} onSelect={pick} /></div>
-              <p className="mt-3 text-[13px] text-faint">Stars fill as you earn them. A dot means reviews are due. Solid blue is the recommended next step.</p>
+              <LessonPath section={section} info={info} selected={selected} onSelect={pick} />
+              <p className="mt-4 text-center text-[13px] text-faint">Steps go in lesson order. Coloured steps are started, grey ones are not yet, and the blue one is next. A dot means reviews are due.</p>
             </>
           ) : <SkillList section={section} info={info} onSelect={pick} />}
         </section>
-        <aside className="space-y-6" id="skill-panel-anchor">
-          {selected && PATH[selected]?.section === section ? <SkillPanel skill={selected} input={input} recommended={next.skill === selected} /> : (
-            <Card><h2 className="text-[20px]">Next step</h2><p className="mt-1 text-[15px] font-medium">{next.title}</p><p className="mt-1 text-[14px] text-muted">{next.reason}</p><Link href={next.href} className="btn-primary mt-3" data-testid="path-next">Start<ArrowRight size={16} aria-hidden /></Link><p className="mt-3 text-[13px] text-faint">Select any skill on the map to see its stars and every way to work on it.</p></Card>
+        <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
+          {selected && PATH[selected]?.section === section && !narrow ? <SkillPanel skill={selected} input={input} recommended={next.skill === selected} /> : (
+            <Card><h2 className="text-[20px]">Next step</h2><p className="mt-1 text-[15px] font-medium">{next.title}</p><p className="mt-1 text-[14px] text-muted">{next.reason}</p><Link href={next.href} className="btn-primary mt-3" data-testid="path-next">Start<ArrowRight size={16} aria-hidden /></Link><p className="mt-3 text-[13px] text-faint">Tap any step on the path to see its stars and every way to work on it.</p></Card>
           )}
         </aside>
       </div>
+      {narrow && selected && PATH[selected]?.section === section && <Modal open onClose={closePanel} title={PATH[selected].title}><SkillPanel skill={selected} input={input} recommended={next.skill === selected} bare /></Modal>}
       <div className="mt-6"><LeverChart rows={input.lever.filter((l) => l.section === section)} /></div>
       {/* phones: the next step is always one tap away */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-bg px-4 py-3 sm:hidden">
@@ -132,7 +133,7 @@ function SkillList({ section, info, onSelect }: { section: Section; info: Record
   );
 }
 
-function SkillPanel({ skill, input, recommended }: { skill: SkillId; input: ReturnType<typeof engineInput>; recommended: boolean }) {
+function SkillPanel({ skill, input, recommended, bare }: { skill: SkillId; input: ReturnType<typeof engineInput>; recommended: boolean; bare?: boolean }) {
   const s = PATH[skill];
   const st = skillStars(input, skill);
   const ch = CHAPTER_IDS[skill] ?? [];
@@ -149,10 +150,11 @@ function SkillPanel({ skill, input, recommended }: { skill: SkillId; input: Retu
     ['hard', 'Hard set', `${SET_RULES.hard.n} hard questions; counts toward ★3`],
     ...(st.count < 2 ? [['check', 'Skip check', `${SET_RULES.check.n} questions; pass to earn ★1 and ★2 at once`] as [PathSetKind, string, string]] : []),
   ];
+  const Wrap = bare ? 'div' : Card;
   return (
-    <Card data-testid="skill-panel">
+    <Wrap data-testid="skill-panel">
       <p className="text-[13px] text-faint">{DOMAIN[s.domain].name}</p>
-      <h2 className="text-[24px] leading-tight">{s.title}</h2>
+      {!bare && <h2 className="text-[24px] leading-tight">{s.title}</h2>}
       <p className="mt-1 flex items-center gap-2 text-[14px] text-muted"><Stars n={st.count} size={16} />{MASTERY_LEVELS[input.levels[skill]]}{recommended ? ' · recommended next' : ''}</p>
       {!open && <p className="mt-2 text-[14px] text-muted">Builds on {s.prereqs.map((p) => PATH[p].title).join(' and ')}. You can start here anyway, or take the skip check.</p>}
       <ol className="mt-3 divide-y divide-line border-y border-line">
@@ -168,7 +170,7 @@ function SkillPanel({ skill, input, recommended }: { skill: SkillId; input: Retu
         {sets.map(([k, label, d]) => <Link key={k} href={`/path/set?kind=${k}&skill=${skill}`} className="btn-ghost w-full !justify-between" title={d} data-testid={`set-${k}`}><span>{label}</span><span className="text-[13px] text-faint">{d.split(';')[0]}</span></Link>)}
       </div>
       {lever && <p className="mt-4 text-[13px] text-faint">Score Lever: {lever.perHour ? `about ${lever.perHour.low}–${lever.perHour.high} points per hour (estimate)` : 'needs a diagnostic'}.</p>}
-    </Card>
+    </Wrap>
   );
 }
 
