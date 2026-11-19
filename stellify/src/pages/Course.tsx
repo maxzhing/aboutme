@@ -3,7 +3,7 @@ import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, BookOpen, Check, CheckCircle2, Eye, Lock, NotebookPen, Play, RotateCcw, Star, Swords, Target, X, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Check, CheckCircle2, Eye, Lock, NotebookPen, Play, RotateCcw, Star, Swords, Target, X, Zap, Layers } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { SkillId } from '@/lib/types';
 import { COURSES, CHAPTER, TRAP, type Chapter } from '@/data/courses';
@@ -27,6 +27,7 @@ import { RichText } from '@/components/RichText';
 import { Confetti } from '@/components/Confetti';
 import { Badge, Card, Empty, PageHeader, Progress, cn } from '@/components/ui';
 import { Glyph } from '@/components/Glyph';
+import { WORKED_BY_SKILL } from '@/data/worked';
 
 const stars = (c: number, t: number) => (t === 0 ? 0 : c === t ? 3 : passed(c, t) ? 2 : 1);
 
@@ -60,6 +61,7 @@ export function CoursePage({ skill }: { skill: SkillId }) {
               {next ? <Link href={`/learn/${skill}/${next.id}`} className="btn !bg-[rgb(var(--surface))] !px-5 !py-3 text-[15px] !text-ink hover:!bg-[rgb(var(--raised))]" data-testid="course-continue"><Play size={17} />{passedN ? 'Continue' : 'Start'}: Chapter {next.n}</Link> : <span className="rounded-xl bg-white/15 px-4 py-2.5 text-sm font-bold">Course complete <Glyph e="✓" /></span>}
               <Link href={`/learn/${skill}?view=quick`} className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20" data-testid="quick-lesson"><Zap size={16} />5-min quick lesson</Link>
               <Link href={`/learn/${skill}?view=notes`} className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20"><BookOpen size={16} />Full notes</Link>
+              {WORKED_BY_SKILL[skill]?.length ? <Link href={`/worked/${skill}`} className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20" data-testid="study-worked"><Layers size={16} />Study this skill with worked examples</Link> : null}
             </div>
           </div>
           <div className="hidden text-center sm:block">

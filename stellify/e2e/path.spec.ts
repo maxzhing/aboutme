@@ -25,35 +25,31 @@ async function answer(page: Page, correct: boolean) {
   await expect(page.getByTestId('explanation')).toBeVisible();
 }
 
-test('Path: a ladder of 3D hexagon steps in lesson order, climbed with the arrow keys, with a skill panel and a list view', async ({ page }) => {
+test('Path: a map of grouped 3D hexagon tiles where touching skills relate, keyboard movement, a skill panel and a list view', async ({ page }) => {
   const errors = watch(page);
   await boot(page);
   await go(page, '/path');
   await expect(page.getByTestId('today')).toBeVisible();
-  const ladder = page.getByTestId('lesson-path');
-  await expect(ladder.locator('[data-testid^="node-"]')).toHaveCount(19);
-  // units in the SAT's domain order, with step 1 at the bottom of the ladder
-  await expect(page.getByTestId('unit-alg')).toContainText('Unit 1');
+  const map = page.getByTestId('lesson-path');
+  await expect(map.locator('[data-testid^="node-"]')).toHaveCount(19);
+  for (const d of ['alg', 'adv', 'psda', 'geo']) await expect(page.getByTestId(`unit-${d}`)).toBeVisible();
+  // the map grows upward from the first skill
   const y = async (id: string) => (await page.getByTestId(id).boundingBox())!.y;
   expect(await y('node-lin2')).toBeLessThan(await y('node-lin1'));
-  expect(await y('unit-adv')).toBeLessThan(await y('unit-alg'));
-  // exactly one recommended step, the only one with a "Start here" tag, and it stands taller
+  // exactly one recommended tile; it says "Start here" inside and stands taller
   const rec = page.locator('[data-recommended="true"]');
   await expect(rec).toHaveCount(1);
   await expect(rec).toHaveAttribute('aria-label', /Step 1 of 19: Linear equations.*recommended next/);
   await expect(page.getByTestId('start-bubble')).toHaveCount(1);
   await expect(rec.locator('.node-riser')).toHaveCount(1);
-  // roving tabindex: one step is in the tab order; up climbs, down steps back
-  await expect(ladder.locator('[data-testid^="node-"][tabindex="0"]')).toHaveCount(1);
+  // roving tabindex; arrow keys move to the touching tile in that direction
+  await expect(map.locator('[data-testid^="node-"][tabindex="0"]')).toHaveCount(1);
   await page.getByTestId('node-lin1').focus();
-  await page.keyboard.press('ArrowUp');
-  await expect(page.getByTestId('node-lin2')).toBeFocused();
-  await page.keyboard.press('ArrowUp');
-  await page.keyboard.press('ArrowUp');
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByTestId('node-ineq')).toBeFocused();
+  await page.keyboard.press('ArrowLeft');
   await page.keyboard.press('ArrowUp');
   await expect(page.getByTestId('node-sys')).toBeFocused();
-  await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('ArrowUp');
   await page.keyboard.press('Enter');
   await expect(page.getByTestId('skill-panel')).toContainText('★1 Learned');
   await expect(page.getByTestId('skill-panel')).toContainText('Linear systems');
@@ -157,5 +153,39 @@ test('test-day hub: a dated checklist that is saved, sources marked "needs verif
   await page.getByLabel('Policy you found there').selectOption('optional');
   await page.getByTestId('add-school').click();
   await expect(page.getByTestId('school-row')).toContainText('Test-optional');
+  expect(errors).toEqual([]);
+});
+
+test('worked examples: climb a four-rung fading ladder, and finishing it earns the skill’s first Path star', async ({ page }) => {
+  const errors = watch(page);
+  const { WORKED_BY_SKILL } = await import('../src/data/worked');
+  const f = WORKED_BY_SKILL.lin1![0];
+  await boot(page);
+  await go(page, '/worked/lin1');
+  const ladder = page.getByTestId(`ladder-${f.id}`);
+  // rung 1: fully worked; every step's reason must be opened (after explaining it to yourself)
+  await expect(ladder.getByTestId('rung-next')).toBeDisabled();
+  while (await ladder.getByTestId('show-why').count()) await ladder.getByTestId('show-why').first().click();
+  await ladder.getByTestId('rung-next').click();
+  // rungs 2 and 3: the last one, then the last two steps are blank
+  for (const rung of [1, 2]) {
+    const steps = f.rungs[rung].steps;
+    const blanks = f.fade[rung - 1];
+    for (let k = steps.length - blanks; k < steps.length; k++) {
+      await ladder.getByTestId('blank-input').first().fill(steps[k].answer[0]);
+      await ladder.getByTestId('blank-check').first().click();
+    }
+    await ladder.getByTestId('rung-next').click();
+  }
+  // rung 4: on your own; a wrong answer is caught first
+  await ladder.getByTestId('blank-input').fill('999');
+  await ladder.getByTestId('blank-check').click();
+  await expect(ladder).toContainText('Not yet');
+  await ladder.getByTestId('blank-input').fill(f.rungs[3].final[0]);
+  await ladder.getByTestId('blank-check').click();
+  await ladder.getByTestId('rung-next').click();
+  await expect(ladder.getByTestId('ladder-finished')).toBeVisible();
+  await go(page, '/path');
+  await expect(page.getByTestId('node-lin1')).toHaveAttribute('aria-label', /Linear equations, 1 of 3 stars/);
   expect(errors).toEqual([]);
 });

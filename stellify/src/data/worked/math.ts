@@ -383,7 +383,7 @@ export const WORKED_MATH: WorkedFamily[] = [
     "steps": [
      {
       "do": "Find the slope from the two points.",
-      "result": "$m = \\frac{16 - (4)}{5 - (1)} = 3$",
+      "result": "$m = \\frac{16 - 4}{5 - 1} = 3$",
       "why": "Each f(a) = b statement is a point (a, b); slope is change in output over change in input.",
       "ask": "the slope",
       "answer": [
@@ -392,7 +392,7 @@ export const WORKED_MATH: WorkedFamily[] = [
      },
      {
       "do": "Find the intercept using one point.",
-      "result": "$b = 4 - (3)(1) = 1$",
+      "result": "$b = 4 - 3 \\cdot 1 = 1$",
       "why": "Put the point into $f(x) = mx + b$ and solve for b.",
       "ask": "b",
       "answer": [
@@ -425,7 +425,7 @@ export const WORKED_MATH: WorkedFamily[] = [
     "steps": [
      {
       "do": "Find the slope from the two points.",
-      "result": "$m = \\frac{19 - (7)}{6 - (2)} = 3$",
+      "result": "$m = \\frac{19 - 7}{6 - 2} = 3$",
       "why": "Each f(a) = b statement is a point (a, b); slope is change in output over change in input.",
       "ask": "the slope",
       "answer": [
@@ -434,7 +434,7 @@ export const WORKED_MATH: WorkedFamily[] = [
      },
      {
       "do": "Find the intercept using one point.",
-      "result": "$b = 7 - (3)(2) = 1$",
+      "result": "$b = 7 - 3 \\cdot 2 = 1$",
       "why": "Put the point into $f(x) = mx + b$ and solve for b.",
       "ask": "b",
       "answer": [
@@ -467,7 +467,7 @@ export const WORKED_MATH: WorkedFamily[] = [
     "steps": [
      {
       "do": "Find the slope from the two points.",
-      "result": "$m = \\frac{2 - (10)}{3 - (-1)} = -2$",
+      "result": "$m = \\frac{2 - 10}{3 - (-1)} = -2$",
       "why": "Each f(a) = b statement is a point (a, b); slope is change in output over change in input.",
       "ask": "the slope",
       "answer": [
@@ -476,7 +476,7 @@ export const WORKED_MATH: WorkedFamily[] = [
      },
      {
       "do": "Find the intercept using one point.",
-      "result": "$b = 10 - (-2)(-1) = 8$",
+      "result": "$b = 10 - (-2) \\cdot (-1) = 8$",
       "why": "Put the point into $f(x) = mx + b$ and solve for b.",
       "ask": "b",
       "answer": [
@@ -509,7 +509,7 @@ export const WORKED_MATH: WorkedFamily[] = [
     "steps": [
      {
       "do": "Find the slope from the two points.",
-      "result": "$m = \\frac{5 - (-3)}{4 - (0)} = 2$",
+      "result": "$m = \\frac{5 - (-3)}{4 - 0} = 2$",
       "why": "Each f(a) = b statement is a point (a, b); slope is change in output over change in input.",
       "ask": "the slope",
       "answer": [
@@ -518,7 +518,7 @@ export const WORKED_MATH: WorkedFamily[] = [
      },
      {
       "do": "Find the intercept using one point.",
-      "result": "$b = -3 - (2)(0) = -3$",
+      "result": "$b = -3 - 2 \\cdot 0 = -3$",
       "why": "Put the point into $f(x) = mx + b$ and solve for b.",
       "ask": "b",
       "answer": [
@@ -1420,11 +1420,11 @@ export const WORKED_MATH: WorkedFamily[] = [
      60,
      30
     ],
-    "prompt": "120 students chose a class format: of the 70 who chose online, 40 were juniors and 30 were seniors; of the 50 who chose in person, 20 were juniors and 30 were seniors. Given that a randomly chosen one a senior, what is the probability that it chose online?",
+    "prompt": "120 students chose a class format: of the 70 who chose online, 40 were juniors and 30 were seniors; of the 50 who chose in person, 20 were juniors and 30 were seniors. Given that a randomly chosen student is a senior, what is the probability that the student chose online?",
     "steps": [
      {
       "do": "Find the size of the group you are GIVEN.",
-      "result": "60 in the group that a senior",
+      "result": "60 in the given group",
       "why": "“Given that …” shrinks the sample to that group; it becomes the denominator.",
       "ask": "the size of the given group",
       "answer": [
@@ -1433,7 +1433,7 @@ export const WORKED_MATH: WorkedFamily[] = [
      },
      {
       "do": "Count the ones in that group with the outcome asked about.",
-      "result": "30",
+      "result": "30 of those chose online",
       "why": "Only count inside the given group, not the whole table.",
       "ask": "the count",
       "answer": [
@@ -1461,11 +1461,11 @@ export const WORKED_MATH: WorkedFamily[] = [
      100,
      60
     ],
-    "prompt": "200 voters answered a question: of the 90 who said yes, 60 lived in cities and 30 in rural areas; of the 110 who said no, 40 lived in cities and 70 in rural areas. Given that a randomly chosen one lives in a city, what is the probability that it said yes?",
+    "prompt": "200 voters answered a question: of the 90 who said yes, 60 lived in cities and 30 in rural areas; of the 110 who said no, 40 lived in cities and 70 in rural areas. Given that a randomly chosen voter lives in a city, what is the probability that the voter said yes?",
     "steps": [
      {
       "do": "Find the size of the group you are GIVEN.",
-      "result": "100 in the group that lives in a city",
+      "result": "100 in the given group",
       "why": "“Given that …” shrinks the sample to that group; it becomes the denominator.",
       "ask": "the size of the given group",
       "answer": [
@@ -1474,7 +1474,7 @@ export const WORKED_MATH: WorkedFamily[] = [
      },
      {
       "do": "Count the ones in that group with the outcome asked about.",
-      "result": "60",
+      "result": "60 of those said yes",
       "why": "Only count inside the given group, not the whole table.",
       "ask": "the count",
       "answer": [
@@ -1502,11 +1502,11 @@ export const WORKED_MATH: WorkedFamily[] = [
      40,
      24
     ],
-    "prompt": "80 plants were measured: of the 30 tall plants, 24 were fertilized; of the 50 short plants, 16 were fertilized. Given that a randomly chosen one was fertilized, what is the probability that it is tall?",
+    "prompt": "80 plants were measured: of the 30 tall plants, 24 were fertilized; of the 50 short plants, 16 were fertilized. Given that a randomly chosen plant was fertilized, what is the probability that the plant is tall?",
     "steps": [
      {
       "do": "Find the size of the group you are GIVEN.",
-      "result": "40 in the group that was fertilized",
+      "result": "40 in the given group",
       "why": "“Given that …” shrinks the sample to that group; it becomes the denominator.",
       "ask": "the size of the given group",
       "answer": [
@@ -1515,7 +1515,7 @@ export const WORKED_MATH: WorkedFamily[] = [
      },
      {
       "do": "Count the ones in that group with the outcome asked about.",
-      "result": "24",
+      "result": "24 of those are tall",
       "why": "Only count inside the given group, not the whole table.",
       "ask": "the count",
       "answer": [
@@ -1543,11 +1543,11 @@ export const WORKED_MATH: WorkedFamily[] = [
      75,
      36
     ],
-    "prompt": "A team played 150 games: of its 90 wins, 54 were at home and 36 away; of its 60 losses, 21 were at home and 39 away. Given that a randomly chosen one was away, what is the probability that it was a win?",
+    "prompt": "A team played 150 games: of its 90 wins, 54 were at home and 36 away; of its 60 losses, 21 were at home and 39 away. Given that a randomly chosen game was played away, what is the probability that the game was a win?",
     "steps": [
      {
       "do": "Find the size of the group you are GIVEN.",
-      "result": "75 in the group that was away",
+      "result": "75 in the given group",
       "why": "“Given that …” shrinks the sample to that group; it becomes the denominator.",
       "ask": "the size of the given group",
       "answer": [
@@ -1556,7 +1556,7 @@ export const WORKED_MATH: WorkedFamily[] = [
      },
      {
       "do": "Count the ones in that group with the outcome asked about.",
-      "result": "36",
+      "result": "36 of those were a win",
       "why": "Only count inside the given group, not the whole table.",
       "ask": "the count",
       "answer": [

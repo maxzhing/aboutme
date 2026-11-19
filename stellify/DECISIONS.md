@@ -51,3 +51,14 @@ Each entry records what was decided, why, and the alternatives considered.
     are joined through their floor labels. Lesson order is now unit by unit in the SAT's domain order, which still
     puts every prerequisite earlier (tested). The radius-2 honeycomb coordinates stay in the data but are no
     longer drawn. The recommended step stands taller, with one "Start here" tag.
+17. **The Path map follows the owner's hexagonal-thinking reference (2026-11-19).** It copies the layout only:
+    each SAT domain is one touching cluster, clusters branch out from related skills, and anything that touches
+    relates (a prerequisite, or a named branch anchor such as Ratios growing from linear functions). Arrows on
+    shared edges show what builds on what. The map grows upward from the first skill. The positions came from a
+    search over those rules: math has 18 of 20 prerequisite pairs touching, Reading & Writing 9 of 10, and every
+    domain is connected (tested). It replaces the zig-zag climb (#16). The 3D tiles, colours, stars, the single
+    raised "Start here" tile, the list view and the keyboard support are kept. On a phone the map pans inside its
+    box at a readable size instead of shrinking the tiles.
+18. **Worked Examples content is generated from formulas** (scripts kept outside the repo; the output is
+    committed) and every final answer is recomputed independently in tests/worked.test.ts. There are 12 math
+    families so far, one per skill for 12 of the 19 math skills; Reading & Writing ladders are not written yet.

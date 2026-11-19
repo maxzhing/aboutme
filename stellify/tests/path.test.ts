@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PATH, PATH_SKILLS, hexDistance, neighbourFor, pathOf, ring } from '../src/lib/path/skills';
+import { PATH, PATH_SKILLS, hexDistance, neighbourFor, pathOf } from '../src/lib/path/skills';
 import { credit, deriveStars, keepStars, retentionFrom, scoreSet, RETENTION_DAYS } from '../src/lib/path/stars';
 import { nextStep, todayPlan, formatFor, skillStars, upcomingSkills, type EngineInput, REVIEW_CAP } from '../src/lib/path/next';
 import { scoreLever, firstTries, LEVER } from '../src/lib/engine/lever';
@@ -22,8 +22,9 @@ function input(over: Partial<EngineInput> = {}): EngineInput {
   };
 }
 
-describe('Path layout', () => {
-  it('has 19 math and 11 reading and writing skills, one per hex', () => {
+describe('Path map layout (grouped hexagon tiles)', () => {
+  const touch = (a: SkillId, b: SkillId) => hexDistance(PATH[a].hex, PATH[b].hex) === 1;
+  it('has 19 math and 11 reading and writing skills, one per tile', () => {
     expect(pathOf('math')).toHaveLength(19);
     expect(pathOf('rw')).toHaveLength(11);
     for (const sec of ['math', 'rw'] as const) {
@@ -31,25 +32,32 @@ describe('Path layout', () => {
       expect(new Set(cells).size).toBe(cells.length);
     }
   });
-  it('math fills a radius-2 hexagon exactly', () => {
-    expect(pathOf('math').every((s) => ring(s.hex) <= 2)).toBe(true);
-    expect(pathOf('math').filter((s) => ring(s.hex) === 2)).toHaveLength(12);
-  });
-  it('never bends prerequisite order: every prerequisite sits on the same ring or an inner one, and comes earlier on the route', () => {
-    for (const s of PATH_SKILLS) for (const p of s.prereqs) {
-      expect(ring(PATH[p].hex)).toBeLessThanOrEqual(ring(s.hex));
-      expect(PATH[p].order).toBeLessThan(s.order);
-      expect(PATH[p].section).toBe(s.section);
+  it('anything that branches relates: every skill touches a prerequisite or the related skill it branches from', () => {
+    for (const s of PATH_SKILLS) {
+      const links = [...s.prereqs, ...s.branch];
+      if (links.length) expect(links.some((l) => touch(l, s.id)), s.id).toBe(true);
     }
   });
-  it('every skill with prerequisites touches at least one of them', () => {
-    for (const s of PATH_SKILLS) if (s.prereqs.length) expect(s.prereqs.some((p) => hexDistance(PATH[p].hex, s.hex) === 1), s.id).toBe(true);
+  it('each domain is one touching cluster', () => {
+    for (const d of [...new Set(PATH_SKILLS.map((s) => s.domain))]) {
+      const mem = PATH_SKILLS.filter((s) => s.domain === d).map((s) => s.id);
+      const seen = new Set([mem[0]]); const stack = [mem[0]];
+      while (stack.length) { const x = stack.pop()!; for (const y of mem) if (!seen.has(y) && touch(x, y)) { seen.add(y); stack.push(y); } }
+      expect(seen.size, d).toBe(mem.length);
+    }
   });
-  it('arrow keys move to neighbouring hexes', () => {
-    expect(neighbourFor(PATH.lin1, 'ArrowLeft')?.id).toBe('lin2');
-    expect(neighbourFor(PATH.lin1, 'ArrowRight')?.id).toBe('data1');
-    expect(neighbourFor(PATH.lin1, 'ArrowUp')?.id).toBe('area');
-    expect(neighbourFor(PATH.lin1, 'ArrowDown')?.id).toBe('equiv');
+  it('the map grows upward: a skill never sits below the skill it attaches to, and prerequisites come earlier in lesson order', () => {
+    for (const s of PATH_SKILLS) {
+      const anchors = [...s.prereqs, ...s.branch].filter((l) => touch(l, s.id));
+      if (anchors.length) expect(anchors.some((l) => PATH[l].hex.r >= s.hex.r), s.id).toBe(true);
+      for (const p of s.prereqs) { expect(PATH[p].order).toBeLessThan(s.order); expect(PATH[p].section).toBe(s.section); }
+    }
+  });
+  it('arrow keys move to the touching tile in that direction', () => {
+    expect(neighbourFor(PATH.lin1, 'ArrowLeft')?.id).toBe('equiv');
+    expect(neighbourFor(PATH.lin1, 'ArrowRight')?.id).toBe('ineq');
+    expect(neighbourFor(PATH.lin1, 'ArrowUp')?.id).toBe('sys');
+    expect(neighbourFor(PATH.lin1, 'ArrowDown')).toBeUndefined();
   });
 });
 

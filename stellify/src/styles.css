@@ -204,12 +204,13 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 .node { position: relative; display: block; border: 0; padding: 0; background: none; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
 .node .node-face { transition: transform 160ms ease-out; }
 .node:active .node-face { transform: translateY(10px); }
-/* not started: grey stone */
-.node-side { fill: rgb(var(--line)); }
-.node-shade { fill: rgb(0 0 0 / .14); }
-.node-top { fill: rgb(var(--raised)); stroke: rgb(var(--line)); stroke-width: 1.5; }
+/* not started: a pale tint of the cluster's colour, so every group shows */
+.node-side { fill: rgb(var(--dom) / .4); fill: color-mix(in srgb, rgb(var(--dom)) 38%, rgb(var(--raised))); }
+.node-shade { fill: rgb(0 0 0 / .1); }
+.node-top { fill: rgb(var(--surface)); fill: color-mix(in srgb, rgb(var(--dom)) 12%, rgb(var(--surface))); stroke: rgb(var(--dom) / .45); stroke-width: 1.5; }
 .node-shine { fill: none; stroke: rgb(255 255 255 / .55); stroke-width: 2.5; }
 .node-icon { color: rgb(var(--faint)); }
+.node-start { font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .08em; fill: rgb(var(--accent-ink)); }
 .node-text { font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; font-size: 11.5px; font-weight: 600; fill: rgb(var(--ink)); }
 .node-num { font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; font-size: 10.5px; font-weight: 600; fill: rgb(var(--muted)); }
 .node-star { stroke-width: 1.8; stroke-linejoin: round; }
@@ -225,7 +226,7 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 .path-step-arrow path { fill: none; stroke: rgb(var(--bg)); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 :root.dark .node-shine { stroke: rgb(255 255 255 / .12); }
 /* in progress: a light tint of the domain colour */
-.node-in-progress .node-top { fill: rgb(var(--dom) / .35); fill: color-mix(in srgb, rgb(var(--dom)) 32%, rgb(var(--surface))); stroke: rgb(var(--dom)); }
+.node-in-progress .node-top { fill: rgb(var(--dom) / .35); fill: color-mix(in srgb, rgb(var(--dom)) 34%, rgb(var(--surface))); stroke: rgb(var(--dom)); stroke-width: 2; }
 .node-in-progress .node-side { fill: rgb(var(--dom)); }
 .node-in-progress .node-icon { color: rgb(var(--dom)); }
 :root.dark .node-in-progress .node-icon { color: rgb(var(--ink)); }
@@ -251,7 +252,13 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 .node:focus-visible { outline: none; }
 .node-due { fill: rgb(var(--warn)); stroke: rgb(var(--surface)); stroke-width: 2.5; }
 /* the climb: a dotted trail ahead, solid colour behind, chevrons pointing up to the next step */
-.ladder-box { max-height: min(74vh, 720px); overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; padding: 8px 4px 4px; border-radius: var(--r-box); }
+.ladder-box { max-height: min(74vh, 720px); overflow: auto; overscroll-behavior: contain; padding: 4px; border-radius: var(--r-box); }
+.map-box { border: 1.5px solid rgb(var(--line)); background: rgb(var(--surface) / .6); }
+.legend-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; font-size: 13px; font-weight: 500; color: #fff; background: rgb(var(--dom)); }
+:root.dark .legend-chip { color: rgb(var(--bg)); }
+.legend-dot { width: 8px; height: 8px; border-radius: 9999px; background: currentColor; opacity: .8; }
+.path-step-branch circle { fill: rgb(var(--surface)); stroke: rgb(var(--ink)); }
+.path-step-branch path { stroke: rgb(var(--ink)); }
 .path-trail { fill: none; stroke: rgb(var(--line)); stroke-width: 9; stroke-linecap: round; stroke-dasharray: 0.1 16; }
 .path-trail-done { stroke: rgb(var(--dom)); stroke-dasharray: none; stroke-width: 8; }
 .path-chevron { fill: none; stroke: rgb(var(--faint)); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
