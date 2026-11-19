@@ -253,6 +253,10 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 .node-due { fill: rgb(var(--warn)); stroke: rgb(var(--surface)); stroke-width: 2.5; }
 /* the climb: a dotted trail ahead, solid colour behind, chevrons pointing up to the next step */
 .ladder-box { max-height: min(74vh, 720px); overflow: auto; overscroll-behavior: contain; padding: 4px; border-radius: var(--r-box); }
+.path-unit-pill { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 4px; padding: 6px 14px; border-radius: 9999px; font-size: 14px; font-weight: 600; color: #fff; background: rgb(var(--dom)); box-shadow: 0 4px 0 rgb(0 0 0 / .18); }
+:root.dark .path-unit-pill { color: rgb(var(--bg)); }
+/* the next step: highlighted with a ring and standing taller */
+.node-rec .node-top { stroke: rgb(var(--star)); stroke-width: 4; }
 .map-box { border: 1.5px solid rgb(var(--line)); background: rgb(var(--surface) / .6); }
 .legend-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; font-size: 13px; font-weight: 500; color: #fff; background: rgb(var(--dom)); }
 :root.dark .legend-chip { color: rgb(var(--bg)); }

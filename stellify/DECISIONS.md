@@ -62,3 +62,8 @@ Each entry records what was decided, why, and the alternatives considered.
 18. **Worked Examples content is generated from formulas** (scripts kept outside the repo; the output is
     committed) and every final answer is recomputed independently in tests/worked.test.ts. There are 12 math
     families so far, one per skill for 12 of the 19 math skills; Reading & Writing ladders are not written yet.
+19. **Path, final form (owner direction, 2026-11-19):** grouped hexagon clusters, one per SAT domain, laid along
+    a path that goes down the page. Inside a cluster, tiles snake in step order so each step touches the next.
+    A dotted trail and the unit's name lead to the next cluster. There are no arrows: step numbers show the
+    order. Only the next step is highlighted (blue, gold ring) and raised above the rest. This replaces #17's
+    branching map. The branch anchors stay in the data for possible later use.

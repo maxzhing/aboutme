@@ -1,4 +1,4 @@
-import { Hexagon, Layers, ListTodo, Music, Piano, BadgeCheck, Braces, ChartScatter, Landmark, Store, SquareFunction, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, Wand2, type LucideIcon } from 'lucide-react';
+import { Eye, Hexagon, Layers, ListTodo, Music, Piano, BadgeCheck, Braces, ChartScatter, Landmark, Store, SquareFunction, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, Wand2, type LucideIcon } from 'lucide-react';
 
 export interface NavItem { href: string; label: string; icon: LucideIcon }
 export const NAV: { group: string; items: NavItem[] }[] = [
@@ -16,6 +16,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     { href: '/practice', label: 'Question Bank', icon: LibraryBig },
     { href: '/practice/smart', label: 'Smart Practice', icon: Brain },
     { href: '/remix', label: 'Remix Studio', icon: Wand2 },
+    { href: '/predict', label: 'Predict-First', icon: Eye },
     { href: '/official', label: 'Official Questions', icon: BadgeCheck },
     { href: '/practice/hard', label: 'Hard Questions', icon: Zap },
     { href: '/practice/timed', label: 'Timed Modules', icon: Timer },

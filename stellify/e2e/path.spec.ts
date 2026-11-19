@@ -25,29 +25,29 @@ async function answer(page: Page, correct: boolean) {
   await expect(page.getByTestId('explanation')).toBeVisible();
 }
 
-test('Path: a map of grouped 3D hexagon tiles where touching skills relate, keyboard movement, a skill panel and a list view', async ({ page }) => {
+test('Path: grouped 3D hexagon clusters along a path, keyboard movement, a skill panel and a list view', async ({ page }) => {
   const errors = watch(page);
   await boot(page);
   await go(page, '/path');
   await expect(page.getByTestId('today')).toBeVisible();
   const map = page.getByTestId('lesson-path');
   await expect(map.locator('[data-testid^="node-"]')).toHaveCount(19);
-  for (const d of ['alg', 'adv', 'psda', 'geo']) await expect(page.getByTestId(`unit-${d}`)).toBeVisible();
-  // the map grows upward from the first skill
+  // clusters in the SAT's domain order, going down the page
   const y = async (id: string) => (await page.getByTestId(id).boundingBox())!.y;
-  expect(await y('node-lin2')).toBeLessThan(await y('node-lin1'));
+  expect(await y('unit-adv')).toBeGreaterThan(await y('unit-alg'));
+  expect(await y('unit-geo')).toBeGreaterThan(await y('unit-psda'));
   // exactly one recommended tile; it says "Start here" inside and stands taller
   const rec = page.locator('[data-recommended="true"]');
   await expect(rec).toHaveCount(1);
   await expect(rec).toHaveAttribute('aria-label', /Step 1 of 19: Linear equations.*recommended next/);
   await expect(page.getByTestId('start-bubble')).toHaveCount(1);
   await expect(rec.locator('.node-riser')).toHaveCount(1);
-  // roving tabindex; arrow keys move to the touching tile in that direction
+  // roving tabindex; arrow keys move to the next or previous step
   await expect(map.locator('[data-testid^="node-"][tabindex="0"]')).toHaveCount(1);
   await page.getByTestId('node-lin1').focus();
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByTestId('node-ineq')).toBeFocused();
-  await page.keyboard.press('ArrowLeft');
+  await expect(page.getByTestId('node-lin2')).toBeFocused();
+  for (let k = 0; k < 4; k++) await page.keyboard.press('ArrowDown');
   await page.keyboard.press('ArrowUp');
   await expect(page.getByTestId('node-sys')).toBeFocused();
   await page.keyboard.press('Enter');
@@ -187,5 +187,22 @@ test('worked examples: climb a four-rung fading ladder, and finishing it earns t
   await expect(ladder.getByTestId('ladder-finished')).toBeVisible();
   await go(page, '/path');
   await expect(page.getByTestId('node-lin1')).toHaveAttribute('aria-label', /Linear equations, 1 of 3 stars/);
+  expect(errors).toEqual([]);
+});
+
+test('Predict-First: choices stay hidden until a prediction is written, then the student grades it and sees their pattern', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/predict?skill=tra');
+  const item = page.getByTestId('predict-item');
+  await expect(item.locator('[data-choice]')).toHaveCount(0);
+  await expect(page.getByTestId('show-choices')).toBeDisabled();
+  await page.getByTestId('prediction').fill('contrast');
+  await page.getByTestId('show-choices').click();
+  await expect(item.locator('[data-choice]')).toHaveCount(4);
+  await item.locator('[data-choice="A"]').click();
+  await page.getByTestId('predict-check').click();
+  await page.getByTestId('self-matched').click();
+  await expect(page.getByTestId('predict-pattern')).toContainText('1 predictions: 1 matched');
   expect(errors).toEqual([]);
 });

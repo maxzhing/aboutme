@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import type { Section, SkillId } from '@/lib/types';
-import { neighbourFor, pathOf, type PathSkill } from '@/lib/path/skills';
+import { pathOf, type PathSkill } from '@/lib/path/skills';
 import type { HexState } from '@/lib/path/next';
 import { DOMAIN } from '@/lib/taxonomy';
 import { cn } from './ui';
@@ -36,10 +36,7 @@ const TOP = 18;           // room above the face for the recommended step to ris
 const LIFT = 14;          // how much higher the recommended step stands
 const NODE_W = Math.ceil(W3) + 4, NODE_H = TOP + 2 * R + DEPTH;
 const FACE_Y = TOP + R;   // face centre inside a node box
-const PAD = 26;
 const STAR = 'M0-10 2.9-3.1 10-3.1 4.3 1.2 6.5 8.1 0 3.8-6.5 8.1-4.3 1.2-10-3.1-2.9-3.1Z';
-const centre = (h: { q: number; r: number }) => ({ x: W3 * (h.q + h.r / 2), y: 1.5 * R * h.r });
-const touching = (a: PathSkill, b: PathSkill) => { const dq = a.hex.q - b.hex.q, dr = a.hex.r - b.hex.r; return Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dq + dr)) === 1; };
 
 /** One tall 3D hexagon tile: thick solid walls under a top face that carries the step's number, name and stars. */
 function Node3D({ s, h, n }: { s: PathSkill; h: HexInfo; n: number }) {
@@ -68,13 +65,26 @@ function Node3D({ s, h, n }: { s: PathSkill; h: HexInfo; n: number }) {
   );
 }
 
+const SHORT_DOMAIN: Partial<Record<PathSkill['domain'], string>> = { psda: 'Data & problem-solving', geo: 'Geometry & trig', sec: 'Conventions', eoi: 'Expression of ideas' };
+const PER_ROW = 3;         // tiles per row inside a cluster
+const COLW = Math.ceil(W3 * (PER_ROW + 0.5)); // a cluster's width (fits a 320px phone)
+
+/** Tile centres inside one unit's cluster: rows of three, snaking so each step touches the next. */
+function clusterLayout(n: number, startRight: boolean) {
+  return Array.from({ length: n }, (_, k) => {
+    const row = Math.floor(k / PER_ROW), pos = k % PER_ROW;
+    const ltr = (row % 2 === 0) !== startRight;
+    const c = ltr ? pos : PER_ROW - 1 - pos;
+    return { x: W3 / 2 + c * W3 + (row % 2 ? W3 / 2 : 0), y: FACE_Y + row * 1.5 * R };
+  });
+}
+
 /**
- * The Path as a map of grouped hexagon tiles (owner request, after hexagonal-thinking boards): each SAT domain is
- * one touching cluster in its colour, clusters branch out from related skills, and anything that touches is
- * related. Small arrows on shared edges show what builds on what. The map grows upward from the first skill.
- * Tiles are tall 3D hexagons; started ones take their domain colour, unstarted ones stay grey, and only the
- * recommended step stands taller, with one "Start here" tag. Arrow keys move to the touching tile in that
- * direction; Enter opens it. The map scrolls inside its own box and opens centred on the current step.
+ * The Path (owner request): grouped hexagon tiles laid along a path you go down. Each SAT domain is one compact
+ * cluster of touching 3D tiles in its colour, snaking in step order so each step touches the next; a dotted
+ * trail and the unit's name lead from one cluster to the next. No arrows: step numbers show the order. Only the
+ * recommended tile is highlighted and stands higher than the rest, with "START HERE" on it. Arrow keys move to
+ * the previous or next step; Enter opens it. The path scrolls in its own box and opens at the current step.
  */
 export function LessonPath({ section, info, selected, onSelect }: { section: Section; info: Record<string, HexInfo>; selected?: SkillId; onSelect: (s: SkillId) => void }) {
   const skills = [...pathOf(section)].sort((a, b) => a.order - b.order);
@@ -83,62 +93,63 @@ export function LessonPath({ section, info, selected, onSelect }: { section: Sec
   const refs = useRef<Record<string, HTMLButtonElement | null>>({});
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => { if (selected) setFocusId(selected); }, [selected]);
-  const cs = skills.map((s) => ({ s, ...centre(s.hex) }));
-  const minX = Math.min(...cs.map((c) => c.x)), maxX = Math.max(...cs.map((c) => c.x));
-  const minY = Math.min(...cs.map((c) => c.y)), maxY = Math.max(...cs.map((c) => c.y));
-  const width = maxX - minX + NODE_W + 2 * PAD, height = maxY - minY + NODE_H + 2 * PAD;
-  const at = (s: PathSkill) => { const c = centre(s.hex); return { x: c.x - minX + NODE_W / 2 + PAD, y: c.y - minY + FACE_Y + PAD }; };
-  // open centred on the current step: scroll the map's own box (never the page)
   useEffect(() => {
-    const b = box.current, target = skills.find((s) => s.id === (rec ?? skills[0].id));
-    if (!b || !target) return;
-    const p = at(target);
-    b.scrollLeft = p.x - b.clientWidth / 2;
-    b.scrollTop = p.y - b.clientHeight / 2;
+    const el = refs.current[rec ?? skills[0].id], b = box.current;
+    if (!el || !b) return;
+    const r = el.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    b.scrollTop += r.top - rb.top - (rb.height - r.height) / 2;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [section, rec]);
-  const move = (s: PathSkill, e: KeyboardEvent<HTMLButtonElement>) => {
-    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+  const move = (i: number, e: KeyboardEvent<HTMLButtonElement>) => {
+    const d = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+    if (!d) return;
     e.preventDefault();
-    const to = neighbourFor(s, e.key as 'ArrowLeft');
-    if (to) { setFocusId(to.id); refs.current[to.id]?.focus(); }
+    const to = skills[Math.max(0, Math.min(skills.length - 1, i + d))];
+    setFocusId(to.id); refs.current[to.id]?.focus();
   };
-  // arrows: from a skill to the touching skill that builds on it (prerequisite) or branches out from it
-  const arrows: { from: PathSkill; to: PathSkill; branch: boolean }[] = [];
-  for (const s of skills) for (const l of [...s.prereqs, ...s.branch]) { const f = skills.find((x) => x.id === l); if (f && touching(f, s)) arrows.push({ from: f, to: s, branch: !s.prereqs.includes(l) }); }
-  const domains = [...new Set(skills.map((s) => s.domain))];
-  const drawOrder = [...skills].sort((a, b) => at(a).y - at(b).y || at(a).x - at(b).x); // lower tiles drawn last, in front
+  const units: { domain: PathSkill['domain']; items: { s: PathSkill; i: number }[] }[] = [];
+  skills.forEach((s, i) => { const last = units[units.length - 1]; if (last?.domain === s.domain) last.items.push({ s, i }); else units.push({ domain: s.domain, items: [{ s, i }] }); });
+  // each cluster starts on the side where the previous one ended, so the trail stays short
+  let startRight = false;
+  const layouts = units.map((u) => { const l = clusterLayout(u.items.length, startRight); const last = l[l.length - 1]; startRight = last.x > COLW / 2; return l; });
   return (
-    <div>
-      <ul className="mb-3 flex flex-wrap gap-2" aria-label="Clusters on the map" data-testid="map-legend">
-        {domains.map((d) => { const ks = skills.filter((s) => s.domain === d); const got = ks.reduce((t, s) => t + (info[s.id]?.stars ?? 0), 0); return (
-          <li key={d} className={cn('legend-chip', `dom-${d}`)} data-testid={`unit-${d}`}><span className="legend-dot" aria-hidden />{DOMAIN[d].name}<span className="opacity-80" data-num>· {got}/{ks.length * 3}</span></li>
-        ); })}
-      </ul>
-      <div ref={box} className="ladder-box map-box" data-testid="ladder-box">
-        <div className="relative mx-auto" style={{ width, height }} role="group" aria-label={`${section === 'math' ? 'Math' : 'Reading and Writing'} map: ${skills.length} skills in clusters by domain; touching skills are related. Use the arrow keys to move to a touching skill, Enter to open it.`} data-testid="lesson-path">
-          {drawOrder.map((s, z) => {
-            const h = info[s.id];
-            const p = at(s);
-            const i = skills.indexOf(s);
-            return (
-              <button key={s.id} ref={(el) => { refs.current[s.id] = el; }} type="button" tabIndex={focusId === s.id ? 0 : -1} onClick={() => { setFocusId(s.id); onSelect(s.id); }} onKeyDown={(e) => move(s, e)}
-                aria-label={hexLabel(s, h, i + 1, skills.length)} aria-pressed={selected === s.id}
-                className={cn('node', `dom-${s.domain}`, `node-${h.state}`, h.recommended && 'node-rec', selected === s.id && 'node-selected')}
-                style={{ position: 'absolute', left: p.x - NODE_W / 2, top: p.y - FACE_Y, zIndex: z + 1 }}
-                data-testid={`node-${s.id}`} data-state={h.state} data-recommended={h.recommended || undefined} data-rank={h.rank}>
-                <Node3D s={s} h={h} n={i + 1} />
-              </button>
-            );
-          })}
-          <svg className="pointer-events-none absolute inset-0 overflow-visible" style={{ zIndex: skills.length + 5 }} width={width} height={height} aria-hidden>
-            {arrows.map(({ from, to, branch }) => {
-              const a = at(from), b = at(to);
-              const ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
-              return <g key={from.id + to.id} transform={`translate(${(a.x + b.x) / 2},${(a.y + b.y) / 2}) rotate(${ang})`} className={cn('path-step-arrow', branch && 'path-step-branch')}><circle r={9.5} /><path d="M-3 -4.5 L2.5 0 L-3 4.5" /></g>;
-            })}
-          </svg>
-        </div>
+    <div ref={box} className="ladder-box" data-testid="ladder-box">
+      <div className="mx-auto" style={{ maxWidth: COLW }} role="group" aria-label={`${section === 'math' ? 'Math' : 'Reading and Writing'} path: ${skills.length} steps in lesson order, in clusters by topic. Use the arrow keys to move to the previous or next step, Enter to open it.`} data-testid="lesson-path">
+        {units.map((u, ui) => {
+          const l = layouts[ui];
+          const rows = Math.ceil(u.items.length / PER_ROW);
+          const height = (rows - 1) * 1.5 * R + NODE_H;
+          const got = u.items.reduce((t, x) => t + (info[x.s.id]?.stars ?? 0), 0);
+          const prevEnd = ui > 0 ? layouts[ui - 1][layouts[ui - 1].length - 1].x : null;
+          return (
+            <section key={u.domain} aria-label={`Unit ${ui + 1}: ${DOMAIN[u.domain].name}`}>
+              {/* the trail from the previous cluster, with this unit's name on it */}
+              <div className="relative flex justify-center" style={{ height: ui ? 74 : 44 }}>
+                {prevEnd !== null && (
+                  <svg className="pointer-events-none absolute inset-0 overflow-visible" width={COLW} height={74} aria-hidden>
+                    <path d={`M${prevEnd} -12 C${prevEnd} 34 ${l[0].x} 40 ${l[0].x} 86`} className="path-trail" />
+                  </svg>
+                )}
+                <span className={cn('path-unit-pill', `dom-${u.domain}`, ui ? 'self-center' : 'self-start')} data-testid={`unit-${u.domain}`}>Unit {ui + 1} · {SHORT_DOMAIN[u.domain] ?? DOMAIN[u.domain].name}<span className="opacity-85" data-num> · {got}/{u.items.length * 3}</span></span>
+              </div>
+              <div className="relative" style={{ height }}>
+                {u.items.map(({ s, i }, k) => {
+                  const h = info[s.id];
+                  const p = l[k];
+                  return (
+                    <button key={s.id} ref={(el) => { refs.current[s.id] = el; }} type="button" tabIndex={focusId === s.id ? 0 : -1} onClick={() => { setFocusId(s.id); onSelect(s.id); }} onKeyDown={(e) => move(i, e)}
+                      aria-label={hexLabel(s, h, i + 1, skills.length)} aria-pressed={selected === s.id}
+                      className={cn('node', `dom-${s.domain}`, `node-${h.state}`, h.recommended && 'node-rec', selected === s.id && 'node-selected')}
+                      style={{ position: 'absolute', left: p.x - NODE_W / 2, top: p.y - FACE_Y, zIndex: h.recommended ? 100 : k + 1 }}
+                      data-testid={`node-${s.id}`} data-state={h.state} data-recommended={h.recommended || undefined} data-rank={h.rank}>
+                      <Node3D s={s} h={h} n={i + 1} />
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </div>
   );

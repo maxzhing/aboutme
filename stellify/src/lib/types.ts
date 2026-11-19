@@ -89,7 +89,7 @@ export interface Question extends Omit<RawQuestion, 'd' | 'time'> {
 
 export type PracticeMode =
   | 'smart' | 'bank' | 'hard' | 'timed' | 'daily' | 'speed' | 'arena'
-  | 'mistakes' | 'review' | 'diagnostic' | 'mock' | 'lesson' | 'tutor' | 'mission' | 'remix' | 'path';
+  | 'mistakes' | 'review' | 'diagnostic' | 'mock' | 'lesson' | 'tutor' | 'mission' | 'remix' | 'path' | 'predict';
 
 export interface Attempt {
   id: string;

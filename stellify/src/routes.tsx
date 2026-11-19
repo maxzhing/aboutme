@@ -25,6 +25,7 @@ import { PathPage, PathSetPage } from './pages/Path';
 import { MaintainerPage } from './pages/Maintainer';
 import { TestDayPage } from './pages/TestDay';
 import { WorkedIndexPage, WorkedSkillPage } from './pages/Worked';
+import { PredictPage } from './pages/Predict';
 import { AboutPage, ChangelogPage, HowWeWritePage, MethodologyPage, PrivacyPage } from './pages/Trust';
 
 function NotFound() {
@@ -90,6 +91,7 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/maintainer$/, component: MaintainerPage },
   { pattern: /^\/test-day$/, component: TestDayPage },
   { pattern: /^\/worked$/, component: WorkedIndexPage },
+  { pattern: /^\/predict$/, component: PredictPage },
   { pattern: /^\/worked\/(?<skill>[a-z0-9]+)$/, component: WorkedSkillPage },
   { pattern: /^\/about$/, component: AboutPage },
   { pattern: /^\/methodology$/, component: MethodologyPage },
