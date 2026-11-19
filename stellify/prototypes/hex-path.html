@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- THROWAWAY PROTOTYPE. Not wired into the app; the real Path lives in src/pages/Path.tsx. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hex Path prototype</title>
+<style>
+  :root { --bg: #F6F3EA; --surface: #FFFDF7; --line: #D6CDBB; --ink: #1B1915; --muted: #4E483F; --accent: #1F4AA8; --base: #B9AE97; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 "IBM Plex Sans", system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font: 600 32px/1.15 "Source Serif 4", Georgia, serif; margin: 0 0 4px; }
+  p { color: var(--muted); margin: 0 0 16px; }
+  svg { width: 100%; height: auto; display: block; }
+  .hex { cursor: pointer; outline: none; }
+  .hex .base { fill: var(--base); }
+  .hex .top { fill: var(--surface); stroke: var(--line); stroke-width: 1; transition: transform 160ms ease-out; }
+  .hex:active .top, .hex.pressed .top { transform: translateY(4px); }
+  .hex.rec .top { fill: var(--accent); stroke: var(--accent); }
+  .hex.rec text { fill: #fff; }
+  .hex:focus-visible .top { stroke: var(--ink); stroke-width: 2.5; }
+  .hex text { font-size: 11px; fill: var(--ink); text-anchor: middle; pointer-events: none; }
+  .star { fill: none; stroke: currentColor; stroke-width: 1.2; }
+  .star.on { fill: currentColor; }
+  @media (prefers-reduced-motion: reduce) { .hex .top { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Math path</h1>
+  <p>Prototype of the radius-2 layout. Click a hex; the recommended one is solid blue.</p>
+  <svg id="map" viewBox="-230 -210 460 420" role="group" aria-label="Math skills map"></svg>
+</main>
+<script>
+  const S = 44, W = Math.sqrt(3) * S;
+  const skills = [['lin1',0,0,'Linear eq.',2],['lin2',-1,0,'Two-var lines',1],['ineq',-1,1,'Inequalities',0],['equiv',0,1,'Equiv. expr.',0],['ratio',1,-1,'Ratios',3],['data1',1,0,'1-var data',1],['area',0,-1,'Area & vol.',0],['nleq',-1,2,'Nonlinear eq.',0],['nlf',-2,2,'Nonlinear fn.',0],['data2',1,1,'2-var data',0],['infer',2,-1,'Inference',0],['circ',0,2,'Circles',0],['linf',-2,1,'Linear fn.',0],['sys',-2,0,'Systems',0],['lines',-1,-1,'Lines & angles',0],['pct',2,-2,'Percentages',0],['prob',1,-2,'Probability',0],['claims',2,0,'Stat. claims',0],['trig',0,-2,'Trig',0]];
+  const pts = (cx, cy) => [0,1,2,3,4,5].map((i) => { const a = Math.PI / 180 * (60 * i - 30); return `${cx + (S - 2) * Math.cos(a)},${cy + (S - 2) * Math.sin(a)}`; }).join(' ');
+  const star = (x, y, on) => `<path class="star${on ? ' on' : ''}" transform="translate(${x},${y}) scale(.42)" d="M0-10 2.9-3.1 10-3.1 4.3 1.2 6.5 8.1 0 3.8-6.5 8.1-4.3 1.2-10-3.1-2.9-3.1Z"/>`;
+  const svg = document.getElementById('map');
+  svg.innerHTML = skills.map(([id, q, r, label, stars]) => {
+    const x = W * (q + r / 2), y = 1.5 * S * r, rec = id === 'lin2';
+    return `<g class="hex${rec ? ' rec' : ''}" tabindex="0" role="button" aria-label="${label}, ${stars} of 3 stars${rec ? ', recommended next' : ''}">
+      <polygon class="base" points="${pts(x, y + 6)}"/><polygon class="top" points="${pts(x, y)}"/>
+      <text x="${x}" y="${y - 4}">${label}</text>
+      <g style="color:${rec ? '#fff' : 'var(--accent)'}">${[0,1,2].map((i) => star(x - 10 + i * 10, y + 12, i < stars)).join('')}</g></g>`;
+  }).join('');
+  svg.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') e.target.classList.toggle('pressed'); });
+</script>
+</body>
+</html>
