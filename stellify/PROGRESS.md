@@ -15,7 +15,7 @@ Status: todo / in progress / done / blocked. Updated after every commit.
 - [x] done: 6. Worked Examples mode (N11): #/worked, 12 math families × 4-rung backward-fading ladders with self-explanation prompts; finishing a skill's ladders earns ★1; engine recommends it after 2+ conceptual misses; answers independently verified. Not yet: Reading & Writing ladders.
 - [x] done: 7. Predict-First mode (N8): #/predict, per-type prediction prompts and quick picks, choices hidden until a prediction is written, self-grade, the student's own match-vs-accuracy pattern, optional soft timer; never in mocks
 - [x] done: 8. Fatigue and pacing curve (N6): difficulty-adjusted accuracy by thirds of each module, needs 3+ modules, "possible drop-off" wording, time-per-question strip against 71 s / 95 s; on Analytics, mock reports and a Today stamina note (tests/fatigue.test.ts)
-- [ ] todo: 9. Desmos Lab (N7)
+- [x] done: 9. Desmos Lab (N7): #/desmos/lab, 7 techniques with algebra vs Desmos side by side and timers, when-not-to notes, exercises checked on the built-in grapher (typed expressions checked for equivalence, then the answer), decision guide, timed method drill, offline message. Desmos API state checking behind flag OFF (needs key).
 - [ ] todo: 10. Hosted web build (code splitting, service worker), CI, content linter, docs
 
 ## Phase 3: QA

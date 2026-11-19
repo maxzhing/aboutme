@@ -1,4 +1,4 @@
-import { Eye, Hexagon, Layers, ListTodo, Music, Piano, BadgeCheck, Braces, ChartScatter, Landmark, Store, SquareFunction, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, Wand2, type LucideIcon } from 'lucide-react';
+import { Eye, FlaskConical, Hexagon, Layers, ListTodo, Music, Piano, BadgeCheck, Braces, ChartScatter, Landmark, Store, SquareFunction, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, Wand2, type LucideIcon } from 'lucide-react';
 
 export interface NavItem { href: string; label: string; icon: LucideIcon }
 export const NAV: { group: string; items: NavItem[] }[] = [
@@ -11,6 +11,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     { href: '/hacks', label: 'SAT Hacks', icon: Lightbulb },
     { href: '/grammar', label: 'Grammar Masterclass', icon: PenLine },
     { href: '/desmos', label: 'Desmos Masterclass', icon: LineChart },
+    { href: '/desmos/lab', label: 'Desmos Lab', icon: FlaskConical },
   ] },
   { group: 'Practice', items: [
     { href: '/practice', label: 'Question Bank', icon: LibraryBig },

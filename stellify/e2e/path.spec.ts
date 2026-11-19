@@ -206,3 +206,24 @@ test('Predict-First: choices stay hidden until a prediction is written, then the
   await expect(page.getByTestId('predict-pattern')).toContainText('1 predictions: 1 matched');
   expect(errors).toEqual([]);
 });
+
+test('Desmos Lab: what you type is checked against the problem, graphed offline, and the answer read from it is checked', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/desmos/lab');
+  const lab = page.getByTestId('lab-intersect');
+  await lab.getByTestId('lab-expr').nth(0).fill('y = 3(2x - 5) + 4');
+  await lab.getByTestId('lab-expr').nth(1).fill('y = 2x + 13 + 1');
+  await lab.getByTestId('lab-graph').click();
+  await expect(lab).toContainText('do not match');
+  await lab.getByTestId('lab-expr').nth(1).fill('y = 2x + 13'); // an equivalent form of 2(x + 7) - 1 is accepted
+  await lab.getByTestId('lab-graph').click();
+  await expect(lab.getByTestId('lab-graphed')).toBeVisible();
+  await lab.getByTestId('lab-answer').fill('6');
+  await lab.getByTestId('lab-check').click();
+  await expect(lab.getByTestId('lab-result')).toContainText('Correct');
+  await page.getByTestId('drill-0').fill('9');
+  await page.getByTestId('drill-done').click();
+  await expect(page.getByTestId('drill-result')).toContainText('1 of 5 right');
+  expect(errors).toEqual([]);
+});

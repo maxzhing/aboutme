@@ -26,6 +26,7 @@ import { MaintainerPage } from './pages/Maintainer';
 import { TestDayPage } from './pages/TestDay';
 import { WorkedIndexPage, WorkedSkillPage } from './pages/Worked';
 import { PredictPage } from './pages/Predict';
+import { DesmosLabPage } from './pages/DesmosLab';
 import { AboutPage, ChangelogPage, HowWeWritePage, MethodologyPage, PrivacyPage } from './pages/Trust';
 
 function NotFound() {
@@ -56,6 +57,7 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/grammar$/, component: GrammarPage },
   { pattern: /^\/hacks$/, component: HacksPage },
   { pattern: /^\/desmos$/, component: DesmosPage },
+  { pattern: /^\/desmos\/lab$/, component: DesmosLabPage },
   { pattern: /^\/practice$/, component: BankPage },
   { pattern: /^\/practice\/session$/, component: SessionPage },
   { pattern: /^\/practice\/smart$/, component: SmartPage },
