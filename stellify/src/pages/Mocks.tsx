@@ -20,6 +20,7 @@ import { TestShell } from '@/components/TestShell';
 import { OfficialTestsCard, TestPlanPanel } from '@/components/FullTests';
 import { FULL_TESTS, fullTestOfForm } from '@/lib/fullTest/registry';
 import { Badge, Card, Empty, Modal, PageHeader, Progress, Stat, cn, toneForPct } from '@/components/ui';
+import { FatigueCard } from '@/components/Fatigue';
 
 const KIND_NAME: Record<MockAttempt['kind'], string> = { full: 'Full-length', 'section-rw': 'Reading & Writing only', 'section-math': 'Math only', 'module-rw': 'One Reading & Writing module' };
 
@@ -281,6 +282,7 @@ export function MockResultsPage() {
   return (
     <div className="space-y-4" data-testid="mock-results">
       <PageHeader eyebrow="Mock exam report" title={`${formName(mock.formId)} · ${KIND_NAME[mock.kind]}`} subtitle={mock.completedAt ? `Completed ${new Date(mock.completedAt).toLocaleString()}` : undefined} actions={<Link href="/mocks" className="btn-ghost">All mock exams</Link>} />
+      {mock.completedAt && <div className="grid gap-4 lg:grid-cols-2">{[...new Set(mock.modules.map((m) => m.section))].map((sec) => <FatigueCard key={sec} section={sec} />)}</div>}
       <div className="grid gap-3 sm:grid-cols-3">
         {mock.kind === 'full' && sc && (scored ? (
           ft?.table ? (

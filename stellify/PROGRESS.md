@@ -14,7 +14,7 @@ Status: todo / in progress / done / blocked. Updated after every commit.
 - [x] done: 5. Test-day hub (#/test-day): dated, saved, printable checklist; Bluebook steps; sleep and stress guide with a when-things-go-wrong playbook; policy explainer; "should I send?"; a school list with the student's own dated notes. College Board specifics link to their source and say "Needs verification" (CB site blocked here). College Scorecard snapshot: script ready, needs the owner's key.
 - [x] done: 6. Worked Examples mode (N11): #/worked, 12 math families × 4-rung backward-fading ladders with self-explanation prompts; finishing a skill's ladders earns ★1; engine recommends it after 2+ conceptual misses; answers independently verified. Not yet: Reading & Writing ladders.
 - [x] done: 7. Predict-First mode (N8): #/predict, per-type prediction prompts and quick picks, choices hidden until a prediction is written, self-grade, the student's own match-vs-accuracy pattern, optional soft timer; never in mocks
-- [ ] todo: 8. Fatigue and pacing curve (N6)
+- [x] done: 8. Fatigue and pacing curve (N6): difficulty-adjusted accuracy by thirds of each module, needs 3+ modules, "possible drop-off" wording, time-per-question strip against 71 s / 95 s; on Analytics, mock reports and a Today stamina note (tests/fatigue.test.ts)
 - [ ] todo: 9. Desmos Lab (N7)
 - [ ] todo: 10. Hosted web build (code splitting, service worker), CI, content linter, docs
 

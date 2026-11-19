@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, BookOpen, CheckCircle2, Circle, Layers, RotateCcw, Target } from 'lucide-react';
 import type { Step } from '@/lib/path/next';
 import { cn } from './ui';
+import { useFatigue } from './Fatigue';
 
 const ICON: Record<Step['kind'], typeof BookOpen> = { review: RotateCcw, confident: Target, chapter: BookOpen, worked: Layers, practice: Target, hard: Target, check: Target, gauntlet: Layers };
 
@@ -11,6 +12,8 @@ const ICON: Record<Step['kind'], typeof BookOpen> = { review: RotateCcw, confide
  * an item done today is ticked, nothing is lost for a day missed.
  */
 export function TodayPanel({ items, weekDone, weekPlanned, className }: { items: (Step & { done: boolean })[]; weekDone: number; weekPlanned: number; className?: string }) {
+  const fr = useFatigue('rw'), fm = useFatigue('math');
+  const tired = [fr, fm].filter((f) => f.verdict === 'possible-drop');
   const minutes = items.filter((i) => !i.done).reduce((t, i) => t + i.minutes, 0);
   const next = items.find((i) => !i.done);
   return (
@@ -37,6 +40,7 @@ export function TodayPanel({ items, weekDone, weekPlanned, className }: { items:
           );
         })}
       </ol>
+      {tired.length > 0 && <p className="border-t border-line px-5 py-3 text-[14px]" data-testid="today-stamina">Stamina: a possible late-module drop-off in {tired.map((f) => (f.section === 'rw' ? 'Reading & Writing' : 'Math')).join(' and ')}. This week, add one <Link href="/practice/timed" className="text-accent underline">timed module</Link> and practise the 10-second reset (see Analytics).</p>}
     </section>
   );
 }

@@ -18,6 +18,7 @@ import { DIFFICULTIES, DIFFICULTY_NAME, DOMAINS, SECTION_NAME, SKILL, SKILLS } f
 import { fmtDuration, pct } from '@/lib/util';
 import { Badge, Card, Empty, PageHeader, Progress, Stat, Tabs, toneForPct } from '@/components/ui';
 import { axis, chartTip } from './Dashboard';
+import { FatigueCard } from '@/components/Fatigue';
 
 export function AnalyticsPage() {
   const s = useStore();
@@ -40,6 +41,7 @@ export function AnalyticsPage() {
   const trendData = trend.filter((t) => t[series]).map((t) => ({ label: t.label, band: [t[series]!.low, t[series]!.high] as [number, number], mid: t[series]!.mid, confidence: t.confidence }));
   const [lo, hi] = series === 'total' ? [400, 1600] : [200, 800];
   if (!ov.total) return <div><PageHeader eyebrow="Performance" title="Analytics" /><Empty title="No data yet" body="Analytics are built only from questions you actually answer. Take the diagnostic or a practice set to begin." action={{ label: 'Start Smart Practice', href: '/practice/smart' }} /></div>;
+      <div className="grid gap-4 lg:grid-cols-2"><FatigueCard section="rw" /><FatigueCard section="math" /></div>
   const domainData = DOMAINS.map((d) => ({ name: d.name.replace('Problem-Solving and Data Analysis', 'Data Analysis').replace('Standard English Conventions', 'English Conventions').replace('Geometry and Trigonometry', 'Geometry & Trig'), accuracy: ov.byDomain[d.id].pct, n: ov.byDomain[d.id].n }));
   const rows = SKILLS.map((k) => stats[k.id]).sort((a, b) => (sort === 'order' ? 0 : sort === 'weak' ? (a.n === 0 ? 1 : b.n === 0 ? -1 : a.score - b.score) : b.score - a.score));
   const pace = (sec: 'math' | 'rw') => { const t = ov.time[sec]; return t.avg ? `${fmtDuration(t.avg)} avg · target ${fmtDuration(t.expected)}` : 'no data'; };
