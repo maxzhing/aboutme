@@ -29,6 +29,8 @@ import { Badge, Card, Empty, PageHeader, Progress, cn } from '@/components/ui';
 import { Glyph } from '@/components/Glyph';
 import { WORKED_BY_SKILL } from '@/data/worked';
 import { SkillPathCard } from './Path';
+import { PRIMERS } from '@/data/primers';
+import { termsIn } from '@/data/glossary';
 
 const stars = (c: number, t: number) => (t === 0 ? 0 : c === t ? 3 : passed(c, t) ? 2 : 1);
 
@@ -109,7 +111,7 @@ export function CoursePage({ skill }: { skill: SkillId }) {
 }
 
 type Step =
-  | { t: 'intro' } | { t: 'teach'; i: number } | { t: 'method' } | { t: 'sheet' } | { t: 'walk'; n: 1 | 2 } | { t: 'traps' } | { t: 'practice'; i: number } | { t: 'done' };
+  | { t: 'intro' } | { t: 'basics' } | { t: 'words' } | { t: 'teach'; i: number } | { t: 'method' } | { t: 'sheet' } | { t: 'walk'; n: 1 | 2 } | { t: 'traps' } | { t: 'practice'; i: number } | { t: 'done' };
 
 /**
  * One chapter, step by step: goal → picture lessons → the method → a worked hard problem revealed one
@@ -131,17 +133,26 @@ function ChapterPlayer({ ch }: { ch: Chapter }) {
   const [round, setRound] = useState(0);
   // the question set is fixed for each pass, so it does not change as you answer
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const set = useMemo(() => chapterSet(ch, useStore.getState().attempts), [ch, round]);
+  const [fromZero, setFromZero] = useState(ch.n === 1);
+  const set = useMemo(() => chapterSet(ch, useStore.getState().attempts, 3, fromZero), [ch, round, fromZero]);
   // everything else the app knows about this chapter's topics: hacks, grammar rules, and the skill's key rules
   const sheet = useMemo(() => {
     const hacks = [...new Map(ch.subs.flatMap((s) => hacksFor(ch.skill, s)).map((h) => [h.id, h])).values()];
     const rules = GRAMMAR.filter((g) => g.skill === ch.skill && g.subs.some((s) => ch.subs.includes(s)));
     return [...hacks.map((h) => ({ kind: 'hack' as const, h })), ...rules.map((g) => ({ kind: 'rule' as const, g }))];
   }, [ch]);
+  // for students starting from zero: what the topic is (first chapter, or on request) and the words this chapter uses
+  const words = useMemo(() => {
+    const text = (c: typeof ch) => [c.goal, ...c.teach.map((t) => `${t.title} ${t.text}`), ...c.method, ...c.traps.flatMap((t) => [t.name, t.looks, t.fix])].join(' ');
+    const sec = SKILL[ch.skill].section;
+    const earlier = new Set(COURSES[ch.skill].filter((c) => c.n < ch.n).flatMap((c) => termsIn(text(c), sec).map((t) => t.term)));
+    const here = termsIn(text(ch), sec);
+    return [...here.filter((t) => !earlier.has(t.term)), ...here.filter((t) => earlier.has(t.term))].slice(0, 8);
+  }, [ch]);
   const steps = useMemo<Step[]>(() => [
-    { t: 'intro' }, ...ch.teach.map((_, i) => ({ t: 'teach' as const, i })), { t: 'method' }, ...(sheet.length ? [{ t: 'sheet' as const }] : []),
+    { t: 'intro' }, ...(fromZero ? [{ t: 'basics' as const }] : []), ...(words.length ? [{ t: 'words' as const }] : []), ...ch.teach.map((_, i) => ({ t: 'teach' as const, i })), { t: 'method' }, ...(sheet.length ? [{ t: 'sheet' as const }] : []),
     ...(set.walk ? [{ t: 'walk' as const, n: 1 as const }] : []), ...(set.walk2 ? [{ t: 'walk' as const, n: 2 as const }] : []), { t: 'traps' }, ...set.practice.map((_, i) => ({ t: 'practice' as const, i })), { t: 'done' },
-  ], [ch, set, sheet.length]);
+  ], [ch, set, sheet.length, fromZero, words])
   const [k, setK] = useState(0);
   const [methodSeen, setMethodSeen] = useState(1);
   const [walkS, setWalkS] = useState<Record<number, number>>({});
@@ -186,9 +197,34 @@ function ChapterPlayer({ ch }: { ch: Chapter }) {
       <p className="eyebrow">{SKILL[ch.skill].short} · Chapter {ch.n} of {all.length}</p>
       <h1 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-[40px]">{ch.title}</h1>
       <p className="mx-auto mt-3 max-w-xl text-muted"><b className="text-ink">By the end:</b> {ch.goal}</p>
+      <label className="mx-auto mt-4 flex w-fit items-center gap-2 rounded-full border border-line px-4 py-2 text-[14px]" data-testid="from-zero"><input type="checkbox" checked={fromZero} onChange={(e) => setFromZero(e.target.checked)} className="h-4 w-4 accent-[rgb(var(--accent))]" />I’m new to this: start from zero</label>
       <ol className="mx-auto mt-7 grid max-w-3xl grid-cols-2 gap-2 text-left text-sm sm:grid-cols-3 md:grid-cols-6">
         {[['🖼️', `${ch.teach.length} picture lessons`], ['🧭', `${ch.method.length}-step method`], ['📋', 'cheat sheet'], ['✍️', `${set.walk2 ? 2 : 1} worked example${set.walk2 ? 's' : ''}`], ['🪤', `${ch.traps.length} traps to dodge`], ['⚔️', `${set.practice.length} hard questions`]].map(([i, t], n) => <li key={t} className="rounded-xl border border-line p-2.5 text-center"><div className="grid place-items-center text-ink" aria-hidden><Glyph e={i} size={22} /></div><div className="mt-1 text-xs font-semibold"><span className="text-faint">{n + 1}. </span>{t}</div></li>)}
       </ol>
+    </div>
+  );
+  else if (step.t === 'basics') { const pr = PRIMERS[ch.skill]; body = (
+    <div data-testid="basics">
+      <p className="eyebrow">Start from zero</p>
+      <h2 className="mt-2 font-display text-2xl leading-tight sm:text-[32px]">{SKILL[ch.skill].short}: the idea in plain words</h2>
+      <p className="mt-3 max-w-3xl text-[17px] leading-relaxed"><RichText text={pr.what} /></p>
+      <p className="mt-3 max-w-3xl rounded-2xl bg-raised/60 px-4 py-3 text-[16px]"><b className="font-medium">In everyday life:</b> <RichText text={pr.everyday} /></p>
+      <div className="mt-4 rounded-2xl border border-line p-4">
+        <p className="font-medium">Tiny example: <RichText text={pr.tiny.problem} /></p>
+        <ol className="mt-2 list-decimal space-y-1 pl-5 text-[16px]">{pr.tiny.steps.map((x) => <li key={x}><RichText text={x} /></li>)}</ol>
+        <p className="mt-2 text-[15px]"><b className="font-medium">Answer:</b> <RichText text={pr.tiny.answer} /></p>
+      </div>
+      <p className="mt-3 text-[15px] text-muted"><b className="font-medium text-ink">Why it matters on the SAT:</b> <RichText text={pr.why} /></p>
+    </div>
+  ); }
+  else if (step.t === 'words') body = (
+    <div data-testid="words">
+      <p className="eyebrow">Words to know</p>
+      <h2 className="mt-2 font-display text-2xl leading-tight sm:text-[32px]">The words this chapter uses</h2>
+      <p className="mt-2 text-[15px] text-muted">Read these first. Come back to this page any time with Back.</p>
+      <dl className="mt-4 divide-y divide-line border-y border-line">
+        {words.map((w) => <div key={w.term} className="py-3"><dt className="font-medium">{w.term}</dt><dd className="mt-0.5 text-[16px]"><RichText text={w.plain} /> <span className="text-muted">Example: <RichText text={w.example} /></span></dd></div>)}
+      </dl>
     </div>
   );
   else if (step.t === 'teach') { const idea = ch.teach[step.i]; body = (
@@ -289,7 +325,7 @@ function ChapterPlayer({ ch }: { ch: Chapter }) {
     </div>
   ); }
 
-  const label: Record<Step['t'], string> = { intro: 'Start', teach: 'Lessons', method: 'Method', sheet: 'Cheat sheet', walk: 'Worked example', traps: 'Traps', practice: 'Hard questions', done: 'Result' };
+  const label: Record<Step['t'], string> = { intro: 'Start', basics: 'Start from zero', words: 'Words to know', teach: 'Lessons', method: 'Method', sheet: 'Cheat sheet', walk: 'Worked example', traps: 'Traps', practice: 'Hard questions', done: 'Result' };
   return (
     <div className="mx-auto max-w-4xl" data-testid="chapter-player">
       <Confetti fire={fire} count={step.t === 'done' ? 70 : 22} />

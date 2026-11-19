@@ -230,3 +230,22 @@ test('Desmos Lab: what you type is checked against the problem, graphed offline,
   await expect(page.getByTestId('drill-result')).toContainText('1 of 5 right');
   expect(errors).toEqual([]);
 });
+
+test('beginners: a first chapter starts from zero and defines its words before teaching; later chapters can opt in', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/learn/lin1/lin1-1');
+  await expect(page.getByTestId('from-zero').locator('input')).toBeChecked();
+  await page.getByTestId('chapter-next').click();
+  await expect(page.getByTestId('basics')).toContainText('An equation says two things are equal');
+  await page.getByTestId('chapter-next').click();
+  await expect(page.getByTestId('words')).toContainText('variable');
+  await go(page, '/learn/lin1/lin1-2');
+  await expect(page.getByTestId('from-zero').locator('input')).not.toBeChecked();
+  await page.getByTestId('chapter-next').click();
+  await expect(page.getByTestId('basics')).toHaveCount(0);
+  await go(page, '/learn/lin1?view=quick');
+  await page.getByTestId('quick-basics').locator('summary').click();
+  await expect(page.getByTestId('quick-basics')).toContainText('Tiny example');
+  expect(errors).toEqual([]);
+});

@@ -17,7 +17,7 @@ export function chapterQuestions(ch: Chapter): Question[] {
  * Practice: questions not yet answered correctly come first, official questions before original ones,
  * hardest first; a short pool is topped up with other hard questions from the same skill.
  */
-export function chapterSet(ch: Chapter, attempts: Attempt[], n = 3): { walk?: Question; walk2?: Question; practice: Question[] } {
+export function chapterSet(ch: Chapter, attempts: Attempt[], n = 3, gentle = false): { walk?: Question; walk2?: Question; practice: Question[] } {
   const seen = new Set(attempts.map((a) => a.qid));
   const solved = new Set(attempts.filter((a) => a.correct).map((a) => a.qid));
   const pool = chapterQuestions(ch);
@@ -34,6 +34,8 @@ export function chapterSet(ch: Chapter, attempts: Attempt[], n = 3): { walk?: Qu
     const extra = [...OFFICIAL, ...QUESTIONS].filter((q) => q.skill === ch.skill && q.difficulty !== 'medium' && q.id !== walk?.id && q.id !== walk2?.id && !practice.includes(q)).sort(order);
     practice.push(...extra.slice(0, n - practice.length));
   }
+  // starting from zero: the same questions, easiest first, so the first one is reachable
+  if (gentle) practice.sort((a, b) => RANK[a.difficulty] - RANK[b.difficulty]);
   return { walk, walk2, practice };
 }
 

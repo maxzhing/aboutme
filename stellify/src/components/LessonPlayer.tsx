@@ -23,6 +23,7 @@ import { Pet } from './Pet';
 import { Confetti } from './Confetti';
 import { cn } from './ui';
 import { Glyph } from './Glyph';
+import { PRIMERS } from '@/data/primers';
 
 type Step =
   | { t: 'intro' }
@@ -124,6 +125,12 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
         <div className="mx-auto flex items-end justify-center gap-2"><Pet mood="study" level={level} equipped={equipped} size={110} /><SkillIcon skill={skill} size={72} className="mb-6" /></div>
         <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{info.name}</h2>
         <p className="mx-auto mt-2 max-w-lg text-muted">{vl.hook}</p>
+        <details className="mx-auto mt-4 max-w-lg rounded-2xl border border-line px-4 py-3 text-left" data-testid="quick-basics">
+          <summary className="cursor-pointer font-medium">New to this? Read the basics first</summary>
+          <p className="mt-2 text-[15px]"><RichText text={PRIMERS[skill].what} /></p>
+          <p className="mt-2 text-[15px] text-muted"><RichText text={PRIMERS[skill].everyday} /></p>
+          <p className="mt-2 text-[15px]"><b className="font-medium">Tiny example:</b> <RichText text={PRIMERS[skill].tiny.problem} /> {PRIMERS[skill].tiny.steps.map((x) => <span key={x}><RichText text={x} /> </span>)}</p>
+        </details>
         <div className="mt-5 flex flex-wrap justify-center gap-2 text-xs font-semibold">
           <span className="chip"><Glyph e="🖼" /> {ideaCount} picture ideas</span><span className="chip"><Glyph e="⚡" /> 2 quick checks</span><span className="chip"><Glyph e="✍" /> 1 worked example</span><span className="chip"><Glyph e="⚔" /> 1 boss question</span><span className="chip">about 5 min</span>
         </div>
