@@ -77,7 +77,7 @@ function EggPage({ egg, hatched, onHatched }: { egg: Egg; hatched: string | null
             </div>
           </Habitat>
           <div className="p-4 text-center">
-            {sp ? <p className="font-semibold" aria-live="polite">It&apos;s {sp.name} the {sp.kind}! <Badge tone={sp.rarity === 'legendary' ? 'gold' : sp.rarity === 'rare' ? 'ok' : 'default'}>{RARITY_LABEL[sp.rarity]}</Badge></p>
+            {sp ? <p className="font-semibold" aria-live="polite">It’s {sp.name} the {sp.kind}! <Badge tone={sp.rarity === 'legendary' ? 'gold' : sp.rarity === 'rare' ? 'ok' : 'default'}>{RARITY_LABEL[sp.rarity]}</Badge></p>
               : egg?.ready ? <button type="button" className="btn-primary !px-6 !py-3 text-base" onClick={start} disabled={cracking} data-testid="hatch">{cracking ? 'Hatching…' : 'Hatch your egg!'}</button>
               : <p className="text-sm text-muted">Your egg is {Math.round((egg?.pct ?? 0) * 100)}% warm.</p>}
           </div>

@@ -69,7 +69,7 @@ export function MistakesPage() {
   return (
     <div className="space-y-4">
       <PageHeader eyebrow="Performance" title="Mistake Bucket" subtitle="Every miss is saved automatically. A mistake is resolved only after you answer the original question correctly without hints and get two new related questions right."
-        actions={<Link href="/practice/session?mode=mistakes&n=8" className={`btn-primary ${open_.length ? '' : 'pointer-events-none opacity-50'}`} data-testid="daily-review">Start today&apos;s mistake review</Link>} />
+        actions={<Link href="/practice/session?mode=mistakes&n=8" className={`btn-primary ${open_.length ? '' : 'pointer-events-none opacity-50'}`} data-testid="daily-review">Start today’s mistake review</Link>} />
       <TrapList />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Unresolved" value={<span data-testid="unresolved-count">{open_.length}</span>} />

@@ -61,8 +61,8 @@ export function MocksPage() {
         <h2 className="font-semibold">How routing and scoring work here</h2>
         <ul className="mt-2 space-y-1.5 text-sm text-muted">
           <li>• <b className="text-ink">Routing:</b> Module 1 mixes medium, hard and very hard questions. Your Module 1 answers are weighed by difficulty (a hard question right counts for more), and if that points to roughly a 570 section level or higher, Module 2 is the harder set; otherwise it is the easier set, which caps the section at {LOWER_ROUTE_CAP}. A simulation of thousands of test-takers checks that strong students are almost never sent to the easier set.</li>
-          <li>• <b className="text-ink">Scores:</b> each section gets an estimated range from Stellify&apos;s own item-response model. The easier route is capped at {LOWER_ROUTE_CAP} for the section, as an easier second module limits the top of the scale on the real test.</li>
-          <li>• <b className="text-ink">Honesty note:</b> this is Stellify&apos;s documented model, not the College Board&apos;s proprietary adaptive algorithm or scoring, and the questions are original rather than official. Forms draw on the same bank as regular practice, so questions you have already seen may appear (Fresh Mix avoids them where it can). For official scores, use <Link href="/resources" className="underline">Bluebook practice tests</Link>.</li>
+          <li>• <b className="text-ink">Scores:</b> each section gets an estimated range from Stellify’s own item-response model. The easier route is capped at {LOWER_ROUTE_CAP} for the section, as an easier second module limits the top of the scale on the real test.</li>
+          <li>• <b className="text-ink">Honesty note:</b> this is Stellify’s documented model, not the College Board’s proprietary adaptive algorithm or scoring, and the questions are original rather than official. Forms draw on the same bank as regular practice, so questions you have already seen may appear (Fresh Mix avoids them where it can). For official scores, use <Link href="/resources" className="underline">Bluebook practice tests</Link>.</li>
         </ul>
       </Card>
       <Card>
@@ -92,7 +92,7 @@ function OfficialCard({ begin }: { begin: (form: string, kind: MockAttempt['kind
   return (
     <Card className="border-gold/50" data-testid="official-card">
       <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Official College Board questions</h2><Badge tone="gold">{OFFICIAL.length} in your library</Badge></div>
-      <p className="mt-1 text-sm text-muted">Timed tests built only from real College Board questions, in real test order and at the real pace, with College Board&apos;s own explanations afterwards.</p>
+      <p className="mt-1 text-sm text-muted">Timed tests built only from real College Board questions, in real test order and at the real pace, with College Board’s own explanations afterwards.</p>
       <div className="mt-4 grid gap-2 sm:grid-cols-3">
         {n(rw) >= 4 && <button className="btn-primary" onClick={() => begin('cb1', 'section-rw')} data-testid="start-official">Reading &amp; Writing · {n(rw)} questions</button>}
         {rw[2].length >= 2 && <button className="btn-ghost" onClick={() => begin('cb2', 'module-rw')} data-testid="start-official-extra">Extra R&amp;W module · {rw[2].length}</button>}

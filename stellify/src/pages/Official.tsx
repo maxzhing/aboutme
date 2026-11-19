@@ -61,7 +61,7 @@ export function OfficialPage() {
           <div>
             <div className="flex items-center gap-2"><span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-solid text-white"><FileUp size={20} /></span><h2 className="text-xl font-bold">Add questions from a Question Bank PDF</h2></div>
             <ol className="mt-4 space-y-2 text-sm text-muted">
-              <li><b className="text-ink">1.</b> Open the College Board&apos;s free SAT Suite Question Bank and choose SAT, a section, and the skills you want.</li>
+              <li><b className="text-ink">1.</b> Open the College Board’s free SAT Suite Question Bank and choose SAT, a section, and the skills you want.</li>
               <li><b className="text-ink">2.</b> Select questions and export them as a PDF <b className="text-ink">with answers and explanations included</b>.</li>
               <li><b className="text-ink">3.</b> Drop the PDF here. Reading &amp; Writing questions become text; math and figure questions are kept exactly as printed.</li>
             </ol>
@@ -122,7 +122,7 @@ export function OfficialPage() {
       ) : (
         <Card className="text-center"><p className="text-sm text-muted">No official questions yet. Add a Question Bank PDF above and they will show up here, in the courses, and as timed tests.</p></Card>
       )}
-      <p className="text-xs text-faint">Official questions are the College Board&apos;s copyrighted work, made free for personal practice. Keep them for your own study; do not share files containing them.</p>
+      <p className="text-xs text-faint">Official questions are the College Board’s copyrighted work, made free for personal practice. Keep them for your own study; do not share files containing them.</p>
     </div>
   );
 }

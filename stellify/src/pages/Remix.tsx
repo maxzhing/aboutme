@@ -194,7 +194,7 @@ function Workspace({ originId, chainId, at }: { originId: string; chainId?: stri
           {full && <p className="text-sm text-warn">This chain has reached {MAX_CHAIN} steps. <Link className="underline" href={href(origin.id)}>Start a new chain</Link> from the original.</p>}
           {notice && <p className="text-xs text-muted" role="status">{notice}</p>}
           {err && <div className="rounded-xl border border-bad/40 bg-bad/5 p-3 text-sm" role="alert" data-testid="remix-error"><b>{err.reason}</b>{err.rejected.length > 0 && <details className="mt-1 text-xs text-muted"><summary className="cursor-pointer">Why each attempt was rejected</summary><ul className="mt-1 list-disc space-y-0.5 pl-4">{err.rejected.map((r, i) => <li key={i}>{r}</li>)}</ul></details>}</div>}
-          {origin.official && <p className="flex gap-1.5 text-xs text-faint"><Info size={13} className="mt-0.5 shrink-0" />This original is an official College Board question. Remixes are built entirely from Stellify&apos;s own content: they test the same skill but reuse none of the College Board&apos;s text.</p>}
+          {origin.official && <p className="flex gap-1.5 text-xs text-faint"><Info size={13} className="mt-0.5 shrink-0" />This original is an official College Board question. Remixes are built entirely from Stellify’s own content: they test the same skill but reuse none of the College Board’s text.</p>}
         </Card>
       </div>
 

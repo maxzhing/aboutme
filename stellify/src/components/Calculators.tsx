@@ -62,7 +62,7 @@ function Offline({ onFail }: { onFail?: () => void }) {
   return (
     <div className="rounded-xl border border-warn/40 bg-warn/5 p-4 text-sm" role="status" data-testid="desmos-offline">
       <div className="flex items-center gap-2 font-semibold"><WifiOff size={16} className="text-warn" />You are offline, so Desmos cannot load.</div>
-      <p className="mt-1 text-muted">Stellify&apos;s built-in grapher and scientific calculator work without a connection.</p>
+      <p className="mt-1 text-muted">Stellify’s built-in grapher and scientific calculator work without a connection.</p>
       {onFail && <button className="btn-ghost mt-2 !py-1.5" onClick={onFail}>Use the built-in calculator</button>}
     </div>
   );
@@ -80,7 +80,7 @@ export function CalcPanel({ initial = 'desmos-graphing', height = 460 }: { initi
       </div>
       {kind === 'desmos-graphing' && <DesmosFrame kind="graphing" height={height} onFail={fallback} />}
       {kind === 'desmos-scientific' && <DesmosFrame kind="scientific" height={height} onFail={fallback} />}
-      {kind === 'graphing' && <><Grapher demo={{ exprs: ['y = x'], view: [-10, 10, -10, 10], show: ['intersections', 'roots', 'extrema'] }} /><p className="text-[11px] text-faint">Stellify&apos;s own grapher (works offline). On test day Bluebook has Desmos built in.</p></>}
+      {kind === 'graphing' && <><Grapher demo={{ exprs: ['y = x'], view: [-10, 10, -10, 10], show: ['intersections', 'roots', 'extrema'] }} /><p className="text-[11px] text-faint">Stellify’s own grapher (works offline). On test day Bluebook has Desmos built in.</p></>}
       {kind === 'scientific' && <ScientificCalc />}
     </div>
   );

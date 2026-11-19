@@ -158,7 +158,7 @@ function SimpleExplanationBlock({ q }: { q: Question }) {
           <ol className="list-decimal space-y-0.5 pl-5 text-muted">{s.method.map((m) => <li key={m}>{m}</li>)}</ol>
         </div>
       )}
-      {!s.rewritten && q.rationaleImage && <p className="mt-2 text-xs text-faint">The College Board&apos;s complete worked solution, exactly as printed, is below.</p>}
+      {!s.rewritten && q.rationaleImage && <p className="mt-2 text-xs text-faint">The College Board’s complete worked solution, exactly as printed, is below.</p>}
     </section>
   );
 }

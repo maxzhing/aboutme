@@ -80,10 +80,10 @@ export function SettingsPage() {
 
       <Card id="ai" className="scroll-mt-20">
         <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">AI tutor (optional)</h2><Badge tone={s.settings.geminiKey && s.settings.aiEnabled ? 'brand' : 'default'}>{s.settings.geminiKey && s.settings.aiEnabled ? `On · ${s.settings.geminiModel ?? DEFAULT_MODEL}` : 'Built-in tutor only'}</Badge></div>
-        <p className="mt-2 text-sm text-muted">Stellify works completely without AI: every question has a validated explanation, and the built-in tutor teaches, hints and explains from that material. If you want more conversational replies, you can connect Google&apos;s Gemini API using its free tier.</p>
+        <p className="mt-2 text-sm text-muted">Stellify works completely without AI: every question has a validated explanation, and the built-in tutor teaches, hints and explains from that material. If you want more conversational replies, you can connect Google’s Gemini API using its free tier.</p>
         <ul className="mt-2 space-y-1 text-sm text-muted">
           <li>• Because this is a single offline file, there is no server to keep a shared key. You create your own free key at <a className="underline" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com</a> (no payment details needed) and paste it here.</li>
-          <li>• The key is sent only to Google, never included in backups or exports, and the page itself is only allowed to connect to Google&apos;s AI service. It is saved in this browser unless you choose to forget it when the tab closes.</li>
+          <li>• The key is sent only to Google, never included in backups or exports, and the page itself is only allowed to connect to Google’s AI service. It is saved in this browser unless you choose to forget it when the tab closes.</li>
           <li>• What is sent: the open question, your answer choice, your message and the names of your weakest skills. Never your nickname, notes or history.</li>
           <li>• Google may use free-tier requests to improve its products, and free quotas are limited and can change. Stellify limits itself to 60 AI replies a day and falls back to built-in explanations on any error.</li>
         </ul>
@@ -92,14 +92,14 @@ export function SettingsPage() {
         {models.length > 0 && <div className="mt-2"><label className="label" htmlFor="st-model">Model</label><select id="st-model" className="input max-w-md" value={s.settings.geminiModel ?? DEFAULT_MODEL} onChange={(e) => s.setSettings({ geminiModel: e.target.value })}>{models.map((m) => <option key={m}>{m}</option>)}</select></div>}
         {s.settings.geminiKey && <label className="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" className="h-4 w-4 accent-[rgb(var(--brand))]" checked={s.settings.aiEnabled && s.settings.aiConsent} onChange={(e) => s.setSettings({ aiEnabled: e.target.checked, aiConsent: e.target.checked })} />Use AI replies in the tutor (I understand what is sent to Google)</label>}
         <p className="mt-2 min-h-5 text-sm text-muted" aria-live="polite">{aiMsg}</p>
-        <p className="text-xs text-faint">This connection could not be tested against Google&apos;s servers when the file was built (the build environment had no internet access to them). If it misbehaves, the built-in tutor is unaffected.</p>
+        <p className="text-xs text-faint">This connection could not be tested against Google’s servers when the file was built (the build environment had no internet access to them). If it misbehaves, the built-in tutor is unaffected.</p>
       </Card>
 
       <Card>
         <h2 className="flex items-center gap-2 text-lg font-bold"><ShieldCheck size={18} className="text-ok" />Your data and privacy</h2>
         <ul className="mt-2 space-y-1 text-sm text-muted">
           <li>• No account, no real name required, no ads, no analytics, no sale of data. Stellify makes no network requests unless you turn on the AI tutor or click a link to an official site.</li>
-          <li>• Progress is saved in this browser&apos;s storage for this file. Clearing site data, using private browsing, or (in some browsers) moving the file can make it unavailable, so export a backup now and then.</li>
+          <li>• Progress is saved in this browser’s storage for this file. Clearing site data, using private browsing, or (in some browsers) moving the file can make it unavailable, so export a backup now and then.</li>
           <li>• To study on another device, export here and import there.</li>
         </ul>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -117,7 +117,7 @@ export function SettingsPage() {
         <h2 className="text-lg font-bold">About Stellify</h2>
         <ul className="mt-2 space-y-1.5 text-sm text-muted">
           <li>• <b className="text-ink">Question bank:</b> {BANK_STATS.total} original questions ({BANK_STATS.math} Math, {BANK_STATS.rw} Reading &amp; Writing), validated {(manifest as { generatedAt: string }).generatedAt}. Math answers were confirmed by an independent computation for each question (three study-design questions are conceptual and were reviewed by hand). Reading &amp; Writing questions passed structural checks and author review; they have not been reviewed by an outside SAT expert. Use the report button on any question that seems wrong.</li>
-          <li>• <b className="text-ink">Score estimates:</b> a three-parameter item-response model with fixed difficulty values for medium, hard and very hard questions, mapped to the 200–800 scale. It uses only first tries without hints, needs 20 per section, and reports an 80% range that includes an extra allowance for the model itself. It is not calibrated on real test-takers, is not the College Board&apos;s method, and is never an SAT score.</li>
+          <li>• <b className="text-ink">Score estimates:</b> a three-parameter item-response model with fixed difficulty values for medium, hard and very hard questions, mapped to the 200–800 scale. It uses only first tries without hints, needs 20 per section, and reports an 80% range that includes an extra allowance for the model itself. It is not calibrated on real test-takers, is not the College Board’s method, and is never an SAT score.</li>
           <li>• <b className="text-ink">Passages:</b> written for practice. Researchers, studies and figures in them are illustrative.</li>
           <li>• {BRAND.disclaimer}</li>
         </ul>

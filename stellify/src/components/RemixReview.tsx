@@ -50,7 +50,7 @@ export function RemixReview() {
         <h2 className="font-semibold">Generated questions (Remix Studio)</h2>
         <Tabs label="Status" value={tab} onChange={setTab} tabs={[{ id: 'all', label: `All (${items.length})` }, ...(['auto-validated', 'needs-review', 'approved', 'rejected'] as ReviewStatus[]).map((st) => ({ id: st, label: `${STATUS_NAME[st]} (${count(st)})` }))]} />
       </div>
-      <p className="mt-1 text-xs text-muted">Every generated question passed the independent validator before a student saw it (“Automatically validated”). AI-written Reading &amp; Writing starts as “Needs review”. Decisions are saved with this device&apos;s data; a rejected question stops counting toward mastery. Content is never edited here.</p>
+      <p className="mt-1 text-xs text-muted">Every generated question passed the independent validator before a student saw it (“Automatically validated”). AI-written Reading &amp; Writing starts as “Needs review”. Decisions are saved with this device’s data; a rejected question stops counting toward mastery. Content is never edited here.</p>
       {list.length ? <ul className="mt-3 divide-y divide-line">{list.map((q) => {
         const m = q.remix, origin = getQuestion(m.originId), d = dups.get(q.id), passed = m.validation.checks.filter((c) => c.pass).length;
         return (

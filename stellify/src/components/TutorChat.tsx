@@ -63,7 +63,7 @@ export function TutorChat({ qid, answer, threadId: initialThread, compact, sugge
       </div>
       {status?.enabled && enabled && !consent && (
         <div className="mb-2 rounded-xl border border-brand/30 bg-brand/10 p-3 text-xs text-muted">
-          An optional AI enhancement is available. If you turn it on, the question text, your answer choice and your message are sent to Google&apos;s Gemini API to generate a reply. Your name, notes and account are never sent. Free-tier requests may be used by Google to improve its products.
+          An optional AI enhancement is available. If you turn it on, the question text, your answer choice and your message are sent to Google’s Gemini API to generate a reply. Your name, notes and account are never sent. Free-tier requests may be used by Google to improve its products.
           <div className="mt-2 flex gap-2"><button className="btn-primary !px-3 !py-1.5 !text-xs" onClick={() => setSettings({ aiConsent: true })}>Turn on AI replies</button><button className="btn-ghost !px-3 !py-1.5 !text-xs" onClick={() => setSettings({ aiEnabled: false })}>Keep offline</button></div>
         </div>
       )}

@@ -42,11 +42,11 @@ export function DesmosPage() {
         <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-muted">{lesson.steps.map((s) => <li key={s}>{s}</li>)}</ol>
         <div className="mt-4"><Grapher key={lesson.id} demo={lesson.demo} /></div>
         <p className="mt-4 rounded-xl border border-warn/30 bg-warn/5 p-3 text-sm"><b className="text-warn">Judgment call.</b> {lesson.caution}</p>
-        <p className="mt-2 text-xs text-faint">This is Stellify&apos;s own practice grapher, built to behave like the calculator you will use. Edit any expression to experiment: it understands y = …, equations in x and y, inequalities, and restrictions in braces.</p>
+        <p className="mt-2 text-xs text-faint">This is Stellify’s own practice grapher, built to behave like the calculator you will use. Edit any expression to experiment: it understands y = …, equations in x and y, inequalities, and restrictions in braces.</p>
       </Card>
 
       <h2 className="mb-1 mt-8 text-xl font-bold">Try the real calculators</h2>
-      <p className="mb-3 text-sm text-muted">These are Desmos&apos;s own College Board calculators, the versions built into Bluebook, embedded from desmos.com (internet needed). Work through the checklist to learn where everything is before test day. The same panel opens from the Calculator button in every mock exam.</p>
+      <p className="mb-3 text-sm text-muted">These are Desmos’s own College Board calculators, the versions built into Bluebook, embedded from desmos.com (internet needed). Work through the checklist to learn where everything is before test day. The same panel opens from the Calculator button in every mock exam.</p>
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Card className="!p-3"><CalcPanel height={540} /></Card>
         <Card className="!p-4">

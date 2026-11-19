@@ -138,7 +138,7 @@ export function DashboardPage() {
               <><h2 className="mt-1.5 text-xl font-bold">{nextTask.title}</h2><p className="mt-1 text-sm text-muted">{nextTask.detail ? `${nextTask.detail} · ` : ''}about {nextTask.minutes} min</p>
                 <div className="mt-4 flex flex-wrap items-center gap-2"><Link href={nextTask.href} className="btn-primary !px-5 !py-3 text-base">Start<ArrowRight size={18} /></Link><button className="btn-quiet" onClick={() => s.togglePlanTask(nextTask.id)}>Mark as done</button></div></>
             ) : (
-              <><h2 className="mt-1.5 text-xl font-bold">You finished today&apos;s mission</h2><p className="mt-1 text-sm text-muted">Stop here with a clear conscience, or keep the momentum going.</p><Link href="/practice/session?mode=smart&n=10" className="btn-primary mt-4">Keep practicing<ArrowRight size={16} /></Link></>
+              <><h2 className="mt-1.5 text-xl font-bold">You finished today’s mission</h2><p className="mt-1 text-sm text-muted">Stop here with a clear conscience, or keep the momentum going.</p><Link href="/practice/session?mode=smart&n=10" className="btn-primary mt-4">Keep practicing<ArrowRight size={16} /></Link></>
             )}
           </div>
           <div className="flex items-center justify-center border-t border-line bg-raised/40 px-8 py-5 sm:border-l sm:border-t-0">

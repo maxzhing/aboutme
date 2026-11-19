@@ -61,7 +61,7 @@ export function EstimatePanel() {
           <li>• Only your <b className="text-ink">first try</b> at each question counts, and only if you used <b className="text-ink">no hints</b>: retries after reading the explanation measure memory, and test day has no hints. It uses your latest 80 such answers per section.</li>
           <li>• Nothing is shown until a section has <b className="text-ink">{MIN_RESPONSES} first tries</b>. Confidence rises with more answers spread over more days (high: 60+ answers on 3+ days).</li>
           <li>• Ranges are <b className="text-ink">80% ranges</b>: the statistical uncertainty plus an extra ±{Math.round(MODEL_SD * 100)} points for the model itself, because its settings are hand-made and it has <b className="text-ink">never been checked against real SAT results</b>. Section ranges combine into the total as independent errors.</li>
-          <li>• It is not the College Board&apos;s method and not an SAT score. For a score on the official scale, take an official practice test in Bluebook (or one of the College Board practice tests here, scored with its own conversion table).</li>
+          <li>• It is not the College Board’s method and not an SAT score. For a score on the official scale, take an official practice test in Bluebook (or one of the College Board practice tests here, scored with its own conversion table).</li>
         </ul>
       </details>
     </Card>

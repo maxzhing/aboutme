@@ -13,7 +13,7 @@
     "verify:csa-java": "tsx scripts/verify-csa-java.ts",
     "test": "vitest run",
     "test:e2e": "playwright test --trace off",
-    "check": "npm run typecheck && npm run test && npm run build && npm run test:e2e"
+    "check": "npm run typecheck && npm run test && npm run build && npm run build:web && npm run test:e2e"
   },
   "dependencies": {
     "@fontsource-variable/source-serif-4": "^5.3.1",

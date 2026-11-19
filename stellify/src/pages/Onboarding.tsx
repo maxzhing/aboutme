@@ -103,7 +103,7 @@ function DiagnosticResults() {
     <div className="mb-5 space-y-4" data-testid="diagnostic-results">
       <Card>
         <h2 className="text-xl font-bold">Your diagnostic results</h2>
-        <p className="mt-1 text-sm text-muted">A 28-question diagnostic cannot produce a precise SAT score. The ranges below are Stellify&apos;s rough, unofficial estimate and are deliberately wide. For a real scaled score, take an official practice test in <Link href="/resources" className="underline">Bluebook</Link>.</p>
+        <p className="mt-1 text-sm text-muted">A 28-question diagnostic cannot produce a precise SAT score. The ranges below are Stellify’s rough, unofficial estimate and are deliberately wide. For a real scaled score, take an official practice test in <Link href="/resources" className="underline">Bluebook</Link>.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
           {([['Reading & Writing', rw], ['Math', math]] as const).map(([label, s]) => (
             <div key={label} className="rounded-xl border border-line p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{label}</div><div className="mt-1 font-display text-2xl font-bold">{s.c}/{s.n}</div><div className="text-sm text-muted">Estimated {fmtRange(s.range)}</div><div className="mt-1 text-xs text-faint">{fmtDuration(s.ms)} used</div></div>

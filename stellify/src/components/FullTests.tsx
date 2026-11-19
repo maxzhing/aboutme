@@ -47,9 +47,9 @@ export function FullTestImport() {
         <div>
           <div className="flex items-center gap-2"><span className="grid h-10 w-10 place-items-center rounded-xl bg-brand2-solid text-white"><FileStack size={20} /></span><h2 className="text-xl font-bold">Add a full official practice test</h2></div>
           <ol className="mt-4 space-y-2 text-sm text-muted">
-            <li><b className="text-ink">1.</b> On the College Board&apos;s SAT paper practice tests page, download one test&apos;s three PDFs: the <b className="text-ink">practice test</b>, its <b className="text-ink">scoring guide</b> and its <b className="text-ink">answer explanations</b>.</li>
+            <li><b className="text-ink">1.</b> On the College Board’s SAT paper practice tests page, download one test’s three PDFs: the <b className="text-ink">practice test</b>, its <b className="text-ink">scoring guide</b> and its <b className="text-ink">answer explanations</b>.</li>
             <li><b className="text-ink">2.</b> Drop all three here at once. They are read on this device, with no API key and nothing uploaded.</li>
-            <li><b className="text-ink">3.</b> Take the whole test under real timing and get a score from that test&apos;s own College Board conversion table.</li>
+            <li><b className="text-ink">3.</b> Take the whole test under real timing and get a score from that test’s own College Board conversion table.</li>
           </ol>
         </div>
         <div className="text-center">
@@ -81,7 +81,7 @@ export function OfficialTestsCard({ begin }: { begin: (form: string, kind: MockA
       {FULL_TESTS.length > 0 && (
         <Card className="border-gold/50">
           <div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-bold">Official full practice tests</h2><Badge tone="gold"><BadgeCheck size={13} />College Board</Badge></div>
-          <p className="mt-1 text-sm text-muted">The College Board&apos;s own practice tests, exactly as printed: two Reading &amp; Writing modules, a 10-minute break, two Math modules, at their real time limits. Your score comes from each test&apos;s official raw-score conversion table.</p>
+          <p className="mt-1 text-sm text-muted">The College Board’s own practice tests, exactly as printed: two Reading &amp; Writing modules, a 10-minute break, two Math modules, at their real time limits. Your score comes from each test’s official raw-score conversion table.</p>
           <ul className="mt-3 divide-y divide-line">
             {FULL_TESTS.map((t) => { const b = best(FULL_FORM + t.id); const n = t.modules.reduce((s, m) => s + m.qids.length, 0); return (
               <li key={t.id} className="flex flex-wrap items-center gap-3 py-3" data-testid={`fulltest-${t.id}`}>

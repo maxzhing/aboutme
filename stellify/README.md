@@ -1,7 +1,26 @@
 # Stellify — free Digital SAT prep in one HTML file
 
-Open `stellify.html` (in the repository root, also built to `stellify/dist/stellify.html`) in any modern
-browser. That is the whole product: no install, no server, no account, no internet connection.
+Two ways to use it:
+
+- **Offline file:** open `stellify.html` (in the repository root, also built to `stellify/dist/stellify.html`) in any
+  modern browser. No install, no server, no account, no internet connection.
+- **Hosted:** `sat/` (built by `npm run build:web`) is the GitHub Pages version. It has a static landing page with a
+  real question, the app split into per-page chunks, and a service worker so it opens offline after one visit.
+
+New in this release (details in DESIGN.md, METHODOLOGY.md and DECISIONS.md):
+
+- **Path** (`#/path`): grouped 3D hexagon clusters, one per SAT domain, along a path. The next step is raised and
+  marked. There are star rules, a next-step engine that gives its reason, and a Today panel.
+- **Score Lever:** points per study hour per skill, as a range.
+- **Worked Examples** (`#/worked`): four-rung fading ladders for 12 math skills.
+- **Predict-First** (`#/predict`): a Reading & Writing training mode.
+- **Desmos Lab** (`#/desmos/lab`).
+- **Fatigue and pacing curve:** on Analytics and mock reports.
+- **Test-day hub** (`#/test-day`).
+- **Item statistics:** an anonymous export and a maintainer page (`#/maintainer`).
+- **Trust pages:** About, Methodology, How we write questions, Privacy, Changelog.
+- **Versioned saved-data migration:** v1 to v2.
+- **Design:** a new design system.
 
 ## What is inside
 
@@ -371,31 +390,8 @@ Bucket and saved questions.
 
 ## Design
 
-One design system in `src/styles.css` and `src/components/ui.tsx`, built on colour tokens so both themes stay
-consistent:
-
-- **Each area has its own accent:**
-  - Learn: teal
-  - Practice: violet to fuchsia
-  - AP Courses: amber, with a distinct colour per course (Music Theory: crimson)
-  - Performance: blue
-  - Companion: pink
-  - Tools: cyan
-  - Settings: slate
-
-  The accent is set by route (`data-section` and `data-course` on the app shell) and colours the sidebar group,
-  the page header, links, tabs, progress bars, rings and charts. The brand violet stays for primary actions.
-- **Flat colour, no gradients anywhere.** Buttons, heroes, progress bars, rings, icon tiles, the sidebar, the
-  backdrop, the logo, the companions and their habitats are all solid colours. A browser test walks 22 pages in
-  both themes and fails if any element, pseudo-element or SVG uses a gradient.
-- **Hierarchy.**
-  - Default cards are crisp; featured cards get a flat accent edge, and clickable cards pick up the accent on hover.
-  - A card inside a card becomes a quiet panel.
-  - Statistics are metric tiles.
-  - Page headers carry a small constellation motif.
-- **Motion** is short and purposeful: a fade between pages (opacity only, so text never shifts under a selection),
-  dialog and drawer entrances, and press feedback. The in-app or system reduced-motion setting turns it all off.
-- All text colours meet WCAG AA contrast in both themes (checked with axe on 38 pages).
+See DESIGN.md. Warm paper and ink, Source Serif 4 with IBM Plex Sans, domain and area colours, gold stars, rounded
+shapes, no gradients, and icons instead of emoji. Every text colour is AA in both themes (axe on 38 routes).
 
 ## Calculators
 
@@ -453,7 +449,7 @@ npm run test:e2e
 - `npm run validate:questions` — per-question and bank-level rules; every math answer is re-derived by an
   independent computation; KaTeX must render; only validated questions are shipped.
 - `npm run test` — unit tests of the learning engine and content, including the College Board specification checks and Remix Studio (every generator swept through the validator, mutation tests proving the validator rejects corrupted keys, failure cases and integration).
-- `npm run test:e2e` — 32 browser tests; four need the private personal files and are skipped without them, and the full audit is opt-in (including Remix Studio, the calculators, AP Music Theory staff writing by keyboard, the Music Studio's part-writing checker, hatching a companion, the no-gradient check, and an accessibility pass in both themes); `AXE_FULL=1 npx playwright test e2e/zz-axe-explore.spec.ts` runs the full accessibility audit on 38 pages against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
+- `npm run test:e2e` — 44 browser tests, including the Path, the web build (offline), the content linter; four need the private personal files and are skipped without them, and the full audit is opt-in (including Remix Studio, the calculators, AP Music Theory staff writing by keyboard, the Music Studio's part-writing checker, hatching a companion, the no-gradient check, and an accessibility pass in both themes); `AXE_FULL=1 npx playwright test e2e/zz-axe-explore.spec.ts` runs the full accessibility audit on 38 pages against the built file opened from disk, including mastering the first and last lesson of each new AP course through the real interface, and the soft-feel effects (ripples, sparkles, the night sky) with and without reduced motion.
 - `npm run verify:csa-java` — compiles and runs every typed-answer CSA problem with a real Java compiler (skips if `javac` is missing).
 - `npm run check:links` — verifies the official-resource URLs (needs open internet; not run in the build environment).
 

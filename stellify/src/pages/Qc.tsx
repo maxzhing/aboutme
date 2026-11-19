@@ -78,7 +78,7 @@ export function QcPage() {
       </Card>
       <Card>
         <h2 className="font-semibold">Reading &amp; Writing passage coverage</h2>
-        <p className="mt-0.5 text-xs text-muted">Questions per domain and subject area (the College Board&apos;s four areas). Subject areas come from hand tags where a person placed them and keyword rules elsewhere (a spot check found the rules right about 85–90% of the time), so counts are approximate. Aim: no empty or thin cells.</p>
+        <p className="mt-0.5 text-xs text-muted">Questions per domain and subject area (the College Board’s four areas). Subject areas come from hand tags where a person placed them and keyword rules elsewhere (a spot check found the rules right about 85–90% of the time), so counts are approximate. Aim: no empty or thin cells.</p>
         <div className="mt-2 overflow-x-auto"><table className="w-full min-w-[520px] text-sm" data-testid="qc-coverage">
           <thead><tr className="text-left text-xs uppercase tracking-wide text-faint"><th className="pb-1.5 font-semibold">Domain</th>{(Object.keys(GENRE_NAME) as Genre[]).map((g) => <th key={g} className="pb-1.5 font-semibold">{GENRE_NAME[g]}</th>)}<th className="pb-1.5 font-semibold">Formats</th></tr></thead>
           <tbody className="divide-y divide-line">{DOMAINS.filter((d) => d.section === 'rw').map((d) => {
@@ -90,7 +90,7 @@ export function QcPage() {
       </Card>
       <Card>
         <h2 className="font-semibold">Do the difficulty labels behave?</h2>
-        <p className="mt-0.5 text-xs text-muted">On your own first tries: accuracy for each label against what the scoring model expects at your estimated level. Flagged when, with 15+ answers, they differ by more than 20 points. One person&apos;s answers are a weak signal; re-labelling single questions needs many students&apos; data.</p>
+        <p className="mt-0.5 text-xs text-muted">On your own first tries: accuracy for each label against what the scoring model expects at your estimated level. Flagged when, with 15+ answers, they differ by more than 20 points. One person’s answers are a weak signal; re-labelling single questions needs many students’ data.</p>
         {labels.length ? (
           <div className="mt-2 overflow-x-auto"><table className="w-full min-w-[460px] text-sm" data-testid="qc-labels">
             <thead><tr className="text-left text-xs uppercase tracking-wide text-faint"><th className="pb-1.5 font-semibold">Section</th><th className="pb-1.5 font-semibold">Label</th><th className="pb-1.5 font-semibold">Answers</th><th className="pb-1.5 font-semibold">Right</th><th className="pb-1.5 font-semibold">Expected</th><th className="pb-1.5 font-semibold" /></tr></thead>
