@@ -59,7 +59,7 @@ export function MethodologyPage() {
         <h2>Mastery and stars</h2>
         <ul>
           <li><b>Proficient</b> needs 8 or more answers, 70% recent accuracy and at least 2 hard questions right. <b>Mastered</b> needs 12 or more answers, 85% recent accuracy, 4 hard or harder questions right (at least 2 of them very hard) and practice on 2 different days.</li>
-          <li>Path stars: ★1 learned, ★2 practiced, ★3 retained (a correct answer in a mixed Gauntlet at least 7 days after ★2). Hints lower the credit of an answer but never block progress. Stars, once earned, are kept.</li>
+          <li>Path stars (the same stars on Learn, the Path and the dashboard): ★1 learned (chapters, worked examples, the quick lesson with 2+ of its stars, or the skip check), ★2 practiced, ★3 retained (a correct answer in a mixed Gauntlet at least 7 days after ★2). Hints lower the credit of an answer but never block progress. Stars, once earned, are kept.</li>
         </ul>
       </section>
       <section id="score-lever">

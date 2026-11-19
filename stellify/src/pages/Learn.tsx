@@ -21,6 +21,7 @@ import { COURSES } from '@/data/courses';
 import { VISUAL_LESSONS } from '@/data/visual-lessons';
 import { Badge, Card, Empty, PageHeader, Ring, Tabs, cn, toneForPct } from '@/components/ui';
 import { Glyph } from '@/components/Glyph';
+import { usePathStars } from './Path';
 
 const LEVEL_TONE = ['default', 'bad', 'warn', 'brand', 'ok'] as const;
 
@@ -30,10 +31,12 @@ export function CurriculumPage({ section }: { section?: Section }) {
   const domains = DOMAINS.filter((d) => !section || d.section === section);
   const skills = SKILLS.filter((k) => !section || k.section === section);
   const mastered = skills.filter((k) => stats[k.id].level >= 3).length;
-  const stars = useStore((s) => s.lessonStars) ?? {};
+  // one star system: the Path's (lessons, Path and dashboard always agree)
+  const { stars, rec } = usePathStars();
   const chaptersDone = useStore((s) => s.chapters) ?? {};
   const earned = skills.reduce((n, k) => n + (stars[k.id] ?? 0), 0);
-  const nextUp = skills.find((k) => !stars[k.id]) ?? skills.find((k) => (stars[k.id] ?? 0) < 3);
+  const recId = section ? rec[section] : rec.math;
+  const nextUp = skills.find((k) => k.id === recId) ?? skills.find((k) => (stars[k.id] ?? 0) < 3);
   return (
     <div>
       <PageHeader eyebrow="Learn" title={section ? `${SECTION_NAME[section]} Academy` : 'Complete Curriculum'}
@@ -42,7 +45,7 @@ export function CurriculumPage({ section }: { section?: Section }) {
       {nextUp && (
         <Link href={`/learn/${nextUp.id}`} className="mb-5 flex flex-wrap items-center gap-4 rounded-2xl border-2 border-brand/50 bg-brand/10 p-4 transition-transform hover:-translate-y-0.5" data-testid="next-lesson">
           <SkillIcon skill={nextUp.id} size={56} />
-          <span className="min-w-0 flex-1"><span className="block text-xs font-bold uppercase tracking-widest text-brand2">{stars[nextUp.id] ? 'Go for 3 stars' : 'Next stop'}</span><span className="block text-lg font-bold">{nextUp.name}</span><span className="block text-sm text-muted">{VISUAL_LESSONS[nextUp.id].hook}</span></span>
+          <span className="min-w-0 flex-1"><span className="block text-xs font-bold uppercase tracking-widest text-brand2">{stars[nextUp.id] ? 'Next step on your Path' : 'Next stop on your Path'}</span><span className="block text-lg font-bold">{nextUp.name}</span><span className="block text-sm text-muted">{VISUAL_LESSONS[nextUp.id].hook}</span></span>
           <span className="btn-primary"><Play size={16} />Play</span>
         </Link>
       )}

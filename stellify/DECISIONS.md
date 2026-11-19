@@ -73,3 +73,8 @@ Each entry records what was decided, why, and the alternatives considered.
     init-order crash), fonts and the PDF worker as files, a strict CSP, a web manifest and a service worker that
     precaches the app core (page chunks are cached on first visit). The single offline file is unchanged and still
     built.
+21. **One system for the Path and the lessons (owner request, 2026-11-19).** The Path's order is exactly Learn's lesson
+    order (Linear functions now builds on Linear equations, so the order stays valid). Each Path step opens its real
+    lesson page, which shows the same Path card (stars, next step, practice set, hard set, skip check). Learn and the
+    dashboard show the Path's stars and next step. Finishing the 5-minute quick lesson with 2 or more of its stars
+    now counts toward ★1, so earlier quick-lesson progress still shows.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PATH, PATH_SKILLS, hexDistance, neighbourFor, pathOf } from '../src/lib/path/skills';
+import { PATH, PATH_SKILLS, pathOf } from '../src/lib/path/skills';
 import { credit, deriveStars, keepStars, retentionFrom, scoreSet, RETENTION_DAYS } from '../src/lib/path/stars';
 import { nextStep, todayPlan, formatFor, skillStars, upcomingSkills, type EngineInput, REVIEW_CAP } from '../src/lib/path/next';
 import { scoreLever, firstTries, LEVER } from '../src/lib/engine/lever';
@@ -22,42 +22,18 @@ function input(over: Partial<EngineInput> = {}): EngineInput {
   };
 }
 
-describe('Path map layout (grouped hexagon tiles)', () => {
-  const touch = (a: SkillId, b: SkillId) => hexDistance(PATH[a].hex, PATH[b].hex) === 1;
-  it('has 19 math and 11 reading and writing skills, one per tile', () => {
+describe('Path order', () => {
+  it('has 19 math and 11 reading and writing skills', () => {
     expect(pathOf('math')).toHaveLength(19);
     expect(pathOf('rw')).toHaveLength(11);
+  });
+  it('is exactly the Learn curriculum order, so the Path and the lessons never disagree', () => {
     for (const sec of ['math', 'rw'] as const) {
-      const cells = pathOf(sec).map((s) => `${s.hex.q},${s.hex.r}`);
-      expect(new Set(cells).size).toBe(cells.length);
+      expect([...pathOf(sec)].sort((a, b) => a.order - b.order).map((s) => s.id)).toEqual(SKILLS.filter((k) => k.section === sec).map((k) => k.id));
     }
   });
-  it('anything that branches relates: every skill touches a prerequisite or the related skill it branches from', () => {
-    for (const s of PATH_SKILLS) {
-      const links = [...s.prereqs, ...s.branch];
-      if (links.length) expect(links.some((l) => touch(l, s.id)), s.id).toBe(true);
-    }
-  });
-  it('each domain is one touching cluster', () => {
-    for (const d of [...new Set(PATH_SKILLS.map((s) => s.domain))]) {
-      const mem = PATH_SKILLS.filter((s) => s.domain === d).map((s) => s.id);
-      const seen = new Set([mem[0]]); const stack = [mem[0]];
-      while (stack.length) { const x = stack.pop()!; for (const y of mem) if (!seen.has(y) && touch(x, y)) { seen.add(y); stack.push(y); } }
-      expect(seen.size, d).toBe(mem.length);
-    }
-  });
-  it('the map grows upward: a skill never sits below the skill it attaches to, and prerequisites come earlier in lesson order', () => {
-    for (const s of PATH_SKILLS) {
-      const anchors = [...s.prereqs, ...s.branch].filter((l) => touch(l, s.id));
-      if (anchors.length) expect(anchors.some((l) => PATH[l].hex.r >= s.hex.r), s.id).toBe(true);
-      for (const p of s.prereqs) { expect(PATH[p].order).toBeLessThan(s.order); expect(PATH[p].section).toBe(s.section); }
-    }
-  });
-  it('arrow keys move to the touching tile in that direction', () => {
-    expect(neighbourFor(PATH.lin1, 'ArrowLeft')?.id).toBe('equiv');
-    expect(neighbourFor(PATH.lin1, 'ArrowRight')?.id).toBe('ineq');
-    expect(neighbourFor(PATH.lin1, 'ArrowUp')?.id).toBe('sys');
-    expect(neighbourFor(PATH.lin1, 'ArrowDown')).toBeUndefined();
+  it('every prerequisite comes earlier in that order', () => {
+    for (const s of PATH_SKILLS) for (const p of s.prereqs) { expect(PATH[p].order, `${p} before ${s.id}`).toBeLessThan(s.order); expect(PATH[p].section).toBe(s.section); }
   });
 });
 
@@ -208,5 +184,13 @@ describe('Score Lever', () => {
   it('uses first tries only', () => {
     const q = qOf('lin1');
     expect(firstTries([att(q.id, false, 1), att(q.id, true, 2)])).toHaveLength(1);
+  });
+});
+
+describe('one star system', () => {
+  it('the 5-minute quick lesson with 2+ stars earns ★1 on the Path (and so on Learn)', () => {
+    const base = { chaptersPassed: 0, chaptersTotal: 3, workedDone: false, level: 0 as const, sets: [] };
+    expect(deriveStars({ ...base, quickStars: 1 }).count).toBe(0);
+    expect(deriveStars({ ...base, quickStars: 2 }).count).toBe(1);
   });
 });

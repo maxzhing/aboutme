@@ -35,6 +35,8 @@ export interface EngineInput {
   /** worked-example family ids of each skill */
   workedFamilies: Partial<Record<SkillId, string[]>>;
   levels: Record<SkillId, MasteryLevel>;
+  /** stars from each skill's 5-minute quick lesson */
+  quickStars?: Partial<Record<SkillId, number>>;
   lever: Lever[];
   examDate?: string;
 }
@@ -52,6 +54,7 @@ export function skillStars(i: EngineInput, skill: SkillId): StarStatus {
     chaptersPassed: ch.filter((c) => i.chapters[c]?.passedAt).length,
     chaptersTotal: ch.length,
     workedDone: fam.length > 0 && fam.every((f) => i.path.worked[f]),
+    quickStars: i.quickStars?.[skill],
     level: i.levels[skill],
     sets: i.path.sets.filter((s) => s.skill === skill),
     retainedAt: i.path.retained[skill],

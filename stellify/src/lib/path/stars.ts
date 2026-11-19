@@ -4,7 +4,8 @@ import { DAY } from '../util';
 
 /**
  * Path star rules (METHODOLOGY.md; approved in PROPOSAL.md):
- *  ★1 Learned   — every chapter passed, OR the worked-example ladder finished, OR the skip check passed,
+ *  ★1 Learned   — every chapter passed, OR the worked-example ladder finished, OR the 5-minute quick lesson
+ *                 finished with 2+ of its stars, OR the skip check passed,
  *                 OR the skill reached Proficient (practice that strong shows it was learned).
  *  ★2 Practiced — the 6-question practice set passed on its FIRST attempt (≥ 4.5 credit), OR Proficient,
  *                 OR the skip check passed (≥ 4 of 5 credit). ★2 includes ★1.
@@ -28,6 +29,8 @@ export interface StarInput {
   chaptersTotal: number;
   /** every worked-example family for this skill finished */
   workedDone: boolean;
+  /** stars from the skill's 5-minute quick lesson (0–3); finishing it with 2+ counts as learned */
+  quickStars?: number;
   level: MasteryLevel;
   sets: PathSetResult[];
   retainedAt?: number;
@@ -49,7 +52,7 @@ export function deriveStars(i: StarInput, kept: { 1?: number; 2?: number; 3?: nu
   const checkPassed = of('check').some((s) => s.passed);
   const firstPractice = of('practice').find((s) => s.first);
   const proficient = i.level >= 3;
-  const learned = !!kept[1] || (i.chaptersTotal > 0 && i.chaptersPassed >= i.chaptersTotal) || i.workedDone || checkPassed || proficient;
+  const learned = !!kept[1] || (i.chaptersTotal > 0 && i.chaptersPassed >= i.chaptersTotal) || i.workedDone || (i.quickStars ?? 0) >= 2 || checkPassed || proficient;
   const practiced = !!kept[2] || !!firstPractice?.passed || proficient || checkPassed;
   const hardDone = of('hard').some((s) => s.passed) || i.level >= 4;
   const twoAt = kept[2];
@@ -60,7 +63,7 @@ export function deriveStars(i: StarInput, kept: { 1?: number; 2?: number; 3?: nu
       : twoAt && Date.now() < twoAt + RETENTION_DAYS * DAY ? `Come back after ${new Date(twoAt + RETENTION_DAYS * DAY).toLocaleDateString()} and get it right in a Gauntlet.`
       : 'Get this skill right in a Gauntlet (mixed review).')
     : count === 1 ? (firstPractice ? 'Reach Proficient through practice, or pass the skip check.' : 'Pass the 6-question practice set on your first try (4.5 credit or more), or reach Proficient.')
-    : 'Finish the chapters or the worked examples, or pass the 5-question skip check.';
+    : 'Finish the chapters, the worked examples or the 5-minute quick lesson (2+ stars), or pass the 5-question skip check.';
   return { count, learned, practiced, hardDone, retained, next };
 }
 

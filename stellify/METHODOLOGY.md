@@ -15,6 +15,7 @@ validated against real SAT score reports; where that matters, the app says so. T
   block progress.
 - **★1 Learned:**
   - all chapters passed;
+  - or the 5-minute quick lesson finished with 2 or more of its stars;
   - or the worked-example ladders finished;
   - or the 5-question skip check passed (4 or more credit);
   - or Proficient.

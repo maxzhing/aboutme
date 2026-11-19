@@ -19,5 +19,6 @@ export function engineInput(s: AppState, now: number, section?: Section, level?:
     levels: Object.fromEntries(SKILLS.map((k) => [k.id, stats[k.id].level])) as EngineInput['levels'],
     lever: scoreLever(s.attempts, getQuestion, { targetScore: s.profile.targetScore, level }),
     examDate: s.profile.examDate,
+    quickStars: s.lessonStars ?? {},
   };
 }

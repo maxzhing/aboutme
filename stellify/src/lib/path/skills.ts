@@ -1,5 +1,5 @@
 import type { DomainId, Section, SkillId } from '../types';
-import { SKILL } from '../taxonomy';
+import { SKILL, SKILLS } from '../taxonomy';
 
 /**
  * The Path's one schema for skills: prerequisites, hex position and route order.
@@ -50,7 +50,7 @@ const MATH: Omit<PathSkill, 'order'>[] = [
   P('lin1', 3, 0, []),
   P('lin2', 4, -1, ['lin1']),
   P('ineq', 4, 0, ['lin1']),
-  P('linf', 5, -1, ['lin2']),
+  P('linf', 5, -1, ['lin1']),
   P('sys', 3, -1, ['lin2']),
   // Advanced Math
   P('equiv', 2, 0, ['lin1']),
@@ -89,7 +89,10 @@ const RW: Omit<PathSkill, 'order'>[] = [
   P('fss', 0, 0, ['bnd']),
 ];
 
-export const PATH_SKILLS: PathSkill[] = [...MATH, ...RW].map((s, i, all) => ({ ...s, order: all.filter((x) => x.section === s.section).indexOf(s) }));
+/** Lesson order is exactly the Learn curriculum's order (taxonomy SKILLS), so the Path and the lessons never disagree. */
+export const PATH_SKILLS: PathSkill[] = [...MATH, ...RW]
+  .map((s) => ({ ...s, order: SKILLS.filter((k) => k.section === s.section).findIndex((k) => k.id === s.id) }))
+  .sort((a, b) => (a.section === b.section ? a.order - b.order : a.section === 'math' ? -1 : 1));
 export const PATH: Record<SkillId, PathSkill> = Object.fromEntries(PATH_SKILLS.map((s) => [s.id, s])) as Record<SkillId, PathSkill>;
 export const pathOf = (section: Section) => PATH_SKILLS.filter((s) => s.section === section);
 

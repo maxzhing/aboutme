@@ -327,7 +327,7 @@ test('interactive lesson: pictures, quick checks, boss question, stars; quests a
     await expect(lessonQuest.getByLabel('Claimed')).toBeVisible();
   }
   await go(page, '/learn/rw');
-  await expect(page.getByTestId('skill-bnd')).toHaveAttribute('aria-label', /2 of 3 stars/);
+  await expect(page.getByTestId('skill-bnd')).toHaveAttribute('aria-label', /1 of 3 stars/); // the quick lesson with 2+ stars earns the Path’s ★1, shown the same on Learn
 
   // the hardest-pattern set (Stellify originals) opens a session of its own questions
   await go(page, '/practice/hard');

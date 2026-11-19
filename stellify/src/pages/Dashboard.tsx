@@ -26,7 +26,7 @@ import { Habitat, Pet, type PetMood } from '@/components/Pet';
 import { Card, Progress, Ring } from '@/components/ui';
 import { Glyph } from '@/components/Glyph';
 import { TodayPanel } from '@/components/TodayPanel';
-import { usePathModel } from './Path';
+import { usePathModel, usePathStars } from './Path';
 
 export const chartTip = { contentStyle: { background: 'rgb(var(--surface))', border: '1px solid rgb(var(--line))', borderRadius: 14, fontSize: 12, color: 'rgb(var(--ink))', boxShadow: '0 12px 30px -14px rgb(var(--shadow) / .45)', padding: '8px 12px' }, labelStyle: { color: 'rgb(var(--muted))' }, cursor: { fill: 'rgb(var(--raised))', opacity: 0.5 } };
 export const axis = { tick: { fill: 'rgb(var(--faint))', fontSize: 11 }, axisLine: { stroke: 'rgb(var(--line))' }, tickLine: false as const };
@@ -79,7 +79,7 @@ export function DashboardPage() {
   const chestReady = quests.every((q) => q.claimed) && !claimedToday.includes(CHEST.id);
   const chestOpen = claimedToday.includes(CHEST.id);
   const claim = (id: string) => { if (s.claimQuest(id)) { setFire(Date.now()); sfx(id === CHEST.id ? 'win' : 'combo'); } };
-  const starMap = s.lessonStars ?? {};
+  const { stars: starMap, rec: pathRec } = usePathStars();
   const totalStars = SKILLS.reduce((n, k) => n + (starMap[k.id] ?? 0), 0);
 
   const est = ov.estimate.total;
@@ -102,10 +102,11 @@ export function DashboardPage() {
   const diffData = DIFFICULTIES.map((d) => ({ name: DIFFICULTY_NAME[d], accuracy: ov.byDifficulty[d].pct, n: ov.byDifficulty[d].n }));
   const greeting = `${away >= 3 ? 'Good to see you again' : 'Welcome back'}${s.profile.name ? `, ${s.profile.name}` : ''}.`;
 
+  // the next lessons, in Path order, starting at the Path's recommended step
   const pathSkills = (() => {
-    const order = weak && !starMap[weak.skill] ? [SKILL[weak.skill], ...SKILLS.filter((k) => k.id !== weak.skill)] : SKILLS;
-    const open = order.filter((k) => !starMap[k.id]);
-    return (open.length ? open : order.filter((k) => (starMap[k.id] ?? 0) < 3)).slice(0, 3);
+    const math = SKILLS.filter((k) => k.section === 'math');
+    const start = Math.max(0, math.findIndex((k) => k.id === pathRec.math));
+    return [...math.slice(start), ...math.slice(0, start)].filter((k) => (starMap[k.id] ?? 0) < 3).slice(0, 3);
   })();
   const questsLeft = quests.filter((q) => !q.done).length;
   const egg = s.pet.species ? null : eggOf(s);

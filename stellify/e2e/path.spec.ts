@@ -46,13 +46,16 @@ test('Path: grouped 3D hexagon clusters along a path, keyboard movement, a skill
   await expect(map.locator('[data-testid^="node-"][tabindex="0"]')).toHaveCount(1);
   await page.getByTestId('node-lin1').focus();
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByTestId('node-lin2')).toBeFocused();
-  for (let k = 0; k < 4; k++) await page.keyboard.press('ArrowDown');
+  await expect(page.getByTestId('node-linf')).toBeFocused(); // Learn's order: linear equations, then linear functions
+  for (let k = 0; k < 3; k++) await page.keyboard.press('ArrowDown');
   await page.keyboard.press('ArrowUp');
   await expect(page.getByTestId('node-sys')).toBeFocused();
+  // a step opens its actual lesson, which carries the same Path stars and sets
   await page.keyboard.press('Enter');
-  await expect(page.getByTestId('skill-panel')).toContainText('★1 Learned');
-  await expect(page.getByTestId('skill-panel')).toContainText('Linear systems');
+  await expect(page).toHaveURL(/#\/learn\/sys$/);
+  await expect(page.getByTestId('lesson-path-card')).toContainText('★1 Learned');
+  await expect(page.getByTestId('lesson-path-card')).toContainText('Step 4 of 19');
+  await go(page, '/path');
   // list view: the same skills as plain rows; the choice is remembered
   await page.getByTestId('view-list').click();
   await expect(page.getByTestId('path-list').getByRole('button')).toHaveCount(19);
@@ -97,7 +100,7 @@ test('Path on a phone: the same ladder fits, steps are big enough to tap, a skil
   expect(box!.height).toBeGreaterThanOrEqual(44);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
   await page.getByTestId('node-lin1').click();
-  await expect(page.getByRole('dialog')).toContainText('★1 Learned');
+  await expect(page.getByTestId('lesson-path-card')).toContainText('★1 Learned');
   expect(errors).toEqual([]);
 });
 

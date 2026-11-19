@@ -14,7 +14,7 @@ import { useOverview, useWeekRhythm } from '@/lib/hooks';
 import { engineInput, CHAPTER_IDS } from '@/lib/path/input';
 import { formatFor, hexState, nextStep, prereqsMet, skillStars, todayPlan, upcomingSkills } from '@/lib/path/next';
 import { pickSet } from '@/lib/path/sets';
-import { PATH, pathOf } from '@/lib/path/skills';
+import { PATH, PATH_SKILLS, pathOf } from '@/lib/path/skills';
 import { SET_RULES } from '@/lib/path/stars';
 import { snapshot, useStore } from '@/lib/store';
 import { DOMAIN, SECTION_NAME } from '@/lib/taxonomy';
@@ -51,7 +51,8 @@ export function PathPage({ section = 'math' }: { section?: Section }) {
   const { input, next, today, upcoming } = usePathModel(section);
   const [view, setView] = useState<'map' | 'list'>(readView);
   const selected = (sp.get('skill') as SkillId | null) ?? undefined;
-  const pick = (id: SkillId) => router.replace(`/path${section === 'rw' ? '/rw' : ''}?skill=${id}`);
+  // a step opens its actual lesson (the same course pages as Learn)
+  const pick = (id: SkillId) => router.push(`/learn/${id}`);
   const info: Record<string, HexInfo> = Object.fromEntries(pathOf(section).map((s) => { const h = hexState(input, s.id); const rank = upcoming.indexOf(s.id); return [s.id, { state: h.state, stars: h.stars.count, due: h.due, recommended: rank === 0, rank: rank >= 0 ? rank : undefined }]; }));
   const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1024);
   useEffect(() => { const on = () => setNarrow(window.innerWidth < 1024); window.addEventListener('resize', on); return () => window.removeEventListener('resize', on); }, []);
@@ -84,7 +85,7 @@ export function PathPage({ section = 'math' }: { section?: Section }) {
         </section>
         <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
           {selected && PATH[selected]?.section === section && !narrow ? <SkillPanel skill={selected} input={input} recommended={next.skill === selected} /> : (
-            <Card><h2 className="text-[20px]">Next step</h2><p className="mt-1 text-[15px] font-medium">{next.title}</p><p className="mt-1 text-[14px] text-muted">{next.reason}</p><Link href={next.href} className="btn-primary mt-3" data-testid="path-next">Start<ArrowRight size={16} aria-hidden /></Link><p className="mt-3 text-[13px] text-faint">Tap any step on the path to see its stars and every way to work on it.</p></Card>
+            <Card><h2 className="text-[20px]">Next step</h2><p className="mt-1 text-[15px] font-medium">{next.title}</p><p className="mt-1 text-[14px] text-muted">{next.reason}</p><Link href={next.href} className="btn-primary mt-3" data-testid="path-next">Start<ArrowRight size={16} aria-hidden /></Link><p className="mt-3 text-[13px] text-faint">Tap any step to open its lesson. Its stars and practice sets are at the top of the lesson.</p></Card>
           )}
         </aside>
       </div>
@@ -158,7 +159,7 @@ function SkillPanel({ skill, input, recommended, bare }: { skill: SkillId; input
       <p className="mt-1 flex items-center gap-2 text-[14px] text-muted"><Stars n={st.count} size={16} />{MASTERY_LEVELS[input.levels[skill]]}{recommended ? ' · recommended next' : ''}</p>
       {!open && <p className="mt-2 text-[14px] text-muted">Builds on {s.prereqs.map((p) => PATH[p].title).join(' and ')}. You can start here anyway, or take the skip check.</p>}
       <ol className="mt-3 divide-y divide-line border-y border-line">
-        {row(st.learned, '★1 Learned', `${passed} of ${ch.length} chapters${fams.length ? `, or the ${fams.length} worked-example ladder${fams.length === 1 ? '' : 's'}` : ''}, or the skip check.`)}
+        {row(st.learned, '★1 Learned', `${passed} of ${ch.length} chapters${fams.length ? `, or the ${fams.length} worked-example ladder${fams.length === 1 ? '' : 's'}` : ''}, or the 5-minute quick lesson with 2+ stars, or the skip check.`)}
         {row(st.practiced, '★2 Practiced', 'The practice set on your first try, or reaching Proficient.')}
         {row(st.count >= 3, '★3 Retained', 'The hard set (or Mastered), then a right answer in a Gauntlet at least 7 days after ★2.')}
       </ol>
@@ -190,4 +191,27 @@ export function PathSetPage() {
   return <SessionRunner key={sp.toString()} qids={qids} mode="path" title={title} backHref={back} completeHref={back} completeLabel="Back to the Path"
     onComplete={(r) => { if (kind !== 'confident') record(kind, { section, skill: kind === 'gauntlet' ? undefined : skill }, r.rows.map((x) => ({ qid: x.qid, correct: x.correct, hints: x.hints }))); }}
     reasons={Object.fromEntries(qids.map((id) => [id, kind === 'gauntlet' ? `Mixed review: ${PATH[getQuestion(id)!.skill].title}.` : kind === 'confident' ? 'You were sure of this answer last time, and it was wrong.' : `${title}.`]))} />;
+}
+
+/** The Path card on a skill's lesson page: the same stars, next step and sets as the Path itself. */
+export function SkillPathCard({ skill }: { skill: SkillId }) {
+  const syncPath = useStore((s) => s.syncPath);
+  useEffect(() => { syncPath(); }, [syncPath]);
+  const { input, upcoming } = usePathModel(PATH[skill].section);
+  return (
+    <div className="mb-6" data-testid="lesson-path-card">
+      <p className="mb-2 text-[14px] text-muted">Step {PATH[skill].order + 1} of {pathOf(PATH[skill].section).length} on your <Link href={`/path${PATH[skill].section === 'rw' ? '/rw' : ''}`} className="text-accent underline">Path</Link>{upcoming[0] === skill ? ' · your next step' : ''}</p>
+      <SkillPanel skill={skill} input={input} recommended={upcoming[0] === skill} />
+    </div>
+  );
+}
+
+/** Path stars for every skill, and the recommended next skill per section: shared by Learn, the dashboard and the Path. */
+export function usePathStars() {
+  const syncPath = useStore((s) => s.syncPath);
+  useEffect(() => { syncPath(); }, [syncPath]);
+  const m = usePathModel(undefined);
+  const rec = { math: upcomingSkills({ ...m.input, section: 'math' }, 1)[0], rw: upcomingSkills({ ...m.input, section: 'rw' }, 1)[0] };
+  const stars = Object.fromEntries(PATH_SKILLS.map((p) => [p.id, skillStars(m.input, p.id).count])) as Record<SkillId, number>;
+  return { stars, rec };
 }

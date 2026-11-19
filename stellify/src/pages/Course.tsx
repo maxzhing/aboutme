@@ -28,6 +28,7 @@ import { Confetti } from '@/components/Confetti';
 import { Badge, Card, Empty, PageHeader, Progress, cn } from '@/components/ui';
 import { Glyph } from '@/components/Glyph';
 import { WORKED_BY_SKILL } from '@/data/worked';
+import { SkillPathCard } from './Path';
 
 const stars = (c: number, t: number) => (t === 0 ? 0 : c === t ? 3 : passed(c, t) ? 2 : 1);
 
@@ -71,6 +72,7 @@ export function CoursePage({ skill }: { skill: SkillId }) {
         </div>
         <p className="relative mt-5 text-sm text-white/80" data-testid="course-progress">{passedN} of {chapters.length} chapters passed · every chapter: pictures → method → cheat sheet → worked examples → traps → 3 hard questions</p>
       </section>
+      <SkillPathCard skill={skill as SkillId} />
       <ol className="relative space-y-3 before:absolute before:bottom-8 before:left-[42px] before:top-8 before:w-0.5 before:bg-line">
         {chapters.map((c) => { const r = done[c.id]; const pool = chapterQuestions(c).length; const isNext = next?.id === c.id; return (
           <li key={c.id}>
