@@ -16,7 +16,8 @@ Status: todo / in progress / done / blocked. Updated after every commit.
 - [x] done: 7. Predict-First mode (N8): #/predict, per-type prediction prompts and quick picks, choices hidden until a prediction is written, self-grade, the student's own match-vs-accuracy pattern, optional soft timer; never in mocks
 - [x] done: 8. Fatigue and pacing curve (N6): difficulty-adjusted accuracy by thirds of each module, needs 3+ modules, "possible drop-off" wording, time-per-question strip against 71 s / 95 s; on Analytics, mock reports and a Today stamina note (tests/fatigue.test.ts)
 - [x] done: 9. Desmos Lab (N7): #/desmos/lab, 7 techniques with algebra vs Desmos side by side and timers, when-not-to notes, exercises checked on the built-in grapher (typed expressions checked for equivalence, then the answer), decision guide, timed method drill, offline message. Desmos API state checking behind flag OFF (needs key).
-- [ ] todo: 10. Hosted web build (code splitting, service worker), CI, content linter, docs
+- [x] done: 10a. Hosted web build (../sat): landing 96/100/100/100, app Path page 89 (median of 3)/100/100/100 on Lighthouse mobile (uncompressed local server); offline after one visit (e2e/web.spec.ts)
+- [ ] todo: 10b. CI, content linter, docs
 
 ## Phase 3: QA
 - [ ] todo: Lighthouse, axe, keyboard, 320 px, 200% zoom, reduced motion, offline, migration, export/import

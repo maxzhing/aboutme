@@ -67,3 +67,9 @@ Each entry records what was decided, why, and the alternatives considered.
     A dotted trail and the unit's name lead to the next cluster. There are no arrows: step numbers show the
     order. Only the next step is highlighted (blue, gold ring) and raised above the rest. This replaces #17's
     branching map. The branch anchors stay in the data for possible later use.
+20. **Hosted web build in `sat/` at the repository root** (for GitHub Pages once merged: /aboutme/sat/). The owner's
+    existing homepage (index.html) is not touched. It has a static landing page with a real question, the app
+    split into per-page chunks behind a one-line loader entry (an entry that chunks import from caused an
+    init-order crash), fonts and the PDF worker as files, a strict CSP, a web manifest and a service worker that
+    precaches the app core (page chunks are cached on first visit). The single offline file is unchanged and still
+    built.

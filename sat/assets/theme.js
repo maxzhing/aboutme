@@ -1,0 +1,1 @@
+(function(){try{var t=localStorage.getItem('stellify-theme')||'light';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();

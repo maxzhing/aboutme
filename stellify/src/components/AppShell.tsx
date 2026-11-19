@@ -78,11 +78,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (!hydrated) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10" aria-busy="true" aria-label="Loading your progress">
+      <main className="mx-auto max-w-3xl px-4 py-10" aria-busy="true" aria-label="Loading your progress">
         <div className="flex items-center gap-2 font-display text-xl font-semibold"><Logo />{BRAND.name}</div>
         <p className="mt-2 text-sm text-muted">Loading your progress from this device…</p>
         <div className="mt-8 space-y-3" aria-hidden>{[70, 92, 84, 60].map((w) => <div key={w} className="h-4 rounded bg-raised" style={{ width: `${w}%` }} />)}</div>
-      </div>
+      </main>
     );
   }
 

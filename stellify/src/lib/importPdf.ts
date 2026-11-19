@@ -20,7 +20,8 @@ export async function pdfjs(): Promise<PDFJS> {
   // @ts-ignore no bundled types for the legacy entry
   lib = (await import('pdfjs-dist/legacy/build/pdf.js')) as PDFJS;
   const src = document.getElementById('pdf-worker')?.textContent;
-  if (src) lib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+  // the single-file build carries the worker inline; the hosted web build serves it as a file next to the app
+  lib.GlobalWorkerOptions.workerSrc = src ? URL.createObjectURL(new Blob([src], { type: 'text/javascript' })) : 'assets/pdf.worker.min.js';
   return lib;
 }
 

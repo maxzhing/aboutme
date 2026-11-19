@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npm run validate:questions && node scripts/build.mjs",
     "build:fast": "node scripts/build.mjs",
+    "build:web": "node scripts/build-web.mjs",
     "typecheck": "tsc --noEmit",
     "validate:questions": "tsx scripts/validate-questions.ts --strict",
     "check:links": "NODE_USE_ENV_PROXY=1 tsx scripts/check-links.ts",

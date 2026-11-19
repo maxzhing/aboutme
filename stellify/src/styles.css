@@ -280,3 +280,27 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 .path-bubble-right::after { left: -7px; border-left: 0; border-right-color: rgb(var(--ink)); }
 .path-bubble-left::after { right: -7px; border-right: 0; border-left-color: rgb(var(--ink)); }
 @keyframes bubble-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+/* ─── Landing page (sat/index.html) ─────────────────────────────────────────── */
+.l-wrap { max-width: 64rem; margin: 0 auto; padding: 0 16px; }
+.l-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 18px; padding-bottom: 18px; border-bottom: 1px solid rgb(var(--line)); }
+.l-top nav { display: flex; gap: 16px; font-size: 15px; }
+.l-top nav a, .l-shot a { color: rgb(var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
+.l-brand { display: inline-flex; align-items: center; gap: 8px; font-family: "Source Serif 4 Variable", Georgia, serif; font-size: 22px; font-weight: 600; }
+.l-intro { padding: 40px 0 28px; max-width: 46rem; }
+.l-intro h1 { font-size: clamp(32px, 6vw, 48px); line-height: 1.08; }
+.l-intro p { margin-top: 14px; font-size: 18px; line-height: 1.55; color: rgb(var(--muted)); }
+.l-cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.l-try { padding: 20px; }
+.l-try h2 { margin: 6px 0 10px; font-size: 24px; }
+.l-try fieldset { border: 0; padding: 0; margin: 14px 0; }
+.l-try legend { font-weight: 500; margin-bottom: 10px; }
+.l-choice { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 8px 12px; margin-bottom: 8px; border: 1px solid rgb(var(--line)); border-radius: var(--r-control); cursor: pointer; }
+.l-choice:has(input:checked) { border-color: rgb(var(--accent)); box-shadow: inset 0 0 0 1px rgb(var(--accent)); }
+#try-out p { margin-top: 10px; }
+.verdict.ok { color: rgb(var(--ok)); font-weight: 600; } .verdict.bad { color: rgb(var(--bad)); font-weight: 600; }
+.l-shot { display: grid; gap: 24px; align-items: center; padding: 36px 0; }
+.l-shot h2 { font-size: 26px; } .l-shot p { margin-top: 10px; color: rgb(var(--muted)); }
+.l-shot img { width: 100%; max-width: 300px; height: auto; border-radius: 16px; border: 1px solid rgb(var(--line)); justify-self: center; }
+@media (min-width: 768px) { .l-shot { grid-template-columns: 1fr 300px; } }
+.l-foot { padding-top: 20px; padding-bottom: 40px; border-top: 1px solid rgb(var(--line)); font-size: 13px; color: rgb(var(--faint)); }
