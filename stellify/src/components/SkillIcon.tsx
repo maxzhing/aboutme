@@ -1,5 +1,6 @@
 import { ArrowRightLeft, Box, ChartColumn, ChartPie, ChartScatter, Circle, Compass, Crosshair, Diff, Dice5, FlaskConical, Handshake, Infinity as Inf, Landmark, Layers, Magnet, Parentheses, Percent, Puzzle, Rocket, Scale, Scissors, SearchCheck, Slash, Table, Target, Telescope, TrendingUp, Triangle, Type, Wrench, type LucideIcon } from 'lucide-react';
 import type { DomainId, SkillId } from '@/lib/types';
+import { SKILL } from '@/lib/taxonomy';
 import { cn } from './ui';
 
 const ICON: Record<SkillId, LucideIcon> = {
@@ -18,7 +19,7 @@ export const DOMAIN_COLOR: Record<DomainId, string> = { alg: '', adv: '', psda: 
 export function SkillIcon({ skill, size = 44, className, dim }: { skill: SkillId; size?: number; className?: string; dim?: boolean }) {
   const Icon = ICON[skill] ?? Inf;
   return (
-    <span className={cn('relative inline-grid shrink-0 place-items-center rounded border border-line bg-raised text-ink', dim && 'opacity-50', className)} style={{ width: size, height: size }} aria-hidden>
+    <span className={cn('relative inline-grid shrink-0 place-items-center rounded-[28%]', `dom-${SKILL[skill].domain}`, dim && 'opacity-50', className)} data-domain={SKILL[skill].domain} style={{ width: size, height: size, color: 'rgb(var(--dom))', background: 'rgb(var(--dom) / .14)' }} aria-hidden>
       <Icon size={Math.round(size * 0.5)} strokeWidth={1.75} />
     </span>
   );

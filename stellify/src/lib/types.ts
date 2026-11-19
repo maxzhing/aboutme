@@ -89,7 +89,7 @@ export interface Question extends Omit<RawQuestion, 'd' | 'time'> {
 
 export type PracticeMode =
   | 'smart' | 'bank' | 'hard' | 'timed' | 'daily' | 'speed' | 'arena'
-  | 'mistakes' | 'review' | 'diagnostic' | 'mock' | 'lesson' | 'tutor' | 'mission' | 'remix';
+  | 'mistakes' | 'review' | 'diagnostic' | 'mock' | 'lesson' | 'tutor' | 'mission' | 'remix' | 'path';
 
 export interface Attempt {
   id: string;
@@ -340,4 +340,38 @@ export interface AppState {
   qcReviewed?: Record<string, { at: number; note: string }>;
   /** Remix Studio: generated questions and the chains they belong to (versioned; see lib/remix/store.ts) */
   remix?: import('./remix/types').RemixState;
+  /** the hex Path: earned stars (kept once earned), set results, worked-example ladders (state v2) */
+  path?: PathState;
+  /** test-day hub checklist, by item id: when it was ticked (state v2) */
+  testDay?: { ticks: Record<string, number>; schools?: string[] };
+  /** Predict-First mode: one row per prediction (state v2) */
+  predictions?: PredictionRow[];
+  /** consent for anonymous research data; collection itself stays off unless a build enables it */
+  research?: { consent: boolean; at?: number; sessionId?: string };
 }
+
+export type PathSetKind = 'practice' | 'hard' | 'check' | 'gauntlet';
+/** One finished Path set. Credit per answer: 1, 0.75, 0.5 or 0.25 after 0–3 hints; 0 when wrong. */
+export interface PathSetResult {
+  kind: PathSetKind;
+  section: Section;
+  skill?: SkillId;
+  at: number;
+  qids: string[];
+  credit: number;
+  n: number;
+  passed: boolean;
+  /** the first attempt at this kind of set for this skill (★2 counts only first attempts) */
+  first: boolean;
+  /** per-skill credit, for Gauntlets */
+  bySkill?: Partial<Record<SkillId, { credit: number; n: number }>>;
+}
+export interface PathState {
+  stars: Partial<Record<SkillId, { 1?: number; 2?: number; 3?: number }>>;
+  sets: PathSetResult[];
+  /** finished worked-example ladders, by problem-family id */
+  worked: Record<string, number>;
+  /** when a delayed retrieval check (a Gauntlet at least 7 days after ★2) succeeded, by skill */
+  retained: Partial<Record<SkillId, number>>;
+}
+export interface PredictionRow { qid: string; at: number; prediction: string; self: 'matched' | 'close' | 'missed'; correct?: boolean }

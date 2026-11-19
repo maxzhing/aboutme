@@ -58,7 +58,7 @@ export function CurriculumPage({ section }: { section?: Section }) {
                     {isNext && <span className="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-brand-solid px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white">Start</span>}
                     {lessonsDone[k.id] && <CheckCircle2 size={18} className="absolute -right-1 -top-1 rounded-full bg-surface text-ok" aria-hidden />}
                   </span>
-                  <span className="mt-1.5 flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= n ? 'fill-gold text-gold' : 'text-line'} />)}</span>
+                  <span className="mt-1.5 flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= n ? 'fill-star text-[rgb(var(--star-edge))]' : 'text-line'} />)}</span>
                   <span className="mt-1 text-xs font-semibold leading-tight">{k.short}</span>
                   <span className="text-[10px] text-muted">{COURSES[k.id].filter((c) => chaptersDone[c.id]?.passedAt).length} of {COURSES[k.id].length} chapters<br />{st.n ? `${st.correct} of ${st.n} right` : 'no answers yet'}</span>
                 </Link>
@@ -123,7 +123,7 @@ function LessonNotes({ skill }: { skill: string }) {
             <p className="text-xs text-faint">Try each example yourself before opening the solution.</p>
           </Section_>
           <Section_ n={5} title="Common mistakes"><ul className="space-y-2">{l.mistakes.map((r, i) => <li key={i} className="flex gap-2.5"><span className="font-bold text-bad">✗</span><span><RichText text={r} /></span></li>)}</ul></Section_>
-          <Section_ n={6} title="SAT shortcuts"><ul className="space-y-2">{l.shortcuts.map((r, i) => <li key={i} className="flex gap-2.5"><Star size={15} aria-hidden className="mt-1 shrink-0 fill-current text-accent" /><span><RichText text={r} /></span></li>)}</ul></Section_>
+          <Section_ n={6} title="SAT shortcuts"><ul className="space-y-2">{l.shortcuts.map((r, i) => <li key={i} className="flex gap-2.5"><Star size={15} aria-hidden className="mt-1 shrink-0 fill-star text-[rgb(var(--star-edge))]" /><span><RichText text={r} /></span></li>)}</ul></Section_>
           {rules.length > 0 && <Card><h2 className="mb-2 text-lg font-bold">Related grammar rules</h2><div className="flex flex-wrap gap-2">{rules.map((g) => <Link key={g.id} href={`/grammar#${g.id}`} className="chip !py-1 hover:text-ink">{g.title}</Link>)}</div></Card>}
           <Card>
             <h2 className="mb-1 text-lg font-bold">Practice by difficulty</h2>

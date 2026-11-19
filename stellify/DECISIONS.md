@@ -32,3 +32,15 @@ Each entry records what was decided, why, and the alternatives considered.
     stubbed, OFF, with no endpoint.
 12. **Desmos Lab validates on Stellify's built-in grapher** (offline, state readable). The embedded College Board
     Desmos calculator stays for free practice. Validating Desmos graph state needs the Desmos API key (NEEDS-OWNER).
+13. **More colour and rounder shapes (owner request, 2026-11-19).** This overrides the brief's "one accent" and
+    "radius at most ~6px" rules. Each content domain has its own colour (Math: teal, orange, gold, rose;
+    Reading & Writing: sky, rose, green, orange) and so does each app area (navigation icons, page labels). Stars are
+    gold. Blue stays the colour of actions and of the recommended next step. Hexagons have rounded corners. Cards use
+    16px, controls 12px, chips are pills. Colour still never carries meaning alone: every state has a word, an icon
+    or a star count, and contrast is checked by axe.
+14. **Format choice refined.** For a brand-new skill (no stars, chapters not done), the engine starts with chapter 1
+    rather than a practice set. The brief's "practice set otherwise" applies once ★1 is earned. Starting a new topic
+    with a test is the opposite of what the brief wants for learning.
+15. **Path stars backfill.** On the first load after the update, skills that already meet a star's rule (for
+    example Proficient) get that star dated at that moment. Their 7-day retention clock starts then, not
+    retroactively. Recomputing the historical date was possible but slow on big histories, for little benefit.

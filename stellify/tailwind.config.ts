@@ -25,14 +25,17 @@ const config: Config = {
         accent2: v('accent2'),
         'brand-solid': v('brand-solid'),
         'brand2-solid': v('brand2-solid'),
+        dom: v('dom'),
+        sec: v('sec'),
+        star: v('star'),
       },
       fontFamily: {
         sans: ['"IBM Plex Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'],
         display: ['"Source Serif 4 Variable"', '"Source Serif 4"', 'Georgia', 'Cambria', 'serif'],
         serif: ['"Source Serif 4 Variable"', '"Source Serif 4"', 'Georgia', 'Cambria', 'serif'],
       },
-      /* two radii only (DESIGN.md): 6px for every box, and the pill */
-      borderRadius: { none: '0', sm: '6px', DEFAULT: '6px', md: '6px', lg: '6px', xl: '6px', '2xl': '6px', '3xl': '6px', xl2: '6px', full: '9999px' },
+      /* rounded, soft corners (owner request): 12px for controls and small boxes, 16px for cards, and the pill */
+      borderRadius: { none: '0', sm: '8px', DEFAULT: '12px', md: '10px', lg: '12px', xl: '12px', '2xl': '16px', '3xl': '20px', xl2: '16px', full: '9999px' },
       /* three weights: regular, medium, semibold (bold and heavier map to semibold) */
       fontWeight: { normal: '400', medium: '500', semibold: '600', bold: '600', extrabold: '600', black: '600' },
       boxShadow: {

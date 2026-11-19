@@ -365,7 +365,7 @@ function Lesson({ l }: { l: CalcLesson }) {
       {tutor && <TeachBack l={l} t={tutor} />}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card><h2 className="font-bold">What you must remember</h2><ul className="mt-2 space-y-1.5">{l.remember.map((x) => <li key={x} className="flex gap-2 text-sm"><Star size={15} aria-hidden className="mt-0.5 shrink-0 fill-current text-accent" /><RichText text={x} /></li>)}</ul></Card>
+        <Card><h2 className="font-bold">What you must remember</h2><ul className="mt-2 space-y-1.5">{l.remember.map((x) => <li key={x} className="flex gap-2 text-sm"><Star size={15} aria-hidden className="mt-0.5 shrink-0 fill-star text-[rgb(var(--star-edge))]" /><RichText text={x} /></li>)}</ul></Card>
         <Card className="border-brand/30"><h2 className="font-bold">Teacher’s check-in</h2><p className="mt-2 text-sm leading-relaxed text-muted">{l.checkIn}</p><Link href="/tutor" className="mt-3 inline-block text-sm font-semibold text-accent hover:underline">Stuck? Ask the tutor →</Link></Card>
       </div>
 

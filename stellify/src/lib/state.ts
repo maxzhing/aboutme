@@ -1,6 +1,8 @@
 import type { AppState } from './types';
+import { CURRENT_VERSION } from './migrate';
+import { emptyPath } from './path/stars';
 
-export const STATE_VERSION = 1;
+export const STATE_VERSION = CURRENT_VERSION;
 
 export const initialState = (): AppState => ({
   version: STATE_VERSION,
@@ -29,4 +31,8 @@ export const initialState = (): AppState => ({
   settings: { theme: 'light', reducedMotion: false, showTimer: true, aiEnabled: true, aiConsent: false, shareIncludeMistakes: false, challenge: 'high', sound: true },
   seenLevel: 1,
   highlights: {},
+  path: emptyPath(),
+  testDay: { ticks: {} },
+  predictions: [],
+  research: { consent: false },
 });

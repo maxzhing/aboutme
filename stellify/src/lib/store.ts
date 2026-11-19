@@ -7,6 +7,11 @@ import { del, get, set } from 'idb-keyval';
 import type { Mark } from './highlight';
 import type { AppState, ErrorCategory, MockAttempt, Note, PetSlot, Profile, Question, QuestionReport, Settings, TutorMessage } from './types';
 import { initialState, STATE_VERSION } from './state';
+import { migrate } from './migrate';
+import { emptyPath, keepStars, retentionFrom, scoreSet } from './path/stars';
+import { skillStars } from './path/next';
+import { engineInput } from './path/input';
+import type { PathSetKind, PathSetResult, Section, SkillId } from './types';
 import { getQuestion, OFFICIAL, QUESTIONS, setExtraResolver } from '@/data/questions';
 import * as RX from './remix/store';
 import { emptyRemix, type RemixQuestion, type ReviewStatus } from './remix/types';
@@ -24,6 +29,7 @@ import { dailyBackup, safetyBackup } from './backup';
 import { XP_REWARD } from './engine/xp';
 import { collectionOf, eggOf, rollSpecies, speciesById, totalLessons } from './engine/companions';
 import { SHOP_ITEM } from '@/data/shop';
+import { SKILLS } from './taxonomy';
 import { clamp, dateKey, uid } from './util';
 
 /** IndexedDB first (roomy, offline-friendly); falls back to localStorage, then to memory. */
@@ -106,6 +112,19 @@ interface Actions {
   remixReview: (id: string, status: ReviewStatus, note: string, flags: string[]) => void;
   remixSaveChain: (id: string, saved: boolean) => void;
   remixDeleteChain: (id: string) => void;
+  /** Path: keep every star the evidence now supports (never removes one) */
+  syncPath: () => void;
+  /** Path: record a finished set and update stars and retention checks */
+  recordPathSet: (kind: PathSetKind, meta: { section: Section; skill?: SkillId }, rows: { qid: string; correct: boolean; hints: number }[]) => PathSetResult;
+  /** Worked Examples: mark a problem family's ladder finished */
+  finishWorked: (familyId: string) => void;
+  /** Test-day checklist */
+  tickTestDay: (id: string, on: boolean) => void;
+  setTestDaySchools: (ids: string[]) => void;
+  /** Predict-First: one prediction and the student's own grade of it */
+  addPrediction: (row: import('./types').PredictionRow) => void;
+  /** research consent (collection itself is switched off in this build) */
+  setResearchConsent: (consent: boolean) => void;
 }
 
 export type Store = AppState & Actions;
@@ -164,7 +183,7 @@ export const useStore = create<Store>()(
           return { state: a.state, events: [...g.events, ...a.events] };
         }),
         setLessonStars: (skill, stars) => { const cur = getState().lessonStars ?? {}; if ((cur[skill] ?? 0) < stars) setState({ lessonStars: { ...cur, [skill]: stars } }); },
-        finishChapter: (id, correct, total) => apply((s) => {
+        finishChapter: (id, correct, total) => { apply((s) => {
           const now = Date.now();
           const prev = s.chapters?.[id];
           const ok = passed(correct, total);
@@ -178,7 +197,7 @@ export const useStore = create<Store>()(
           st = g.state;
           const a = post(st, now);
           return { state: a.state, events: [...g.events, ...a.events] };
-        }),
+        }); getState().syncPath(); },
         calcAnswer: (pid, correct) => {
           const c = getState().calc ?? { done: {}, answers: {} };
           const prev = c.answers[pid];
@@ -378,7 +397,7 @@ export const useStore = create<Store>()(
           const a = post(st, now);
           return { state: a.state, events: [...g.events, ...a.events] };
         }),
-        importState: (s) => { void safetyBackup(pure(getState()), 'restoring a backup'); setState({ ...initialState(), ...s, remix: RX.sanitize(s.remix), version: STATE_VERSION }); },
+        importState: (raw) => { void safetyBackup(pure(getState()), 'restoring a backup'); const s = migrate(raw, raw?.version ?? 1); setState({ ...initialState(), ...s, remix: RX.sanitize(s.remix), version: STATE_VERSION }); },
         resetAll: () => { void safetyBackup(pure(getState()), 'deleting all data'); setState({ ...initialState(), events: [] }); },
         markLevelSeen: (level) => setState({ seenLevel: level }),
         setMarks: (key, marks) => {
@@ -395,12 +414,45 @@ export const useStore = create<Store>()(
         remixReview: (id, status, note, flags) => setState({ remix: RX.review(getState().remix ?? emptyRemix(), id, status, note, flags, Date.now()) }),
         remixSaveChain: (id, saved) => setState({ remix: RX.setChainSaved(getState().remix ?? emptyRemix(), id, saved) }),
         remixDeleteChain: (id) => setState({ remix: RX.deleteChain(getState().remix ?? emptyRemix(), id, remixRefs(getState())) }),
+        syncPath: () => {
+          const st = pure(getState()), now = Date.now();
+          const input = engineInput(st, now);
+          const path = st.path ?? emptyPath();
+          const stars = { ...path.stars };
+          let changed = false;
+          for (const k of SKILLS) {
+            const kept = keepStars(stars[k.id], skillStars(input, k.id), now);
+            if (JSON.stringify(kept) !== JSON.stringify(stars[k.id] ?? {})) { stars[k.id] = kept; changed = true; }
+          }
+          if (changed) setState({ path: { ...path, stars } });
+        },
+        recordPathSet: (kind, meta, rows) => {
+          const st = pure(getState()), now = Date.now();
+          const path = st.path ?? emptyPath();
+          const withSkill = rows.map((r) => ({ ...r, skill: getQ(r.qid)?.skill ?? meta.skill ?? 'lin1' })) as { qid: string; correct: boolean; hints: number; skill: SkillId }[];
+          const result = scoreSet(kind, withSkill, { section: meta.section, skill: meta.skill, at: now, previous: path.sets });
+          const retained = { ...path.retained };
+          if (kind === 'gauntlet') for (const k of retentionFrom(withSkill, path.stars, now)) retained[k] = retained[k] ?? now;
+          setState({ path: { ...path, sets: [...path.sets, result].slice(-400), retained } });
+          getState().syncPath();
+          return result;
+        },
+        finishWorked: (familyId) => {
+          const path = getState().path ?? emptyPath();
+          if (!path.worked[familyId]) { setState({ path: { ...path, worked: { ...path.worked, [familyId]: Date.now() } } }); getState().syncPath(); }
+        },
+        tickTestDay: (id, on) => { const t = { ...(getState().testDay?.ticks ?? {}) }; if (on) t[id] = Date.now(); else delete t[id]; setState({ testDay: { ...(getState().testDay ?? { ticks: {} }), ticks: t } }); },
+        setTestDaySchools: (ids) => setState({ testDay: { ...(getState().testDay ?? { ticks: {} }), schools: ids } }),
+        addPrediction: (row) => setState({ predictions: [...(getState().predictions ?? []), row].slice(-2000) }),
+        setResearchConsent: (consent) => setState({ research: { ...(getState().research ?? { consent: false }), consent, at: Date.now(), sessionId: consent ? (getState().research?.sessionId ?? uid()) : undefined } }),
         clearMarks: (prefix) => setState({ highlights: Object.fromEntries(Object.entries(getState().highlights ?? {}).filter(([k]) => !k.startsWith(prefix))) }),
       };
     },
     {
       name: STORAGE_KEY,
       version: STATE_VERSION,
+      // older saved progress is upgraded, never dropped (lib/migrate.ts)
+      migrate: (persisted, from) => migrate(persisted, from) as unknown as Store,
       storage: createJSONStorage(() => idbStorage),
       // a key marked session-only lives in sessionStorage (gone when the tab closes), never in the saved state
       partialize: (s) => {

@@ -192,7 +192,7 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
         <Pet mood="celebrate" level={level} equipped={equipped} size={120} className="mx-auto" />
         <h2 className="mt-1 font-display text-2xl font-bold">Lesson complete!</h2>
         <div className="mt-3 flex justify-center gap-2" aria-label={`${stars} of 3 stars`} data-testid="lesson-stars" data-stars={stars}>
-          {[1, 2, 3].map((n) => <motion.span key={n} initial={{ scale: 0, rotate: -40 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.15 * n, type: 'spring', stiffness: 260 }}><Star size={44} className={n <= stars ? 'fill-gold text-gold' : 'text-line'} /></motion.span>)}
+          {[1, 2, 3].map((n) => <motion.span key={n} initial={{ scale: 0, rotate: -40 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.15 * n, type: 'spring', stiffness: 260 }}><Star size={44} className={n <= stars ? 'fill-star text-[rgb(var(--star-edge))]' : 'text-line'} /></motion.span>)}
         </div>
         {firstTime && <p className="mt-3 inline-block rounded-full border border-gold/50 bg-gold/10 px-3 py-1 text-sm font-bold text-gold" data-testid="lesson-xp">+40 XP · +20 Stardust</p>}
         <p className="mt-3 text-sm text-muted">{checkPoints} of 2 quick checks right first time · boss {bossDone ? 'defeated' : 'not beaten yet'}{stars < 3 ? ' · replay any time for 3 stars' : ''}</p>
@@ -214,7 +214,7 @@ export function LessonPlayer({ skill, onExit }: { skill: SkillId; onExit: () => 
         <div className="flex flex-1 gap-1" role="progressbar" aria-valuemin={0} aria-valuemax={steps.length - 1} aria-valuenow={i} aria-label="Lesson progress">
           {steps.slice(1).map((s, k) => <span key={k} className={cn('h-2.5 flex-1 rounded-full transition-colors duration-300', k < i ? (s.t === 'check' ? 'bg-gold' : s.t === 'boss' ? 'bg-bad' : 'bg-brand') : 'bg-raised')} />)}
         </div>
-        <span className="inline-flex items-center gap-1 text-sm font-bold text-gold" aria-label={`${points} points so far`}><Star size={16} className="fill-gold" />{points}</span>
+        <span className="inline-flex items-center gap-1 text-sm font-bold text-gold" aria-label={`${points} points so far`}><Star size={16} className="fill-star" />{points}</span>
       </div>
       <div className="card min-h-[420px] p-5 sm:p-7">
         <AnimatePresence mode="wait">

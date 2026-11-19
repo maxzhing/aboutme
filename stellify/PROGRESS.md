@@ -7,9 +7,9 @@ Status: todo / in progress / done / blocked. Updated after every commit.
 - [x] done: Proposal (`PROPOSAL.md`), prototype (`prototypes/hex-path.html`), `IDEAS.md`, `NEEDS-OWNER.md`, `DECISIONS.md`
 
 ## Phase 2: build
-- [ ] todo: 1. Design system: tokens, fonts, one accent, icons for emoji, SVG stars, typesetting, banned words, shortcut cheat sheet, trust pages
-- [ ] todo: 2. Hex Path, star rules, next-step engine, Today panel, storage migration v2
-- [ ] todo: 3. Score Lever (N10)
+- [x] done: 1. Design system: tokens, fonts, icons for emoji, SVG stars, typesetting, banned words, shortcut cheat sheet, trust pages. Then, at the owner's request, more colour (domain and area colours, gold stars) and rounder shapes.
+- [x] done: 2. Hex Path (map, zigzag, list, keyboard), star rules, next-step engine, Today panel, Path sets, storage migration v1→v2 (tests: tests/path.test.ts, tests/migrate.test.ts, e2e/path.spec.ts)
+- [x] done: 3. Score Lever (N10): lib/engine/lever.ts, LeverChart on the Path; feeds the engine
 - [ ] todo: 4. Psychometrics: events, cleaning, item stats, lifecycle, maintainer dashboard, consent stub (OFF)
 - [ ] todo: 5. Test-day hub
 - [ ] todo: 6. Worked Examples mode (N11)

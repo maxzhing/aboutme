@@ -15,8 +15,17 @@
   --shadow: 27 25 21;
   /* legacy names kept so existing components resolve to the same single accent */
   --brand: var(--accent); --brand2: var(--accent); --brand-solid: var(--accent); --brand2-solid: var(--accent);
-  --gold: var(--accent); --accent2: var(--accent); --hero1: var(--ink); --hero2: var(--ink);
+  --gold: var(--star-edge); --accent2: var(--accent); --hero1: var(--ink); --hero2: var(--ink);
   --cover: 27 25 21;
+  /* colour (owner request 2026-11-19): one colour per content domain and per app area, plus gold stars.
+     Blue stays the action colour. Colour never carries meaning alone: every state also has a word or an icon. */
+  --d-alg: 12 104 97; --d-adv: 180 58 10; --d-psda: 146 88 6; --d-geo: 190 24 93;
+  --d-ii: 3 105 161; --d-cs: 190 24 93; --d-eoi: 18 112 53; --d-sec: 180 58 10;
+  --star: 214 151 10; --star-edge: 138 90 0;
+  --sec-home: 31 74 168; --sec-learn: 12 104 97; --sec-practice: 180 58 10; --sec-ap: 146 88 6;
+  --sec-performance: 3 105 161; --sec-companion: 190 24 93; --sec-tools: 18 112 53; --sec-settings: 101 94 83;
+  --dom: var(--accent); --sec: var(--accent);
+  --r-box: 16px; --r-control: 12px;
   color-scheme: light;
 }
 :root.dark {
@@ -27,8 +36,20 @@
   --shadow: 0 0 0;
   --brand-solid: 49 93 196; --brand2-solid: 49 93 196;
   --cover: 38 34 27;
+  --d-alg: 94 214 196; --d-adv: 251 146 96; --d-psda: 240 190 80; --d-geo: 244 132 180;
+  --d-ii: 110 190 245; --d-cs: 244 132 180; --d-eoi: 120 214 150; --d-sec: 251 146 96;
+  --star: 245 196 70; --star-edge: 245 196 70;
+  --sec-home: 147 178 244; --sec-learn: 94 214 196; --sec-practice: 251 146 96; --sec-ap: 240 190 80;
+  --sec-performance: 110 190 245; --sec-companion: 244 132 180; --sec-tools: 120 214 150; --sec-settings: 196 187 170;
   color-scheme: dark;
 }
+
+/* which colour a block takes: set by domain (skills) or by app area (navigation, page headers) */
+.dom-alg { --dom: var(--d-alg); } .dom-adv { --dom: var(--d-adv); } .dom-psda { --dom: var(--d-psda); } .dom-geo { --dom: var(--d-geo); }
+.dom-ii { --dom: var(--d-ii); } .dom-cs { --dom: var(--d-cs); } .dom-eoi { --dom: var(--d-eoi); } .dom-sec { --dom: var(--d-sec); }
+[data-section="home"] { --sec: var(--sec-home); } [data-section="learn"] { --sec: var(--sec-learn); } [data-section="practice"] { --sec: var(--sec-practice); }
+[data-section="ap"] { --sec: var(--sec-ap); } [data-section="performance"] { --sec: var(--sec-performance); } [data-section="companion"] { --sec: var(--sec-companion); }
+[data-section="tools"] { --sec: var(--sec-tools); } [data-section="settings"] { --sec: var(--sec-settings); }
 
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
@@ -47,15 +68,15 @@
 
 @layer components {
   /* a sheet of paper: hairline rule, no shadow */
-  .card { @apply rounded border border-line bg-surface; }
+  .card { @apply border border-line bg-surface; border-radius: var(--r-box); }
   /* a sheet inside a sheet becomes a quiet tinted panel */
   .card .card { @apply border-line/70 bg-raised/40; }
-  .card-soft { @apply rounded border border-line/70 bg-raised/50; }
+  .card-soft { @apply border border-line/70 bg-raised/50; border-radius: var(--r-box); }
   /* the booklet cover: a near-black band with paper-white type (one per page at most) */
-  .card-hero { @apply relative overflow-hidden rounded text-white; background-color: rgb(var(--cover)); isolation: isolate; }
-  .card-hero .btn { border-radius: 6px; }
+  .card-hero { @apply relative overflow-hidden text-white; border-radius: var(--r-box); background-color: rgb(var(--cover)); isolation: isolate; }
+  
   .card-hero .ring-white\/40 { box-shadow: none; }
-  .btn { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded px-4 py-2 text-[15px] font-medium disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn { @apply inline-flex min-h-[44px] items-center justify-center gap-2 px-4 py-2 text-[15px] font-medium disabled:cursor-not-allowed disabled:opacity-50; border-radius: var(--r-control); }
   .btn-primary { @apply btn; color: #fff; background-color: rgb(var(--brand-solid)); }
   .btn-primary:hover:not(:disabled) { background-color: rgb(var(--brand-solid) / .9); }
   .btn-ghost { @apply btn border border-line bg-surface text-ink hover:border-ink/40 hover:bg-raised/60; }
@@ -63,10 +84,11 @@
   .chip { @apply inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[13px] font-medium text-muted; }
   a.chip:hover, button.chip:hover:not(:disabled) { @apply border-ink/40 text-ink; }
   /* small caps label above a page title */
-  .eyebrow { @apply inline-flex items-center text-[12px] font-semibold uppercase tracking-[0.12em] text-accent; }
+  .eyebrow { @apply inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.12em]; color: rgb(var(--sec)); }
+  .eyebrow::before { content: ''; width: 8px; height: 8px; border-radius: 9999px; background: rgb(var(--sec)); }
   /* kept for older markup: no blur, no transparency tricks */
   .glass { @apply border border-line bg-surface; }
-  .input { @apply w-full rounded border border-line bg-surface px-3 py-2.5 text-[15px] text-ink placeholder:text-faint hover:border-ink/40 focus:border-accent focus:outline-none; }
+  .input { @apply w-full border border-line bg-surface px-3 py-2.5 text-[15px] text-ink placeholder:text-faint hover:border-ink/40 focus:border-accent focus:outline-none; border-radius: var(--r-control); }
   .input:focus { box-shadow: 0 0 0 3px rgb(var(--accent) / .18); }
   select.input { @apply appearance-none pr-9; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%236b6458' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-position: calc(100% - 12px) 50%; background-size: 12px 8px; background-repeat: no-repeat; }
   .label { @apply mb-1 block text-[12px] font-semibold uppercase tracking-[0.06em] text-faint; }
@@ -75,10 +97,10 @@
   .passage { @apply font-serif; font-size: 19px; line-height: 1.6; max-width: 68ch; }
   .grad-text { color: rgb(var(--accent)); }
   /* a small square that holds an icon */
-  .icon-tile { @apply grid shrink-0 place-items-center rounded border border-line bg-raised; color: rgb(var(--ink)); }
-  .metric { @apply relative rounded border border-line bg-surface p-4; }
+  .icon-tile { @apply grid shrink-0 place-items-center; border-radius: var(--r-control); color: rgb(var(--sec)); background: rgb(var(--sec) / .12); }
+  .metric { @apply relative border border-line bg-surface p-4; border-radius: var(--r-box); }
   .card .metric { @apply bg-raised/40; }
-  .kbd { @apply inline-grid min-w-[1.6em] place-items-center rounded border border-line bg-raised px-1 font-mono text-[12px] leading-[1.5] text-ink; }
+  .kbd { @apply inline-grid min-w-[1.6em] place-items-center rounded-md border border-line bg-raised px-1 font-mono text-[12px] leading-[1.5] text-ink; }
 }
 
 .katex { font-size: 1.05em; }
@@ -105,7 +127,7 @@
 /* decorative effects from the old "soft feel" are retired: these hooks stay inert so older markup cannot break */
 .ripple, .sparkles, .backdrop { display: none !important; }
 .pop-in, .shake { animation: none; }
-[data-choice] { @apply rounded; }
+[data-choice] { border-radius: var(--r-control); }
 [data-choice]:hover:not(:disabled) { border-color: rgb(var(--ink) / .45); }
 [data-choice][aria-checked="true"]:not(:disabled) { box-shadow: inset 0 0 0 1px rgb(var(--accent)); }
 .card { position: relative; }
@@ -161,13 +183,15 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 
 /* sidebar: a table of contents */
 .sidebar { background-color: rgb(var(--bg)); }
-.nav-item { @apply relative flex min-h-[40px] items-center gap-2.5 rounded px-2 py-[6px] text-[14.5px] text-muted; }
+.nav-item { @apply relative flex min-h-[40px] items-center gap-2.5 px-2 py-[6px] text-[14.5px] text-muted; border-radius: var(--r-control); }
 .nav-item:hover { @apply bg-raised text-ink; }
-.nav-item[aria-current="page"] { @apply font-medium text-ink; background: rgb(var(--raised)); }
-.nav-item[aria-current="page"]::before { content: ''; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 3px; background: rgb(var(--accent)); }
-.nav-icon { @apply grid h-6 w-6 shrink-0 place-items-center; color: rgb(var(--faint)); }
-.nav-item[aria-current="page"] .nav-icon { color: rgb(var(--accent)); }
-.nav-group-label { @apply px-2 pb-1 text-[12px] font-semibold uppercase tracking-[0.1em] text-faint; }
+.nav-item[aria-current="page"] { @apply font-medium text-ink; background: rgb(var(--sec) / .12); }
+.nav-item[aria-current="page"]::before { content: ''; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 4px; border-radius: 0 4px 4px 0; background: rgb(var(--sec)); }
+.nav-icon { @apply grid h-7 w-7 shrink-0 place-items-center; border-radius: 9px; color: rgb(var(--sec)); background: rgb(var(--sec) / .1); }
+.nav-item[aria-current="page"] .nav-icon { color: #fff; background: rgb(var(--sec)); }
+:root.dark .nav-item[aria-current="page"] .nav-icon { color: rgb(var(--bg)); }
+.nav-group-label { @apply flex items-center gap-2 px-2 pb-1 text-[12px] font-semibold uppercase tracking-[0.1em] text-faint; }
+.nav-group-label::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: rgb(var(--sec)); }
 
 /* top bar */
 .stat-cluster { @apply flex items-center rounded-full border border-line bg-surface p-0.5; }
@@ -175,3 +199,40 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 .stat-cluster > a + a { position: relative; }
 .stat-cluster > a + a::before { content: ''; position: absolute; left: -1px; top: 25%; bottom: 25%; width: 1px; background: rgb(var(--line)); }
 .searchbar { @apply flex min-h-[40px] min-w-0 flex-1 items-center gap-2.5 rounded-full border border-line bg-surface px-4 py-2 text-left text-[15px] text-faint hover:border-ink/40 hover:text-muted sm:max-w-md; }
+
+/* ─── The hex Path ──────────────────────────────────────────────────────────── */
+/* each hex takes its domain colour (--dom); the state sets how much of it shows, and every state also has words */
+.hex, .hex-btn { cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
+.hex .hex-face, .hex-btn .hex-face { transition: transform 160ms ease-out; }
+.hex:active .hex-face, .hex-btn:active .hex-face { transform: translateY(4px); }
+.hex-base { fill: rgb(var(--dom) / .45); }
+.hex-top { fill: rgb(var(--dom) / .14); stroke: rgb(var(--dom) / .65); stroke-width: 1.4; stroke-linejoin: round; }
+.hex-text { font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; font-size: 11.5px; font-weight: 500; fill: rgb(var(--ink)); pointer-events: none; }
+.hex-stars path { stroke-width: 1.6; stroke-linejoin: round; }
+.hex-stars .on { fill: rgb(var(--star)); stroke: rgb(var(--star-edge)); }
+.hex-stars .off { fill: none; stroke: rgb(var(--dom) / .7); }
+.hex-not-started .hex-top { fill: rgb(var(--surface)); stroke: rgb(var(--dom) / .4); }
+.hex-not-started .hex-base { fill: rgb(var(--dom) / .22); }
+.hex-not-started .hex-text { fill: rgb(var(--muted)); }
+.hex-proficient .hex-top { fill: rgb(var(--dom) / .28); stroke: rgb(var(--dom)); stroke-width: 2; }
+.hex-mastered .hex-top { fill: rgb(var(--dom)); stroke: rgb(var(--dom)); }
+.hex-mastered .hex-base { fill: rgb(var(--ink) / .55); }
+.hex-mastered .hex-text { fill: #fff; }
+:root.dark .hex-mastered .hex-text { fill: rgb(var(--bg)); }
+.hex-mastered .hex-stars .on { stroke: #fff; }
+/* recommended next: solid blue, and the only thing on the page that moves */
+.hex-rec .hex-top { fill: rgb(var(--accent)); stroke: rgb(var(--accent)); }
+.hex-rec .hex-base { fill: rgb(var(--ink) / .75); }
+.hex-rec .hex-text { fill: rgb(var(--accent-ink)); }
+.hex-rec .hex-stars .off { stroke: rgb(var(--accent-ink) / .85); }
+.hex-rec .hex-face { animation: hex-breathe 2.4s ease-in-out infinite; }
+@keyframes hex-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
+.hex:focus-visible .hex-top, .hex-btn:focus-visible .hex-top { stroke: rgb(var(--ink)); stroke-width: 3; }
+.hex-btn:focus-visible { outline: none; }
+.hex-selected .hex-top { stroke: rgb(var(--ink)); stroke-width: 2.6; }
+.hex-due { fill: rgb(var(--warn)); stroke: rgb(var(--surface)); stroke-width: 2; }
+.hex-constellation line { stroke: rgb(var(--star-edge)); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 2 3; opacity: .8; }
+.hexzig { padding: 4px 0; }
+.hexzig > li { position: relative; }
+.hexzig > li:nth-child(odd) { padding-right: 18%; }
+.hexzig > li:nth-child(even) { padding-left: 18%; }

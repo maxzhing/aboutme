@@ -80,7 +80,7 @@ export function CoursePage({ skill }: { skill: SkillId }) {
                 <span className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-muted"><span className="chip"><Glyph e="🖼" /> {c.teach.length} pictures</span><span className="chip"><Glyph e="🧭" /> {c.method.length}-step method</span><span className="chip"><Glyph e="🪤" /> {c.traps.length} traps</span><span className="chip"><Glyph e="⚔" /> {pool} questions{chapterQuestions(c).some((q) => q.official) ? ' · official' : ''}</span></span>
               </span>
               <span className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
-                {r && <span className="flex gap-0.5" aria-label={`${stars(r.best, r.total)} of 3 stars`}>{[1, 2, 3].map((x) => <Star key={x} size={14} className={x <= stars(r.best, r.total) ? 'fill-gold text-gold' : 'text-line'} />)}</span>}
+                {r && <span className="flex gap-0.5" aria-label={`${stars(r.best, r.total)} of 3 stars`}>{[1, 2, 3].map((x) => <Star key={x} size={14} className={x <= stars(r.best, r.total) ? 'fill-star text-[rgb(var(--star-edge))]' : 'text-line'} />)}</span>}
                 <span className="text-xs text-muted">{r ? `best ${r.best}/${r.total}` : isNext ? 'Up next' : 'Not started'}</span>
               </span>
             </Link>
@@ -273,7 +273,7 @@ function ChapterPlayer({ ch }: { ch: Chapter }) {
   else { const tot = set.practice.length; const ok = passed(correct, tot); const s_ = stars(correct, tot); body = (
     <div className="text-center" data-testid="chapter-done">
       <h2 className="font-display text-2xl font-bold">{ok ? 'Chapter passed!' : 'Not passed yet'}</h2>
-      <div className="mt-3 flex justify-center gap-2" data-testid="chapter-stars" data-stars={s_}>{[1, 2, 3].map((n) => <motion.span key={n} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.12 * n, type: 'spring' }}><Star size={40} className={n <= s_ ? 'fill-gold text-gold' : 'text-line'} /></motion.span>)}</div>
+      <div className="mt-3 flex justify-center gap-2" data-testid="chapter-stars" data-stars={s_}>{[1, 2, 3].map((n) => <motion.span key={n} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.12 * n, type: 'spring' }}><Star size={40} className={n <= s_ ? 'fill-star text-[rgb(var(--star-edge))]' : 'text-line'} /></motion.span>)}</div>
       <p className="mt-3 text-lg font-semibold" data-testid="chapter-score">{correct} of {tot} hard questions right</p>
       <p className="mx-auto mt-1 max-w-md text-sm text-muted">{ok ? `+50 XP the first time you pass. ${correct < tot ? 'The one you missed is in your Mistake Bucket and will come back.' : 'Perfect run.'}` : 'You need 2 of 3 to pass. Go over the traps again and retry with new questions; the ones you missed are saved in your Mistake Bucket.'}</p>
       <div className="mt-5 flex flex-wrap justify-center gap-2">

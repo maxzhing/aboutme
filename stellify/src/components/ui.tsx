@@ -13,11 +13,10 @@ export function Card({ className, children, as: Tag = 'section', ...rest }: { cl
 export function PageHeader({ title, subtitle, actions, eyebrow }: { title: string; subtitle?: ReactNode; actions?: ReactNode; eyebrow?: string }) {
   return (
     <header className="page-head mb-8 flex flex-wrap items-end justify-between gap-4">
-      <Constellation />
       <div className="min-w-0">
         {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
-        <h1 className="text-[30px] font-bold leading-[1.1] sm:text-[40px]">{title}</h1>
-        {subtitle && <p className="mt-2.5 max-w-2xl text-[15px] leading-relaxed text-muted">{subtitle}</p>}
+        <h1 className="text-[32px] leading-[1.1] sm:text-[40px]">{title}</h1>
+        {subtitle && <p className="mt-2.5 max-w-[68ch] text-[16px] leading-relaxed text-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </header>

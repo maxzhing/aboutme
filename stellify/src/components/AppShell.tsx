@@ -93,7 +93,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="nav-group-label">{g.group}</div>
           <ul className="space-y-0.5">
             {g.items.map((it) => {
-              const active = it.href === '/' ? clean === '/' : clean === it.href || (it.href !== '/learn' && it.href !== '/practice' && clean.startsWith(it.href + '/'));
+              const active = it.href === '/' ? clean === '/' : it.href === '/path' ? clean.startsWith('/path') : clean === it.href || (it.href !== '/learn' && it.href !== '/practice' && clean.startsWith(it.href + '/'));
               return (
                 <li key={it.href} data-course={courseOf(it.href)}>
                   <Link href={it.href} aria-current={active ? 'page' : undefined} className="nav-item">

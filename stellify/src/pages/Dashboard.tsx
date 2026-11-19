@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { getQuestion } from '@/data/questions';
 import { snapshot, useStore } from '@/lib/store';
-import { useLevel, useOverview, useSkillStats, useStreak } from '@/lib/hooks';
+import { useLevel, useOverview, useSkillStats, useStreak, useWeekRhythm } from '@/lib/hooks';
 import { accuracyBlocks, weekMinutes } from '@/lib/engine/analytics';
 import { findWeaknesses } from '@/lib/engine/adaptive';
 import { todaysMission } from '@/lib/engine/plan';
@@ -25,6 +25,8 @@ import { eggOf, petName } from '@/lib/engine/companions';
 import { Habitat, Pet, type PetMood } from '@/components/Pet';
 import { Card, Progress, Ring } from '@/components/ui';
 import { Glyph } from '@/components/Glyph';
+import { TodayPanel } from '@/components/TodayPanel';
+import { usePathModel } from './Path';
 
 export const chartTip = { contentStyle: { background: 'rgb(var(--surface))', border: '1px solid rgb(var(--line))', borderRadius: 14, fontSize: 12, color: 'rgb(var(--ink))', boxShadow: '0 12px 30px -14px rgb(var(--shadow) / .45)', padding: '8px 12px' }, labelStyle: { color: 'rgb(var(--muted))' }, cursor: { fill: 'rgb(var(--raised))', opacity: 0.5 } };
 export const axis = { tick: { fill: 'rgb(var(--faint))', fontSize: 11 }, axisLine: { stroke: 'rgb(var(--line))' }, tickLine: false as const };
@@ -49,6 +51,8 @@ export function DashboardPage() {
   const stats = useSkillStats();
   const streak = useStreak();
   const level = useLevel();
+  const pathModel = usePathModel();
+  const week = useWeekRhythm();
   const [more, setMore] = useState(false);
   const [allTasks, setAllTasks] = useState(false);
   const [poked, setPoked] = useState(0);
@@ -96,7 +100,7 @@ export function DashboardPage() {
   const doneCount = tasks.filter((t) => t.done).length;
   const levels = [0, 1, 2, 3, 4].map((l) => SKILLS.filter((k) => stats[k.id].level === l).length);
   const diffData = DIFFICULTIES.map((d) => ({ name: DIFFICULTY_NAME[d], accuracy: ov.byDifficulty[d].pct, n: ov.byDifficulty[d].n }));
-  const greeting = `${away >= 3 ? 'Good to see you again' : 'Welcome back'}${s.profile.name ? `, ${s.profile.name}` : ''}!`;
+  const greeting = `${away >= 3 ? 'Good to see you again' : 'Welcome back'}${s.profile.name ? `, ${s.profile.name}` : ''}.`;
 
   const pathSkills = (() => {
     const order = weak && !starMap[weak.skill] ? [SKILL[weak.skill], ...SKILLS.filter((k) => k.id !== weak.skill)] : SKILLS;
@@ -116,31 +120,18 @@ export function DashboardPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <Confetti fire={fire} />
-      <section className="card overflow-hidden p-0" data-testid="pet-card">
-        <Habitat id={s.pet.equipped.habitat} className="!rounded-none">
-          <div className="flex h-40 items-end gap-2 px-4 sm:px-8">
-            {egg ? <Link href="/pet" className="shrink-0 transition-transform active:scale-95" aria-label={egg.ready ? 'Hatch your egg' : 'See your egg'} data-testid="dash-egg"><Pet size={132} /></Link>
-              : <button type="button" onClick={poke} className="shrink-0 transition-transform active:scale-95" aria-label={`Pat ${petName(s.pet)}`} title={`Pat ${petName(s.pet)}`}><Pet mood={petMood} level={level.level} equipped={s.pet.equipped} size={132} /></button>}
-            <p className="mb-14 max-w-xs rounded-2xl rounded-bl-sm bg-surface px-4 py-2.5 text-sm font-semibold text-ink shadow-card" data-testid="lumi-says">{say}</p>
-          </div>
-        </Habitat>
-        <div className="p-5">
-          <h1 className="text-2xl font-bold sm:text-3xl" data-testid="greeting">{greeting} <span className="text-accent">Let&apos;s work toward {target}.</span></h1>
-          <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-            <div className="metric !p-3.5"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Flame size={14} className="text-warn" />Streak</div><div className="font-display text-xl font-bold">{streak.current} day{streak.current === 1 ? '' : 's'}</div></div>
-            <Link href="/pet" className="metric !p-3.5 transition-colors hover:border-accent/50"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Zap size={14} className="text-brand" />Level {level.level}</div><Progress value={level.progress * 100} className="mt-2.5" label="XP to next level" /></Link>
-            <Link href="/rewards" className="metric !p-3.5 transition-colors hover:border-accent/50"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Coins size={14} className="text-gold" />Stardust</div><div className="font-display text-xl font-bold">{s.pet.coins}</div></Link>
-            <Link href="/learn" className="metric !p-3.5 transition-colors hover:border-accent/50"><div className="flex items-center gap-1.5 text-xs font-semibold text-muted"><Star size={14} className="fill-gold text-gold" />Lesson stars</div><div className="font-display text-xl font-bold">{totalStars}<span className="text-sm text-muted"> / {SKILLS.length * 3}</span></div></Link>
-          </div>
-          <p className="mt-3 text-xs text-muted">{daysLeft !== null && daysLeft >= 0 ? `${daysLeft === 0 ? 'Test day is today' : `${daysLeft} days to your SAT`} · ` : ''}{todayMin >= goal ? 'Daily goal done' : `${todayMin} of ${goal} min today`}</p>
-        </div>
-      </section>
+      <header className="page-head">
+        <h1 className="text-[32px] leading-tight sm:text-[40px]" data-testid="greeting">{greeting}</h1>
+        <p className="mt-2 text-[15px] text-muted" data-num>{daysLeft !== null && daysLeft >= 0 ? `${daysLeft === 0 ? 'Test day is today' : `${daysLeft} days to your SAT`} · ` : ''}target {target} · {todayMin} of {goal} min today</p>
+      </header>
+      <TodayPanel items={pathModel.today} weekDone={week.done} weekPlanned={week.planned} />
+      <p className="-mt-3 text-[14px] text-muted">The <Link href="/path" className="text-accent underline">Path</Link> shows every skill and why this is next.</p>
 
-      {/* The one thing to do next */}
-      <section className="card card-glow overflow-hidden p-0" data-testid="mission">
+      {/* the study plan's next task */}
+      <section className="card overflow-hidden p-0" data-testid="mission">
         <div className="grid sm:grid-cols-[1fr_auto]">
           <div className="p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-accent">{mission.rest ? 'Rest day' : nextTask ? `Next up · ${doneCount} of ${tasks.length} done today` : 'Today is complete'}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-accent">{mission.rest ? 'Study plan · rest day' : nextTask ? `Study plan · ${doneCount} of ${tasks.length} done today` : 'Study plan · today is complete'}</p>
             {mission.rest ? (
               <><h2 className="mt-1.5 text-xl font-bold">Take the day off</h2><p className="mt-1 text-sm text-muted">Recovery is part of the plan. Anything you do today is a bonus.</p><Link href="/practice/session?mode=smart&n=5" className="btn-ghost mt-4">Optional: 5 light questions</Link></>
             ) : nextTask ? (
@@ -172,6 +163,15 @@ export function DashboardPage() {
           </div>
         )}
       </section>
+      <section className="card overflow-hidden p-0" data-testid="pet-card" aria-label="Your companion">
+        <Habitat id={s.pet.equipped.habitat} className="!rounded-none">
+          <div className="flex h-28 items-end gap-2 px-4 sm:px-8">
+            {egg ? <Link href="/pet" className="shrink-0 transition-transform active:scale-95" aria-label={egg.ready ? 'Hatch your egg' : 'See your egg'} data-testid="dash-egg"><Pet size={96} /></Link>
+              : <button type="button" onClick={poke} className="shrink-0 transition-transform active:scale-95" aria-label={`Pat ${petName(s.pet)}`} title={`Pat ${petName(s.pet)}`}><Pet mood={petMood} level={level.level} equipped={s.pet.equipped} size={96} /></button>}
+            <p className="mb-8 max-w-xs rounded border border-line bg-surface px-3 py-2 text-[14px] text-ink" data-testid="lumi-says">{say}</p>
+          </div>
+        </Habitat>
+      </section>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card data-testid="quests">
@@ -199,7 +199,7 @@ export function DashboardPage() {
                 <Link href={`/learn/${k.id}`} className={`flex items-center gap-3 rounded-2xl border p-2.5 transition-[transform,border-color] hover:-translate-y-0.5 ${i === 0 ? 'border-accent/45 bg-accent/[.08]' : 'border-line hover:border-accent/40'}`}>
                   <SkillIcon skill={k.id} size={44} />
                   <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{k.short}</span><span className="block truncate text-xs text-muted">{i === 0 && weak?.skill === k.id ? 'Your biggest opportunity right now' : `Full course · ${COURSES[k.id].filter((c) => s.chapters?.[c.id]?.passedAt).length}/${COURSES[k.id].length} chapters · ${MASTERY_LEVELS[stats[k.id].level]}`}</span></span>
-                  {i === 0 ? <span className="btn-primary !px-3 !py-1.5 text-sm"><Play size={14} />Play</span> : <span className="flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= (starMap[k.id] ?? 0) ? 'fill-gold text-gold' : 'text-line'} />)}</span>}
+                  {i === 0 ? <span className="btn-primary !px-3 !py-1.5 text-sm"><Play size={14} />Play</span> : <span className="flex gap-0.5" aria-hidden>{[1, 2, 3].map((x) => <Star key={x} size={13} className={x <= (starMap[k.id] ?? 0) ? 'fill-star text-[rgb(var(--star-edge))]' : 'text-line'} />)}</span>}
                 </Link>
               </li>
             ))}

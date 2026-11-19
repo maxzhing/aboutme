@@ -75,7 +75,7 @@ export function OnboardingPage() {
         <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-line pt-4">
           {step > 0 && <button className="btn-ghost" onClick={() => setStep(step - 1)}>Back</button>}
           {step < 3 ? <button className="btn-primary" onClick={() => setStep(step + 1)}>Continue<ArrowRight size={16} /></button>
-            : <><button className="btn-primary" onClick={() => finish('/diagnostic')}>Start the diagnostic<ArrowRight size={16} /></button><button className="btn-ghost" onClick={() => finish('/')}>Skip for now</button></>}
+            : <><button className="btn-primary" onClick={() => finish('/diagnostic')}>Start the diagnostic<ArrowRight size={16} /></button><button className="btn-ghost" onClick={() => finish('/path')}>Go to my Path</button></>}
           {step < 3 && <button className="btn-quiet ml-auto" onClick={() => finish('/')}>Skip setup</button>}
         </div>
       </Card>

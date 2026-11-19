@@ -96,6 +96,8 @@ export function SessionRunner(cfg: SessionConfig) {
     const result: SessionResult = { rows, totalMs: Date.now() - startedAt, correct: rows.filter((r) => r.correct).length, xp: useStore.getState().pet.xp - xpStart };
     setDone(result);
     cfg.onComplete?.(result);
+    // keep any Path star this session earned (stars are kept once earned)
+    useStore.getState().syncPath();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions, hints, feedback, cfg, sessionId, startedAt, xpStart]);
 

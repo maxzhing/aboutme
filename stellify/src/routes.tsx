@@ -21,12 +21,15 @@ import { QcPage } from './pages/Qc';
 import { RemixPage } from './pages/Remix';
 import { StudioPage } from './pages/Studio';
 import { TypesetContext } from './components/RichText';
+import { PathPage, PathSetPage } from './pages/Path';
 import { AboutPage, ChangelogPage, HowWeWritePage, MethodologyPage, PrivacyPage } from './pages/Trust';
 
 function NotFound() {
   return <div className="card p-10 text-center"><h1 className="text-2xl font-bold">Page not found</h1><p className="mt-2 text-sm text-muted">That page does not exist.</p><Link href="/" className="btn-primary mt-4">Back to the dashboard</Link></div>;
 }
 const Math_ = () => <CurriculumPage section="math" />;
+const PathMath = () => <PathPage section="math" />;
+const PathRw = () => <PathPage section="rw" />;
 /** AP Computer Science A prose is full of Java string literals: keep its quotes straight. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const course = (C: ComponentType<any>) => function CoursePage(p: { course: string }) { return <TypesetContext.Provider value={p.course !== 'csa'}><C {...p} /></TypesetContext.Provider>; };
@@ -37,6 +40,9 @@ const Rw = () => <CurriculumPage section="rw" />;
 export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/$/, component: DashboardPage },
   { pattern: /^\/onboarding$/, component: OnboardingPage },
+  { pattern: /^\/path$/, component: PathMath },
+  { pattern: /^\/path\/rw$/, component: PathRw },
+  { pattern: /^\/path\/set$/, component: PathSetPage },
   { pattern: /^\/diagnostic$/, component: DiagnosticPage },
   { pattern: /^\/learn$/, component: CurriculumPage },
   { pattern: /^\/learn\/math$/, component: Math_ },
