@@ -24,6 +24,7 @@ import { RW_SPEC } from './rw-spec';
 import { MATH_NEW_1 } from './math-new-1';
 import { MATH_NEW_2 } from './math-new-2';
 import { MATH_NEW_3 } from './math-new-3';
+import { RW_NEW_1 } from './rw-new-1';
 
 /** Every authored question. Add new batch files here; nothing else needs to change. */
 export const ALL_RAW: RawQuestion[] = [
@@ -53,7 +54,8 @@ export const ALL_RAW: RawQuestion[] = [
   ...MATH_NEW_1,
   ...MATH_NEW_2,
   ...MATH_NEW_3,
+  ...RW_NEW_1,
 ];
 
 /** Questions added after Practice Tests A and B were fixed: those forms leave them out, so retakes stay identical. */
-export const ADDED_AFTER_FIXED_FORMS = new Set([...MATH_NEW_1, ...MATH_NEW_2, ...MATH_NEW_3].map((q) => q.id));
+export const ADDED_AFTER_FIXED_FORMS = new Set([...MATH_NEW_1, ...MATH_NEW_2, ...MATH_NEW_3, ...RW_NEW_1].map((q) => q.id));

@@ -302,4 +302,17 @@ export const DISTRACTORS: Record<string, (TrapCode | null)[]> = {
   'r-x-tsp-02': ['purpose', 'purpose', 'off-target', null],
   'r-x-wic-01': ['meaning', null, 'meaning', 'meaning'],
   'r-x-wic-02': ['meaning', 'meaning', null, 'meaning'],
+  // batch 2 (2026-11-20)
+  'r-coeq-n1': ['data', 'data', null, 'data'],
+  'r-coeq-n2': ['reversed', 'data', 'off-target', null],
+  'r-inf-n1': ['beyond', 'reversed', null, 'beyond'],
+  'r-inf-n2': ['beyond', 'causation', 'reversed', null],
+  'r-coet-n1': ['off-target', 'reversed', null, 'off-target'],
+  'r-coet-n2': ['off-target', null, 'off-target', 'off-target'],
+  'r-cid-n1': ['reversed', 'reversed', 'qualifier', null],
+  'r-cid-n2': ['beyond', 'beyond', null, 'beyond'],
+  'r-ctc-n1': ['reversed', 'qualifier', null, 'beyond'],
+  'r-ctc-n2': ['wrong-text', 'beyond', 'qualifier', null],
+  'r-tsp-n1': ['purpose', null, 'reversed', 'beyond'],
+  'r-tsp-n2': ['purpose', 'detail', 'beyond', null],
 };
