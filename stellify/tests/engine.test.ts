@@ -399,8 +399,12 @@ describe('Beyond SAT tier, challenge level and hacks', () => {
     let hi = initialState();
     QUESTIONS.filter((x) => x.skill === 'tra' && x.difficulty !== 'medium').slice(0, 12).forEach((x, i) => { hi = answer(hi, x, true, T0 - 3 * DAY + i * 1000).state; });
     expect(pickSmartSet(hi, QUESTIONS, getQuestion, 10, T0, { seed: 'a', skill: 'tra' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(false);
+    // at standard they are eligible again; for a strong student they rank last (aimed at about 70% success), so ask
+    // for the whole skill: a fixed set size would stop reaching them as the bank grows
     const std: AppState = { ...hi, settings: { ...hi.settings, challenge: 'standard' } };
-    expect(pickSmartSet(std, QUESTIONS, getQuestion, 30, T0, { seed: 'a', skill: 'tra' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(true);
+    const allTra = QUESTIONS.filter((x) => x.skill === 'tra').length;
+    expect(pickSmartSet(std, QUESTIONS, getQuestion, allTra, T0, { seed: 'a', skill: 'tra' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(true);
+    expect(pickSmartSet(hi, QUESTIONS, getQuestion, allTra, T0, { seed: 'a', skill: 'tra' }).some((p) => getQuestion(p.qid)!.difficulty === 'medium')).toBe(false);
   });
   it('has a hack card for every skill that questions can show', async () => {
     const { HACKS, hacksFor } = await import('@/data/hacks');
