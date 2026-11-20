@@ -97,4 +97,27 @@ Each entry records what was decided, why, and the alternatives considered.
     below about 900 run out of practice at their level sooner and are sent to lessons instead.
 26. **Speed Training and the Blitz modes use only medium and hard questions**, as their descriptions always said. They
     had been including Beyond SAT questions.
+27. **Nova, one mascot (owner request, 2026-11-20).** The egg, hatching and ten random companions are replaced in
+    everything students see by Nova, a small gold star drawn in the existing flat-colour style, so every shop
+    accessory still fits. The old companion data stays so saved progress loads.
+28. **The Path is a route, in order (owner request).** Its next step is the first skill along the route the student
+    has not secured (★2, or clearly strong in their answers), and the map scrolls the page to it. The Today list
+    still follows the coach's weakness-first plan; the Path shows where the student is along the whole route.
+29. **Practice tests are scored by difficulty, like the real test (owner request).** Official tests now use the
+    item-response scoring on the official curve (the College Board's printed raw-score table is shown beside it for
+    comparison). Tests of Stellify questions keep Stellify's item model, which already weights difficulty with a
+    guessing allowance and recovers known scores more closely in the simulation tests. The report shows what each
+    miss cost, to the nearest point: a missed easier question costs more than a missed hard one.
+30. **Merges (owner request).** One Desmos page with two tabs (the old addresses open the right tab); Predict-First is
+    an option inside Reading and Writing practice and off the menu; Remix Studio stays and is offered for every miss at
+    the end of a set. The Formula Sheet shows formulas only (the grammar entries still feed search and the tutor).
+31. **72 new questions are appended to the bank and left out of Practice Tests A and B**, so a retake of a fixed form
+    has exactly the same questions as before (checked against the previous version). Nine drafts that turned out
+    to be near-copies of existing questions were replaced before release.
+32. **One score estimate everywhere.** The answer-based estimate that Analytics uses, once a section has enough
+    answers; before that, the student model's starting estimate, labelled as such.
+33. **Setup is two screens, and the placement check can be finished later** (it resumes where it stopped, and Today
+    shows it until it is done). **The Daily Challenge is chosen per student**, from their weakest skills, at about a
+    50% chance, and fixed for the day.
+34. **Computers only (owner decision, 2026-11-20).** No more work for phones; existing phone tests stay as they pass.
 

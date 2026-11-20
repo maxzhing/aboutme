@@ -30,6 +30,15 @@ Status: todo / in progress / done / blocked. Updated after every commit.
 - [x] done: pop-ups no longer cover headings on phones
 - [ ] not done: a contents list for Grammar and Hacks; a level-aware hard-questions quest; real students
 
+## Phase 5: owner's list (2026-11-20)
+- [x] done: 72 new College Board-style questions (60 math, 12 Reading and Writing; 20/40/40 medium/hard/very hard; every math answer checked; every wrong R&W choice tagged), bank 517 → 589
+- [x] done: one score estimate; Smart Practice follows the plan; setup in two screens with a resumable placement check
+- [x] done: Path in route order, scrolled to the student's step
+- [x] done: Nova replaces the egg and companions
+- [x] done: practice tests scored by difficulty with "what each miss cost you"
+- [x] done: one Desmos page; Predict-First inside R&W practice; remix every miss; daily challenge per student; 324 vocabulary words; formulas-only sheet
+- [ ] later (owner): Firebase accounts; more questions toward OnePrep's scale (about 3,900 official questions)
+
 ## Phase 3: QA
 - [x] done: Lighthouse (landing 96/100/100/100; app Path 86–90/100/100/100, local uncompressed), axe 0 serious/critical on 49 routes × 2 themes, keyboard tests, no overflow or console errors at 320 and 640 px (200% zoom), reduced motion (global rule; not separately re-tested on the new Path animation), offline (web build e2e), migration (unit tests), export/import (existing e2e)
 - [x] done: Personal copy rebuilt and pushed to `satstudy` branch claude/sweet-gates-ev8uj4 (privacy checked twice right before)

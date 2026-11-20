@@ -1,5 +1,13 @@
 /** Shown on #/changelog, newest first. Add an entry for every change students will notice. */
 export const CHANGELOG: { date: string; title: string; items: string[] }[] = [
+  { date: '2026-11-20', title: 'Nova, more questions, and scoring like the real test', items: [
+    'Meet Nova, Stellify’s mascot: one small gold star instead of an egg and random companions.',
+    '72 new questions in the College Board’s style, mostly hard and very hard, in the skills that had the fewest. Practice Tests A and B are unchanged, so retakes stay comparable.',
+    'Practice tests are scored by which questions you got right, like the Digital SAT: a missed easier question costs more than a missed hard one. The report shows what each miss cost you.',
+    'Setup is two short screens, and the placement check can be finished later.',
+    'The Path starts where you are and goes in order. One score estimate everywhere. The Daily Challenge is picked for your level.',
+    'One Desmos page (lessons and a practice lab), Predict-First inside Reading and Writing practice, remix your misses from the end of any set, 324 vocabulary words, and a formulas-only Formula Sheet.',
+  ] },
   { date: '2026-11-19', title: 'A plan made for you', items: [
     'New students answer a few questions about where they are (grade, math class, scores, test date, goal, time, what feels hard), then take a 16-question placement check that adapts as they go.',
     'One plan per student, built from those answers and re-planned every morning from the newest results. It leads with the skills that are weakest for you, fits your minutes and rest days, and says why each task is there.',

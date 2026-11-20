@@ -152,6 +152,16 @@ answering, Path sets and stars, the plan or coach) for up to 28 days. Assumption
 The results compare versions under the same assumptions. They are not predictions for real students. Results:
 CRITIQUE.md.
 
+## Practice-test scoring (`src/lib/engine/mock.ts`, `src/lib/fullTest/score.ts`)
+
+Every practice test is scored by which questions were right, not just how many. Each question's difficulty
+enters a three-parameter item-response model with a guessing allowance. Official tests and calibrated forms go on
+the College Board scale through the average official curve of Practice Tests 4–10 (within about 30 points of the
+College Board's own tables on those tests), and the printed raw-score table is shown beside it. Tests of Stellify
+questions use Stellify's item model and the 500 + 100θ scale. "What each miss cost" rescores the section with that one
+answer marked right, before rounding. Because a wrong answer on a question most students get right is strong
+evidence of a lower level, missing an easier question costs more than missing a hard one.
+
 ## Not verified
 
 College Board specifics in the test-day hub (device rules, arrival, setup timing, pretest items per module) link

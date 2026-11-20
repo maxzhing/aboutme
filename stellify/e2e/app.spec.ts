@@ -146,10 +146,9 @@ test('multiple-choice question: every distractor is explained; XP, coins, shop a
   await expect(page.getByTestId('item-hat-cap')).toContainText('Owned');
   expect(Number(await page.getByTestId('coins').innerText())).toBe(coins - 60);
   await go(page, '/pet');
-  // no lesson finished yet, so the companion is still an egg, but the XP from real work warms it
-  await expect(page.getByTestId('egg-progress')).toContainText('XP earned');
-  await expect(page.getByTestId('egg-progress')).toContainText('60/60');
-  await expect(page.getByTestId('egg-progress')).toContainText('0/1');
+  // Nova (no egg) shows the XP from real work, and wears what was just bought once equipped
+  await expect(page.getByRole('heading', { level: 1, name: 'Nova' })).toBeVisible();
+  await expect(page.getByText(/XP total/)).toBeVisible();
   await go(page, '/achievements');
   await expect(page.getByTestId('ach-first-10')).toHaveAttribute('data-unlocked', 'false'); // 9 answered so far
   await go(page, '/analytics');

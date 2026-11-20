@@ -136,3 +136,19 @@ still get too many questions above their level, because the question bank has no
   0.20), which is useful but far from perfect; the plan keeps correcting itself as answers come in.
 - Whether the start-up questions are answered honestly and quickly by 14- to 17-year-olds. Nothing is required, and
   the plan works without them.
+
+## Since this critique (2026-11-20)
+
+Fixed at the owner's request: one score estimate everywhere; two-screen setup with a placement check that can be
+finished later; the Path in route order and scrolled to the student's step; Nova replaces the egg; practice tests
+scored by difficulty, with what each miss cost; one Desmos page; Predict-First inside Reading and Writing practice;
+remix every miss; a Daily Challenge per student; 324 vocabulary words; a formulas-only Formula Sheet; and 72 new
+College Board-style questions (bank 517 → 589).
+
+**Against Crackd and OnePrep, honestly.** OnePrep's bank is built from the College Board's own question bank
+(about 1,500 Reading and Writing and 2,400 Math questions, with harder "challenge" sets) and includes full practice
+tests. Crackd offers practice tests, a challenge mode, Desmos explanations, an AI tutor and paid tutoring. Stellify is
+free, works offline, plans around each student, and teaches with lessons and worked examples. But its public bank
+of 589 original questions is far smaller than OnePrep's. Volume is the biggest remaining gap. The personal copy adds
+920 official questions and 7 full tests. Growing the original bank further, and accounts (Firebase, planned), are
+the next steps.
