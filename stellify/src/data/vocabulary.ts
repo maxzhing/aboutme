@@ -1,3 +1,5 @@
+import { RAW_2 } from './vocabulary-2';
+
 export interface VocabWord { w: string; pos: 'adj' | 'verb' | 'noun' | 'adv'; def: string; ex: string; syn: string[]; nuance?: string }
 
 /**
@@ -86,7 +88,7 @@ const RAW: [string, VocabWord['pos'], string, string, string, string?][] = [
   ['integral', 'adj', 'necessary to make a whole complete', 'Rhythm is integral to the poem\'s effect.', 'essential, vital'],
   ['intricate', 'adj', 'very detailed and complicated', 'The watch contains an intricate system of gears.', 'complex, elaborate'],
   ['lucid', 'adj', 'clear and easy to understand', 'Her lucid explanation made the theory accessible.', 'clear, intelligible'],
-  ['meticulous', 'adj', 'showing great attention to detail', 'Meticulous notes allowed others to repeat the test.', 'careful, painstaking'],
+  ['meticulous', 'adj', 'showing great attention to detail', 'Her meticulous notes allowed others to repeat the test.', 'careful, painstaking'],
   ['mitigate', 'verb', 'to make less severe', 'Trees help mitigate urban heat.', 'lessen, alleviate', 'Mitigate reduces harm; ameliorate improves a situation.'],
   ['nuanced', 'adj', 'showing subtle distinctions', 'The biography offers a nuanced portrait of the general.', 'subtle, refined'],
   ['novel', 'adj', 'new and unusual', 'The lab devised a novel method of storing energy.', 'new, original'],
@@ -107,14 +109,14 @@ const RAW: [string, VocabWord['pos'], string, string, string, string?][] = [
   ['redundant', 'adj', 'unnecessarily repetitive', 'Delete the redundant phrase "past history."', 'superfluous, repetitive'],
   ['refute', 'verb', 'to prove wrong', 'New fossils refute the idea that the species was aquatic.', 'disprove, rebut', 'Refute = prove false; dispute = merely challenge.'],
   ['reluctant', 'adj', 'unwilling', 'The board was reluctant to raise fees.', 'hesitant, unwilling'],
-  ['resilient', 'adj', 'able to recover quickly', 'Resilient ecosystems rebound after fires.', 'hardy, adaptable'],
+  ['resilient', 'adj', 'able to recover quickly', 'Some resilient ecosystems rebound quickly after fires.', 'hardy, adaptable'],
   ['restraint', 'noun', 'self-control; moderation', 'The design shows restraint in its use of color.', 'moderation, control'],
   ['rigorous', 'adj', 'extremely thorough and strict', 'The drug passed rigorous testing.', 'thorough, exacting'],
   ['scrutinize', 'verb', 'to examine closely', 'Reviewers scrutinize every figure in the paper.', 'inspect, examine'],
   ['skeptical', 'adj', 'doubtful; not easily convinced', 'Editors were skeptical of the anonymous tip.', 'doubtful, dubious'],
   ['sparse', 'adj', 'thinly scattered', 'Vegetation is sparse above the tree line.', 'scant, meager'],
   ['speculative', 'adj', 'based on guesswork', 'Any estimate of the site\'s age is speculative.', 'conjectural, unproven'],
-  ['subsequent', 'adj', 'coming after', 'Subsequent surveys confirmed the first count.', 'later, following'],
+  ['subsequent', 'adj', 'coming after', 'Two subsequent surveys confirmed the first count.', 'later, following'],
   ['substantiate', 'verb', 'to support with proof', 'Records substantiate her claim to the land.', 'verify, corroborate'],
   ['subtle', 'adj', 'delicate; not obvious', 'A subtle shift in tone signals the narrator\'s doubt.', 'slight, understated'],
   ['superficial', 'adj', 'on the surface; lacking depth', 'The damage was superficial and easily repaired.', 'shallow, cursory'],
@@ -130,5 +132,7 @@ const RAW: [string, VocabWord['pos'], string, string, string, string?][] = [
   ['wary', 'adj', 'cautious about possible danger', 'Investors remain wary of the new currency.', 'cautious, guarded'],
 ];
 
-export const VOCAB: VocabWord[] = RAW.map(([w, pos, def, ex, syn, nuance]) => ({ w, pos, def, ex, syn: syn.split(', '), nuance }));
+// the second list adds words the first does not already have
+const ALL_RAW = [...RAW, ...RAW_2.filter((r) => !RAW.some((x) => x[0] === r[0]))];
+export const VOCAB: VocabWord[] = ALL_RAW.map(([w, pos, def, ex, syn, nuance]) => ({ w, pos, def, ex, syn: syn.split(', '), nuance }));
 export const VOCAB_BY_WORD = Object.fromEntries(VOCAB.map((v) => [v.w, v])) as Record<string, VocabWord>;
