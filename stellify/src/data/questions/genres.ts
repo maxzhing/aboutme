@@ -12,6 +12,7 @@ export type Format = 'single' | 'paired' | 'data' | 'notes';
  * coverage counts built on them are approximate.
  */
 export const GENRE_TAGS: Record<string, Genre> = {
+  'r-bnd-n67': 'history-social',
   'r-fss-n64': 'science',
   'r-bnd-n64': 'science',
   'r-bnd-n63': 'science',
