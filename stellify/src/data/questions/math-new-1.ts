@@ -1,5 +1,5 @@
 import type { RawQuestion } from '@/lib/types';
-import { r, near, mean, sd, sameSet, roots } from './kit';
+import { r, near, mean, median, sd, sameSet, roots } from './kit';
 
 /**
  * Math · Problem-Solving and Data Analysis, batch 2 (2026-11-20): ratios, percentages, one- and two-variable data.
@@ -131,16 +131,16 @@ export const MATH_NEW_1: RawQuestion[] = [
   },
   // ── One-variable data
   {
-    id: 'm-data1-n1', skill: 'data1', sub: 'Mean', d: 'M',
-    stem: r`The mean of five numbers is 17. Four of the numbers are 12, 15, 20 and 25. What is the fifth number?`,
+    id: 'm-data1-n1', skill: 'data1', sub: 'Median', d: 'M',
+    stem: r`The data set 5, 9, 12, 14, 16, 20, 25 has a median of 14. If the value 3 is added to the data set, what is the median of the new data set?`,
     answer: ['13'],
-    steps: [r`The five numbers add up to $5 \times 17 = 85$.`, r`The four known numbers add up to $12 + 15 + 20 + 25 = 72$.`, r`The fifth number is $85 - 72 = 13$.`],
-    why: ['18: this is the mean of the four known numbers (72 ÷ 4), not the missing number.', '85: this is the total of all five numbers. Subtract the four you know.'],
-    concept: 'Mean × number of values = total of the values.',
-    strategy: 'Turn a mean into a total, then subtract what you know.',
-    trap: 'Averaging the known numbers instead of working with totals.',
-    remember: 'Missing-value questions about a mean are total questions in disguise.',
-    check: () => near(mean([12, 15, 20, 25, 13]), 17),
+    steps: [r`In order, the new data set is 3, 5, 9, 12, 14, 16, 20, 25: eight values.`, r`With an even number of values, the median is the mean of the two middle values (the 4th and 5th): $\dfrac{12 + 14}{2} = 13$.`],
+    why: ['14: this keeps the old median. Adding a value below the middle shifts the middle down.', '12: this takes the 4th value alone. With eight values there are two middle values, and the median is their average.'],
+    concept: 'The median is the middle of the ordered values; with an even count, it is the average of the two middle values.',
+    strategy: 'Insert the new value in order, count the values, then find the middle position.',
+    trap: 'Taking a single middle value when there are an even number of values.',
+    remember: 'Even count: average the two in the middle.',
+    check: () => near(median([5, 9, 12, 14, 16, 20, 25, 3]), 13),
   },
   {
     id: 'm-data1-n2', skill: 'data1', sub: 'Outliers', d: 'H',
@@ -204,16 +204,16 @@ export const MATH_NEW_1: RawQuestion[] = [
     check: () => near(85 * 6 + 120 - (85 * 5 + 120), 85),
   },
   {
-    id: 'm-data2-n2', skill: 'data2', sub: 'Residuals', d: 'H',
-    stem: r`The line of best fit for a data set is $y = 4.5x + 14$. One data point in the set is $(6, 47)$. What is the residual for this data point?`,
-    answer: ['6'],
-    steps: [r`Predicted value at $x = 6$: $4.5(6) + 14 = 41$.`, r`Residual $=$ actual $-$ predicted $= 47 - 41 = 6$.`],
-    why: ['−6: this is predicted minus actual. A residual is actual minus predicted, so a point above the line has a positive residual.', '41: this is the predicted value, not the residual.'],
-    concept: 'A residual is the vertical distance from a data point to the line: actual minus predicted.',
-    strategy: 'Plug x into the model, then subtract the prediction from the real y-value.',
-    trap: 'Subtracting in the wrong order.',
-    remember: 'Point above the line: positive residual. Below: negative.',
-    check: () => near(47 - (4.5 * 6 + 14), 6),
+    id: 'm-data2-n2', skill: 'data2', sub: 'Lines of best fit', d: 'H',
+    stem: r`A line of best fit for a data set passes through the points $(10, 46)$ and $(30, 94)$. According to the line, what is the predicted value of $y$ when $x = 25$?`,
+    answer: ['82'],
+    steps: [r`Slope: $\dfrac{94 - 46}{30 - 10} = \dfrac{48}{20} = 2.4$.`, r`From $(10, 46)$, moving 15 units right raises the prediction by $2.4 \times 15 = 36$, so $y = 46 + 36 = 82$.`, r`Check from the other point: $94 - 2.4 \times 5 = 82$.`],
+    why: ['70: this is the value halfway between 46 and 94, which would be the prediction at x = 20, not at x = 25.', '2.4: this is the slope of the line, not a predicted value.'],
+    concept: 'A line of best fit predicts y from x: find its slope from two points, then move along it.',
+    strategy: 'Compute the slope, then step from the nearest known point.',
+    trap: 'Using the midpoint of the y-values when x is not the midpoint of the x-values.',
+    remember: 'Prediction = known y + slope × (change in x).',
+    check: () => near(46 + ((94 - 46) / 20) * 15, 82),
   },
   {
     id: 'm-data2-n3', skill: 'data2', sub: 'Linear vs exponential models', d: 'H',

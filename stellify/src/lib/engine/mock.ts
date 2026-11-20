@@ -1,3 +1,4 @@
+import { ADDED_AFTER_FIXED_FORMS } from '@/data/questions/all';
 import type { Difficulty, MockAttempt, MockModuleResult, Question, ScoreRange, Section, SkillId } from '../types';
 import { SAT_STRUCTURE } from '../taxonomy';
 import { isCorrect } from '../answers';
@@ -84,6 +85,9 @@ export const MATH_FIXED: SkillId[] = ['lin1', 'linf', 'linf', 'lin2', 'sys', 'sy
 export const MATH_CHOICE: SkillId[][] = [['ratio', 'pct'], ['data1', 'data2'], ['prob', 'infer', 'claims'], ['area', 'lines']];
 const ORDER: Difficulty[] = ['medium', 'hard', 'very-hard'];
 
+/** Fixed forms A and B use the bank as it was when they were fixed, so a retake has identical questions. */
+const formBank = (formId: string, bank: Question[]) => (formId === 'A' || formId === 'B' ? bank.filter((q) => !ADDED_AFTER_FIXED_FORMS.has(q.id)) : bank);
+
 export function buildModule(section: Section, kind: Kind, seed: string, bank: Question[], exclude: Set<string>, seen?: Set<string>): string[] {
   const rand = rng(`${seed}|${section}|${kind}`);
   const slots: SkillId[] = section === 'rw' ? [...RW_SLOTS] : [...MATH_FIXED, ...MATH_CHOICE.map((c) => c[Math.floor(rand() * c.length)])];
@@ -153,7 +157,7 @@ export function startMock(id: string, formId: string, kind: MockAttempt['kind'],
     return { id, formId, kind, startedAt: now, modules: [{ ...emptyModule(sec, 1, qids), msAllowed: ms }], cursor: { stage: 0, index: 0, msLeft: ms } };
   }
   const first = stageSection(stagesFor(kind)[0]);
-  const qids = buildModule(first, 'm1', seedFor(formId, now), bank, new Set(), formId === 'mix' ? seen : undefined);
+  const qids = buildModule(first, 'm1', seedFor(formId, now), formBank(formId, bank), new Set(), formId === 'mix' ? seen : undefined);
   return { id, formId, kind, startedAt: now, modules: [emptyModule(first, 1, qids)], cursor: { stage: 0, index: 0, msLeft: moduleMs(first) } };
 }
 
@@ -207,11 +211,11 @@ export function advanceMock(mock: MockAttempt, bank: Question[], getQ: (id: stri
   const used = new Set(mock.modules.flatMap((m) => m.qids));
   const seed = seedFor(mock.formId, mock.startedAt);
   let mod: MockModuleResult;
-  if (next.endsWith('1')) mod = emptyModule(section, 1, buildModule(section, 'm1', seed, bank, used, mock.formId === 'mix' ? seen : undefined));
+  if (next.endsWith('1')) mod = emptyModule(section, 1, buildModule(section, 'm1', seed, formBank(mock.formId, bank), used, mock.formId === 'mix' ? seen : undefined));
   else {
     const m1 = mock.modules.find((m) => m.section === section && m.module === 1)!;
     const route = routeFor(m1, getQ);
-    mod = emptyModule(section, 2, buildModule(section, route, seed, bank, used, mock.formId === 'mix' ? seen : undefined), route);
+    mod = emptyModule(section, 2, buildModule(section, route, seed, formBank(mock.formId, bank), used, mock.formId === 'mix' ? seen : undefined), route);
   }
   return { mock: { ...mock, modules: [...mock.modules, mod], cursor: { stage: nextStage, index: 0, msLeft: moduleMs(section) } }, finished: false };
 }
