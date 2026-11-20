@@ -139,7 +139,7 @@ export const MATH_NEW_18: RawQuestion[] = [
     strategy: 'Scale one equation so the y-coefficients match, then compare.',
     trap: 'Comparing coefficients before scaling.',
     remember: 'No solution: same slope, different intercept.',
-    check: () => near(3 / -2, (3 / 4) / (-1 / 2)) && 22 !== 48,
+    check: () => near(3 / -2, (3 / 4) / (-1 / 2)) && (22 as number) !== 4 * 12,
   },
   {
     id: 'm-sys-n19', skill: 'sys', sub: 'Systems from word problems', d: 'V',
