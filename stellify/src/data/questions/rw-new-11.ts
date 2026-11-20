@@ -179,7 +179,7 @@ export const RW_NEW_11: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n26', skill: 'bnd', sub: 'Supplements and nonessential elements', d: 'H',
-    passage: 'Zaha Hadid, the first woman to win the Pritzker Architecture ______ designed buildings around the world known for their sweeping, curved forms, including an aquatic center built for the 2012 Olympic Games in London.',
+    passage: 'Zaha Hadid, the first woman to win the Pritzker Architecture ______ designed buildings around the world celebrated for their sweeping, curvilinear forms, including an aquatic center constructed for the 2012 Olympic Games in London, whose undulating roof evokes the movement of water.',
     stem: STD,
     choices: ['Prize,', 'Prize', 'Prize;', 'Prize—'], answer: 0,
     steps: ['"The first woman to win the Pritzker Architecture Prize" is a nonessential description of Zaha Hadid, opened by a comma.', 'It must be closed with a matching comma before the verb "designed."'],
@@ -191,7 +191,7 @@ export const RW_NEW_11: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n27', skill: 'bnd', sub: 'Colons', d: 'V',
-    passage: 'After months of testing, the engineers found exactly what they had been hoping ______ the new coating reduced corrosion on the steel samples by nearly 90 percent compared with uncoated steel.',
+    passage: 'After months of testing under simulated conditions of humidity and salt exposure, the engineers found exactly what they had been hoping ______ the new coating reduced corrosion on the steel samples by nearly 90 percent compared with uncoated steel, a durability improvement that could substantially extend the lifespan of coastal infrastructure.',
     stem: STD,
     choices: ['for, the', 'for the', 'for: the', 'for, and, the'], answer: 2,
     steps: ['"After months of testing, the engineers found exactly what they had been hoping for" is a complete sentence.', 'What follows explains what they found, so a colon fits.'],

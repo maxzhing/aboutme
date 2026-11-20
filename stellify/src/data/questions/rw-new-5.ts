@@ -11,7 +11,7 @@ export const RW_NEW_5: RawQuestion[] = [
   // ── Boundaries
   {
     id: 'r-bnd-n6', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'The town museum’s newest exhibit has one unusual ______ visitors may handle every object on display, including the two-hundred-year-old tools that once belonged to the town’s first blacksmith.',
+    passage: 'Most historical institutions protect fragile artifacts behind glass, but the town museum has deliberately abandoned that convention. The town museum’s newest exhibit has one unusual ______ visitors may handle every object on display, including the two-hundred-year-old tools that once belonged to the town’s first blacksmith.',
     stem: STD,
     choices: ['rule:', 'rule,', 'rule', 'rule; that'], answer: 0,
     steps: ['"The town museum’s newest exhibit has one unusual rule" is a complete sentence, and what follows explains the rule.', 'A colon after a complete sentence can introduce an explanation of it.'],
@@ -23,7 +23,7 @@ export const RW_NEW_5: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n7', skill: 'bnd', sub: 'Dashes', d: 'V',
-    passage: 'The coelacanth—a fish once known only from fossils and thought to have died out about 66 million years ______ was found alive off the coast of South Africa in 1938, astonishing scientists around the world.',
+    passage: 'The coelacanth—a fish once known only from fossils and thought to have died out about 66 million years ______ was found alive off the coast of South Africa in 1938, astonishing scientists around the world and prompting a decades-long reassessment of how completely the fossil record documents marine extinctions.',
     stem: STD,
     choices: ['ago,', 'ago—', 'ago', 'ago;'], answer: 1,
     steps: ['A dash after "coelacanth" opens an interruption that describes the fish.', 'The interruption must be closed with the same mark, a dash, before the sentence continues with "was found."'],
@@ -35,7 +35,7 @@ export const RW_NEW_5: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n8', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'H',
-    passage: 'In her 1966 novel *Wide Sargasso Sea*, Dominican-born ______ Jean Rhys tells the story of Antoinette Cosway, the character who appears in Charlotte Brontë’s *Jane Eyre* only as the mysterious first wife of Mr. Rochester.',
+    passage: 'In her 1966 novel *Wide Sargasso Sea*, Dominican-born ______ Jean Rhys tells the story of Antoinette Cosway, the character who appears in Charlotte Brontë’s *Jane Eyre* only as the mysterious first wife of Mr. Rochester, thereby reimagining a canonical narrative from the perspective of its most marginalized figure.',
     stem: STD,
     choices: ['writer,', 'writer—', 'writer', 'writer:'], answer: 2,
     steps: ['"Dominican-born writer" is a title placed directly before the name "Jean Rhys."', 'A title or description directly before a name is essential to the phrase, so no punctuation separates them.'],
@@ -47,7 +47,7 @@ export const RW_NEW_5: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n9', skill: 'bnd', sub: 'Lists', d: 'V',
-    passage: 'The festival’s three headline acts come from very different places: a jazz trio from New Orleans, Louisiana ______ a string quartet from Kraków, Poland; and a choir from Accra, Ghana.',
+    passage: 'Organizers selected performers who represent remarkably diverse musical traditions, hoping to attract audiences who might otherwise never encounter one another. The festival’s three headline acts come from very different places: a jazz trio from New Orleans, Louisiana ______ a string quartet from Kraków, Poland; and a choir from Accra, Ghana.',
     stem: STD,
     choices: ['Louisiana,', 'Louisiana', 'Louisiana:', 'Louisiana;'], answer: 3,
     steps: ['Each item in the list already contains a comma (city, place), and the later items are separated by semicolons.', 'To keep the items distinct and consistent, the first item must also end with a semicolon.'],

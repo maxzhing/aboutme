@@ -13,7 +13,7 @@ export const RW_PATTERN: RawQuestion[] = [
   /* ───────────────────────── Boundaries ───────────────────────── */
   {
     id: 'r-cb-bnd-01', skill: 'bnd', sub: 'Lists', d: 'E',
-    passage: 'Marine engineer Tala Okonjo has led three restoration projects on the same estuary: the removal of a derelict ______ the replanting of eelgrass beds, in 2016; and the construction of an oyster reef, in 2021.',
+    passage: 'Coastal ecologist Tala Okonjo, whose research examines how degraded tidal wetlands recover after decades of industrial disturbance, has led three restoration projects on the same estuary: the removal of a derelict ______ the replanting of eelgrass beds, in 2016; and the construction of an oyster reef, in 2021.',
     stem: SEC,
     choices: ['seawall; in 2011,', 'seawall, in 2011;', 'seawall, in 2011,', 'seawall; in 2011;'], answer: 1,
     steps: [
@@ -35,7 +35,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-02', skill: 'bnd', sub: 'Transition punctuation', d: 'V',
-    passage: 'Composer Ines Varga writes almost exclusively for electronic instruments. For the slow movement of her latest ______ she scored the melody for a single unaccompanied cello.',
+    passage: 'Composer Ines Varga writes almost exclusively for synthesizers and other electronic instruments, often layering hundreds of digitally manipulated recordings into dense, shimmering textures. For the slow movement of her latest ______ she scored the melody for a single unaccompanied cello, an unexpectedly austere choice that critics described as a deliberate retreat from technological spectacle.',
     stem: SEC,
     choices: ['symphony though,', 'symphony, though;', 'symphony; though,', 'symphony, though,'], answer: 3,
     steps: [
@@ -57,7 +57,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-03', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'A 2021 paper by geologist Dawit Bekele offers a new explanation for the origin of the region’s most puzzling ______ circular depressions called kettles, steep-sided hollows that form when a buried block of glacial ice melts and the sediment above it collapses.',
+    passage: 'A 2021 paper by geologist Dawit Bekele offers a new explanation for the origin of the region’s most puzzling ______ circular depressions called kettles, steep-sided hollows that form when a buried block of glacial ice melts and the sediment above it collapses, sometimes thousands of years after the surrounding glacier has disappeared.',
     stem: SEC,
     choices: ['landforms circular', 'landforms; circular', 'landforms: circular', 'landforms. Circular'], answer: 2,
     steps: [
@@ -79,7 +79,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-04', skill: 'bnd', sub: 'Semicolons', d: 'V',
-    passage: 'Historian Mireille Abena borrowed the term “palimpsest,” normally applied to manuscripts that have been scraped clean and written over, to describe nineteenth-century port cities. Her usage pointed to merchants’ habit of rebuilding warehouses on old ______ even a street laid out in the 1880s might follow a wall raised two centuries earlier.',
+    passage: 'Historian Mireille Abena borrowed the term “palimpsest,” normally applied to manuscripts that have been scraped clean and written over, to describe nineteenth-century port cities whose layered streetscapes preserved traces of earlier eras. Her usage pointed to merchants’ habit of rebuilding warehouses on old ______ even a street laid out in the 1880s might follow a wall raised two centuries earlier, so that successive generations inscribed their commercial ambitions upon foundations they rarely noticed.',
     stem: SEC,
     choices: ['foundations; in those cities,', 'foundations, in those cities', 'foundations in those cities,', 'foundations, in those cities,'], answer: 0,
     steps: [
@@ -101,7 +101,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-05', skill: 'bnd', sub: 'Lists', d: 'V',
-    passage: 'To keep the village school open during the 1934 drought, teacher Ansa Mbeki held lessons at dawn and again after dusk, an unusual ______ organized a rota of families to haul water for the students; and persuaded the district to pay her assistants in grain.',
+    passage: 'To keep the village school operating during the catastrophic 1934 drought, when many families considered withdrawing their children to help with subsistence work, teacher Ansa Mbeki held lessons at dawn and again after dusk, an unusual ______ organized a rotation of families to haul water for the students; and persuaded the district administration to pay her assistants in grain.',
     stem: SEC,
     choices: ['arrangement, in that region', 'arrangement in that region;', 'arrangement, in that region,', 'arrangement in that region,'], answer: 1,
     steps: [
@@ -167,7 +167,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-08', skill: 'bnd', sub: 'Dashes', d: 'V',
-    passage: 'In 1998, climber Nomvula Dlamini reached the highest points of Africa, South America, and North America in a single calendar year—Kilimanjaro, Aconcagua, and Denali, ______ the feat had been accomplished only twice before.',
+    passage: 'In 1998, climber Nomvula Dlamini reached the highest points of Africa, South America, and North America in a single calendar year—Kilimanjaro, Aconcagua, and Denali, ______ according to expedition historians, the feat had been accomplished only twice before, both times by mountaineers with considerably larger support teams.',
     stem: SEC,
     choices: ['respectively;', 'respectively—', 'respectively,', 'respectively'], answer: 0,
     steps: [
@@ -189,7 +189,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-09', skill: 'bnd', sub: 'Sentence boundaries', d: 'H',
-    passage: 'In 2022, architects Sana and Idris Rahimi redesigned the reading rooms of the Kestrel Street ______ to librarians, the Rahimis’ changes doubled the number of visitors who stay longer than an hour.',
+    passage: 'In 2022, architects Sana and Idris Rahimi redesigned the reading rooms of the Kestrel Street ______ to librarians, who compared attendance records collected before and after the renovation, the Rahimis’ changes, particularly the addition of natural light and acoustically separated study alcoves, doubled the number of visitors who stay longer than an hour.',
     stem: SEC,
     choices: ['Library according,', 'Library, according', 'Library. According', 'Library according'], answer: 2,
     steps: [
@@ -211,7 +211,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-10', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'H',
-    passage: 'When raising the roof of the great hall, medieval carpenters depended on a lattice of temporary poles to hold each beam in place. These poles, a support system known as ______ were taken down once the final joints had been pegged.',
+    passage: 'When raising the roof of the great hall, medieval carpenters depended on an intricate lattice of temporary poles to hold each massive oak beam in position until it could be permanently secured. These poles, a support system known as ______ were dismantled once the final joints had been pegged, which is why historians must reconstruct them from surviving accounts and illustrations.',
     stem: SEC,
     choices: ['scaffolding;', 'scaffolding', 'scaffolding:', 'scaffolding,'], answer: 3,
     steps: [
@@ -233,7 +233,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-11', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'In a well-known field experiment on tipping, economist Chiara Lombardi had servers at a café present customers’ bills in one of two ways. The wording on the ______ some customers saw a suggested tip of 15 percent, others no suggestion at all. Curiously, the customers given no suggestion tipped more.',
+    passage: 'In a frequently cited field experiment on tipping, economist Chiara Lombardi had servers at a café present customers’ bills in one of two ways, randomly alternating between conditions throughout each shift. The wording on the ______ some customers saw a suggested tip of 15 percent, others no suggestion at all. Counterintuitively, the customers given no suggestion tipped more, a result Lombardi attributes to their resentment of perceived pressure.',
     stem: SEC,
     choices: ['bill differed:', 'bill differed,', 'bill differed while', 'bill differed, while'], answer: 0,
     steps: [
@@ -277,7 +277,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-13', skill: 'bnd', sub: 'Semicolons', d: 'V',
-    passage: 'That the manuscript had been copied somewhere in northern Italy was accepted by every scholar ______ fixing the decade in which it was made proved far more contentious.',
+    passage: 'That the manuscript had been copied somewhere in northern Italy, probably in a monastic scriptorium near Bologna, was accepted by every scholar ______ fixing the decade in which it was made proved far more contentious, since the evidence of its handwriting and the evidence of its decoration pointed to different periods.',
     stem: SEC,
     choices: ['consulted,', 'consulted;', 'consulted:', 'consulted'], answer: 1,
     steps: [
@@ -299,7 +299,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-bnd-14', skill: 'bnd', sub: 'Dashes', d: 'E',
-    passage: 'Told as a child that her stutter would keep her off the stage, Imani Clarke resolved to prove otherwise. Clarke didn’t just learn to speak in public, she ______ the 1987 national debating finals, she delivered an eleven-minute closing argument without notes and became the youngest champion in the tournament’s history.',
+    passage: 'Told as a child that her persistent stutter would keep her permanently off the stage, Imani Clarke resolved to prove otherwise. Clarke didn’t just learn to speak in public, she ______ the 1987 national debating finals, she delivered an eleven-minute closing argument without notes and became the youngest champion in the tournament’s considerable history.',
     stem: SEC,
     choices: ['excelled—brilliantly—during', 'excelled—brilliantly during', 'excelled—brilliantly, during', 'excelled—brilliantly. During'], answer: 3,
     steps: [

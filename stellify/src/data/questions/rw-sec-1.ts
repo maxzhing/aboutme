@@ -90,7 +90,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-05', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: "Before entering the newly discovered cave, the researchers agreed on a plan. The expedition had three goals ______ to map the cave system, to collect water samples, and to photograph the bats that roost there.",
+    passage: 'Before entering the newly discovered limestone cave, which had remained sealed beneath a collapsed sinkhole for thousands of years, the researchers agreed on a deliberately limited plan. The expedition had three goals ______ to map the cave system, to collect water samples for chemical analysis, and to photograph the endangered bats that roost there without disturbing their hibernation.',
     stem: STEM,
     choices: ['goals,', 'goals:', 'goals;', 'goals'], answer: 1,
     steps: [
@@ -111,7 +111,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-06', skill: 'bnd', sub: 'Transition punctuation', d: 'V',
-    passage: 'Honeybees have brains containing fewer than a million ______ they can learn to recognize individual human faces. In one experiment, researchers trained the bees by rewarding them with sugar water.',
+    passage: 'Honeybees have brains containing fewer than a million ______ they can learn to recognize individual human faces. In one frequently cited experiment, researchers conditioned the insects by consistently rewarding correct identifications with droplets of sugar water, demonstrating that sophisticated visual discrimination does not necessarily require an enormous or elaborately organized nervous system.',
     stem: STEM,
     choices: ['neurons, however,', 'neurons; however,', 'neurons, however;', 'neurons however'], answer: 1,
     steps: [
@@ -132,7 +132,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-07', skill: 'bnd', sub: 'Dashes', d: 'H',
-    passage: "The okapi—an animal that looks like a cross between a zebra and a ______ is actually the giraffe's closest living relative. Like a giraffe, it uses a long, dark tongue to strip leaves from branches.",
+    passage: 'The okapi—an elusive rainforest mammal whose horizontally striped hindquarters make it resemble a cross between a zebra and a ______ is actually the giraffe\'s closest living relative. Like a giraffe, it uses a remarkably elongated, prehensile tongue to strip foliage from branches, a feeding adaptation that zoologists consider compelling anatomical evidence of the two species\' shared ancestry.',
     stem: STEM,
     choices: ['deer,', 'deer', 'deer;', 'deer—'], answer: 3,
     steps: [
@@ -153,7 +153,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-08', skill: 'bnd', sub: 'Coordination and subordination', d: 'H',
-    passage: 'Although the painting was long attributed to a famous Dutch ______ recent analysis of its pigments suggests that it was made by one of his students.',
+    passage: 'Although the painting was long attributed to a famous Dutch ______ recent analysis of its pigments, conducted with noninvasive infrared imaging techniques that reveal preliminary sketches beneath the visible surface, suggests that it was made by one of his students, an apprentice whose characteristic brushwork appears in several unsigned canvases.',
     stem: STEM,
     choices: ['master;', 'master.', 'master,', 'master'], answer: 2,
     steps: [
@@ -174,7 +174,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-09', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'H',
-    passage: 'In 1962, biologist ______ published *Silent Spring*, a book that drew public attention to the dangers of pesticides. The book is widely credited with helping to launch the modern environmental movement.',
+    passage: 'In 1962, biologist ______ published *Silent Spring*, a meticulously documented book that drew public attention to the dangers that synthetic pesticides posed to birds, fish, and human communities. The book, which provoked fierce opposition from chemical manufacturers, is widely credited with helping to launch the modern environmental movement in the United States.',
     stem: STEM,
     choices: ['Rachel Carson', ', Rachel Carson,', 'Rachel Carson,', ', Rachel Carson'], answer: 0,
     steps: [
@@ -195,7 +195,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-10', skill: 'bnd', sub: 'Lists', d: 'H',
-    passage: 'The orchestra has announced the schedule for its spring tour of three European cities. The tour will stop in Lyon, ______ Turin, Italy; and Geneva, Switzerland.',
+    passage: 'Having secured funding from cultural foundations on both sides of the Atlantic, the orchestra has announced the schedule for its spring tour of three European cities, each celebrated for its distinguished musical history. The tour will stop in Lyon, ______ Turin, Italy; and Geneva, Switzerland.',
     stem: STEM,
     choices: ['France,', 'France', 'France:', 'France;'], answer: 3,
     steps: [
@@ -216,7 +216,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-11', skill: 'bnd', sub: 'Run-ons and fragments', d: 'H',
-    passage: 'The glacier has retreated nearly two kilometers since ______ a valley strewn with boulders and newly formed ponds. Geologists expect the retreat to continue for decades.',
+    passage: 'Comparisons of nineteenth-century photographs with contemporary satellite imagery have allowed researchers to document the glacier\'s disappearance with unusual precision. The glacier has retreated nearly two kilometers since ______ a desolate valley strewn with boulders, unstable gravel terraces, and newly formed meltwater ponds that hydrologists now monitor continuously for signs of sudden flooding.',
     stem: STEM,
     choices: ['1950, leaving behind', '1950. Leaving behind', '1950; leaving behind', '1950, it left behind'], answer: 0,
     steps: [
@@ -237,7 +237,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-12', skill: 'bnd', sub: 'Coordination and subordination', d: 'H',
-    passage: 'Visitors are often surprised by the age of the stone building on the corner of the square. The city\'s oldest library was built in ______ makes it nearly a century older than the university beside it.',
+    passage: 'Visitors are often surprised by the considerable age of the unassuming stone building on the corner of the square, which is overshadowed by the elaborate architecture surrounding it. The city\'s oldest library was built in ______ makes it nearly a century older than the prestigious university beside it.',
     stem: STEM,
     choices: ['1838, it', '1838. Which', '1838, which', '1838; which'], answer: 2,
     steps: [
@@ -258,7 +258,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-13', skill: 'bnd', sub: 'Parentheses', d: 'H',
-    passage: 'The festival\'s main event (a parade of illuminated ______ draws thousands of visitors to the harbor each winter. Local families spend months decorating their boats for the occasion.',
+    passage: 'The festival\'s main event (a parade of illuminated ______ draws thousands of visitors to the harbor each winter, transforming the otherwise quiet waterfront into a spectacle of reflected light. Local families spend months constructing elaborate decorations for their boats, often preserving designs that have been handed down across several generations.',
     stem: STEM,
     choices: ['boats),', 'boats—', 'boats,', 'boats)'], answer: 3,
     steps: [
@@ -279,7 +279,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-14', skill: 'bnd', sub: 'Commas', d: 'H',
-    passage: 'Hoping to attract more pollinators to the campus ______ the students replaced a section of lawn with native wildflowers. Within a single season, they counted eleven species of native bees visiting the new plantings.',
+    passage: 'Hoping to attract more pollinators to the campus ______ the students replaced a section of manicured lawn with native wildflowers, deliberately selecting species whose staggered flowering periods would provide nectar continuously from early spring until autumn. Within a single season, they documented eleven species of native bees visiting the new plantings, including several previously unrecorded in the surrounding county.',
     stem: STEM,
     choices: ['garden;', 'garden,', 'garden', 'garden:'], answer: 1,
     steps: [
@@ -300,7 +300,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-15', skill: 'bnd', sub: 'Colons', d: 'V',
-    passage: 'The museum\'s new wing houses artifacts from several ancient ______ those of the Olmec, the Maya, and the Zapotec. The wing opened to the public after six years of construction.',
+    passage: 'Assembled through decades of excavations and acquisitions, the museum\'s collections are particularly strong in the archaeology of Mesoamerica. The museum\'s new wing houses artifacts from several ancient ______ those of the Olmec, the Maya, and the Zapotec, whose sophisticated calendars and monumental architecture the exhibits examine in considerable detail.',
     stem: STEM,
     choices: ['civilizations including:', 'civilizations: including', 'civilizations, including', 'civilizations; including'], answer: 2,
     steps: [
@@ -321,7 +321,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-16', skill: 'bnd', sub: 'Transition punctuation', d: 'V',
-    passage: "Most seabirds avoid flying in storms. Frigatebirds, ______ have been tracked riding the updrafts inside storm clouds to altitudes of several thousand meters. Scientists think the birds use this lift to travel long distances while spending very little energy.",
+    passage: 'Most seabirds avoid flying in storms, since turbulent winds and torrential rain make sustained flight exhausting and potentially dangerous. Frigatebirds, ______ have been tracked riding the powerful updrafts inside towering storm clouds to altitudes of several thousand meters, and scientists think the birds exploit this lift to travel enormous distances while expending very little energy.',
     stem: STEM,
     choices: ['however,', 'however', 'however;', 'however:'], answer: 0,
     steps: [
@@ -342,7 +342,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-17', skill: 'bnd', sub: 'Colons', d: 'V',
-    passage: "The researchers had expected the stone tools at the cave site to be relatively recent. After a decade of excavation, the team's conclusion was ______ the tools had been made not by modern humans but by an earlier species.",
+    passage: 'The archaeologists had initially expected the stone implements at the limestone cave site to be relatively recent, perhaps several thousand years old. After a decade of excavation, the team\'s conclusion was ______ the tools had been made not by modern humans but by an earlier species that occupied the region long before our own ancestors arrived, a possibility few specialists had seriously entertained.',
     stem: STEM,
     choices: ['startling,', 'startling; that', 'startling', 'startling:'], answer: 3,
     steps: [
@@ -363,7 +363,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-18', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'V',
-    passage: 'The fossils ______ were discovered in the quarry last spring belong to a previously unknown species of early whale. Researchers have spent the months since then cleaning and measuring the bones.',
+    passage: 'The fossils ______ were discovered in the quarry last spring belong to a previously unknown species of early whale, one whose surprisingly robust hind limbs suggest it could still move awkwardly on land. Researchers have spent the intervening months painstakingly cleaning, measuring, and digitally scanning the bones before publishing a formal description.',
     stem: STEM,
     choices: [', which', 'which,', 'that', ', that'], answer: 2,
     steps: [
@@ -384,7 +384,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-19', skill: 'bnd', sub: 'Semicolons', d: 'V',
-    passage: "Many desert plants have evolved ways to limit water ______ the creosote bush, for example, coats its leaves in a waxy resin. Other plants, such as cacti, store water in thick, fleshy stems.",
+    passage: 'Many desert plants have evolved ways to limit water ______ the creosote bush, for example, coats its leaves in a waxy, aromatic resin that dramatically reduces evaporation during the hottest hours of the afternoon. Other succulents, such as cacti, store moisture in thick, expandable stems whose specialized tissues absorb enormous quantities following infrequent rainstorms.',
     stem: STEM,
     choices: ['loss,', 'loss;', 'loss, and,', 'loss'], answer: 1,
     steps: [
@@ -405,7 +405,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-20', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'V',
-    passage: "Wangari ______ founded the Green Belt Movement in 1977, became the first African woman to win the Nobel Peace Prize. The movement, which began in Kenya, has since planted tens of millions of trees.",
+    passage: 'Wangari ______ founded the Green Belt Movement in 1977, became the first African woman to win the Nobel Peace Prize, an honor recognizing her conviction that environmental restoration and democratic participation are inseparable. The movement, which began in Kenya by paying rural women to plant seedlings, has since planted tens of millions of trees.',
     stem: STEM,
     choices: ['Maathai who', 'Maathai, she', 'Maathai; who', 'Maathai, who'], answer: 3,
     steps: [
@@ -426,7 +426,7 @@ export const RW_SEC_1: RawQuestion[] = [
   },
   {
     id: 'r-bnd-21', skill: 'bnd', sub: 'Coordination and subordination', d: 'V',
-    passage: 'Because the mineral forms only under extreme pressure, such as that produced when a meteorite strikes ______ its presence in the rock layer is strong evidence of an ancient impact.',
+    passage: 'Shocked quartz, a mineral whose crystalline structure is permanently deformed by sudden compression, has become one of geologists\' most dependable indicators of extraterrestrial collisions. Because the mineral forms only under extreme pressure, such as that produced when a meteorite strikes ______ its presence in the rock layer is strong evidence of an ancient impact, even where erosion has erased any visible crater.',
     stem: STEM,
     choices: ['Earth,', 'Earth;', 'Earth.', 'Earth, and'], answer: 0,
     steps: [

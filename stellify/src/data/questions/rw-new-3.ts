@@ -212,7 +212,7 @@ export const RW_NEW_3: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n5', skill: 'bnd', sub: 'Conjunctive adverbs', d: 'V',
-    passage: 'The first trial of the new fertilizer produced promising ______ the second trial, which used a much larger sample of fields, found no effect on crop yields at all.',
+    passage: 'The first trial of the experimental nitrogen fertilizer, conducted on a handful of carefully irrigated demonstration plots, produced promising ______ the second trial, which used a much larger and more representative sample of commercial fields, found no effect on crop yields at all, suggesting that the initial improvement reflected unusually favorable growing conditions.',
     stem: STD,
     choices: ['results, however,', 'results; however,', 'results however;', 'results, however;'], answer: 1,
     steps: ['"The first trial … produced promising results" and "the second trial … found no effect" are both complete sentences.', '"However" joins them as a conjunctive adverb: a semicolon before it and a comma after it.'],

@@ -191,7 +191,7 @@ export const RW_NEW_8: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n18', skill: 'bnd', sub: 'Joining independent clauses', d: 'V',
-    passage: 'The main trail to the summit was closed for ______ hikers could still reach the top by a longer route along the north side of the mountain, which added about two hours to the climb.',
+    passage: 'The main trail to the summit was closed for ______ hikers could still reach the top by a longer, considerably steeper alternative along the northern ridge, which added approximately two hours to the climb and required navigating several precarious, unstable sections of volcanic rubble that park administrators consider particularly treacherous.',
     stem: STD,
     choices: ['repairs, but', 'repairs; but,', 'repairs, but,', 'repairs but;'], answer: 0,
     steps: ['"The main trail… was closed for repairs" and "hikers could still reach the top…" are both complete sentences.', 'A comma followed by "but" joins them.'],
@@ -203,7 +203,7 @@ export const RW_NEW_8: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n19', skill: 'bnd', sub: 'Parentheses', d: 'H',
-    passage: 'The study’s lead author (a marine ecologist who has spent two decades studying kelp ______ argues that warming waters are now the greatest threat to the forests along the coast.',
+    passage: 'The study’s lead author (a marine ecologist who has spent two decades studying kelp ______ argues that warming waters, rather than overfishing or coastal pollution, now represent the greatest threat to the underwater forests along the Pacific coastline.',
     stem: STD,
     choices: ['forests', 'forests,', 'forests)', 'forests),'], answer: 2,
     steps: ['A parenthesis opens after "author," so it must close after the description "…studying kelp forests."', 'The subject "The study’s lead author" then connects directly to its verb "argues," with no comma.'],

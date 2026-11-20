@@ -148,7 +148,7 @@ export const RW_NEW_2: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n2', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'The bakery’s famous country loaf calls for only three ______ flour, water, and a pinch of salt, kneaded into a stiff dough that rests overnight before it is baked in a stone oven.',
+    passage: 'Despite its reputation among food critics for remarkable complexity of flavor, the bakery’s famous country loaf calls for only three ______ flour, water, and a pinch of salt, kneaded into a stiff dough that ferments slowly overnight, developing its characteristic acidity, before it is baked in a traditional stone oven.',
     stem: STD,
     choices: ['ingredients;', 'ingredients:', 'ingredients', 'ingredients,'], answer: 1,
     steps: ['What follows the blank lists the three ingredients announced before it.', 'A colon introduces a list after a complete sentence: "…calls for only three ingredients: flour, water, and a pinch of salt."'],
@@ -160,7 +160,7 @@ export const RW_NEW_2: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n3', skill: 'bnd', sub: 'Supplements and nonessential elements', d: 'V',
-    passage: 'The engineer’s first prototype—a wooden frame wrapped in canvas and driven by a bicycle ______ flew for only twelve seconds before it drifted down into a neighbor’s field.',
+    passage: 'The engineer’s first prototype—a wooden frame wrapped in waterproofed canvas and propelled by a modified bicycle ______ flew for only twelve seconds before it drifted gently down into a neighbor’s field, an outcome she nonetheless recorded in her notebook as an encouraging demonstration of the design’s fundamental stability.',
     stem: STD,
     choices: ['chain,', 'chain—', 'chain;', 'chain'], answer: 1,
     steps: ['The phrase "a wooden frame … bicycle chain" interrupts the sentence and opens with a dash.', 'A nonessential phrase must close with the same mark that opened it: a second dash.'],

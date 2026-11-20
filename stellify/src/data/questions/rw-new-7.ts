@@ -178,7 +178,7 @@ export const RW_NEW_7: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n14', skill: 'bnd', sub: 'Supplements and nonessential elements', d: 'V',
-    passage: 'The lead engineer on the ______ Amara Diallo, had previously designed two of the longest suspension bridges in West Africa, and her team expected the new crossing to open within four years.',
+    passage: 'The lead engineer on the ______ Amara Diallo, had previously designed two of the longest suspension bridges in West Africa, and her team, drawing on that experience with unpredictable riverbed geology and seasonal flooding, confidently anticipated that the new crossing would open within four years despite considerable logistical complications.',
     stem: STD,
     choices: ['project:', 'project,', 'project', 'project—'], answer: 1,
     steps: ['"Amara Diallo" renames "the lead engineer on the project," and a comma already follows the name.', 'A nonessential appositive is set off by a matching pair of commas, so a comma goes before the name too.'],
@@ -190,7 +190,7 @@ export const RW_NEW_7: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n15', skill: 'bnd', sub: 'Semicolons', d: 'H',
-    passage: 'Most of the bird species on the island are found nowhere else on ______ many of them are now threatened by rats and cats that settlers brought to the island in the nineteenth century.',
+    passage: 'Because the archipelago has remained geographically isolated for millions of years, its wildlife evolved without mammalian predators. Most of the bird species on the island are found nowhere else on ______ many of them are now threatened by rats and cats that European settlers introduced in the nineteenth century, and conservationists consider eradication programs essential.',
     stem: STD,
     choices: ['Earth, many', 'Earth many', 'Earth; many', 'Earth, and, many'], answer: 2,
     steps: ['"Most of the bird species… are found nowhere else on Earth" and "many of them are now threatened…" are both complete sentences.', 'A semicolon can join two closely related complete sentences.'],

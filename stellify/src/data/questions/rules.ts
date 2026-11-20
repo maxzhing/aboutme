@@ -55,6 +55,42 @@ export function cbSpecChecks(q: RawQuestion): string[] {
   return e;
 }
 
+/**
+ * The College Board hard-question bar (DECISIONS 36). Measured on the College Board’s own hard Reading and Writing
+ * questions: their non-literary passages average 26 words per sentence with 16% of words 9+ letters long (the easier
+ * quarter of them still reach 22 and 12%), and reading-question answer choices average 20+ words. A hard or very hard
+ * question of ours must reach at least that easier quarter. Literary excerpts (older prose and verse) use plainer
+ * words, so they have their own lower bar measured the same way.
+ */
+export const CB_BAR = { wordsPerSentence: 22, longWordPct: 13, litWordsPerSentence: 15, litLongWordPct: 6 } as const;
+const CB_CHOICE_WORDS: Partial<Record<SkillId, number>> = { inf: 17, cid: 17, coet: 17, coeq: 17, ctc: 17, tsp: 14, syn: 14 };
+
+export function passageComplexity(text: string): { wordsPerSentence: number; longWordPct: number } {
+  const t = plain(text).replace(/_{3,}/g, ' ').replace(/\bText [12]\b/g, ' ');
+  const ws = t.match(/[A-Za-z’'-]+/g) ?? [];
+  const sentences = t.split(/(?<=[.!?”"])\s+/).filter((s) => /[A-Za-z]/.test(s));
+  return { wordsPerSentence: ws.length / Math.max(1, sentences.length), longWordPct: (100 * ws.filter((w) => w.replace(/[’'-]/g, '').length >= 9).length) / Math.max(1, ws.length) };
+}
+
+/** Problems that keep a hard or very hard Reading and Writing question below the College Board’s hard level. */
+export function cbBarIssues(q: RawQuestion): string[] {
+  const e: string[] = [];
+  if (SKILL[q.skill]?.section !== 'rw' || q.d === 'M') return e;
+  if (q.skill !== 'syn' && q.passage) {
+    const lit = /^The following text is (from|adapted from)/.test(q.passage.trim());
+    const c = passageComplexity(q.passage.replace(/^The following text[^\n]*\n+/, ''));
+    const [w, l] = lit ? [CB_BAR.litWordsPerSentence, CB_BAR.litLongWordPct] : [CB_BAR.wordsPerSentence, CB_BAR.longWordPct];
+    if (c.wordsPerSentence < w) e.push(`below College Board hard level: ${c.wordsPerSentence.toFixed(1)} words per sentence (need ${w})`);
+    if (c.longWordPct < l) e.push(`below College Board hard level: ${c.longWordPct.toFixed(1)}% long words (need ${l}%)`);
+  }
+  const min = CB_CHOICE_WORDS[q.skill];
+  if (min && q.choices) {
+    const avg = q.choices.map(words).reduce((a, b) => a + b, 0) / q.choices.length;
+    if (avg < min) e.push(`below College Board hard level: answer choices average ${avg.toFixed(1)} words (need ${min})`);
+  }
+  return e;
+}
+
 /** Per-question validation. Returns a list of problems (empty = valid). */
 export function validateQuestion(q: RawQuestion, renderMath?: (tex: string) => void): string[] {
   const e: string[] = [];

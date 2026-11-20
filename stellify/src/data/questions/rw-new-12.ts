@@ -179,7 +179,7 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n29', skill: 'bnd', sub: 'Dashes', d: 'H',
-    passage: 'When she opened her first restaurant in 2015, the chef insisted on one rule above all ______ every dish on the menu must use ingredients grown within fifty miles of the restaurant’s kitchen.',
+    passage: 'When she opened her first restaurant in 2015, the chef, who had trained in kitchens that relied heavily on imported specialty ingredients, insisted on one rule above all ______ every dish on the menu must use ingredients grown within fifty miles of the restaurant’s kitchen, a commitment that required cultivating relationships with dozens of regional farmers.',
     stem: STD,
     choices: ['others,', 'others—', 'others', 'others;'], answer: 1,
     steps: ['"The chef insisted on one rule above all others" is complete, and what follows states the rule.', 'A dash (like a colon) can introduce an explanation after a complete clause.'],

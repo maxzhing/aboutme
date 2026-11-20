@@ -158,7 +158,7 @@ export const RW_BREADTH: RawQuestion[] = [
   },
   {
     id: 'r-br-bnd-01', skill: 'bnd', sub: 'Joining independent clauses', d: 'H',
-    passage: "Zora Neale Hurston's novel *Their Eyes Were Watching God* received mixed reviews when it was published in ______ some critics faulted its focus on one woman's inner life rather than on social protest. Decades later, the writer Alice Walker helped bring the book back into print and into classrooms.",
+    passage: 'Zora Neale Hurston\'s novel *Their Eyes Were Watching God* received mixed reviews when it was published in ______ some critics faulted its focus on one woman\'s interior life rather than on explicitly political protest, a judgment that reflected prevailing assumptions about what African American fiction ought to accomplish. Decades later, the writer Alice Walker championed the neglected book, helping to restore it to print and to university curricula across the country.',
     stem: SEC_STEM,
     choices: ['1937;', '1937,', '1937', '1937 and,'], answer: 0,
     steps: [
@@ -178,7 +178,7 @@ export const RW_BREADTH: RawQuestion[] = [
   },
   {
     id: 'r-br-bnd-02', skill: 'bnd', sub: 'Paired punctuation', d: 'V',
-    passage: 'The poet Gwendolyn Brooks—the first Black writer to win the Pulitzer ______ published her first collection, *A Street in Bronzeville*, in 1945. Its poems portray the everyday lives of residents of a single Chicago neighborhood.',
+    passage: 'The poet Gwendolyn Brooks—the first Black writer to win the Pulitzer ______ published her first collection, *A Street in Bronzeville*, in 1945. Its poems, celebrated for their technical sophistication and their compassionate attention to ordinary experience, portray the everyday lives of residents of a single South Side Chicago neighborhood.',
     stem: SEC_STEM,
     choices: ['Prize—', 'Prize,', 'Prize', 'Prize;'], answer: 0,
     steps: [

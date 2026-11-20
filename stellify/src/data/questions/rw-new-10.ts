@@ -190,7 +190,7 @@ export const RW_NEW_10: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n24', skill: 'bnd', sub: 'Commas', d: 'V',
-    passage: 'The ecologist described the restored wetland at the edge of town as “a giant sponge that protects the ______ she explained, “by soaking up floodwater before it can reach the streets and homes nearby.”',
+    passage: 'Defending the project’s considerable expense at a public meeting, the ecologist described the restored wetland at the edge of town as “a giant sponge that protects the ______ she explained, “by soaking up floodwater before it can reach the streets and homes nearby.”',
     stem: STD,
     choices: ['city”', 'city.”', 'city,”', 'city;”'], answer: 2,
     steps: ['The quotation is interrupted by "she explained" and then continues with "by soaking up…"', 'An interrupted quotation that continues the same sentence takes a comma inside the closing quotation mark.'],

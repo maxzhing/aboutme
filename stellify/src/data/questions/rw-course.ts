@@ -348,7 +348,7 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-bnd-01', skill: 'bnd', sub: 'Lists', d: 'V',
-    passage: 'The museum’s new wing will house three collections donated by a single family: woven textiles from Oaxaca, Mexico ______ glazed ceramics from Fez, Morocco; and lacquerware from Kyoto, Japan.',
+    passage: 'The museum’s new wing, designed to display decorative arts alongside the communities and techniques that produced them, will house three collections donated by a single family: woven textiles from Oaxaca, Mexico ______ glazed ceramics from Fez, Morocco; and lacquerware from Kyoto, Japan.',
     stem: SEC,
     choices: ['Mexico,', 'Mexico:', 'Mexico;', 'Mexico'], answer: 2,
     steps: [

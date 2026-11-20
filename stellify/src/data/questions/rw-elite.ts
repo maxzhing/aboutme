@@ -296,7 +296,7 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-bnd-01', skill: 'bnd', sub: 'Dashes', d: 'E',
-    passage: 'After months of hearings, the council finally acted. The committee\'s recommendation—that the bridge be closed to trucks, repaired in stages, and reopened only after an independent ______ was adopted without a single dissenting vote.',
+    passage: 'After months of contentious hearings, during which engineers and residents disagreed sharply about the structure\'s safety, the council finally acted. The committee\'s recommendation—that the bridge be closed to trucks, repaired in stages, and reopened only after an independent ______ was adopted without a single dissenting vote.',
     stem: SEC,
     choices: ['inspection,', 'inspection', 'inspection—', 'inspection:'], answer: 2,
     steps: [
@@ -317,7 +317,7 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-bnd-02', skill: 'bnd', sub: 'Transition punctuation', d: 'E',
-    passage: 'Reviewers were nearly unanimous in praising the film\'s cinematography, which they compared to the work of the great landscape painters. The screenplay, they ______ was derivative and thin.',
+    passage: 'Reviewers were nearly unanimous in praising the film\'s cinematography, which they compared favorably to the luminous canvases of nineteenth-century landscape painters such as Frederic Edwin Church. The screenplay, they ______ was derivative and thin, recycling familiar conventions of the genre without investing them with any discernible originality.',
     stem: SEC,
     choices: ['agreed, however,', 'agreed; however,', 'agreed, however', 'agreed however,'], answer: 0,
     steps: [

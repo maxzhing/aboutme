@@ -124,3 +124,12 @@ Each entry records what was decided, why, and the alternatives considered.
     asked for many more questions written at the College Board's hard level. The number of medium questions does not
     shrink (about 100 per section), so beginners keep the same reachable pool; only the share changes as hard and very
     hard questions are added. New questions are labeled honestly: roughly half hard and half very hard per batch.
+36. **Hard Reading and Writing questions must reach the College Board's own hard level, measured.** The owner said
+    our hard questions read a full level easier than the College Board's. Measured against the College Board's hard
+    items (kept locally, never committed), their non-literary passages average 26 words per sentence with 16% of words
+    nine or more letters long, and reading-question choices average about 20 words; ours averaged 23 words, 11% and 15.
+    `cbBarIssues` in rules.ts now sets the bar at the easier quarter of the College Board's hard items (22 words per
+    sentence, 13% long words; literary excerpts 15 and 6%; choices 17 words for inference, central-idea, evidence and
+    cross-text questions, 14 for structure and synthesis). `tests/cb-bar.test.ts` holds a count of hard questions still
+    below the bar that may only go down, so new questions must meet it. `scripts/cb-audit.ts` lists what is left.
+    The measures are proxies for wording difficulty; the logic of each question and its wrong answers is reviewed by hand.

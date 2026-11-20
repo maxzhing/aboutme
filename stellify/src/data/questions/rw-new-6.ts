@@ -179,7 +179,7 @@ export const RW_NEW_6: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n11', skill: 'bnd', sub: 'Commas', d: 'H',
-    passage: 'The marine biologist who first described the deep-sea anglerfish’s glowing lure ______ that the light is produced not by the fish itself but by bacteria living inside the lure.',
+    passage: 'The marine biologist who first described the deep-sea anglerfish’s glowing lure ______ that the light is produced not by the fish itself but by bioluminescent bacteria living inside the lure, a hypothesis that subsequent genetic investigations have confirmed in several anglerfish species.',
     stem: STD,
     choices: ['proposed,', 'proposed;', 'proposed', 'proposed:'], answer: 2,
     steps: ['"Proposed" is the main verb, and "that the light is produced…" is its object.', 'No punctuation separates a verb from its object clause.'],
@@ -191,7 +191,7 @@ export const RW_NEW_6: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n12', skill: 'bnd', sub: 'Introductory elements', d: 'H',
-    passage: 'After three years of construction and nearly a decade of ______ the city’s new light-rail line opened to passengers in March, linking the airport to downtown for the first time.',
+    passage: 'After three years of construction and nearly a decade of ______ the city’s new light-rail line opened to passengers in March, linking the international airport to downtown for the first time and fulfilling a commitment that municipal officials had repeatedly postponed because of budgetary disagreements.',
     stem: STD,
     choices: ['planning;', 'planning:', 'planning', 'planning,'], answer: 3,
     steps: ['"After three years of construction and nearly a decade of planning" is an introductory phrase, not a sentence.', 'An introductory phrase is followed by a comma before the main clause begins.'],

@@ -190,7 +190,7 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n21', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'V',
-    passage: 'Residents were stranded for three days last winter after a storm damaged two concrete supports of the only ______ connects the island to the mainland.',
+    passage: 'Residents were stranded for three days last winter after an unusually powerful storm damaged two concrete supports of the only ______ connects the island to the mainland, prompting regional authorities to commission an independent assessment of the community’s emergency preparedness.',
     stem: STD,
     choices: ['bridge, that', 'bridge, which', 'bridge—that', 'bridge that'], answer: 3,
     steps: ['"That connects the island to the mainland" identifies which bridge; it is essential.', 'Essential clauses are not set off with commas or dashes.'],
@@ -202,7 +202,7 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n22', skill: 'bnd', sub: 'Lists', d: 'H',
-    passage: 'The new community garden includes raised beds for ______ a small orchard of apple and pear trees, and a shed where volunteers can store their tools between workdays.',
+    passage: 'Funded by a municipal grant and designed collaboratively by neighborhood residents, the new community garden includes raised beds for ______ a small orchard of apple and pear trees, and a shed where volunteers can store their tools between workdays.',
     stem: STD,
     choices: ['vegetables,', 'vegetables;', 'vegetables:', 'vegetables'], answer: 0,
     steps: ['The garden includes three items: raised beds, an orchard and a shed.', 'Items in a simple list are separated by commas.'],
