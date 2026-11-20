@@ -30,9 +30,10 @@ import { RW_NEW_2 } from './rw-new-2';
 import { MATH_NEW_5 } from './math-new-5';
 import { RW_NEW_3 } from './rw-new-3';
 import { MATH_NEW_6 } from './math-new-6';
+import { RW_NEW_4 } from './rw-new-4';
 
 /** Question batches written after Practice Tests A and B were fixed (newest last). Add each new batch here. */
-const NEW_BATCHES: RawQuestion[][] = [MATH_NEW_1, MATH_NEW_2, MATH_NEW_3, RW_NEW_1, MATH_NEW_4, RW_NEW_2, MATH_NEW_5, RW_NEW_3, MATH_NEW_6];
+const NEW_BATCHES: RawQuestion[][] = [MATH_NEW_1, MATH_NEW_2, MATH_NEW_3, RW_NEW_1, MATH_NEW_4, RW_NEW_2, MATH_NEW_5, RW_NEW_3, MATH_NEW_6, RW_NEW_4];
 
 /** Every authored question. Add new batch files here; nothing else needs to change. */
 export const ALL_RAW: RawQuestion[] = [

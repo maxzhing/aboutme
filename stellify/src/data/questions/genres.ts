@@ -13,6 +13,7 @@ export type Format = 'single' | 'paired' | 'data' | 'notes';
  */
 export const GENRE_TAGS: Record<string, Genre> = {
   'r-wic-n3': 'history-social', 'r-wic-n5': 'science', 'r-bnd-n5': 'science', 'r-fss-n3': 'history-social',
+  'r-coeq-n5': 'history-social', 'r-coeq-n6': 'science', 'r-wic-n7': 'science', 'r-syn-n6': 'science',
   'r-syn-n1': 'science', 'r-bnd-n2': 'history-social', 'r-bnd-n3': 'science', 'r-fss-n2': 'science',
   'r-coet-02': 'literature',
   'r-coeq-02': 'history-social',
