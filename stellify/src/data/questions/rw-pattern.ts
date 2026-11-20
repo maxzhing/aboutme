@@ -966,7 +966,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-wic-01', skill: 'wic', sub: 'Words in context', d: 'H',
-    passage: 'The following text is from an original short story.\nBy the time the ferry cleared the headland the fog had begun to lift, though not all at once. It thinned first above the mast, betraying a patch of pale sky, and then along the shore, where the lamps of the town, lit early against the gloom, stood disclosed one by one like a row of small confessions.',
+    passage: 'The following text is from an original short story.\nBy the time the ferry cleared the headland the fog had begun to lift, though not all at once and not evenly. It thinned first above the mast, betraying a patch of pale sky, and then along the shore, where the lamps of the town, lit early against the gloom of the afternoon, stood disclosed one by one like a row of small confessions.',
     stem: 'As used in the text, what does the word “betraying” most nearly mean?',
     choices: ['Deceiving', 'Revealing', 'Abandoning', 'Undermining'], answer: 1,
     steps: [

@@ -32,7 +32,7 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-wic-02', skill: 'wic', sub: 'Secondary meanings', d: 'H',
-    passage: 'Transportation economist Rafael Ortiz argues that the city’s new fare system, though it raises prices only slightly, will tax the patience of commuters who already face long transfers. Riders, he predicts, will tolerate small price increases far more readily than added waiting time, so the system’s extra transfer step may cost the city more riders than the higher fares do.',
+    passage: 'Transportation economist Rafael Ortiz argues that the city’s new fare system, though it raises prices only slightly, will tax the patience of commuters who already endure lengthy transfers between bus and subway lines. Riders, he predicts on the basis of extensive survey evidence, will tolerate modest price increases far more readily than additional waiting time, so the system’s extra transfer step may ultimately cost the municipal transit authority more passengers than the higher fares do.',
     stem: 'As used in the text, what does the word “tax” most nearly mean?',
     choices: ['Charge a fee on', 'Strain', 'Calculate', 'Accuse'], answer: 1,
     steps: [
@@ -53,7 +53,7 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-wic-03', skill: 'wic', sub: 'Secondary meanings', d: 'E',
-    passage: 'In her memoir, botanist Ada Whitcombe recalls that her mentor would entertain no hypothesis he had not tested himself. Colleagues found this rigor exhausting: he redid experiments others had published years earlier and refused to cite results he could not reproduce. Yet the same habit spared his laboratory the embarrassing retractions that befell several rival groups.',
+    passage: 'In her memoir, botanist Ada Whitcombe recalls that her mentor would entertain no hypothesis he had not tested himself, regardless of the reputation of the scientist who had proposed it. Colleagues found this rigor exhausting: he repeated experiments others had published years earlier and refused to cite results he could not reproduce. Yet the same habit spared his laboratory the embarrassing retractions that befell several rival research groups.',
     stem: 'As used in the text, what does the word “entertain” most nearly mean?',
     choices: ['Amuse', 'Host', 'Consider', 'Perform'], answer: 2,
     steps: [
@@ -269,7 +269,7 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-tra-01', skill: 'tra', sub: 'Sequence', d: 'H',
-    passage: 'Before it could be launched, the space telescope’s primary mirror had to be folded up, like a piece of origami, so that it would fit inside the nose of the rocket. ______ once the spacecraft reached its destination, the mirror’s eighteen hexagonal segments were unfolded and aligned one by one over a period of several weeks.',
+    passage: 'Before it could be launched, the space telescope’s primary mirror had to be folded up, like an elaborate piece of origami, so that it would fit inside the narrow protective nose of the rocket. ______ once the spacecraft reached its destination, the mirror’s eighteen hexagonal segments were unfolded and aligned one by one over a period of several weeks, with engineers adjusting each segment’s position to within nanometers.',
     stem: TRA,
     choices: ['Subsequently,', 'Previously,', 'For instance,', 'Nevertheless,'], answer: 0,
     steps: [

@@ -145,7 +145,7 @@ export const RW_NEW_5: RawQuestion[] = [
   },
   {
     id: 'r-tra-n9', skill: 'tra', sub: 'Concession', d: 'H',
-    passage: 'When it was first performed, critics dismissed the composer’s symphony as noisy and shapeless, and several predicted that it would soon be forgotten. ______ within twenty years it had become one of the most frequently performed works in the orchestra’s repertoire.',
+    passage: 'When it was first performed, critics dismissed the composer’s symphony as noisy and shapeless, and several predicted that audiences would soon forget its dissonant harmonies and irregular rhythms. ______ within twenty years it had become one of the most frequently performed works in the orchestra’s repertoire, celebrated precisely for the qualities that reviewers had initially condemned.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Even so,', 'Similarly,', 'In other words,', 'Specifically,'], answer: 0,
     steps: ['The first sentence gives the critics’ negative view and prediction; the second shows the opposite outcome.', 'An outcome that happens despite the first idea calls for a concession: "Even so."'],
@@ -157,7 +157,7 @@ export const RW_NEW_5: RawQuestion[] = [
   },
   {
     id: 'r-tra-n10', skill: 'tra', sub: 'Logical flow', d: 'V',
-    passage: 'Engineers designing the new suspension bridge across the bay needed it to withstand the region’s powerful winter storms. ______ they tested a scale model of the bridge in a wind tunnel at speeds well beyond those of any storm on record.',
+    passage: 'Engineers designing the new suspension bridge across the bay needed it to withstand the region’s powerful winter storms, whose sustained winds had damaged several earlier structures along the coastline. ______ they tested a scale model of the bridge in a wind tunnel at speeds well beyond those of any storm on record, measuring how the deck oscillated under turbulent conditions.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Instead,', 'Still,', 'Meanwhile,', 'To that end,'], answer: 3,
     steps: ['The first sentence states a goal: the bridge must withstand storms.', 'The second sentence describes an action taken to reach that goal, so the transition should signal purpose.'],
@@ -169,7 +169,7 @@ export const RW_NEW_5: RawQuestion[] = [
   },
   {
     id: 'r-tra-n11', skill: 'tra', sub: 'Restatement', d: 'V',
-    passage: 'Researchers found that lizards on the island had shorter legs than lizards of the same species on the nearby mainland, a difference that appeared within only a few generations of the lizards’ arrival. ______ the island population had changed in a measurable way in just a few years.',
+    passage: 'Researchers found that lizards on the island had shorter legs than lizards of the same species on the nearby mainland, a difference that appeared within only a few generations of the lizards’ arrival and that improved their agility on narrow vegetation. ______ the island population had changed in a measurable way in just a few years, demonstrating that evolution can proceed remarkably quickly.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['For example,', 'In other words,', 'Nonetheless,', 'By contrast,'], answer: 1,
     steps: ['The first sentence reports a difference that appeared within a few generations.', 'The second sentence says the same thing more simply: the population changed in a few years. That is a restatement.'],

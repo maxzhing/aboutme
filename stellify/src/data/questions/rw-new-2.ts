@@ -23,7 +23,7 @@ export const RW_NEW_2: RawQuestion[] = [
   },
   {
     id: 'r-wic-n2', skill: 'wic', sub: 'Multiple-meaning words', d: 'H',
-    passage: 'Critics agreed that the painter’s final canvas was arresting. Visitors who had walked quickly past the other works in the gallery stopped in front of it and stayed for several minutes, studying the strange, bright figures crowded at its edges.',
+    passage: 'Critics agreed that the painter’s final canvas was arresting. Visitors who had walked hurriedly past the other works in the retrospective exhibition stopped in front of it and remained for several minutes, studying the strange, luminous figures crowded at its edges and the unexplained emptiness at its center, which reviewers interpreted variously.',
     stem: 'As used in the text, what does the word “arresting” most nearly mean?',
     choices: ['striking', 'detaining', 'delaying', 'unlawful'], answer: 0,
     steps: ['The next sentence explains the word: visitors stopped and stayed to study the painting.', 'A painting that makes people stop and look is striking: it grabs attention.'],
@@ -98,7 +98,7 @@ export const RW_NEW_2: RawQuestion[] = [
   },
   {
     id: 'r-tra-n4', skill: 'tra', sub: 'Concession', d: 'V',
-    passage: 'The museum’s new wing cost twice its original budget and opened a full year behind schedule. ______ it has drawn more visitors in its first six months than the rest of the museum drew in all of last year.',
+    passage: 'The museum’s new wing, designed by an internationally celebrated architect, cost twice its original budget and opened a full year behind schedule, provoking sharp criticism from municipal officials and taxpayers. ______ it has drawn more visitors in its first six months than the rest of the museum drew in all of last year, generating revenue that administrators had not anticipated.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Consequently,', 'Still,', 'Moreover,', 'Specifically,'], answer: 1,
     steps: ['The first sentence lists problems (over budget, late). The second reports a success.', 'The success comes despite the problems: a concession, signaled by "Still."'],

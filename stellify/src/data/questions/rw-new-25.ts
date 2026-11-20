@@ -83,7 +83,7 @@ export const RW_NEW_25: RawQuestion[] = [
   },
   {
     id: 'r-wic-n48', skill: 'wic', sub: 'Precise word choice', d: 'H',
-    passage: 'Although the documentary’s director insists that the film is a neutral record of events, several critics argue that its selective editing ______ a clear point of view.',
+    passage: 'Although the documentary’s director insists that the film is a neutral record of events, several critics argue that its selective editing, which consistently juxtaposes sympathetic interviews with unflattering footage of the opposing faction, ______ a clear point of view.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['conceals', 'betrays', 'disproves', 'precedes'], answer: 1,
     steps: ['"Although" contrasts the director’s claim of neutrality with the critics’ view.', 'The critics think the editing reveals, often unintentionally, a point of view: "betrays."'],
@@ -131,7 +131,7 @@ export const RW_NEW_25: RawQuestion[] = [
   },
   {
     id: 'r-tra-n50', skill: 'tra', sub: 'Cause and effect', d: 'H',
-    passage: 'Engineers have developed ceramic materials that remain stable at temperatures that would melt most metals. ______ these ceramics are used to shield spacecraft from the intense heat generated as they reenter Earth’s atmosphere.',
+    passage: 'Engineers have developed ceramic materials that remain stable at temperatures that would melt most metals, because their atoms are held together by exceptionally strong chemical bonds that resist thermal agitation. ______ these ceramics are used to shield spacecraft from the intense heat generated as they reenter Earth’s atmosphere at extraordinary velocities.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['For this reason,', 'Nevertheless,', 'Instead,', 'By contrast,'], answer: 0,
     steps: ['Sentence 1: the ceramics withstand extreme heat.', 'Sentence 2: they are used where extreme heat occurs. The first explains the second.'],

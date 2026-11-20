@@ -90,7 +90,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-05', skill: 'wic', sub: 'Connotation and tone', d: 'H',
-    passage: 'The novelist\'s early drafts were sprawling, but her editor was ______ in cutting them: entire chapters disappeared, and no sentence survived unless it advanced the plot.',
+    passage: 'The novelist\'s early drafts were sprawling, often exceeding a thousand manuscript pages, but her editor was ______ in cutting them: entire chapters disappeared, subplots that had occupied years of revision were eliminated without discussion, and no sentence survived unless it demonstrably advanced the plot.',
     stem: BLANK_STEM,
     choices: ['hesitant', 'careless', 'generous', 'ruthless'], answer: 3,
     steps: [
@@ -111,7 +111,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-06', skill: 'wic', sub: 'Precision', d: 'H',
-    passage: 'Early critics considered the composer\'s use of folk melodies ______, a pleasant decoration with no bearing on the structure of her symphonies. Recent analysis, however, shows that the melodies generate the works\' central themes.',
+    passage: 'Early critics considered the composer\'s use of folk melodies ______, a pleasant decoration with no bearing on the structure of her symphonies. Recent analysis by musicologists examining her preliminary sketches, however, demonstrates that the melodies generate the works\' central themes, which she systematically transformed across successive movements.',
     stem: BLANK_STEM,
     choices: ['innovative', 'superficial', 'essential', 'deliberate'], answer: 1,
     steps: [
@@ -132,7 +132,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-07', skill: 'wic', sub: 'Precision', d: 'H',
-    passage: "Reporters at Tuesday's press conference pressed the mayor about the zoning dispute. The mayor's statement was deliberately ______: by praising \"all reasonable proposals\" without naming any, she avoided committing herself to either side of the debate.",
+    passage: 'Reporters at Tuesday\'s press conference repeatedly pressed the mayor about the contentious zoning dispute dividing neighborhood associations and developers. The mayor\'s statement was deliberately ______: by praising "all reasonable proposals" without identifying any, she avoided committing herself to either side of the increasingly acrimonious debate.',
     stem: BLANK_STEM,
     choices: ['candid', 'inflammatory', 'equivocal', 'redundant'], answer: 2,
     steps: [
@@ -153,7 +153,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-08', skill: 'wic', sub: 'Vocabulary in context', d: 'H',
-    passage: 'Rather than ______ the findings of earlier studies, the new experiment contradicted them: where previous researchers had reported a strong effect, this team found none.',
+    passage: 'Rather than ______ the findings of earlier investigations, the new experiment, which employed a considerably larger sample and more rigorous controls, contradicted them: where previous researchers had reported a substantial effect of the supplement on memory, this team found none whatsoever.',
     stem: BLANK_STEM,
     choices: ['corroborating', 'disputing', 'publicizing', 'anticipating'], answer: 0,
     steps: [
@@ -174,7 +174,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-09', skill: 'wic', sub: 'Vocabulary in context', d: 'H',
-    passage: "The mountain's weather is notoriously ______; a clear morning can give way to hail within the hour, and forecasts are of little use. Experienced guides therefore tell hikers to carry rain gear even on cloudless days.",
+    passage: 'The mountain\'s weather is notoriously ______; a clear morning can give way to hail within the hour, and because conditions on the exposed summit ridge change faster than any instrument can register, forecasts are of little use. Experienced guides therefore instruct hikers to carry waterproof equipment even on cloudless days.',
     stem: BLANK_STEM,
     choices: ['temperate', 'predictable', 'stagnant', 'capricious'], answer: 3,
     steps: [
@@ -195,7 +195,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-10', skill: 'wic', sub: 'Secondary meanings', d: 'H',
-    passage: 'The senator\'s speech __qualified__ her earlier support for the bill: she now said that she would vote for it only if the funding provisions were revised.',
+    passage: 'Responding to complaints from constituents and financial analysts, the senator\'s speech __qualified__ her earlier support for the bill: she now said that she would vote for it only if the funding provisions were substantially revised to address concerns about long-term expenditures.',
     stem: 'As used in the text, what does the word "qualified" most nearly mean?',
     choices: ['Limited', 'Certified', 'Deserved', 'Strengthened'], answer: 0,
     steps: [
@@ -258,7 +258,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-13', skill: 'wic', sub: 'Precision', d: 'V',
-    passage: 'Although the treaty was hailed as a triumph, its effects proved ______: within two years, both nations had resumed the practices it was meant to end.',
+    passage: 'Although the treaty was celebrated by diplomats and journalists as a historic triumph of international cooperation, its effects proved ______: within two years, both nations had resumed the practices it was meant to end, and the commission established to monitor compliance had quietly dissolved.',
     stem: BLANK_STEM,
     choices: ['profound', 'irreversible', 'unforeseen', 'ephemeral'], answer: 3,
     steps: [
@@ -363,7 +363,7 @@ export const RW_CS_1: RawQuestion[] = [
   },
   {
     id: 'r-wic-18', skill: 'wic', sub: 'Precision', d: 'V',
-    passage: 'Economists once regarded the informal street markets of the city as ______ to its economy, a minor supplement to the official retail sector; a new survey, however, finds that these markets account for nearly half of all food sales.',
+    passage: 'Economists once regarded the informal street markets of the city as ______ to its economy, a minor supplement to the official retail sector that deserved little analytical attention; a comprehensive new survey, however, finds that these markets account for nearly half of all food purchases.',
     stem: BLANK_STEM,
     choices: ['integral', 'detrimental', 'peripheral', 'comparable'], answer: 2,
     steps: [

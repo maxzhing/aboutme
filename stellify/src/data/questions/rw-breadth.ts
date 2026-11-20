@@ -14,7 +14,7 @@ const S_STEM = (goal: string) => `While researching a topic, a student has taken
 export const RW_BREADTH: RawQuestion[] = [
   {
     id: 'r-br-tra-01', skill: 'tra', sub: 'Contrast', d: 'H',
-    passage: "Readers of Willa Cather's 1913 novel *O Pioneers!* often remember it as a celebration of the Nebraska prairie, and its descriptions of wheat fields in summer are among the most admired passages in American fiction. ______ the novel's opening chapters portray the same land as harsh and nearly unworkable, a place that defeats many of the farmers who first try to settle it.",
+    passage: 'Readers of Willa Cather\'s 1913 novel *O Pioneers* often remember it as an affectionate celebration of the Nebraska prairie, and its descriptions of wheat fields in summer are among the most frequently anthologized passages in American literature. ______ the novel\'s opening chapters portray the same land as harsh and nearly unworkable, a place that defeats many of the farmers who first try to settle it, driving them back eastward in discouragement, humiliation, and bankruptcy.',
     stem: T_STEM,
     choices: ['However,', 'Therefore,', 'Similarly,', 'For example,'], answer: 0,
     steps: [
@@ -34,7 +34,7 @@ export const RW_BREADTH: RawQuestion[] = [
   },
   {
     id: 'r-br-tra-02', skill: 'tra', sub: 'Emphasis and support', d: 'H',
-    passage: "Emily Dickinson published only about ten poems in her lifetime, most of them without her name. Her obscurity was not simply bad luck: she was wary of how editors treated her work. ______ when one of her poems appeared in a newspaper in 1866 with its punctuation changed, she complained in a letter that the poem \"was robbed of me.\"",
+    passage: 'Emily Dickinson published only about ten poems in her lifetime, most of them anonymously, and her obscurity was not simply misfortune: she was deeply wary of how editors treated her unconventional punctuation and capitalization. ______ when one of her poems appeared in a newspaper in 1866 with its punctuation changed, she complained in a letter that the poem "was robbed of me."',
     stem: T_STEM,
     choices: ['Indeed,', 'Nevertheless,', 'Instead,', 'Meanwhile,'], answer: 0,
     steps: [
@@ -54,7 +54,7 @@ export const RW_BREADTH: RawQuestion[] = [
   },
   {
     id: 'r-br-tra-03', skill: 'tra', sub: 'Specification', d: 'H',
-    passage: 'Most Gothic cathedrals took generations to build, and their designs often changed as one master builder succeeded another. Salisbury Cathedral in England is a notable exception. ______ its main body was completed in just 38 years, between 1220 and 1258, so the building follows a single, unusually consistent design.',
+    passage: 'Most Gothic cathedrals took generations to build, and their designs often changed substantially as one master builder succeeded another, producing structures that combine incompatible architectural styles; Salisbury Cathedral in England is a notable exception. ______ its main body was completed in just 38 years, between 1220 and 1258, so the building follows a single, unusually consistent design.',
     stem: T_STEM,
     choices: ['Specifically,', 'Nonetheless,', 'Previously,', 'Alternatively,'], answer: 0,
     steps: [
@@ -74,7 +74,7 @@ export const RW_BREADTH: RawQuestion[] = [
   },
   {
     id: 'r-br-tra-04', skill: 'tra', sub: 'Cause and effect', d: 'V',
-    passage: 'During the 1930s, the Tennessee Valley Authority built dams that brought electricity to thousands of rural households for the first time. The same dams flooded farmland and entire towns, forcing roughly 15,000 families to leave their homes. ______ historians who praise the project for its economic benefits increasingly acknowledge its human costs as well.',
+    passage: 'During the 1930s, the Tennessee Valley Authority built dams that brought electricity to thousands of rural households for the first time, transforming agricultural productivity across an impoverished region. The same dams flooded farmland and entire towns, forcing roughly 15,000 families to abandon homes their ancestors had occupied for generations, often with inadequate compensation. ______ historians who praise the project for its economic benefits increasingly acknowledge its human costs as well.',
     stem: T_STEM,
     choices: ['Accordingly,', 'Even so,', 'By contrast,', 'In other words,'], answer: 0,
     steps: [

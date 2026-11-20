@@ -132,7 +132,7 @@ export const RW_NEW_17: RawQuestion[] = [
   },
   {
     id: 'r-tra-n34', skill: 'tra', sub: 'Cause and effect', d: 'V',
-    passage: 'Because sound travels roughly four times faster in water than in air, the difference between the moments a sound reaches a listener’s left and right ears is much smaller underwater. ______ divers often find it difficult to tell which direction a sound is coming from, since the brain locates sounds partly by comparing that tiny difference in arrival time.',
+    passage: 'Because sound travels roughly four times faster in water than in air, the difference between the moments a sound reaches a listener’s left and right ears is considerably smaller underwater. ______ divers often find it difficult to tell which direction a sound is coming from, since the brain locates sounds partly by comparing that tiny difference in arrival time.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['In contrast,', 'For instance,', 'Similarly,', 'As a result,'], answer: 3,
     steps: ['The first sentence gives a cause: a smaller time difference between the ears underwater.', 'The second gives its effect: divers struggle to locate sounds.'],
@@ -144,7 +144,7 @@ export const RW_NEW_17: RawQuestion[] = [
   },
   {
     id: 'r-tra-n35', skill: 'tra', sub: 'Concession', d: 'H',
-    passage: 'The new vaccine trial enrolled far more participants than any earlier study of the vaccine, and its results were consistent across every age group tested. ______ the trial lasted only six months, so it could not reveal whether the protection the vaccine provides fades over longer periods.',
+    passage: 'The new vaccine trial enrolled far more participants than any earlier investigation of the vaccine, and its results were consistent across every age group and demographic category tested. ______ the trial lasted only six months, so it could not reveal whether the protection the vaccine provides diminishes over longer periods, a question that subsequent monitoring must address.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Consequently,', 'For example,', 'Still,', 'Likewise,'], answer: 2,
     steps: ['The first sentence lists strengths of the trial.', 'The second introduces a limitation that holds despite those strengths.'],

@@ -82,7 +82,7 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-wic-n16', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'Investors hoped that the land near the new rail station would appreciate quickly once trains began running, allowing them to sell their lots at a large profit within a few years.',
+    passage: 'Investors hoped that the undeveloped land near the new rail station would appreciate quickly once passenger trains began running, allowing them to sell their lots at a substantial profit within a few years, as had happened in comparable neighborhoods elsewhere in the metropolitan region.',
     stem: 'As used in the text, what does the word “appreciate” most nearly mean?',
     choices: ['admire', 'understand', 'welcome', 'increase in value'], answer: 3,
     steps: ['The investors want to sell the land "at a large profit."', 'For that, the land must appreciate in the financial sense: increase in value.'],
@@ -130,7 +130,7 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-tra-n18', skill: 'tra', sub: 'Similarity', d: 'H',
-    passage: 'Many desert plants survive long dry seasons by storing water in thick, fleshy stems that swell after each rain. ______ some desert frogs survive drought by storing water in their bodies and burrowing underground until the rains return.',
+    passage: 'Many desert plants survive prolonged dry seasons by storing water in thick, fleshy stems that swell dramatically after each rain and gradually contract as the accumulated moisture is consumed. ______ some desert frogs survive drought by storing water in their bodies and burrowing underground, enclosed in protective cocoons of shed skin, until the seasonal rains return, sometimes after several consecutive years.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['In contrast,', 'As a result,', 'Similarly,', 'Even so,'], answer: 2,
     steps: ['Both sentences describe a desert organism surviving drought by storing water.', 'The second gives a different organism with a similar strategy, so "Similarly" fits.'],
@@ -142,7 +142,7 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-tra-n19', skill: 'tra', sub: 'Contrast', d: 'V',
-    passage: 'The library’s new policy, which shortens the loan period for bestsellers from three weeks to one, was not meant to reduce the number of books it lends. ______ it was designed to make sure that popular titles come back quickly enough for others to borrow them.',
+    passage: 'Contrary to the assumptions of several frustrated patrons, the library’s new policy, which shortens the loan period for bestsellers from three weeks to one, was not meant to reduce the number of books it lends to the surrounding community of enthusiastic readers. ______ it was designed to ensure that popular titles return quickly enough for others on lengthy waiting lists to borrow them, distributing access considerably more equitably.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Additionally,', 'Similarly,', 'For example,', 'Rather,'], answer: 3,
     steps: ['The first sentence says what the policy was not meant to do.', 'The second gives its actual purpose, replacing the rejected one. "Rather" introduces a correction after a negative.'],

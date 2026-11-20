@@ -72,7 +72,7 @@ export const RW_NEW_23: RawQuestion[] = [
   },
   {
     id: 'r-wic-n43', skill: 'wic', sub: 'Precise word choice', d: 'H',
-    passage: 'The new fossil evidence did not merely weaken the long-standing theory of how the species migrated; it ______ the theory, leaving researchers with no choice but to begin again from first principles.',
+    passage: 'The new fossil evidence did not merely weaken the long-standing theory of how the species migrated across the continent; it ______ the theory, leaving researchers with no alternative but to begin again from first principles and reconsider decades of accepted conclusions.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['refined', 'overturned', 'tempered', 'echoed'], answer: 1,
     steps: ['"Did not merely weaken… it ___" calls for something stronger than weakening.', 'Researchers must start over, so the theory was overturned.'],
@@ -84,7 +84,7 @@ export const RW_NEW_23: RawQuestion[] = [
   },
   {
     id: 'r-wic-n44', skill: 'wic', sub: 'Precise word choice', d: 'V',
-    passage: 'Although the senator was known for ______ speeches that wandered across dozens of loosely related topics, her remarks at the hearing were notably concise, addressing only the single question before the committee.',
+    passage: 'Although the senator was known for ______ speeches that wandered across dozens of loosely related topics, her remarks at the congressional hearing were notably concise, addressing only the single question before the committee with unusual precision and considerable discipline.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['incisive', 'terse', 'cogent', 'discursive'], answer: 3,
     steps: ['"Although" sets up a contrast with "notably concise."', 'Speeches that wandered across many topics are discursive.'],
@@ -132,7 +132,7 @@ export const RW_NEW_23: RawQuestion[] = [
   },
   {
     id: 'r-tra-n46', skill: 'tra', sub: 'Contrast', d: 'H',
-    passage: 'Most of the early railroads in the United States were financed by private investors seeking a profit. The first transcontinental railroad, ______ depended heavily on federal support: Congress granted its builders millions of acres of public land and issued government bonds to help pay for construction.',
+    passage: 'Most of the early railroads in the United States were financed by private investors seeking a profit, who assumed the considerable risks of construction in exchange for anticipated revenues. The first transcontinental railroad, ______ depended heavily on federal support: Congress granted its builders millions of acres of public land and issued government bonds to help pay for construction.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['similarly,', 'by contrast,', 'for instance,', 'therefore,'], answer: 1,
     steps: ['Sentence 1: most railroads were privately financed.', 'Sentence 2: the transcontinental railroad relied on federal support. That is a contrast.'],
@@ -144,7 +144,7 @@ export const RW_NEW_23: RawQuestion[] = [
   },
   {
     id: 'r-tra-n47', skill: 'tra', sub: 'Concession', d: 'V',
-    passage: 'In laboratory tests, an experimental coating reduced corrosion on steel samples by nearly 80 percent. ______ the coating has not yet been tested under the fluctuating temperatures and salt exposure that bridges endure outdoors, so engineers caution against adopting it widely.',
+    passage: 'In laboratory tests, an experimental coating reduced corrosion on steel samples by nearly 80 percent, a result that materials scientists described as exceptionally encouraging. ______ the coating has not yet been tested under the fluctuating temperatures and salt exposure that bridges endure outdoors, so engineers caution against adopting it widely before field evaluations are completed.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Accordingly,', 'In other words,', 'Still,', 'Moreover,'], answer: 2,
     steps: ['Sentence 1 reports a promising result.', 'Sentence 2 introduces a limitation that tempers it, calling for a concessive transition: "Still."'],

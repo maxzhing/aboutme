@@ -71,7 +71,7 @@ export const RW_NEW_20: RawQuestion[] = [
   },
   {
     id: 'r-wic-n37', skill: 'wic', sub: 'Precise word choice', d: 'V',
-    passage: 'The novelist’s later work is marked by a strikingly ______ style: sentences that once ran for half a page are pared down to a few spare words, and whole chapters consist of brief, unadorned dialogue.',
+    passage: 'The novelist’s later work is distinguished by a strikingly ______ style: sentences that once extended across half a page are pared down to a few spare words, and entire chapters consist of brief, unadorned dialogue stripped of explanatory commentary.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['florid', 'meandering', 'grandiloquent', 'laconic'], answer: 3,
     steps: ['The later style uses "a few spare words" and "brief, unadorned dialogue."', 'A style that uses very few words is laconic.'],
@@ -131,7 +131,7 @@ export const RW_NEW_20: RawQuestion[] = [
   },
   {
     id: 'r-tra-n40', skill: 'tra', sub: 'Contrast', d: 'V',
-    passage: 'For most of history, sculptors made their works either by carving away material from stone or wood or by pouring molten metal into molds. ______ many contemporary artists use 3D printers, building forms up layer by layer from digital models.',
+    passage: 'For most of history, sculptors produced their works either by carving away material from stone or wood or by pouring molten metal into molds, techniques that demanded years of apprenticeship to master. ______ many contemporary artists use 3D printers, constructing forms layer by layer from digital models that can be revised indefinitely before fabrication begins, encouraging unprecedented experimentation.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Similarly,', 'Thus,', 'For instance,', 'Today, by contrast,'], answer: 3,
     steps: ['The first sentence describes traditional methods (removing material or casting).', 'The second describes a modern method that builds material up, a contrast in time and technique.'],
@@ -143,7 +143,7 @@ export const RW_NEW_20: RawQuestion[] = [
   },
   {
     id: 'r-tra-n41', skill: 'tra', sub: 'Contrast', d: 'H',
-    passage: 'After months of public hearings, the city council rejected a proposal to widen Main Street to accommodate more car traffic. ______ it approved a plan to narrow the roadway, plant trees along the sidewalks, and add protected bike lanes in both directions.',
+    passage: 'After months of contentious public hearings, the city council rejected a proposal to widen Main Street to accommodate more automobile traffic, concluding that additional lanes would simply attract additional drivers. ______ it approved a plan to narrow the roadway, plant trees along the sidewalks, and add protected bicycle lanes in both directions.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Similarly,', 'Instead,', 'For example,', 'Moreover,'], answer: 1,
     steps: ['The council rejected one plan (widening).', 'It approved a different, opposite plan (narrowing) in its place: "Instead."'],

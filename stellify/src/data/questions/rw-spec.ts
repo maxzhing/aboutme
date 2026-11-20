@@ -352,7 +352,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-wic-02', skill: 'wic', sub: 'Multiple-meaning word', d: 'H',
-    passage: 'Conservationists hope that restoring the wetland’s natural water flow will arrest the decline of the marsh bird population, which has fallen by half over the past twenty years. Early surveys suggest that the number of nesting pairs has already stopped falling.',
+    passage: 'Conservationists hope that restoring the wetland’s natural water flow, which agricultural drainage channels have disrupted for decades, will arrest the decline of the marsh bird population, which has fallen by half over the past twenty years. Preliminary surveys conducted by regional ornithologists suggest that the number of nesting pairs has already stopped falling.',
     stem: 'As used in the text, what does the word “arrest” most nearly mean?',
     choices: ['capture', 'seize', 'halt', 'notice'], answer: 2,
     steps: [
@@ -372,7 +372,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-wic-03', skill: 'wic', sub: 'Precise connotation', d: 'V',
-    passage: 'Unlike earlier biographers, who treated the composer’s entire career, Weiss deliberately ______ her study, focusing only on the eighteen months in which he wrote his final three symphonies. This narrow focus, she argues, allows a level of detail that a survey of his whole life could not.',
+    passage: 'Unlike earlier biographers, who surveyed the composer’s entire career from his childhood performances to his final illness, Weiss deliberately ______ her study, focusing only on the eighteen months in which he wrote his final three symphonies. This narrow concentration, she argues, permits a level of documentary detail that a survey of his whole life could not accommodate.',
     stem: WIC,
     choices: ['circumscribed', 'exaggerated', 'abandoned', 'concealed'], answer: 0,
     steps: [
@@ -392,7 +392,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-wic-04', skill: 'wic', sub: 'Multiple-meaning word', d: 'V',
-    passage: 'In the 1630s, at the height of the Dutch “tulip mania,” a single bulb of a rare striped variety could command a price higher than that of a fine house in Amsterdam. When prices collapsed in 1637, many buyers were left holding bulbs worth only a fraction of what they had paid.',
+    passage: 'In the 1630s, at the height of the speculative Dutch “tulip mania,” a single bulb of a rare striped variety could command a price higher than that of a fine house in Amsterdam, astonishing foreign observers and contemporary pamphleteers. When prices collapsed abruptly in 1637, many buyers were left holding bulbs worth only a fraction of what they had paid, and numerous merchants faced bankruptcy.',
     stem: 'As used in the text, what does the word “command” most nearly mean?',
     choices: ['order', 'control', 'direct', 'bring in'], answer: 3,
     steps: [
@@ -622,7 +622,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-tra-02', skill: 'tra', sub: 'Concession', d: 'H',
-    passage: 'Critics of the new subway line point out that it cost nearly twice its original budget and opened three years late. ______ the line now carries more than two hundred thousand riders a day, far exceeding planners’ predictions, and has shortened commutes across the eastern half of the city.',
+    passage: 'Critics of the new subway line point out that it cost nearly twice its original budget and opened three years late, delays they attribute to inadequate geological surveys and repeated design revisions. ______ the line now carries more than two hundred thousand riders a day, far exceeding planners’ predictions, and has substantially shortened commutes across the eastern neighborhoods of the city.',
     stem: TRA,
     choices: ['Even so,', 'For instance,', 'Therefore,', 'In other words,'], answer: 0,
     steps: [
@@ -642,7 +642,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-tra-03', skill: 'tra', sub: 'Restatement', d: 'H',
-    passage: 'The forest’s canopy intercepts most of the rain that falls during a light shower, and much of that water evaporates from the leaves before it ever reaches the ground. ______ during light showers, very little rain actually falls on the forest floor.',
+    passage: 'The forest’s dense canopy intercepts most of the rain that falls during a light shower, and much of that water evaporates from the leaves before it ever reaches the ground, a phenomenon that hydrologists call interception loss. ______ during light showers, very little rain actually falls on the forest floor, whose understory vegetation depends instead on considerably heavier, longer-lasting storms for moisture.',
     stem: TRA,
     choices: ['By contrast,', 'For example,', 'Meanwhile,', 'In other words,'], answer: 3,
     steps: [
@@ -662,7 +662,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-tra-04', skill: 'tra', sub: 'Contrast with qualification', d: 'V',
-    passage: 'Laboratory experiments have shown that the compound kills several kinds of drug-resistant bacteria within hours. ______ researchers caution that it has not yet been tested in animals, let alone in people, and that many promising compounds fail at those stages.',
+    passage: 'Laboratory experiments have demonstrated that the compound kills several kinds of drug-resistant bacteria within hours, including strains that have defeated every antibiotic currently available to physicians. ______ researchers caution that it has not yet been tested in animals, let alone in people, and that many promising compounds fail at those stages because of toxicity or instability.',
     stem: TRA,
     choices: ['Consequently,', 'Still,', 'Specifically,', 'Likewise,'], answer: 1,
     steps: [
@@ -682,7 +682,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-tra-05', skill: 'tra', sub: 'Specification', d: 'V',
-    passage: 'The museum’s new exhibit challenges a familiar view of medieval life as dark and colorless. ______ it displays manuscripts painted with brilliant blues made from ground lapis lazuli, a stone carried thousands of kilometers from mines in present-day Afghanistan.',
+    passage: 'The museum’s new exhibit challenges a familiar view of medieval life as dark, impoverished, and colorless, a stereotype reinforced by faded surviving artifacts and nineteenth-century illustrations. ______ it displays manuscripts painted with brilliant blues made from ground lapis lazuli, a stone carried thousands of kilometers from mines in present-day Afghanistan.',
     stem: TRA,
     choices: ['Specifically,', 'Nevertheless,', 'Instead,', 'Finally,'], answer: 0,
     steps: [
@@ -702,7 +702,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-tra-06', skill: 'tra', sub: 'Cause and effect', d: 'V',
-    passage: 'Unlike most mammals, naked mole-rats live in large underground colonies where oxygen levels can fall very low. Their cells can switch to burning a type of sugar that requires less oxygen. ______ these animals can survive for several minutes in conditions that would quickly kill a mouse.',
+    passage: 'Unlike most mammals, naked mole-rats live in large underground colonies where oxygen concentrations can fall extremely low, especially in crowded nesting chambers, and their cells can switch to metabolizing a type of sugar that requires considerably less oxygen. ______ these animals can survive for several minutes in conditions that would quickly kill a mouse, a resilience that physiologists hope to understand.',
     stem: TRA,
     choices: ['In contrast,', 'For instance,', 'Moreover,', 'As a result,'], answer: 3,
     steps: [

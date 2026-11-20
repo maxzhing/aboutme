@@ -23,7 +23,7 @@ export const RW_NEW_3: RawQuestion[] = [
   },
   {
     id: 'r-wic-n4', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'The scientist’s praise for the new drug was qualified. She called its early results encouraging but cautioned that the trial had been small and that the drug’s long-term effects were still unknown.',
+    passage: 'The pharmacologist’s praise for the experimental drug was qualified. She described its preliminary results as encouraging but cautioned that the clinical trial had been small, that participants had been monitored for only a few months, and that the drug’s long-term consequences were still unknown.',
     stem: 'As used in the text, what does the word “qualified” most nearly mean?',
     choices: ['certified', 'skilled', 'eligible', 'limited'], answer: 3,
     steps: ['The next sentence shows praise held back by cautions: "encouraging but… small… unknown."', 'Praise with reservations is limited praise: that is this meaning of "qualified."'],
@@ -150,7 +150,7 @@ export const RW_NEW_3: RawQuestion[] = [
   // ── Transitions
   {
     id: 'r-tra-n5', skill: 'tra', sub: 'Elaboration', d: 'H',
-    passage: 'Many coastal cities are now planting mangrove forests to protect their shorelines from storm surges. ______ the trees’ dense, tangled roots slow incoming waves and trap sediment that gradually builds up the shore.',
+    passage: 'Many coastal cities are now planting mangrove forests to protect their shorelines from storm surges, an approach that engineers increasingly consider more sustainable than concrete seawalls. ______ the trees’ dense, tangled roots slow incoming waves and trap sediment that gradually builds up the shore, so the natural barrier strengthens rather than deteriorates over time.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['However,', 'Specifically,', 'Even so,', 'Meanwhile,'], answer: 1,
     steps: ['Sentence 1 says mangroves protect shorelines. Sentence 2 explains exactly how they do it.', 'A sentence that spells out the details of the previous claim calls for "Specifically."'],
@@ -162,7 +162,7 @@ export const RW_NEW_3: RawQuestion[] = [
   },
   {
     id: 'r-tra-n6', skill: 'tra', sub: 'Contrast', d: 'V',
-    passage: 'The novelist’s first three books sold poorly and drew little attention from critics. ______ her fourth novel, published when she was sixty, won a major prize and was eventually translated into more than twenty languages.',
+    passage: 'The novelist’s first three books sold poorly and drew little attention from critics, who dismissed her experimental narrative structures as needlessly complicated and self-indulgent. ______ her fourth novel, published when she was sixty, won a major international prize and was eventually translated into more than twenty languages, prompting renewed interest in her earlier work.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Similarly,', 'For example,', 'As a result,', 'By contrast,'], answer: 3,
     steps: ['Sentence 1: early books failed. Sentence 2: the fourth book was a great success.', 'The two sentences are opposed, so the transition must signal contrast.'],

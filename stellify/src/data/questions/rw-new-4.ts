@@ -197,7 +197,7 @@ export const RW_NEW_4: RawQuestion[] = [
   // ── Words in context
   {
     id: 'r-wic-n6', skill: 'wic', sub: 'Precise word choice', d: 'H',
-    passage: 'Although the senator’s speech at the convention was ______, lasting barely three minutes, it was quoted in more newspapers the next morning than any of the much longer addresses delivered that week.',
+    passage: 'Although the senator’s speech at the national convention was ______, lasting barely three minutes, it was quoted in more newspapers the following morning than any of the considerably longer addresses delivered that week, and commentators praised its disciplined concentration on a single argument.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['succinct', 'rambling', 'eloquent', 'controversial'], answer: 0,
     steps: ['"Although" sets up a contrast with being quoted widely, and "lasting barely three minutes" defines the blank.', 'A short, compact speech is succinct.'],
@@ -209,7 +209,7 @@ export const RW_NEW_4: RawQuestion[] = [
   },
   {
     id: 'r-wic-n7', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'Early treatment cannot undo the damage that the disease has already done to a patient’s nerves, but doctors say that it can arrest the disease’s progress, keeping symptoms from growing worse for many years.',
+    passage: 'Early treatment cannot reverse the damage that the disease has already inflicted on a patient’s nerves, but neurologists say that it can arrest the disease’s progress, preventing symptoms from deteriorating further for many years and preserving considerable independence for patients.',
     stem: 'As used in the text, what does the word “arrest” most nearly mean?',
     choices: ['capture', 'halt', 'attract', 'accuse'], answer: 1,
     steps: ['The phrase after the comma explains the word: treatment keeps symptoms from growing worse.', 'Stopping the progress of a disease is halting it.'],
@@ -222,7 +222,7 @@ export const RW_NEW_4: RawQuestion[] = [
   // ── Transitions
   {
     id: 'r-tra-n7', skill: 'tra', sub: 'Contrast', d: 'H',
-    passage: 'Critics praised the architect’s design for the city museum, especially its bold facade of floor-to-ceiling glass. ______ the building proved costly to heat in winter, and within a decade the museum had replaced much of the glass with insulated panels.',
+    passage: 'Critics praised the architect’s design for the city museum, especially its bold facade of floor-to-ceiling glass, which they described as an elegant expression of institutional transparency. ______ the building proved costly to heat in winter, and within a decade the museum had replaced much of the glass with insulated panels, substantially altering the original appearance.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['For example,', 'Similarly,', 'As a result,', 'In practice, however,'], answer: 3,
     steps: ['The first sentence gives the praise for the design; the second describes problems with how the building actually worked.', 'Moving from praise to real-world problems is a contrast between the design on paper and its use.'],

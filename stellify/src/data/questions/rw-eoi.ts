@@ -92,7 +92,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-05', skill: 'tra', sub: 'Concession', d: 'H',
-    passage: 'Electric buses cost considerably more to purchase than diesel buses do. ______ because they are cheaper to fuel and maintain, they can cost less over their full operating lives.',
+    passage: 'Electric buses cost considerably more to purchase than comparable diesel buses do, a disparity that has discouraged many municipal transit agencies with limited capital budgets from adopting them. ______ because they are substantially cheaper to fuel and maintain, they can cost less over their full operating lives, according to analyses that account for fluctuating energy prices.',
     stem: T_STEM,
     choices: ['Nevertheless,', 'Furthermore,', 'Specifically,', 'Accordingly,'], answer: 0,
     steps: [
@@ -113,7 +113,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-06', skill: 'tra', sub: 'Addition', d: 'H',
-    passage: 'The new irrigation system reduced the farm\'s water use by nearly a third. ______ it lowered the farm\'s electricity costs, since less water had to be pumped.',
+    passage: 'The new precision irrigation system, which delivers water directly to each plant’s roots according to measurements from buried moisture sensors, reduced the farm\'s water use by nearly a third. ______ it lowered the farm\'s electricity expenditures, since considerably less water had to be pumped from the underground aquifer.',
     stem: T_STEM,
     choices: ['In contrast,', 'For instance,', 'Otherwise,', 'Moreover,'], answer: 3,
     steps: [
@@ -134,7 +134,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-07', skill: 'tra', sub: 'Logical flow', d: 'H',
-    passage: "Field biologists have now described the daily activity pattern of the newly studied rodent. The species is crepuscular; ______ it is most active at dawn and dusk rather than in full daylight or complete darkness.",
+    passage: 'After two years of nocturnal and daytime observations using motion-activated infrared cameras, field biologists have now described the daily activity pattern of the newly studied rodent. The species is crepuscular; ______ it is most active at dawn and dusk rather than in full daylight or complete darkness, a schedule that may help it simultaneously avoid diurnal raptors and nocturnal predators.',
     stem: T_STEM,
     choices: ['however,', 'that is,', 'in addition,', 'as a result,'], answer: 1,
     steps: [
@@ -155,7 +155,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-08', skill: 'tra', sub: 'Addition', d: 'H',
-    passage: 'Bats navigate in darkness by emitting high-pitched calls and listening for the echoes. ______ dolphins produce rapid clicks and interpret the returning sound to locate prey in murky water.',
+    passage: 'Bats navigate in darkness by emitting high-pitched calls and interpreting the echoes that return from surrounding objects, a technique known as echolocation that allows them to detect insects smaller than a mosquito. ______ dolphins produce rapid clicks and interpret the returning sound to locate prey in murky water, an ability that evolved independently in marine mammals.',
     stem: T_STEM,
     choices: ['Conversely,', 'Consequently,', 'Similarly,', 'In fact,'], answer: 2,
     steps: [
@@ -176,7 +176,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-09', skill: 'tra', sub: 'Contrast', d: 'H',
-    passage: 'The researchers expected the drought-stressed plants to produce fewer seeds than the well-watered plants. ______ the drought-stressed plants produced more seeds, though the seeds were smaller.',
+    passage: 'Applying conventional assumptions about plant physiology, the researchers expected the drought-stressed plants to produce considerably fewer seeds than the well-watered plants growing in adjacent greenhouse chambers. ______ the drought-stressed plants produced more seeds, though the seeds were smaller, a strategy that ecologists interpret as spreading reproductive investment across many offspring.',
     stem: T_STEM,
     choices: ['Therefore,', 'In addition,', 'For example,', 'Instead,'], answer: 3,
     steps: [
@@ -197,7 +197,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-10', skill: 'tra', sub: 'Emphasis', d: 'V',
-    passage: "Critics predicted that the low-budget film would attract little attention. They were wrong. ______ it became the most-watched release of the year, and within a month theaters across the country had added extra screenings.",
+    passage: 'Critics predicted that the low-budget film, which featured unknown performers, an unconventional and largely improvised screenplay, and almost no advertising, would attract little attention beyond a handful of independent festivals before disappearing quietly into obscurity. They were wrong. ______ it became the most-watched release of the year, and within a month theaters across the country had added extra screenings to accommodate the enormous, sustained demand from audiences of every age.',
     stem: T_STEM,
     choices: ['Nevertheless,', 'In fact,', 'For example,', 'Meanwhile,'], answer: 1,
     steps: [
@@ -218,7 +218,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-11', skill: 'tra', sub: 'Logical flow', d: 'V',
-    passage: 'The committee\'s report identified a single cause of the construction delays. ______ the contractor had failed to order the steel beams until three months after work began.',
+    passage: 'After interviewing engineers, subcontractors, and municipal inspectors over several months, the committee\'s report identified a single cause of the construction delays that had postponed the hospital’s opening. ______ the contractor had failed to order the steel beams until three months after work began, leaving crews idle while fabricators processed the belated request.',
     stem: T_STEM,
     choices: ['Specifically,', 'For example,', 'Similarly,', 'However,'], answer: 0,
     steps: [
@@ -239,7 +239,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-12', skill: 'tra', sub: 'Concession', d: 'V',
-    passage: 'Trials of the four-day workweek have been encouraging: in most of them, productivity held steady while employees reported less stress. ______ most of those trials involved office workers; whether the results apply to hospitals or factories remains unknown.',
+    passage: 'Trials of the four-day workweek have been encouraging: in most of them, productivity held steady while employees reported considerably less stress and fewer unscheduled absences. ______ most of those trials involved office workers; whether the results apply to hospitals or factories, where continuous staffing is essential, remains unknown.',
     stem: T_STEM,
     choices: ['As a result,', 'Likewise,', 'That said,', 'In other words,'], answer: 2,
     steps: [
@@ -260,7 +260,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-13', skill: 'tra', sub: 'Cause and effect', d: 'V',
-    passage: 'When wolves returned to the valley, elk began avoiding the open riverbanks where they were easy to catch. Willows along those banks, no longer heavily browsed, grew taller. ______ the taller willows provided beavers with food and building material, and beaver numbers rose.',
+    passage: 'When wolves returned to the valley, elk began avoiding the open riverbanks where they were vulnerable to predators, and willows along those banks, no longer heavily browsed, grew substantially taller within a decade. ______ the taller willows provided beavers with food and building material, and beaver numbers rose, creating ponds that dramatically transformed the surrounding wetland ecosystem.',
     stem: T_STEM,
     choices: ['By contrast,', 'In turn,', 'For instance,', 'Regardless,'], answer: 1,
     steps: [
@@ -281,7 +281,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-14', skill: 'tra', sub: 'Contrast', d: 'H',
-    passage: 'The pottery fragments may have been left by a permanent settlement at the site. ______ they may have been discarded by traders who camped there only briefly.',
+    passage: 'Archaeologists remain divided about how to interpret the assemblage of decorated ceramics recovered from the windswept plateau, which lacks any visible architectural remains, burials, or storage pits. The pottery fragments may have been left by a permanent settlement at the site whose wooden dwellings have since decomposed entirely. ______ they may have been discarded by traders who camped there only briefly while traveling between coastal and highland markets.',
     stem: T_STEM,
     choices: ['Accordingly,', 'Furthermore,', 'Indeed,', 'Alternatively,'], answer: 3,
     steps: [
@@ -302,7 +302,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-15', skill: 'tra', sub: 'Contrast', d: 'V',
-    passage: 'Increased funding does not by itself improve a school\'s outcomes. ______ what matters is how the funds are spent: districts that invested in teacher training saw gains, while those that spent on administration did not.',
+    passage: 'Increased funding does not by itself improve a school\'s outcomes, according to economists who have analyzed decades of expenditure data across thousands of districts. ______ what matters is how the funds are spent: districts that invested in teacher training saw measurable gains in achievement, while those that spent principally on administration did not.',
     stem: T_STEM,
     choices: ['Moreover,', 'Thus,', 'Rather,', 'Likewise,'], answer: 2,
     steps: [
@@ -323,7 +323,7 @@ export const RW_EOI: RawQuestion[] = [
   },
   {
     id: 'r-tra-16', skill: 'tra', sub: 'Cause and effect', d: 'V',
-    passage: 'The city council wants to cut traffic deaths in half within a decade. ______ it has lowered speed limits on residential streets and redesigned its most dangerous intersections.',
+    passage: 'Alarmed by statistics showing that pedestrian fatalities had increased for five consecutive years, the city council wants to cut traffic deaths in half within a decade. ______ it has lowered speed limits on residential streets and redesigned its most dangerous intersections, adding protected crossings and narrowing lanes to discourage acceleration.',
     stem: T_STEM,
     choices: ['To that end,', 'Even so,', 'In comparison,', 'For example,'], answer: 0,
     steps: [

@@ -131,7 +131,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-tra-n48', skill: 'tra', sub: 'Contrast', d: 'H',
-    passage: 'Most migratory songbirds travel at night, navigating partly by the stars and avoiding daytime predators. ______ some species, including swallows and many hawks, migrate during the day, riding rising columns of warm air or catching insects as they fly.',
+    passage: 'Most migratory songbirds travel at night, navigating partly by the stars and avoiding daytime predators, a strategy that also allows them to forage during daylight hours. ______ some species, including swallows and many hawks, migrate during the day, riding rising columns of warm air or catching insects as they fly, so their journeys depend on favorable atmospheric conditions.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['As a result,', 'Likewise,', 'In other words,', 'However,'], answer: 3,
     steps: ['Sentence 1: most songbirds migrate at night.', 'Sentence 2: some species migrate during the day. That is a contrast.'],
@@ -143,7 +143,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-tra-n49', skill: 'tra', sub: 'Sequence', d: 'V',
-    passage: 'The city’s first subway line, which opened in 1904, ran for about nine miles. Over the next two decades, the system expanded to hundreds of miles of track. ______ the subway had become the backbone of the city’s transportation network, carrying more passengers each day than all of its streetcars and buses combined.',
+    passage: 'The city’s first subway line, which opened in 1904, ran for about nine miles beneath a single crowded avenue. Over the next two decades, the system expanded to hundreds of miles of track, extending into neighborhoods that had previously been accessible only by streetcar or ferry. ______ the subway had become the backbone of the city’s transportation network, carrying more passengers each day than all of its streetcars and buses combined, an achievement contemporaries considered extraordinary.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['By then,', 'In contrast,', 'Even so,', 'Similarly,'], answer: 0,
     steps: ['The text traces growth over time: 1904, then two decades of expansion.', 'The last sentence describes the state at the end of that expansion: "By then."'],

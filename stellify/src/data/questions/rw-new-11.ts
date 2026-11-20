@@ -71,7 +71,7 @@ export const RW_NEW_11: RawQuestion[] = [
   },
   {
     id: 'r-wic-n19', skill: 'wic', sub: 'Precise word choice', d: 'H',
-    passage: 'The novelist’s prose is famously ______: she rarely uses two words where one will do, and her chapters seldom run longer than a few pages.',
+    passage: 'The novelist’s prose is famously ______: she rarely uses two words where one will suffice, her descriptions omit nearly every adjective, and her chapters seldom extend beyond a few pages, a discipline that critics contrast with the expansiveness of her contemporaries.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['ornate', 'whimsical', 'verbose', 'economical'], answer: 3,
     steps: ['The colon explains the blank: few words, short chapters.', 'Prose that uses no more words than needed is economical.'],
@@ -143,7 +143,7 @@ export const RW_NEW_11: RawQuestion[] = [
   },
   {
     id: 'r-tra-n23', skill: 'tra', sub: 'Emphasis', d: 'V',
-    passage: 'The small theater company’s revival of a nearly forgotten 1890s play turned out to be far more popular than anyone had expected. ______ the production sold out its entire run within a week, and the company added twelve more performances to meet demand.',
+    passage: 'The small theater company’s revival of a nearly forgotten 1890s melodrama, which critics had long dismissed as hopelessly dated, turned out to be far more popular than anyone had anticipated. ______ the production sold out its entire run within a week, and the company added twelve more performances to accommodate the extraordinary demand.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Nevertheless,', 'Instead,', 'Indeed,', 'Otherwise,'], answer: 2,
     steps: ['The first sentence says the revival was very popular.', 'The second gives striking evidence that strengthens that claim. "Indeed" emphasizes and confirms it.'],

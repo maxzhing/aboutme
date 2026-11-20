@@ -102,7 +102,7 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-wic-01', skill: 'wic', sub: 'Connotation and tone', d: 'E',
-    passage: 'The new biography is no hagiography. If anything, its portrait of the reformer is ______, cataloguing his vanity and his political miscalculations alongside his considerable achievements.',
+    passage: 'The new biography is no hagiography, despite its author’s evident admiration for her subject’s accomplishments in public education and municipal reform. If anything, its portrait of the reformer is ______, cataloguing his vanity, his intellectual inconsistencies, and his political miscalculations alongside his considerable achievements, which it neither minimizes nor exaggerates.',
     stem: WIC,
     choices: ['adulatory', 'unsparing', 'vindictive', 'perfunctory'], answer: 1,
     steps: [
@@ -222,7 +222,7 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-tra-01', skill: 'tra', sub: 'Concession', d: 'E',
-    passage: 'No one disputes that the vaccine reduces severe illness in those who receive it. Whether it also reduces transmission to others is far less clear. ______ health officials have based their public campaign chiefly on the claim that getting vaccinated protects the people around you.',
+    passage: 'No one disputes that the vaccine substantially reduces severe illness in those who receive it, since clinical trials involving tens of thousands of participants demonstrated that protection conclusively and repeatedly. Whether it also reduces transmission to others, however, is far less clear from the epidemiological evidence currently available. ______ health officials have based their public campaign chiefly on the claim that getting vaccinated protects the people around you.',
     stem: TRA,
     choices: ['Accordingly,', 'For instance,', 'Similarly,', 'Nevertheless,'], answer: 3,
     steps: [
@@ -243,7 +243,7 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-tra-02', skill: 'tra', sub: 'Concession', d: 'E',
-    passage: 'The author\'s early stories are all set in a single unnamed village. Her later novels range across three continents and two centuries. ______ her preoccupations remain constant: inheritance, debt, and the obligations of the eldest child.',
+    passage: 'The author\'s early stories are all set in a single unnamed village, rendered with meticulous attention to its dialects, quarrels, and seasonal rituals, whereas her later novels range across three continents and two centuries, incorporating historical figures and elaborate interwoven narratives. ______ her preoccupations remain constant: inheritance, debt, and the obligations of the eldest child.',
     stem: TRA,
     choices: ['For that reason,', 'For all that,', 'In that case,', 'At that point,'], answer: 1,
     steps: [

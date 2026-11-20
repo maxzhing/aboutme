@@ -82,7 +82,7 @@ export const RW_NEW_10: RawQuestion[] = [
   },
   {
     id: 'r-wic-n18', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'The doctor’s grave expression, as she studied the test results in silence for several long minutes, told the waiting family more about the news than any words could have.',
+    passage: 'The physician’s grave expression, as she studied the laboratory results in silence for several excruciatingly long minutes, communicated more to the waiting family about the seriousness of the diagnosis than any carefully chosen explanation could have.',
     stem: 'As used in the text, what does the word “grave” most nearly mean?',
     choices: ['buried', 'serious', 'heavy', 'carved'], answer: 1,
     steps: ['Her expression, during a long silence over test results, told the family something troubling.', '"Grave" here describes a solemn, serious look.'],
@@ -130,7 +130,7 @@ export const RW_NEW_10: RawQuestion[] = [
   },
   {
     id: 'r-tra-n20', skill: 'tra', sub: 'Concession', d: 'V',
-    passage: 'The trail’s final mile climbs nearly 600 meters over loose rock, and park rangers rate it as one of the most difficult hikes in the region. ______ hundreds of visitors complete it every summer, many of them first-time hikers.',
+    passage: 'The trail’s final mile climbs nearly 600 meters over loose, unstable rock, and park rangers, citing the frequency of injuries and emergency evacuations, rate it as one of the most difficult hikes in the region. ______ hundreds of visitors complete it every summer, many of them first-time hikers with little specialized equipment.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Moreover,', 'Nonetheless,', 'Therefore,', 'Similarly,'], answer: 1,
     steps: ['The first sentence stresses how hard the trail is.', 'The second reports something surprising given that difficulty: many people, even beginners, finish it. That calls for a concession.'],
@@ -142,7 +142,7 @@ export const RW_NEW_10: RawQuestion[] = [
   },
   {
     id: 'r-tra-n21', skill: 'tra', sub: 'Example', d: 'H',
-    passage: 'Some bird species have adapted to city life in surprising ways. ______ peregrine falcons, which once nested mainly on cliffs, now raise their young on the ledges of tall buildings in cities around the world.',
+    passage: 'Some bird species have adapted to urban environments in surprising ways, exploiting artificial structures and abundant food sources that their ancestors never encountered. ______ peregrine falcons, which once nested mainly on cliffs, now raise their young on the ledges of skyscrapers in cities around the world, hunting the pigeons that congregate in surrounding plazas.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['In contrast,', 'However,', 'As a result,', 'For example,'], answer: 3,
     steps: ['The first sentence makes a general claim: some birds have adapted to cities.', 'The second gives a specific case: peregrine falcons nesting on buildings.'],

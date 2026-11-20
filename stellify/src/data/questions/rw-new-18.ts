@@ -84,7 +84,7 @@ export const RW_NEW_18: RawQuestion[] = [
   },
   {
     id: 'r-wic-n34', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'The economist’s optimism about the recovery was tempered by her concern that rising interest rates might slow business investment, and she cautioned against expecting rapid growth before the end of the year.',
+    passage: 'The economist’s optimism about the recovery was tempered by her concern that rising interest rates might discourage business investment, and she cautioned against expecting substantial growth before the end of the year, particularly in industries dependent on borrowing.',
     stem: 'As used in the text, what does the word “tempered” most nearly mean?',
     choices: ['moderated', 'hardened', 'concealed', 'provoked'], answer: 0,
     steps: ['Her optimism was limited by a concern, and she cautioned against expecting rapid growth.', 'Optimism reduced by a competing concern is moderated.'],
@@ -132,7 +132,7 @@ export const RW_NEW_18: RawQuestion[] = [
   },
   {
     id: 'r-tra-n36', skill: 'tra', sub: 'Emphasis', d: 'V',
-    passage: 'Several bird species have shown that they can recognize their own reflections, a capacity once thought to be limited to great apes and a few other mammals with large brains. ______ Eurasian magpies, whose brains are far smaller than those of apes, have passed the standard mirror test by trying to remove marks that they could see only in a mirror.',
+    passage: 'Several bird species have demonstrated that they can recognize their own reflections, a cognitive capacity once thought to be limited to great apes and a few other mammals with exceptionally large brains and complex, hierarchical societies, including chimpanzees, dolphins, and elephants. ______ Eurasian magpies, whose brains are far smaller than those of apes, have passed the standard mirror test by attempting to remove colored marks that they could perceive only in a mirror.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['In contrast,', 'Therefore,', 'Notably,', 'Instead,'], answer: 2,
     steps: ['The first sentence makes a general claim about birds and mirror recognition.', 'The second highlights a striking case, magpies with small brains, that supports and sharpens the claim.'],
@@ -144,7 +144,7 @@ export const RW_NEW_18: RawQuestion[] = [
   },
   {
     id: 'r-tra-n37', skill: 'tra', sub: 'Addition', d: 'H',
-    passage: 'Cities that replace asphalt parking lots with permeable pavement reduce the amount of rainwater that floods storm drains during heavy storms. ______ water that soaks through the pavement is filtered by the soil beneath it, which removes some pollutants before the water reaches the groundwater.',
+    passage: 'Cities that replace asphalt parking lots with permeable pavement substantially reduce the volume of rainwater that overwhelms storm drains during heavy storms, lowering the risk of neighborhood flooding. ______ water that soaks through the pavement is filtered by the soil beneath it, which removes some pollutants before the water reaches the groundwater that many communities depend on.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Nevertheless,', 'Moreover,', 'In contrast,', 'Thus,'], answer: 1,
     steps: ['The first sentence gives one benefit (less flooding); the second gives another (filtering pollutants).', 'Adding a second benefit calls for "Moreover."'],

@@ -144,7 +144,7 @@ export const RW_NEW_16: RawQuestion[] = [
   },
   {
     id: 'r-tra-n33', skill: 'tra', sub: 'Contrast', d: 'H',
-    passage: 'Early studies of the urban heat island effect relied almost entirely on measurements of air temperature taken at weather stations. ______ more recent work measures the surface temperatures of pavement and rooftops, which can exceed air temperature by 20 °C or more on summer afternoons and which more directly affect the comfort of pedestrians.',
+    passage: 'Early studies of the urban heat island effect relied almost entirely on measurements of air temperature recorded at meteorological stations, many of them located in parks or airports far from densely populated neighborhoods. ______ more recent work measures the surface temperatures of pavement and rooftops, which can exceed air temperature by 20 °C or more on summer afternoons and which more directly affect the comfort of pedestrians.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Thus,', 'Likewise,', 'Indeed,', 'By contrast,'], answer: 3,
     steps: ['The first sentence describes the older focus on air temperature.', 'The second describes a different focus, surface temperature, so a contrast fits.'],

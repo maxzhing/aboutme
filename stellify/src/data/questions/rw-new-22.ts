@@ -71,7 +71,7 @@ export const RW_NEW_22: RawQuestion[] = [
   },
   {
     id: 'r-wic-n41', skill: 'wic', sub: 'Precise word choice', d: 'V',
-    passage: 'Far from being ______, the professor’s lectures were carefully structured: each one built on the one before, and the final lecture of the semester drew every thread of the course together.',
+    passage: 'Far from being ______, the professor’s lectures were meticulously structured: each one built deliberately on the one before, and the final lecture of the semester drew every thread of the course together into a coherent synthesis that students consistently described as illuminating.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['coherent', 'rigorous', 'haphazard', 'repetitive'], answer: 2,
     steps: ['"Far from being ___" means the lectures were the opposite of the blank.', 'They were carefully structured, so the blank is the opposite of structured: haphazard.'],
@@ -83,7 +83,7 @@ export const RW_NEW_22: RawQuestion[] = [
   },
   {
     id: 'r-wic-n42', skill: 'wic', sub: 'Multiple-meaning words', d: 'H',
-    passage: 'The league did not sanction the charity exhibition match, so its results were not counted in the players’ official records, even though several of the sport’s top stars took part.',
+    passage: 'The league did not sanction the charity exhibition match, so its results were not counted in the players’ official statistical records, even though several of the sport’s most celebrated competitors participated and the event attracted an enormous television audience.',
     stem: 'As used in the text, what does the word “sanction” most nearly mean?',
     choices: ['approve', 'punish', 'schedule', 'promote'], answer: 0,
     steps: ['Because the league did not sanction the match, its results did not count officially.', 'To sanction in this sense is to give official approval.'],
@@ -131,7 +131,7 @@ export const RW_NEW_22: RawQuestion[] = [
   },
   {
     id: 'r-tra-n44', skill: 'tra', sub: 'Cause and effect', d: 'V',
-    passage: 'Unlike most substances, water is less dense as a solid than as a liquid, so ice floats. ______ lakes freeze from the top down, and the layer of surface ice insulates the water beneath it, allowing fish to survive the winter.',
+    passage: 'Unlike most substances, water is less dense as a solid than as a liquid, because hydrogen bonds lock its frozen molecules into an unusually spacious crystalline arrangement, so ice floats. ______ lakes freeze from the top down, and the layer of surface ice insulates the water beneath it, allowing fish and other aquatic organisms to survive the winter in relatively stable, unfrozen conditions.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Nevertheless,', 'For example,', 'For this reason,', 'Likewise,'], answer: 2,
     steps: ['The first sentence gives a property: ice floats.', 'The second gives its consequence: lakes freeze from the top down.'],
@@ -143,7 +143,7 @@ export const RW_NEW_22: RawQuestion[] = [
   },
   {
     id: 'r-tra-n45', skill: 'tra', sub: 'Emphasis', d: 'H',
-    passage: 'The first draft of the novel was rejected by every publisher its author approached. ______ one editor returned the manuscript with a note suggesting that the author abandon fiction altogether and look for steadier work.',
+    passage: 'The first draft of the novel, an ambitious multigenerational narrative that its author had revised for nearly a decade, was rejected by every publisher its author approached. ______ one editor returned the manuscript with a note suggesting that the author abandon fiction altogether and look for steadier, more conventional employment.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Nonetheless,', 'In fact,', 'Consequently,', 'By contrast,'], answer: 1,
     steps: ['The first sentence says the draft was rejected everywhere.', 'The second gives a more extreme instance, intensifying the point: "In fact."'],

@@ -83,7 +83,7 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-wic-n24', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'From its position on the hilltop, the old fort commands a view of the entire valley, which made it valuable to armies for centuries and now draws thousands of tourists each summer.',
+    passage: 'From its position on the hilltop, the old fortress commands a view of the entire valley, an advantage that made it strategically valuable to successive armies for centuries and that now attracts thousands of tourists each summer.',
     stem: 'As used in the text, what does the word “commands” most nearly mean?',
     choices: ['orders', 'controls', 'overlooks', 'demands'], answer: 2,
     steps: ['The fort is on a hilltop and "commands a view of the entire valley."', 'To command a view is to look out over it: to overlook it.'],
@@ -131,7 +131,7 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-tra-n26', skill: 'tra', sub: 'Sequence', d: 'H',
-    passage: 'Inside City Hall, the city council debated the proposed budget cuts until nearly midnight. ______ several hundred residents gathered on the steps outside, holding signs urging the council to protect funding for the public libraries.',
+    passage: 'Inside City Hall, the city council debated the proposed budget reductions until nearly midnight, with members disagreeing sharply about which departments should absorb the deepest cuts. ______ several hundred residents gathered on the steps outside, holding signs urging the council to protect funding for the public libraries and community recreation centers.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Therefore,', 'Meanwhile,', 'For instance,', 'Similarly,'], answer: 1,
     steps: ['The first sentence describes what happened inside; the second, what happened outside at the same time.', '"Meanwhile" signals events happening simultaneously.'],
@@ -143,7 +143,7 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-tra-n27', skill: 'tra', sub: 'Concession', d: 'V',
-    passage: 'Most of the fossil’s bones were found scattered across a wide area, and several of them had been badly damaged. ______ paleontologists were able to reconstruct nearly the entire skeleton by comparing the bones with those of closely related species.',
+    passage: 'Most of the fossil’s bones were found scattered across a wide area of the eroding riverbank, and several of them had been badly damaged by centuries of seasonal flooding. ______ paleontologists were able to reconstruct nearly the entire skeleton by comparing the fragments with those of closely related species preserved in museum collections.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Consequently,', 'In addition,', 'Even so,', 'In other words,'], answer: 2,
     steps: ['The first sentence lists obstacles: scattered, damaged bones.', 'The second reports success despite them, so a concession transition fits.'],

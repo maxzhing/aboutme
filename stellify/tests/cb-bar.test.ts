@@ -7,7 +7,7 @@ import { cbBarIssues } from '@/data/questions/rules';
  * hard level. This number only ever goes down: lower it whenever questions are rewritten, never raise it.
  * New questions must meet the bar, so adding one below it fails this test.
  */
-const MAX_BELOW_BAR = 371;
+const MAX_BELOW_BAR = 269;
 
 describe('College Board hard bar', () => {
   it('the number of hard questions below the College Board hard level never grows', () => {

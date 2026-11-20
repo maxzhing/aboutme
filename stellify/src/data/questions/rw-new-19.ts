@@ -72,7 +72,7 @@ export const RW_NEW_19: RawQuestion[] = [
   },
   {
     id: 'r-wic-n35', skill: 'wic', sub: 'Precise word choice', d: 'V',
-    passage: 'The historian’s account of the revolution is admirably ______: rather than casting either side as heroes or villains, she weighs the evidence for each faction’s motives with equal care and acknowledges the failings of both.',
+    passage: 'The historian’s account of the revolution is admirably ______: rather than casting either side as heroes or villains, she weighs the documentary evidence for each faction’s motives with equal care and acknowledges the failings of both with scrupulous fairness.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['partisan', 'sensational', 'evenhanded', 'cursory'], answer: 2,
     steps: ['The colon explains: she treats both sides with equal care and acknowledges both sides’ failings.', 'An account that is fair to all sides is evenhanded.'],
@@ -144,7 +144,7 @@ export const RW_NEW_19: RawQuestion[] = [
   },
   {
     id: 'r-tra-n39', skill: 'tra', sub: 'Restatement', d: 'H',
-    passage: 'Indian paintbrush, a wildflower common in western North America, is a hemiparasite. ______ it can produce some of its own food through photosynthesis, but it also draws water and nutrients from the roots of neighboring plants.',
+    passage: 'Indian paintbrush, a brilliantly colored wildflower common in western North America, has an intermediate way of obtaining nourishment that distinguishes it from both ordinary flowering plants and parasitic species that cannot photosynthesize; botanists classify it as a hemiparasite. ______ it can produce some of its own food through photosynthesis, but it also draws water and nutrients from the roots of neighboring plants.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['That is,', 'Nonetheless,', 'Meanwhile,', 'Accordingly,'], answer: 0,
     steps: ['The first sentence uses a technical term; the second explains what it means.', 'An explanation of a term calls for "That is."'],

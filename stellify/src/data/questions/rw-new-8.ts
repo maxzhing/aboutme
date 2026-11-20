@@ -71,7 +71,7 @@ export const RW_NEW_8: RawQuestion[] = [
   },
   {
     id: 'r-wic-n13', skill: 'wic', sub: 'Precise word choice', d: 'H',
-    passage: 'Rather than accept the first explanation that fit the evidence, the investigators remained ______, testing every possible cause of the bridge’s collapse until only one explanation was left standing.',
+    passage: 'Rather than accept the first explanation that seemed consistent with the evidence, the investigators remained ______, systematically testing every conceivable cause of the bridge’s collapse, from defective welds to unusual vibrations, until only one explanation was left standing.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['skeptical', 'gullible', 'indifferent', 'hasty'], answer: 0,
     steps: ['"Rather than accept the first explanation," the investigators kept testing every cause.', 'Refusing to accept claims without testing them is being skeptical.'],
@@ -143,7 +143,7 @@ export const RW_NEW_8: RawQuestion[] = [
   },
   {
     id: 'r-tra-n17', skill: 'tra', sub: 'Cause and effect', d: 'H',
-    passage: 'Every electric car sold in the country must pass the same crash-safety tests as cars with gasoline engines. ______ buyers who choose an electric model are not giving up crash protection in exchange for lower fuel costs.',
+    passage: 'Every electric car sold in the country must pass the same rigorous crash-safety evaluations as cars with gasoline engines, including tests that simulate frontal, side, and rollover collisions at highway speeds. ______ buyers who choose an electric model are not sacrificing crash protection in exchange for lower fuel costs, despite persistent misconceptions about battery-powered vehicles.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Thus,', 'Still,', 'Meanwhile,', 'For instance,'], answer: 0,
     steps: ['The first sentence gives a fact: the same safety tests apply.', 'The second sentence draws a conclusion from it: buyers do not sacrifice safety. That is a logical consequence.'],

@@ -83,7 +83,7 @@ export const RW_NEW_15: RawQuestion[] = [
   },
   {
     id: 'r-wic-n28', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'After hours of debate, the senator finally conceded that the bill’s cost estimates had been too optimistic, though she continued to argue that its goals were worth pursuing.',
+    passage: 'After hours of contentious debate with colleagues and budget analysts, the senator finally conceded that the bill’s cost estimates had been unrealistically optimistic, though she continued to argue that its fundamental objectives were worth pursuing.',
     stem: 'As used in the text, what does the word “conceded” most nearly mean?',
     choices: ['surrendered', 'awarded', 'denied', 'admitted'], answer: 3,
     steps: ['The senator acknowledged a point (the estimates were too optimistic) while still supporting the bill.', 'To concede a point is to admit it.'],
@@ -131,7 +131,7 @@ export const RW_NEW_15: RawQuestion[] = [
   },
   {
     id: 'r-tra-n30', skill: 'tra', sub: 'Sequence', d: 'H',
-    passage: 'The committee spent months reviewing designs for the new library, debating cost, size, and style at every meeting. ______ it chose a plan that combined a modern glass atrium with the restored brick front of the town’s old post office.',
+    passage: 'The committee spent months reviewing competing architectural designs for the new library, debating cost, size, accessibility, and style at every meeting and soliciting extensive feedback from residents. ______ it chose a plan that combined a modern glass atrium with the restored brick facade of the town’s old post office.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['For instance,', 'Similarly,', 'In contrast,', 'Ultimately,'], answer: 3,
     steps: ['The first sentence describes a long process of debate.', 'The second describes the final decision, so "Ultimately" fits.'],
@@ -143,7 +143,7 @@ export const RW_NEW_15: RawQuestion[] = [
   },
   {
     id: 'r-tra-n31', skill: 'tra', sub: 'Restatement', d: 'V',
-    passage: 'The weather satellite travels in a geostationary orbit. ______ it circles Earth once every 24 hours, matching Earth’s rotation, so that it remains above the same point on the equator at all times.',
+    passage: 'Unlike most satellites, which pass rapidly overhead and remain observable from a particular location for only minutes, the meteorological satellite travels in a geostationary orbit. ______ it circles Earth once every 24 hours, matching Earth’s rotation, so that it remains above the same point on the equator at all times and continuously monitors developing hurricanes.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Nevertheless,', 'That is,', 'For example,', 'As a result,'], answer: 1,
     steps: ['The first sentence names the orbit type; the second explains what that term means.', 'An explanation of a term is a restatement: "That is."'],

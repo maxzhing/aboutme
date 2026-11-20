@@ -71,7 +71,7 @@ export const RW_NEW_6: RawQuestion[] = [
   },
   {
     id: 'r-wic-n9', skill: 'wic', sub: 'Precise word choice', d: 'V',
-    passage: 'The board’s decision to postpone the vote was widely seen as ______: by delaying, members avoided taking a public position on the controversial proposal until after the election.',
+    passage: 'The board’s decision to postpone the vote was widely interpreted as ______: by delaying, members avoided taking a public position on the controversial development proposal until after the municipal election, when their constituents could no longer hold them accountable at the ballot box.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['decisive', 'impartial', 'candid', 'evasive'], answer: 3,
     steps: ['The colon explains the blank: delaying let members avoid taking a public position.', 'Avoiding a direct stand is being evasive.'],
@@ -143,7 +143,7 @@ export const RW_NEW_6: RawQuestion[] = [
   },
   {
     id: 'r-tra-n13', skill: 'tra', sub: 'Specification', d: 'H',
-    passage: 'The architect’s plan for the new library includes several features meant to reduce the building’s energy use. ______ its roof will be covered with plants that insulate the building, and its windows will open automatically at night to let cool air circulate.',
+    passage: 'The architect’s plan for the new library includes several features intended to reduce the building’s energy consumption, which municipal officials have identified as a priority for every new public facility. ______ its roof will be covered with plants that insulate the building, and its windows will open automatically at night to let cool air circulate through the reading rooms.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Specifically,', 'Regardless,', 'Instead,', 'Even so,'], answer: 0,
     steps: ['The first sentence mentions "several features" in general.', 'The second sentence names those features: a planted roof and automatic windows. That is a specification.'],

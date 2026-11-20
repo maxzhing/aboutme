@@ -71,7 +71,7 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-wic-n21', skill: 'wic', sub: 'Precise word choice', d: 'H',
-    passage: 'Though the senator was known for fiery speeches, her response to the scandal was surprisingly ______: she issued a brief written statement and declined every request for an interview.',
+    passage: 'Though the senator was known for fiery speeches delivered before enthusiastic crowds, her response to the scandal was surprisingly ______: she issued a brief written statement acknowledging the allegations and declined every request for an interview, leaving journalists to speculate about her intentions.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['combative', 'theatrical', 'restrained', 'dishonest'], answer: 2,
     steps: ['"Though… fiery speeches" sets up a contrast; the colon explains her response: brief and quiet.', 'A brief, quiet response is restrained.'],
@@ -83,7 +83,7 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-wic-n22', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'The sand on this stretch of beach is so fine that it squeaks underfoot and drifts like flour in even a light breeze, coating the dunes in thin, smooth layers.',
+    passage: 'The sand on this stretch of coastline is so fine that it squeaks underfoot and drifts like flour in even a gentle breeze, gradually coating the dunes in thin, smooth layers that geologists attribute to centuries of persistent abrasion by waves.',
     stem: 'As used in the text, what does the word “fine” most nearly mean?',
     choices: ['excellent', 'powdery', 'healthy', 'penalized'], answer: 1,
     steps: ['The sand "drifts like flour" in a light breeze.', 'Sand with tiny grains that drifts like flour is powdery.'],
@@ -131,7 +131,7 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-tra-n24', skill: 'tra', sub: 'Cause and effect', d: 'H',
-    passage: 'Inspectors discovered that the bridge’s steel cables had corroded far more than anyone had expected after only fifteen years of service. ______ city officials closed the bridge to heavy trucks until the cables could be replaced.',
+    passage: 'Inspectors conducting a routine structural assessment discovered that the bridge’s steel cables had corroded far more than anyone had expected after only fifteen years of service, apparently because of defective protective coatings. ______ city officials closed the bridge to heavy trucks until the cables could be replaced, rerouting commercial traffic through congested residential neighborhoods.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Consequently,', 'Nevertheless,', 'Similarly,', 'For example,'], answer: 0,
     steps: ['The first sentence describes a problem: badly corroded cables.', 'The second describes the response caused by it: closing the bridge to trucks.'],

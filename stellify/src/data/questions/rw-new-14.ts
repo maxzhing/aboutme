@@ -83,7 +83,7 @@ export const RW_NEW_14: RawQuestion[] = [
   },
   {
     id: 'r-wic-n26', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'The patient sustained a minor fracture in her wrist when she slipped on the icy steps outside the library, but her doctors expect her to recover fully within six weeks.',
+    passage: 'The patient sustained a minor fracture in her wrist when she slipped on the icy steps outside the library, but her physicians, citing her otherwise excellent health, expect her to recover completely within six weeks without surgical intervention.',
     stem: 'As used in the text, what does the word “sustained” most nearly mean?',
     choices: ['suffered', 'supported', 'prolonged', 'nourished'], answer: 0,
     steps: ['The patient slipped on icy steps and ended up with a minor fracture that will take weeks to heal.', 'To sustain an injury is to suffer or experience it, so "suffered" fits.'],
@@ -143,7 +143,7 @@ export const RW_NEW_14: RawQuestion[] = [
   },
   {
     id: 'r-tra-n29', skill: 'tra', sub: 'Contrast', d: 'V',
-    passage: 'Contrary to some news reports, the council’s new transportation plan does not ban cars from downtown. ______ it charges drivers a fee to enter downtown during rush hour and uses the money to expand bus service.',
+    passage: 'Contrary to several widely circulated news reports, the council’s new transportation plan does not prohibit private automobiles from entering downtown. ______ it charges drivers a fee to enter downtown during rush hour and uses the resulting revenue to expand bus service, an approach economists call congestion pricing.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Rather,', 'Similarly,', 'For example,', 'Moreover,'], answer: 0,
     steps: ['The first sentence says what the plan does not do.', 'The second says what it actually does, correcting the reports. "Rather" introduces that correction.'],

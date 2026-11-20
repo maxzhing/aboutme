@@ -131,7 +131,7 @@ export const RW_NEW_21: RawQuestion[] = [
   },
   {
     id: 'r-tra-n42', skill: 'tra', sub: 'Cause and effect', d: 'V',
-    passage: 'Many predators learn to avoid brightly colored prey, since bright coloring often signals that an animal is toxic or foul-tasting. ______ some harmless species have evolved to mimic the bright colors of toxic ones, gaining protection from predators without producing any toxins themselves.',
+    passage: 'Many predators learn to avoid brightly colored prey, since conspicuous coloring often signals that an animal is toxic or foul-tasting, a warning strategy biologists call aposematism. ______ some harmless species have evolved to mimic the bright colors of toxic ones, gaining protection from predators without producing any toxins themselves.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Nevertheless,', 'In contrast,', 'Accordingly,', 'Similarly,'], answer: 2,
     steps: ['The first sentence explains why predators avoid bright colors.', 'The second describes a strategy that exists because of that avoidance: mimicry pays off since predators avoid bright prey.'],
@@ -143,7 +143,7 @@ export const RW_NEW_21: RawQuestion[] = [
   },
   {
     id: 'r-tra-n43', skill: 'tra', sub: 'Sequence', d: 'H',
-    passage: 'The city first tested its new adaptive traffic signals at three busy intersections in 2021. ______ after crashes at those intersections fell by nearly a third over the following year, officials approved installing the signals at every major intersection in the city.',
+    passage: 'The city first tested its new adaptive traffic signals, which adjust their timing according to real-time measurements of approaching vehicles, at three congested intersections in 2021. ______ after crashes at those intersections fell by nearly a third over the following year, officials approved installing the signals at every major intersection in the city.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Subsequently,', 'Conversely,', 'Likewise,', 'In other words,'], answer: 0,
     steps: ['The first sentence describes a test; the second describes what happened later.', 'A later step in a sequence calls for "Subsequently."'],

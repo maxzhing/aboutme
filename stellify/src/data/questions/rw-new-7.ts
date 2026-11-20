@@ -70,7 +70,7 @@ export const RW_NEW_7: RawQuestion[] = [
   },
   {
     id: 'r-wic-n11', skill: 'wic', sub: 'Precise word choice', d: 'H',
-    passage: 'The new mayor’s first budget was notably ______: it cut spending in nearly every city department and set aside the savings to pay down the debt that earlier administrations had built up.',
+    passage: 'The new mayor’s first budget was notably ______: it reduced expenditures in nearly every municipal department, eliminated several ceremonial positions, and set aside the resulting savings to pay down the debt that previous administrations had accumulated over decades.',
     stem: 'Which choice completes the text with the most logical and precise word or phrase?',
     choices: ['lavish', 'ambiguous', 'austere', 'innovative'], answer: 2,
     steps: ['The colon explains the blank: the budget cut spending nearly everywhere and saved money for debt.', 'A budget marked by strict spending cuts is austere.'],
@@ -82,7 +82,7 @@ export const RW_NEW_7: RawQuestion[] = [
   },
   {
     id: 'r-wic-n12', skill: 'wic', sub: 'Multiple-meaning words', d: 'V',
-    passage: 'The dam was built not to generate electricity but to check the spring floods that had, for centuries, swept away the farms and villages along the lower part of the river.',
+    passage: 'The concrete dam was constructed not to generate electricity but to check the spring floods that had, for centuries, swept away the farms and villages along the lower reaches of the river, destroying harvests and periodically displacing entire communities.',
     stem: 'As used in the text, what does the word “check” most nearly mean?',
     choices: ['inspect', 'verify', 'mark', 'restrain'], answer: 3,
     steps: ['The dam was built to deal with floods that swept away farms.', 'To check a flood in this sense is to hold it back: to restrain it.'],
@@ -130,7 +130,7 @@ export const RW_NEW_7: RawQuestion[] = [
   },
   {
     id: 'r-tra-n14', skill: 'tra', sub: 'Addition', d: 'H',
-    passage: 'Starting this fall, a public library card will give residents free admission to all of the city’s museums on weekdays. ______ cardholders will be able to borrow tablets and laptops from any branch for up to two weeks at a time.',
+    passage: 'Under an agreement negotiated between municipal officials and the directors of several cultural institutions, starting this fall a public library card will give residents free admission to all of the city’s museums on weekdays. ______ cardholders will be able to borrow tablets and laptops from any branch for up to two weeks at a time, an initiative intended to narrow persistent disparities in technological access.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['Nevertheless,', 'As a result,', 'In contrast,', 'In addition,'], answer: 3,
     steps: ['Both sentences describe benefits of the library card.', 'The second adds another benefit, so an addition transition fits.'],
@@ -142,7 +142,7 @@ export const RW_NEW_7: RawQuestion[] = [
   },
   {
     id: 'r-tra-n15', skill: 'tra', sub: 'Concession', d: 'V',
-    passage: 'The researchers’ results are promising: patients who followed the new exercise program reported far less back pain after eight weeks. ______ the study included only 40 participants, all from a single clinic, so its findings should be confirmed with a larger and more varied group.',
+    passage: 'The researchers’ results are promising: patients who followed the new exercise program, which emphasizes strengthening the muscles that stabilize the spine, reported considerably less back pain after eight weeks than patients receiving conventional treatment. ______ the study included only 40 participants, all from a single clinic, so its findings should be confirmed with a larger and more demographically varied group.',
     stem: 'Which choice completes the text with the most logical transition?',
     choices: ['For instance,', 'That said,', 'Accordingly,', 'In fact,'], answer: 1,
     steps: ['The first sentence praises the results; the second raises a limitation.', 'Moving from praise to a limitation calls for a concession: "That said."'],
