@@ -14,12 +14,12 @@ const CLOZE: SkillId[] = ['tra', 'bnd', 'fss'];
  */
 const Q = `["“'][^"”']+["”']`;
 export const OFFICIAL_STEMS: Partial<Record<SkillId, RegExp[]>> = {
-  cid: [/^Which choice best states the main idea of the text\?$/, /^According to the text, .+\?$/, /^Based on the text, .+\?$/],
-  coet: [/^Which quotation from .+ most effectively illustrates the claim\?$/, /^Which finding, if true, would most directly (support|weaken) .+\?$/],
-  coeq: [/^Which choice most effectively uses data from the (table|graph) to complete the (statement|text|example)\?$/, /^Which choice best describes data from the (table|graph) that support .+\?$/],
+  cid: [/^Which choice best states the main idea of the text\?$/, /^According to the text, .+\?$/, /^Based on the text, .+\?$/, /^What does the text most strongly suggest about .+\?$/],
+  coet: [/^Which quotation from .+ most effectively illustrates the claim\?$/, /^Which finding, if true, would most directly (support|weaken) .+\?$/, /^Which quotation from .+ would most directly support the claim made in the text\?$/],
+  coeq: [/^Which choice most effectively uses data from the (table|graph) to complete the (statement|text|example)\?$/, /^Which choice best describes data from the (table|graph) that support .+\?$/, /^Which choice uses data from the (table|graph) to most effectively support .+\?$/],
   inf: [/^Which choice most logically completes the text\?$/],
   wic: [/^Which choice completes the text with the most logical and precise word or phrase\?$/, new RegExp(`^As used in the text, what does the word ${Q} most nearly mean\\?$`)],
-  tsp: [/^Which choice best describes the function of the underlined (sentence|portion) in the text as a whole\?$/, /^Which choice best describes the overall structure of the text\?$/, /^Which choice best states the main purpose of the text\?$/],
+  tsp: [/^Which choice best describes the function of the underlined (sentence|portion) in the text as a whole\?$/, /^Which choice best describes the overall structure of the text\?$/, /^Which choice best states the main purpose of the text\?$/, /^Which choice best describes the function of the (first|second|third|fourth|last) sentence in the overall structure of the text\?$/],
   ctc: [/^Based on the texts, .+(\?|\.\.\.|…)?$/],
   tra: [/^Which choice completes the text with the most logical transition\?$/],
   syn: [/^While researching a topic, a student has taken the following notes\. The student wants to .+\. Which choice most effectively uses relevant information from the notes to accomplish this goal\?$/],
