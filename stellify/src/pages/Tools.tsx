@@ -3,6 +3,8 @@ import { useSearchParams } from 'next/navigation';
 import { ExternalLink, Plus, Search, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { REF_CATS, REFERENCE } from '@/data/reference';
+
+const MATH_CATS = REF_CATS.filter((c) => ['Algebra', 'Advanced Math', 'Data & Statistics', 'Geometry', 'Trigonometry'].includes(c));
 import { KIND_NAME, RESOURCES, type ResourceKind } from '@/data/resources';
 import { VOCAB, type VocabWord } from '@/data/vocabulary';
 import { getQuestion } from '@/data/questions';
@@ -125,15 +127,16 @@ export function ReferencePage() {
   const [cat, setCat] = useState('All');
   const saveNote = useStore((s) => s.saveNote);
   const [saved, setSaved] = useState<string[]>([]);
-  const list = REFERENCE.filter((e) => (cat === 'All' || e.cat === cat) && (!q.trim() || `${e.title} ${e.body} ${e.cat}`.toLowerCase().includes(q.toLowerCase())));
+  // formulas only: grammar, transitions and reading strategies live in the lessons (and still come up in search and the tutor)
+  const list = REFERENCE.filter((e) => MATH_CATS.includes(e.cat) && (cat === 'All' || e.cat === cat) && (!q.trim() || `${e.title} ${e.body} ${e.cat}`.toLowerCase().includes(q.toLowerCase())));
   return (
     <div>
-      <PageHeader eyebrow="Tools" title="Formula & Grammar Reference" subtitle="Math formulas, algebra and geometry rules, punctuation, grammar, transitions and reading strategies in one searchable sheet." actions={<button className="btn-ghost no-print" onClick={() => window.print()}>Print</button>} />
+      <PageHeader eyebrow="Tools" title="Formula Sheet" subtitle="Every Math formula and rule the SAT expects you to know, in one searchable, printable sheet. Bluebook also gives you a reference sheet on test day; this one covers what it leaves out." actions={<button className="btn-ghost no-print" onClick={() => window.print()}>Print</button>} />
       <div className="no-print mb-4 flex flex-wrap items-center gap-3">
         <div className="relative min-w-[220px] flex-1"><Search size={16} className="pointer-events-none absolute left-3 top-3.5 text-faint" /><input className="input pl-9" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search: slope, vertex, colon, percent…" aria-label="Search reference" /></div>
-        <select className="input !w-auto" value={cat} onChange={(e) => setCat(e.target.value)} aria-label="Category"><option>All</option>{REF_CATS.map((c) => <option key={c}>{c}</option>)}</select>
+        <select className="input !w-auto" value={cat} onChange={(e) => setCat(e.target.value)} aria-label="Category"><option>All</option>{MATH_CATS.map((c) => <option key={c}>{c}</option>)}</select>
       </div>
-      {(cat === 'All' ? REF_CATS : [cat]).map((c) => { const items = list.filter((e) => e.cat === c); if (!items.length) return null; return (
+      {(cat === 'All' ? MATH_CATS : [cat]).map((c) => { const items = list.filter((e) => e.cat === c); if (!items.length) return null; return (
         <section key={c} className="mb-5"><h2 className="mb-2 text-lg font-bold">{c}</h2>
           <div className="grid gap-2 md:grid-cols-2">{items.map((e) => <Card key={e.id} id={e.id} className="scroll-mt-20 !p-3.5"><div className="flex items-start justify-between gap-2"><h3 className="font-semibold">{e.title}</h3><button className="no-print text-xs text-accent hover:underline" disabled={saved.includes(e.id)} onClick={() => { saveNote({ title: e.title, body: e.body, topic: e.cat, kind: 'formula' }); setSaved((s) => [...s, e.id]); }}>{saved.includes(e.id) ? 'Saved' : 'Save to notes'}</button></div><div className="mt-1 text-[15px] leading-relaxed"><RichText text={e.body} /></div></Card>)}</div>
         </section>

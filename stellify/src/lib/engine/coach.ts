@@ -8,6 +8,8 @@ import { addDays, clamp, dateKey, daysBetween, parseDateKey } from '../util';
 import { dueIds } from './srs';
 import { estimateAbilities, sectionBand, testAccuracy, withinReach, type Abilities } from '../model/ability';
 import { horizonDays, type Intake } from '../model/intake';
+import { PLACEMENT_LENGTH, openPlacement } from '../model/placement';
+import { sectionStatus, totalRange } from './scoring';
 
 /**
  * The coach: one custom plan per student, from what we know about them.
@@ -41,7 +43,7 @@ export interface FocusSkill { skill: SkillId; minutes: number; points: number; w
 export interface CoachPlan {
   stage: Stage;
   hasData: boolean;
-  estimate: { rw: { low: number; mid: number; high: number }; math: { low: number; mid: number; high: number }; total: { low: number; mid: number; high: number } };
+  estimate: { rw: { low: number; mid: number; high: number }; math: { low: number; mid: number; high: number }; total: { low: number; mid: number; high: number }; source: 'answers' | 'start' };
   target: number;
   horizon: { days: number; known: boolean };
   dailyMinutes: number;
@@ -119,8 +121,13 @@ export function buildCoach(s: AppState, o: CoachOpts): CoachPlan {
   const cutoff = Math.max(startOfDay(o.now), s.profile.diagnosticAt && dateKey(s.profile.diagnosticAt) === today ? s.profile.diagnosticAt + 1 : 0);
   const known = s.attempts.filter((a) => a.at < cutoff);
   const ab = estimateAbilities(known, o.getQ, cutoff, intake);
-  const rw = sectionBand(ab, 'rw'), math = sectionBand(ab, 'math');
-  const total = { low: rw.low + math.low, mid: rw.mid + math.mid, high: rw.high + math.high };
+  // one estimate everywhere: the answer-based estimate Analytics uses once there are enough answers in a section,
+  // otherwise the student model's starting estimate (from the start-up answers and the placement check)
+  const now = estimateAbilities(s.attempts, o.getQ, o.now, intake);
+  const pick = (sec: 'rw' | 'math') => sectionStatus(sec, s.attempts, o.getQ).range ?? sectionBand(now, sec);
+  const rw = pick('rw'), math = pick('math');
+  const fromAnswers = !!sectionStatus('rw', s.attempts, o.getQ).range && !!sectionStatus('math', s.attempts, o.getQ).range;
+  const total = totalRange(rw, math)!;
   const stage = stageOf(total.mid);
   const target = Math.max(s.profile.targetScore || 0, 400);
   const daily = Math.max(10, s.profile.dailyMinutes || 30);
@@ -204,7 +211,9 @@ export function buildCoach(s: AppState, o: CoachOpts): CoachPlan {
     const tasks: CoachTask[] = [];
     let budget = daily;
     const add = (t: CoachTask) => { if (t.minutes > 0) { tasks.push(t); budget -= t.minutes; } };
-    if (!hasData && i === 0) {
+    const resume = i === 0 ? openPlacement(s.attempts, s.profile.diagnosticAt) : null;
+    if (resume) add({ id: '', kind: 'placement', minutes: Math.max(2, Math.round((PLACEMENT_LENGTH - resume.answered) * 1.2)), title: `Finish your placement check (${PLACEMENT_LENGTH - resume.answered} questions left)`, why: 'You stopped part-way. The rest makes your plan fit you better; it picks up where you left off.', href: '/onboarding?step=placement' });
+    if (!hasData && i === 0 && !resume) {
       add({ id: '', kind: 'placement', minutes: Math.min(20, daily), title: 'Placement check', why: 'Sixteen questions that adapt to you. Your plan is built from them.', href: '/onboarding?step=placement' });
     } else if (horizon.known && left <= 2) {
       add({ id: '', kind: 'review', minutes: Math.min(15, budget), title: 'Light review', why: 'Two days out: keep it light. Nothing new now.', href: '/practice/session?mode=review&n=8' });
@@ -245,7 +254,7 @@ export function buildCoach(s: AppState, o: CoachOpts): CoachPlan {
   if (daily < 45 && horizon.days >= 14) notes.push('Full practice tests take over two hours. With your daily time, the plan uses timed modules instead; take one full official test in Bluebook on a free afternoon before test day.');
 
   return {
-    stage, hasData, estimate: { rw, math, total }, target, horizon, dailyMinutes: daily, studyDaysPerWeek: perWeek,
+    stage, hasData, estimate: { rw, math, total, source: fromAnswers ? 'answers' : 'start' }, target, horizon, dailyMinutes: daily, studyDaysPerWeek: perWeek,
     focus, strengths, days,
     projection: { low: Math.round(gain * 0.5 / 10) * 10, high: Math.round(gain * 1.3 / 10) * 10, minutesForGoal },
     basis: [...ab.basis, ...(known.length ? [`${new Set(known.map((a) => a.qid)).size} questions you have answered`] : [])],
@@ -268,7 +277,7 @@ export function markDone(plan: CoachPlan, s: AppState, now: number, getQ: (id: s
         x.kind === 'mistakes' ? by((m) => m === 'mistakes') >= 3 :
         x.kind === 'timed' ? by((m) => m === 'timed') >= 10 :
         x.kind === 'mock' ? s.mocks.some((m) => dateKey(m.startedAt) === t) :
-        x.kind === 'placement' ? !!s.profile.diagnosticAt :
+        x.kind === 'placement' ? !!s.profile.diagnosticAt && !openPlacement(s.attempts, s.profile.diagnosticAt) :
         false);
       return { ...x, done };
     }),

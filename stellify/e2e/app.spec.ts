@@ -38,11 +38,9 @@ async function solve(page: Page, correct: boolean, thinkMs = 0) { const id = awa
 test('start-up questions and the adaptive placement check build a plan for this student, and the dashboard follows it', async ({ page }) => {
   const errors = watch(page);
   await go(page, '/');
-  await expect(page.getByTestId('intake-welcome')).toBeVisible(); // first visit is redirected to the start-up questions
-  await page.getByTestId('intake-next').click();
+  await expect(page.getByTestId('intake-welcome')).toBeVisible(); // first visit is redirected to the start-up questions (two screens)
   await page.getByRole('button', { name: '9th grade' }).click();
   await page.getByRole('button', { name: /^Algebra 1/ }).click();
-  await page.getByTestId('intake-next').click();
   await page.getByRole('button', { name: 'The PSAT' }).click();
   await page.getByLabel(/Math score/).fill('420');
   await page.getByLabel(/Reading .*score/).fill('560');
@@ -50,9 +48,7 @@ test('start-up questions and the adaptive placement check build a plan for this 
   await page.getByTestId('intake-next').click();
   await expect(page.getByText('Goal score: 1080')).toBeVisible(); // about 100 above the PSAT total
   await page.getByRole('button', { name: '30 min' }).click();
-  await page.getByTestId('intake-next').click();
   await page.getByTestId('hard-geometry').click();
-  await page.getByTestId('intake-next').click();
   await page.getByRole('button', { name: /I run out of time/ }).click();
   await page.getByLabel(/nickname/).fill('Sam');
   await page.getByTestId('intake-to-placement').click();
@@ -68,6 +64,11 @@ test('start-up questions and the adaptive placement check build a plan for this 
     await expect(page.getByTestId('question-card')).not.toHaveAttribute('data-qid', qid);
   }
   await page.getByTestId('placement-not-learned').click();
+  // finish later: Today asks to finish it, and it resumes where it stopped
+  await page.getByTestId('placement-later').click();
+  await expect(page.getByTestId('today')).toContainText('Finish your placement check (10 questions left)');
+  await go(page, '/onboarding?step=placement');
+  await expect(page.getByText('Question 7 of 16')).toBeVisible();
   await page.getByTestId('placement-stop').click();
   await expect(page.getByTestId('plan-ready')).toBeVisible();
   await expect(page.getByTestId('focus-list')).toBeVisible();

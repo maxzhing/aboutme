@@ -48,3 +48,12 @@ export function nextPlacementQuestion(o: { bank: Question[]; attempts: Attempt[]
   }
   return null;
 }
+
+/** A placement check started after the last finished one and left before the end, so it can be resumed. */
+export function openPlacement(attempts: Attempt[], finishedAt?: number): { sessionId: string; answered: number } | null {
+  const mine = attempts.filter((a) => a.sessionId.startsWith(PLACEMENT.sessionPrefix) && (!finishedAt || a.at > finishedAt));
+  const last = mine[mine.length - 1]?.sessionId;
+  if (!last) return null;
+  const answered = mine.filter((a) => a.sessionId === last).length;
+  return answered < PLACEMENT_LENGTH ? { sessionId: last, answered } : null;
+}

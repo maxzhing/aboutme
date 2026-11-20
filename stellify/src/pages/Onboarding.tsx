@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getQuestion, QUESTIONS } from '@/data/questions';
 import { useStore } from '@/lib/store';
 import { FLAGS, GRADES, HARD_TOPICS, MATH_CLASSES, TEST_WHEN, emptyIntake, type Flag, type Grade, type Intake, type MathClass, type TestWhen } from '@/lib/model/intake';
-import { PLACEMENT, PLACEMENT_LENGTH, nextPlacementQuestion, placementAnswers } from '@/lib/model/placement';
+import { PLACEMENT, PLACEMENT_LENGTH, nextPlacementQuestion, openPlacement, placementAnswers } from '@/lib/model/placement';
 import { STAGE_INFO } from '@/lib/engine/coach';
 import { SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { Logo } from '@/components/AppShell';
@@ -26,7 +26,7 @@ export function OnboardingPage() {
   const sp = useSearchParams();
   const profile = useStore((s) => s.profile);
   const setProfile = useStore((s) => s.setProfile);
-  const [step, setStep] = useState(sp.get('step') === 'placement' ? 6 : 0);
+  const [step, setStep] = useState(sp.get('step') === 'placement' ? 2 : 0);
   const [i, setI] = useState<Intake>(() => profile.intake ?? emptyIntake(Date.now()));
   const [exam, setExam] = useState(profile.examDate ?? '');
   const [target, setTarget] = useState(profile.targetScore);
@@ -41,34 +41,33 @@ export function OnboardingPage() {
   useEffect(() => { if (!targetTouched && past >= 400) setTarget(Math.min(1600, Math.round((past + 100) / 10) * 10)); }, [past, targetTouched]);
 
   const save = () => setProfile({ intake: { ...i, at: Date.now(), testWhen: exam ? 'date' : i.testWhen }, examDate: exam || undefined, targetScore: target, dailyMinutes: minutes, restDays: rest, name: name.trim().slice(0, 24) || undefined, currentScore: past >= 400 ? past : profile.currentScore, onboardedAt: profile.onboardedAt ?? Date.now() });
-  const go = (n: number) => { if (n >= 6) save(); setStep(n); window.scrollTo(0, 0); };
-  const STEPS = 6;
+  const go = (n: number) => { if (n >= 2) save(); setStep(n); window.scrollTo(0, 0); };
+  const STEPS = 2;
 
-  if (step === 6) return <PlacementStep onDone={() => router.push('/onboarding/plan')} />;
+  if (step === 2) return <PlacementStep onDone={() => router.push('/onboarding/plan')} />;
   return (
     <div className="mx-auto max-w-2xl py-6">
       <div className="mb-6 flex items-center gap-3"><Logo size={36} /><div><div className="font-display text-xl font-bold">Stellify</div><div className="text-xs text-muted">Free Digital SAT prep, planned around you</div></div></div>
-      <Progress value={((step + 1) / (STEPS + 1)) * 100} className="mb-5" label="Setup progress" />
-      <Card>
+      <Progress value={((step + 1) / (STEPS + 2)) * 100} className="mb-5" label="Setup progress" />
+      <Card className="space-y-8">
         {step === 0 && (
-          <div className="space-y-4" data-testid="intake-welcome">
+          <div className="space-y-4 border-b border-line pb-5" data-testid="intake-welcome">
             <h1 className="text-2xl font-bold">Let’s find out what you need</h1>
-            <p className="text-[15px] text-muted">A few quick questions about where you are, then a 15-minute check that adapts to you. Your plan is built from your answers: what you work on, how hard the questions are and how your weeks are laid out. Two students with different answers get different plans.</p>
-            <ul className="space-y-1 text-[15px]"><li>• About 2 minutes of questions. Skip any you like.</li><li>• Then 16 questions that get easier or harder as you go.</li><li>• Then your plan, with the reason for each part.</li></ul>
+            <p className="text-[15px] text-muted">Two short screens about you, then a 15-minute check that adapts to you (you can finish it later). Your plan is built from your answers. Skip anything you like.</p>
             <div className="flex gap-2 rounded-xl border border-ok/30 bg-ok/5 p-3 text-sm"><ShieldCheck className="mt-0.5 shrink-0 text-ok" size={18} /><span>No account. Everything stays in this browser on this device. No ads, no tracking. Export or erase it any time in Settings.</span></div>
           </div>
         )}
-        {step === 1 && (
+        {step === 0 && (
           <div className="space-y-5">
-            <h1 className="text-xl font-bold">Where are you in school?</h1>
+            <h2 className="text-lg font-bold">Where are you in school?</h2>
             <div><span className="label">Grade</span><div className="flex flex-wrap gap-2">{GRADES.map((g) => <button type="button" key={g.id} aria-pressed={i.grade === g.id} onClick={() => set({ grade: g.id as Grade })} className={chip(i.grade === g.id)}>{g.label}</button>)}</div></div>
             <div><span className="label">Math class you are taking now (or took last)</span><div className="flex flex-wrap gap-2">{MATH_CLASSES.map((m) => <button type="button" key={m.id} aria-pressed={i.mathClass === m.id} onClick={() => set({ mathClass: m.id as MathClass })} className={chip(i.mathClass === m.id)}>{m.label}{m.sub && <span className="text-faint"> · {m.sub}</span>}</button>)}</div>
               <p className="mt-1.5 text-xs text-faint">Used to tell “not learned yet” apart from “needs practice”: topics your class has not reached start with a lesson.</p></div>
           </div>
         )}
-        {step === 2 && (
+        {step === 0 && (
           <div className="space-y-5">
-            <h1 className="text-xl font-bold">Your scores and your test</h1>
+            <h2 className="text-lg font-bold">Your scores and your test</h2>
             <div><span className="label">Have you taken the SAT or PSAT?</span><div className="flex flex-wrap gap-2">{([['none', 'Not yet'], ['psat', 'The PSAT'], ['sat', 'The SAT']] as const).map(([v, l]) => <button type="button" key={v} aria-pressed={i.taken === v} onClick={() => set({ taken: v })} className={chip(i.taken === v)}>{l}</button>)}</div></div>
             {(i.taken === 'psat' || i.taken === 'sat') && (
               <div className="grid gap-3 sm:grid-cols-2">
@@ -80,33 +79,33 @@ export function OnboardingPage() {
               <div className="mt-3"><label className="label" htmlFor="ob-exam">Or the exact date, if you are registered</label><input id="ob-exam" type="date" className="input max-w-[220px]" value={exam} onChange={(e) => setExam(e.target.value)} /></div></div>
           </div>
         )}
-        {step === 3 && (
+        {step === 1 && (
           <div className="space-y-5">
-            <h1 className="text-xl font-bold">Your goal and your time</h1>
+            <h1 className="text-2xl font-bold">Your goal, your time, and what feels hard</h1>
             <div><label className="label" htmlFor="ob-target">Goal score: <span className="text-ink">{target}</span></label><input id="ob-target" type="range" min={600} max={1600} step={10} value={target} onChange={(e) => { setTarget(Number(e.target.value)); setTargetTouched(true); }} className="w-full accent-[rgb(var(--brand))]" /><div className="flex justify-between text-xs text-faint"><span>600</span><span>1100</span><span>1600</span></div>
               <p className="mt-1 text-xs text-faint">{past >= 400 ? `Set to about 100 points above your ${past}. Not sure what you need? Check the middle 50% range for the schools you like.` : 'Not sure? The check will tell you where you are, and your plan will say how realistic this goal is.'}</p></div>
             <div><span className="label">Minutes you can study on a typical day</span><div className="flex flex-wrap gap-2">{[15, 20, 30, 45, 60, 90].map((m) => <button type="button" key={m} aria-pressed={minutes === m} onClick={() => setMinutes(m)} className={chip(minutes === m)}>{m} min</button>)}</div><p className="mt-1.5 text-xs text-faint">Be honest: a plan you keep beats one you drop. Short days get short, focused tasks.</p></div>
             <div><span className="label">Days off each week</span><div className="flex flex-wrap gap-2">{DAYS.map((d, n) => <button type="button" key={d} aria-pressed={rest.includes(n)} onClick={() => setRest((r) => toggle(r, n))} className={chip(rest.includes(n))}>{d}</button>)}</div></div>
           </div>
         )}
-        {step === 4 && (
+        {step === 1 && (
           <div className="space-y-5">
-            <h1 className="text-xl font-bold">What feels hard right now?</h1>
+            <h2 className="text-lg font-bold">What feels hard right now?</h2>
             <p className="text-sm text-muted">Pick any that apply. The check tests these first, and they start a little lower in your plan until the check says otherwise.</p>
             {(['math', 'rw'] as const).map((sec) => <div key={sec}><span className="label">{SECTION_NAME[sec]}</span><div className="flex flex-wrap gap-2">{HARD_TOPICS.filter((t) => t.section === sec).map((t) => <button type="button" key={t.id} aria-pressed={i.hard.includes(t.id)} onClick={() => set({ hard: toggle(i.hard, t.id) })} className={chip(i.hard.includes(t.id))} data-testid={`hard-${t.id}`}>{t.label}</button>)}</div></div>)}
           </div>
         )}
-        {step === 5 && (
+        {step === 1 && (
           <div className="space-y-5">
-            <h1 className="text-xl font-bold">Anything else we should plan around?</h1>
+            <h2 className="text-lg font-bold">Anything else we should plan around?</h2>
             <ul className="space-y-2">{FLAGS.map((f) => <li key={f.id}><button type="button" aria-pressed={i.flags.includes(f.id)} onClick={() => set({ flags: toggle(i.flags, f.id as Flag) })} className={cn(chip(i.flags.includes(f.id)), 'w-full !justify-start')}><span>{f.label}</span><span className="ml-auto pl-3 text-xs text-faint">{f.usedFor}</span></button></li>)}</ul>
             <div><label className="label" htmlFor="ob-name">A nickname for your study companion to use (optional)</label><input id="ob-name" className="input" value={name} onChange={(e) => setName(e.target.value)} maxLength={24} placeholder="Leave blank to stay anonymous" /></div>
           </div>
         )}
         <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-line pt-4">
           {step > 0 && <button className="btn-ghost" onClick={() => go(step - 1)}>Back</button>}
-          {step < 5 ? <button className="btn-primary" onClick={() => go(step + 1)} data-testid="intake-next">{step === 0 ? 'Start' : 'Continue'}<ArrowRight size={16} /></button>
-            : <><button className="btn-primary" onClick={() => go(6)} data-testid="intake-to-placement">Take the 15-minute check<ArrowRight size={16} /></button><button className="btn-ghost" onClick={() => { save(); router.push('/onboarding/plan'); }}>Skip the check: plan from my answers</button></>}
+          {step < 1 ? <button className="btn-primary" onClick={() => go(step + 1)} data-testid="intake-next">{'Continue'}<ArrowRight size={16} /></button>
+            : <><button className="btn-primary" onClick={() => go(2)} data-testid="intake-to-placement">Take the 15-minute check<ArrowRight size={16} /></button><button className="btn-ghost" onClick={() => { save(); router.push('/onboarding/plan'); }}>Skip the check: plan from my answers</button></>}
           {step === 0 && <button className="btn-quiet ml-auto" onClick={() => { setProfile({ onboardedAt: Date.now() }); router.push('/'); }}>Skip setup</button>}
         </div>
       </Card>
@@ -121,7 +120,10 @@ export function PlacementStep({ onDone }: { onDone: () => void }) {
   const answerQ = useStore((s) => s.answer);
   const setProfile = useStore((s) => s.setProfile);
   const finishDiagnostic = useStore((s) => s.finishDiagnostic);
-  const sessionId = useRef(`${PLACEMENT.sessionPrefix}${Date.now()}`).current;
+  const diagnosticAt = useStore((s) => s.profile.diagnosticAt);
+  const router = useRouter();
+  // a check left half-way resumes where it stopped
+  const sessionId = useRef(openPlacement(attempts, diagnosticAt)?.sessionId ?? `${PLACEMENT.sessionPrefix}${Date.now()}`).current;
   const [answer, setAnswer] = useState<string | null>(null);
   const [fast, setFast] = useState(false);
   const shownAt = useRef(Date.now());
@@ -151,7 +153,7 @@ export function PlacementStep({ onDone }: { onDone: () => void }) {
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <h1 className="text-xl font-bold">Placement check</h1>
         <span className="text-sm text-muted" data-num>Question {n + 1} of {PLACEMENT_LENGTH}</span>
-        <button className="btn-quiet ml-auto" onClick={finish} data-testid="placement-stop">{n ? 'Stop here and see my plan' : 'Skip the check'}</button>
+        <span className="ml-auto flex flex-wrap gap-2">{n > 0 && n < PLACEMENT_LENGTH && <button className="btn-ghost" onClick={() => router.push('/')} data-testid="placement-later">Save and finish later</button>}<button className="btn-quiet" onClick={finish} data-testid="placement-stop">{n ? 'Stop here and see my plan' : 'Skip the check'}</button></span>
       </div>
       <Progress value={(n / PLACEMENT_LENGTH) * 100} className="mb-4" label="Placement progress" />
       {fast && <p className="mb-3 rounded-xl border border-warn/30 bg-warn/5 px-4 py-2 text-sm" role="status">That was quick. A guess tells us less than a real try, so take your time: there is no clock here.</p>}

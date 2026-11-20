@@ -98,6 +98,9 @@ export function LessonPath({ section, info, selected, onSelect }: { section: Sec
     if (!el || !b) return;
     const r = el.getBoundingClientRect(), rb = b.getBoundingClientRect();
     b.scrollTop += r.top - rb.top - (rb.height - r.height) / 2;
+    // on a computer the map is not its own scroll box: bring the student's step into view on the page itself
+    const r2 = el.getBoundingClientRect();
+    if (r2.top < 0 || r2.bottom > window.innerHeight) el.scrollIntoView({ block: 'center' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [section, rec]);
   const move = (i: number, e: KeyboardEvent<HTMLButtonElement>) => {

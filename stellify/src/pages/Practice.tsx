@@ -7,6 +7,7 @@ import { BANK_STATS, getQuestion, QUESTIONS } from '@/data/questions';
 import { snapshot, useStore } from '@/lib/store';
 import { buildSession, filterBank, type BankFilter } from '@/lib/sessions';
 import { rankSkills } from '@/lib/engine/adaptive';
+import { useCoach } from '@/components/Coach';
 import { buildModule, moduleMs } from '@/lib/engine/mock';
 import { MASTERY_LEVELS } from '@/lib/engine/mastery';
 import { DIFFICULTIES, DIFFICULTY_NAME, DOMAINS, SAT_STRUCTURE, SECTION_NAME, SKILL, SKILLS } from '@/lib/taxonomy';
@@ -89,9 +90,12 @@ export function BankPage() {
 
 export function SmartPage() {
   const attempts = useStore((s) => s.attempts);
-  const ranked = useMemo(() => rankSkills(snapshot(), getQuestion, Date.now()).slice(0, 6),
+  // the plan's own order and reasons: Smart Practice works on the same skills as Today
+  const coach = useCoach(1);
+  const fallback = useMemo(() => rankSkills(snapshot(), getQuestion, Date.now()).slice(0, 6).map((r) => ({ skill: r.skill, why: r.reason })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [attempts]);
+  const ranked = coach.hasData ? coach.focus.slice(0, 6).map((f) => ({ skill: f.skill, why: f.why })) : fallback;
   const due = useStore((s) => Object.values(s.srs).filter((c) => c.due <= Date.now()).length);
   return (
     <div>
@@ -122,12 +126,12 @@ export function SmartPage() {
           </ul>
         </Card>
       </div>
-      <h2 className="mb-2 mt-6 font-semibold">What the engine will prioritize</h2>
+      <h2 className="mb-2 mt-6 font-semibold">What your plan is working on</h2>
       <div className="grid gap-3 sm:grid-cols-2">
         {ranked.map((r) => (
           <Card key={r.skill} className="!p-4">
-            <div className="flex items-center justify-between gap-2"><Link href={`/learn/${r.skill}`} className="font-semibold hover:underline">{SKILL[r.skill].short}</Link><Badge>{MASTERY_LEVELS[r.stats.level]}</Badge></div>
-            <p className="mt-1 text-sm text-muted">{r.reason}</p>
+            <div className="flex items-center justify-between gap-2"><Link href={`/learn/${r.skill}`} className="font-semibold hover:underline">{SKILL[r.skill].short}</Link></div>
+            <p className="mt-1 text-sm text-muted">{r.why}</p>
             <Link href={`/practice/session?mode=skill&skill=${r.skill}&n=6`} className="mt-2 inline-block text-sm font-semibold text-accent hover:underline">Practice 6 →</Link>
           </Card>
         ))}

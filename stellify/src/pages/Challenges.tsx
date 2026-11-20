@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Flame, Gauge, Swords, Trophy } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { getQuestion, QUESTIONS } from '@/data/questions';
-import { useStore } from '@/lib/store';
+import { snapshot, useStore } from '@/lib/store';
 import { dailyQuestion } from '@/lib/sessions';
 import { DIFFICULTY_NAME, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { addDays, dateKey, fmtDuration, pct, rng, shuffle } from '@/lib/util';
@@ -14,7 +14,8 @@ export function DailyPage() {
   const daily = useStore((s) => s.daily);
   const record = useStore((s) => s.recordDaily);
   const today = dateKey();
-  const q = useMemo(() => dailyQuestion(QUESTIONS, today), [today]);
+  // fixed for the day: it only uses answers from before today
+  const q = useMemo(() => dailyQuestion(QUESTIONS, today, snapshot(), getQuestion), [today]);
   const [go, setGo] = useState(false);
   const done = daily[today];
   let run = 0;
@@ -24,7 +25,7 @@ export function DailyPage() {
   if (go && !done) return <SessionRunner qids={[q.id]} mode="daily" title="Daily Challenge" backHref="/daily" onComplete={(r) => record(q.id, r.rows[0].correct, r.rows[0].ms)} completeHref="/daily" completeLabel="Back to Daily Challenge" />;
   return (
     <div>
-      <PageHeader eyebrow="Practice" title="Daily Challenge" subtitle="One hard or very hard question a day, the same for everyone using Stellify that day. A small habit that keeps you sharp." />
+      <PageHeader eyebrow="Practice" title="Daily Challenge" subtitle="One question a day picked to stretch you: from the skills your plan is working on, just above your current level. A small habit that keeps you sharp." />
       <div className="grid gap-3 sm:grid-cols-3">
         <Stat label="Challenge streak" value={`${run} day${run === 1 ? '' : 's'}`} icon={<Flame size={15} className="text-warn" />} />
         <Stat label="Solved" value={`${wins}/${Object.keys(daily).length}`} sub="correct / attempted" />

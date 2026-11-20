@@ -4,6 +4,7 @@ import { DAY, pct, rng, shuffle } from '../util';
 import { computeAllSkillStats, type SkillStats } from './mastery';
 import { dueIds } from './srs';
 import { TIER_B, estimateAbilities, pKnow, withinReach } from '../model/ability';
+import { buildCoach, coachPriority } from './coach';
 
 export interface SkillPriority { skill: SkillId; priority: number; stats: SkillStats; reason: string }
 
@@ -65,7 +66,12 @@ export function pickSmartSet(
   const due = dueIds(s.srs, now).map(getQ).filter((q): q is Question => !!q && pool.includes(q));
   for (const q of due.slice(0, Math.max(1, Math.round(n * 0.2)))) take(q, 'Spaced review: you missed or needed help with this before.');
 
-  const ranked = rankSkills(s, getQ, now, opts.section).filter((r) => !opts.skill || r.skill === opts.skill);
+  // the same order as the student's plan (lib/engine/coach.ts), so Smart Practice and the plan never disagree
+  const plan = buildCoach(s, { now, getQ, days: 1 });
+  const order = plan.hasData ? coachPriority(plan) : [];
+  const at = (k: SkillId) => { const i = order.indexOf(k); return i < 0 ? 99 : i; };
+  const ranked = rankSkills(s, getQ, now, opts.section).filter((r) => !opts.skill || r.skill === opts.skill)
+    .sort((a, b) => (order.length ? at(a.skill) - at(b.skill) : 0));
   const fromSkill = (r: SkillPriority, reason: string) => {
     const th = ab.skills[r.skill].theta;
     const prefs = (['medium', 'hard', 'very-hard', 'elite'] as Difficulty[]).sort((a, b) => Math.abs(pKnow(th, TIER_B[a]) - 0.7) - Math.abs(pKnow(th, TIER_B[b]) - 0.7));

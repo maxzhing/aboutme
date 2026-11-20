@@ -1,9 +1,9 @@
 import type { AppState, Difficulty, DomainId, PracticeMode, Question, Section, SkillId } from './types';
-import { SECTION_NAME, SKILL } from './taxonomy';
+import { SECTION_NAME, SKILL, SKILLS } from './taxonomy';
 import { dateKey, rng, shuffle } from './util';
 import { pickSmartSet } from './engine/adaptive';
 import { dueIds } from './engine/srs';
-import { estimateAbilities, withinReach } from './model/ability';
+import { TIER_B, estimateAbilities, pKnow, withinReach } from './model/ability';
 
 export interface BuiltSession { qids: string[]; title: string; mode: PracticeMode; reasons?: Record<string, string>; empty?: string }
 export type Params = Record<string, string | undefined>;
@@ -88,10 +88,26 @@ export function buildSession(p: Params, s: AppState, bank: Question[], getQ: (id
   return { qids: picks.map((x) => x.qid), mode: p.mode === 'mission' ? 'mission' : 'smart', title: `Smart practice${section ? ` · ${SECTION_NAME[section]}` : ''}`, reasons: Object.fromEntries(picks.map((x) => [x.qid, x.reason])) };
 }
 
-/** The same challenging question for everyone on a given calendar day. */
-export function dailyQuestion(bank: Question[], day = dateKey()): Question {
+/**
+ * Today's challenge: one question that stretches this student (about a 50% chance of knowing how), from the skills
+ * their plan is working on, never one answered right before. Fixed for the day. Without a state it falls back to
+ * one very hard question, the same for everyone.
+ */
+export function dailyQuestion(bank: Question[], day = dateKey(), s?: AppState, getQ?: (id: string) => Question | undefined): Question {
+  const rand = rng(`daily-${day}`);
+  if (s && getQ) {
+    const start = Math.min(Date.now(), new Date(`${day}T00:00:00`).getTime());
+    const before = s.attempts.filter((a) => a.at < start);
+    const ab = estimateAbilities(before, getQ, start, s.profile.intake);
+    const right = new Set(before.filter((a) => a.correct).map((a) => a.qid));
+    const focus = SKILLS.map((k) => k.id).sort((a, b) => ab.skills[a].theta - ab.skills[b].theta).slice(0, 8);
+    const pool = bank.filter((q) => !q.official && focus.includes(q.skill) && !right.has(q.id) && q.difficulty !== 'elite')
+      .map((q) => ({ q, d: Math.abs(pKnow(ab.skills[q.skill].theta, TIER_B[q.difficulty]) - 0.5) + rand() * 0.05 }))
+      .sort((a, b) => a.d - b.d).slice(0, 6);
+    if (pool.length) return pool[Math.floor(rand() * pool.length)].q;
+  }
   const pool = bank.filter((q) => q.difficulty === 'very-hard' || q.difficulty === 'elite');
-  return pool[Math.floor(rng(`daily-${day}`)() * pool.length)];
+  return pool[Math.floor(rand() * pool.length)];
 }
 
 /** Twelve math and twelve reading & writing questions covering every domain at mixed difficulty. */

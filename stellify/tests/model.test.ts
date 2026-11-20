@@ -12,6 +12,7 @@ import { buildSession } from '@/lib/sessions';
 import { addDays, dateKey, parseDateKey } from '@/lib/util';
 import { engineInput } from '@/lib/path/input';
 import { nextStep } from '@/lib/path/next';
+import { pathOf } from '@/lib/path/skills';
 
 const NOW = parseDateKey('2026-09-07') + 16 * 3_600_000; // a Monday afternoon
 let n = 0;
@@ -118,11 +119,14 @@ describe('coach', () => {
     expect(p.notes.join(' ')).toMatch(/goal of 1500/);
   });
 
-  it('drives the Path: its recommended step is the coach’s first focus skill', () => {
+  it('keeps the Path in route order: it starts at the first skill along the route the student has not secured', () => {
     const s = state({ intake: intake({}) }, placed(['circ', 'trig']));
     const i = engineInput(s, NOW, 'math');
     const step = nextStep({ ...i, srs: {}, mistakes: {} });
-    expect(step.skill).toBe(i.priority!.find((k) => SKILLS.find((x) => x.id === k)!.section === 'math'));
+    const firstWeak = pathOf('math').sort((a, b) => a.order - b.order).find((p) => p.id === 'circ' || p.id === 'trig')!.id;
+    expect(step.skill).toBe(firstWeak); // every earlier skill was answered right, so the route moves past it
+    const fresh = engineInput(state({}), NOW, 'math');
+    expect(nextStep(fresh).skill).toBe(pathOf('math').sort((a, b) => a.order - b.order)[0].id); // nothing known: the very start
   });
 });
 

@@ -39,7 +39,7 @@ export interface EngineInput {
   quickStars?: Partial<Record<SkillId, number>>;
   lever: Lever[];
   examDate?: string;
-  /** the coach's skill order for this student (lib/engine/coach.ts), best first */
+  /** the route's unsecured skills, in order (lib/path/input.ts) */
   priority?: SkillId[];
 }
 
@@ -142,13 +142,13 @@ export function nextStep(i: EngineInput, opts: { skipReview?: boolean; skipQueue
         reason: `You have finished ${passed} of ${ch.length} chapters of ${s.title}. Finishing it earns ★1.` };
     }
   }
-  // 4. the coach's order, from the student model (works from the first answers, unlike the Score Lever's 6-answer minimum)
+  // 4. the route, in order: the first skill along it the student has not secured (see lib/path/input.ts)
   if (i.priority?.length) {
     const pick = i.priority.map((k) => PATH[k]).find((p) => p && inSection(i, p.id) && !ex.has(p.id) && skillStars(i, p.id).count < 3);
     if (pick) {
       const f = formatFor(i, pick.id);
       return { ...f, skill: pick.id, section: pick.section, priority: 4,
-        reason: f.why ? `Recommended because of ${f.why} on ${pick.title}.` : `Your plan’s focus: ${pick.title} is where an hour of work should add the most points for you right now.` };
+        reason: f.why ? `Recommended because of ${f.why} on ${pick.title}.` : `Next on your route: ${pick.title}. The steps before it are secured${pick.prereqs.length ? `, and it builds on ${pick.prereqs.map((p) => PATH[p].title).join(' and ')}` : ''}.` };
     }
   }
   // 4b. the highest Score Lever skill with prerequisites met
