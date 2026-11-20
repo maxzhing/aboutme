@@ -21,9 +21,13 @@ import { MATH_COURSE_1 } from './math-course-1';
 import { MATH_COURSE_2 } from './math-course-2';
 import { RW_COURSE } from './rw-course';
 import { RW_SPEC } from './rw-spec';
+import { MATH_NEW_1 } from './math-new-1';
+import { MATH_NEW_2 } from './math-new-2';
 
 /** Every authored question. Add new batch files here; nothing else needs to change. */
 export const ALL_RAW: RawQuestion[] = [
+  ...MATH_NEW_1,
+  ...MATH_NEW_2,
   ...MATH_ALG_1,
   ...MATH_ALG_2,
   ...MATH_ADV_1,
