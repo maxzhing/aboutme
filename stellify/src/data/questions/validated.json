@@ -1,6 +1,6 @@
 {
  "generatedAt": "2026-11-20",
- "count": 629,
+ "count": 649,
  "ids": {
   "m-lin1-01": "12gezx3",
   "m-lin1-02": "1ig3miv",
@@ -630,6 +630,26 @@
   "r-cid-n4": "1abkx5e",
   "r-inf-n3": "kfprr0",
   "r-inf-n4": "1hd8vog",
-  "r-coeq-n3": "s5r345"
+  "r-coeq-n3": "s5r345",
+  "m-equiv-n1": "ylry0l",
+  "m-equiv-n2": "18y88df",
+  "m-equiv-n3": "j9t9y7",
+  "m-equiv-n4": "1eloykq",
+  "m-equiv-n5": "1m6t4tq",
+  "m-equiv-n6": "1vazk18",
+  "m-equiv-n7": "zrixk5",
+  "m-nleq-n1": "17w0zj1",
+  "m-nleq-n2": "10ib20u",
+  "m-nleq-n3": "136q9gc",
+  "m-nleq-n4": "1u6i3yf",
+  "m-nleq-n5": "10bab4b",
+  "m-nleq-n6": "9408tg",
+  "m-nleq-n7": "u91ikc",
+  "m-nlf-n1": "1gjoycg",
+  "m-nlf-n2": "1tt4t7l",
+  "m-nlf-n3": "1bqx3ss",
+  "m-nlf-n4": "123j77t",
+  "m-nlf-n5": "17jgnfg",
+  "m-nlf-n6": "fnb24q"
  }
 }
