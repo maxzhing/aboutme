@@ -24,8 +24,8 @@ New in this release (details in DESIGN.md, METHODOLOGY.md and DECISIONS.md):
 
 ## What is inside
 
-- 517 original questions: SAT-style Math and Reading & Writing (about 20% medium, 40% hard,
-  40% very hard), a Beyond SAT tier that is deliberately harder than the real test, and a 40-question
+- 517 original questions: SAT-style Math and Reading & Writing (about 15% medium, 40% hard,
+  45% very hard), a Beyond SAT tier that is deliberately harder than the real test, and a 40-question
   Reading & Writing set whose structures mirror the hardest College Board-released items (original questions, not official ones). Each has a step-by-step solution, a rationale for every answer choice, the concept,
   the fastest method, the common trap, a takeaway and three levels of hints.
 - A full course for every one of the 30 skills: 88 step-by-step chapters. Each chapter has picture
@@ -307,7 +307,7 @@ item-development process before the app will serve it (`src/data/questions/rules
   the text, reverses the relationship, ignores a qualification, misuses the data, comma splice, and so on;
   `distractors.ts`). The app shows that trap next to each wrong answer's explanation.
 - **Coverage:** the four content domains appear in Digital SAT proportions (about 26/28/20/26%), with a
-  20/40/40 medium/hard/very hard mix and correct answers spread evenly across A–D.
+  15/40/45 medium/hard/very hard mix and correct answers spread evenly across A–D.
 
 Statistical pretesting, discrimination and differential item functioning analyses need responses from
 thousands of real test takers, so they are outside what an offline study app can do.

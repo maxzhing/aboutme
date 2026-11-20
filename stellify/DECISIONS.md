@@ -120,4 +120,7 @@ Each entry records what was decided, why, and the alternatives considered.
     shows it until it is done). **The Daily Challenge is chosen per student**, from their weakest skills, at about a
     50% chance, and fixed for the day.
 34. **Computers only (owner decision, 2026-11-20).** No more work for phones; existing phone tests stay as they pass.
-
+35. **The difficulty mix target moves from 20/40/40 to 15/40/45 (medium/hard/very hard, ±5 points).** The owner
+    asked for many more questions written at the College Board's hard level. The number of medium questions does not
+    shrink (about 100 per section), so beginners keep the same reachable pool; only the share changes as hard and very
+    hard questions are added. New questions are labeled honestly: roughly half hard and half very hard per batch.

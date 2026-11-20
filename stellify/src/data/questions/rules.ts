@@ -150,14 +150,15 @@ export function validateBank(all: RawQuestion[], opts: { minPerSection?: number 
   }
   for (const section of ['math', 'rw'] as const) {
     const every = all.filter((q) => SKILL[q.skill]?.section === section);
-    // the 20/40/40 mix applies to the SAT-level tiers; Beyond SAT questions are an extra tier on top
+    // the 15/40/45 mix (±5 points) applies to the SAT-level tiers; Beyond SAT questions are an extra tier on top.
+    // It was 20/40/40 until the owner asked for many more questions at the College Board's hard level (DECISIONS 35).
     const qs = every.filter((q) => q.d !== 'E');
     if (every.length - qs.length < 16) e.push(`${section}: only ${every.length - qs.length} Beyond SAT questions (need 16)`);
     if (qs.length < min) e.push(`${section}: ${qs.length} questions (need ${min})`);
     const share = (d: string) => qs.filter((q) => q.d === d).length / Math.max(1, qs.length);
-    const target = { M: 0.2, H: 0.4, V: 0.4 } as const;
+    const target = { M: 0.15, H: 0.4, V: 0.45 } as const;
     for (const d of ['M', 'H', 'V'] as const) {
-      if (Math.abs(share(d) - target[d]) > 0.04) e.push(`${section}: difficulty ${d} share ${(share(d) * 100).toFixed(1)}% (target ${target[d] * 100}%)`);
+      if (Math.abs(share(d) - target[d]) > 0.05) e.push(`${section}: difficulty ${d} share ${(share(d) * 100).toFixed(1)}% (target ${target[d] * 100}%)`);
     }
     const mcq = every.filter((q) => q.choices);
     for (let i = 0; i < 4; i++) {

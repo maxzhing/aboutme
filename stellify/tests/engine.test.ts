@@ -43,7 +43,7 @@ describe('question bank', () => {
     const failures = ALL_RAW.flatMap((q) => validateQuestion(q).map((e) => `${q.id}: ${e}`));
     expect(failures).toEqual([]);
   });
-  it('passes bank-level rules: no duplicates, 20/40/40 difficulty, balanced answer positions, every skill at every level', () => {
+  it('passes bank-level rules: no duplicates, 15/40/45 difficulty, balanced answer positions, every skill at every level', () => {
     expect(validateBank(ALL_RAW)).toEqual([]);
     expect(new Set(QUESTIONS.map((q) => q.id)).size).toBe(QUESTIONS.length);
   });
