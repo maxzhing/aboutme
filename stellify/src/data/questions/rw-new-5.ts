@@ -84,7 +84,7 @@ export const RW_NEW_5: RawQuestion[] = [
   },
   {
     id: 'r-fss-n7', skill: 'fss', sub: 'Pronoun agreement', d: 'V',
-    passage: 'Each of the city’s public libraries now lends tools, board games, and musical instruments in addition to books, and according to ______ records, the instruments are borrowed most often during the summer months.',
+    passage: 'Each of the city’s public libraries now lends tools, board games, and musical instruments in addition to books, reflecting a broader transformation in how municipal institutions understand their responsibilities, and according to ______ records, the instruments are borrowed most often during the summer months.',
     stem: STD,
     choices: ['their', 'they’re', 'its', 'it’s'], answer: 2,
     steps: ['The pronoun refers back to "Each of the city’s public libraries." "Each" is singular.', 'A singular possessive pronoun is needed: "its" (no apostrophe).'],
@@ -96,7 +96,7 @@ export const RW_NEW_5: RawQuestion[] = [
   },
   {
     id: 'r-fss-n8', skill: 'fss', sub: 'Verb tense', d: 'H',
-    passage: 'In 1928, Alexander Fleming noticed that a mold growing on one of his bacterial cultures had killed the bacteria around it. More than a decade later, researchers at the University of Oxford ______ a way to produce the mold’s active substance, penicillin, in amounts large enough to treat patients.',
+    passage: 'In 1928, bacteriologist Alexander Fleming noticed that a mold contaminating one of his bacterial cultures had destroyed the bacteria surrounding it, an observation he published but could not exploit therapeutically. More than a decade later, researchers at the University of Oxford ______ a way to produce the mold’s active substance, penicillin, in amounts large enough to treat patients.',
     stem: STD,
     choices: ['develop', 'will develop', 'have developed', 'developed'], answer: 3,
     steps: ['The text describes completed events in the past: 1928 and "more than a decade later."', 'A completed past event takes the simple past: "developed."'],
@@ -108,7 +108,7 @@ export const RW_NEW_5: RawQuestion[] = [
   },
   {
     id: 'r-fss-n9', skill: 'fss', sub: 'Modifiers', d: 'V',
-    passage: 'Centuries ago, skilled carpenters joined the wooden beams of a temple in central Japan with carefully cut interlocking joints rather than metal fasteners. Built entirely without nails, ______',
+    passage: 'Centuries ago, extraordinarily skilled carpenters joined the wooden beams of a temple in central Japan with meticulously cut interlocking joints rather than metal fasteners, a technique that allows the structure to flex rather than fracture when the ground shakes violently. Built entirely without nails, ______',
     stem: STD,
     choices: ['the temple’s wooden frame has survived several major earthquakes.', 'several major earthquakes have struck the temple’s wooden frame.', 'the survival of the temple’s wooden frame through several major earthquakes.', 'earthquakes have not destroyed the temple’s wooden frame.'], answer: 0,
     steps: ['"Built entirely without nails" describes whatever comes right after the comma.', 'The thing built without nails is the temple’s frame, so the frame must come first.'],

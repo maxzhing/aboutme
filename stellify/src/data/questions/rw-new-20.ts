@@ -179,7 +179,7 @@ export const RW_NEW_20: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n53', skill: 'bnd', sub: 'Introductory elements', d: 'H',
-    passage: 'Exhausted after the twelve-hour ______ the volunteers rested in the shade of the old barn for nearly an hour before loading the trucks with the last of the donated food.',
+    passage: 'Exhausted after the twelve-hour ______ the volunteers rested in the shade of the old barn for nearly an hour before loading the trucks with the last of the donated food, which regional coordinators distributed the following morning to approximately forty community organizations.',
     stem: STD,
     choices: ['shift;', 'shift,', 'shift', 'shift:'], answer: 1,
     steps: ['"Exhausted after the twelve-hour shift" is an introductory phrase describing the volunteers.', 'A comma separates it from the main clause.'],
@@ -203,7 +203,7 @@ export const RW_NEW_20: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n55', skill: 'bnd', sub: 'Lists', d: 'V',
-    passage: 'The festival’s program featured three premieres: a cello concerto by Ana Ruiz, a young composer from ______ a string quartet by Kenji Abe, who teaches in Osaka; and a song cycle by Femi Adeyemi, a pianist and poet.',
+    passage: 'Commissioned to celebrate the ensemble’s fiftieth anniversary, the festival’s program featured three premieres: a cello concerto by Ana Ruiz, a young composer from ______ a string quartet by Kenji Abe, who teaches in Osaka; and a song cycle by Femi Adeyemi, a pianist and poet.',
     stem: STD,
     choices: ['Seville,', 'Seville', 'Seville:', 'Seville;'], answer: 3,
     steps: ['Each item in the list contains commas (descriptions of each composer), and the later items are separated by semicolons.', 'The first item must also end with a semicolon.'],
@@ -227,7 +227,7 @@ export const RW_NEW_20: RawQuestion[] = [
   },
   {
     id: 'r-fss-n54', skill: 'fss', sub: 'Pronoun agreement', d: 'H',
-    passage: 'To limit water loss, many desert plants close the tiny pores on ______ leaves during the hottest hours of the day and open them again only after the air has cooled in the evening.',
+    passage: 'To limit water loss, many desert plants close the tiny pores on ______ leaves during the hottest hours of the day and open them again only after the air has cooled in the evening, sacrificing some photosynthetic capacity in exchange for considerably reduced evaporation, a compromise that botanists consider essential to survival in extraordinarily arid environments.',
     stem: STD,
     choices: ['their', 'its', 'they’re', 'there'], answer: 0,
     steps: ['The leaves belong to "many desert plants," a plural noun.', 'The plural possessive pronoun is "their."'],
@@ -239,7 +239,7 @@ export const RW_NEW_20: RawQuestion[] = [
   },
   {
     id: 'r-fss-n55', skill: 'fss', sub: 'Logical comparisons', d: 'V',
-    passage: 'Biologists measuring finches on an island found that birds on the northern coast, where hard seeds are common, have evolved unusually deep and strong beaks. The beaks of finches on the island’s northern coast are significantly deeper than ______',
+    passage: 'Biologists measuring finches on an island found that birds on the northern coast, where exceptionally hard seeds are abundant, have evolved unusually deep and powerful beaks capable of cracking them, an adaptation absent elsewhere. The beaks of finches on the island’s northern coast are significantly deeper than ______',
     stem: STD,
     choices: ['finches on the southern coast.', 'those of finches on the southern coast.', 'that of finches on the southern coast.', 'the southern coast.'], answer: 1,
     steps: ['The sentence compares the beaks of northern finches, so they must be compared with other beaks: "those of finches on the southern coast."', '"Those" is plural, matching "beaks."'],

@@ -215,7 +215,7 @@ export const RW_NEW_11: RawQuestion[] = [
   },
   {
     id: 'r-fss-n26', skill: 'fss', sub: 'Verb tense and forms', d: 'H',
-    passage: 'The letters, which ______ hidden in the attic of a farmhouse for more than a century, were donated to the county archive last year by the farmer’s great-granddaughter.',
+    passage: 'The letters, which ______ hidden in the attic of a farmhouse for more than a century, were donated to the county archive last year by the farmer’s great-granddaughter, and historians anticipate that their detailed descriptions of agricultural practices will illuminate rural life during the 1880s.',
     stem: STD,
     choices: ['has been', 'is', 'had been', 'was'], answer: 2,
     steps: ['"Which" refers to "the letters," which is plural.', 'The hiding came before the donation last year, so the past perfect "had been" fits.'],
@@ -227,7 +227,7 @@ export const RW_NEW_11: RawQuestion[] = [
   },
   {
     id: 'r-fss-n27', skill: 'fss', sub: 'Logical comparisons', d: 'V',
-    passage: 'Seabirds that spend most of their lives gliding over the open ocean tend to have long, narrow wings. The wingspan of the wandering albatross, which can exceed 3 meters, is greater than ______',
+    passage: 'Seabirds that spend most of their lives gliding over the open ocean tend to have long, narrow wings, a configuration that aerodynamic engineers associate with exceptional efficiency during sustained, effortless flight. The wingspan of the wandering albatross, which can exceed 3 meters, is greater than ______',
     stem: STD,
     choices: ['any other living bird.', 'that of any living bird.', 'those of any other living bird.', 'that of any other living bird.'], answer: 3,
     steps: ['A wingspan must be compared with another bird’s wingspan: "that of."', 'The albatross is itself a living bird, so the comparison must say "any other" bird.'],

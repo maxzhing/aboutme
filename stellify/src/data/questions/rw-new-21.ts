@@ -203,7 +203,7 @@ export const RW_NEW_21: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n58', skill: 'bnd', sub: 'Colons', d: 'V',
-    passage: 'The expedition’s two most important finds were a fossilized jaw and a small stone ______ the jaw belonged to a previously unknown species of primate, and the tool was the oldest ever found in the region.',
+    passage: 'The archaeologists spent three seasons excavating a collapsed rock shelter whose sediments had accumulated undisturbed for millennia. The expedition’s two most important finds were a fossilized jaw and a small stone ______ the jaw belonged to a previously unknown species of primate, and the tool was the oldest ever found in the region.',
     stem: STD,
     choices: ['tool, the', 'tool the', 'tool, and, the', 'tool: the'], answer: 3,
     steps: ['"The expedition’s two most important finds were a fossilized jaw and a small stone tool" is a complete sentence, and what follows explains why each find mattered.', 'A colon can introduce that explanation.'],
@@ -239,7 +239,7 @@ export const RW_NEW_21: RawQuestion[] = [
   },
   {
     id: 'r-fss-n58', skill: 'fss', sub: 'Subject–verb agreement', d: 'V',
-    passage: 'The decision by the city’s planning board, which had debated the proposal for more than a year, to approve construction of the new riverfront stadium ______ surprised many residents who had expected the plan to be rejected.',
+    passage: 'The decision by the city’s planning board, which had debated the proposal for more than a year, to approve construction of the new riverfront stadium ______ surprised many residents who had expected the plan to be rejected because of its environmental consequences.',
     stem: STD,
     choices: ['have', 'were', 'are', 'has'], answer: 3,
     steps: ['The subject is "The decision," which is singular; everything up to "stadium" describes it.', 'A singular subject takes "has": "The decision… has surprised."'],

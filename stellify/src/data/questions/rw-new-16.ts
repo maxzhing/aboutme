@@ -192,7 +192,7 @@ export const RW_NEW_16: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n42', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'Ethnobotanist Mariam Diallo has documented three distinct uses of the baobab tree among farming communities in central ______ cooking its young leaves as a vegetable, blending its dried fruit pulp into drinks, and stripping its fibrous inner bark to twist into rope.',
+    passage: 'Ethnobotanist Mariam Diallo, whose fieldwork examines how agricultural communities preserve botanical knowledge across generations, has documented three distinct uses of the baobab tree among farming communities in central ______ cooking its young leaves as a vegetable, blending its dried fruit pulp into drinks, and stripping its fibrous inner bark to twist into rope.',
     stem: STD,
     choices: ['Mali;', 'Mali', 'Mali:', 'Mali, and'], answer: 2,
     steps: ['"Ethnobotanist Mariam Diallo has documented three distinct uses… in central Mali" is a complete sentence that announces a list.', 'A colon introduces the list of three uses.'],
@@ -216,7 +216,7 @@ export const RW_NEW_16: RawQuestion[] = [
   },
   {
     id: 'r-fss-n41', skill: 'fss', sub: 'Subject–verb agreement', d: 'V',
-    passage: 'The proportion of migratory songbirds that return to their breeding grounds each spring, a figure that ornithologists have tracked at banding stations across Europe since the 1950s, ______ declined in most of the species studied.',
+    passage: 'The proportion of migratory songbirds that successfully return to their breeding grounds each spring, a figure that ornithologists have tracked at banding stations across Europe since the 1950s, ______ declined in most of the species studied, alarming conservation biologists.',
     stem: STD,
     choices: ['have', 'has', 'are', 'were'], answer: 1,
     steps: ['The subject is "The proportion," which is singular; "of migratory songbirds that return…" and the appositive both describe it.', 'A singular subject with "declined… in most of the species studied" takes "has."'],
@@ -228,7 +228,7 @@ export const RW_NEW_16: RawQuestion[] = [
   },
   {
     id: 'r-fss-n42', skill: 'fss', sub: 'Verb tense', d: 'H',
-    passage: 'When divers excavated the ancient shipwreck off the coast of Turkey in 1975, they found that much of its cargo of ceramic jars ______ remarkably intact for more than two thousand years, sealed beneath a protective layer of fine silt.',
+    passage: 'When divers excavated the ancient shipwreck off the coast of Turkey in 1975, they found that much of its cargo of ceramic jars ______ remarkably intact for more than two thousand years, sealed beneath a protective layer of fine silt that had prevented decomposition.',
     stem: STD,
     choices: ['remains', 'will remain', 'had remained', 'is remaining'], answer: 2,
     steps: ['The excavation happened in 1975, and the jars stayed intact for the two thousand years before that.', 'An ongoing state that lasted up to a past moment takes the past perfect: "had remained."'],
@@ -240,7 +240,7 @@ export const RW_NEW_16: RawQuestion[] = [
   },
   {
     id: 'r-fss-n43', skill: 'fss', sub: 'Modifiers', d: 'V',
-    passage: 'Critics have long noted the hidden symmetries in the chapter lengths and plot structures of Lena Arkwright’s fiction. Trained as a mathematician before she turned to writing novels, ______',
+    passage: 'Critics have long noted the hidden symmetries in the chapter lengths and plot structures of Lena Arkwright’s fiction, patterns that become apparent only through careful statistical analysis of her manuscripts and their extensive revisions. Trained as a mathematician before she turned to writing novels, ______',
     stem: STD,
     choices: ['the novels of Lena Arkwright are often structured around elaborate numerical patterns.', 'Lena Arkwright often structures her novels around elaborate numerical patterns.', 'there are elaborate numerical patterns in many of Lena Arkwright’s novels.', 'elaborate numerical patterns frequently structure the novels of Lena Arkwright.'], answer: 1,
     steps: ['"Trained as a mathematician before she turned to writing novels" describes a person.', 'That person, Lena Arkwright, must come right after the comma.'],

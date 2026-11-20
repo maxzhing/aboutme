@@ -179,7 +179,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n65', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'V',
-    passage: 'The novelist’s early drafts, which she wrote in pencil on the backs of old grocery ______ are now held in a university archive, where scholars study her revisions line by line.',
+    passage: 'The novelist’s early drafts, which she wrote in pencil on the backs of old grocery ______ are now held in a university archive, where scholars study her revisions line by line, reconstructing how her characteristically fragmented sentences emerged from considerably more conventional prose.',
     stem: STD,
     choices: ['receipts;', 'receipts', 'receipts—', 'receipts,'], answer: 3,
     steps: ['"Which she wrote in pencil on the backs of old grocery receipts" is a nonessential clause opened with a comma.', 'It must close with a comma before the verb "are."'],
@@ -191,7 +191,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n66', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'Researchers have identified two factors that strongly predict whether a tree seedling will survive its first ______ the amount of light reaching the forest floor and the density of nearby competing plants.',
+    passage: 'Researchers have identified two factors that strongly predict whether a tree seedling will survive its first ______ the amount of light reaching the forest floor and the density of nearby competing plants, variables that foresters can manipulate through selective thinning of the surrounding canopy.',
     stem: STD,
     choices: ['year:', 'year;', 'year, and', 'year'], answer: 0,
     steps: ['The first part is a complete clause that announces "two factors."', 'A colon introduces the two factors that follow.'],
@@ -203,7 +203,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n67', skill: 'bnd', sub: 'Sentence boundaries', d: 'V',
-    passage: 'In 1859, workers drilling near Titusville, Pennsylvania, struck oil at a depth of about 69 ______ well, one of the first drilled specifically for oil, launched a boom that transformed the region within a few years.',
+    passage: 'In 1859, workers drilling near Titusville, Pennsylvania, struck oil at a depth of about 69 ______ well, one of the first drilled specifically for petroleum, launched a boom that transformed the surrounding region within a few years, attracting thousands of prospectors and speculative investors.',
     stem: STD,
     choices: ['feet, the', 'feet the', 'feet. The', 'feet, and, the'], answer: 2,
     steps: ['"In 1859, workers… struck oil at a depth of about 69 feet" is a complete sentence.', '"The well… launched a boom" is another, so a period is needed between them.'],
@@ -215,7 +215,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-fss-n65', skill: 'fss', sub: 'Pronoun agreement', d: 'H',
-    passage: 'The museum acquired its collection of Andean textiles in 1962, but it was not until 2019 that curators displayed ______ to the public for the first time.',
+    passage: 'The museum acquired its collection of Andean textiles in 1962, but it was not until 2019 that curators displayed ______ to the public for the first time, having spent decades stabilizing deteriorating fibers and researching the communities in which the weavings originated.',
     stem: STD,
     choices: ['them', 'it', 'they', 'those'], answer: 1,
     steps: ['The pronoun refers to "collection," which is singular.', 'As the object of "displayed," the singular pronoun is "it."'],
@@ -239,7 +239,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-fss-n67', skill: 'fss', sub: 'Parallel structure', d: 'H',
-    passage: 'The city’s new climate plan aims to expand bus service, to plant 10,000 street trees, and ______ the energy efficiency of public buildings by 2030.',
+    passage: 'Developed after extensive consultation with residents, engineers, and environmental organizations, the city’s new climate plan aims to expand bus service, to plant 10,000 street trees, and ______ the energy efficiency of public buildings by 2030.',
     stem: STD,
     choices: ['improving', 'improvement of', 'to improve', 'improves'], answer: 2,
     steps: ['The plan aims to do three things: "to expand bus service, to plant 10,000 street trees, and ___."', 'Each item is "to" + verb, so parallel structure requires "to improve."'],

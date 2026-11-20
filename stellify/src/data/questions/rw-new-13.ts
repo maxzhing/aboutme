@@ -179,7 +179,7 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n32', skill: 'bnd', sub: 'Sentence boundaries', d: 'H',
-    passage: 'Some animals can survive being frozen ______ the wood frog of North America can spend weeks with ice in its body and its heart stopped, then thaw and hop away in the spring.',
+    passage: 'Biologists studying freeze tolerance have identified several vertebrates whose physiology defies conventional assumptions about survival. Some animals can survive being frozen ______ the wood frog of North America can spend weeks with ice in its body and its heart stopped, then thaw and hop away in the spring, because concentrated glucose prevents ice crystals from rupturing its cells.',
     stem: STD,
     choices: ['solid, for example,', 'solid for example', 'solid. For example,', 'solid; for example'], answer: 2,
     steps: ['"Some animals can survive being frozen solid" is a complete sentence, and "the wood frog… can spend weeks…" is another.', 'A period ends the first; "For example," followed by a comma, begins the second.'],
@@ -191,7 +191,7 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n33', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'V',
-    passage: 'Bandleaders ______ Duke Ellington and Count Basie toured the country in the 1930s, playing in ballrooms where hundreds of dancers crowded the floor each night.',
+    passage: 'Bandleaders ______ Duke Ellington and Count Basie toured the country in the 1930s, playing in ballrooms where hundreds of dancers crowded the floor each night, and their recordings, distributed through increasingly influential radio broadcasts, popularized orchestral jazz far beyond the nightclubs of Harlem and Kansas City.',
     stem: STD,
     choices: ['such as,', 'such as', ', such as', 'such as:'], answer: 1,
     steps: ['"Such as Duke Ellington and Count Basie" identifies which bandleaders are meant; it is essential.', 'No punctuation separates "such as" from its examples, and none is needed before it here.'],
@@ -227,7 +227,7 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-fss-n33', skill: 'fss', sub: 'Possessives and apostrophes', d: 'H',
-    passage: 'In caves in Southeast Asia, colonies of small birds called swiftlets build their homes high above the cave floor. The ______ nests, made almost entirely of hardened saliva, cling to the bare rock walls.',
+    passage: 'In limestone caves throughout Southeast Asia, colonies of small birds called swiftlets build their homes high above the cave floor, navigating the darkness by echolocation. The ______ nests, constructed almost entirely of hardened saliva, cling to the bare rock walls, where they remain inaccessible to most predators.',
     stem: STD,
     choices: ['swiftlet’s', 'swiftlets', 'swiftlets’', 'swiftlets’s'], answer: 2,
     steps: ['The nests belong to many birds (colonies), so a plural possessive is needed.', 'For a plural noun ending in -s, add only an apostrophe: "swiftlets’."'],
@@ -239,7 +239,7 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-fss-n34', skill: 'fss', sub: 'Verb tense', d: 'H',
-    passage: 'Since the new bridge across the bay opened in 2019, traffic on the old ferry route ______ by more than half, and the ferry company has cut its schedule to three trips a day.',
+    passage: 'Since the new suspension bridge across the bay opened in 2019, traffic on the old ferry route ______ by more than half, and the ferry company, confronting dramatically diminished revenue, has reduced its schedule to three trips a day and eliminated its overnight service entirely.',
     stem: STD,
     choices: ['drops', 'has dropped', 'will drop', 'is dropping'], answer: 1,
     steps: ['"Since… 2019" describes a change from a past time up to now.', 'That calls for the present perfect: "has dropped," matching "has cut."'],

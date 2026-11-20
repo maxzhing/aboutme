@@ -173,7 +173,7 @@ export const RW_NEW_2: RawQuestion[] = [
   // ── Form, structure and sense
   {
     id: 'r-fss-n1', skill: 'fss', sub: 'Subject–verb agreement', d: 'H',
-    passage: 'The collection of letters written by the poet’s younger sister ______ new details about the family’s years in Lisbon, including the address of the narrow house where they lived above a bakery.',
+    passage: 'The collection of letters written by the poet’s younger sister ______ new details about the family’s years in Lisbon, including the address of the narrow house where they lived above a bakery, and biographers are now revising several longstanding assumptions about the poet’s adolescence and intellectual formation.',
     stem: STD,
     choices: ['reveal', 'reveals', 'have revealed', 'are revealing'], answer: 1,
     steps: ['The subject is "collection," which is singular; "of letters written by the poet’s younger sister" describes it.', 'A singular subject takes a singular verb: "The collection … reveals."'],
@@ -185,7 +185,7 @@ export const RW_NEW_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-n2', skill: 'fss', sub: 'Modifiers', d: 'V',
-    passage: 'Hydrologist Amara Diallo began measuring the river in 2012, a year after a large dam was completed upstream. Having studied the river’s flow for a decade, ______',
+    passage: 'Hydrologist Amara Diallo began measuring the river in 2012, a year after an enormous hydroelectric dam was completed upstream, and she has since documented substantial changes in sediment transport, channel depth, and seasonal flooding along the lower valley. Having studied the river’s flow for a decade, ______',
     stem: STD,
     choices: ['the data showed Diallo that the dam had changed the river.', 'the river had changed, Diallo found, because of the dam.', 'Diallo concluded that the dam had changed the river’s course.', 'the dam, Diallo concluded, had changed the river’s course.'], answer: 2,
     steps: ['The opening phrase "Having studied the river’s flow for a decade" must describe the noun right after the comma.', 'Diallo did the studying, so "Diallo" must come right after the comma.'],

@@ -227,7 +227,7 @@ export const RW_NEW_8: RawQuestion[] = [
   },
   {
     id: 'r-fss-n18', skill: 'fss', sub: 'Verb tense', d: 'H',
-    passage: 'Each spring, the river town holds a festival in which residents ______ hundreds of paper lanterns on the water at dusk, a tradition that dates back more than two hundred years.',
+    passage: 'Each spring, the river town holds a festival in which residents ______ hundreds of paper lanterns on the water at dusk, a tradition that dates back more than two hundred years and that anthropologists have documented as an expression of remembrance for deceased relatives.',
     stem: STD,
     choices: ['floated', 'float', 'had floated', 'will have floated'], answer: 1,
     steps: ['"Each spring, the town holds" describes something that happens regularly, in the present.', 'The verb for what residents do must also be present: "float."'],
@@ -239,7 +239,7 @@ export const RW_NEW_8: RawQuestion[] = [
   },
   {
     id: 'r-fss-n19', skill: 'fss', sub: 'Logical comparisons', d: 'V',
-    passage: 'Most members of the cat family avoid water whenever they can, but one large species is a notable exception. Unlike most other members of the cat family, ______',
+    passage: 'Most members of the cat family avoid water whenever possible, a tendency that zoologists attribute partly to the difficulty of drying dense, insulating fur and partly to the vulnerability of a waterlogged predator, but one large species is a conspicuous exception. Unlike most other members of the cat family, ______',
     stem: STD,
     choices: ['swimming is something tigers often enjoy and do well.', 'water does not deter tigers, which often enjoy swimming.', 'the tiger’s enjoyment of swimming is well known.', 'tigers often enjoy swimming and are strong swimmers.'], answer: 3,
     steps: ['"Unlike most other members of the cat family" compares cats with something.', 'Cats must be compared with cats, so "tigers" must come right after the comma.'],

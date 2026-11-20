@@ -68,7 +68,7 @@ const CB_CHOICE_WORDS: Partial<Record<SkillId, number>> = { inf: 17, cid: 17, co
 export function passageComplexity(text: string): { wordsPerSentence: number; longWordPct: number } {
   const t = plain(text).replace(/_{3,}/g, ' ').replace(/\bText [12]\b/g, ' ');
   const ws = t.match(/[A-Za-z’'-]+/g) ?? [];
-  const sentences = t.split(/(?<=[.!?”"])\s+/).filter((s) => /[A-Za-z]/.test(s));
+  const sentences = t.split(/(?<=[.!?])\s+|(?<=[.!?][”"’])\s+/).filter((s) => /[A-Za-z]/.test(s));
   return { wordsPerSentence: ws.length / Math.max(1, sentences.length), longWordPct: (100 * ws.filter((w) => w.replace(/[’'-]/g, '').length >= 9).length) / Math.max(1, ws.length) };
 }
 

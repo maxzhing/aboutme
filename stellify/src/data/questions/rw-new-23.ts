@@ -181,7 +181,7 @@ export const RW_NEW_23: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n62', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'The expedition’s success depended on a single resource that the team could not carry in sufficient ______ fresh water, which had to be found at springs along the route.',
+    passage: 'The expedition’s success depended on a single resource that the team could not carry in sufficient ______ fresh water, which had to be found at springs along the route, so the navigators relied extensively on nineteenth-century surveyors’ maps of unreliable seasonal sources.',
     stem: STD,
     choices: ['quantity;', 'quantity:', 'quantity', 'quantity, it was'], answer: 1,
     steps: ['The clause before the blank is complete and points to "a single resource."', 'A colon introduces the item that names it: fresh water.'],
@@ -193,7 +193,7 @@ export const RW_NEW_23: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n63', skill: 'bnd', sub: 'Appositives', d: 'V',
-    passage: 'The Svalbard Global Seed Vault, a facility built deep inside a mountain on a remote Norwegian ______ seeds from nearly every country on Earth as insurance against the loss of crop diversity.',
+    passage: 'The Svalbard Global Seed Vault, a facility built deep inside a mountain on a remote Norwegian ______ seeds from nearly every country on Earth as insurance against the loss of crop diversity, preserving duplicate samples at temperatures cold enough to keep them viable for centuries.',
     stem: STD,
     choices: ['island—stores', 'island; stores', 'island, stores', 'island stores'], answer: 2,
     steps: ['The appositive "a facility built deep inside a mountain on a remote Norwegian island" opens with a comma.', 'It must close with a comma before the verb "stores."'],
@@ -229,7 +229,7 @@ export const RW_NEW_23: RawQuestion[] = [
   },
   {
     id: 'r-fss-n63', skill: 'fss', sub: 'Subject–verb agreement', d: 'V',
-    passage: 'Divers spent three summers excavating a merchant ship that sank off the coast of Sicily in the sixteenth century. Among the artifacts recovered from the wreck ______ a bronze astrolabe, a set of brass navigational dividers, and dozens of glazed ceramic jars.',
+    passage: 'Divers spent three summers excavating a merchant ship that sank off the coast of Sicily in the sixteenth century, documenting each object’s position before removing it. Among the artifacts recovered from the wreck ______ a bronze astrolabe, a set of brass navigational dividers, and dozens of glazed ceramic jars.',
     stem: STD,
     choices: ['was', 'were', 'has been', 'is'], answer: 1,
     steps: ['The sentence is inverted: the subject comes after the verb.', 'The subject is the list "a bronze astrolabe, a set of… dividers, and dozens of… jars," which is plural, so "were."'],

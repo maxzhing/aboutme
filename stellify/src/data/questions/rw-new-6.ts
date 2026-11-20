@@ -215,7 +215,7 @@ export const RW_NEW_6: RawQuestion[] = [
   },
   {
     id: 'r-fss-n11', skill: 'fss', sub: 'Subject–verb agreement', d: 'V',
-    passage: 'Neither the coach nor the players ______ the storm to cancel the championship game, which had been scheduled for months and was expected to draw a record crowd.',
+    passage: 'Neither the coach nor the players ______ the storm to cancel the championship game, which had been scheduled for months, was expected to draw a record crowd, and had been promoted extensively by regional broadcasters eager for the considerable advertising revenue it promised.',
     stem: STD,
     choices: ['was expecting', 'were expecting', 'has expected', 'expects'], answer: 1,
     steps: ['With "neither… nor," the verb agrees with the nearer subject, "players," which is plural.', 'The rest of the sentence is in the past, so the plural past form "were expecting" fits.'],
@@ -227,7 +227,7 @@ export const RW_NEW_6: RawQuestion[] = [
   },
   {
     id: 'r-fss-n12', skill: 'fss', sub: 'Parallel structure', d: 'H',
-    passage: 'To prepare for the expedition, the climbers studied detailed maps of the route for weeks, practiced crossing crevasses on a glacier near their base camp, and ______',
+    passage: 'Recognizing that the unfamiliar route presented both technical and physiological challenges, the climbers devoted months to systematic preparation. To prepare for the expedition, the climbers studied detailed maps of the route for weeks, practiced crossing crevasses on a glacier near their base camp, and ______',
     stem: STD,
     choices: ['they were testing their oxygen equipment at high altitude.', 'testing their oxygen equipment at high altitude.', 'tested their oxygen equipment at high altitude.', 'to test their oxygen equipment at high altitude.'], answer: 2,
     steps: ['The list of actions is "studied…, practiced…, and ______."', 'The third item must match: a past-tense verb, "tested."'],
@@ -239,7 +239,7 @@ export const RW_NEW_6: RawQuestion[] = [
   },
   {
     id: 'r-fss-n13', skill: 'fss', sub: 'Singular and plural', d: 'H',
-    passage: 'Among the most popular exhibits at the city’s science center ______ a full-size model of a blue whale, which hangs from the ceiling of the main hall and is lit from below to look as if it is swimming.',
+    passage: 'Among the most popular exhibits at the city’s science center ______ a full-size model of a blue whale, which hangs from the ceiling of the main hall and is dramatically illuminated from below so that it appears to be swimming, an effect that consistently astonishes younger visitors and that educators credit with stimulating considerable curiosity about marine conservation.',
     stem: STD,
     choices: ['is', 'are', 'have been', 'were'], answer: 0,
     steps: ['The sentence is inverted: the subject comes after the verb. The subject is "a full-size model," which is singular.', 'A singular subject in the present takes "is."'],

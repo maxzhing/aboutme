@@ -179,7 +179,7 @@ export const RW_NEW_14: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n35', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'H',
-    passage: 'F. Scott Fitzgerald’s ______ *The Great Gatsby*, published in 1925, follows the mysterious millionaire Jay Gatsby and his longing for Daisy Buchanan during one summer on Long Island.',
+    passage: 'F. Scott Fitzgerald’s ______ *The Great Gatsby*, published in 1925, follows the mysterious millionaire Jay Gatsby and his longing for Daisy Buchanan during one summer on Long Island, offering a famously ambivalent portrait of ambition, nostalgia, and conspicuous consumption that literary historians regard as emblematic of the Jazz Age.',
     stem: STD,
     choices: ['novel,', 'novel:', 'novel—', 'novel'], answer: 3,
     steps: ['Fitzgerald wrote several novels, so the title identifies which one; it is essential.', 'An essential appositive is not set off by punctuation.'],
@@ -191,7 +191,7 @@ export const RW_NEW_14: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n36', skill: 'bnd', sub: 'Introductory elements', d: 'V',
-    passage: 'Although the bridge had passed a full safety inspection only a month ______ engineers ordered it closed immediately after a cargo ship struck one of its concrete piers during a storm.',
+    passage: 'Although the bridge had passed a full safety inspection only a month ______ engineers ordered it closed immediately after a cargo ship struck one of its concrete piers during a storm, reasoning that even invisible structural damage could compromise the entire span.',
     stem: STD,
     choices: ['earlier,', 'earlier;', 'earlier.', 'earlier'], answer: 0,
     steps: ['"Although the bridge had passed… a month earlier" is a dependent clause.', 'A comma separates it from the main clause, "engineers ordered it closed…"'],
@@ -227,7 +227,7 @@ export const RW_NEW_14: RawQuestion[] = [
   },
   {
     id: 'r-fss-n36', skill: 'fss', sub: 'Logical comparisons', d: 'V',
-    passage: 'Climbers who reach the top of Mount Everest after weeks of preparation stand 8,849 meters above sea level. The summit of Mount Everest is higher than ______',
+    passage: 'Climbers who reach the top of Mount Everest after weeks of acclimatization stand 8,849 meters above sea level, where the atmosphere contains roughly a third of the oxygen available at the coastline, a physiological challenge that requires extraordinary endurance. The summit of Mount Everest is higher than ______',
     stem: STD,
     choices: ['any other mountain on Earth.', 'that of any mountain on Earth.', 'that of any other mountain on Earth.', 'those of any other mountain on Earth.'], answer: 2,
     steps: ['A summit must be compared with another summit: "that of."', 'Everest is itself a mountain, so it must be compared with "any other" mountain.'],
@@ -239,7 +239,7 @@ export const RW_NEW_14: RawQuestion[] = [
   },
   {
     id: 'r-fss-n37', skill: 'fss', sub: 'Verb tense', d: 'H',
-    passage: 'When the members of the 1858 expedition finally reached the shore of the great lake after months of travel, they ______ that a large river flowed out of its northern end.',
+    passage: 'When the members of the 1858 expedition finally reached the shore of the great lake after months of exhausting overland travel through unfamiliar territory, they ______ that a large river flowed out of its northern end, a finding that resolved a geographical controversy.',
     stem: STD,
     choices: ['discover', 'discovered', 'will discover', 'have discovered'], answer: 1,
     steps: ['"When… reached… in 1858" sets the action in the past.', 'The discovery happened at that past time, so the simple past "discovered" fits.'],

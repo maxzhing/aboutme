@@ -191,7 +191,7 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n30', skill: 'bnd', sub: 'Transition punctuation', d: 'V',
-    passage: 'The first version of the language-learning app was popular with teenagers, who liked its game-style lessons. ______ found its menus confusing and rarely opened the app more than once or twice.',
+    passage: 'The first version of the language-learning app was popular with teenagers, who appreciated its competitive, game-style lessons and its leaderboards comparing progress among classmates. ______ found its menus confusing and rarely opened the app more than once or twice, a pattern the developers discovered only after analyzing anonymized usage statistics.',
     stem: STD,
     choices: ['Adults however', 'Adults; however,', 'Adults, however', 'Adults, however,'], answer: 3,
     steps: ['"However" interrupts a single clause ("Adults found…"); it is not between two clauses.', 'An interrupting word inside a clause is set off with a pair of commas.'],
@@ -215,7 +215,7 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-fss-n29', skill: 'fss', sub: 'Pronoun agreement and clarity', d: 'V',
-    passage: 'The award went to a young engineer ______ design for a low-cost water filter, made from clay and sawdust, is now used in more than forty countries.',
+    passage: 'The international award, which recognizes inexpensive innovations that improve public health, went to a young engineer ______ design for a low-cost water filter, made from clay and sawdust, is now used in more than forty countries.',
     stem: STD,
     choices: ['whose', 'who’s', 'who', 'whom'], answer: 0,
     steps: ['The design belongs to the engineer, so a possessive is needed.', '"Whose" is the possessive form of "who."'],
@@ -227,7 +227,7 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-fss-n30', skill: 'fss', sub: 'Pronoun agreement', d: 'H',
-    passage: 'After the software company moved ______ headquarters from San Jose to Denver, it hired more than two hundred new employees and opened a training center for local students.',
+    passage: 'After the software company moved ______ headquarters from San Jose to Denver, it hired more than two hundred new employees and opened a training center for local students, a commitment that municipal officials had negotiated in exchange for considerable tax incentives.',
     stem: STD,
     choices: ['it’s', 'their', 'its', 'they’re'], answer: 2,
     steps: ['The headquarters belong to "the software company," a singular noun (the sentence also uses "it").', 'The singular possessive pronoun is "its."'],
@@ -239,7 +239,7 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-fss-n31', skill: 'fss', sub: 'Subject–verb agreement', d: 'H',
-    passage: 'Over the past decade, the number of electric buses in the city’s public transit fleet ______ from just four to more than three hundred, cutting the fleet’s fuel costs nearly in half.',
+    passage: 'Over the past decade, the number of electric buses in the city’s public transit fleet ______ from just four to more than three hundred, cutting the fleet’s fuel expenditures nearly in half and substantially reducing the concentration of particulate pollution along heavily traveled thoroughfares.',
     stem: STD,
     choices: ['have grown', 'has grown', 'are growing', 'were growing'], answer: 1,
     steps: ['The subject is "the number," which is singular.', '"Over the past decade" calls for the present perfect: "has grown."'],

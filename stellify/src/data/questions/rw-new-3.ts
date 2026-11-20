@@ -249,7 +249,7 @@ export const RW_NEW_3: RawQuestion[] = [
   },
   {
     id: 'r-fss-n5', skill: 'fss', sub: 'Logical comparisons', d: 'V',
-    passage: 'In a study of study habits, researchers found that students who reviewed their notes on the same day as the lecture remembered far more of the material a month later than ______',
+    passage: 'In a longitudinal investigation of study habits, researchers found that students who reviewed their notes on the same day as the lecture remembered considerably more of the material a month later than ______',
     stem: STD,
     choices: ['waiting until the night before the test.', 'those of students who waited until the night before the test.', 'students who waited until the night before the test.', 'the night before the test.'], answer: 2,
     steps: ['The comparison is between two groups of students: those who reviewed early and those who waited.', 'So the second part must also name students: "students who waited…"'],

@@ -214,7 +214,7 @@ export const RW_NEW_7: RawQuestion[] = [
   },
   {
     id: 'r-fss-n14', skill: 'fss', sub: 'Verb tense and forms', d: 'H',
-    passage: 'By the time the rescue team reached the village, the floodwaters had already ______ above the windows of most of the houses on the main street, and residents were waiting on the rooftops.',
+    passage: 'By the time the rescue team reached the village, the floodwaters had already ______ above the windows of most of the houses on the main street, and residents were waiting on the rooftops, having received no warning from regional authorities about the catastrophic collapse of the upstream embankment, which engineers had described as structurally unreliable.',
     stem: STD,
     choices: ['risen', 'rose', 'rising', 'rise'], answer: 0,
     steps: ['"Had already" requires the past participle to form the past perfect.', 'The past participle of "rise" is "risen."'],
@@ -226,7 +226,7 @@ export const RW_NEW_7: RawQuestion[] = [
   },
   {
     id: 'r-fss-n15', skill: 'fss', sub: 'Subject–verb agreement', d: 'V',
-    passage: 'The number of students who apply to the city’s summer science program ______ grown every year since the program began in 2015, and organizers now plan to double the number of available spots.',
+    passage: 'The number of students who apply to the city’s summer science program ______ grown every year since the program began in 2015, and organizers, encouraged by additional funding from university partners and philanthropic foundations, now plan to double the number of available positions.',
     stem: STD,
     choices: ['have', 'has', 'are', 'were'], answer: 1,
     steps: ['The subject is "the number," which is singular; "of students who apply…" describes it.', 'A singular subject takes "has": "The number… has grown."'],
@@ -238,7 +238,7 @@ export const RW_NEW_7: RawQuestion[] = [
   },
   {
     id: 'r-fss-n16', skill: 'fss', sub: 'Modifiers', d: 'H',
-    passage: 'The ancient city of Tal Amra was once home to tens of thousands of people, but by 900 CE it was nearly empty. Having studied the city’s ruins for more than a decade, ______',
+    passage: 'The ancient city of Tal Amra was once home to tens of thousands of people, but by 900 CE it was nearly empty, and historians have proposed competing explanations involving warfare, epidemic disease, and environmental deterioration. Having studied the city’s ruins for more than a decade, ______',
     stem: STD,
     choices: ['the theory that drought forced residents to leave was proposed by archaeologist Elena Ruiz.', 'there is new evidence, according to archaeologist Elena Ruiz, that drought forced residents to leave.', 'archaeologist Elena Ruiz proposed that drought forced residents to leave.', 'drought was proposed by archaeologist Elena Ruiz as the reason residents left.'], answer: 2,
     steps: ['"Having studied the city’s ruins for more than a decade" must describe the person who studied them.', 'That person, archaeologist Elena Ruiz, must come right after the comma.'],

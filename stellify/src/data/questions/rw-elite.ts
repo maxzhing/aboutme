@@ -338,7 +338,7 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-fss-01', skill: 'fss', sub: 'Subject-verb agreement', d: 'E',
-    passage: 'The inquiry ended in March, but its findings remain confidential. Neither the committee\'s recommendations nor the report on which they were based ______ been made public.',
+    passage: 'The inquiry ended in March, but its findings remain confidential, frustrating journalists and legislators who had repeatedly demanded transparency about the agency’s handling of the investigation and its expenditures. Neither the committee\'s recommendations nor the report on which they were based ______ been made public, and officials have declined to specify when disclosure might occur.',
     stem: SEC,
     choices: ['have', 'has', 'are', 'were'], answer: 1,
     steps: [
@@ -359,7 +359,7 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-fss-02', skill: 'fss', sub: 'Modifiers', d: 'E',
-    passage: "Scholars have long linked the abandonment of several ancient towns to a severe drought. Historical records suggested that the region's great drought had lasted about a decade. Having analyzed sediment cores from forty lakes, ______",
+    passage: 'Scholars have long attributed the abandonment of several ancient towns to a severe drought, although estimates of its duration varied considerably depending on the documentary sources consulted and the methods used to interpret them. Historical records suggested that the region\'s great drought had lasted about a decade, a figure that most archaeologists accepted without independent verification for more than a century. Having analyzed sediment cores from forty lakes, ______',
     stem: SEC,
     choices: [
       'the conclusion of the researchers was that the drought had lasted far longer.',

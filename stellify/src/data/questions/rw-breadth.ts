@@ -198,7 +198,7 @@ export const RW_BREADTH: RawQuestion[] = [
   },
   {
     id: 'r-br-fss-01', skill: 'fss', sub: 'Subject-verb agreement', d: 'H',
-    passage: "The linked sketches that make up Sarah Orne Jewett's 1896 book *The Country of the Pointed Firs* ______ set in a fictional fishing village on the coast of Maine, seen through the eyes of a writer who spends a summer there.",
+    passage: 'The linked sketches that make up Sarah Orne Jewett\'s 1896 book *The Country of the Pointed Firs* ______ set in a fictional fishing village on the coast of Maine, observed through the perspective of a writer who spends a summer there, and literary historians consider the collection a defining achievement of American regionalist literature.',
     stem: SEC_STEM,
     choices: ['are', 'is', 'has been', 'was'], answer: 0,
     steps: [
@@ -218,7 +218,7 @@ export const RW_BREADTH: RawQuestion[] = [
   },
   {
     id: 'r-br-fss-02', skill: 'fss', sub: 'Verb tense', d: 'V',
-    passage: 'By the time the Erie Canal opened in 1825, workers ______ more than 360 miles of channel across upstate New York, much of it dug by hand. The canal cut the cost of shipping goods between Buffalo and New York City by roughly 90 percent.',
+    passage: 'By the time the Erie Canal opened in 1825, workers ______ more than 360 miles of channel across upstate New York, much of it excavated by hand through dense forests and limestone escarpments. The canal reduced the cost of transporting merchandise between Buffalo and New York City by roughly 90 percent, accelerating westward settlement dramatically.',
     stem: SEC_STEM,
     choices: ['had excavated', 'excavate', 'will have excavated', 'are excavating'], answer: 0,
     steps: [

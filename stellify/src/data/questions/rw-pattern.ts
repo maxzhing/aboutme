@@ -345,7 +345,7 @@ export const RW_PATTERN: RawQuestion[] = [
   /* ───────────────────────── Form, Structure, and Sense ───────────────────────── */
   {
     id: 'r-cb-fss-01', skill: 'fss', sub: 'Subject-verb agreement', d: 'H',
-    passage: 'Pitcher plants draw most of their nitrogen from the insects they trap, but some species also shelter colonies of ants. As botanist Lin Zhao has documented, the ants feed on a nectar, secreted along the pitcher’s rim, that is harmless to them but fatal to any mosquito larvae that ______ in the fluid below.',
+    passage: 'Pitcher plants obtain most of their nitrogen from the insects they trap, but some species also shelter colonies of ants in a relationship that ecologists describe as mutually beneficial. As botanist Lin Zhao has documented, the ants feed on a nectar, secreted along the pitcher’s rim, that is harmless to them but fatal to any mosquito larvae that ______ in the fluid below. Consequently, the plant’s digestive chamber remains uncontaminated by competing organisms that would otherwise intercept its nutrients.',
     stem: SEC,
     choices: ['hatch', 'hatches', 'has hatched', 'is hatching'], answer: 0,
     steps: [
@@ -367,7 +367,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-fss-02', skill: 'fss', sub: 'Verb tense and forms', d: 'V',
-    passage: 'Volcanologist Keala Nakoa and her team estimate that nearly a fifth of the black sand on the island’s southern beaches consists of tiny glass shards. These shards form when lava pours into the sea, throwing up droplets of molten rock that, after hardening in the cold water and being ground down by the surf, ______ ashore with each tide.',
+    passage: 'Volcanologist Keala Nakoa and her colleagues estimate that nearly a fifth of the black sand on the island’s southern beaches consists of microscopic volcanic glass. These fragments originate when lava pours into the sea, throwing up droplets of molten rock that, after hardening in the cold water and being ground down by the surf, ______ ashore with each tide, gradually accumulating into distinctive coastal deposits.',
     stem: SEC,
     choices: ['to wash', 'wash', 'washing', 'having washed'], answer: 1,
     steps: [
@@ -389,7 +389,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-fss-03', skill: 'fss', sub: 'Verb tense and forms', d: 'H',
-    passage: 'A community land trust is a nonprofit that owns land on behalf of the people who live on it. This arrangement differs from conventional ownership, in which a buyer purchases both a house and the ground beneath it. Because the trust never sells the land itself—only the buildings—homes on trust land ______ affordable from one owner to the next.',
+    passage: 'A community land trust is a nonprofit organization that owns land on behalf of the residents who live on it, an arrangement intended to insulate neighborhoods from speculative price increases. This model differs fundamentally from conventional ownership, in which a buyer purchases both a house and the ground beneath it. Because the trust never sells the land itself—only the buildings—homes on trust land ______ affordable from one owner to the next.',
     stem: SEC,
     choices: ['stayed', 'had stayed', 'stay', 'were staying'], answer: 2,
     steps: [
@@ -411,7 +411,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-fss-04', skill: 'fss', sub: 'Verb tense and forms', d: 'H',
-    passage: 'Choreographer Dario Fuentes, ______ to unsettle the audience before a single dancer appears, opens his piece *Tidewater* with ninety seconds of darkness and the sound of dripping water.',
+    passage: 'Choreographer Dario Fuentes, ______ to unsettle the audience before a single dancer appears, opens his piece *Tidewater* with ninety seconds of darkness and the amplified sound of dripping water, a disorienting introduction that reviewers have described as simultaneously meditative and claustrophobic.',
     stem: SEC,
     choices: ['sought', 'seeks', 'is seeking', 'seeking'], answer: 3,
     steps: [
@@ -433,7 +433,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-fss-05', skill: 'fss', sub: 'Comparisons', d: 'V',
-    passage: 'The Gini coefficient, a standard measure of how unevenly income is spread across a population, runs from zero to one. Compared with that of a country in which a small elite earns most of the income, ______',
+    passage: 'The Gini coefficient, a standard statistical measure of how unevenly income is distributed across a population, ranges from zero, representing perfect equality, to one, representing a situation in which a single individual receives everything. Compared with that of a country in which a small elite earns most of the income, ______',
     stem: SEC,
     choices: [
       'a country with evenly spread incomes will have a much lower Gini coefficient.',
@@ -460,7 +460,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-fss-06', skill: 'fss', sub: 'Subject-verb agreement', d: 'V',
-    passage: 'Honeybees are unusual among insects in using two distinct signals to recruit nestmates: a round dance and a waggle dance. The puzzle of which features of a food source trigger one dance rather than the other, and of how colonies came to rely on both, ______ much of entomologist Farah Siddiqui’s recent fieldwork.',
+    passage: 'Honeybees are unusual among insects in employing two distinct signals to recruit nestmates: a round dance and a waggle dance. The puzzle of which features of a food source trigger one dance rather than the other, and of how colonies came to rely on both, ______ much of entomologist Farah Siddiqui’s recent fieldwork, which combines behavioral observation with experimental manipulation of feeding stations.',
     stem: SEC,
     choices: ['drives', 'drive', 'have driven', 'driving'], answer: 0,
     steps: [
@@ -526,7 +526,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-fss-09', skill: 'fss', sub: 'Modifiers', d: 'H',
-    passage: 'The great timber halls of the Ardal valley were long assumed to span three centuries of building. Drawing on tree-ring records from more than 600 timbers recovered across the valley, ______',
+    passage: 'The great timber halls of the Ardal valley were long assumed to represent three centuries of gradual construction by successive chieftains, an interpretation based largely on stylistic differences among their carved doorways and roof supports. Drawing on tree-ring records from more than 600 timbers recovered across the valley, ______',
     stem: SEC,
     choices: [
       'a 2023 study concluded that the valley’s great halls were all built within a single generation.',

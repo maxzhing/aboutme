@@ -214,7 +214,7 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-fss-n20', skill: 'fss', sub: 'Subject–verb agreement', d: 'H',
-    passage: 'The museum’s director and its chief curator ______ in agreement that the exhibit should travel to other cities after it closes in May, though they disagree about which cities to choose.',
+    passage: 'The museum’s director and its chief curator ______ in agreement that the exhibit should travel to other cities after it closes in May, though they disagree about which institutions should host it and whether the most fragile illuminated manuscripts can safely be transported internationally.',
     stem: STD,
     choices: ['is', 'are', 'was', 'has been'], answer: 1,
     steps: ['The subject is compound: "the director and… the chief curator," joined by "and."', 'A compound subject joined by "and" is plural and takes "are" (the sentence is in the present: "closes," "disagree").'],

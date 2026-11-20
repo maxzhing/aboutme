@@ -214,7 +214,7 @@ export const RW_NEW_10: RawQuestion[] = [
   },
   {
     id: 'r-fss-n23', skill: 'fss', sub: 'Pronoun agreement and clarity', d: 'V',
-    passage: 'When the agricultural researchers visited the village to interview the farmers about a new drought-resistant variety of maize, ______ said that the new seeds had cut their water use nearly in half.',
+    passage: 'When the agricultural researchers visited the village to interview the farmers about a new drought-resistant variety of maize, which had been distributed experimentally the previous year, ______ said that the new seeds had cut their water use nearly in half.',
     stem: STD,
     choices: ['the farmers', 'they', 'it', 'he'], answer: 0,
     steps: ['Two plural groups appear: the researchers and the farmers. "They" could refer to either.', 'Only the farmers would report on their own water use, so the noun must be named.'],
@@ -226,7 +226,7 @@ export const RW_NEW_10: RawQuestion[] = [
   },
   {
     id: 'r-fss-n24', skill: 'fss', sub: 'Possessives and apostrophes', d: 'H',
-    passage: 'The museum’s new exhibit traces the history of the ______ suffrage movement in the region, from the first public meetings in the 1840s to the ratification of a constitutional amendment in 1920.',
+    passage: 'Drawing on newspapers, pamphlets, and personal correspondence preserved in regional archives, the museum’s new exhibit traces the history of the ______ suffrage movement in the region, from the first public meetings in the 1840s to the ratification of a constitutional amendment in 1920.',
     stem: STD,
     choices: ['womens’', 'women’s', 'womans’', 'women’s’'], answer: 1,
     steps: ['"Women" is already plural, and it does not end in -s.', 'Plural nouns that do not end in -s form the possessive with ’s: "women’s."'],
@@ -238,7 +238,7 @@ export const RW_NEW_10: RawQuestion[] = [
   },
   {
     id: 'r-fss-n25', skill: 'fss', sub: 'Verb tense', d: 'H',
-    passage: 'By the time the first European ships reached the Pacific island of Rapa Nui in 1722, its inhabitants ______ hundreds of large stone statues, known as moai, many of which stood along the coast.',
+    passage: 'By the time the first European ships reached the Pacific island of Rapa Nui in 1722, its inhabitants ______ hundreds of enormous stone statues, known as moai, many of which stood along the coastline, and archaeologists continue to debate how the islanders transported these monumental sculptures from distant volcanic quarries.',
     stem: STD,
     choices: ['carve', 'are carving', 'will have carved', 'had carved'], answer: 3,
     steps: ['"By the time… reached… in 1722" sets a past moment.', 'An action completed before that past moment takes the past perfect: "had carved."'],

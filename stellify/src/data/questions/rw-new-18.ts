@@ -180,7 +180,7 @@ export const RW_NEW_18: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n47', skill: 'bnd', sub: 'Supplements and nonessential elements', d: 'H',
-    passage: 'The original Tacoma Narrows Bridge in Washington State collapsed in November ______ just four months after it opened, when strong winds set its long, slender deck twisting violently.',
+    passage: 'The original Tacoma Narrows Bridge in Washington State collapsed in November ______ just four months after it opened, when strong winds set its long, slender deck twisting violently, a catastrophe that compelled engineers to incorporate aerodynamic considerations into suspension bridge design.',
     stem: STD,
     choices: ['1940; just', '1940. Just', '1940, just', '1940 just'], answer: 2,
     steps: ['"Just four months after it opened…" is a supplementary phrase, not a complete sentence.', 'It is set off from the main clause with a comma.'],
@@ -216,7 +216,7 @@ export const RW_NEW_18: RawQuestion[] = [
   },
   {
     id: 'r-fss-n47', skill: 'fss', sub: 'Subject–verb agreement', d: 'H',
-    passage: 'Among the instruments aboard the space probe ______ a pair of high-resolution cameras that captured the first detailed images of the dwarf planet’s cratered surface.',
+    passage: 'Among the instruments aboard the space probe ______ a pair of high-resolution cameras that captured the first detailed images of the dwarf planet’s cratered surface, revealing geological features that planetary scientists had not anticipated on so distant and diminutive a body.',
     stem: STD,
     choices: ['were', 'are', 'was', 'have been'], answer: 2,
     steps: ['The sentence is inverted; the subject is "a pair," which is singular.', 'The sentence is in the past ("captured"), so the verb is "was."'],
@@ -228,7 +228,7 @@ export const RW_NEW_18: RawQuestion[] = [
   },
   {
     id: 'r-fss-n48', skill: 'fss', sub: 'Logical comparisons', d: 'V',
-    passage: 'Many nineteenth-century American poets favored exact rhymes, in which the final sounds of paired words match exactly, such as "stone" and "bone." Unlike the poems of most of her contemporaries, ______',
+    passage: 'Many nineteenth-century American poets favored exact rhymes, in which the final sounds of paired words correspond perfectly, such as "stone" and "bone," a convention that contemporary reviewers frequently treated as straightforward evidence of technical accomplishment and refinement. Unlike the poems of most of her contemporaries, ______',
     stem: STD,
     choices: ['Emily Dickinson’s poems often used slant rhyme, in which the sounds are similar but not identical.', 'Emily Dickinson often used slant rhyme, in which the sounds are similar but not identical.', 'slant rhyme, in which the sounds are similar but not identical, was often used by Emily Dickinson.', 'there was frequent use of slant rhyme in the poetry of Emily Dickinson.'], answer: 0,
     steps: ['"Unlike the poems of most of her contemporaries" compares poems with something.', 'Poems must be compared with poems: "Emily Dickinson’s poems."'],
@@ -240,7 +240,7 @@ export const RW_NEW_18: RawQuestion[] = [
   },
   {
     id: 'r-fss-n49', skill: 'fss', sub: 'Verb tense', d: 'V',
-    passage: 'The city archive has been closed for renovation since 2023. By the time it reopens to the public next spring, conservators ______ more than ten thousand fragile documents, many of them damaged by a flood decades ago.',
+    passage: 'The city archive has been closed for renovation since 2023, frustrating genealogists and historians who depend on its municipal records and photographs. By the time it reopens to the public next spring, conservators ______ more than ten thousand fragile documents, many of them damaged by a flood decades ago.',
     stem: STD,
     choices: ['restored', 'have restored', 'had restored', 'will have restored'], answer: 3,
     steps: ['"By the time it reopens… next spring" sets a future reference point.', 'An action completed before a future moment takes the future perfect: "will have restored."'],

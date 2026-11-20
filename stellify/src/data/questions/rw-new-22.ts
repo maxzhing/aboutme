@@ -179,7 +179,7 @@ export const RW_NEW_22: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n59', skill: 'bnd', sub: 'Dashes', d: 'H',
-    passage: 'Several ______ including Voyager 1, Voyager 2, and New Horizons—are now traveling far beyond the orbit of Pluto, still sending data back to Earth decades after their launch.',
+    passage: 'Several ______ including Voyager 1, Voyager 2, and New Horizons—are now traveling far beyond the orbit of Pluto, still transmitting measurements back to Earth decades after their launch, although their diminishing power supplies will eventually force engineers to deactivate their remaining instruments.',
     stem: STD,
     choices: ['spacecraft,', 'spacecraft:', 'spacecraft;', 'spacecraft—'], answer: 3,
     steps: ['The interruption "including Voyager 1, Voyager 2, and New Horizons" closes with a dash.', 'It must open with a matching dash.'],
@@ -191,7 +191,7 @@ export const RW_NEW_22: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n60', skill: 'bnd', sub: 'Transition punctuation', d: 'H',
-    passage: 'Many desert animals avoid the extreme daytime heat entirely. Kangaroo rats, for ______ stay in cool underground burrows during the day and come out to search for seeds only after sunset.',
+    passage: 'Many desert animals avoid the extreme daytime heat entirely, conserving both energy and moisture by restricting their activity to cooler nocturnal hours. Kangaroo rats, for ______ stay in cool underground burrows during the day and emerge to search for seeds only after sunset, obtaining nearly all of their water metabolically, through the chemical breakdown of the carbohydrates in their food.',
     stem: STD,
     choices: ['example,', 'example;', 'example:', 'example'], answer: 0,
     steps: ['"For example" interrupts the clause "Kangaroo rats… stay in cool underground burrows."', 'An interrupter is set off by a pair of commas; one comma already precedes "for."'],
@@ -215,7 +215,7 @@ export const RW_NEW_22: RawQuestion[] = [
   },
   {
     id: 'r-fss-n59', skill: 'fss', sub: 'Subject–verb agreement', d: 'H',
-    passage: 'The list of required supplies for the advanced chemistry course, which includes safety goggles, a lab notebook, and a scientific calculator, ______ posted on the class website.',
+    passage: 'The list of required supplies for the advanced chemistry course, which includes safety goggles, a laboratory notebook, and a scientific calculator, ______ posted on the class website, along with detailed instructions describing the procedures students must follow when handling hazardous materials.',
     stem: STD,
     choices: ['are', 'is', 'were', 'have been'], answer: 1,
     steps: ['The subject is "The list," which is singular; the "of" phrase and "which" clause describe it.', 'A singular subject takes "is."'],
@@ -227,7 +227,7 @@ export const RW_NEW_22: RawQuestion[] = [
   },
   {
     id: 'r-fss-n60', skill: 'fss', sub: 'Verb tense', d: 'H',
-    passage: 'Every summer since 2010, the coastal town ______ an outdoor jazz festival that now draws tens of thousands of visitors and fills every hotel within twenty miles.',
+    passage: 'Every summer since 2010, the coastal town ______ an outdoor jazz festival that now draws tens of thousands of visitors and fills every hotel within twenty miles, transforming a local economy that had previously depended almost entirely on commercial fishing and seasonal agriculture, both increasingly precarious industries.',
     stem: STD,
     choices: ['held', 'will hold', 'has held', 'had held'], answer: 2,
     steps: ['"Since 2010" describes a repeated action from a past time up to now.', 'That calls for the present perfect: "has held."'],
@@ -239,7 +239,7 @@ export const RW_NEW_22: RawQuestion[] = [
   },
   {
     id: 'r-fss-n61', skill: 'fss', sub: 'Modifiers', d: 'V',
-    passage: 'In January 1610, the Italian astronomer Galileo Galilei made a discovery that challenged the belief that everything in the heavens orbits Earth. Using a telescope he had built himself, ______',
+    passage: 'In January 1610, the Italian astronomer Galileo Galilei made a discovery that challenged the prevailing belief, inherited from ancient philosophers and endorsed by influential religious authorities throughout Europe, that everything in the heavens revolves around a stationary Earth. Using a telescope he had built himself, ______',
     stem: STD,
     choices: ['the moons of Jupiter were observed by Galileo for the first time.', 'Jupiter’s four largest moons were seen orbiting the planet.', 'the discovery of four moons orbiting Jupiter was made by Galileo.', 'Galileo observed four moons orbiting Jupiter.'], answer: 3,
     steps: ['"Using a telescope he had built himself" describes the person who used the telescope.', 'That person, Galileo, must come right after the comma.'],

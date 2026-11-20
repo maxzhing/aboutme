@@ -179,7 +179,7 @@ export const RW_NEW_15: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n38', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'V',
-    passage: 'The Amazon ______ which carries more water than any other river on Earth, flows roughly 6,400 kilometers from the Andes Mountains to the Atlantic Ocean.',
+    passage: 'The Amazon ______ which carries more water than any other river on Earth, flows roughly 6,400 kilometers from the Andes Mountains to the Atlantic Ocean, draining a basin so enormous that its freshwater discharge measurably dilutes the salinity of the ocean hundreds of kilometers offshore.',
     stem: STD,
     choices: ['River', 'River;', 'River—', 'River,'], answer: 3,
     steps: ['"Which carries more water than any other river on Earth" is a nonessential clause, closed by a comma after "Earth."', 'It must open with a matching comma after "River."'],
@@ -191,7 +191,7 @@ export const RW_NEW_15: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n39', skill: 'bnd', sub: 'Joining independent clauses', d: 'H',
-    passage: 'The research team’s new robot could climb stairs and open doors on its ______ it still struggled to pick up soft objects such as fruit without crushing them.',
+    passage: 'The research team’s new robot could climb stairs and open doors on its ______ it still struggled to pick up soft objects such as fruit without crushing them, a limitation that engineers attribute to the difficulty of calibrating mechanical grippers to perceive delicate variations in pressure.',
     stem: STD,
     choices: ['own yet', 'own, yet', 'own; yet,', 'own yet,'], answer: 1,
     steps: ['"The research team’s new robot could climb stairs…" and "it still struggled…" are both complete sentences.', 'A comma before "yet," a coordinating conjunction, joins them.'],
@@ -215,7 +215,7 @@ export const RW_NEW_15: RawQuestion[] = [
   },
   {
     id: 'r-fss-n38', skill: 'fss', sub: 'Subject–verb agreement', d: 'H',
-    passage: 'A number of residents ______ asked the city to install speed bumps on Elm Street, where drivers often exceed the speed limit near the elementary school.',
+    passage: 'A number of residents ______ asked the city to install speed bumps on Elm Street, where drivers frequently exceed the speed limit near the elementary school, and transportation officials have promised to evaluate the request after completing a comprehensive traffic study.',
     stem: STD,
     choices: ['has', 'is', 'have', 'was'], answer: 2,
     steps: ['"A number of residents" means "several residents"; it is plural.', 'A plural subject takes "have."'],
@@ -227,7 +227,7 @@ export const RW_NEW_15: RawQuestion[] = [
   },
   {
     id: 'r-fss-n39', skill: 'fss', sub: 'Pronoun agreement and clarity', d: 'V',
-    passage: 'Before Saturday’s game, the coach asked Maria and ______ to demonstrate the new passing drill for the rest of the team, since we had practiced it all week.',
+    passage: 'Hoping that a demonstration by teammates would prove more persuasive than another lengthy explanation, the coach asked Maria and ______ to demonstrate the new passing drill for the rest of the team before Saturday’s championship game, since we had practiced it all week.',
     stem: STD,
     choices: ['I', 'myself', 'mine', 'me'], answer: 3,
     steps: ['The pronoun is an object of "asked," along with "Maria."', 'Remove "Maria and": "the coach asked ___" needs the object pronoun "me."'],

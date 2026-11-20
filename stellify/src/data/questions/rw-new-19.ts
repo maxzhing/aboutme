@@ -180,7 +180,7 @@ export const RW_NEW_19: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n50', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'Opened last spring, the new gallery at the city museum displays pottery, tools, and jewelry from three of the world’s earliest urban ______ Egypt, Mesopotamia, and the Indus Valley.',
+    passage: 'Opened last spring after years of negotiation with international lending institutions, the new gallery at the city museum displays pottery, agricultural implements, and ornamental jewelry from three of the world’s earliest urban ______ Egypt, Mesopotamia, and the Indus Valley.',
     stem: STD,
     choices: ['civilizations;', 'civilizations:', 'civilizations', 'civilizations, such as:'], answer: 1,
     steps: ['"The new gallery… displays artifacts from three of the world’s earliest urban civilizations" is a complete sentence that announces a list.', 'A colon introduces the list of three.'],
@@ -192,7 +192,7 @@ export const RW_NEW_19: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n51', skill: 'bnd', sub: 'Nonessential and essential clauses', d: 'H',
-    passage: 'At the end of each summer, the public library holds a small ceremony at which students ______ complete the summer reading challenge receive certificates and choose a free book to keep.',
+    passage: 'At the end of each summer, the public library holds a small ceremony at which students ______ complete the summer reading challenge receive certificates and choose a free book to keep, a tradition that librarians credit with substantially increasing participation among younger readers.',
     stem: STD,
     choices: ['who', ', who', 'who,', '—who'], answer: 0,
     steps: ['"Who complete the summer reading challenge" identifies which students receive certificates; it is essential.', 'Essential clauses are not set off by punctuation.'],
@@ -204,7 +204,7 @@ export const RW_NEW_19: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n52', skill: 'bnd', sub: 'Coordination and subordination', d: 'V',
-    passage: 'The river’s water level dropped sharply during the long summer ______ by late August, cargo barges could no longer navigate the shallow channel near the city.',
+    passage: 'The river’s water level dropped sharply during the long summer ______ by late August, cargo barges could no longer navigate the shallow channel near the city, forcing regional manufacturers to transport materials by truck at considerably greater expense and prompting hydrologists to warn of recurring disruptions.',
     stem: STD,
     choices: ['drought, by late', 'drought; so, by late', 'drought so, by late', 'drought, so by late'], answer: 3,
     steps: ['"The river’s water level dropped sharply during the long summer drought" and "barges could no longer navigate…" are both complete sentences.', 'A comma before "so" joins them; "by late August" then introduces the second clause.'],
@@ -240,7 +240,7 @@ export const RW_NEW_19: RawQuestion[] = [
   },
   {
     id: 'r-fss-n52', skill: 'fss', sub: 'Verb tense and forms', d: 'V',
-    passage: 'The city council postponed its vote on the new library several times last year. If the council ______ the proposal earlier, construction could have begun last spring instead of next fall.',
+    passage: 'The city council postponed its vote on the new library several times last year, citing unresolved disagreements about parking, landscaping, and the building’s projected operating expenses. If the council ______ the proposal earlier, construction could have begun last spring instead of next fall, saving considerable money.',
     stem: STD,
     choices: ['approves', 'would approve', 'has approved', 'had approved'], answer: 3,
     steps: ['"Could have begun" signals an unreal past situation.', 'The "if" clause of an unreal past condition uses the past perfect: "had approved."'],

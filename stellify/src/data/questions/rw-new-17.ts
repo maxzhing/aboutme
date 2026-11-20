@@ -180,7 +180,7 @@ export const RW_NEW_17: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n44', skill: 'bnd', sub: 'Dashes', d: 'H',
-    passage: 'The researchers’ central conclusion—that the comet had formed in the outermost reaches of the solar ______ was based on the unusually high ratio of heavy water to ordinary water in the ice of its nucleus.',
+    passage: 'The researchers’ central conclusion—that the comet had formed in the outermost reaches of the solar ______ was based on the unusually high ratio of heavy water to ordinary water in the ice of its nucleus, a chemical signature that planetary scientists associate with extremely frigid environments.',
     stem: STD,
     choices: ['system,', 'system;', 'system—', 'system'], answer: 2,
     steps: ['A dash after "conclusion" opens an interruption that explains the conclusion.', 'The interruption must close with a matching dash before the verb "was based."'],
@@ -192,7 +192,7 @@ export const RW_NEW_17: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n45', skill: 'bnd', sub: 'Colons', d: 'H',
-    passage: 'The test results surprised the engineering ______ the supposedly inert coating had reacted with the steel within hours, forming a thin layer of rust beneath the paint.',
+    passage: 'The test results surprised the engineering ______ the supposedly inert coating had reacted with the steel within hours, forming a thin layer of rust beneath the paint, a failure that prompted an immediate reexamination of the manufacturer’s laboratory certification procedures.',
     stem: STD,
     choices: ['team, the', 'team: the', 'team the', 'team, and, the'], answer: 1,
     steps: ['"The test results surprised the engineering team" is a complete sentence, and what follows explains what was surprising.', 'A colon introduces an explanation after a complete sentence.'],
@@ -204,7 +204,7 @@ export const RW_NEW_17: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n46', skill: 'bnd', sub: 'Transition punctuation', d: 'V',
-    passage: 'Historians broadly agree that the 1648 Peace of Westphalia ended decades of devastating religious warfare in central Europe. They ______ about whether it established the modern system of sovereign states, as many textbooks claim.',
+    passage: 'Historians broadly agree that the 1648 Peace of Westphalia ended decades of devastating religious warfare in central Europe, redistributing territories among exhausted monarchies and principalities. They ______ about whether it established the modern system of sovereign states, as many textbooks claim, or whether that interpretation was constructed retrospectively by nineteenth-century scholars.',
     stem: STD,
     choices: ['disagree; however,', 'disagree however', 'disagree, however;', 'disagree, however,'], answer: 3,
     steps: ['"They disagree… about whether it established…" is a single clause; "however" interrupts it.', 'An interrupting word inside a clause is set off by a pair of commas.'],
@@ -228,7 +228,7 @@ export const RW_NEW_17: RawQuestion[] = [
   },
   {
     id: 'r-fss-n45', skill: 'fss', sub: 'Verb tense and forms', d: 'H',
-    passage: 'The expedition set out on the morning of March 3 and was caught in the blizzard two days later. If its leaders had chosen to depart just one week earlier, the expedition ______ the storm entirely.',
+    passage: 'The expedition set out on the morning of March 3 and was caught in the blizzard two days later, losing most of its equipment and several pack animals before retreating. If its leaders had chosen to depart just one week earlier, the expedition ______ the storm entirely, according to meteorological reconstructions.',
     stem: STD,
     choices: ['would have avoided', 'will avoid', 'avoids', 'would avoid'], answer: 0,
     steps: ['"If… had chosen" describes a past condition that did not happen.', 'The result of an unreal past condition uses "would have" plus the past participle.'],
@@ -240,7 +240,7 @@ export const RW_NEW_17: RawQuestion[] = [
   },
   {
     id: 'r-fss-n46', skill: 'fss', sub: 'Subject–verb agreement', d: 'V',
-    passage: 'The archive’s collection of letters written by the poet, which scholars had long believed was lost in a fire in 1923 (several of the letters were later found in a private library in Lisbon), ______ been digitized and made freely available online.',
+    passage: 'The archive’s collection of letters written by the poet, which scholars had long believed was destroyed in a fire in 1923 (several of the letters were subsequently discovered in a private library in Lisbon), ______ been digitized and made freely available online.',
     stem: STD,
     choices: ['have', 'has', 'were', 'are'], answer: 1,
     steps: ['The subject is "collection," which is singular; the "of" phrase, the "which" clause and the parenthetical all describe it.', 'A singular subject takes "has": "The… collection… has been digitized."'],

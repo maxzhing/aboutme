@@ -90,7 +90,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-05', skill: 'fss', sub: 'Subject-verb agreement', d: 'H',
-    passage: 'Among the artifacts recovered from the shipwreck ______ a bronze astrolabe and several hundred silver coins. The astrolabe, an instrument that sailors used to navigate by the stars, helped historians date the wreck.',
+    passage: 'Among the artifacts recovered from the shipwreck ______ a bronze astrolabe and several hundred silver coins. The astrolabe, a navigational instrument that sailors used to calculate latitude by observing the positions of celestial bodies, helped historians establish the approximate date of the wreck with unusual confidence.',
     stem: STEM,
     choices: ['were', 'was', 'is', 'has been'], answer: 0,
     steps: [
@@ -111,7 +111,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-06', skill: 'fss', sub: 'Modifiers', d: 'H',
-    passage: 'Readers of contemporary fiction may notice how often science appears in the work of one particular writer. Trained as a chemist before turning to fiction, ______',
+    passage: 'Readers of contemporary fiction may notice how frequently scientific practice appears, rendered with unusual technical precision and an insider’s familiarity with laboratory routines, in the work of one particular novelist whose earlier career was spent far from literature. Trained as a chemist before turning to fiction, ______',
     stem: STEM,
     choices: [
       'the novels of Kaoru Ishida often feature laboratories and experiments.',
@@ -137,7 +137,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-07', skill: 'fss', sub: 'Verb tense and forms', d: 'H',
-    passage: 'The Bauhaus school, founded in Germany in 1919, ______ artists and designers to unite fine art with practical craft. Its influence can still be seen in architecture and furniture design today.',
+    passage: 'The Bauhaus school, founded in Germany in 1919, ______ artists and designers to unite fine art with practical craft, rejecting the traditional hierarchy that elevated painting and sculpture above furniture, textiles, and typography. Its influence remains conspicuous in contemporary architecture and industrial design, particularly in the preference for unornamented geometric forms.',
     stem: STEM,
     choices: ['encouraging', 'to encourage', 'encouraged', 'having encouraged'], answer: 2,
     steps: [
@@ -158,7 +158,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-08', skill: 'fss', sub: 'Pronoun agreement and clarity', d: 'H',
-    passage: 'Unlike the leaves of most plants, which lose water through open pores during the day, the leaves of many cacti open ______ pores only at night.',
+    passage: 'Unlike the leaves of most plants, which lose water through open pores during the day, the leaves of many cacti open ______ pores only at night, absorbing carbon dioxide during cooler hours and storing it chemically until sunlight becomes available for photosynthesis, an adaptation that minimizes evaporation in arid environments.',
     stem: STEM,
     choices: ['its', 'their', 'it\'s', 'there'], answer: 1,
     steps: [
@@ -179,7 +179,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-09', skill: 'fss', sub: 'Verb tense and forms', d: 'H',
-    passage: 'A sudden storm stranded four climbers near the peak overnight. By the time the rescue team reached the summit, the storm ______ and the climbers were already descending.',
+    passage: 'A sudden, unforecast storm stranded four climbers near the peak overnight, and mountain authorities immediately dispatched an experienced rescue team. By the time the rescue team reached the summit, the storm ______ and the climbers were already descending, having survived the night by sheltering beneath an overhanging granite ledge.',
     stem: STEM,
     choices: ['passes', 'has passed', 'will have passed', 'had passed'], answer: 3,
     steps: [
@@ -200,7 +200,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-10', skill: 'fss', sub: 'Possessives and apostrophes', d: 'H',
-    passage: 'During its long migration, the humpback ______ were recorded by a network of underwater microphones. Scientists are using the recordings to study how the animal\'s song changes over a season.',
+    passage: 'During its long migration, the humpback ______ were recorded by a network of underwater microphones stretching across thousands of kilometers of open ocean. Scientists are using the recordings to investigate how the animal\'s song gradually changes over a season, a phenomenon that suggests cultural transmission among populations.',
     stem: STEM,
     choices: ['whale\'s calls', 'whales calls', 'whale\'s call\'s', 'whales\' calls\''], answer: 0,
     steps: [
@@ -221,7 +221,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-11', skill: 'fss', sub: 'Subject-verb agreement', d: 'H',
-    passage: 'Restoring the wetlands along the river\'s lower reaches ______ reduced flooding in nearby towns. Wetlands act like sponges, absorbing water during heavy rains and releasing it slowly.',
+    passage: 'Restoring the wetlands along the river\'s lower reaches ______ reduced flooding in nearby towns, according to hydrologists who compared water levels recorded before and after the restoration project. Wetlands function like enormous sponges, absorbing water during torrential rains and releasing it gradually into surrounding waterways.',
     stem: STEM,
     choices: ['have', 'are', 'has', 'were'], answer: 2,
     steps: [
@@ -242,7 +242,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-12', skill: 'fss', sub: 'Parallel structure', d: 'H',
-    passage: "During her first year in the studio, the apprentice learned to mix pigments, to prepare canvases, and ______ the master's brushwork. By the end of that year, she was trusted to paint the backgrounds of several portraits.",
+    passage: 'During her first year in the studio, the apprentice learned to mix pigments, to prepare canvases, and ______ the master\'s brushwork. By the end of that year, she was trusted to paint the backgrounds of several commissioned portraits, an unusual responsibility that reflected her exceptional technical facility.',
     stem: STEM,
     choices: ['imitating', 'imitated', 'she imitated', 'to imitate'], answer: 3,
     steps: [
@@ -284,7 +284,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-14', skill: 'fss', sub: 'Modifiers', d: 'V',
-    passage: 'Excavations at a Roman villa near the coast have produced an unexpected discovery. Having been buried under volcanic ash for nearly two thousand years, ______',
+    passage: 'Excavations at a Roman villa near the Bay of Naples have produced an unexpected discovery that has prompted historians to reconsider long-standing assumptions about the decoration of ordinary provincial households in the first century CE. Having been buried under volcanic ash for nearly two thousand years, ______',
     stem: STEM,
     choices: [
       'archaeologists found the villa\'s wall paintings remarkably well preserved.',
@@ -310,7 +310,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-15', skill: 'fss', sub: 'Verb tense and forms', d: 'V',
-    passage: "The new community center remains only a set of drawings. If the committee had approved the proposal last year, construction ______ by now. Instead, the proposal is still waiting for a final vote.",
+    passage: 'The new community center remains only a set of architectural drawings, despite years of enthusiastic support from neighborhood organizations, local businesses, and several prominent municipal officials. If the committee had approved the proposal last year, when materials were considerably less expensive, construction ______ by now, according to the contractor’s original schedule. Instead, the proposal is still awaiting a final vote, delayed by protracted disagreements about financing and long-term maintenance responsibilities.',
     stem: STEM,
     choices: ['will have begun', 'had begun', 'would begin', 'would have begun'], answer: 3,
     steps: [
@@ -331,7 +331,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-16', skill: 'fss', sub: 'Subject-verb agreement', d: 'V',
-    passage: "The lead violinist, as well as the two cellists who joined the ensemble last season, ______ from the same conservatory. Their shared training is evident in the group's precise, unified sound.",
+    passage: 'The lead violinist, as well as the two cellists who joined the ensemble last season, ______ from the same conservatory. Their shared training is evident in the group\'s precise, unified sound, which critics have praised as remarkably cohesive for an ensemble assembled so recently, particularly in technically demanding contemporary repertoire.',
     stem: STEM,
     choices: ['have graduated', 'are graduating', 'has graduated', 'graduating'], answer: 2,
     steps: [
@@ -352,7 +352,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-17', skill: 'fss', sub: 'Verb tense and forms', d: 'V',
-    passage: 'Since the reserve was established in 1987, populations of several threatened bird species ______ steadily. Ecologists credit the ban on hunting within the reserve\'s boundaries.',
+    passage: 'Since the reserve was established in 1987, populations of several threatened bird species ______ steadily. Ecologists credit the prohibition on hunting within the reserve\'s boundaries, although they acknowledge that simultaneous improvements in regional water quality and the restoration of nesting habitat may also have contributed substantially.',
     stem: STEM,
     choices: ['rose', 'have risen', 'rise', 'had risen'], answer: 1,
     steps: [
@@ -373,7 +373,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-18', skill: 'fss', sub: 'Comparisons', d: 'V',
-    passage: 'Few animals are as well suited to gliding over the open ocean as the wandering albatross. The wingspan of the wandering albatross is greater than ______',
+    passage: 'Few animals are as well suited to gliding effortlessly over the open ocean as the wandering albatross, which can travel thousands of kilometers while scarcely flapping, exploiting gradients in wind speed just above the waves. The wingspan of the wandering albatross is greater than ______',
     stem: STEM,
     choices: [
       'any other living bird.',
@@ -399,7 +399,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-19', skill: 'fss', sub: 'Singular and plural', d: 'V',
-    passage: "The number of languages spoken in the region ______ sharply over the past century. Linguists attribute the change mainly to migration toward cities, where many younger residents now speak only the national language.",
+    passage: 'The number of languages spoken in the region ______ sharply over the past century. Linguists attribute the change principally to migration toward cities, where many younger residents now speak only the national language, and they warn that several indigenous languages may disappear entirely within decades.',
     stem: STEM,
     choices: ['have declined', 'are declining', 'were declining', 'has declined'], answer: 3,
     steps: [
@@ -420,7 +420,7 @@ export const RW_SEC_2: RawQuestion[] = [
   },
   {
     id: 'r-fss-20', skill: 'fss', sub: 'Pronoun agreement and clarity', d: 'V',
-    passage: 'The trial lasted three weeks and involved testimony from more than forty witnesses. Although its members disagreed at first, the jury ultimately delivered ______ verdict after only two hours.',
+    passage: 'The trial lasted three weeks and involved testimony from more than forty witnesses, including several forensic specialists whose conclusions directly contradicted one another on the central question of timing. Although its members disagreed at first, the jury ultimately delivered ______ verdict after only two hours of deliberation, surprising observers who had predicted a protracted stalemate.',
     stem: STEM,
     choices: ['its', 'their', 'it\'s', 'they\'re'], answer: 0,
     steps: [

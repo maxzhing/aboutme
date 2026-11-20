@@ -179,7 +179,7 @@ export const RW_NEW_25: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n68', skill: 'bnd', sub: 'Lists', d: 'H',
-    passage: 'To study how rapidly growing coastal cities manage flooding, the international research team included urban planners and hydrologists from three ______ Lagos, Nigeria; Lima, Peru; and Osaka, Japan.',
+    passage: 'To investigate how rapidly expanding coastal cities manage flooding, an increasingly urgent problem as sea levels rise, the international research team included urban planners and hydrologists from three ______ Lagos, Nigeria; Lima, Peru; and Osaka, Japan.',
     stem: STD,
     choices: ['cities:', 'cities;', 'cities,', 'cities'], answer: 0,
     steps: ['"…the international research team included urban planners and hydrologists from three cities" is a complete clause.', 'A colon introduces the list of cities that follows.'],
@@ -191,7 +191,7 @@ export const RW_NEW_25: RawQuestion[] = [
   },
   {
     id: 'r-bnd-n69', skill: 'bnd', sub: 'Run-ons and fragments', d: 'V',
-    passage: 'Because Halley’s Comet passes close enough to the Sun to be seen from Earth only about once every 76 ______ most people have the chance to see it just once in their lives.',
+    passage: 'Because Halley’s Comet passes close enough to the Sun to be seen from Earth only about once every 76 ______ most people have the chance to see it just once in their lives, and astronomers are already preparing coordinated observational campaigns for its anticipated return in 2061.',
     stem: STD,
     choices: ['years;', 'years. Most', 'years and', 'years,'], answer: 3,
     steps: ['"Because… every 76 years" is a dependent clause.', 'It must attach to the main clause "most people have the chance…" with a comma.'],
@@ -227,7 +227,7 @@ export const RW_NEW_25: RawQuestion[] = [
   },
   {
     id: 'r-fss-n69', skill: 'fss', sub: 'Possessives', d: 'H',
-    passage: 'After two years of delays, the aerospace company announced that ______ newest weather satellite would finally launch in the spring, pending the results of final safety reviews.',
+    passage: 'After two years of delays caused by supply shortages and engineering complications, the aerospace company announced that ______ newest weather satellite would finally launch in the spring, pending the results of final safety reviews.',
     stem: STD,
     choices: ['its', 'it’s', 'their', 'its’'], answer: 0,
     steps: ['The satellite belongs to "the company," a singular noun.', 'The singular possessive pronoun is "its" (no apostrophe).'],
@@ -239,7 +239,7 @@ export const RW_NEW_25: RawQuestion[] = [
   },
   {
     id: 'r-fss-n70', skill: 'fss', sub: 'Modifiers', d: 'H',
-    passage: 'The design competition for the city’s new pedestrian bridge drew entries from more than forty architecture and engineering firms around the world. A self-taught engineer with no formal training, ______',
+    passage: 'The design competition for the city’s new pedestrian bridge drew entries from more than forty architecture and engineering firms around the world, many of them internationally celebrated for ambitious infrastructure projects that had transformed waterfronts on several continents. A self-taught engineer with no formal training, ______',
     stem: STD,
     choices: ['the bridge’s winning design was the work of Amara Lind.', 'Amara Lind’s design for the bridge won the competition.', 'the competition was won by Amara Lind’s design.', 'Amara Lind designed the bridge that won the competition.'], answer: 3,
     steps: ['"A self-taught engineer with no formal training" describes a person.', 'That person, Amara Lind, must come right after the comma.'],
