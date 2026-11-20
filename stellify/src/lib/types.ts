@@ -235,7 +235,7 @@ export interface MockAttempt {
   startedAt: number;
   completedAt?: number;
   modules: MockModuleResult[];
-  scores?: { rw: ScoreRange; math: ScoreRange; total: ScoreRange };
+  scores?: { rw: ScoreRange; math: ScoreRange; total: ScoreRange; /** an official test's printed raw-score table result, for reference */ table?: { rw: ScoreRange; math: ScoreRange; total: ScoreRange } };
   /** in-progress pointer */
   cursor?: { stage: number; index: number; msLeft: number; breakMsLeft?: number };
   kind: 'full' | 'section-rw' | 'section-math' | 'module-rw';

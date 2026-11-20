@@ -7,7 +7,7 @@ import { REFERENCE } from '@/data/reference';
 import { useStore } from '@/lib/store';
 import { useOfficial } from '@/lib/officialStore';
 import { formName, isOfficialForm, isOfficialLike, isCalibratedForm, LOWER_ROUTE_CAP, MOCK_FORMS, OFFICIAL_FORMS, officialModules, stageSection, stagesFor, summarizeMock } from '@/lib/engine/mock';
-import { fmtRange } from '@/lib/engine/scoring';
+import { fmtRange, missCostsItems } from '@/lib/engine/scoring';
 import { DOMAIN, DOMAINS, SAT_STRUCTURE, SECTION_NAME, SKILL } from '@/lib/taxonomy';
 import { fmtClock, fmtDuration, pct } from '@/lib/util';
 import type { MockAttempt, ScoreRange, Section, SkillId } from '@/lib/types';
@@ -19,6 +19,7 @@ import { RichText } from '@/components/RichText';
 import { TestShell } from '@/components/TestShell';
 import { OfficialTestsCard, TestPlanPanel } from '@/components/FullTests';
 import { FULL_TESTS, fullTestOfForm } from '@/lib/fullTest/registry';
+import { levelOf, missCosts } from '@/lib/fullTest/score';
 import { Badge, Card, Empty, Modal, PageHeader, Progress, Stat, cn, toneForPct } from '@/components/ui';
 import { FatigueCard } from '@/components/Fatigue';
 
@@ -284,15 +285,11 @@ export function MockResultsPage() {
       <PageHeader eyebrow="Mock exam report" title={`${formName(mock.formId)} · ${KIND_NAME[mock.kind]}`} subtitle={mock.completedAt ? `Completed ${new Date(mock.completedAt).toLocaleString()}` : undefined} actions={<Link href="/mocks" className="btn-ghost">All mock exams</Link>} />
       {mock.completedAt && <div className="grid gap-4 lg:grid-cols-2">{[...new Set(mock.modules.map((m) => m.section))].map((sec) => <FatigueCard key={sec} section={sec} />)}</div>}
       <div className="grid gap-3 sm:grid-cols-3">
-        {mock.kind === 'full' && sc && (scored ? (
-          ft?.table ? (
-            <div className="card border-gold/50 bg-gold/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Practice-test score · College Board conversion table</div><div className="mt-1 font-display text-4xl font-bold" data-testid="mock-total">{sc.total.mid}</div><div className="text-xs text-muted" data-testid="mock-total-range">Range {sc.total.low}–{sc.total.high} of 400–1600{prev?.scores ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div><div className="mt-1 text-xs text-faint">A practice-test score, not an official SAT score.</div></div>
-          ) : (
-            <div className="card border-brand/40 bg-brand/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Estimated total · unofficial 80% range</div><div className="mt-1 font-display text-3xl font-bold" data-testid="mock-total">{fmtRange(sc.total)}</div><div className="text-xs text-muted" data-testid="mock-total-range">Most likely near {sc.total.mid} of 400–1600{prev?.scores ? ` · ${changeNote(sc.total, prev.scores.total)}` : ''}</div><div className="mt-1 text-xs text-faint">A Stellify estimate on the College Board scale, not an SAT score.</div></div>
-          )
-        ) : <div className="card border-brand/40 bg-brand/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">Estimated total range</div><div className="mt-1 font-display text-3xl font-bold" data-testid="mock-total">{fmtRange(sc.total)}</div><div className="text-xs text-muted">Unofficial estimate{prev?.scores ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div></div>)}
+        {sc && (
+          <div className="card border-gold/50 bg-gold/10 p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{mock.kind === 'full' ? 'Practice-test score · scored by difficulty, like the real SAT' : 'Estimated total · scored by difficulty'}</div><div className="mt-1 font-display text-4xl font-bold" data-testid="mock-total">{sc.total?.mid ?? '—'}</div><div className="text-xs text-muted" data-testid="mock-total-range">{sc.total ? `Range ${sc.total.low}–${sc.total.high} of 400–1600` : ''}{prev?.scores?.total && sc.total ? ` · ${sc.total.mid - prev.scores.total.mid >= 0 ? '+' : ''}${sc.total.mid - prev.scores.total.mid} vs your previous exam` : ''}</div>{sc.table && <div className="mt-1 text-xs text-faint" data-testid="printed-score">The College Board’s printed table for this test, which counts right answers only: {sc.table.total?.mid}</div>}</div>
+        )}
         {sections.map((sec) => { const b = sum.bySection[sec]; const route = mock.modules.find((m) => m.section === sec && m.module === 2)?.route; return (
-          <div key={sec} className="card p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{SECTION_NAME[sec]}</div><div className="mt-1 font-display text-2xl font-bold" data-testid={`mock-score-${sec}`}>{sc ? (ft?.table ? (sec === 'rw' ? sc.rw : sc.math)?.mid : fmtRange(sec === 'rw' ? sc.rw : sc.math)) : '—'}</div>{sc && ft?.table && <div className="text-xs text-muted">Range {(sec === 'rw' ? sc.rw : sc.math)?.low}–{(sec === 'rw' ? sc.rw : sc.math)?.high} of 200–800</div>}{sc && !ft?.table && <div className="text-xs text-muted">{scored ? 'Estimated 80% range' : 'Stellify estimate'} of 200–800</div>}<div className="text-xs text-muted">{b.correct}/{b.total} correct · {b.unanswered} unanswered</div><div className="mt-1 text-xs text-muted">Module 2: {route === 'upper' ? 'harder set' : route === 'lower' ? 'easier set' : ft ? 'as printed' : '—'} · {fmtDuration(b.msUsed)} of {Math.round(b.msAllowed / 60_000)} min used</div></div>
+          <div key={sec} className="card p-4"><div className="text-xs font-semibold uppercase tracking-wide text-faint">{SECTION_NAME[sec]}</div><div className="mt-1 font-display text-2xl font-bold" data-testid={`mock-score-${sec}`}>{sc ? ((sec === 'rw' ? sc.rw : sc.math)?.mid ?? '—') : '—'}</div>{sc && <div className="text-xs text-muted">Range {(sec === 'rw' ? sc.rw : sc.math)?.low}–{(sec === 'rw' ? sc.rw : sc.math)?.high} of 200–800</div>}<div className="text-xs text-muted">{b.correct}/{b.total} correct · {b.unanswered} unanswered</div><div className="mt-1 text-xs text-muted">Module 2: {route === 'upper' ? 'harder set' : route === 'lower' ? 'easier set' : ft ? 'as printed' : '—'} · {fmtDuration(b.msUsed)} of {Math.round(b.msAllowed / 60_000)} min used</div></div>
         ); })}
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -327,7 +324,8 @@ export function MockResultsPage() {
         <p className="mt-1.5 text-xs text-faint">Module 2 is chosen from Module 1: the harder set opens the top of the scale; the easier set caps the section at {LOWER_ROUTE_CAP}.</p>
       </Card>
       <p className="text-xs text-faint" data-testid="lock-report">{mock.locked ? 'Taken locked in (full screen)' : 'Taken without full screen'} · {mock.breaks ? `left the test window ${mock.breaks} time${mock.breaks === 1 ? '' : 's'}` : 'never left the test window'}.</p>
-      <p className="text-xs text-faint" data-testid="score-note">{ft?.table ? `Scored exactly as the College Board scores ${ft.name}: your number of correct answers in each section, read from that test's official raw-score conversion table. The College Board reports practice-test scores as these ranges; the large number is the middle of the range.` : ft || isCalibratedForm(mock.formId) ? 'An unofficial estimate. Harder questions count for more (item-response scoring), and ability is placed on the College Board scale through the average conversion table of Practice Tests 4–10. On those seven official tests this method reproduces the College Board’s own tables to within about 30 points for the same answers, but it has never been checked against real SAT results, so read the 80% range rather than a single number.' : isOfficialForm(mock.formId) ? 'The questions are official College Board questions from your own file, but the range is Stellify’s own estimate from this set, not a College Board score.' : 'Ranges come from Stellify’s own model and original questions. They are not College Board scores.'}</p>
+      <p className="text-xs text-faint" data-testid="score-note">Scored the way the Digital SAT is scored: by which questions you got right, not just how many. Each question’s difficulty counts, so a miss on an easier question costs more than a miss on a harder one. The score is placed on the College Board scale using the average conversion table of official Practice Tests 4–10, and on those seven tests it lands within about 30 points of the College Board’s own tables.{ft?.table ? ' The College Board’s printed table for this test, which counts right answers only, is shown for comparison.' : ft ? '' : ' These are Stellify questions with our own difficulty labels, so treat the score as an estimate.'} For an official score, take a practice test in Bluebook.</p>
+      {mock.completedAt && <MissCost mock={mock} />}
       <TestPlanPanel mock={mock} />
       <div className="grid gap-4 md:grid-cols-2">
         <Card><h2 className="font-semibold">Domain performance</h2><ul className="mt-3 space-y-2.5">{DOMAINS.filter((d) => sum.byDomain[d.id]).map((d) => { const x = sum.byDomain[d.id]; const p = pct(x.correct, x.total); return <li key={d.id}><div className="mb-1 flex justify-between text-sm"><span>{d.name}</span><span className="text-muted">{x.correct}/{x.total}</span></div><Progress value={p} tone={toneForPct(p)} label={d.name} /></li>; })}</ul></Card>
@@ -354,3 +352,33 @@ export function MockResultsPage() {
 }
 
 export const mockStageSection = stageSection;
+
+/** What each miss cost: the points a section would have gained had that one answer been right. */
+function MissCost({ mock }: { mock: MockAttempt }) {
+  const rows = useMemo(() => (['rw', 'math'] as Section[]).flatMap((sec) => {
+    const mods = mock.modules.filter((m) => m.section === sec);
+    const items = mods.flatMap((m) => m.qids.map((id) => ({ id, q: getQuestion(id), a: m.answers[id] ?? null }))).filter((x) => x.q);
+    const lower = mods.some((m) => m.module === 2 && m.route === 'lower');
+    const rs = items.map((x) => ({ level: levelOf(x.q!), type: x.q!.type, correct: isCorrect(x.q!, x.a), difficulty: x.q!.difficulty }));
+    if (rs.length < 8) return [];
+    // the same method that scored this test
+    const cost = fullTestOfForm(mock.formId) || isCalibratedForm(mock.formId) ? missCosts(sec, rs, lower ? LOWER_ROUTE_CAP : 800) : missCostsItems(rs, lower ? LOWER_ROUTE_CAP : 800);
+    return items.map((x, i) => ({ id: x.id, q: x.q!, level: rs[i].level, cost: cost[i], sec, right: rs[i].correct })).filter((r) => !r.right);
+  }).sort((a, b) => b.cost - a.cost), [mock]);
+  if (!rows.length) return null;
+  const by = (lv: string[]) => rows.filter((r) => lv.includes(r.level));
+  const sum = (xs: typeof rows) => xs.reduce((t, r) => t + r.cost, 0);
+  const easier = by(['Easy', 'Medium']), harder = by(['Hard', 'VeryHard']);
+  const avg = (xs: typeof rows) => (xs.length ? Math.round(sum(xs) / xs.length) : 0);
+  return (
+    <Card data-testid="miss-cost">
+      <h2 className="font-semibold">What each miss cost you</h2>
+      <p className="mt-1 text-sm text-muted">Points each section would have gained had that one answer been right. {easier.length && harder.length ? `A missed easier question cost you about ${avg(easier)} points on average; a missed harder one about ${avg(harder)}.` : ''} Fix the expensive ones first: they are usually the quickest points.</p>
+      <ol className="mt-3 grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
+        {rows.slice(0, 12).map((r) => (
+          <li key={r.id} className="flex items-center gap-2"><span className="w-16 shrink-0 font-semibold tabular-nums">−{r.cost} pts</span><Link href={`/practice/session?mode=single&ids=${r.id}`} className="min-w-0 flex-1 truncate hover:underline">{SECTION_NAME[r.sec]} · {SKILL[r.q.skill].short}</Link><Badge tone={r.level === 'Easy' || r.level === 'Medium' ? 'warn' : 'default'}>{r.level === 'VeryHard' ? 'Very hard' : r.level}</Badge></li>
+        ))}
+      </ol>
+    </Card>
+  );
+}

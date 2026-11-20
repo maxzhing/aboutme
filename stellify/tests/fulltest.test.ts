@@ -5,7 +5,7 @@ import { QUESTIONS } from '@/data/questions';
 import type { MockAttempt, Question } from '@/lib/types';
 import { initialState } from '@/lib/state';
 import { classifyMath, classifyRW, keyAgrees, parseKeyCell, positionalDifficulty, parseAnswerKey, parseBooklet, parseExplanations, parseScoreTable, docKind, testNumber, MOD_KEYS, type PPage } from '@/lib/fullTest/parse';
-import { calibratedScore, CB_CURVE, curveAt, pointsPerQuestion, tableScore, type Resp } from '@/lib/fullTest/score';
+import { ability, calibratedScore, CB_CURVE, curveAt, missCosts, pointsPerQuestion, tableScore, type Resp } from '@/lib/fullTest/score';
 import { buildSatModule, remixForms, satCoverage } from '@/lib/fullTest/assemble';
 import { RW_SLOTS, advanceMock, scoreMock, startMock, REAL_SAT, REMIX, formName } from '@/lib/engine/mock';
 import { registerFullTests, FULL_TESTS } from '@/lib/fullTest/registry';
@@ -82,6 +82,21 @@ describe('scoring official tests', () => {
     expect(calibratedScore('rw', mediumRight)!.mid).toBeGreaterThan(calibratedScore('rw', easyRight)!.mid);
     expect(calibratedScore('math', resp(44, 44, 'Hard'))!.mid).toBe(800);
     expect(calibratedScore('math', resp(44, 44, 'Easy'), 650)!.mid).toBeLessThanOrEqual(650);
+  });
+
+  it('makes a miss on an easier question cost more than a miss on a harder one, like the real test', () => {
+    // a mid-scale student: every easy question right, most medium ones, a third of the hard ones
+    const form: Resp[] = [...resp(18, 18, 'Easy'), ...resp(18, 12, 'Medium'), ...resp(18, 6, 'Hard')];
+    const missEasy = form.map((r, i) => (i === 0 ? { ...r, correct: false } : r));
+    const missHard = form.map((r, i) => (i === 36 ? { ...r, correct: false } : r));
+    expect(ability(missEasy).theta).toBeLessThan(ability(missHard).theta);
+    const both = form.map((r, i) => (i === 0 || i === 36 ? { ...r, correct: false } : r));
+    const [easyCost, hardCost] = [missCosts('rw', both)[0], missCosts('rw', both)[36]];
+    expect(easyCost).toBeGreaterThan(hardCost);
+    // the same number right, a different pattern: missing easy ones scores lower than missing hard ones
+    const easyMissed = form.map((r, i) => (i < 6 ? { ...r, correct: false } : r));
+    const hardMissed = form.map((r, i) => (i >= 36 && i < 42 ? { ...r, correct: false } : r));
+    expect(calibratedScore('rw', easyMissed)!.mid).toBeLessThan(calibratedScore('rw', hardMissed)!.mid);
   });
 
   it('matches the official curve near the middle of the scale', () => {
@@ -220,8 +235,10 @@ describe('an official full test', () => {
     expect(mock.modules.map((m) => m.msAllowed / 60_000)).toEqual([39, 39, 43, 43]);
     const sc = scoreMock(mock, (id) => byId.get(id));
     const raw = (sec: 'rw' | 'math') => mock.modules.filter((m) => m.section === sec).flatMap((m) => m.qids).filter((id) => isCorrect(byId.get(id)!, mock.modules.find((m) => m.qids.includes(id))!.answers[id] ?? null)).length;
-    expect(sc.rw).toEqual(tableScore(table.rw, raw('rw')));
-    expect(sc.math).toEqual(tableScore(table.math, raw('math')));
+    // scored by difficulty like the real test; the printed table (right answers only) is kept for comparison
+    expect(sc.table!.rw).toEqual(tableScore(table.rw, raw('rw')));
+    expect(sc.table!.math).toEqual(tableScore(table.math, raw('math')));
+    expect(sc.math!.mid).toBeGreaterThanOrEqual(200); // (this fixture's Reading and Writing modules are empty)
     FULL_TESTS.splice(FULL_TESTS.findIndex((t) => t.id === 'ptT'), 1);
   });
 });

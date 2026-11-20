@@ -90,3 +90,15 @@ export function pointsPerQuestion(section: Section, score: number): number {
   const a = Math.max(0, i - 3), b = Math.min(c.length - 1, i + 3);
   return Math.max(5, Math.round((c[b] - c[a]) / (b - a)));
 }
+
+/**
+ * What each miss cost: for every wrong answer, the section score with that one answer right minus the score as
+ * answered. Like the real test's scoring, a miss on an easier question costs more than a miss on a harder one,
+ * because getting an easy question wrong says more about a student's level than missing a hard one.
+ */
+export function missCosts(section: Section, responses: Resp[], cap = 800): number[] {
+  // to the nearest point (the reported score rounds to 10s, which would hide the difference)
+  const score = (rs: Resp[]) => Math.min(cap, clamp(curveAt(section, expectedRaw(section, ability(rs).theta)), 200, 800));
+  const base = score(responses);
+  return responses.map((r, i) => (r.correct ? 0 : Math.round(Math.max(0, score(responses.map((x, j) => (j === i ? { ...x, correct: true } : x))) - base))));
+}

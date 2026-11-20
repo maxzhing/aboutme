@@ -121,3 +121,10 @@ const ORDER: Confidence[] = ['low', 'medium', 'high'];
 export const lowerConfidence = (a: Confidence | null, b: Confidence | null): Confidence | null => (a && b ? ORDER[Math.min(ORDER.indexOf(a), ORDER.indexOf(b))] : null);
 
 export const fmtRange = (r: ScoreRange | null) => (r ? (r.low === r.high ? `${r.mid}` : `${r.low}–${r.high}`) : '—');
+
+/** What each miss cost on a test of Stellify questions: the section score with that one answer right minus the score as answered. */
+export function missCostsItems(responses: Response[], cap = 800): number[] {
+  const score = (rs: Response[]) => Math.min(cap, clamp(500 + 100 * estimateTheta(rs).theta, 200, 800));
+  const base = score(responses);
+  return responses.map((r, i) => (r.correct ? 0 : Math.round(Math.max(0, score(responses.map((x, j) => (j === i ? { ...x, correct: true } : x))) - base))));
+}

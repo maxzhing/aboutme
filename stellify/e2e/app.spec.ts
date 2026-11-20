@@ -597,7 +597,8 @@ test('official full practice test: import the three College Board PDFs, take it,
     await page.getByTestId('submit-module').click();
   }
   await expect(page.getByTestId('mock-total')).toHaveText('400');
-  await expect(page.getByTestId('score-note')).toContainText('official raw-score conversion table');
+  await expect(page.getByTestId('score-note')).toContainText('by which questions you got right');
+  await expect(page.getByTestId('printed-score')).toContainText('400'); // the College Board's printed table, for comparison
   await expect(page.getByTestId('plan-focus').first()).toBeVisible();
   await page.getByTestId('adopt-plan').click();
   await expect(page.getByTestId('plan-adopted')).toBeVisible();

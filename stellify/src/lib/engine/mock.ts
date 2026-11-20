@@ -223,18 +223,26 @@ export function scoreMock(mock: MockAttempt, getQ: (id: string) => Question | un
     const responses = mods.flatMap((m) => m.qids.map((id) => ({ q: getQ(id), a: m.answers[id] ?? null })))
       .filter((r) => r.q).map((r) => ({ difficulty: r.q!.difficulty, type: r.q!.type, correct: isCorrect(r.q!, r.a) }));
     const lower = mods.some((m) => m.module === 2 && m.route === 'lower');
-    // an official practice test taken whole is scored with its own College Board conversion table
-    const fullTest = fullTestOfForm(mock.formId);
-    if (fullTest?.table && mods.length === 2) return tableScore(fullTest.table[sec], responses.filter((r) => r.correct).length);
-    if (fullTest || isCalibratedForm(mock.formId)) {
+    // every practice test is scored like the real test: by which questions were right, each weighted by its
+    // difficulty with an allowance for guessing (so a miss on an easier question costs more than one on a harder
+    // question). Official tests and calibrated forms go on the College Board scale through the official curve;
+    // tests of Stellify questions use Stellify's own item model, which recovers known scores more closely
+    if (fullTestOfForm(mock.formId) || isCalibratedForm(mock.formId)) {
       const rs = mods.flatMap((m) => m.qids.map((id) => ({ q: getQ(id), a: m.answers[id] ?? null }))).filter((r) => r.q)
         .map((r) => ({ level: levelOf(r.q!), type: r.q!.type, correct: isCorrect(r.q!, r.a) }));
       return calibratedScore(sec, rs, lower ? LOWER_ROUTE_CAP : 800);
     }
     return rangeFromResponses(responses, lower ? LOWER_ROUTE_CAP : 800);
   };
+  // an official practice test taken whole also gets the College Board's printed conversion table, for reference
+  const printed = (sec: Section) => {
+    const fullTest = fullTestOfForm(mock.formId), mods = mock.modules.filter((m) => m.section === sec);
+    if (!fullTest?.table || mods.length !== 2) return null;
+    return tableScore(fullTest.table[sec], mods.flatMap((m) => m.qids.filter((id) => { const q = getQ(id); return !!q && isCorrect(q, m.answers[id] ?? null); })).length);
+  };
   const rw = section('rw'), math = section('math');
-  return { rw, math, total: totalRange(rw, math) };
+  const trw = printed('rw'), tmath = printed('math');
+  return { rw, math, total: totalRange(rw, math), ...(trw && tmath ? { table: { rw: trw, math: tmath, total: totalRange(trw, tmath) } } : {}) };
 }
 
 export interface MockSummary {
