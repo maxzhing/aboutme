@@ -25,6 +25,10 @@ import { MATH_NEW_1 } from './math-new-1';
 import { MATH_NEW_2 } from './math-new-2';
 import { MATH_NEW_3 } from './math-new-3';
 import { RW_NEW_1 } from './rw-new-1';
+import { MATH_NEW_4 } from './math-new-4';
+
+/** Question batches written after Practice Tests A and B were fixed (newest last). Add each new batch here. */
+const NEW_BATCHES: RawQuestion[][] = [MATH_NEW_1, MATH_NEW_2, MATH_NEW_3, RW_NEW_1, MATH_NEW_4];
 
 /** Every authored question. Add new batch files here; nothing else needs to change. */
 export const ALL_RAW: RawQuestion[] = [
@@ -50,12 +54,9 @@ export const ALL_RAW: RawQuestion[] = [
   ...MATH_COURSE_2,
   ...RW_COURSE,
   ...RW_SPEC,
-  // added 2026-11-20, at the end so existing order (and everything seeded from it) is unchanged
-  ...MATH_NEW_1,
-  ...MATH_NEW_2,
-  ...MATH_NEW_3,
-  ...RW_NEW_1,
+  // added from 2026-11-20 on, at the end so existing order (and everything seeded from it) is unchanged
+  ...NEW_BATCHES.flat(),
 ];
 
 /** Questions added after Practice Tests A and B were fixed: those forms leave them out, so retakes stay identical. */
-export const ADDED_AFTER_FIXED_FORMS = new Set([...MATH_NEW_1, ...MATH_NEW_2, ...MATH_NEW_3, ...RW_NEW_1].map((q) => q.id));
+export const ADDED_AFTER_FIXED_FORMS = new Set(NEW_BATCHES.flat().map((q) => q.id));
