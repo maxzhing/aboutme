@@ -24,7 +24,7 @@ New in this release (details in DESIGN.md, METHODOLOGY.md and DECISIONS.md):
 
 ## What is inside
 
-- 517 original questions: SAT-style Math and Reading & Writing (about 15% medium, 40% hard,
+- 1,549 original questions (793 Math, 756 Reading & Writing): SAT-style Math and Reading & Writing (about 15% medium, 40% hard,
   45% very hard), a Beyond SAT tier that is deliberately harder than the real test, and a 40-question
   Reading & Writing set whose structures mirror the hardest College Board-released items (original questions, not official ones). Each has a step-by-step solution, a rationale for every answer choice, the concept,
   the fastest method, the common trap, a takeaway and three levels of hints.

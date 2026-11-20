@@ -1,5 +1,10 @@
 /** Shown on #/changelog, newest first. Add an entry for every change students will notice. */
 export const CHANGELOG: { date: string; title: string; items: string[] }[] = [
+  { date: '2026-11-20', title: 'Over 1,500 practice questions, written harder', items: [
+    '400 more questions modeled on the College Board’s hardest released items: denser academic passages, longer and more tempting wrong answers, precise vocabulary, and multi-step math with parameters and constraints. The bank now has 1,549 questions: 793 Math and 756 Reading and Writing.',
+    'About half of the new questions are very hard and the rest are hard.',
+    'Practice Tests A and B are unchanged, so retakes stay comparable.',
+  ] },
   { date: '2026-11-20', title: 'Over 1,100 practice questions', items: [
     '560 more questions in the College Board’s style across every skill, about 80% of them hard or very hard. The bank now has 1,149 questions: 593 Math and 556 Reading and Writing.',
     'Each new question comes with a worked solution, an explanation of every wrong answer, and a strategy tip. Math answers are checked by an independent calculation wherever the question has a computed answer.',
