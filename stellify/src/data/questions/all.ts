@@ -62,9 +62,10 @@ import { MATH_NEW_20 } from './math-new-20';
 import { RW_NEW_19 } from './rw-new-19';
 import { MATH_NEW_21 } from './math-new-21';
 import { RW_NEW_20 } from './rw-new-20';
+import { MATH_NEW_22 } from './math-new-22';
 
 /** Question batches written after Practice Tests A and B were fixed (newest last). Add each new batch here. */
-const NEW_BATCHES: RawQuestion[][] = [MATH_NEW_1, MATH_NEW_2, MATH_NEW_3, RW_NEW_1, MATH_NEW_4, RW_NEW_2, MATH_NEW_5, RW_NEW_3, MATH_NEW_6, RW_NEW_4, MATH_NEW_7, RW_NEW_5, MATH_NEW_8, RW_NEW_6, MATH_NEW_9, RW_NEW_7, MATH_NEW_10, RW_NEW_8, MATH_NEW_11, RW_NEW_9, MATH_NEW_12, RW_NEW_10, MATH_NEW_13, RW_NEW_11, MATH_NEW_14, RW_NEW_12, MATH_NEW_15, RW_NEW_13, MATH_NEW_16, RW_NEW_14, MATH_NEW_17, RW_NEW_15, RW_NEW_16, MATH_NEW_18, RW_NEW_17, MATH_NEW_19, RW_NEW_18, MATH_NEW_20, RW_NEW_19, MATH_NEW_21, RW_NEW_20];
+const NEW_BATCHES: RawQuestion[][] = [MATH_NEW_1, MATH_NEW_2, MATH_NEW_3, RW_NEW_1, MATH_NEW_4, RW_NEW_2, MATH_NEW_5, RW_NEW_3, MATH_NEW_6, RW_NEW_4, MATH_NEW_7, RW_NEW_5, MATH_NEW_8, RW_NEW_6, MATH_NEW_9, RW_NEW_7, MATH_NEW_10, RW_NEW_8, MATH_NEW_11, RW_NEW_9, MATH_NEW_12, RW_NEW_10, MATH_NEW_13, RW_NEW_11, MATH_NEW_14, RW_NEW_12, MATH_NEW_15, RW_NEW_13, MATH_NEW_16, RW_NEW_14, MATH_NEW_17, RW_NEW_15, RW_NEW_16, MATH_NEW_18, RW_NEW_17, MATH_NEW_19, RW_NEW_18, MATH_NEW_20, RW_NEW_19, MATH_NEW_21, RW_NEW_20, MATH_NEW_22];
 
 /** Every authored question. Add new batch files here; nothing else needs to change. */
 export const ALL_RAW: RawQuestion[] = [
