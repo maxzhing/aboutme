@@ -38,7 +38,7 @@ export const MATH_NEW_10: RawQuestion[] = [
     strategy: 'Match the coefficients first, then check the constants.',
     trap: 'Setting the coefficient of x on the left equal to zero.',
     remember: 'No solution: same slope, different intercept.',
-    check: () => { const k = 5; return k - 3 === 2 && 6 !== k; },
+    check: () => { const k: number = 5; return k - 3 === 2 && 6 !== k; },
   },
   {
     id: 'm-lin1-n11', skill: 'lin1', sub: 'Word problems', d: 'H',

@@ -76,7 +76,7 @@ export const MATH_NEW_7: RawQuestion[] = [
     strategy: 'Put the standard-form line into slope-intercept form before comparing.',
     trap: 'Using the perpendicular slope.',
     remember: 'No intersection → same slope.',
-    check: () => near(-2 / 3, -2 / 3) && 4 !== 1,
+    check: () => { const slope = (0 - 4) / (6 - 0), b: number = 12 / 3; return near(slope, -2 / 3) && near(2 * 6 + 3 * 0, 12) && b !== 1; },
   },
   // ── Linear inequalities
   {
