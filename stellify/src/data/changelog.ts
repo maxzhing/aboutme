@@ -1,5 +1,10 @@
 /** Shown on #/changelog, newest first. Add an entry for every change students will notice. */
 export const CHANGELOG: { date: string; title: string; items: string[] }[] = [
+  { date: '2026-11-20', title: 'Over 1,100 practice questions', items: [
+    '560 more questions in the College Board’s style across every skill, about 80% of them hard or very hard. The bank now has 1,149 questions: 593 Math and 556 Reading and Writing.',
+    'Each new question comes with a worked solution, an explanation of every wrong answer, and a strategy tip. Math answers are checked by an independent calculation wherever the question has a computed answer.',
+    'Practice Tests A and B are unchanged, so retakes stay comparable.',
+  ] },
   { date: '2026-11-20', title: 'Nova, more questions, and scoring like the real test', items: [
     'Meet Nova, Stellify’s mascot: one small gold star instead of an egg and random companions.',
     '72 new questions in the College Board’s style, mostly hard and very hard, in the skills that had the fewest. Practice Tests A and B are unchanged, so retakes stay comparable.',
