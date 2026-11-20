@@ -1,6 +1,6 @@
 {
  "generatedAt": "2026-11-20",
- "count": 969,
+ "count": 989,
  "ids": {
   "m-lin1-01": "12gezx3",
   "m-lin1-02": "1ig3miv",
@@ -970,6 +970,26 @@
   "m-data2-n15": "126ua0o",
   "m-pct-n14": "xm8byq",
   "m-circ-n12": "1mahtlv",
-  "m-trig-n12": "14q53jm"
+  "m-trig-n12": "14q53jm",
+  "r-cid-n14": "1cl4zn6",
+  "r-coet-n13": "1tjhksb",
+  "r-coeq-n14": "j2ee7v",
+  "r-inf-n18": "1wu7et7",
+  "r-inf-n19": "16966nv",
+  "r-wic-n19": "15zj2um",
+  "r-wic-n20": "15qxhrz",
+  "r-tsp-n16": "ampms9",
+  "r-ctc-n18": "1lch33a",
+  "r-ctc-n19": "1ftyg64",
+  "r-tra-n22": "mx9igl",
+  "r-tra-n23": "1tb2h54",
+  "r-syn-n19": "1ok9wuq",
+  "r-syn-n20": "4nlmom",
+  "r-bnd-n26": "nmy02c",
+  "r-bnd-n27": "h3bl7d",
+  "r-bnd-n28": "178xrvj",
+  "r-fss-n26": "cymmtl",
+  "r-fss-n27": "10dhywl",
+  "r-fss-n28": "n9mlzb"
  }
 }
