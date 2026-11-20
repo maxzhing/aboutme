@@ -1,7 +1,7 @@
 import type { Difficulty, Question } from '../types';
 
 export const LEVEL_TIERS = [
-  { level: 1, title: 'Beginner', form: 'Hatchling' },
+  { level: 1, title: 'Beginner', form: 'First light' },
   { level: 5, title: 'Growing', form: 'Sparkle cheeks' },
   { level: 10, title: 'Advanced', form: 'Star pin' },
   { level: 20, title: 'Expert', form: 'Explorer' },

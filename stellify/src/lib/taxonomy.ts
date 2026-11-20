@@ -3,7 +3,7 @@ import type { Difficulty, DomainId, Section, SkillId } from './types';
 export const BRAND = {
   name: 'Stellify',
   tagline: 'Free Digital SAT prep that actually teaches you.',
-  mascot: 'a companion hatched from an egg',
+  mascot: 'Nova, a small gold star',
   disclaimer:
     'Stellify is an independent, free study tool. SAT® is a trademark registered by the College Board, which is not affiliated with and does not endorse Stellify. All practice questions are original Stellify content, not official College Board questions.',
 };

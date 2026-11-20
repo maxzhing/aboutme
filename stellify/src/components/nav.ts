@@ -12,8 +12,7 @@ export const NAV: { group: string; folded?: boolean; items: NavItem[] }[] = [
     { href: '/learn', label: 'Lessons', icon: GraduationCap },
     { href: '/worked', label: 'Worked Examples', icon: Layers },
     { href: '/grammar', label: 'Grammar Rules', icon: PenLine },
-    { href: '/desmos', label: 'Desmos Masterclass', icon: LineChart },
-    { href: '/desmos/lab', label: 'Desmos Lab', icon: FlaskConical },
+    { href: '/desmos', label: 'Desmos', icon: LineChart },
     { href: '/hacks', label: 'SAT Hacks', icon: Lightbulb },
   ] },
   { group: 'Practice', items: [
@@ -22,7 +21,6 @@ export const NAV: { group: string; folded?: boolean; items: NavItem[] }[] = [
     { href: '/practice/timed', label: 'Timed Modules', icon: Timer },
     { href: '/mocks', label: 'Practice Tests', icon: ClipboardList },
     { href: '/practice', label: 'Question Bank', icon: LibraryBig },
-    { href: '/predict', label: 'Predict-First', icon: Eye },
     { href: '/remix', label: 'Remix Studio', icon: Wand2 },
     { href: '/official', label: 'Official Questions', icon: BadgeCheck },
   ] },
@@ -44,7 +42,7 @@ export const NAV: { group: string; folded?: boolean; items: NavItem[] }[] = [
     { href: '/resources', label: 'Official SAT Resources', icon: ListChecks },
   ] },
   { group: 'Companion', folded: true, items: [
-    { href: '/pet', label: 'My Pet', icon: PawPrint },
+    { href: '/pet', label: 'Nova', icon: PawPrint },
     { href: '/rewards', label: 'Rewards', icon: ShoppingBag },
     { href: '/achievements', label: 'Achievements', icon: Trophy },
   ] },

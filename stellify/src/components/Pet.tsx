@@ -1,7 +1,7 @@
 'use client';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useMemo, type ReactNode } from 'react';
-import { EGG_PATTERNS, eggOf, speciesById, type Species } from '@/lib/engine/companions';
+import { type ReactNode } from 'react';
+import { EGG_PATTERNS, NOVA, mascotName, type Species } from '@/lib/engine/companions';
 import { useStore } from '@/lib/store';
 import type { PetSlot } from '@/lib/types';
 import { cn } from './ui';
@@ -32,17 +32,11 @@ export function Pet({ mood = 'idle', level = 1, equipped = {}, size = 180, class
   species?: string;
 }) {
   const pet = useStore((s) => s.pet);
-  const activity = useStore((s) => s.activity);
-  const active = pet.species, name = pet.name;
-  const egg = useMemo(() => (active || species ? null : eggOf({ pet, activity })), [pet, activity, active, species]);
-  const sp = speciesById(species ?? active);
+  void species;
   const reduce = useReducedMotion() || still;
-  if (!sp) {
-    const svg = <EggArt pct={egg?.pct ?? 0} ready={!!egg?.ready} pattern={egg?.pattern ?? 0} size={size} still={reduce} className={className} label={label ?? `Your companion egg, ${Math.round((egg?.pct ?? 0) * 100)}% warm${egg?.ready ? ', ready to hatch' : ''}`} />;
-    return onClick ? <button type="button" onClick={onClick} className="rounded-3xl outline-offset-4" aria-label={label ?? 'Your egg'}>{svg}</button> : svg;
-  }
-  const svg = <Creature sp={sp} mood={mood} level={level} equipped={equipped} size={size} className={className} reduce={!!reduce} label={label ?? `${name || sp.name} the ${sp.kind}, ${mood}`} />;
-  return onClick ? <button type="button" onClick={onClick} className="rounded-3xl outline-offset-4" aria-label={label ?? `Pet ${name || sp.name}`}>{svg}</button> : svg;
+  const name = mascotName(pet);
+  const svg = <Creature sp={NOVA} mood={mood} level={level} equipped={equipped} size={size} className={className} reduce={!!reduce} label={label ?? `${name}, ${mood}`} />;
+  return onClick ? <button type="button" onClick={onClick} className="rounded-3xl outline-offset-4" aria-label={label ?? `Say hi to ${name}`}>{svg}</button> : svg;
 }
 
 function Creature({ sp, mood, level, equipped, size, className, reduce, label }: { sp: Species; mood: PetMood; level: number; equipped: Partial<Record<PetSlot, string>>; size: number; className?: string; reduce: boolean; label: string }) {
@@ -70,6 +64,7 @@ function Creature({ sp, mood, level, equipped, size, className, reduce, label }:
         {equipped.back === 'back-cape' && <path d="M58 100 C40 140 44 172 52 186 L148 186 C156 172 160 140 142 100 Z" fill="#E4572E" {...s} />}
         {equipped.back === 'back-wings' && <g fill="#FFFFFF" {...s}><path d="M48 104 C12 78 4 110 18 128 C8 132 22 150 50 134 Z" /><path d="M152 104 C188 78 196 110 182 128 C192 132 178 150 150 134 Z" /></g>}
         {equipped.back === 'back-pack' && <g {...s}><rect x="134" y="104" width="34" height="46" rx="10" fill="#B45309" /><rect x="140" y="118" width="22" height="14" rx="4" fill="#F59E0B" /></g>}
+        {sp.id === 'nova' ? <NovaBody c={c} outline={outline} /> : (<>
         <Back sp={sp} s={s} />
 
         {/* feet and body */}
@@ -87,18 +82,21 @@ function Creature({ sp, mood, level, equipped, size, className, reduce, label }:
 
         <Front sp={sp} s={s} />
 
+        </>)}
         {/* neck accessories (and a level-10 star pin when nothing is worn) */}
         {equipped.neck === 'neck-scarf' && <g {...s}><path d="M56 146 C80 160 120 160 144 146 L146 158 C122 172 78 172 54 158 Z" fill="#22D3EE" /><path d="M120 160 L132 186 L118 184 L112 164 Z" fill="#06B6D4" /></g>}
         {equipped.neck === 'neck-bowtie' && <g fill="#F43F5E" {...s}><path d="M100 154 L80 144 L80 164 Z" /><path d="M100 154 L120 144 L120 164 Z" /><circle cx="100" cy="154" r="4.5" fill="#BE123C" /></g>}
         {equipped.neck === 'neck-medal' && <g><path d="M84 142 L100 162 L116 142" fill="none" stroke="#EF4444" strokeWidth="5" /><circle cx="100" cy="166" r="9" fill="#FACC15" {...s} /><path d={STAR} transform="translate(100 166) scale(0.45)" fill="#CA8A04" /></g>}
         {!equipped.neck && level >= 10 && <path d={STAR} transform="translate(100 158) scale(0.55)" fill="#FFD23F" stroke={outline} strokeWidth={2} />}
 
+        {sp.id === 'nova' ? <NovaFace c={c} asleep={asleep} joyful={joyful} think={mood === 'think'} look={look} level={level} /> : (<>
         {/* face */}
         {!(sp.id === 'bao') && <g fill={c.cheek} opacity="0.75"><ellipse cx="64" cy="124" rx="8" ry="5.5" /><ellipse cx="136" cy="124" rx="8" ry="5.5" /></g>}
         {level >= 5 && <g fill="#FFFFFF" opacity="0.9"><circle cx="60" cy="121" r="1.6" /><circle cx="132" cy="121" r="1.6" /></g>}
         <Eyes sp={sp} asleep={asleep} joyful={joyful} look={look} reduce={reduce} />
         <Mouth sp={sp} asleep={asleep} joyful={joyful} think={mood === 'think'} beak={beak} />
 
+        </>)}
         {/* eyewear */}
         {face === 'face-glasses' && <g fill="none" stroke="#14121A" strokeWidth="3"><circle cx="80" cy="108" r="15" /><circle cx="120" cy="108" r="15" /><path d="M95 108 H105" /></g>}
         {face === 'face-shades' && <g fill="#14121A"><rect x="62" y="98" width="34" height="20" rx="8" /><rect x="104" y="98" width="34" height="20" rx="8" /><rect x="94" y="104" width="12" height="4" /></g>}
@@ -270,5 +268,52 @@ export function Habitat({ id = 'habitat-nook', className, children }: { id?: str
       </svg>
       <div className="relative">{children}</div>
     </div>
+  );
+}
+
+/** A five-point star outline with rounded tips (drawn with a thick round-joined stroke). */
+function starPath(cx: number, cy: number, R: number, r: number) {
+  return Array.from({ length: 10 }, (_, i) => { const a = (-90 + i * 36) * Math.PI / 180, d = i % 2 ? r : R; return `${i ? 'L' : 'M'}${(cx + d * Math.cos(a)).toFixed(1)} ${(cy + d * Math.sin(a)).toFixed(1)}`; }).join(' ') + ' Z';
+}
+const NOVA_STAR = starPath(100, 120, 62, 36);
+
+/** Nova's body: a soft gold star. Its side points are its arms and its lower points its feet. */
+function NovaBody({ c, outline }: { c: Species['colors']; outline: string }) {
+  return (
+    <g>
+      <path d={NOVA_STAR} fill={outline} stroke={outline} strokeWidth={26 + 2 * SW} strokeLinejoin="round" />
+      <path d={NOVA_STAR} fill={c.body} stroke={c.body} strokeWidth={26} strokeLinejoin="round" />
+      {/* a lighter face patch and a shine on the top point: flat shapes, no gradients */}
+      <ellipse cx="100" cy="122" rx="40" ry="31" fill={c.belly} opacity="0.55" />
+      <path d="M62 98 C66 88 74 82 84 80" fill="none" stroke="#FFFFFF" strokeOpacity="0.7" strokeWidth="5" strokeLinecap="round" />
+      <path d="M100 47 L102.6 53.4 L109 56 L102.6 58.6 L100 65 L97.4 58.6 L91 56 L97.4 53.4 Z" fill="#FFFFFF" opacity="0.9" />
+    </g>
+  );
+}
+
+/** Nova's face: big, calm eyes, rosy cheeks and a mouth that follows its mood. */
+function NovaFace({ c, asleep, joyful, think, look, level }: { c: Species['colors']; asleep: boolean; joyful: boolean; think: boolean; look: { dx: number; dy: number }; level: number }) {
+  const ink = '#2B2730';
+  return (
+    <g>
+      <g fill={c.cheek} opacity="0.8"><ellipse cx="66" cy="128" rx="8" ry="5" /><ellipse cx="134" cy="128" rx="8" ry="5" /></g>
+      {level >= 5 && <g fill="#FFFFFF" opacity="0.9"><circle cx="62" cy="126" r="1.6" /><circle cx="130" cy="126" r="1.6" /></g>}
+      {asleep ? (
+        <g fill="none" stroke={ink} strokeWidth="3.4" strokeLinecap="round"><path d="M72 112 Q80 118 88 112" /><path d="M112 112 Q120 118 128 112" /></g>
+      ) : joyful ? (
+        <g fill="none" stroke={ink} strokeWidth="3.6" strokeLinecap="round"><path d="M72 114 Q80 104 88 114" /><path d="M112 114 Q120 104 128 114" /></g>
+      ) : (
+        <g>
+          <ellipse cx={80 + look.dx} cy={110 + look.dy} rx="7" ry="9" fill={ink} />
+          <ellipse cx={120 + look.dx} cy={110 + look.dy} rx="7" ry="9" fill={ink} />
+          <circle cx={77.5 + look.dx} cy={106.5 + look.dy} r="2.4" fill="#FFFFFF" />
+          <circle cx={117.5 + look.dx} cy={106.5 + look.dy} r="2.4" fill="#FFFFFF" />
+        </g>
+      )}
+      {asleep ? <path d="M95 132 H105" stroke={ink} strokeWidth="3" strokeLinecap="round" />
+        : joyful ? <g><path d="M89 127 Q100 143 111 127 Z" fill="#7A2E2E" stroke={ink} strokeWidth="2.6" strokeLinejoin="round" /><ellipse cx="100" cy="135.5" rx="5" ry="2.6" fill="#F0828A" /></g>
+        : think ? <circle cx="104" cy="131" r="3.6" fill="#7A2E2E" stroke={ink} strokeWidth="2" />
+        : <path d="M91 128 Q100 136 109 128" fill="none" stroke={ink} strokeWidth="3.2" strokeLinecap="round" />}
+    </g>
   );
 }

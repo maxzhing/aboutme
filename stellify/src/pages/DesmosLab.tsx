@@ -89,7 +89,7 @@ function Technique({ t }: { t: LabTechnique }) {
   );
 }
 
-export function DesmosLabPage() {
+export function DesmosLabPage({ embedded = false }: { embedded?: boolean }) {
   const online = useOnline();
   const [choice, setChoice] = useState<Record<number, string>>({});
   const [drill, setDrill] = useState<{ start: number | null; end: number | null; method: Record<number, string>; ans: Record<number, string> }>({ start: null, end: null, method: {}, ans: {} });
@@ -97,7 +97,7 @@ export function DesmosLabPage() {
   const score = DRILL.filter((d, i) => matches(drill.ans[i] ?? '', d.answer)).length;
   return (
     <div className="mx-auto max-w-4xl space-y-6" data-testid="desmos-lab">
-      <PageHeader eyebrow="Learn" title="Desmos Lab" subtitle="Seven techniques that save time on SAT Math, each beside the algebra way, with a timer for both. You practise on Stellify’s built-in grapher, which works offline and can check what you type." actions={<Link href="/desmos" className="btn-ghost">Desmos Masterclass</Link>} />
+      {!embedded && <PageHeader eyebrow="Learn" title="Desmos Lab" subtitle="Seven techniques that save time on SAT Math, each beside the algebra way, with a timer for both. You practise on Stellify’s built-in grapher, which works offline and can check what you type." actions={<Link href="/desmos" className="btn-ghost">Desmos Masterclass</Link>} />}
       <Card>
         {online ? <p className="text-[15px]">Try the same steps in the real calculator: <a className="inline-flex items-center gap-1 text-accent underline" href={DESMOS.graphing} target="_blank" rel="noreferrer">Desmos (College Board version)<ExternalLink size={13} aria-hidden /></a>. It needs an internet connection.</p>
           : <p className="flex items-center gap-2 text-[15px]" data-testid="lab-offline"><WifiOff size={16} aria-hidden />You are offline, so the real Desmos cannot load. Everything on this page still works on the built-in grapher.</p>}

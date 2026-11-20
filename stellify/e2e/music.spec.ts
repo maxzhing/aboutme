@@ -105,47 +105,22 @@ test('Music Studio: live analysis, ear training and a part-writing exercise chec
   expect(errors).toEqual([]);
 });
 
-test('companions: everyone starts with an egg that hatches into a random companion after a lesson', async ({ page }) => {
+test('Nova: one mascot from the first visit, no egg, and a name that sticks', async ({ page }) => {
   const errors = watch(page);
   await boot(page);
-  await expect(page.getByTestId('dash-egg')).toBeVisible();
-  await go(page, '/pet');
-  await expect(page.getByTestId('egg-stage')).toBeVisible();
-  await expect(page.getByTestId('egg-progress')).toContainText('0/1');
-  await expect(page.getByTestId('hatch')).toHaveCount(0);
-
-  // finish a whole lesson (AP Music Theory 1.4, all multiple choice except two numbers)
-  await go(page, '/music/mt1-4');
-  const answers: (string | number)[] = [2, '8', '3', 3, 1, 2, 2, 2];
-  for (let i = 0; i < answers.length; i++) {
-    const card = page.getByTestId(`calc-problem-mt1-4-${i + 1}`);
-    const a = answers[i];
-    if (typeof a === 'number') await card.locator(`[data-choice="${'ABCD'[a]}"]`).click();
-    else await card.getByTestId('calc-input').fill(a);
-    await card.getByTestId('calc-check').click();
-    await expect(card.getByTestId('calc-solution')).toContainText('Correct!');
-  }
-  await expect(page.getByTestId('calc-result')).toContainText('Lesson mastered!');
-
-  await go(page, '/pet');
-  await expect(page.getByTestId('egg-progress')).toContainText('1/1');
-  await page.getByTestId('hatch').click();
-  await expect(page.getByTestId('hatched')).toBeVisible();
-  const title = await page.getByRole('heading', { level: 1 }).innerText();
-  expect(title).toMatch(/^Meet (Mochi|Pip|Ember|Sunny|Toffee|Bao|Kumo|Coral|Skye|Moss)!$/);
-  await page.getByTestId('name-pet').fill('Doodle');
-  await page.getByRole('button', { name: 'Save' }).click();
-  await expect(page.getByRole('heading', { name: 'My Pet: Doodle' })).toBeVisible();
-  await expect(page.getByTestId('collection')).toContainText('Collection · 1/10');
-  await expect(page.getByTestId('next-egg')).toBeVisible();
-  await page.getByTestId('pet-pet').click();
-  await expect(page.getByText(/Doodle loves that/)).toBeVisible();
-  // the new companion shows up on the dashboard, and persists after a reload
-  await go(page, '/');
+  await expect(page.getByTestId('pet-card')).toBeVisible();
   await expect(page.getByTestId('dash-egg')).toHaveCount(0);
+  await go(page, '/pet');
+  await expect(page.getByRole('heading', { level: 1, name: 'Nova' })).toBeVisible();
+  await expect(page.getByText(/egg/i)).toHaveCount(0);
+  await page.getByRole('textbox').last().fill('Sparky');
+  await page.getByRole('button', { name: 'Rename' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Sparky' })).toBeVisible();
+  await page.getByTestId('pet-pet').click();
+  await expect(page.getByText(/Sparky loves that/)).toBeVisible();
   await page.reload();
   await go(page, '/pet');
-  await expect(page.getByRole('heading', { name: 'My Pet: Doodle' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Sparky' })).toBeVisible();
   expect(errors).toEqual([]);
 });
 

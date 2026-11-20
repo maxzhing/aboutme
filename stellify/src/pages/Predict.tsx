@@ -39,7 +39,7 @@ export function PredictPage() {
   if (!qs.length) return <Empty title="No questions for this type" body="Predict-First uses Reading & Writing questions." action={{ label: 'Predict-First', href: '/predict' }} />;
   return (
     <div className="mx-auto max-w-3xl" data-testid="predict">
-      <PageHeader eyebrow="Practice" title="Predict-First" subtitle="Read the passage and the question, decide what the answer must say, then look at the choices. It trains you to answer from the text, not from the choices. Training only: mock tests never hide the choices." />
+      <PageHeader eyebrow="Reading & Writing practice" title="Predict-First" subtitle="Read the passage and the question, decide what the answer must say, then look at the choices. It trains you to answer from the text, not from the choices. Training only: mock tests never hide the choices." />
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Link href="/predict" className={cn('chip', !skill && '!border-ink !text-ink')}>All types</Link>
         {Object.keys(PREDICT).map((k) => <Link key={k} href={`/predict?skill=${k}`} className={cn('chip', skill === k && '!border-ink !text-ink')}>{SKILL[k as SkillId].short}</Link>)}

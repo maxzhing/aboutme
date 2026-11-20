@@ -17,7 +17,7 @@ import { MASTERY_LEVELS } from '@/lib/engine/mastery';
 import { ACHIEVEMENT } from '@/lib/engine/achievements';
 import { DIFFICULTIES, DIFFICULTY_NAME, SKILL, SKILLS } from '@/lib/taxonomy';
 import { clamp, dateKey, daysBetween } from '@/lib/util';
-import { eggOf, petName } from '@/lib/engine/companions';
+import { mascotName } from '@/lib/engine/companions';
 import { Habitat, Pet, type PetMood } from '@/components/Pet';
 import { Card, Progress, Ring } from '@/components/ui';
 import { Glyph } from '@/components/Glyph';
@@ -89,9 +89,7 @@ export function DashboardPage() {
   const greeting = `${away >= 3 ? 'Good to see you again' : 'Welcome back'}${s.profile.name ? `, ${s.profile.name}` : ''}.`;
 
   const questsLeft = quests.filter((q) => !q.done).length;
-  const egg = s.pet.species ? null : eggOf(s);
-  const say = egg ? (egg.ready ? 'Your egg is wiggling! Tap it to hatch your companion.' : `Your egg is ${Math.round(egg.pct * 100)}% warm. ${egg.lessons < egg.need.lessons ? 'Finish a lesson' : 'Answer a few questions'} to help it hatch!`)
-    : away >= 3 ? 'I missed you! Let’s warm up with one quick lesson.'
+  const say = away >= 3 ? 'I missed you! Let’s warm up with one quick lesson.'
     : chestReady ? 'All three quests done. Your chest is ready!'
     : restDay ? 'Rest day. I’ll be here if you want a bonus round.'
     : streak.studiedToday ? (questsLeft ? `Nice work today. ${questsLeft} quest${questsLeft === 1 ? '' : 's'} to go!` : 'Everything done today. You are on fire!')
@@ -109,8 +107,7 @@ export function DashboardPage() {
       <section className="card overflow-hidden p-0" data-testid="pet-card" aria-label="Your companion">
         <Habitat id={s.pet.equipped.habitat} className="!rounded-none">
           <div className="flex h-28 items-end gap-2 px-4 sm:px-8">
-            {egg ? <Link href="/pet" className="shrink-0 transition-transform active:scale-95" aria-label={egg.ready ? 'Hatch your egg' : 'See your egg'} data-testid="dash-egg"><Pet size={96} /></Link>
-              : <button type="button" onClick={poke} className="shrink-0 transition-transform active:scale-95" aria-label={`Pat ${petName(s.pet)}`} title={`Pat ${petName(s.pet)}`}><Pet mood={petMood} level={level.level} equipped={s.pet.equipped} size={96} /></button>}
+            {<button type="button" onClick={poke} className="shrink-0 transition-transform active:scale-95" aria-label={`Pat ${mascotName(s.pet)}`} title={`Pat ${mascotName(s.pet)}`}><Pet mood={petMood} level={level.level} equipped={s.pet.equipped} size={96} /></button>}
             <p className="mb-8 max-w-xs rounded border border-line bg-surface px-3 py-2 text-[14px] text-ink" data-testid="lumi-says">{say}</p>
           </div>
         </Habitat>

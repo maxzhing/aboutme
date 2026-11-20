@@ -1,5 +1,7 @@
 import { ExternalLink } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { DesmosLabPage } from './DesmosLab';
 import { DECIDE, DESMOS_LESSONS } from '@/data/desmos';
 import { useStore } from '@/lib/store';
 import { Grapher } from '@/components/Grapher';
@@ -20,7 +22,7 @@ const DESMOS_TOUR = [
   'Scientific tab: use the ans key to reuse your last result in a new calculation.',
 ];
 
-export function DesmosPage() {
+export function DesmosPage({ embedded = false }: { embedded?: boolean }) {
   const [active, setActive] = useState(DESMOS_LESSONS[0].id);
   const [picks, setPicks] = useState<Record<string, string>>({});
   const award = useStore((s) => s.awardXp);
@@ -30,8 +32,8 @@ export function DesmosPage() {
   const answered = Object.keys(picks).length;
   return (
     <div>
-      <PageHeader eyebrow="Learn" title="Desmos Masterclass" subtitle="The Digital SAT has a Desmos graphing calculator built in. Used well, it turns many hard questions into quick ones. Used blindly, it wastes time. These lessons teach both the techniques and the judgment."
-        actions={<a className="btn-ghost" href={DESMOS.graphing} target="_blank" rel="noopener noreferrer">Open the real Desmos (SAT version)<ExternalLink size={14} /></a>} />
+      {!embedded && <PageHeader eyebrow="Learn" title="Desmos Masterclass" subtitle="The Digital SAT has a Desmos graphing calculator built in. Used well, it turns many hard questions into quick ones. Used blindly, it wastes time. These lessons teach both the techniques and the judgment."
+        actions={<a className="btn-ghost" href={DESMOS.graphing} target="_blank" rel="noopener noreferrer">Open the real Desmos (SAT version)<ExternalLink size={14} /></a>} />}
       <div className="mb-4 flex flex-wrap gap-1.5" role="tablist" aria-label="Desmos lessons">
         {DESMOS_LESSONS.map((l, i) => <button key={l.id} id={l.id} role="tab" aria-selected={active === l.id} onClick={() => setActive(l.id)} className={`chip !py-1 ${active === l.id ? 'border-brand bg-brand/15 text-ink' : ''}`}>{i + 1}. {l.title}</button>)}
       </div>
@@ -75,6 +77,21 @@ export function DesmosPage() {
           <button className="btn-primary" disabled={awarded} onClick={() => { award(30, 'Completed the Desmos judgment drill'); setAwarded(true); }}>{awarded ? 'XP claimed' : 'Claim 30 XP'}</button>
         </Card>
       )}
+    </div>
+  );
+}
+
+/** One Desmos page: the lessons and the practice lab, as two tabs (the old addresses open the matching tab). */
+export function DesmosHubPage({ tab }: { tab: 'lessons' | 'lab' }) {
+  const router = useRouter();
+  return (
+    <div>
+      <PageHeader eyebrow="Learn" title="Desmos" subtitle="The Digital SAT has a Desmos graphing calculator built in. Used well, it turns many hard questions into quick ones; used blindly, it wastes time. Learn the techniques and when to use them, then practise them against the clock."
+        actions={<a className="btn-ghost" href={DESMOS.graphing} target="_blank" rel="noopener noreferrer">Open the real Desmos (SAT version)<ExternalLink size={14} /></a>} />
+      <div className="mb-5 flex gap-1 rounded-full border border-line bg-surface p-1" role="tablist" aria-label="Desmos">
+        {([['lessons', 'Lessons', '/desmos'], ['lab', 'Practice lab', '/desmos/lab']] as const).map(([id, label, href]) => <button key={id} role="tab" aria-selected={tab === id} onClick={() => router.replace(href)} className={`rounded-full px-4 py-1.5 text-[14px] font-medium ${tab === id ? 'bg-ink text-bg' : 'text-muted hover:text-ink'}`}>{label}</button>)}
+      </div>
+      {tab === 'lessons' ? <DesmosPage embedded /> : <DesmosLabPage embedded />}
     </div>
   );
 }

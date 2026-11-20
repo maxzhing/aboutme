@@ -5,7 +5,7 @@ import { DiagnosticPage, OnboardingPage, PlanReadyPage } from './pages/Onboardin
 const CurriculumPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m.CurriculumPage })));
 const GrammarPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m.GrammarPage })));
 const LessonPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m.LessonPage })));
-const DesmosPage = lazy(() => import('./pages/Desmos').then((m) => ({ default: m.DesmosPage })));
+const DesmosPage = lazy(() => import('./pages/Desmos').then((m) => ({ default: () => <m.DesmosHubPage tab="lessons" /> })));
 const OfficialPage = lazy(() => import('./pages/Official').then((m) => ({ default: m.OfficialPage })));
 const CourseHomePage = lazy(() => import('./pages/Calc').then((m) => ({ default: m.CourseHomePage })));
 const CourseLessonPage = lazy(() => import('./pages/Calc').then((m) => ({ default: m.CourseLessonPage })));
@@ -46,7 +46,7 @@ const TestDayPage = lazy(() => import('./pages/TestDay').then((m) => ({ default:
 const WorkedIndexPage = lazy(() => import('./pages/Worked').then((m) => ({ default: m.WorkedIndexPage })));
 const WorkedSkillPage = lazy(() => import('./pages/Worked').then((m) => ({ default: m.WorkedSkillPage })));
 const PredictPage = lazy(() => import('./pages/Predict').then((m) => ({ default: m.PredictPage })));
-const DesmosLabPage = lazy(() => import('./pages/DesmosLab').then((m) => ({ default: m.DesmosLabPage })));
+const DesmosLabPage = lazy(() => import('./pages/Desmos').then((m) => ({ default: () => <m.DesmosHubPage tab="lab" /> })));
 const AboutPage = lazy(() => import('./pages/Trust').then((m) => ({ default: m.AboutPage })));
 const ChangelogPage = lazy(() => import('./pages/Trust').then((m) => ({ default: m.ChangelogPage })));
 const HowWeWritePage = lazy(() => import('./pages/Trust').then((m) => ({ default: m.HowWeWritePage })));

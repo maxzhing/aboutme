@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Bot, Clock, Flag, Lightbulb, NotebookPen, SkipForward, TriangleAlert } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Bot, Clock, Flag, Lightbulb, NotebookPen, SkipForward, TriangleAlert, Wand2 } from 'lucide-react';
+import { remixable } from '@/lib/remix/engine';
 import { sfx } from '@/lib/sfx';
 import { Confetti } from './Confetti';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -171,6 +172,7 @@ export function SessionRunner(cfg: SessionConfig) {
     const review = reviewId ? getQuestion(reviewId) : undefined;
     const row = done.rows.find((r) => r.qid === reviewId);
     const weak = [...new Set(done.rows.filter((r) => !r.correct).map((r) => getQuestion(r.qid)!.skill))];
+    const missedRemix = done.rows.filter((r) => !r.correct).map((r) => getQuestion(r.qid)!).filter((q) => !q.id.startsWith('gx-') && remixable(q).ok);
     return (
       <div className="space-y-4" data-testid="session-summary">
         <Card className="flex flex-wrap items-center gap-5">
@@ -196,6 +198,13 @@ export function SessionRunner(cfg: SessionConfig) {
               {weak.slice(0, 4).map((k) => <Link key={k} href={`/learn/${k}`} className="btn-ghost !py-1.5">Review {SKILL[k].short}</Link>)}
               <Link href="/mistakes" className="btn-ghost !py-1.5">Open Mistake Bucket</Link>
             </div>
+            {missedRemix.length > 0 && (
+              <div className="mt-4 border-t border-line pt-3" data-testid="remix-misses">
+                <h4 className="flex items-center gap-2 text-sm font-semibold"><Wand2 size={15} aria-hidden className="text-accent" />Remix what you missed</h4>
+                <p className="mt-0.5 text-sm text-muted">The same idea in a new question: new numbers, a new situation, or the question turned around. The fastest way to check the fix stuck.</p>
+                <div className="mt-2 flex flex-wrap gap-2">{missedRemix.slice(0, 6).map((q) => <Link key={q.id} href={`/remix?q=${encodeURIComponent(q.id)}`} className="btn-ghost !py-1.5">Remix: {SKILL[q.skill].short}</Link>)}</div>
+              </div>
+            )}
           </Card>
         )}
         <Card>

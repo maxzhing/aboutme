@@ -107,6 +107,7 @@ export function SmartPage() {
             {([['', 'Mixed'], ['math', 'Math'], ['rw', 'Reading & Writing']] as const).map(([sec, label]) => (
               <div key={label} className="rounded-xl border border-line p-3">
                 <div className="text-sm font-semibold">{label}</div>
+                {sec === 'rw' && <Link href="/predict" className="mt-1 inline-flex items-center gap-1 text-[13px] font-semibold text-accent hover:underline" data-testid="predict-first-option">Predict first: hide the choices until you decide what the answer must say →</Link>}
                 <div className="mt-2 flex flex-wrap gap-1.5">{[5, 10, 20].map((n) => <Link key={n} href={`/practice/session?mode=smart&n=${n}${sec ? `&section=${sec}` : ''}`} className={n === 10 ? 'btn-primary !px-3 !py-1.5' : 'btn-ghost !px-3 !py-1.5'}>{n}</Link>)}</div>
               </div>
             ))}

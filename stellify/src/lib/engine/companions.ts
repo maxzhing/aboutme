@@ -29,6 +29,12 @@ export const SPECIES: Species[] = [
   { id: 'moss', name: 'Moss', kind: 'baby dragon', rarity: 'legendary', blurb: 'A rare baby dragon with tiny wings and a big, brave heart.', colors: { body: '#2EC4A6', belly: '#D8FFF2', dark: '#178F79', cheek: '#FF9FA0', accent: '#FFD166' } },
 ];
 export const speciesById = (id?: string) => SPECIES.find((s) => s.id === id);
+/**
+ * Nova, Stellify's one mascot: a small gold star (owner request, 2026-11-20). It replaces the egg and the ten random
+ * companions in everything students see; the old companions stay in the data so saved progress still loads.
+ */
+export const NOVA: Species = { id: 'nova', name: 'Nova', kind: 'star', rarity: 'common', blurb: 'A small, steady star who has seen every SAT question type and never panics about any of them.', colors: { body: '#F6C445', belly: '#FFE7A3', dark: '#D9961B', cheek: '#F2928E', accent: '#2E4A7D' } };
+export const mascotName = (p: { name?: string }) => (p.name && p.name !== 'Lumi' ? p.name : 'Nova');
 export const RARITY_LABEL: Record<Rarity, string> = { common: 'Common', rare: 'Rare', legendary: 'Legendary' };
 const WEIGHT: Record<Rarity, number> = { common: 0.6, rare: 0.32, legendary: 0.08 };
 

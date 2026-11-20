@@ -262,7 +262,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(40); // 39 menu items (extras in folded groups, still in the page) plus Settings
+  expect(links.length).toBe(38); // 37 menu items (extras in folded groups, still in the page) plus Settings
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();
