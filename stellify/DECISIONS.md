@@ -194,3 +194,17 @@ Each entry records what was decided, why, and the alternatives considered.
     that about 110 of the 342 items labeled very hard read like College Board Medium (for example a circle
     through the origin, a rhombus from its diagonals). Relabeling them would break the bank's enforced 15/40/45
     difficulty mix, so they keep their labels for now; making those items harder is the next piece of work.
+44. **The very-hard math items that read like College Board Medium were rewritten as genuinely harder problems (owner request).**
+    110 of the 111 flagged items were replaced in place, keeping each id, skill, subskill and label so the
+    enforced difficulty mix and answer-position balance hold. Each new item needs an extra idea a Medium item
+    does not: a second case to find (a quadratic factor that adds one new zero either as a double root or by
+    sharing a zero), a substitution before the algebra works (a system in 1/x and 1/y), a hidden step before the
+    asked quantity (solve a cubic from a volume, then find surface area), a conditional probability instead of a
+    plain one, or a reading of a whole margin-of-error interval. Every key is computed by the item's own check, every
+    wrong choice's rationale was re-checked against the choice it describes, and solutions follow the tutor style of
+    entry 43. m-prob-n5 was not replaced because its figure would also need redrawing. The quality-control pass then
+    raised 14 flags: three answer-length giveaways (the long answer was the key) were fixed by rewriting the
+    choices to similar lengths; two new items too close to existing ones were rewritten; the remaining 11 are
+    different problems that share College Board's standard stem wording, and each is recorded in qcReviewed.ts with
+    its reason. The difficulty of these items is our own judgment against the College Board's published Hard items;
+    no students have answered them yet, so the labels are not yet confirmed by data.
