@@ -73,6 +73,8 @@ interface Actions {
   setCalcExam: (date: string | undefined, course?: string) => void;
   /** record a finished Calculus BC test attempt */
   calcTest: (examId: string, score: number, total: number) => void;
+  /** record a finished guided free-response workout */
+  calcFrq: (id: string, firstTry: number, total: number) => void;
   setCalcTeach: (lessonId: string, text: string) => void;
   makePlan: () => void;
   togglePlanTask: (id: string) => void;
@@ -227,6 +229,12 @@ export const useStore = create<Store>()(
           const tests = { ...(c.tests ?? {}) };
           tests[examId] = [...(tests[examId] ?? []), { at: Date.now(), score, total }];
           setState({ calc: { ...c, tests } });
+        },
+        calcFrq: (id, firstTry, total) => {
+          const c = getState().calc ?? { done: {}, answers: {} };
+          const prev = c.frq?.[id];
+          const keep = prev && prev.firstTry / prev.total >= firstTry / total ? prev : { at: Date.now(), firstTry, total };
+          setState({ calc: { ...c, frq: { ...(c.frq ?? {}), [id]: keep } } });
         },
         setCalcTeach: (lessonId, text) => { const c = getState().calc ?? { done: {}, answers: {} }; setState({ calc: { ...c, teach: { ...(c.teach ?? {}), [lessonId]: text } } }); },
         logTrap: (trapId, qid) => {

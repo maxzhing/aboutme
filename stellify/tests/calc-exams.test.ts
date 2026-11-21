@@ -22,3 +22,21 @@ describe('Calculus BC unit tests, semester exams and finals', () => {
     }
   });
 });
+
+import { CALC_FRQS } from '@/data/calc/frq';
+describe('Calculus BC guided free-response workouts', () => {
+  it('ids are unique and every part has steps, a full-credit note and a trap', () => {
+    expect(new Set(CALC_FRQS.map((f) => f.id)).size).toBe(CALC_FRQS.length);
+    for (const f of CALC_FRQS) for (const p of f.parts) {
+      expect(p.steps.length, `${f.id}${p.label}`).toBeGreaterThan(0);
+      expect(p.write.length).toBeGreaterThan(30); expect(p.trap.length).toBeGreaterThan(20);
+    }
+  });
+  it('every step accepts its own keyed answer and passes its independent check', () => {
+    for (const f of CALC_FRQS) for (const p of f.parts) for (const s of p.steps) {
+      const fake = { id: 'x', q: '', answer: s.answer, hint: '', solution: [], level: 3 as const };
+      expect(calcCorrect(fake, s.answer[0]), `${f.id} ${s.prompt}`).toBe(true);
+      if (s.check) expect(s.check(), `${f.id} ${s.prompt}`).toBe(true);
+    }
+  });
+});

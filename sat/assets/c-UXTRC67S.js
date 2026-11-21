@@ -1,0 +1,1 @@
+"use client";import{a,b}from"./c-VBFY6PWW.js";import"./c-WELHWUK3.js";import"./c-TFTMUJBX.js";import"./c-R4QXC2P3.js";import"./c-D2UZFBYV.js";import"./c-VVCCTZTN.js";import"./c-U66KCPK5.js";export{a as CalcFrqCard,b as CalcFrqPage};

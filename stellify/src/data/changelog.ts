@@ -3,6 +3,8 @@ export const CHANGELOG: { date: string; title: string; items: string[] }[] = [
   { date: '2026-11-21', title: 'Calculus BC: fast track and tests', items: [
     'A fast track through Calculus BC built like a two-semester high-school course: one unit a week, a hard unit test after each unit, a Semester A exam after Unit 5, a Semester B exam after Unit 10, and cumulative finals.',
     'Every test is timed, has no hints, is graded only when you hand it in, and has a no-calculator part and a calculator part like the AP exam. Pass at 80%.',
+    'Work it out: 12 guided free-response problems. You work every detail yourself, one checked step at a time, then see exactly what to write for full credit and where students usually lose points.',
+    'Two more cumulative finals, for four in all.',
   ] },
   { date: '2026-11-20', title: 'Over 1,500 practice questions, written harder', items: [
     '400 more questions modeled on the College Board’s hardest released items: denser academic passages, longer and more tempting wrong answers, precise vocabulary, and multi-step math with parameters and constraints. The bank now has 1,549 questions: 793 Math and 756 Reading and Writing.',
