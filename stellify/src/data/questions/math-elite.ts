@@ -347,12 +347,7 @@ export const MATH_ELITE: RawQuestion[] = [
     id: 'm-x-pct-01', skill: 'pct', sub: 'Successive percent changes', d: 'E',
     stem: r`The price of an item was increased by 20%, and the new price was then decreased by $p\%$. The final price was 4% less than the original price. What is the value of $p$?`,
     answer: ['20'],
-    steps: [
-      r`Use multipliers. After both changes: $1.20 \times \left(1 - \dfrac{p}{100}\right) = 0.96$.`,
-      r`Divide: $1 - \dfrac{p}{100} = \dfrac{0.96}{1.20} = 0.80$.`,
-      r`So $\dfrac{p}{100} = 0.20$.`,
-      r`$p = 20$.`,
-    ],
+    steps: ['**Write each change as a multiplier.** Up 20%: $\\times 1.20$. Down $p\\%$: $\\times\\left(1 - \\dfrac{p}{100}\\right)$. Final: 4% below the original, $\\times 0.96$.', '**Set up the equation.** $1.20\\left(1 - \\dfrac{p}{100}\\right) = 0.96$.', '**Solve.** $1 - \\dfrac{p}{100} = \\dfrac{0.96}{1.20} = 0.80$, so $p = 20$.', '**Check.** \\$100 → \\$120 → \\$96, since 20% of \\$120 is \\$24. ✓ (Adding percents, $20 + 4 = 24$, is the trap.)'],
     why: [
       r`24 — this adds the percentages ($20 + 4$). The decrease applies to the larger, increased price, so fewer percentage points are needed.`,
       r`16 — this subtracts ($20 - 4$), again treating percent changes as if they added.`,

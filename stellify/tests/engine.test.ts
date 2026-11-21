@@ -57,6 +57,11 @@ describe('question bank', () => {
       expect(q.source).toMatch(/not an official/i);
     }
   });
+  it('explains every hard and very-hard math question in full, step by step (owner request: tutor-level solutions)', () => {
+    const words = (s: string) => (s.match(/[A-Za-z0-9]+/g) ?? []).length;
+    const thin = QUESTIONS.filter((q) => q.section === 'math' && q.difficulty !== 'medium' && (q.steps.length < 3 || words(q.steps.join(' ')) < 40)).map((q) => q.id);
+    expect(thin).toEqual([]);
+  });
   it('has a lesson for every skill', () => { for (const k of SKILLS) expect(LESSON[k.id].rules.length).toBeGreaterThan(2); });
 });
 

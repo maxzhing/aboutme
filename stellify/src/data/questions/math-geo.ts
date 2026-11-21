@@ -30,11 +30,7 @@ export const MATH_GEO: RawQuestion[] = [
     id: 'm-area-02', skill: 'area', sub: 'Surface area', d: 'H',
     stem: r`The surface area of a cube is 150 square inches. What is the volume, in cubic inches, of the cube?`,
     answer: ['125'],
-    steps: [
-      r`A cube has 6 congruent square faces, so $6s^2 = 150$.`,
-      r`$s^2 = 25$, so the edge length is $s = 5$ inches.`,
-      r`Volume: $s^3 = 5^3 = 125$ cubic inches.`,
-    ],
+    steps: ['**Use the surface area to find the edge.** A cube has 6 congruent square faces: $6s^2 = 150$, so $s^2 = 25$ and $s = 5$ inches.', '**Find the volume.** $s^3 = 5^3 = 125$ cubic inches.', '**Check.** Surface area $6 \\times 25 = 150$. ✓', '**Answer.** 125. (Taking $\\sqrt{150}$ as the edge forgets that the 150 is spread over 6 faces.)'],
     why: [
       r`25 — this is the area of one face ($s^2$), not the volume.`,
       r`5 — this is the edge length. Cube it to get the volume.`,
@@ -274,11 +270,7 @@ export const MATH_GEO: RawQuestion[] = [
     id: 'm-trig-02', skill: 'trig', sub: 'Complementary angle identity', d: 'H',
     stem: r`In right triangle $ABC$, angle $C$ is the right angle. If $\sin A = \dfrac{5}{13}$, what is the value of $\cos B$?`,
     choices: [r`$\dfrac{5}{13}$`, r`$\dfrac{12}{13}$`, r`$\dfrac{5}{12}$`, r`$\dfrac{13}{5}$`], answer: 0,
-    steps: [
-      r`In a right triangle, the two acute angles are complementary: $A + B = 90^\circ$.`,
-      r`The sine of an angle equals the cosine of its complement: $\sin A = \cos(90^\circ - A) = \cos B$.`,
-      r`So $\cos B = \dfrac{5}{13}$.`,
-    ],
+    steps: ['**The acute angles are complementary.** In a right triangle, $A + B = 90°$.', '**Use the cofunction identity.** The sine of an angle equals the cosine of its complement: $\\sin A = \\cos B$.', '**See it in the triangle.** The side opposite $A$ is the side adjacent to $B$, and both ratios divide it by the same hypotenuse.', '**Answer.** $\\cos B = \\dfrac{5}{13}$: choice A. (Choice B is $\\cos A$.)'],
     why: [
       r`Correct. The side opposite $A$ is the side adjacent to $B$, so $\sin A$ and $\cos B$ are the same ratio.`,
       r`$\frac{12}{13}$ is $\cos A$ (and $\sin B$), using the other leg.`,
@@ -316,12 +308,7 @@ export const MATH_GEO: RawQuestion[] = [
     id: 'm-trig-04', skill: 'trig', sub: 'Complementary angle identity', d: 'V',
     stem: r`For acute angles with measures $x^\circ$ and $(3x - 10)^\circ$, $\sin(x^\circ) = \cos\big((3x - 10)^\circ\big)$. What is the value of $x$?`,
     answer: ['25'],
-    steps: [
-      r`For acute angles, $\sin(a^\circ) = \cos(b^\circ)$ exactly when $a + b = 90$.`,
-      r`So $x + (3x - 10) = 90$.`,
-      r`$4x = 100$.`,
-      r`$x = 25$.`,
-    ],
+    steps: ['**Use the cofunction rule.** For acute angles, $\\sin(a°) = \\cos(b°)$ exactly when the angles are complementary: $a + b = 90$.', '**Apply it.** $x + (3x - 10) = 90$.', '**Solve.** $4x - 10 = 90$, so $4x = 100$ and $x = 25$.', '**Check.** The angles are $25°$ and $65°$, both acute, and they add to $90°$. ✓ (Setting $x = 3x - 10$ is the trap: sine equals cosine of the complement, not of the same angle.)'],
     why: [
       r`5 — this sets the two angles equal ($x = 3x - 10$). Sine and cosine are equal for complementary angles, not equal angles.`,
       r`47.5 — this sets the sum of the angles equal to 180 instead of 90.`,
@@ -402,11 +389,7 @@ export const MATH_GEO: RawQuestion[] = [
     id: 'm-circ-02', skill: 'circ', sub: 'Arcs and sectors', d: 'H',
     stem: r`A circle has a radius of 12. What is the length of an arc of the circle intercepted by a central angle of $75^\circ$?`,
     choices: [r`$\dfrac{5\pi}{2}$`, r`$5\pi$`, r`$10\pi$`, r`$30\pi$`], answer: 1,
-    steps: [
-      r`The arc is the fraction $\dfrac{75}{360}$ of the full circumference.`,
-      r`Circumference: $2\pi r = 24\pi$.`,
-      r`Arc length: $\dfrac{75}{360} \cdot 24\pi = \dfrac{5}{24} \cdot 24\pi = 5\pi$.`,
-    ],
+    steps: ['**What fraction of the circle is the arc?** A $75°$ central angle is $\\dfrac{75}{360} = \\dfrac{5}{24}$ of a full turn.', '**Full circumference.** $2\\pi r = 2\\pi(12) = 24\\pi$.', '**Take that fraction.** $\\dfrac{5}{24} \\times 24\\pi = 5\\pi$.', '**Answer.** Choice B. (Choice D, $30\\pi$, would be the sector\'s area, $\\tfrac{5}{24} \\times 144\\pi$, not the arc\'s length.)'],
     why: [
       r`$\frac{5\pi}{2}$ uses $\pi r$ (half the circumference) instead of $2\pi r$.`,
       r`Correct. $\frac{75}{360} = \frac{5}{24}$, and $\frac{5}{24}$ of $24\pi$ is $5\pi$.`,

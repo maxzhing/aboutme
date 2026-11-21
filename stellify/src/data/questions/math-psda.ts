@@ -47,11 +47,7 @@ export const MATH_PSDA: RawQuestion[] = [
     id: 'm-ratio-03', skill: 'ratio', sub: 'Unit conversions', d: 'H',
     stem: r`A liquid flows through a pipe at a constant rate of 2.4 liters per minute. What is this rate in cubic centimeters per second? (1 liter $= 1{,}000$ cubic centimeters)`,
     answer: ['40'],
-    steps: [
-      r`Convert liters to cubic centimeters: $2.4 \text{ L} = 2{,}400 \text{ cm}^3$ per minute.`,
-      r`Convert minutes to seconds: one minute is 60 seconds, so divide by 60.`,
-      r`$\dfrac{2{,}400}{60} = 40 \text{ cm}^3$ per second.`,
-    ],
+    steps: ['**Convert liters to cubic centimeters.** $2.4 \\times 1000 = 2400$ cubic centimeters per minute.', '**Convert per minute to per second.** A minute is 60 seconds, so a per-minute rate is 60 times a per-second rate: divide by 60.', '**Compute.** $2400 \\div 60 = 40$ cubic centimeters per second.', '**Sanity check.** Per second must be smaller than per minute. ✓ (Multiplying by 60 gives 144,000, which goes the wrong way.)'],
     why: [
       r`144000 — this multiplies by 60 instead of dividing. Less liquid flows in one second than in one minute, so the number must get smaller in that step.`,
       r`0.04 — this divides by 60 but forgets to convert liters to cubic centimeters ($2.4 \div 60$).`,
@@ -66,11 +62,7 @@ export const MATH_PSDA: RawQuestion[] = [
     id: 'm-ratio-04', skill: 'ratio', sub: 'Proportions', d: 'V',
     stem: r`On a map, 1 centimeter represents 2.5 kilometers. A rectangular park is drawn on the map as a rectangle that measures 3.2 centimeters by 1.5 centimeters. What is the actual area of the park, in square kilometers?`,
     answer: ['30'],
-    steps: [
-      r`Convert each dimension separately: $3.2 \times 2.5 = 8$ km and $1.5 \times 2.5 = 3.75$ km.`,
-      r`Multiply the actual dimensions: $8 \times 3.75$.`,
-      r`The area is $30$ square kilometers.`,
-    ],
+    steps: ['**Convert each map length to real length first.** $3.2 \\times 2.5 = 8$ km and $1.5 \\times 2.5 = 3.75$ km.', '**Multiply for the area.** $8 \\times 3.75 = 30$ square kilometers.', '**Check with area scaling.** The map area is $3.2 \\times 1.5 = 4.8$ square cm, and each square cm is $2.5^2 = 6.25$ square km: $4.8 \\times 6.25 = 30$. ✓', '**Answer.** 30. (Multiplying the map area by 2.5 instead of $2.5^2$ gives 12, the classic trap.)'],
     why: [
       r`12 — this multiplies the map area ($4.8 \text{ cm}^2$) by 2.5 only once. Area scales by the square of the scale factor: $4.8 \times 2.5^2 = 30$.`,
       r`4.8 — this is the area on the map in square centimeters, with no conversion.`,
@@ -125,11 +117,7 @@ export const MATH_PSDA: RawQuestion[] = [
     id: 'm-pct-02', skill: 'pct', sub: 'Reverse percentages', d: 'H',
     stem: r`After a 20% discount, the price of a laptop is \$680. What was the price of the laptop, in dollars, before the discount?`,
     answer: ['850'],
-    steps: [
-      r`A 20% discount means the sale price is 80% of the original price $P$: $0.80P = 680$.`,
-      r`Divide: $P = \dfrac{680}{0.80}$.`,
-      r`$P = 850$.`,
-    ],
+    steps: ['**What the sale price is.** A 20% discount leaves 80% of the original price $P$: $0.80P = 680$.', '**Undo the multiplication.** $P = 680 \\div 0.80 = 850$.', '**Check.** 20% of \\$850 is \\$170, and $850 - 170 = 680$. ✓', '**Answer.** \\$850. (Adding 20% of \\$680 gives \\$816, which is wrong because the 20% was of the original price.)'],
     why: [
       r`816 — this adds 20% of \$680 to \$680. The 20% was taken from the original price, which is larger, so the amount removed was more than 20% of 680.`,
       r`544 — this takes another 20% off the sale price instead of undoing the discount.`,
@@ -165,12 +153,7 @@ export const MATH_PSDA: RawQuestion[] = [
     id: 'm-pct-04', skill: 'pct', sub: 'Percent of a quantity', d: 'V',
     stem: r`The positive number $a$ is 60% greater than the positive number $b$. The number $b$ is $p\%$ less than $a$. What is the value of $p$?`,
     answer: ['37.5', '75/2'],
-    steps: [
-      r`Translate: $a = 1.6b$.`,
-      r`Solve for $b$ in terms of $a$: $b = \dfrac{a}{1.6} = 0.625a$.`,
-      r`So $b$ is $62.5\%$ of $a$, which is $100\% - 62.5\%$ less than $a$.`,
-      r`$p = 37.5$.`,
-    ],
+    steps: ['**Translate.** $a$ is 60% greater than $b$: $a = 1.6b$.', '**Express $b$ in terms of $a$.** $b = \\dfrac{a}{1.6} = 0.625a$, so $b$ is 62.5% of $a$.', '**Turn that into a percent less.** $100\\% - 62.5\\% = 37.5\\%$ less than $a$, so $p = 37.5$.', '**Check with numbers.** $b = 100$, $a = 160$: $b$ is 60 less than $a$, and $\\dfrac{60}{160} = 37.5\\%$. ✓ (Answering 60 assumes percent changes reverse symmetrically; they do not, because the base changes.)'],
     why: [
       r`60 — the percent difference is not the same in both directions, because the base changes. 60% of $b$ is a smaller fraction of the larger number $a$.`,
       r`62.5 — this is $b$ as a percent of $a$, not how much less $b$ is than $a$.`,
@@ -249,11 +232,7 @@ export const MATH_PSDA: RawQuestion[] = [
     id: 'm-data1-03', skill: 'data1', sub: 'Mean', d: 'H',
     stem: r`A data set of 10 test scores has a mean of 82. One score of 46 was recorded in error and is removed from the data set. What is the mean of the remaining 9 scores?`,
     answer: ['86'],
-    steps: [
-      r`Total of the 10 scores: $10 \times 82 = 820$.`,
-      r`Remove the incorrect score: $820 - 46 = 774$.`,
-      r`Divide by the new count: $\dfrac{774}{9} = 86$.`,
-    ],
+    steps: ['**Turn the mean into a total.** 10 scores with mean 82 add to $10 \\times 82 = 820$.', '**Remove the wrong score.** $820 - 46 = 774$, now for 9 scores.', '**Divide by the new count.** $774 \\div 9 = 86$.', '**Sanity check.** Removing a score far below the mean should raise the mean, and 86 > 82. ✓ (Dividing by 10 again, to get 77.4, is the common slip.)'],
     why: [
       r`77.4 — this divides the new total by 10. After removing a score, only 9 scores remain.`,
       r`78 — this subtracts a rough adjustment from the mean in the wrong direction. Removing a score far below the mean raises the mean.`,
@@ -342,11 +321,7 @@ export const MATH_PSDA: RawQuestion[] = [
     id: 'm-data2-02', skill: 'data2', sub: 'Residuals', d: 'H',
     stem: r`A line of best fit for a data set is given by $\hat{y} = 1.5x + 4$. One data point in the set is $(12, 25)$. The residual for a data point is the actual $y$-value minus the predicted $y$-value. What is the residual for the data point $(12, 25)$?`,
     answer: ['3'],
-    steps: [
-      r`Predicted value at $x = 12$: $\hat{y} = 1.5(12) + 4 = 22$.`,
-      r`Actual value: $25$.`,
-      r`Residual $=$ actual $-$ predicted $= 25 - 22 = 3$.`,
-    ],
+    steps: ['**Find the predicted value.** At $x = 12$: $\\hat{y} = 1.5(12) + 4 = 18 + 4 = 22$.', '**Read the actual value.** The data point has $y = 25$.', '**Residual = actual − predicted.** $25 - 22 = 3$.', '**Interpret.** A positive residual means the point lies above the line, here by 3 units.'],
     why: [
       r`$-3$ — this subtracts in the wrong order (predicted minus actual). The point lies above the line, so its residual is positive.`,
       r`22 — this is the predicted value, not the residual.`,
@@ -425,11 +400,7 @@ export const MATH_PSDA: RawQuestion[] = [
     figure: { kind: 'table', title: 'Drink preference of club members', headers: ['', 'Coffee', 'Tea', 'Total'], rows: [['Junior', 30, 20, 50], ['Senior', 18, 32, 50], ['Total', 48, 52, 100]] },
     stem: r`The table shows the drink preferences of the 100 members of a club. If a member who prefers tea is selected at random, what is the probability that the member is a senior?`,
     choices: [r`$\dfrac{8}{25}$`, r`$\dfrac{8}{13}$`, r`$\dfrac{16}{25}$`, r`$\dfrac{13}{25}$`], answer: 1,
-    steps: [
-      r`The member is selected from those who prefer tea, so the denominator is the tea total: 52.`,
-      r`Of those, 32 are seniors.`,
-      r`$\dfrac{32}{52} = \dfrac{8}{13}$.`,
-    ],
+    steps: ['**Read the condition.** \\"A member who prefers tea is selected\\" restricts the choice to the tea column: 52 members. That is the denominator.', '**Find the numerator.** Of the 52 tea drinkers, the table shows 32 seniors.', '**Divide and simplify.** $\\dfrac{32}{52} = \\dfrac{8}{13}$.', '**Answer.** Choice B. (Choice A, $\\tfrac{32}{100}$, divides by all members; that would be the chance a random member is a senior who prefers tea.)'],
     why: [
       r`$\frac{8}{25}$ is $\frac{32}{100}$: seniors who prefer tea out of all members. But the selection is only from tea drinkers.`,
       r`Correct. Among the 52 members who prefer tea, 32 are seniors.`,

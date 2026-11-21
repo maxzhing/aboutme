@@ -75,11 +75,7 @@ export const MATH_ADV_3: RawQuestion[] = [
     id: 'm-nlf-04', skill: 'nlf', sub: 'Quadratic functions and vertex form', d: 'H',
     stem: r`The function $h(t) = -16t^2 + 64t + 5$ gives the height, in feet, of a ball $t$ seconds after it is thrown. What is the maximum height, in feet, that the ball reaches?`,
     answer: ['69'],
-    steps: [
-      r`The maximum occurs at the vertex: $t = -\dfrac{b}{2a} = -\dfrac{64}{2(-16)} = 2$ seconds.`,
-      r`Evaluate: $h(2) = -16(4) + 64(2) + 5$.`,
-      r`$h(2) = -64 + 128 + 5 = 69$ feet.`,
-    ],
+    steps: ['**Where the maximum is.** The coefficient of $t^2$ is negative, so the parabola opens down and its highest point is the vertex.', '**Find the vertex time.** $t = -\\dfrac{b}{2a} = -\\dfrac{64}{2(-16)} = 2$ seconds.', '**Evaluate the height there.** $h(2) = -16(4) + 64(2) + 5 = -64 + 128 + 5 = 69$ feet.', '**Answer.** 69. (Answering 2 gives the time of the maximum, not the height.)'],
     why: [
       r`2 — this is the time at which the maximum height occurs, not the height.`,
       r`5 — this is the initial height $h(0)$.`,
@@ -138,12 +134,7 @@ export const MATH_ADV_3: RawQuestion[] = [
     id: 'm-nlf-07', skill: 'nlf', sub: 'Zeros and roots', d: 'H',
     stem: r`The function $f$ is defined by $f(x) = x^3 - 4x^2 - 9x + 36$. What is the greatest zero of $f$?`,
     answer: ['4'],
-    steps: [
-      r`Factor by grouping: $x^2(x - 4) - 9(x - 4)$.`,
-      r`Factor out $(x - 4)$: $(x - 4)(x^2 - 9) = (x - 4)(x - 3)(x + 3)$.`,
-      r`The zeros are $4$, $3$, and $-3$.`,
-      r`The greatest zero is $4$.`,
-    ],
+    steps: ['**Factor by grouping.** $x^3 - 4x^2 - 9x + 36 = x^2(x - 4) - 9(x - 4)$.', '**Pull out the common factor.** $(x - 4)(x^2 - 9) = (x - 4)(x - 3)(x + 3)$.', '**List the zeros.** $4$, $3$ and $-3$.', '**Answer.** The greatest zero is 4. Check: $64 - 64 - 36 + 36 = 0$. ✓'],
     why: [
       r`3 — this is a zero, but not the greatest one; $x = 4$ is also a zero.`,
       r`36 — this is the $y$-intercept $f(0)$, not a zero.`,
@@ -160,12 +151,7 @@ export const MATH_ADV_3: RawQuestion[] = [
     id: 'm-nlf-08', skill: 'nlf', sub: 'Function notation', d: 'H',
     stem: r`The function $f$ is defined by $f(x) = x^2 - 2x$. Which of the following is equivalent to $f(a + 1) - f(a)$?`,
     choices: ['$-1$', r`$2a + 1$`, r`$2a + 3$`, r`$2a - 1$`], answer: 3,
-    steps: [
-      r`Compute $f(a + 1) = (a + 1)^2 - 2(a + 1) = a^2 + 2a + 1 - 2a - 2 = a^2 - 1$.`,
-      r`$f(a) = a^2 - 2a$.`,
-      r`Subtract: $(a^2 - 1) - (a^2 - 2a) = -1 + 2a$.`,
-      r`The result is $2a - 1$.`,
-    ],
+    steps: ['**Compute $f(a + 1)$.** Replace every $x$ with $a + 1$: $(a + 1)^2 - 2(a + 1) = a^2 + 2a + 1 - 2a - 2 = a^2 - 1$.', '**Write $f(a)$.** $a^2 - 2a$.', '**Subtract.** $(a^2 - 1) - (a^2 - 2a) = -1 + 2a = 2a - 1$.', '**Check with $a = 3$.** $f(4) - f(3) = 8 - 3 = 5$, and $2(3) - 1 = 5$. ✓ Choice D. (Choice B forgets the $-2(a + 1)$ term\'s $-2$.)'],
     why: [
       r`$-1$ is $f(1)$. It assumes $f(a + 1) - f(a) = f(1)$, but function notation does not distribute over addition for nonlinear functions.`,
       r`$2a + 1$ leaves out the $-2$ from distributing $-2(a + 1)$.`,
@@ -286,11 +272,7 @@ export const MATH_ADV_3: RawQuestion[] = [
     id: 'm-nlf-14', skill: 'nlf', sub: 'Function transformations', d: 'V',
     stem: r`The function $f$ is defined by $f(x) = (x + 3)(x - 1)(x - 5)$. The function $g$ is defined by $g(x) = f(x - 2)$. What is the sum of the zeros of $g$?`,
     answer: ['9'],
-    steps: [
-      r`The zeros of $f$ are $-3$, $1$, and $5$.`,
-      r`$g(x) = f(x - 2)$ shifts the graph of $f$ 2 units to the right, so each zero increases by 2: $-1$, $3$, and $7$.`,
-      r`Sum: $-1 + 3 + 7 = 9$.`,
-    ],
+    steps: ['**Find the zeros of $f$.** Each factor gives one: $-3$, 1 and 5.', '**Interpret $g(x) = f(x - 2)$.** $g$ is $f$ shifted 2 units to the right, so $g(x) = 0$ exactly when $x - 2$ is a zero of $f$.', '**Shift each zero.** $x - 2 = -3, 1, 5$ gives $x = -1, 3, 7$.', '**Add.** $-1 + 3 + 7 = 9$. Shortcut: the zeros of $f$ add to 3, and each moves up by 2, so the sum rises by $3 \\times 2 = 6$: $3 + 6 = 9$.'],
     why: [
       r`3 — this is the sum of the zeros of $f$. The shift moves each of the three zeros.`,
       r`$-3$ — this shifts the zeros 2 units to the left ($-5$, $-1$, $3$). $f(x - 2)$ shifts right.`,

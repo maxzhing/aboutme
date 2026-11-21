@@ -119,11 +119,7 @@ export const MATH_ALG_2: RawQuestion[] = [
     id: 'm-sys-06', skill: 'sys', sub: 'Elimination', d: 'H',
     stem: r`$$7x + 3y = 31$$ $$3x + 7y = 19$$ If $(x, y)$ is the solution to the given system of equations, what is the value of $x + y$?`,
     answer: ['5'],
-    steps: [
-      r`Notice the coefficients are swapped. Add the two equations: $10x + 10y = 50$.`,
-      r`Divide every term by 10.`,
-      r`$x + y = 5$.`,
-    ],
+    steps: ['**Notice the structure.** The coefficients are swapped between the equations (7 and 3, then 3 and 7), so adding them makes the $x$ and $y$ coefficients equal.', '**Add the equations.** $(7x + 3y) + (3x + 7y) = 31 + 19$, so $10x + 10y = 50$.', '**Divide by 10.** $x + y = 5$.', '**Check by solving.** Subtracting gives $4x - 4y = 12$, so $x - y = 3$; then $x = 4$, $y = 1$, and $7(4) + 3(1) = 31$. ✓'],
     why: [
       r`3 — this is $x - y$, which comes from subtracting the equations ($4x - 4y = 12$) instead of adding them.`,
       r`4 — this is the value of $x$ alone. The question asks for $x + y$.`,
@@ -187,12 +183,7 @@ export const MATH_ALG_2: RawQuestion[] = [
     id: 'm-sys-09', skill: 'sys', sub: 'Graphical solutions', d: 'V',
     stem: r`In the $xy$-plane, the lines $y = 2x + k$ and $y = -x + 3k$ intersect at a point with an $x$-coordinate of 4, where $k$ is a constant. What is the $y$-coordinate of the point of intersection?`,
     answer: ['14'],
-    steps: [
-      r`At the intersection the $y$-values are equal: $2x + k = -x + 3k$.`,
-      r`Substitute $x = 4$: $8 + k = -4 + 3k$, so $12 = 2k$ and $k = 6$.`,
-      r`Use either line: $y = 2(4) + 6$.`,
-      r`$y = 14$.`,
-    ],
+    steps: ['**At an intersection, the $y$-values are equal.** $2x + k = -x + 3k$.', '**Use the given $x$-coordinate.** Substitute $x = 4$: $8 + k = -4 + 3k$, so $12 = 2k$ and $k = 6$.', '**Find $y$ from either line.** $y = 2(4) + 6 = 14$.', '**Check with the other line.** $y = -4 + 3(6) = 14$. ✓ (Answering 6 gives $k$, not the $y$-coordinate.)'],
     why: [
       r`6 — this is the value of $k$. The question asks for the $y$-coordinate of the intersection point.`,
       r`8 — this is $2x$ without adding $k$.`,
@@ -293,11 +284,7 @@ export const MATH_ALG_2: RawQuestion[] = [
     id: 'm-ineq-03', skill: 'ineq', sub: 'Compound and absolute value inequalities', d: 'H',
     stem: r`Which of the following describes all values of $x$ that satisfy $-7 < 3 - 2x \leq 9$?`,
     choices: [r`$-5 < x \leq 3$`, r`$-3 \leq x < 5$`, r`$-3 < x \leq 5$`, r`$x \leq -3$ or $x > 5$`], answer: 1,
-    steps: [
-      r`Subtract 3 from all three parts: $-10 < -2x \leq 6$.`,
-      r`Divide all three parts by $-2$ and reverse both inequality signs: $5 > x \geq -3$.`,
-      r`Rewrite in increasing order: $-3 \leq x < 5$.`,
-    ],
+    steps: ['**Subtract 3 from all three parts.** $-10 < -2x \\le 6$.', '**Divide all three parts by $-2$, reversing both signs.** $5 > x \\ge -3$. Dividing by a negative number flips every inequality.', '**Rewrite in increasing order.** $-3 \\le x < 5$.', '**Answer.** Choice B. Watch which end is included: $\\le$ became $\\ge$ at $-3$, so $-3$ is included and 5 is not. (Choice C includes the wrong endpoint.)'],
     why: [
       r`This divides by 2 but forgets the negative sign, giving the endpoints with the wrong signs. Test $x = -4$: $3 + 8 = 11$, which is not $\leq 9$.`,
       r`Correct. The endpoint $-3$ is included (it came from $\leq 9$) and 5 is excluded (it came from $-7 <$).`,

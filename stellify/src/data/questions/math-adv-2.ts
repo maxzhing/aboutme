@@ -48,12 +48,7 @@ export const MATH_ADV_2: RawQuestion[] = [
     id: 'm-nleq-03', skill: 'nleq', sub: 'Discriminants', d: 'H',
     stem: r`In the equation $2x^2 - 8x + k = 0$, $k$ is a constant. If the equation has exactly one real solution, what is the value of $k$?`,
     answer: ['8'],
-    steps: [
-      r`A quadratic has exactly one real solution when its discriminant $b^2 - 4ac$ equals 0.`,
-      r`Here $a = 2$, $b = -8$, $c = k$: $(-8)^2 - 4(2)(k) = 64 - 8k$.`,
-      r`Set $64 - 8k = 0$.`,
-      r`$k = 8$.`,
-    ],
+    steps: ['**One real solution means the discriminant is 0.** For $ax^2 + bx + c$, the discriminant is $b^2 - 4ac$.', '**Identify the coefficients.** $a = 2$, $b = -8$, $c = k$.', '**Set the discriminant to 0.** $(-8)^2 - 4(2)(k) = 64 - 8k = 0$.', '**Solve and check.** $k = 8$. Then $2x^2 - 8x + 8 = 2(x - 2)^2$, which has the single solution $x = 2$. ✓'],
     why: [
       r`16 — this uses $b^2 - 4c$, leaving out the leading coefficient $a = 2$ ($64 - 4k = 0$).`,
       r`32 — this uses $b^2 - 2ac$... the formula is $b^2 - 4ac$, which gives $64 - 8k$.`,
@@ -112,12 +107,7 @@ export const MATH_ADV_2: RawQuestion[] = [
     id: 'm-nleq-06', skill: 'nleq', sub: 'Exponential equations', d: 'H',
     stem: r`If $4^{x + 1} = 8^{x - 1}$, what is the value of $x$?`,
     answer: ['5'],
-    steps: [
-      r`Write both sides with base 2: $4 = 2^2$ and $8 = 2^3$.`,
-      r`$(2^2)^{x+1} = (2^3)^{x-1}$ becomes $2^{2x + 2} = 2^{3x - 3}$.`,
-      r`Equal bases mean equal exponents: $2x + 2 = 3x - 3$.`,
-      r`$x = 5$.`,
-    ],
+    steps: ['**Rewrite both sides with base 2.** $4 = 2^2$ and $8 = 2^3$.', '**Apply the power rule.** $(2^2)^{x + 1} = 2^{2x + 2}$ and $(2^3)^{x - 1} = 2^{3x - 3}$.', '**Equal bases mean equal exponents.** $2x + 2 = 3x - 3$, so $x = 5$.', '**Check.** $4^6 = 4096$ and $8^4 = 4096$. ✓'],
     why: [
       r`2 — this sets $x + 1 = 2(x - 1) - \ldots$ or otherwise drops a factor; distributing fully gives $2x + 2 = 3x - 3$.`,
       r`$-1$ — this comes from $2x + 2 = 3x + 3$, a sign error when distributing 3 across $(x - 1)$.`,
@@ -132,11 +122,7 @@ export const MATH_ADV_2: RawQuestion[] = [
     id: 'm-nleq-07', skill: 'nleq', sub: 'Sum and product of roots', d: 'H',
     stem: r`What is the sum of the solutions to the equation $3x^2 - 12x + 7 = 0$?`,
     choices: ['$-4$', r`$\dfrac{7}{3}$`, '$12$', '$4$'], answer: 3,
-    steps: [
-      r`For $ax^2 + bx + c = 0$, the sum of the solutions is $-\dfrac{b}{a}$.`,
-      r`Here $a = 3$ and $b = -12$: $-\dfrac{-12}{3}$.`,
-      r`The sum is $4$.`,
-    ],
+    steps: ['**Use the sum-of-roots shortcut.** For $ax^2 + bx + c = 0$, the solutions add to $-\\dfrac{b}{a}$. No need to solve.', '**Identify $a$ and $b$.** $a = 3$, $b = -12$.', '**Compute.** $-\\dfrac{-12}{3} = 4$.', '**Answer.** Choice D. (Choice A forgets the minus sign in $-\\tfrac{b}{a}$; choice B is the product, $\\tfrac{c}{a}$; choice C forgets to divide by $a$.)'],
     why: [
       r`$-4$ uses $\frac{b}{a}$ and forgets the negative sign in the formula $-\frac{b}{a}$.`,
       r`$\frac{7}{3}$ is $\frac{c}{a}$, the product of the solutions.`,

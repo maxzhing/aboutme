@@ -99,12 +99,7 @@ export const MATH_ALG_1: RawQuestion[] = [
     id: 'm-lin1-05', skill: 'lin1', sub: 'Absolute value equations', d: 'H',
     stem: r`What is the sum of the solutions to the equation $|2x - 7| + 3 = 12$?`,
     choices: ['$-1$', '$7$', '$8$', '$9$'], answer: 1,
-    steps: [
-      r`Isolate the absolute value: $|2x - 7| = 9$.`,
-      r`Split into two cases: $2x - 7 = 9$ or $2x - 7 = -9$.`,
-      r`Solve each: $x = 8$ or $x = -1$.`,
-      r`The sum of the solutions is $8 + (-1) = 7$.`,
-    ],
+    steps: ['**Isolate the absolute value first.** Subtract 3 from both sides: $|2x - 7| = 9$. (Splitting before isolating is the classic error.)', '**Split into two cases.** An absolute value of 9 means the inside is 9 or $-9$: $2x - 7 = 9$ or $2x - 7 = -9$.', '**Solve each.** $2x = 16$ gives $x = 8$; $2x = -2$ gives $x = -1$.', '**Add.** $8 + (-1) = 7$: choice B. Check: $|16 - 7| + 3 = 12$ ✓ and $|-2 - 7| + 3 = 12$ ✓. (Choice C is one solution, not the sum.)'],
     why: [
       r`$-1$ is one of the two solutions, not their sum.`,
       r`Correct. The solutions are $8$ and $-1$, and $8 + (-1) = 7$.`,
@@ -304,12 +299,7 @@ export const MATH_ALG_1: RawQuestion[] = [
     id: 'm-linf-06', skill: 'linf', sub: 'Linear models', d: 'H',
     stem: r`A tank initially holds 480 gallons of water and drains at a constant rate. After 12 minutes, the tank holds 390 gallons. How many minutes after draining begins will the tank hold 150 gallons?`,
     answer: ['44'],
-    steps: [
-      r`Rate: $\dfrac{480 - 390}{12} = 7.5$ gallons per minute.`,
-      r`Model: $V(t) = 480 - 7.5t$.`,
-      r`Set $480 - 7.5t = 150$: $7.5t = 330$.`,
-      r`$t = 44$ minutes.`,
-    ],
+    steps: ['**Find the draining rate.** The tank loses $480 - 390 = 90$ gallons in 12 minutes: $90 \\div 12 = 7.5$ gallons per minute.', '**Write the model.** Start at 480 and subtract 7.5 each minute: $V(t) = 480 - 7.5t$.', '**Set it equal to the target.** $480 - 7.5t = 150$, so $7.5t = 330$.', '**Solve.** $t = 330 \\div 7.5 = 44$ minutes. Check: $480 - 7.5(44) = 480 - 330 = 150$. ✓'],
     why: [
       r`32 — this is the time measured from the 12-minute mark ($240 \div 7.5$). The question asks for time since draining began.`,
       r`64 — this is when the tank is empty ($480 \div 7.5$), not when it holds 150 gallons.`,
@@ -325,11 +315,7 @@ export const MATH_ALG_1: RawQuestion[] = [
     id: 'm-linf-07', skill: 'linf', sub: 'Function notation', d: 'H',
     stem: r`The graph of the linear function $f$ passes through the points $(2, k)$ and $(5, k + 18)$, where $k$ is a constant. The function $g$ is defined by $g(x) = f(x) - 4x$. What is the slope of the graph of $y = g(x)$?`,
     answer: ['2'],
-    steps: [
-      r`Slope of $f$: $\dfrac{(k + 18) - k}{5 - 2} = \dfrac{18}{3} = 6$. The unknown $k$ cancels.`,
-      r`Write $f(x) = 6x + b$. Then $g(x) = 6x + b - 4x = 2x + b$.`,
-      r`The slope of $g$ is $6 - 4 = 2$.`,
-    ],
+    steps: ['**Find the slope of $f$.** From $(2, k)$ to $(5, k + 18)$: $\\dfrac{(k + 18) - k}{5 - 2} = \\dfrac{18}{3} = 6$. The unknown $k$ cancels, so you never need it.', '**Write $f$ with an unknown intercept.** $f(x) = 6x + b$.', '**Build $g$.** $g(x) = f(x) - 4x = 6x + b - 4x = 2x + b$.', '**Read the slope.** $g$ has slope 2. In general, subtracting $4x$ lowers the slope by exactly 4: $6 - 4 = 2$.'],
     why: [
       r`6 — this is the slope of $f$. Subtracting $4x$ lowers the slope by 4.`,
       r`10 — this adds 4 to the slope instead of subtracting it.`,
@@ -367,12 +353,7 @@ export const MATH_ALG_1: RawQuestion[] = [
     id: 'm-linf-09', skill: 'linf', sub: 'Function notation', d: 'V',
     stem: r`The function $f$ is defined by $f(x) = 3x - 8$, and the function $g$ is defined by $g(x) = f(f(x))$. What is the $x$-intercept of the graph of $y = g(x)$ in the $xy$-plane?`,
     answer: ['32/9', '3.555', '3.556'],
-    steps: [
-      r`Compose: $g(x) = f(3x - 8) = 3(3x - 8) - 8$.`,
-      r`Simplify: $g(x) = 9x - 24 - 8 = 9x - 32$.`,
-      r`Set $g(x) = 0$: $9x = 32$.`,
-      r`$x = \dfrac{32}{9}$.`,
-    ],
+    steps: ['**Compose from the inside out.** $g(x) = f(f(x)) = f(3x - 8)$: feed the output $3x - 8$ back into $f$.', '**Apply $f$ to that input.** $f(3x - 8) = 3(3x - 8) - 8 = 9x - 24 - 8 = 9x - 32$.', '**The $x$-intercept is where $g(x) = 0$.** $9x - 32 = 0$, so $x = \\dfrac{32}{9} \\approx 3.556$.', '**Check.** $f\\left(\\dfrac{32}{9}\\right) = \\dfrac{32}{3} - 8 = \\dfrac{8}{3}$, and $f\\left(\\dfrac{8}{3}\\right) = 8 - 8 = 0$. ✓ (Squaring $f(x)$ instead of composing is the trap: $f(f(x)) \\ne [f(x)]^2$.)'],
     why: [
       r`$\frac{8}{3}$ — this is the $x$-intercept of $f$. You also get it by doubling or squaring $f(x)$ instead of composing, or by dropping the outer $-8$.`,
       r`$-32$ — this is the $y$-intercept of $g$, not the $x$-intercept.`,
@@ -428,11 +409,7 @@ export const MATH_ALG_1: RawQuestion[] = [
     id: 'm-lin2-03', skill: 'lin2', sub: 'Parallel and perpendicular lines', d: 'H',
     stem: r`In the $xy$-plane, line $k$ passes through the point $(-2, 9)$ and is parallel to the line with equation $5x + 2y = 7$. Which of the following is an equation of line $k$?`,
     choices: [r`$5x + 2y = 8$`, r`$5x + 2y = 28$`, r`$2x - 5y = -49$`, r`$5x - 2y = -28$`], answer: 0,
-    steps: [
-      r`Parallel lines have the same slope, so line $k$ has the same $x$- and $y$-coefficients: $5x + 2y = c$.`,
-      r`Substitute the point $(-2, 9)$: $5(-2) + 2(9) = -10 + 18 = 8$.`,
-      r`So line $k$ is $5x + 2y = 8$.`,
-    ],
+    steps: ['**Parallel lines in standard form share their $x$ and $y$ coefficients**, because those coefficients set the slope. So line $k$ is $5x + 2y = c$ for some constant $c$.', '**Use the point.** Substitute $(-2, 9)$: $5(-2) + 2(9) = -10 + 18 = 8$.', '**Write the line.** $5x + 2y = 8$.', '**Answer.** Choice A. (Choice B gets the sign of $5(-2)$ wrong; choices C and D change the coefficients, so they are not parallel.)'],
     why: [
       r`Correct. It has the same slope as $5x + 2y = 7$ (namely $-\frac{5}{2}$) and contains $(-2, 9)$.`,
       r`This has the right slope, but $(-2, 9)$ gives $8$, not $28$. The value 28 comes from computing $10 + 18$ with a sign error.`,
@@ -449,11 +426,7 @@ export const MATH_ALG_1: RawQuestion[] = [
     id: 'm-lin2-04', skill: 'lin2', sub: 'Standard and slope-intercept form', d: 'H',
     stem: r`In the $xy$-plane, line $p$ has an $x$-intercept at $(a, 0)$ and a $y$-intercept at $(0, b)$, where $a$ and $b$ are nonzero constants and $a = 3b$. What is the slope of line $p$?`,
     choices: ['$-3$', '$3$', r`$-\dfrac{1}{3}$`, r`$\dfrac{1}{3}$`], answer: 2,
-    steps: [
-      r`Slope between $(a, 0)$ and $(0, b)$: $\dfrac{b - 0}{0 - a} = -\dfrac{b}{a}$.`,
-      r`Substitute $a = 3b$: $-\dfrac{b}{3b}$.`,
-      r`Cancel $b$: the slope is $-\dfrac{1}{3}$.`,
-    ],
+    steps: ['**Write the two intercepts as points.** $(a, 0)$ and $(0, b)$.', '**Slope between them.** $\\dfrac{b - 0}{0 - a} = -\\dfrac{b}{a}$.', '**Substitute $a = 3b$.** $-\\dfrac{b}{3b} = -\\dfrac{1}{3}$ (allowed because $b \\ne 0$).', '**Check with numbers.** $b = 2$, $a = 6$: the line through $(6, 0)$ and $(0, 2)$ falls 2 over a run of 6, slope $-\\dfrac{1}{3}$. ✓ Choice C. (Choice A inverts the ratio.)'],
     why: [
       r`$-3$ inverts the ratio, computing $-\frac{a}{b}$ (run over rise).`,
       r`$3$ inverts the ratio and drops the negative sign.`,

@@ -66,11 +66,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-pct-01', skill: 'pct', sub: 'Percent change', d: 'H',
     stem: r`A club's membership increased from 200 to 250. The next year, it decreased by $p$ percent and returned to 200. What is the value of $p$?`,
     answer: ['20'],
-    steps: [
-      r`The decrease is $250 - 200 = 50$ members.`,
-      r`A percent change is measured from the ORIGINAL value of that change, which is now 250.`,
-      r`$\frac{50}{250} = 0.2$, so $p = 20$.`,
-    ],
+    steps: ['**Find the change.** Back to 200 from 250 is a drop of 50 members.', '**Use the right base.** A percent change is always measured from the starting value of that change, which is now 250, not 200.', '**Compute.** $\\dfrac{50}{250} = 0.2$, so $p = 20$.', '**Contrast.** The first change, 200 to 250, was a 25% increase. The return trip is only 20%, because the same 50 members is a smaller share of the larger number.'],
     why: [
       r`25 — this is the earlier percent increase, measured from 200. The decrease starts from 250.`,
       r`50 — this is the number of members lost, not a percent.`,
@@ -85,11 +81,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-pct-02', skill: 'pct', sub: 'Percent of a quantity', d: 'V',
     stem: r`In a survey, 40% of the respondents chose option A. Of the respondents who chose option A, 35% were younger than 30. If 84 respondents chose option A and were younger than 30, how many people responded to the survey?`,
     choices: [r`$240$`, r`$210$`, r`$600$`, r`$1{,}176$`], answer: 2,
-    steps: [
-      r`The group described is 35% of 40% of all respondents: $0.35 \times 0.40 = 0.14$.`,
-      r`So $0.14N = 84$.`,
-      r`$N = 84 \div 0.14 = 600$.`,
-    ],
+    steps: ['**Combine the two percents.** The group is 35% of the 40% who chose A, so it is $0.35 \\times 0.40 = 0.14$ of all respondents.', '**Set up the equation.** $0.14N = 84$.', '**Solve.** $N = 84 \\div 0.14 = 600$.', '**Check.** 40% of 600 is 240 chose A, and 35% of 240 is 84. ✓ Choice C. (Choice A, 240, is the number who chose A.)'],
     why: [
       r`240 is $84 \div 0.35$: the number who chose option A, not the total.`,
       r`210 is $84 \div 0.40$, which skips the 35% step.`,
@@ -106,11 +98,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-pct-03', skill: 'pct', sub: 'Reverse percentages', d: 'V',
     stem: r`The price of a jacket was increased by 15%. The new price was then discounted by 20%, and the jacket sold for \$73.60. What was the original price, in dollars?`,
     answer: ['80'],
-    steps: [
-      r`Write each change as a multiplier: $\times 1.15$ then $\times 0.80$. Combined: $1.15 \times 0.80 = 0.92$.`,
-      r`So $0.92p = 73.60$.`,
-      r`$p = 73.60 \div 0.92 = 80$.`,
-    ],
+    steps: ['**Write each change as a multiplier.** Up 15%: $\\times 1.15$. Then 20% off: $\\times 0.80$.', '**Combine.** $1.15 \\times 0.80 = 0.92$, so the sale price is 92% of the original: $0.92p = 73.60$.', '**Solve.** $p = 73.60 \\div 0.92 = 80$.', '**Check.** \\$80 → \\$92 → \\$73.60. ✓ (Treating the changes as one 5% decrease gives \\$77.47, which is wrong.)'],
     why: [
       r`77.47 — this treats the changes as a net 5% decrease ($+15\% - 20\%$). Percent changes multiply: the net change is 8%, not 5%.`,
       r`67.71 — this multiplies 73.60 by 0.92 instead of dividing. Going back to the original means undoing the multiplier.`,
@@ -126,11 +114,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-data1-01', skill: 'data1', sub: 'Mean', d: 'H',
     stem: r`Class A has 18 students with a mean test score of 76. Class B has 12 students with a mean test score of 86. What is the mean score of all 30 students?`,
     choices: [r`$81$`, r`$80$`, r`$82$`, r`$2{,}400$`], answer: 1,
-    steps: [
-      r`Convert each mean to a total: Class A $18 \times 76 = 1368$; Class B $12 \times 86 = 1032$.`,
-      r`Combined total: $2400$, over $30$ students.`,
-      r`Mean: $2400 \div 30 = 80$.`,
-    ],
+    steps: ['**You cannot just average 76 and 86**, because the classes have different sizes; that shortcut gives 81 (choice A).', '**Convert each mean to a total.** Class A: $18 \\times 76 = 1368$. Class B: $12 \\times 86 = 1032$.', '**Combine.** $1368 + 1032 = 2400$ points for 30 students.', '**Divide.** $2400 \\div 30 = 80$: choice B. The larger class, with the lower mean, pulls the combined mean below 81. (Choice D is the total, not the mean.)'],
     why: [
       r`81 averages the two means, which would only be right if the classes were the same size.`,
       r`Correct. The larger class (with the lower mean) pulls the combined mean below 81.`,
@@ -312,11 +296,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     figure: { kind: 'table', title: 'Exam results', headers: ['', 'Passed', 'Failed', 'Total'], rows: [['Tutored', 68, 12, 80], ['Not tutored', 90, 30, 120], ['Total', 158, 42, 200]] },
     stem: r`The table summarizes exam results for 200 students. If a student who failed the exam is selected at random, what is the probability that the student was tutored?`,
     choices: [r`$\dfrac{3}{20}$`, r`$\dfrac{2}{7}$`, r`$\dfrac{3}{50}$`, r`$\dfrac{2}{5}$`], answer: 1,
-    steps: [
-      r`The student is chosen from those who FAILED, so the denominator is the failed total: 42.`,
-      r`Of those, 12 were tutored.`,
-      r`$\frac{12}{42} = \frac{2}{7}$.`,
-    ],
+    steps: ['**Read the condition.** \\"A student who failed\\" restricts the choice to the 42 students who failed. That is the denominator.', '**Find the numerator.** Of those 42, the table shows 12 who were tutored.', '**Divide.** $\\dfrac{12}{42} = \\dfrac{2}{7}$.', '**Answer.** Choice B. (Choice C, $\\tfrac{12}{200}$, divides by all students; that is the chance that a random student both failed and was tutored.)'],
     why: [
       r`$\frac{3}{20} = \frac{12}{80}$: the probability that a tutored student failed. That reverses the condition.`,
       r`Correct. Among the 42 who failed, 12 were tutored.`,
@@ -352,11 +332,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-prob-03', skill: 'prob', sub: 'Probability', d: 'H',
     stem: r`A factory finds that 2.5% of the light bulbs it makes are defective. In a shipment of 1,800 bulbs, how many bulbs are expected NOT to be defective?`,
     choices: [r`$45$`, r`$1{,}755$`, r`$1{,}797.5$`, r`$1{,}775$`], answer: 1,
-    steps: [
-      r`Probability a bulb is not defective: $1 - 0.025 = 0.975$.`,
-      r`Expected count: $0.975 \times 1800 = 1755$.`,
-      r`(Equivalently: $0.025 \times 1800 = 45$ defective, and $1800 - 45 = 1755$.)`,
-    ],
+    steps: ['**Probability a bulb is good.** $1 - 0.025 = 0.975$.', '**Expected count.** $0.975 \\times 1800 = 1755$ bulbs not defective.', '**Check another way.** Defective: $0.025 \\times 1800 = 45$, and $1800 - 45 = 1755$. ✓', '**Answer.** Choice B. (Choice A, 45, answers how many are defective; choice C subtracts 2.5 bulbs instead of 2.5%.)'],
     why: [
       r`45 is the expected number of DEFECTIVE bulbs.`,
       r`Correct. 97.5% of 1,800 is 1,755.`,
@@ -373,11 +349,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-prob-04', skill: 'prob', sub: 'Probability', d: 'E',
     stem: r`A spinner lands on red with probability 0.3. If the spinner is spun twice and the spins are independent, what is the probability that it lands on red at least once?`,
     choices: [r`$0.60$`, r`$0.09$`, r`$0.51$`, r`$0.49$`], answer: 2,
-    steps: [
-      r`"At least once" is the complement of "never." P(not red on one spin) $= 0.7$.`,
-      r`P(not red on both spins) $= 0.7 \times 0.7 = 0.49$.`,
-      r`P(red at least once) $= 1 - 0.49 = 0.51$.`,
-    ],
+    steps: ['**Use the complement.** \\"At least once\\" is the opposite of \\"never,\\" which is a single case and easy to compute.', '**Never red.** Each spin misses red with probability 0.7, and independent spins multiply: $0.7 \\times 0.7 = 0.49$.', '**At least once.** $1 - 0.49 = 0.51$.', '**Answer.** Choice C. (Choice A adds $0.3 + 0.3$, double-counting red on both spins; choice B is red on both spins; choice D is never red.)'],
     why: [
       r`0.60 adds the two probabilities, which double-counts the case where both spins are red.`,
       r`0.09 is the probability of red on BOTH spins.`,
@@ -420,11 +392,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
       'Reading for pleasure every day causes students to do better in school.',
       'Approximately 40% of the students at that school read for pleasure every day.',
     ], answer: 3,
-    steps: [
-      r`Sample proportion: $\frac{120}{300} = 40\%$.`,
-      r`The sample was random from ONE school, so the estimate applies to that school's students.`,
-      r`It is an estimate ("approximately"), and the survey measured nothing about school performance.`,
-    ],
+    steps: ['**Compute the sample proportion.** $\\dfrac{120}{300} = 0.40$, or 40%.', '**Identify the population.** The 300 students were randomly selected from one high school, so the estimate applies to that school, not the country (rules out A).', '**Keep it an estimate.** A sample gives an approximate population value, not an exact count (rules out B), and the survey measured nothing about grades (rules out C).', '**Answer.** Choice D: about 40% of the students at that school.'],
     why: [
       r`The sample came from one school; it cannot represent students across the country.`,
       r`120 is the count in the sample. The school has more students than the 300 sampled.`,
@@ -441,11 +409,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-infer-03', skill: 'infer', sub: 'Data inference', d: 'E',
     stem: r`To estimate the number of fish in a lake, biologists catch, tag, and release 150 fish. A week later they catch 80 fish at random, and 12 of them are tagged. Assuming the tagged fish have mixed evenly through the lake, what is the best estimate of the number of fish in the lake?`,
     answer: ['1000'],
-    steps: [
-      r`In the second catch, $\frac{12}{80} = 15\%$ of the fish are tagged.`,
-      r`If the lake mixes evenly, about 15% of ALL fish are tagged: $0.15N = 150$.`,
-      r`$N = 150 \div 0.15 = 1000$.`,
-    ],
+    steps: ['**Idea.** If tagged fish mix evenly, the tagged share of the second catch matches the tagged share of the whole lake.', '**Tagged share of the catch.** $\\dfrac{12}{80} = 0.15$.', '**Apply it to the lake.** The 150 tagged fish are about 15% of all $N$ fish: $0.15N = 150$.', '**Solve.** $N = 1000$. Proportion form: $\\dfrac{12}{80} = \\dfrac{150}{N}$, so $N = \\dfrac{150 \\times 80}{12} = 1000$.'],
     why: [
       r`22.5 — this inverts the proportion, setting $\frac{12}{80} = \frac{N}{150}$.`,
       r`230 — this adds 150 and 80, the numbers of fish handled, which is not an estimate of the population.`,
@@ -482,11 +446,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-infer-05', skill: 'infer', sub: 'Confidence in estimates', d: 'H',
     stem: r`Survey A used a random sample of 400 people and reported a margin of error of 4.9 percentage points. Survey B used the same method on a random sample of 1,600 people from the same population. Which of the following is most likely the margin of error for Survey B?`,
     choices: [r`$9.8$`, r`$4.9$`, r`$2.45$`, r`$1.23$`], answer: 2,
-    steps: [
-      r`Margin of error shrinks as the sample grows, in proportion to $\frac{1}{\sqrt{n}}$.`,
-      r`The sample is 4 times as large, so the margin is divided by $\sqrt{4} = 2$.`,
-      r`$4.9 \div 2 = 2.45$.`,
-    ],
+    steps: ['**How margin of error scales.** For random samples, it is roughly proportional to $\\dfrac{1}{\\sqrt{n}}$.', '**Compare the sizes.** Survey B\'s sample is $\\dfrac{1600}{400} = 4$ times as large.', '**Scale the margin.** Divide by $\\sqrt{4} = 2$: $4.9 \\div 2 = 2.45$ percentage points.', '**Answer.** Choice C. (Choice D divides by 4, forgetting the square root; choice A moves the wrong way.)'],
     why: [
       r`A bigger sample gives a SMALLER margin, not a larger one.`,
       r`The margin depends on sample size; a larger sample changes it.`,
@@ -548,11 +508,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
       'Randomly assign the fertilizer to half of the farms that volunteer, and compare yields.',
       'Randomly select farms from the region, then randomly assign half of them to use the fertilizer, and compare yields.',
     ], answer: 3,
-    steps: [
-      r`"Causes" requires random ASSIGNMENT of the fertilizer.`,
-      r`"Throughout the region" requires a random SAMPLE of the region's farms.`,
-      r`Only the last design has both.`,
-    ],
+    steps: ['**Two goals, two kinds of randomness.** \\"Causes\\" needs random assignment of the fertilizer. \\"Throughout the region\\" needs a random sample of the region\'s farms.', '**Check each design.** A compares farms that chose the fertilizer: no random assignment. B has no comparison group and uses volunteers. C randomly assigns, but only among volunteers, so it cannot generalize to the region.', '**Find the design with both.** D randomly selects farms from the region and then randomly assigns the fertilizer.', '**Answer.** Choice D.'],
     why: [
       r`No random assignment: farms that chose the fertilizer may differ in other ways.`,
       r`No control group and no random assignment; weather could also explain a change from last year.`,
@@ -596,11 +552,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
       'Crime rates are measured per person, so large and small cities cannot be compared.',
       'Libraries are usually closed at night, when most of the crimes in a city happen.',
     ], answer: 0,
-    steps: [
-      r`The data are observational: no one assigned libraries to cities.`,
-      r`A third factor, such as wealth, could drive both more libraries and less crime.`,
-      r`That possible confounding variable is why the link cannot be called a cause.`,
-    ],
+    steps: ['**The data are observational.** No one assigned libraries to cities; the study only notes that two things occur together.', '**Look for a third factor.** Wealth could raise both: richer cities may fund more libraries and also have less crime.', '**Why that blocks the causal claim.** If a confounding variable drives both, the library–crime link could exist even if libraries have no effect on crime.', '**Answer.** Choice A. (B is backward: many cities make chance less likely; C and D raise issues that do not address cause.)'],
     why: [
       r`Correct. A confounding variable could explain the association.`,
       r`More cities make a pattern less likely to be chance, not more; and chance is not the issue here.`,
@@ -622,10 +574,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
       'Studying in silence causes higher scores for all students.',
       'Studying with music likely caused lower scores for students like the volunteers, but the result may not apply to all students.',
     ], answer: 3,
-    steps: [
-      r`Random assignment of the study condition supports a causal conclusion.`,
-      r`The participants were volunteers, not a random sample, so the result applies to students like them.`,
-    ],
+    steps: ['**Check how the groups were formed.** The 60 volunteers were randomly assigned to music or silence, so the groups differed only by chance and by the study condition. A significant difference can therefore be attributed to the music: a causal conclusion is justified, which rules out A.', '**Check who was studied.** The students were volunteers, not a random sample of all students. Volunteers may differ from typical students, so the conclusion reaches only students like them, which rules out B and C.', '**Watch the wording of C.** Even within the study, the claim is about music lowering scores relative to silence; C restates it as a claim about all students, which has the same generalization problem.', '**Answer.** Choice D: music likely caused lower scores for students like the volunteers, but the result may not apply to all students.'],
     why: [
       r`Random assignment does allow a causal conclusion; this is too cautious.`,
       r`Volunteers are not a random sample of all students.`,
@@ -643,11 +592,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-area-01', skill: 'area', sub: 'Scale factors', d: 'V',
     stem: r`Two cylinders are similar. Their surface areas are $48\pi$ and $108\pi$ square centimeters. If the volume of the smaller cylinder is $64\pi$ cubic centimeters, what is the volume of the larger cylinder?`,
     choices: [r`$96\pi$`, r`$144\pi$`, r`$216\pi$`, r`$486\pi$`], answer: 2,
-    steps: [
-      r`Area ratio: $\frac{108}{48} = \frac{9}{4}$. Length ratio: $\sqrt{\frac{9}{4}} = \frac{3}{2}$.`,
-      r`Volume ratio: $\left(\frac{3}{2}\right)^3 = \frac{27}{8}$.`,
-      r`Larger volume: $64\pi \times \frac{27}{8} = 216\pi$.`,
-    ],
+    steps: ['**From areas to lengths.** Areas of similar figures scale by the square of the length ratio. $\\dfrac{108\\pi}{48\\pi} = \\dfrac{9}{4}$, so the length ratio is $\\sqrt{\\dfrac{9}{4}} = \\dfrac{3}{2}$.', '**From lengths to volumes.** Volumes scale by the cube: $\\left(\\dfrac{3}{2}\\right)^3 = \\dfrac{27}{8}$.', '**Scale the smaller volume.** $64\\pi \\times \\dfrac{27}{8} = 216\\pi$.', '**Answer.** Choice C. (Choice B scales the volume by the area ratio, $\\tfrac{9}{4}$; choice A by the length ratio.)'],
     why: [
       r`$96\pi$ scales the volume by the LENGTH ratio $\frac{3}{2}$.`,
       r`$144\pi$ scales the volume by the AREA ratio $\frac{9}{4}$.`,
@@ -683,11 +628,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-area-03', skill: 'area', sub: 'Scale factors', d: 'E',
     stem: r`The edge length of a cube is increased by 50%. By what percent does the volume of the cube increase?`,
     choices: [r`$50\%$`, r`$125\%$`, r`$150\%$`, r`$237.5\%$`], answer: 3,
-    steps: [
-      r`New edge: $1.5s$. New volume: $(1.5s)^3 = 3.375s^3$.`,
-      r`The volume is multiplied by 3.375, an increase of $3.375 - 1 = 2.375$.`,
-      r`That is a 237.5% increase.`,
-    ],
+    steps: ['**Write the new edge.** A 50% increase makes it $1.5s$.', '**Cube it for volume.** $(1.5s)^3 = 3.375s^3$, so the volume is multiplied by 3.375.', '**Convert to a percent increase.** $3.375 - 1 = 2.375$, a 237.5% increase.', '**Answer.** Choice D. (Choice B, 125%, is the increase in surface area, $1.5^2 = 2.25$; choice A treats volume like length.)'],
     why: [
       r`50% is the change in edge length; volume grows much faster.`,
       r`125% is the increase in surface AREA: $1.5^2 = 2.25$.`,
@@ -724,11 +665,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-lines-02', skill: 'lines', sub: 'Parallel lines and transversals', d: 'V',
     stem: r`Two parallel lines are cut by a transversal. Two angles on the same side of the transversal and between the parallel lines measure $(4y + 18)°$ and $(2y + 30)°$. What is the value of $y$?`,
     choices: [r`$6$`, r`$22$`, r`$7$`, r`$33$`], answer: 1,
-    steps: [
-      r`Angles on the same side of the transversal and between the parallel lines (same-side interior angles) are supplementary.`,
-      r`$(4y + 18) + (2y + 30) = 180$, so $6y + 48 = 180$.`,
-      r`$6y = 132$, so $y = 22$. The angles are $106°$ and $74°$.`,
-    ],
+    steps: ['**Name the angle pair.** Angles on the same side of the transversal and between the parallel lines are same-side interior angles, which are supplementary.', '**Set up the equation.** $(4y + 18) + (2y + 30) = 180$, so $6y + 48 = 180$.', '**Solve.** $6y = 132$, so $y = 22$.', '**Check.** The angles are $106°$ and $74°$, which add to $180°$. ✓ Choice B. (Setting the angles equal, as if they were alternate interior angles, gives choice A, 6.)'],
     why: [
       r`6 sets the angles EQUAL. Same-side interior angles add to 180°; they are equal only in the special case of 90°.`,
       r`Correct. The angles are 106° and 74°, which add to 180°.`,
@@ -785,11 +722,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-lines-05', skill: 'lines', sub: 'Coordinate geometry', d: 'V',
     stem: r`In the $xy$-plane, point $B(4, 11)$ is the midpoint of $\overline{AC}$, where $A$ is $(-2, 3)$. What is the sum of the coordinates of point $C$?`,
     answer: ['29'],
-    steps: [
-      r`Midpoint means $B$ is the average: $4 = \frac{-2 + x}{2}$ and $11 = \frac{3 + y}{2}$.`,
-      r`$x = 8 + 2 = 10$ and $y = 22 - 3 = 19$. (Shortcut: $C = 2B - A$.)`,
-      r`$C = (10, 19)$, so the sum is 29.`,
-    ],
+    steps: ['**A midpoint is the average of the endpoints.** $4 = \\dfrac{-2 + x}{2}$ and $11 = \\dfrac{3 + y}{2}$.', '**Solve each.** $-2 + x = 8$, so $x = 10$. $3 + y = 22$, so $y = 19$.', '**Shortcut.** $C = 2B - A = (8 + 2, 22 - 3) = (10, 19)$: go from $A$ to $B$, then the same step again.', '**Answer.** The sum of the coordinates is $10 + 19 = 29$. (Averaging $A$ and $B$ instead finds the midpoint of $\\overline{AB}$, not $C$.)'],
     why: [
       r`8 — this is the sum for the midpoint of $\overline{AB}$, $(1, 7)$.`,
       r`14 — this is the sum of $B - A = (6, 8)$, the step from A to B, not the point C.`,
@@ -887,11 +820,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-trig-04', skill: 'trig', sub: 'Right-triangle applications', d: 'E',
     stem: r`From a point on level ground 50 meters from the base of a building, the angle of elevation to the top of the building is $58°$. Which of the following is closest to the height of the building, in meters?`,
     choices: [r`$26.5$`, r`$42.4$`, r`$80.0$`, r`$94.4$`], answer: 2,
-    steps: [
-      r`The height is OPPOSITE the $58°$ angle and the 50 m distance is ADJACENT to it.`,
-      r`Opposite and adjacent → tangent: $\tan 58° = \frac{h}{50}$.`,
-      r`$h = 50 \tan 58° \approx 50 \times 1.600 = 80.0$ meters.`,
-    ],
+    steps: ['**Draw the right triangle.** The building is vertical and the ground is level, so they meet at a right angle. The height $h$ is opposite the $58°$ angle; the 50 m distance is adjacent to it.', '**Choose the ratio.** Opposite and adjacent sides mean tangent: $\\tan 58° = \\dfrac{h}{50}$.', '**Solve.** $h = 50\\tan 58° \\approx 50 \\times 1.600 = 80.0$ meters.', '**Answer.** Choice C. (Choice B uses sine, $50\\sin 58° \\approx 42.4$, treating 50 as the hypotenuse; choice A uses cosine.)'],
     why: [
       r`26.5 is $50\cos 58°$, which uses the wrong ratio.`,
       r`42.4 is $50\sin 58°$, treating 50 as the hypotenuse.`,
@@ -908,11 +837,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-trig-05', skill: 'trig', sub: 'Complementary angle identity', d: 'V',
     stem: r`In a right triangle, the two acute angles measure $x°$ and $(2x - 30)°$, and $\sin(x°) = \cos((2x - 30)°)$. What is the value of $x$?`,
     answer: ['40'],
-    steps: [
-      r`$\sin a° = \cos b°$ when $a + b = 90$ (the angles are complementary).`,
-      r`$x + (2x - 30) = 90$, so $3x = 120$ and $x = 40$.`,
-      r`Check: the angles are $40°$ and $50°$, which add to $90°$.`,
-    ],
+    steps: ['**Use the cofunction rule.** For acute angles, $\\sin a° = \\cos b°$ exactly when $a + b = 90$, because the side opposite one angle is adjacent to the other.', '**Set up the equation.** $x + (2x - 30) = 90$.', '**Solve.** $3x - 30 = 90$, so $3x = 120$ and $x = 40$.', '**Check.** The angles are $40°$ and $50°$, which add to $90°$, and $\\sin 40° = \\cos 50° \\approx 0.643$. ✓'],
     why: [
       r`30 — this sets the angles equal: $x = 2x - 30$. Sine of an angle equals cosine of its COMPLEMENT.`,
       r`70 — this sets the sum to 180°.`,
@@ -927,11 +852,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-trig-06', skill: 'trig', sub: 'Complementary angle identity', d: 'H',
     stem: r`In right triangle $PQR$, angle $R$ is the right angle and $\cos P = 0.6$. What is the value of $\sin Q$?`,
     choices: [r`$0.8$`, r`$0.4$`, r`$0.6$`, r`$1.25$`], answer: 2,
-    steps: [
-      r`Angles $P$ and $Q$ are the two acute angles, so $P + Q = 90°$.`,
-      r`The side adjacent to $P$ is the side opposite $Q$, so $\cos P = \sin Q$.`,
-      r`$\sin Q = 0.6$.`,
-    ],
+    steps: ['**The acute angles are complementary.** With the right angle at $R$, $P + Q = 90°$.', '**Match sides.** The side adjacent to $P$ is the side opposite $Q$ (it is the leg $PR$), and both ratios divide it by the same hypotenuse $PQ$.', '**So the ratios are equal.** $\\cos P = \\dfrac{PR}{PQ} = \\sin Q$.', '**Answer.** $\\sin Q = 0.6$: choice C. (Choice A, 0.8, is $\\sin P$; choice D inverts the ratio, but a sine can never be greater than 1.)'],
     why: [
       r`0.8 is $\sin P$ (from the 3-4-5 triangle), not $\sin Q$.`,
       r`0.4 is $1 - 0.6$; sine and cosine are not related by subtraction.`,
@@ -971,11 +892,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-circ-02', skill: 'circ', sub: 'Circle equations', d: 'E',
     stem: r`A circle in the $xy$-plane has its center at $(2, -1)$ and passes through the point $(7, 11)$. What is the radius of the circle?`,
     answer: ['13'],
-    steps: [
-      r`The radius is the distance from the center to any point on the circle.`,
-      r`$\Delta x = 5$ and $\Delta y = 12$.`,
-      r`$r = \sqrt{5^2 + 12^2} = \sqrt{169} = 13$.`,
-    ],
+    steps: ['**The radius is the distance from the center to any point on the circle.**', '**Find the changes.** From $(2, -1)$ to $(7, 11)$: $\\Delta x = 5$ and $\\Delta y = 12$.', '**Use the distance formula.** $r = \\sqrt{5^2 + 12^2} = \\sqrt{25 + 144} = \\sqrt{169} = 13$.', '**Answer.** 13 (a 5-12-13 right triangle). Watch the sign: $11 - (-1) = 12$, not 10.'],
     why: [
       r`169 — this is $r^2$, the number on the right side of the circle's equation.`,
       r`17 — this adds the changes $5 + 12$ instead of using the distance formula.`,
@@ -990,11 +907,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-circ-03', skill: 'circ', sub: 'Arcs and sectors', d: 'V',
     stem: r`A circle has a radius of 9 centimeters. A sector of the circle has an area of $27\pi$ square centimeters. What is the measure, in degrees, of the sector's central angle?`,
     answer: ['120'],
-    steps: [
-      r`Area of the whole circle: $\pi \cdot 9^2 = 81\pi$.`,
-      r`Fraction of the circle: $\frac{27\pi}{81\pi} = \frac{1}{3}$.`,
-      r`Central angle: $\frac{1}{3} \times 360° = 120°$.`,
-    ],
+    steps: ['**Find the whole circle\'s area.** $\\pi r^2 = \\pi(9)^2 = 81\\pi$.', '**Find the sector\'s fraction of the circle.** $\\dfrac{27\\pi}{81\\pi} = \\dfrac{1}{3}$.', '**The central angle is the same fraction of $360°$.** $\\dfrac{1}{3} \\times 360° = 120°$.', '**Answer.** 120. Check: $\\dfrac{120}{360} \\times 81\\pi = 27\\pi$. ✓'],
     why: [
       r`540 — this divides by the circumference ($18\pi$) instead of the area, giving 1.5 of the circle.`,
       r`3 — this is the fraction inverted ($\frac{81}{27}$), not an angle.`,
@@ -1009,11 +922,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-circ-04', skill: 'circ', sub: 'Radians and arc length', d: 'H',
     stem: r`An arc of a circle with radius 12 has length $5\pi$. What is the measure of the arc's central angle, in radians?`,
     choices: [r`$\dfrac{12}{5\pi}$`, r`$\dfrac{5\pi}{12}$`, r`$75$`, r`$\dfrac{5\pi}{24}$`], answer: 1,
-    steps: [
-      r`In radians, arc length $s = r\theta$.`,
-      r`$5\pi = 12\theta$, so $\theta = \frac{5\pi}{12}$.`,
-      r`(That is $75°$, but the question asks for radians.)`,
-    ],
+    steps: ['**Use the radian formula.** Arc length $s = r\\theta$ when $\\theta$ is in radians.', '**Substitute.** $5\\pi = 12\\theta$.', '**Solve.** $\\theta = \\dfrac{5\\pi}{12}$ radians.', '**Answer.** Choice B. (That angle is $75°$, which is choice C, but the question asks for radians; choice A flips the fraction.)'],
     why: [
       r`$\frac{12}{5\pi}$ is $\frac{r}{s}$, the formula upside down.`,
       r`Correct. $\theta = \frac{s}{r}$.`,
@@ -1030,11 +939,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-circ-05', skill: 'circ', sub: 'Tangents', d: 'V',
     stem: r`Point $P$ lies outside a circle with center $O$ and radius 8. A line through $P$ is tangent to the circle at point $T$. If $PO = 17$, what is the length of $\overline{PT}$?`,
     answer: ['15'],
-    steps: [
-      r`A tangent is perpendicular to the radius at the point of tangency, so angle $OTP$ is a right angle.`,
-      r`$PO$ is the hypotenuse: $PT^2 + 8^2 = 17^2$.`,
-      r`$PT^2 = 289 - 64 = 225$, so $PT = 15$.`,
-    ],
+    steps: ['**Use the tangent fact.** A tangent line is perpendicular to the radius at the point of tangency, so angle $OTP$ is $90°$.', '**Identify the sides.** In right triangle $OTP$, the radius $OT = 8$ is a leg, $PT$ is the other leg, and $PO = 17$ is the hypotenuse.', '**Apply the Pythagorean theorem.** $PT^2 + 8^2 = 17^2$, so $PT^2 = 289 - 64 = 225$.', '**Answer.** $PT = 15$ (an 8-15-17 triangle).'],
     why: [
       r`9 — this subtracts the lengths, $17 - 8$, instead of using the right triangle.`,
       r`18.79 — this adds the squares, treating $PT$ as the hypotenuse.`,

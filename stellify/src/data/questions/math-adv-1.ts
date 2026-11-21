@@ -97,12 +97,7 @@ export const MATH_ADV_1: RawQuestion[] = [
     id: 'm-equiv-05', skill: 'equiv', sub: 'Completing the square', d: 'H',
     stem: r`The expression $x^2 - 10x + 7$ can be rewritten as $(x - h)^2 + k$, where $h$ and $k$ are constants. What is the value of $k$?`,
     answer: ['-18'],
-    steps: [
-      r`Half of the $x$-coefficient $-10$ is $-5$, and $(-5)^2 = 25$.`,
-      r`Add and subtract 25: $x^2 - 10x + 25 - 25 + 7$.`,
-      r`Group: $(x - 5)^2 - 18$.`,
-      r`So $k = -18$.`,
-    ],
+    steps: ['**Find the number that completes the square.** Half of the $x$ coefficient $-10$ is $-5$, and $(-5)^2 = 25$.', '**Add and subtract 25.** $x^2 - 10x + 25 - 25 + 7$, which keeps the value unchanged.', '**Group.** $(x^2 - 10x + 25) + (7 - 25) = (x - 5)^2 - 18$.', '**Answer.** $k = -18$ (and $h = 5$). Check at $x = 0$: $25 - 18 = 7$. ✓'],
     why: [
       r`18 — the sign is wrong. Completing the square adds 25 inside the square, so 25 must be subtracted outside: $7 - 25 = -18$.`,
       r`32 — this adds 25 to 7 instead of subtracting it.`,
@@ -183,12 +178,7 @@ export const MATH_ADV_1: RawQuestion[] = [
     id: 'm-equiv-09', skill: 'equiv', sub: 'Rational expressions', d: 'V',
     stem: r`$$\frac{x^2 - 5x + c}{x - 2} = x - 3 + \frac{4}{x - 2}$$ The given equation is true for all $x \neq 2$, where $c$ is a constant. What is the value of $c$?`,
     answer: ['10'],
-    steps: [
-      r`Multiply both sides by $x - 2$: $x^2 - 5x + c = (x - 3)(x - 2) + 4$.`,
-      r`Expand: $(x - 3)(x - 2) = x^2 - 5x + 6$.`,
-      r`So $x^2 - 5x + c = x^2 - 5x + 6 + 4$.`,
-      r`Therefore $c = 10$.`,
-    ],
+    steps: ['**Clear the denominator.** Multiply both sides by $x - 2$: $x^2 - 5x + c = (x - 3)(x - 2) + 4$.', '**Expand the right side.** $(x - 3)(x - 2) = x^2 - 5x + 6$, so the right side is $x^2 - 5x + 10$.', '**Match the constants.** The $x^2$ and $x$ terms already agree, so $c = 10$.', '**Interpret.** The 4 is the remainder when $x^2 - 5x + 10$ is divided by $x - 2$; check: $2^2 - 5(2) + 10 = 4$. ✓'],
     why: [
       r`6 — this is the constant from $(x - 3)(x - 2)$ alone. The remainder 4 must be added.`,
       r`2 — this subtracts the remainder ($6 - 4$) instead of adding it.`,
@@ -268,11 +258,7 @@ export const MATH_ADV_1: RawQuestion[] = [
     id: 'm-equiv-13', skill: 'equiv', sub: 'Rational expressions', d: 'V',
     stem: r`$$\frac{a}{x - 1} + \frac{b}{x + 2} = \frac{7x + 5}{(x - 1)(x + 2)}$$ The given equation is true for all $x$ other than $1$ and $-2$, where $a$ and $b$ are constants. What is the value of $a$?`,
     answer: ['4'],
-    steps: [
-      r`Multiply both sides by $(x - 1)(x + 2)$: $a(x + 2) + b(x - 1) = 7x + 5$.`,
-      r`This holds for all $x$, so choose $x = 1$ to eliminate $b$: $a(3) + 0 = 7 + 5 = 12$.`,
-      r`Therefore $a = 4$.`,
-    ],
+    steps: ['**Clear the denominators.** Multiply both sides by $(x - 1)(x + 2)$: $a(x + 2) + b(x - 1) = 7x + 5$.', '**Pick a value of $x$ that removes $b$.** At $x = 1$, the $b$ term is $b(0) = 0$. (The identity holds for every $x$ once the fractions are cleared.)', '**Solve for $a$.** $a(3) = 7 + 5 = 12$, so $a = 4$.', '**Check.** At $x = -2$: $b(-3) = -14 + 5 = -9$, so $b = 3$; and $4(x + 2) + 3(x - 1) = 7x + 5$. ✓'],
     why: [
       r`3 — this is the value of $b$ (substitute $x = -2$: $-3b = -9$). The question asks for $a$.`,
       r`7 — this is $a + b$, the coefficient of $x$, not $a$ alone.`,

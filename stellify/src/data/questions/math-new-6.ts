@@ -213,7 +213,7 @@ export const MATH_NEW_6: RawQuestion[] = [
     id: 'm-area-n7', skill: 'area', sub: 'Surface area', d: 'H',
     stem: r`A closed right circular cylinder has a radius of 4 and a height of 6. Its total surface area is $k\pi$. What is the value of $k$?`,
     answer: ['80'],
-    steps: [r`Two circular bases: $2\pi r^2 = 2\pi(16) = 32\pi$.`, r`The curved side: $2\pi r h = 2\pi(4)(6) = 48\pi$.`, r`Total: $32\pi + 48\pi = 80\pi$, so $k = 80$.`],
+    steps: ['**List the surfaces of a closed cylinder.** Two circular bases and one curved side.', '**Bases.** $2\\pi r^2 = 2\\pi(16) = 32\\pi$.', '**Curved side.** Unrolled, it is a rectangle with width equal to the circumference: $2\\pi r h = 2\\pi(4)(6) = 48\\pi$.', '**Add.** $32\\pi + 48\\pi = 80\\pi$, so $k = 80$. (Counting only one base gives 64.)'],
     why: ['96: this is the volume coefficient, πr²h = 96π, not the surface area.', '64: this counts only one circular base (16π + 48π).'],
     concept: 'Total surface area of a closed cylinder = two bases + the curved side.',
     strategy: 'Imagine unrolling the side into a rectangle of width 2πr and height h.',

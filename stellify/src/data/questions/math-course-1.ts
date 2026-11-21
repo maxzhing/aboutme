@@ -71,12 +71,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-lin1-04', skill: 'lin1', sub: 'Absolute value equations', d: 'H',
     stem: r`What is the sum of all solutions to the equation $3|2x + 1| - 7 = 8$?`,
     answer: ['-1'],
-    steps: [
-      r`Isolate the absolute value first: $3|2x + 1| = 15$, so $|2x + 1| = 5$.`,
-      r`Now split into two cases: $2x + 1 = 5$ or $2x + 1 = -5$.`,
-      r`$x = 2$ or $x = -3$.`,
-      r`The sum of the solutions is $2 + (-3) = -1$.`,
-    ],
+    steps: ['**Isolate the absolute value first.** Add 7: $3|2x + 1| = 15$. Divide by 3: $|2x + 1| = 5$.', '**Split into two cases.** $2x + 1 = 5$ or $2x + 1 = -5$.', '**Solve each.** $x = 2$ or $x = -3$.', '**Add.** $2 + (-3) = -1$. Check $x = -3$: $3|-5| - 7 = 8$. ✓ (Splitting $3|2x + 1| - 7 = 8$ before isolating leads to wrong cases.)'],
     why: [
       r`2 — this is only the solution from the positive case. Absolute value equations (with a positive right side) have two solutions.`,
       r`1.333 — this comes from splitting before isolating: $3(2x + 1) - 7 = \pm 8$ gives $x = 2$ and $x = -\frac{2}{3}$.`,
@@ -185,11 +180,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-linf-04', skill: 'linf', sub: 'Function notation', d: 'H',
     stem: r`The function $g$ is defined by $g(x) = 4x - 7$. If $g(2a) = 3a + 13$, what is the value of $a$?`,
     choices: [r`$4$`, r`$8$`, r`$\dfrac{27}{5}$`, r`$20$`], answer: 0,
-    steps: [
-      r`$g(2a)$ means substitute $2a$ for $x$: $g(2a) = 4(2a) - 7 = 8a - 7$.`,
-      r`Set it equal: $8a - 7 = 3a + 13$.`,
-      r`$5a = 20$, so $a = 4$.`,
-    ],
+    steps: ['**Evaluate $g$ at $2a$.** Substitute $2a$ for $x$: $g(2a) = 4(2a) - 7 = 8a - 7$.', '**Set it equal to the given expression.** $8a - 7 = 3a + 13$.', '**Solve.** $5a = 20$, so $a = 4$.', '**Check.** $g(8) = 32 - 7 = 25$ and $3(4) + 13 = 25$. ✓ Choice A. (Choice B is $2a$; computing $2g(a)$ instead of $g(2a)$ leads to choice C.)'],
     why: [
       r`Correct. Check: $g(8) = 25$ and $3(4) + 13 = 25$.`,
       r`8 is the input $2a$. The question asks for $a$.`,
@@ -269,11 +260,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-lin2-04', skill: 'lin2', sub: 'Relationships between variables', d: 'V',
     stem: r`A bakery's Saturday sales satisfy $3m + 8\ell = 670$, where $m$ is the number of muffins sold and $\ell$ is the number of loaves sold. If the bakery had sold 8 more muffins, how would the number of loaves sold need to change for total sales to stay the same?`,
     choices: ['Decrease by 8', 'Decrease by 3', r`Decrease by $\frac{8}{3}$`, 'Increase by 3'], answer: 1,
-    steps: [
-      r`Eight more muffins add $3 \times 8 = 24$ dollars.`,
-      r`To keep the total at 670, the loaves must lose \$24 of sales: $8 \times \Delta\ell = -24$.`,
-      r`$\Delta\ell = -3$: three fewer loaves.`,
-    ],
+    steps: ['**Read the equation as dollars.** Each muffin brings in \\$3 and each loaf \\$8; the total stays \\$670.', '**Measure the change.** 8 more muffins add $3 \\times 8 = 24$ dollars.', '**Compensate.** The loaves must bring in \\$24 less: $8 \\times \\Delta\\ell = -24$, so $\\Delta\\ell = -3$.', '**Answer.** Decrease by 3: choice B. (Choice A matches the 8 extra muffins with 8 loaves, ignoring the prices.)'],
     why: [
       r`Decreasing by 8 would remove \$64 of loaf sales, far more than the \$24 the muffins added.`,
       r`Correct. 8 muffins add \$24; 3 loaves remove \$24.`,
@@ -290,11 +277,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-sys-01', skill: 'sys', sub: 'Elimination', d: 'H',
     stem: r`If $5x + 3y = 31$ and $3x + 5y = 33$, what is the value of $x - y$?`,
     answer: ['-1'],
-    steps: [
-      r`Notice the coefficients are swapped. Subtracting the second equation from the first cancels nothing but makes the combination you want.`,
-      r`$(5x + 3y) - (3x + 5y) = 31 - 33$, so $2x - 2y = -2$.`,
-      r`Divide by 2: $x - y = -1$.`,
-    ],
+    steps: ['**Look at the target, $x - y$.** The coefficients are swapped between the equations, so subtracting one from the other produces equal and opposite $x$ and $y$ coefficients.', '**Subtract the second equation from the first.** $(5x + 3y) - (3x + 5y) = 31 - 33$, so $2x - 2y = -2$.', '**Divide by 2.** $x - y = -1$.', '**Check by solving.** Adding the equations gives $x + y = 8$; with $x - y = -1$: $x = 3.5$, $y = 4.5$, and $5(3.5) + 3(4.5) = 31$. ✓'],
     why: [
       r`8 — this is $x + y$, from adding the equations ($8x + 8y = 64$). The question asks for $x - y$.`,
       r`1 — subtracting in the other order gives $-2x + 2y = 2$, which is $y - x = 1$, not $x - y$.`,
@@ -309,11 +292,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-sys-02', skill: 'sys', sub: 'Substitution', d: 'V',
     stem: r`If $y = 2x - 5$ and $3x - 2y = 4$, what is the value of $x + y$?`,
     choices: [r`$6$`, r`$7$`, r`$13$`, r`$-47$`], answer: 2,
-    steps: [
-      r`Substitute $y = 2x - 5$ into the second equation: $3x - 2(2x - 5) = 4$.`,
-      r`Distribute $-2$ to both terms: $3x - 4x + 10 = 4$, so $-x = -6$ and $x = 6$.`,
-      r`$y = 2(6) - 5 = 7$, so $x + y = 13$.`,
-    ],
+    steps: ['**Substitute the expression for $y$.** $3x - 2(2x - 5) = 4$.', '**Distribute the $-2$ to both terms.** $3x - 4x + 10 = 4$, so $-x = -6$ and $x = 6$. (Writing $-4x - 10$ is the sign trap that leads to choice D.)', '**Find $y$.** $y = 2(6) - 5 = 7$.', '**Answer.** $x + y = 13$: choice C. Check: $3(6) - 2(7) = 4$. ✓ (Choices A and B are $x$ and $y$ alone.)'],
     why: [
       r`6 is the value of $x$ alone; the question asks for $x + y$.`,
       r`7 is the value of $y$ alone; the question asks for $x + y$.`,
@@ -413,11 +392,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-ineq-02', skill: 'ineq', sub: 'Modeling constraints', d: 'H',
     stem: r`A student needs at least 30 credits to graduate and has already earned 9. She plans to take $x$ courses worth 3 credits each and $y$ courses worth 4 credits each. Which inequality represents the possible values of $x$ and $y$ that will let her graduate?`,
     choices: [r`$3x + 4y \le 21$`, r`$3x + 4y \ge 30$`, r`$3x + 4y \ge 21$`, r`$x + y \ge 21$`], answer: 2,
-    steps: [
-      r`Credits from new courses: $3x + 4y$.`,
-      r`Total credits: $9 + 3x + 4y$, which must be at least 30: $9 + 3x + 4y \ge 30$.`,
-      r`Subtract 9: $3x + 4y \ge 21$.`,
-    ],
+    steps: ['**Credits from new courses.** $x$ courses at 3 credits and $y$ at 4 credits: $3x + 4y$.', '**Include what she has.** Total credits $= 9 + 3x + 4y$, and \\"at least 30\\" means $\\ge 30$.', '**Simplify.** Subtract 9: $3x + 4y \\ge 21$.', '**Answer.** Choice C. (Choice B forgets the 9 credits already earned; choice A reverses the inequality; choice D counts courses, not credits.)'],
     why: [
       r`"At least" means $\ge$, not $\le$.`,
       r`This ignores the 9 credits she already has; it would require 30 NEW credits.`,
@@ -453,11 +428,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-ineq-04', skill: 'ineq', sub: 'Compound and absolute value inequalities', d: 'H',
     stem: r`How many integers $x$ satisfy $-4 \le 5 - 3x < 11$?`,
     answer: ['5'],
-    steps: [
-      r`Subtract 5 from all three parts: $-9 \le -3x < 6$.`,
-      r`Divide all three parts by $-3$ and flip both signs: $3 \ge x > -2$.`,
-      r`So $-2 < x \le 3$. The integers are $-1, 0, 1, 2, 3$: five integers.`,
-    ],
+    steps: ['**Subtract 5 from all three parts.** $-9 \\le -3x < 6$.', '**Divide all three parts by $-3$ and flip both signs.** $3 \\ge x > -2$.', '**Rewrite in order.** $-2 < x \\le 3$: $-2$ is excluded and 3 is included.', '**List and count the integers.** $-1, 0, 1, 2, 3$: five integers. Check $x = 3$: $5 - 9 = -4$, allowed by $\\le$. ✓'],
     why: [
       r`4 — this leaves out 3, which IS included because the left inequality was $\le$.`,
       r`6 — this includes $-2$, but $x > -2$ is strict, so $-2$ is excluded.`,
@@ -515,11 +486,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-equiv-03', skill: 'equiv', sub: 'Rewriting for structure', d: 'E',
     stem: r`If $x^2 - 10x + c = (x - k)^2 - 4$ for all values of $x$, where $c$ and $k$ are constants, what is the value of $c$?`,
     choices: [r`$25$`, r`$29$`, r`$21$`, r`$5$`], answer: 2,
-    steps: [
-      r`Expand the right side: $(x - k)^2 - 4 = x^2 - 2kx + k^2 - 4$.`,
-      r`Match the $x$-coefficients: $-2k = -10$, so $k = 5$.`,
-      r`Match the constants: $c = k^2 - 4 = 25 - 4 = 21$.`,
-    ],
+    steps: ['**\\"For all $x$\\" means coefficients match.** Expand the right side: $(x - k)^2 - 4 = x^2 - 2kx + k^2 - 4$.', '**Match the $x$ terms.** $-2k = -10$, so $k = 5$.', '**Match the constants.** $c = k^2 - 4 = 25 - 4 = 21$.', '**Answer.** Choice C. Check: $(x - 5)^2 - 4 = x^2 - 10x + 21$. ✓ (Choice A is $k^2$, forgetting the $-4$; choice B adds 4 instead.)'],
     why: [
       r`25 is $k^2$; it forgets the $-4$ outside the square.`,
       r`29 adds 4 instead of subtracting it.`,
@@ -555,11 +522,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-nleq-02', skill: 'nleq', sub: 'Sum and product of roots', d: 'V',
     stem: r`The solutions to $3x^2 - 12x + 5 = 0$ are $p$ and $q$. What is the value of $p^2 + q^2$?`,
     choices: [r`$16$`, r`$\dfrac{38}{3}$`, r`$\dfrac{58}{3}$`, r`$\dfrac{43}{3}$`], answer: 1,
-    steps: [
-      r`Sum of solutions: $p + q = -\frac{b}{a} = \frac{12}{3} = 4$. Product: $pq = \frac{c}{a} = \frac{5}{3}$.`,
-      r`Use the identity $p^2 + q^2 = (p + q)^2 - 2pq$.`,
-      r`$16 - \frac{10}{3} = \frac{38}{3}$.`,
-    ],
+    steps: ['**Get the sum and product without solving.** For $ax^2 + bx + c = 0$: $p + q = -\\dfrac{b}{a} = \\dfrac{12}{3} = 4$ and $pq = \\dfrac{c}{a} = \\dfrac{5}{3}$.', '**Connect them to $p^2 + q^2$.** $(p + q)^2 = p^2 + 2pq + q^2$, so $p^2 + q^2 = (p + q)^2 - 2pq$.', '**Substitute.** $4^2 - 2\\left(\\dfrac{5}{3}\\right) = 16 - \\dfrac{10}{3} = \\dfrac{38}{3}$.', '**Answer.** Choice B. (Choice A, 16, is $(p + q)^2$ without subtracting $2pq$; choice C adds $2pq$ instead.)'],
     why: [
       r`16 is $(p + q)^2$; it leaves out the $-2pq$ term.`,
       r`Correct. $(p + q)^2 - 2pq = 16 - \frac{10}{3}$.`,

@@ -185,3 +185,12 @@ Each entry records what was decided, why, and the alternatives considered.
     private pack, our hard-math solutions are much shorter (median about 35 words of steps against 172 for College
     Board Hard), and some items labeled V read like College Board Medium; expanding those solutions and re-checking
     those labels is the next piece of work.
+43. **Every hard, very-hard and beyond-SAT math question is solved like a tutor would solve it (owner request).**
+    The 2-step solutions (median 33–35 words, against 172 words in College Board's own Hard rationales) were
+    rewritten for all 682 items: one move per step, each with its reason, a check, and where it helps, which
+    wrong choice a slip leads to (each such claim was verified against the choices). Medians are now 4 steps and
+    63 (hard) to 77 (very hard) words of steps, about 100 words with the rationale and strategy notes. A test
+    requires at least 3 steps and 40 words for every non-medium math question. Reading every item also showed
+    that about 110 of the 342 items labeled very hard read like College Board Medium (for example a circle
+    through the origin, a rhombus from its diagonals). Relabeling them would break the bank's enforced 15/40/45
+    difficulty mix, so they keep their labels for now; making those items harder is the next piece of work.
