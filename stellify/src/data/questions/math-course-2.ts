@@ -468,10 +468,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
       "Since the margin of error is added to the estimate, between 54% and 57% of the city's voters support it.",
       "Because the margin of error is 3 points, 57% of the voters in the sample itself support the plan.",
     ], answer: 1,
-    steps: [
-      r`An estimate with a margin of error gives a range: $54 \pm 3$, from 51% to 57%.`,
-      r`The true value is plausibly anywhere in that range, not necessarily 54%.`,
-    ],
+    steps: ['**What a margin of error means.** A sample estimate is not the exact population value. The margin of error says how far the true population percentage could plausibly be from the sample\'s 54%.', '**Build the interval.** Go the margin of error in both directions from the estimate: $54 - 3 = 51$ and $54 + 3 = 57$. Plausible values for all the city\'s voters run from 51% to 57%.', '**Test the other choices against that.** Choice A claims an exact value, which a sample can never give. Choice C goes only upward from 54%. Choice D treats the margin as describing the sample, but the sample\'s percentage is known exactly: 54%.', '**Conclusion.** The appropriate statement gives a range of plausible values for the population, 51% to 57%: choice B.'],
     why: [
       r`A random sample still gives only an estimate; the true percentage is uncertain.`,
       r`Correct. Estimate ± margin of error gives the plausible range.`,
@@ -535,10 +532,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-claims-02', skill: 'claims', sub: 'Generalizing results', d: 'V',
     stem: r`A city selected 500 people at random from its list of registered voters and asked whether they favor building a new park. Of those surveyed, 62% said yes. To which group can the result most appropriately be generalized?`,
     choices: ["The city's registered voters", "All residents of the city", "All residents of the state", 'Only the 500 people surveyed'], answer: 0,
-    steps: [
-      r`The sample was drawn at random from the list of registered voters.`,
-      r`A random sample represents the population it was drawn from: the city's registered voters.`,
-    ],
+    steps: ['**Identify the population that was sampled.** The 500 people were chosen at random from the city\'s list of registered voters, so every registered voter had a chance to be picked, and nobody else did.', '**Apply the rule.** A random sample lets you generalize to the population it was drawn from, and to no wider group.', '**Rule out the wider groups.** Residents who are not registered voters (B) and residents of the rest of the state (C) had no chance to be selected, so the result says nothing reliable about them.', '**Rule out the narrowest group.** Limiting the result to the 500 people (D) ignores the whole point of random sampling, which is to describe the population. The answer is the city\'s registered voters: choice A.'],
     why: [
       r`Correct. That is exactly the population that was sampled.`,
       r`Residents who are not registered voters (including children) could not be selected.`,
