@@ -27,10 +27,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-ratio-02', skill: 'ratio', sub: 'Rates', d: 'H',
     stem: r`Printer A prints 45 pages per minute and printer B prints 30 pages per minute. Working at the same time, how many minutes will the two printers take to print 1,800 pages?`,
     choices: [r`$24$`, r`$48$`, r`$50$`, r`$75$`], answer: 0,
-    steps: [
-      r`Rates add when the machines work together: $45 + 30 = 75$ pages per minute.`,
-      r`Time = work ÷ rate: $1800 \div 75 = 24$ minutes.`,
-    ],
+    steps: ['**Rates add when machines work at the same time.** Together the printers produce $45 + 30 = 75$ pages each minute.', '**Time = amount of work ÷ rate.** $1800 \\div 75 = 24$ minutes.', '**Check.** In 24 minutes, A prints $45 \\times 24 = 1080$ and B prints $30 \\times 24 = 720$: $1080 + 720 = 1800$. ✓', '**Answer.** Choice A. (Adding the separate times, $40 + 60$, or averaging them, would ignore that both printers work at once; teamwork must be faster than either printer alone, which is 40 minutes for A.)'],
     why: [
       r`Correct. Together they print 75 pages each minute.`,
       r`48 uses the AVERAGE rate, 37.5 pages per minute, as if only one printer were running.`,
@@ -512,10 +509,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
       'The routine likely reduces injuries for people similar to the volunteers.',
       'The routine reduces injuries for all members of every gym in the country.',
     ], answer: 2,
-    steps: [
-      r`The treatment was RANDOMLY ASSIGNED, so a cause-and-effect conclusion is reasonable.`,
-      r`The participants were volunteers from one gym, not a random sample, so the result applies to people like them.`,
-    ],
+    steps: ['**Check how the groups were formed.** The routine was randomly assigned to half the volunteers, so the groups differed only by chance and by the routine. That supports a cause-and-effect conclusion (rules out B).', '**Check who was studied.** The 200 people were volunteers from one gym, not a random sample of adults, so the result applies to people like them.', '**Rule out the overreach.** A and D extend the result to all adults or every gym, groups that were never sampled.', '**Answer.** Choice C: the routine likely reduces injuries for people similar to the volunteers.'],
     why: [
       r`Volunteers from one gym are not a random sample of all adults.`,
       r`Random assignment does allow a causal conclusion; this is too cautious.`,
@@ -580,10 +574,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
       'Higher job satisfaction causes adults to sleep more.',
       'The result applies only to the adults who were surveyed.',
     ], answer: 1,
-    steps: [
-      r`The researchers did not assign sleep; they only observed it. So no causal conclusion in either direction.`,
-      r`The sample was random from the country's adults, so an association can be generalized to them.`,
-    ],
+    steps: ['**Is it an experiment?** No. The researchers only recorded how much people sleep; nobody was assigned a sleep schedule.', '**What that means for cause.** People who sleep more may differ in other ways (less stress, different jobs) that also affect job satisfaction. So no causal claim in either direction: rules out A and C.', '**What random selection allows.** The adults were randomly selected from the country, so the association can be generalized to the country\'s adults: rules out D.', '**Answer.** Choice B: more sleep is associated with higher job satisfaction among adults in the country.'],
     why: [
       r`An observational survey cannot show that sleep causes satisfaction.`,
       r`Correct. Association, generalized to the population that was randomly sampled.`,
