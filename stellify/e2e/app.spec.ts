@@ -261,7 +261,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(38); // 37 menu items (extras in folded groups, still in the page) plus Settings
+  expect(links.length).toBe(39); // 38 menu items (extras in folded groups, still in the page) plus Settings
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();
@@ -688,9 +688,9 @@ test('highlights and notes: select words, pick a color, add a note, keep them, r
   const PASSAGE = '[data-hl$="|passage"]';
   await selectWords(page, PASSAGE, 'Honeybees have brains');
   await page.getByTestId('hl-yellow').click();
-  await selectWords(page, PASSAGE, 'trained the bees');
+  await selectWords(page, PASSAGE, 'conditioned the insects');
   await page.getByTestId('hl-underline').click();
-  await expect.poll(() => painted(page)).toMatchObject({ yellow: ['Honeybees have brains'], underline: ['trained the bees'] });
+  await expect.poll(() => painted(page)).toMatchObject({ yellow: ['Honeybees have brains'], underline: ['conditioned the insects'] });
   await expect(page.getByTestId('hl-tip')).toHaveCount(0);
   // a click on a highlight opens it: recolor it and attach a note
   const at = await selectWords(page, PASSAGE, 'brains');
@@ -706,11 +706,11 @@ test('highlights and notes: select words, pick a color, add a note, keep them, r
   // saved on this device
   await stored(page, 'Contrast: a tiny brain, yet it learns faces');
   await page.reload();
-  await expect.poll(() => painted(page)).toMatchObject({ pink: ['Honeybees have brains'], underline: ['trained the bees'], note: ['Honeybees have brains'] });
+  await expect.poll(() => painted(page)).toMatchObject({ pink: ['Honeybees have brains'], underline: ['conditioned the insects'], note: ['Honeybees have brains'] });
   // remove one, clear the rest
   await page.mouse.click(at.a[0] + 4, at.a[1]);
   await page.getByTestId('hl-remove').click();
-  await expect.poll(() => painted(page)).toMatchObject({ pink: [], underline: ['trained the bees'] });
+  await expect.poll(() => painted(page)).toMatchObject({ pink: [], underline: ['conditioned the insects'] });
   await page.getByTestId('hl-clear').click();
   await expect.poll(() => painted(page)).toMatchObject({ underline: [] });
   // a timed test has its own clean slate, and the header's Highlights & Notes button works like Bluebook's
