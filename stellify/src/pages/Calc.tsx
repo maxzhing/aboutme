@@ -20,6 +20,7 @@ import { Pet } from '@/components/Pet';
 import { Confetti } from '@/components/Confetti';
 import { Badge, Card, Empty, Progress, Ring, cn } from '@/components/ui';
 import { Glyph } from '@/components/Glyph';
+import { CalcTestsCard } from './CalcTest';
 
 const UNIT_COLOR = ['#475569', '#1D4ED8', '#4338CA', '#6D28D9', '#BE185D', '#B45309', '#047857', '#0369A1', '#15803D', '#7E22CE', '#B91C1C'];
 const UnitTile = ({ n, size = 48 }: { n: number; size?: number }) => (
@@ -62,6 +63,7 @@ function CourseHome() {
             <div className="mt-5 flex flex-wrap gap-2">
               {next ? <Link href={`/${course.id}/${next.id}`} className="btn !bg-[rgb(var(--surface))] !px-5 !py-3 text-[15px] !text-ink hover:!bg-[rgb(var(--raised))]" data-testid="calc-continue"><Play size={17} />{done.length ? 'Continue' : 'Start'}: {next.unit}.{next.n} {next.title}</Link> : <span className="rounded-xl bg-white/15 px-4 py-2.5 text-sm font-bold">All lessons mastered <Glyph e="✓" /></span>}
               <a href="#plan" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20"><CalendarDays size={16} />Study plan</a>
+              {course.id === 'calc' && <a href="#tests" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20" data-testid="calc-tests-link"><Target size={16} />Fast track and tests</a>}
               {course.id === 'music' && <Link href="/music/studio" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20" data-testid="open-studio"><Piano size={16} />Music Studio</Link>}
             </div>
           </div>
@@ -92,6 +94,8 @@ function CourseHome() {
           <li className="rounded-xl border border-gold/40 bg-gold/5 p-3 text-xs"><div className="font-bold text-ink">Weeks {totalWeeks + 1}–{totalWeeks + 3}</div><div className="mt-0.5 text-muted">Full practice exams and review of your weakest units</div></li>
         </ol>
       </Card>
+
+      {course.id === 'calc' && <CalcTestsCard />}
 
       <div className="space-y-3">
         {units.map((u) => { const ls = course.lessonsOfUnit(u.n); const m = ls.filter((l) => done.includes(l)).length; const isOpen = open === u.n; return (

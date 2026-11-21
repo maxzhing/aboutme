@@ -133,3 +133,9 @@ Each entry records what was decided, why, and the alternatives considered.
     cross-text questions, 14 for structure and synthesis). `tests/cb-bar.test.ts` holds a count of hard questions still
     below the bar that may only go down, so new questions must meet it. `scripts/cb-audit.ts` lists what is left.
     The measures are proxies for wording difficulty; the logic of each question and its wrong answers is reviewed by hand.
+37. **Calculus BC gets a fast track and real tests (owner request).** The owner asked for a course that can be
+    learned quickly with many hard tests at the end, modeled on MCPS (Winston Churchill High School). MCPS
+    publishes the course only as a two-semester sequence (AP BC Calculus A/B) that follows the College Board
+    framework; no unit pacing guide or test is public, so the split is ours: Semester A = Units 1–5, Semester B =
+    Units 6–10. Each unit has a timed, hint-free test of hard problems with no-calculator and calculator parts
+    (pass at 80%), then a semester exam for each half and cumulative finals. All answers are checked in tests.

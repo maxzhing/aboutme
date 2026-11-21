@@ -71,6 +71,8 @@ interface Actions {
   calcAnswer: (pid: string, correct: boolean) => void;
   calcFinish: (lessonId: string, score: number, total: number) => void;
   setCalcExam: (date: string | undefined, course?: string) => void;
+  /** record a finished Calculus BC test attempt */
+  calcTest: (examId: string, score: number, total: number) => void;
   setCalcTeach: (lessonId: string, text: string) => void;
   makePlan: () => void;
   togglePlanTask: (id: string) => void;
@@ -219,6 +221,12 @@ export const useStore = create<Store>()(
           const c = getState().calc ?? { done: {}, answers: {} };
           if (course === 'calc') setState({ calc: { ...c, examDate: date } });
           else { const dates = { ...(c.examDates ?? {}) }; if (date) dates[course] = date; else delete dates[course]; setState({ calc: { ...c, examDates: dates } }); }
+        },
+        calcTest: (examId, score, total) => {
+          const c = getState().calc ?? { done: {}, answers: {} };
+          const tests = { ...(c.tests ?? {}) };
+          tests[examId] = [...(tests[examId] ?? []), { at: Date.now(), score, total }];
+          setState({ calc: { ...c, tests } });
         },
         setCalcTeach: (lessonId, text) => { const c = getState().calc ?? { done: {}, answers: {} }; setState({ calc: { ...c, teach: { ...(c.teach ?? {}), [lessonId]: text } } }); },
         logTrap: (trapId, qid) => {

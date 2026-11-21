@@ -323,7 +323,7 @@ export interface AppState {
   /** traps the student said caught them, by trap id */
   traps: Record<string, { n: number; last: number; qids: string[] }>;
   /** AP Calculus BC self-study progress */
-  calc: { done: Record<string, { at: number; score: number; total: number }>; answers: Record<string, { correct: boolean; at: number; tries: number }>; examDate?: string; /** AP exam dates for the other courses, by course id */ examDates?: Record<string, string>; /** the student's own teach-back explanations, by lesson */ teach?: Record<string, string> };
+  calc: { done: Record<string, { at: number; score: number; total: number }>; answers: Record<string, { correct: boolean; at: number; tries: number }>; examDate?: string; /** AP exam dates for the other courses, by course id */ examDates?: Record<string, string>; /** the student's own teach-back explanations, by lesson */ teach?: Record<string, string>; /** Calculus BC unit tests, semester exams and finals: every attempt, by test id */ tests?: Record<string, { at: number; score: number; total: number }[]> };
   plan?: StudyPlan;
   planDone: Record<string, number>;
   mocks: MockAttempt[];

@@ -10,6 +10,7 @@ const OfficialPage = lazy(() => import('./pages/Official').then((m) => ({ defaul
 const CourseHomePage = lazy(() => import('./pages/Calc').then((m) => ({ default: m.CourseHomePage })));
 const CourseLessonPage = lazy(() => import('./pages/Calc').then((m) => ({ default: m.CourseLessonPage })));
 const CourseReviewPage = lazy(() => import('./pages/Calc').then((m) => ({ default: m.CourseReviewPage })));
+const CalcTestPageL = lazy(() => import('./pages/CalcTest').then((m) => ({ default: m.CalcTestPage })));
 const ChapterPage = lazy(() => import('./pages/Course').then((m) => ({ default: m.ChapterPage })));
 const HacksPage = lazy(() => import('./pages/Hacks').then((m) => ({ default: m.HacksPage })));
 const BankPage = lazy(() => import('./pages/Practice').then((m) => ({ default: m.BankPage })));
@@ -63,6 +64,7 @@ const PathRw = () => <PathPage section="rw" />;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const course = (C: ComponentType<any>) => function CoursePage(p: { course: string }) { return <TypesetContext.Provider value={p.course !== 'csa'}><C {...p} /></TypesetContext.Provider>; };
 const CourseHome = course(CourseHomePage), CourseReview = course(CourseReviewPage), CourseLesson = course(CourseLessonPage);
+const CalcTest = course(CalcTestPageL);
 const Rw = () => <CurriculumPage section="rw" />;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -93,6 +95,7 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   // AP self-study courses: /calc, /csa, /micro, /macro, /stats, /music, their lessons and unit reviews
   { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)$/, component: CourseHome },
   { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)\/review\/(?<unit>\d+)$/, component: CourseReview },
+  { pattern: /^\/calc\/test\/(?<test>[a-z0-9-]+)$/, component: CalcTest },
   { pattern: /^\/(?<course>calc|csa|micro|macro|stats|music)\/(?<lesson>[a-z]+\d+-\d+)$/, component: CourseLesson },
   { pattern: /^\/practice\/timed$/, component: TimedPage },
   { pattern: /^\/daily$/, component: DailyPage },
