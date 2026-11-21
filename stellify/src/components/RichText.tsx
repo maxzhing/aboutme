@@ -16,7 +16,7 @@ export const RichText = memo(function RichText({ text, className, block }: { tex
   const on = useContext(TypesetContext);
   const typeset = on ? typesetProse : (v: string) => v;
   const paras = text.split(/\n\n+/);
-  const render = (src: string) => tokenize(src).map((t, i) => {
+  const tokens = (src: string) => tokenize(src).map((t, i) => {
     switch (t.t) {
       case 'math': return <span key={i} dangerouslySetInnerHTML={{ __html: tex(t.v, false) }} />;
       case 'dmath': return <span key={i} className="block" dangerouslySetInnerHTML={{ __html: tex(t.v, true) }} />;
@@ -29,6 +29,13 @@ export const RichText = memo(function RichText({ text, className, block }: { tex
       default: return <Fragment key={i}>{typeset(t.v)}</Fragment>;
     }
   });
+  // a bold label that contains math (**At $x = 2$.**) is rendered as bold around its own math and text
+  const render = (src: string) => {
+    const segs = src.split(/\*\*([^*]+?)\*\*/g);
+    if (!segs.some((seg, k) => k % 2 === 1 && seg.includes('$'))) return tokens(src);
+    return segs.map((seg, k) => (k % 2 === 0 ? <Fragment key={k}>{tokens(seg)}</Fragment>
+      : seg.includes('$') ? <strong key={k} className="font-semibold">{tokens(seg)}</strong> : <Fragment key={k}>{tokens(`**${seg}**`)}</Fragment>));
+  };
   // fenced code blocks (~~~ … ~~~) keep their line breaks and spacing exactly
   if (text.includes('~~~')) {
     const parts = text.split(/~~~[a-z]*\n?([\s\S]*?)\n?~~~/);

@@ -78,6 +78,20 @@ const WORKOUTS: Frq[] = [
         S(r`Distance on $[2, 4]$, where $v < 0$: $\left|\int_2^4v(t)\,dt\right|$.`, ['4/3', '1.333'], 'Take the absolute value of the integral.', r`$\int_2^4v\,dt = -\frac{4}{3}$, so the distance is $\frac{4}{3}$.`, () => near(integ((t) => t * t - 6 * t + 8, 2, 4), -4 / 3)),
         S('Total distance from t = 0 to t = 5.', ['28/3', '9.333'], 'Add the distance on [4, 5] as well (it is 4/3).', r`$\frac{20}{3} + \frac{4}{3} + \frac{4}{3} = \frac{28}{3}$.`, () => near(integ((t) => Math.abs(t * t - 6 * t + 8), 0, 5, 50000), 28 / 3, 1e-4)),
       ], write: r`Total distance $= \int_0^5|v(t)|\,dt = \frac{20}{3} + \frac{4}{3} + \frac{4}{3} = \frac{28}{3}$.`, trap: 'Integrating v instead of |v|. That gives displacement (20/3), not distance.' },
+      { label: 'e', q: 'Find the least position of the particle on 0 ≤ t ≤ 5, and decide whether there must be a time in (1, 5) when its acceleration is 0. (Harder than the exam: two theorems in one part.)', steps: [
+        S('Find x(4), the position at the second time the particle is at rest. (Fraction.)', ['19/3', '6.333'], 'x(4) = 1 + ∫₀⁴ v(t) dt; antiderivative t³/3 − 3t² + 8t.', r`$x(4) = 1 + \left[\frac{t^3}{3} - 3t^2 + 8t\right]_0^4 = 1 + \frac{64}{3} - 48 + 32 = \frac{19}{3}$.
+
+Why $t = 4$: the least position on a closed interval is found by the candidates test, and the interior candidates are where $v$ changes sign. At $t = 4$, $v$ goes from negative to positive, so the particle stops moving left and turns right: a local low point.`, () => near(1 + integ((t) => t * t - 6 * t + 8, 0, 4), 19 / 3)),
+        S('Compare x(0) = 1, x(2) = 23/3, x(4) = 19/3 and x(5) = 23/3. What is the least position?', ['1'], 'The candidates test includes the endpoints.', r`The least value is $x(0) = 1$, at the start.
+
+This is the trap of the part: the local minimum at $t = 4$ is not the absolute minimum. The particle moved right for 2 seconds first (to $\frac{23}{3}$), so even after drifting back left it only reached $\frac{19}{3}$, still to the right of where it began. Always list the endpoints with the critical points.`, () => Math.min(1, 23 / 3, 19 / 3, 23 / 3) === 1),
+        S(r`Compute the average acceleration $\frac{v(5) - v(1)}{5 - 1}$.`, ['0'], 'v(5) = 25 − 30 + 8, v(1) = 3.', r`$v(5) = 3$ and $v(1) = 3$, so the average acceleration is $\frac{3 - 3}{4} = 0$.
+
+Average acceleration is the average rate of change of velocity, exactly like the slope of a secant line on the graph of $v$. Equal velocities at the two ends mean the secant is flat.`, () => (25 - 30 + 8 - 3) / 4 === 0),
+        S('Must there be a time in (1, 5) when a(t) = 0? (yes or no)', YES, 'v is a polynomial, so it is continuous and differentiable: Rolle’s Theorem / the MVT applies.', r`Yes. $v$ is differentiable (a polynomial), so by the Mean Value Theorem (here Rolle's Theorem, since $v(1) = v(5)$) there is a $c$ in $(1, 5)$ with $v'(c) = a(c) = 0$.
+
+In fact $a(t) = 2t - 6 = 0$ at $t = 3$, which is in $(1, 5)$. On the exam you must name the theorem and state its condition (differentiable, so continuous) to earn the point.`),
+      ], write: r`"Candidates: $x(0) = 1$, $x(2) = \frac{23}{3}$, $x(4) = \frac{19}{3}$, $x(5) = \frac{23}{3}$. The least position is 1." Then: "$v$ is differentiable and $v(1) = v(5) = 3$, so by the Mean Value Theorem $a(c) = 0$ for some $c$ in $(1, 5)$."`, trap: 'Answering 19/3 because t = 4 is where v changes from negative to positive. A relative minimum is not automatically the absolute minimum: compare with the endpoints.' },
     ] },
   { id: 'frq-3', units: [2, 6, 5], title: 'A table of velocities', calculator: false,
     setup: r`A runner’s velocity $v(t)$, in feet per second, is differentiable. Selected values: $v(0) = 0$, $v(2) = 8$, $v(5) = 14$, $v(9) = 10$, $v(12) = 4$.`,
@@ -110,6 +124,14 @@ const WORKOUTS: Frq[] = [
         S(r`$f(4) = 2 + \int_0^4f'(x)\,dx$.`, ['10/3', '3.333'], 'Same antiderivative from 0 to 4.', r`$2 + \frac{64}{3} - 32 + 12 = \frac{10}{3}$.`, () => near(2 + integ((x) => x * x - 4 * x + 3, 0, 4), 10 / 3)),
         S('The absolute maximum value of f on [0, 4].', ['10/3', '3.333'], 'Compare f(0) = 2, f(1), f(3) and f(4).', r`$f(0) = 2$, $f(1) = \frac{10}{3}$, $f(3) = 2$, $f(4) = \frac{10}{3}$. The maximum is $\frac{10}{3}$.`),
       ], write: r`Candidates test with every value shown: $f(0) = 2$, $f(1) = \frac{10}{3}$, $f(3) = 2$, $f(4) = \frac{10}{3}$. Absolute maximum $\frac{10}{3}$.`, trap: 'Checking only the critical points and missing the tie at the endpoint x = 4.' },
+      { label: 'd', q: 'Let h(x) = f(x²) for 0 < x < 2. At which x does h have a relative maximum? Justify. (Harder than the exam: chain rule inside a sign chart.)', steps: [
+        S(r`By the chain rule $h'(x) = 2x\,f'(x^2)$. Write $h'(x)$ in factored form and give the smaller zero in $(0, 2)$.`, ['1'], 'f′(u) = (u − 1)(u − 3) with u = x².', r`$h'(x) = 2x\left(x^2 - 1\right)\left(x^2 - 3\right)$, which is zero at $x = 1$ and $x = \sqrt{3}$ in $(0, 2)$; the smaller is 1.
+
+Where it comes from: $f'(u) = u^2 - 4u + 3 = (u - 1)(u - 3)$. Replacing $u$ by $x^2$ gives $f'(x^2) = (x^2 - 1)(x^2 - 3)$, and the chain rule multiplies by the derivative of the inside, $2x$.`, () => near(2 * 1 * (1 - 1) * (1 - 3), 0)),
+        S('At which x in (0, 2) does h have a relative maximum?', ['1'], 'Sign chart of 2x(x² − 1)(x² − 3).', r`At $x = 1$.
+
+Sign chart on $(0, 2)$: $2x > 0$ throughout. On $(0, 1)$: $(x^2 - 1) < 0$ and $(x^2 - 3) < 0$, so $h' > 0$. On $(1, \sqrt{3})$: $(+)(-)$, so $h' < 0$. On $(\sqrt{3}, 2)$: $(+)(+)$, so $h' > 0$. $h'$ changes from positive to negative at $x = 1$ (maximum) and from negative to positive at $x = \sqrt{3}$ (minimum).`, () => { const hp = (x: number) => 2 * x * (x * x - 1) * (x * x - 3); return hp(0.9) > 0 && hp(1.1) < 0 && hp(1.7) < 0 && hp(1.8) > 0; }),
+      ], write: r`"$h'(x) = 2x f'(x^2) = 2x(x^2 - 1)(x^2 - 3)$. $h'$ changes from positive to negative at $x = 1$, so $h$ has a relative maximum at $x = 1$."`, trap: 'Using the critical points of f (x = 1 and x = 3) for h. The inside function moves them: h′ is zero where x² = 1 or x² = 3.' },
     ] },
   { id: 'frq-5', units: [7], title: 'A differential equation', calculator: false,
     setup: r`Let $y = f(x)$ be the solution to $\dfrac{dy}{dx} = (y - 1)x^2$ with $f(0) = 3$.`,
@@ -143,6 +165,14 @@ const WORKOUTS: Frq[] = [
       { label: 'd', q: 'The vertical line x = k divides R into two regions of equal area. Find k.', steps: [
         S(r`Solve $\int_{-2}^k(2 - x - x^2)\,dx = 2.25$.`, ['-0.5', '-1/2'], 'Half of 4.5.', r`$k = -0.5$ (the parabola is symmetric about $x = -\frac{1}{2}$ between the intersection points).`, () => near(integ((x) => 2 - x - x * x, -2, -0.5), 2.25)),
       ], write: r`Write the equation $\int_{-2}^k\left(2 - x - x^2\right)dx = \frac{1}{2}(4.5)$; then $k = -0.5$.`, trap: 'Setting the integral equal to 4.5 instead of half of it.' },
+      { label: 'e', q: 'Find the volume of the solid formed when R is revolved about the line y = 5. (Harder than the exam: the axis is above the region, so the lower curve gives the outer radius.)', steps: [
+        S('Which curve is farther from the line y = 5, and so gives the outer radius? Type "line" or "parabola".', ['line'], 'The axis is above the whole region (the parabola peaks at y = 4).', r`The line $y = x + 2$ is the lower boundary, so it is farther from $y = 5$: outer radius $R = 5 - (x + 2) = 3 - x$. The parabola is the upper boundary, closer to the axis: inner radius $r = 5 - (4 - x^2) = 1 + x^2$.
+
+When the axis is above the region, each radius is "axis minus curve", and the roles flip: the bottom curve makes the big circle.`),
+        S(r`Compute $V = \pi\int_{-2}^1\left[(3 - x)^2 - (1 + x^2)^2\right]dx$. (Three decimal places.)`, ['73.513'], 'Expand: 8 − 6x − x² − x⁴.', r`$V = \pi\int_{-2}^1\left(8 - 6x - x^2 - x^4\right)dx = \pi\left[8x - 3x^2 - \frac{x^3}{3} - \frac{x^5}{5}\right]_{-2}^1 = 23.4\pi \approx 73.513$.
+
+Each slice perpendicular to the $x$-axis, spun around $y = 5$, makes a washer of area $\pi(R^2 - r^2)$. Adding the washers from the left intersection $x = -2$ to the right one $x = 1$ gives the volume.`, () => near(Math.PI * integ((x) => (3 - x) ** 2 - (1 + x * x) ** 2, -2, 1), 73.513, 1e-4)),
+      ], write: r`$V = \pi\int_{-2}^1\left[(5 - (x + 2))^2 - (5 - (4 - x^2))^2\right]dx \approx 73.513$. Show the radii as distances from $y = 5$.`, trap: 'Using 4 − x² as the outer radius because the parabola is on top. Distances are measured from the axis y = 5, so the top curve is the closer one.' },
     ] },
   { id: 'frq-7', units: [9], title: 'Motion in the plane', calculator: true,
     setup: r`A particle moves in the plane with velocity $\langle e^{t/2},\ \sin t\rangle$. At $t = 0$ it is at $(2, 1)$.`,
@@ -216,6 +246,14 @@ const WORKOUTS: Frq[] = [
       { label: 'c', q: 'Does the curve have any horizontal tangent lines?', steps: [
         S('Horizontal tangents need 2x + 3y = 0, so y = −2x/3. Substituting gives (−5/9)x² = 11. How many real solutions?', ['0'], 'A negative times x² cannot equal 11.', r`$-\frac{5}{9}x^2 = 11$ has no real solution, so there are no horizontal tangents.`),
       ], write: r`Set the numerator $2x + 3y = 0$, substitute into the curve, and show the resulting equation has no real solutions.`, trap: 'Stopping at y = −2x/3 without checking that such points lie on the curve.' },
+      { label: 'd', q: 'Find d²y/dx² at (1, 2). Is the tangent-line estimate from part (b) an overestimate or an underestimate? (Harder than the exam: an implicit second derivative.)', steps: [
+        S(r`Differentiate $y' = -\frac{2x + 3y}{3x + 2y}$ with the quotient rule and evaluate at $(1, 2)$ with $y' = -\frac{8}{7}$. (Fraction or three decimals.)`, ['110/343', '0.321'], 'Top′ = 2 + 3y′, bottom′ = 3 + 2y′.', r`$y'' = -\frac{(2 + 3y')(3x + 2y) - (2x + 3y)(3 + 2y')}{(3x + 2y)^2}$. At the point: $2 + 3y' = -\frac{10}{7}$, $3x + 2y = 7$, $2x + 3y = 8$, $3 + 2y' = \frac{5}{7}$.
+
+So the numerator is $\left(-\frac{10}{7}\right)(7) - 8\cdot\frac{5}{7} = -10 - \frac{40}{7} = -\frac{110}{7}$, and $y'' = -\frac{-110/7}{49} = \frac{110}{343} \approx 0.321$.`, () => { const y = (x: number) => (-3 * x + Math.sqrt(5 * x * x + 44)) / 2; return near((y(1 + 1e-4) - 2 * y(1) + y(1 - 1e-4)) / 1e-8, 110 / 343, 1e-3); }),
+        S('Is the estimate 1.886 an overestimate? (yes or no)', NO, 'Concave up graphs lie above their tangent lines.', r`No, it is an underestimate.
+
+$y'' > 0$ at $(1, 2)$, so the curve is concave up there and bends above its tangent line. The tangent line's value 1.886 is therefore below the curve's true value (about 1.887). Concavity, not the sign of the slope, decides over or under.`),
+      ], write: r`"$\frac{d^2y}{dx^2} = \frac{110}{343} > 0$ at $(1, 2)$, so the curve is concave up and lies above its tangent line; the approximation is an underestimate."`, trap: 'Treating y as a constant when differentiating y′. Every y in the quotient brings a y′ with it.' },
     ] },
   { id: 'frq-12', units: [4, 5], title: 'An inscribed rectangle', calculator: false,
     setup: r`A rectangle has its base on the $x$-axis and its upper corners on $y = 12 - x^2$, at $(\pm x, 12 - x^2)$ with $0 < x < \sqrt{12}$.`,
@@ -228,6 +266,14 @@ const WORKOUTS: Frq[] = [
         S(r`Solve $A'(x) = 0$ on the domain.`, ['2'], '24 − 6x² = 0.', r`$x = 2$; $A''(x) = -12x < 0$ there, so it is a maximum.`, () => near(d((x) => 24 * x - 2 * x ** 3, 2), 0)),
         S('The maximum area.', ['32'], 'A(2).', r`$A(2) = 4 \cdot 8 = 32$.`, () => 2 * 2 * (12 - 4) === 32),
       ], write: r`"$A'(2) = 0$ and $A''(2) = -24 < 0$ (or $A'$ changes from positive to negative), so $A(2) = 32$ is the maximum."`, trap: 'Finding x = 2 but never justifying that it gives a maximum.' },
+      { label: 'c', q: 'x still increases at 0.5 units per second. How fast is the rectangle’s diagonal changing at the moment the area is greatest? (Harder than the exam: related rates on a quantity you have to build.)', steps: [
+        S('At the moment of greatest area, x = 2. How long is the diagonal then? (Exact or three decimals.)', ['4sqrt5', '8.944'], 'Width 2x = 4, height 12 − x² = 8.', r`$D = \sqrt{4^2 + 8^2} = \sqrt{80} = 4\sqrt{5} \approx 8.944$.
+
+The diagonal joins opposite corners, so by Pythagoras $D^2 = (\text{width})^2 + (\text{height})^2 = (2x)^2 + (12 - x^2)^2$. Find its value now because you will need it after differentiating.`, () => near(Math.hypot(4, 8), 8.944, 1e-4)),
+        S(r`Differentiate $D^2 = 4x^2 + (12 - x^2)^2$ with respect to $t$ and solve for $\frac{dD}{dt}$ at $x = 2$. (Three decimal places.)`, ['-1.342', '-3/sqrt5'], '2D D′ = [8x + 2(12 − x²)(−2x)] x′.', r`$2D\frac{dD}{dt} = \left[8x - 4x(12 - x^2)\right]\frac{dx}{dt} = (16 - 64)(0.5) = -24$, so $\frac{dD}{dt} = \frac{-24}{2\cdot 4\sqrt{5}} = -\frac{3}{\sqrt{5}} \approx -1.342$ units per second.
+
+The diagonal is shrinking even though $x$ grows: the rectangle is getting wider by 1 unit per second but shorter by 2 units per second, and the height loss wins.`, () => near(d((t) => Math.hypot(2 * (2 + 0.5 * t), 12 - (2 + 0.5 * t) ** 2), 0), -3 / Math.sqrt(5), 1e-4)),
+      ], write: r`$D^2 = 4x^2 + (12 - x^2)^2$, so $2D\frac{dD}{dt} = \left(8x - 4x(12 - x^2)\right)\frac{dx}{dt}$. At $x = 2$, $D = 4\sqrt{5}$: $\frac{dD}{dt} = -\frac{3}{\sqrt{5}}$ units per second.`, trap: 'Substituting x = 2 before differentiating, which makes every rate zero. Differentiate first, substitute second.' },
     ] },
 ];
 /** the workouts with their full explanations and formula links attached */

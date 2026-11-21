@@ -21,6 +21,14 @@ describe('Calculus BC unit tests, semester exams and finals', () => {
       expect(p.solution.length, p.id).toBeGreaterThanOrEqual(2);
     }
   });
+  it('every problem is solved like a tutor would: what it asks, full steps, and the trap', () => {
+    for (const p of all) {
+      expect(p.ask.length, `${p.id} ask`).toBeGreaterThanOrEqual(60);
+      expect(p.trap.length, `${p.id} trap`).toBeGreaterThanOrEqual(30);
+      for (const s of p.solution) expect(s.length, `${p.id} step too thin: ${s.slice(0, 40)}`).toBeGreaterThanOrEqual(40);
+      expect(p.solution.join(' ').length, `${p.id} solution`).toBeGreaterThanOrEqual(220);
+    }
+  });
 });
 
 import { CALC_FRQS } from '@/data/calc/frq';

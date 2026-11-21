@@ -112,7 +112,10 @@ function TestProblem({ p, i, value, onChange, done }: { p: ExamProblem; i: numbe
       {done && (
         <div className={cn('mt-3 rounded-xl border p-3.5 text-[15px]', ok ? 'border-ok/40 bg-ok/10' : 'border-bad/40 bg-bad/10')}>
           <b className={ok ? 'text-ok' : 'text-bad'}>{ok ? <><Check size={14} className="inline" /> Correct.</> : <><X size={14} className="inline" /> The answer is {answerLabel(p)}.</>}</b>
-          <ol className="mt-2 list-decimal space-y-1 pl-5">{p.solution.map((s, k) => <li key={k}><RichText text={s} /></li>)}</ol>
+          <div className="mt-3 rounded-lg bg-surface/70 p-3"><div className="text-xs font-bold uppercase tracking-wide text-muted">What the question is really asking</div><div className="mt-1"><RichText text={p.ask} /></div></div>
+          <div className="mt-3 text-xs font-bold uppercase tracking-wide text-muted">Step by step</div>
+          <ol className="mt-1 list-decimal space-y-2 pl-5">{p.solution.map((s, k) => <li key={k}><RichText text={s} /></li>)}</ol>
+          <div className="mt-3 rounded-lg border border-warn/40 bg-warn/10 p-3"><div className="text-xs font-bold uppercase tracking-wide text-warn">The trap</div><div className="mt-1"><RichText text={p.trap} /></div></div>
         </div>
       )}
     </div>

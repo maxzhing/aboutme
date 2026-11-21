@@ -147,3 +147,11 @@ Each entry records what was decided, why, and the alternatives considered.
     found, why that method fits, what each number means and how to state it; a test sets a 160-character floor. Past
     College Board free-response questions the owner uploaded are worked the same way, but only in the personal
     copy (through the git-ignored pack, `scripts/calc-frq-pack.ts`). They are never committed or published.
+39. **Every Calculus BC test problem is at or above the College Board's hard level, and is solved like a tutor
+    would solve it (owner request).** All 152 test problems (10 unit tests, 2 semester exams, 4 finals) were
+    rewritten. The easy one-step items are gone (plain limits, a single rule applied once, discs about an axis).
+    In their place are problems with unknown constants, tables, two ideas at once, "which must be true" reasoning,
+    axes that are not the x-axis, and endpoint traps. Each problem has three parts. `ask` says what the question is really asking.
+    The `solution` steps each say what to do, why, and the arithmetic in full. `trap` names the mistake that costs
+    the point. Tests enforce a minimum for each, and every answer is still checked numerically. Five of the
+    original free-response workouts gained a part that is harder than the exam. A bold step label may now contain math.
