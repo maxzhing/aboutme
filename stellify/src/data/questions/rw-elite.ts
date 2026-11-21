@@ -12,7 +12,7 @@ const LOG = 'Which choice most logically completes the text?';
 export const RW_ELITE: RawQuestion[] = [
   {
     id: 'r-x-inf-01', skill: 'inf', sub: 'Inference vs assumption', d: 'E',
-    passage: 'Economists studying a city\'s new congestion charge found that the number of cars entering the charged zone fell by 18 percent, yet average travel speeds inside the zone rose only slightly. Road sensors showed that during the same period the city had converted several traffic lanes in the zone into bus lanes and pedestrian space. The economists therefore caution that the modest change in speeds ______',
+    passage: 'Economists studying a city\'s new congestion charge found that the number of cars entering the charged zone fell by 18 percent, yet average travel speeds inside the zone increased only slightly. Road sensors and municipal records showed that during the same period the city had converted several traffic lanes in the zone into dedicated bus lanes and pedestrian space. The economists therefore caution that the modest change in speeds ______',
     stem: LOG,
     choices: ["proves that congestion charges cannot meaningfully improve travel speeds, even in cities where far fewer cars enter the charged zone.", "shows that most of the drivers who stopped entering the zone switched to riding buses in the newly created bus lanes.", "should not be read as evidence that the charge failed to reduce driving, since the road space available to cars shrank at the same time.", "indicates that the road sensors measured the reported 18 percent decline in the number of cars entering the zone incorrectly."], answer: 2,
     steps: [
@@ -35,12 +35,7 @@ export const RW_ELITE: RawQuestion[] = [
     id: 'r-x-inf-02', skill: 'inf', sub: 'Understanding assumptions', d: 'E',
     passage: 'Linguists have long observed that languages spoken by small, isolated communities tend to have more complex word structure than widely spoken languages, and many have attributed the difference to adult learners, who simplify the languages they acquire. A new analysis of 1,200 languages confirms the correlation but finds that it largely disappears once the languages\' family relationships are taken into account: closely related languages resemble one another in complexity regardless of how many people speak them. This finding suggests that the pattern ______',
     stem: LOG,
-    choices: [
-      'may owe more to inheritance within language families than to any simplifying effect of adult learners.',
-      'shows that adult learners in fact make the languages they acquire more complex.',
-      'demonstrates that the size of a community has no connection to any feature of its language.',
-      'results from linguists having miscounted the speakers of isolated languages.',
-    ], answer: 0,
+    choices: ['may owe more to inheritance within language families than to any simplifying effect of adult learners on languages.', 'shows that adult learners in fact make the languages they acquire more complex rather than simpler over time.', 'demonstrates that the size of a community has no connection whatsoever to any feature of the language it speaks.', 'results from linguists having systematically miscounted the number of people who speak small, isolated languages.'], answer: 0,
     steps: [
       'The correlation between community size and complexity is real, but it mostly vanishes when family relationships are controlled for.',
       'That means related languages are similar because of shared ancestry, and the apparent effect of community size is largely a by-product of which families happen to be large or small.',

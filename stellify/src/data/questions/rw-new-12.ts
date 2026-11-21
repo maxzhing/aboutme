@@ -59,9 +59,9 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-inf-n21', skill: 'inf', sub: 'Logical conclusions', d: 'V',
-    passage: 'In 1890s Paris, posters advertising theaters and cafés were often designed by noted painters such as Henri de Toulouse-Lautrec. Collectors began peeling the posters off walls almost as soon as they were pasted up, and some printers sold extra copies directly to collectors. This suggests that ______',
+    passage: 'In 1890s Paris, lithographic posters advertising theaters and cafés were frequently designed by celebrated painters such as Henri de Toulouse-Lautrec, who brought bold colors and dramatic compositions to the commercial medium. Collectors began peeling the posters off walls almost as soon as they were pasted up, and some enterprising printers sold additional copies directly to collectors, a practice suggesting that ______',
     stem: 'Which choice most logically completes the text?',
-    choices: ['the posters failed to attract customers to the theaters and cafés.', 'painters were paid more for posters than for their paintings.', 'many people at the time valued the posters as art and not only as advertising.', 'printers soon stopped producing posters for theaters and cafés.'], answer: 2,
+    choices: ['the posters failed to attract customers to the theaters and cafés that had commissioned and paid for them.', 'the painters who designed the posters were paid considerably more for them than for their paintings, which hung in galleries.', 'many people at the time valued the posters as works of art and not merely as commercial advertising.', 'printers soon stopped producing posters for theaters and cafés because collectors removed them so quickly, sometimes within hours.'], answer: 2,
     steps: ['Collectors took posters off walls and printers sold copies directly to them.', 'People collecting advertisements as objects suggests they valued them as art.'],
     why: ['The text says nothing about whether the posters drew customers.', 'The text gives no information about how painters were paid.', 'Correct. Collecting posters shows they were valued beyond their advertising use.', 'Printers selling extra copies suggests more production, not less.'],
     concept: 'People’s behavior toward an object reveals how they valued it.',

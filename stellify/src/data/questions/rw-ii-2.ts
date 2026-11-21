@@ -262,14 +262,9 @@ export const RW_II_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-03', skill: 'inf', sub: 'Logical conclusions', d: 'H',
-    passage: 'In a field experiment, researcher Noor Haidari set up a tasting table at a grocery store offering either 6 or 24 varieties of tea. More shoppers stopped at the table when 24 varieties were displayed, but shoppers who stopped at the 6-variety display were far more likely to buy a box of tea. Haidari\'s results suggest that a large number of options may ______',
+    passage: 'In a field experiment conducted over several consecutive weekends, researcher Noor Haidari set up a tasting table at a busy suburban supermarket offering either 6 or 24 varieties of tea. Considerably more shoppers stopped at the table when 24 varieties were displayed, but shoppers who stopped at the 6-variety display were far more likely to purchase a box of tea. Haidari\'s results suggest that a large number of options may ______',
     stem: 'Which choice most logically completes the text?',
-    choices: [
-      'attract shoppers\' attention while making it harder for them to commit to a purchase.',
-      'cause shoppers to buy more products than they had intended to buy.',
-      'lead shoppers to doubt the quality of the products being offered.',
-      'increase both shoppers\' interest in a product and the product\'s sales.',
-    ], answer: 0,
+    choices: ['attract shoppers\' attention while making it more difficult for them to commit to purchasing any one of the products.', 'cause shoppers who stop at a display to buy considerably more products than they had originally intended to buy.', 'lead shoppers to doubt the quality of the products being offered, since so many varieties seem difficult to evaluate.', 'increase both shoppers\' interest in a product and the number of boxes of that product that the store sells.'], answer: 0,
     steps: [
       'Two results: the larger display drew more shoppers (more attention), but the smaller display produced more purchases (the larger one produced fewer).',
       'The completion must describe what "a large number of options" does and include both effects: more attention, fewer purchases.',
@@ -309,14 +304,9 @@ export const RW_II_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-05', skill: 'inf', sub: 'Completing an argument', d: 'H',
-    passage: 'Glassmakers in a medieval workshop used plant ash as a source of the alkali needed to melt sand. Chemical analysis by Sofia Marchetti shows that glass from the workshop\'s earliest period contains ash from a coastal plant, while its later glass contains ash from inland trees—even though the coastal plant yields clearer glass and the workshop never moved. Marchetti therefore infers that ______',
+    passage: 'Glassmakers in a medieval Venetian workshop systematically used plant ash as a source of the alkali needed to melt sand into glass. Chemical analysis by Sofia Marchetti demonstrates that glass from the workshop\'s earliest period contains ash from a coastal plant, while its later glass contains ash from inland trees—even though the coastal plant yields considerably clearer, more transparent glass and the workshop never relocated. Marchetti therefore infers that ______',
     stem: 'Which choice most logically completes the text?',
-    choices: [
-      'the glassmakers came to prefer the appearance of glass made with tree ash.',
-      'the workshop was relocated to a site farther from the coast.',
-      'inland trees produce more alkali per kilogram than the coastal plant does.',
-      'the workshop\'s access to the coastal plant was probably reduced, forcing a change in materials.',
-    ], answer: 3,
+    choices: ['the glassmakers gradually came to prefer the cloudier appearance of glass produced with ash from inland trees.', 'the workshop was eventually relocated to a site considerably farther from the coast, closer to the inland forests.', 'inland trees produce more of the alkali needed to melt sand, per kilogram of ash, than the coastal plant does.', 'the workshop\'s access to the coastal plant was probably reduced, forcing the glassmakers to change their materials.'], answer: 3,
     steps: [
       'The facts: the workshop switched from coastal-plant ash to tree ash. The switch was not an improvement (coastal ash makes clearer glass) and was not caused by relocation (the workshop never moved).',
       'With preference for quality and relocation ruled out, the remaining explanation is that the better material became harder to get.',
@@ -335,7 +325,7 @@ export const RW_II_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-06', skill: 'inf', sub: 'Logical conclusions', d: 'H',
-    passage: 'Some economists argue that raising a city\'s minimum wage will inevitably reduce employment in restaurants. Yet when the city of Port Avery raised its minimum wage, restaurant employment held steady while menu prices rose by about 3 percent. Since restaurant owners there apparently covered their higher labor costs through pricing, the Port Avery case suggests that ______',
+    passage: 'Some economists argue that raising a city\'s minimum wage will inevitably reduce employment in restaurants, since owners facing higher labor costs will hire fewer workers or eliminate existing positions. Yet when the city of Port Avery raised its minimum wage, restaurant employment held steady while menu prices rose by approximately 3 percent. Since restaurant owners there apparently covered their higher labor costs through pricing, the Port Avery case suggests that ______',
     stem: 'Which choice most logically completes the text?',
     choices: ["minimum wage increases never reduce employment in restaurants, regardless of how much the minimum wage is raised.", "the effect of a minimum wage increase on employment may depend on whether businesses can pass higher costs on to customers.", "restaurants in Port Avery were more profitable after the wage increase than restaurants in other cities were.", "customers in Port Avery prefer to eat at restaurants that pay their workers higher wages, even at higher prices."], answer: 1,
     steps: [
@@ -356,14 +346,9 @@ export const RW_II_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-07', skill: 'inf', sub: 'Understanding assumptions', d: 'V',
-    passage: 'Researchers studying a species of cave fish that has lost its eyes over many generations found that the same gene that suppresses eye development also increases the number of taste buds on the fish\'s jaw. In the total darkness of caves, eyes offer no benefit, but extra taste buds help fish find scarce food. The researchers therefore suggest that eye loss in this species ______',
+    passage: 'Researchers studying a species of cave fish that has lost its eyes over many generations discovered that the same gene that suppresses eye development also increases the number of taste buds on the fish\'s jaw. In the total darkness of underground caves, eyes offer no benefit, but additional taste buds help fish locate scarce, widely dispersed food. The researchers therefore suggest that eye loss in this species ______',
     stem: 'Which choice most logically completes the text?',
-    choices: [
-      'occurred because the fish\'s eyes were repeatedly injured in the rocky cave environment.',
-      'demonstrates that the fish could no longer survive outside of caves.',
-      'may have arisen as a side effect of selection for more taste buds rather than because losing eyes was itself advantageous.',
-      'took place more rapidly than the increase in the number of taste buds did.',
-    ], answer: 2,
+    choices: ['occurred because the fish\'s eyes were repeatedly injured by sharp rocks in the dark, confined cave environment.', 'demonstrates that the fish could no longer survive in rivers or lakes outside the caves where they now live.', 'may have arisen as a side effect of selection for more taste buds rather than because losing eyes was itself advantageous.', 'took place considerably more rapidly than the increase in the number of taste buds on the fish\'s jaw did.'], answer: 2,
     steps: [
       'Key fact: one gene does two things, reducing eyes and adding taste buds. Extra taste buds are useful in caves; eyes are merely useless there, not harmful.',
       'So natural selection would favor the gene for its taste-bud benefit, and eye loss would come along with it.',
@@ -382,14 +367,9 @@ export const RW_II_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-08', skill: 'inf', sub: 'Inference vs assumption', d: 'V',
-    passage: 'Art historians dating an unsigned landscape painting noted that it includes a bright synthetic green pigment that was not manufactured until 1838. A restoration report, however, shows that the green areas lie on top of an older layer of varnish, indicating that they were added after the original painting had been finished and sealed. Consequently, the presence of the pigment ______',
+    passage: 'Art historians attempting to date an unsigned landscape painting noted that it includes a brilliant synthetic green pigment that was not manufactured commercially until 1838, a date that would seem to establish the earliest possible year of composition. A restoration report, however, demonstrates that the green areas lie on top of an older layer of varnish, indicating that they were added after the original painting had been completed and sealed. Consequently, the presence of the pigment ______',
     stem: 'Which choice most logically completes the text?',
-    choices: [
-      'shows only that the painting was retouched in or after 1838, not when it was originally painted.',
-      'proves that the original painting was completed well before 1838.',
-      'suggests that the varnish layer was applied sometime after 1838.',
-      'indicates that the restorers who examined the painting used inauthentic materials.',
-    ], answer: 0,
+    choices: ['shows only that the painting was retouched in or after 1838, not when the original painting was actually made.', 'proves that the original painting was completed considerably earlier than 1838, probably by several decades.', 'suggests that the older layer of varnish beneath the green areas was applied sometime after the year 1838.', 'indicates that the restorers who examined the painting used inauthentic materials when they repaired its surface.'], answer: 0,
     steps: [
       'The pigment did not exist before 1838, so anything painted with it dates to 1838 or later.',
       'But the green was applied over the varnish, after the original work was finished. So the pigment dates the addition, not the original painting.',
@@ -408,14 +388,9 @@ export const RW_II_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-09', skill: 'inf', sub: 'Logical conclusions', d: 'V',
-    passage: 'A widely repeated claim holds that people in the Middle Ages commonly died by age 35. This figure comes from estimates of average life expectancy at birth, which were pulled sharply downward by very high death rates among infants and young children. Records from several medieval English manors show that individuals who reached age 20 could expect, on average, to live into their sixties. The low average life expectancy at birth therefore ______',
+    passage: 'A widely repeated claim, frequently encountered in popular histories and textbooks, holds that people in the Middle Ages commonly died by age 35. This figure derives from estimates of average life expectancy at birth, which demographers acknowledge were pulled sharply downward by extraordinarily high mortality among infants and young children. Records from several medieval English manors indicate that individuals who survived to age 20 could expect, on average, to live into their sixties, a longevity comparable to that documented in considerably later centuries. The low average life expectancy at birth therefore ______',
     stem: 'Which choice most logically completes the text?',
-    choices: [
-      'proves that surviving medieval records are too unreliable to use.',
-      'shows that medieval adults lived longer than adults do today.',
-      'indicates that the common claim underestimates how many infants died.',
-      'reflects high mortality in childhood rather than showing that most adults died young.',
-    ], answer: 3,
+    choices: ['proves that the surviving records from medieval English manors are far too unreliable for historians to use.', 'shows that medieval adults who survived childhood generally lived longer than adults in wealthy countries live today.', 'indicates that the common claim about medieval life spans seriously underestimates how many infants actually died.', 'reflects high mortality in early childhood rather than showing that most medieval adults died at a young age.'], answer: 3,
     steps: [
       'The text explains where the figure of 35 comes from: an average at birth, dragged down by many early childhood deaths.',
       'It then shows that people who survived childhood typically lived into their sixties.',
@@ -434,14 +409,9 @@ export const RW_II_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-10', skill: 'inf', sub: 'Logical conclusions', d: 'V',
-    passage: 'Psycholinguist Hana Vesely had participants read sentences containing either familiar idioms or literal phrases of the same length while their eye movements were tracked. Readers spent less time on the final word of an idiom than on the final word of a literal phrase, but only when they recognized the idiom; for idioms they did not know, reading times matched those for literal phrases. This pattern suggests that ______',
+    passage: 'Psycholinguist Hana Vesely had participants read sentences containing either familiar idioms or literal phrases of identical length and grammatical structure while their eye movements were tracked electronically. Readers spent less time on the final word of an idiom than on the final word of a literal phrase, but only when they recognized the idiom; for unfamiliar idioms, reading times matched those for literal phrases. This pattern suggests that ______',
     stem: 'Which choice most logically completes the text?',
-    choices: [
-      'idioms are read quickly because their final words tend to be shorter than the final words of literal phrases.',
-      'familiar idioms are retrieved as whole units, allowing readers to anticipate how they end.',
-      'readers generally skip over words that they do not recognize.',
-      'literal phrases take longer to read than idioms of any kind.',
-    ], answer: 1,
+    choices: ['idioms are read quickly because their final words tend to be considerably shorter than the final words of literal phrases.', 'familiar idioms are retrieved from memory as whole units, allowing readers to anticipate how the expressions will end.', 'readers generally skip over the final words of phrases whenever they encounter words that they do not recognize.', 'literal phrases take longer to read than idioms of any kind, whether or not the readers recognize the idioms.'], answer: 1,
     steps: [
       'Finding: the final word of an idiom was read faster only when the reader knew the idiom. Unknown idioms were read like literal phrases.',
       'So the speed-up comes from familiarity with the whole expression, not from the words themselves: the reader already expects the ending.',
@@ -460,14 +430,9 @@ export const RW_II_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-11', skill: 'inf', sub: 'Completing an argument', d: 'V',
-    passage: 'Coral reefs near the island of Tavua recovered quickly after a severe bleaching event, while reefs near neighboring Molau, exposed to the same water temperatures, did not. Marine ecologist Sefa Latu notes that catching plant-eating fish is banned around Tavua but not around Molau, and that on Molau\'s reefs fast-growing algae covered the dead coral within months, leaving little bare surface where young corals could settle. Latu\'s observations suggest that ______',
+    passage: 'Coral reefs near the island of Tavua recovered quickly after a severe bleaching event, while reefs near neighboring Molau, exposed to identical water temperatures, did not. Marine ecologist Sefa Latu notes that catching plant-eating fish is prohibited around Tavua but not around Molau, and that on Molau\'s reefs fast-growing algae covered the dead coral within months, leaving little exposed surface where young corals could settle. Latu\'s observations suggest that ______',
     stem: 'Which choice most logically completes the text?',
-    choices: [
-      'the bleaching event was less severe near Tavua than it was near Molau.',
-      'algae growth is a major cause of coral bleaching.',
-      'protecting plant-eating fish may help reefs recover from bleaching by keeping algae from crowding out young corals.',
-      'banning fishing near coral reefs prevents bleaching events from occurring.',
-    ], answer: 2,
+    choices: ['the bleaching event was considerably less severe near Tavua than it was near Molau, which explains the different outcomes.', 'the growth of algae on coral reefs is a major cause of the bleaching events that damage reefs throughout the region.', 'protecting plant-eating fish may help reefs recover from bleaching by keeping algae from crowding out young corals.', 'banning the fishing of plant-eating species near coral reefs prevents bleaching events from occurring in the first place.'], answer: 2,
     steps: [
       'Same temperatures at both sites, different recovery. The difference Latu notes: plant-eating fish are protected at Tavua, not at Molau.',
       'At Molau, algae overgrew dead coral so young corals could not settle. Plant-eating fish eat algae, so where they are protected, algae are kept down and corals can return.',

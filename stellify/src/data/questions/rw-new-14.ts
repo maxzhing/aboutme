@@ -47,9 +47,9 @@ export const RW_NEW_14: RawQuestion[] = [
   },
   {
     id: 'r-inf-n24', skill: 'inf', sub: 'Logical conclusions', d: 'H',
-    passage: 'Many trees in temperate forests drop their leaves in autumn. Botanists found that in an unusually warm, wet year, trees of one species kept their leaves almost three weeks longer than usual, while in a year with an early frost, the same trees dropped their leaves early. These observations suggest that, for this species, the timing of leaf drop ______',
+    passage: 'Many deciduous trees in temperate forests shed their leaves in autumn, a process that botanists have traditionally associated with shortening days. Researchers found that in an unusually warm, wet year, trees of one species retained their leaves almost three weeks longer than usual, while in a year with an exceptionally early frost, the same trees shed their leaves prematurely. These observations suggest that, for this species, the timing of leaf drop ______',
     stem: 'Which choice most logically completes the text?',
-    choices: ['is controlled entirely by the length of the day.', 'depends at least partly on weather conditions rather than on a fixed date.', 'has no effect on how well the trees grow the next year.', 'is the same for every species of tree in temperate forests.'], answer: 1,
+    choices: ['is controlled entirely by the length of the day, regardless of the temperatures and rainfall during autumn.', 'depends at least partly on weather conditions rather than on a fixed date or a fixed length of day.', 'has no measurable effect on how successfully the trees grow and reproduce during the following year.', 'is identical for every species of deciduous tree that grows in the temperate forests of the region.'], answer: 1,
     steps: ['The same trees dropped leaves later in a warm year and earlier in a frosty year.', 'So weather affects the timing; it is not fixed.'],
     why: ['Day length changes the same way every year, so it cannot explain the different timing.', 'Correct. Timing shifted with the weather.', 'Growth in the next year is not discussed.', 'The text studies one species; it cannot say all species behave the same way.'],
     concept: 'If an outcome changes when one condition changes, that condition likely matters.',
@@ -59,9 +59,9 @@ export const RW_NEW_14: RawQuestion[] = [
   },
   {
     id: 'r-inf-n25', skill: 'inf', sub: 'Logical conclusions', d: 'V',
-    passage: 'During the California Gold Rush that began in 1848, most miners found little gold, but many merchants who sold them supplies grew rich. Records from mining towns show that basic goods such as flour, boots, and shovels often cost ten times as much as they did in East Coast cities, where such goods were plentiful. These details suggest that ______',
+    passage: 'During the California Gold Rush that began in 1848, most miners found little gold, but many merchants who sold them provisions and equipment accumulated considerable fortunes within remarkably few years. Records from mining settlements indicate that basic goods such as flour, boots, and shovels often cost ten times as much as they did in East Coast cities, where such merchandise was plentiful and competition among sellers was intense. These details suggest that ______',
     stem: 'Which choice most logically completes the text?',
-    choices: ['most miners became wealthy from the gold they found.', 'goods were cheaper in mining towns than in East Coast cities.', 'East Coast merchants refused to sell goods to miners.', 'merchants in mining towns could profit greatly from miners’ need for supplies.'], answer: 3,
+    choices: ['most of the miners who traveled to California during the Gold Rush became wealthy from the gold they found.', 'basic goods such as flour and boots were considerably cheaper in mining settlements than in East Coast cities.', 'merchants in East Coast cities refused to sell flour, boots, and shovels to miners who were traveling west.', 'merchants in mining settlements could profit enormously from miners’ urgent and continuing need for supplies.'], answer: 3,
     steps: ['Miners needed supplies, and prices in mining towns were about ten times higher.', 'Merchants selling at those prices could profit greatly, which explains why many grew rich.'],
     why: ['The text says most miners found little gold.', 'The text says goods cost far more in mining towns.', 'Nothing is said about East Coast merchants refusing to sell.', 'Correct. High demand and high prices let merchants profit.'],
     concept: 'A conclusion should explain the contrast the text sets up.',

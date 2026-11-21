@@ -746,14 +746,9 @@ export const RW_PATTERN: RawQuestion[] = [
   /* ───────────────────────── Inferences ───────────────────────── */
   {
     id: 'r-cb-inf-01', skill: 'inf', sub: 'Inference vs assumption', d: 'E',
-    passage: 'Ledgers from a seventeenth-century paper mill in the Rhine valley show that its sheets grew steadily thinner: a sheet made in 1620 was about 0.20 millimeters thick, while one made in 1648 measured barely 0.12, thin enough that printers complained that ink showed through. Because printers in the region generally refused sheets thinner than 0.15 millimeters, historian Anke Vogel suggests that the mill faced a collapse in orders around 1648, one that was probably averted—although rag fiber remained as scarce and costly as before—by the new owner’s decision to ______',
+    passage: 'Surviving financial ledgers from a seventeenth-century paper mill in the Rhine valley indicate that its sheets grew progressively thinner: a sheet manufactured in 1620 was about 0.20 millimeters thick, while one manufactured in 1648 measured barely 0.12, thin enough that printers complained that ink showed through conspicuously. Because printers in the region generally refused sheets thinner than 0.15 millimeters, historian Anke Vogel suggests that the mill faced a collapse in orders around 1648, one that was probably averted—although rag fiber remained as scarce and expensive as before—by the new owner’s decision to ______',
     stem: LOG,
-    choices: [
-      'use the same amount of fiber per sheet as in 1648 but cut the sheets to a smaller size.',
-      'make larger sheets using the same amount of fiber per sheet as in 1648.',
-      'announce that the mill would no longer sell any sheet thinner than 0.20 millimeters.',
-      'buy a second mill whose waterwheel had not been available to the previous owner.',
-    ], answer: 0,
+    choices: ['use the same amount of fiber per sheet as in 1648 but cut the sheets to a smaller size, making each one thicker.', 'make larger sheets using the same amount of rag fiber per sheet that the mill had used in 1648.', 'announce that the mill would no longer sell any sheet thinner than 0.20 millimeters, regardless of the cost of fiber.', 'purchase a second mill whose waterwheel and equipment had not been available to the mill’s previous owner.'], answer: 0,
     steps: [
       'The problem: sheets at 0.12 mm are below the 0.15 mm that printers accept.',
       'The constraint, flagged by “although”: fiber is still scarce and costly, so the fix cannot depend on using more of it.',
@@ -773,14 +768,9 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-inf-02', skill: 'inf', sub: 'Qualifying a claim', d: 'V',
-    passage: 'Archaeologists dating the first use of a mountain pass have sometimes relied on the deepest soil layer in which spores of dung fungi—which grow only where livestock have been—can be found. Soil scientist Emeka Obi and colleagues examined cores from one such pass and found the spores in every layer, including layers deposited thousands of years before any other evidence of herding in the region. Laboratory tests showed that percolating meltwater readily carries the spores downward through that soil. The researchers therefore concluded that ______',
+    passage: 'Archaeologists dating the first use of a mountain pass have sometimes relied on the deepest soil layer in which spores of dung fungi—which grow only where livestock have been—can be found. Soil scientist Emeka Obi and colleagues examined cores from one such pass and found the spores in every layer, including layers deposited thousands of years before any other evidence of herding in the region. Subsequent laboratory experiments demonstrated that percolating meltwater readily carries the spores downward through that particular soil, contaminating considerably older deposits. The researchers therefore concluded that ______',
     stem: LOG,
-    choices: [
-      'herding in the region must have begun thousands of years earlier than other evidence indicates.',
-      'at this site, the deepest layer containing the spores cannot be taken to mark when livestock first crossed the pass.',
-      'the spores are too scarce in the soil to show that livestock ever used the pass.',
-      'dung fungi spores are a reliable dating tool at lowland sites but not at mountain sites.',
-    ], answer: 1,
+    choices: ['herding in the region must have begun thousands of years earlier than any of the other archaeological evidence indicates.', 'at this site, the deepest layer containing the spores cannot be taken to mark when livestock first crossed the pass.', 'the spores are too scarce in the soil of the pass to show that livestock ever used the route at all.', 'dung fungi spores are a reliable dating tool at lowland archaeological sites but never at sites in the mountains.'], answer: 1,
     steps: [
       'The dating method assumes spores stay in the layer where they were deposited, so the deepest spore layer marks the first livestock.',
       'The lab result breaks that assumption: meltwater moves spores down into older layers.',

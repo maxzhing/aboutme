@@ -47,9 +47,9 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-inf-n22', skill: 'inf', sub: 'Logical conclusions', d: 'H',
-    passage: 'Bats locate flying insects in the dark using echolocation. Moths of some species can hear bat calls, and when they detect an approaching bat, they fold their wings and drop toward the ground. Researchers found that moths whose hearing organs had been experimentally disabled were caught by bats far more often than moths with intact hearing. These results suggest that ______',
+    passage: 'Insectivorous bats locate flying insects in complete darkness using echolocation, interpreting the echoes of their own high-frequency calls. Moths of some species possess specialized hearing organs sensitive to ultrasonic bat calls, and when they detect an approaching bat, they fold their wings and plummet toward the ground. Researchers found that moths whose hearing organs had been experimentally disabled were captured by bats considerably more often than moths with intact hearing, so these results suggest that ______',
     stem: 'Which choice most logically completes the text?',
-    choices: ['bats are unable to detect moths that are falling.', 'moths use echolocation to find their food.', 'all species of moths can hear the calls of bats.', 'the moths’ ability to hear bat calls helps them avoid being caught.'], answer: 3,
+    choices: ['bats are entirely unable to detect moths that are falling rapidly toward the ground rather than flying.', 'moths use a form of echolocation similar to that of bats in order to locate their own food sources.', 'all species of moths possess hearing organs that allow them to detect the echolocation calls of bats.', 'the moths’ ability to hear bat calls helps them avoid being captured by the bats that hunt them.'], answer: 3,
     steps: ['Moths that could hear were caught less often than moths that could not.', 'So hearing bat calls helps moths escape.'],
     why: ['The text does not say bats cannot detect falling moths; it says hearing moths escape more often.', 'The text says bats, not moths, echolocate.', 'The text says "moths of some species," not all species.', 'Correct. Disabling hearing led to more captures.'],
     concept: 'Removing a feature and seeing a worse outcome shows the feature helps.',
@@ -59,9 +59,9 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-inf-n23', skill: 'inf', sub: 'Logical conclusions', d: 'V',
-    passage: 'Novelist Inês Lacerda wrote her first three novels in Portuguese and her next three in English. Critics have observed that her English novels contain far more dialogue. Lacerda has said that she learned English as an adult mainly by listening to conversations, which made her intensely aware of how people actually speak. This suggests that the change in her novels ______',
+    passage: 'Novelist Inês Lacerda wrote her first three novels in Portuguese and her subsequent three in English, and critics have observed that her English novels contain considerably more dialogue than her earlier work. Lacerda has explained that she learned English as an adult principally by listening to conversations, an experience that made her intensely conscious of how people actually speak. This suggests that the change in her novels ______',
     stem: 'Which choice most logically completes the text?',
-    choices: ['may be connected to the way Lacerda learned English.', 'resulted from her readers’ strong preference for dialogue.', 'shows that she wrote her Portuguese novels hastily.', 'occurred because English has more words than Portuguese.'], answer: 0,
+    choices: ['may be connected to the particular way in which Lacerda learned English as an adult, by listening to conversations, rather than in a classroom.', 'resulted from her English-speaking readers’ strong and frequently expressed preference for novels with more dialogue.', 'demonstrates that she wrote her Portuguese novels hastily, without paying careful attention to her characters’ speech.', 'occurred because the English language contains considerably more words than the Portuguese language does, making dialogue easier to write.'], answer: 0,
     steps: ['Her English novels have more dialogue, and she learned English by listening to how people speak.', 'That learning process plausibly explains the increased dialogue.'],
     why: ['Correct. Learning by listening to speech connects to writing more dialogue.', 'Readers’ preferences are never mentioned.', 'Nothing suggests the earlier novels were hasty.', 'The size of each language’s vocabulary is not discussed.'],
     concept: 'A logical completion connects the facts the text actually provides.',

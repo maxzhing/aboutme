@@ -223,9 +223,9 @@ export const RW_NEW_2: RawQuestion[] = [
   // ── Inferences
   {
     id: 'r-inf-n3', skill: 'inf', sub: 'Logical completion', d: 'H',
-    passage: 'Lichens can grow on bare rock, where they slowly release acids that break the rock’s surface into fine particles. Over centuries, these particles mix with the remains of dead lichens to form a thin layer of soil. Because mosses and small plants can take root only where some soil has formed, lichens are often ______',
+    passage: 'Lichens, symbiotic partnerships between fungi and photosynthetic algae, can grow on bare rock, where they gradually release acids that break the rock’s surface into extremely fine particles. Over centuries, these particles accumulate and mix with the decomposing remains of dead lichens to form a thin, nutrient-poor layer of soil. Because mosses and small vascular plants can take root only where some soil has already developed, lichens are often ______',
     stem: 'Which choice most logically completes the text?',
-    choices: ['found only in places where larger plants have already died.', 'among the first organisms to colonize newly exposed rock.', 'harmful to the mosses that grow after them.', 'unable to survive on surfaces that lack soil.'], answer: 1,
+    choices: ['found exclusively in locations where larger plants have already died and decomposed into nutrient-rich soil.', 'among the first organisms to colonize newly exposed rock, preparing the surface for the plants that follow.', 'harmful to the mosses and small vascular plants that establish themselves on the rock after the lichens have arrived.', 'unable to survive on rocky surfaces that lack an existing layer of soil in which to anchor themselves.'], answer: 1,
     steps: ['Lichens grow on bare rock and create the soil that other plants need.', 'So they come first, before plants that need soil: they are early colonizers of bare rock.'],
     why: ['Lichens grow on bare rock, before other plants; the text says nothing about plants dying first.', 'Correct. They can live on bare rock and make the soil others need, so they arrive first.', 'The text shows lichens helping mosses by forming soil, not harming them.', 'The text says the opposite: lichens grow on bare rock.'],
     concept: 'An inference completes the chain of reasoning the text has built.',
@@ -235,9 +235,9 @@ export const RW_NEW_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-n4', skill: 'inf', sub: 'Logical completion', d: 'V',
-    passage: 'A team studying a lake recorded that the number of water fleas, tiny animals that feed on algae, fell sharply in a year when a fish species that eats water fleas was introduced. That same year, the lake’s water turned noticeably greener. The researchers concluded that the greener water most likely resulted from ______',
+    passage: 'A team of limnologists studying a temperate lake recorded that the population of water fleas, microscopic crustaceans that feed on algae, declined sharply in a year when a predatory fish species that consumes water fleas was introduced. During that same year, the lake’s water turned noticeably and persistently greener, and the researchers, after ruling out changes in temperature and nutrient runoff, concluded that the greener water most likely resulted from ______',
     stem: 'Which choice most logically completes the text?',
-    choices: ['the new fish eating the lake’s algae directly.', 'water fleas producing a green pigment as they died.', 'the lake’s algae dying off after the fish arrived.', 'algae growing unchecked once fewer water fleas were eating them.'], answer: 3,
+    choices: ['the newly introduced fish consuming the lake’s algae directly, which released concentrated green pigments into the surrounding water.', 'water fleas producing a distinctive green pigment as their populations declined and large numbers of the animals died.', 'the lake’s algae dying off in enormous numbers after the predatory fish species was introduced into the lake’s water.', 'algae multiplying unchecked once considerably fewer water fleas remained in the lake to consume them.'], answer: 3,
     steps: ['The fish eat water fleas; water fleas eat algae.', 'Fewer water fleas means less algae eaten, so algae multiply and the water turns greener.'],
     why: ['The fish eat water fleas, not algae.', 'Nothing in the text mentions a pigment from the fleas.', 'Greener water suggests more algae, not fewer.', 'Correct. With fewer grazers, algae grew unchecked.'],
     concept: 'In a food chain, removing a predator’s prey can increase what that prey used to eat.',
