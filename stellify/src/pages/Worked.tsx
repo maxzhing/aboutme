@@ -41,7 +41,7 @@ export function WorkedIndexPage() {
 
 export function WorkedSkillPage({ skill }: { skill: string }) {
   const fams = WORKED_BY_SKILL[skill as SkillId] ?? [];
-  if (!fams.length) return <Empty title="No worked examples for this skill yet" body="Worked-example ladders exist for 12 math skills so far. The skill’s chapters and practice sets are always available." action={{ label: 'All worked examples', href: '/worked' }} />;
+  if (!fams.length) return <Empty page title="No worked examples for this skill yet" body="Worked-example ladders exist for 12 math skills so far. The skill’s chapters and practice sets are always available." action={{ label: 'All worked examples', href: '/worked' }} />;
   return (
     <div className="mx-auto max-w-3xl" data-testid="worked-skill">
       <PageHeader eyebrow="Worked examples" title={SKILL[skill as SkillId].short} subtitle="Work down the ladder. Support fades one step at a time. This is different from hints: you see a full solution first, then do more of it yourself each time."

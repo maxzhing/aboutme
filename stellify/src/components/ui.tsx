@@ -109,13 +109,15 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
   );
 }
 
-export function Empty({ title, body, action }: { title: string; body: string; action?: { label: string; href: string } }) {
+/** `page`: the empty state is the whole page, so its title is the page's h1. */
+export function Empty({ title, body, action, page }: { title: string; body: string; action?: { label: string; href: string }; page?: boolean }) {
+  const H = page ? 'h1' : 'h3';
   return (
     <div className="card grid place-items-center gap-2 overflow-hidden p-10 text-center">
       <div className="relative mb-1 grid h-20 w-28 place-items-center text-accent" aria-hidden>
         <Constellation className="!static !z-0 !block !h-auto !w-28 !opacity-70" />
       </div>
-      <h3 className="text-lg font-semibold">{title}</h3>
+      <H className="text-lg font-semibold">{title}</H>
       <p className="max-w-md text-sm text-muted">{body}</p>
       {action && <Link href={action.href} className="btn-primary mt-2">{action.label}</Link>}
     </div>

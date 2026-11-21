@@ -25,7 +25,7 @@ export function SessionPage() {
   const built = useMemo(() => buildSession(Object.fromEntries(sp.entries()), snapshot(), QUESTIONS, getQuestion, Date.now()),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [key]);
-  if (!built.qids.length) return <Empty title="Nothing to practice here yet" body={built.empty ?? 'No questions match this selection.'} action={{ label: 'Go to Smart Practice', href: '/practice/smart' }} />;
+  if (!built.qids.length) return <Empty page title="Nothing to practice here yet" body={built.empty ?? 'No questions match this selection.'} action={{ label: 'Go to Smart Practice', href: '/practice/smart' }} />;
   const back = sp.get('back') ?? (built.mode === 'mistakes' ? '/mistakes' : built.mode === 'lesson' ? `/learn/${sp.get('skill')}` : '/practice');
   return <SessionRunner key={key} qids={built.qids} mode={built.mode} title={built.title} reasons={built.reasons} backHref={back}
     completeHref={built.mode === 'mistakes' ? '/mistakes' : '/practice/smart'} completeLabel={built.mode === 'mistakes' ? 'Back to the Mistake Bucket' : 'More smart practice'} />;

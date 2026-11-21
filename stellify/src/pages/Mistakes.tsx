@@ -85,8 +85,8 @@ export function MistakesPage() {
       ))}
       <div className="flex flex-wrap items-center gap-2">
         <Tabs label="Filter mistakes" value={filter} onChange={setFilter} tabs={(['unresolved', 'all', 'recent', 'repeated', 'math', 'rw', 'resolved'] as Filter[]).map((f) => ({ id: f, label: { unresolved: 'Unresolved', all: 'All', recent: 'Recent', repeated: 'Repeated', math: 'Math', rw: 'Reading & Writing', resolved: 'Resolved' }[f], count: count(f) }))} />
-        <select className="input !w-auto" value={diff} onChange={(e) => setDiff(e.target.value as Difficulty | '')} aria-label="Filter by difficulty"><option value="">Any difficulty</option>{DIFFICULTIES.map((d) => <option key={d} value={d}>{DIFFICULTY_NAME[d]}</option>)}</select>
-        <select className="input !w-auto" value={cat} onChange={(e) => setCatFilter(e.target.value as ErrorCategory | '')} aria-label="Filter by error type"><option value="">Any error type</option>{ERROR_CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</select>
+        <select className="input !w-auto max-w-full" value={diff} onChange={(e) => setDiff(e.target.value as Difficulty | '')} aria-label="Filter by difficulty"><option value="">Any difficulty</option>{DIFFICULTIES.map((d) => <option key={d} value={d}>{DIFFICULTY_NAME[d]}</option>)}</select>
+        <select className="input !w-auto max-w-full" value={cat} onChange={(e) => setCatFilter(e.target.value as ErrorCategory | '')} aria-label="Filter by error type"><option value="">Any error type</option>{ERROR_CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</select>
       </div>
       <ul className="space-y-2">
         {list.map(({ m, q }) => { const p = resolveProgress(m); const tries = attempts.filter((a) => a.qid === q.id && !a.abandoned); return (

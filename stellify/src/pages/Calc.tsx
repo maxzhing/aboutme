@@ -32,7 +32,7 @@ const UnitTile = ({ n, size = 48 }: { n: number; size?: number }) => (
 /** Course home: the whole self-study plan, unit by unit, with progress and pacing. */
 export function CourseHomePage({ course: cid }: { course: string }) {
   const course = COURSES[cid];
-  if (!course) return <Empty title="Course not found" body="That course does not exist." action={{ label: 'Dashboard', href: '/' }} />;
+  if (!course) return <Empty page title="Course not found" body="That course does not exist." action={{ label: 'Dashboard', href: '/' }} />;
   return <CourseCtx.Provider value={course}><CourseHome /></CourseCtx.Provider>;
 }
 
@@ -287,7 +287,7 @@ function Problem({ p, i, hints = true, onDone }: { p: CalcProblem; i: number; hi
 export function CourseLessonPage({ course: cid, lesson }: { course: string; lesson: string }) {
   const course = COURSES[cid];
   const l = course?.lesson[lesson];
-  if (!course || !l) return <Empty title="Lesson not found" body="That lesson does not exist." action={{ label: course?.name ?? 'Dashboard', href: course ? `/${course.id}` : '/' }} />;
+  if (!course || !l) return <Empty page title="Lesson not found" body="That lesson does not exist." action={{ label: course?.name ?? 'Dashboard', href: course ? `/${course.id}` : '/' }} />;
   return <CourseCtx.Provider value={course}><Lesson key={l.id} l={l} /></CourseCtx.Provider>;
 }
 
@@ -388,7 +388,7 @@ function Lesson({ l }: { l: CalcLesson }) {
 /** Unit review: two harder problems from every lesson, shuffled, hints off. */
 export function CourseReviewPage({ course: cid, unit }: { course: string; unit: string }) {
   const course = COURSES[cid];
-  if (!course) return <Empty title="Course not found" body="That course does not exist." action={{ label: 'Dashboard', href: '/' }} />;
+  if (!course) return <Empty page title="Course not found" body="That course does not exist." action={{ label: 'Dashboard', href: '/' }} />;
   return <CourseCtx.Provider value={course}><Review unit={unit} /></CourseCtx.Provider>;
 }
 
@@ -398,7 +398,7 @@ function Review({ unit }: { unit: string }) {
   const [seed, setSeed] = useState(() => Date.now());
   const [res, setRes] = useState<Record<string, boolean>>({});
   const set = useMemo(() => { const rand = rng(seed); return shuffle(course.lessonsOfUnit(Number(unit)).flatMap((l) => shuffle(l.practice.filter((p) => p.level >= 2), rand).slice(0, 2)), rand); }, [course, unit, seed]);
-  if (!u || !set.length) return <Empty title="No review yet" body="This unit’s lessons have not been written yet." action={{ label: course.name, href: `/${course.id}` }} />;
+  if (!u || !set.length) return <Empty page title="No review yet" body="This unit’s lessons have not been written yet." action={{ label: course.name, href: `/${course.id}` }} />;
   const score = Object.values(res).filter(Boolean).length, n = Object.keys(res).length;
   return (
     <div className="mx-auto max-w-3xl space-y-5" data-testid="calc-review">

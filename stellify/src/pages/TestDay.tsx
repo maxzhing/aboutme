@@ -50,7 +50,7 @@ export function TestDayPage() {
               <ul className="divide-y divide-line">
                 {CHECKLIST.filter((c) => c.phase === p.id).map((c) => (
                   <li key={c.id} className="flex items-start gap-3 px-5 py-3">
-                    <button type="button" role="checkbox" aria-checked={!!ticks[c.id]} onClick={() => tick(c.id, !ticks[c.id])} className="mt-0.5 shrink-0" aria-label={c.text} data-testid={`tick-${c.id}`}>
+                    <button type="button" role="checkbox" aria-checked={!!ticks[c.id]} onClick={() => tick(c.id, !ticks[c.id])} className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center" aria-label={c.text} data-testid={`tick-${c.id}`}>
                       {ticks[c.id] ? <CheckCircle2 size={22} className="text-ok" aria-hidden /> : <Circle size={22} className="text-faint" aria-hidden />}
                     </button>
                     <span className="min-w-0 flex-1"><span className={cn('block text-[15px]', ticks[c.id] && 'text-muted line-through')}>{c.text}</span>{c.source && <span className="mt-1 block"><Src s={SOURCES[c.source]} /></span>}</span>

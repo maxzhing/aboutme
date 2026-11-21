@@ -48,8 +48,8 @@ export function CoachToday({ plan, className, compact }: { plan: CoachPlan; clas
             const Icon = ICON[t.kind];
             return (
               <li key={t.id} className="flex flex-wrap items-start gap-x-3 gap-y-2 px-5 py-4 sm:flex-nowrap" data-testid="today-item" data-kind={t.kind} data-done={t.done || undefined}>
-                <button type="button" className="mt-0.5 shrink-0" onClick={() => togglePlanTask(t.id)} aria-pressed={!!t.done} aria-label={`Mark “${t.title}” ${t.done ? 'not done' : 'done'}`}>{t.done ? <CheckCircle2 size={20} className="text-ok" /> : <Circle size={20} className="text-faint" />}</button>
-                <span className="min-w-0 flex-1 basis-[calc(100%-2rem)] sm:basis-auto">
+                <button type="button" className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center" onClick={() => togglePlanTask(t.id)} aria-pressed={!!t.done} aria-label={`Mark “${t.title}” ${t.done ? 'not done' : 'done'}`}>{t.done ? <CheckCircle2 size={20} className="text-ok" /> : <Circle size={20} className="text-faint" />}</button>
+                <span className="min-w-0 flex-1 basis-[calc(100%-2.25rem)] sm:basis-auto">
                   <span className="flex items-start gap-2 font-medium"><span className="mt-[3px]"><Icon size={16} aria-hidden className="text-muted" /></span><span className={t.done ? 'text-muted line-through' : ''}>{t.title}</span></span>
                   {!compact && <span className="mt-0.5 block text-[14px] text-muted">{t.why}</span>}
                 </span>

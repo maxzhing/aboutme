@@ -271,7 +271,7 @@ export function MockResultsPage() {
   const [only, setOnly] = useState(false);
   const mock = mocks.find((m) => m.id === id) ?? [...mocks].reverse().find((m) => m.completedAt);
   const sum = useMemo(() => (mock ? summarizeMock(mock, getQuestion) : null), [mock]);
-  if (!mock || !sum) return <Empty title="No exam report found" body="Complete a mock exam to see a full performance report." action={{ label: 'Mock exams', href: '/mocks' }} />;
+  if (!mock || !sum) return <Empty page title="No exam report found" body="Complete a mock exam to see a full performance report." action={{ label: 'Mock exams', href: '/mocks' }} />;
   const prev = [...mocks].filter((m) => m.completedAt && m.kind === mock.kind && m.completedAt < (mock.completedAt ?? 0)).sort((a, b) => b.completedAt! - a.completedAt!)[0];
   const sc = mock.scores;
   const sections = [...new Set(mock.modules.map((m) => m.section))] as Section[];

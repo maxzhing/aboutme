@@ -187,7 +187,7 @@ export function PathSetPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sp.toString()]);
   const back = `/path${section === 'rw' ? '/rw' : ''}${skill ? `?skill=${skill}` : ''}`;
-  if (!qids.length) return <Empty title="Nothing to practice here yet" body={kind === 'confident' ? 'No confident errors right now. They appear when you mark an answer “sure” and it turns out wrong.' : 'There are no questions for this set.'} action={{ label: 'Back to the Path', href: back }} />;
+  if (!qids.length) return <Empty page title="Nothing to practice here yet" body={kind === 'confident' ? 'No confident errors right now. They appear when you mark an answer “sure” and it turns out wrong.' : 'There are no questions for this set.'} action={{ label: 'Back to the Path', href: back }} />;
   const title = { practice: 'Practice set', hard: 'Hard set', check: 'Skip check', gauntlet: 'Gauntlet', confident: 'Confident errors' }[kind] + (skill && kind !== 'gauntlet' ? `: ${PATH[skill].title}` : '');
   return <SessionRunner key={sp.toString()} qids={qids} mode="path" title={title} backHref={back} completeHref={back} completeLabel="Back to the Path"
     onComplete={(r) => { if (kind !== 'confident') record(kind, { section, skill: kind === 'gauntlet' ? undefined : skill }, r.rows.map((x) => ({ qid: x.qid, correct: x.correct, hints: x.hints }))); }}

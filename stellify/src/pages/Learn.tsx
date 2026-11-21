@@ -79,7 +79,7 @@ export function LessonPage({ skill }: { skill: string }) {
   const params = useSearchParams();
   const router = useRouter();
   const info = SKILL[skill as SkillId];
-  if (!info) return <Empty title="Lesson not found" body="That skill does not exist." action={{ label: 'Back to the curriculum', href: '/learn' }} />;
+  if (!info) return <Empty page title="Lesson not found" body="That skill does not exist." action={{ label: 'Back to the curriculum', href: '/learn' }} />;
   if (params.get('view') === 'notes') return <LessonNotes skill={skill} />;
   if (params.get('view') !== 'quick') return <CoursePage skill={info.id} />;
   return (
@@ -98,7 +98,7 @@ function LessonNotes({ skill }: { skill: string }) {
   const [open, setOpen] = useState<number | null>(null);
   const [bookmarked, setBookmarked] = useState(false);
   const info = SKILL[skill as SkillId];
-  if (!info) return <Empty title="Lesson not found" body="That skill does not exist." action={{ label: 'Back to the curriculum', href: '/learn' }} />;
+  if (!info) return <Empty page title="Lesson not found" body="That skill does not exist." action={{ label: 'Back to the curriculum', href: '/learn' }} />;
   const l = LESSON[info.id];
   const st = stats[info.id];
   const bank = questionsBySkill(info.id);

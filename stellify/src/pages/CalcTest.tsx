@@ -46,7 +46,7 @@ export function CalcTestsCard({ course = 'calc' }: { course?: string }) {
 export function CalcTestPage({ course = 'calc', test }: { course?: string; test: string }) {
   const kit = isKit(course) ? KITS[course] : undefined;
   const exam = kit?.exam[test];
-  if (!kit || !exam) return <Empty title="Test not found" body="That test does not exist." action={{ label: kit?.name ?? 'Courses', href: kit ? `/${kit.id}` : '/' }} />;
+  if (!kit || !exam) return <Empty page title="Test not found" body="That test does not exist." action={{ label: kit?.name ?? 'Courses', href: kit ? `/${kit.id}` : '/' }} />;
   return <Test key={exam.id} exam={exam} kit={kit} />;
 }
 

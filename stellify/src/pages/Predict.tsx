@@ -36,7 +36,7 @@ export function PredictPage() {
   const [i, setI] = useState(0);
   const [timer, setTimer] = useState(false);
   const pat = predictionPattern(rows);
-  if (!qs.length) return <Empty title="No questions for this type" body="Predict-First uses Reading & Writing questions." action={{ label: 'Predict-First', href: '/predict' }} />;
+  if (!qs.length) return <Empty page title="No questions for this type" body="Predict-First uses Reading & Writing questions." action={{ label: 'Predict-First', href: '/predict' }} />;
   return (
     <div className="mx-auto max-w-3xl" data-testid="predict">
       <PageHeader eyebrow="Reading & Writing practice" title="Predict-First" subtitle="Read the passage and the question, decide what the answer must say, then look at the choices. It trains you to answer from the text, not from the choices. Training only: mock tests never hide the choices." />

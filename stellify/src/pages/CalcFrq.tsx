@@ -48,7 +48,7 @@ function FrqGroup({ title, list, done, kit }: { title: string; list: Frq[]; done
 export function CalcFrqPage({ course = 'calc', frq }: { course?: string; frq: string }) {
   const kit = isKit(course) ? KITS[course] : undefined;
   const f = kit?.frq[frq];
-  if (!kit || !f) return <Empty title="Workout not found" body="That free-response workout does not exist." action={{ label: kit?.name ?? 'Courses', href: kit ? `/${kit.id}` : '/' }} />;
+  if (!kit || !f) return <Empty page title="Workout not found" body="That free-response workout does not exist." action={{ label: kit?.name ?? 'Courses', href: kit ? `/${kit.id}` : '/' }} />;
   return <Workout key={f.id} f={f} kit={kit} />;
 }
 
@@ -165,7 +165,7 @@ export function FormulaBox({ f, open: start = false }: { f: Formula; open?: bool
 /** Every formula in the course, each taken apart. */
 export function CalcFormulasPage({ course = 'calc' }: { course?: string }) {
   const kit = isKit(course) ? KITS[course] : undefined;
-  if (!kit) return <Empty title="Page not found" body="That course has no formula page." action={{ label: 'Courses', href: '/' }} />;
+  if (!kit) return <Empty page title="Page not found" body="That course has no formula page." action={{ label: 'Courses', href: '/' }} />;
   return (
     <div className="mx-auto max-w-3xl space-y-4" data-testid="calc-formulas">
       <Link href={`/${kit.id}#frq`} className="btn-quiet !px-2 text-sm"><ArrowLeft size={16} />{kit.name}</Link>

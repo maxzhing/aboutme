@@ -63,7 +63,7 @@ function Home() {
       <Card>
         <h2 className="font-semibold">Start from any skill</h2>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <select className="input !w-auto" value={skill} onChange={(e) => setSkill(e.target.value as SkillId)} aria-label="Skill">
+          <select className="input !w-auto max-w-full" value={skill} onChange={(e) => setSkill(e.target.value as SkillId)} aria-label="Skill">
             {SKILLS.filter((k) => questionsBySkill(k.id).some((q) => remixable(q).ok)).map((k) => <option key={k.id} value={k.id}>{k.name}</option>)}
           </select>
           <button className="btn-primary" onClick={random} data-testid="remix-random"><Shuffle size={15} />Pick a question to remix</button>

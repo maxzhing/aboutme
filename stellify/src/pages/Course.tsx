@@ -119,7 +119,7 @@ type Step =
  */
 export function ChapterPage({ skill, chapter }: { skill: string; chapter: string }) {
   const ch = CHAPTER[chapter];
-  if (!ch || ch.skill !== skill) return <Empty title="Chapter not found" body="That chapter does not exist." action={{ label: 'Back to the curriculum', href: '/learn' }} />;
+  if (!ch || ch.skill !== skill) return <Empty page title="Chapter not found" body="That chapter does not exist." action={{ label: 'Back to the curriculum', href: '/learn' }} />;
   return <ChapterPlayer key={ch.id} ch={ch} />;
 }
 
