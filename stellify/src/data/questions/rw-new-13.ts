@@ -95,9 +95,9 @@ export const RW_NEW_13: RawQuestion[] = [
   },
   {
     id: 'r-tsp-n18', skill: 'tsp', sub: 'Main purpose', d: 'H',
-    passage: 'Plants growing side by side were long thought simply to compete for water and nutrients. But experiments with a beach plant called sea rocket found that plants grown with siblings produced fewer roots than plants grown with unrelated plants of the same species. The finding suggests that the plants may recognize relatives and compete less with them.',
+    passage: 'Plants growing side by side were long thought simply to compete for water and nutrients, regardless of their genetic relationships. But experiments with a coastal plant called sea rocket demonstrated that plants grown with siblings produced fewer roots than plants grown with unrelated individuals of the same species. The finding suggests that the plants may somehow recognize relatives and compete less aggressively with them, a capacity once attributed only to animals.',
     stem: 'Which choice best states the main purpose of the text?',
-    choices: ['To present a finding that challenges an assumption about how plants interact', 'To describe the beaches where sea rocket plants grow', 'To argue that sea rocket competes more aggressively than other plants', 'To explain how roots absorb water and nutrients from soil'], answer: 0,
+    choices: ['To present a finding that challenges a long-held assumption about how plants interact with one another', 'To describe the coastal beaches and dunes where sea rocket plants most commonly grow', 'To argue that sea rocket competes more aggressively for water than other coastal plants do', 'To explain how plant roots absorb water and dissolved nutrients from the surrounding soil'], answer: 0,
     steps: ['The text states an assumption (plants simply compete) and then a finding that complicates it.', 'Its purpose is to present that finding.'],
     why: ['Correct. Assumption → challenging finding.', 'The text does not describe sea rocket’s habitat.', 'The finding suggests sea rocket competes less with relatives, not more aggressively.', 'Root absorption is not explained.'],
     concept: 'Purpose questions often follow the pattern "common view → new evidence."',

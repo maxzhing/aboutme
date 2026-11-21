@@ -94,7 +94,7 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-tsp-n14', skill: 'tsp', sub: 'Overall structure', d: 'V',
-    passage: 'Why do zebras have stripes? For more than a century, scientists proposed explanations ranging from camouflage to keeping cool. Biologist Tim Caro and his colleagues tested many of these ideas and found the strongest support for one: stripes discourage biting flies, which approach striped surfaces but often fail to land on them.',
+    passage: 'Why do zebras have stripes? For more than a century, scientists proposed explanations ranging from camouflage and confusing predators to regulating body temperature and recognizing other members of the herd. Biologist Tim Caro and his colleagues systematically tested many of these ideas and found the strongest support for one: stripes discourage biting flies, which approach striped surfaces but frequently fail to land on them, apparently because the pattern disrupts their visual perception during approach.',
     stem: 'Which choice best describes the overall structure of the text?',
     choices: ['It describes zebra behavior and explains how it differs from the behavior of horses.', 'It presents a theory about zebras and then explains why biologists rejected it.', 'It poses a long-standing question, mentions proposed answers, and reports research supporting one of them.', 'It lists the threats zebras face and ranks them from most to least serious.'], answer: 2,
     steps: ['Sentence 1 asks a question. Sentence 2 mentions several proposed answers.', 'Sentence 3 reports research that supports one answer: deterring flies.'],

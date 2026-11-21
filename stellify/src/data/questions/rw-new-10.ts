@@ -94,9 +94,9 @@ export const RW_NEW_10: RawQuestion[] = [
   },
   {
     id: 'r-tsp-n15', skill: 'tsp', sub: 'Main purpose', d: 'H',
-    passage: 'Pianist Lukas Brandt practices each new piece at half speed for weeks before he plays it at full tempo. He says that slow practice lets him notice small errors in finger placement that would be impossible to catch at full speed, and that fixing those errors early keeps them from becoming habits.',
+    passage: 'Pianist Lukas Brandt practices each new composition at half speed for several weeks before he performs it at full tempo, a regimen that colleagues sometimes consider excessively cautious. He explains that slow practice allows him to notice subtle errors in finger placement that would be impossible to detect at full speed, and that correcting those errors early prevents them from becoming entrenched habits.',
     stem: 'Which choice best states the main purpose of the text?',
-    choices: ['To describe a musician’s practice method and his reasons for using it', 'To argue that all musicians should practice new pieces at half speed', 'To compare Brandt’s practice methods with those of other pianists', 'To explain why some pieces of music are difficult to play quickly'], answer: 0,
+    choices: ['To describe a musician’s practice method and the reasons he gives for using it', 'To argue that all musicians should practice every new piece of music at half speed', 'To compare Brandt’s practice methods with the methods used by other professional pianists', 'To explain why some pieces of music are especially difficult for pianists to play quickly'], answer: 0,
     steps: ['Sentence 1 describes Brandt’s method; sentence 2 gives his reasons.', 'The purpose is to describe the method and explain why he uses it.'],
     why: ['Correct. Method, then reasons.', 'The text reports Brandt’s own practice; it does not argue that everyone should do it.', 'No other pianists are mentioned.', 'The text is about practice habits, not why pieces are hard.'],
     concept: 'A text that reports a person’s habit and reasons is describing, not arguing.',

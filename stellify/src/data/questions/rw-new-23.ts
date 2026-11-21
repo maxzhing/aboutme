@@ -108,7 +108,7 @@ export const RW_NEW_23: RawQuestion[] = [
   },
   {
     id: 'r-tsp-n35', skill: 'tsp', sub: 'Function of a sentence', d: 'H',
-    passage: 'Hummingbirds have among the highest metabolic rates of any warm-blooded animal. To survive cold nights when they cannot feed, many species enter torpor, a state in which body temperature can drop by more than 20°C and metabolism slows dramatically. A hummingbird in deep torpor may use only a small fraction of the energy it would otherwise use at rest.',
+    passage: 'Hummingbirds have among the highest metabolic rates of any warm-blooded animal, consuming energy so rapidly that they must feed almost continuously during daylight. To survive cold nights when they cannot feed, many species enter torpor, a state in which body temperature can drop by more than 20°C and metabolism slows dramatically. A hummingbird in deep torpor may use only a small fraction of the energy it would otherwise use at rest.',
     stem: 'Which choice best describes the function of the first sentence in the overall structure of the text?',
     choices: ['It establishes the high energy demand that makes the behavior described later necessary.', 'It introduces a claim about hummingbirds that the rest of the text goes on to question.', 'It provides an example of the state of torpor that is defined in the second sentence.', 'It compares the metabolism of hummingbirds with that of animals that are cold-blooded.'], answer: 0,
     steps: ['Sentence 1: hummingbirds burn energy very fast. Sentence 2: to survive nights without food, they enter torpor.', 'The first sentence sets up the problem that torpor solves.'],

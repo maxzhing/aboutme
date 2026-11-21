@@ -95,7 +95,7 @@ export const RW_NEW_25: RawQuestion[] = [
   },
   {
     id: 'r-tsp-n38', skill: 'tsp', sub: 'Overall structure', d: 'V',
-    passage: 'For much of the twentieth century, historians described medieval Europe as a period of scientific stagnation. Over the past several decades, however, scholars have documented substantial medieval advances in optics, mechanical clockmaking, and mathematics. Historian Clara Brandt argues that the older view persisted largely because early historians relied on a narrow set of sources that omitted technical manuscripts.',
+    passage: 'For much of the twentieth century, historians described medieval Europe as a period of scientific stagnation between the achievements of antiquity and those of the Renaissance. Over the past several decades, however, scholars have documented substantial medieval advances in optics, mechanical clockmaking, and mathematics. Historian Clara Brandt argues that the older view persisted largely because early historians relied on a narrow set of sources that omitted technical manuscripts.',
     stem: 'Which choice best describes the overall structure of the text?',
     choices: ['It describes a traditional view, notes evidence that undermines it, and explains why the view persisted.', 'It presents a historian’s argument, offers evidence for it, and then considers an objection to it.', 'It introduces a debate between two historians and explains why each historian is partly correct.', 'It describes several medieval inventions and explains how each influenced later scientific work.'], answer: 0,
     steps: ['Sentence 1: the old view (stagnation). Sentence 2: evidence against it (medieval advances).', 'Sentence 3: Brandt’s explanation of why the old view lasted.'],
@@ -107,9 +107,9 @@ export const RW_NEW_25: RawQuestion[] = [
   },
   {
     id: 'r-tsp-n39', skill: 'tsp', sub: 'Function of a sentence', d: 'H',
-    passage: 'The architects designing the city’s new public library faced a problem: the site was a narrow lot squeezed between two taller buildings. Placing the reading rooms at street level would have left them dim for most of the day. The architects instead put the reading rooms on the top floor beneath a glass roof and placed the book stacks, which need little light, on the floors below.',
+    passage: 'The architects designing the city’s new public library confronted a considerable problem: the site was a narrow lot squeezed between two substantially taller buildings. Placing the reading rooms at street level would have left them dim for most of the day, since the neighboring structures would block direct sunlight. The architects instead positioned the reading rooms on the top floor beneath a glass roof and placed the book stacks, which require little illumination, on the floors below.',
     stem: 'Which choice best describes the function of the second sentence in the overall structure of the text?',
-    choices: ['It describes the solution that the architects ultimately adopted.', 'It provides background about the history of the two taller buildings.', 'It explains why an obvious design choice would have been unsatisfactory.', 'It presents a criticism of the finished library made by its users.'], answer: 2,
+    choices: ['It describes the architectural solution that the designers of the library ultimately adopted.', 'It provides background information about the history of the two taller neighboring buildings.', 'It explains why an obvious design choice would have been unsatisfactory.', 'It presents a criticism of the finished library made by the people who use its reading rooms.'], answer: 2,
     steps: ['Sentence 1: the problem (a narrow lot between taller buildings).', 'Sentence 2: why the obvious plan, street-level reading rooms, would fail. Sentence 3: the actual solution.'],
     why: ['The solution comes in the third sentence.', 'The buildings’ history is not discussed.', 'Correct. It rules out the obvious option.', 'The sentence describes a hypothetical plan, not users’ reactions.'],
     concept: 'A sentence can eliminate an option to set up the solution that follows.',

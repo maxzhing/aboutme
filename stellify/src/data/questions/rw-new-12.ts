@@ -95,9 +95,9 @@ export const RW_NEW_12: RawQuestion[] = [
   },
   {
     id: 'r-tsp-n17', skill: 'tsp', sub: 'Main purpose', d: 'H',
-    passage: 'Although the ocean covers about 70 percent of Earth’s surface, only about a quarter of the seafloor has been mapped in high detail, mostly by ships using sonar. Large areas are known only from rough estimates based on satellite measurements. An international project called Seabed 2030 aims to map the entire ocean floor in high detail by the end of the decade.',
+    passage: 'Although the ocean covers about 70 percent of Earth’s surface, only about a quarter of the seafloor has been mapped in high resolution, mostly by research vessels using sonar. Enormous areas are known only from approximate estimates based on satellite measurements of variations in the ocean’s surface height. An international collaboration called Seabed 2030 aims to map the entire ocean floor in high resolution by the end of the decade, coordinating data from governments, universities, and commercial ships.',
     stem: 'Which choice best states the main purpose of the text?',
-    choices: ['To argue that sonar is less accurate than satellite measurements', 'To explain in detail how ships use sonar to map the seafloor', 'To describe the animals that live on the deep ocean floor', 'To describe how little of the seafloor has been mapped in detail and an effort to change that'], answer: 3,
+    choices: ['To argue that sonar measurements are less accurate than measurements made by satellites', 'To explain in technical detail how research vessels use sonar to map the seafloor', 'To describe the animals that inhabit the deepest and least explored parts of the ocean floor', 'To describe how little of the seafloor has been mapped in detail and an effort to change that'], answer: 3,
     steps: ['The text states how much of the seafloor is mapped in detail (about a quarter) and how the rest is known.', 'It ends with Seabed 2030’s goal of mapping the whole seafloor.'],
     why: ['The text says satellite data give only rough estimates; it does not argue sonar is less accurate.', 'Sonar is mentioned, but how it works is not explained.', 'Animals are not mentioned.', 'Correct. A gap in knowledge and a project to fill it.'],
     concept: 'A main purpose covers the whole text: here, a problem and a response.',
