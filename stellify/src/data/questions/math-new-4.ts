@@ -144,7 +144,7 @@ export const MATH_NEW_4: RawQuestion[] = [
     id: 'm-ineq-n2', skill: 'ineq', sub: 'Modeling constraints', d: 'H',
     stem: r`A van can carry at most 1,200 pounds. The driver weighs 180 pounds, and each box weighs 45 pounds. Which inequality represents the possible numbers of boxes, $b$, the van can carry along with the driver?`,
     choices: [r`$180 + 45b \le 1{,}200$`, r`$45b \le 1{,}200$`, r`$180b + 45 \le 1{,}200$`, r`$180 + 45b \ge 1{,}200$`], answer: 0,
-    steps: ['**Total weight.** The driver contributes 180 pounds no matter what, and each box adds 45: $180 + 45b$.', '**Translate \\"at most.\\"** \\"At most 1,200\\" means less than or equal to 1,200.', '**Write the inequality.** $180 + 45b \\le 1200$.', '**Answer.** Choice A. (B forgets the driver; C swaps the driver\'s and boxes\' weights; D reverses the inequality.)'],
+    steps: ['**Total weight.** The driver contributes 180 pounds no matter what, and each box adds 45: $180 + 45b$.', '**Translate "at most."** "At most 1,200" means less than or equal to 1,200.', '**Write the inequality.** $180 + 45b \\le 1200$.', '**Answer.** Choice A. (B forgets the driver; C swaps the driver\'s and boxes\' weights; D reverses the inequality.)'],
     why: [r`Correct. Driver plus boxes can be at most 1,200 pounds.`, r`This leaves out the driver's weight, which also counts toward the limit.`, r`This multiplies the driver's weight by the number of boxes.`, r`"At most" means $\le$; this says the load must be at least 1,200 pounds.`],
     concept: 'Model a limit as (fixed part + rate × count) ≤ maximum.',
     strategy: 'Write the total, then translate "at most" to ≤.',

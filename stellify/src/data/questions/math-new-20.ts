@@ -33,7 +33,7 @@ export const MATH_NEW_20: RawQuestion[] = [
     id: 'm-lin2-n19', skill: 'lin2', sub: 'Intercepts', d: 'V',
     stem: r`In the $xy$-plane, the graph of $5x + ky = 30$, where $k$ is a positive constant, has an $x$-intercept that is twice its $y$-intercept. What is the value of $k$?`,
     answer: ['10'],
-    steps: ['**Find the $x$-intercept.** Set $y = 0$: $5x = 30$, so the $x$-intercept is 6.', '**Find the $y$-intercept.** Set $x = 0$: $ky = 30$, so the $y$-intercept is $\\dfrac{30}{k}$.', '**Translate \\"twice.\\"** The $x$-intercept is twice the $y$-intercept: $6 = 2 \\cdot \\dfrac{30}{k} = \\dfrac{60}{k}$.', '**Solve.** $k = 10$. Check: $5x + 10y = 30$ has intercepts 6 and 3, and $6 = 2 \\times 3$. ✓'],
+    steps: ['**Find the $x$-intercept.** Set $y = 0$: $5x = 30$, so the $x$-intercept is 6.', '**Find the $y$-intercept.** Set $x = 0$: $ky = 30$, so the $y$-intercept is $\\dfrac{30}{k}$.', '**Translate "twice."** The $x$-intercept is twice the $y$-intercept: $6 = 2 \\cdot \\dfrac{30}{k} = \\dfrac{60}{k}$.', '**Solve.** $k = 10$. Check: $5x + 10y = 30$ has intercepts 6 and 3, and $6 = 2 \\times 3$. ✓'],
     why: ['2.5: this sets the y-intercept equal to twice the x-intercept instead.', '5: this makes the two intercepts equal.'],
     concept: 'Intercepts come from setting the other variable to zero.',
     strategy: 'Write both intercepts in terms of k, then apply the condition.',

@@ -117,7 +117,7 @@ export const MATH_NEW_23: RawQuestion[] = [
     id: 'm-ineq-n22', skill: 'ineq', sub: 'Compound and absolute value inequalities', d: 'H',
     stem: r`Which inequality describes all real numbers $x$ whose distance from 3 on the number line is less than 5?`,
     choices: [r`$|x + 3| < 5$`, r`$|x - 5| < 3$`, r`$|x - 3| < 5$`, r`$|x - 3| > 5$`], answer: 2,
-    steps: ['**Distance on a number line.** The distance between $x$ and a number $a$ is $|x - a|$.', '**Apply it.** The distance from $x$ to 3 is $|x - 3|$.', '**Translate \\"less than 5.\\"** $|x - 3| < 5$, which describes $-2 < x < 8$.', '**Answer.** Choice C. (Choice A measures distance from $-3$; choice B swaps 3 and 5; choice D describes numbers farther than 5 away.)'],
+    steps: ['**Distance on a number line.** The distance between $x$ and a number $a$ is $|x - a|$.', '**Apply it.** The distance from $x$ to 3 is $|x - 3|$.', '**Translate "less than 5."** $|x - 3| < 5$, which describes $-2 < x < 8$.', '**Answer.** Choice C. (Choice A measures distance from $-3$; choice B swaps 3 and 5; choice D describes numbers farther than 5 away.)'],
     why: [r`$|x + 3|$ is the distance from $-3$.`, r`This is the distance from 5 being less than 3.`, r`Correct. Distance from 3 less than 5.`, r`This describes points more than 5 away.`],
     concept: '|x − a| is the distance between x and a.',
     strategy: 'Translate "distance from a" into |x − a|.',

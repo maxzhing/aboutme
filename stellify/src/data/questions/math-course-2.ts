@@ -296,7 +296,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     figure: { kind: 'table', title: 'Exam results', headers: ['', 'Passed', 'Failed', 'Total'], rows: [['Tutored', 68, 12, 80], ['Not tutored', 90, 30, 120], ['Total', 158, 42, 200]] },
     stem: r`The table summarizes exam results for 200 students. If a student who failed the exam is selected at random, what is the probability that the student was tutored?`,
     choices: [r`$\dfrac{3}{20}$`, r`$\dfrac{2}{7}$`, r`$\dfrac{3}{50}$`, r`$\dfrac{2}{5}$`], answer: 1,
-    steps: ['**Read the condition.** \\"A student who failed\\" restricts the choice to the 42 students who failed. That is the denominator.', '**Find the numerator.** Of those 42, the table shows 12 who were tutored.', '**Divide.** $\\dfrac{12}{42} = \\dfrac{2}{7}$.', '**Answer.** Choice B. (Choice C, $\\tfrac{12}{200}$, divides by all students; that is the chance that a random student both failed and was tutored.)'],
+    steps: ['**Read the condition.** "A student who failed" restricts the choice to the 42 students who failed. That is the denominator.', '**Find the numerator.** Of those 42, the table shows 12 who were tutored.', '**Divide.** $\\dfrac{12}{42} = \\dfrac{2}{7}$.', '**Answer.** Choice B. (Choice C, $\\tfrac{12}{200}$, divides by all students; that is the chance that a random student both failed and was tutored.)'],
     why: [
       r`$\frac{3}{20} = \frac{12}{80}$: the probability that a tutored student failed. That reverses the condition.`,
       r`Correct. Among the 42 who failed, 12 were tutored.`,
@@ -349,7 +349,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
     id: 'm-c-prob-04', skill: 'prob', sub: 'Probability', d: 'E',
     stem: r`A spinner lands on red with probability 0.3. If the spinner is spun twice and the spins are independent, what is the probability that it lands on red at least once?`,
     choices: [r`$0.60$`, r`$0.09$`, r`$0.51$`, r`$0.49$`], answer: 2,
-    steps: ['**Use the complement.** \\"At least once\\" is the opposite of \\"never,\\" which is a single case and easy to compute.', '**Never red.** Each spin misses red with probability 0.7, and independent spins multiply: $0.7 \\times 0.7 = 0.49$.', '**At least once.** $1 - 0.49 = 0.51$.', '**Answer.** Choice C. (Choice A adds $0.3 + 0.3$, double-counting red on both spins; choice B is red on both spins; choice D is never red.)'],
+    steps: ['**Use the complement.** "At least once" is the opposite of "never," which is a single case and easy to compute.', '**Never red.** Each spin misses red with probability 0.7, and independent spins multiply: $0.7 \\times 0.7 = 0.49$.', '**At least once.** $1 - 0.49 = 0.51$.', '**Answer.** Choice C. (Choice A adds $0.3 + 0.3$, double-counting red on both spins; choice B is red on both spins; choice D is never red.)'],
     why: [
       r`0.60 adds the two probabilities, which double-counts the case where both spins are red.`,
       r`0.09 is the probability of red on BOTH spins.`,
@@ -493,7 +493,7 @@ export const MATH_COURSE_2: RawQuestion[] = [
       'Randomly assign the fertilizer to half of the farms that volunteer, and compare yields.',
       'Randomly select farms from the region, then randomly assign half of them to use the fertilizer, and compare yields.',
     ], answer: 3,
-    steps: ['**Two goals, two kinds of randomness.** \\"Causes\\" needs random assignment of the fertilizer. \\"Throughout the region\\" needs a random sample of the region\'s farms.', '**Check each design.** A compares farms that chose the fertilizer: no random assignment. B has no comparison group and uses volunteers. C randomly assigns, but only among volunteers, so it cannot generalize to the region.', '**Find the design with both.** D randomly selects farms from the region and then randomly assigns the fertilizer.', '**Answer.** Choice D.'],
+    steps: ['**Two goals, two kinds of randomness.** "Causes" needs random assignment of the fertilizer. "Throughout the region" needs a random sample of the region\'s farms.', '**Check each design.** A compares farms that chose the fertilizer: no random assignment. B has no comparison group and uses volunteers. C randomly assigns, but only among volunteers, so it cannot generalize to the region.', '**Find the design with both.** D randomly selects farms from the region and then randomly assigns the fertilizer.', '**Answer.** Choice D.'],
     why: [
       r`No random assignment: farms that chose the fertilizer may differ in other ways.`,
       r`No control group and no random assignment; weather could also explain a change from last year.`,

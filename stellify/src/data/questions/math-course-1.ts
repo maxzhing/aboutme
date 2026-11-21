@@ -392,7 +392,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-ineq-02', skill: 'ineq', sub: 'Modeling constraints', d: 'H',
     stem: r`A student needs at least 30 credits to graduate and has already earned 9. She plans to take $x$ courses worth 3 credits each and $y$ courses worth 4 credits each. Which inequality represents the possible values of $x$ and $y$ that will let her graduate?`,
     choices: [r`$3x + 4y \le 21$`, r`$3x + 4y \ge 30$`, r`$3x + 4y \ge 21$`, r`$x + y \ge 21$`], answer: 2,
-    steps: ['**Credits from new courses.** $x$ courses at 3 credits and $y$ at 4 credits: $3x + 4y$.', '**Include what she has.** Total credits $= 9 + 3x + 4y$, and \\"at least 30\\" means $\\ge 30$.', '**Simplify.** Subtract 9: $3x + 4y \\ge 21$.', '**Answer.** Choice C. (Choice B forgets the 9 credits already earned; choice A reverses the inequality; choice D counts courses, not credits.)'],
+    steps: ['**Credits from new courses.** $x$ courses at 3 credits and $y$ at 4 credits: $3x + 4y$.', '**Include what she has.** Total credits $= 9 + 3x + 4y$, and "at least 30" means $\\ge 30$.', '**Simplify.** Subtract 9: $3x + 4y \\ge 21$.', '**Answer.** Choice C. (Choice B forgets the 9 credits already earned; choice A reverses the inequality; choice D counts courses, not credits.)'],
     why: [
       r`"At least" means $\ge$, not $\le$.`,
       r`This ignores the 9 credits she already has; it would require 30 NEW credits.`,
@@ -486,7 +486,7 @@ export const MATH_COURSE_1: RawQuestion[] = [
     id: 'm-c-equiv-03', skill: 'equiv', sub: 'Rewriting for structure', d: 'E',
     stem: r`If $x^2 - 10x + c = (x - k)^2 - 4$ for all values of $x$, where $c$ and $k$ are constants, what is the value of $c$?`,
     choices: [r`$25$`, r`$29$`, r`$21$`, r`$5$`], answer: 2,
-    steps: ['**\\"For all $x$\\" means coefficients match.** Expand the right side: $(x - k)^2 - 4 = x^2 - 2kx + k^2 - 4$.', '**Match the $x$ terms.** $-2k = -10$, so $k = 5$.', '**Match the constants.** $c = k^2 - 4 = 25 - 4 = 21$.', '**Answer.** Choice C. Check: $(x - 5)^2 - 4 = x^2 - 10x + 21$. ✓ (Choice A is $k^2$, forgetting the $-4$; choice B adds 4 instead.)'],
+    steps: ['**"For all $x$" means coefficients match.** Expand the right side: $(x - k)^2 - 4 = x^2 - 2kx + k^2 - 4$.', '**Match the $x$ terms.** $-2k = -10$, so $k = 5$.', '**Match the constants.** $c = k^2 - 4 = 25 - 4 = 21$.', '**Answer.** Choice C. Check: $(x - 5)^2 - 4 = x^2 - 10x + 21$. ✓ (Choice A is $k^2$, forgetting the $-4$; choice B adds 4 instead.)'],
     why: [
       r`25 is $k^2$; it forgets the $-4$ outside the square.`,
       r`29 adds 4 instead of subtracting it.`,

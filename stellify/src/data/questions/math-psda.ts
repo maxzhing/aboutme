@@ -400,7 +400,7 @@ export const MATH_PSDA: RawQuestion[] = [
     figure: { kind: 'table', title: 'Drink preference of club members', headers: ['', 'Coffee', 'Tea', 'Total'], rows: [['Junior', 30, 20, 50], ['Senior', 18, 32, 50], ['Total', 48, 52, 100]] },
     stem: r`The table shows the drink preferences of the 100 members of a club. If a member who prefers tea is selected at random, what is the probability that the member is a senior?`,
     choices: [r`$\dfrac{8}{25}$`, r`$\dfrac{8}{13}$`, r`$\dfrac{16}{25}$`, r`$\dfrac{13}{25}$`], answer: 1,
-    steps: ['**Read the condition.** \\"A member who prefers tea is selected\\" restricts the choice to the tea column: 52 members. That is the denominator.', '**Find the numerator.** Of the 52 tea drinkers, the table shows 32 seniors.', '**Divide and simplify.** $\\dfrac{32}{52} = \\dfrac{8}{13}$.', '**Answer.** Choice B. (Choice A, $\\tfrac{32}{100}$, divides by all members; that would be the chance a random member is a senior who prefers tea.)'],
+    steps: ['**Read the condition.** "A member who prefers tea is selected" restricts the choice to the tea column: 52 members. That is the denominator.', '**Find the numerator.** Of the 52 tea drinkers, the table shows 32 seniors.', '**Divide and simplify.** $\\dfrac{32}{52} = \\dfrac{8}{13}$.', '**Answer.** Choice B. (Choice A, $\\tfrac{32}{100}$, divides by all members; that would be the chance a random member is a senior who prefers tea.)'],
     why: [
       r`$\frac{8}{25}$ is $\frac{32}{100}$: seniors who prefer tea out of all members. But the selection is only from tea drinkers.`,
       r`Correct. Among the 52 members who prefer tea, 32 are seniors.`,

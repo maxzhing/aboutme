@@ -119,7 +119,7 @@ export const MATH_NEW_12: RawQuestion[] = [
     id: 'm-nleq-n18', skill: 'nleq', sub: 'Discriminants', d: 'V',
     stem: r`The equation $x^2 + bx + 36 = 0$, where $b$ is a positive constant, has exactly one real solution. What is that solution?`,
     answer: ['-6'],
-    steps: ['**\\"Exactly one real solution\\" means the discriminant is 0.** For $x^2 + bx + 36 = 0$: $b^2 - 4(1)(36) = 0$.', '**Solve for $b$.** $b^2 = 144$, so $b = 12$ or $b = -12$. The problem says $b$ is positive, so $b = 12$.', '**Solve the equation.** $x^2 + 12x + 36 = (x + 6)^2 = 0$, so $x = -6$.', '**Answer.** The solution is $-6$. (Answering 12 gives $b$, not the solution; answering 6 drops the sign. The single solution is $-\\dfrac{b}{2} = -6$.)'],
+    steps: ['**"Exactly one real solution" means the discriminant is 0.** For $x^2 + bx + 36 = 0$: $b^2 - 4(1)(36) = 0$.', '**Solve for $b$.** $b^2 = 144$, so $b = 12$ or $b = -12$. The problem says $b$ is positive, so $b = 12$.', '**Solve the equation.** $x^2 + 12x + 36 = (x + 6)^2 = 0$, so $x = -6$.', '**Answer.** The solution is $-6$. (Answering 12 gives $b$, not the solution; answering 6 drops the sign. The single solution is $-\\dfrac{b}{2} = -6$.)'],
     why: ['6: this has the wrong sign; (x + 6)² = 0 gives x = −6.', '12: this is the value of b, not the solution.'],
     concept: 'A quadratic with one real solution is a perfect square.',
     strategy: 'Find b from the discriminant, then factor.',

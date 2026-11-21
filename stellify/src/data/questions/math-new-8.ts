@@ -34,7 +34,7 @@ export const MATH_NEW_8: RawQuestion[] = [
     id: 'm-equiv-n10', skill: 'equiv', sub: 'Completing the square', d: 'V',
     stem: r`If $(2x + k)^2 = 4x^2 - 20x + m$ for all values of $x$, where $k$ and $m$ are constants, what is the value of $m$?`,
     answer: ['25'],
-    steps: ['**\\"For all values of $x$\\" means the two sides are the same polynomial**, so their coefficients must match term by term.', '**Expand the left side.** $(2x + k)^2 = (2x)^2 + 2(2x)(k) + k^2 = 4x^2 + 4kx + k^2$.', '**Match the $x$ terms to find $k$.** $4kx = -20x$, so $4k = -20$ and $k = -5$.', '**Match the constants to find $m$.** $m = k^2 = (-5)^2 = 25$. Check: $(2x - 5)^2 = 4x^2 - 20x + 25$. ✓'],
+    steps: ['**"For all values of $x$" means the two sides are the same polynomial**, so their coefficients must match term by term.', '**Expand the left side.** $(2x + k)^2 = (2x)^2 + 2(2x)(k) + k^2 = 4x^2 + 4kx + k^2$.', '**Match the $x$ terms to find $k$.** $4kx = -20x$, so $4k = -20$ and $k = -5$.', '**Match the constants to find $m$.** $m = k^2 = (-5)^2 = 25$. Check: $(2x - 5)^2 = 4x^2 - 20x + 25$. ✓'],
     why: ['-5: this is the value of k, not m.', '100: this squares half of −20, which works only when the coefficient of x² is 1; here (2x + k)² gives 4kx, not 2kx.'],
     concept: 'Two polynomials are equal for all x only when their matching coefficients are equal.',
     strategy: 'Expand, then match the x coefficients to find k before finding m.',

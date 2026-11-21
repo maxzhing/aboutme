@@ -109,7 +109,7 @@ export const MATH_NEW_1: RawQuestion[] = [
     id: 'm-pct-n4', skill: 'pct', sub: 'Percent of a quantity', d: 'V',
     stem: r`The value of $p$ is 40% greater than the value of $q$, and the value of $r$ is 30% less than the value of $p$. The value of $r$ is what percent of the value of $q$?`,
     choices: ['$70\\%$', '$98\\%$', '$110\\%$', '$140\\%$'], answer: 1,
-    steps: ['**Write each statement as a multiplier.** \\"40% greater than $q$\\": $p = 1.4q$. \\"30% less than $p$\\": $r = 0.7p$.', '**Substitute.** $r = 0.7(1.4q) = 0.98q$.', '**Interpret.** $r$ is 98% of $q$.', '**Check with $q = 100$.** $p = 140$ and $r = 0.7 \\times 140 = 98$. ✓ Choice B. (Choice C adds the percents, $+40 - 30$; percent changes multiply.)'],
+    steps: ['**Write each statement as a multiplier.** "40% greater than $q$": $p = 1.4q$. "30% less than $p$": $r = 0.7p$.', '**Substitute.** $r = 0.7(1.4q) = 0.98q$.', '**Interpret.** $r$ is 98% of $q$.', '**Check with $q = 100$.** $p = 140$ and $r = 0.7 \\times 140 = 98$. ✓ Choice B. (Choice C adds the percents, $+40 - 30$; percent changes multiply.)'],
     why: [r`70% is $r$ as a percent of $p$, not of $q$.`, r`Correct. $r = 0.7 \times 1.4q = 0.98q$, which is 98% of $q$.`, r`110% adds and subtracts the percents ($100 + 40 - 30$). Each percent is taken from a different base, so they multiply.`, r`140% is $p$ as a percent of $q$.`],
     concept: 'Chained percent comparisons multiply, because each percent is taken of a different quantity.',
     strategy: 'Pick a friendly value such as q = 100 and follow it through.',

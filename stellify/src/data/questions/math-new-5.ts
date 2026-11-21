@@ -70,7 +70,7 @@ export const MATH_NEW_5: RawQuestion[] = [
     id: 'm-equiv-n6', skill: 'equiv', sub: 'Completing the square', d: 'V',
     stem: r`For all values of $x$, $3x^2 + 18x + 5 = 3(x + 3)^2 + c$, where $c$ is a constant. What is the value of $c$?`,
     answer: ['-22'],
-    steps: ['**What \\"for all values of $x$\\" means.** The two sides are the same polynomial, so after expanding, their coefficients must match term by term.', '**Expand the right side.** $3(x + 3)^2 + c = 3(x^2 + 6x + 9) + c = 3x^2 + 18x + 27 + c$.', '**Match the terms.** The $x^2$ terms ($3x^2$) and $x$ terms ($18x$) already agree. The constants must agree too: $27 + c = 5$.', '**Solve.** $c = 5 - 27 = -22$. Check at $x = 0$: left side $5$; right side $3(9) - 22 = 5$. ✓'],
+    steps: ['**What "for all values of $x$" means.** The two sides are the same polynomial, so after expanding, their coefficients must match term by term.', '**Expand the right side.** $3(x + 3)^2 + c = 3(x^2 + 6x + 9) + c = 3x^2 + 18x + 27 + c$.', '**Match the terms.** The $x^2$ terms ($3x^2$) and $x$ terms ($18x$) already agree. The constants must agree too: $27 + c = 5$.', '**Solve.** $c = 5 - 27 = -22$. Check at $x = 0$: left side $5$; right side $3(9) - 22 = 5$. ✓'],
     why: ['−4: this subtracts 9 instead of 27. The 9 inside the square is multiplied by 3 when the parentheses are expanded.', '32: this adds 27 to 5 instead of subtracting it.'],
     concept: 'Completing the square with a leading coefficient: the constant inside the square is multiplied by that coefficient.',
     strategy: 'Expand the given form and match the constant terms.',

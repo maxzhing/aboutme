@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { QUESTIONS } from '@/data/questions';
 import type { MockAttempt, Question } from '@/lib/types';
 import { initialState } from '@/lib/state';
-import { classifyMath, classifyRW, keyAgrees, parseKeyCell, positionalDifficulty, parseAnswerKey, parseBooklet, parseExplanations, parseScoreTable, docKind, testNumber, MOD_KEYS, type PPage } from '@/lib/fullTest/parse';
+import { classifyMath, classifyRW, keyAgrees, parseKeyCell, rwFromLines, scrub, positionalDifficulty, parseAnswerKey, parseBooklet, parseExplanations, parseScoreTable, docKind, testNumber, MOD_KEYS, type PPage } from '@/lib/fullTest/parse';
 import { ability, calibratedScore, CB_CURVE, curveAt, missCosts, pointsPerQuestion, tableScore, type Resp } from '@/lib/fullTest/score';
 import { buildSatModule, remixForms, satCoverage } from '@/lib/fullTest/assemble';
 import { RW_SLOTS, advanceMock, scoreMock, startMock, REAL_SAT, REMIX, formName } from '@/lib/engine/mock';
@@ -56,6 +56,31 @@ describe('reading official practice-test files', () => {
 
   it('estimates difficulty from position in thirds', () => {
     expect([0, 4, 5, 9, 10, 12].map((i) => positionalDifficulty(i, 13))).toEqual(['Easy', 'Easy', 'Medium', 'Hard', 'Hard', 'Hard']);
+  });
+});
+
+describe('cleaning imported Reading and Writing text (made-up text, same damage as seen in real imports)', () => {
+  it('removes leaked page furniture and keeps everything else', () => {
+    expect(scrub('The bridge opened in 1932. Do not turn to any other module in the test. Engineers praised it.', 'passage')).toBe('The bridge opened in 1932. Engineers praised it.');
+    expect(scrub('a slow decline of important reading and writing skills. Each passage or pair', 'other')).toBe('a slow decline');
+    expect(scrub('.,  ______, Glass frogs are nearly transparent.', 'passage')).toBe('Glass frogs are nearly transparent.');
+    expect(scrub('The poem ends quietly.\n©2019 by A. Writer', 'passage')).toBe('The poem ends quietly.');
+    expect(scrub('a cutting- edge design', 'other')).toBe('a cutting-edge design');
+    // a choice may rightly start with punctuation, and "pre- and post-" is not a broken word
+    expect(scrub(', and', 'other')).toBe(', and');
+    expect(scrub('pre- and post-war housing', 'other')).toBe('pre- and post-war housing');
+  });
+  it('gives up on text it cannot cut cleanly, so the exact page image is used instead', () => {
+    expect(scrub('The trail is steep ©2020 by B. Author Which choice best states', 'other')).toBeNull();
+    expect(scrub('If you finish before time is called, you may', 'other')).toBeNull();
+  });
+  it('keeps the hyphen of a compound split across lines', () => {
+    const L = (text: string, i: number) => ({ page: 1, x: 40, top: 100 + i * 12, bottom: 110 + i * 12, right: 300, text, h: 10 });
+    const lines = ['Art groups such as the Vietnam-', 'based collective show new work', 'each spring in small galleries.', 'Which choice best states the main idea of the text?', 'A) One', 'B) Two', 'C) Three', 'D) Four'].map(L);
+    lines[3] = { ...lines[3], top: lines[3].top + 20, bottom: lines[3].bottom + 20 };
+    const t = rwFromLines(lines, 300);
+    expect(t.passage).toContain('Vietnam-based');
+    expect(t.clean).toBe(true);
   });
 });
 

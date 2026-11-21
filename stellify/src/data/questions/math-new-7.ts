@@ -83,7 +83,7 @@ export const MATH_NEW_7: RawQuestion[] = [
     id: 'm-ineq-n6', skill: 'ineq', sub: 'Modeling constraints', d: 'H',
     stem: r`A phone plan costs \$40 per month, plus \$0.10 for each text message sent after the first 200 texts. Ana expects to send $t$ texts this month, where $t > 200$, and wants her bill to be at most \$55. Which inequality represents this situation?`,
     choices: [r`$40 + 0.10(t - 200) \le 55$`, r`$40 + 0.10t \le 55$`, r`$40 + 0.10(t - 200) \ge 55$`, r`$0.10(t - 200) \le 40 + 55$`], answer: 0,
-    steps: ['**Count the charged texts.** Only texts after the first 200 cost extra: $t - 200$ of them.', '**Write the bill.** $40 + 0.10(t - 200)$.', '**Translate \\"at most \\$55.\\"** $40 + 0.10(t - 200) \\le 55$.', '**Answer.** Choice A. (B charges for every text, including the free 200; C reverses the inequality; D adds the base fee to the limit instead of to the bill.)'],
+    steps: ['**Count the charged texts.** Only texts after the first 200 cost extra: $t - 200$ of them.', '**Write the bill.** $40 + 0.10(t - 200)$.', '**Translate "at most \\$55."** $40 + 0.10(t - 200) \\le 55$.', '**Answer.** Choice A. (B charges for every text, including the free 200; C reverses the inequality; D adds the base fee to the limit instead of to the bill.)'],
     why: [r`Correct. It charges only the texts after 200 and caps the bill at \$55.`, r`This charges for every text, including the first 200 free ones.`, r`"At most" means less than or equal to, not greater than or equal to.`, r`This adds the \$40 fee to the limit instead of to the bill.`],
     concept: 'Model a charge that applies only above a threshold with (t − threshold).',
     strategy: 'Build the cost expression first, then attach the inequality sign from the words.',

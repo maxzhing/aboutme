@@ -216,9 +216,14 @@ export function parseBooklet(pages: PPage[]): Booklet {
         prev.parts.push({ page: p.n, box: { x0, y0, x1, y1: firstTop } });
         prev.lines.push(...toLines(p.n, col.filter((i) => i.y < firstTop)));
       }
+      // the last question in a column ends above the end-of-module banner ("STOP", "If you finish before time..."),
+      // which otherwise ends up in its last choice and in its cropped image
+      const lastY = accepted.length ? accepted[accepted.length - 1].y : -1;
+      const banner = p.items.filter((i) => i.y > lastY + 20 && FURNITURE.test(i.s.trim())).map((i) => i.y - i.h - 6);
+      const floor = Math.min(p.height * 0.94, ...banner);
       accepted.forEach((n, k) => {
         const next = accepted[k + 1];
-        const y0 = n.y - n.h - 3, y1 = next ? next.y - next.h - 6 : p.height * 0.94;
+        const y0 = n.y - n.h - 3, y1 = next ? next.y - next.h - 6 : floor;
         const inside = col.filter((i) => i !== n && i.y > y0 && i.y <= y1 + 1);
         cur!.questions.push({ mod: cur!.mod, num: Number(n.s), parts: [{ page: p.n, box: { x0: Math.max(x0, n.x - 8), y0, x1, y1 } }], lines: toLines(p.n, inside) });
       });
@@ -284,7 +289,28 @@ export function choiceNotes(text: string): string[] {
 export interface RwText { passage: string; notes?: string[]; stem: string; choices: string[]; clean: boolean; figure: boolean }
 
 const tidy = (s: string) => s.replace(/\s+/g, ' ').replace(/\s+([,.;:!?])/g, '$1').replace(/_{3,}/g, '______').replace(/ﬁ/g, 'fi').replace(/ﬂ/g, 'fl').trim();
-const glue = (parts: string[]) => parts.reduce((a, p) => (a.endsWith('-') && !a.endsWith(' -') ? a.slice(0, -1) + p : a ? `${a} ${p}` : p), '');
+// The booklets are set ragged-right without word breaks, so a hyphen at the end of a line belongs to a compound
+// ("Vietnam-based", "Coleridge-Taylor") and is kept; dropping it was the cause of joined words in imported text.
+const glue = (parts: string[]) => parts.reduce((a, p) => (a.endsWith('-') && !a.endsWith(' -') ? a + p : a ? `${a} ${p}` : p), '');
+
+/** Page furniture that sits beside questions on the printed page and leaks into their text. */
+export const FURNITURE = /If you finish before time is called|Do not turn to any other module|The questions in this section address|important reading and writing skills\.|^STOP$|^CONTINUE$/i;
+/**
+ * Removes page furniture and credit lines from imported text and repairs compounds split as "cutting- edge".
+ * Returns null when furniture or a credit line is left that cannot be cut cleanly, so the caller keeps the exact
+ * page image instead of showing damaged text.
+ */
+export function scrub(s: string, field: 'passage' | 'other'): string | null {
+  let t = s
+    .replace(/\s*(?:Do not turn to any other module in the test\.|If you finish before time is called, you may check your work on this module only\.)/gi, '')
+    .replace(/\s*(?:The questions in this section address|of important reading and writing skills\.)[^]*$/i, '')
+    .replace(/([A-Za-z])- (?!(?:and|or|to|nor|through)\b)([a-z])/g, '$1-$2');
+  // a credit line ("©2019 by ...") can end a passage; anywhere else it means text from two places was merged.
+  // Stray punctuation before a passage is debris; choices may rightly start with punctuation (", and").
+  if (field === 'passage') t = t.replace(/\s*©\s?\d{4}\s+by\s+[^\n]*$/g, '').replace(/^[.,;:]+\s*(?:______,\s*)?/, '');
+  t = t.trim();
+  return /©/.test(t) || FURNITURE.test(t) ? null : t;
+}
 
 /** Rebuilds passage, stem and choices from the lines of one booklet question. */
 export function rwFromLines(lines: Line[], colWidth: number): RwText {
@@ -329,8 +355,13 @@ export function rwFromLines(lines: Line[], colWidth: number): RwText {
     stem = `${ps[ni]} ${stem}`;
     passage = '';
   }
+  const scrubbed = { passage: scrub(passage, 'passage'), stem: scrub(stem, 'other'), choices: choices.map((c) => scrub(c, 'other')), notes: notes?.map((x) => scrub(x, 'other')) };
+  const damaged = scrubbed.passage === null || scrubbed.stem === null || scrubbed.choices.some((c) => c === null) || !!scrubbed.notes?.some((x) => x === null);
+  passage = scrubbed.passage ?? passage; stem = scrubbed.stem ?? stem;
+  choices.splice(0, choices.length, ...scrubbed.choices.map((c, i) => c ?? choices[i]));
+  if (notes) notes = scrubbed.notes!.map((x, i) => x ?? notes![i]);
   const all = [passage, stem, ...choices, ...(notes ?? [])].join(' ');
-  const clean = choices.length === 4 && choices.every((c) => c.length > 0) && stem.length > 12 && !/[~|\\{}<>^¢§¤]|�/.test(all) && (passage.length > 40 || (notes?.length ?? 0) >= 2);
+  const clean = !damaged && choices.length === 4 && choices.every((c) => c.length > 0) && stem.length > 12 && !/[~|\\{}<>^¢§¤]|�/.test(all) && (passage.length > 40 || (notes?.length ?? 0) >= 2);
   const figure = /\b(table|graph|chart|figure|underlined|scatterplot|map|diagram|bar)\b/i.test(stem) || ps.some((x) => /^[\d.,%$\s-]+$/.test(x));
   return { passage, notes, stem, choices, clean, figure };
 }

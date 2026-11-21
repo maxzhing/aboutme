@@ -7,7 +7,7 @@ import { r, near, CONCEPTUAL } from './kit';
  * follow the College Board's two rules: random sampling supports generalizing, random assignment supports cause.
  */
 const TABLE_INSTR: Figure = { kind: 'table', title: 'Students by Grade and Instrument', headers: ['Grade', 'Plays an instrument', 'Does not play', 'Total'], rows: [['10', 18, 42, 60], ['11', 27, 33, 60], ['Total', 45, 75, 120]] };
-const TABLE_TV: Figure = { kind: 'table', title: 'Viewing Preference by Age Group', headers: ['Age group', 'Streaming', 'Cable', 'Total'], rows: [['Under 30', 96, 24, 120], ['30 and over', 65, 65, 130], ['Total', 161, 89, 250]] };
+const TABLE_TV: Figure = { kind: 'table', title: 'Viewing Preference by Age Group', headers: ['Age group', 'Streaming', 'Cable', 'Total'], rows: [['Under 30', 96, '', ''], ['30 and over', '', 65, 130], ['Total', '', '', 250]] };
 
 export const MATH_NEW_2: RawQuestion[] = [
   // ── Probability and conditional probability
@@ -27,7 +27,7 @@ export const MATH_NEW_2: RawQuestion[] = [
     id: 'm-prob-n2', skill: 'prob', sub: 'Two-way tables', d: 'H', figure: TABLE_INSTR,
     stem: r`The table shows the number of students in grades 10 and 11 at a school who do and do not play a musical instrument. If a student who plays an instrument is selected at random, what is the probability that the student is in grade 11?`,
     choices: [r`$\dfrac{9}{40}$`, r`$\dfrac{3}{8}$`, r`$\dfrac{9}{20}$`, r`$\dfrac{3}{5}$`], answer: 3,
-    steps: ['**Read the condition.** \\"A student who plays an instrument is selected\\" restricts the choice to the \\"Plays an instrument\\" column: 45 students. That is the denominator.', '**Find the numerator.** Of those 45, the table shows 27 in grade 11.', '**Divide.** $\\dfrac{27}{45} = \\dfrac{3}{5}$.', '**Answer.** Choice D. (Dividing 27 by all the students, or by all of grade 11, answers a different question.)'],
+    steps: ['**Read the condition.** "A student who plays an instrument is selected" restricts the choice to the "Plays an instrument" column: 45 students. That is the denominator.', '**Find the numerator.** Of those 45, the table shows 27 in grade 11.', '**Divide.** $\\dfrac{27}{45} = \\dfrac{3}{5}$.', '**Answer.** Choice D. (Dividing 27 by all the students, or by all of grade 11, answers a different question.)'],
     why: [r`$\frac{9}{40} = \frac{27}{120}$ divides by all 120 students. The question limits the choice to students who play an instrument.`, r`$\frac{3}{8} = \frac{45}{120}$ is the probability that a randomly chosen student plays an instrument.`, r`$\frac{9}{20} = \frac{27}{60}$ is the probability that a grade 11 student plays an instrument: the condition is reversed.`, r`Correct. 27 of the 45 instrument players are in grade 11.`],
     concept: 'Conditional probability: restrict to the group named in the condition, then count within it.',
     strategy: 'Find the row or column the condition describes; its total is the denominator.',
@@ -39,7 +39,7 @@ export const MATH_NEW_2: RawQuestion[] = [
     id: 'm-prob-n3', skill: 'prob', sub: 'Conditional probability', d: 'H',
     stem: r`In a survey of 200 people, 120 said they drink coffee, 70 said they drink tea, and 30 said they drink both. If a person who drinks tea is selected at random from the survey, what is the probability that the person also drinks coffee?`,
     answer: ['3/7', '.4285', '.4286', '0.4285', '0.4286'],
-    steps: ['**Read the condition.** \\"A person who drinks tea is selected\\" means the denominator is the 70 tea drinkers, not all 200 people.', '**Find the numerator.** Among the tea drinkers, the ones who also drink coffee are the 30 who drink both.', '**Divide.** $\\dfrac{30}{70} = \\dfrac{3}{7} \\approx 0.4286$.', '**Answer.** $\\dfrac{3}{7}$. (Dividing by the 120 coffee drinkers, $\\tfrac{30}{120}$, reverses the condition.)'],
+    steps: ['**Read the condition.** "A person who drinks tea is selected" means the denominator is the 70 tea drinkers, not all 200 people.', '**Find the numerator.** Among the tea drinkers, the ones who also drink coffee are the 30 who drink both.', '**Divide.** $\\dfrac{30}{70} = \\dfrac{3}{7} \\approx 0.4286$.', '**Answer.** $\\dfrac{3}{7}$. (Dividing by the 120 coffee drinkers, $\\tfrac{30}{120}$, reverses the condition.)'],
     why: ['1/4: this is 30 ÷ 120, the probability that a coffee drinker also drinks tea. The condition is reversed.', '0.15: this is 30 ÷ 200, the probability that a person drinks both, out of everyone surveyed.'],
     concept: 'P(coffee given tea) = number who drink both ÷ number who drink tea.',
     strategy: 'Identify the condition (tea), make it the denominator, and count the overlap on top.',
@@ -61,15 +61,15 @@ export const MATH_NEW_2: RawQuestion[] = [
   },
   {
     id: 'm-prob-n5', skill: 'prob', sub: 'Two-way tables', d: 'V', figure: TABLE_TV,
-    stem: r`The table shows the results of a survey of 250 people about whether they prefer streaming or cable television. If a person who prefers cable is selected at random, what is the probability that the person is under 30?`,
-    choices: [r`$\dfrac{24}{250}$`, r`$\dfrac{24}{120}$`, r`$\dfrac{24}{89}$`, r`$\dfrac{89}{250}$`], answer: 2,
-    steps: ['**Read the condition first.** \\"If a person who prefers cable is selected\\" means the random choice is made only from the people who prefer cable. That group, not all 250 people, is the denominator.', '**Find the denominator in the table.** The total of the cable column is 89 people.', '**Find the numerator.** Among those 89 cable viewers, the table shows 24 who are under 30.', '**Divide.** $P(\\text{under } 30 \\mid \\text{cable}) = \\dfrac{24}{89}$: choice C. Choice A divides by all 250 people, which answers a different question (a random person who is both under 30 and prefers cable).'],
-    why: [r`$\frac{24}{250}$ divides by everyone surveyed; the condition limits the group to cable viewers.`, r`$\frac{24}{120}$ is the probability that a person under 30 prefers cable: the condition is reversed.`, r`Correct. 24 of the 89 people who prefer cable are under 30.`, r`$\frac{89}{250}$ is the probability that a randomly chosen person prefers cable.`],
-    concept: 'In a two-way table, the condition picks one row or column, and its total is the denominator.',
-    strategy: 'Circle the column for "prefers cable" before reading any numbers.',
-    trap: 'Reading the row total for "under 30" instead of the column total for "cable."',
-    remember: 'Same numerator, different denominators: decide the denominator first.',
-    check: () => 24 + 65 === 89 && near(24 / 89, 0.2697, 1e-3),
+    stem: r`The incomplete table summarizes a survey of 250 people, each of whom chose exactly one of streaming or cable television as their preference. Of the people under 30, 80% prefer streaming. If a person who prefers cable is selected at random, what is the probability that the person is under 30?`,
+    choices: [r`$\dfrac{24}{250}$`, r`$\dfrac{24}{120}$`, r`$\dfrac{24}{89}$`, r`$\dfrac{96}{161}$`], answer: 2,
+    steps: [r`**Fill in the under-30 row.** 96 people under 30 prefer streaming, and that is 80% of everyone under 30: $0.8T = 96$, so $T = 120$. Then $120 - 96 = 24$ people under 30 prefer cable.`, r`**Check the other row.** The row totals must add to 250: $120 + 130 = 250$ ✓. In the 30-and-over row, $130 - 65 = 65$ prefer streaming.`, r`**Read the condition.** "A person who prefers cable is selected" means the choice is made only from cable viewers, so the denominator is the cable total: $24 + 65 = 89$.`, r`**Divide.** $P(\text{under } 30 \mid \text{cable}) = \dfrac{24}{89}$: choice C. Choice A divides by all 250 people, and choice B, $\frac{24}{120}$, reverses the condition.`],
+    why: [r`$\frac{24}{250}$ divides by everyone surveyed: it is the probability that a random person is both under 30 and a cable viewer.`, r`$\frac{24}{120}$ is the probability that a person under 30 prefers cable: the condition is reversed.`, r`Correct. The table gives 24 cable viewers under 30 once the row is completed, out of $24 + 65 = 89$ cable viewers.`, r`$\frac{96}{161}$ is the probability that a streaming viewer is under 30: it uses the wrong column of the table.`],
+    concept: 'In a two-way table, the condition picks one row or column, and its total is the denominator; missing cells follow from the totals.',
+    strategy: 'Complete the cells you need from the percent and the totals, then circle the "cable" column before dividing.',
+    trap: 'Using the under-30 row total (120) as the denominator, which reverses the condition.',
+    remember: 'Fill the table, then let the condition choose the denominator.',
+    check: () => { const t = 96 / 0.8, cu = t - 96, cable = cu + 65; return t === 120 && t + 130 === 250 && cable === 89 && 161 === 96 + 65 && near(cu / cable, 24 / 89); },
   },
   // ── Inference from sample statistics and margin of error
   {
@@ -149,7 +149,7 @@ export const MATH_NEW_2: RawQuestion[] = [
     id: 'm-claims-n2', skill: 'claims', sub: 'Generalizing results', d: 'H',
     stem: r`A survey of 500 randomly selected members of a gym found that 70% of them would use a new swimming pool if the gym built one. Which conclusion is best supported by the survey?`,
     choices: ['About 70% of all the people in the town would use the pool.', 'About 70% of the gym\'s members would use the pool.', 'The survey cannot support any conclusion because 500 people is too few.', 'Exactly 350 of the gym\'s members will use the pool.'], answer: 1,
-    steps: ['**Identify the population sampled.** The 500 people were randomly selected from the gym\'s members, so the result describes the gym\'s members.', '**Estimate, not exact.** 70% of the sample is an estimate of the members\' percentage, so \\"about 70%\\" is right and \\"exactly 350\\" (D) is not.', '**Rule out the other overreach and underreach.** A extends to the whole town, which was not sampled. C is wrong: 500 random members is a large sample.', '**Answer.** Choice B.'],
+    steps: ['**Identify the population sampled.** The 500 people were randomly selected from the gym\'s members, so the result describes the gym\'s members.', '**Estimate, not exact.** 70% of the sample is an estimate of the members\' percentage, so "about 70%" is right and "exactly 350" (D) is not.', '**Rule out the other overreach and underreach.** A extends to the whole town, which was not sampled. C is wrong: 500 random members is a large sample.', '**Answer.** Choice B.'],
     why: [r`The sample includes only gym members, who are not representative of the whole town.`, r`Correct. A random sample of members supports an estimate about all members.`, r`500 randomly chosen members is a reasonable sample for an estimate.`, r`An estimate from a sample is approximate, and 350 is 70% of the sample, not of all members.`],
     concept: 'A random sample supports conclusions only about the population it was drawn from.',
     strategy: 'Identify the population the sample came from, then reject choices that reach beyond it or claim certainty.',

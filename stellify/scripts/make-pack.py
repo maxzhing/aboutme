@@ -27,6 +27,8 @@ def paragraphs(lines):
 def tidy(s):
     s = re.sub(r'\s+', ' ', s).strip().replace('ﬂ', 'fl').replace('ﬁ', 'fi')
     s = s.replace('(H2O)', '(H₂O)').replace('(H2)', '(H₂)').replace('km2', 'km²')
+    # a compound broken at a line end comes out as "long- headed"; "pre- and post-" is left alone
+    s = re.sub(r'([A-Za-z])- (?!(?:and|or|to|nor|through)\b)([a-z])', r'\1-\2', s)
     return re.sub(r'_{3,}', '______', s)
 
 def italics(pdf):

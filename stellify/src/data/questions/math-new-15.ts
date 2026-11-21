@@ -96,7 +96,7 @@ export const MATH_NEW_15: RawQuestion[] = [
     id: 'm-nleq-n23', skill: 'nleq', sub: 'Quadratic equations', d: 'H',
     stem: r`The height, in meters, of a ball $t$ seconds after it is thrown upward from a platform is given by $h(t) = -5t^2 + 20t + 25$. How many seconds after it is thrown does the ball hit the ground?`,
     choices: ['$1$', '$2$', '$4$', '$5$'], answer: 3,
-    steps: ['**\\"Hits the ground\\" means height 0.** Set $-5t^2 + 20t + 25 = 0$.', '**Simplify.** Divide every term by $-5$: $t^2 - 4t - 5 = 0$.', '**Factor.** $(t - 5)(t + 1) = 0$, so $t = 5$ or $t = -1$.', '**Choose the sensible root.** Time after the throw must be positive: 5 seconds, choice D. (Choice B, 2, is when the ball is highest, at the vertex.)'],
+    steps: ['**"Hits the ground" means height 0.** Set $-5t^2 + 20t + 25 = 0$.', '**Simplify.** Divide every term by $-5$: $t^2 - 4t - 5 = 0$.', '**Factor.** $(t - 5)(t + 1) = 0$, so $t = 5$ or $t = -1$.', '**Choose the sensible root.** Time after the throw must be positive: 5 seconds, choice D. (Choice B, 2, is when the ball is highest, at the vertex.)'],
     why: [r`1 comes from a sign error: $t = -1$ is the other root, which is negative.`, r`2 is the time of the maximum height, $t = -\frac{20}{2(-5)}$.`, r`At $t = 4$, $h = -80 + 80 + 25 = 25$ meters; the ball is still in the air.`, r`Correct. $h(5) = -125 + 100 + 25 = 0$.`],
     concept: 'The ball hits the ground when its height is 0.',
     strategy: 'Divide by the leading coefficient to simplify before factoring.',
