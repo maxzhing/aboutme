@@ -165,3 +165,13 @@ Each entry records what was decided, why, and the alternatives considered.
     works presented with a fake author and date (“a 1923 poem by …”), now labeled as original works. Official
     College Board questions shown as page images can now carry the exact text of each choice (`choiceText`),
     used where the printed image clips a fraction at its bottom edge.
+41. **AP Chemistry gets the same exam kit as Calculus BC (owner request).** Nine unit tests, two semester exams
+    and a cumulative final (84 original problems), five guided free-response workouts and a 13-formula anatomy
+    page, served by the same pages as Calc BC through a per-course registry (`src/data/kits.ts`; routes
+    `/(calc|chem)/test|frq|formulas`). A calculator is allowed on every chemistry problem, as on both sections of
+    the AP Chemistry exam since 2023, so a chemistry test is one part, not a no-calculator part and a calculator
+    part. Chemistry answers with three or more significant figures accept ±1 in the last digit (`lastDigit`),
+    because a student who rounds an intermediate value is not wrong; Calc BC stays strict. Every keyed number is
+    recomputed in code from the problem's own data; every problem was also read for chemistry errors, and the
+    items that were too easy for a "hard" test (an R_f division, a plain HCl dilution, a same-cuvette Beer's-law
+    ratio) were replaced with harder ones.

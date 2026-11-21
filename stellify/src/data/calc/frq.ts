@@ -65,8 +65,8 @@ const WORKOUTS: Frq[] = [
         S('The larger time when v(t) = 0 is:', ['4'], 'The other factor.', r`… and at $t = 4$.`, () => 16 - 24 + 8 === 0),
       ], write: r`$v(t) = (t - 2)(t - 4) = 0$ at $t = 2$ and $t = 4$.`, trap: 'Setting the position or the acceleration equal to 0 instead of the velocity.' },
       { label: 'b', q: 'Is the speed of the particle increasing or decreasing at t = 1? Give a reason.', steps: [
-        S('Find v(1).', ['3'], 'Plug in.', r`$v(1) = 1 - 6 + 8 = 3$.`, () => 1 - 6 + 8 === 3),
-        S('Find a(1), where a(t) = v′(t).', ['-4'], 'a(t) = 2t − 6.', r`$a(1) = -4$.`, () => near(d((t) => t * t - 6 * t + 8, 1), -4)),
+        S('Find v(1).', ['3'], 'Substitute t = 1 into v(t) = t² − 6t + 8.', r`$v(1) = 1 - 6 + 8 = 3$.`, () => 1 - 6 + 8 === 3),
+        S('Find a(1), where a(t) = v′(t).', ['-4'], 'Differentiate v(t) = t² − 6t + 8 term by term, then put in t = 1.', r`$a(1) = -4$.`, () => near(d((t) => t * t - 6 * t + 8, 1), -4)),
         S('Is the speed increasing at t = 1? (yes or no)', NO, 'Speed increases only when v and a have the same sign.', r`$v(1) > 0$ and $a(1) < 0$ have opposite signs, so the speed is decreasing.`),
       ], write: r`"$v(1) = 3 > 0$ and $a(1) = -4 < 0$. Because they have opposite signs, the speed is decreasing." Name both signs.`, trap: 'Saying the speed decreases because a(1) < 0 alone. Negative acceleration speeds the particle up when v < 0.' },
       { label: 'c', q: 'Find the position of the particle at t = 5.', steps: [
@@ -74,7 +74,7 @@ const WORKOUTS: Frq[] = [
         S('Find x(5).', ['23/3', '7.667'], 'Position = initial position + displacement.', r`$x(5) = 1 + \frac{20}{3} = \frac{23}{3}$.`, () => near(1 + 20 / 3, 23 / 3)),
       ], write: r`$x(5) = x(0) + \int_0^5v(t)\,dt = 1 + \frac{20}{3} = \frac{23}{3}$.`, trap: 'Reporting the displacement 20/3 and forgetting x(0) = 1.' },
       { label: 'd', q: 'Find the total distance the particle travels from t = 0 to t = 5.', steps: [
-        S(r`Distance on $[0, 2]$: $\int_0^2v(t)\,dt$.`, ['20/3', '6.667'], 'v ≥ 0 here.', r`$\frac{8}{3} - 12 + 16 = \frac{20}{3}$.`, () => near(integ((t) => t * t - 6 * t + 8, 0, 2), 20 / 3)),
+        S(r`Distance on $[0, 2]$: $\int_0^2v(t)\,dt$.`, ['20/3', '6.667'], 'Check the sign of v on [0, 2] first: if v never goes negative there, distance equals the plain integral.', r`$\frac{8}{3} - 12 + 16 = \frac{20}{3}$.`, () => near(integ((t) => t * t - 6 * t + 8, 0, 2), 20 / 3)),
         S(r`Distance on $[2, 4]$, where $v < 0$: $\left|\int_2^4v(t)\,dt\right|$.`, ['4/3', '1.333'], 'Take the absolute value of the integral.', r`$\int_2^4v\,dt = -\frac{4}{3}$, so the distance is $\frac{4}{3}$.`, () => near(integ((t) => t * t - 6 * t + 8, 2, 4), -4 / 3)),
         S('Total distance from t = 0 to t = 5.', ['28/3', '9.333'], 'Add the distance on [4, 5] as well (it is 4/3).', r`$\frac{20}{3} + \frac{4}{3} + \frac{4}{3} = \frac{28}{3}$.`, () => near(integ((t) => Math.abs(t * t - 6 * t + 8), 0, 5, 50000), 28 / 3, 1e-4)),
       ], write: r`Total distance $= \int_0^5|v(t)|\,dt = \frac{20}{3} + \frac{4}{3} + \frac{4}{3} = \frac{28}{3}$.`, trap: 'Integrating v instead of |v|. That gives displacement (20/3), not distance.' },
@@ -101,7 +101,7 @@ In fact $a(t) = 2t - 6 = 0$ at $t = 3$, which is in $(1, 5)$. On the exam you mu
       ], write: r`$v'(3.5) \approx \frac{v(5) - v(2)}{5 - 2} = 2$ ft/s². Show the quotient with the table values.`, trap: 'Using t = 0 and t = 12, which do not bracket 3.5 closely.' },
       { label: 'b', q: 'Use a trapezoidal sum with the four subintervals given by the table to approximate the integral of v from 0 to 12.', steps: [
         S('First two trapezoids (widths 2 and 3).', ['41'], 'width × (left + right) / 2 for each.', r`$2\cdot\frac{0 + 8}{2} + 3\cdot\frac{8 + 14}{2} = 8 + 33 = 41$.`, () => 8 + 33 === 41),
-        S('Last two trapezoids (widths 4 and 3).', ['69'], 'Same formula.', r`$4\cdot\frac{14 + 10}{2} + 3\cdot\frac{10 + 4}{2} = 48 + 21 = 69$.`, () => 48 + 21 === 69),
+        S('Last two trapezoids (widths 4 and 3).', ['69'], 'Each trapezoid is width × (left height + right height) / 2; use the table values at t = 5, 9 and 12.', r`$4\cdot\frac{14 + 10}{2} + 3\cdot\frac{10 + 4}{2} = 48 + 21 = 69$.`, () => 48 + 21 === 69),
         S('Trapezoidal approximation of the integral from 0 to 12.', ['110'], 'Add both pieces.', r`$41 + 69 = 110$ feet: the approximate distance run in 12 seconds.`, () => 41 + 69 === 110),
       ], write: r`Show every term: $2\cdot\frac{0 + 8}{2} + 3\cdot\frac{8 + 14}{2} + 4\cdot\frac{14 + 10}{2} + 3\cdot\frac{10 + 4}{2} = 110$ feet.`, trap: 'Using equal widths. The subintervals here have widths 2, 3, 4 and 3.' },
       { label: 'c', q: 'Must there be a time t in (5, 9) when the runner’s acceleration is −1 ft/s²? Justify.', steps: [
@@ -113,16 +113,16 @@ In fact $a(t) = 2t - 6 = 0$ at $t = 3$, which is in $(1, 5)$. On the exam you mu
     setup: r`A function $f$ has derivative $f'(x) = x^2 - 4x + 3$ and $f(0) = 2$. Consider $0 \le x \le 4$.`,
     parts: [
       { label: 'a', q: 'At what value of x does f have a relative maximum? Justify.', steps: [
-        S(r`Factor $f'$. The smaller zero is:`, ['1'], '(x − 1)(x − 3).', r`$f'(x) = (x - 1)(x - 3)$, zero at $x = 1$ and $x = 3$.`, () => 1 - 4 + 3 === 0),
-        S('Where does f′ change from positive to negative?', ['1'], 'Test the signs on (0, 1), (1, 3), (3, 4).', r`$f' > 0$ on $(0, 1)$ and $f' < 0$ on $(1, 3)$: relative maximum at $x = 1$.`),
+        S(r`Factor $f'$. The smaller zero is:`, ['1'], 'Find two numbers that multiply to 3 and add to −4.', r`$f'(x) = (x - 1)(x - 3)$, zero at $x = 1$ and $x = 3$.`, () => 1 - 4 + 3 === 0),
+        S('Where does f′ change from positive to negative?', ['1'], 'Test the signs on (0, 1), (1, 3), (3, 4).', r`$f' > 0$ on $(0, 1)$ and $f' < 0$ on $(1, 3)$: relative maximum at $x = 1$.`, () => (0.5 - 1) * (0.5 - 3) > 0 && (2 - 1) * (2 - 3) < 0),
       ], write: r`"$f$ has a relative maximum at $x = 1$ because $f'$ changes from positive to negative there."`, trap: 'Saying "because f′(1) = 0". A zero of f′ alone does not make a maximum.' },
       { label: 'b', q: 'At what x does the graph of f have a point of inflection? Justify.', steps: [
-        S(r`Solve $f''(x) = 0$.`, ['2'], 'f″(x) = 2x − 4.', r`$f''(x) = 2x - 4 = 0$ at $x = 2$, and $f''$ changes sign there.`, () => near(d((x) => x * x - 4 * x + 3, 2), 0)),
+        S(r`Solve $f''(x) = 0$.`, ['2'], 'Differentiate f′(x) = x² − 4x + 3 once more and set the result equal to 0.', r`$f''(x) = 2x - 4 = 0$ at $x = 2$, and $f''$ changes sign there.`, () => near(d((x) => x * x - 4 * x + 3, 2), 0)),
       ], write: r`"$f''(x) = 2x - 4$ changes sign at $x = 2$ (equivalently, $f'$ changes from decreasing to increasing), so there is a point of inflection at $x = 2$."`, trap: 'Not mentioning the sign change of f″.' },
       { label: 'c', q: 'Find the absolute maximum value of f on [0, 4].', steps: [
         S(r`$f(1) = 2 + \int_0^1f'(x)\,dx$. (Fraction or three decimals.)`, ['10/3', '3.333'], 'Antiderivative x³/3 − 2x² + 3x.', r`$2 + \frac{1}{3} - 2 + 3 = \frac{10}{3}$.`, () => near(2 + integ((x) => x * x - 4 * x + 3, 0, 1), 10 / 3)),
         S(r`$f(4) = 2 + \int_0^4f'(x)\,dx$.`, ['10/3', '3.333'], 'Same antiderivative from 0 to 4.', r`$2 + \frac{64}{3} - 32 + 12 = \frac{10}{3}$.`, () => near(2 + integ((x) => x * x - 4 * x + 3, 0, 4), 10 / 3)),
-        S('The absolute maximum value of f on [0, 4].', ['10/3', '3.333'], 'Compare f(0) = 2, f(1), f(3) and f(4).', r`$f(0) = 2$, $f(1) = \frac{10}{3}$, $f(3) = 2$, $f(4) = \frac{10}{3}$. The maximum is $\frac{10}{3}$.`),
+        S('The absolute maximum value of f on [0, 4].', ['10/3', '3.333'], 'Compare f(0) = 2, f(1), f(3) and f(4).', r`$f(0) = 2$, $f(1) = \frac{10}{3}$, $f(3) = 2$, $f(4) = \frac{10}{3}$. The maximum is $\frac{10}{3}$.`, () => { const F = (b: number) => 2 + integ((x) => x * x - 4 * x + 3, 0, b); return near(Math.max(F(0), F(1), F(3), F(4)), 10 / 3); }),
       ], write: r`Candidates test with every value shown: $f(0) = 2$, $f(1) = \frac{10}{3}$, $f(3) = 2$, $f(4) = \frac{10}{3}$. Absolute maximum $\frac{10}{3}$.`, trap: 'Checking only the critical points and missing the tie at the endpoint x = 4.' },
       { label: 'd', q: 'Let h(x) = f(x²) for 0 < x < 2. At which x does h have a relative maximum? Justify. (Harder than the exam: chain rule inside a sign chart.)', steps: [
         S(r`By the chain rule $h'(x) = 2x\,f'(x^2)$. Write $h'(x)$ in factored form and give the smaller zero in $(0, 2)$.`, ['1'], 'f′(u) = (u − 1)(u − 3) with u = x².', r`$h'(x) = 2x\left(x^2 - 1\right)\left(x^2 - 3\right)$, which is zero at $x = 1$ and $x = \sqrt{3}$ in $(0, 2)$; the smaller is 1.
@@ -137,7 +137,7 @@ Sign chart on $(0, 2)$: $2x > 0$ throughout. On $(0, 1)$: $(x^2 - 1) < 0$ and $(
     setup: r`Let $y = f(x)$ be the solution to $\dfrac{dy}{dx} = (y - 1)x^2$ with $f(0) = 3$.`,
     parts: [
       { label: 'a', q: 'Find d²y/dx² at the point (1, 2). Is the solution curve through (1, 2) concave up there?', steps: [
-        S(r`Find $\frac{dy}{dx}$ at $(1, 2)$.`, ['1'], 'Plug in.', r`$(2 - 1)(1) = 1$.`, () => (2 - 1) * 1 === 1),
+        S(r`Find $\frac{dy}{dx}$ at $(1, 2)$.`, ['1'], 'Substitute x = 1 and y = 2 into the differential equation.', r`$(2 - 1)(1) = 1$.`, () => (2 - 1) * 1 === 1),
         S(r`Find $\frac{d^2y}{dx^2} = 2x(y - 1) + x^2\frac{dy}{dx}$ at $(1, 2)$.`, ['3'], 'Product rule; y′ is the value from the previous step.', r`$2(1)(1) + (1)(1) = 3 > 0$: concave up.`, () => 2 * 1 * 1 + 1 * 1 === 3),
       ], write: r`$\frac{d^2y}{dx^2} = 2x(y - 1) + x^2\frac{dy}{dx}$; at $(1, 2)$ it equals 3 > 0, so concave up.`, trap: 'Forgetting that y depends on x, so the derivative of (y − 1) is dy/dx, not 0.' },
       { label: 'b', q: 'Use Euler’s method with two steps of size 0.5, starting at (0, 3), to approximate f(1).', steps: [
@@ -163,7 +163,7 @@ Sign chart on $(0, 2)$: $2x > 0$ throughout. On $(0, 1)$: $(x^2 - 1) < 0$ and $(
         S(r`$\int_{-2}^1(2 - x - x^2)^2\,dx$. (Three decimal places.)`, ['8.1', '8.100'], 'Side of each square = top − bottom.', r`$= 8.1$.`, () => near(integ((x) => (2 - x - x * x) ** 2, -2, 1), 8.1)),
       ], write: r`$V = \int_{-2}^1\left(2 - x - x^2\right)^2dx = 8.1$.`, trap: 'Multiplying by π. Cross-section volumes use the area of the shape, here a square.' },
       { label: 'd', q: 'The vertical line x = k divides R into two regions of equal area. Find k.', steps: [
-        S(r`Solve $\int_{-2}^k(2 - x - x^2)\,dx = 2.25$.`, ['-0.5', '-1/2'], 'Half of 4.5.', r`$k = -0.5$ (the parabola is symmetric about $x = -\frac{1}{2}$ between the intersection points).`, () => near(integ((x) => 2 - x - x * x, -2, -0.5), 2.25)),
+        S(r`Solve $\int_{-2}^k(2 - x - x^2)\,dx = 2.25$.`, ['-0.5', '-1/2'], 'The total area between the curves is 4.5, so you want the k that cuts it exactly in half; think about the symmetry of the parabola.', r`$k = -0.5$ (the parabola is symmetric about $x = -\frac{1}{2}$ between the intersection points).`, () => near(integ((x) => 2 - x - x * x, -2, -0.5), 2.25)),
       ], write: r`Write the equation $\int_{-2}^k\left(2 - x - x^2\right)dx = \frac{1}{2}(4.5)$; then $k = -0.5$.`, trap: 'Setting the integral equal to 4.5 instead of half of it.' },
       { label: 'e', q: 'Find the volume of the solid formed when R is revolved about the line y = 5. (Harder than the exam: the axis is above the region, so the lower curve gives the outer radius.)', steps: [
         S('Which curve is farther from the line y = 5, and so gives the outer radius? Type "line" or "parabola".', ['line'], 'The axis is above the whole region (the parabola peaks at y = 4).', r`The line $y = x + 2$ is the lower boundary, so it is farther from $y = 5$: outer radius $R = 5 - (x + 2) = 3 - x$. The parabola is the upper boundary, closer to the axis: inner radius $r = 5 - (4 - x^2) = 1 + x^2$.
@@ -195,12 +195,12 @@ Each slice perpendicular to the $x$-axis, spun around $y = 5$, makes a washer of
         S(r`$\frac{1}{2}\int_0^{2\pi}(3 + 2\cos\theta)^2\,d\theta$. (Three decimal places.)`, ['34.558'], 'Area in polar = ½ ∫ r² dθ.', r`$= 11\pi \approx 34.558$.`, () => near(0.5 * integ((t) => (3 + 2 * Math.cos(t)) ** 2, 0, 2 * Math.PI), 11 * Math.PI)),
       ], write: r`$A = \frac{1}{2}\int_0^{2\pi}(3 + 2\cos\theta)^2d\theta \approx 34.558$.`, trap: 'Leaving out the factor of ½ in the polar area formula.' },
       { label: 'b', q: 'Find dy/dx at θ = π/2.', steps: [
-        S(r`$\frac{dy}{d\theta} = r'\sin\theta + r\cos\theta$ at $\theta = \frac{\pi}{2}$.`, ['-2'], 'r = 3 and r′ = −2 sin θ = −2 at π/2.', r`$(-2)(1) + 3(0) = -2$.`),
-        S(r`$\frac{dx}{d\theta} = r'\cos\theta - r\sin\theta$ at $\theta = \frac{\pi}{2}$.`, ['-3'], 'Same values.', r`$(-2)(0) - 3(1) = -3$.`),
-        S(r`$\frac{dy}{dx}$ at $\theta = \frac{\pi}{2}$.`, ['2/3', '0.667'], 'Divide.', r`$\frac{-2}{-3} = \frac{2}{3}$.`, () => { const x = (t: number) => (3 + 2 * Math.cos(t)) * Math.cos(t), y = (t: number) => (3 + 2 * Math.cos(t)) * Math.sin(t); return near(d(y, Math.PI / 2) / d(x, Math.PI / 2), 2 / 3); }),
+        S(r`$\frac{dy}{d\theta} = r'\sin\theta + r\cos\theta$ at $\theta = \frac{\pi}{2}$.`, ['-2'], 'r = 3 and r′ = −2 sin θ = −2 at π/2.', r`$(-2)(1) + 3(0) = -2$.`, () => near(d((t) => (3 + 2 * Math.cos(t)) * Math.sin(t), Math.PI / 2), -2)),
+        S(r`$\frac{dx}{d\theta} = r'\cos\theta - r\sin\theta$ at $\theta = \frac{\pi}{2}$.`, ['-3'], 'Use the same r = 3 and r′ = −2, now with cos(π/2) = 0 and sin(π/2) = 1.', r`$(-2)(0) - 3(1) = -3$.`, () => near(d((t) => (3 + 2 * Math.cos(t)) * Math.cos(t), Math.PI / 2), -3)),
+        S(r`$\frac{dy}{dx}$ at $\theta = \frac{\pi}{2}$.`, ['2/3', '0.667'], 'dy/dx is (dy/dθ) ÷ (dx/dθ), using the two values you just found.', r`$\frac{-2}{-3} = \frac{2}{3}$.`, () => { const x = (t: number) => (3 + 2 * Math.cos(t)) * Math.cos(t), y = (t: number) => (3 + 2 * Math.cos(t)) * Math.sin(t); return near(d(y, Math.PI / 2) / d(x, Math.PI / 2), 2 / 3); }),
       ], write: r`Use $x = r\cos\theta$, $y = r\sin\theta$: $\frac{dy}{dx} = \frac{dy/d\theta}{dx/d\theta} = \frac{-2}{-3} = \frac{2}{3}$.`, trap: 'Reporting dr/dθ as the slope of the curve.' },
-      { label: 'c', q: 'Is the particle moving toward or away from the origin at θ = π/2? (Assume θ increases.)', steps: [
-        S(r`Find $\frac{dr}{d\theta}$ at $\theta = \frac{\pi}{2}$.`, ['-2'], 'r′ = −2 sin θ.', r`$-2 < 0$ while $r = 3 > 0$, so $r$ is decreasing: moving toward the origin.`),
+      { label: 'c', q: 'As θ increases through π/2, is a point tracing the curve moving toward or away from the origin?', steps: [
+        S(r`Find $\frac{dr}{d\theta}$ at $\theta = \frac{\pi}{2}$.`, ['-2'], 'Differentiate r = 3 + 2 cos θ, then put in θ = π/2.', r`$-2 < 0$ while $r = 3 > 0$, so $r$ is decreasing: moving toward the origin.`, () => near(d((t) => 3 + 2 * Math.cos(t), Math.PI / 2), -2)),
         S('Is it moving toward the origin? (yes or no)', YES, 'r > 0 and decreasing means the distance to the origin is shrinking.', 'Yes.'),
       ], write: r`"$r(\pi/2) = 3 > 0$ and $r'(\pi/2) = -2 < 0$, so the distance from the origin is decreasing."`, trap: 'Ignoring the sign of r. Distance to the origin is |r|.' },
     ] },
@@ -208,22 +208,22 @@ Each slice perpendicular to the $x$-axis, spun around $y = 5$, makes a washer of
     setup: r`Let $f(x) = \ln(1 + 2x)$.`,
     parts: [
       { label: 'a', q: 'Find the first three nonzero terms of the Maclaurin series for f.', steps: [
-        S(r`Substitute $u = 2x$ into $\ln(1 + u) = u - \frac{u^2}{2} + \frac{u^3}{3} - \cdots$. Coefficient of $x^2$:`, ['-2'], '(2x)²/2 = 2x².', r`$-\frac{(2x)^2}{2} = -2x^2$.`),
-        S(r`Coefficient of $x^3$:`, ['8/3', '2.667'], '(2x)³/3.', r`$\frac{8x^3}{3}$, so $f(x) \approx 2x - 2x^2 + \frac{8}{3}x^3$.`, () => near((Math.log(1.02) - 0.02 + 2e-4) / 1e-6, 8 / 3, 2e-2)),
+        S(r`Substitute $u = 2x$ into $\ln(1 + u) = u - \frac{u^2}{2} + \frac{u^3}{3} - \cdots$. Coefficient of $x^2$:`, ['-2'], 'Replace u with 2x and square the whole thing, coefficient included, before dividing by 2.', r`$-\frac{(2x)^2}{2} = -2x^2$.`, () => near((Math.log(1.002) - 0.002) / 1e-6, -2, 2e-3)),
+        S(r`Coefficient of $x^3$:`, ['8/3', '2.667'], 'Same idea: cube all of 2x, then divide by 3. The sign is + for the cubic term.', r`$\frac{8x^3}{3}$, so $f(x) \approx 2x - 2x^2 + \frac{8}{3}x^3$.`, () => near((Math.log(1.02) - 0.02 + 2e-4) / 1e-6, 8 / 3, 2e-2)),
       ], write: r`$f(x) = 2x - 2x^2 + \frac{8}{3}x^3 - \cdots$. Show the substitution into the known series.`, trap: 'Writing 2x − 4x²/2 … and then simplifying wrongly; keep (2x)ⁿ in parentheses.' },
       { label: 'b', q: 'Use the three terms to approximate f(0.1), and bound the error.', steps: [
         S('Approximate f(0.1). (Three decimal places.)', ['0.183'], '0.2 − 0.02 + 0.002667.', r`$\approx 0.18267$.`, () => near(0.2 - 0.02 + (8 / 3) * 0.001, 0.18267, 1e-4)),
         S('Alternating series error bound: the next term in absolute value.', ['0.0004'], 'Next term is (2x)⁴/4 at x = 0.1.', r`$\frac{(0.2)^4}{4} = 0.0004$. The true value $\ln 1.2 \approx 0.18232$ is within it.`, () => Math.abs(Math.log(1.2) - 0.182667) < 0.0004),
       ], write: r`"The series at $x = 0.1$ alternates with terms decreasing to 0, so the error is at most the first omitted term: $\frac{(0.2)^4}{4} = 0.0004$."`, trap: 'Using the alternating error bound without saying the terms alternate and decrease to 0.' },
       { label: 'c', q: 'Find the radius of convergence of the series.', steps: [
-        S('Radius of convergence.', ['1/2', '0.5'], 'The series for ln(1 + u) converges for |u| < 1.', r`$|2x| < 1$ gives $|x| < \frac{1}{2}$.`),
+        S('Radius of convergence.', ['1/2', '0.5'], 'The series for ln(1 + u) converges for |u| < 1.', r`$|2x| < 1$ gives $|x| < \frac{1}{2}$.`, () => { const t = (x: number, n: number) => Math.abs((2 * x) ** n / n); return t(0.45, 400) < 1e-10 && t(0.55, 400) > 1; }),
       ], write: r`Ratio test (or $|2x| < 1$): radius $\frac{1}{2}$.`, trap: 'Answering 1, the radius for ln(1 + x).' },
     ] },
   { id: 'frq-10', units: [10], title: 'A power series', calculator: false,
     setup: r`Let $f(x) = \displaystyle\sum_{n=1}^\infty\frac{(x - 3)^n}{n\cdot 2^n}$ wherever the series converges.`,
     parts: [
       { label: 'a', q: 'Find the interval of convergence.', steps: [
-        S('Radius of convergence from the ratio test.', ['2'], 'The ratio tends to |x − 3|/2.', r`$\frac{|x - 3|}{2} < 1$: radius 2, endpoints 1 and 5.`),
+        S('Radius of convergence from the ratio test.', ['2'], 'The ratio tends to |x − 3|/2.', r`$\frac{|x - 3|}{2} < 1$: radius 2, endpoints 1 and 5.`, () => { const a = (n: number) => 1 / (n * 2 ** n); return near(a(200) / a(201), 2, 1e-2); }),
         S('Does the series converge at x = 5? (yes or no)', NO, 'At x = 5 the terms are 1/n.', 'No: the harmonic series diverges.'),
         S('Does the series converge at x = 1? (yes or no)', YES, 'At x = 1 the terms are (−1)ⁿ/n.', 'Yes: the alternating harmonic series converges. Interval $[1, 5)$.', () => near(series((n) => (-1) ** n / n, 1, 20000), -Math.log(2), 1e-3)),
       ], write: r`Ratio test for the radius, then test each endpoint by name: harmonic (diverges) at 5, alternating series test (converges) at 1. Interval $[1, 5)$.`, trap: 'Forgetting to test the endpoints, or testing them without naming a test.' },
@@ -244,7 +244,7 @@ Each slice perpendicular to the $x$-axis, spun around $y = 5$, makes a washer of
         S('Approximate y at x = 1.1. (Three decimal places.)', ['1.886'], 'y ≈ 2 + (−8/7)(0.1).', r`$2 - \frac{0.8}{7} \approx 1.886$.`, () => near(2 - 0.8 / 7, 1.8857, 1e-4)),
       ], write: r`$y \approx 2 - \frac{8}{7}(1.1 - 1) \approx 1.886$.`, trap: 'Using the slope at x = 1.1 instead of at the known point.' },
       { label: 'c', q: 'Does the curve have any horizontal tangent lines?', steps: [
-        S('Horizontal tangents need 2x + 3y = 0, so y = −2x/3. Substituting gives (−5/9)x² = 11. How many real solutions?', ['0'], 'A negative times x² cannot equal 11.', r`$-\frac{5}{9}x^2 = 11$ has no real solution, so there are no horizontal tangents.`),
+        S('Horizontal tangents need 2x + 3y = 0, so y = −2x/3. Substituting gives (−5/9)x² = 11. How many real solutions?', ['0'], 'A negative times x² cannot equal 11.', r`$-\frac{5}{9}x^2 = 11$ has no real solution, so there are no horizontal tangents.`, () => [-10, -1, 0, 1, 10].every((x) => (-5 / 9) * x * x !== 11) && (-5 / 9) * 0 < 11),
       ], write: r`Set the numerator $2x + 3y = 0$, substitute into the curve, and show the resulting equation has no real solutions.`, trap: 'Stopping at y = −2x/3 without checking that such points lie on the curve.' },
       { label: 'd', q: 'Find d²y/dx² at (1, 2). Is the tangent-line estimate from part (b) an overestimate or an underestimate? (Harder than the exam: an implicit second derivative.)', steps: [
         S(r`Differentiate $y' = -\frac{2x + 3y}{3x + 2y}$ with the quotient rule and evaluate at $(1, 2)$ with $y' = -\frac{8}{7}$. (Fraction or three decimals.)`, ['110/343', '0.321'], 'Top′ = 2 + 3y′, bottom′ = 3 + 2y′.', r`$y'' = -\frac{(2 + 3y')(3x + 2y) - (2x + 3y)(3 + 2y')}{(3x + 2y)^2}$. At the point: $2 + 3y' = -\frac{10}{7}$, $3x + 2y = 7$, $2x + 3y = 8$, $3 + 2y' = \frac{5}{7}$.
@@ -259,12 +259,12 @@ $y'' > 0$ at $(1, 2)$, so the curve is concave up there and bends above its tang
     setup: r`A rectangle has its base on the $x$-axis and its upper corners on $y = 12 - x^2$, at $(\pm x, 12 - x^2)$ with $0 < x < \sqrt{12}$.`,
     parts: [
       { label: 'a', q: 'If x increases at 0.5 units per second, how fast is the area changing when x = 1?', steps: [
-        S(r`Write $A(x) = 2x(12 - x^2) = 24x - 2x^3$. Find $A'(1)$.`, ['18'], 'A′(x) = 24 − 6x².', r`$A'(1) = 18$.`, () => near(d((x) => 24 * x - 2 * x ** 3, 1), 18)),
-        S(r`$\frac{dA}{dt} = A'(x)\frac{dx}{dt}$ at $x = 1$.`, ['9'], 'Chain rule.', r`$18 \cdot 0.5 = 9$ square units per second.`),
+        S(r`Write $A(x) = 2x(12 - x^2) = 24x - 2x^3$. Find $A'(1)$.`, ['18'], 'Differentiate A(x) = 24x − 2x³, then put in x = 1.', r`$A'(1) = 18$.`, () => near(d((x) => 24 * x - 2 * x ** 3, 1), 18)),
+        S(r`$\frac{dA}{dt} = A'(x)\frac{dx}{dt}$ at $x = 1$.`, ['9'], 'Chain rule: dA/dt = (dA/dx)(dx/dt), with dx/dt = 0.5.', r`$18 \cdot 0.5 = 9$ square units per second.`, () => near(d((x) => 24 * x - 2 * x ** 3, 1) * 0.5, 9)),
       ], write: r`$\frac{dA}{dt} = (24 - 6x^2)\frac{dx}{dt} = 18(0.5) = 9$ square units per second.`, trap: 'Forgetting the factor dx/dt.' },
       { label: 'b', q: 'Find the maximum possible area. Justify that it is a maximum.', steps: [
-        S(r`Solve $A'(x) = 0$ on the domain.`, ['2'], '24 − 6x² = 0.', r`$x = 2$; $A''(x) = -12x < 0$ there, so it is a maximum.`, () => near(d((x) => 24 * x - 2 * x ** 3, 2), 0)),
-        S('The maximum area.', ['32'], 'A(2).', r`$A(2) = 4 \cdot 8 = 32$.`, () => 2 * 2 * (12 - 4) === 32),
+        S(r`Solve $A'(x) = 0$ on the domain.`, ['2'], 'Set A′(x) = 24 − 6x² equal to 0 and keep only the root with x > 0.', r`$x = 2$; $A''(x) = -12x < 0$ there, so it is a maximum.`, () => near(d((x) => 24 * x - 2 * x ** 3, 2), 0)),
+        S('The maximum area.', ['32'], 'Put the critical x back into A(x) = 2x(12 − x²).', r`$A(2) = 4 \cdot 8 = 32$.`, () => 2 * 2 * (12 - 4) === 32),
       ], write: r`"$A'(2) = 0$ and $A''(2) = -24 < 0$ (or $A'$ changes from positive to negative), so $A(2) = 32$ is the maximum."`, trap: 'Finding x = 2 but never justifying that it gives a maximum.' },
       { label: 'c', q: 'x still increases at 0.5 units per second. How fast is the rectangle’s diagonal changing at the moment the area is greatest? (Harder than the exam: related rates on a quantity you have to build.)', steps: [
         S('At the moment of greatest area, x = 2. How long is the diagonal then? (Exact or three decimals.)', ['4sqrt5', '8.944'], 'Width 2x = 4, height 12 − x² = 8.', r`$D = \sqrt{4^2 + 8^2} = \sqrt{80} = 4\sqrt{5} \approx 8.944$.

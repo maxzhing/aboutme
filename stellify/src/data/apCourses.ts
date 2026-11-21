@@ -4,6 +4,7 @@ import { CSA_LESSONS, CSA_TUTOR, CSA_UNITS } from './csa';
 import { MICRO_LESSONS, MICRO_TUTOR, MICRO_UNITS } from './micro';
 import { MACRO_LESSONS, MACRO_TUTOR, MACRO_UNITS } from './macro';
 import { STATS_LESSONS, STATS_TUTOR, STATS_UNITS } from './stats';
+import { CHEM_LESSONS, CHEM_TUTOR, CHEM_UNITS } from './chem';
 import { MUSIC_LESSONS, MUSIC_TUTOR, MUSIC_UNITS } from './music';
 
 /**
@@ -65,6 +66,12 @@ export const COURSES: Record<string, ApCourse> = {
     blurb: 'Learn to reason with data: all nine College Board units, from describing distributions and designing studies to probability, confidence intervals, t tests, chi-square and regression inference. Every answer is double-checked by an independent statistics engine, every step is explained in plain words, and every lesson ends with you teaching it back.',
     units: STATS_UNITS, lessons: STATS_LESSONS, tutor: STATS_TUTOR,
     answer: { placeholder: 'e.g. 0.125', chips: [], help: 'Type a number, rounded as the question asks. Probabilities and proportions are decimals like 0.25 (a % sign is ignored if you type one).' },
+  }),
+  chem: make({
+    id: 'chem', name: 'AP Chemistry', short: 'Chem',
+    blurb: 'All nine College Board units, from moles and atomic structure to equilibrium, acids and bases, thermodynamics and electrochemistry. Every numeric answer key is recomputed in code from the problem’s own data (molar masses, constants, the math), every step is explained in plain words, and every lesson ends with you teaching it back.',
+    units: CHEM_UNITS, lessons: CHEM_LESSONS, tutor: CHEM_TUTOR,
+    answer: { placeholder: 'e.g. 0.294 or 1.8e-5', chips: [], help: 'Type a number, rounded as the question asks. For very small or large numbers use scientific notation: 1.8e-5 or 1.8×10^-5. Units are not needed.' },
   }),
   music: make({
     id: 'music', name: 'AP Music Theory', short: 'Music Theory',

@@ -509,11 +509,11 @@ test('AP Calculus BC: study plan, a full lesson with examples and checked practi
   expect(errors).toEqual([]);
 });
 
-test('AP CSA, Microeconomics, Macroeconomics and Statistics: every unit, first and last lesson mastered, tutor layer, review', async ({ page }) => {
+test('AP CSA, Microeconomics, Macroeconomics, Statistics and Chemistry: every unit, first and last lesson mastered, tutor layer, review', async ({ page }) => {
   const errors = watch(page);
   await boot(page);
   const { COURSES } = await import('../src/data/apCourses');
-  for (const id of ['csa', 'micro', 'macro', 'stats']) {
+  for (const id of ['csa', 'micro', 'macro', 'stats', 'chem']) {
     const c = COURSES[id];
     await go(page, `/${id}`);
     await expect(page.getByTestId('calc-home')).toContainText(c.name);
@@ -914,4 +914,49 @@ test('safety: automatic backups undo a reset, and the page may only connect to t
   await expect(page.getByText('Stored now: 1 answered questions')).toBeVisible();
   // the content security policy blocks any other connection (so nothing can be sent elsewhere)
   expect(await page.evaluate(() => fetch('https://example.com/').then(() => 'connected', () => 'blocked'))).toBe('blocked');
+});
+
+test('Calc BC and AP Chemistry kits: every test hands in at 100% with the keys, every workout completes, formula pages open', async ({ page }) => {
+  test.setTimeout(240_000);
+  const errors = watch(page);
+  await boot(page);
+  const { KITS } = await import('../src/data/kits');
+  for (const kit of Object.values(KITS)) {
+    await go(page, `/${kit.id}`);
+    await expect(page.getByTestId('calc-tests')).toBeVisible();
+    for (const e of kit.exams) await expect(page.getByTestId(`calc-test-${e.id}`)).toContainText(e.title);
+    for (const e of kit.exams) {
+      await go(page, `/${kit.id}/test/${e.id}`);
+      await expect(page.getByTestId('calc-test')).toContainText(e.title);
+      await expect(page.getByText(kit.calculatorThroughout ? 'Calculator allowed on every problem' : 'Part 1: no calculator')).toBeVisible();
+      for (const p of e.problems) {
+        const box = page.getByTestId(`calc-test-problem-${p.id}`);
+        if (typeof p.answer === 'number') await box.getByRole('button').nth(p.answer).click();
+        else await box.getByLabel('Your answer').fill(p.answer[0]);
+      }
+      await page.getByTestId('calc-test-submit').click();
+      await expect(page.getByTestId('calc-test-result')).toContainText(`${e.problems.length}/${e.problems.length} (100%)`);
+    }
+    await go(page, `/${kit.id}`);
+    for (const f of kit.original) {
+      await go(page, `/${kit.id}/frq/${f.id}`);
+      await expect(page.getByTestId('calc-frq')).toContainText(f.title);
+      for (const p of f.parts) {
+        const part = page.getByTestId(`calc-frq-part-${p.label}`);
+        for (let k = 0; k < p.steps.length; k++) {
+          const step = part.getByTestId('calc-frq-step').nth(k);
+          await step.locator('input').fill(p.steps[k].answer[0]);
+          await step.getByTestId('calc-frq-check').click();
+          await expect(step.getByTestId('calc-frq-explain')).toContainText('Correct.');
+        }
+        await part.getByTestId('calc-frq-next-part').click();
+      }
+      await expect(page.getByTestId('calc-frq-done')).toContainText('right on the first try');
+    }
+    await go(page, `/${kit.id}/formulas`);
+    await expect(page.getByTestId('calc-formulas')).toContainText(`${kit.formulas.length} formulas`);
+    await page.getByTestId(`formula-${kit.formulas[0].id}`).getByRole('button').click();
+    await expect(page.getByTestId(`formula-${kit.formulas[0].id}`)).toContainText('Every piece of it');
+  }
+  expect(errors).toEqual([]);
 });

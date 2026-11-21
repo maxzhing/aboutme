@@ -1,0 +1,63 @@
+import type { Formula } from '../calc/formulas';
+
+const r = String.raw;
+
+/**
+ * Formula anatomy for AP Chemistry: every equation on the AP equation sheet that students most often misuse, taken
+ * apart symbol by symbol, read aloud, and shown in the different ways the exam uses it.
+ */
+export const CHEM_FORMULAS: Formula[] = [
+  { id: 'moles', name: 'Moles from mass', tex: r`n = \dfrac{m}{M}`, read: 'Moles equal grams divided by grams per mole.',
+    parts: [{ piece: '$n$', means: 'Amount of substance in moles: a count of particles in units of 6.022 × 10²³.' }, { piece: '$m$', means: 'The mass you weighed, in grams.' }, { piece: '$M$', means: 'Molar mass in g/mol, found by adding atomic masses from the formula (multiply by every subscript, including those outside parentheses).' }],
+    ways: [{ when: 'Stoichiometry', how: 'The first and last step of every mass-to-mass problem: grams → moles, then moles → grams of product.' }, { when: 'Empirical formulas', how: 'Turn each element’s grams (from percent composition) into moles before taking ratios.' }],
+    trap: 'Using mass ratios instead of mole ratios. Equations and formulas count particles, so always convert to moles first.' },
+  { id: 'molarity', name: 'Molarity and dilution', tex: r`M = \dfrac{n}{V}\qquad M_1V_1 = M_2V_2`, read: 'Concentration is moles per liter; diluting keeps the moles the same.',
+    parts: [{ piece: '$M$', means: 'Molarity, moles of solute per liter of solution (not per liter of solvent).' }, { piece: '$V$', means: 'Volume of solution in liters (divide mL by 1000).' }, { piece: '$M_1V_1 = M_2V_2$', means: 'Moles before dilution equal moles after: only the volume changes.' }],
+    ways: [{ when: 'Titration', how: 'Moles of titrant = M × V at the equivalence point, then use the mole ratio.' }, { when: 'Ion concentrations', how: 'Multiply the salt’s molarity by the number of each ion in its formula.' }],
+    trap: 'Using milliliters in M = n/V. Molarity needs liters.' },
+  { id: 'ideal-gas', name: 'Ideal gas law', tex: r`PV = nRT`, read: 'Pressure times volume equals moles times the gas constant times kelvin temperature.',
+    parts: [{ piece: '$P$', means: 'Pressure, in atm when R = 0.08206 L·atm/(mol·K); for a mixture, use each gas’s partial pressure.' }, { piece: '$V$', means: 'Volume in liters.' }, { piece: '$R$', means: 'The gas constant: 0.08206 L·atm/(mol·K) for these units (8.314 J/(mol·K) for energy calculations).' }, { piece: '$T$', means: 'Absolute temperature in kelvins: °C + 273.' }],
+    ways: [{ when: 'Molar mass from density', how: 'Substitute n = m/M to get M = dRT/P.' }, { when: 'Changing conditions', how: 'Hold n constant and set P₁V₁/T₁ = P₂V₂/T₂.' }, { when: 'Partial pressures', how: 'P_A = X_A · P_total, where X_A is the mole fraction.' }],
+    trap: 'Leaving T in °C. Every gas-law ratio breaks, and 0 °C would divide by zero.' },
+  { id: 'beer', name: 'Beer–Lambert law', tex: r`A = \varepsilon b c`, read: 'Absorbance equals molar absorptivity times path length times concentration.',
+    parts: [{ piece: '$A$', means: 'Absorbance: unitless; measured by the spectrophotometer.' }, { piece: r`$\varepsilon$`, means: 'Molar absorptivity (M⁻¹cm⁻¹): how strongly this substance absorbs at this wavelength.' }, { piece: '$b$', means: 'Path length through the sample, usually 1.00 cm.' }, { piece: '$c$', means: 'Concentration in M.' }],
+    ways: [{ when: 'Calibration curve', how: 'A plot of A against c is a straight line with slope εb; read an unknown’s c from its A.' }, { when: 'Comparing solutions', how: 'Same substance and cuvette: the absorbance ratio equals the concentration ratio.' }],
+    trap: 'Forgetting a dilution step: Beer–Lambert gives the concentration of the solution actually in the cuvette.' },
+  { id: 'photon', name: 'Photon energy', tex: r`E = h\nu = \dfrac{hc}{\lambda}`, read: 'Energy of a photon is Planck’s constant times frequency, or hc divided by wavelength.',
+    parts: [{ piece: '$h$', means: 'Planck’s constant, 6.626 × 10⁻³⁴ J·s.' }, { piece: r`$\nu$`, means: 'Frequency in s⁻¹.' }, { piece: '$c$', means: 'Speed of light, 2.998 × 10⁸ m/s.' }, { piece: r`$\lambda$`, means: 'Wavelength in meters (convert nm by multiplying by 10⁻⁹).' }],
+    ways: [{ when: 'Per photon', how: 'Gives joules for one photon; multiply by Avogadro’s number for a mole of photons.' }, { when: 'Spectroscopy', how: 'Shorter wavelength means higher energy: UV excites electrons, IR only vibrations.' }],
+    trap: 'Leaving λ in nanometers, which makes the energy a billion times too large.' },
+  { id: 'q-mcdt', name: 'Heat and temperature change', tex: r`q = mc\Delta T`, read: 'Heat equals mass times specific heat times the change in temperature.',
+    parts: [{ piece: '$q$', means: 'Heat absorbed (positive) or released (negative) by the substance whose temperature changed.' }, { piece: '$m$', means: 'Mass in grams.' }, { piece: '$c$', means: 'Specific heat, J/(g·°C); 4.18 for water.' }, { piece: r`$\Delta T$`, means: 'Final minus initial temperature; the same size in °C and K.' }],
+    ways: [{ when: 'Calorimetry', how: 'Find q for the water, then q_reaction = −q_water, then divide by moles for ΔH.' }, { when: 'Thermal equilibrium', how: 'Heat lost by the hot object equals heat gained by the cold one.' }],
+    trap: 'Keeping the sign of q_water for the reaction. If the water warmed, the reaction released heat: ΔH < 0.' },
+  { id: 'dh-formation', name: 'Enthalpy from formation data', tex: r`\Delta H^\circ_{\text{rxn}} = \sum n\Delta H^\circ_f(\text{products}) - \sum n\Delta H^\circ_f(\text{reactants})`, read: 'Products’ formation enthalpies minus reactants’, each times its coefficient.',
+    parts: [{ piece: '$n$', means: 'The coefficient from the balanced equation.' }, { piece: r`$\Delta H^\circ_f$`, means: 'Standard enthalpy of formation, kJ/mol; zero for elements in their standard states.' }],
+    ways: [{ when: 'Combustion', how: 'Balance first; products are usually CO₂ and H₂O, and O₂ contributes zero.' }, { when: 'Bond enthalpies instead', how: 'Use ΔH ≈ Σ(bonds broken) − Σ(bonds formed): note the reversed order.' }],
+    trap: 'Forgetting to multiply by coefficients, or mixing up the order between the formation and bond-enthalpy formulas.' },
+  { id: 'first-order', name: 'First-order integrated rate law', tex: r`\ln[A] = \ln[A]_0 - kt\qquad t_{1/2} = \dfrac{0.693}{k}`, read: 'The natural log of concentration falls in a straight line with time; the half-life is constant.',
+    parts: [{ piece: '$[A]_0$', means: 'Initial concentration.' }, { piece: '$k$', means: 'Rate constant in s⁻¹ (or min⁻¹).' }, { piece: '$t_{1/2}$', means: 'Half-life: the same no matter how much remains, only for first order.' }],
+    ways: [{ when: 'Fraction remaining', how: 'After n half-lives, (½)ⁿ remains; for any time, [A]/[A]₀ = e^(−kt).' }, { when: 'Identifying order', how: 'If ln[A] versus t is linear, the reaction is first order.' }],
+    trap: 'Using it for second-order reactions, whose half-life depends on [A]₀.' },
+  { id: 'kp-kc', name: 'Equilibrium constants', tex: r`K_c = \dfrac{[C]^c[D]^d}{[A]^a[B]^b}\qquad K_p = K_c(RT)^{\Delta n}`, read: 'Products over reactants, each to its coefficient; convert with RT to the change in gas moles.',
+    parts: [{ piece: 'the bracket terms', means: 'Equilibrium concentrations; pure solids and liquids are left out.' }, { piece: r`$\Delta n$`, means: 'Moles of gaseous products minus moles of gaseous reactants.' }],
+    ways: [{ when: 'Predicting direction', how: 'Compute Q the same way with current values; Q < K shifts right, Q > K shifts left.' }, { when: 'Combining equations', how: 'Reverse: 1/K; multiply coefficients by n: Kⁿ; add equations: multiply K’s.' }],
+    trap: 'Including solids in K, or forgetting exponents from coefficients.' },
+  { id: 'hh', name: 'Henderson–Hasselbalch equation', tex: r`\text{pH} = \text{p}K_a + \log\dfrac{[\text{A}^-]}{[\text{HA}]}`, read: 'Buffer pH equals pKa plus the log of base over acid.',
+    parts: [{ piece: r`$\text{p}K_a$`, means: '−log Ka: the pH at which acid and base forms are equal.' }, { piece: r`$[\text{A}^-]/[\text{HA}]$`, means: 'Ratio of conjugate base to weak acid; moles work as well as concentrations because both share a volume.' }],
+    ways: [{ when: 'After adding strong acid or base', how: 'Do the stoichiometry in moles first, then plug the new amounts in.' }, { when: 'Half-equivalence point', how: 'Ratio = 1, so pH = pKa: read Ka straight off a titration curve.' }],
+    trap: 'Flipping the ratio, which flips the sign of the log term.' },
+  { id: 'gibbs', name: 'Gibbs free energy', tex: r`\Delta G^\circ = \Delta H^\circ - T\Delta S^\circ = -RT\ln K`, read: 'Free energy equals enthalpy minus temperature times entropy, and connects to K through −RT ln K.',
+    parts: [{ piece: r`$\Delta G^\circ$`, means: 'Negative means thermodynamically favorable (K > 1).' }, { piece: r`$T\Delta S^\circ$`, means: 'The entropy term, which grows with temperature; ΔS° is usually in J/K, so convert to kJ/K.' }, { piece: '$-RT\\ln K$', means: 'Links free energy to the equilibrium constant; use R = 8.314 J/(mol·K) and ΔG in J.' }],
+    ways: [{ when: 'Crossover temperature', how: 'Set ΔG = 0: T = ΔH/ΔS.' }, { when: 'From K', how: 'K > 1 ↔ ΔG° < 0; K < 1 ↔ ΔG° > 0.' }],
+    trap: 'Mixing kJ and J. ΔH in kJ with ΔS in J/K gives an answer off by a factor of 1000.' },
+  { id: 'cell', name: 'Cell potential and free energy', tex: r`E^\circ_{\text{cell}} = E^\circ_{\text{cath}} - E^\circ_{\text{an}}\qquad \Delta G^\circ = -nFE^\circ`, read: 'Cell voltage is cathode minus anode potential; free energy is minus moles of electrons times Faraday’s constant times voltage.',
+    parts: [{ piece: r`$E^\circ_{\text{cath}}$`, means: 'Reduction potential of the half-reaction that is reduced (the larger one in a galvanic cell).' }, { piece: '$n$', means: 'Moles of electrons transferred in the balanced reaction.' }, { piece: '$F$', means: 'Faraday constant, 96,485 C per mole of electrons.' }],
+    ways: [{ when: 'Predicting favorability', how: 'Positive E° ↔ negative ΔG° ↔ galvanic.' }, { when: 'Nonstandard conditions', how: 'More reactant raises E; more product lowers it; at equilibrium E = 0.' }],
+    trap: 'Multiplying E° by a coefficient when balancing. Potentials never scale.' },
+  { id: 'faraday', name: 'Faraday’s law (electrolysis)', tex: r`q = It\qquad n_{e^-} = \dfrac{q}{F}`, read: 'Charge equals current times time; moles of electrons equal charge divided by Faraday’s constant.',
+    parts: [{ piece: '$I$', means: 'Current in amperes (coulombs per second).' }, { piece: '$t$', means: 'Time in seconds.' }, { piece: '$F$', means: '96,485 C per mole of electrons.' }],
+    ways: [{ when: 'Mass deposited', how: 'Moles of electrons ÷ electrons per ion (from the half-reaction) × molar mass.' }, { when: 'Time required', how: 'Work backward: grams → moles → moles of electrons → coulombs → seconds.' }],
+    trap: 'Forgetting to convert minutes or hours to seconds, or the number of electrons per ion.' },
+];
+export const CHEM_FORMULA: Record<string, Formula> = Object.fromEntries(CHEM_FORMULAS.map((f) => [f.id, f]));

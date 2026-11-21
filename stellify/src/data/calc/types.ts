@@ -33,6 +33,8 @@ export interface CalcProblem {
   solution: string[];
   /** independent numerical verification of the keyed answer */
   check?: () => boolean;
+  /** chemistry: a key with 3+ significant figures also accepts ±1 in its last digit (intermediate rounding, as AP Chemistry scoring allows) */
+  lastDigit?: boolean;
   level: 1 | 2 | 3; // 1 warm-up, 2 standard AP, 3 hard
   /** notation shown with the question */
   staff?: StaffSpec;
@@ -105,7 +107,14 @@ export function calcCorrect(p: CalcProblem, input: string | null, exact = false)
     // scientific notation (chemistry): compare to 3 significant figures
     if (parseSci(a) !== null) { const x = parseSci(input) ?? parseNumeric(got), y = parseSci(a)!; return x !== null && Math.abs(x - y) <= 5e-3 * Math.abs(y); }
     const x = parseNumeric(got) ?? parseSci(input), y = parseNumeric(want);
-    return x !== null && y !== null && Math.abs(x - y) < 1e-3 * Math.max(1, Math.abs(y));
+    if (x === null || y === null) return false;
+    if (Math.abs(x - y) < 1e-3 * Math.max(1, Math.abs(y))) return true;
+    // a key stated to 3+ significant figures also accepts a more precise answer that rounds to it (1.336 → 1.34)
+    const digits = want.replace(/^-/, '').replace('.', '').replace(/^0+/, '');
+    const dec = (want.split('.')[1] ?? '').length;
+    if (!/^\d+$/.test(digits) || digits.length < 3) return false;
+    if (p.lastDigit && Math.abs(x - y) <= 10 ** -dec * 1.000001) return true;
+    return Math.abs(Math.round(x * 10 ** dec) / 10 ** dec - y) < 1e-9;
   });
 }
 export const answerLabel = (p: CalcProblem) => (typeof p.answer === 'number' ? 'ABCDE'[p.answer] : p.answer[0] === 'inf' ? '∞' : p.answer[0] === '-inf' ? '−∞' : p.answer[0] === 'dne' ? 'does not exist' : p.answer[0]);
