@@ -1,9 +1,16 @@
 'use client';
 import Link from 'next/link';
-import { ArrowLeft, Calculator, Check, Eye, Lightbulb, NotebookPen, PenLine, TriangleAlert, X } from 'lucide-react';
+import { ArrowLeft, BookOpen, Calculator, Check, ChevronDown, Eye, Lightbulb, NotebookPen, PenLine, Sigma, TriangleAlert, X } from 'lucide-react';
 import { useState } from 'react';
 import { calcCorrect } from '@/data/calc';
-import { CALC_FRQ, CALC_FRQS, type Frq, type FrqPart, type FrqStep } from '@/data/calc/frq';
+import { CALC_FRQS as ORIGINAL_FRQS, type Frq, type FrqPart, type FrqStep } from '@/data/calc/frq';
+import { CALC_FORMULA, CALC_FORMULAS, type Formula } from '@/data/calc/formulas';
+import { PACK_CALC_FRQS } from '@/data/pack';
+
+/** official College Board questions from the student's private pack (personal build only), then the original workouts */
+const OFFICIAL = PACK_CALC_FRQS as Frq[];
+const CALC_FRQS: Frq[] = [...OFFICIAL, ...ORIGINAL_FRQS];
+const CALC_FRQ: Record<string, Frq> = Object.fromEntries(CALC_FRQS.map((f) => [f.id, f]));
 import { useStore } from '@/lib/store';
 import { pct } from '@/lib/util';
 import { RichText } from '@/components/RichText';
@@ -18,16 +25,27 @@ export function CalcFrqCard() {
         <h2 className="flex items-center gap-2 text-xl font-bold"><NotebookPen size={20} className="text-brand" />Work it out: guided free response</h2>
         <p className="mt-1 max-w-3xl text-sm text-muted">Full multi-part free-response problems, the kind that decide whether you pass. You work every detail yourself, one step at a time, and each step is checked before you go on. After each part you see exactly what to write to earn full credit, and the mistake that usually costs points.</p>
       </div>
-      <ol className="grid gap-2 sm:grid-cols-2">
-        {CALC_FRQS.map((f) => { const r = done[f.id]; const steps = f.parts.reduce((s, p) => s + p.steps.length, 0); return (
+      <p className="text-sm"><Link href="/calc/formulas" className="font-semibold text-brand underline" data-testid="calc-formulas-link">Formula anatomy</Link>: every formula taken apart piece by piece, with every way it is used.</p>
+      {OFFICIAL.length > 0 && <FrqGroup title={`Real College Board free-response questions (${OFFICIAL.length})`} list={OFFICIAL} done={done} />}
+      <FrqGroup title={OFFICIAL.length ? 'Original practice workouts' : 'Workouts'} list={ORIGINAL_FRQS} done={done} />
+    </Card>
+  );
+}
+
+function FrqGroup({ title, list, done }: { title: string; list: Frq[]; done: Record<string, { firstTry: number; total: number }> }) {
+  return (
+    <div>
+      <h3 className="text-xs font-bold uppercase tracking-wide text-faint">{title}</h3>
+      <ol className="mt-2 grid gap-2 sm:grid-cols-2">
+        {list.map((f) => { const r = done[f.id]; const steps = f.parts.reduce((s, p) => s + p.steps.length, 0); return (
           <li key={f.id}><Link href={`/calc/frq/${f.id}`} className="flex items-center gap-3 rounded-2xl border border-line p-3 hover:border-brand/50" data-testid={`calc-frq-${f.id}`}>
             <span className={cn('grid h-10 w-10 shrink-0 place-items-center rounded-xl', r ? 'bg-[#047857] text-white' : 'bg-raised text-muted')}>{r ? <Check size={18} /> : <PenLine size={18} />}</span>
-            <span className="min-w-0 flex-1"><span className="block font-semibold">{f.title}</span><span className="block text-xs text-muted">Units {f.units.join(', ')} · {f.parts.length} parts · {steps} steps · {f.calculator ? 'calculator' : 'no calculator'}</span></span>
+            <span className="min-w-0 flex-1"><span className="block font-semibold">{f.title}</span><span className="block text-xs text-muted">{f.source ? `${f.source} · ` : ''}Units {f.units.join(', ')} · {f.parts.length} parts · {steps} steps · {f.calculator ? 'calculator' : 'no calculator'}</span></span>
             <span className="text-xs text-muted">{r ? `${pct(r.firstTry, r.total)}% first try` : ''}</span>
           </Link></li>
         ); })}
       </ol>
-    </Card>
+    </div>
   );
 }
 
@@ -53,11 +71,12 @@ function Workout({ f }: { f: Frq }) {
     <div className="mx-auto max-w-3xl space-y-5" data-testid="calc-frq">
       <Link href="/calc#frq" className="btn-quiet !px-2 text-sm"><ArrowLeft size={16} />AP Calculus BC</Link>
       <header>
-        <p className="eyebrow">Guided free response · Units {f.units.join(', ')}</p>
+        <p className="eyebrow">{f.official ? `Official College Board question · ${f.source ?? ''}` : 'Guided free response'} · Units {f.units.join(', ')}</p>
         <h1 className="mt-2 text-3xl font-bold">{f.title}</h1>
         <div className="mt-2 flex gap-2">{f.calculator ? <Badge><Calculator size={12} className="mr-1 inline" />Calculator allowed</Badge> : <Badge>No calculator</Badge>}<Badge>{f.parts.length} parts · {total} steps</Badge></div>
       </header>
-      <div className="rounded-2xl border border-line bg-raised/40 p-4 text-[16px] leading-relaxed"><RichText text={f.setup} /></div>
+      <div className="rounded-2xl border border-line bg-raised/40 p-4 text-[16px] leading-relaxed"><RichText text={f.setup} />{f.figure && <div className="mx-auto mt-3 max-w-md text-ink [&_svg]:h-auto [&_svg]:w-full" data-testid="calc-frq-figure" dangerouslySetInnerHTML={{ __html: f.figure }} />}</div>
+      {f.official && <p className="text-xs text-muted">Question text © College Board, from your own copy, for your private study only. The step-by-step solution, explanations and point notes are Stellify’s own, not the official scoring guidelines.</p>}
       {f.parts.slice(0, part + 1).map((p, k) => <Part key={p.label} p={p} active={k === part} onDone={next} />)}
       {finished && (
         <div className="rounded-3xl border-2 border-ok/50 bg-ok/10 p-5 text-center" data-testid="calc-frq-done">
@@ -117,7 +136,43 @@ function Step({ s, n, onDone, done }: { s: FrqStep; n: number; onDone: (firstTry
       </div>
       {state === 'wrong' && <p className="mt-2 flex items-center gap-1.5 text-sm text-bad"><X size={14} />Not yet. Recheck your work{tries >= 2 ? ', or use “Show me” and study the step.' : ' and try again.'}</p>}
       {hint && !settled && <p className="mt-2 rounded-lg border border-gold/40 bg-gold/5 p-2 text-sm"><b className="text-gold">Hint: </b><RichText text={s.hint} /></p>}
-      {settled && <p className={cn('mt-2 rounded-lg p-2 text-sm', state === 'right' ? 'bg-ok/10' : 'bg-raised')}><b>{state === 'right' ? 'Correct. ' : `The result is ${s.answer[0]}. `}</b><RichText text={s.explain} /></p>}
+      {s.formula && CALC_FORMULA[s.formula] && <FormulaBox f={CALC_FORMULA[s.formula]} />}
+      {settled && <div className={cn('mt-2 space-y-2 rounded-lg p-3 text-[15px] leading-relaxed', state === 'right' ? 'bg-ok/10' : 'bg-raised')} data-testid="calc-frq-explain"><b>{state === 'right' ? 'Correct.' : `The result is ${s.answer[0]}.`}</b>{s.explain.split(/\n\n+/).map((para, k) => <p key={k}><RichText text={para} /></p>)}</div>}
     </li>
+  );
+}
+
+/** One formula taken apart: what every piece means, how to say it, every way it is used, and the trap. */
+export function FormulaBox({ f, open: start = false }: { f: Formula; open?: boolean }) {
+  const [open, setOpen] = useState(start);
+  return (
+    <div className="mt-2 rounded-xl border border-brand/30 bg-brand/5 text-sm" data-testid={`formula-${f.id}`}>
+      <button type="button" className="flex w-full items-center gap-2 p-2.5 text-left font-semibold" onClick={() => setOpen(!open)} aria-expanded={open}><Sigma size={15} className="text-brand" />Formula: {f.name}<ChevronDown size={15} className={cn('ml-auto transition-transform', open && 'rotate-180')} /></button>
+      {open && (
+        <div className="space-y-3 border-t border-brand/20 p-3">
+          <div className="overflow-x-auto text-center text-[17px]"><RichText text={`$$${f.tex}$$`} /></div>
+          <p><b>In words: </b>{f.read}</p>
+          <div><b>Every piece of it</b>
+            <dl className="mt-1 space-y-1.5">{f.parts.map((p, k) => <div key={k} className="grid gap-1 sm:grid-cols-[minmax(7rem,auto)_1fr] sm:gap-3"><dt className="font-semibold"><RichText text={p.piece} /></dt><dd className="text-muted"><RichText text={p.means} /></dd></div>)}</dl>
+          </div>
+          <div><b>The different ways it is used</b>
+            <ul className="mt-1 space-y-1.5">{f.ways.map((w, k) => <li key={k} className="rounded-lg bg-surface p-2"><span className="font-semibold"><RichText text={w.when} /></span><br /><RichText text={w.how} /></li>)}</ul>
+          </div>
+          <p className="rounded-lg bg-warn/10 p-2"><TriangleAlert size={13} className="mr-1 inline text-warn" /><b>Trap: </b><RichText text={f.trap} /></p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Every formula in the course, each taken apart. */
+export function CalcFormulasPage() {
+  return (
+    <div className="mx-auto max-w-3xl space-y-4" data-testid="calc-formulas">
+      <Link href="/calc#frq" className="btn-quiet !px-2 text-sm"><ArrowLeft size={16} />AP Calculus BC</Link>
+      <header><p className="eyebrow">AP Calculus BC</p><h1 className="mt-2 flex items-center gap-2 text-3xl font-bold"><BookOpen size={26} />Formula anatomy</h1>
+        <p className="mt-1 text-sm text-muted">{CALC_FORMULAS.length} formulas. Open any one to see what every symbol means, how to say it in words, the different ways the exam uses it, and the mistake that costs the most points.</p></header>
+      {CALC_FORMULAS.map((f) => <FormulaBox key={f.id} f={f} />)}
+    </div>
   );
 }

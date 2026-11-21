@@ -1,4 +1,5 @@
 import { d, euler, integ, near, series } from './types';
+import { FRQ_FORMULA, FRQ_FULL } from './frq-explain';
 
 /**
  * Guided free-response workouts for AP Calculus BC. Each problem is a full multi-part free-response question,
@@ -12,12 +13,22 @@ export interface FrqStep {
   /** accepted answers (numbers, fractions, or short words such as yes / no) */
   answer: string[];
   hint: string;
-  /** shown after the step is answered, right or wrong */
+  /** shown after the step is answered, right or wrong; paragraphs separated by a blank line */
   explain: string;
+  /** the formula this step uses (see formulas.ts): its anatomy is shown with the step */
+  formula?: string;
   check?: () => boolean;
 }
 export interface FrqPart { label: string; q: string; steps: FrqStep[]; write: string; trap: string }
-export interface Frq { id: string; units: number[]; title: string; calculator: boolean; setup: string; parts: FrqPart[] }
+export interface Frq {
+  id: string; units: number[]; title: string; calculator: boolean; setup: string; parts: FrqPart[];
+  /** an official College Board question from the student's private pack (never in the public build) */
+  official?: boolean;
+  /** e.g. "AP Calculus BC 2023, Question 4" */
+  source?: string;
+  /** a figure drawn as inline SVG, or a table written in LaTeX inside setup */
+  figure?: string;
+}
 
 const r = String.raw;
 const S = (prompt: string, answer: string[], hint: string, explain: string, check?: () => boolean): FrqStep => ({ prompt, answer, hint, explain, check });
@@ -25,7 +36,7 @@ const YES = ['yes', 'y'], NO = ['no', 'n'];
 
 const E = (t: number) => 8 + 2 * Math.sin(t / 2), L = (t: number) => 0.5 * t + 4;
 
-export const CALC_FRQS: Frq[] = [
+const WORKOUTS: Frq[] = [
   { id: 'frq-1', units: [6, 8], title: 'Rate in, rate out: a water tank', calculator: true,
     setup: r`Water flows into a tank at $E(t) = 8 + 2\sin\left(\frac{t}{2}\right)$ gallons per hour and drains at $L(t) = 0.5t + 4$ gallons per hour, for $0 \le t \le 8$. At $t = 0$ the tank holds 50 gallons.`,
     parts: [
@@ -219,4 +230,6 @@ export const CALC_FRQS: Frq[] = [
       ], write: r`"$A'(2) = 0$ and $A''(2) = -24 < 0$ (or $A'$ changes from positive to negative), so $A(2) = 32$ is the maximum."`, trap: 'Finding x = 2 but never justifying that it gives a maximum.' },
     ] },
 ];
+/** the workouts with their full explanations and formula links attached */
+export const CALC_FRQS: Frq[] = WORKOUTS.map((f) => ({ ...f, parts: f.parts.map((p) => ({ ...p, steps: p.steps.map((s, i) => { const k = `${f.id}|${p.label}|${i}`; return { ...s, explain: FRQ_FULL[k] ?? s.explain, formula: s.formula ?? FRQ_FORMULA[k] }; }) })) }));
 export const CALC_FRQ: Record<string, Frq> = Object.fromEntries(CALC_FRQS.map((f) => [f.id, f]));

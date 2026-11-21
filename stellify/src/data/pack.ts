@@ -27,7 +27,7 @@ export interface PackTest {
   table?: { rw: [number, number][]; math: [number, number][] };
   imported?: number;
 }
-type Pack = PackItem[] | { items: PackItem[]; tests?: PackTest[] };
+type Pack = PackItem[] | { items: PackItem[]; tests?: PackTest[]; calcFrqs?: unknown[] };
 declare const __PACK__: Pack | null | undefined;
 /** A personal build embeds the pack as a JSON block in the page (fast to parse); see scripts/build.mjs. */
 function packFromPage(): Pack | null {
@@ -39,3 +39,5 @@ function packFromPage(): Pack | null {
 const PACK: Pack = (typeof __PACK__ !== 'undefined' && __PACK__) || packFromPage() || [];
 export const PACK_RAW: PackItem[] = Array.isArray(PACK) ? PACK : PACK.items;
 export const PACK_TESTS: PackTest[] = Array.isArray(PACK) ? [] : PACK.tests ?? [];
+/** official AP Calculus BC free-response questions, worked step by step (personal builds only); typed in data/calc/frq.ts */
+export const PACK_CALC_FRQS: unknown[] = Array.isArray(PACK) ? [] : PACK.calcFrqs ?? [];

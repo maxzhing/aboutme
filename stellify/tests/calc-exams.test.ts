@@ -24,6 +24,7 @@ describe('Calculus BC unit tests, semester exams and finals', () => {
 });
 
 import { CALC_FRQS } from '@/data/calc/frq';
+import { CALC_FORMULA, CALC_FORMULAS } from '@/data/calc/formulas';
 describe('Calculus BC guided free-response workouts', () => {
   it('ids are unique and every part has steps, a full-credit note and a trap', () => {
     expect(new Set(CALC_FRQS.map((f) => f.id)).size).toBe(CALC_FRQS.length);
@@ -37,6 +38,11 @@ describe('Calculus BC guided free-response workouts', () => {
       const fake = { id: 'x', q: '', answer: s.answer, hint: '', solution: [], level: 3 as const };
       expect(calcCorrect(fake, s.answer[0]), `${f.id} ${s.prompt}`).toBe(true);
       if (s.check) expect(s.check(), `${f.id} ${s.prompt}`).toBe(true);
+      expect(s.explain.length, `${f.id}${p.label} explanation is too thin`).toBeGreaterThanOrEqual(160);
+      if (s.formula) expect(CALC_FORMULA[s.formula], `${f.id} formula ${s.formula}`).toBeDefined();
     }
+  });
+  it('every formula is taken apart piece by piece, with several uses and a trap', () => {
+    for (const fm of CALC_FORMULAS) { expect(fm.parts.length, fm.id).toBeGreaterThanOrEqual(2); expect(fm.ways.length, fm.id).toBeGreaterThanOrEqual(1); expect(fm.trap.length).toBeGreaterThan(20); }
   });
 });

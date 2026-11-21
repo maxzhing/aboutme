@@ -139,3 +139,11 @@ Each entry records what was decided, why, and the alternatives considered.
     framework; no unit pacing guide or test is public, so the split is ours: Semester A = Units 1–5, Semester B =
     Units 6–10. Each unit has a timed, hint-free test of hard problems with no-calculator and calculator parts
     (pass at 80%), then a semester exam for each half and cumulative finals. All answers are checked in tests.
+38. **Guided free-response workouts explain every step in full, and formulas are taken apart piece by piece.**
+    The owner asked that each formula be broken into its parts and used in more than one way, and that every
+    step be explained in full, not in a few words. `src/data/calc/formulas.ts` lists 22 formulas. For each one it
+    gives how to read it aloud, what each symbol means, the different ways it gets used, and its usual trap. The page
+    is at `/calc/formulas`, and each workout step links to the formula it uses. Every step explanation says what is
+    found, why that method fits, what each number means and how to state it; a test sets a 160-character floor. Past
+    College Board free-response questions the owner uploaded are worked the same way, but only in the personal
+    copy (through the git-ignored pack, `scripts/calc-frq-pack.ts`). They are never committed or published.
