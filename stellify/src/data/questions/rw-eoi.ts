@@ -460,7 +460,7 @@ export const RW_EOI: RawQuestion[] = [
     why: [
       'This describes the method (the task and noise levels), not a reason.',
       'This reports the result but does not say why it occurred.',
-      'This states the research question only.',
+      'This states only what the researchers set out to study. The goal is to explain their proposed reason for the result, and this choice gives neither the result nor a reason.',
       'Correct. It gives the proposed mechanism and ties it to the 70-decibel finding.',
     ],
     concept: 'Distinguish the parts of a study: question, method, result, explanation. The goal names one of them.',
@@ -492,7 +492,7 @@ export const RW_EOI: RawQuestion[] = [
     why: [
       'This contrasts what each practice repairs: a difference.',
       'Correct. It identifies what the two practices have in common.',
-      'This describes kintsugi alone.',
+      'This describes kintsugi alone, so it cannot show a similarity; it never mentions boro or the feature the two share, visible repair.',
       'This contrasts the materials used: another difference.',
     ],
     concept: 'To emphasize a similarity, the sentence must discuss both items and state what they share.',
@@ -616,7 +616,7 @@ export const RW_EOI: RawQuestion[] = [
       'Correct. It shows that Osk is smaller in area yet much deeper.',
       'This compares surface areas only and says nothing about depth.',
       'This states what the lakes share, not the contrast between area and depth.',
-      'This describes only Lake Teren.',
+      'This describes only Lake Teren. Without Lake Osk\'s area and depth, it cannot show that the smaller lake is the deeper one.',
     ],
     concept: 'When a goal combines two comparisons, the sentence must include both, usually joined by a contrast word.',
     strategy: 'List the data points the goal needs (two areas, two depths). The right choice contains all of them.',

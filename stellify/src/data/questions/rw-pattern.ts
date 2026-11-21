@@ -179,7 +179,7 @@ export const RW_PATTERN: RawQuestion[] = [
     why: [
       'Correct. The dash-led list of mountains ends the first sentence, and the semicolon separates it from the second.',
       'A second dash would make the mountain names a removable aside, but removing them leaves two complete sentences with nothing between them.',
-      'A comma alone between two complete sentences is a comma splice.',
+      'This choice makes the text read "…year—Kilimanjaro, Aconcagua, and Denali, respectively, according to expedition historians,…": a comma alone is joining two complete sentences, which is a comma splice. Joining them takes a semicolon, a period, or a comma with "and," "but" or another joining word.',
       'No punctuation fuses “respectively” onto a new sentence: a run-on.',
     ],
     concept: 'A dash can work alone, adding material at the end of a sentence. A second dash is correct only if the sentence still works when everything between the dashes is removed.',
@@ -265,7 +265,7 @@ export const RW_PATTERN: RawQuestion[] = [
       'Choice B.',
     ],
     why: [
-      'A comma alone between two complete sentences is a comma splice.',
+      'This choice makes the text read "…call this the labor illusion, studies suggest that it…": a comma alone is joining two complete sentences, which is a comma splice. Joining them takes a semicolon, a period, or a comma with "and," "but" or another joining word.',
       'Correct. Comma, then “and,” joining two complete sentences.',
       'The comma is on the wrong side of “and.” Nothing separates “illusion” from “and,” and the comma then splits “and” from the sentence it introduces.',
       'With no punctuation and no joining word, “the labor illusion studies suggest” runs two sentences together.',

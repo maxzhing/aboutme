@@ -175,3 +175,13 @@ Each entry records what was decided, why, and the alternatives considered.
     recomputed in code from the problem's own data; every problem was also read for chemistry errors, and the
     items that were too easy for a "hard" test (an R_f division, a plain HCl dilution, a same-cuvette Beer's-law
     ratio) were replaced with harder ones.
+42. **Explanation re-audit (owner request: "make sure each explanation is good").** An automated pass over all
+    1,549 questions looked for thin, templated or mismatched explanations and for duplicate questions. 308 wrong-answer
+    rationales in Reading and Writing were rewritten: 52 that were boilerplate repeated across questions ("A comma alone
+    between two complete sentences is a comma splice") now quote the exact text the choice produces, and 256 that
+    stated a fact without the reason ("'Carve' is present tense") now say why that makes the choice wrong in this text.
+    Four near-duplicate questions were replaced with new items (r-fss-n62, r-syn-n14, r-tsp-n12, r-fss-n64). Every
+    math solution was checked to reach its keyed answer. Measured against the College Board's own rationales in the
+    private pack, our hard-math solutions are much shorter (median about 35 words of steps against 172 for College
+    Board Hard), and some items labeled V read like College Board Medium; expanding those solutions and re-checking
+    those labels is the next piece of work.

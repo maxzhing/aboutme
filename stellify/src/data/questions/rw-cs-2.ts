@@ -20,7 +20,7 @@ export const RW_CS_2: RawQuestion[] = [
     why: [
       'The text names coastal development as a cause of decline, but it makes no argument about what should be done.',
       'Correct. It covers both parts of the text: the benefits and the threat.',
-      'No other marine plants are mentioned.',
+      'The text discusses only seagrass and never mentions any other marine plant, so it cannot be comparing them; it explains seagrass\'s value and then the threat to it.',
       'The text states that seagrass stores carbon but does not describe any measurement methods.',
     ],
     concept: 'Purpose questions ask what the text does (explains, argues, compares, describes), not just what it is about.',
@@ -172,7 +172,7 @@ export const RW_CS_2: RawQuestion[] = [
     why: [
       '"Conclusively disproves" is too strong. The text calls the evidence "weak and inconsistent" and the matter "an open question."',
       'Correct. Each of its three parts corresponds to a part of the passage.',
-      'Only peafowl are discussed.',
+      'Only peafowl are discussed; no other bird species appears, so the text cannot be contrasting two species\' mating behavior.',
       'The text ends by saying the question is unresolved. It does not take a side.',
     ],
     concept: 'Concession structure: an idea is stated, credited ("do show"), then qualified ("But"). The author\'s position is the qualified one.',

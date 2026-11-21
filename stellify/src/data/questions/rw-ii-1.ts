@@ -339,7 +339,7 @@ export const RW_II_1: RawQuestion[] = [
     why: [
       'These lines show evidence of loss (objects washed ashore) but describe the speaker\'s actions, not the sea\'s attitude.',
       'Correct. The calm, regular motion and "as if nothing had been asked of it" present the sea as unmoved.',
-      'These lines describe the gulls, not the sea.',
+      'These lines describe the gulls, which are loud and "insistent," not the sea; the claim is about the sea\'s indifference, which only the lines about the water\'s "even, unhurried breath" show.',
       'These lines reveal the speaker\'s hope and sense of what the sea owes, not how the sea itself is portrayed.',
     ],
     concept: 'For quotation questions, the lines must show the specific quality named in the claim, attributed to the specific subject named in the claim.',

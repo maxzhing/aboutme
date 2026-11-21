@@ -15,7 +15,7 @@ export const RW_SEC_1: RawQuestion[] = [
       'The semicolon in choice C correctly joins them.',
     ],
     why: [
-      'A comma alone between two independent clauses is a comma splice.',
+      'This choice makes the text read "…to lakes near Mexico City, unlike most amphibians, it…": a comma alone is joining two complete sentences, which is a comma splice. Joining them takes a semicolon, a period, or a comma with "and," "but" or another joining word.',
       'No punctuation at all between two independent clauses creates a run-on sentence.',
       'Correct. A semicolon can join two closely related independent clauses.',
       '"And" without a comma before it does not correctly join two independent clauses; the standard pattern is comma + and.',
@@ -396,7 +396,7 @@ export const RW_SEC_1: RawQuestion[] = [
       'A comma between two independent clauses is a comma splice. The other commas in the sentence do not change that.',
       'Correct. The semicolon separates two independent clauses, the second of which contains its own interrupting phrase.',
       'A comma after "and" is incorrect, and "and" is not the logical connection for a general statement followed by an example.',
-      'No punctuation creates a run-on.',
+      'This choice makes the text read "…ways to limit water loss the creosote bush, for…": two complete sentences meet with no punctuation at all between them, so they run together into a run-on sentence.',
     ],
     concept: 'Punctuation inside a clause (such as commas around "for example") is separate from the boundary between clauses.',
     strategy: 'Mentally remove interrupters such as "for example." Then test whether each side is a sentence.',

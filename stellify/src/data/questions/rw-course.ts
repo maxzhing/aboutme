@@ -202,7 +202,7 @@ export const RW_COURSE: RawQuestion[] = [
     why: [
       'True, but it describes only the mulched plots; without the bare plots there is no benefit to measure.',
       'True, but the starting point shows no benefit at all; it says nothing about growth over time.',
-      'True, but it describes only the bare plots.',
+      'True, but it describes only the bare plots. To show that mulch\'s benefit grows over time, the sentence must compare mulched with bare plots at different weeks.',
       'Correct. A widening gap is exactly a benefit that grows over time.',
     ],
     concept: 'A "benefit" or "effect" is a comparison between groups; to show it changes, compare the gap at different times.',
@@ -244,7 +244,7 @@ export const RW_COURSE: RawQuestion[] = [
     why: [
       'Reyes explicitly agrees that the garages waste land.',
       'This is the planners’ position, which Reyes disputes.',
-      'Reyes never discusses transit use.',
+      'Reyes never discusses transit use; Text 2 accepts that the garages sit underused and challenges only the planners\' claim that converting them is cheap.',
       'Correct. He accepts the underuse point and disputes the cost point.',
     ],
     concept: 'Cross-text questions are usually “yes, but”: the second author accepts part of the first text and challenges another part.',
@@ -298,7 +298,7 @@ export const RW_COURSE: RawQuestion[] = [
       'This emphasizes a difference (hot versus freezing), the opposite of the goal.',
       'Correct. It names two features the locations share.',
       'This describes only one location, so it cannot show a similarity.',
-      'This also describes only one location.',
+      'This describes only the Atacama. A similarity needs both places, and this choice never mentions the McMurdo Dry Valleys.',
     ],
     concept: 'Synthesis questions are judged by the goal; a similarity requires both items and a shared feature.',
     strategy: 'Read the goal first, then look for “both,” “like,” or “similarly.”',

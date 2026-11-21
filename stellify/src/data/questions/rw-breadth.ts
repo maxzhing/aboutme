@@ -148,7 +148,7 @@ export const RW_BREADTH: RawQuestion[] = [
     why: [
       'Correct. It names the performance and states why it mattered historically.',
       'It covers her birth and the prize, not the 1933 performance.',
-      'The 2009 rediscovery is a different event.',
+      'The 2009 rediscovery of her manuscripts is a different event. The goal is the historical significance of the 1933 performance, which this choice never mentions.',
       'It reports the performance but not why it was significant.',
     ],
     concept: 'To emphasize significance, the sentence must say why the event mattered, not only that it happened.',
@@ -167,7 +167,7 @@ export const RW_BREADTH: RawQuestion[] = [
     ],
     why: [
       'Correct. The semicolon properly joins two independent clauses.',
-      'A comma alone between two independent clauses is a comma splice.',
+      'This choice makes the text read "…it was published in 1937, some critics faulted its…": a comma alone is joining two complete sentences, which is a comma splice. Joining them takes a semicolon, a period, or a comma with "and," "but" or another joining word.',
       'With no punctuation, the clauses run together.',
       '"and" would be enough to join the clauses with a comma before it, but a comma after "and" is misplaced.',
     ],

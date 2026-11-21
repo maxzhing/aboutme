@@ -59,7 +59,7 @@ export const RW_SEC_2: RawQuestion[] = [
     why: [
       'Correct. "Darkened" matches the simple past of "erupted" and "failed."',
       '"Darkens" is present tense, which does not fit an event of 1815.',
-      '"Will darken" is future tense.',
+      '"Will darken" is future tense, but the eruption happened in 1815 ("erupted") and the crops "failed" the next summer. An event in that past story needs the simple past, "darkened."',
       '"Has darkened" (present perfect) connects a past action to the present. These events ended long ago.',
     ],
     concept: 'Keep verb tense consistent within a time frame unless the meaning requires a shift.',
@@ -81,7 +81,7 @@ export const RW_SEC_2: RawQuestion[] = [
       '"Their" is plural, but the antecedent "each" is singular.',
       '"It\'s" is a contraction of "it is." "At it is base" makes no sense.',
       'Correct. "Its" is the singular possessive pronoun.',
-      '"They\'re" is a contraction of "they are."',
+      '"They\'re" means "they are" ("at they are base"), and it is plural. The base belongs to "Each of the sculptures," a singular subject, so the possessive is "its."',
     ],
     concept: 'A pronoun must agree in number with its antecedent. "Each" is singular. "Its" is possessive; "it\'s" is "it is."',
     strategy: 'Expand any contraction to check it: "it\'s" → "it is." If that does not fit, eliminate it.',
@@ -169,7 +169,7 @@ export const RW_SEC_2: RawQuestion[] = [
     why: [
       '"Its" is singular and does not agree with the plural antecedent "leaves."',
       'Correct. "The leaves ... open their pores" matches a plural pronoun to a plural antecedent.',
-      '"It\'s" means "it is," which does not fit.',
+      '"It\'s" means "it is" ("open it is pores"), which makes no sense, and it is singular. The pores belong to "the leaves," which are plural, so the possessive is "their."',
       '"There" refers to a place; it is not a possessive pronoun.',
     ],
     concept: 'A pronoun agrees in number with its antecedent, however far apart the two are.',

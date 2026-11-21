@@ -507,7 +507,7 @@ export const RW_SPEC: RawQuestion[] = [
     why: [
       'This describes Hadrian’s Wall alone, so it shows no similarity.',
       'This contrasts the walls’ lengths: a difference, the opposite of the goal.',
-      'This describes the Great Wall alone.',
+      'This describes only the Great Wall. A similarity needs both walls, and this choice never mentions Hadrian\'s Wall.',
       'Correct. It names both walls and a feature they share, signaled by "Like."',
     ],
     concept: 'A comparison goal requires both subjects and the right kind of relationship (alike vs. different).',

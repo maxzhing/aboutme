@@ -69,7 +69,7 @@ export const RW_II_2: RawQuestion[] = [
     ],
     why: [
       'Correct. A large early gap and almost no final gap is precisely "faster, not more."',
-      'This is about scarifying, not soaking alone.',
+      'This is about scarification, not soaking alone. The researchers\' conclusion concerns what soaking by itself does, so data on scarified seeds cannot support it.',
       'This describes the combined treatment\'s final rate and does not isolate the effect of soaking.',
       'This compares soaking with scarifying. It does not show how soaking compares with no treatment over time.',
     ],
