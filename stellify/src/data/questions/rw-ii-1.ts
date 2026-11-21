@@ -32,12 +32,7 @@ export const RW_II_1: RawQuestion[] = [
     id: 'r-cid-02', skill: 'cid', sub: 'Supporting details', d: 'H',
     passage: 'The following text is from an original short story.\n\nMarguerite had kept the bakery\'s ledger for eleven years, and in all that time she had never once left a column unbalanced. So when the totals for March refused to agree, she did not suspect her arithmetic. She suspected the till. She sat in the back room long after closing, recounting receipts by lamplight, less troubled by the missing four dollars than by the idea that the numbers, which had always told her the truth, were now keeping something from her.',
     stem: 'According to the text, what troubles Marguerite most?',
-    choices: [
-      'The possibility that she will be blamed for the missing money',
-      'The sense that records she has always trusted are no longer giving her the whole truth',
-      'The discovery that she has made an error in her arithmetic',
-      'The amount of time it takes her to recount the receipts',
-    ], answer: 1,
+    choices: ['The possibility that her employer will blame her for the missing four dollars once the discrepancy is discovered', 'The sense that records she has always trusted are no longer giving her the whole truth about the bakery', 'The discovery that, after eleven years of careful work, she has finally made an error in her arithmetic', 'The amount of time it takes her to recount every receipt by lamplight long after the bakery has closed'], answer: 1,
     steps: [
       'The final sentence makes a direct comparison: she is "less troubled by the missing four dollars than by the idea that the numbers, which had always told her the truth, were now keeping something from her."',
       'So the larger worry is not the money but the feeling that her trusted numbers are concealing something.',
@@ -56,14 +51,9 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-cid-03', skill: 'cid', sub: 'Identifying arguments', d: 'H',
-    passage: 'Historians long described the medieval trade routes across the Sahara chiefly in terms of gold and salt. Recent scholarship by Amina Diallo complicates that picture. Examining thousands of manuscripts preserved in private family libraries, Diallo shows that caravans also carried books—legal commentaries, astronomical tables, and poetry—and that the copying and sale of these texts supported a class of scribes and scholars. The routes, she argues, moved ideas as reliably as they moved goods.',
+    passage: 'Historians long described the medieval trade routes across the Sahara chiefly in terms of gold and salt, the commodities that dominated the accounts of Arab geographers and European merchants. Recent scholarship by Amina Diallo complicates that picture considerably. Examining thousands of manuscripts preserved in private family libraries, Diallo shows that caravans also carried books—legal commentaries, astronomical tables, and poetry—and that the copying and sale of these texts supported a class of scribes and scholars. The routes, she argues, moved ideas as reliably as they moved goods.',
     stem: 'Which choice best states the main idea of the text?',
-    choices: [
-      'Diallo\'s research demonstrates that gold and salt were less valuable to medieval traders than historians have assumed.',
-      'Diallo\'s research shows that manuscripts kept in family libraries are better preserved than other historical sources.',
-      'Diallo\'s research suggests that trans-Saharan trade was an important channel for intellectual exchange as well as for commodities.',
-      'Diallo\'s research indicates that medieval scribes depended on caravans mainly to obtain writing materials.',
-    ], answer: 2,
+    choices: ['Diallo\'s research demonstrates that gold and salt were considerably less valuable to medieval traders than historians have traditionally assumed.', 'Diallo\'s research shows that manuscripts kept in private family libraries are better preserved than other sources of historical evidence.', 'Diallo\'s research suggests that trans-Saharan trade was an important channel for intellectual exchange as well as for commodities.', 'Diallo\'s research indicates that medieval scribes depended on trans-Saharan caravans mainly to obtain the materials they needed for writing.'], answer: 2,
     steps: [
       'The text sets up a traditional view (the routes were about gold and salt) and then says Diallo "complicates that picture."',
       'Her evidence: caravans also carried books, and the book trade supported scribes and scholars. Her conclusion: the routes "moved ideas as reliably as they moved goods."',
@@ -108,14 +98,9 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-cid-05', skill: 'cid', sub: 'Main idea', d: 'H',
-    passage: 'The following text is from an original short story.\n\nMy grandfather mended clocks, but he did not much care for time. He never wore a watch, was late to his own shop most mornings, and once missed a train because he had stopped to listen to a stranger\'s pocket watch ticking unevenly. What he loved was the mechanism: the patience of gears, the small logic by which one wheel persuaded another to move. "A clock is only an argument," he liked to say, "that happens to end in the hour."',
+    passage: 'The following text is from an original short story.\n\nMy grandfather mended clocks, but he did not much care for time. He never wore a watch, was late to his own shop most mornings, and once missed a train because he had stopped to listen to a stranger\'s pocket watch ticking unevenly, an irregularity he found irresistible. What he loved was the mechanism: the patience of gears, the small logic by which one wheel persuaded another to move. "A clock is only an argument," he liked to say, "that happens to end in the hour."',
     stem: 'Which choice best states the main idea of the text?',
-    choices: [
-      'The narrator\'s grandfather cared more about how clocks work than about the purpose they serve.',
-      'The narrator\'s grandfather was a poor businessman because he was so often late.',
-      'The narrator learned to repair clocks by watching the grandfather work.',
-      'The narrator\'s grandfather believed that other people\'s watches were better made than his own.',
-    ], answer: 0,
+    choices: ['The narrator\'s grandfather cared more about the intricate workings of clocks than about the purpose that clocks are meant to serve.', 'The narrator\'s grandfather was an unsuccessful businessman because he so often arrived late to open his own shop.', 'The narrator learned the craft of repairing clocks by carefully watching the grandfather at work in his shop.', 'The narrator\'s grandfather believed that the watches carried by strangers were better made than the clocks he repaired.'], answer: 0,
     steps: [
       'The first sentence sets up a contrast: he mended clocks but "did not much care for time." The examples (no watch, late, missed train) show his indifference to timekeeping.',
       'The turn comes with "What he loved was the mechanism," and his saying treats the hour as almost an afterthought of the clock\'s inner logic.',
@@ -134,14 +119,9 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-cid-06', skill: 'cid', sub: 'Summarizing', d: 'H',
-    passage: 'Economists have often assumed that people who receive unconditional cash grants will work less. A long-running study in rural Kenya led by Tavita Mwangi found little support for that assumption. Recipients of monthly grants worked about as many hours as non-recipients did, but they shifted how they worked: many left low-paid day labor to start small businesses or to farm their own land. Total hours changed little; what changed was the kind of work people chose to do.',
+    passage: 'Economists have frequently assumed that people who receive unconditional cash grants will work less, since the additional income reduces their need for wages. A long-running investigation in rural Kenya led by Tavita Mwangi found little support for that assumption among the thousands of households it followed. Recipients of monthly grants worked approximately as many hours as non-recipients did, but they shifted how they worked: many abandoned low-paid day labor to establish small businesses or to cultivate their own land. Total hours changed little; what changed was the kind of work people chose to do.',
     stem: 'Which choice best states the main idea of the text?',
-    choices: [
-      'The study found that cash grants led recipients to work substantially more hours than they had before.',
-      'The study suggests that cash grants changed the kind of work recipients did rather than the amount they worked.',
-      'The study has persuaded economists to abandon their assumptions about cash grants.',
-      'The study shows that small businesses started by grant recipients were more profitable than day labor.',
-    ], answer: 1,
+    choices: ['The study found that cash grants led recipients to work substantially more hours each week than they had worked before.', 'The study suggests that cash grants changed the kind of work recipients did rather than the amount of time they worked.', 'The study has persuaded most economists to abandon their long-standing assumptions about the effects of cash grants.', 'The study shows that small businesses started by grant recipients were considerably more profitable than day labor.'], answer: 1,
     steps: [
       'The text names an assumption (grants make people work less) and reports that the study "found little support" for it.',
       'The key finding is stated twice: hours were about the same, but people "shifted how they worked," and "what changed was the kind of work."',
@@ -160,7 +140,7 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-cid-07', skill: 'cid', sub: 'Main idea', d: 'V',
-    passage: 'Some deep-sea anglerfish find mates in a drastic way: the tiny male bites onto a female and their tissues fuse, so that he draws nutrients from her bloodstream for the rest of his life. In most vertebrates, such a union would trigger an immune attack on the foreign tissue. Immunologist Rei Tanabe\'s team found that the species practicing the most complete fusion have lost genes essential to adaptive immunity—the very system that would reject a partner—yet they remain able to resist infection, apparently by relying on other, still poorly understood defenses.',
+    passage: 'Some deep-sea anglerfish find mates in a drastic way: the diminutive male bites onto a female and their tissues fuse, so that he draws nutrients from her bloodstream for the rest of his life. In most vertebrates, such a union would trigger an immediate immunological attack on the foreign tissue. Immunologist Rei Tanabe\'s team found that the species practicing the most complete fusion have lost genes essential to adaptive immunity—the very system that would reject a partner—yet they remain able to resist infection, apparently by relying on other, still poorly understood biochemical defenses.',
     stem: 'Which choice best states the main idea of the text?',
     choices: [
       'Tanabe\'s team has identified the previously unknown defenses that replaced adaptive immunity in anglerfish.',
@@ -186,7 +166,7 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-cid-08', skill: 'cid', sub: 'Identifying arguments', d: 'V',
-    passage: 'For much of the twentieth century, museum curators classified quilts as "craft" rather than "art," a label that kept them out of fine-art galleries. Art historian Lena Whitcombe argues that the distinction says more about who made the objects than about the objects themselves. The bold asymmetry and improvised color fields of many quilts, she notes, anticipate qualities later praised in abstract painting. That the paintings hung in museums while the quilts stayed on beds, Whitcombe suggests, reflects assumptions about domestic work, not differences in visual ambition.',
+    passage: 'For much of the twentieth century, museum curators classified quilts as "craft" rather than "art," a designation that kept them out of fine-art galleries. Art historian Lena Whitcombe argues that the distinction, which persisted for decades in exhibition catalogues and acquisition policies, says more about who made the objects than about the objects themselves. The bold asymmetry and improvised color fields of many quilts, she notes, anticipate qualities later praised in abstract painting. That the paintings hung in museums while the quilts stayed on beds, Whitcombe suggests, reflects assumptions about domestic work, not differences in visual ambition.',
     stem: 'Which choice best states the main idea of the text?',
     choices: ["Whitcombe argues that abstract painters studied quilts closely and borrowed their bold asymmetry and improvised color fields directly from quilt makers.", "Whitcombe claims that museums have recently begun to move quilts out of storage and display them alongside abstract paintings in fine-art galleries.", "Whitcombe maintains that quilts are more visually ambitious than most abstract paintings and therefore deserve a more prominent place in museums.", "Whitcombe contends that quilts were labeled craft because of attitudes toward their makers and setting, not because of their artistic qualities."], answer: 3,
     steps: [
@@ -207,14 +187,9 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-cid-09', skill: 'cid', sub: 'Supporting details', d: 'V',
-    passage: 'The following text is from an original short story set in the nineteenth century.\n\nMr. Aldous Finch had the reputation of a generous man, and he guarded it as other men guard their purses. No subscription list went round the parish without his name upon it, written large; no widow was relieved but the whole street knew by whom. Yet his own clerk went three winters in the same thin coat, and it was observed by those who cared to observe that Mr. Finch\'s charity never traveled anywhere it could not be seen.',
+    passage: 'The following text is from an original short story set in the nineteenth century.\n\nMr. Aldous Finch had the reputation of a generous man, and he guarded it as other men guard their purses, with constant and anxious attention. No subscription list went round the parish without his name upon it, written large; no widow was relieved but the whole neighborhood knew by whom, and in considerable detail. Yet his own clerk went three winters in the same thin coat, and it was observed by those who cared to observe that Mr. Finch\'s charity never traveled anywhere it could not be seen, nor lingered anywhere unaccompanied by an appreciative audience.',
     stem: 'Based on the text, which statement about Mr. Finch\'s generosity is true?',
-    choices: [
-      'It is offered chiefly where it will be publicly noticed.',
-      'It is directed mainly toward the people who work for him.',
-      'It has left him poorer than his neighbors realize.',
-      'It is widely resented by the other members of the parish.',
-    ], answer: 0,
+    choices: ['It is offered chiefly in places and circumstances where it will be publicly noticed by others in the parish.', 'It is directed mainly toward his clerk and the other people who work for him in his business.', 'It has gradually left him considerably poorer than his neighbors in the parish realize or suspect.', 'It is widely resented by the other members of the parish, who consider his donations excessive.'], answer: 0,
     steps: [
       'Each example of his giving is public: his name "written large" on subscription lists, and relief of a widow that "the whole street knew" about.',
       'The contrast is private need he ignores (his clerk\'s thin coat), and the last clause states the pattern outright: his charity "never traveled anywhere it could not be seen."',
@@ -233,7 +208,7 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-cid-10', skill: 'cid', sub: 'Summarizing', d: 'V',
-    passage: 'Planting trees is widely promoted as a way to cool the planet, since trees absorb carbon dioxide. But climate scientist Ingrid Solheim cautions that location matters. In snowy northern regions, dark evergreen canopies absorb sunlight that white snow would have reflected back into space, and this warming effect can cancel out, or even exceed, the cooling benefit of the carbon the trees store. In the tropics, by contrast, forests both store carbon and release moisture that forms reflective clouds. Solheim concludes that tree-planting efforts should be concentrated where both effects point in the same direction.',
+    passage: 'Planting trees is widely promoted as a way to cool the planet, since trees absorb carbon dioxide from the atmosphere as they grow. But climate scientist Ingrid Solheim cautions that location matters considerably, a complication that international reforestation initiatives have largely overlooked. In snowy northern regions, dark evergreen canopies absorb sunlight that white snow would have reflected back into space, and this warming effect can cancel out, or even exceed, the cooling benefit of the carbon the trees store. In the tropics, by contrast, forests both store carbon and release moisture that forms reflective clouds. Solheim concludes that tree-planting efforts should be concentrated where both effects point in the same direction.',
     stem: 'Which choice best states the main idea of the text?',
     choices: ["Solheim argues that planting trees does not help cool the planet, because the sunlight absorbed by forest canopies always outweighs the carbon the trees store.", "Solheim has found that northern evergreen trees store less carbon than tropical trees do, so northern forests do less to slow climate change.", "Solheim has shown that snow reflects more sunlight than clouds do, so northern regions stay cooler than the tropics when trees are planted there.", "Solheim holds that the climate benefit of planting trees depends on location, so planting should focus on regions where trees have a net cooling effect."], answer: 3,
     steps: [

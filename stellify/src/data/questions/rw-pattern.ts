@@ -856,14 +856,9 @@ export const RW_PATTERN: RawQuestion[] = [
   /* ───────────────────────── Central Ideas and Details ───────────────────────── */
   {
     id: 'r-cb-cid-01', skill: 'cid', sub: 'Implied ideas', d: 'H',
-    passage: 'The latest staging of the audio work *Harbour Voices*, first presented in Bergen in 2015, sends listeners out alone onto a working ferry with headphones and no script. Because each of the forty recorded monologues is triggered by the listener’s position on deck, and because the ferry’s route shifts with the weather, no two listeners hear the same sequence, and none hears all forty. The work’s refusal to settle into a single story thus depends on the unpredictability of the vessel itself.',
+    passage: 'The latest staging of the audio work *Harbour Voices*, first presented in Bergen in 2015 and subsequently performed in several Scandinavian harbors, sends listeners out alone onto a working commuter ferry with headphones and no printed script or instructions. Because each of the forty recorded monologues is triggered by the listener’s position on deck, and because the ferry’s route shifts with the weather, no two listeners hear the same sequence, and none hears all forty. The work’s refusal to settle into a single story thus depends on the unpredictability of the vessel itself, an effect that its creators consider fundamental rather than accidental to the composition’s meaning.',
     stem: "Based on the text, what can most reasonably be concluded about *Harbour Voices*?",
-    choices: [
-      'Listeners who stay in one place on deck come away with a clearer sense of the story than those who move around.',
-      'Its creators chose Bergen because the city’s weather is unusually changeable.',
-      'Presented in a fixed indoor space, the work would likely lose a quality that the text treats as central to it.',
-      'Most listeners are frustrated at being unable to hear all forty monologues.',
-    ], answer: 2,
+    choices: ['Listeners who remain in one place on deck come away with a considerably clearer sense of the story than those who move around.', 'Its creators chose Bergen as the location for the work because the city’s coastal weather is unusually changeable.', 'Presented in a fixed indoor space, the work would likely lose a quality that the text treats as central to it.', 'Most listeners are frustrated at being unable to hear all forty of the recorded monologues during a single crossing.'], answer: 2,
     steps: [
       'The last sentence is the point: the work’s “refusal to settle into a single story” depends on “the unpredictability of the vessel.”',
       'If a defining quality depends on the moving, unpredictable ferry, then removing the ferry should remove or weaken that quality.',
@@ -883,14 +878,9 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-cid-02', skill: 'cid', sub: 'Supporting details', d: 'H',
-    passage: 'The following text is from an original short story.\nOld Tobias kept the lighthouse log with a care that nobody had asked of him. “Wind NW, fresh. Nothing sighted,” he would write, and then, after a pause, add the hour at which the gulls had left the rocks, though no inspector had ever shown the least interest in gulls. It was not that he thought the birds important. It was that a day set down without them seemed to him a day only partly kept, and he had been trusted, he felt, with the whole of each one.',
+    passage: 'The following text is from an original short story.\nOld Tobias kept the lighthouse log with a meticulousness that nobody had asked of him, and that nobody, in all his years of service, had ever acknowledged. “Wind NW, fresh. Nothing sighted,” he would write, and then, after a pause, add the hour at which the gulls had left the rocks, though no government inspector had ever shown the least interest in seabirds. It was not that he thought the birds important, or that he expected anyone to read his entries attentively. It was that a day set down without them seemed to him a day only partly kept, and he had been trusted, he felt, with the whole of each one.',
     stem: 'Based on the text, why does Tobias record when the gulls leave the rocks?',
-    choices: [
-      'He believes the inspectors will eventually come to value such observations.',
-      'He regards a complete record of each day as part of the responsibility he has been given.',
-      'He considers the gulls’ movements a better guide to the weather than the wind.',
-      'He wants to fill the pauses in an otherwise monotonous routine.',
-    ], answer: 1,
+    choices: ['He believes that the lighthouse inspectors will eventually come to value such observations of the local wildlife.', 'He regards a complete record of each day as part of the responsibility he feels he has been given.', 'He considers the movements of the gulls a more reliable guide to the coming weather than the direction of the wind.', 'He wants to fill the long pauses in an otherwise monotonous routine of watching the empty sea from the lighthouse.'], answer: 1,
     steps: [
       'The text rules out one reason directly: “It was not that he thought the birds important.”',
       'It then gives the real reason: a day recorded without the gulls “seemed to him a day only partly kept, and he had been trusted, he felt, with the whole of each one.”',
@@ -910,14 +900,9 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-cid-03', skill: 'cid', sub: 'Main idea', d: 'V',
-    passage: 'Few forms of nineteenth-century writing are mocked as readily as the etiquette manual. Yet historians now argue that these books were far more than catalogues of fussy rules. Consider the manuals of Eliza Hartwell: they do dwell on forks and calling cards (matters, incidentally, that fill the pages of many admired novels of the period), but like other manuals written for newly arrived city dwellers, hers also explain how to open a bank account and how to read a lease. Such practical counsel runs through the genre’s most popular titles and is not hard to find.',
+    passage: 'Few forms of nineteenth-century writing are mocked as readily as the etiquette manual, which literary critics have long dismissed as trivial, pretentious, and preoccupied with insignificant distinctions. Yet historians now argue that these books were considerably more than catalogues of fussy rules. Consider the manuals of Eliza Hartwell: they do dwell on forks and calling cards (matters, incidentally, that fill the pages of many admired novels of the period), but like other manuals written for newly arrived urban residents, hers also explain how to open a bank account and how to interpret a lease. Such practical counsel runs through the genre’s most popular titles and is not difficult to find for anyone who examines them attentively.',
     stem: "Based on the text, what can most reasonably be concluded about nineteenth-century etiquette manuals?",
-    choices: [
-      'They have been neglected by most historians despite the practical value of their advice.',
-      'They began as guides to manners and only later came to include practical advice.',
-      'They were read mainly by novelists looking for details of city life.',
-      'They have been unfairly ridiculed for attention to subjects that also appear in more respected writing of the period.',
-    ], answer: 3,
+    choices: ['They have been neglected by most historians despite the considerable practical value of the advice that they contain.', 'They began as guides to manners and only later, as cities grew, came to include practical financial advice.', 'They were read mainly by novelists who were looking for accurate details of city life to include in their fiction.', 'They have been unfairly ridiculed for attention to subjects that also appear in more respected writing of the period.'], answer: 3,
     steps: [
       'Main line of the text: etiquette manuals are mocked, but they deserve better.',
       'Now weigh the parenthesis: forks and calling cards are “matters, incidentally, that fill the pages of many admired novels of the period.”',

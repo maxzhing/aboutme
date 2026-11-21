@@ -217,14 +217,9 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-cid-01', skill: 'cid', sub: 'Identifying arguments', d: 'H',
-    passage: 'For centuries, museums displayed ancient Roman marble statues as gleaming white, and many visitors still assume that this is how the sculptors meant them to look. Yet traces of pigment surviving in the crevices of dozens of statues show that many were once brightly painted. Archaeologist Lena Fischer argues that the white statues admired since the Renaissance are therefore not the works as their makers saw them but the products of centuries of weathering and, in some cases, of overzealous cleaning.',
+    passage: 'For centuries, museums displayed ancient Roman marble statues as gleaming white, and many visitors still assume that this is how the sculptors intended them to appear. Yet microscopic traces of pigment surviving in the crevices of dozens of statues demonstrate that many were once brightly painted. Archaeologist Lena Fischer argues that the white statues admired since the Renaissance are therefore not the works as their makers saw them but the products of centuries of weathering and, in some cases, of overzealous cleaning.',
     stem: 'Which choice best states the main idea of the text?',
-    choices: [
-      'Renaissance artists painted over Roman statues to make them appear white.',
-      'Many Roman statues were originally painted, and their whiteness reflects later weathering and cleaning rather than the sculptors’ intentions.',
-      'Museums should repaint Roman statues so that visitors can see them as they once appeared.',
-      'Traces of pigment are found on only a few Roman statues, so most were probably always white.',
-    ], answer: 1,
+    choices: ['Renaissance artists deliberately painted over ancient Roman statues so that the sculptures would appear uniformly white to viewers.', 'Many Roman statues were originally painted, and their whiteness reflects later weathering and cleaning rather than the sculptors’ intentions.', 'Museums should repaint their ancient Roman statues so that visitors can see the sculptures as they appeared when they were made.', 'Traces of pigment survive on only a few Roman statues, so most of the sculptures were probably always white, as museums display them.'], answer: 1,
     steps: [
       'Topic: the color of Roman marble statues. Common view: they were meant to be white.',
       'Turn (“Yet”): pigment traces show many were painted. Conclusion (“therefore”): their whiteness comes from weathering and cleaning.',

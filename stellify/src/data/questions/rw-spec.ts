@@ -726,12 +726,7 @@ export const RW_SPEC: RawQuestion[] = [
     id: 'r-s-cid-01', skill: 'cid', sub: 'Main idea', d: 'H',
     passage: 'For centuries, Polynesian navigators crossed thousands of kilometers of open Pacific Ocean without instruments. They read the positions of rising and setting stars, the shapes of ocean swells reflected off distant islands, and the flight paths of seabirds that return to land each evening. In the 1970s, the voyaging canoe *Hōkūle‘a* sailed from Hawai‘i to Tahiti using only these methods, helping to show that the settlement of the Pacific was the result of deliberate navigation rather than accidental drifting.',
     stem: 'Which choice best states the main idea of the text?',
-    choices: [
-      'The *Hōkūle‘a* was the first canoe ever to sail from Hawai‘i to Tahiti without instruments.',
-      'Polynesian navigators relied mainly on seabirds to find land in the open ocean.',
-      'Polynesian navigators used detailed knowledge of their environment to make deliberate long-distance voyages, as a modern voyage helped demonstrate.',
-      'Historians now agree that ocean currents carried early settlers to most Pacific islands by accident.',
-    ], answer: 2,
+    choices: ['The *Hōkūle‘a* was the first canoe in history to sail the entire distance from Hawai‘i to Tahiti without navigational instruments.', 'Polynesian navigators relied mainly on the flight paths of seabirds to locate distant islands while crossing the open ocean.', 'Polynesian navigators used detailed knowledge of their environment to make deliberate long-distance voyages, as a modern voyage helped demonstrate.', 'Historians now agree that ocean currents carried early settlers to most Pacific islands by accident rather than by design.'], answer: 2,
     steps: [
       'Sentences 1–2: navigators crossed the ocean using stars, swells, and birds.',
       'Sentence 3: a modern voyage helped show the settlement was deliberate, not accidental.',
@@ -750,14 +745,9 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-cid-02', skill: 'cid', sub: 'Supporting detail', d: 'V',
-    passage: 'Many people assume that the Sahara has always been a desert. Yet rock paintings found deep in the desert show giraffes, crocodiles, and herds of cattle, and sediments from ancient lakebeds contain the bones of fish and hippopotamuses. Climate scientists explain that between about 11,000 and 5,000 years ago, small changes in Earth’s orbit strengthened the African monsoon, bringing enough rain to turn much of the region into grassland dotted with lakes.',
+    passage: 'Many people assume that the Sahara has always been a desert. Yet rock paintings discovered deep in the desert depict giraffes, crocodiles, and herds of cattle, and sediments from ancient lakebeds contain the fossilized bones of fish and hippopotamuses. Climate scientists explain that between about 11,000 and 5,000 years ago, small changes in Earth’s orbit strengthened the African monsoon, bringing enough rain to transform much of the region into grassland dotted with lakes.',
     stem: 'According to the text, what caused much of the Sahara to become grassland in the past?',
-    choices: [
-      'Herds of cattle grazing in the region gradually enriched the soil.',
-      'Changes in Earth’s orbit strengthened the African monsoon, increasing rainfall.',
-      'Rivers flowing from the region’s large lakes carried water across the desert.',
-      'Ancient people moved water across the region to support their herds of cattle.',
-    ], answer: 1,
+    choices: ['Herds of cattle grazing across the region gradually enriched the soil until grasses could grow throughout the area.', 'Changes in Earth’s orbit strengthened the African monsoon, increasing rainfall enough to turn much of the region into grassland.', 'Rivers flowing outward from the region’s large lakes carried water across the desert and allowed grasses to spread.', 'Ancient people moved water across the region in channels to support the herds of cattle that they raised there.'], answer: 1,
     steps: [
       'The question asks for a cause stated in the text.',
       'The last sentence gives it: orbital changes strengthened the monsoon, bringing rain. Choice B.',

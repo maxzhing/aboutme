@@ -288,14 +288,9 @@ export const RW_II_2: RawQuestion[] = [
   },
   {
     id: 'r-inf-04', skill: 'cid', sub: 'Inference vs assumption', d: 'H',
-    passage: 'The following text is from an original novel.\n\nWhen the letter came, Odile read it standing in the hall, then folded it along its creases and placed it in her apron pocket. At supper she asked her brother about the price of seed and laughed at the dog\'s begging. It was only later, when the lamp had been turned down and the house was quiet, that she took the letter out again, smoothed it flat upon her knee, and sat with it a long while.',
+    passage: 'The following text is from an original novel.\n\nWhen the letter came, Odile read it standing in the hall, then folded it carefully along its creases and placed it in her apron pocket. At supper she asked her brother about the price of seed, discussed the neighbors\' unfinished fences, and laughed at the dog\'s persistent begging. It was only later, when the lamp had been turned down and the household was quiet, that she took the letter out again, smoothed it flat upon her knee, and sat with it a long while, motionless and attentive.',
     stem: 'Based on the text, what can most reasonably be inferred about Odile?',
-    choices: [
-      'She has not fully understood what the letter says.',
-      'She intends to show the letter to her brother the next morning.',
-      'She regards the letter as important but chooses to keep her reaction to it private.',
-      'She finds the contents of the letter amusing.',
-    ], answer: 2,
+    choices: ['She has not fully understood what the letter says and must read it several more times to grasp its meaning.', 'She intends to show the letter to her brother the next morning, after the household has finished breakfast.', 'She regards the letter as important but chooses to keep her reaction to it private from the rest of the household.', 'She finds the contents of the letter so amusing that she cannot help laughing at supper with her brother.'], answer: 2,
     steps: [
       'In company, Odile behaves normally: she talks about seed prices and laughs at the dog, and the letter stays in her pocket.',
       'Alone, she takes it out, smooths it, and sits with it "a long while," which shows it matters to her.',
