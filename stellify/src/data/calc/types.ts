@@ -87,6 +87,12 @@ export function normalizeCalc(raw: string): string {
   const s = raw.trim().toLowerCase().replace(/\s+/g, '').replace(/−/g, '-').replace(/[$%,]/g, '');
   return KEY[s] ?? s;
 }
+const SUP: Record<string, string> = { '⁻': '-', '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9' };
+/** a number in scientific notation: 1.8e-5, 1.8E-5, 1.8x10^-5, 1.8×10⁻⁵, 1.8*10^-5 (null if it is not one) */
+export function parseSci(raw: string): number | null {
+  const s = raw.trim().replace(/\s+/g, '').replace(/−/g, '-').replace(/[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]/g, (c) => SUP[c]).replace(/^(-?\d*\.?\d+)[x×*·]10\^?/i, '$1e');
+  return /^-?\d*\.?\d+e[-+]?\d+$/i.test(s) ? Number(s) : null;
+}
 export function calcCorrect(p: CalcProblem, input: string | null, exact = false): boolean {
   if (input === null || input === '') return false;
   if (typeof p.answer === 'number') return input === String(p.answer);
@@ -96,7 +102,9 @@ export function calcCorrect(p: CalcProblem, input: string | null, exact = false)
   return p.answer.some((a) => {
     const want = normalizeCalc(a);
     if (want === got) return true;
-    const x = parseNumeric(got), y = parseNumeric(want);
+    // scientific notation (chemistry): compare to 3 significant figures
+    if (parseSci(a) !== null) { const x = parseSci(input) ?? parseNumeric(got), y = parseSci(a)!; return x !== null && Math.abs(x - y) <= 5e-3 * Math.abs(y); }
+    const x = parseNumeric(got) ?? parseSci(input), y = parseNumeric(want);
     return x !== null && y !== null && Math.abs(x - y) < 1e-3 * Math.max(1, Math.abs(y));
   });
 }

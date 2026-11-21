@@ -155,3 +155,13 @@ Each entry records what was decided, why, and the alternatives considered.
     The `solution` steps each say what to do, why, and the arithmetic in full. `trap` names the mistake that costs
     the point. Tests enforce a minimum for each, and every answer is still checked numerically. Five of the
     original free-response workouts gained a part that is harder than the exam. A bold step label may now contain math.
+40. **Every question re-checked; all hard Reading and Writing questions now reach the College Board's measured
+    level (owner request).** The owner asked that every question be checked and be College Board level before
+    any new ones are added. The 117 hard Reading and Writing questions that were below the measured bar (sentence
+    length, long-word share, answer-choice length) were rewritten in a denser academic register with their logic
+    and keys unchanged; `MAX_BELOW_BAR` is now 0, so none may fall below it again. Reading each one surfaced real
+    errors, which were fixed: a quotation question whose wrong answer was in fact also correct (Rossetti’s
+    “Up-Hill”: the line called the traveler’s question is the reassuring voice’s answer), and invented literary
+    works presented with a fake author and date (“a 1923 poem by …”), now labeled as original works. Official
+    College Board questions shown as page images can now carry the exact text of each choice (`choiceText`),
+    used where the printed image clips a fraction at its bottom edge.

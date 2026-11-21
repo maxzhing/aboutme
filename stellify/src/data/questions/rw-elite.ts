@@ -54,14 +54,9 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-coet-01', skill: 'coet', sub: 'Weakening a claim', d: 'E',
-    passage: 'Several species of migratory songbirds that breed in a northern forest region have declined sharply. Ornithologist Imre Kovács hypothesizes that the declines are caused by the loss of the birds\' wintering habitat in the tropics rather than by any change in conditions on the northern breeding grounds.',
+    passage: 'Several species of migratory songbirds that breed in a northern forest region have declined precipitously over recent decades. Ornithologist Imre Kovács hypothesizes that these declines are attributable to the destruction of the birds’ wintering habitat in the tropics rather than to any deterioration in conditions on the northern breeding grounds themselves.',
     stem: "Which finding, if true, would most directly weaken Kovács's hypothesis?",
-    choices: [
-      'The declines have been steepest among species that winter in tropical areas with the most deforestation.',
-      'Bird species that live in the northern forest region year-round have maintained stable populations.',
-      'The declines began several decades ago and have continued at a steady rate.',
-      'Populations of the same species that share those tropical wintering areas but breed in other northern regions have remained stable.',
-    ], answer: 3,
+    choices: ['The population declines have been steepest among the species that spend the winter in the tropical regions experiencing the most extensive deforestation.', 'Bird species that inhabit the northern forest region throughout the entire year, rather than migrating, have maintained relatively stable populations.', 'The population declines began several decades ago and have continued at an approximately constant rate ever since, without noticeable acceleration.', 'Populations of the same species that share those tropical wintering areas but breed in other northern regions have remained essentially stable.'], answer: 3,
     steps: [
       'The hypothesis says the cause lies in the tropics, not on the breeding grounds.',
       'To weaken it, find evidence that birds exposed to the same tropical conditions are fine unless they breed in this particular region. That would point to the breeding grounds.',
@@ -181,14 +176,9 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-ctc-01', skill: 'ctc', sub: 'Qualifying a claim', d: 'E',
-    passage: 'Text 1\nArchitectural historian Odile Marchetti argues that the builders of medieval cathedrals worked without drawn plans. Master masons, she contends, relied on geometric rules of thumb passed down orally, deriving every proportion on site with compass and straightedge.\n\nText 2\nHistorian Piers Lindqvist points to surviving "tracing floors," plaster surfaces on which masons incised full-scale designs. These drawings, he notes, record individual elements such as window tracery rather than whole buildings, and their proportions do follow simple geometric constructions of the kind passed from master to apprentice.',
+    passage: 'Text 1\nArchitectural historian Odile Marchetti argues that the builders of medieval cathedrals worked without drawn plans, contending that master masons relied instead on geometric rules of thumb transmitted orally, deriving every proportion on site with compass and straightedge.\n\nText 2\nHistorian Piers Lindqvist points to surviving “tracing floors,” plaster surfaces on which masons incised full-scale designs. These drawings, he notes, record individual elements such as window tracery rather than whole buildings, and their proportions do follow simple geometric constructions of the kind passed from master to apprentice.',
     stem: 'Based on the texts, how would Lindqvist (Text 2) most likely respond to Marchetti\'s argument in Text 1?',
-    choices: [
-      'By rejecting it entirely, since tracing floors prove that cathedrals were built from complete drawn plans',
-      'By agreeing that inherited geometric rules guided the builders while disputing the claim that they made no drawings',
-      'By accepting it without reservation, since tracing floors were not used for design',
-      'By arguing that masons learned geometry from written treatises rather than from oral instruction',
-    ], answer: 1,
+    choices: ['By rejecting it entirely, since the surviving tracing floors prove that cathedrals were constructed from complete drawn plans', 'By agreeing that inherited geometric rules guided the builders while disputing the claim that the builders made no drawings', 'By accepting it without reservation, since the tracing floors were never actually used in the process of design', 'By arguing that masons learned their geometry from written treatises rather than from oral instruction by their masters'], answer: 1,
     steps: [
       'Marchetti makes two claims: builders used orally transmitted geometric rules, and they worked without drawn plans.',
       'Lindqvist\'s evidence supports the first (proportions follow constructions "passed from master to apprentice") but complicates the second (masons did draw, though only individual elements, not whole buildings).',

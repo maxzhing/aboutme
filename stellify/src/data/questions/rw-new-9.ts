@@ -22,9 +22,9 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-coet-n11', skill: 'coet', sub: 'Illustrating a claim with a quotation', d: 'V',
-    passage: '“Field in Winter” is a 1923 poem by Thomas Avery. In the poem, the speaker suggests that a winter field, though it seems lifeless, holds life that is waiting to return.',
+    passage: '“Field in Winter” is an original poem in which the speaker crosses a frozen, snow-covered agricultural field on a gray afternoon in midwinter. In the poem, the speaker suggests that the field, although it appears completely lifeless, nonetheless harbors dormant organisms that are patiently anticipating their eventual reawakening.',
     stem: 'Which quotation from “Field in Winter” most effectively illustrates the claim?',
-    choices: ['“The fence posts lean like tired men / along the frozen ditch.”', '“Beneath the snow, the stubborn roots / are keeping count of spring.”', '“No bird sings here; the sky is white / and heavy as a stone.”', '“I cross the field and leave my tracks / for no one else to read.”'], answer: 1,
+    choices: ['“The weathered fence posts lean like tired old men / along the frozen ditch beside the winding road.”', '“Beneath the snow, the stubborn roots lie waiting, / quietly keeping count of the days till spring.”', '“No bird sings anywhere here; the sky is white / and heavy as a stone above the hills.”', '“I cross the empty field and leave my tracks / behind me for no one else to read.”'], answer: 1,
     steps: ['The claim has two parts: the field seems lifeless, and life is waiting to return.', 'Roots under the snow "keeping count of spring" show hidden life waiting for its season.'],
     why: ['This describes fence posts, not life waiting to return.', 'Correct. Hidden roots waiting for spring show life beneath the apparent lifelessness.', 'This shows only lifelessness; nothing suggests life will return.', 'This describes the speaker’s solitude, not life in the field.'],
     concept: 'A quotation must show every part of the claim, not just its mood.',
@@ -34,7 +34,7 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-coeq-n12', skill: 'coeq', sub: 'Data that supports a claim', d: 'H', figure: WATER,
-    passage: 'A water utility installed low-flow faucets and showerheads in homes across a town and compared each household’s daily water use before and after. The utility claims that the fixtures saved the most water in the largest households.',
+    passage: 'A water utility installed low-flow faucets and showerheads in residences throughout a town and compared each household’s daily water consumption before and after installation, and the utility claims that the new fixtures conserved the most water in the largest households.',
     stem: 'Which choice best describes data from the table that support the utility’s claim?',
     choices: ['Households of 5 or more people used 170 fewer liters per day after installation, compared with 30 fewer liters for households of 1–2 people.', 'Households of 5 or more people used the most water of any group both before and after installation.', 'Households of 3–4 people used 330 liters of water per day after installation.', 'Every household size used less water after the installation than it did before.'], answer: 0,
     steps: ['The claim is about savings: the drop in water use, by household size.', 'Savings are 640 − 470 = 170 liters for the largest households and 210 − 180 = 30 liters for the smallest.'],
@@ -106,9 +106,9 @@ export const RW_NEW_9: RawQuestion[] = [
   },
   {
     id: 'r-ctc-n14', skill: 'ctc', sub: 'Responding to another view', d: 'H',
-    passage: 'Text 1\nSome music educators argue that beginning students should learn to read musical notation before they are allowed to play by ear, since notation gives them a precise, lasting way to learn new pieces.\n\nText 2\nMusic teacher Rosa Delgado has her beginning students play songs by ear for their entire first year and introduces notation only afterward. She reports that her students are more likely to keep playing than students taught notation first, and that they later learn to read music without difficulty.',
+    passage: 'Text 1\nSome music educators argue that beginning students should learn to read musical notation before they are permitted to play by ear, since notation provides them with a precise, permanent method for learning unfamiliar pieces.\n\nText 2\nMusic teacher Rosa Delgado has her beginning students play songs by ear throughout their entire first year and introduces notation only afterward. She reports that her students are more likely to continue playing than students taught notation first, and that they subsequently learn to read music without difficulty.',
     stem: 'Based on the texts, how would Delgado (Text 2) most likely respond to the educators’ view in Text 1?',
-    choices: ['She would argue that delaying notation does not keep students from learning it and may help them stay motivated.', 'She would agree that notation must be taught before students play by ear.', 'She would claim that reading music is unnecessary for most musicians.', 'She would suggest that students taught by ear never learn to read music.'], answer: 0,
+    choices: ['She would argue that delaying notation does not keep students from learning it and may help them stay motivated.', 'She would agree that musical notation must be taught to beginning students before they are allowed to play by ear.', 'She would claim that learning to read musical notation is unnecessary for most people who play an instrument.', 'She would suggest that students who first learn to play by ear never manage to learn to read music.'], answer: 0,
     steps: ['Text 1 says notation should come first.', 'Delgado teaches notation later; her students keep playing and still learn notation easily.'],
     why: ['Correct. Her students learn notation later without trouble and are more likely to keep playing.', 'She does the opposite: ear first, notation later.', 'She does teach notation; she only changes when.', 'Her students "later learn to read music without difficulty."'],
     concept: 'A response can accept a goal (learning notation) while rejecting a method (notation first).',

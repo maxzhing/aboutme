@@ -73,9 +73,9 @@ export const RW_NEW_3: RawQuestion[] = [
   // ── Cross-text connections
   {
     id: 'r-ctc-n5', skill: 'ctc', sub: 'Responding to another view', d: 'V',
-    passage: 'Text 1\nSome linguists have argued that young children learn the grammar of their first language mainly by imitating, word for word, the sentences they hear adults say around them.\n\nText 2\nLinguist Amaru Quispe points out that young English-speaking children regularly produce forms they have almost certainly never heard, such as “goed” for “went” or “mouses” for “mice.” These errors, Quispe argues, show children applying rules they have worked out for themselves, not simply copying adult speech.',
+    passage: 'Text 1\nSome linguists have argued that young children acquire the grammar of their first language primarily by imitating, word for word, the sentences they hear adults produce around them.\n\nText 2\nLinguist Amaru Quispe points out that young English-speaking children regularly produce forms they have almost certainly never heard, such as “goed” for “went” or “mouses” for “mice.” These errors, Quispe argues, demonstrate children applying grammatical rules they have formulated independently rather than simply reproducing adult speech.',
     stem: 'Based on the texts, how would Quispe (Text 2) most likely respond to the linguists in Text 1?',
-    choices: ['By agreeing that imitation fully explains how children learn grammar', 'By arguing that adults often teach children incorrect forms such as “goed”', 'By noting that children’s errors reveal rule-making that imitation alone cannot explain', 'By claiming that children cannot learn grammar until they begin school'], answer: 2,
+    choices: ['By agreeing that imitation of adult speech fully explains how young children come to learn the grammar of a language', 'By arguing that adults frequently teach children incorrect grammatical forms such as “goed” in place of “went”', 'By noting that children’s grammatical errors reveal a kind of rule-making that imitation alone cannot explain', 'By claiming that children are unable to learn the grammar of their first language until they begin attending school'], answer: 2,
     steps: ['Text 1 says children learn grammar mainly by imitation.', 'Quispe offers counterevidence: children say forms adults never say, which shows them applying their own rules.'],
     why: ['Quispe argues against imitation as the full explanation.', 'Quispe’s point is that children have not heard "goed" from adults.', 'Correct. Errors like "goed" cannot come from imitation, so they show rule-making.', 'Nothing in Text 2 concerns school.'],
     concept: 'A second author often answers the first with evidence the first view cannot explain.',
@@ -99,9 +99,9 @@ export const RW_NEW_3: RawQuestion[] = [
   // ── Command of evidence: textual
   {
     id: 'r-coet-n3', skill: 'coet', sub: 'Supporting a claim', d: 'H',
-    passage: 'Biologist Rafael Ortiz hypothesizes that a desert lizard species changes color to control its body temperature, turning darker in the cool morning to absorb heat and lighter at midday to reflect it.',
+    passage: 'Biologist Rafael Ortiz hypothesizes that a desert lizard species alters its coloration to regulate its body temperature, becoming darker during the cool early morning to absorb additional heat and becoming lighter at midday to reflect excessive sunlight.',
     stem: 'Which finding, if true, would most directly support Ortiz’s hypothesis?',
-    choices: ['The lizards are darker in color than most other lizard species in the same desert.', 'Predators spot dark lizards more easily against the pale desert sand.', 'Lizards kept in a warm enclosure all day stayed light, while those in a cool enclosure stayed dark.', 'The lizards change color quickly whenever a predator approaches them.'], answer: 2,
+    choices: ['The lizards of this species are considerably darker in overall coloration than most other lizard species inhabiting the same desert.', 'Predatory birds detect dark-colored lizards much more readily than light-colored lizards against the pale desert sand.', 'Lizards kept in a warm enclosure throughout the entire day remained light, whereas those kept in a cool enclosure remained dark.', 'The lizards change color rapidly whenever a predator approaches them, a response that ends once the predator has departed.'], answer: 2,
     steps: ['The hypothesis links color to temperature: dark when cool, light when warm.', 'Support must show color following temperature, with other factors held constant.'],
     why: ['Comparing this species with others says nothing about whether its color changes with temperature.', 'This is about camouflage, a different explanation, and does not test temperature.', 'Correct. Color tracked temperature even when the time of day was not changing.', 'This links color change to predators, an alternative explanation, not to temperature.'],
     concept: 'Supporting a "because of X" hypothesis means showing the effect follows X when other causes are ruled out.',
@@ -124,9 +124,9 @@ export const RW_NEW_3: RawQuestion[] = [
   // ── Command of evidence: quantitative
   {
     id: 'r-coeq-n4', skill: 'coeq', sub: 'Completing an example with data', d: 'H', figure: NET,
-    passage: 'A researcher studying national survey data argues that the gap in home internet access between urban and rural households narrowed between 2000 and 2020. For example, ______',
+    passage: 'A researcher analyzing national survey data argues that the disparity in home internet access between urban and rural households narrowed substantially between 2000 and 2020, even though rural households continued to lag behind throughout the period; for example, ______',
     stem: 'Which choice most effectively uses data from the table to complete the example?',
-    choices: ['urban access rose from 45% of households in 2000 to 92% in 2020.', 'rural access was lower than urban access in every year shown in the table.', 'the gap fell from 20 percentage points in 2000 to 12 percentage points in 2020.', 'the gap was 20 percentage points in both 2000 and 2010.'], answer: 2,
+    choices: ['urban access increased from 45 percent of households in 2000 to 92 percent of households in 2020.', 'rural access remained lower than urban access in every one of the years shown in the table.', 'the gap between urban and rural access fell from 20 percentage points in 2000 to 12 percentage points in 2020.', 'the gap between urban and rural access remained at 20 percentage points in both 2000 and 2010.'], answer: 2,
     steps: ['The claim is about the gap narrowing from 2000 to 2020.', 'Gap in 2000: 45 − 25 = 20 points. Gap in 2020: 92 − 80 = 12 points. It narrowed.'],
     why: ['This describes only urban households; it says nothing about the gap.', 'True, but a persistent gap does not show that it narrowed.', 'Correct. The gap shrank from 20 to 12 percentage points.', 'True, but it shows no narrowing in that period, so it does not support the claim.'],
     concept: 'A claim about a gap needs both groups, compared at two times.',

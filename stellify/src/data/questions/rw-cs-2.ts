@@ -313,14 +313,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-ctc-02', skill: 'ctc', sub: 'How one author would respond', d: 'H',
-    passage: 'Text 1\nThe decline of the handwritten letter is often mourned as the loss of a uniquely thoughtful form of communication. Letters, critics say, demanded time and reflection; a message that took days to arrive was composed with a care that instant messages rarely receive.\n\nText 2\nHistorian Edgar Villanueva has read thousands of ordinary nineteenth-century letters and finds most of them hasty and formulaic: remarks on the weather, apologies for not writing sooner, lists of who was ill. The reflective letter, he suggests, was always the exception; we remember it because those were the letters that families saved.',
+    passage: 'Text 1\nThe decline of the handwritten letter is frequently mourned as the disappearance of a uniquely thoughtful form of communication. Letters, critics maintain, demanded time and reflection; a message that took days to arrive was composed with a deliberateness that instant messages rarely receive.\n\nText 2\nHistorian Edgar Villanueva has read thousands of ordinary nineteenth-century letters and finds most of them hasty and formulaic: remarks on the weather, apologies for not writing sooner, lists of who was ill. The reflective letter, he suggests, was always the exception; we remember it because those were the letters that families saved.',
     stem: 'Based on the texts, Villanueva (Text 2) would most likely say that the critics described in Text 1',
-    choices: [
-      'underestimate how long letters once took to reach their recipients.',
-      'are correct that instant messages are composed with great care.',
-      'overlook the fact that some people still write letters by hand.',
-      'base their view on an unrepresentative set of letters that survived because they were exceptional.',
-    ], answer: 3,
+    choices: ['underestimate how long handwritten letters once took to travel from their writers to their intended recipients in distant places.', 'are correct that instant messages, despite the speed with which they are sent, are generally composed with great care and reflection.', 'overlook the fact that a considerable number of people continue to write and send letters by hand even today.', 'base their view on an unrepresentative set of letters that survived precisely because those particular letters were exceptional.'], answer: 3,
     steps: [
       'Text 1\'s critics believe letters in general were thoughtful and carefully composed.',
       'Villanueva finds most ordinary letters were hasty and formulaic, and says thoughtful ones are remembered because they were the ones kept.',
@@ -339,14 +334,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-ctc-03', skill: 'ctc', sub: 'Agreement and disagreement', d: 'H',
-    passage: 'Text 1\nBiologists have traditionally explained the zebra\'s stripes as camouflage: in tall grass or in a moving herd, the pattern is thought to make an individual animal hard for predators to pick out.\n\nText 2\nA team led by Tunde Bakare tested horses wearing striped, black, or white coats and found that biting flies landed far less often on the striped coats; the flies seemed unable to slow down properly as they approached the stripes. Bakare also notes that lions do not appear to have any more difficulty catching zebras than catching other prey of similar size.',
+    passage: 'Text 1\nBiologists have traditionally explained the zebra’s distinctive stripes as camouflage: in tall grass or in a moving herd, the pattern is thought to make an individual animal considerably harder for predators to distinguish from its companions.\n\nText 2\nA team led by Tunde Bakare tested horses wearing striped, black, or white coats and found that biting flies landed far less often on the striped coats; the flies seemed unable to decelerate properly as they approached the stripes. Bakare also notes that lions do not appear to have any more difficulty catching zebras than catching other prey of similar size.',
     stem: 'Based on the texts, how would Bakare\'s team (Text 2) most likely respond to the explanation presented in Text 1?',
-    choices: [
-      'By suggesting that stripes are better explained as protection against biting flies than as camouflage from predators',
-      'By arguing that stripes serve no useful function for zebras',
-      'By claiming that camouflage and protection from flies are equally well supported explanations',
-      'By asserting that horses and zebras are too different for the comparison to be meaningful',
-    ], answer: 0,
+    choices: ['By suggesting that the stripes are better explained as protection against biting flies than as camouflage from predators', 'By arguing that the stripes serve no useful function for zebras, whether in protecting them from predators or from insects', 'By claiming that the camouflage explanation and the protection-from-flies explanation are equally well supported by the evidence', 'By asserting that horses and zebras differ too much for an experiment using horses to reveal anything about zebras'], answer: 0,
     steps: [
       'Text 1: stripes are camouflage against predators.',
       'Text 2 gives evidence for a different function (flies avoid landing on stripes) and evidence against camouflage (lions catch zebras as easily as other prey).',
@@ -365,14 +355,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-ctc-04', skill: 'ctc', sub: 'Relationships between passages', d: 'H',
-    passage: 'Text 1\nOpen-plan offices were designed to encourage collaboration. Without walls and doors, the reasoning went, employees would talk to one another more often, and ideas would circulate freely.\n\nText 2\nWhen organizational researcher Leena Abadi tracked employees before and after their company moved to an open-plan layout, she found that face-to-face conversations dropped sharply while electronic messages increased. Workers, she observed, wore headphones and avoided eye contact to preserve some sense of privacy.',
+    passage: 'Text 1\nOpen-plan offices were designed to encourage collaboration among employees, since without walls and doors, the reasoning went, coworkers would converse with one another more often and ideas would circulate freely throughout the organization.\n\nText 2\nWhen organizational researcher Leena Abadi tracked employees before and after their company moved to an open-plan layout, she found that face-to-face conversations dropped sharply while electronic messages increased. Workers, she observed, wore headphones and avoided eye contact to preserve some sense of privacy.',
     stem: "Based on the texts, which choice best describes how Text 2 relates to Text 1?",
-    choices: [
-      'Text 2 offers a historical explanation for the trend described in Text 1.',
-      'Text 2 provides additional support for the reasoning described in Text 1.',
-      'Text 2 presents findings that challenge the assumption described in Text 1.',
-      'Text 2 proposes a solution to the problem identified in Text 1.',
-    ], answer: 2,
+    choices: ['Text 2 offers a historical explanation for how the workplace trend described in Text 1 originally developed over time.', 'Text 2 provides additional evidence that supports the reasoning about open-plan offices that is described in Text 1.', 'Text 2 presents research findings that directly challenge the central assumption about open-plan offices described in Text 1.', 'Text 2 proposes a practical solution to the workplace problem that is identified and explained in Text 1.'], answer: 2,
     steps: [
       'Text 1 states an assumption: removing walls makes employees talk more.',
       'Text 2 reports what happened: face-to-face conversation fell, and workers sought privacy.',
@@ -391,14 +376,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-ctc-05', skill: 'ctc', sub: 'How one author would respond', d: 'H',
-    passage: 'Text 1\nLiterary scholar Anneliese Roth argues that translations of poetry should preserve the original\'s meter and rhyme whenever possible. A poem\'s sound, she contends, is inseparable from its meaning, and a translation that abandons form delivers only a paraphrase.\n\nText 2\nTranslator Dev Malhotra holds that attempts to reproduce rhyme and meter in another language almost always force the translator to distort what the poem says. He prefers unrhymed versions that follow the original\'s imagery and sense closely, on the principle that readers are best served by fidelity to content.',
+    passage: 'Text 1\nLiterary scholar Anneliese Roth argues that translations of poetry should preserve the original’s meter and rhyme whenever possible. A poem’s sound, she contends, is inseparable from its meaning, and a translation that abandons form delivers only a paraphrase.\n\nText 2\nTranslator Dev Malhotra maintains that attempts to reproduce rhyme and meter in another language almost invariably force the translator to distort what the poem actually says. He prefers unrhymed versions that follow the original’s imagery and sense closely, on the principle that readers are best served by fidelity to content.',
     stem: 'Based on the texts, how would Malhotra (Text 2) most likely respond to Roth\'s claim in Text 1 that a translation that abandons form "delivers only a paraphrase"?',
-    choices: [
-      'By agreeing that a poem\'s imagery matters less than its sound',
-      'By arguing that preserving form usually comes at the cost of accurately conveying what the poem says',
-      'By claiming that rhyme is easier to reproduce in translation than meter is',
-      'By suggesting that poetry should not be translated at all',
-    ], answer: 1,
+    choices: ['By agreeing with Roth that a poem’s imagery ultimately matters less to readers than its sound does', 'By arguing that preserving a poem’s form usually comes at the cost of accurately conveying what the poem says', 'By claiming that rhyme is considerably easier than meter for a translator to reproduce in another language', 'By suggesting that poetry, because its sound cannot be preserved, should not be translated into other languages at all'], answer: 1,
     steps: [
       'Roth: giving up form loses something essential.',
       'Malhotra: trying to keep rhyme and meter "almost always force[s] the translator to distort what the poem says," so he puts content first.',
@@ -417,14 +397,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-ctc-06', skill: 'ctc', sub: 'How one author would respond', d: 'V',
-    passage: 'Text 1\nEconomists who study innovation often emphasize the lone inventor. Patent records, they note, typically list one or two names, and popular histories celebrate individuals whose single insight changed an industry.\n\nText 2\nHistorian of technology Mireille Okonjo argues that patent records are a poor guide to how inventions actually arise. Reconstructing the development of the sewing machine, she shows that its key mechanisms were devised by more than a dozen people over decades, many of whom never filed a patent. The individual credited as "the inventor" was typically the one who combined existing parts—or who won the lawsuit.',
+    passage: 'Text 1\nEconomists who study innovation frequently emphasize the solitary inventor, observing that patent records typically list only one or two names and that popular histories celebrate individuals whose single insight transformed an entire industry.\n\nText 2\nHistorian of technology Mireille Okonjo argues that patent records are a poor guide to how inventions actually arise. Reconstructing the development of the sewing machine, she shows that its key mechanisms were devised by more than a dozen people over decades, many of whom never filed a patent. The individual credited as “the inventor” was typically the one who combined existing parts—or who won the lawsuit.',
     stem: 'Based on the texts, Okonjo (Text 2) would most likely characterize the evidence cited by the economists in Text 1 as',
-    choices: [
-      'misleading, because it records who received legal credit rather than who contributed to an invention.',
-      'persuasive, because it shows that most inventions are the work of one or two people.',
-      'outdated, because patent law has changed since the sewing machine was invented.',
-      'incomplete, because it does not take popular histories into account.',
-    ], answer: 0,
+    choices: ['misleading, because it records who received legal credit for an invention rather than everyone who actually contributed to developing it.', 'persuasive, because it demonstrates that most important inventions are the work of only one or two talented individuals.', 'outdated, because patent law has changed considerably in the many decades since the sewing machine was first invented and patented.', 'incomplete, because it fails to take into account the popular histories that celebrate the achievements of individual inventors.'], answer: 0,
     steps: [
       'The economists\' evidence: patent records list one or two names.',
       'Okonjo: patent records are "a poor guide"; many contributors never filed, and the credited person was often the one who combined parts "or who won the lawsuit."',
@@ -445,12 +420,7 @@ export const RW_CS_2: RawQuestion[] = [
     id: 'r-ctc-07', skill: 'ctc', sub: 'Qualifying a claim', d: 'V',
     passage: 'Text 1\nSleep researchers have long recommended that adults get about eight hours of uninterrupted sleep each night. Waking for long periods in the middle of the night is generally classified as a sleep disorder.\n\nText 2\nDrawing on diaries, court records, and medical texts from preindustrial Europe, historian Bertrand Lacroix finds frequent references to a "first sleep" and a "second sleep" separated by an hour or more of quiet wakefulness, during which people prayed, talked, or tended fires. Lacroix suggests that consolidated sleep may be a product of artificial lighting rather than a biological norm.',
     stem: 'Based on the texts, how would Lacroix (Text 2) most likely view the classification mentioned in the last sentence of Text 1?',
-    choices: [
-      'As a conclusion that the historical records he studied confirm',
-      'As proof that people in preindustrial Europe suffered from widespread sleep disorders',
-      'As a judgment that applies only to people who use no artificial lighting',
-      'As possibly treating a sleep pattern that was once ordinary as if it were abnormal',
-    ], answer: 3,
+    choices: ['As a conclusion that the historical records he studied from preindustrial Europe generally tend to confirm rather than contradict', 'As proof that many people living in preindustrial Europe suffered from widespread and persistent disorders that disrupted their sleep', 'As a judgment that applies only to people who live without any regular access to artificial lighting in their homes', 'As possibly treating a sleep pattern that was once entirely ordinary in human history as if it were abnormal'], answer: 3,
     steps: [
       'Text 1: waking for a long period at night is classified as a disorder.',
       'Lacroix: historically, sleeping in two segments with a waking period between was common, and unbroken sleep "may be a product of artificial lighting rather than a biological norm."',
@@ -469,14 +439,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-ctc-08', skill: 'ctc', sub: 'How one author would respond', d: 'V',
-    passage: 'Text 1\nAstronomers searching for life beyond Earth have concentrated on planets in the "habitable zone," the range of distances from a star at which liquid water could exist on a planet\'s surface. A planet outside this zone, the reasoning goes, would be too hot or too cold to support life.\n\nText 2\nPlanetary scientist Irina Volkov points out that several moons of Jupiter and Saturn, far outside the Sun\'s habitable zone, appear to hold vast oceans beneath their icy crusts, kept liquid by heat generated as the moons are flexed by their planets\' gravity. Volkov argues that limiting the search to worlds warmed by starlight risks overlooking some of the most promising candidates.',
+    passage: 'Text 1\nAstronomers searching for life beyond Earth have concentrated on planets in the “habitable zone,” the range of distances from a star at which liquid water could exist on a planet’s surface. A planet outside this zone, the reasoning goes, would be too hot or too cold to support life.\n\nText 2\nPlanetary scientist Irina Volkov points out that several moons of Jupiter and Saturn, far outside the Sun’s habitable zone, appear to hold vast oceans beneath their icy crusts, kept liquid by heat generated as the moons are flexed by their planets’ gravitational pull. Volkov argues that restricting the search to worlds warmed by starlight risks overlooking some of the most promising candidates.',
     stem: 'Based on the texts, Volkov (Text 2) would most likely say that the approach described in Text 1',
-    choices: [
-      'correctly identifies the only places where liquid water can exist.',
-      'overestimates the number of planets that lie within habitable zones.',
-      'relies on too narrow a view of where liquid water can be found.',
-      'should give priority to planets that are closer to their stars.',
-    ], answer: 2,
+    choices: ['correctly identifies the only places in the universe where liquid water, and therefore life, could possibly exist.', 'overestimates the number of planets in the galaxy that actually lie within the habitable zones of their stars.', 'relies on too narrow a view of the places in the solar system and beyond where liquid water can be found.', 'should give greater priority to planets that orbit much closer to their stars than Earth orbits the Sun.'], answer: 2,
     steps: [
       'Text 1\'s approach: look only where starlight allows liquid water on a planet\'s surface.',
       'Volkov: moons far outside that zone seem to have liquid oceans under ice, heated by gravitational flexing, so the starlight-only focus "risks overlooking" good candidates.',
@@ -495,14 +460,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-ctc-09', skill: 'ctc', sub: 'Agreement and disagreement', d: 'V',
-    passage: 'Text 1\nPsychologist Greta Lindqvist argues that willpower functions like a muscle that tires with use: after resisting one temptation, people have less capacity to resist the next. In her experiments, participants who first had to resist eating cookies gave up sooner on a difficult puzzle than participants who had not.\n\nText 2\nPsychologist Arun Bhatt has found that the fatigue effect Lindqvist describes appears mainly in people who believe that willpower is limited. Participants who were told that exerting self-control is energizing showed no decline on a second task. Bhatt concludes that what looks like a depleted resource may instead reflect people\'s expectations.',
+    passage: 'Text 1\nPsychologist Greta Lindqvist argues that willpower functions like a muscle that tires with use: after resisting one temptation, people have diminished capacity to resist the next. In her experiments, participants who first had to resist eating cookies abandoned a difficult puzzle sooner than participants who had not.\n\nText 2\nPsychologist Arun Bhatt has found that the fatigue effect Lindqvist describes appears primarily in people who believe that willpower is limited, since participants who were told that exerting self-control is energizing showed no decline on a second task. Bhatt concludes that what looks like a depleted resource may instead reflect people’s expectations.',
     stem: 'Based on the texts, Lindqvist and Bhatt would most likely agree with which statement?',
-    choices: [
-      'Under some conditions, people perform worse on a task requiring self-control after completing an earlier one.',
-      'Willpower is a physical resource that is used up whenever it is exerted.',
-      'People\'s beliefs about willpower have no influence on their self-control.',
-      'The decline in performance on a second task cannot be reliably measured.',
-    ], answer: 0,
+    choices: ['Under some conditions, people perform worse on a task requiring self-control after completing an earlier task that required it.', 'Willpower is a physical resource that is inevitably used up, at least partially, whenever a person exerts it.', 'People’s beliefs about the nature of willpower have no meaningful influence on their capacity for self-control.', 'The decline in performance on a second self-control task cannot be reliably measured in laboratory experiments.'], answer: 0,
     steps: [
       'Lindqvist observed that performance dropped after an earlier act of self-control.',
       'Bhatt says this effect "appears mainly in people who believe that willpower is limited." So he accepts that it occurs, but only under some conditions.',

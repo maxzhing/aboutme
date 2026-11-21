@@ -79,6 +79,8 @@ export interface Question extends Omit<RawQuestion, 'd' | 'time'> {
   created: string;
   /** official College Board question kept as the exact page image (math, tables, graphs, underlining) */
   image?: string;
+  /** for an image question: the exact text of each choice, shown beside "Choice A" etc. */
+  choiceText?: string[];
   rationaleImage?: string;
   official?: boolean;
   /** College Board difficulty rating for official questions (estimated from position for full practice tests) */

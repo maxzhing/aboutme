@@ -12,6 +12,8 @@ export interface PackItem {
   choices: string[]; answer: number | string[]; why: string[]; note?: string; notes?: string[];
   /** questions imported in the app keep the exact page image for math, tables, graphs and underlining */
   image?: string; rationaleImage?: string; rationale?: string; imported?: number;
+  /** for an image question: each choice's exact text, shown beside the choice when the printed image clips it */
+  choiceText?: string[];
   /** where the question comes from, e.g. "SAT Practice Test 4 · Math Module 1 · Question 13" */
   source?: string;
   /** the full practice test this question belongs to (see FullTest) */

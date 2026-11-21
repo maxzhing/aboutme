@@ -239,7 +239,7 @@ export const RW_BREADTH: RawQuestion[] = [
   {
     id: 'r-br-coeq-01', skill: 'coeq', sub: 'Completing an example with data', d: 'H',
     figure: { kind: 'table', title: 'Visitors to Three Regional Art Museums (thousands)', headers: ['Museum', '2019', '2021', '2023'], rows: [['Harbor Museum', 210, 95, 230], ['Valley Arts Center', 140, 120, 150], ['Northgate Gallery', 88, 40, 61]] },
-    passage: 'Many museums lost visitors during 2020 and 2021 and have since worked to win them back. Arts administrator Lena Osei notes that recovery among the three regional museums she studies has been uneven: one now draws more visitors than it did in 2019, while another remains well below its 2019 level. For example, ______',
+    passage: 'Numerous museums lost substantial numbers of visitors during 2020 and 2021 and have since endeavored to attract them back, but arts administrator Lena Osei observes that the recovery among the three regional institutions she studies has been remarkably uneven, with one museum now attracting more visitors than it did in 2019 while another remains considerably below its 2019 attendance. For example, ______',
     stem: 'Which choice most effectively uses data from the table to complete the example?',
     choices: [
       'the Harbor Museum drew 230,000 visitors in 2023, up from 210,000 in 2019, while the Northgate Gallery drew 61,000, down from 88,000.',
@@ -265,25 +265,15 @@ export const RW_BREADTH: RawQuestion[] = [
   },
   {
     id: 'r-br-coet-01', skill: 'coet', sub: 'Quotation illustrating a claim', d: 'H',
-    passage: '"Up-Hill" is an 1862 poem by Christina Rossetti in which a traveler asks a series of questions about a difficult journey and another voice answers them. A student claims that the poem’s answers are reassuring: although the journey is hard, the traveler will find rest and welcome at its end.',
+    passage: '“Up-Hill” is an 1862 poem by Christina Rossetti in which a weary traveler poses a series of anxious questions about an arduous journey, and another, unidentified voice answers each of them in turn. A student claims that the poem’s answers are fundamentally reassuring: although the journey is undeniably difficult, the traveler will ultimately find rest and welcome at its conclusion.',
     stem: 'Which quotation from "Up-Hill" most effectively illustrates the claim?',
-    choices: [
-      '"Does the road wind up-hill all the way? / Yes, to the very end."',
-      '"Will there be beds for me and all who seek? / Yea, beds for all who come."',
-      '"Will the day\'s journey take the whole long day? / From morn to night, my friend."',
-      '"But is there for the night a resting-place? / A roof for when the slow dark hours begin."',
-    ],
+    choices: ['“Does the road wind up-hill all the way? / Yes, to the very end. / Will the day’s journey take the whole long day? / From morn to night, my friend.”', '“Shall I find comfort, travel-sore and weak? / Of labour you shall find the sum. / Will there be beds for me and all who seek? / Yea, beds for all who come.”', '“Shall I meet other wayfarers at night? / Those who have gone before.”', '“May not the darkness hide it from my face?”'],
     answer: 1,
     steps: [
       'The claim has two parts: the answers are reassuring, and they promise rest and welcome at the journey’s end.',
       'Choice B answers a question about rest with a promise of "beds for all who come": rest and welcome.',
     ],
-    why: [
-      'This answer confirms that the journey is hard, but it offers no reassurance about rest or welcome.',
-      'Correct. The answer promises a place to rest for everyone who arrives.',
-      'This answer confirms that the journey is long, not that it ends in rest.',
-      'These lines are both part of the traveler’s question, so they contain no reassuring answer.',
-    ],
+    why: ['These answers confirm that the journey is steep and lasts the whole day. They stress its difficulty and offer no promise of rest or welcome.', 'Correct. The voice promises the weary traveler comfort and “beds for all who come”: rest and welcome at the journey’s end, which is exactly the reassurance the claim describes.', 'The answer promises company on the road, but it says nothing about rest or welcome at the end of the journey.', 'This line is only the traveler’s anxious question. It contains no answer at all, so it cannot show that the answers are reassuring.'],
     concept: 'A quotation must illustrate every part of the claim, not just its topic.',
     strategy: 'Split the claim into parts and check each quotation for all of them.',
     trap: 'Choosing D because it mentions a "resting-place": the lines only ask about rest; they do not promise it.',
@@ -291,7 +281,7 @@ export const RW_BREADTH: RawQuestion[] = [
   },
   {
     id: 'r-br-ctc-01', skill: 'ctc', sub: 'Responding to another view', d: 'V',
-    passage: "Text 1\nMany readers assume that Mary Shelley's *Frankenstein* (1818) warns against scientific ambition itself. Victor Frankenstein's experiment, on this reading, is the novel's central mistake: had he never pursued forbidden knowledge, no one would have been harmed.\n\nText 2\nLiterary scholar Inés Calder argues that the novel's real failure is not Victor's experiment but what follows it. Victor abandons the creature he made, refusing it any care or guidance, and the creature turns to violence only after it has been rejected again and again.",
+    passage: 'Text 1\nMany readers assume that Mary Shelley’s *Frankenstein* (1818) warns against scientific ambition itself, and according to this interpretation, Victor Frankenstein’s experiment constitutes the novel’s central mistake: had he never pursued forbidden knowledge, nobody would have been harmed.\n\nText 2\nLiterary scholar Inés Calder argues that the novel’s genuine failure is not Victor’s experiment but what follows it. Victor abandons the creature he made, refusing it any care or guidance whatsoever, and the creature turns to violence only after it has been rejected repeatedly by everyone it encounters.',
     stem: 'Based on the texts, how would Calder (Text 2) most likely respond to the reading described in Text 1?',
     choices: [
       "She would argue that it places the novel's central mistake in the wrong spot, since the harm follows from Victor's abandonment of the creature rather than from the experiment.",

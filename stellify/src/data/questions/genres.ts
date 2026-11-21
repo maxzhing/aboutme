@@ -52,7 +52,7 @@ export const GENRE_TAGS: Record<string, Genre> = {
   'r-bnd-n9': 'humanities', 'r-tra-n8': 'science', 'r-wic-n9': 'history-social', 'r-fss-n12': 'science',
   'r-coeq-n5': 'history-social', 'r-coeq-n6': 'science', 'r-wic-n7': 'science', 'r-syn-n6': 'science',
   'r-syn-n1': 'science', 'r-bnd-n2': 'history-social', 'r-bnd-n3': 'science', 'r-fss-n2': 'science',
-  'r-coet-02': 'literature',
+  'r-coet-02': 'literature', 'r-coet-n24': 'literature',
   'r-coeq-02': 'history-social',
   'r-inf-09': 'history-social',
   'r-wic-01': 'history-social',

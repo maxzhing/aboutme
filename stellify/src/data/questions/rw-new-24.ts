@@ -11,7 +11,7 @@ const LIBRARY: Figure = { kind: 'table', title: 'Percentage of Surveyed Resident
 export const RW_NEW_24: RawQuestion[] = [
   {
     id: 'r-cid-n27', skill: 'cid', sub: 'Main idea', d: 'V',
-    passage: 'The following text is from a 1920 short story.\n\nTheo had spent the whole morning rehearsing what he would say to his employer, polishing each sentence until it gleamed with reasonableness. Yet when Mr. Pryce at last looked up from his ledger and asked what he wanted, Theo heard himself inquiring about the weather, and he walked back to his desk with the speech still folded, unread, inside him.',
+    passage: 'The following text is from an original short story set in the 1920s.\n\nTheo had spent the whole morning rehearsing what he would say to his employer, polishing each sentence until it gleamed with reasonableness. Yet when Mr. Pryce at last looked up from his ledger and asked what he wanted, Theo heard himself inquiring about the weather, and he walked back to his desk with the speech still folded, unread, inside him.',
     stem: 'Which choice best states the main idea of the text?',
     choices: ['After careful reflection, Theo decides that his complaint against his employer is not worth raising after all.', 'Theo’s careful preparation fails him when he loses his nerve at the very moment he faces his employer.', 'Mr. Pryce discourages Theo from speaking by seeming far too busy with his ledger to listen to anyone.', 'Theo rehearses his speech so many times that he forgets what he had originally meant to say to Mr. Pryce.'], answer: 1,
     steps: ['Sentence 1: Theo prepares carefully. "Yet": when the moment comes, he talks about the weather instead.', 'The speech stays "folded, unread, inside him": he lost his nerve.'],
@@ -23,7 +23,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-coet-n26', skill: 'coet', sub: 'Illustrating a claim with a quotation', d: 'V',
-    passage: 'In Nadia Rahimi’s 1987 novel The Salt Year, the narrator recalls her grandmother, who lived in a distant village. Throughout the novel, the grandmother is characterized as someone who expresses her love through practical acts rather than through words.',
+    passage: 'In the original novel *The Salt Year*, the narrator recalls her grandmother, who lived alone in a distant mountain village, and throughout the novel the grandmother is characterized as someone who expresses her affection through practical acts rather than through words.',
     stem: 'Which quotation from The Salt Year most effectively illustrates the claim?',
     choices: ['“My grandmother told me often, and in front of anyone who would listen, that I was the dearest thing she had.”', '“She kept a garden behind the house, and every summer the tomatoes there grew taller than I was.”', '“She never wrote that she missed me, but each letter came with a sweater she had knit for the child she imagined I had become.”', '“When she was angry, my grandmother would go silent for days at a time, speaking to no one in the house.”'], answer: 2,
     steps: ['The claim: love shown by deeds, not words.', 'Only one quotation pairs an absence of affectionate words with an affectionate act (the knitted sweater).'],
@@ -35,7 +35,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-coeq-n27', skill: 'coeq', sub: 'Data that supports a claim', d: 'H', figure: LIBRARY,
-    passage: 'A city library surveyed residents about which of its services they had used in the past year. A library analyst claims that use of e-book lending declines with age, while use of in-person book lending increases with age.',
+    passage: 'A municipal library surveyed residents about which of its services they had used during the previous year, grouping respondents into three age categories. A library analyst contends that utilization of e-book lending declines with age, whereas utilization of traditional in-person book lending increases correspondingly with age.',
     stem: 'Which choice best describes data from the table that support the analyst’s claim?',
     choices: ['E-book lending fell from 62% to 48% to 31% across the age groups, while in-person lending rose from 38% to 51% to 66%.', 'Online databases were used by 45% of residents aged 18–34 but by only 22% of residents aged 55 and older.', 'Residents aged 35–54 used in-person book lending (51%) slightly more than they used e-book lending (48%).', 'In every age group, a greater percentage of residents used e-book lending than used the online databases.'], answer: 0,
     steps: ['The claim has two trends: e-book use falls with age, in-person use rises with age.', 'E-books: 62 → 48 → 31. In-person: 38 → 51 → 66. Only one choice gives both trends.'],
@@ -119,7 +119,7 @@ export const RW_NEW_24: RawQuestion[] = [
   },
   {
     id: 'r-ctc-n37', skill: 'ctc', sub: 'Responding with evidence', d: 'V',
-    passage: 'Text 1\nMany transportation planners have argued that adding lanes to congested highways reduces traffic delays. By increasing the number of vehicles a road can carry at once, they reason, wider highways allow drivers to reach their destinations more quickly.\n\nText 2\nStudying cities across the United States, economists Gilles Duranton and Matthew Turner found that the total distance driven on highways rose almost in direct proportion to the expansion of those highways. New lanes attracted new driving, leaving congestion largely unchanged.',
+    passage: 'Text 1\nMany transportation planners have argued that adding lanes to congested highways reduces traffic delays, reasoning that by increasing the number of vehicles a road can accommodate simultaneously, wider highways allow drivers to reach their destinations more quickly.\n\nText 2\nStudying cities across the United States, economists Gilles Duranton and Matthew Turner found that the total distance driven on highways increased almost in direct proportion to the expansion of those highways. New lanes attracted new driving, leaving congestion largely unchanged.',
     stem: 'Based on the texts, how would Duranton and Turner (Text 2) most likely respond to the planners’ argument in Text 1?',
     choices: ['They would argue that added lanes tend to attract enough new driving to cancel the expected reduction in congestion.', 'They would agree that added lanes reduce congestion but argue that the benefits take many years to appear.', 'They would argue that congestion is caused mainly by poor road design rather than by the amount of driving.', 'They would claim that widening highways leads many drivers to switch to public transportation instead.'], answer: 0,
     steps: ['Text 1: more lanes → less delay.', 'Text 2: driving grew with lane capacity, so congestion stayed about the same. They would say new lanes fill up.'],

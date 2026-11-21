@@ -281,7 +281,7 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-coet-03', skill: 'coet', sub: 'Supporting a claim', d: 'H',
-    passage: 'Psychologists have long observed that people remember information better when they expect to teach it to someone else. Researcher Min-jun Seo suspects that the benefit arises not from extra study time but from the way learners organize the material: people preparing to teach, Seo hypothesizes, concentrate on how the main ideas connect rather than on isolated details.',
+    passage: 'Psychologists have long documented a curious phenomenon: people remember information considerably better when they anticipate teaching it to someone else. Researcher Min-jun Seo suspects that this advantage originates not from additional study time but from the way learners structure the material, hypothesizing that individuals preparing to teach concentrate on the relationships connecting the principal ideas rather than on isolated, disconnected details.',
     stem: 'Which finding, if true, would most directly support Seo\'s hypothesis?',
     choices: [
       'Participants who expected to teach a passage spent nearly twice as long studying it as participants who expected to be tested on it.',
@@ -307,14 +307,9 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-coet-04', skill: 'coet', sub: 'Weakening a claim', d: 'H',
-    passage: 'Archaeologist Farid Haddad argues that a set of clay tokens found at a 5,000-year-old settlement was used for record keeping by traders who passed through seasonally, rather than by the settlement\'s permanent residents. Haddad notes that the tokens were found only near the settlement\'s outer gate, where visiting caravans would have camped.',
+    passage: 'Archaeologist Farid Haddad argues that a collection of clay tokens recovered from a 5,000-year-old settlement was used for record keeping by itinerant traders who passed through seasonally, rather than by the settlement’s permanent residents. Haddad emphasizes that the tokens were discovered exclusively near the settlement’s outer gate, precisely where visiting caravans would have established their temporary encampments.',
     stem: 'Which finding, if true, would most directly weaken Haddad\'s argument?',
-    choices: [
-      'Tokens of a similar kind have been found at other settlements along the same trade route.',
-      'The tokens found near the gate are of several different shapes and sizes.',
-      'The tokens bear markings that appear to correspond to quantities of grain.',
-      'Further excavation uncovers large numbers of identical tokens inside permanent houses throughout the settlement.',
-    ], answer: 3,
+    choices: ['Tokens resembling those near the gate have been recovered at several other settlements located along the same long-distance trade route.', 'The tokens discovered near the outer gate exhibit a considerable variety of shapes and sizes rather than a single standardized form.', 'The tokens bear incised markings that appear to correspond to particular quantities of grain, suggesting that they recorded agricultural transactions.', 'Further excavation uncovers large numbers of identical tokens inside permanent houses distributed throughout the settlement, far from the outer gate.'], answer: 3,
     steps: [
       'Haddad\'s conclusion: visiting traders, not residents, used the tokens. His evidence: the tokens were found only near the outer gate, where visitors camped.',
       'To weaken the argument, attack the evidence: show the tokens were not confined to the gate area or that they were connected to residents.',
@@ -333,14 +328,9 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-coet-05', skill: 'coet', sub: 'Illustrating a claim with a quotation', d: 'H',
-    passage: 'In the original poem "Low Tide," the speaker describes walking along a shoreline the morning after a storm in which a fishing boat was lost. A student claims that the speaker portrays the sea as indifferent to human loss.',
+    passage: 'In the original poem “Low Tide,” the speaker describes walking along a deserted shoreline on the morning after a violent storm during which a local fishing boat disappeared with its entire crew. A student analyzing the poem claims that the speaker portrays the sea as fundamentally indifferent to human suffering and loss.',
     stem: "Which quotation from the poem most effectively illustrates the claim?",
-    choices: [
-      '"I gathered what the waves had left: / a shoe, a spoon, a child\'s blue cup."',
-      '"The water kept its even breath, / folding and unfolding, as if nothing had been asked of it."',
-      '"Gulls quarreled over the wreckage, / loud as neighbors."',
-      '"I thought the tide would bring him back; / I thought the tide owed me that much."',
-    ], answer: 1,
+    choices: ['“I gathered what the waves had left behind me on the sand: / a shoe, a tarnished spoon, a child’s blue cup.”', '“The water kept its even, unhurried breath, / folding and unfolding, as if nothing had been asked of it.”', '“Gulls quarreled loudly over the scattered wreckage, / shrill and insistent as arguing neighbors.”', '“I thought the tide would bring him back to me; / I thought the tide owed me at least that much.”'], answer: 1,
     steps: [
       'The claim is about how the sea is portrayed: as indifferent, that is, unmoved and unconcerned.',
       'The right quotation must describe the sea itself behaving as though the loss does not matter.',
@@ -359,7 +349,7 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-coet-06', skill: 'coet', sub: 'Supporting a claim', d: 'H',
-    passage: 'Botanist Oluwaseun Adeyemi studies a desert shrub whose leaves are covered in fine hairs that excrete salt. Adeyemi hypothesizes that the salt crust that forms on the leaves does more than rid the plant of excess salt: it also draws water vapor from the night air, which the leaves then absorb.',
+    passage: 'Botanist Oluwaseun Adeyemi studies a desert shrub whose leaves are covered in microscopic hairs that continuously excrete salt. Adeyemi hypothesizes that the crystalline salt crust accumulating on the leaves accomplishes considerably more than eliminating the plant’s excess salt: it also attracts atmospheric water vapor from the comparatively humid nighttime air, moisture that the leaves subsequently absorb.',
     stem: 'Which finding, if true, would most directly support Adeyemi\'s hypothesis?',
     choices: [
       'Under the same humid nighttime conditions, shrubs whose leaves had been washed free of salt absorbed significantly less water than shrubs with the salt crust intact.',
@@ -411,7 +401,7 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-coet-08', skill: 'coet', sub: 'Weakening a claim', d: 'V',
-    passage: 'Economist Bao Nguyen claims that the introduction of a bike-share program in the city of Larkfield caused a decline in downtown car traffic. As evidence, Nguyen points out that in the year after the program began, the number of cars entering downtown each weekday fell by 8 percent.',
+    passage: 'Economist Bao Nguyen claims that the introduction of a municipal bike-share program in the city of Larkfield was responsible for a subsequent decline in downtown automobile traffic. As evidence, Nguyen observes that during the year following the program’s introduction, the number of automobiles entering the downtown district each weekday decreased by approximately 8 percent.',
     stem: "Which finding, if true, would most directly weaken Nguyen's claim?",
     choices: ["Use of the bike-share program was highest during the summer months, when the weather was most comfortable for cycling downtown.", "Most bike-share trips in Larkfield were shorter than two miles and began or ended near downtown bus and train stations.", "During the same year, weekday car traffic fell by a similar percentage in comparable nearby cities that had no bike-share programs.", "A survey found that some bike-share users in Larkfield had previously walked, rather than driven, to their downtown destinations."], answer: 2,
     steps: [
@@ -432,7 +422,7 @@ export const RW_II_1: RawQuestion[] = [
   },
   {
     id: 'r-coet-09', skill: 'coet', sub: 'Claims and evidence', d: 'V',
-    passage: '"The Lamplighter\'s Daughter" is an original short story. In the story, Ines appears outwardly obedient to her father. A student claims, however, that Ines privately resists her father\'s plans for her future.',
+    passage: '“The Lamplighter’s Daughter” is an original short story in which Ines, the only child of the quarter’s aging lamplighter, appears outwardly obedient to her father in every particular of daily life. A student analyzing the story argues, however, that Ines privately but persistently resists the plans her father has made for her future.',
     stem: "Which quotation from the story most effectively illustrates the claim?",
     choices: ["\"Ines set her father's supper before him and waited, as always, until he had finished before she sat. Then she cleared the plates without a word and swept the hearth.\"", "\"'You will keep the lamps after me,' he said, and Ines said, 'Yes, Father,' and that night added another coin to the tin beneath the floorboard, where the fare to the city was slowly accumulating.\"", "\"Her father had tended the lamps of the quarter for thirty years, and his father before him, and it was understood in the house that the pole and the ladder would pass to Ines.\"", "\"Ines knew every lamp on the route and could have lit them blindfolded, from the chapel steps down to the last post by the harbor wall.\""], answer: 1,
     steps: [

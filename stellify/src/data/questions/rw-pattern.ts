@@ -555,7 +555,7 @@ export const RW_PATTERN: RawQuestion[] = [
   /* ───────────────────────── Command of Evidence: textual ───────────────────────── */
   {
     id: 'r-cb-coet-01', skill: 'coet', sub: 'Weakening a claim', d: 'V',
-    passage: 'Ecologist Marit Solheim hypothesizes that reindeer in northern Norway avoid grazing near wind turbines because of the noise the turbines make rather than because of their appearance. To test this, her team tracked collared reindeer near two turbine fields over three winters, recording how close the animals came to the turbines on days when the blades were turning and on days when the blades were locked in place for maintenance.',
+    passage: 'Ecologist Marit Solheim hypothesizes that reindeer in northern Norway avoid grazing in the vicinity of wind turbines because of the noise the turbines generate rather than because of their visual appearance. To investigate this hypothesis, her research team tracked radio-collared reindeer near two turbine installations over three consecutive winters, recording how closely the animals approached the turbines on days when the blades were rotating and on days when the blades were immobilized for scheduled maintenance.',
     stem: 'Which finding, if true, would most directly weaken Solheim’s hypothesis?',
     choices: [
       'The reindeer came no closer to the turbines on days when the blades were locked than on days when the blades were turning.',
@@ -582,7 +582,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-coet-02', skill: 'coet', sub: 'Supporting a claim', d: 'E',
-    passage: 'Psycholinguist Oriol Ferrer and colleagues recorded the reading speeds of forty adults who speak both Catalan and Spanish. Half had learned both languages before the age of four; the other half had learned one of them after the age of ten. Each participant read three passages aloud: one in Catalan, one in Spanish, and one made of fragments of the first two, shuffled so that it was grammatical in neither language. The team concluded that learning a second language early affects how sharply a reader distinguishes grammatical text from ungrammatical text.',
+    passage: 'Psycholinguist Oriol Ferrer and colleagues measured the reading speeds of forty adults fluent in both Catalan and Spanish; half had acquired both languages before the age of four, whereas the other half had acquired one of them after the age of ten. Each participant read aloud three passages: one in Catalan, one in Spanish, and one assembled from shuffled fragments of the first two so that it was grammatical in neither language. The researchers concluded that acquiring a second language early influences how sharply a reader distinguishes grammatical from ungrammatical text.',
     stem: "Which finding, if true, would most directly support the team’s conclusion?",
     choices: [
       'Compared with the later learners, the early learners showed a larger gap between their reading speed on the Catalan passage and their reading speed on the Spanish passage.',
@@ -609,7 +609,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-coet-03', skill: 'coet', sub: 'Illustrating a claim', d: 'H',
-    passage: 'In a 1911 essay on household craft, the Welsh writer Carys Penhallow argues that mending is not merely a matter of thrift. A repaired object, she claims, carries a kind of knowledge about its owner that a new object cannot.',
+    passage: 'In a 1911 essay on domestic craftsmanship, the Welsh writer Carys Penhallow maintains that mending household possessions is not merely a matter of thrift or economic necessity. A repaired object, she argues, preserves a particular kind of knowledge about its owner’s habits and circumstances that a newly purchased object cannot possibly possess.',
     stem: 'Which quotation from the essay most effectively illustrates the claim?',
     choices: [
       '“The household that mends will always outlast the household that buys, for a needle costs a penny and a new coat a week’s wages.”',
@@ -636,7 +636,7 @@ export const RW_PATTERN: RawQuestion[] = [
   },
   {
     id: 'r-cb-coet-04', skill: 'coet', sub: 'Supporting a claim', d: 'E',
-    passage: 'The Old Norse word *víking* is usually rendered in modern English as “pirate raid,” and *víkingr* as “pirate.” Philologist Sunniva Dahl cautions that these renderings mislead: “pirate” implies a fixed occupation and an inherently criminal one, whereas, she contends, medieval Scandinavians used the terms for a temporary activity that a person might take up and set down, and one that carried no settled moral judgment.',
+    passage: 'The Old Norse word *víking* is conventionally rendered in modern English as “pirate raid,” and *víkingr* as “pirate.” Philologist Sunniva Dahl cautions that these translations are misleading: “pirate” implies a permanent occupation and an inherently criminal one, whereas, she contends, medieval Scandinavians employed the terms for a temporary undertaking that a person might adopt and later abandon, and one that carried no established moral condemnation.',
     stem: 'Which finding, if true, would most directly support Dahl’s contention?',
     choices: ["The earliest surviving written use of *víkingr* appears on a runestone raised several decades before the earliest saga manuscripts were produced.", "Chronicles written in English monasteries during the same period consistently describe the Scandinavian raiders who attacked their communities as violent criminals and pagans.", "In several sagas, men called *víkingar* are shown raiding the same stretch of coastline year after year throughout their adult lives, returning home only in winter to repair their ships.", "Several sagas describe the same farmer as “going on *víking*” for two summers in his youth and later serving for decades as a respected local judge, with no suggestion that the first was held against him."], answer: 3,
     steps: [
@@ -663,12 +663,7 @@ export const RW_PATTERN: RawQuestion[] = [
     figure: { kind: 'table', title: 'Seeds Removed by Harvester Ants in 24 Hours', headers: ['Seed species', 'Percentage removed', 'Native to study site', 'Has oil-rich appendage'], rows: [['Bluestem grass', '4%', 'yes', 'no'], ['Desert chia', '9%', 'yes', 'no'], ['Storksbill', '88%', 'no', 'yes'], ['Milkvetch', '5%', 'yes', 'no'], ['Needlegrass', '21%', 'yes', 'no']] },
     passage: 'Harvester ants at a desert research site carry off seeds of the introduced plant storksbill far more readily than seeds of native plants. A 2021 study attributed the preference to the oil-rich appendage attached to each storksbill seed, a structure that the native seeds in the study lack. A student reviewing the study’s data, however, wants to argue that the appendage cannot be the only thing that determines which seeds the ants prefer.',
     stem: 'Which choice best describes data from the table that support the student’s argument?',
-    choices: [
-      'The ants removed a higher percentage of storksbill seeds than of the seeds of any native species.',
-      'The ants left at least some seeds of every species in place.',
-      'The ants removed a much higher percentage of needlegrass seeds than of bluestem grass seeds, though neither has the appendage.',
-      'The ants removed nearly the same percentage of bluestem grass seeds as of milkvetch seeds.',
-    ], answer: 2,
+    choices: ['The ants removed a higher percentage of storksbill seeds than of the seeds of any native species.', 'The ants left at least some seeds of every species in place, even the storksbill seeds that they removed most readily.', 'The ants removed a much higher percentage of needlegrass seeds than of bluestem grass seeds, though neither has the appendage.', 'The ants removed nearly the same percentage of bluestem grass seeds as of milkvetch seeds, neither of which has the appendage.'], answer: 2,
     steps: [
       'The student’s argument: the appendage is not the whole explanation. Something else also affects preference.',
       'To show that, find seeds that are identical with respect to the appendage and yet are treated differently by the ants.',
@@ -689,7 +684,7 @@ export const RW_PATTERN: RawQuestion[] = [
   {
     id: 'r-cb-coeq-02', skill: 'coeq', sub: 'Data that supports a claim', d: 'V',
     figure: { kind: 'table', title: 'Oak Seedlings after Twelve Weeks', headers: ['Light level', 'Average dry mass (g)', 'Average tannin per seedling (mg)', 'Tannin concentration (mg per g of dry mass)'], rows: [['Full sun', '8.4', '302', '36.0'], ['Partial shade', '6.1', '287', '47.0'], ['Deep shade', '3.2', '262', '81.9']] },
-    passage: 'Tannins are bitter compounds that deter insects from eating leaves. Botanist Hye-jin Roh grew oak seedlings under three light levels and measured their growth and tannin content after twelve weeks. Roh concluded that seedlings starved of light maintained their chemical defenses at the expense of growth.',
+    passage: 'Tannins are bitter compounds that deter insects from consuming foliage, but producing them requires resources that a plant might otherwise devote to growth. Botanist Hye-jin Roh cultivated oak seedlings under three light intensities and measured their growth and tannin content after twelve weeks, concluding that seedlings deprived of light maintained their chemical defenses at the expense of growth.',
     stem: 'Which choice best describes data from the table that support Roh’s conclusion?',
     choices: [
       'Seedlings in deep shade had less than half the dry mass of seedlings in full sun but nearly as much tannin per seedling.',
@@ -717,7 +712,7 @@ export const RW_PATTERN: RawQuestion[] = [
   {
     id: 'r-cb-coeq-03', skill: 'coeq', sub: 'Interpreting tables', d: 'H',
     figure: { kind: 'table', title: 'Percentage of Library Card Holders Who Borrowed Each Type of Item in 2023', headers: ['Type of item', 'Ages 13–17', 'Ages 18–34', 'Ages 35–59', 'Ages 60+'], rows: [['Print books', 71, 64, 69, 82], ['E-books', 48, 57, 44, 29], ['Audiobooks', 22, 41, 46, 33], ['Tools and equipment', 6, 19, 27, 21]] },
-    passage: "A regional library system surveyed a random sample of its card holders about what they borrowed in 2023. About one in four residents of the region holds a library card. The table shows, for each age group, the percentage of card holders who borrowed at least one item of each type. The survey data support the following statement: ______",
+    passage: 'A regional library system surveyed a randomly selected sample of its registered card holders about the materials they borrowed in 2023; approximately one in four residents of the region holds a library card. The accompanying table shows, for each age group, the percentage of card holders who borrowed at least one item of each particular type, and the survey data support the following statement: ______',
     stem: "Which choice most effectively uses data from the table to complete the statement?",
     choices: [
       'Card holders aged 60 and older were more likely than any other age group to borrow items of every type.',

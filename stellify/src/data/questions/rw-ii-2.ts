@@ -59,7 +59,7 @@ export const RW_II_2: RawQuestion[] = [
   {
     id: 'r-coeq-03', skill: 'coeq', sub: 'Data that supports a claim', d: 'H',
     figure: { kind: 'table', title: 'Germination of prairie legume seeds', headers: ['Seed treatment', 'Germinated within 7 days (%)', 'Germinated within 21 days (%)'], rows: [['None', 12, 64], ['Soaked 24 hours', 38, 66], ['Scarified', 71, 93], ['Scarified and soaked', 74, 94]] },
-    passage: 'Researchers tested whether treating the hard-coated seeds of a prairie legume would improve germination. Some seeds were soaked in water, some were scarified (their seed coats were scratched), and some received both treatments. The researchers concluded that soaking alone mainly speeds germination up rather than increasing the share of seeds that eventually germinate.',
+    passage: 'Researchers investigated whether treating the hard-coated seeds of a prairie legume would improve germination, subjecting some seeds to soaking in water, others to scarification (scratching of their seed coats), and still others to both treatments. The researchers concluded that soaking alone primarily accelerates germination rather than increasing the proportion of seeds that eventually germinate.',
     stem: 'Which choice best describes data from the table that support the researchers\' conclusion?',
     choices: ["Compared with untreated seeds, soaked seeds had a much higher germination rate at 7 days (38% versus 12%) but nearly the same rate at 21 days (66% versus 64%).", "Scarified seeds had a germination rate of 71% at 7 days, compared with 12% for untreated seeds, and the gap between them remained large at 21 days (93% versus 64%).", "Seeds that were both scarified and soaked had the highest germination rate at 21 days, 94%, which was higher than the rate for any single treatment.", "Soaked seeds had a lower germination rate at 21 days than scarified seeds did (66% versus 93%), and also a lower rate at 7 days (38% versus 71%)."], answer: 0,
     steps: [
@@ -81,7 +81,7 @@ export const RW_II_2: RawQuestion[] = [
   {
     id: 'r-coeq-04', skill: 'coeq', sub: 'Interpreting tables', d: 'H',
     figure: { kind: 'table', title: 'Mean reaction time (milliseconds)', headers: ['Hours awake', 'No caffeine', 'Caffeine'], rows: [[4, 262, 258], [12, 271, 264], [20, 318, 281], [28, 389, 312]] },
-    passage: 'In a sleep-deprivation study, participants completed a reaction-time task after being awake for various lengths of time; half of the participants received caffeine before each test. Lower times indicate faster reactions. The researchers claim that the benefit of caffeine grew as participants became more sleep deprived.',
+    passage: 'In a sleep-deprivation study, participants completed a reaction-time task after remaining awake for various lengths of time, and half of the participants received caffeine before each test, with lower times indicating faster reactions. The researchers claim that the benefit of caffeine increased progressively as participants became more severely sleep deprived.',
     stem: 'Which choice best describes data from the table that support the researchers\' claim?',
     choices: [
       'At each of the four testing times, the caffeine group had a lower mean reaction time than the no-caffeine group.',
@@ -108,7 +108,7 @@ export const RW_II_2: RawQuestion[] = [
   {
     id: 'r-coeq-05', skill: 'coeq', sub: 'Completing a statement with data', d: 'H',
     figure: { kind: 'bar', title: 'Format most often used when reading for pleasure', yLabel: 'Percent of respondents', categories: ['13–17', '18–29', '30–49', '50 and older'], series: [{ name: 'Print', values: [21, 24, 33, 47] }, { name: 'Digital', values: [38, 35, 22, 14] }] },
-    passage: 'A sociologist surveyed people in four age groups about the format in which they most often read for pleasure. She notes that although the share of respondents choosing print is larger in each successively older age group, the pattern for digital reading is the reverse: ______',
+    passage: 'A sociologist surveyed respondents in four age groups about the format in which they most frequently read for pleasure. She observes that although the proportion of respondents choosing print is considerably larger in each successively older age group, the corresponding pattern for digital reading is precisely the reverse: ______',
     stem: 'Which choice most effectively uses data from the graph to complete the statement?',
     choices: [
       'the youngest age group is the only one in which digital reading is more common than print reading.',
@@ -135,7 +135,7 @@ export const RW_II_2: RawQuestion[] = [
   {
     id: 'r-coeq-06', skill: 'coeq', sub: 'Data that supports a claim', d: 'V',
     figure: { kind: 'table', title: 'Yield (metric tons per hectare)', headers: ['Planting method', 'Maize', 'Beans', 'Total'], rows: [['Maize alone', 6.2, '—', 6.2], ['Beans alone', '—', 2.1, 2.1], ['Maize and beans together', 5.4, 1.3, 6.7]] },
-    passage: 'Agronomist Thandiwe Nkosi compared fields planted with maize alone, beans alone, and the two crops grown together in the same field (intercropping). She argues that intercropping can be worthwhile even though each crop yields less than it would if grown alone.',
+    passage: 'Agronomist Thandiwe Nkosi compared agricultural fields planted with maize alone, with beans alone, and with the two crops cultivated together in the same field, a practice known as intercropping. She argues that intercropping can be worthwhile even though each individual crop yields less than it would if cultivated by itself.',
     stem: 'Which choice best describes data from the table that support Nkosi\'s argument?',
     choices: [
       'The maize yield of the intercropped field (5.4 metric tons per hectare) was lower than that of the field planted with maize alone (6.2).',
@@ -162,7 +162,7 @@ export const RW_II_2: RawQuestion[] = [
   {
     id: 'r-coeq-07', skill: 'coeq', sub: 'Interpreting tables', d: 'V',
     figure: { kind: 'table', title: 'River valley survey results', headers: ['Year', 'Elk counted', 'Mean willow height (cm)', 'Beaver colonies'], rows: [[2000, '1,700', 40, 1], [2005, '1,400', 55, 2], [2010, '950', 110, 6], [2015, '700', 180, 11], [2020, '680', 195, 12]] },
-    passage: 'After predators were reintroduced to a river valley in 1999, ecologists tracked the number of elk, the height of the streamside willows that elk browse, and the number of beaver colonies, which depend on willows for food and building material. An ecologist hypothesizes that the recovery of beavers lagged behind the decline in elk because willows first had to grow tall enough to support the beavers.',
+    passage: 'After predators were reintroduced to a river valley in 1999, ecologists monitored the number of elk, the height of the streamside willows that elk consume, and the number of beaver colonies, which depend on willows for nourishment and construction material. An ecologist hypothesizes that the recovery of beavers lagged considerably behind the decline in elk because willows first had to grow sufficiently tall to support the beavers.',
     stem: 'Which choice best describes data from the table that support the ecologist\'s hypothesis?',
     choices: ["The number of elk counted fell from 1,700 in 2000 to 680 in 2020, with the largest five-year drop, 450 elk, occurring between 2005 and 2010.", "Mean willow height increased in every five-year period shown in the table, rising from 40 centimeters in 2000 to 195 centimeters in 2020.", "In 2020, there were 12 beaver colonies and the mean willow height was 195 centimeters, the highest values for both measures in the table.", "From 2000 to 2005 the elk count fell by 300 while beaver colonies increased only from 1 to 2; the largest gains in beaver colonies came after 2005, as mean willow height rose above 100 centimeters."], answer: 3,
     steps: [

@@ -75,7 +75,7 @@ export function officialQuestion(p: PackItem): Question {
     source: p.source ? `Official College Board question · ${p.source}${p.estimated ? '' : ` (${p.cbDifficulty ?? 'rated'} difficulty)`} · explanation by the College Board` : `Official College Board question (${p.cbDifficulty ?? 'rated'} difficulty)${p.imported ? ', imported by you' : ', from your own practice file'} · explanation by the College Board`,
     license: 'Copyright College Board. For your personal study only; do not share or publish.',
     validation: 'validated', created: '2026-11-15',
-    image: p.image, rationaleImage: p.rationaleImage, official: true, test: p.test,
+    image: p.image, choiceText: p.choiceText, rationaleImage: p.rationaleImage, official: true, test: p.test,
     cbDifficulty: p.cbDifficulty === 'Easy' || p.cbDifficulty === 'Medium' || p.cbDifficulty === 'Hard' ? p.cbDifficulty : p.d === 'H' ? 'Hard' : 'Medium',
   };
 }

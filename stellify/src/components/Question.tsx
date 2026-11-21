@@ -77,7 +77,7 @@ export function QuestionView({ q, answer, onAnswer, locked, reveal, eliminated, 
                   <span className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-full border text-sm font-bold', right ? 'border-ok bg-ok text-white' : wrong ? 'border-bad bg-bad text-white' : selected ? 'border-brand bg-brand-solid text-white' : 'border-line text-muted')}>
                     {right ? <Check size={15} /> : wrong ? <X size={15} /> : LETTERS[i]}
                   </span>
-                  <span className={cn('min-w-0', out && 'line-through')}>{q.image ? <span className="font-semibold">Choice {LETTERS[i]}</span> : <RichText text={c} />}</span>
+                  <span className={cn('min-w-0', out && 'line-through')}>{q.image ? <><span className="font-semibold">Choice {LETTERS[i]}</span>{q.choiceText?.[i] && <span className="ml-2" data-testid="choice-text"><RichText text={q.choiceText[i]} /></span>}</> : <RichText text={c} />}</span>
                 </button>
                 {onEliminate && !locked && (
                   <button type="button" onClick={() => onEliminate(i)} className={cn('btn-quiet !px-2', eliminated?.includes(i) && 'text-bad')} aria-label={`${eliminated?.includes(i) ? 'Restore' : 'Cross out'} choice ${LETTERS[i]}`} title="Cross out this choice"><CircleSlash size={16} /></button>

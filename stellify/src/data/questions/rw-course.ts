@@ -121,7 +121,7 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-coet-01', skill: 'coet', sub: 'Illustrating a claim with a quotation', d: 'V',
-    passage: 'In her essay “The Patient Eye,” the painter Helena Varga argues that the value of sketching outdoors lies less in the drawings themselves than in the habit of attention that the practice builds.',
+    passage: 'In the original essay “The Patient Eye,” written for this question, a landscape painter argues that the principal value of sketching outdoors resides less in the resulting drawings themselves than in the disciplined habit of attention that the practice gradually cultivates in the artist.',
     stem: 'Which quotation from “The Patient Eye” most effectively illustrates the claim?',
     choices: ["“A drawing made in haste will rarely hang on any wall worth the name, and the painter who hurries through a landscape will have little to show for the afternoon.”", "“My sketchbooks from those summers are of little worth; what they gave me was the habit of looking at a hedge until it stopped being a hedge and became a hundred particular leaves.”", "“Outdoor light changes so quickly that no painter can hope to capture it before it is gone; by the time the sky is mixed on the palette, the clouds have moved on.”", "“I advise every student to buy the best paper they can afford, for cheap paper yellows within a decade, and a faded sketch is a poor record of a summer’s work.”"], answer: 1,
     steps: [
@@ -142,7 +142,7 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-coet-02', skill: 'coet', sub: 'Illustrating a claim', d: 'E',
-    passage: 'Historian Kofi Mensah claims that many nineteenth-century letter writers used the mail for purposes that had little to do with conveying news. For them, he argues, a letter could function as a gift, valued as a physical object as much as a message.',
+    passage: 'Historian Kofi Mensah contends that many nineteenth-century correspondents used the postal system for purposes that had remarkably little to do with communicating news. For such writers, he argues, a letter could function essentially as a gift, cherished as a physical keepsake at least as much as a message.',
     stem: "Which quotation from a nineteenth-century letter most effectively illustrates the claim?",
     choices: [
       '“I have little news to share, but I pressed this violet from the garden between the pages so that you might hold a piece of our spring.”',
@@ -169,7 +169,7 @@ export const RW_COURSE: RawQuestion[] = [
   {
     id: 'r-c-coeq-01', skill: 'coeq', sub: 'Completing a statement with data', d: 'V',
     figure: { kind: 'table', title: 'Average Nightly Foraging Time of Bats in Two Caves', headers: ['Season', 'North Cave temperature (°C)', 'North Cave foraging (minutes)', 'South Cave temperature (°C)', 'South Cave foraging (minutes)'], rows: [['Spring', 8, 95, 16, 140], ['Summer', 15, 150, 22, 142], ['Autumn', 7, 90, 15, 138]] },
-    passage: 'Ecologist Marisol Peña compared how long bats roosting in two caves foraged each night across three seasons, recording the average air temperature outside each cave. She concluded that temperature strongly influenced foraging time for the bats in North Cave but had little effect on the bats in South Cave, since ______',
+    passage: 'Ecologist Marisol Peña compared how long bats roosting in two caves foraged each night across three seasons, simultaneously recording the average air temperature outside each cave. She concluded that temperature substantially influenced foraging duration for the bats in North Cave but had comparatively little effect on the bats in South Cave, since ______',
     stem: 'Which choice most effectively uses data from the table to complete the statement?',
     choices: ["in North Cave, foraging time rose from about 90 minutes to 150 minutes as temperatures rose, while in South Cave foraging time stayed near 140 minutes despite a similar rise in temperature.", "South Cave was warmer than North Cave in every season, by about 8 degrees in spring and autumn and by 7 degrees in summer.", "bats in South Cave foraged longer than bats in North Cave in spring and in autumn, by about 45 and 48 minutes, respectively.", "foraging time in both caves was greatest in summer, when each cave recorded its highest average temperature of the three seasons."], answer: 0,
     steps: [
@@ -191,7 +191,7 @@ export const RW_COURSE: RawQuestion[] = [
   {
     id: 'r-c-coeq-02', skill: 'coeq', sub: 'Completing a statement with data', d: 'E',
     figure: { kind: 'line', title: 'Survival of Transplanted Seedlings', xLabel: 'Weeks after transplanting', yLabel: 'Seedlings surviving (%)', x: [0, 2, 4, 6, 8], series: [{ name: 'Mulched plots', values: [100, 96, 94, 93, 92] }, { name: 'Bare plots', values: [100, 88, 74, 61, 50] }] },
-    passage: 'A horticulturist transplanted oak seedlings into plots that were either covered with mulch or left bare and tracked the percentage of seedlings that survived. She argues that the benefit of mulch grows the longer seedlings remain in the field, since ______',
+    passage: 'A horticulturist transplanted oak seedlings into experimental plots that were either covered with mulch or left bare and then tracked the percentage of seedlings that survived over the following eight weeks. She argues that the benefit of mulch increases the longer seedlings remain in the field, since ______',
     stem: 'Which choice most effectively uses data from the graph to complete the statement?',
     choices: ["survival in the mulched plots never fell below 90%, remaining at 92% or higher through all eight weeks.", "both kinds of plots began with 100% survival at week 0, when the seedlings were first transplanted into the field.", "survival in the bare plots fell by 50 percentage points over the eight weeks, from 100% at week 0 to 50% at week 8.", "the difference in survival between mulched and bare plots widened from 8 percentage points at week 2 to 42 percentage points at week 8."], answer: 3,
     steps: [
@@ -233,14 +233,9 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-ctc-01', skill: 'ctc', sub: 'Relationships between passages', d: 'V',
-    passage: 'Text 1\nMany urban planners favor converting downtown parking garages into housing. Garages built in the 1970s and 1980s, they note, sit half empty as more residents commute by transit, and their sturdy frames can carry new apartments at a fraction of the cost of building from scratch.\n\nText 2\nEngineer Tomás Reyes agrees that half-empty garages waste valuable land. But he cautions that the low ceilings and sloped floors of most older garages make conversion far costlier than its advocates suggest; in his assessment, demolishing such garages and building new housing is often cheaper.',
+    passage: 'Text 1\nMany urban planners favor converting downtown parking garages into residential housing. Garages constructed during the 1970s and 1980s, they observe, sit half empty as increasing numbers of residents commute by public transit, and their sturdy frames can support new apartments at a fraction of the cost of constructing buildings from scratch.\n\nText 2\nEngineer Tomás Reyes agrees that half-empty garages squander valuable downtown land. But he cautions that the low ceilings and sloped floors of most older garages make conversion considerably costlier than its advocates acknowledge; in his assessment, demolishing such garages and constructing new housing is frequently cheaper.',
     stem: 'Based on the texts, how would Reyes (Text 2) most likely respond to the planners’ argument in Text 1?',
-    choices: [
-      'He would reject the planners’ claim that many older garages are underused.',
-      'He would argue that converting garages is the least expensive way to add housing downtown.',
-      'He would question whether transit use has really increased among downtown residents.',
-      'He would agree that the garages are underused but dispute the claim that converting them is inexpensive.',
-    ], answer: 3,
+    choices: ['He would reject the planners’ claim that many older downtown garages are underused by the residents of the city.', 'He would argue that converting garages is the least expensive way to add new housing to a city’s downtown.', 'He would question whether the use of public transit has really increased among residents of the downtown area.', 'He would agree that the garages are underused but dispute the planners’ claim that converting them is inexpensive.'], answer: 3,
     steps: [
       'Text 1: garages are underused, AND converting them is cheap.',
       'Text 2: Reyes agrees they waste land (underused) BUT says conversion is costlier than claimed.',

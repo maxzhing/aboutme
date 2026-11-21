@@ -42,7 +42,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-ctc-02', skill: 'ctc', sub: 'Extending an explanation', d: 'H',
-    passage: 'Text 1\nRoman concrete has survived for two thousand years in harbors and domes, while much modern concrete cracks within decades. Researchers have long credited volcanic ash: when mixed with lime, the ash reacts to form durable minerals that bind the material tightly together.\n\nText 2\nIn 2023, a team led by materials scientist Admir Masic examined the small white lumps of lime found throughout Roman concrete, long dismissed as signs of careless mixing. The team concluded that the lumps formed when builders mixed in hot quicklime and that they act as reservoirs of calcium: when water seeps into a crack, the lumps dissolve and fill it with new mineral, sealing the crack.',
+    passage: 'Text 1\nRoman concrete has survived for two thousand years in harbors and domes, whereas considerable amounts of modern concrete crack within decades. Researchers have traditionally credited volcanic ash: when combined with lime, the ash reacts to form durable minerals that bind the material extraordinarily tightly together.\n\nText 2\nIn 2023, a team led by materials scientist Admir Masic examined the small white lumps of lime distributed throughout Roman concrete, long dismissed as signs of careless mixing. The team concluded that the lumps formed when builders incorporated hot quicklime and that they function as reservoirs of calcium: when water infiltrates a crack, the lumps dissolve and fill it with new mineral, effectively sealing the crack.',
     stem: CTC('Masic’s team (Text 2)', 'the explanation presented in Text 1'),
     choices: [
       'By arguing that volcanic ash weakens Roman concrete rather than strengthening it as Text 1 claims',
@@ -68,14 +68,9 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-ctc-03', skill: 'ctc', sub: 'Shared assumption', d: 'H',
-    passage: 'Text 1\nThe novelist Mira Okafor left an unfinished manuscript when she died, along with a note asking that it never be published. Critic Daniel Rees argues that the manuscript should appear in print anyway: its chapters, though rough, show Okafor attempting a form of storytelling unlike anything in her published novels.\n\nText 2\nEditor Lucia Ferrante agrees that the manuscript is among the most revealing documents of Okafor’s career, which is exactly why, in her view, the author’s wishes deserve respect. An unfinished draft, Ferrante writes, shows a writer at her most exposed, and publishing it would present as finished work something Okafor herself judged unready.',
+    passage: 'Text 1\nThe novelist Mira Okafor left an unfinished manuscript when she died, together with a note requesting that it never be published. Critic Daniel Rees argues that the manuscript should appear in print regardless: its chapters, though unpolished, demonstrate Okafor attempting a form of storytelling unlike anything in her published novels.\n\nText 2\nEditor Lucia Ferrante agrees that the manuscript is among the most revealing documents of Okafor’s career, which is exactly why, in her view, the author’s wishes deserve respect. An unfinished draft, Ferrante writes, shows a writer at her most exposed, and publishing it would present as finished work something Okafor herself judged unready.',
     stem: 'Based on the texts, Rees (Text 1) and Ferrante (Text 2) would most likely agree with which statement?',
-    choices: [
-      'Authors’ instructions about their papers should always be followed after their death.',
-      'Unfinished manuscripts are rarely as valuable to readers as an author’s published novels.',
-      'Okafor’s manuscript offers significant insight into her development as a writer.',
-      'Okafor’s manuscript should be published, though with an introduction explaining her wishes.',
-    ], answer: 2,
+    choices: ['Authors’ instructions about the handling of their papers should always be followed after their death, whatever those papers contain.', 'Unfinished manuscripts are rarely as valuable to readers as the novels that an author completed and published during her lifetime.', 'Okafor’s unfinished manuscript offers readers significant insight into her development and ambitions as a writer of fiction.', 'Okafor’s manuscript should be published, though with an introduction that explains to readers the author’s stated wishes.'], answer: 2,
     steps: [
       'Rees: publish it, because it shows Okafor trying something new.',
       'Ferrante: do not publish it, although it is "among the most revealing documents" of her career.',
@@ -94,7 +89,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-ctc-04', skill: 'ctc', sub: 'Evaluating evidence', d: 'V',
-    passage: 'Text 1\nIn a widely reported trial, dozens of companies moved their employees to a four-day workweek for six months without reducing pay. Most companies reported that output held steady and that staff turnover fell, and the great majority chose to keep the shorter week afterward. Supporters say the results show the policy works.\n\nText 2\nEconomist Ilse Varga points out that the companies in such trials volunteered to take part. Firms that expect a shorter week to suit their work, or whose managers are already enthusiastic about it, are the ones most likely to sign up, so their success may say little about how the policy would perform in a typical firm.',
+    passage: 'Text 1\nIn a widely reported trial, dozens of companies transitioned their employees to a four-day workweek for six months without reducing compensation. Most companies reported that output remained steady and that staff turnover declined, and the overwhelming majority chose to retain the shorter week afterward; supporters maintain that the results demonstrate the policy’s effectiveness.\n\nText 2\nEconomist Ilse Varga observes that the companies in such trials volunteered to participate. Firms that anticipate a shorter week suiting their operations, or whose managers are already enthusiastic about it, are precisely the ones most likely to enroll, so their success may reveal little about how the policy would perform in a typical firm.',
     stem: CTC('Varga (Text 2)', 'the supporters’ conclusion in Text 1'),
     choices: [
       'By arguing that the companies in the trial exaggerated their output in order to keep the shorter week',
@@ -122,12 +117,7 @@ export const RW_SPEC: RawQuestion[] = [
     id: 'r-s-ctc-05', skill: 'ctc', sub: 'Applying a criterion', d: 'V',
     passage: 'Text 1\nBiologist Con Slobodchikoff has found that the alarm calls of Gunnison’s prairie dogs vary with the kind of predator approaching and even with the size and color of an approaching human. Such precision, some commentators argue, shows that prairie dogs possess a language.\n\nText 2\nFor linguist Tomás Ekwueme, the defining feature of human language is not precision but productivity: speakers combine a limited set of units, according to rules, to express an unlimited number of new meanings. A signal system can be remarkably detailed, he notes, and still lack this capacity for open-ended combination.',
     stem: CTC('Ekwueme (Text 2)', 'the commentators’ argument described in Text 1'),
-    choices: [
-      'By acknowledging that the calls are impressively detailed while maintaining that detail alone does not show that the calls form a language',
-      'By arguing that Slobodchikoff’s measurements of the calls are probably inaccurate and need to be repeated',
-      'By claiming that prairie dogs cannot distinguish one type of predator from another',
-      'By agreeing that the calls form a language because they convey precise information about predators',
-    ], answer: 0,
+    choices: ['By acknowledging that the calls are impressively detailed while maintaining that detail alone does not show that the calls form a language', 'By arguing that Slobodchikoff’s measurements of the prairie dogs’ calls are probably inaccurate and need to be repeated', 'By claiming that prairie dogs are unable to distinguish one type of approaching predator from another type', 'By agreeing that the calls form a language because they convey precise information about predators approaching the colony'], answer: 0,
     steps: [
       'Text 1: the calls are precise, so some say prairie dogs have language.',
       'Text 2: language is defined by productivity (combining units into new meanings), not precision; a detailed system can lack it.',
@@ -146,14 +136,9 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-ctc-06', skill: 'ctc', sub: 'Mechanism of influence', d: 'H',
-    passage: 'Text 1\nThe printing press is often credited with the rapid spread of religious reform in sixteenth-century Germany. Printers turned out hundreds of thousands of copies of reformers’ pamphlets, and the sheer volume of print, the argument goes, carried the new ideas across the region.\n\nText 2\nHistorian Greta Lindholm notes that only a small fraction of Germans at the time could read. Printed pamphlets mattered, she argues, but mostly because literate townspeople read them aloud in taverns, workshops, and churches, so that most people encountered the reformers’ ideas by hearing rather than reading them.',
+    passage: 'Text 1\nThe printing press is frequently credited with the rapid dissemination of religious reform in sixteenth-century Germany. Printers produced hundreds of thousands of copies of reformers’ pamphlets, and the sheer volume of print, the argument goes, carried the new ideas across the region.\n\nText 2\nHistorian Greta Lindholm notes that only a small fraction of Germans at the time could read. Printed pamphlets mattered, she argues, but mostly because literate townspeople read them aloud in taverns, workshops, and churches, so that most people encountered the reformers’ ideas by hearing rather than reading them.',
     stem: CTC('Lindholm (Text 2)', 'the argument in Text 1'),
-    choices: [
-      'By insisting that printed pamphlets played no part in the spread of religious reform',
-      'By agreeing that printing was important while emphasizing that its influence depended largely on oral reading',
-      'By claiming that the number of pamphlets printed has been greatly overestimated by historians',
-      'By arguing that literacy rates in sixteenth-century Germany were higher than historians assume',
-    ], answer: 1,
+    choices: ['By insisting that printed pamphlets played no meaningful part in the spread of religious reform throughout sixteenth-century Germany', 'By agreeing that printing was important while emphasizing that its influence depended largely on pamphlets being read aloud', 'By claiming that historians have greatly overestimated the number of pamphlets that printers actually produced during this period', 'By arguing that literacy rates in sixteenth-century Germany were considerably higher than most historians have assumed them to be'], answer: 1,
     steps: [
       'Text 1: the volume of print spread the ideas.',
       'Text 2: few could read; pamphlets mattered "but mostly because" they were read aloud.',
