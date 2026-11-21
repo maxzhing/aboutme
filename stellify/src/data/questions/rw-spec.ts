@@ -226,14 +226,9 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-tsp-02', skill: 'tsp', sub: 'Function of a sentence', d: 'H',
-    passage: 'Art historians have often described the Impressionists as painters who worked quickly outdoors, capturing a fleeting moment of light in a single session. __Yet x-ray studies of several canvases by Claude Monet reveal layer upon layer of revisions, some added months later in the studio.__ Such findings suggest that the look of spontaneity in his work was, at least in part, carefully constructed.',
+    passage: 'Art historians have often described the Impressionists as painters who worked rapidly outdoors, capturing a fleeting moment of light in a single session before conditions changed. __Yet x-ray studies of several canvases by Claude Monet reveal layer upon layer of revisions, some added months later in the studio.__ Such findings suggest that the appearance of spontaneity in his work was, at least in part, deliberately and carefully constructed.',
     stem: 'Which choice best describes the function of the underlined sentence in the text as a whole?',
-    choices: [
-      'It presents evidence that complicates the common description of how the Impressionists worked.',
-      'It explains why x-ray technology has become popular among art historians.',
-      'It offers an example that supports the claim that Monet painted each work in a single session.',
-      'It introduces a technique that Monet invented and that other Impressionists later copied.',
-    ], answer: 0,
+    choices: ['It presents evidence that complicates the common description of how the Impressionists worked.', 'It explains why x-ray technology has become increasingly popular among professional art historians.', 'It offers an example that supports the claim that Monet completed each painting in a single session.', 'It introduces a painting technique that Monet invented and that other Impressionists later imitated.'], answer: 0,
     steps: [
       'Sentence 1: the common view is quick, single-session outdoor painting.',
       'The underlined sentence ("Yet…") reports x-ray evidence of long, studio revisions.',
@@ -252,7 +247,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-tsp-03', skill: 'tsp', sub: 'Overall structure', d: 'H',
-    passage: 'For decades, ecologists assumed that the deep ocean floor was nearly lifeless, since sunlight cannot reach it and food is scarce. That assumption collapsed in 1977, when researchers in the submersible *Alvin* discovered hydrothermal vents crowded with tube worms, clams, and crabs. These communities, scientists later learned, depend not on sunlight but on bacteria that draw energy from chemicals in the vent water. The discovery led researchers to rethink where, and in what forms, life can exist.',
+    passage: 'For decades, ecologists assumed that the deep ocean floor was nearly lifeless, since sunlight cannot reach it and organic food drifting down from surface waters is extremely scarce. That assumption collapsed in 1977, when researchers in the submersible *Alvin* discovered hydrothermal vents crowded with tube worms, clams, and crabs. These communities, scientists subsequently learned, depend not on sunlight but on bacteria that extract energy from chemicals dissolved in the vent water. The discovery led researchers to reconsider where, and in what forms, life can exist on Earth and perhaps elsewhere.',
     stem: 'Which choice best describes the overall structure of the text?',
     choices: [
       'It describes a scientific debate and then explains why neither side was able to win it.',
@@ -278,7 +273,7 @@ export const RW_SPEC: RawQuestion[] = [
   },
   {
     id: 'r-s-tsp-04', skill: 'tsp', sub: 'Function in literary text', d: 'V',
-    passage: 'The following text is from an original short story.\n\nFor thirty years, Tomas had opened the bakery at four in the morning, and for thirty years he had told anyone who asked that he did not mind the hour. On the morning of his retirement, he unlocked the door, switched on the ovens, and then, instead of reaching for the flour, __sat down on the stool by the window and watched the street turn slowly from black to gray__. He did not get up until the first customer knocked.',
+    passage: 'The following text is from an original short story.\n\nFor thirty years, Tomas had opened the bakery at four in the morning, and for thirty years he had told anyone who asked that he did not mind the hour in the slightest. On the morning of his retirement, he unlocked the door, switched on the ovens, and then, instead of reaching for the flour, __sat down on the stool by the window and watched the street turn slowly from black to gray__. He did not get up until the first customer knocked, apologetic, impatient, and considerably surprised.',
     stem: 'Which choice best describes the function of the underlined portion in the text as a whole?',
     choices: [
       'It shows that, after thirty years, Tomas has suddenly forgotten the order in which he usually begins his work.',

@@ -48,9 +48,9 @@ export const RW_NEW_3: RawQuestion[] = [
   // ── Text structure and purpose
   {
     id: 'r-tsp-n5', skill: 'tsp', sub: 'Function of a sentence', d: 'H',
-    passage: 'Novelist Kwame Asante drafts every book by hand. __He has said that the slowness of writing with a pen forces him to choose each word carefully before committing it to the page.__ His editor notes that his manuscripts arrive with far fewer revisions than those of writers who type.',
+    passage: 'Novelist Kwame Asante drafts every book by hand, filling dozens of inexpensive notebooks before a single page is typed. __He has said that the slowness of writing with a pen forces him to choose each word carefully before committing it to the page.__ His editor notes that his manuscripts arrive with considerably fewer revisions than those of writers who compose directly on computers, an observation that seems to confirm his explanation.',
     stem: 'Which choice best describes the function of the underlined sentence in the text as a whole?',
-    choices: ['It introduces a criticism of Asante’s method that the last sentence then answers.', 'It describes how Asante’s editor reacts to his handwritten drafts.', 'It gives Asante’s own explanation for the drafting habit described in the first sentence.', 'It presents evidence that typed manuscripts need more revision than handwritten ones.'], answer: 2,
+    choices: ['It introduces a criticism of Asante’s drafting method that the last sentence of the text then answers.', 'It describes how Asante’s editor typically reacts when receiving his handwritten drafts of novels.', 'It gives Asante’s own explanation for the drafting habit described in the first sentence.', 'It presents evidence that typed manuscripts generally require more revision than handwritten manuscripts.'], answer: 2,
     steps: ['Sentence 1 states a habit (drafting by hand). The underlined sentence gives Asante’s reason for it.', 'The last sentence adds the editor’s observation. So the underlined sentence explains the habit in Asante’s own words.'],
     why: ['The underlined sentence is not a criticism; it is Asante’s own reason.', 'The editor’s reaction comes in the last sentence, not the underlined one.', 'Correct. It gives the reason, in Asante’s words, for the habit in sentence 1.', 'The comparison of manuscripts is in the last sentence, from the editor.'],
     concept: 'A sentence’s function is its job relative to the sentences around it.',
@@ -60,7 +60,7 @@ export const RW_NEW_3: RawQuestion[] = [
   },
   {
     id: 'r-tsp-n6', skill: 'tsp', sub: 'Overall structure', d: 'V',
-    passage: 'For decades, the decline of a songbird species in a northern forest was blamed on logging. Ecologist Sun-Mi Park noticed, however, that the birds were also disappearing from protected areas where no trees had been cut. She traced the decline to a parasitic fly whose range had expanded northward as winters warmed, and she found the fly in nests in both logged and protected areas.',
+    passage: 'For decades, the decline of a songbird species in a northern forest was attributed to commercial logging. Ecologist Sun-Mi Park noticed, however, that the birds were also disappearing from protected areas where no trees had been harvested. She traced the decline to a parasitic fly whose geographical range had expanded northward as winters warmed, and she discovered the fly in nests in both logged and protected areas.',
     stem: 'Which choice best describes the overall structure of the text?',
     choices: ['It presents a theory, supports it with two examples, and recommends a policy.', 'It compares two bird species and explains why one declined faster than the other.', 'It describes a research method and then lists the method’s limitations.', 'It gives an accepted explanation, presents an observation that did not fit it, then reports an alternative explanation.'], answer: 3,
     steps: ['Sentence 1: the accepted explanation (logging). Sentence 2: an observation that does not fit (decline where no trees were cut).', 'Sentence 3: a new explanation that fits all the evidence (a parasitic fly in both kinds of area).'],

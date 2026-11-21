@@ -74,7 +74,7 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-tsp-01', skill: 'tsp', sub: 'Rhetorical strategies', d: 'H',
-    passage: 'Critics have long treated the city’s concrete central library, completed in 1971, as an eyesore: a windowless slab dropped into a neighborhood of brick row houses. Architectural historian Noor Haddad is not persuaded. She grants that the building’s exterior is severe, but she points out that its reading rooms, lit by deep skylights and arranged around a quiet central court, are among the most welcoming public spaces the city has produced.',
+    passage: 'Critics have long treated the city’s concrete central library, completed in 1971, as an eyesore: a windowless slab dropped incongruously into a neighborhood of brick row houses. Architectural historian Noor Haddad is not persuaded. She acknowledges that the building’s exterior is severe, but she points out that its reading rooms, illuminated by deep skylights and arranged around a quiet central court, are among the most welcoming public spaces the city has produced.',
     stem: 'Which choice best describes the overall structure of the text?',
     choices: [
       'It presents a common criticism of a building, then describes a scholar’s view that partly accepts that criticism while highlighting a strength the critics overlook.',
@@ -100,14 +100,9 @@ export const RW_COURSE: RawQuestion[] = [
   },
   {
     id: 'r-c-tsp-02', skill: 'tsp', sub: 'Rhetorical strategies', d: 'H',
-    passage: 'Many people assume that bumblebees find rewarding flowers chiefly by sight and smell. __Yet bumblebees in laboratory trials also learn to tell apart two artificial flowers that are identical in color and scent but carry different, faint electric charges.__ Because a flower’s charge changes for a short time after a bee visits, researchers suggest that the charge may signal to the next bee that the flower’s nectar has already been taken.',
+    passage: 'Many people assume that bumblebees locate rewarding flowers chiefly by sight and smell, the senses most obviously engaged when insects forage. __Yet bumblebees in laboratory trials also learn to tell apart two artificial flowers that are identical in color and scent but carry different, faint electric charges.__ Because a flower’s charge changes temporarily after a bee visits, researchers suggest that the charge may signal to the next bee that the flower’s nectar has already been collected.',
     stem: 'Which choice best describes the function of the underlined sentence in the text as a whole?',
-    choices: [
-      'It provides an example that supports the common assumption described in the previous sentence.',
-      'It states the main conclusion, which the final sentence then calls into question.',
-      'It presents a finding that complicates the common assumption mentioned in the previous sentence.',
-      'It describes the method that researchers originally used to reach the common assumption.',
-    ], answer: 2,
+    choices: ['It provides an example that supports the common assumption described in the previous sentence.', 'It states the main conclusion of the text, which the final sentence then calls into question.', 'It presents a finding that complicates the common assumption mentioned in the previous sentence.', 'It describes the method that researchers originally used to arrive at the common assumption about bees.'], answer: 2,
     steps: [
       'The first sentence states an assumption: bees find flowers “chiefly by sight and smell.”',
       'The underlined sentence begins with “Yet” and reports that bees can distinguish flowers that look and smell the same, using electric charge.',

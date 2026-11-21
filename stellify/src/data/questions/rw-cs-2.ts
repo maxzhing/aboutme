@@ -56,14 +56,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-tsp-03', skill: 'tsp', sub: 'Passage organization', d: 'H',
-    passage: 'For decades, the standard account held that the first farmers in the region abandoned hunting almost as soon as they began planting grain. Excavations at the village of Tell Miran tell a different story. In layers dating to centuries after the first cultivated wheat appears, archaeologists found gazelle bones in undiminished numbers, along with newly made hunting points. Farming, it seems, was added to an older way of life long before it replaced it.',
+    passage: 'For decades, the standard account held that the first farmers in the region abandoned hunting almost as soon as they began cultivating grain, as though agriculture had been an immediate and decisive revolution. Excavations at the village of Tell Miran, however, tell a considerably different and more gradual story. In layers dating to centuries after the first cultivated wheat appears, archaeologists found gazelle bones in undiminished numbers, along with newly manufactured hunting points. Farming, it seems, was added to an older way of life long before it replaced it.',
     stem: 'Which choice best describes the overall structure of the text?',
-    choices: [
-      'It describes a discovery and then explains the method used to make it.',
-      'It summarizes two competing theories and declines to choose between them.',
-      'It presents a long-held view and then describes evidence that calls for revising it.',
-      'It outlines a problem and then proposes a practical solution.',
-    ], answer: 2,
+    choices: ['It describes an archaeological discovery and then explains the excavation method used to make it.', 'It summarizes two competing theories about early farming and declines to choose between them.', 'It presents a long-held view and then describes evidence that calls for revising that view.', 'It outlines a practical problem faced by early farmers and then describes how they solved it.'], answer: 2,
     steps: [
       'Sentence 1 gives "the standard account." Sentence 2 says the excavations "tell a different story."',
       'Sentences 3 and 4 give the evidence (continued hunting long after farming began) and the revised conclusion.',
@@ -82,14 +77,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-tsp-04', skill: 'tsp', sub: 'Function of a sentence', d: 'H',
-    passage: 'Octopuses can change the color and texture of their skin in a fraction of a second. __Curiously, their eyes contain only one type of light receptor, which should make them colorblind.__ Biologist Mira Castell proposes a resolution: light-sensitive proteins found throughout octopus skin may allow the animal to detect color with its body, independent of its eyes.',
+    passage: 'Octopuses can change the color and texture of their skin in a fraction of a second, matching backgrounds with astonishing precision. __Curiously, their eyes contain only one type of light receptor, which should make them colorblind.__ Biologist Mira Castell proposes a resolution: light-sensitive proteins distributed throughout octopus skin may allow the animal to detect color with its body, independently of its eyes, an explanation that would reconcile the two observations.',
     stem: 'Which choice best describes the function of the underlined sentence in the text as a whole?',
-    choices: [
-      'It provides evidence that supports Castell\'s proposal.',
-      'It summarizes the main finding of Castell\'s research.',
-      'It questions the accuracy of the claim made in the first sentence.',
-      'It introduces a puzzle that the proposal in the next sentence is meant to address.',
-    ], answer: 3,
+    choices: ['It provides experimental evidence that directly supports the proposal Castell offers in the next sentence.', 'It summarizes the main finding of Castell\'s research on light-sensitive proteins in octopus skin.', 'It questions the accuracy of the claim about octopus camouflage made in the first sentence of the text.', 'It introduces a puzzle that the proposal in the next sentence is meant to address and resolve.'], answer: 3,
     steps: [
       'Sentence 1: octopuses match colors expertly. Underlined sentence: yet their eyes should make them colorblind. Together these create an apparent contradiction.',
       'The next sentence calls Castell\'s idea "a resolution," meaning it answers that contradiction.',
@@ -108,14 +98,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-tsp-05', skill: 'tsp', sub: "Author's purpose", d: 'H',
-    passage: 'The following text is from an original poem.\n\nI keep the porch light burning, not for you—\nyou know the road, the gate, the third loose stair—\nbut for the moths, who have no better plan,\nand for myself, who likes to think you\'d care.',
+    passage: 'The following text is from an original poem.\n\nI keep the porch light burning, not for you—\nyou know the road, the gate, the third loose stair,\nthe neighbors’ dog, the hedge’s overhanging branches—\nbut for the moths, who have no better, more sensible plan,\nand for myself, who likes to think you\'d care,\nimagining, as you pass, the window illuminated.',
     stem: 'Which choice best states the main purpose of the text?',
-    choices: [
-      'To describe the insects that gather around a porch light at night',
-      'To explain why the person addressed no longer visits the speaker',
-      'To suggest that a gesture the speaker plays down in fact expresses a hope for the other person\'s concern',
-      'To criticize the person addressed for forgetting the way to the speaker\'s house',
-    ], answer: 2,
+    choices: ['To describe in detail the insects that gather around a porch light on summer nights', 'To explain why the person addressed no longer visits the speaker’s house as before', 'To suggest that a gesture the speaker plays down in fact expresses a hope for the other person\'s concern', 'To criticize the person addressed for forgetting the way to the speaker\'s house and porch'], answer: 2,
     steps: [
       'The speaker first denies that the light is for "you," offering lighter reasons (the moths).',
       'The last line admits the real reason: the speaker "likes to think you\'d care."',
@@ -134,14 +119,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-tsp-06', skill: 'tsp', sub: "Author's purpose", d: 'H',
-    passage: 'In the 1920s, a sociologist\'s survey method was simple: knock on doors and ask. Today\'s researchers can analyze millions of social media posts in an afternoon. Yet sociologist Deja Marlowe warns against assuming that more data means better answers. People who post online, she observes, differ systematically from those who do not, and what they post is shaped by what they expect others to reward.',
+    passage: 'In the 1920s, a sociologist\'s survey method was straightforward: knock on doors and ask residents questions, recording their answers by hand in notebooks. Today\'s researchers can analyze millions of social media posts in an afternoon, using software that identifies patterns no individual could detect. Yet sociologist Deja Marlowe warns against assuming that more data necessarily means better answers. People who post online, she observes, differ systematically from those who do not, and what they post is shaped by what they expect others to reward with attention and approval.',
     stem: 'Which choice best states the main purpose of the text?',
-    choices: [
-      'To present a researcher\'s caution about a limitation of a modern research method',
-      'To trace the history of survey methods in sociology',
-      'To argue that door-to-door surveys are more accurate than online data',
-      'To explain how social media companies collect information about users',
-    ], answer: 0,
+    choices: ['To present a researcher\'s caution about a significant limitation of a modern research method', 'To trace the historical development of survey methods in sociology from the 1920s to today', 'To argue that door-to-door surveys produce more accurate results than analyses of online data', 'To explain how social media companies collect and analyze information about the people who use them'], answer: 0,
     steps: [
       'The first two sentences contrast old and new methods only to set up the main point.',
       '"Yet" introduces Marlowe\'s warning, and the last sentence gives her reasons (online posters are unrepresentative; posts are shaped by expected reward).',
@@ -160,14 +140,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-tsp-07', skill: 'tsp', sub: 'Function of a sentence', d: 'H',
-    passage: 'The following text is from an original novel.\n\nThe house on Carroway Lane had been for sale so long that the sign itself had become a landmark. __Children gave directions by it; the postman leaned his bicycle against it.__ So when a van pulled up one gray morning and a woman began carrying boxes inside, the whole street took it as a kind of trespass.',
+    passage: 'The following text is from an original novel.\n\nThe house on Carroway Lane had been for sale so long that the sign itself had become a neighborhood landmark. __Children gave directions by it; the postman leaned his bicycle against it.__ So when a moving van pulled up one gray morning and a woman began carrying boxes inside, the whole street interpreted it as a kind of trespass, an unexpected violation of something everyone had silently agreed upon.',
     stem: 'Which choice best describes the function of the underlined sentence in the text as a whole?',
-    choices: [
-      'It explains why the house on Carroway Lane had failed to sell.',
-      'It introduces characters who will be important later in the story.',
-      'It suggests that the neighbors were eager for someone to move in.',
-      'It illustrates how completely the neighborhood had come to treat the house\'s vacancy as a permanent fact.',
-    ], answer: 3,
+    choices: ['It explains why the house on Carroway Lane had failed to attract any buyers for so long.', 'It introduces several characters who will become important later in the novel’s story.', 'It suggests that the neighbors had been eager for someone to buy the house and move in.', 'It illustrates how completely the neighborhood had come to treat the house\'s vacancy as a permanent fact.'], answer: 3,
     steps: [
       'The previous sentence claims the for-sale sign "had become a landmark." The underlined sentence gives two examples of that: directions and the postman\'s bicycle.',
       'These examples show the neighbors had built the empty house into their routines, which is why the new arrival feels like "a kind of trespass."',
@@ -186,14 +161,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-tsp-08', skill: 'tsp', sub: 'Argument structure', d: 'V',
-    passage: 'It is tempting to read the peacock\'s tail as a straightforward advertisement of health: only a vigorous male, the reasoning goes, could afford such an ornament. Field studies do show that peahens often prefer males with more elaborate trains. But the link between train quality and the survival of a male\'s offspring has proved weak and inconsistent across populations. If the tail is a signal, what it signals is still an open question.',
+    passage: 'It is tempting to interpret the peacock\'s tail as a straightforward advertisement of health: only a vigorous male, the reasoning goes, could afford such an extravagant ornament. Field studies do demonstrate that peahens often prefer males with more elaborate trains, a preference observed in several wild and captive populations. But the relationship between train quality and the survival of a male\'s offspring has proved weak and inconsistent across populations. If the tail is a signal, what it communicates to prospective mates remains an open and surprisingly persistent question.',
     stem: 'Which choice best describes the overall structure of the text?',
-    choices: [
-      'It presents a hypothesis and then describes evidence that conclusively disproves it.',
-      'It describes an appealing interpretation, acknowledges some support for it, and then explains why it remains unconfirmed.',
-      'It contrasts the mating behavior of two different species.',
-      'It summarizes a scientific debate and then endorses one side.',
-    ], answer: 1,
+    choices: ['It presents a hypothesis and then describes evidence that conclusively disproves the hypothesis.', 'It describes an appealing interpretation, acknowledges some support for it, and then explains why it remains unconfirmed.', 'It contrasts the mating behavior of peacocks with the mating behavior of a different species of bird.', 'It summarizes a scientific debate about peacocks and then endorses one side of that debate.'], answer: 1,
     steps: [
       'Sentence 1: an appealing interpretation ("It is tempting to read ..."). Sentence 2: some support ("Field studies do show ...").',
       'Sentence 3: a complication ("But the link ... weak and inconsistent"). Sentence 4: the question stays open.',
@@ -212,14 +182,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-tsp-09', skill: 'tsp', sub: 'Function of a sentence', d: 'V',
-    passage: 'Calls to replace lectures with "active learning" rest on solid evidence: students in courses built around problem solving outperform, on average, those in traditional lectures. __But averages can conceal as much as they reveal.__ In one large study, the gains were concentrated among students who had entered with weaker preparation, while well-prepared students did about equally well under either format. The case for active learning, then, may be strongest precisely where it is least often made: as a tool for narrowing gaps.',
+    passage: 'Calls to replace lectures with "active learning" rest on substantial evidence: students in courses built around collaborative problem solving consistently outperform, on average, those in traditional lectures. __But averages can conceal as much as they reveal.__ In one large, carefully controlled study, the gains were concentrated among students who had entered with weaker preparation, while well-prepared students performed about equally well under either format. The case for active learning, then, contrary to how advocates usually present it, may be strongest precisely where it is least often made: as a tool for narrowing achievement gaps.',
     stem: 'Which choice best describes the function of the underlined sentence in the text as a whole?',
-    choices: [
-      'It rejects the evidence described in the previous sentence as unreliable.',
-      'It defines a technical term that is used later in the text.',
-      'It offers an example of an active-learning technique.',
-      'It signals that the text will complicate the general finding stated in the previous sentence.',
-    ], answer: 3,
+    choices: ['It rejects the evidence described in the previous sentence as unreliable and methodologically flawed.', 'It defines a technical term about student achievement that is used later in the text.', 'It offers a specific example of an active-learning technique used in problem-solving courses.', 'It signals that the text will complicate the general finding stated in the previous sentence.'], answer: 3,
     steps: [
       'The first sentence reports a general result based on an average. The underlined sentence warns that averages can hide things.',
       'The following sentences show what the average hid: the gains came mostly from less-prepared students.',
@@ -240,12 +205,7 @@ export const RW_CS_2: RawQuestion[] = [
     id: 'r-tsp-10', skill: 'tsp', sub: 'Tone and attitude', d: 'V',
     passage: 'The following text is from an original memoir.\n\nMy father believed in maps the way other men believe in luck. He folded them into the glove compartment, the kitchen drawer, the pocket of every coat; he could not pass a gas station rack without adding to the collection. And yet he never consulted one. He drove by feel, by the angle of the light, by an obstinate conviction that the road he wanted would present itself—and he was lost, cheerfully, for a good part of my childhood.',
     stem: 'Which choice best states the main purpose of the text?',
-    choices: [
-      'To portray, with affection, a contradiction in the father\'s character',
-      'To criticize the father for putting his family in danger',
-      'To explain how the narrator learned to read maps',
-      'To argue that intuition is a more reliable guide than maps',
-    ], answer: 0,
+    choices: ['To portray, with affection, a contradiction in the father\'s character and lifelong habits', 'To criticize the father for repeatedly putting his family in danger while driving them', 'To explain how the narrator eventually learned to read the many maps the father collected', 'To argue that intuition is a more reliable guide than maps when traveling on unfamiliar roads'], answer: 0,
     steps: [
       'The contradiction: he collected maps devotedly "and yet he never consulted one," navigating by feel instead.',
       'The tone is warm and amused: "the way other men believe in luck," "lost, cheerfully."',
@@ -264,14 +224,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-tsp-11', skill: 'tsp', sub: 'Function of a sentence', d: 'V',
-    passage: 'When the city\'s first public library opened in 1854, its trustees described it as a place where "the mechanic and the merchant" might read side by side. __The reading room\'s rules, however, required patrons to present a letter of reference from a property owner.__ Historian Ruth Okoye argues that such requirements, common at the time, reveal the distance between the democratic language of early library founders and the institutions they actually built.',
+    passage: 'When the city\'s first public library opened in 1854, its philanthropic trustees described it as an institution where "the mechanic and the merchant" might read side by side. __The reading room\'s regulations, however, required patrons to present a letter of reference from a property owner.__ Historian Ruth Okoye argues that such requirements, common at the time, reveal the considerable distance between the democratic rhetoric of early library founders and the institutions they actually built.',
     stem: 'Which choice best describes the function of the underlined sentence in the text as a whole?',
-    choices: [
-      'It explains why the trustees decided to found a public library.',
-      'It states the conclusion that Okoye draws from her research.',
-      'It provides a specific detail that contrasts with the ideal expressed in the previous sentence.',
-      'It offers evidence that the library was popular with residents of the city.',
-    ], answer: 2,
+    choices: ['It explains why the trustees decided to found a public library in the city in 1854.', 'It states the conclusion that Okoye draws from her research on early public libraries.', 'It provides a specific detail that contrasts with the ideal expressed in the previous sentence.', 'It offers evidence that the library was popular with many different residents of the city.'], answer: 2,
     steps: [
       'Sentence 1 gives the trustees\' ideal: workers and merchants reading side by side.',
       'The underlined sentence, with "however," reports a rule that would have kept many working people out.',
@@ -316,14 +271,9 @@ export const RW_CS_2: RawQuestion[] = [
   },
   {
     id: 'r-tsp-13', skill: 'tsp', sub: 'Passage organization', d: 'V',
-    passage: 'To learn whether city-dwelling birds are bolder than their rural relatives, ecologist Paz Arriaga measured how closely a person could approach birds of the same species in both settings before they took flight. Urban birds tolerated a much closer approach. Arriaga then raised chicks from both populations under identical conditions; as adults, the urban-descended birds still allowed a closer approach. The difference, she concluded, is at least partly inherited rather than simply learned from exposure to people.',
+    passage: 'To learn whether city-dwelling birds are bolder than their rural relatives, ecologist Paz Arriaga measured how closely a person could approach birds of the same species in both settings before they took flight. Urban birds consistently tolerated a much closer approach than rural birds did, often by several meters. Arriaga then raised chicks from both populations under identical laboratory conditions; as adults, the urban-descended birds still allowed a closer approach. The difference, she concluded, is at least partly inherited rather than simply learned from repeated exposure to people.',
     stem: 'Which choice best describes the overall structure of the text?',
-    choices: [
-      'It presents a conclusion and then lists objections that other researchers have raised.',
-      'It compares the methods used by two researchers who study the same species.',
-      'It describes a research method and then explains why the method failed.',
-      'It poses a research question, describes two stages of an investigation, and states the conclusion drawn from them.',
-    ], answer: 3,
+    choices: ['It presents a conclusion and then lists several objections that other researchers have raised against it.', 'It compares the methods used by two different researchers who study the same species of bird.', 'It describes a research method and then explains why that method failed to produce useful results.', 'It poses a research question, describes two stages of an investigation, and states the conclusion drawn from them.'], answer: 3,
     steps: [
       'Opening: the question ("To learn whether city-dwelling birds are bolder ...").',
       'Stage 1: field measurement of approach distance. Stage 2 ("Arriaga then ..."): raising chicks from both populations in identical conditions.',

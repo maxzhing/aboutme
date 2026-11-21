@@ -914,14 +914,9 @@ export const RW_PATTERN: RawQuestion[] = [
   /* ───────────────────────── Craft and Structure ───────────────────────── */
   {
     id: 'r-cb-tsp-01', skill: 'tsp', sub: 'Function of a sentence', d: 'V',
-    passage: 'Wondering how songbirds keep their bearings on overcast nights, Lucía Ferreyra and her team fitted migrating thrushes with tiny magnetic sensors. The birds could be reliably tracked from dusk onward; the team then compared each bird’s heading under clear and clouded skies. __The steadiness with which the thrushes held their course beneath thick cloud closely matched the steadiness of ships steering by compass rather than by the stars__, suggesting to the team that the birds were navigating by something other than what they could see.',
+    passage: 'Wondering how songbirds maintain their bearings on overcast nights, Lucía Ferreyra and her team fitted migrating thrushes with miniature electronic sensors that recorded orientation continuously. The birds could be reliably tracked from dusk onward; the team then compared each bird’s directional heading under clear and overcast skies. __The steadiness with which the thrushes held their course beneath thick cloud closely matched the steadiness of ships steering by compass rather than by the stars__, suggesting to the team that the birds were navigating by something other than what they could see, perhaps by sensing Earth’s magnetic field.',
     stem: "Which choice best describes the function of the underlined portion in the text as a whole?",
-    choices: [
-      'It offers a parallel case that lends support to the team’s interpretation.',
-      'It presents a result that conflicts with the team’s initial assumption.',
-      'It describes the method the team used to track the thrushes.',
-      'It notes a practical application of the team’s finding.',
-    ], answer: 0,
+    choices: ['It offers a parallel case that lends support to the interpretation that the team ultimately reached.', 'It presents an unexpected result that conflicts with the team’s initial assumption about navigation.', 'It describes the method that the team used to fit the thrushes with sensors and track them.', 'It notes a practical application of the team’s finding for ships that navigate on cloudy nights.'], answer: 0,
     steps: [
       'Read what comes right after the underlined portion: “suggesting to the team that the birds were navigating by something other than what they could see.” So the underlined part is what leads to that interpretation.',
       'What does the underlined part contain? The birds’ steadiness under cloud, compared with ships steering by compass rather than by the stars.',

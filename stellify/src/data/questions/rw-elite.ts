@@ -139,14 +139,9 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-tsp-01', skill: 'tsp', sub: 'Function of a sentence', d: 'E',
-    passage: 'It has become a commonplace that the printing press democratized knowledge. The claim is not so much false as premature. For well over a century after Gutenberg, books remained costly, literacy remained rare, and the press\'s most reliable customers were the same churches and courts that had once commissioned manuscripts. __What the press altered first was not who could read but how reliably a text could be reproduced.__ Only when standardized copies allowed scattered scholars to argue over the same page did the wider social consequences follow.',
+    passage: 'It has become a commonplace that the printing press democratized knowledge, but the claim is not so much false as premature, since it compresses centuries of change into a single moment. For well over a century after Gutenberg, books remained costly, literacy remained rare, and the press\'s most reliable customers were the same churches and courts that had once commissioned manuscripts. __What the press altered first was not who could read but how reliably a text could be reproduced.__ Only when standardized copies allowed scattered scholars to argue over the same page did the wider social consequences follow.',
     stem: 'Which choice best describes the function of the underlined sentence in the text as a whole?',
-    choices: [
-      'It identifies the more immediate effect of the press that the author offers in place of the commonplace claim.',
-      'It restates the commonplace claim in more precise language.',
-      'It provides evidence that literacy increased rapidly after the invention of the press.',
-      'It concedes that the commonplace claim accurately describes the first century of printing.',
-    ], answer: 0,
+    choices: ['It identifies the more immediate effect of the press that the author offers in place of the commonplace claim.', 'It restates the commonplace claim about the printing press in more precise and technical language.', 'It provides evidence that literacy increased rapidly in the decades after the invention of the press.', 'It concedes that the commonplace claim accurately describes the first century of printing in Europe.'], answer: 0,
     steps: [
       'The author calls the commonplace claim "premature" and supports that with facts about cost, literacy and customers.',
       'The underlined sentence then says what did change first: reliable reproduction of texts, "not who could read."',
@@ -165,14 +160,9 @@ export const RW_ELITE: RawQuestion[] = [
   },
   {
     id: 'r-x-tsp-02', skill: 'tsp', sub: "Author's purpose", d: 'E',
-    passage: 'The notion that bilingual children enjoy a general cognitive advantage was greeted with enthusiasm when early studies reported it. Larger subsequent studies have often failed to reproduce the effect. Some researchers conclude that the advantage was an artifact of small samples; others maintain that it is real but appears only under particular conditions, such as when both languages are used every day. What the dispute has made plain is that "bilingualism" names too many different experiences to be treated as a single variable.',
+    passage: 'The notion that bilingual children enjoy a general cognitive advantage was greeted with enthusiasm when early studies reported it, partly because it seemed to justify educational policies many researchers already favored. Larger subsequent studies have frequently failed to reproduce the effect. Some researchers conclude that the advantage was an artifact of small samples; others maintain that it is real but appears only under particular conditions, such as when both languages are used every day. What the dispute has made plain is that "bilingualism" names too many different experiences to be treated as a single variable.',
     stem: 'Which choice best states the main purpose of the text?',
-    choices: [
-      'To defend the claim that bilingual children have a general cognitive advantage',
-      'To argue that the reported advantage was produced by flawed early studies',
-      'To describe the conditions under which children most easily become bilingual',
-      'To suggest that a scientific dispute has exposed a problem in how its central concept is defined',
-    ], answer: 3,
+    choices: ['To defend the claim that bilingual children have a general cognitive advantage over other children', 'To argue that the reported advantage was produced entirely by flawed and poorly designed early studies', 'To describe the particular conditions under which young children most easily become bilingual', 'To suggest that a scientific dispute has exposed a problem in how its central concept is defined'], answer: 3,
     steps: [
       'The text reports an early finding, later failures to reproduce it, and two rival interpretations, without choosing between them.',
       'The final sentence gives the author\'s own point: the dispute shows that "bilingualism" is too varied to be one variable.',
