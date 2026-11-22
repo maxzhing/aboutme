@@ -97,6 +97,8 @@ export function VideoPlayer({ video, onDone }: { video: Video; onDone?: (score: 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement)?.closest('input, textarea, select, [contenteditable]')) return;
+      // Space on a focused button already presses that button
+      if (e.key === ' ' && (e.target as HTMLElement)?.closest('button, a')) return;
       if (e.key === ' ' || e.key === 'k') { e.preventDefault(); toggle(); }
       else if (e.key === 'ArrowRight') { e.preventDefault(); jump(i + 1); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); jump(i - 1); }
@@ -336,7 +338,8 @@ function PlotView({ s, b }: { s: Extract<Scene, { k: 'plot' }>; b: number }) {
     }
     return d;
   };
-  const step = (r: number) => (r <= 12 ? 1 : r <= 30 ? 5 : r <= 120 ? 10 : 50);
+  // a round grid step giving about 6–12 lines across the range (1, 2, 5, 10, 20, 50, 100, 200, ...)
+  const step = (r: number) => { const m = 10 ** Math.floor(Math.log10(r / 6)); return [1, 2, 5, 10].map((f) => f * m).find((st) => r / st <= 12)!; };
   const ticks = (a: number, z: number) => { const st = step(z - a), out: number[] = []; for (let t = Math.ceil(a / st) * st; t <= z; t += st) out.push(t); return out; };
   const draw = { initial: { pathLength: 0, opacity: 0 }, animate: { pathLength: 1, opacity: 1 }, transition: { duration: 1.1, ease: 'easeInOut' as const } };
   const fade = { initial: { opacity: 0, scale: 0.6 }, animate: { opacity: 1, scale: 1 }, transition: { duration: 0.4 } };
@@ -367,10 +370,12 @@ function PlotView({ s, b }: { s: Extract<Scene, { k: 'plot' }>; b: number }) {
         {ticks(y0, y1).map((t) => <line key={`y${t}`} y1={py(t)} y2={py(t)} x1={px(x0)} x2={px(x1)} stroke={LINE} strokeWidth={0.6} />)}
         {y0 <= 0 && y1 >= 0 && <line x1={px(x0)} x2={px(x1)} y1={py(0)} y2={py(0)} stroke={MUTED} strokeWidth={1.4} />}
         {x0 <= 0 && x1 >= 0 && <line y1={py(y0)} y2={py(y1)} x1={px(0)} x2={px(0)} stroke={MUTED} strokeWidth={1.4} />}
-        {ticks(x0, x1).filter((t) => t !== 0 && t % (step(x1 - x0) * 2) === 0).map((t) => <text key={`lx${t}`} x={px(t)} y={Math.min(H - 2, py(Math.max(y0, Math.min(y1, 0))) + 13)} fontSize={10} fill={MUTED} textAnchor="middle">{t}</text>)}
-        {ticks(y0, y1).filter((t) => t !== 0 && t % (step(y1 - y0) * 2) === 0).map((t) => <text key={`ly${t}`} x={Math.max(10, px(Math.max(x0, Math.min(x1, 0))) - 5)} y={py(t) + 3.5} fontSize={10} fill={MUTED} textAnchor="end">{t}</text>)}
       </g>}
       {s.items.map((it, n) => ((it.at ?? 0) <= b ? item(it, n) : null))}
+      {s.axes !== false && <g aria-hidden>
+        {ticks(x0, x1).filter((t) => t !== 0 && t % (step(x1 - x0) * 2) === 0).map((t) => <text key={`lx${t}`} x={px(t)} y={Math.min(H - 2, py(Math.max(y0, Math.min(y1, 0))) + 13)} fontSize={10} fill={MUTED} textAnchor="middle" {...HALO}>{t}</text>)}
+        {ticks(y0, y1).filter((t) => t !== 0 && t % (step(y1 - y0) * 2) === 0).map((t) => <text key={`ly${t}`} x={Math.max(32, px(Math.max(x0, Math.min(x1, 0))) - 5)} y={py(t) + 3.5} fontSize={10} fill={MUTED} textAnchor="end" {...HALO}>{t}</text>)}
+      </g>}
     </svg>
   );
 }
