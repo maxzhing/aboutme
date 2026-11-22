@@ -233,7 +233,7 @@ export const MATH_VIDEOS: Video[] = [
     { k: 'plot', head: r`$P(t) = 200(1.5)^t$`, win: [-0.5, 5.5, -100, 1700], items: [
       { t: 'fn', f: (x) => 200 * 1.5 ** x, from: 0, to: 5.5 },
       { t: 'pt', x: 0, y: 200, label: 'starts at 200', tone: 'gold', at: 1 },
-      { t: 'pt', x: 1, y: 300, label: '×1.5 each step', tone: 'ok', at: 2 },
+      { t: 'pt', x: 2, y: 450, label: '×1.5 each step: 200, 300, 450, ...', tone: 'ok', at: 2 },
     ], caption: ['Exponential functions multiply by the same factor each step.', 'The number in front is the starting value.', 'A factor of 1.5 means 50% growth per period.'], say: [
       'Exponential functions multiply instead of add.',
       'The number in front is the start: two hundred.',

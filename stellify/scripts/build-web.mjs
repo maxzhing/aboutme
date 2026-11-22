@@ -15,7 +15,9 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const at = (p) => join(root, p);
 const out = join(root, '..', 'sat');
 const A = join(out, 'assets');
-rmSync(out, { recursive: true, force: true });
+// start clean, except the rendered video lessons (sat/videos, made by scripts/videos/render.mjs), which are kept
+mkdirSync(out, { recursive: true });
+for (const f of readdirSync(out)) if (f !== 'videos') rmSync(join(out, f), { recursive: true, force: true });
 mkdirSync(join(A, 'fonts'), { recursive: true });
 mkdirSync(join(A, 'katex'), { recursive: true });
 const hash = (s) => createHash('sha256').update(s).digest('hex').slice(0, 10);
@@ -46,9 +48,7 @@ const r = await build({
 const entry = Object.entries(r.metafile.outputs).find(([, o]) => o.entryPoint?.endsWith('web-entry.ts'))?.[0].split('/').pop();
 copyFileSync(at('node_modules/pdfjs-dist/legacy/build/pdf.worker.min.js'), join(A, 'pdf.worker.min.js'));
 copyFileSync(at('public/screenshot-path.webp'), join(A, 'screenshot-path.webp'));
-// video lessons (rendered by scripts/videos/): streamed, never in the offline cache
-mkdirSync(join(out, 'videos'), { recursive: true });
-for (const f of readdirSync(at('public/videos'))) if (/\.(mp4|jpg)$/.test(f)) copyFileSync(at(`public/videos/${f}`), join(out, 'videos', f));
+
 writeFileSync(join(A, 'theme.js'), `(function(){try{var t=localStorage.getItem('stellify-theme')||'light';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`);
 const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="#1B1915"/><path d="M20 7 L23.5 16.2 L33.2 16.7 L25.6 22.8 L28.2 32.2 L20 26.8 L11.8 32.2 L14.4 22.8 L6.8 16.7 L16.5 16.2 Z" fill="#F6F3EA"/></svg>`;
 writeFileSync(join(out, 'icon.svg'), icon);

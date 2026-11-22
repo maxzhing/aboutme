@@ -13,7 +13,7 @@ script, re-render that video so the file, its timing and its captions match agai
 
 2. Film: `npm run build:fast`, then (real time, about as long as the videos; keep the machine otherwise idle)
 
-       node scripts/videos/render.mjs dist/stellify.html audio public/videos [skill,...]
+       node scripts/videos/render.mjs dist/stellify.html audio ../sat/videos [skill,...]
 
 3. Copy `audio/timing.json` to `src/data/videos/timing.json` (the app uses it for captions, chapters and the
-   pause-and-try stops), then `npm run build:web`, which copies `public/videos/` to `../sat/videos/`.
+   pause-and-try stops), then `npm run build:web` (it keeps `../sat/videos/` and rebuilds everything else).

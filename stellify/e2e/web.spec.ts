@@ -12,7 +12,15 @@ test.beforeAll(async () => {
     const p = join(ROOT, decodeURIComponent((req.url ?? '/').split('?')[0]));
     const f = existsSync(p) && statSync(p).isDirectory() ? join(p, 'index.html') : p;
     if (!existsSync(f)) { res.writeHead(404); res.end(); return; }
-    res.writeHead(200, { 'content-type': TYPES[extname(f)] ?? 'application/octet-stream' }); res.end(readFileSync(f));
+    const body = readFileSync(f), type = TYPES[extname(f)] ?? 'application/octet-stream';
+    // byte ranges, as GitHub Pages serves them: a video can only be seeked with these
+    const range = /bytes=(\d*)-(\d*)/.exec(req.headers.range ?? '');
+    if (range) {
+      const start = range[1] ? Number(range[1]) : body.length - Number(range[2]), end = range[1] && range[2] ? Number(range[2]) : body.length - 1;
+      res.writeHead(206, { 'content-type': type, 'accept-ranges': 'bytes', 'content-range': `bytes ${start}-${end}/${body.length}`, 'content-length': end - start + 1 });
+      res.end(body.subarray(start, end + 1)); return;
+    }
+    res.writeHead(200, { 'content-type': type, 'accept-ranges': 'bytes' }); res.end(body);
   });
   await new Promise<void>((r) => server.listen(0, () => r()));
   base = `http://localhost:${(server.address() as { port: number }).port}/sat/`;

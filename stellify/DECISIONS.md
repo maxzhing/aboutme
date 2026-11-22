@@ -252,8 +252,8 @@ Each entry records what was decided, why, and the alternatives considered.
     screen stream is recorded; ffmpeg joins picture and voice (scripts/videos/). Each video stops by itself at its
     pause-and-try question and waits for the student's answer; skipping plays the video's own spoken answer after a
     five-second countdown, so the file also works as a plain video. Captions (WebVTT) and chapters come from the script
-    and its timing, so they always match the narration. The files (about 1–2 MB each) live in public/videos/, are
-    copied to sat/videos/ by the web build, and are streamed rather than stored in the offline cache. The single-file
+    and its timing, so they always match the narration. The files (about 1–2 MB each, 49 MB in all) live only in sat/videos/,
+    which the web build keeps, and are streamed rather than stored in the offline cache. The single-file
     builds stream them from the hosted site (https://maxzhing.github.io/aboutme/sat/, assumed to be the GitHub Pages
     address; not checked from here) and, when that cannot be reached, fall back to the animated version from entry 46,
     which also stays available on request.

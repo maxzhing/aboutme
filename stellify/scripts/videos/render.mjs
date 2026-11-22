@@ -70,7 +70,7 @@ for (const skill of skills) {
   writeFileSync(join(work, 'list.txt'), list.join('\n'));
   execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', join(work, 'list.txt'), '-i', join(audioDir, `${skill}.wav`),
     '-map', '0:v', '-map', '1:a', '-vf', 'fps=30,format=yuv420p', '-c:v', 'libx264', '-preset', 'slow', '-tune', 'animation', '-crf', '26',
-    '-c:a', 'aac', '-b:a', '80k', '-ac', '1', '-t', String(t.duration), '-movflags', '+faststart', join(outDir, `${skill}.mp4`)]);
+    '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-ar', '24000', '-c:a', 'aac', '-b:a', '80k', '-ac', '1', '-t', String(t.duration), '-movflags', '+faststart', join(outDir, `${skill}.mp4`)]);
   // the poster: the title card, once it has faded in
   execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-ss', '2.5', '-i', join(outDir, `${skill}.mp4`), '-frames:v', '1', '-q:v', '4', join(outDir, `${skill}.jpg`)]);
   rmSync(work, { recursive: true, force: true });
