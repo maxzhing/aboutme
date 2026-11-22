@@ -227,3 +227,21 @@ Each entry records what was decided, why, and the alternatives considered.
     text cannot be cut cleanly; against the earlier hand audit it reproduced 28 fixes exactly, sent 8 to the image
     and touched nothing undamaged. make-pack.py repairs compounds split as "long- headed" (5 of 7 earlier cases).
     The 9 quarantined questions still need the College Board PDFs.
+46. **Video lessons for the SAT, and two-column questions in the practice-test importer (owner request).**
+    Video Lessons (menu: Learn → Video Lessons, /videos) has one video for each of the 30 SAT skills, the same skills
+    as the lessons. They are narrated, animated explainers drawn in the browser, not recorded video files: each
+    sentence of narration is a beat that reveals the next part of the picture (graphs that draw themselves, lines of
+    work, highlighted passages, answer choices crossed out one by one with the reason, two-way tables), so all 30
+    add about 140 KB of source instead of the hundreds of megabytes real video would add to a single-file, offline app. Each
+    video has the idea, a worked question, the trap to avoid, a pause-and-try question that stops the video until the
+    student answers, and a recap, and runs about 1–2 minutes. The voice is the browser's built-in speech (it sounds
+    different on each device, and some browsers have none); captions are always available, with speed, keyboard
+    controls and full screen. Narration is plain words because it is read aloud; the math is typeset in the
+    pictures. All passages and questions are original; tests/videos.test.ts checks the structure of every video
+    and recomputes every number in the math scripts. "Watched" marks are kept in this browser only (they are a
+    convenience, not progress), so they are not in the export file. AP courses have no videos yet, as asked.
+    Importer: a left-column question whose text runs across the gutter (a wide table row or line) now gets a
+    full-width crop, and the right column's items beside it are given to it instead of to the right column. Tested
+    on a made-up page with the same layout; not yet tested on the College Board PDFs, which are not on this machine,
+    and a figure drawn as an image with no text in it is still not detected. The 9 quarantined questions stay set
+    aside until the PDFs and private/pack.json are available.

@@ -163,6 +163,9 @@ function numberCandidates(col: PItem[]): PItem[] {
     && !col.some((o) => o !== n && word(o) && o.y > n.y - 4 && o.y < n.y + 60 && o.x < n.x - 3)).sort((a, b) => a.y - b.y);
 }
 
+/** Whether a left-column question runs past the middle of the page (a wide line, table row or figure label). */
+export const spansGutter = (items: PItem[], mid: number) => items.some((i) => word(i) && i.x < mid - 4 && i.x + i.w > mid + 6);
+
 export function parseBooklet(pages: PPage[]): Booklet {
   const modules: BookletModule[] = [];
   const minutes: Partial<Record<ModKey, number>> = {};
@@ -198,8 +201,11 @@ export function parseBooklet(pages: PPage[]): Booklet {
     if (!cur || /No Test Material On This Page/i.test(txt)) continue;
     const body = bodyOf(p);
     const mid = p.width / 2;
+    // A question whose text or table runs across the gutter takes the full page width for its height; the right
+    // column's items in that band belong to it, not to the right column (otherwise its crop is cut off on the right).
+    const wide: [number, number][] = [];
     for (const [c0, c1] of [[0, mid], [mid, p.width]] as const) {
-      const col = body.filter((i) => i.x >= c0 && i.x < c1);
+      const col = body.filter((i) => i.x >= c0 && i.x < c1 && (c0 === 0 || !wide.some(([a, b]) => i.y > a && i.y <= b + 1)));
       const nx = numX.get(`${p.n % 2}-${c0 === 0 ? 0 : 1}`);
       const starts = numberCandidates(col).filter((n) => nx === undefined || Math.abs(n.x - nx) <= 6);
       const accepted: PItem[] = [];
@@ -224,8 +230,14 @@ export function parseBooklet(pages: PPage[]): Booklet {
       accepted.forEach((n, k) => {
         const next = accepted[k + 1];
         const y0 = n.y - n.h - 3, y1 = next ? next.y - next.h - 6 : floor;
-        const inside = col.filter((i) => i !== n && i.y > y0 && i.y <= y1 + 1);
-        cur!.questions.push({ mod: cur!.mod, num: Number(n.s), parts: [{ page: p.n, box: { x0: Math.max(x0, n.x - 8), y0, x1, y1 } }], lines: toLines(p.n, inside) });
+        let inside = col.filter((i) => i !== n && i.y > y0 && i.y <= y1 + 1);
+        let right = x1;
+        if (c0 === 0 && spansGutter(inside, mid)) {
+          right = p.width - 18;
+          wide.push([y0, y1]);
+          inside = body.filter((i) => i !== n && i.x >= Math.max(x0, n.x - 8) && i.y > y0 && i.y <= y1 + 1);
+        }
+        cur!.questions.push({ mod: cur!.mod, num: Number(n.s), parts: [{ page: p.n, box: { x0: Math.max(x0, n.x - 8), y0, x1: right, y1 } }], lines: toLines(p.n, inside) });
       });
     }
     if (p.items.some((i) => /^STOP$/i.test(i.s.trim()))) cur = null;

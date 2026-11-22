@@ -261,7 +261,7 @@ test('every navigation item opens a working page with no console errors', async 
   const errors = watch(page);
   await boot(page);
   const links = await page.locator('aside nav a').evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
-  expect(links.length).toBe(39); // 38 menu items (extras in folded groups, still in the page) plus Settings
+  expect(links.length).toBe(40); // 39 menu items (extras in folded groups, still in the page) plus Settings
   for (const href of links) {
     await page.goto(`${FILE}${href}`);
     await expect(page.locator('main h1').first()).toBeVisible();
@@ -993,5 +993,27 @@ test('practice tests have the Bluebook Line Reader: it shades the page, moves wi
   await answerCurrent(page, true, 'mock-question');
   await page.keyboard.press('Escape');
   await expect(page.getByTestId('line-reader')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('video lessons: every SAT skill has a video; it plays, stops for the pause-and-try question, and finishes', async ({ page }) => {
+  const errors = watch(page);
+  await boot(page);
+  await go(page, '/videos');
+  await expect(page.getByRole('heading', { name: 'Video Lessons' })).toBeVisible();
+  await expect(page.locator('[data-testid^="video-"]')).toHaveCount(30);
+  await page.getByTestId('video-lin1').click();
+  await page.getByTestId('video-start').click();
+  await expect(page.getByTestId('video-caption')).toContainText('balance scale');
+  // step forward to the pause-and-try scene: it waits there until the student answers
+  for (let n = 0; n < 40 && !/Your turn/.test(await page.getByTestId('video-caption').innerText()); n++) await page.getByTestId('video-next').click();
+  await expect(page.getByTestId('video-quiz')).toBeVisible();
+  await page.getByTestId('video-choice-2').click();
+  await expect(page.getByTestId('video-quiz-why')).toContainText('Right');
+  await page.getByTestId('video-continue').click();
+  for (let n = 0; n < 10 && !(await page.getByTestId('video-ended').isVisible()); n++) await page.getByTestId('video-next').click();
+  await expect(page.getByTestId('video-ended')).toContainText('1 of 1');
+  await page.getByRole('link', { name: 'All videos' }).click();
+  await expect(page.getByTestId('video-lin1').getByLabel('Watched')).toBeVisible();
   expect(errors).toEqual([]);
 });

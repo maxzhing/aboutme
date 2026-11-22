@@ -48,6 +48,8 @@ const MaintainerPage = lazy(() => import('./pages/Maintainer').then((m) => ({ de
 const TestDayPage = lazy(() => import('./pages/TestDay').then((m) => ({ default: m.TestDayPage })));
 const WorkedIndexPage = lazy(() => import('./pages/Worked').then((m) => ({ default: m.WorkedIndexPage })));
 const WorkedSkillPage = lazy(() => import('./pages/Worked').then((m) => ({ default: m.WorkedSkillPage })));
+const VideosPage = lazy(() => import('./pages/Videos').then((m) => ({ default: m.VideosPage })));
+const VideoPage = lazy(() => import('./pages/Videos').then((m) => ({ default: m.VideoPage })));
 const PredictPage = lazy(() => import('./pages/Predict').then((m) => ({ default: m.PredictPage })));
 const DesmosLabPage = lazy(() => import('./pages/Desmos').then((m) => ({ default: () => <m.DesmosHubPage tab="lab" /> })));
 const AboutPage = lazy(() => import('./pages/Trust').then((m) => ({ default: m.AboutPage })));
@@ -83,6 +85,8 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/learn\/rw$/, component: Rw },
   { pattern: /^\/learn\/(?<skill>[a-z0-9]+)$/, component: LessonPage },
   { pattern: /^\/learn\/(?<skill>[a-z0-9]+)\/(?<chapter>[a-z0-9]+-\d+)$/, component: ChapterPage },
+  { pattern: /^\/videos$/, component: VideosPage },
+  { pattern: /^\/videos\/(?<skill>[a-z0-9]+)$/, component: VideoPage },
   { pattern: /^\/grammar$/, component: GrammarPage },
   { pattern: /^\/hacks$/, component: HacksPage },
   { pattern: /^\/desmos$/, component: DesmosPage },

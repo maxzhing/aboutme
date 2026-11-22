@@ -84,6 +84,30 @@ describe('cleaning imported Reading and Writing text (made-up text, same damage 
   });
 });
 
+describe('questions that span both columns (made-up page, same layout as the cut-off questions)', () => {
+  const it_ = (x: number, y: number, s: string, w = s.length * 5, h = 10) => ({ x, y, w, h, s });
+  const page = (wideRow: boolean): PPage => ({ n: 1, width: 612, height: 792, items: [
+    it_(40, 40, 'Module'), it_(90, 40, '1'), it_(200, 60, 'Math', 40, 20), it_(200, 75, '22 QUESTIONS'),
+    it_(40, 120, '1'), it_(60, 140, 'The table shows the number of tickets sold.'),
+    wideRow ? it_(60, 170, 'Day Monday Tuesday Wednesday Thursday Friday Saturday Sunday Total', 420) : it_(60, 170, 'Day Monday Tuesday'),
+    it_(60, 200, 'How many tickets were sold on Friday?'), it_(60, 230, 'A) 12'),
+    it_(40, 300, '2'), it_(60, 320, 'What is the value of x?'), it_(60, 340, 'A) 4'),
+    it_(320, 400, '3'), it_(340, 420, 'Which expression is equivalent?'), it_(340, 440, 'A) 2x'),
+  ] });
+  it('widens the crop of a question whose table runs across the gutter, and keeps the next questions intact', () => {
+    const b = parseBooklet([page(true)]);
+    const qs = b.modules[0].questions;
+    expect(qs.map((q) => q.num)).toEqual([1, 2, 3]);
+    expect(qs[0].parts[0].box.x1).toBe(612 - 18);
+    expect(qs[1].parts[0].box.x1).toBeLessThan(306);
+    expect(qs[2].parts[0].box.x0).toBeGreaterThan(306);
+  });
+  it('leaves ordinary one-column questions alone', () => {
+    const qs = parseBooklet([page(false)]).modules[0].questions;
+    expect(qs.every((q) => q.parts[0].box.x1 <= 306 || q.parts[0].box.x0 > 306)).toBe(true);
+  });
+});
+
 describe('scoring official tests', () => {
   it('uses the printed conversion table exactly', () => {
     const table: [number, number][] = [[200, 200], [200, 210], [230, 250]];

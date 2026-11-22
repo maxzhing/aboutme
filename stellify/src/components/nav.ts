@@ -1,4 +1,4 @@
-import { Atom, Eye, FlaskConical, Hexagon, Layers, ListTodo, Music, Piano, BadgeCheck, Braces, ChartScatter, Landmark, Store, SquareFunction, Lightbulb, BarChart3, BookOpen, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, Wand2, type LucideIcon } from 'lucide-react';
+import { Atom, Eye, FlaskConical, Hexagon, Layers, ListTodo, Music, Piano, BadgeCheck, Braces, ChartScatter, Landmark, Store, SquareFunction, Lightbulb, BarChart3, BookOpen, Clapperboard, Bot, Brain, Calculator, CalendarDays, ClipboardList, Flame, Gauge, GraduationCap, Home, Languages, LibraryBig, LineChart, ListChecks, Medal, NotebookPen, PawPrint, PenLine, ShoppingBag, Sigma, Sparkles, Swords, Target, Timer, Trophy, Zap, FileBarChart, Wand2, type LucideIcon } from 'lucide-react';
 
 export interface NavItem { href: string; label: string; icon: LucideIcon }
 /**
@@ -10,6 +10,7 @@ export const NAV: { group: string; folded?: boolean; items: NavItem[] }[] = [
   { group: 'Home', items: [{ href: '/', label: 'Today', icon: Home }, { href: '/calendar', label: 'My plan', icon: CalendarDays }, { href: '/path', label: 'Path', icon: Hexagon }, { href: '/test-day', label: 'Test day', icon: ListTodo }] },
   { group: 'Learn', items: [
     { href: '/learn', label: 'Lessons', icon: GraduationCap },
+    { href: '/videos', label: 'Video Lessons', icon: Clapperboard },
     { href: '/worked', label: 'Worked Examples', icon: Layers },
     { href: '/grammar', label: 'Grammar Rules', icon: PenLine },
     { href: '/desmos', label: 'Desmos', icon: LineChart },
