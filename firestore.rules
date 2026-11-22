@@ -1,0 +1,20 @@
+rules_version = '2';
+// Stellify: each signed-in student has one record, users/{their uid}, holding their saved progress.
+// Only that student can read or write it; nobody can list other students. Everything else is closed.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['v', 'at', 'attempts', 'data', 'updated'])
+        && request.resource.data.v == 1
+        && request.resource.data.at is int
+        && request.resource.data.attempts is int
+        && request.resource.data.data is bytes
+        && request.resource.data.data.size() < 950000;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

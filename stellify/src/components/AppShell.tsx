@@ -15,6 +15,8 @@ import { SoftFeel } from './Feel';
 import { ShortcutSheet } from './Shortcuts';
 import { HighlightToolbar } from './Highlight';
 import { cn } from './ui';
+import { ConflictDialog } from './Account';
+import { initCloud } from '@/lib/cloud';
 
 export function Logo({ size = 30 }: { size?: number }) {
   return (
@@ -55,6 +57,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [menu, setMenu] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  // the optional Google account (website only): reconnects if this browser signed in before
+  useEffect(() => { void initCloud(); }, []);
   useEffect(() => {
     if (!hydrated) return;
     const dark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -181,6 +185,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <Toasts />
+      <ConflictDialog />
     </MotionConfig>
   );
 }

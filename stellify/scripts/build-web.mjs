@@ -54,7 +54,9 @@ const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect 
 writeFileSync(join(out, 'icon.svg'), icon);
 writeFileSync(join(out, 'manifest.webmanifest'), JSON.stringify({ name: 'Stellify', short_name: 'Stellify', start_url: 'app.html', display: 'standalone', background_color: '#F6F3EA', theme_color: '#F6F3EA', icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml' }] }));
 
-const csp = `default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self' https://generativelanguage.googleapis.com; frame-src https://www.desmos.com; base-uri 'none'; form-action 'none'; object-src 'none'`;
+// Google sign-in and Firestore (the optional account) need Google's sign-in script, its sign-in frame and three APIs
+const FIREBASE = { script: 'https://apis.google.com', frame: 'https://stellify-e1fd0.firebaseapp.com https://accounts.google.com', connect: 'https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com', img: 'https://lh3.googleusercontent.com' };
+const csp = `default-src 'self'; script-src 'self' ${FIREBASE.script}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${FIREBASE.img}; font-src 'self' data:; media-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self' https://generativelanguage.googleapis.com ${FIREBASE.connect}; frame-src https://www.desmos.com ${FIREBASE.frame}; base-uri 'none'; form-action 'none'; object-src 'none'`;
 const head = (title, desc, extra = '') => `<!doctype html>
 <html lang="en" data-web="1">
 <head>
@@ -91,13 +93,13 @@ writeFileSync(join(out, 'app.html'), `${head('Stellify — free SAT and AP study
 const q = JSON.parse(execFileSync('npx', ['tsx', 'scripts/landing-question.ts', 'r-bnd-06'], { cwd: root, encoding: 'utf8' }));
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 writeFileSync(join(A, 'landing.js'), `(function(){var q=${JSON.stringify({ answer: q.answer, why: q.why })};var f=document.getElementById('try');var out=document.getElementById('try-out');f.addEventListener('submit',function(e){e.preventDefault();var v=f.querySelector('input:checked');if(!v){out.textContent='Pick an answer first.';return;}var i=+v.value,ok=i===q.answer;out.innerHTML='';var p=document.createElement('p');p.className='verdict '+(ok?'ok':'bad');p.textContent=(ok?'Correct. ':'Not quite. The answer is '+'ABCD'[q.answer]+'. ')+q.why[q.answer];out.appendChild(p);if(!ok){var w=document.createElement('p');w.textContent='Why '+'ABCD'[i]+' is wrong: '+q.why[i];out.appendChild(w);}});})();`);
-writeFileSync(join(out, 'index.html'), `${head('Stellify — free SAT and AP study', 'Free, independent Digital SAT prep. Original questions, a guided path, honest score estimates. No account; your progress stays on your device.')}
+writeFileSync(join(out, 'index.html'), `${head('Stellify — free SAT and AP study', 'Free, independent Digital SAT prep. Original questions, a guided path, honest score estimates. No account needed; sign in with Google to save progress, or stay a guest.')}
 <body class="landing">
 <header class="l-wrap l-top"><a class="l-brand" href="./"><img src="icon.svg" width="28" height="28" alt="">Stellify</a><nav aria-label="Main"><a href="app.html#/about">About</a><a href="app.html#/methodology">Methodology</a><a href="app.html#/privacy">Privacy</a></nav></header>
 <main class="l-wrap">
 <section class="l-intro">
 <h1>Free SAT practice that tells you what to do next.</h1>
-<p>Original questions with an explanation for every choice, a path through all 30 skills, and score estimates shown as honest ranges. No account, no ads, no paywall. Your progress stays on your device.</p>
+<p>Original questions with an explanation for every choice, a path through all 30 skills, and score estimates shown as honest ranges. No ads, no paywall, no account needed: stay a guest and your progress stays on your device, or sign in with Google to keep it on any device.</p>
 <p class="l-cta"><a class="btn-primary" href="app.html">Open Stellify</a><a class="btn-ghost" href="../stellify.html" download>Download the offline file</a></p>
 </section>
 <section class="card l-try" aria-labelledby="try-h">

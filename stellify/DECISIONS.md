@@ -257,3 +257,16 @@ Each entry records what was decided, why, and the alternatives considered.
     builds stream them from the hosted site (https://maxzhing.github.io/aboutme/sat/, assumed to be the GitHub Pages
     address; not checked from here) and, when that cannot be reached, fall back to the animated version from entry 46,
     which also stays available on request.
+48. **Optional Google accounts with saved progress (owner request); hosting on Firebase.**
+    On the website the first screen now offers "Continue with Google" or "Continue as guest". Guests work exactly as
+    before (everything on the device; nothing sent). Signed in, the same snapshot that Export writes is gzip-compressed
+    and saved to the student's own Firestore record (users/{uid}) about 20 seconds after a change and when the tab is
+    hidden; another device loads it on sign-in. If both the device and the account changed, the student chooses which
+    to keep, and the other is kept as a backup on the device. Security rules let a student read and write only their
+    own record, with a fixed shape and a size cap. Settings has the account card (save now, sign out, delete the
+    account copy). The Firebase library (about 150 KB compressed) downloads only when someone signs in; the offline
+    single file and the personal copy contain none of it and stay guest-only, because Google sign-in needs a real web
+    address. Google Analytics, offered in Firebase's sample code, is deliberately not used. Accounts are for ages 13+.
+    The Privacy, About, Settings and landing texts say this. Tested end to end against the Firebase emulators (guest,
+    sign-in and save, second device, conflict, rules refusing another user, sign-out); the real Google pop-up could not
+    be tested here (its script host is unreachable from this machine) and needs one check on the live site.

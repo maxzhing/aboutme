@@ -44,6 +44,7 @@ test('web build: the landing page has a real question you can answer, with no ap
 test('web build: the app loads over http, and after one visit it opens offline (service worker)', async ({ page, context }) => {
   const errors: string[] = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(`${base}app.html#/onboarding`);
+  await page.getByTestId('continue-guest').click(); // on the website, the first choice: Google account or guest
   await page.getByRole('button', { name: 'Skip setup' }).click();
   await page.goto(`${base}app.html#/path`);
   await expect(page.getByTestId('path-page')).toBeVisible();
@@ -63,6 +64,7 @@ test('web build: a video lesson plays the real video with a voice, captions and 
   test.skip(!existsSync(join(ROOT, 'sat/videos/linf.mp4')), 'the rendered videos are not in this build');
   const errors: string[] = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(`${base}app.html#/onboarding`);
+  await page.getByTestId('continue-guest').click(); // on the website, the first choice: Google account or guest
   await page.getByRole('button', { name: 'Skip setup' }).click();
   await page.goto(`${base}app.html#/videos/linf`);
   const v = page.getByTestId('lesson-video-el');

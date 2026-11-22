@@ -18,7 +18,7 @@ function Doc({ eyebrow, title, intro, children }: { eyebrow: string; title: stri
 
 export function AboutPage() {
   return (
-    <Doc eyebrow="About" title="About Stellify" intro="Stellify is a free, independent study tool for the Digital SAT, with self-study courses for six AP subjects. It has no accounts, no ads and no paid tier.">
+    <Doc eyebrow="About" title="About Stellify" intro="Stellify is a free, independent study tool for the Digital SAT, with self-study courses for six AP subjects. It has no ads and no paid tier, and no account is needed: sign in with Google only if you want your progress saved to your account.">
       <section>
         <h2>Who makes it</h2>
         <p data-testid="about-names">Names to be added by the owner.</p>
@@ -111,27 +111,30 @@ export function HowWeWritePage() {
 
 export function PrivacyPage() {
   return (
-    <Doc eyebrow="Privacy" title="Privacy" intro="Stellify keeps your study data on this device. Nothing about you is sent anywhere unless you turn a feature on yourself.">
+    <Doc eyebrow="Privacy" title="Privacy" intro="As a guest, Stellify keeps your study data on this device. If you choose to sign in with Google, your progress is also saved to your account so you can use it on other devices. Nothing else about you is sent anywhere unless you turn a feature on yourself.">
       <section>
         <h2>What is stored, and where</h2>
         <ul>
-          <li>Your answers, notes, settings and progress are stored in this browser (IndexedDB, with local storage as a fallback). There is no account and no server copy.</li>
-          <li>Export, import and delete are in Settings. Automatic backups also stay on this device.</li>
+          <li><b>As a guest</b> (the default, and the only option in the offline file): your answers, notes, settings and progress are stored in this browser (IndexedDB, with local storage as a fallback). There is no server copy.</li>
+          <li><b>If you sign in with Google</b> (on the website, optional): the same progress is also saved to your own record in Google Firebase (Cloud Firestore), and Firebase Authentication keeps your Google account’s name, email address and profile picture so you can sign in. Only you can read or change your record; Stellify does not use it for anything except giving it back to you. Accounts are for students 13 and older.</li>
+          <li>Export, import and delete are in Settings. Automatic backups stay on this device. Signed in, Settings also has <b>Delete my account copy</b>, which removes your saved progress from Firebase.</li>
         </ul>
       </section>
       <section>
         <h2>What can leave the device, and only if you choose it</h2>
         <ul>
-          <li><b>AI tutor:</b> if you add your own Gemini key, your question to the tutor is sent to Google. The key is never included in exports or backups.</li>
+          <li><b>Google account:</b> only if you sign in, as described above. Signing in is handled by Google; Stellify never sees your Google password.</li>
+          <li><b>AI tutor:</b> if you add your own Gemini key, your question to the tutor is sent to Google. The key is never included in exports, backups or your account copy.</li>
           <li><b>Desmos calculator:</b> when you open it online, it loads from desmos.com, which sees a normal web request. Stellify does not see what you type into it.</li>
+          <li><b>Video lessons:</b> the videos load from the Stellify website like any other page file.</li>
           <li><b>Anonymous research data:</b> designed, but switched off in this version. If it is ever switched on, it will ask first in plain words, send no name or email, use a random session ID, and be reviewed for student-privacy law (COPPA and FERPA) before launch.</li>
         </ul>
       </section>
       <section>
         <h2>What Stellify never does</h2>
         <ul>
-          <li>No ads, no tracking scripts, no cookies for tracking, no selling of data.</li>
-          <li>The page’s security policy blocks connections to anything except Google’s AI service (only when you turn the tutor on) and Desmos frames.</li>
+          <li>No ads, no tracking scripts, no analytics, no cookies for tracking, no selling of data.</li>
+          <li>The page’s security policy blocks connections to anything except Google’s sign-in and Firestore (only when you sign in), Google’s AI service (only when you turn the tutor on) and Desmos frames.</li>
         </ul>
       </section>
     </Doc>

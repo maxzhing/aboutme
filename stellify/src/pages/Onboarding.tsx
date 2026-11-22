@@ -12,6 +12,8 @@ import { Logo } from '@/components/AppShell';
 import { QuestionView } from '@/components/Question';
 import { CoachToday, FocusList, useCoach } from '@/components/Coach';
 import { Card, PageHeader, Progress, cn } from '@/components/ui';
+import { AccountChoice } from '@/components/Account';
+import { accountMode, cloudAvailable, reconcile } from '@/lib/cloud';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const chip = (on: boolean) => cn('chip !px-3 !py-1.5 text-left', on && 'border-brand bg-brand/15 text-ink');
@@ -44,6 +46,21 @@ export function OnboardingPage() {
   const go = (n: number) => { if (n >= 2) save(); setStep(n); window.scrollTo(0, 0); };
   const STEPS = 2;
 
+  // on the website, the first choice: a Google account (progress saved there) or guest (this device only)
+  const [chooseAccount, setChooseAccount] = useState(() => step === 0 && cloudAvailable() && accountMode() === null);
+  if (chooseAccount) return (
+    <div className="mx-auto max-w-2xl py-6">
+      <div className="mb-6 flex items-center gap-3"><Logo size={36} /><div><div className="font-display text-xl font-bold">Stellify</div><div className="text-xs text-muted">Free Digital SAT prep, planned around you</div></div></div>
+      <Card><AccountChoice onDone={async (mode) => {
+        if (mode === 'google') {
+          await reconcile();
+          // a returning student: their account already has a plan, so go straight to it
+          if (useStore.getState().profile.onboardedAt) { router.push('/'); return; }
+        }
+        setChooseAccount(false);
+      }} /></Card>
+    </div>
+  );
   if (step === 2) return <PlacementStep onDone={() => router.push('/onboarding/plan')} />;
   return (
     <div className="mx-auto max-w-2xl py-6">
@@ -54,7 +71,7 @@ export function OnboardingPage() {
           <div className="space-y-4 border-b border-line pb-5" data-testid="intake-welcome">
             <h1 className="text-2xl font-bold">Let’s find out what you need</h1>
             <p className="text-[15px] text-muted">Two short screens about you, then a 15-minute check that adapts to you (you can finish it later). Your plan is built from your answers. Skip anything you like.</p>
-            <div className="flex gap-2 rounded-xl border border-ok/30 bg-ok/5 p-3 text-sm"><ShieldCheck className="mt-0.5 shrink-0 text-ok" size={18} /><span>No account. Everything stays in this browser on this device. No ads, no tracking. Export or erase it any time in Settings.</span></div>
+            <div className="flex gap-2 rounded-xl border border-ok/30 bg-ok/5 p-3 text-sm"><ShieldCheck className="mt-0.5 shrink-0 text-ok" size={18} /><span>{accountMode() === 'google' ? 'Signed in: your progress is saved to your account. No ads, no tracking. Export or erase it any time in Settings.' : 'No account needed. Everything stays in this browser on this device. No ads, no tracking. Export or erase it any time in Settings.'}</span></div>
           </div>
         )}
         {step === 0 && (

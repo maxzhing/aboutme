@@ -3,6 +3,7 @@ import { Download, ShieldCheck, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { BANK_STATS, getQuestion } from '@/data/questions';
 import { itemExport } from '@/lib/psych/export';
+import { AccountCard } from '@/components/Account';
 import manifest from '@/data/questions/validated.json';
 import { listBackups, readBackup, type BackupInfo } from '@/lib/backup';
 import { snapshot, useStore } from '@/lib/store';
@@ -53,7 +54,8 @@ export function SettingsPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader eyebrow="Settings" title="Settings & account" subtitle="Stellify has no sign-up. Your profile lives in this browser on this device. Back it up or move it with Export and Import." />
+      <PageHeader eyebrow="Settings" title="Settings & account" subtitle="No sign-up needed. As a guest your progress lives in this browser; on the website you can also sign in with Google to keep it in your account." />
+      <AccountCard />
 
       <Card>
         <h2 className="text-lg font-bold">Profile and goals</h2>
@@ -98,7 +100,7 @@ export function SettingsPage() {
       <Card>
         <h2 className="flex items-center gap-2 text-lg font-bold"><ShieldCheck size={18} className="text-ok" />Your data and privacy</h2>
         <ul className="mt-2 space-y-1 text-sm text-muted">
-          <li>• No account, no real name required, no ads, no analytics, no sale of data. Stellify makes no network requests unless you turn on the AI tutor or click a link to an official site.</li>
+          <li>• No account needed, no real name required, no ads, no analytics, no sale of data. Stellify makes no network requests unless you sign in with Google (to save progress to your account), turn on the AI tutor, or click a link to an official site.</li>
           <li>• Progress is saved in this browser’s storage for this file. Clearing site data, using private browsing, or (in some browsers) moving the file can make it unavailable, so export a backup now and then.</li>
           <li>• To study on another device, export here and import there.</li>
         </ul>
