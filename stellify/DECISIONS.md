@@ -208,3 +208,22 @@ Each entry records what was decided, why, and the alternatives considered.
     different problems that share College Board's standard stem wording, and each is recorded in qcReviewed.ts with
     its reason. The difficulty of these items is our own judgment against the College Board's published Hard items;
     no students have answered them yet, so the labels are not yet confirmed by data.
+45. **Pre-launch check and competitive gaps (owner request: the site is going public).**
+    Checked before launch: no College Board question text, ids or images and no official AP free-response text in any
+    public file (4,328 text samples and 325 FRQ strings searched), nothing from private/ ever committed, no personal
+    details in the repository. First app visit is about 1.6 MB compressed, roughly 2–3 seconds on 4G, then served
+    offline by the service worker; left as is. Changed only what a public launch needed: the trademark notice now
+    names AP as well as SAT (the site has AP Calculus BC and AP Chemistry); link-preview tags for shared links; a
+    visible warning when the browser is not saving progress (private browsing, blocked storage, full disk), which
+    before failed silently, plus a request that the browser keep the site's data once a student has 10 answers
+    (Safari can clear unvisited sites' data after 7 days). Compared with Bluebook, Khan Academy, UWorld and OnePrep,
+    the one test-day tool missing from practice tests was Bluebook's Line Reader; it is added (drag or arrow keys,
+    1–3 lines, clicks pass through). Gaps left open on purpose, because they need a server, money or the owner's
+    decision: no accounts or cross-device sync (export and import instead), no video lessons, the AI tutor needs the
+    student's own free key, question reports stay on the student's device, and the bank (1,549) is near UWorld's
+    size but well below OnePrep's (about 3,900–4,900).
+    Importers: the practice-test importer keeps compound hyphens split across lines, strips leaked page furniture
+    and credit lines, ends the last crop on a page above the STOP banner, and falls back to the exact page image when
+    text cannot be cut cleanly; against the earlier hand audit it reproduced 28 fixes exactly, sent 8 to the image
+    and touched nothing undamaged. make-pack.py repairs compounds split as "long- headed" (5 of 7 earlier cases).
+    The 9 quarantined questions still need the College Board PDFs.

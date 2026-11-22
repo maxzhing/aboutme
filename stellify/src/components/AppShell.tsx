@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { CalendarCheck, Keyboard, Menu, Moon, Search, Settings, Sparkles, Sun, X } from 'lucide-react';
 import { MotionConfig } from 'framer-motion';
 import { Suspense, useEffect, useState } from 'react';
-import { useStore } from '@/lib/store';
+import { storageIsVolatile, useStore } from '@/lib/store';
 import { useWeekRhythm } from '@/lib/hooks';
 import { BRAND } from '@/lib/taxonomy';
 import { NAV } from './nav';
@@ -165,6 +165,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           )}
+          {!focus && <StorageWarning />}
           <main id="main" className={cn('mx-auto w-full', focus ? 'max-w-6xl p-3 sm:p-6' : 'max-w-6xl px-3 py-7 sm:px-8 sm:py-9')}>
             <Suspense fallback={<div className="py-20 text-center text-sm text-muted">Loading…</div>}><div key={clean} className="page-enter">{children}</div></Suspense>
           </main>
@@ -181,5 +182,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <Toasts />
     </MotionConfig>
+  );
+}
+
+/** Shown when the browser is not keeping saves, so a student is not surprised by lost progress. */
+function StorageWarning() {
+  const [on, setOn] = useState(storageIsVolatile);
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    const f = () => setOn(true);
+    window.addEventListener('stellify:storage-volatile', f);
+    return () => window.removeEventListener('stellify:storage-volatile', f);
+  }, []);
+  if (!on || hidden) return null;
+  return (
+    <div role="alert" className="no-print mx-3 mt-3 flex max-w-6xl items-start gap-3 rounded-xl border border-bad/40 bg-bad/10 px-4 py-3 text-sm text-ink sm:mx-8 xl:mx-auto">
+      <p className="min-w-0 flex-1"><strong>This browser isn’t saving your progress.</strong> Private browsing, a full disk or a school setting is blocking storage, so what you do now is lost when this tab closes. Use a normal window, or <Link href="/settings" className="underline">export a backup</Link> before you leave.</p>
+      <button className="btn-quiet !min-h-0 !p-1" onClick={() => setHidden(true)} aria-label="Hide this warning"><X size={16} /></button>
+    </div>
   );
 }

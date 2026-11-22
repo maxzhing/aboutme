@@ -60,6 +60,11 @@ const head = (title, desc, extra = '') => `<!doctype html>
 <meta http-equiv="Content-Security-Policy" content="${csp}">
 <title>${title}</title>
 <meta name="description" content="${desc}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Stellify">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${desc}">
+<meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#F6F3EA" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14120E" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -106,7 +111,7 @@ ${q.choices.map((c, i) => `<label class="l-choice"><input type="radio" name="a" 
 <img src="assets/screenshot-path.webp" width="366" height="645" loading="lazy" alt="Screenshot of the Stellify path: hexagon tiles grouped by topic, with the next step raised and marked Start here">
 </section>
 </main>
-<footer class="l-wrap l-foot"><p>SAT® is a trademark registered by the College Board, which is not affiliated with and does not endorse Stellify. All practice questions are original Stellify content, not official College Board questions.</p></footer>
+<footer class="l-wrap l-foot"><p>SAT® and AP® are trademarks registered by the College Board, which is not affiliated with and does not endorse Stellify. All practice questions are original Stellify content, not official College Board questions.</p></footer>
 <script src="assets/landing.js" defer></script>
 </body>
 </html>

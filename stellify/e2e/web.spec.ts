@@ -29,7 +29,7 @@ test('web build: the landing page has a real question you can answer, with no ap
   await page.locator('.l-choice').nth(1).click();
   await page.getByRole('button', { name: 'Check' }).click();
   await expect(page.locator('#try-out .verdict')).toBeVisible();
-  await expect(page.locator('footer')).toContainText('SAT® is a trademark');
+  await expect(page.locator('footer')).toContainText('SAT® and AP® are trademarks');
   expect(errors).toEqual([]);
 });
 

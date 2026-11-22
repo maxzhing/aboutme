@@ -5,7 +5,7 @@ export const BRAND = {
   tagline: 'Free Digital SAT prep that actually teaches you.',
   mascot: 'Nova, a small gold star',
   disclaimer:
-    'Stellify is an independent, free study tool. SAT® is a trademark registered by the College Board, which is not affiliated with and does not endorse Stellify. All practice questions are original Stellify content, not official College Board questions.',
+    'Stellify is an independent, free study tool. SAT® and AP® are trademarks registered by the College Board, which is not affiliated with and does not endorse Stellify. All practice questions are original Stellify content, not official College Board questions.',
 };
 
 export const SECTION_NAME: Record<Section, string> = { math: 'Math', rw: 'Reading & Writing' };

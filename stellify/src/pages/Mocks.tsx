@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { BookOpenText, Calculator, ChevronUp, Clock, Coffee, Flag, LayoutGrid, X } from 'lucide-react';
+import { BookOpenText, Calculator, ChevronUp, Clock, Coffee, Flag, LayoutGrid, Rows3, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getQuestion, hasOfficial, OFFICIAL } from '@/data/questions';
 import { REFERENCE } from '@/data/reference';
@@ -14,6 +14,7 @@ import type { MockAttempt, ScoreRange, Section, SkillId } from '@/lib/types';
 import { Explanation, QuestionMeta, QuestionView } from '@/components/Question';
 import { isCorrect } from '@/lib/answers';
 import { AnnotateButton } from '@/components/Highlight';
+import { LineReader } from '@/components/LineReader';
 import { CalcPanel } from '@/components/Calculators';
 import { RichText } from '@/components/RichText';
 import { TestShell } from '@/components/TestShell';
@@ -109,7 +110,7 @@ const DIRECTIONS: Record<Section, string[]> = {
   rw: [
     'Each question has a short passage (sometimes two passages, or a table or graph) and four answer choices. Choose the single best answer, based only on what the passage says.',
     'Every question is multiple choice. There is no penalty for guessing, so answer every question.',
-    'You can move back and forth within this module, mark questions for review, cross out choices, and highlight words or add notes (select the words, or use Highlights & Notes in the top bar).',
+    'You can move back and forth within this module, mark questions for review, cross out choices, highlight words or add notes (select the words, or use Highlights & Notes in the top bar), and use the Line Reader to shade all but the lines you are reading.',
     'When time runs out, the module ends and your answers are saved. Answers from a finished module cannot be changed.',
   ],
   math: [
@@ -130,6 +131,7 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
   const [idx, setIdx] = useState(Math.min(mock.cursor!.index, mod.qids.length - 1));
   const [review, setReview] = useState(false);
   const [tool, setTool] = useState<'ref' | 'calc' | null>(null);
+  const [reader, setReader] = useState(false);
   const [dirs, setDirs] = useState(() => mod.module === 1 && mock.cursor!.index === 0 && mod.qids.every((id) => !mod.answers[id])); // at the start of each section
   const [nav, setNav] = useState(false);
   const [five, setFive] = useState(false);
@@ -168,8 +170,10 @@ function ModuleStage({ mock }: { mock: MockAttempt }) {
         <button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setDirs(true)} data-testid="open-directions"><BookOpenText size={15} />Directions</button>
         {mod.section === 'math' && <><button className="btn-ghost !px-2.5 !py-1.5" aria-pressed={tool === 'calc'} onClick={() => setTool(tool === 'calc' ? null : 'calc')} data-testid="toggle-calc"><Calculator size={15} />Calculator</button><button className="btn-ghost !px-2.5 !py-1.5" onClick={() => setTool('ref')}>Reference</button></>}
         <AnnotateButton />
+        <button className="btn-ghost !px-2.5 !py-1.5" aria-pressed={reader} onClick={() => setReader(!reader)} data-testid="toggle-line-reader"><Rows3 size={15} />Line Reader</button>
         <button className="btn-ghost !px-2.5 !py-1.5" onClick={() => { flush(); router.push('/mocks'); }}>Save &amp; exit</button>
       </header>
+      {reader && <LineReader onClose={() => setReader(false)} />}
       {five && <div role="alert" className="flex items-center gap-3 rounded-xl border border-warn/50 bg-warn/10 p-3 text-sm" data-testid="five-minutes"><Clock size={16} className="text-warn" /><span className="flex-1"><b>5 minutes left in this module.</b> The timer stays visible now. Make sure every question has an answer: there is no penalty for guessing.</span><button className="btn-quiet !p-1" aria-label="Dismiss" onClick={() => setFive(false)}><X size={15} /></button></div>}
       {review ? (
         <Card>

@@ -960,3 +960,38 @@ test('Calc BC and AP Chemistry kits: every test hands in at 100% with the keys, 
   }
   expect(errors).toEqual([]);
 });
+
+test('when the browser blocks storage, the student is told progress will not be kept', async ({ page }) => {
+  const errors = watch(page);
+  await page.addInitScript(() => {
+    for (const k of ['localStorage', 'indexedDB']) Object.defineProperty(window, k, { get() { throw new DOMException('denied', 'SecurityError'); } });
+  });
+  await go(page, '/settings');
+  await page.getByRole('button', { name: /Switch to (dark|light) theme/ }).click();
+  await expect(page.getByRole('alert').filter({ hasText: 'isn’t saving your progress' })).toBeVisible();
+  await page.getByRole('button', { name: 'Hide this warning' }).click();
+  await expect(page.getByRole('alert').filter({ hasText: 'isn’t saving your progress' })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('practice tests have the Bluebook Line Reader: it shades the page, moves with the keys, and lets answers through', async ({ page }) => {
+  const errors = watch(page);
+  page.on('dialog', (d) => d.accept());
+  await boot(page);
+  await go(page, '/mocks');
+  await page.getByRole('button', { name: /Math · 70 min/ }).first().click();
+  await page.getByTestId('lock-go').click();
+  await page.getByTestId('toggle-line-reader').click();
+  const slider = page.getByRole('slider', { name: /Line Reader position/ });
+  await expect(slider).toBeFocused();
+  const before = Number(await slider.getAttribute('aria-valuenow'));
+  await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowDown');
+  expect(Number(await slider.getAttribute('aria-valuenow'))).toBeGreaterThan(before);
+  await page.getByRole('button', { name: /Window height: 2 lines/ }).click();
+  await expect(page.getByRole('button', { name: /Window height: 3 lines/ })).toBeVisible();
+  // the shading does not block answering
+  await answerCurrent(page, true, 'mock-question');
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('line-reader')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

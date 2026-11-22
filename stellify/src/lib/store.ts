@@ -34,6 +34,13 @@ import { clamp, dateKey, uid } from './util';
 
 /** IndexedDB first (roomy, offline-friendly); falls back to localStorage, then to memory. */
 const mem = new Map<string, string>();
+/**
+ * True once a save had to fall back to memory (private browsing, storage blocked by the browser or a school policy,
+ * or a full disk). Progress then lasts only until the tab closes, so the app says so instead of losing it silently.
+ */
+let volatile = false;
+export const storageIsVolatile = () => volatile;
+const markVolatile = () => { if (!volatile) { volatile = true; try { window.dispatchEvent(new Event('stellify:storage-volatile')); } catch { /* no window */ } } };
 const idbStorage: StateStorage = {
   getItem: async (k) => {
     try { const v = await get<string>(k); if (v != null) return v; } catch { /* fall through */ }
@@ -41,7 +48,7 @@ const idbStorage: StateStorage = {
   },
   setItem: async (k, v) => {
     try { await set(k, v); return; } catch { /* fall through */ }
-    try { localStorage.setItem(k, v); } catch { mem.set(k, v); }
+    try { localStorage.setItem(k, v); } catch { mem.set(k, v); markVolatile(); }
   },
   removeItem: async (k) => {
     try { await del(k); } catch { /* ignore */ }
@@ -485,8 +492,15 @@ export const useStore = create<Store>()(
 );
 
 let lastAuto = 0;
+let askedPersist = false;
 useStore.subscribe((s, prev) => {
   if (!s.hydrated || s.attempts === prev.attempts) return;
+  // once there is real progress to lose, ask the browser not to clear this site's storage on its own (Safari can
+  // clear it after 7 days without a visit). Browsers decide; most grant it silently or ignore it.
+  if (!askedPersist && s.attempts.length >= 10) {
+    askedPersist = true;
+    try { void navigator.storage?.persisted?.().then((ok) => { if (!ok) void navigator.storage.persist?.(); }).catch(() => {}); } catch { /* unsupported */ }
+  }
   const now = Date.now();
   if (now - lastAuto < 120_000) return;
   lastAuto = now;
