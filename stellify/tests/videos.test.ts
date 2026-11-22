@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { VIDEOS } from '@/data/videos';
 import { SKILLS } from '@/lib/taxonomy';
 import { beatSeconds, beatsOf } from '@/components/VideoPlayer';
+import { captionsVtt } from '@/components/LessonVideo';
+import { shotsOf, type VideoTiming } from '@/data/videos/types';
+import TIMING from '@/data/videos/timing.json';
 
 describe('video lessons', () => {
   it('has one video for every SAT skill', () => {
@@ -24,7 +27,7 @@ describe('video lessons', () => {
           expect(new Set(s.cross).size).toBe(3);
           expect(s.say.length, `${v.skill} choices beats`).toBe(s.cross.length + 2);
         }
-        if (s.k === 'quiz') { expect(s.choices).toHaveLength(4); expect(s.answer).toBeGreaterThanOrEqual(0); expect(s.answer).toBeLessThan(4); }
+        if (s.k === 'quiz') { expect(s.reveal).toMatch(/^The answer is /); expect(s.reveal).not.toMatch(/[$\\{}]/); expect(s.choices).toHaveLength(4); expect(s.answer).toBeGreaterThanOrEqual(0); expect(s.answer).toBeLessThan(4); }
         if (s.k === 'lines') expect(s.rows.length, `${v.skill} lines`).toBe(s.say.length);
         if (s.k === 'recap') expect(s.points.length).toBe(s.say.length);
         if (s.k === 'tiles') expect(s.items.length).toBe(s.say.length);
@@ -67,5 +70,25 @@ describe('video lesson math', () => {
     expect(Math.hypot(5, 12)).toBe(13); expect(Math.hypot(3, 4)).toBe(5);
     expect(Math.sin(28 * Math.PI / 180)).toBeCloseTo(Math.cos(62 * Math.PI / 180));
     expect(12 + 9 + 4).toBe(25); expect(40 / 360 * 18).toBeCloseTo(2);
+  });
+});
+
+describe('rendered video files', () => {
+  const timing = TIMING as Record<string, VideoTiming>;
+  it('has timing for every video, one start per shot, in order', () => {
+    for (const v of VIDEOS) {
+      const t = timing[v.skill];
+      expect(t, v.skill).toBeDefined();
+      expect(t.starts.length, v.skill).toBe(shotsOf(v).length);
+      for (let i = 1; i < t.starts.length; i++) expect(t.starts[i]).toBeGreaterThan(t.starts[i - 1]);
+      expect(t.duration).toBeGreaterThan(t.starts[t.starts.length - 1]);
+    }
+  });
+  it('builds captions in WebVTT form from the script', () => {
+    const v = VIDEOS[0];
+    const vtt = captionsVtt(v, timing[v.skill]);
+    expect(vtt.startsWith('WEBVTT')).toBe(true);
+    expect(vtt).toContain(v.scenes[0].say[0]);
+    expect(vtt).toMatch(/00:00:00\.600 --> /);
   });
 });

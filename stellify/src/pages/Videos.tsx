@@ -1,10 +1,14 @@
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, CheckCircle2, Clapperboard, GraduationCap, Play } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { VIDEO, VIDEOS } from '@/data/videos';
 import { DOMAINS, SECTION_NAME, SKILL, skillsOfDomain } from '@/lib/taxonomy';
 import type { SkillId } from '@/lib/types';
-import { beatSeconds, beatsOf, VideoPlayer, watchedVideos } from '@/components/VideoPlayer';
+import { beatSeconds, beatsOf, VideoFrame, VideoPlayer, watchedVideos } from '@/components/VideoPlayer';
+import { shotsOf, type VideoTiming } from '@/data/videos/types';
+import TIMING from '@/data/videos/timing.json';
+import { LessonVideo } from '@/components/LessonVideo';
 import { SkillIcon } from '@/components/SkillIcon';
 import { Empty, PageHeader } from '@/components/ui';
 
@@ -17,7 +21,7 @@ export function VideosPage() {
   return (
     <div>
       <PageHeader eyebrow="Learn" title="Video Lessons"
-        subtitle={`A short narrated video for every SAT skill: the idea, a worked question, the trap to avoid, and a question for you to try mid-video. They play right here, work offline, and have captions. ${done} of ${VIDEOS.length} watched.`} />
+        subtitle={`A short narrated video for every SAT skill: the idea, a worked question, the trap to avoid, and a question for you to try mid-video (the video stops and waits for your answer). Captions and chapters included; an animated version works offline. ${done} of ${VIDEOS.length} watched.`} />
       <div className="space-y-5">
         {DOMAINS.map((d) => { const ks = skillsOfDomain(d.id).filter((k) => VIDEO[k.id]); return ks.length ? (
           <section key={d.id} aria-label={d.name} className="card overflow-hidden p-0">
@@ -43,6 +47,8 @@ export function VideosPage() {
 export function VideoPage({ skill }: { skill: string }) {
   const v = VIDEO[skill as SkillId];
   const [score, setScore] = useState<{ right: number; total: number } | null>(null);
+  const [animated, setAnimated] = useState<null | 'offline' | 'chosen'>(null);
+  const timing = (TIMING as Record<string, VideoTiming>)[skill];
   if (!v) return <Empty page title="Video not found" body="There is no video lesson for that skill yet." action={{ label: 'All video lessons', href: '/videos' }} />;
   const info = SKILL[v.skill];
   const i = VIDEOS.indexOf(v), next = VIDEOS[i + 1];
@@ -50,13 +56,31 @@ export function VideoPage({ skill }: { skill: string }) {
     <div>
       <PageHeader eyebrow={`Video lesson · ${SECTION_NAME[info.section]}`} title={info.name} subtitle={v.hook}
         actions={<Link href="/videos" className="btn-ghost"><ArrowLeft size={16} />All videos</Link>} />
-      <VideoPlayer key={v.skill} video={v} onDone={setScore} />
+      {timing && !animated
+        ? <LessonVideo key={v.skill} video={v} timing={timing} onFail={() => setAnimated('offline')} onDone={setScore} />
+        : <VideoPlayer key={v.skill} video={v} onDone={setScore} />}
+      {timing && (animated === 'offline'
+        ? <p className="mt-3 text-sm text-muted" data-testid="video-offline-note">The video file could not be loaded (it needs an internet connection), so this is the animated version, which works offline. <button type="button" className="font-semibold text-accent hover:underline" onClick={() => setAnimated(null)}>Try the video again</button></p>
+        : <p className="mt-3 text-xs text-muted">{animated ? <button type="button" className="font-semibold text-accent hover:underline" onClick={() => setAnimated(null)}>Back to the video</button> : <button type="button" className="font-semibold text-accent hover:underline" onClick={() => setAnimated('chosen')} data-testid="use-animated">Use the interactive animated version instead (works offline)</button>}</p>)}
       <div className="mt-5 flex flex-wrap gap-2" data-testid="video-after">
         <Link href={`/practice/session?mode=skill&skill=${v.skill}&n=8`} className={score ? 'btn-primary' : 'btn-ghost'}>Practice this skill<ArrowRight size={16} /></Link>
         <Link href={`/learn/${v.skill}`} className="btn-ghost"><GraduationCap size={16} />Full course</Link>
         {next && <Link href={`/videos/${next.skill}`} className="btn-ghost"><Clapperboard size={16} />Next video: {SKILL[next.skill].short}</Link>}
       </div>
-      <p className="mt-4 text-xs text-muted">Keys: Space plays and pauses, the arrow keys step one sentence, C turns captions on and off. The voice is your browser’s built-in speech, so it sounds different on different devices.</p>
+      {(!timing || animated) && <p className="mt-4 text-xs text-muted">Keys: Space plays and pauses, the arrow keys step one sentence, C turns captions on and off. In this version the voice is your browser’s built-in speech, so it sounds different on different devices.</p>}
     </div>
   );
+}
+
+/**
+ * Used only by scripts/videos/render.mjs to film a video: one 1280 × 720 frame over the whole page, moved from shot
+ * to shot by the script (window.__shot). Not linked from anywhere in the app.
+ */
+export function VideoRenderPage({ skill }: { skill: string }) {
+  const v = VIDEO[skill as SkillId];
+  const [i, setI] = useState(0);
+  useEffect(() => { (window as unknown as { __shot: (n: number) => void }).__shot = setI; }, []);
+  if (!v) return null;
+  const shots = shotsOf(v);
+  return createPortal(<div className="fixed inset-0 z-[1000] bg-surface"><VideoFrame video={v} shot={shots[i]} /></div>, document.body);
 }

@@ -30,7 +30,7 @@ export const MATH_VIDEOS: Video[] = [
       'Here is the trap. The x terms cancel, and a student writes x equals zero.',
       'But when the x terms cancel, the leftover statement decides. False means no solution. True means every x works.',
     ] },
-    { k: 'quiz', q: r`If $\frac{x}{3} + 4 = 10$, what is the value of $x$?`, choices: ['2', '6', '18', '42'], answer: 2, why: r`Subtract 4: $\frac{x}{3} = 6$. Multiply by 3: $x = 18$.`, say: ['Your turn. Solve it, then pick an answer.'] },
+    { k: 'quiz', q: r`If $\frac{x}{3} + 4 = 10$, what is the value of $x$?`, choices: ['2', '6', '18', '42'], answer: 2, why: r`Subtract 4: $\frac{x}{3} = 6$. Multiply by 3: $x = 18$.`, reveal: 'The answer is eighteen. Subtract four from both sides to get x over three equals six, then multiply by three.', say: ['Your turn. Solve it, then pick an answer.'] },
     { k: 'recap', points: ['Do the same thing to both sides; undo operations in reverse order.', r`Compare $x$-coefficients first: different means exactly one solution.`, 'Same coefficients: same constants means infinitely many, different constants means none.'], say: [
       'Three things to remember. Keep the balance.',
       'Compare the x coefficients first.',
@@ -65,7 +65,7 @@ export const MATH_VIDEOS: Video[] = [
       'So the function is three x plus one.',
     ] },
     { k: 'versus', head: 'The trap', bad: 'The outputs go up by 6 each column, so the slope is 6.', good: r`The inputs go up by 2 each column. Slope $= \frac{6}{2} = 3$.`, say: ['The trap: reading the jump in the outputs as the slope.', 'Always divide by the jump in the inputs.'] },
-    { k: 'quiz', q: r`A candle is 30 cm tall and burns down 1.5 cm per hour. Which function gives its height, in cm, after $t$ hours?`, choices: [r`$h(t) = 1.5 + 30t$`, r`$h(t) = 30 - 1.5t$`, r`$h(t) = 30 + 1.5t$`, r`$h(t) = 1.5t - 30$`], answer: 1, why: 'It starts at 30, the intercept, and loses 1.5 every hour, a negative slope.', say: ['Pause and try. Find the start and the rate.'] },
+    { k: 'quiz', q: r`A candle is 30 cm tall and burns down 1.5 cm per hour. Which function gives its height, in cm, after $t$ hours?`, choices: [r`$h(t) = 1.5 + 30t$`, r`$h(t) = 30 - 1.5t$`, r`$h(t) = 30 + 1.5t$`, r`$h(t) = 1.5t - 30$`], answer: 1, why: 'It starts at 30, the intercept, and loses 1.5 every hour, a negative slope.', reveal: 'The answer is B. The candle starts at thirty centimeters, and it loses one and a half every hour, so the slope is negative.', say: ['Pause and try. Find the start and the rate.'] },
     { k: 'recap', points: ['The intercept is the starting value: the output when the input is 0.', 'The slope is the change in output for each 1 of input.', 'From a table: slope = change in output ÷ change in input.'], say: ['The intercept is where you start.', 'The slope is how fast you change.', 'And from a table, divide the jumps.'] },
   ] },
 
@@ -94,7 +94,7 @@ export const MATH_VIDEOS: Video[] = [
       'b is negative one. The line is y equals three x minus one.',
     ] },
     { k: 'versus', head: 'The trap', bad: r`Perpendicular to slope $\frac{2}{3}$ means slope $-\frac{2}{3}$.`, good: r`Flip it AND change the sign: $-\frac{3}{2}$. Check: $\frac{2}{3} \cdot \left(-\frac{3}{2}\right) = -1$.`, say: ['The trap: changing the sign but forgetting to flip.', 'Do both. And check that the product is negative one.'] },
-    { k: 'quiz', q: r`Line $\ell$ is perpendicular to the line $3x - y = 7$. What is the slope of line $\ell$?`, choices: ['$3$', '$-3$', r`$\frac{1}{3}$`, r`$-\frac{1}{3}$`], answer: 3, why: r`$3x - y = 7$ is $y = 3x - 7$, slope 3. The perpendicular slope is $-\frac{1}{3}$.`, say: ['Your turn. Find the slope of the given line first.'] },
+    { k: 'quiz', q: r`Line $\ell$ is perpendicular to the line $3x - y = 7$. What is the slope of line $\ell$?`, choices: ['$3$', '$-3$', r`$\frac{1}{3}$`, r`$-\frac{1}{3}$`], answer: 3, why: r`$3x - y = 7$ is $y = 3x - 7$, slope 3. The perpendicular slope is $-\frac{1}{3}$.`, reveal: 'The answer is D. Rewrite the line as y equals three x minus seven. Its slope is three, so the perpendicular slope is negative one third.', say: ['Your turn. Find the slope of the given line first.'] },
     { k: 'recap', points: [r`For $Ax + By = C$, the slope is $-\frac{A}{B}$.`, 'Parallel lines: equal slopes, different intercepts.', 'Perpendicular lines: slopes multiply to −1. Flip and change the sign.'], say: ['Standard form: slope is negative A over B.', 'Parallel: same slope.', 'Perpendicular: flip and change the sign.'] },
   ] },
 
@@ -130,7 +130,7 @@ export const MATH_VIDEOS: Video[] = [
       'Three is not in proportion at all.',
       'Two works. Double the first equation and you get the second exactly.',
     ] },
-    { k: 'quiz', q: r`If $x + y = 10$ and $x - y = 4$, what is the value of $x$?`, choices: ['3', '6', '7', '14'], answer: 2, why: r`Add the equations: $2x = 14$, so $x = 7$.`, say: ['Pause and try. Which method is fastest here?'] },
+    { k: 'quiz', q: r`If $x + y = 10$ and $x - y = 4$, what is the value of $x$?`, choices: ['3', '6', '7', '14'], answer: 2, why: r`Add the equations: $2x = 14$, so $x = 7$.`, reveal: 'The answer is seven. Add the two equations: the y terms cancel, two x equals fourteen, so x is seven.', say: ['Pause and try. Which method is fastest here?'] },
     { k: 'recap', points: ['The solution of a system is the point on both lines.', 'Elimination: add or subtract the equations so one variable cancels.', 'Asked for a combination like x + y? Add or subtract the equations to build it.'], say: ['A solution is a crossing point.', 'Elimination makes a variable cancel.', 'And when they ask for a combination, build it directly.'] },
   ] },
 
@@ -158,7 +158,7 @@ export const MATH_VIDEOS: Video[] = [
       'Twenty-six rounds twenty-five point five up. But twenty-six boxes go over the limit.',
       'So the answer is twenty-five. With at most questions, round down.',
     ] },
-    { k: 'quiz', q: r`Which value of $x$ satisfies $5 - 2x > 11$?`, choices: ['−4', '−3', '0', '3'], answer: 0, why: r`$-2x > 6$, so $x < -3$ (flip). Only −4 is less than −3; −3 itself fails because the inequality is strict.`, say: ['Pause and try. Watch for the flip.'] },
+    { k: 'quiz', q: r`Which value of $x$ satisfies $5 - 2x > 11$?`, choices: ['−4', '−3', '0', '3'], answer: 0, why: r`$-2x > 6$, so $x < -3$ (flip). Only −4 is less than −3; −3 itself fails because the inequality is strict.`, reveal: 'The answer is negative four. Subtract five, then divide by negative two and flip the sign: x is less than negative three. Negative three itself does not count, because the inequality is strict.', say: ['Pause and try. Watch for the flip.'] },
     { k: 'recap', points: ['Multiplying or dividing by a negative flips the inequality.', 'Strict (< or >): dashed line, open circle. Otherwise solid.', 'Test (0, 0) to choose the side to shade.'], say: ['Negative? Flip.', 'Strict means dashed.', 'And a test point settles the shading.'] },
   ] },
 
@@ -181,7 +181,7 @@ export const MATH_VIDEOS: Video[] = [
       'It is a difference of squares: three x squared minus five squared.',
     ] },
     { k: 'lines', head: 'Check any answer by plugging in', rows: [[r`pick $x = 2$`], [r`$9(2)^2 - 25 = 11$`], [r`$(6 - 5)(6 + 5) = 11$ ✓`]], say: ['Not sure? Pick an easy number, like two.', 'The original gives eleven.', 'The answer gives eleven too. Same value, same expression.'] },
-    { k: 'quiz', q: r`Which expression is equivalent to $\frac{x^2 - 9}{x + 3}$ for $x \ne -3$?`, choices: [r`$x - 3$`, r`$x + 3$`, r`$x - 9$`, r`$x^2 - 3$`], answer: 0, why: r`$x^2 - 9 = (x - 3)(x + 3)$. Cancel the $x + 3$.`, say: ['Pause and try. Factor the top first.'] },
+    { k: 'quiz', q: r`Which expression is equivalent to $\frac{x^2 - 9}{x + 3}$ for $x \ne -3$?`, choices: [r`$x - 3$`, r`$x + 3$`, r`$x - 9$`, r`$x^2 - 3$`], answer: 0, why: r`$x^2 - 9 = (x - 3)(x + 3)$. Cancel the $x + 3$.`, reveal: 'The answer is x minus three. The top factors into x minus three times x plus three, and the x plus three cancels.', say: ['Pause and try. Factor the top first.'] },
     { k: 'recap', points: ['Factor by finding two numbers with the right product and sum.', r`Know $a^2 - b^2$ and $(a + b)^2$ by heart.`, 'When in doubt, plug in a number and compare.'], say: ['Product and sum.', 'Know the two big patterns.', 'And when in doubt, plug in.'] },
   ] },
 
@@ -212,7 +212,7 @@ export const MATH_VIDEOS: Video[] = [
       'Three leaves twenty-four. Two solutions.',
       'Nine makes it zero. It is x plus three, squared.',
     ] },
-    { k: 'quiz', q: r`What is the sum of the solutions of $2x^2 - 10x + 7 = 0$?`, choices: ['−5', '3.5', '5', '10'], answer: 2, why: r`Sum $= -\frac{b}{a} = -\frac{-10}{2} = 5$.`, say: ['Pause and try. Use the shortcut.'] },
+    { k: 'quiz', q: r`What is the sum of the solutions of $2x^2 - 10x + 7 = 0$?`, choices: ['−5', '3.5', '5', '10'], answer: 2, why: r`Sum $= -\frac{b}{a} = -\frac{-10}{2} = 5$.`, reveal: 'The answer is five. The sum of the solutions is negative b over a: negative negative ten, over two, which is five.', say: ['Pause and try. Use the shortcut.'] },
     { k: 'recap', points: ['Friendly numbers: factor. Otherwise: formula or graph.', r`Discriminant $b^2 - 4ac$: positive two, zero one, negative none.`, r`Sum of solutions $-\frac{b}{a}$; product $\frac{c}{a}$.`], say: ['Pick the fastest tool.', 'The discriminant counts solutions.', 'And for the sum or product of the solutions, skip solving.'] },
   ] },
 
@@ -241,7 +241,7 @@ export const MATH_VIDEOS: Video[] = [
     ] },
     { k: 'lines', head: 'Percent to growth factor', rows: [['grows 8%: factor $1.08$'], ['decays 8%: factor $0.92$'], [r`halves every 3 years: $A\left(\frac{1}{2}\right)^{t/3}$`]], say: ['Growth of eight percent: multiply by one point oh eight.', 'Decay of eight percent: keep ninety-two percent. Zero point nine two.', 'Halving every three years: one half, to the power t over three.'] },
     { k: 'versus', head: 'The trap', bad: r`Loses 20% each year: $V = 500(0.2)^t$`, good: r`Losing 20% means keeping 80%: $V = 500(0.8)^t$.`, say: ['The trap: using the percent lost as the factor.', 'The factor is what is left. Eighty percent.'] },
-    { k: 'quiz', q: r`$f(x) = -2(x + 3)^2 + 5$. What is the maximum value of $f$?`, choices: ['−3', '2', '3', '5'], answer: 3, why: r`The vertex is $(-3, 5)$. Since $a = -2 < 0$ the parabola opens down, so the maximum value is 5.`, say: ['Pause and try. Read it from the vertex form.'] },
+    { k: 'quiz', q: r`$f(x) = -2(x + 3)^2 + 5$. What is the maximum value of $f$?`, choices: ['−3', '2', '3', '5'], answer: 3, why: r`The vertex is $(-3, 5)$. Since $a = -2 < 0$ the parabola opens down, so the maximum value is 5.`, reveal: 'The answer is five. The vertex is negative three, five, and the parabola opens downward, so five is the highest value.', say: ['Pause and try. Read it from the vertex form.'] },
     { k: 'recap', points: [r`Vertex form $a(x - h)^2 + k$: vertex $(h, k)$; $a < 0$ opens down.`, 'Factored form shows the zeros.', r`Exponential $a \cdot b^t$: start $a$, factor $b$; $b > 1$ grows, $b < 1$ decays.`], say: ['Vertex form gives the turning point.', 'Factored form gives the zeros.', 'And exponentials: start times factor to the t.'] },
   ] },
 
@@ -258,7 +258,7 @@ export const MATH_VIDEOS: Video[] = [
       'Sixty drops the point two.',
       'Four point two times fifteen: sixty-three miles.',
     ] },
-    { k: 'quiz', q: 'A printer prints 12 pages in 40 seconds. At this rate, how many pages does it print in 5 minutes?', choices: ['60', '72', '90', '150'], answer: 2, why: r`5 minutes is 300 seconds, which is $\frac{300}{40} = 7.5$ blocks of 40 seconds. $7.5 \times 12 = 90$ pages.`, say: ['Pause and try. Watch the units.'] },
+    { k: 'quiz', q: 'A printer prints 12 pages in 40 seconds. At this rate, how many pages does it print in 5 minutes?', choices: ['60', '72', '90', '150'], answer: 2, why: r`5 minutes is 300 seconds, which is $\frac{300}{40} = 7.5$ blocks of 40 seconds. $7.5 \times 12 = 90$ pages.`, reveal: 'The answer is ninety. Five minutes is three hundred seconds, which is seven and a half blocks of forty seconds. Seven and a half times twelve is ninety.', say: ['Pause and try. Watch the units.'] },
     { k: 'recap', points: ['Write the units; multiply by fractions equal to 1 so they cancel.', 'Keep the same order on both sides of a proportion.', 'Part-to-whole: add the parts of the ratio to get the whole.'], say: ['Let the units cancel.', 'Keep the order.', 'And add the parts to get the whole.'] },
   ] },
 
@@ -275,7 +275,7 @@ export const MATH_VIDEOS: Video[] = [
       'One twenty-five is the ratio, not the increase.',
       'Six hundred over twenty-four hundred: twenty-five percent.',
     ] },
-    { k: 'quiz', q: 'A price is increased by 10%, and then the new price is increased by 10%. The final price is what percent of the original price?', choices: ['110%', '120%', '121%', '200%'], answer: 2, why: r`$1.1 \times 1.1 = 1.21$, so 121%.`, say: ['Pause and try. Multiply the factors.'] },
+    { k: 'quiz', q: 'A price is increased by 10%, and then the new price is increased by 10%. The final price is what percent of the original price?', choices: ['110%', '120%', '121%', '200%'], answer: 2, why: r`$1.1 \times 1.1 = 1.21$, so 121%.`, reveal: 'The answer is one hundred twenty-one percent. Multiply the factors: one point one times one point one is one point two one.', say: ['Pause and try. Multiply the factors.'] },
     { k: 'recap', points: ['Increase p%: × (1 + p/100). Decrease p%: × (1 − p/100).', 'Back-to-back changes multiply; they do not add.', 'Percent change = change ÷ original. Reverse percent: divide by the multiplier.'], say: ['Every percent is a multiplier.', 'Changes multiply.', 'And for reverse percents, divide.'] },
   ] },
 
@@ -304,7 +304,7 @@ export const MATH_VIDEOS: Video[] = [
       'Careful here. With six values, the median is the average of the middle two: seven and nine. That is eight.',
       'So both increase. The median just moves a lot less.',
     ] },
-    { k: 'quiz', q: 'Set X: 20, 20, 20, 20. Set Y: 10, 20, 20, 30. Which statement is true?', choices: ['The sets have the same mean, and X has the larger standard deviation.', 'The sets have the same mean, and Y has the larger standard deviation.', 'Y has the larger mean.', 'The sets have the same standard deviation.'], answer: 1, why: "Both average 20. X has no spread at all; Y's values sit away from 20.", say: ['Pause and try. No calculator needed.'] },
+    { k: 'quiz', q: 'Set X: 20, 20, 20, 20. Set Y: 10, 20, 20, 30. Which statement is true?', choices: ['The sets have the same mean, and X has the larger standard deviation.', 'The sets have the same mean, and Y has the larger standard deviation.', 'Y has the larger mean.', 'The sets have the same standard deviation.'], answer: 1, why: "Both average 20. X has no spread at all; Y's values sit away from 20.", reveal: "The answer is B. Both sets average twenty. Set X has no spread at all, while set Y's values sit away from twenty.", say: ['Pause and try. No calculator needed.'] },
     { k: 'recap', points: ['Outliers pull the mean; the median resists them.', 'Standard deviation measures the typical distance from the mean.', 'For an even count, the median is the average of the middle two values.'], say: ['Outliers pull the mean.', 'Standard deviation is spread.', 'And for an even count, average the middle two.'] },
   ] },
 
@@ -332,7 +332,7 @@ export const MATH_VIDEOS: Video[] = [
       'The fourth mixes the numbers up.',
       'The slope is a rate: about one point eight centimeters per week.',
     ] },
-    { k: 'quiz', q: r`A line of best fit predicts $y = 40$ when $x = 6$. The actual data point at $x = 6$ has $y = 34$. What is the residual?`, choices: ['−6', '6', '34', '74'], answer: 0, why: 'Residual = actual − predicted = 34 − 40 = −6. Points below the line have negative residuals.', say: ['Pause and try. Actual minus predicted.'] },
+    { k: 'quiz', q: r`A line of best fit predicts $y = 40$ when $x = 6$. The actual data point at $x = 6$ has $y = 34$. What is the residual?`, choices: ['−6', '6', '34', '74'], answer: 0, why: 'Residual = actual − predicted = 34 − 40 = −6. Points below the line have negative residuals.', reveal: 'The answer is negative six. Actual minus predicted: thirty-four minus forty. Points below the line have negative residuals.', say: ['Pause and try. Actual minus predicted.'] },
     { k: 'recap', points: ['Slope: predicted change in y per 1 of x. Intercept: prediction at x = 0.', 'Residual = actual − predicted.', 'Linear adds a constant; exponential multiplies by a constant.'], say: ['Slope and intercept are predictions.', 'Residual is actual minus predicted.', 'Linear adds, exponential multiplies.'] },
   ] },
 
@@ -353,7 +353,7 @@ export const MATH_VIDEOS: Video[] = [
       'Ten over forty-six counts grade eleven.',
       'Forty-six non-players, and thirty-six of them are in grade ten.',
     ] },
-    { k: 'quiz', q: 'A fair coin is flipped twice. What is the probability of getting heads both times?', choices: [r`$\frac{1}{4}$`, r`$\frac{1}{3}$`, r`$\frac{1}{2}$`, '1'], answer: 0, why: 'There are four equally likely outcomes: HH, HT, TH, TT. Only HH works.', say: ['Pause and try. List the outcomes.'] },
+    { k: 'quiz', q: 'A fair coin is flipped twice. What is the probability of getting heads both times?', choices: [r`$\frac{1}{4}$`, r`$\frac{1}{3}$`, r`$\frac{1}{2}$`, '1'], answer: 0, why: 'There are four equally likely outcomes: HH, HT, TH, TT. Only HH works.', reveal: 'The answer is one quarter. There are four equally likely outcomes, and only heads, heads works.', say: ['Pause and try. List the outcomes.'] },
     { k: 'recap', points: ['Probability = favorable ÷ total.', '"Given" or "of those who" picks the row or column for the denominator.', 'Flipping the condition changes the answer.'], say: ['Favorable over total.', 'The given group is the denominator.', 'And never flip the condition.'] },
   ] },
 
@@ -379,7 +379,7 @@ export const MATH_VIDEOS: Video[] = [
       'A larger sample shrinks the margin of error. It does not double it.',
       'Fifty-eight to sixty-six percent, for adults in that city.',
     ] },
-    { k: 'quiz', q: 'Two random samples are taken from the same population. Survey A has 200 people and Survey B has 1,000. Which survey is likely to have the smaller margin of error?', choices: ['Survey A', 'Survey B', 'They have the same margin of error.', 'It cannot be known.'], answer: 1, why: 'Larger random samples give smaller margins of error.', say: ['Pause and try.'] },
+    { k: 'quiz', q: 'Two random samples are taken from the same population. Survey A has 200 people and Survey B has 1,000. Which survey is likely to have the smaller margin of error?', choices: ['Survey A', 'Survey B', 'They have the same margin of error.', 'It cannot be known.'], answer: 1, why: 'Larger random samples give smaller margins of error.', reveal: 'The answer is survey B. A larger random sample gives a smaller margin of error.', say: ['Pause and try.'] },
     { k: 'recap', points: ['Estimate ± margin of error gives the plausible range.', 'Larger random samples give smaller margins of error.', 'Generalize only to the population that was randomly sampled.'], say: ['Estimate plus or minus the margin.', 'Bigger samples, smaller margins.', 'And only the sampled population.'] },
   ] },
 
@@ -395,7 +395,7 @@ export const MATH_VIDEOS: Video[] = [
       'Volunteers limit how far it reaches, but a conclusion is still possible.',
       'So: a likely cause, for students like these.',
     ] },
-    { k: 'quiz', q: 'Which study design would let researchers conclude that a fertilizer causes taller plants?', choices: ['Measure plants in gardens that already use the fertilizer.', 'Ask gardeners whether their plants grew taller.', 'Randomly assign plants to receive the fertilizer or not.', "Compare this year's plants to last year's plants."], answer: 2, why: 'Only random assignment balances out the other differences between groups.', say: ['Pause and try. Which one supports cause?'] },
+    { k: 'quiz', q: 'Which study design would let researchers conclude that a fertilizer causes taller plants?', choices: ['Measure plants in gardens that already use the fertilizer.', 'Ask gardeners whether their plants grew taller.', 'Randomly assign plants to receive the fertilizer or not.', "Compare this year's plants to last year's plants."], answer: 2, why: 'Only random assignment balances out the other differences between groups.', reveal: 'The answer is C. Only random assignment balances out the other differences between the groups, so only it can show cause and effect.', say: ['Pause and try. Which one supports cause?'] },
     { k: 'recap', points: ['Random assignment → cause and effect.', 'Random selection → generalize to that population.', 'Otherwise: an association for these subjects only.'], say: ['Assignment gives cause.', 'Selection gives reach.', 'Without them, it is just an association.'] },
   ] },
 
@@ -423,7 +423,7 @@ export const MATH_VIDEOS: Video[] = [
       'Ninety-six is just the surface area.',
       'Each face is sixteen, so the side is four. Four cubed is sixty-four.',
     ] },
-    { k: 'quiz', q: 'Two similar triangles have corresponding sides in the ratio 1 : 3. The smaller triangle has an area of 5. What is the area of the larger triangle?', choices: ['15', '25', '45', '135'], answer: 2, why: r`Areas scale by $k^2 = 3^2 = 9$. $5 \times 9 = 45$.`, say: ['Pause and try. Lengths, areas, or volumes?'] },
+    { k: 'quiz', q: 'Two similar triangles have corresponding sides in the ratio 1 : 3. The smaller triangle has an area of 5. What is the area of the larger triangle?', choices: ['15', '25', '45', '135'], answer: 2, why: r`Areas scale by $k^2 = 3^2 = 9$. $5 \times 9 = 45$.`, reveal: 'The answer is forty-five. Areas scale by the square of the scale factor. Three squared is nine, and five times nine is forty-five.', say: ['Pause and try. Lengths, areas, or volumes?'] },
     { k: 'recap', points: ['Split odd shapes into rectangles, triangles and circles.', 'Scale lengths by k: area × k², volume × k³.', 'Work from what you know (surface area, a face) to what you need.'], say: ['Split odd shapes.', 'Square for area, cube for volume.', 'And work step by step from what you know.'] },
   ] },
 
@@ -460,7 +460,7 @@ export const MATH_VIDEOS: Video[] = [
       'Seventy needs a first angle of forty.',
       'One eighty minus fifty, divided by two: sixty-five.',
     ] },
-    { k: 'quiz', q: r`Two parallel lines are cut by a transversal. One angle measures $(3x + 10)°$ and its alternate interior angle measures $(5x - 30)°$. What is the value of $x$?`, choices: ['10', '20', '25', '40'], answer: 1, why: r`Alternate interior angles are equal: $3x + 10 = 5x - 30$, so $40 = 2x$ and $x = 20$.`, say: ['Pause and try. Equal or supplementary?'] },
+    { k: 'quiz', q: r`Two parallel lines are cut by a transversal. One angle measures $(3x + 10)°$ and its alternate interior angle measures $(5x - 30)°$. What is the value of $x$?`, choices: ['10', '20', '25', '40'], answer: 1, why: r`Alternate interior angles are equal: $3x + 10 = 5x - 30$, so $40 = 2x$ and $x = 20$.`, reveal: 'The answer is twenty. Alternate interior angles are equal, so three x plus ten equals five x minus thirty. That gives x equals twenty.', say: ['Pause and try. Equal or supplementary?'] },
     { k: 'recap', points: ['Straight line and triangle: 180°.', 'Parallel lines: angles are equal or add to 180°.', 'Similar triangles: every side scales by the same factor.'], say: ['One eighty for lines and triangles.', 'Parallel lines: equal or supplementary.', 'Similar triangles share one scale factor.'] },
   ] },
 
@@ -488,7 +488,7 @@ export const MATH_VIDEOS: Video[] = [
       'Thirteen twelfths is more than one. Impossible for a cosine.',
       'It is a five twelve thirteen triangle. Cosine is twelve over thirteen.',
     ] },
-    { k: 'quiz', q: r`In a right triangle, $\cos x° = 0.6$. What is $\sin(90° - x°)$?`, choices: ['0.4', '0.6', '0.8', '1.6'], answer: 1, why: r`$\sin(90° - x°) = \cos x°$, so it is 0.6.`, say: ['Pause and try. Use the complement rule.'] },
+    { k: 'quiz', q: r`In a right triangle, $\cos x° = 0.6$. What is $\sin(90° - x°)$?`, choices: ['0.4', '0.6', '0.8', '1.6'], answer: 1, why: r`$\sin(90° - x°) = \cos x°$, so it is 0.6.`, reveal: 'The answer is zero point six. The sine of an angle equals the cosine of its complement, so it is the same number.', say: ['Pause and try. Use the complement rule.'] },
     { k: 'recap', points: ['SOH CAH TOA, with sides named from the angle.', 'Know 45-45-90, 30-60-90 and the common triples.', 'sin x° = cos(90° − x°).'], say: ['SOH CAH TOA.', 'Know the special triangles.', 'And complements swap sine and cosine.'] },
   ] },
 
@@ -522,7 +522,7 @@ export const MATH_VIDEOS: Video[] = [
       'Pi uses the wrong circumference.',
       'One ninth of eighteen pi: two pi.',
     ] },
-    { k: 'quiz', q: r`What is the radius of the circle $x^2 + y^2 - 10x = 0$?`, choices: ['5', '10', '25', r`$\sqrt{10}$`], answer: 0, why: r`Complete the square: $(x - 5)^2 + y^2 = 25$, so the radius is 5.`, say: ['Pause and try. Complete the square on x.'] },
+    { k: 'quiz', q: r`What is the radius of the circle $x^2 + y^2 - 10x = 0$?`, choices: ['5', '10', '25', r`$\sqrt{10}$`], answer: 0, why: r`Complete the square: $(x - 5)^2 + y^2 = 25$, so the radius is 5.`, reveal: 'The answer is five. Complete the square on x: x minus five, squared, plus y squared, equals twenty-five. The radius is five.', say: ['Pause and try. Complete the square on x.'] },
     { k: 'recap', points: [r`$(x - h)^2 + (y - k)^2 = r^2$: center $(h, k)$, radius $r$.`, 'Scrambled equation? Complete the square for x and for y.', 'Arc and sector = (angle ÷ 360°) × the whole.'], say: ['Standard form gives the center and radius.', 'Complete the square when it is scrambled.', 'And arcs and sectors are fractions of the whole.'] },
   ] },
 ];

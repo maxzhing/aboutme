@@ -1002,7 +1002,10 @@ test('video lessons: every SAT skill has a video; it plays, stops for the pause-
   await go(page, '/videos');
   await expect(page.getByRole('heading', { name: 'Video Lessons' })).toBeVisible();
   await expect(page.locator('[data-testid^="video-"]')).toHaveCount(30);
+  // the single file streams the real video from the hosted site; offline it switches to the animated version
+  await page.route('https://maxzhing.github.io/**', (r) => r.abort());
   await page.getByTestId('video-lin1').click();
+  await expect(page.getByTestId('video-offline-note')).toBeVisible();
   await page.getByTestId('video-start').click();
   await expect(page.getByTestId('video-caption')).toContainText('balance scale');
   // step forward to the pause-and-try scene: it waits there until the student answers

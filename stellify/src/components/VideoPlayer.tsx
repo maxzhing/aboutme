@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Captions, Check, ChevronLeft, ChevronRight, Maximize, Pause, Play, RotateCcw, Volume2, VolumeX, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { PlotItem, Scene, Video } from '@/data/videos/types';
+import { COUNTDOWN_SECONDS, type PlotItem, type Scene, type Shot, type Video } from '@/data/videos/types';
 import type { Tone } from '@/data/visual-lessons';
 import { RichText } from './RichText';
 import { SkillIcon } from './SkillIcon';
@@ -23,7 +23,7 @@ const store = {
   set(k: string, v: string) { try { localStorage.setItem(k, v); } catch { /* private mode: setting just isn't remembered */ } },
 };
 export const watchedVideos = (): Record<string, number> => { try { return JSON.parse(store.get('stellify-videos-watched') ?? '{}'); } catch { return {}; } };
-const markWatched = (skill: string) => store.set('stellify-videos-watched', JSON.stringify({ ...watchedVideos(), [skill]: Date.now() }));
+export const markWatched = (skill: string) => store.set('stellify-videos-watched', JSON.stringify({ ...watchedVideos(), [skill]: Date.now() }));
 
 const canSpeak = () => typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
 function pickVoice(): SpeechSynthesisVoice | undefined {
@@ -188,7 +188,7 @@ export const sceneName = (s: Scene) => (s.k === 'quiz' ? 'Pause and try' : s.k =
 
 const pop = { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35 } };
 
-function SceneView({ scene: s, b, picked, onPick, onContinue }: { scene: Scene; b: number; picked?: number; onPick: (n: number) => void; onContinue?: () => void }) {
+export function SceneView({ scene: s, b, picked, onPick, onContinue, phase }: { scene: Scene; b: number; picked?: number; onPick: (n: number) => void; onContinue?: () => void; phase?: Shot['phase'] }) {
   const Head = ({ t }: { t?: string }) => (t ? <h3 className="mb-3 text-center text-lg font-bold sm:text-xl"><RichText text={t} /></h3> : null);
   switch (s.k) {
     case 'title': return (
@@ -257,10 +257,13 @@ function SceneView({ scene: s, b, picked, onPick, onContinue }: { scene: Scene; 
       </div>
     );
     case 'quiz': {
+      // in the rendered video: a countdown to pause on, then the answer
+      if (phase === 'reveal') picked = s.answer;
       const done = picked !== undefined;
       return (
         <div className="mx-auto max-w-2xl" data-testid="video-quiz">
           <p className="mb-2 text-center text-xs font-black uppercase tracking-widest text-gold">Pause and try</p>
+          {phase === 'countdown' && <Countdown />}
           {s.passage && <p className="mb-3 rounded-xl bg-raised/50 p-3 text-sm leading-relaxed sm:text-base"><RichText text={s.passage} /></p>}
           <p className="mb-3 font-semibold"><RichText text={s.q} /></p>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -271,9 +274,9 @@ function SceneView({ scene: s, b, picked, onPick, onContinue }: { scene: Scene; 
               </button>
             ))}
           </div>
-          {done && <motion.p {...pop} className={cn('mt-3 rounded-xl p-3 text-sm', picked === s.answer ? 'bg-ok/10' : 'bg-bad/10')} data-testid="video-quiz-why"><b>{picked === s.answer ? 'Right. ' : `Not quite: it is ${'ABCD'[s.answer]}. `}</b><RichText text={s.why} /></motion.p>}
+          {done && <motion.p {...pop} className={cn('mt-3 rounded-xl p-3 text-sm', picked === s.answer ? 'bg-ok/10' : 'bg-bad/10')} data-testid="video-quiz-why"><b>{phase === 'reveal' ? `The answer is ${'ABCD'[s.answer]}. ` : picked === s.answer ? 'Right. ' : `Not quite: it is ${'ABCD'[s.answer]}. `}</b><RichText text={s.why} /></motion.p>}
           {done && onContinue && <div className="mt-3 text-center"><button type="button" className="btn-primary" onClick={onContinue} data-testid="video-continue">Continue<ChevronRight size={16} /></button></div>}
-          {!done && b === s.say.length - 1 && <p className="mt-3 text-center text-xs text-muted">The video waits for your answer.</p>}
+          {!done && !phase && b === s.say.length - 1 && <p className="mt-3 text-center text-xs text-muted">The video waits for your answer.</p>}
         </div>
       );
     }
@@ -377,5 +380,36 @@ function PlotView({ s, b }: { s: Extract<Scene, { k: 'plot' }>; b: number }) {
         {ticks(y0, y1).filter((t) => t !== 0 && t % (step(y1 - y0) * 2) === 0).map((t) => <text key={`ly${t}`} x={Math.max(32, px(Math.max(x0, Math.min(x1, 0))) - 5)} y={py(t) + 3.5} fontSize={10} fill={MUTED} textAnchor="end" {...HALO}>{t}</text>)}
       </g>}
     </svg>
+  );
+}
+
+/** The rendered video's countdown: a ring that empties while the student pauses and tries the question. */
+function Countdown() {
+  const [left, setLeft] = useState(COUNTDOWN_SECONDS);
+  useEffect(() => { const t = window.setInterval(() => setLeft((n) => Math.max(1, n - 1)), 1000); return () => window.clearInterval(t); }, []);
+  return (
+    <div className="mb-3 flex items-center justify-center gap-3" aria-hidden>
+      <svg viewBox="0 0 44 44" className="h-11 w-11 -rotate-90"><circle cx="22" cy="22" r="18" fill="none" stroke={LINE} strokeWidth="4" /><motion.circle cx="22" cy="22" r="18" fill="none" stroke="rgb(var(--gold))" strokeWidth="4" strokeLinecap="round" initial={{ pathLength: 1 }} animate={{ pathLength: 0 }} transition={{ duration: COUNTDOWN_SECONDS, ease: 'linear' }} /></svg>
+      <span className="text-lg font-bold">Pause the video and try it. Answer in {left}…</span>
+    </div>
+  );
+}
+
+/** One frame of the rendered video, at 1280 × 720: the header, the scene, and nothing interactive. */
+export function VideoFrame({ video, shot }: { video: Video; shot: Shot }) {
+  const scene = video.scenes[shot.scene];
+  return (
+    <div className="flex h-[720px] w-[1280px] flex-col overflow-hidden bg-surface text-ink" data-testid="video-frame">
+      <div className="flex items-center gap-3 border-b border-line/70 px-8 py-4 text-base text-muted">
+        <SkillIcon skill={video.skill} size={34} />
+        <span className="font-semibold">{video.title}</span>
+        <span className="ml-auto font-bold tracking-wide text-brand">Stellify</span>
+      </div>
+      <div className="flex min-h-0 flex-1 items-center justify-center px-16 py-6 [zoom:1.3]">
+        <motion.div key={shot.scene} className="w-full max-w-3xl" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}>
+          <SceneView scene={scene} b={shot.b} phase={shot.phase} onPick={() => undefined} />
+        </motion.div>
+      </div>
+    </div>
   );
 }

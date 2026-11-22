@@ -40,8 +40,24 @@ export type Scene =
   /** The trap next to the fix: beat 0 shows the trap, beat 1 the fix. */
   | { k: 'versus'; head?: string; bad: string; good: string; badLabel?: string; goodLabel?: string; say: string[] }
   /** Pause and try: the video stops until the student answers. */
-  | { k: 'quiz'; q: string; passage?: string; choices: string[]; answer: number; why: string; say: string[] }
+  | { k: 'quiz'; q: string; passage?: string; choices: string[]; answer: number; why: string; say: string[]
+      /** spoken in the rendered video after a short countdown: the answer and why, in plain words */
+      reveal: string }
   /** The takeaways, one per beat. */
   | { k: 'recap'; points: string[]; say: string[] };
 
 export interface Video { skill: SkillId; title: string; hook: string; scenes: Scene[] }
+
+/**
+ * The rendered video's timeline: every narration sentence, plus, for each pause-and-try question, a silent countdown
+ * (the moment the app pauses the video for the student's answer) and the spoken reveal.
+ */
+export interface Shot { scene: number; b: number; say: string; phase: 'say' | 'countdown' | 'reveal' }
+export const COUNTDOWN_SECONDS = 5;
+export const shotsOf = (v: Video): Shot[] => v.scenes.flatMap((s, scene) => [
+  ...s.say.map((say, b) => ({ scene, b, say, phase: 'say' as const })),
+  ...(s.k === 'quiz' ? [{ scene, b: s.say.length - 1, say: '', phase: 'countdown' as const }, { scene, b: s.say.length - 1, say: s.reveal, phase: 'reveal' as const }] : []),
+]);
+
+/** Written by scripts/videos/render.mjs: where each shot starts in the rendered file, in seconds. */
+export interface VideoTiming { duration: number; starts: number[] }

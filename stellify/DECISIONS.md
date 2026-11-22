@@ -245,3 +245,15 @@ Each entry records what was decided, why, and the alternatives considered.
     on a made-up page with the same layout; not yet tested on the College Board PDFs, which are not on this machine,
     and a figure drawn as an image with no text in it is still not detected. The 9 quarantined questions stay set
     aside until the PDFs and private/pack.json are available.
+47. **The video lessons are real videos with a recorded voice (owner request).**
+    Each of the 30 SAT video lessons is now an MP4 (1280 × 720, 30 frames a second, H.264 with AAC sound) with a
+    natural-sounding voice, made here from the same scripts: Kokoro, an open-weight text-to-speech model (Apache-2.0,
+    voice "Michael", chosen by the owner) reads every line; headless Chromium plays the animation in real time and its
+    screen stream is recorded; ffmpeg joins picture and voice (scripts/videos/). Each video stops by itself at its
+    pause-and-try question and waits for the student's answer; skipping plays the video's own spoken answer after a
+    five-second countdown, so the file also works as a plain video. Captions (WebVTT) and chapters come from the script
+    and its timing, so they always match the narration. The files (about 1–2 MB each) live in public/videos/, are
+    copied to sat/videos/ by the web build, and are streamed rather than stored in the offline cache. The single-file
+    builds stream them from the hosted site (https://maxzhing.github.io/aboutme/sat/, assumed to be the GitHub Pages
+    address; not checked from here) and, when that cannot be reached, fall back to the animated version from entry 46,
+    which also stays available on request.

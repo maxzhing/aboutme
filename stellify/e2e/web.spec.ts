@@ -5,7 +5,7 @@ import { extname, join, resolve } from 'node:path';
 
 /** The hosted web build (../sat), served over http like GitHub Pages would. Run `npm run build:web` first. */
 const ROOT = resolve(__dirname, '../..');
-const TYPES: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.webp': 'image/webp', '.webmanifest': 'application/manifest+json', '.json': 'application/json' };
+const TYPES: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.webp': 'image/webp', '.webmanifest': 'application/manifest+json', '.json': 'application/json', '.mp4': 'video/mp4', '.jpg': 'image/jpeg' };
 let server: Server; let base = '';
 test.beforeAll(async () => {
   server = createServer((req, res) => {
@@ -48,5 +48,31 @@ test('web build: the app loads over http, and after one visit it opens offline (
   await page.goto(`${base}app.html#/path`);
   await expect(page.getByTestId('path-page')).toBeVisible();
   await context.setOffline(false);
+  expect(errors).toEqual([]);
+});
+
+test('web build: a video lesson plays the real video with a voice, captions and chapters, and stops for the question', async ({ page }) => {
+  test.skip(!existsSync(join(ROOT, 'sat/videos/linf.mp4')), 'the rendered videos are not in this build');
+  const errors: string[] = []; page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto(`${base}app.html#/onboarding`);
+  await page.getByRole('button', { name: 'Skip setup' }).click();
+  await page.goto(`${base}app.html#/videos/linf`);
+  const v = page.getByTestId('lesson-video-el');
+  await expect(v).toBeVisible();
+  await expect.poll(() => v.evaluate((el: HTMLVideoElement) => el.readyState)).toBeGreaterThanOrEqual(1);
+  const info = await v.evaluate((el: HTMLVideoElement) => ({ d: el.duration, tracks: el.textTracks.length, w: el.videoWidth }));
+  expect(info.d).toBeGreaterThan(60);
+  expect(info.tracks).toBe(1);
+  expect(info.w).toBe(1280);
+  // jump to just before the pause-and-try question: the video stops there by itself
+  const quizChapter = page.getByRole('navigation', { name: 'Chapters' }).getByRole('button').filter({ hasText: 'Pause and try' });
+  await quizChapter.click();
+  await v.evaluate((el: HTMLVideoElement) => { el.muted = true; el.currentTime += 3.2; return el.play(); });
+  await expect(page.getByTestId('video-pause-quiz')).toBeVisible({ timeout: 15_000 });
+  expect(await v.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+  await page.getByTestId('video-choice-1').click();
+  await expect(page.getByTestId('video-quiz-why')).toContainText('Right');
+  await page.getByTestId('video-continue').click();
+  await expect(page.getByTestId('video-pause-quiz')).toBeHidden();
   expect(errors).toEqual([]);
 });

@@ -46,6 +46,9 @@ const r = await build({
 const entry = Object.entries(r.metafile.outputs).find(([, o]) => o.entryPoint?.endsWith('web-entry.ts'))?.[0].split('/').pop();
 copyFileSync(at('node_modules/pdfjs-dist/legacy/build/pdf.worker.min.js'), join(A, 'pdf.worker.min.js'));
 copyFileSync(at('public/screenshot-path.webp'), join(A, 'screenshot-path.webp'));
+// video lessons (rendered by scripts/videos/): streamed, never in the offline cache
+mkdirSync(join(out, 'videos'), { recursive: true });
+for (const f of readdirSync(at('public/videos'))) if (/\.(mp4|jpg)$/.test(f)) copyFileSync(at(`public/videos/${f}`), join(out, 'videos', f));
 writeFileSync(join(A, 'theme.js'), `(function(){try{var t=localStorage.getItem('stellify-theme')||'light';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`);
 const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="#1B1915"/><path d="M20 7 L23.5 16.2 L33.2 16.7 L25.6 22.8 L28.2 32.2 L20 26.8 L11.8 32.2 L14.4 22.8 L6.8 16.7 L16.5 16.2 Z" fill="#F6F3EA"/></svg>`;
 writeFileSync(join(out, 'icon.svg'), icon);
@@ -128,12 +131,12 @@ const core = new Set();
 const visit = (k) => { if (!k || core.has(k)) return; core.add(k); for (const i of outs[k].imports) if (i.kind === 'import-statement') visit(i.path); };
 visit(mainOut);
 const coreFiles = [...core].map((k) => `assets/${k.split('/').pop()}`);
-const shell = [...files.filter((f) => !f.startsWith('assets/c-') && !f.includes('pdf.worker')), ...coreFiles.filter((f) => f.startsWith('assets/c-'))];
+const shell = [...files.filter((f) => !f.startsWith('assets/c-') && !f.includes('pdf.worker') && !f.startsWith('videos/')), ...coreFiles.filter((f) => f.startsWith('assets/c-'))];
 const version = hash(files.join('|') + readFileSync(join(A, entry), 'utf8').length);
 writeFileSync(join(out, 'sw.js'), `const V='stellify-${version}';const SHELL=${JSON.stringify(['./', ...shell])};
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
-self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==location.origin)return;e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(hit=>hit||fetch(e.request).then(res=>{if(res.ok){const copy=res.clone();caches.open(V).then(c=>c.put(e.request,copy));}return res;}).catch(()=>caches.match('app.html'))));});
+self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==location.origin||u.pathname.includes('/videos/'))return;e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(hit=>hit||fetch(e.request).then(res=>{if(res.ok){const copy=res.clone();caches.open(V).then(c=>c.put(e.request,copy));}return res;}).catch(()=>caches.match('app.html'))));});
 `);
 const size = (f) => statSync(join(out, f)).size;
 const js = files.filter((f) => f.endsWith('.js') && f.startsWith('assets/'));
