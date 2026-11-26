@@ -176,8 +176,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {!focus && (
             <footer className="no-print mx-auto max-w-6xl border-t border-line px-6 pb-8 pt-5 text-[13px] leading-relaxed text-faint">
               <nav aria-label="About Stellify" className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-muted">
-                {[['/about', 'About'], ['/methodology', 'Methodology'], ['/how-we-write', 'How we write and check questions'], ['/privacy', 'Privacy'], ['/changelog', 'Changelog']].map(([h, l]) => <Link key={h} href={h} className="underline-offset-4 hover:text-ink hover:underline">{l}</Link>)}
+                {[['/about', 'About'], ['/methodology', 'Methodology'], ['/how-we-write', 'How we write and check questions'], ['/privacy', 'Privacy'], ['/changelog', 'Changelog'], ['/help', 'Help and report a problem']].map(([h, l]) => <Link key={h} href={h} className="underline-offset-4 hover:text-ink hover:underline">{l}</Link>)}
               </nav>
+              <p className="mb-2 text-muted" data-testid="footer-help">Have a problem or want to report one? Email <a className="underline underline-offset-4 hover:text-ink" href="mailto:stellifyprep@gmail.com">stellifyprep@gmail.com</a> or use <Link href="/help" className="underline underline-offset-4 hover:text-ink">Report a problem</Link>.</p>
               {BRAND.disclaimer} {hasOfficial() && 'Exception: questions labelled Official are real College Board questions that you added yourself, kept on this device for your own study. '}Passages are written for practice; the researchers, studies and data they describe are illustrative.
             </footer>
           )}

@@ -79,6 +79,37 @@ test('web build: the site opens with the fly-over film, then asks: sign in with 
   await still.close();
 });
 
+test('web build: "Have a problem?" is on the landing page and in the app, and reports are emailed to the team', async ({ page }) => {
+  await page.goto(base);
+  await expect(page.locator('.l-help')).toContainText('Have a problem?');
+  await expect(page.locator('.l-help a[href="mailto:stellifyprep@gmail.com"]')).toBeVisible();
+  // the app: its footer, and the Help page's report form (the report service is stood in for here)
+  const sent: string[] = [];
+  await page.addInitScript(() => { (window as unknown as { __STELLIFY_REPORT_URL__: string }).__STELLIFY_REPORT_URL__ = 'https://script.google.com/macros/s/test/exec'; });
+  await page.route('https://script.google.com/macros/s/test/exec', (r) => { sent.push(r.request().postData() ?? ''); r.fulfill({ status: 200, body: 'ok' }); });
+  await page.locator('.l-help a[href="app.html#/help"]').click();
+  await expect(page.getByTestId('help-card')).toContainText('stellifyprep@gmail.com');
+  await expect(page.getByTestId('footer-help')).toContainText('stellifyprep@gmail.com');
+  const form = page.getByTestId('report-form').last();
+  await form.getByLabel('What is it about?').selectOption('Signing in or saving');
+  await form.getByLabel('What happened?').fill('The sign-out button did nothing.');
+  await form.getByLabel(/Your email/).fill('student@example.com');
+  await form.getByTestId('report-send').click();
+  await expect(page.getByTestId('report-sent')).toBeVisible();
+  expect(JSON.parse(sent[0])).toMatchObject({ kind: 'Signing in or saving', message: 'The sign-out button did nothing.', replyTo: 'student@example.com', page: '/help' });
+});
+
+test('web build: before the report service is set up, a report opens the email app with the report written in', async ({ page }) => {
+  await page.goto(`${base}app.html#/onboarding`);
+  await page.getByTestId('continue-guest').click();
+  await page.getByRole('button', { name: 'Skip setup' }).click();
+  await page.goto(`${base}app.html#/help`);
+  const form = page.getByTestId('report-form').last();
+  await form.getByLabel('What happened?').fill('A lesson would not play.');
+  await form.getByTestId('report-send').click();
+  await expect(page.getByTestId('report-mail')).toBeVisible();
+});
+
 test('web build: the app loads over http, and after one visit it opens offline (service worker)', async ({ page, context }) => {
   const errors: string[] = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(`${base}app.html#/onboarding`);

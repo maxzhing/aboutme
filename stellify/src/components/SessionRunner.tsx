@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { SUPPORT_EMAIL, sendReport } from '@/lib/feedback';
 import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Bot, Clock, Flag, Lightbulb, NotebookPen, SkipForward, TriangleAlert, Wand2 } from 'lucide-react';
 import { remixable } from '@/lib/remix/engine';
 import { sfx } from '@/lib/sfx';
@@ -342,14 +343,15 @@ function ReportModal({ open, onClose, qid }: { open: boolean; onClose: () => voi
   const report = useStore((s) => s.report);
   const [reason, setReason] = useState(REPORT_REASONS[0]);
   const [detail, setDetail] = useState('');
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<false | 'sent' | 'mail'>(false);
   return (
     <Modal open={open} onClose={() => { setSent(false); onClose(); }} title="Report an error in this question">
-      {sent ? <p className="text-sm text-muted">Thank you. The report is saved with your data (Settings → Export) so it can be sent to whoever maintains your copy of Stellify.</p> : (
-        <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); report({ qid, reason, detail }); setSent(true); setDetail(''); }}>
+      {sent === 'sent' ? <p className="text-sm text-muted" data-testid="report-sent">Thank you! Your report was sent to the Stellify team to review.</p>
+        : sent === 'mail' ? <p className="text-sm text-muted" data-testid="report-mail">Thank you. Your email app should now be open with the report written in: press <b>Send</b> there. If nothing opened, email <a className="text-accent underline" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p> : (
+        <form className="space-y-3" onSubmit={async (e) => { e.preventDefault(); report({ qid, reason, detail }); setDetail(''); setSent(await sendReport({ kind: 'A question or answer is wrong', message: detail.trim() ? `${reason}: ${detail.trim()}` : reason, qid })); }}>
           <div><label className="label" htmlFor="rr">What is wrong?</label><select id="rr" className="input" value={reason} onChange={(e) => setReason(e.target.value)}>{REPORT_REASONS.map((r) => <option key={r}>{r}</option>)}</select></div>
           <div><label className="label" htmlFor="rd">Details (optional)</label><textarea id="rd" className="input min-h-24" value={detail} onChange={(e) => setDetail(e.target.value)} maxLength={600} /></div>
-          <button className="btn-primary">Save report</button>
+          <button className="btn-primary">Send report</button>
         </form>
       )}
     </Modal>

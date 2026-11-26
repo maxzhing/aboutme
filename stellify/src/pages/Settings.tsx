@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { BANK_STATS, getQuestion } from '@/data/questions';
 import { itemExport } from '@/lib/psych/export';
 import { AccountCard } from '@/components/Account';
+import { HelpCard } from '@/components/Feedback';
 import manifest from '@/data/questions/validated.json';
 import { listBackups, readBackup, type BackupInfo } from '@/lib/backup';
 import { snapshot, useStore } from '@/lib/store';
@@ -56,6 +57,7 @@ export function SettingsPage() {
     <div className="space-y-4">
       <PageHeader eyebrow="Settings" title="Settings & account" subtitle="No sign-up needed. As a guest your progress lives in this browser; on the website you can also sign in with Google to keep it in your account." />
       <AccountCard />
+      <HelpCard />
 
       <Card>
         <h2 className="text-lg font-bold">Profile and goals</h2>

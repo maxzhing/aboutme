@@ -99,7 +99,7 @@ export function HowWeWritePage() {
       </section>
       <section>
         <h2>Checking, by people</h2>
-        <p>Use <b>Report an error</b> on any question. Reports are saved with your data and appear on the quality page for whoever maintains your copy. No outside SAT expert has reviewed the bank yet. We say so rather than imply otherwise.</p>
+        <p>Use <b>Report an error</b> on any question, or <b>Report a problem</b> on the Help page. Reports are emailed to the Stellify team (stellifyprep@gmail.com), who review every one, and question reports are also saved with your data. No outside SAT expert has reviewed the bank yet. We say so rather than imply otherwise.</p>
       </section>
       <section>
         <h2>Life cycle</h2>
@@ -126,6 +126,7 @@ export function PrivacyPage() {
           <li><b>Google account:</b> only if you sign in, as described above. Signing in is handled by Google; Stellify never sees your Google password.</li>
           <li><b>AI tutor:</b> if you add your own Gemini key, your question to the tutor is sent to Google. The key is never included in exports, backups or your account copy.</li>
           <li><b>Desmos calculator:</b> when you open it online, it loads from desmos.com, which sees a normal web request. Stellify does not see what you type into it.</li>
+          <li><b>Reports:</b> only if you send one. Your report, the page you were on, your browser type and (if you give it) your email for a reply are emailed to the Stellify team through Google (Gmail). Nothing else is attached.</li>
           <li><b>Video lessons:</b> the videos load from the Stellify website like any other page file.</li>
           <li><b>Anonymous research data:</b> designed, but switched off in this version. If it is ever switched on, it will ask first in plain words, send no name or email, use a random session ID, and be reviewed for student-privacy law (COPPA and FERPA) before launch.</li>
         </ul>
@@ -134,7 +135,7 @@ export function PrivacyPage() {
         <h2>What Stellify never does</h2>
         <ul>
           <li>No ads, no tracking scripts, no analytics, no cookies for tracking, no selling of data.</li>
-          <li>The page’s security policy blocks connections to anything except Google’s sign-in and Firestore (only when you sign in), Google’s AI service (only when you turn the tutor on) and Desmos frames.</li>
+          <li>The page’s security policy blocks connections to anything except Google’s sign-in and Firestore (only when you sign in), Google’s AI service (only when you turn the tutor on), Google’s report service (only when you send a report) and Desmos frames.</li>
         </ul>
       </section>
     </Doc>

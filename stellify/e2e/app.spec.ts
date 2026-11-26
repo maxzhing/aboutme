@@ -829,9 +829,16 @@ test('quality control: a student report shows up as an open flag, and a reviewer
   await expect(page.getByTestId('qc-page')).toContainText('Question quality control');
   await expect(page.getByTestId('qc-page')).toContainText('No open flags.'); // every automatic flag on the bank has been reviewed
   await go(page, '/practice/session?mode=single&ids=r-bnd-06');
+  // the report is also emailed to the team (the report service is stood in for here)
+  const sent: string[] = [];
+  await page.evaluate(() => { (window as unknown as { __STELLIFY_REPORT_URL__: string }).__STELLIFY_REPORT_URL__ = 'https://script.google.com/macros/s/test/exec'; });
+  await page.route('https://script.google.com/macros/s/test/exec', (r) => { sent.push(r.request().postData() ?? ''); r.fulfill({ status: 200, body: 'ok' }); });
   await page.getByRole('button', { name: 'Report an error' }).click();
   await page.locator('form textarea').fill('Choice C looks defensible too.');
-  await page.getByRole('button', { name: 'Save report' }).click();
+  await page.getByRole('button', { name: 'Send report' }).click();
+  await expect(page.getByTestId('report-sent')).toBeVisible();
+  expect(JSON.parse(sent[0])).toMatchObject({ kind: 'A question or answer is wrong', qid: 'r-bnd-06' });
+  expect(JSON.parse(sent[0]).message).toContain('Choice C looks defensible too.');
   await go(page, '/qc');
   const flag = page.getByTestId('qc-flag').filter({ hasText: 'r-bnd-06' });
   await expect(flag).toHaveAttribute('data-kind', 'reported');

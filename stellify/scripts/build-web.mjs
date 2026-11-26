@@ -58,7 +58,7 @@ writeFileSync(join(out, 'manifest.webmanifest'), JSON.stringify({ name: 'Stellif
 
 // Google sign-in and Firestore (the optional account) need Google's sign-in script, its sign-in frame and three APIs
 const FIREBASE = { script: 'https://apis.google.com', frame: "'self' https://stellify-e1fd0.firebaseapp.com https://accounts.google.com", connect: 'https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com', img: 'https://lh3.googleusercontent.com' };
-const csp = `default-src 'self'; script-src 'self' ${FIREBASE.script}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${FIREBASE.img}; font-src 'self' data:; media-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self' https://generativelanguage.googleapis.com ${FIREBASE.connect}; frame-src https://www.desmos.com ${FIREBASE.frame}; base-uri 'none'; form-action 'none'; object-src 'none'`;
+const csp = `default-src 'self'; script-src 'self' ${FIREBASE.script}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${FIREBASE.img}; font-src 'self' data:; media-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self' https://generativelanguage.googleapis.com ${FIREBASE.connect} https://script.google.com https://script.googleusercontent.com; frame-src https://www.desmos.com ${FIREBASE.frame}; base-uri 'none'; form-action 'none'; object-src 'none'`;
 const head = (title, desc, extra = '') => `<!doctype html>
 <html lang="en" data-web="1">
 <head>
@@ -139,6 +139,10 @@ ${q.choices.map((c, i) => `<label class="l-choice"><input type="radio" name="a" 
 </section>
 <section class="l-promise" aria-labelledby="promise-h" data-section="promise">
 <blockquote class="card" data-layer="testimonial"><p id="promise-h">“Every question here is original. Every explanation shows its reasoning. There is no paywall, no trial and no premium version, and there never will be.”</p><cite>The Stellify promise</cite></blockquote>
+</section>
+<section class="l-help" aria-labelledby="help-h">
+<h2 id="help-h">Have a problem?</h2>
+<p>If something isn’t working, a question looks wrong, or you have an idea, tell us: email <a href="mailto:stellifyprep@gmail.com">stellifyprep@gmail.com</a> or <a href="app.html#/help">report a problem</a>, and the Stellify team will review it.</p>
 </section>
 </main>
 <footer class="l-wrap l-foot" data-section="footer">
