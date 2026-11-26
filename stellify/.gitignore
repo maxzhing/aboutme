@@ -1,0 +1,13 @@
+node_modules
+.build
+*.tsbuildinfo
+e2e-results
+playwright-report
+test-results
+coverage
+.DS_Store
+private/
+dist/stellify-personal.html
+
+# lesson build cache (voice WAVs, timelines)
+.lesson-cache/

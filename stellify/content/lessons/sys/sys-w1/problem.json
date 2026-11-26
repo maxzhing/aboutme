@@ -1,0 +1,103 @@
+{
+  "id": "sys-w1",
+  "skill": "sys",
+  "domain": "alg",
+  "format": "mcq",
+  "title": "No solution: the constant that breaks a system",
+  "stem": "In the system below, $k$ is a constant.\n\n$2x + ky = 6$\n\n$kx + 8y = 12$\n\nFor which value of $k$ does the system have no solution?",
+  "choices": [
+    "$-4$",
+    "$0$",
+    "$4$",
+    "$16$"
+  ],
+  "answer": 0,
+  "distractors": {
+    "1": "With k = 0 the lines are x = 3 and y = 1.5: they cross once.",
+    "2": "With k = 4 the second equation is exactly twice the first: the same line, so infinitely many solutions.",
+    "3": "16 is the value of k squared, not of k. With k = 16 the slopes differ, so there is one solution."
+  },
+  "trap": {
+    "answer": 2,
+    "misconception": "sys-3.1",
+    "why": "Students make the slopes match, find k squared equals 16, take the positive root and stop. Matching slopes is not enough: the constants decide between no solution and infinitely many."
+  },
+  "math": {
+    "symbols": [
+      "k",
+      "x",
+      "y"
+    ],
+    "key": "-4",
+    "steps": [
+      {
+        "eq": "2*8 - k*k = 0",
+        "over": [
+          "k"
+        ]
+      },
+      {
+        "eq": "16 - k^2 = 0",
+        "over": [
+          "k"
+        ]
+      },
+      {
+        "eq": "k^2 = 16",
+        "over": [
+          "k"
+        ]
+      },
+      {
+        "set": [
+          "4",
+          "-4"
+        ],
+        "over": [
+          "k"
+        ]
+      }
+    ],
+    "stepsReachKey": true,
+    "checks": [
+      {
+        "desc": "k = -4: the system has no solution",
+        "expr": "len(linsolve([2*x + (-4)*y - 6, (-4)*x + 8*y - 12], [x, y])) == 0"
+      },
+      {
+        "desc": "k = 4: infinitely many solutions (the second equation is 2 times the first)",
+        "expr": "expand(2*(2*x + 4*y - 6) - (4*x + 8*y - 12)) == 0"
+      },
+      {
+        "desc": "k = 0: exactly one solution",
+        "expr": "linsolve([2*x - 6, 8*y - 12], [x, y]) == FiniteSet((3, Rational(3, 2)))"
+      },
+      {
+        "desc": "k = 16: exactly one solution",
+        "expr": "len(linsolve([2*x + 16*y - 6, 16*x + 8*y - 12], [x, y])) == 1 and 2*8 - 16*16 != 0"
+      },
+      {
+        "desc": "graph check: with k = -4 the lines are y = x/2 - 3/2 and y = x/2 + 3/2",
+        "expr": "solve(2*x - 4*y - 6, y)[0] == x/2 - Rational(3, 2) and solve(-4*x + 8*y - 12, y)[0] == x/2 + Rational(3, 2)"
+      },
+      {
+        "desc": "graph check: with k = 4 both equations are y = 3/2 - x/2",
+        "expr": "solve(2*x + 4*y - 6, y)[0] == Rational(3, 2) - x/2 and solve(4*x + 8*y - 12, y)[0] == Rational(3, 2) - x/2"
+      }
+    ],
+    "trap": {
+      "value": "4",
+      "checks": [
+        {
+          "desc": "the trap value gives infinitely many solutions, not none",
+          "expr": "linsolve([2*x + 4*y - 6, 4*x + 8*y - 12], [x, y]) != EmptySet"
+        }
+      ]
+    },
+    "derive": {
+      "type": "system-no-solution",
+      "param": "k",
+      "trapOutcome": "many"
+    }
+  }
+}

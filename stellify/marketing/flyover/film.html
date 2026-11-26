@@ -1,0 +1,280 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Stellify fly-over</title>
+<style>
+@font-face { font-family: Geist; font-weight: 500; src: url(node_modules/geist/dist/fonts/geist-sans/Geist-Medium.woff2) format('woff2'); }
+@font-face { font-family: 'Instrument Serif'; font-style: italic; src: url(node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2) format('woff2'); }
+html, body { margin: 0; width: 1440px; height: 1152px; overflow: hidden; background: #f9fbfb; }
+canvas { position: absolute; inset: 0; }
+#title { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-family: Geist, sans-serif; pointer-events: none; }
+#badge { position: absolute; left: 50%; top: 44px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 10px; padding: 9px 18px 9px 10px; border-radius: 999px; background: #fff; box-shadow: 0 6px 24px rgba(26,33,51,.10); font: 500 21px Geist, sans-serif; color: #1b1915; opacity: 0; }
+#badge img { width: 30px; height: 30px; border-radius: 7px; }
+.w { display: inline-block; white-space: pre; }
+#l1 { position: absolute; left: 0; right: 0; top: 112px; font: 500 74px/1 Geist, sans-serif; letter-spacing: -0.02em; color: #1b1915; }
+#l2 { position: absolute; left: 0; right: 0; top: 186px; font: italic 400 82px/1 'Instrument Serif', serif; color: #8b8b92; }
+</style></head>
+<body>
+<canvas id="c" width="1440" height="1152"></canvas>
+<div id="title"><div id="badge"><img src="layers/logo.png" alt="">Stellify</div><div id="l1"></div><div id="l2"></div></div>
+<script>
+'use strict';
+const W = 1440, H = 1152, F = 1880;                 // frame and focal length in pixels
+const TILT0 = 56 * Math.PI / 180;
+const FLOOR_C = [0xf9 / 255, 0xfb / 255, 0xfb / 255], FLOOR_E = [0xf2 / 255, 0xf3 / 255, 0xf6 / 255];
+const LINE1 = 'Walk into the SAT ready,', LINE2 = 'free, for good.';
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const smooth = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+const easeOut = (x) => 1 - (1 - clamp(x)) ** 3;
+const quadInOut = (x) => { x = clamp(x); return x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2; };
+const lerp = (a, b, u) => a + (b - a) * u;
+const loglerp = (a, b, u) => Math.exp(lerp(Math.log(a), Math.log(b), u));
+
+let L, gl, prog = {}, tex = {}, fbo = {};
+
+// ── speed curve (share of cruise), integrated into the look-at point's travel down the page ───────────────────────
+function v(t) {
+  if (t < 0.6) return 0.5 * smooth(t / 0.6);
+  if (t < 1.25) return 0.5;
+  if (t < 1.6) return lerp(0.5, 1.0, smooth((t - 1.25) / 0.35));
+  if (t < 7.3) return 1.0 + 0.04 * Math.sin((t - 1.6) * 0.9);   // held between 0.96 and 1.04
+  if (t < 8.3) return lerp(1.0, 0.12, smooth((t - 7.3) / 1.0));
+  return 0.12;
+}
+const DT = 1 / 2000; let travelTable = [0];
+function buildTravel() { let s = 0; for (let i = 1; i <= 9 / DT; i++) { s += v((i - 0.5) * DT) * DT; travelTable.push(s); } }
+const travel = (t) => travelTable[Math.min(travelTable.length - 1, Math.max(0, Math.round(t / DT)))];
+
+// ── camera at time t: look-at point, distance, tilt; plus the dive mask ────────────────────────────────────────────
+function camera(t) {
+  const hero = L.sections.hero, foot = L.sections.footer;
+  const y0 = hero.y + hero.h * 0.28, yEnd = foot.y + 40;
+  const cruise = (yEnd - y0) / travel(8.0);
+  const flightY = y0 + cruise * travel(Math.min(t, 8.2)) + (t > 8.2 ? cruise * 0.12 * (t - 8.2) : 0);
+  const flightD = lerp(1360, 1700, easeOut(t / 8.2));
+  const Hp = L.height, Dover = F * Hp / (H - 84), Lover = Hp / 2;
+  const heroW = hero.w + 56, Dcard = F * heroW / 1018, Lcard = hero.y + 293 * Dcard / F;
+  // rise: trapezoid speed in log scale (accelerate 7.75-8.35, even 8.35-8.95, stop at 9.25)
+  const riseU = (() => { if (t <= 7.75) return 0; if (t >= 9.25) return 1;
+    const a = 0.6, c = 0.6, d = 0.3, vmax = 1 / (a / 2 + c + d / 2); const x = t - 7.75;
+    if (x < a) return vmax * x * x / (2 * a); if (x < a + c) return vmax * (a / 2 + (x - a));
+    const y = x - a - c; return vmax * (a / 2 + c + y - y * y / (2 * d)); })();
+  let ly = lerp(flightY, Lover, smooth(riseU * 1.15)), D = loglerp(flightD, Dover, riseU), tilt = TILT0 * (1 - smooth((t - 8.15) / 0.8));
+  let mask = { x0: 0, y0: 0, x1: L.width, y1: Hp, r: 24, fade: 0 }, lx = L.width / 2;
+  if (t > 9.25) { D = Dover * (1 - 0.035 * clamp((t - 9.25) / 0.22)); ly = Lover; }
+  if (t > 9.47) {
+    const u = quadInOut((t - 9.47) / 0.5);
+    D = loglerp(Dover * 0.965, Dcard, u);
+    // pin the page's top edge to the frame top while growing, then let the hero land at y 283
+    const pinTop = (H / 2 - 42) * D / F;               // look-at y that keeps the page top at frame y 42
+    ly = lerp(pinTop, Lcard, smooth((u - 0.35) / 0.65));
+    lx = lerp(L.width / 2, hero.x + hero.w / 2, u);
+    mask = { x0: lerp(0, hero.x - 28, u), y0: lerp(0, hero.y - 8, u), x1: lerp(L.width, hero.x + hero.w + 28, u), y1: lerp(Hp, hero.y + hero.h + 8, u), r: lerp(24, 38 * Dcard / F, u), fade: u };
+  }
+  if (t > 9.97) { D = Dcard * (1 - 0.02 * clamp((t - 9.97) / 4.53)); }
+  return { lx, ly, D, tilt, mask };
+}
+
+// ── matrices ────────────────────────────────────────────────────────────────────────────────────────────────────────
+function viewProj(cam) {
+  const eye = [cam.lx, cam.ly + cam.D * Math.sin(cam.tilt), cam.D * Math.cos(cam.tilt)];
+  const tgt = [cam.lx, cam.ly, 0];
+  const f = norm(sub(tgt, eye)), upW = [0, -1, 0];
+  // right-handed basis with the page's top at the top of the frame and its left on the left
+  const s = norm(cross(upW, f)); const u = cross(f, s);
+  const view = [s[0], u[0], -f[0], 0, s[1], u[1], -f[1], 0, s[2], u[2], -f[2], 0, -dot(s, eye), -dot(u, eye), dot(f, eye), 1];
+  const near = 10, far = 40000, fy = 2 * F / H, fx = 2 * F / W;
+  const proj = [fx, 0, 0, 0, 0, fy, 0, 0, 0, 0, -(far + near) / (far - near), -1, 0, 0, -2 * far * near / (far - near), 0];
+  return { vp: mul(proj, view), view, eye };
+}
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const norm = (a) => { const l = Math.hypot(...a); return [a[0] / l, a[1] / l, a[2] / l]; };
+function mul(a, b) { const o = new Array(16).fill(0); for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) o[c * 4 + r] += a[k * 4 + r] * b[c * 4 + k]; return o; }
+
+// ── GL setup ────────────────────────────────────────────────────────────────────────────────────────────────────────
+const VS = `#version 300 es
+in vec2 uv; uniform mat4 vp; uniform vec3 p0, ex, ey; uniform mat4 view;
+out vec2 vuv; out float vdepth; out vec3 wpos;
+void main() { vec3 w = p0 + ex * uv.x + ey * uv.y; wpos = w; vuv = uv; vec4 vv = view * vec4(w, 1.0); vdepth = -vv.z; gl_Position = vp * vec4(w, 1.0); }`;
+const FS_QUAD = `#version 300 es
+precision highp float; in vec2 vuv; in float vdepth; in vec3 wpos;
+uniform sampler2D img; uniform float alpha, lod, shadow, depthPass; uniform vec4 mask; uniform float maskR, maskFade; uniform vec3 floorC;
+uniform vec2 rectSize; uniform float radius;
+out vec4 o;
+float rrect(vec2 p, vec2 a, vec2 b, float r) { vec2 c = (a + b) * 0.5, h = (b - a) * 0.5 - r; vec2 q = abs(p - c) - h; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }
+void main() {
+  // a slight negative bias keeps tilted text crisp where anisotropic filtering is not available (software GL)
+  vec4 c = lod > 0.0 ? textureLod(img, vuv, lod) : texture(img, vuv, -0.8);
+  if (radius > 0.0) { float d = rrect(vuv * rectSize, vec2(0.0), rectSize, radius); c.a *= clamp(0.5 - d, 0.0, 1.0); }
+  // the dive: everything outside the hero card fades into the floor
+  float m = rrect(wpos.xy, mask.xy, mask.zw, maskR); float inside = clamp(0.5 - m / max(1.0, maskR * 0.04), 0.0, 1.0);
+  float keep = mix(1.0, inside, maskFade);
+  if (shadow > 0.0) { o = vec4(0.102, 0.129, 0.2, c.a * shadow * keep); }
+  else { c.rgb = mix(floorC, c.rgb, keep); o = vec4(c.rgb, c.a * alpha * mix(1.0, max(keep, 0.0), maskFade * 0.0 + 1.0)); o.a *= keep > 0.001 ? 1.0 : 0.0; }
+  if (depthPass > 0.0) { if (o.a < 0.5 || shadow > 0.0) discard; float d = clamp(vdepth / 60000.0, 0.0, 1.0); float hi = floor(d * 255.0) / 255.0; o = vec4(hi, (d - hi) * 255.0, 0.0, 1.0); }
+}`;
+const VS_FULL = `#version 300 es
+in vec2 uv; out vec2 vuv; void main() { vuv = uv; gl_Position = vec4(uv * 2.0 - 1.0, 0.0, 1.0); }`;
+const FS_BG = `#version 300 es
+precision highp float; in vec2 vuv; uniform vec3 c0, c1; out vec4 o;
+void main() { float d = length((vuv - 0.5) * vec2(1.25, 1.0)) / 0.8; o = vec4(mix(c0, c1, smoothstep(0.0, 1.0, d)), 1.0); }`;
+const FS_DOF = `#version 300 es
+precision highp float; in vec2 vuv; uniform sampler2D col, dep; uniform float focus; uniform vec2 px; uniform float wgt; out vec4 o;
+float depthAt(vec2 uv) { vec4 e = texture(dep, uv); return (e.r + e.g / 255.0) * 60000.0; }
+void main() {
+  float d = depthAt(vuv); if (d < 1.0) d = 60000.0;
+  float r = d < focus ? 75.0 * (focus - d) / d : 6.0 * (d - focus) / d; r = min(r, 120.0);
+  vec3 acc = vec3(0.0); float n = 0.0;
+  float lod = max(0.0, log2(max(r, 1.0) / 5.0));
+  const int TAPS = 24; float ga = 2.39996323;
+  for (int i = 0; i < TAPS; i++) { float fi = float(i) + 0.5; float rr = sqrt(fi / float(TAPS)) * r; float a = fi * ga;
+    vec2 uv = vuv + vec2(cos(a), sin(a)) * rr * px; acc += textureLod(col, uv, lod).rgb; n += 1.0; }
+  o = vec4(acc / n, wgt);
+}`;
+function compile(vs, fs) { const p = gl.createProgram(); for (const [t, s] of [[gl.VERTEX_SHADER, vs], [gl.FRAGMENT_SHADER, fs]]) { const sh = gl.createShader(t); gl.shaderSource(sh, s); gl.compileShader(sh); if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh)); gl.attachShader(p, sh); } gl.bindAttribLocation(p, 0, 'uv'); gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p)); return p; }
+function texFrom(img) { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img); gl.generateMipmap(gl.TEXTURE_2D); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); for (const w of [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T]) gl.texParameteri(gl.TEXTURE_2D, w, gl.CLAMP_TO_EDGE); const an = gl.getExtension('EXT_texture_filter_anisotropic'); if (an) gl.texParameterf(gl.TEXTURE_2D, an.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(16, gl.getParameter(an.MAX_TEXTURE_MAX_ANISOTROPY_EXT))); return t; }
+function target(mip) { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.texStorage2D(gl.TEXTURE_2D, mip ? 1 + Math.floor(Math.log2(W)) : 1, gl.RGBA8, W, H); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, mip ? gl.LINEAR : gl.NEAREST); for (const w of [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T]) gl.texParameteri(gl.TEXTURE_2D, w, gl.CLAMP_TO_EDGE); const f = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, f); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0); return { t, f }; }
+const loadImg = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+
+async function init() {
+  L = await (await fetch('layers/layout.json')).json();
+  buildTravel();
+  gl = document.getElementById('c').getContext('webgl2', { antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: true });
+  prog.quad = compile(VS, FS_QUAD); prog.bg = compile(VS_FULL, FS_BG); prog.dof = compile(VS_FULL, FS_DOF);
+  const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW); gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  tex.page = texFrom(await loadImg('layers/page.png'));
+  tex.white = texFrom((() => { const c = document.createElement('canvas'); c.width = c.height = 8; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, 8, 8); return c; })());
+  for (const p of L.pieces) tex[p.i] = texFrom(await loadImg(`layers/piece-${p.i}.png`));
+  tex.logo = texFrom(await loadImg('layers/logo.png'));
+  fbo.scene = target(true); fbo.depth = target(false); fbo.acc = target(false);
+  // section passing times (when the look-at point crosses each section), for timing the lifts
+  const times = []; for (let t = 0; t <= 8.2; t += 0.01) times.push([t, camera(t).ly]);
+  L.passAt = (y) => (times.find(([, ly]) => ly >= y) || [8.2])[0];
+  await document.fonts.ready;
+  window.ready = true;
+}
+
+// ── what lifts, how high, how far it stands up (z in page pixels, angle in degrees) ─────────────────────────────────
+function pose(p, t) {
+  const pass = L.passAt(p.y + p.h / 2);
+  const win = (a, b) => smooth((t - (pass + a)) / (b - a));
+  switch (p.kind) {
+    case 'chip': return { z: lerp(4, 60 + (p.i % 2) * 20, smooth((t - 0.1) / 1.25)), a: 30 * smooth((t - 0.1) / 1.25) };
+    case 'button': return { z: 20, a: 0 };
+    case 'phone': return { z: 34, a: 0 };
+    case 'card': return { z: 18, a: 0 };
+    case 'photo': return { z: lerp(20, 100 + (p.i % 3) * 15, win(-1.4, -0.1)), a: 46 * win(-1.4, -0.1) };
+    case 'testimonial': return { z: lerp(22, 112, win(-1.0, 0.0)), a: 30 * win(-1.0, 0.0) };
+    default: return { z: 10, a: 0 };
+  }
+}
+// the four logo tiles: lift beside the button, hang off the page's top corners, trail the camera, then leave the top
+function tiles(t, cam) {
+  const out = [], tl = L.pieces.filter((p) => p.kind === 'tile');
+  tl.forEach((p, k) => {
+    const lift = smooth((t - 0.1) / 1.25), trail = smooth((t - 1.2) / 1.2);
+    const corner = k < 2 ? [-90 - k * 120, 40 + k * 90] : [L.width + 90 + (k - 2) * 120 - 170, 40 + (k - 2) * 90];
+    const size = lerp(p.w, 140 + 20 * k, lift);
+    const x = lerp(p.x, corner[0], lift), y = lerp(p.y, corner[1], lift) + 300 * trail;
+    out.push({ x, y, z: lerp(4, 160 + 25 * k, lift) + 120 * trail, w: size, h: size, a: 0, img: tex.logo });
+  });
+  // a tile passing close to the lens at the left edge at 5.4 s
+  if (t > 4.9 && t < 5.9) { const u = (t - 4.9) / 1.0; out.push({ x: -40, y: cam.ly + lerp(-200, 500, u), z: 900, w: 160, h: 160, a: 0, img: tex.logo }); }
+  // the end card: two on the card's top corners (one crisp at the right edge), two large soft ones at the bottom
+  if (t > 9.6) { const m = cam.mask, e = smooth((t - 9.6) / 0.4), s = 70 * cam.D / F;
+    out.push({ x: m.x0 - s * 0.4, y: m.y0 - s * 0.5, z: 30, w: s, h: s, a: 0, img: tex.logo, alpha: e });
+    out.push({ x: m.x1 - s * 0.6, y: m.y0 - s * 0.5, z: 30, w: s, h: s, a: 0, img: tex.logo, alpha: e });
+    const big = 260 * cam.D / F;
+    out.push({ x: m.x0 - big * 0.7 + 6 * Math.sin(t), y: m.y1 - big * 0.4, z: cam.D * 0.55, w: big, h: big, a: 0, img: tex.logo, alpha: e });
+    out.push({ x: m.x1 - big * 0.3 - 6 * Math.sin(t), y: m.y1 - big * 0.4, z: cam.D * 0.55, w: big, h: big, a: 0, img: tex.logo, alpha: e }); }
+  return out;
+}
+
+function drawQuad(m, q, depthPass, cam) {
+  const a = q.a * Math.PI / 180, cy = q.y + q.h / 2;
+  // a quad standing up by turning about its own middle: the top edge rises toward the lens
+  const p0 = [q.x, cy - (q.h / 2) * Math.cos(a), q.z + (q.h / 2) * Math.sin(a)];
+  gl.uniform3fv(gl.getUniformLocation(prog.quad, 'p0'), p0);
+  gl.uniform3fv(gl.getUniformLocation(prog.quad, 'ex'), [q.w, 0, 0]);
+  gl.uniform3fv(gl.getUniformLocation(prog.quad, 'ey'), [0, q.h * Math.cos(a), -q.h * Math.sin(a)]);
+  gl.uniform1f(gl.getUniformLocation(prog.quad, 'alpha'), q.alpha ?? 1);
+  gl.uniform1f(gl.getUniformLocation(prog.quad, 'lod'), q.lod ?? 0);
+  gl.uniform1f(gl.getUniformLocation(prog.quad, 'shadow'), q.shadow ?? 0);
+  gl.uniform1f(gl.getUniformLocation(prog.quad, 'depthPass'), depthPass ? 1 : 0);
+  gl.uniform2f(gl.getUniformLocation(prog.quad, 'rectSize'), q.w, q.h);
+  gl.uniform1f(gl.getUniformLocation(prog.quad, 'radius'), q.radius ?? 0);
+  gl.bindTexture(gl.TEXTURE_2D, q.img);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+function scene(t, depthPass) {
+  const cam = camera(t), { vp, view } = viewProj(cam);
+  gl.useProgram(prog.quad);
+  gl.uniformMatrix4fv(gl.getUniformLocation(prog.quad, 'vp'), false, vp);
+  gl.uniformMatrix4fv(gl.getUniformLocation(prog.quad, 'view'), false, view);
+  const m = cam.mask;
+  gl.uniform4f(gl.getUniformLocation(prog.quad, 'mask'), m.x0, m.y0, m.x1, m.y1);
+  gl.uniform1f(gl.getUniformLocation(prog.quad, 'maskR'), m.r);
+  gl.uniform1f(gl.getUniformLocation(prog.quad, 'maskFade'), m.fade);
+  gl.uniform3fv(gl.getUniformLocation(prog.quad, 'floorC'), FLOOR_C);
+  // the page's soft wide shadow, then the page (24 px corners), then each piece's shadow and the piece, lowest first
+  const sh = 60 * (1 - m.fade) + 40 * m.fade;
+  if (!depthPass) drawQuad(m, { x: m.x0 - sh, y: m.y0 - sh * 0.4, z: 0, w: m.x1 - m.x0 + 2 * sh, h: m.y1 - m.y0 + 2 * sh, a: 0, img: tex.white, shadow: 0.10, radius: m.r + sh, lod: 0 }, false, cam);
+  drawQuad(m, { x: 0, y: 0, z: 0, w: L.width, h: L.height, a: 0, img: tex.page, radius: 24 }, depthPass, cam);
+  const items = L.pieces.filter((p) => p.kind !== 'tile').map((p) => ({ ...pose(p, t), x: p.px, y: p.py, w: p.pw, h: p.ph, img: tex[p.i] }));
+  items.push(...tiles(t, cam));
+  items.sort((a, b) => a.z - b.z);
+  for (const q of items) {
+    if (!depthPass && q.z < cam.D * 0.4) { const off = [0.10 * q.z, 4 + 0.36 * q.z], blur = 7 + 0.5 * q.z;
+      drawQuad(m, { ...q, x: q.x + off[0], y: q.y + off[1], z: 0.5, a: 0, shadow: 0.26 * (q.alpha ?? 1), lod: Math.log2(Math.max(1, blur * 2 / 4)) }, false, cam); }
+    drawQuad(m, q, depthPass, cam);
+  }
+  return cam;
+}
+
+// ── one frame: subframes across 0.7 of a frame for motion blur, each with depth of field ────────────────────────────
+window.seek = function (t, fps = 60, subframes = 4) {
+  for (let s = 0; s < subframes; s++) {
+    const ts = t + (subframes > 1 ? (s / (subframes - 1) - 0.5) * 0.7 / fps : 0);
+    // colour
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.scene.f); gl.viewport(0, 0, W, H);
+    gl.disable(gl.BLEND); gl.useProgram(prog.bg);
+    gl.uniform3fv(gl.getUniformLocation(prog.bg, 'c0'), FLOOR_C); gl.uniform3fv(gl.getUniformLocation(prog.bg, 'c1'), FLOOR_E);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    const cam = scene(ts, false);
+    gl.bindTexture(gl.TEXTURE_2D, fbo.scene.t); gl.generateMipmap(gl.TEXTURE_2D);
+    // depth
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.depth.f); gl.disable(gl.BLEND); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    scene(ts, true);
+    // depth of field, averaged into the accumulation target
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.acc.f); gl.useProgram(prog.dof);
+    if (s === 0) gl.disable(gl.BLEND); else { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); }
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, fbo.scene.t); gl.uniform1i(gl.getUniformLocation(prog.dof, 'col'), 0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, fbo.depth.t); gl.uniform1i(gl.getUniformLocation(prog.dof, 'dep'), 1);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.uniform1f(gl.getUniformLocation(prog.dof, 'focus'), cam.D);
+    gl.uniform2f(gl.getUniformLocation(prog.dof, 'px'), 1 / W, 1 / H);
+    gl.uniform1f(gl.getUniformLocation(prog.dof, 'wgt'), 1 / (s + 1));
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  // present
+  gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fbo.acc.f); gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+  gl.blitFramebuffer(0, 0, W, H, 0, 0, W, H, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+  gl.finish();
+  title(t);
+};
+
+// ── the end card's title: badge, then line 1 a word every 0.06 s, then the italic tail a word every 0.05 s ────────────
+function words(el, text, start, step, t) {
+  if (!el.dataset.built) { el.innerHTML = text.split(' ').map((w) => `<span class="w">${w} </span>`).join(''); el.dataset.built = '1'; }
+  [...el.children].forEach((sp, i) => { const u = clamp((t - start - i * step) / 0.34), e = 1 - (1 - u) ** 3;
+    sp.style.opacity = e; sp.style.transform = `translateY(${16 * (1 - e)}px)`; sp.style.filter = `blur(${12 * (1 - e)}px)`; });
+}
+function title(t) {
+  const b = document.getElementById('badge'); b.style.opacity = clamp((t - 10.02) / 0.3);
+  words(document.getElementById('l1'), LINE1, 10.12, 0.06, t);
+  words(document.getElementById('l2'), LINE2, 10.36, 0.05, t);
+}
+init().catch((e) => { window.initError = String(e && e.stack || e); });
+</script>
+</body></html>

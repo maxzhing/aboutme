@@ -1,0 +1,383 @@
+import type { Mark } from './highlight';
+/**
+ * Core domain types. These mirror the Postgres schema in supabase/schema.sql so the
+ * local-first store and the optional cloud database stay structurally identical.
+ */
+
+export type Section = 'math' | 'rw';
+export type Difficulty = 'medium' | 'hard' | 'very-hard' | 'elite';
+export type QuestionType = 'mcq' | 'spr';
+
+export type DomainId =
+  | 'alg' | 'adv' | 'psda' | 'geo' // Math
+  | 'ii' | 'cs' | 'eoi' | 'sec'; // Reading & Writing
+
+export type SkillId =
+  | 'lin1' | 'linf' | 'lin2' | 'sys' | 'ineq'
+  | 'equiv' | 'nleq' | 'nlf'
+  | 'ratio' | 'pct' | 'data1' | 'data2' | 'prob' | 'infer' | 'claims'
+  | 'area' | 'lines' | 'trig' | 'circ'
+  | 'cid' | 'coet' | 'coeq' | 'inf'
+  | 'wic' | 'tsp' | 'ctc'
+  | 'tra' | 'syn'
+  | 'bnd' | 'fss';
+
+export type Figure =
+  | { kind: 'table'; title?: string; headers: string[]; rows: (string | number)[][]; note?: string }
+  | { kind: 'bar'; title?: string; xLabel?: string; yLabel?: string; categories: string[]; series: { name: string; values: number[] }[] }
+  | { kind: 'line'; title?: string; xLabel?: string; yLabel?: string; x: (string | number)[]; series: { name: string; values: number[] }[] }
+  | { kind: 'scatter'; title?: string; xLabel?: string; yLabel?: string; points: [number, number][]; fit?: { m: number; b: number } };
+
+/** Compact authoring format used in src/data/questions/*.ts */
+export interface RawQuestion {
+  id: string;
+  skill: SkillId;
+  /** Subskill / granular topic tag, e.g. "Nonessential clauses" */
+  sub: string;
+  /** M medium · H hard · V very hard · E beyond SAT (deliberately harder than the real test) */
+  d: 'M' | 'H' | 'V' | 'E';
+  passage?: string;
+  /** Bulleted research notes for Rhetorical Synthesis questions */
+  notes?: string[];
+  figure?: Figure;
+  stem: string;
+  /** Exactly four choices for multiple choice; omitted for student-produced response */
+  choices?: string[];
+  /** Index of the correct choice (mcq) or list of accepted answers (spr), e.g. ['7/2', '3.5'] */
+  answer: number | string[];
+  /** Step-by-step solution */
+  steps: string[];
+  /**
+   * mcq: one rationale per choice, same order as `choices` (the correct one says why it works).
+   * spr: common wrong answers, each starting with the wrong value and why it is wrong.
+   */
+  why: string[];
+  concept: string;
+  strategy: string;
+  trap: string;
+  remember: string;
+  /** Desmos / calculator approach (math only, where it is genuinely useful) */
+  desmos?: string;
+  /** Alternate solution method */
+  alt?: string;
+  /** Estimated solving time in seconds (defaults by section and difficulty) */
+  time?: number;
+  /** Independent machine verification of the keyed answer (math). Must return true. */
+  check?: () => boolean;
+}
+
+export interface Question extends Omit<RawQuestion, 'd' | 'time'> {
+  section: Section;
+  domain: DomainId;
+  difficulty: Difficulty;
+  type: QuestionType;
+  time: number;
+  hints: [string, string, string];
+  source: string;
+  license: string;
+  validation: 'validated' | 'unvalidated';
+  created: string;
+  /** official College Board question kept as the exact page image (math, tables, graphs, underlining) */
+  image?: string;
+  /** for an image question: the exact text of each choice, shown beside "Choice A" etc. */
+  choiceText?: string[];
+  rationaleImage?: string;
+  official?: boolean;
+  /** College Board difficulty rating for official questions (estimated from position for full practice tests) */
+  cbDifficulty?: 'Easy' | 'Medium' | 'Hard';
+  /** id of the official full practice test this question belongs to */
+  test?: string;
+}
+
+export type PracticeMode =
+  | 'smart' | 'bank' | 'hard' | 'timed' | 'daily' | 'speed' | 'arena'
+  | 'mistakes' | 'review' | 'diagnostic' | 'mock' | 'lesson' | 'tutor' | 'mission' | 'remix' | 'path' | 'predict';
+
+export interface Attempt {
+  id: string;
+  qid: string;
+  at: number;
+  /** choice index as a string for mcq, raw text for spr, null when skipped/abandoned */
+  answer: string | null;
+  correct: boolean;
+  ms: number;
+  hints: number;
+  mode: PracticeMode;
+  sessionId: string;
+  abandoned?: boolean;
+  /** how sure the student said they were before checking (practice only) */
+  confidence?: AnswerConfidence;
+}
+
+/** How sure a student was of an answer: drives review scheduling and mistake diagnosis. */
+export type AnswerConfidence = 'sure' | 'unsure' | 'guess';
+
+export type ErrorCategory =
+  | 'concept' | 'calculation' | 'misread' | 'grammar' | 'inference' | 'time' | 'careless' | 'strategy';
+
+export interface Mistake {
+  qid: string;
+  firstAt: number;
+  lastAt: number;
+  /** number of times this question was answered incorrectly */
+  count: number;
+  answers: (string | null)[];
+  lastMs: number;
+  category: ErrorCategory;
+  categoryBy: 'auto' | 'student';
+  /** the evidence behind an automatic category, in plain words */
+  why?: string[];
+  status: 'unresolved' | 'resolved';
+  resolvedAt?: number;
+  /** original question re-answered correctly, without hints, after the last miss */
+  redoCorrect: boolean;
+  /** other same-skill questions answered correctly after the last miss */
+  relatedCorrect: string[];
+}
+
+export interface SrsCard {
+  due: number; // epoch ms
+  interval: number; // days
+  ease: number;
+  reps: number;
+  lapses: number;
+  /** last few outcomes, oldest first: S sure-right, U unsure-right, G guessed-right, x wrong, X wrong while sure */
+  hist?: string;
+  /** answered wrong while sure: a likely misconception, reviewed first until it is answered right with confidence twice */
+  misconception?: boolean;
+}
+
+export interface Profile {
+  name?: string;
+  currentScore?: number;
+  targetScore: number;
+  examDate?: string; // yyyy-mm-dd
+  dailyMinutes: number;
+  strongest?: Section | 'unsure';
+  weakest?: Section | 'unsure';
+  onboardedAt?: number;
+  diagnosticAt?: number;
+  restDays: number[]; // 0=Sun … 6=Sat
+  /** answers to the start-up questions (lib/model/intake.ts) */
+  intake?: import('./model/intake').Intake;
+}
+
+export type PetSlot = 'hat' | 'face' | 'neck' | 'back' | 'habitat' | 'effect';
+
+export interface PetState {
+  name: string;
+  xp: number;
+  coins: number;
+  happiness: number; // 0–100
+  lastCare: number;
+  owned: string[];
+  equipped: Partial<Record<PetSlot, string>>;
+  lastEvent?: { kind: string; at: number; text: string };
+  /** the active companion (undefined while the first egg has not hatched) */
+  species?: string;
+  /** every companion hatched so far, with the name the student gave it */
+  collection?: { id: string; at: number; name?: string }[];
+  /** the current egg's starting point: study is counted from here */
+  egg?: { xp0: number; lessons0: number; pattern: number };
+}
+
+export interface DayActivity {
+  ms: number;
+  questions: number;
+  correct: number;
+  xp: number;
+  lessons: number;
+}
+
+export interface PlanTask {
+  id: string;
+  kind: 'lesson' | 'practice' | 'mistakes' | 'review' | 'timed' | 'mock' | 'mixed' | 'vocab' | 'diagnostic' | 'desmos';
+  title: string;
+  detail?: string;
+  skill?: SkillId;
+  section?: Section;
+  minutes: number;
+  href: string;
+  done?: boolean;
+}
+
+export interface PlanDay {
+  date: string; // yyyy-mm-dd
+  week: number;
+  phase: string;
+  rest: boolean;
+  focus: string;
+  tasks: PlanTask[];
+}
+
+export interface StudyPlan {
+  createdAt: number;
+  startDate: string;
+  days: PlanDay[];
+  basis: string;
+}
+
+export interface MockModuleResult {
+  section: Section;
+  module: 1 | 2;
+  route?: 'upper' | 'lower';
+  qids: string[];
+  answers: Record<string, string | null>;
+  flagged: string[];
+  msUsed: number;
+  msAllowed: number;
+  perQuestionMs: Record<string, number>;
+}
+
+export interface ScoreRange { low: number; high: number; mid: number }
+
+export interface MockAttempt {
+  id: string;
+  formId: string;
+  startedAt: number;
+  completedAt?: number;
+  modules: MockModuleResult[];
+  scores?: { rw: ScoreRange; math: ScoreRange; total: ScoreRange; /** an official test's printed raw-score table result, for reference */ table?: { rw: ScoreRange; math: ScoreRange; total: ScoreRange } };
+  /** in-progress pointer */
+  cursor?: { stage: number; index: number; msLeft: number; breakMsLeft?: number };
+  kind: 'full' | 'section-rw' | 'section-math' | 'module-rw';
+  /** times the student left full screen or the test window during this attempt */
+  breaks?: number;
+  /** whether the student chose full-screen lock-in for this attempt */
+  locked?: boolean;
+}
+
+export interface Note {
+  id: string;
+  title: string;
+  body: string;
+  topic?: string;
+  qid?: string;
+  kind: 'note' | 'strategy' | 'formula' | 'lesson';
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface TutorMessage {
+  role: 'student' | 'tutor';
+  text: string;
+  at: number;
+  source?: 'offline' | 'gemini';
+  mode?: string;
+}
+
+export interface TutorThread {
+  id: string;
+  title: string;
+  qid?: string;
+  messages: TutorMessage[];
+  updatedAt: number;
+}
+
+export interface ArenaRecord {
+  best: number;
+  bestAt: number;
+  history: { score: number; correct: number; total: number; ms: number; at: number }[];
+}
+
+export interface QuestionReport {
+  qid: string;
+  reason: string;
+  detail: string;
+  at: number;
+}
+
+export interface Settings {
+  theme: 'dark' | 'light' | 'system';
+  reducedMotion: boolean;
+  showTimer: boolean;
+  aiEnabled: boolean;
+  aiConsent: boolean;
+  /** optional, student-supplied free Gemini key; stored only on this device */
+  geminiKey?: string;
+  /** keep the AI key only for this browser tab (never written to this device's storage) */
+  keySessionOnly?: boolean;
+  geminiModel?: string;
+  shareIncludeMistakes: boolean;
+  /** 'high' keeps medium questions out of smart practice */
+  challenge: 'standard' | 'high';
+  /** short sound effects for correct answers, combos and rewards */
+  sound: boolean;
+}
+
+export interface AppState {
+  version: number;
+  profile: Profile;
+  attempts: Attempt[];
+  mistakes: Record<string, Mistake>;
+  srs: Record<string, SrsCard>;
+  vocabSrs: Record<string, SrsCard>;
+  pet: PetState;
+  achievements: Record<string, number>;
+  activity: Record<string, DayActivity>;
+  lessonsDone: Record<string, number>;
+  /** best star rating (1–3) earned in each interactive lesson */
+  lessonStars: Record<string, number>;
+  /** daily quest rewards already claimed, keyed by date */
+  quests: Record<string, string[]>;
+  /** best result in each course chapter */
+  chapters: Record<string, { best: number; total: number; at: number; passedAt?: number }>;
+  /** traps the student said caught them, by trap id */
+  traps: Record<string, { n: number; last: number; qids: string[] }>;
+  /** AP Calculus BC self-study progress */
+  calc: { done: Record<string, { at: number; score: number; total: number }>; answers: Record<string, { correct: boolean; at: number; tries: number }>; examDate?: string; /** AP exam dates for the other courses, by course id */ examDates?: Record<string, string>; /** the student's own teach-back explanations, by lesson */ teach?: Record<string, string>; /** Calculus BC unit tests, semester exams and finals: every attempt, by test id */ tests?: Record<string, { at: number; score: number; total: number }[]>; /** guided free-response workouts: steps right on the first try, by workout id */ frq?: Record<string, { at: number; firstTry: number; total: number }> };
+  plan?: StudyPlan;
+  planDone: Record<string, number>;
+  mocks: MockAttempt[];
+  activeMock?: MockAttempt;
+  saved: string[];
+  notes: Note[];
+  reports: QuestionReport[];
+  daily: Record<string, { qid: string; correct: boolean; ms: number }>;
+  arena: Record<string, ArenaRecord>;
+  tutor: TutorThread[];
+  settings: Settings;
+  seenLevel: number;
+  /** highlights and their notes, by `scope|questionId|part` (each test attempt has its own scope, like a fresh Bluebook session) */
+  highlights?: Record<string, { at: number; marks: Mark[] }>;
+  /** quality-control flags this reviewer marked as checked, with a note */
+  qcReviewed?: Record<string, { at: number; note: string }>;
+  /** Remix Studio: generated questions and the chains they belong to (versioned; see lib/remix/store.ts) */
+  remix?: import('./remix/types').RemixState;
+  /** the hex Path: earned stars (kept once earned), set results, worked-example ladders (state v2) */
+  path?: PathState;
+  /** test-day hub checklist, by item id: when it was ticked (state v2) */
+  testDay?: { ticks: Record<string, number>; schools?: SchoolEntry[] };
+  /** Predict-First mode: one row per prediction (state v2) */
+  predictions?: PredictionRow[];
+  /** consent for anonymous research data; collection itself stays off unless a build enables it */
+  research?: { consent: boolean; at?: number; sessionId?: string };
+}
+
+export type PathSetKind = 'practice' | 'hard' | 'check' | 'gauntlet';
+/** One finished Path set. Credit per answer: 1, 0.75, 0.5 or 0.25 after 0–3 hints; 0 when wrong. */
+export interface PathSetResult {
+  kind: PathSetKind;
+  section: Section;
+  skill?: SkillId;
+  at: number;
+  qids: string[];
+  credit: number;
+  n: number;
+  passed: boolean;
+  /** the first attempt at this kind of set for this skill (★2 counts only first attempts) */
+  first: boolean;
+  /** per-skill credit, for Gauntlets */
+  bySkill?: Partial<Record<SkillId, { credit: number; n: number }>>;
+}
+export interface PathState {
+  stars: Partial<Record<SkillId, { 1?: number; 2?: number; 3?: number }>>;
+  sets: PathSetResult[];
+  /** finished worked-example ladders, by problem-family id */
+  worked: Record<string, number>;
+  /** when a delayed retrieval check (a Gauntlet at least 7 days after ★2) succeeded, by skill */
+  retained: Partial<Record<SkillId, number>>;
+}
+/** A school the student is tracking: their own notes from the school's official page, with the date they checked it. */
+export interface SchoolEntry { id: string; name: string; url: string; policy: 'required' | 'optional' | 'flexible' | 'blind' | 'unknown'; checked: string; low?: number; high?: number; unitId?: number }
+export interface PredictionRow { qid: string; at: number; prediction: string; self: 'matched' | 'close' | 'missed'; correct?: boolean }

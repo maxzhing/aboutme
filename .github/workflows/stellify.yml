@@ -1,0 +1,21 @@
+name: Stellify checks
+on:
+  push:
+    paths: ['stellify/**', '.github/workflows/stellify.yml']
+  pull_request:
+    paths: ['stellify/**']
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: stellify } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: stellify/package-lock.json }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npx vitest run
+      - run: npm run build            # validates every question, builds the single offline file
+      - run: npm run build:web        # the hosted build in ../sat
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --trace off   # includes axe accessibility, the content linter and the web build

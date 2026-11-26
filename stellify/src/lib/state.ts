@@ -1,0 +1,38 @@
+import type { AppState } from './types';
+import { CURRENT_VERSION } from './migrate';
+import { emptyPath } from './path/stars';
+
+export const STATE_VERSION = CURRENT_VERSION;
+
+export const initialState = (): AppState => ({
+  version: STATE_VERSION,
+  profile: { targetScore: 1500, dailyMinutes: 45, restDays: [0] },
+  attempts: [],
+  mistakes: {},
+  srs: {},
+  vocabSrs: {},
+  pet: { name: '', xp: 0, coins: 0, happiness: 70, lastCare: 0, owned: ['habitat-nook'], equipped: { habitat: 'habitat-nook' }, egg: { xp0: 0, lessons0: 0, pattern: 0 } },
+  achievements: {},
+  activity: {},
+  lessonsDone: {},
+  lessonStars: {},
+  quests: {},
+  chapters: {},
+  traps: {},
+  calc: { done: {}, answers: {} },
+  planDone: {},
+  mocks: [],
+  saved: [],
+  notes: [],
+  reports: [],
+  daily: {},
+  arena: {},
+  tutor: [],
+  settings: { theme: 'light', reducedMotion: false, showTimer: true, aiEnabled: true, aiConsent: false, shareIncludeMistakes: false, challenge: 'high', sound: true },
+  seenLevel: 1,
+  highlights: {},
+  path: emptyPath(),
+  testDay: { ticks: {} },
+  predictions: [],
+  research: { consent: false },
+});

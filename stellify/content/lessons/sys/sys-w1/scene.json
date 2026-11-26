@@ -1,0 +1,258 @@
+{
+  "skill": "sys",
+  "title": "No solution: the constant that breaks a system",
+  "hook": "Find the value of a constant that leaves a system with no solution, and see why the first value you find is the trap.",
+  "scenes": [
+    {
+      "k": "passage",
+      "head": "The problem",
+      "text": "In the system below, $k$ is a constant.\n$2x + ky = 6$\n$kx + 8y = 12$\nFor which value of $k$ does the system have no solution?\nA) $-4$     B) $0$     C) $4$     D) $16$",
+      "say": [
+        "Here's a system with a constant, k, in both equations. It looks routine, and that's what makes it easy to miss."
+      ]
+    },
+    {
+      "k": "pause",
+      "prompt": "Find the value of $k$ that gives no solution.",
+      "seconds": 15,
+      "say": [
+        "Before we solve it together, try it yourself. Take fifteen seconds."
+      ],
+      "stem": "In the system below, $k$ is a constant.\n$2x + ky = 6$\n$kx + 8y = 12$\nFor which value of $k$ does the system have no solution?",
+      "choices": [
+        "$-4$",
+        "$0$",
+        "$4$",
+        "$16$"
+      ]
+    },
+    {
+      "k": "passage",
+      "head": "Read it like the test-writer",
+      "text": "In the system, {{$k$ is a constant|gold|given}}: {{$2x + ky = 6$ and $kx + 8y = 12$|brand|two lines}}. For which value of $k$ does the system have {{no solution|bad|asked}}?",
+      "say": [
+        "Read it the way the person who wrote it did.",
+        "The constant k sits in both equations.",
+        "Each equation is a line in the plane.",
+        "And the question is about no solution. That phrase decides everything."
+      ]
+    },
+    {
+      "k": "tiles",
+      "head": "The plan",
+      "items": [
+        [
+          "No solution",
+          "the lines are parallel: same slope, different intercept"
+        ],
+        [
+          "Step 1",
+          "make the $x$ and $y$ coefficients proportional"
+        ],
+        [
+          "Step 2",
+          "check that the constants are NOT in the same proportion"
+        ]
+      ],
+      "say": [
+        "No solution means the lines never meet. They're parallel.",
+        "So first, make the x and y coefficients proportional. That gives the lines the same slope.",
+        "Then check the constants. Parallel lines can also be the same line, and that's the trap."
+      ]
+    },
+    {
+      "k": "morph",
+      "head": "Same slope",
+      "verify": {
+        "over": [
+          "k"
+        ]
+      },
+      "steps": [
+        {
+          "tokens": [
+            [
+              "a",
+              "2 \\cdot 8"
+            ],
+            [
+              "m",
+              "-"
+            ],
+            [
+              "b",
+              "k \\cdot k"
+            ],
+            [
+              "e",
+              "="
+            ],
+            [
+              "z",
+              "0"
+            ]
+          ],
+          "note": "Parallel: the cross products of the coefficients are equal."
+        },
+        {
+          "tokens": [
+            [
+              "a",
+              "16"
+            ],
+            [
+              "m",
+              "-"
+            ],
+            [
+              "b",
+              "k^2"
+            ],
+            [
+              "e",
+              "="
+            ],
+            [
+              "z",
+              "0"
+            ]
+          ]
+        },
+        {
+          "tokens": [
+            [
+              "b",
+              "k^2"
+            ],
+            [
+              "e",
+              "="
+            ],
+            [
+              "a",
+              "16"
+            ]
+          ],
+          "note": "Move $k^2$ to the other side."
+        },
+        {
+          "tokens": [
+            [
+              "k",
+              "k = 4"
+            ],
+            [
+              "or",
+              "\\text{ or }"
+            ],
+            [
+              "n",
+              "k = -4"
+            ]
+          ],
+          "note": "Two candidates. Parallel is not enough yet."
+        }
+      ],
+      "say": [
+        "Proportional coefficients means two times eight equals k times k. Same slope.",
+        "Two times eight is sixteen, so sixteen minus k squared equals zero.",
+        "Move k squared across. K squared equals sixteen.",
+        "That gives two candidates: k equals four, or k equals negative four. We're not done yet."
+      ]
+    },
+    {
+      "k": "lines",
+      "head": "Now check the constants",
+      "rows": [
+        [
+          "$k = 4$: $2x + 4y = 6$ and $4x + 8y = 12$",
+          "the second is exactly 2 times the first: the same line"
+        ],
+        [
+          "$k = -4$: $2x - 4y = 6$ and $-4x + 8y = 12$",
+          "multiply the first by $-2$: $-4x + 8y = -12$"
+        ],
+        [
+          "$-4x + 8y$ cannot equal both $-12$ and $12$",
+          "parallel lines that never meet: no solution"
+        ]
+      ],
+      "say": [
+        "Try k equals four. Double the first equation and you get the second one exactly. That's the same line, with infinitely many solutions.",
+        "Now k equals negative four. Multiply the first equation by negative two: negative four x plus eight y equals negative twelve.",
+        "But the second equation says the same left side equals twelve. It can't be both. These lines never meet, so k is negative four."
+      ]
+    },
+    {
+      "k": "plot",
+      "head": "Check it with Desmos",
+      "win": [
+        -6,
+        6,
+        -5,
+        5
+      ],
+      "square": true,
+      "items": [
+        {
+          "t": "expr",
+          "e": "x/2 - 1.5",
+          "check": "2*x - 4*y - 6"
+        },
+        {
+          "t": "expr",
+          "e": "x/2 + 1.5",
+          "check": "-4*x + 8*y - 12",
+          "tone": "gold"
+        }
+      ],
+      "caption": [
+        "$k = -4$: parallel lines $y = \\frac{x}{2} - \\frac{3}{2}$ and $y = \\frac{x}{2} + \\frac{3}{2}$",
+        "A slider on $k$ shows it; the algebra proves it."
+      ],
+      "say": [
+        "On the test you have Desmos built in. Type both equations with a slider for k. At negative four, the lines are parallel, their y-intercepts three units apart.",
+        "Slide to four and the two lines lie on top of each other. The slider shows it fast; the algebra is what proves it."
+      ],
+      "alt": "With k = -4 the two equations graph as parallel lines, y = x/2 - 3/2 and y = x/2 + 3/2: same slope, three units apart up and down, never meeting."
+    },
+    {
+      "k": "choices",
+      "stem": "For which value of $k$ does the system have no solution?",
+      "choices": [
+        "$-4$",
+        "$0$",
+        "$4$",
+        "$16$"
+      ],
+      "answer": 0,
+      "cross": [
+        3,
+        1,
+        2
+      ],
+      "notes": [
+        "Parallel lines with different constants: no solution.",
+        "With $k = 0$ the lines are $x = 3$ and $y = 1.5$: they cross once.",
+        "The trap: the same line, so infinitely many solutions.",
+        "That is $k^2$, not $k$. The slopes differ: one solution."
+      ],
+      "say": [
+        "Here's how the answer choices are built.",
+        "Sixteen is k squared, not k. With k equal to sixteen, the slopes are different.",
+        "Zero makes the lines x equals three and y equals one and a half. They cross once.",
+        "Four is the trap. It's the first value you find, and it gives the same line twice.",
+        "So the answer is negative four, choice A."
+      ]
+    },
+    {
+      "k": "recap",
+      "points": [
+        "When you see a constant and \"no solution,\" think: proportional coefficients first, then constants that are NOT in proportion."
+      ],
+      "say": [
+        "When you see a constant and no solution, think: proportional coefficients first, then make sure the constants are not in proportion."
+      ]
+    }
+  ]
+}

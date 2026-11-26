@@ -1,0 +1,129 @@
+import type { AppState, Difficulty, DomainId, PracticeMode, Question, Section, SkillId } from './types';
+import { SECTION_NAME, SKILL, SKILLS } from './taxonomy';
+import { dateKey, rng, shuffle } from './util';
+import { pickSmartSet } from './engine/adaptive';
+import { dueIds } from './engine/srs';
+import { TIER_B, estimateAbilities, pKnow, withinReach } from './model/ability';
+
+export interface BuiltSession { qids: string[]; title: string; mode: PracticeMode; reasons?: Record<string, string>; empty?: string }
+export type Params = Record<string, string | undefined>;
+
+const DIFF_OK = new Set(['medium', 'hard', 'very-hard', 'elite']);
+const parseDiff = (s?: string) => (s ? (s.split(',').filter((d) => DIFF_OK.has(d)) as Difficulty[]) : []);
+
+export interface BankFilter { section?: Section; domain?: DomainId; skill?: SkillId; diff?: Difficulty[]; type?: 'mcq' | 'spr'; status?: 'unseen' | 'wrong' | 'correct' | 'saved'; text?: string }
+
+export function filterBank(bank: Question[], f: BankFilter, s: Pick<AppState, 'attempts' | 'saved'>): Question[] {
+  const last = new Map<string, boolean>();
+  for (const a of s.attempts) if (!a.abandoned) last.set(a.qid, a.correct);
+  const t = f.text?.trim().toLowerCase();
+  return bank.filter((q) =>
+    (!f.section || q.section === f.section) && (!f.domain || q.domain === f.domain) && (!f.skill || q.skill === f.skill) &&
+    (!f.diff?.length || f.diff.includes(q.difficulty)) && (!f.type || q.type === f.type) &&
+    (!f.status || (f.status === 'unseen' ? !last.has(q.id) : f.status === 'wrong' ? last.get(q.id) === false : f.status === 'correct' ? last.get(q.id) === true : s.saved.includes(q.id))) &&
+    (!t || `${q.stem} ${q.passage ?? ''} ${q.sub} ${q.id}`.toLowerCase().includes(t)));
+}
+
+/** Turns URL parameters into a concrete list of questions. Pure, so it can be unit tested. */
+export function buildSession(p: Params, s: AppState, bank: Question[], getQ: (id: string) => Question | undefined, now: number): BuiltSession {
+  const n = Math.max(1, Math.min(40, Number(p.n) || 10));
+  const section = p.section === 'math' || p.section === 'rw' ? p.section : undefined;
+  const skill = p.skill && SKILL[p.skill as SkillId] ? (p.skill as SkillId) : undefined;
+  const rand = rng(`${p.mode}-${now}`);
+  const lastCorrect = new Map<string, boolean>();
+  for (const a of s.attempts) if (!a.abandoned) lastCorrect.set(a.qid, a.correct);
+  const unseenFirst = (qs: Question[]) => shuffle(qs, rand).sort((a, b) => Number(lastCorrect.has(a.id)) - Number(lastCorrect.has(b.id)) || Number(lastCorrect.get(a.id) ?? false) - Number(lastCorrect.get(b.id) ?? false));
+
+  switch (p.mode) {
+    case 'single': case 'custom': {
+      const ids = (p.ids ?? '').split(',').filter((id) => getQ(id));
+      return { qids: ids, mode: 'bank', title: ids.length === 1 ? 'Single question' : 'Custom set' };
+    }
+    case 'skill': case 'lesson': {
+      if (!skill) break;
+      const diff = parseDiff(p.diff);
+      const pool = bank.filter((q) => q.skill === skill && (!diff.length || diff.includes(q.difficulty)));
+      if (diff.length) return { qids: unseenFirst(pool).slice(0, n).map((q) => q.id), mode: p.mode === 'lesson' ? 'lesson' : 'bank', title: `${SKILL[skill].short}${diff.length === 1 ? ` · ${diff[0].replace('-', ' ')}` : ''}` };
+      const picks = pickSmartSet(s, bank, getQ, n, now, { skill });
+      return { qids: picks.map((x) => x.qid), mode: 'smart', title: SKILL[skill].short, reasons: Object.fromEntries(picks.map((x) => [x.qid, x.reason])) };
+    }
+    case 'hard': {
+      const pool = bank.filter((q) => (q.difficulty === 'very-hard' || q.difficulty === 'elite') && (!section || q.section === section));
+      return { qids: unseenFirst(pool).slice(0, n).map((q) => q.id), mode: 'hard', title: `Hardest questions${section ? ` · ${SECTION_NAME[section]}` : ''}` };
+    }
+    case 'mistakes': {
+      // a missed question far above the student's level waits until the skill catches up
+      const ab = estimateAbilities(s.attempts, getQ, now, s.profile.intake);
+      const unresolved = Object.values(s.mistakes).filter((m) => m.status === 'unresolved');
+      const open = unresolved.filter((m) => { const mq = getQ(m.qid); return !mq || withinReach(ab, mq); }).sort((a, b) => b.count - a.count || a.lastAt - b.lastAt);
+      const parked = unresolved.length - open.length;
+      const only = p.ids ? new Set(p.ids.split(',')) : null;
+      const qids: string[] = [];
+      const reasons: Record<string, string> = {};
+      for (const m of open) {
+        if (only && !only.has(m.qid)) continue;
+        const mq = getQ(m.qid);
+        if (!mq || qids.length >= n) continue;
+        if (!m.redoCorrect && !qids.includes(m.qid)) { qids.push(m.qid); reasons[m.qid] = `You missed this ${m.count > 1 ? `${m.count} times` : 'before'}. Answer it correctly without hints to clear the redo step.`; }
+        const need = Math.max(0, 2 - m.relatedCorrect.length);
+        const related = unseenFirst(bank.filter((q) => q.skill === mq.skill && q.id !== m.qid && !m.relatedCorrect.includes(q.id) && !qids.includes(q.id) && !s.mistakes[q.id] && withinReach(ab, q))).slice(0, need);
+        for (const r of related) { if (qids.length < n + 2) { qids.push(r.id); reasons[r.id] = `New related practice for a ${SKILL[mq.skill].short} mistake.`; } }
+      }
+      return { qids, mode: 'mistakes', title: 'Mistake review', reasons, empty: parked ? `Your ${parked} open mistake${parked === 1 ? ' is' : 's are'} well above your current level in ${parked === 1 ? 'its skill' : 'their skills'}. They are saved and come back once the skill catches up: the lessons and practice in your plan get you there.` : 'No unresolved mistakes. Every miss you make is saved here automatically.' };
+    }
+    case 'review': {
+      const ab = estimateAbilities(s.attempts, getQ, now, s.profile.intake);
+      const due = dueIds(s.srs, now).filter((id) => { const q = getQ(id); return !!q && withinReach(ab, q); }).slice(0, n);
+      return { qids: due, mode: 'review', title: 'Spaced review', reasons: Object.fromEntries(due.map((id) => [id, 'Scheduled review: this question is due to come back today.'])), empty: 'Nothing is due for review right now. Questions you miss come back here at growing intervals.' };
+    }
+    case 'saved':
+      return { qids: s.saved.filter((id) => getQ(id)), mode: 'bank', title: 'Saved questions', empty: 'You have not saved any questions yet. Use the bookmark icon on a question.' };
+    case 'bank': {
+      const pool = filterBank(bank, { section, domain: p.domain as DomainId | undefined, skill, diff: parseDiff(p.diff), type: p.type as 'mcq' | 'spr' | undefined, status: p.status as BankFilter['status'] }, s);
+      return { qids: unseenFirst(pool).slice(0, n).map((q) => q.id), mode: 'bank', title: 'Question bank set' };
+    }
+    default: break;
+  }
+  const picks = pickSmartSet(s, bank, getQ, n, now, { section, skill });
+  return { qids: picks.map((x) => x.qid), mode: p.mode === 'mission' ? 'mission' : 'smart', title: `Smart practice${section ? ` · ${SECTION_NAME[section]}` : ''}`, reasons: Object.fromEntries(picks.map((x) => [x.qid, x.reason])) };
+}
+
+/**
+ * Today's challenge: one question that stretches this student (about a 50% chance of knowing how), from the skills
+ * their plan is working on, never one answered right before. Fixed for the day. Without a state it falls back to
+ * one very hard question, the same for everyone.
+ */
+export function dailyQuestion(bank: Question[], day = dateKey(), s?: AppState, getQ?: (id: string) => Question | undefined): Question {
+  const rand = rng(`daily-${day}`);
+  if (s && getQ) {
+    const start = Math.min(Date.now(), new Date(`${day}T00:00:00`).getTime());
+    const before = s.attempts.filter((a) => a.at < start);
+    const ab = estimateAbilities(before, getQ, start, s.profile.intake);
+    const right = new Set(before.filter((a) => a.correct).map((a) => a.qid));
+    const focus = SKILLS.map((k) => k.id).sort((a, b) => ab.skills[a].theta - ab.skills[b].theta).slice(0, 8);
+    const pool = bank.filter((q) => !q.official && focus.includes(q.skill) && !right.has(q.id) && q.difficulty !== 'elite')
+      .map((q) => ({ q, d: Math.abs(pKnow(ab.skills[q.skill].theta, TIER_B[q.difficulty]) - 0.5) + rand() * 0.05 }))
+      .sort((a, b) => a.d - b.d).slice(0, 6);
+    if (pool.length) return pool[Math.floor(rand() * pool.length)].q;
+  }
+  const pool = bank.filter((q) => q.difficulty === 'very-hard' || q.difficulty === 'elite');
+  return pool[Math.floor(rand() * pool.length)];
+}
+
+/** Twelve math and twelve reading & writing questions covering every domain at mixed difficulty. */
+export function diagnosticSet(bank: Question[]): string[] {
+  const rand = rng('stellify-diagnostic-v1');
+  const plan: [SkillId, Difficulty][] = [
+    ['wic', 'medium'], ['wic', 'hard'], ['tsp', 'hard'], ['ctc', 'hard'], ['cid', 'medium'], ['coet', 'hard'], ['coeq', 'hard'], ['inf', 'very-hard'],
+    ['bnd', 'medium'], ['bnd', 'hard'], ['fss', 'hard'], ['fss', 'very-hard'], ['tra', 'hard'], ['syn', 'hard'],
+    ['lin1', 'medium'], ['linf', 'hard'], ['sys', 'hard'], ['ineq', 'hard'], ['equiv', 'hard'], ['nleq', 'hard'], ['nleq', 'very-hard'], ['nlf', 'hard'], ['nlf', 'very-hard'],
+    ['pct', 'hard'], ['data1', 'hard'], ['prob', 'hard'], ['area', 'hard'], ['trig', 'hard'],
+  ];
+  const used = new Set<string>();
+  const out: string[] = [];
+  for (const [skill, d] of plan) {
+    const q = shuffle(bank.filter((x) => x.skill === skill && x.difficulty === d && !used.has(x.id)), rand)[0] ?? shuffle(bank.filter((x) => x.skill === skill && !used.has(x.id)), rand)[0];
+    if (q) { used.add(q.id); out.push(q.id); }
+  }
+  return out;
+}
