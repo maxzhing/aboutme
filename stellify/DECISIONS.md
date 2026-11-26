@@ -287,3 +287,18 @@ Each entry records what was decided, why, and the alternatives considered.
     synthesis, so no forced alignment is needed.
     Rendered MP4s stay (not deleted) as a fallback/download, but the in-browser lesson is now the primary format, as
     the brief decides: sharper on phones, about 1 MB per lesson instead of 1.6 MB, captions and reduced motion built in.
+50. **Critic gates, lesson approvals, and the landing film (owner brief).**
+    Each lesson is shown to students only after an independent reviewer (a separate agent that reads only the
+    artifacts) gives SHIP; the verdicts and evidence are in CRITIQUE-REPORT.md, the approvals in
+    content/lessons/approvals.json. Gate 1 loop 1 found 2 Blockers and 11 Majors in the pilots (the try-it-first pause
+    hid the problem; one narrated fact was wrong; transcript, accessibility, verifier gaps). All were fixed; loop 2 gave
+    sys-w1 SHIP (approved), inf-w1 SHIP pending an English teacher (left unapproved until then), and found a new
+    Blocker in circ-w1 (a worked step clipped on phones), fixed and re-reviewed in loop 3. The 30 re-voiced skill
+    lessons (v-<skill>) have not been through a gate yet, so the earlier version stays live for them.
+    Audio: loudness is measured per file after encoding; true peak is held at or below -1.5 dBTP by measuring the MP3
+    and lowering the level by any excess, which leaves integrated loudness at -17 to -19 LUFS (target -16): quieter
+    than intended rather than clipped.
+    Landing film (marketing/flyover): rendered here with software WebGL, so 4 motion-blur subframes and 24 depth-of-
+    field taps instead of 16 and 40; the page is shorter than the brief assumed, so the cruise speed is solved to reach
+    the footer at 8.0 s. The closing line is "Walk into the SAT ready, free, for good.": it promises preparation, not
+    a score increase or college admission, which Stellify cannot support with evidence.

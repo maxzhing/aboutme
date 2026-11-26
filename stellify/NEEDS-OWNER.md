@@ -6,12 +6,16 @@
    which would also explain why satstudy keeps turning public. Turn Pages off there (the public site is aboutme's
    `sat/` folder or Firebase). Until you confirm, nothing new with College Board content is pushed to satstudy.
 2. **Listen** to the three pilot lessons and two of the re-voiced lessons on a phone (voice, pace, pronunciation).
-3. **A math teacher** spot-checks every pilot solution; **an English teacher** confirms the Reading & Writing key.
+3. **A math teacher** spot-checks every pilot solution; **an English teacher** confirms the Reading & Writing key
+   (inf-w1, answer B and its three trap tags). The Critic gave inf-w1 SHIP pending exactly this; after the teacher
+   agrees, set `"inf-w1": { "criticApproved": true }` in content/lessons/approvals.json.
 4. **3–5 students** try a lesson on their own phones; note anything confusing.
 5. **Check GitHub Pages / Firebase limits** for site size and bandwidth (could not be checked from here).
 6. **Click through every skill page and play one lesson on a phone** after you merge.
 7. **AP Calculus sample questions (College Board):** they are in your private copy only, built on this machine and not
    pushed. Confirm item 1 (Pages off for satstudy), then ask for the push.
+9. **Film soundtrack**: add your 15-second track (hit at 9.97 s, whooshes at 8.66 s and 9.80 s) with
+   `ffmpeg -i stellify-flyover.mp4 -i track.mp3 -c:v copy -shortest out.mp4`.
 8. **A calculus teacher** looks over the 30 new hard AP-style questions (src/data/calc/exam-style.ts): every key is
    checked numerically, but the trap explanations are teaching judgments.
 

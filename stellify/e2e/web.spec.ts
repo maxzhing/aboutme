@@ -96,8 +96,14 @@ test('web build: animated lessons play their narration from the site, stay behin
   await page.getByTestId('continue-guest').click();
   await page.getByRole('button', { name: 'Skip setup' }).click();
   // not yet approved by the review: the lesson is not offered, and the skill video page keeps the previous version
-  await page.goto(`${base}app.html#/videos/w/sys-w1`);
-  await expect(page.getByText('Walkthrough not available yet')).toBeVisible();
+  const approvals = JSON.parse(readFileSync(join(ROOT, 'stellify/content/lessons/approvals.json'), 'utf8'));
+  const unapproved = ['sys-w1', 'circ-w1', 'inf-w1'].find((id) => !approvals[id]?.criticApproved);
+  if (unapproved) {
+    await page.goto(`${base}app.html#/videos/w/${unapproved}`);
+    await expect(page.getByText('Walkthrough not available yet')).toBeVisible();
+  }
+  // an approved one is offered without the preview flag
+  if (approvals['sys-w1']?.criticApproved) { await page.goto(`${base}app.html#/videos/w/sys-w1`); await expect(page.getByTestId('lesson-start')).toBeVisible(); }
   await page.goto(`${base}app.html#/videos/lin1`);
   await expect(page.getByTestId('narrated-lesson')).toHaveCount(0);
   // the preview: the narrated lesson
