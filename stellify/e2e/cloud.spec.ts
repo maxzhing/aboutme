@@ -116,11 +116,45 @@ test('account: guest uploads nothing; Google sign-in saves progress, a second de
   const write = await fetch(`${FS}/v1/projects/${PROJECT}/databases/(default)/documents/users/${uid}`, { method: 'PATCH', headers: { Authorization: `Bearer ${other.idToken}`, 'content-type': 'application/json' }, body: JSON.stringify({ fields: { v: { integerValue: 1 } } }) });
   expect(write.status).toBe(403);
 
-  // 6. signing out keeps this device's copy and stops syncing
+  // 6. signing out saves everything to the account (lesson positions too), clears this device and goes back to the choice
+  await a.evaluate(() => localStorage.setItem('stellify-lesson-pos-sys-w1', '42.5'));
   await a.goto(`${base}app.html#/settings`);
   await a.getByTestId('sign-out').click();
-  await expect(a.getByTestId('account-card')).toContainText('guest');
-  expect(await localAttempts(a)).toBe(3);
+  await expect(a.getByTestId('landing-google')).toBeVisible();
+  await expect.poll(() => localAttempts(a)).toBe(0);
+  expect(await a.evaluate(() => localStorage.getItem('stellify-lesson-pos-sys-w1'))).toBeNull();
+  expect(await a.evaluate(() => localStorage.getItem('stellify-account'))).toBeNull();
+  expect((await cloudDoc(uid)).attempts.integerValue).toBe('3');
+
+  // 7. signing in again brings all of it back
+  await a.getByTestId('landing-google').click();
+  await a.getByTestId('google-sign-in').click();
+  await expect.poll(() => localAttempts(a)).toBe(3);
+  await expect.poll(() => a.evaluate(() => localStorage.getItem('stellify-lesson-pos-sys-w1'))).toBe('42.5');
+
+  // 8. signing out with no connection doesn't hang: it gives up on the last save, signs out, and keeps a safety copy here
+  await answerOne(a);
+  await a.goto(`${base}app.html#/settings`);
+  await A.setOffline(true);
+  const t0 = Date.now();
+  await a.getByTestId('sign-out').click();
+  await expect.poll(() => a.url(), { timeout: 20_000 }).toContain('#choose');
+  expect(Date.now() - t0).toBeLessThan(16_000);
+  await A.setOffline(false);
+  await a.goto(`${base}#choose`);
+  expect(await a.evaluate(() => new Promise<number>((ok) => { const r = indexedDB.open('keyval-store'); r.onsuccess = () => { const q = r.result.transaction('keyval').objectStore('keyval').getAllKeys(); q.onsuccess = () => ok(q.result.filter((k) => String(k).includes('auto-backup:safety')).length); }; }))).toBeGreaterThan(0);
+
+  // 9. "Delete my account copy" deletes it for good (signing out doesn't save it back)
+  const D = await device(browser, ana); const d = await D.newPage();
+  await d.goto(`${base}app.html#/onboarding`);
+  await d.getByTestId('google-sign-in').click();
+  await expect.poll(() => localAttempts(d)).toBe(3);
+  await d.goto(`${base}app.html#/settings`);
+  await d.getByRole('button', { name: 'Delete my account copy' }).click();
+  await d.getByRole('button', { name: 'Delete and sign out' }).click();
+  await expect(d.getByTestId('landing-google')).toBeVisible();
+  await expect.poll(() => cloudDoc(uid)).toBeNull();
+  await D.close();
   expect(errors).toEqual([]);
   await A.close(); await B.close();
 });

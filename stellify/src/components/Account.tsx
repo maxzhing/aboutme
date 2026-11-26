@@ -39,6 +39,9 @@ export function AccountChoice({ onDone }: { onDone: (mode: 'guest' | 'google') =
   );
 }
 
+/** After signing out: back to the website's start, straight to the Google-or-guest choice. */
+const leave = () => { location.assign('./#choose'); };
+
 /** Settings: who is signed in, when progress was last saved, and the controls. */
 export function AccountCard() {
   const { user, syncing, lastSync, error, status } = useCloud();
@@ -66,13 +69,13 @@ export function AccountCard() {
           </p>
           <div className="flex flex-wrap gap-2">
             <button type="button" className="btn-ghost" disabled={syncing} onClick={() => void push().catch(() => undefined)} data-testid="sync-now"><RefreshCw size={15} />Save now</button>
-            <button type="button" className="btn-ghost" onClick={() => void signOutCloud()} data-testid="sign-out"><LogOut size={15} />Sign out</button>
+            <button type="button" className="btn-ghost" disabled={busy} onClick={async () => { setBusy(true); await signOutCloud(); leave(); }} data-testid="sign-out"><LogOut size={15} />{busy ? 'Saving and signing out…' : 'Sign out'}</button>
             <button type="button" className="btn-quiet text-bad" onClick={() => setConfirmDelete(true)}><Trash2 size={15} />Delete my account copy</button>
           </div>
-          <p className="text-xs text-muted">Progress saves to your account a few seconds after you study, and when you close the tab. Signing out keeps a copy on this device; Delete all data below removes it.</p>
+          <p className="text-xs text-muted">Everything you do is saved to your account a few seconds after you study, and when you close the tab. Signing out saves one last time and clears your progress from this device; sign in again on any device to pick up where you left off.</p>
           <Modal open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete your account copy?">
-            <p className="text-sm">This deletes the progress saved in your Google-linked Stellify account. This device keeps its own copy, and the next save creates a new account copy unless you sign out first.</p>
-            <div className="mt-4 flex gap-2"><button type="button" className="btn-primary bg-bad" onClick={async () => { await deleteCloudCopy(); await signOutCloud(); setConfirmDelete(false); }}>Delete and sign out</button><button type="button" className="btn-ghost" onClick={() => setConfirmDelete(false)}>Cancel</button></div>
+            <p className="text-sm">This permanently deletes all the progress saved in your Stellify account and signs you out. It also clears your progress from this device. It can't be undone.</p>
+            <div className="mt-4 flex gap-2"><button type="button" className="btn-primary bg-bad" onClick={async () => { await deleteCloudCopy(); await signOutCloud({ save: false }); setConfirmDelete(false); leave(); }}>Delete and sign out</button><button type="button" className="btn-ghost" onClick={() => setConfirmDelete(false)}>Cancel</button></div>
           </Modal>
         </>
       ) : (

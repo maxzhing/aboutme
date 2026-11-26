@@ -111,6 +111,8 @@ interface Actions {
   finishDiagnostic: () => void;
   importState: (s: AppState) => void;
   resetAll: () => void;
+  /** Empties this device without a safety copy: only after the progress is safe in the account (sign-out). */
+  clearDevice: () => void;
   markLevelSeen: (level: number) => void;
   /** replaces the highlights of one block of question text (or one page image) */
   setMarks: (key: string, marks: Mark[]) => void;
@@ -423,6 +425,7 @@ export const useStore = create<Store>()(
         }),
         importState: (raw) => { void safetyBackup(pure(getState()), 'restoring a backup'); const s = migrate(raw, raw?.version ?? 1); setState({ ...initialState(), ...s, remix: RX.sanitize(s.remix), version: STATE_VERSION }); },
         resetAll: () => { void safetyBackup(pure(getState()), 'deleting all data'); setState({ ...initialState(), events: [] }); },
+        clearDevice: () => setState({ ...initialState(), events: [] }),
         markLevelSeen: (level) => setState({ seenLevel: level }),
         setMarks: (key, marks) => {
           const all = { ...(getState().highlights ?? {}) };

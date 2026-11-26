@@ -53,3 +53,8 @@ export async function listBackups(): Promise<BackupInfo[]> {
 export async function readBackup(key: string): Promise<AppState | null> {
   try { const raw = await get<string>(key); return raw ? (JSON.parse(raw) as Saved).state : null; } catch { return null; }
 }
+
+/** Removes every automatic backup on this device: on sign-out, once the progress is safe in the account. */
+export async function clearBackups() {
+  try { for (const k of (await keys()).map(String).filter((k) => k.startsWith(PREFIX))) await del(k); } catch { /* storage blocked */ }
+}

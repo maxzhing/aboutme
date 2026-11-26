@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { loadSdk, preloadModules, type Sdk } from './firebaseSdk';
 import { snapshot, useStore } from './store';
-import { safetyBackup } from './backup';
+import { clearBackups, safetyBackup } from './backup';
 import type { AppState } from './types';
 
 /**
@@ -32,6 +32,12 @@ const ls = {
   get(k: string) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k: string, v: string | null) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* storage blocked */ } },
 };
+/** Other things Stellify keeps in this browser (lesson positions, Studio work, watched videos, display choices):
+ *  saved in the account with the progress. Not the account's own bookkeeping, and never keys or daily counters. */
+const deviceKeys = () => { const out: string[] = []; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i)!; if (k.startsWith('stellify-') && ![MODE_KEY, META_KEY, REDIRECT_KEY].includes(k) && !/key|token|usage|secret/i.test(k)) out.push(k); } } catch { /* storage blocked */ } return out; };
+const collectDevice = (): Record<string, string> => Object.fromEntries(deviceKeys().map((k) => [k, ls.get(k) ?? '']));
+const restoreDevice = (d: unknown) => { if (d && typeof d === 'object') for (const [k, v] of Object.entries(d as Record<string, unknown>)) if (k.startsWith('stellify-') && typeof v === 'string') ls.set(k, v); };
+let pushedDevice = '';
 export const accountMode = (): Mode | null => { const m = ls.get(MODE_KEY); return m === 'guest' || m === 'google' ? m : null; };
 export const setAccountMode = (m: Mode) => ls.set(MODE_KEY, m);
 /** Google sign-in needs a real web address (not the offline file) and the Firebase build. */
@@ -112,13 +118,27 @@ export async function signInWithGoogle() {
   } catch (e) { console.warn('Google sign-in failed:', (e as { code?: string })?.code ?? e); useCloud.setState({ error: message(e) }); return false; }
 }
 
-/** Signs out after a last save. Progress stays on this device (Settings → Delete all data removes it). */
-export async function signOutCloud() {
-  if (!sdk) return;
-  if (readMeta()?.dirty) await push().catch(() => undefined);
-  await sdk.A.signOut(sdk.auth);
-  writeMeta(null); setAccountMode('guest');
-  useCloud.setState({ user: null, conflict: null, lastSync: null });
+/** Signs out. The progress lives in the account: it is saved one last time (waiting at most 10 s), then cleared from
+ *  this device, so the next person here starts fresh. If that last save fails, this device keeps a safety copy
+ *  (Settings → Backups) so nothing is lost. `save: false` is for after deleting the account copy. */
+export async function signOutCloud(opts: { save?: boolean } = {}): Promise<{ saved: boolean }> {
+  const s = await sdkOnce();
+  let saved = opts.save !== false;
+  if (saved) {
+    if (!useCloud.getState().user || useCloud.getState().conflict) saved = false;
+    else try { await Promise.race([push(), new Promise((_, no) => setTimeout(() => no(new Error('timeout')), 10_000))]); } catch { saved = false; }
+    if (!saved && hasProgress(snapshot())) await safetyBackup(snapshot(), 'signing out before the last save reached the account');
+  }
+  window.clearTimeout(timer);
+  try { await s.A.signOut(s.auth); } catch { /* already signed out */ }
+  writeMeta(null); ls.set(MODE_KEY, null); ls.set(REDIRECT_KEY, null);
+  importing = true;
+  try { useStore.getState().clearDevice(); for (const k of deviceKeys()) ls.set(k, null); } finally { importing = false; }
+  // the automatic backups hold this student's progress too; keep them only if the last save didn't make it
+  if (saved || opts.save === false) await clearBackups();
+  pushedDevice = '';
+  useCloud.setState({ user: null, conflict: null, lastSync: null, error: null, syncing: false });
+  return { saved };
 }
 
 /** Deletes the account's saved copy (this device keeps its own). */
@@ -129,12 +149,12 @@ export async function deleteCloudCopy() {
   writeMeta(null);
 }
 
-async function readCloud(): Promise<{ at: number; attempts: number; state: () => Promise<AppState> } | null> {
+async function readCloud(): Promise<{ at: number; attempts: number; state: () => Promise<AppState & { __device?: Record<string, string> }> } | null> {
   const s = await sdkOnce(), u = useCloud.getState().user!;
   const snap = await s.F.getDoc(s.F.doc(s.db, 'users', u.uid));
   if (!snap.exists()) return null;
   const d = snap.data() as { at: number; attempts: number; data: { toUint8Array(): Uint8Array } };
-  return { at: d.at, attempts: d.attempts, state: async () => JSON.parse(await gunzip(d.data.toUint8Array())) as AppState };
+  return { at: d.at, attempts: d.attempts, state: async () => JSON.parse(await gunzip(d.data.toUint8Array())) as AppState & { __device?: Record<string, string> } };
 }
 
 /** Uploads this device's progress to the account. */
@@ -143,12 +163,12 @@ export async function push() {
   const s = await sdkOnce();
   useCloud.setState({ syncing: true });
   try {
-    const state = snapshot();
-    const bytes = await gzip(JSON.stringify(state));
+    const state = snapshot(), device = collectDevice();
+    const bytes = await gzip(JSON.stringify({ ...state, __device: device }));
     if (bytes.length > MAX_BYTES) throw new Error('Your progress is too large to save to the account. It is still saved on this device; Export also works.');
     const at = Date.now();
     await s.F.setDoc(s.F.doc(s.db, 'users', u.uid), { v: 1, at, attempts: state.attempts.length, data: s.F.Bytes.fromUint8Array(bytes), updated: s.F.serverTimestamp() });
-    writeMeta({ uid: u.uid, cloudAt: at, dirty: false });
+    writeMeta({ uid: u.uid, cloudAt: at, dirty: false }); pushedDevice = JSON.stringify(device);
     useCloud.setState({ lastSync: at, error: null });
   } catch (e) { useCloud.setState({ error: message(e) }); throw e; }
   finally { useCloud.setState({ syncing: false }); }
@@ -156,9 +176,10 @@ export async function push() {
 
 async function pull(cloud: NonNullable<Awaited<ReturnType<typeof readCloud>>>) {
   const u = useCloud.getState().user!;
-  const state = await cloud.state();
+  const { __device, ...state } = await cloud.state();
   importing = true;
-  try { useStore.getState().importState(state); } finally { importing = false; }
+  try { useStore.getState().importState(state as AppState); restoreDevice(__device); } finally { importing = false; }
+  pushedDevice = JSON.stringify(collectDevice());
   writeMeta({ uid: u.uid, cloudAt: cloud.at, dirty: false });
   useCloud.setState({ lastSync: Date.now(), conflict: null });
 }
@@ -194,7 +215,7 @@ export async function resolveConflict(keep: 'cloud' | 'device') {
   useCloud.setState({ conflict: null });
   if (keep === 'cloud' && cloud) await pull(cloud); // importState keeps this device's progress as a safety backup
   else {
-    if (cloud) await safetyBackup(await cloud.state(), 'replacing the account copy with this device');
+    if (cloud) { const { __device: _d, ...old } = await cloud.state(); await safetyBackup(old as AppState, 'replacing the account copy with this device'); }
     await push();
   }
 }
@@ -205,8 +226,8 @@ useStore.subscribe((s, prev) => {
   const u = useCloud.getState().user; if (!u) return;
   const m = readMeta(); writeMeta({ uid: u.uid, cloudAt: m?.uid === u.uid ? m.cloudAt : 0, dirty: true });
   window.clearTimeout(timer);
-  timer = window.setTimeout(() => { void push().catch(() => undefined); }, 20_000);
+  timer = window.setTimeout(() => { void push().catch(() => undefined); }, 5_000);
 });
 if (typeof document !== 'undefined') document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden' && useCloud.getState().user && readMeta()?.dirty) { window.clearTimeout(timer); void push().catch(() => undefined); }
+  if (document.visibilityState === 'hidden' && useCloud.getState().user && (readMeta()?.dirty || JSON.stringify(collectDevice()) !== pushedDevice)) { window.clearTimeout(timer); void push().catch(() => undefined); }
 });
