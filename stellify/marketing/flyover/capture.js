@@ -10,7 +10,7 @@ const out = process.argv[2];
   // scroll once to the bottom so lazy images load, then back up; then lock the layout
   await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 400) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); } scrollTo(0, 0); });
   await p.waitForTimeout(800);
-  await p.addStyleTag({ content: '*{transition:none!important;animation:none!important}' });
+  await p.addStyleTag({ content: '*{transition:none!important;animation:none!important} .l-film{display:none!important}' });  // the film itself is not part of the page it flies over
   const pieces = await p.evaluate(() => [...document.querySelectorAll('[data-layer]')].map((el, i) => { el.setAttribute('data-film', String(i)); const r = el.getBoundingClientRect(); return { i, kind: el.getAttribute('data-layer'), x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height }; }));
   const H = await p.evaluate(() => document.documentElement.scrollHeight);
   const sections = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('[data-section]')].map((el) => { const r = el.getBoundingClientRect(); return [el.getAttribute('data-section'), { y: r.top + scrollY, h: r.height, x: r.left, w: r.width }]; })));

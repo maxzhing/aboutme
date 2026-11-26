@@ -1,4 +1,16 @@
-# Landing page fly-over film (14.5 s, 1440 × 1152, 60 fps)
+# Landing page fly-over film (14.5 s, 60 fps; 1920 × 1080 for computers, 1080 × 1920 for phones)
+
+The landing page plays the film full screen: `sat/videos/flyover.mp4` (wide) or `flyover-tall.mp4` (tall), picked by
+the screen's shape, and cropped to fill it. `film.html?w=…&h=…` renders any frame size: the lens and end card scale
+so the flight shows as much of the page across as the 1440 × 1152 design frame did; on tall frames a lens shift keeps
+the page in the middle during the flight, and the end card sits in the top 62 % so the sign-in card covers nothing.
+
+Re-render (2026-11-26): `node run_capture.js` (serves /home/user so the page is at /aboutme/sat/, hides the film
+section, writes layers/), then `PORT=8101 node render.js flyover-wide.mp4 1920 1080` and
+`PORT=8102 node render.js flyover-tall.mp4 1080 1920` (they can run at the same time). `node probe2.js <dir> <w> <h>
+<t,t,…>` renders a few frames to check a size quickly.
+
+## Original notes (first render, 1440 × 1152)
 
 1. Build and serve the site (`npm run build:web`, then serve `../sat` so the landing page is at
    `http://127.0.0.1:8098/aboutme/sat/`), then `node capture.js layers` (page + every `data-layer` piece + layout.json).

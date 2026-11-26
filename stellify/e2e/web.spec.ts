@@ -64,6 +64,13 @@ test('web build: the site opens with the fly-over film, then asks: sign in with 
   await expect(page.getByTestId('continue-guest')).toBeVisible();
   expect(errors).toEqual([]);
   await page.close();
+  // the film fills the screen, and a phone gets the tall version
+  const phone = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await phone.goto(base);
+  expect(await phone.locator('#intro-film').evaluate((v: HTMLVideoElement) => v.currentSrc || v.src)).toMatch(/flyover-tall\.mp4$/);
+  const box = await phone.locator('#intro-film').boundingBox();
+  expect(box && Math.round(box.width) === 390 && Math.round(box.height) === 844).toBe(true);
+  await phone.close();
   // with reduced motion the film doesn't play: the choice is there straight away
   const still = await browser.newPage({ reducedMotion: 'reduce' });
   await still.goto(base);

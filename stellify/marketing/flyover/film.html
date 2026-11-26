@@ -3,9 +3,9 @@
 <style>
 @font-face { font-family: Geist; font-weight: 500; src: url(node_modules/geist/dist/fonts/geist-sans/Geist-Medium.woff2) format('woff2'); }
 @font-face { font-family: 'Instrument Serif'; font-style: italic; src: url(node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2) format('woff2'); }
-html, body { margin: 0; width: 1440px; height: 1152px; overflow: hidden; background: #f9fbfb; }
+html, body { margin: 0; overflow: hidden; background: #f9fbfb; }
 canvas { position: absolute; inset: 0; }
-#title { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-family: Geist, sans-serif; pointer-events: none; }
+#title { position: absolute; left: 0; right: 0; top: 0; transform-origin: 50% 0; text-align: center; font-family: Geist, sans-serif; pointer-events: none; }
 #badge { position: absolute; left: 50%; top: 44px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 10px; padding: 9px 18px 9px 10px; border-radius: 999px; background: #fff; box-shadow: 0 6px 24px rgba(26,33,51,.10); font: 500 21px Geist, sans-serif; color: #1b1915; opacity: 0; }
 #badge img { width: 30px; height: 30px; border-radius: 7px; }
 .w { display: inline-block; white-space: pre; }
@@ -13,11 +13,16 @@ canvas { position: absolute; inset: 0; }
 #l2 { position: absolute; left: 0; right: 0; top: 186px; font: italic 400 82px/1 'Instrument Serif', serif; color: #8b8b92; }
 </style></head>
 <body>
-<canvas id="c" width="1440" height="1152"></canvas>
+<canvas id="c"></canvas>
 <div id="title"><div id="badge"><img src="layers/logo.png" alt="">Stellify</div><div id="l1"></div><div id="l2"></div></div>
 <script>
 'use strict';
-const W = 1440, H = 1152, F = 1880;                 // frame and focal length in pixels
+// frame size from the address (?w=1920&h=1080); the design frame is 1440 x 1152. S scales the lens and the end card
+// so the flight shows as much of the page across as the design frame did, whatever the shape.
+const Q = new URLSearchParams(location.search);
+const W = +Q.get('w') || 1440, H = +Q.get('h') || 1152, S = Math.min(W / 1440, H / 1152), F = 1880 * S;
+const TALL = H > W;   // phones: the end card sits higher, leaving the bottom for the sign-in choice
+let TY = 0;           // the end composition's vertical offset in frame pixels (set in init)
 const TILT0 = 56 * Math.PI / 180;
 const FLOOR_C = [0xf9 / 255, 0xfb / 255, 0xfb / 255], FLOOR_E = [0xf2 / 255, 0xf3 / 255, 0xf6 / 255];
 const LINE1 = 'Walk into the SAT ready,', LINE2 = 'free, for good.';
@@ -50,8 +55,8 @@ function camera(t) {
   const cruise = (yEnd - y0) / travel(8.0);
   const flightY = y0 + cruise * travel(Math.min(t, 8.2)) + (t > 8.2 ? cruise * 0.12 * (t - 8.2) : 0);
   const flightD = lerp(1360, 1700, easeOut(t / 8.2));
-  const Hp = L.height, Dover = F * Hp / (H - 84), Lover = Hp / 2;
-  const heroW = hero.w + 56, Dcard = F * heroW / 1018, Lcard = hero.y + 293 * Dcard / F;
+  const Hp = L.height, Dover = Math.max(F * Hp / (H - 84), F * (L.width + 160) / W), Lover = Hp / 2;
+  const heroW = hero.w + 56, Dcard = F * heroW / (1018 * S), Lcard = hero.y + (H / 2 - TY - 283 * S) * Dcard / F;
   // rise: trapezoid speed in log scale (accelerate 7.75-8.35, even 8.35-8.95, stop at 9.25)
   const riseU = (() => { if (t <= 7.75) return 0; if (t >= 9.25) return 1;
     const a = 0.6, c = 0.6, d = 0.3, vmax = 1 / (a / 2 + c + d / 2); const x = t - 7.75;
@@ -70,7 +75,10 @@ function camera(t) {
     mask = { x0: lerp(0, hero.x - 28, u), y0: lerp(0, hero.y - 8, u), x1: lerp(L.width, hero.x + hero.w + 28, u), y1: lerp(Hp, hero.y + hero.h + 8, u), r: lerp(24, 38 * Dcard / F, u), fade: u };
   }
   if (t > 9.97) { D = Dcard * (1 - 0.02 * clamp((t - 9.97) / 4.53)); }
-  return { lx, ly, D, tilt, mask };
+  // tall frames: a lens shift lifts the tilted page into the middle of the frame during the flight, easing out
+  // before the rise, so the top of a phone screen isn't empty floor
+  const shift = TALL ? 0.42 * (1 - smooth((t - 7.4) / 1.4)) : 0;
+  return { lx, ly, D, tilt, mask, shift };
 }
 
 // ── matrices ────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -82,7 +90,7 @@ function viewProj(cam) {
   const s = norm(cross(upW, f)); const u = cross(f, s);
   const view = [s[0], u[0], -f[0], 0, s[1], u[1], -f[1], 0, s[2], u[2], -f[2], 0, -dot(s, eye), -dot(u, eye), dot(f, eye), 1];
   const near = 10, far = 40000, fy = 2 * F / H, fx = 2 * F / W;
-  const proj = [fx, 0, 0, 0, 0, fy, 0, 0, 0, 0, -(far + near) / (far - near), -1, 0, 0, -2 * far * near / (far - near), 0];
+  const proj = [fx, 0, 0, 0, 0, fy, 0, 0, 0, -(cam.shift || 0), -(far + near) / (far - near), -1, 0, 0, -2 * far * near / (far - near), 0];
   return { vp: mul(proj, view), view, eye };
 }
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -115,14 +123,14 @@ void main() {
 const VS_FULL = `#version 300 es
 in vec2 uv; out vec2 vuv; void main() { vuv = uv; gl_Position = vec4(uv * 2.0 - 1.0, 0.0, 1.0); }`;
 const FS_BG = `#version 300 es
-precision highp float; in vec2 vuv; uniform vec3 c0, c1; out vec4 o;
-void main() { float d = length((vuv - 0.5) * vec2(1.25, 1.0)) / 0.8; o = vec4(mix(c0, c1, smoothstep(0.0, 1.0, d)), 1.0); }`;
+precision highp float; in vec2 vuv; uniform vec3 c0, c1; uniform float asp; out vec4 o;
+void main() { float d = length((vuv - 0.5) * vec2(asp, 1.0)) / 0.8; o = vec4(mix(c0, c1, smoothstep(0.0, 1.0, d)), 1.0); }`;
 const FS_DOF = `#version 300 es
-precision highp float; in vec2 vuv; uniform sampler2D col, dep; uniform float focus; uniform vec2 px; uniform float wgt; out vec4 o;
+precision highp float; in vec2 vuv; uniform sampler2D col, dep; uniform float focus; uniform vec2 px; uniform float wgt, sc; out vec4 o;
 float depthAt(vec2 uv) { vec4 e = texture(dep, uv); return (e.r + e.g / 255.0) * 60000.0; }
 void main() {
   float d = depthAt(vuv); if (d < 1.0) d = 60000.0;
-  float r = d < focus ? 75.0 * (focus - d) / d : 6.0 * (d - focus) / d; r = min(r, 120.0);
+  float r = d < focus ? 75.0 * (focus - d) / d : 6.0 * (d - focus) / d; r = min(r * sc, 120.0 * sc);
   vec3 acc = vec3(0.0); float n = 0.0;
   float lod = max(0.0, log2(max(r, 1.0) / 5.0));
   const int TAPS = 24; float ga = 2.39996323;
@@ -137,6 +145,12 @@ const loadImg = (src) => new Promise((ok, no) => { const i = new Image(); i.onlo
 
 async function init() {
   L = await (await fetch('layers/layout.json')).json();
+  const cv = document.getElementById('c'); cv.width = W; cv.height = H; document.body.style.width = W + 'px'; document.body.style.height = H + 'px';
+  // the end composition (badge at 44, card top at 283, card bottom) in design pixels, scaled by S, then placed:
+  // centred on wide frames; on tall frames centred in the top 62 %, so the sign-in card below covers nothing
+  const hero = L.sections.hero, cardBottom = 283 + (hero.h + 16) * 1018 / (hero.w + 56);
+  const top = 44 * S, h = (cardBottom - 44) * S;
+  TY = TALL ? Math.max(24, (0.62 * H - h) / 2) - top : (H - h) / 2 - top;
   buildTravel();
   gl = document.getElementById('c').getContext('webgl2', { antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: true });
   prog.quad = compile(VS, FS_QUAD); prog.bg = compile(VS_FULL, FS_BG); prog.dof = compile(VS_FULL, FS_DOF);
@@ -180,10 +194,10 @@ function tiles(t, cam) {
   // a tile passing close to the lens at the left edge at 5.4 s
   if (t > 4.9 && t < 5.9) { const u = (t - 4.9) / 1.0; out.push({ x: -40, y: cam.ly + lerp(-200, 500, u), z: 900, w: 160, h: 160, a: 0, img: tex.logo }); }
   // the end card: two on the card's top corners (one crisp at the right edge), two large soft ones at the bottom
-  if (t > 9.6) { const m = cam.mask, e = smooth((t - 9.6) / 0.4), s = 70 * cam.D / F;
+  if (t > 9.6) { const m = cam.mask, e = smooth((t - 9.6) / 0.4), s = 70 * S * cam.D / F;
     out.push({ x: m.x0 - s * 0.4, y: m.y0 - s * 0.5, z: 30, w: s, h: s, a: 0, img: tex.logo, alpha: e });
     out.push({ x: m.x1 - s * 0.6, y: m.y0 - s * 0.5, z: 30, w: s, h: s, a: 0, img: tex.logo, alpha: e });
-    const big = 260 * cam.D / F;
+    const big = 260 * S * cam.D / F;
     out.push({ x: m.x0 - big * 0.7 + 6 * Math.sin(t), y: m.y1 - big * 0.4, z: cam.D * 0.55, w: big, h: big, a: 0, img: tex.logo, alpha: e });
     out.push({ x: m.x1 - big * 0.3 - 6 * Math.sin(t), y: m.y1 - big * 0.4, z: cam.D * 0.55, w: big, h: big, a: 0, img: tex.logo, alpha: e }); }
   return out;
@@ -238,7 +252,7 @@ window.seek = function (t, fps = 60, subframes = 4) {
     // colour
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo.scene.f); gl.viewport(0, 0, W, H);
     gl.disable(gl.BLEND); gl.useProgram(prog.bg);
-    gl.uniform3fv(gl.getUniformLocation(prog.bg, 'c0'), FLOOR_C); gl.uniform3fv(gl.getUniformLocation(prog.bg, 'c1'), FLOOR_E);
+    gl.uniform1f(gl.getUniformLocation(prog.bg, 'asp'), W / H); gl.uniform3fv(gl.getUniformLocation(prog.bg, 'c0'), FLOOR_C); gl.uniform3fv(gl.getUniformLocation(prog.bg, 'c1'), FLOOR_E);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     const cam = scene(ts, false);
@@ -254,7 +268,7 @@ window.seek = function (t, fps = 60, subframes = 4) {
     gl.activeTexture(gl.TEXTURE0);
     gl.uniform1f(gl.getUniformLocation(prog.dof, 'focus'), cam.D);
     gl.uniform2f(gl.getUniformLocation(prog.dof, 'px'), 1 / W, 1 / H);
-    gl.uniform1f(gl.getUniformLocation(prog.dof, 'wgt'), 1 / (s + 1));
+    gl.uniform1f(gl.getUniformLocation(prog.dof, 'wgt'), 1 / (s + 1)); gl.uniform1f(gl.getUniformLocation(prog.dof, 'sc'), S);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   // present
@@ -271,6 +285,7 @@ function words(el, text, start, step, t) {
     sp.style.opacity = e; sp.style.transform = `translateY(${16 * (1 - e)}px)`; sp.style.filter = `blur(${12 * (1 - e)}px)`; });
 }
 function title(t) {
+  document.getElementById('title').style.transform = `translateY(${TY}px) scale(${S})`;
   const b = document.getElementById('badge'); b.style.opacity = clamp((t - 10.02) / 0.3);
   words(document.getElementById('l1'), LINE1, 10.12, 0.06, t);
   words(document.getElementById('l2'), LINE2, 10.36, 0.05, t);
