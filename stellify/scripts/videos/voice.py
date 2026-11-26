@@ -13,6 +13,8 @@ shots_file, model, voices, out = sys.argv[1:5]
 voice = sys.argv[5] if len(sys.argv) > 5 else 'af_heart'
 only = set(sys.argv[6].split(',')) if len(sys.argv) > 6 else None
 COUNTDOWN, LEAD, GAP, SCENE_GAP, TAIL = 5.0, 0.6, 0.45, 0.6, 1.2
+# optional human recordings: <RECORDINGS>/<skill>/<shot number, 3 digits>.wav (see docs/RECORDING-GUIDE.md)
+RECORDINGS = os.environ.get('RECORDINGS', '')
 os.makedirs(out, exist_ok=True)
 k = Kokoro(model, voices)
 shots = json.load(open(shots_file))
@@ -26,8 +28,14 @@ for skill, list_ in shots.items():
         if i and s['scene'] != list_[i - 1]['scene']:
             pieces.append(np.zeros(int(SCENE_GAP * sr), np.float32)); t += SCENE_GAP
         starts.append(round(t, 3))
+        rec = os.path.join(RECORDINGS, skill, f'{i:03d}.wav') if RECORDINGS else ''
         if s['phase'] == 'countdown':
-            audio = np.zeros(int(COUNTDOWN * sr), np.float32)
+            audio = np.zeros(int(s.get('secs', COUNTDOWN) * sr), np.float32)
+        elif rec and os.path.exists(rec):
+            # a human recording of this line replaces the generated voice (mono, resampled to the track's rate)
+            audio, rsr = sf.read(rec, dtype='float32', always_2d=True); audio = audio.mean(axis=1)
+            if rsr != sr: audio = np.interp(np.linspace(0, len(audio), int(len(audio) * sr / rsr), endpoint=False), np.arange(len(audio)), audio).astype(np.float32)
+            audio = np.concatenate([audio, np.zeros(int(GAP * sr), np.float32)])
         else:
             audio, sr2 = k.create(s['say'], voice=voice, speed=1.0, lang='en-us')
             assert sr2 == sr

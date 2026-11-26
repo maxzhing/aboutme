@@ -1,0 +1,22 @@
+{
+  "id": "inf-w1",
+  "skill": "inf",
+  "domain": "ii",
+  "format": "rw",
+  "title": "Inference: what the evidence allows, and no more",
+  "passage": "Seed banks store the seeds of crop plants at very low temperatures so that a variety can be replanted if it disappears from farms. Some botanists, however, point out that a stored seed is frozen in time. In the field, a crop's wild relatives keep changing over generations, adapting to new pests and to shifts in climate, but a seed in storage does not. For this reason, these botanists argue that seed banks should be seen as ______",
+  "stem": "Which choice most logically completes the text?",
+  "choices": [
+    "a replacement for protecting crops' wild relatives where they grow.",
+    "a useful backup that cannot, on its own, preserve a crop's ability to keep adapting.",
+    "unnecessary, since crops in the field continue to adapt without them.",
+    "the main reason that modern crops resist new pests."
+  ],
+  "answer": 1,
+  "distractors": {
+    "0": { "trap": "reversed", "why": "The botanists' point is that stored seeds do NOT keep adapting, so seed banks cannot replace plants changing in the field." },
+    "2": { "trap": "qualifier", "why": "Too extreme. The text says stored seeds have a limit, not that seed banks are useless; they still let a lost variety be replanted." },
+    "3": { "trap": "beyond", "why": "The text never says seed banks make crops resist pests; adapting to pests happens in the field." }
+  },
+  "trap": { "answer": 2, "misconception": "qualifier", "why": "The text criticizes seed banks, so a choice that dismisses them feels right. But the criticism is a limit, not a rejection." }
+}

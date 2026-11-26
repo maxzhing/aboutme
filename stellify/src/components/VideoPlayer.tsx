@@ -1,9 +1,10 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { Captions, Check, ChevronLeft, ChevronRight, Maximize, Pause, Play, RotateCcw, Volume2, VolumeX, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { COUNTDOWN_SECONDS, type PlotItem, type Scene, type Shot, type Video } from '@/data/videos/types';
 import type { Tone } from '@/data/visual-lessons';
 import { RichText } from './RichText';
+import { compile } from '@/lib/mathexpr';
 import { SkillIcon } from './SkillIcon';
 import { cn } from './ui';
 
@@ -184,7 +185,12 @@ export function VideoPlayer({ video, onDone }: { video: Video; onDone?: (score: 
   );
 }
 
-export const sceneName = (s: Scene) => (s.k === 'quiz' ? 'Pause and try' : s.k === 'recap' ? 'Recap' : s.k === 'title' ? s.title : s.k === 'choices' ? 'Worked question' : s.k === 'versus' ? s.head ?? 'The trap' : ('head' in s && s.head) || 'Idea');
+/** Plain words for a label that may hold $math$: chapter buttons and the transcript are not typeset. */
+export const plainLabel = (t: string) => t.replace(/\$([^$]*)\$/g, (_, m: string) => m
+  .replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '$1/$2').replace(/\\(left|right)/g, '').replace(/\\[,;!]/g, '')
+  .replace(/\\(le|leq)\b/g, '≤').replace(/\\(ge|geq)\b/g, '≥').replace(/\\cdot\b/g, '·').replace(/\\pi\b/g, 'π').replace(/\\theta\b/g, 'θ')
+  .replace(/\\sqrt\{([^}]*)\}/g, '√$1').replace(/\\[a-zA-Z]+/g, '').replace(/[{}]/g, '')).replace(/\s+/g, ' ').trim();
+export const sceneName = (s: Scene) => plainLabel(s.k === 'quiz' ? 'Pause and try' : s.k === 'pause' ? 'Try it first' : s.k === 'recap' ? 'Recap' : s.k === 'title' ? s.title : s.k === 'choices' ? 'Worked question' : s.k === 'versus' ? s.head ?? 'The trap' : ('head' in s && s.head) || 'Idea');
 
 const pop = { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35 } };
 
@@ -291,6 +297,34 @@ export function SceneView({ scene: s, b, picked, onPick, onContinue, phase }: { 
         {s.note?.[b] && <motion.p key={b} {...pop} className="mt-3 text-center text-base"><RichText text={s.note[b]} /></motion.p>}
       </div>
     );
+    case 'morph': {
+      const step = s.steps[Math.min(b, s.steps.length - 1)];
+      return (
+        <div><Head t={s.head} />
+          <LayoutGroup>
+            <div className="mx-auto flex min-h-[3.5rem] max-w-2xl flex-wrap items-center justify-center gap-x-1.5 gap-y-2 rounded-xl border border-brand/40 bg-brand/5 px-4 py-4 text-xl sm:text-2xl" data-testid="morph-step" aria-live="polite">
+              <AnimatePresence mode="popLayout">
+                {step.tokens.map(([key, tex]) => (
+                  <motion.span key={key} layoutId={`m-${key}`} layout="position" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }} className="inline-block whitespace-nowrap">
+                    <RichText text={`$${tex}$`} />
+                  </motion.span>
+                ))}
+              </AnimatePresence>
+            </div>
+          </LayoutGroup>
+          {step.note && <motion.p key={b} {...pop} className="mt-3 text-center text-sm text-muted sm:text-base"><RichText text={step.note} /></motion.p>}
+          {b > 0 && <ol className="mx-auto mt-4 max-w-xl space-y-1 text-sm text-muted" aria-label="Earlier steps">{s.steps.slice(0, Math.min(b, s.steps.length - 1)).map((st, n) => <li key={n} className="text-center"><RichText text={`$${st.tokens.map((x) => x[1]).join(' ')}$`} /></li>)}</ol>}
+        </div>
+      );
+    }
+    case 'pause': return (
+      <div className="mx-auto max-w-xl text-center" data-testid="try-first">
+        <p className="mb-2 text-xs font-black uppercase tracking-widest text-gold">Try it first</p>
+        <p className="text-lg font-semibold sm:text-xl"><RichText text={s.prompt} /></p>
+        {phase === 'countdown' && <p className="mt-3 text-sm text-muted">Work it out on paper. The lesson carries on in {s.seconds} seconds{onContinue ? ', or skip ahead now' : ''}.</p>}
+        {phase === 'countdown' && onContinue && <button type="button" className="btn-ghost mt-3" onClick={onContinue} data-testid="skip-pause">Skip ahead<ChevronRight size={16} /></button>}
+      </div>
+    );
     case 'recap': return (
       <div>
         <h3 className="mb-3 text-center text-lg font-bold sm:text-xl">Remember</h3>
@@ -349,6 +383,7 @@ function PlotView({ s, b }: { s: Extract<Scene, { k: 'plot' }>; b: number }) {
   const item = (it: PlotItem, n: number) => {
     const col = C[it.tone ?? 'brand'];
     switch (it.t) {
+      case 'expr': { const g = compile(it.e).fn; return <motion.path key={n} {...draw} d={curve((x) => g({ x }), it.from ?? x0, it.to ?? x1)} fill="none" stroke={col} strokeWidth={3} strokeLinecap="round" strokeDasharray={it.dash ? '7 6' : undefined} />; }
       case 'fn': return <motion.path key={n} {...draw} d={curve(it.f, it.from ?? x0, it.to ?? x1)} fill="none" stroke={col} strokeWidth={3} strokeLinecap="round" strokeDasharray={it.dash ? '7 6' : undefined} />;
       case 'shade': { const top = it.side === 'above'; const d = `${curve(it.f)} L${px(x1)} ${top ? 0 : H} L${px(x0)} ${top ? 0 : H} Z`; return <motion.path key={n} initial={{ opacity: 0 }} animate={{ opacity: 0.18 }} transition={{ duration: 0.6 }} d={d} fill={col} />; }
       case 'pt': return <motion.g key={n} {...fade} style={{ transformOrigin: `${px(it.x)}px ${py(it.y)}px` }}><circle cx={px(it.x)} cy={py(it.y)} r={5.5} fill={col} stroke="rgb(var(--surface))" strokeWidth={1.6} />{it.label && <text x={px(it.x) + 8} y={py(it.y) - 8} fontSize={13} fontWeight={700} fill={INK} {...HALO}>{it.label}</text>}</motion.g>;

@@ -1,0 +1,37 @@
+{
+  "id": "circ-w1",
+  "skill": "circ",
+  "domain": "geo",
+  "format": "spr",
+  "title": "A tangent circle hidden in a scrambled equation",
+  "stem": "In the $xy$-plane, the graph of $x^2 + y^2 - 6x + 10y + c = 0$, where $c$ is a constant, is a circle that is tangent to the $x$-axis. What is the value of $c$?",
+  "answer": ["9"],
+  "commonWrong": {
+    "-25": "Completed the squares on the left but did not add 9 and 25 to the right side.",
+    "25": "Used 3, the distance from the center to the y-axis, as the radius. That circle touches the y-axis instead.",
+    "34": "Took the radius as 0 by setting 34 minus c to 0: that is a single point, not a circle."
+  },
+  "trap": { "misconception": "circ-1.3", "why": "Completing the square adds 9 and 25 to the left side. Forgetting to add them to the right side leaves the radius squared as negative c, which gives c = -25." },
+  "math": {
+    "symbols": ["c", "x", "y"],
+    "key": "9",
+    "steps": [
+      { "eq": "34 - c = 5^2", "over": ["c"] },
+      { "eq": "34 - c = 25", "over": ["c"] },
+      { "eq": "c = 34 - 25", "over": ["c"] },
+      { "set": ["9"], "over": ["c"] }
+    ],
+    "checks": [
+      { "desc": "completing the square: the equation equals (x - 3)^2 + (y + 5)^2 - (34 - c)", "expr": "expand(x**2 + y**2 - 6*x + 10*y + c - ((x - 3)**2 + (y + 5)**2 - (34 - c))) == 0" },
+      { "desc": "with c = 9 the circle meets the x-axis at exactly one point (tangent)", "expr": "len(solveset((x**2 - 6*x + 9).subs(y, 0), x, Reals)) == 1 and discriminant(x**2 - 6*x + 9, x) == 0" },
+      { "desc": "with c = 9 the radius is 5, the distance from the center (3, -5) to the x-axis", "expr": "sqrt(34 - 9) == 5 and abs(-5) == 5" },
+      { "desc": "with c = 25 the circle touches the y-axis, not the x-axis", "expr": "discriminant((y**2 + 10*y + 25), y) == 0 and discriminant(x**2 - 6*x + 25, x) < 0" },
+      { "desc": "c = 34 is a single point, not a circle", "expr": "34 - 34 == 0" }
+    ],
+    "trap": {
+      "value": "-25",
+      "checks": [ { "desc": "the trap's equation (x - 3)^2 + (y + 5)^2 = -c gives c = -25 for radius 5", "expr": "solve(Eq(-c, 25), c) == [-25]" },
+                  { "desc": "with c = -25 the circle crosses the x-axis twice (not tangent)", "expr": "discriminant(x**2 - 6*x - 25, x) > 0" } ]
+    }
+  }
+}

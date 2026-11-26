@@ -12,6 +12,8 @@ import type { Tone } from '@/data/visual-lessons';
 export type Pt = [number, number];
 export type PlotItem = { at?: number; tone?: Tone } & (
   | { t: 'fn'; f: (x: number) => number; dash?: boolean; label?: string; from?: number; to?: number }
+  /** the same as fn, written as a formula in x (lesson files are JSON); checked by scripts/lessons/verify.py */
+  | { t: 'expr'; e: string; dash?: boolean; from?: number; to?: number }
   | { t: 'pt'; x: number; y: number; label?: string }
   | { t: 'seg'; a: Pt; b: Pt; dash?: boolean; label?: string }
   | { t: 'poly'; pts: Pt[]; fill?: boolean }
@@ -43,6 +45,13 @@ export type Scene =
   | { k: 'quiz'; q: string; passage?: string; choices: string[]; answer: number; why: string; say: string[]
       /** spoken in the rendered video after a short countdown: the answer and why, in plain words */
       reveal: string }
+  /**
+   * Worked steps where terms move: each step is a list of [key, LaTeX] tokens; a token whose key appears in the next
+   * step glides to its new place, removed tokens fade out, new ones fade in. One step per beat.
+   */
+  | { k: 'morph'; head?: string; steps: { tokens: [string, string][]; note?: string }[]; say: string[] }
+  /** "Try it first": the narration invites the student to work, then a silent, skippable pause of `seconds`. */
+  | { k: 'pause'; prompt: string; seconds: number; say: string[] }
   /** The takeaways, one per beat. */
   | { k: 'recap'; points: string[]; say: string[] };
 
@@ -52,11 +61,12 @@ export interface Video { skill: SkillId; title: string; hook: string; scenes: Sc
  * The rendered video's timeline: every narration sentence, plus, for each pause-and-try question, a silent countdown
  * (the moment the app pauses the video for the student's answer) and the spoken reveal.
  */
-export interface Shot { scene: number; b: number; say: string; phase: 'say' | 'countdown' | 'reveal' }
+export interface Shot { scene: number; b: number; say: string; phase: 'say' | 'countdown' | 'reveal'; secs?: number }
 export const COUNTDOWN_SECONDS = 5;
 export const shotsOf = (v: Video): Shot[] => v.scenes.flatMap((s, scene) => [
   ...s.say.map((say, b) => ({ scene, b, say, phase: 'say' as const })),
   ...(s.k === 'quiz' ? [{ scene, b: s.say.length - 1, say: '', phase: 'countdown' as const }, { scene, b: s.say.length - 1, say: s.reveal, phase: 'reveal' as const }] : []),
+  ...(s.k === 'pause' ? [{ scene, b: s.say.length - 1, say: '', phase: 'countdown' as const, secs: s.seconds }] : []),
 ]);
 
 /** Written by scripts/videos/render.mjs: where each shot starts in the rendered file, in seconds. */

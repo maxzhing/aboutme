@@ -8,9 +8,9 @@ export const MATH_VIDEOS: Video[] = [
   { skill: 'lin1', title: 'Linear equations: the balance never lies', hook: 'Solve any linear equation, and spot in seconds when it has no solution or infinitely many.', scenes: [
     { k: 'title', title: 'The balance never lies', sub: 'One rule solves every linear equation.', say: ['Every linear equation is a balance scale.', 'Do the same thing to both sides, and it stays balanced. That is the whole game.'] },
     { k: 'lines', head: r`Solve $5(x - 2) - 3 = 2x + 8$`, rows: [[r`$5(x - 2) - 3 = 2x + 8$`, 'start'], [r`$5x - 10 - 3 = 2x + 8$`, 'distribute the 5'], [r`$5x - 13 = 2x + 8$`, 'combine like terms'], [r`$3x = 21$`, r`subtract $2x$, add 13`], [r`$x = 7$`, 'divide by 3']], say: [
-      'Let us solve this one together.',
+      'Let\'s solve this one together.',
       'First, distribute the five to both terms inside the parentheses. Five x minus ten.',
-      'Combine the constants: minus ten minus three is minus thirteen.',
+      'Combine the constants: negative ten minus three is negative thirteen.',
       'Get the x terms on one side. Subtract two x, add thirteen. Three x equals twenty-one.',
       'Divide by three. x equals seven. Check it: both sides come out to twenty-two.',
     ] },
@@ -39,7 +39,7 @@ export const MATH_VIDEOS: Video[] = [
   ] },
 
   { skill: 'linf', title: 'Linear functions: where you start and how fast you change', hook: 'Read any line, table or word problem as two numbers: a start and a rate.', scenes: [
-    { k: 'title', title: 'Every line tells a story', sub: 'Where it starts, and how fast it changes.', say: ['A line is just two numbers in disguise.', 'Where you start, and how fast you change. Let us see it.'] },
+    { k: 'title', title: 'Every line tells a story', sub: 'Where it starts, and how fast it changes.', say: ['A line is two numbers in disguise.', 'Where you start, and how fast you change. Let\'s see it.'] },
     { k: 'plot', head: r`Taxi fare: $f(m) = 3 + 2m$`, win: [-1, 9, -2, 22], items: [
       { t: 'fn', f: (x) => 3 + 2 * x, from: 0, to: 9 },
       { t: 'pt', x: 0, y: 3, label: 'start: 3 dollars', tone: 'gold', at: 1 },
@@ -70,7 +70,7 @@ export const MATH_VIDEOS: Video[] = [
   ] },
 
   { skill: 'lin2', title: 'Lines in two variables: three forms, one line', hook: 'Switch between forms of a line and spot parallel and perpendicular lines on sight.', scenes: [
-    { k: 'title', title: 'Three forms, one line', sub: 'Slope-intercept, standard and point-slope all describe the same thing.', say: ['The SAT loves to hide a line in a form you did not expect.', 'Let us learn to see through all of them.'] },
+    { k: 'title', title: 'Three forms, one line', sub: 'Slope-intercept, standard and point-slope all describe the same thing.', say: ['The SAT loves to hide a line in a form you did not expect.', 'Let\'s learn to see through all of them.'] },
     { k: 'lines', head: 'Standard form to slope', rows: [[r`$4x + 2y = 10$`], [r`$2y = -4x + 10$`, r`subtract $4x$`], [r`$y = -2x + 5$`, 'divide by 2'], [r`slope $-2$, $y$-intercept $5$`], [r`shortcut: slope $= -\frac{A}{B} = -\frac{4}{2} = -2$`]], say: [
       'Here is a line in standard form.',
       'Get y by itself. Subtract four x.',
@@ -195,7 +195,7 @@ export const MATH_VIDEOS: Video[] = [
     ], caption: [r`$b^2 - 4ac > 0$: crosses twice, two solutions`, r`$b^2 - 4ac < 0$: never touches, no real solutions`, r`$b^2 - 4ac = 0$: touches once, exactly one solution`], say: [
       'The part under the square root, b squared minus four a c, is the discriminant. Positive means two solutions.',
       'Negative means the parabola misses the axis. No real solutions.',
-      'Zero means it just touches. Exactly one.',
+      'Zero means it touches once. Exactly one.',
     ] },
     { k: 'lines', head: 'A line meets a parabola', rows: [[r`$y = x^2 - 3$ and $y = 2x$`], [r`$x^2 - 3 = 2x$`, 'set them equal'], [r`$x^2 - 2x - 3 = 0$`], [r`$(x - 3)(x + 1) = 0$`], [r`$x = 3$ or $x = -1$: points $(3, 6)$ and $(-1, -2)$`]], say: [
       'Now a system: a parabola and a line.',
@@ -217,7 +217,7 @@ export const MATH_VIDEOS: Video[] = [
   ] },
 
   { skill: 'nlf', title: 'Nonlinear functions: curves you can read at a glance', hook: 'Read a parabola’s vertex and zeros straight from its equation, and tell growth from decay.', scenes: [
-    { k: 'title', title: 'Curves you can read at a glance', sub: 'Every form of a function shows you something for free.', say: ['Nonlinear functions look scary, but each form hands you information for free.', 'Let us read them.'] },
+    { k: 'title', title: 'Curves you can read at a glance', sub: 'Every form of a function shows you something for free.', say: ['Nonlinear functions look scary, but each form hands you information for free.', 'Let\'s read them.'] },
     { k: 'plot', head: r`$f(x) = (x - 2)^2 - 1$`, win: [-3, 7, -3, 8], items: [
       { t: 'fn', f: (x) => (x - 2) ** 2 - 1 },
       { t: 'pt', x: 2, y: -1, label: 'vertex (2, −1)', tone: 'gold', at: 1 },
@@ -253,7 +253,7 @@ export const MATH_VIDEOS: Video[] = [
     { k: 'tiles', head: 'Part-to-part vs part-to-whole', items: [['Ratio 2 : 3', 'boys to girls'], ['Total parts', r`$2 + 3 = 5$`], ['Fraction that are boys', r`$\frac{2}{5}$, not $\frac{2}{3}$`]], say: ['A ratio of two to three compares the parts.', 'The whole is two plus three: five parts.', 'So the fraction of boys is two fifths, not two thirds.'] },
     { k: 'choices', stem: 'A map scale is 1 inch : 15 miles. Two towns are 4.2 inches apart on the map. How far apart are the towns?', choices: ['3.6 miles', '19.2 miles', '60 miles', '63 miles'], answer: 3, cross: [1, 0, 2], notes: ['Divides 15 by 4.2.', 'Adds instead of multiplies.', 'Uses 4 inches and drops the 0.2.', r`$4.2 \times 15 = 63$ miles.`], say: [
       'Each inch is fifteen miles.',
-      'Nineteen point two just adds the numbers.',
+      'Nineteen point two adds the numbers instead.',
       'Three point six divides. Way too small.',
       'Sixty drops the point two.',
       'Four point two times fifteen: sixty-three miles.',
@@ -300,9 +300,9 @@ export const MATH_VIDEOS: Video[] = [
     { k: 'choices', stem: 'The value 40 is added to the list 4, 7, 7, 9, 13. Which statement is true?', choices: ['The mean and the median both increase.', 'Only the mean increases.', 'Only the median increases.', 'Neither changes.'], answer: 0, cross: [3, 2, 1], notes: ['Mean: 8 → about 13.3. Median: 7 → 8.', r`The median moves too: from 7 to $\frac{7 + 9}{2} = 8$.`, 'The mean jumps from 8 to about 13.3.', 'Adding a value always changes the count.'], say: [
       'The mean is eight and the median is seven. Now add forty.',
       'Something must change. Cross out neither.',
-      'The mean obviously jumps, so not only the median.',
+      'The mean jumps a lot, so not only the median.',
       'Careful here. With six values, the median is the average of the middle two: seven and nine. That is eight.',
-      'So both increase. The median just moves a lot less.',
+      'So both increase. The median moves a lot less.',
     ] },
     { k: 'quiz', q: 'Set X: 20, 20, 20, 20. Set Y: 10, 20, 20, 30. Which statement is true?', choices: ['The sets have the same mean, and X has the larger standard deviation.', 'The sets have the same mean, and Y has the larger standard deviation.', 'Y has the larger mean.', 'The sets have the same standard deviation.'], answer: 1, why: "Both average 20. X has no spread at all; Y's values sit away from 20.", reveal: "The answer is B. Both sets average twenty. Set X has no spread at all, while set Y's values sit away from twenty.", say: ['Pause and try. No calculator needed.'] },
     { k: 'recap', points: ['Outliers pull the mean; the median resists them.', 'Standard deviation measures the typical distance from the mean.', 'For an even count, the median is the average of the middle two values.'], say: ['Outliers pull the mean.', 'Standard deviation is spread.', 'And for an even count, average the middle two.'] },
@@ -384,9 +384,9 @@ export const MATH_VIDEOS: Video[] = [
   ] },
 
   { skill: 'claims', title: 'Study design: correlation, cause and who it applies to', hook: 'Two questions settle every study-design question: was there random assignment, and random selection?', scenes: [
-    { k: 'title', title: 'Two questions for every study', sub: 'Random assignment gives cause. Random selection gives reach.', say: ['Every study question on the SAT comes down to two questions.', 'Let us learn them.'] },
+    { k: 'title', title: 'Two questions for every study', sub: 'Random assignment gives cause. Random selection gives reach.', say: ['Every study question on the SAT comes down to two questions.', 'Let\'s learn them.'] },
     { k: 'tiles', head: 'Ask these', items: [['Randomly ASSIGNED to groups?', 'Yes: you can conclude cause and effect.'], ['Randomly SELECTED from a population?', 'Yes: you can generalize to that population.'], ['Neither?', 'Only an association, only for these subjects.']], say: ['First: did the researchers randomly assign the treatment? If yes, you can talk about cause.', 'Second: were the subjects randomly selected from a bigger group? If yes, you can generalize to that group.', 'If neither, you have an association, for these subjects only.'] },
-    { k: 'passage', head: 'Read a claim', text: 'Researchers {{surveyed 300 volunteers|bad|not random}} and found that {{people who drank more tea|brand|observed, not assigned}} reported {{fewer colds|gold|association}}.', say: ['Let us read a study.', 'Volunteers are not a random sample. No generalizing.', 'Nobody was assigned to drink tea. It is observational.', 'So this shows an association. Not that tea prevents colds.'] },
+    { k: 'passage', head: 'Read a claim', text: 'Researchers {{surveyed 300 volunteers|bad|not random}} and found that {{people who drank more tea|brand|observed, not assigned}} reported {{fewer colds|gold|association}}.', say: ['Let\'s read a study.', 'Volunteers are not a random sample. No generalizing.', 'Nobody was assigned to drink tea. It is observational.', 'So this shows an association. Not that tea prevents colds.'] },
     { k: 'versus', head: 'The trap', bad: 'Tea drinkers had fewer colds, so tea prevents colds.', good: 'Maybe tea drinkers also sleep more or exercise more. Only random assignment rules out explanations like these.', say: ['The trap: treating an association as a cause.', 'Something else could explain it. Random assignment is what rules that out.'] },
     { k: 'choices', stem: 'A school randomly assigned 80 student volunteers to study with either a new app or a textbook for one month. The app group scored higher on a final quiz. Which conclusion is best supported?', choices: ['The app causes higher scores for all students in the country.', 'The app likely caused higher scores for students like these volunteers.', 'There is only an association; no cause can be concluded.', 'No conclusion is possible because the students were volunteers.'], answer: 1, cross: [0, 2, 3], notes: ['Volunteers were not randomly selected from all students.', 'Random assignment supports cause; volunteers limit who it applies to.', 'Random assignment does allow a cause-and-effect conclusion.', 'Volunteers limit generalizing, not the causal conclusion for this group.'], say: [
       'Random assignment? Yes. Random selection? No, they were volunteers.',
@@ -396,7 +396,7 @@ export const MATH_VIDEOS: Video[] = [
       'So: a likely cause, for students like these.',
     ] },
     { k: 'quiz', q: 'Which study design would let researchers conclude that a fertilizer causes taller plants?', choices: ['Measure plants in gardens that already use the fertilizer.', 'Ask gardeners whether their plants grew taller.', 'Randomly assign plants to receive the fertilizer or not.', "Compare this year's plants to last year's plants."], answer: 2, why: 'Only random assignment balances out the other differences between groups.', reveal: 'The answer is C. Only random assignment balances out the other differences between the groups, so only it can show cause and effect.', say: ['Pause and try. Which one supports cause?'] },
-    { k: 'recap', points: ['Random assignment → cause and effect.', 'Random selection → generalize to that population.', 'Otherwise: an association for these subjects only.'], say: ['Assignment gives cause.', 'Selection gives reach.', 'Without them, it is just an association.'] },
+    { k: 'recap', points: ['Random assignment → cause and effect.', 'Random selection → generalize to that population.', 'Otherwise: an association for these subjects only.'], say: ['Assignment gives cause.', 'Selection gives reach.', 'Without them, it\'s only an association.'] },
   ] },
 
   /* ───────────── Geometry and Trigonometry ───────────── */
@@ -420,7 +420,7 @@ export const MATH_VIDEOS: Video[] = [
       'Six equal faces share ninety-six square inches.',
       'Sixteen is one face, not the volume.',
       'Twenty-four multiplies the side by six.',
-      'Ninety-six is just the surface area.',
+      'Ninety-six is the surface area again.',
       'Each face is sixteen, so the side is four. Four cubed is sixty-four.',
     ] },
     { k: 'quiz', q: 'Two similar triangles have corresponding sides in the ratio 1 : 3. The smaller triangle has an area of 5. What is the area of the larger triangle?', choices: ['15', '25', '45', '135'], answer: 2, why: r`Areas scale by $k^2 = 3^2 = 9$. $5 \times 9 = 45$.`, reveal: 'The answer is forty-five. Areas scale by the square of the scale factor. Three squared is nine, and five times nine is forty-five.', say: ['Pause and try. Lengths, areas, or volumes?'] },
@@ -441,7 +441,7 @@ export const MATH_VIDEOS: Video[] = [
       'Its twin at the other crossing is equal. Corresponding angles match.',
       'And next to it, along a straight line, the angles add to one eighty. So that one is one thirty-five.',
     ] },
-    { k: 'tiles', head: 'The facts that solve most questions', items: [['Straight line', 'angles add to 180°'], ['Triangle', 'angles add to 180°'], ['Parallel lines', 'only two angle sizes, and they add to 180°']], say: ['Angles on a straight line add to one eighty.', 'So do the angles in a triangle.', 'And parallel lines create just two sizes of angle, adding to one eighty.'] },
+    { k: 'tiles', head: 'The facts that solve most questions', items: [['Straight line', 'angles add to 180°'], ['Triangle', 'angles add to 180°'], ['Parallel lines', 'only two angle sizes, and they add to 180°']], say: ['Angles on a straight line add to one eighty.', 'So do the angles in a triangle.', 'And parallel lines create only two sizes of angle, adding to one eighty.'] },
     { k: 'plot', head: 'Similar triangles', win: [0, 14, -0.6, 7], axes: false, items: [
       { t: 'poly', pts: [[0.5, 0.5], [4.5, 0.5], [0.5, 3.5]] },
       { t: 'poly', pts: [[5.5, 0.5], [13.5, 0.5], [5.5, 6.5]], tone: 'gold' },
@@ -465,7 +465,7 @@ export const MATH_VIDEOS: Video[] = [
   ] },
 
   { skill: 'trig', title: 'Right triangles and trig: SOH CAH TOA and the triangles to know', hook: 'Name the sides, use sine, cosine and tangent, and recognize the special right triangles on sight.', scenes: [
-    { k: 'title', title: 'SOH CAH TOA', sub: 'Plus the special triangles you should know by heart.', say: ['Right triangle trig is just ratios of sides.', 'Name the sides correctly, and it is easy.'] },
+    { k: 'title', title: 'SOH CAH TOA', sub: 'Plus the special triangles you should know by heart.', say: ['Right triangle trig is ratios of sides.', 'Name the sides correctly, and it is easy.'] },
     { k: 'plot', head: 'Name the sides from the angle', win: [0, 8, -0.4, 5], axes: false, items: [
       { t: 'poly', pts: [[1, 0.5], [5.8, 0.5], [5.8, 4.1]] },
       { t: 'seg', a: [5.5, 0.5], b: [5.5, 0.8], tone: 'muted' }, { t: 'seg', a: [5.5, 0.8], b: [5.8, 0.8], tone: 'muted' },
@@ -493,7 +493,7 @@ export const MATH_VIDEOS: Video[] = [
   ] },
 
   { skill: 'circ', title: 'Circles: center, radius and the fraction of the turn', hook: 'Read a circle’s equation, complete the square, and find arcs and sectors as fractions of the whole.', scenes: [
-    { k: 'title', title: 'Center, radius, fraction', sub: 'Three ideas cover nearly every circle question.', say: ['Circle questions come in two kinds.', 'Equations on a grid, and arcs and sectors. Let us do both.'] },
+    { k: 'title', title: 'Center, radius, fraction', sub: 'Three ideas cover nearly every circle question.', say: ['Circle questions come in two kinds.', 'Equations on a grid, and arcs and sectors. Let\'s do both.'] },
     { k: 'plot', head: r`$(x - 3)^2 + (y - 2)^2 = 16$`, win: [-2, 8, -3, 7], square: true, items: [
       { t: 'circle', c: [3, 2], r: 4 },
       { t: 'pt', x: 3, y: 2, label: 'center (3, 2)', tone: 'gold', at: 1 },
@@ -510,11 +510,11 @@ export const MATH_VIDEOS: Video[] = [
       { t: 'arc', c: [0, 0], r: 0.8, from: 0, to: 60, label: '60°', tone: 'gold', at: 1 },
       { t: 'arc', c: [0, 0], r: 3, from: 0, to: 60, tone: 'ok', at: 2 },
     ], caption: ['', r`$60°$ is $\frac{60}{360} = \frac{1}{6}$ of the full turn.`, r`arc length $= \frac{1}{6} \cdot 2\pi r$; sector area $= \frac{1}{6} \cdot \pi r^2$`], say: [
-      'Arcs and sectors are just fractions of the circle.',
+      'Arcs and sectors are fractions of the circle.',
       'A sixty degree angle is one sixth of the full turn.',
       'So the arc is one sixth of the circumference, and the sector is one sixth of the area.',
     ] },
-    { k: 'tiles', head: 'Radians in one line', items: [['Full turn', r`$360° = 2\pi$ radians`], ['Convert', r`degrees $\times \frac{\pi}{180}$`], ['Arc length', r`$s = r\theta$, with $\theta$ in radians`]], say: ['A full turn is two pi radians.', 'To convert degrees, multiply by pi over one eighty.', 'And in radians, arc length is just r times theta.'] },
+    { k: 'tiles', head: 'Radians in one line', items: [['Full turn', r`$360° = 2\pi$ radians`], ['Convert', r`degrees $\times \frac{\pi}{180}$`], ['Arc length', r`$s = r\theta$, with $\theta$ in radians`]], say: ['A full turn is two pi radians.', 'To convert degrees, multiply by pi over one eighty.', 'And in radians, arc length is r times theta.'] },
     { k: 'choices', stem: 'A circle has a radius of 9. What is the length of an arc with a central angle of 40°?', choices: [r`$\pi$`, r`$2\pi$`, r`$4\pi$`, r`$9\pi$`], answer: 1, cross: [3, 2, 0], notes: [r`Uses $9\pi$ as the circumference.`, r`$\frac{40}{360} \cdot 18\pi = 2\pi$.`, r`Uses $\frac{40}{180}$ of the circumference.`, 'That is half the circumference.'], say: [
       'Forty degrees is one ninth of the turn. The circumference is eighteen pi.',
       'Nine pi is half the circle. Far too big.',
