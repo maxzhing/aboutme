@@ -1,0 +1,3 @@
+{
+  "_readme": "Set criticApproved to true ONLY after a Critic SHIP verdict for that lesson (see CRITIQUE-REPORT.md). Until then the old version stays live; the new one is viewable with ?preview=1."
+}

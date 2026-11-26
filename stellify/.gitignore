@@ -8,3 +8,6 @@ coverage
 .DS_Store
 private/
 dist/stellify-personal.html
+
+# lesson build cache (voice WAVs, timelines)
+.lesson-cache/

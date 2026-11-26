@@ -21,6 +21,7 @@ shots = json.load(open(shots_file))
 tf = os.path.join(out, 'timing.json')
 timing = json.load(open(tf)) if os.path.exists(tf) else {}
 for skill, list_ in shots.items():
+    if isinstance(list_, dict): list_ = list_['shots']  # scripts/lessons/dump.ts format
     if only and skill not in only: continue
     sr = 24000
     pieces, starts, t = [np.zeros(int(LEAD * sr), np.float32)], [], LEAD

@@ -5,6 +5,12 @@ import { beatSeconds, beatsOf } from '@/components/VideoPlayer';
 import { captionsVtt } from '@/components/LessonVideo';
 import { shotsOf, type VideoTiming } from '@/data/videos/types';
 import TIMING from '@/data/videos/timing.json';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { WALKTHROUGHS } from '@/data/narrated/content';
+import type { Video } from '@/data/videos/types';
+import { TRAP } from '@/data/courses';
+import { TRAPS } from '@/data/questions/distractors';
 
 describe('video lessons', () => {
   it('has one video for every SAT skill', () => {
@@ -91,4 +97,33 @@ describe('rendered video files', () => {
     expect(vtt).toContain(v.scenes[0].say[0]);
     expect(vtt).toMatch(/00:00:00\.600 --> /);
   });
+});
+
+describe('hard-problem walkthroughs', () => {
+  for (const w of WALKTHROUGHS) {
+    const dir = join(__dirname, '../content/lessons', w.skill, w.id);
+    const v = JSON.parse(readFileSync(join(dir, 'scene.json'), 'utf8')) as Video;
+    const p = JSON.parse(readFileSync(join(dir, 'problem.json'), 'utf8'));
+    it(`${w.id}: follows the lesson anatomy and every scene is well formed`, () => {
+      expect(v.skill).toBe(w.skill);
+      const kinds = v.scenes.map((s) => s.k);
+      expect(kinds[0]).toBe('passage'); // the hook shows the problem
+      expect(kinds[1]).toBe('pause'); // try it first, straight away
+      expect(kinds).toContain('recap'); // the pattern card
+      expect(kinds.some((k) => k === 'versus' || k === 'choices')).toBe(true); // the trap
+      for (const s of v.scenes) {
+        if (s.k === 'morph') expect(s.steps.length, `${w.id} morph`).toBe(s.say.length);
+        if (s.k === 'passage') expect((s.text.match(/\{\{/g) ?? []).length).toBe(s.say.length - 1);
+        if (s.k === 'lines') expect(s.rows.length).toBe(s.say.length);
+        if (s.k === 'tiles') expect(s.items.length).toBe(s.say.length);
+        if (s.k === 'choices') expect(s.say.length).toBe(s.cross.length + 2);
+        if (s.k === 'pause') { expect(s.seconds).toBeGreaterThanOrEqual(10); expect(s.seconds).toBeLessThanOrEqual(20); }
+        for (const say of s.say) expect(say).not.toMatch(/[$\\{}]/);
+      }
+    });
+    it(`${w.id}: the trap is tagged with an existing misconception`, () => {
+      const tag = p.trap.misconception as string;
+      expect(p.format === 'rw' ? tag in TRAPS : !!TRAP[tag], tag).toBe(true);
+    });
+  }
 });

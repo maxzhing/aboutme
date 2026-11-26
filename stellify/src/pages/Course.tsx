@@ -1,5 +1,6 @@
 'use client';
 import { DISTRACTORS, TRAPS } from '@/data/questions/distractors';
+import { WalkthroughPanel } from '@/components/WalkthroughPanel';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -74,6 +75,7 @@ export function CoursePage({ skill }: { skill: SkillId }) {
         </div>
         <p className="relative mt-5 text-sm text-white/80" data-testid="course-progress">{passedN} of {chapters.length} chapters passed · every chapter: pictures → method → cheat sheet → worked examples → traps → 3 hard questions</p>
       </section>
+      <WalkthroughPanel skill={skill} />
       <SkillPathCard skill={skill as SkillId} />
       <ol className="relative space-y-3 before:absolute before:bottom-8 before:left-[42px] before:top-8 before:w-0.5 before:bg-line">
         {chapters.map((c) => { const r = done[c.id]; const pool = chapterQuestions(c).length; const isNext = next?.id === c.id; return (

@@ -1,0 +1,6 @@
+# Pinned tools for building lessons (python -m venv venv && venv/bin/pip install -r scripts/lessons/requirements.txt)
+kokoro-onnx==0.6.1
+onnxruntime==1.32.0
+soundfile==0.14.0
+sympy==1.14.0
+antlr4-python3-runtime==4.11.1
