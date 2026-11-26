@@ -57,7 +57,7 @@ writeFileSync(join(out, 'icon.svg'), icon);
 writeFileSync(join(out, 'manifest.webmanifest'), JSON.stringify({ name: 'Stellify', short_name: 'Stellify', start_url: 'app.html', display: 'standalone', background_color: '#F6F3EA', theme_color: '#F6F3EA', icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml' }] }));
 
 // Google sign-in and Firestore (the optional account) need Google's sign-in script, its sign-in frame and three APIs
-const FIREBASE = { script: 'https://apis.google.com', frame: 'https://stellify-e1fd0.firebaseapp.com https://accounts.google.com', connect: 'https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com', img: 'https://lh3.googleusercontent.com' };
+const FIREBASE = { script: 'https://apis.google.com', frame: "'self' https://stellify-e1fd0.firebaseapp.com https://accounts.google.com", connect: 'https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com', img: 'https://lh3.googleusercontent.com' };
 const csp = `default-src 'self'; script-src 'self' ${FIREBASE.script}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${FIREBASE.img}; font-src 'self' data:; media-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self' https://generativelanguage.googleapis.com ${FIREBASE.connect}; frame-src https://www.desmos.com ${FIREBASE.frame}; base-uri 'none'; form-action 'none'; object-src 'none'`;
 const head = (title, desc, extra = '') => `<!doctype html>
 <html lang="en" data-web="1">

@@ -20,17 +20,22 @@ export function GoogleButton({ onClick, busy, label = 'Continue with Google' }: 
  * The first choice a new student makes on the website: sign in with Google (progress saved to their account) or carry
  * on as a guest (everything stays on this device). Not shown in the offline file, which has no sign-in.
  */
-export function AccountChoice({ onDone }: { onDone: (mode: 'guest' | 'google') => void }) {
+export function AccountChoice({ onDone, google: fromLanding }: { onDone: (mode: 'guest' | 'google') => void; google?: boolean }) {
   const [busy, setBusy] = useState(false);
   const error = useCloud((s) => s.error);
   useEffect(preloadCloud, []);
   const google = async () => { setBusy(true); const ok = await signInWithGoogle(); setBusy(false); if (ok) onDone('google'); };
   return (
     <div className="space-y-4" data-testid="account-choice">
-      <h1 className="text-2xl font-bold">Save your progress?</h1>
-      <p className="text-[15px] text-muted">Sign in with Google to keep your progress in your account and pick it up on any device. Or continue as a guest: everything stays in this browser, and you can sign in later in Settings.</p>
+      {fromLanding ? (<>
+        <h1 className="text-2xl font-bold">Sign in with Google</h1>
+        <p className="text-[15px] text-muted">Choose your Google account in the window that opens. Your progress is saved to your account, so you can pick it up on any device.</p>
+      </>) : (<>
+        <h1 className="text-2xl font-bold">Save your progress?</h1>
+        <p className="text-[15px] text-muted">Sign in with Google to keep your progress in your account and pick it up on any device. Or continue as a guest: everything stays in this browser, and you can sign in later in Settings.</p>
+      </>)}
       <div className="flex flex-col gap-2 sm:flex-row">
-        <GoogleButton onClick={google} busy={busy} />
+        <GoogleButton onClick={google} busy={busy} label={fromLanding ? 'Sign in with Google' : undefined} />
         <button type="button" className="btn-ghost" onClick={() => { setAccountMode('guest'); onDone('guest'); }} data-testid="continue-guest">Continue as guest</button>
       </div>
       {error && <p className="text-sm text-bad" role="alert">{error}</p>}

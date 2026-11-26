@@ -106,8 +106,17 @@ export async function signInWithGoogle() {
     // tests only: the local emulators accept a made-up Google identity, so no pop-up is needed
     const fake = (globalThis as { __STELLIFY_EMULATORS__?: { googleUser?: { sub: string; email: string; name: string } } }).__STELLIFY_EMULATORS__?.googleUser;
     // the pop-up must open straight from the click, before anything else waits on the network
-    try { if (fake) await s.A.signInWithCredential(s.auth, s.A.GoogleAuthProvider.credential(JSON.stringify({ ...fake, email_verified: true }))); else await s.A.signInWithPopup(s.auth, provider, s.popup); }
+    // carry on as soon as Firebase reports the student signed in, even if the pop-up's own answer gets lost
+    let off = () => {};
+    const signedIn = new Promise<void>((ok) => { off = s.A.onAuthStateChanged(s.auth, (u) => { if (u) ok(); }); });
+    try {
+      const attempt = fake ? s.A.signInWithCredential(s.auth, s.A.GoogleAuthProvider.credential(JSON.stringify({ ...fake, email_verified: true }))) : s.A.signInWithPopup(s.auth, provider, s.popup);
+      attempt.catch(() => undefined); // if the sign-in already went through, a late "pop-up closed" is not an error
+      await Promise.race([attempt, signedIn]);
+      off();
+    }
     catch (e) {
+      off();
       if ((e as { code?: string }).code !== 'auth/popup-blocked') throw e;
       setAccountMode('google'); ls.set(REDIRECT_KEY, '1');
       await s.A.signInWithRedirect(s.auth, provider, s.popup);

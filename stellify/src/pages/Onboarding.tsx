@@ -46,14 +46,22 @@ export function OnboardingPage() {
   const go = (n: number) => { if (n >= 2) save(); setStep(n); window.scrollTo(0, 0); };
   const STEPS = 2;
 
+  // a signed-in student whose saved plan arrives from the account after the welcome questions appeared: take them to it
+  // (only a plan that ARRIVES while this screen is open: "Change my answers" opens it with a plan already there)
+  const onboardedAt = useStore((s) => s.profile.onboardedAt);
+  const hadPlan = useRef(Boolean(onboardedAt));
+  useEffect(() => { if (!hadPlan.current && step === 0 && onboardedAt && accountMode() === 'google') router.push('/'); }, [onboardedAt, step, router]);
+
   // on the website, the first choice: a Google account (progress saved there) or guest (this device only)
   const [chooseAccount, setChooseAccount] = useState(() => step === 0 && cloudAvailable() && (accountMode() === null || sp.get('choose') === 'google'));
   if (chooseAccount) return (
     <div className="mx-auto max-w-2xl py-6">
       <div className="mb-6 flex items-center gap-3"><Logo size={36} /><div><div className="font-display text-xl font-bold">Stellify</div><div className="text-xs text-muted">Free Digital SAT prep, planned around you</div></div></div>
-      <Card><AccountChoice onDone={async (mode) => {
+      <Card><AccountChoice google={sp.get('choose') === 'google'} onDone={async (mode) => {
         if (mode === 'google') {
-          await reconcile();
+          // check the account for saved progress, but never keep the student waiting more than 4 s: it carries on
+          // in the background, and a plan that arrives later still takes them to it (see the effect below)
+          await Promise.race([reconcile().catch(() => undefined), new Promise((ok) => setTimeout(ok, 4000))]);
           // a returning student: their account already has a plan, so go straight to it
           if (useStore.getState().profile.onboardedAt) { router.push('/'); return; }
         }

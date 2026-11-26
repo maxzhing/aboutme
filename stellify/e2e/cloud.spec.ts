@@ -155,6 +155,18 @@ test('account: guest uploads nothing; Google sign-in saves progress, a second de
   await expect(d.getByTestId('landing-google')).toBeVisible();
   await expect.poll(() => cloudDoc(uid)).toBeNull();
   await D.close();
+  // 10. a new student whose account service is slow or unreachable right after sign-in still gets the welcome
+  //     questions within a few seconds (it used to wait for the account forever)
+  const bo = { sub: 'g-bo', email: 'bo@example.com', name: 'Bo Test' };
+  const E = await device(browser, bo);
+  await E.route(/127\.0\.0\.1:8080/, (r) => r.abort());
+  const e = await E.newPage();
+  await e.goto(`${base}app.html#/onboarding?choose=google`);
+  const t1 = Date.now();
+  await e.getByTestId('google-sign-in').click();
+  await expect(e.getByTestId('intake-welcome')).toContainText('Signed in', { timeout: 8_000 });
+  expect(Date.now() - t1).toBeLessThan(8_000);
+  await E.close();
   expect(errors).toEqual([]);
   await A.close(); await B.close();
 });
