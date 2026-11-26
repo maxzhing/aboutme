@@ -1,17 +1,28 @@
 """
 Correctness gate for animated lessons (the brief's Section 7). A failure stops the build.
 
-For each content/lessons/<skill>/<lesson>/problem.json:
-  * the answer key equals the machine-computed answer (math.key) and the shown choice/grid-in value;
-  * every worked step has exactly the same solutions as the step before it (or is the same equation up to a
-    nonzero constant factor, for equations in two variables);
-  * every stated check is true (sympy expressions over the problem's symbols), e.g. "k = -4 gives no solution";
-  * the trap path really produces the stated wrong answer, and that wrong answer is one of the listed distractors
-    (a choice for multiple choice, a listed common wrong answer for grid-in), tagged with an existing misconception;
-  * Reading & Writing: structure only (four choices, one key, every wrong choice explained and tagged). Meaning
-    cannot be machine-checked, so R&W keys need a teacher (NEEDS-OWNER).
+For each content/lessons/<skill>/<lesson>/problem.json (and its scene.json):
+  * DERIVED KEY: the equations are parsed from the problem's own stem (its $...$ math), and the answer is computed
+    from them (math.derive): for "system-no-solution", the one choice that leaves the system with no solution; for
+    "circle-tangent-x", the one value of the constant that makes the circle touch the x-axis. The keyed choice /
+    grid-in answer and math.key must both equal it. The trap value must give the stated wrong outcome.
+  * STEPS: every worked step (problem.json and every equation shown on screen in a morph scene, read from its LaTeX)
+    has exactly the same solutions as the step before (or, in two variables, is a nonzero multiple of it), and the
+    last shown step reaches the key.
+  * STATED FACTS: every check is evaluated with KEY bound to the derived key, so a fact that does not depend on the
+    answer cannot hide a wrong key.
+  * ON SCREEN = PROBLEM: the hook scene and the try-it-first scene show every math expression of the stem; the
+    choices scene shows the problem's choices and key and crosses out the trap; graph lines lie on the stem's
+    equations at the key; a drawn circle has the stem's center and radius at the key, and every marked point is its
+    center or on it.
+  * TAGS: the trap's misconception tag (and every R&W distractor's trap code) exists in
+    content/lessons/misconceptions.json, which tests/videos.test.ts keeps equal to the app's live lists.
+  * R&W: structure only (four choices, one key, every wrong choice explained and tagged). Meaning cannot be checked
+    by a machine, so R&W keys need a teacher (NEEDS-OWNER).
+NOT machine-checked: numbers spoken in the narration (the script lint and the Critic read them), and the wording of
+explanations.
 
-  python verify.py <lessons-root> [--json]
+  python verify.py <lessons-root>
 """
 import json, os, re, sys
 import sympy as sp
@@ -53,10 +64,57 @@ class Lesson:
             return val
         return sp.solveset(val, over, domain=sp.S.Reals)
 
+    def tags(self):
+        return json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'content', 'lessons', 'misconceptions.json')))
+
+    def stem_math(self):
+        return [m.strip() for m in re.findall(r'\$([^$]+)\$', self.p['stem'])]
+
+    def stem_equations(self, ns):
+        """Equations written in the stem, read from their LaTeX."""
+        from sympy.parsing.latex import parse_latex
+        out = []
+        for m in self.stem_math():
+            if '=' in m:
+                e = parse_latex(m)
+                out.append(sp.expand(e.lhs - e.rhs).subs({sp.Symbol(n): ns[n] for n in self.p['math']['symbols']}))
+        return out
+
+    def derive(self, ns):
+        """The answer computed from the stem's own equations."""
+        m, p = self.p['math'], self.p
+        d = m.get('derive')
+        if not d: self.err('math.derive is missing: the key must be computed from the stem'); return None
+        eqs = self.stem_equations(ns)
+        k = ns[d['param']]
+        x, y = ns.get('x'), ns.get('y')
+        if d['type'] == 'system-no-solution':
+            if len(eqs) != 2: self.err(f'expected two equations in the stem, found {len(eqs)}'); return None
+            vals = [tex_to_value(c) for c in p['choices']]
+            none = [v for v in vals if sp.linsolve([e.subs(k, v) for e in eqs], [x, y]) == sp.EmptySet]
+            if len(none) != 1: self.err(f'{len(none)} choices give no solution; exactly one must'); return None
+            self.derived_outcome = {v: ('none' if sp.linsolve([e.subs(k, v) for e in eqs], [x, y]) == sp.EmptySet else ('many' if len(sp.linsolve([e.subs(k, v) for e in eqs], [x, y]).free_symbols) else 'one')) for v in vals}
+            return none[0]
+        if d['type'] == 'circle-tangent-x':
+            if len(eqs) != 1: self.err('expected one circle equation in the stem'); return None
+            e = eqs[0]
+            q = sp.Poly(e.subs(y, 0), x)
+            sols = [c for c in sp.solve(sp.discriminant(q.as_expr(), x), k) if (sp.Poly(e, x, y).coeff_monomial(1).subs(k, c) - (sp.Poly(e, x, y).coeff_monomial(x) ** 2 + sp.Poly(e, x, y).coeff_monomial(y) ** 2) / 4) < 0]
+            if len(sols) != 1: self.err(f'{len(sols)} values make the circle tangent to the x-axis; exactly one must'); return None
+            return sols[0]
+        self.err(f"unknown derive type {d['type']}"); return None
+
     def check_math(self):
         p, m = self.p, self.p['math']
         ns, syms = self.ns()
         key = self.parse(m['key'], ns)
+        derived = self.derive(ns)
+        if derived is not None and sp.simplify(derived - key) != 0: self.err(f'math.key {key} is not what the stem gives ({derived})')
+        if derived is not None: key = derived
+        ns['KEY'] = key
+        self.key = key
+        tags = self.tags()
+        if p.get('trap', {}).get('misconception') and p['trap']['misconception'] not in tags['math']: self.err(f"misconception tag {p['trap']['misconception']} does not exist in the app")
         # the key against what the student sees
         if p['format'] == 'mcq':
             shown = tex_to_value(p['choices'][p['answer']])
@@ -98,6 +156,9 @@ class Lesson:
             if sp.simplify(tex_to_value(p['choices'][t['answer']]) - tv) != 0: self.err(f"trap choice {p['choices'][t['answer']]} is not the trap value {tv}")
         else:
             if not any(sp.simplify(tex_to_value(w) - tv) == 0 for w in p.get('commonWrong', {}).keys()): self.err(f"trap value {tv} is not a listed common wrong answer")
+        if getattr(self, 'derived_outcome', None) is not None and m.get('derive', {}).get('trapOutcome'):
+            got = self.derived_outcome.get(tv)
+            if got != m['derive']['trapOutcome']: self.err(f"the trap value gives '{got}' solutions, not '{m['derive']['trapOutcome']}'")
         for c in m['trap'].get('checks', []):
             ok = bool(eval(c['expr'], {'__builtins__': {}, 'len': len, 'set': set, 'abs': abs}, ns))
             if not ok: self.err(f"trap check failed: {c['desc']}  [{c['expr']}]")
@@ -116,6 +177,10 @@ class Lesson:
             d = p.get('distractors', {}).get(str(i))
             if not d or not d.get('why') or not d.get('trap'): self.err(f'choice {"ABCD"[i]} needs a reason and a trap tag')
         if not p.get('trap', {}).get('misconception'): self.err('the main trap has no tag')
+        codes = self.tags()['rw']
+        for i, d in p.get('distractors', {}).items():
+            if d.get('trap') and d['trap'] not in codes: self.err(f"choice {'ABCD'[int(i)]}: trap code {d['trap']} does not exist in the app")
+        if p.get('trap', {}).get('misconception') not in codes: self.err(f"trap code {p.get('trap', {}).get('misconception')} does not exist in the app")
 
     def check_scene(self, scene_path):
         """What is on screen comes from the checked math: the shown equation steps, the graph lines, the key."""
@@ -169,6 +234,36 @@ class Lesson:
                     if [c.strip() for c in s['choices']] != [c.strip() for c in p['choices']]: self.err(f"{where}: the scene's choices differ from the problem's")
                     if p.get('trap', {}).get('answer') is not None and p['trap']['answer'] not in s['cross']: self.err(f"{where}: the trap choice is never crossed out")
         if not any(s['k'] == 'pause' for s in sc['scenes']): self.err('no "try it first" pause')
+        norm = lambda t: re.sub(r'\s+', '', t)
+        if p['format'] != 'rw':
+            hook = sc['scenes'][0]
+            pause = next((s for s in sc['scenes'] if s['k'] == 'pause'), {})
+            for mth in self.stem_math():
+                if norm(mth) not in norm(hook.get('text', '')): self.err(f"the hook scene does not show ${mth}$ from the stem")
+                if norm(mth) not in norm(pause.get('stem', '') + pause.get('passage', '')): self.err(f"the try-it-first scene does not show ${mth}$ from the stem")
+            if p['format'] == 'mcq' and [c.strip() for c in pause.get('choices', [])] != [c.strip() for c in p['choices']]: self.err('the try-it-first scene does not show the choices')
+            eqs = [e.subs(ns[p['math']['derive']['param']], self.key) for e in self.stem_equations(ns)] if p['math'].get('derive') else []
+            x, y = sp.Symbol('x', real=True), sp.Symbol('y', real=True)
+            for s in sc['scenes']:
+                if s['k'] != 'plot': continue
+                for it in s['items']:
+                    if it.get('t') == 'expr' and eqs and 'check' in it:
+                        line = sp.sympify(it['e'], locals={'x': x}) if True else None
+                        if not any(sp.simplify(e.subs({ns['x']: x, ns['y']: y}).subs(y, line)) == 0 for e in eqs): self.err(f"graph line y = {it['e']} is not one of the stem's equations at the key")
+                    if it.get('t') == 'circle' and eqs:
+                        e = sp.Poly(eqs[0], ns['x'], ns['y'])
+                        D, E, F0 = e.coeff_monomial(ns['x']), e.coeff_monomial(ns['y']), e.coeff_monomial(1)
+                        cx, cy, r = -D / 2, -E / 2, sp.sqrt(D ** 2 / 4 + E ** 2 / 4 - F0)
+                        if (sp.nsimplify(it['c'][0]), sp.nsimplify(it['c'][1]), sp.nsimplify(it['r'])) != (cx, cy, r): self.err(f"the drawn circle (center {it['c']}, r {it['r']}) is not the stem's circle at the key (center ({cx}, {cy}), r {r})")
+                        for q in s['items']:
+                            if q.get('t') == 'pt':
+                                on = sp.simplify((q['x'] - cx) ** 2 + (q['y'] - cy) ** 2 - r ** 2) == 0
+                                if not on and (sp.nsimplify(q['x']), sp.nsimplify(q['y'])) != (cx, cy): self.err(f"marked point ({q['x']}, {q['y']}) is neither the center nor on the circle")
+        else:
+            pause = next((s for s in sc['scenes'] if s['k'] == 'pause'), {})
+            if norm(pause.get('passage', '')) != norm(p['passage']): self.err('the try-it-first scene does not show the passage')
+            ch = next((s for s in sc['scenes'] if s['k'] == 'choices'), {})
+            if norm(ch.get('passage', '')) != norm(p['passage']): self.err('the choices scene does not show the passage')
 
     def run(self):
         for f in ('id', 'skill', 'format', 'stem'):

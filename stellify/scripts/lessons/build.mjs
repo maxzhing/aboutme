@@ -23,7 +23,7 @@ const cache = join(app, '.lesson-cache'), out = resolve(app, '../sat/videos/less
 mkdirSync(cache, { recursive: true }); mkdirSync(out, { recursive: true });
 const run = (cmd, args, opts = {}) => execFileSync(cmd, args, { stdio: 'inherit', cwd: app, ...opts });
 
-console.log('1. verify'); run(PY, ['scripts/lessons/verify.py', 'content/lessons']); run(PY, ['scripts/lessons/test_verify.py', 'content/lessons'], { stdio: 'ignore' });
+console.log('1. verify'); run('npx', ['tsx', 'scripts/lessons/tags.ts', 'content/lessons/misconceptions.json']); run(PY, ['scripts/lessons/verify.py', 'content/lessons']); run(PY, ['scripts/lessons/test_verify.py', 'content/lessons'], { stdio: 'ignore' });
 console.log('2. lint'); run('npx', ['tsx', 'scripts/videos/lint.ts']);
 console.log('3. voice'); run('npx', ['tsx', 'scripts/lessons/dump.ts', join(cache, 'shots.json')]);
 const lessons = JSON.parse(readFileSync(join(cache, 'shots.json'), 'utf8'));
@@ -45,8 +45,15 @@ for (const id of stale) {
   // and can overshoot the peak once encoded); -2 dBTP leaves room for MP3 encoding
   const wav = join(cache, 'wav', `${id}.wav`);
   const measured = JSON.parse(/\{[\s\S]*\}/.exec(execFileSync('sh', ['-c', `ffmpeg -hide_banner -i "${wav}" -af loudnorm=I=-16:TP=-2:LRA=11:print_format=json -f null - 2>&1`], { encoding: 'utf8' }))[0]);
-  const af = `loudnorm=I=-16:TP=-2:LRA=11:measured_I=${measured.input_i}:measured_TP=${measured.input_tp}:measured_LRA=${measured.input_lra}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true`;
-  run('ffmpeg', ['-loglevel', 'error', '-y', '-i', wav, '-af', af, '-ar', '24000', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '48k', join(out, `${id}.mp3`)]);
+  // then a peak limiter at -2.5 dBFS so the encoded MP3 stays under -1.5 dBTP
+  const af = `loudnorm=I=-16:TP=-2:LRA=11:measured_I=${measured.input_i}:measured_TP=${measured.input_tp}:measured_LRA=${measured.input_lra}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true,alimiter=limit=0.66:level=false`;
+  // measure the encoded file's true peak; if MP3 overshoot put it above -1.5 dBTP, lower the level by the excess
+  const truePeak = () => Number(/Peak:\s+(-?[\d.]+) dBFS/.exec(execFileSync('sh', ['-c', `ffmpeg -hide_banner -i "${join(out, `${id}.mp3`)}" -af ebur128=peak=true -f null - 2>&1 | tail -3`], { encoding: 'utf8' }))?.[1] ?? 0);
+  let gain = 0;
+  for (let k = 0; k < 4; k++) {
+    run('ffmpeg', ['-loglevel', 'error', '-y', '-i', wav, '-af', `${af},volume=${gain.toFixed(2)}dB`, '-ar', '24000', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '48k', join(out, `${id}.mp3`)]);
+    const tp = truePeak(); if (tp <= -1.5) break; gain -= tp + 1.5 + 0.2;
+  }
   const mp3 = readFileSync(join(out, `${id}.mp3`));
   manifests[id] = { id, skill: lessons[id].skill, kind: lessons[id].kind, voice: `Kokoro-82M v1.0 · ${VOICE} (computer-generated)`, duration: timing[id].duration, starts: timing[id].starts,
     audio: `videos/lessons/${id}.mp3`, bytes: mp3.length, sha256: createHash('sha256').update(mp3).digest('hex'), scriptHash: lessons[id].hash, captions: 'from the script (same cue offsets)', transcript: 'from the script', built: new Date().toISOString().slice(0, 10) };

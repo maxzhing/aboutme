@@ -34,7 +34,9 @@ export type Scene =
   /** A question: beat 0 reads it, each later beat crosses out `cross[i]`, the beat after the last reveals the answer. */
   | { k: 'choices'; stem: string; passage?: string; choices: string[]; answer: number; cross: number[]; notes: string[]; say: string[] }
   /** A coordinate picture; each item appears on beat `at` (default 0). `axes: false` for geometry. */
-  | { k: 'plot'; head?: string; win: [number, number, number, number]; axes?: boolean; square?: boolean; items: PlotItem[]; caption?: string[]; say: string[] }
+  | { k: 'plot'; head?: string; win: [number, number, number, number]; axes?: boolean; square?: boolean; items: PlotItem[]; caption?: string[]; say: string[]
+      /** what the picture shows, in words (transcript and screen readers) */
+      alt?: string }
   /** A table; `lit[b]` lists the [row, column] cells lit on beat b, and `note[b]` is shown under it. */
   | { k: 'table'; head?: string; headers: string[]; rows: (string | number)[][]; lit: [number, number][][]; note?: string[]; say: string[] }
   /** Tiles, one per beat. */
@@ -51,7 +53,9 @@ export type Scene =
    */
   | { k: 'morph'; head?: string; steps: { tokens: [string, string][]; note?: string }[]; say: string[] }
   /** "Try it first": the narration invites the student to work, then a silent, skippable pause of `seconds`. */
-  | { k: 'pause'; prompt: string; seconds: number; say: string[] }
+  | { k: 'pause'; prompt: string; seconds: number; say: string[]
+      /** the problem stays on screen while the student works (B1, Gate 1); hold = wait for Continue instead of a timer */
+      stem?: string; passage?: string; choices?: string[]; hold?: boolean }
   /** The takeaways, one per beat. */
   | { k: 'recap'; points: string[]; say: string[] };
 

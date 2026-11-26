@@ -117,7 +117,7 @@ describe('hard-problem walkthroughs', () => {
         if (s.k === 'lines') expect(s.rows.length).toBe(s.say.length);
         if (s.k === 'tiles') expect(s.items.length).toBe(s.say.length);
         if (s.k === 'choices') expect(s.say.length).toBe(s.cross.length + 2);
-        if (s.k === 'pause') { expect(s.seconds).toBeGreaterThanOrEqual(10); expect(s.seconds).toBeLessThanOrEqual(20); }
+        if (s.k === 'pause') { expect(s.seconds).toBeGreaterThanOrEqual(10); expect(s.seconds).toBeLessThanOrEqual(20); expect(s.stem || s.passage, `${w.id}: the problem stays on screen while the student tries it`).toBeTruthy(); }
         for (const say of s.say) expect(say).not.toMatch(/[$\\{}]/);
       }
     });
@@ -126,4 +126,11 @@ describe('hard-problem walkthroughs', () => {
       expect(p.format === 'rw' ? tag in TRAPS : !!TRAP[tag], tag).toBe(true);
     });
   }
+});
+
+describe('lesson verifier inputs', () => {
+  it('the misconception list the verifier reads equals the app\'s live trap lists', () => {
+    const file = JSON.parse(readFileSync(join(__dirname, '../content/lessons/misconceptions.json'), 'utf8'));
+    expect(file).toEqual({ math: Object.keys(TRAP).sort(), rw: Object.keys(TRAPS).sort() });
+  });
 });

@@ -27,6 +27,11 @@ CASES = {
     'circle step with the wrong arithmetic': broken('circ', lambda p: p['math']['steps'].__setitem__(2, {'eq': 'c = 34 + 25', 'over': ['c']})),
     'R&W wrong choice without a trap tag': broken('inf', lambda p: p['distractors']['0'].pop('trap')),
     'R&W with three choices': broken('inf', lambda p: p['choices'].pop()),
+    'a made-up misconception tag': broken('sys', lambda p: p['trap'].update(misconception='sys-9.9')),
+    'a made-up R&W trap code': broken('inf', lambda p: p['distractors']['0'].update(trap='vibes')),
+    'a changed stem (now two choices give no solution)': broken('sys', lambda p: p.update(stem=p['stem'].replace('kx + 8y = 12', 'kx + 8y = 24'))),
+    'a changed stem (the circle is now tangent at c = 16)': broken('circ', lambda p: p.update(stem=p['stem'].replace('- 6x', '- 8x'))),
+    'a key typed by hand that the stem does not give': broken('circ', lambda p: p.update(answer=['25']) or p['math'].update(key='25')),
 }
 
 missed = []
@@ -59,6 +64,12 @@ SCENE_CASES = {
     'graph line that is not the system\'s line': ('sys', lambda sc: [s for s in sc['scenes'] if s['k'] == 'plot'][0]['items'][0].update(e='x/2 - 1')),
     'scene shows a different answer than the problem': ('sys', lambda sc: [s for s in sc['scenes'] if s['k'] == 'choices'][0].update(answer=2)),
     'no try-it-first pause': ('inf', lambda sc: sc.update(scenes=[s for s in sc['scenes'] if s['k'] != 'pause'])),
+    'drawn circle with the wrong center': ('circ', lambda sc: [s for s in sc['scenes'] if s['k'] == 'plot'][0]['items'][0].update(c=[3, 5])),
+    'marked point off the circle': ('circ', lambda sc: [s for s in sc['scenes'] if s['k'] == 'plot'][0]['items'][3].update(y=1)),
+    'hook scene shows a different equation': ('sys', lambda sc: sc['scenes'][0].update(text=sc['scenes'][0]['text'].replace('$kx + 8y = 12$', '$kx + 8y = 21$'))),
+    'try-it-first scene hides the choices': ('sys', lambda sc: sc['scenes'][1].pop('choices')),
+    'try-it-first scene hides the passage': ('inf', lambda sc: sc['scenes'][1].pop('passage')),
+    'choices scene without the passage (R&W)': ('inf', lambda sc: [s for s in sc['scenes'] if s['k'] == 'choices'][0].pop('passage')),
 }
 scene_missed = []
 for name, (skill, change) in SCENE_CASES.items():

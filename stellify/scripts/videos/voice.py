@@ -25,11 +25,13 @@ for skill, list_ in shots.items():
     if only and skill not in only: continue
     sr = 24000
     pieces, starts, t = [np.zeros(int(LEAD * sr), np.float32)], [], LEAD
+    spoken = -1
     for i, s in enumerate(list_):
+        if s['phase'] != 'countdown': spoken += 1
         if i and s['scene'] != list_[i - 1]['scene']:
             pieces.append(np.zeros(int(SCENE_GAP * sr), np.float32)); t += SCENE_GAP
         starts.append(round(t, 3))
-        rec = os.path.join(RECORDINGS, skill, f'{i:03d}.wav') if RECORDINGS else ''
+        rec = os.path.join(RECORDINGS, skill, f'{spoken:03d}.wav') if RECORDINGS and s['phase'] != 'countdown' else ''
         if s['phase'] == 'countdown':
             audio = np.zeros(int(s.get('secs', COUNTDOWN) * sr), np.float32)
         elif rec and os.path.exists(rec):

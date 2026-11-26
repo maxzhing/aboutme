@@ -8,15 +8,28 @@
   "stem": "Which choice most logically completes the text?",
   "choices": [
     "a replacement for protecting crops' wild relatives where they grow.",
-    "a useful backup that cannot, on its own, preserve a crop's ability to keep adapting.",
+    "a useful backup that cannot, on its own, keep pace with the adapting that happens in the field.",
     "unnecessary, since crops in the field continue to adapt without them.",
     "the main reason that modern crops resist new pests."
   ],
   "answer": 1,
   "distractors": {
-    "0": { "trap": "reversed", "why": "The botanists' point is that stored seeds do NOT keep adapting, so seed banks cannot replace plants changing in the field." },
-    "2": { "trap": "qualifier", "why": "Too extreme. The text says stored seeds have a limit, not that seed banks are useless; they still let a lost variety be replanted." },
-    "3": { "trap": "beyond", "why": "The text never says seed banks make crops resist pests; adapting to pests happens in the field." }
+    "0": {
+      "trap": "reversed",
+      "why": "The botanists' point is that stored seeds do NOT keep adapting, so seed banks cannot replace plants changing in the field."
+    },
+    "2": {
+      "trap": "qualifier",
+      "why": "Too extreme. The text says stored seeds have a limit, not that seed banks are useless; they still let a lost variety be replanted."
+    },
+    "3": {
+      "trap": "beyond",
+      "why": "The text never says seed banks make crops resist pests; adapting to pests happens in the field."
+    }
   },
-  "trap": { "answer": 2, "misconception": "qualifier", "why": "The text criticizes seed banks, so a choice that dismisses them feels right. But the criticism is a limit, not a rejection." }
+  "trap": {
+    "answer": 2,
+    "misconception": "qualifier",
+    "why": "The text criticizes seed banks, so a choice that dismisses them feels right. But the criticism is a limit, not a rejection."
+  }
 }

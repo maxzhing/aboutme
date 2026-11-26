@@ -229,7 +229,7 @@ export function SceneView({ scene: s, b, picked, onPick, onContinue, phase }: { 
               return (
                 <div key={n} className={cn('rounded-xl border px-3 py-2 transition-all duration-500', win ? 'border-ok bg-ok/10 ring-2 ring-ok/40' : out ? 'border-line' : 'border-line bg-raised/30')}>
                   <span className={cn('font-semibold', out && 'text-muted line-through decoration-bad decoration-2')}>{'ABCD'[n]}) <RichText text={c} /></span>
-                  {(out || win) && s.notes[n] && <motion.span {...pop} className={cn('mt-1 block text-xs', win ? 'text-ok' : 'text-bad')}><RichText text={s.notes[n]} /></motion.span>}
+                  {(out || win) && s.notes[n] && <motion.span {...pop} className={cn('mt-1 block text-sm', win ? 'text-ok' : 'text-bad')}><RichText text={s.notes[n]} /></motion.span>}
                 </div>
               );
             })}
@@ -302,7 +302,7 @@ export function SceneView({ scene: s, b, picked, onPick, onContinue, phase }: { 
       return (
         <div><Head t={s.head} />
           <LayoutGroup>
-            <div className="mx-auto flex min-h-[3.5rem] max-w-2xl flex-wrap items-center justify-center gap-x-1.5 gap-y-2 rounded-xl border border-brand/40 bg-brand/5 px-4 py-4 text-xl sm:text-2xl" data-testid="morph-step" aria-live="polite">
+            <div className="mx-auto flex min-h-[3.5rem] max-w-2xl flex-nowrap items-center justify-center gap-x-1.5 overflow-x-auto rounded-xl border border-brand/40 bg-brand/5 px-4 py-4 text-lg sm:text-2xl" data-testid="morph-step">
               <AnimatePresence mode="popLayout">
                 {step.tokens.map(([key, tex]) => (
                   <motion.span key={key} layoutId={`m-${key}`} layout="position" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }} className="inline-block whitespace-nowrap">
@@ -321,8 +321,15 @@ export function SceneView({ scene: s, b, picked, onPick, onContinue, phase }: { 
       <div className="mx-auto max-w-xl text-center" data-testid="try-first">
         <p className="mb-2 text-xs font-black uppercase tracking-widest text-gold">Try it first</p>
         <p className="text-lg font-semibold sm:text-xl"><RichText text={s.prompt} /></p>
-        {phase === 'countdown' && <p className="mt-3 text-sm text-muted">Work it out on paper. The lesson carries on in {s.seconds} seconds{onContinue ? ', or skip ahead now' : ''}.</p>}
-        {phase === 'countdown' && onContinue && <button type="button" className="btn-ghost mt-3" onClick={onContinue} data-testid="skip-pause">Skip ahead<ChevronRight size={16} /></button>}
+        {(s.passage || s.stem) && (
+          <div className="mt-3 rounded-xl bg-raised/50 p-3 text-left text-[15px] leading-relaxed sm:text-base" data-testid="try-first-problem">
+            {s.passage && <p className="whitespace-pre-line"><RichText text={s.passage} /></p>}
+            {s.stem && <p className={cn('whitespace-pre-line', s.passage && 'mt-2 font-semibold')}><RichText text={s.stem} /></p>}
+            {s.choices && <ol className="mt-2 grid gap-1 sm:grid-cols-2">{s.choices.map((c, n) => <li key={n}>{'ABCD'[n]}) <RichText text={c} /></li>)}</ol>}
+          </div>
+        )}
+        {phase === 'countdown' && <p className="mt-3 text-sm text-muted">{s.hold ? 'Take as long as you need, then continue.' : `Work it out on paper. The lesson carries on in ${s.seconds} seconds${onContinue ? ', or skip ahead now' : ''}.`}</p>}
+        {phase === 'countdown' && onContinue && <button type="button" className="btn-ghost mt-3" onClick={onContinue} data-testid="skip-pause">{s.hold ? 'Continue' : 'Skip ahead'}<ChevronRight size={16} /></button>}
       </div>
     );
     case 'recap': return (
@@ -341,7 +348,7 @@ function Marked({ text, lit }: { text: string; lit: number }) {
   const parts = text.split(/(\{\{[^}]+\}\})/);
   let k = 0;
   return (
-    <p className="mx-auto max-w-2xl rounded-xl bg-raised/40 p-4 text-base leading-loose sm:text-lg">
+    <p className="mx-auto max-w-2xl whitespace-pre-line rounded-xl bg-raised/40 p-4 text-base leading-loose sm:text-lg">
       {parts.map((p, n) => {
         const m = p.match(/^\{\{([^|}]+)\|?([a-z0-9]*)\|?([^}]*)\}\}$/);
         if (!m) return <RichText key={n} text={p} />;
@@ -349,7 +356,7 @@ function Marked({ text, lit }: { text: string; lit: number }) {
         return (
           <span key={n} className="relative inline">
             <motion.span animate={on ? { backgroundColor: `color-mix(in srgb, ${C[tone]} 22%, transparent)` } : { backgroundColor: 'rgba(0,0,0,0)' }} transition={{ duration: 0.4 }} className={cn('rounded px-0.5', on && 'font-semibold')} style={on ? { boxShadow: `inset 0 -2px 0 ${C[tone]}` } : undefined}><RichText text={m[1]} /></motion.span>
-            {on && m[3] && <motion.sup {...pop} className="ml-0.5 whitespace-nowrap rounded px-1 text-[11px] font-bold" style={{ color: C[tone] }}>{m[3]}</motion.sup>}
+            {on && m[3] && <motion.sup {...pop} className="ml-0.5 whitespace-nowrap rounded px-1 text-sm font-bold" style={{ color: C[tone] }}>{m[3]}</motion.sup>}
           </span>
         );
       })}
@@ -386,11 +393,11 @@ function PlotView({ s, b }: { s: Extract<Scene, { k: 'plot' }>; b: number }) {
       case 'expr': { const g = compile(it.e).fn; return <motion.path key={n} {...draw} d={curve((x) => g({ x }), it.from ?? x0, it.to ?? x1)} fill="none" stroke={col} strokeWidth={3} strokeLinecap="round" strokeDasharray={it.dash ? '7 6' : undefined} />; }
       case 'fn': return <motion.path key={n} {...draw} d={curve(it.f, it.from ?? x0, it.to ?? x1)} fill="none" stroke={col} strokeWidth={3} strokeLinecap="round" strokeDasharray={it.dash ? '7 6' : undefined} />;
       case 'shade': { const top = it.side === 'above'; const d = `${curve(it.f)} L${px(x1)} ${top ? 0 : H} L${px(x0)} ${top ? 0 : H} Z`; return <motion.path key={n} initial={{ opacity: 0 }} animate={{ opacity: 0.18 }} transition={{ duration: 0.6 }} d={d} fill={col} />; }
-      case 'pt': return <motion.g key={n} {...fade} style={{ transformOrigin: `${px(it.x)}px ${py(it.y)}px` }}><circle cx={px(it.x)} cy={py(it.y)} r={5.5} fill={col} stroke="rgb(var(--surface))" strokeWidth={1.6} />{it.label && <text x={px(it.x) + 8} y={py(it.y) - 8} fontSize={13} fontWeight={700} fill={INK} {...HALO}>{it.label}</text>}</motion.g>;
-      case 'seg': return <motion.g key={n}><motion.path {...draw} d={`M${px(it.a[0])} ${py(it.a[1])} L${px(it.b[0])} ${py(it.b[1])}`} stroke={col} strokeWidth={2.6} strokeDasharray={it.dash ? '6 5' : undefined} fill="none" />{it.label && <motion.text {...fade} x={(px(it.a[0]) + px(it.b[0])) / 2 + 6} y={(py(it.a[1]) + py(it.b[1])) / 2 - 6} fontSize={13} fontWeight={700} fill={col} {...HALO}>{it.label}</motion.text>}</motion.g>;
+      case 'pt': return <motion.g key={n} {...fade} style={{ transformOrigin: `${px(it.x)}px ${py(it.y)}px` }}><circle cx={px(it.x)} cy={py(it.y)} r={5.5} fill={col} stroke="rgb(var(--surface))" strokeWidth={1.6} />{it.label && <text x={px(it.x) + 8} y={py(it.y) - 8} fontSize={15} fontWeight={700} fill={INK} {...HALO}>{it.label}</text>}</motion.g>;
+      case 'seg': return <motion.g key={n}><motion.path {...draw} d={`M${px(it.a[0])} ${py(it.a[1])} L${px(it.b[0])} ${py(it.b[1])}`} stroke={col} strokeWidth={2.6} strokeDasharray={it.dash ? '6 5' : undefined} fill="none" />{it.label && <motion.text {...fade} x={(px(it.a[0]) + px(it.b[0])) / 2 + 6} y={(py(it.a[1]) + py(it.b[1])) / 2 - 6} fontSize={15} fontWeight={700} fill={col} {...HALO}>{it.label}</motion.text>}</motion.g>;
       case 'poly': return <motion.path key={n} {...draw} d={`M${it.pts.map(([x, y]) => `${px(x)} ${py(y)}`).join(' L')} Z`} stroke={col} strokeWidth={2.6} fill={it.fill ? col : 'none'} fillOpacity={it.fill ? 0.15 : 0} strokeLinejoin="round" />;
       case 'circle': return <motion.circle key={n} {...draw} cx={px(it.c[0])} cy={py(it.c[1])} r={it.r * k} stroke={col} strokeWidth={2.6} fill={it.fill ? col : 'none'} fillOpacity={it.fill ? 0.12 : 0} />;
-      case 'text': return <motion.text key={n} {...fade} x={px(it.x)} y={py(it.y)} fontSize={it.size ?? 13} fontWeight={700} fill={it.tone ? col : INK} textAnchor="middle" {...HALO}>{it.s}</motion.text>;
+      case 'text': return <motion.text key={n} {...fade} x={px(it.x)} y={py(it.y)} fontSize={it.size ?? 15} fontWeight={700} fill={it.tone ? col : INK} textAnchor="middle" {...HALO}>{it.s}</motion.text>;
       case 'bar': { const w = (it.w ?? 0.7) * kx; return <motion.g key={n}><motion.rect initial={{ height: 0, y: py(0) }} animate={{ height: Math.abs(it.h) * ky, y: py(Math.max(0, it.h)) }} transition={{ duration: 0.6 }} x={px(it.x) - w / 2} width={w} fill={col} fillOpacity={0.75} rx={2} />{it.label && <motion.text {...fade} x={px(it.x)} y={py(it.h) - 6} fontSize={12} fontWeight={700} fill={INK} textAnchor="middle" {...HALO}>{it.label}</motion.text>}</motion.g>; }
       case 'arc': {
         const r = it.r * k, a = (-it.from * Math.PI) / 180, z = (-it.to * Math.PI) / 180;
@@ -402,7 +409,7 @@ function PlotView({ s, b }: { s: Extract<Scene, { k: 'plot' }>; b: number }) {
     }
   };
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="mx-auto block h-auto w-full max-w-xl" role="img" aria-label={s.head ?? 'Diagram'}>
+    <svg viewBox={`0 0 ${W} ${H}`} className="mx-auto block h-auto w-full max-w-xl" role="img" aria-label={s.alt ?? s.head ?? 'Diagram'}>
       {s.axes !== false && <g>
         {ticks(x0, x1).map((t) => <line key={`x${t}`} x1={px(t)} x2={px(t)} y1={py(y0)} y2={py(y1)} stroke={LINE} strokeWidth={0.6} />)}
         {ticks(y0, y1).map((t) => <line key={`y${t}`} y1={py(t)} y2={py(t)} x1={px(x0)} x2={px(x1)} stroke={LINE} strokeWidth={0.6} />)}
@@ -411,8 +418,8 @@ function PlotView({ s, b }: { s: Extract<Scene, { k: 'plot' }>; b: number }) {
       </g>}
       {s.items.map((it, n) => ((it.at ?? 0) <= b ? item(it, n) : null))}
       {s.axes !== false && <g aria-hidden>
-        {ticks(x0, x1).filter((t) => t !== 0 && t % (step(x1 - x0) * 2) === 0).map((t) => <text key={`lx${t}`} x={px(t)} y={Math.min(H - 2, py(Math.max(y0, Math.min(y1, 0))) + 13)} fontSize={10} fill={MUTED} textAnchor="middle" {...HALO}>{t}</text>)}
-        {ticks(y0, y1).filter((t) => t !== 0 && t % (step(y1 - y0) * 2) === 0).map((t) => <text key={`ly${t}`} x={Math.max(32, px(Math.max(x0, Math.min(x1, 0))) - 5)} y={py(t) + 3.5} fontSize={10} fill={MUTED} textAnchor="end" {...HALO}>{t}</text>)}
+        {ticks(x0, x1).filter((t) => t !== 0 && t % (step(x1 - x0) * 2) === 0).map((t) => <text key={`lx${t}`} x={px(t)} y={Math.min(H - 2, py(Math.max(y0, Math.min(y1, 0))) + 13)} fontSize={12} fill={MUTED} textAnchor="middle" {...HALO}>{t}</text>)}
+        {ticks(y0, y1).filter((t) => t !== 0 && t % (step(y1 - y0) * 2) === 0).map((t) => <text key={`ly${t}`} x={Math.max(32, px(Math.max(x0, Math.min(x1, 0))) - 5)} y={py(t) + 3.5} fontSize={12} fill={MUTED} textAnchor="end" {...HALO}>{t}</text>)}
       </g>}
     </svg>
   );
