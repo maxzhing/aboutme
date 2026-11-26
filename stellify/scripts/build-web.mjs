@@ -48,6 +48,8 @@ const r = await build({
 const entry = Object.entries(r.metafile.outputs).find(([, o]) => o.entryPoint?.endsWith('web-entry.ts'))?.[0].split('/').pop();
 copyFileSync(at('node_modules/pdfjs-dist/legacy/build/pdf.worker.min.js'), join(A, 'pdf.worker.min.js'));
 copyFileSync(at('public/screenshot-path.webp'), join(A, 'screenshot-path.webp'));
+mkdirSync(join(A, 'landing'), { recursive: true });
+for (const f of readdirSync(at('public/landing'))) copyFileSync(at(`public/landing/${f}`), join(A, 'landing', f));
 
 writeFileSync(join(A, 'theme.js'), `(function(){try{var t=localStorage.getItem('stellify-theme')||'light';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`);
 const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="#1B1915"/><path d="M20 7 L23.5 16.2 L33.2 16.7 L25.6 22.8 L28.2 32.2 L20 26.8 L11.8 32.2 L14.4 22.8 L6.8 16.7 L16.5 16.2 Z" fill="#F6F3EA"/></svg>`;
@@ -95,12 +97,24 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, 
 writeFileSync(join(A, 'landing.js'), `(function(){var q=${JSON.stringify({ answer: q.answer, why: q.why })};var f=document.getElementById('try');var out=document.getElementById('try-out');f.addEventListener('submit',function(e){e.preventDefault();var v=f.querySelector('input:checked');if(!v){out.textContent='Pick an answer first.';return;}var i=+v.value,ok=i===q.answer;out.innerHTML='';var p=document.createElement('p');p.className='verdict '+(ok?'ok':'bad');p.textContent=(ok?'Correct. ':'Not quite. The answer is '+'ABCD'[q.answer]+'. ')+q.why[q.answer];out.appendChild(p);if(!ok){var w=document.createElement('p');w.textContent='Why '+'ABCD'[i]+' is wrong: '+q.why[i];out.appendChild(w);}});})();`);
 writeFileSync(join(out, 'index.html'), `${head('Stellify — free SAT and AP study', 'Free, independent Digital SAT prep. Original questions, a guided path, honest score estimates. No account needed; sign in with Google to save progress, or stay a guest.')}
 <body class="landing">
-<header class="l-wrap l-top"><a class="l-brand" href="./"><img src="icon.svg" width="28" height="28" alt="">Stellify</a><nav aria-label="Main"><a href="app.html#/about">About</a><a href="app.html#/methodology">Methodology</a><a href="app.html#/privacy">Privacy</a></nav></header>
+<header class="l-wrap l-top"><a class="l-brand" href="./"><img src="assets/landing/logo-star.svg" width="32" height="32" alt="">Stellify</a><nav aria-label="Main"><a href="app.html#/about">About</a><a href="app.html#/methodology">Methodology</a><a href="app.html#/privacy">Privacy</a></nav></header>
 <main class="l-wrap">
-<section class="l-intro">
+<section class="l-hero" data-section="hero">
+<div class="l-hero-text">
+<p class="l-chips" aria-label="At a glance"><span class="l-chip" data-layer="chip">Free, for good</span><span class="l-chip" data-layer="chip">No ads</span><span class="l-chip" data-layer="chip">Works offline</span><span class="l-chip" data-layer="chip">All 30 SAT skills</span></p>
 <h1>Free SAT practice that tells you what to do next.</h1>
-<p>Original questions with an explanation for every choice, a path through all 30 skills, and score estimates shown as honest ranges. No ads, no paywall, no account needed: stay a guest and your progress stays on your device, or sign in with Google to keep it on any device.</p>
-<p class="l-cta"><a class="btn-primary" href="app.html">Open Stellify</a><a class="btn-ghost" href="../stellify.html" download>Download the offline file</a></p>
+<p>Original questions with an explanation for every choice, a path through all 30 skills, narrated lessons, and score estimates shown as honest ranges. No ads, no paywall, no account needed: stay a guest and your progress stays on your device, or sign in with Google to keep it on any device.</p>
+<p class="l-cta"><a class="btn-primary" href="app.html" data-layer="button">Open Stellify</a><a class="btn-ghost" href="../stellify.html" download>Download the offline file</a><span class="l-tiles" aria-hidden="true"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"></span></p>
+</div>
+<figure class="l-phone" data-layer="phone"><img src="assets/screenshot-path.webp" width="366" height="645" alt="Screenshot of the Stellify path: skills grouped by topic, with the next step marked"></figure>
+</section>
+<section class="l-features" aria-labelledby="feat-h" data-section="features">
+<h2 id="feat-h">Everything a student needs, in one free place</h2>
+<div class="l-grid">
+<article class="card l-feature" data-layer="card"><img src="assets/landing/lesson.webp" loading="lazy" alt="A narrated lesson completing the square, step by step" data-layer="photo"><h3>Lessons that move</h3><p>Every SAT skill has a narrated, animated lesson: the idea, a worked problem, the trap, and a question to try mid-lesson. Captions included.</p></article>
+<article class="card l-feature" data-layer="card"><img src="assets/landing/question.webp" loading="lazy" alt="A practice question on a linear system, with four answer choices" data-layer="photo"><h3>Every choice explained</h3><p>1,549 original questions. After each one, you see why the right answer works and why each wrong one tempted you.</p></article>
+<article class="card l-feature" data-layer="card"><img src="assets/landing/path.webp" loading="lazy" alt="The study path with today's plan" data-layer="photo"><h3>A plan for today</h3><p>A short placement check builds a daily plan around your test date, your weak spots and what is due for review.</p></article>
+</div>
 </section>
 <section class="card l-try" aria-labelledby="try-h">
 <p class="eyebrow">Try one</p>
@@ -111,12 +125,14 @@ ${q.choices.map((c, i) => `<label class="l-choice"><input type="radio" name="a" 
 </fieldset><button class="btn-primary" type="submit">Check</button></form>
 <div id="try-out" role="status" aria-live="polite"></div>
 </section>
-<section class="l-shot" aria-labelledby="shot-h">
-<div><h2 id="shot-h">Your path, one step at a time</h2><p>Every skill is a tile in its topic’s cluster. The raised tile is your next step, chosen from what you have missed, what is due for review, and where the most points are. The screenshot shows sample progress.</p><p><a href="app.html#/path">See your path</a></p></div>
-<img src="assets/screenshot-path.webp" width="366" height="645" loading="lazy" alt="Screenshot of the Stellify path: hexagon tiles grouped by topic, with the next step raised and marked Start here">
+<section class="l-promise" aria-labelledby="promise-h" data-section="promise">
+<blockquote class="card" data-layer="testimonial"><p id="promise-h">“Every question here is original. Every explanation shows its reasoning. There is no paywall, no trial and no premium version, and there never will be.”</p><footer>The Stellify promise</footer></blockquote>
 </section>
 </main>
-<footer class="l-wrap l-foot"><p>SAT® and AP® are trademarks registered by the College Board, which is not affiliated with and does not endorse Stellify. All practice questions are original Stellify content, not official College Board questions.</p></footer>
+<footer class="l-wrap l-foot" data-section="footer">
+<p class="l-closing">Walk into the SAT ready, <em>free, for good.</em></p>
+<p>SAT® and AP® are trademarks registered by the College Board, which is not affiliated with and does not endorse Stellify. All practice questions are original Stellify content, not official College Board questions.</p>
+</footer>
 <script src="assets/landing.js" defer></script>
 </body>
 </html>
