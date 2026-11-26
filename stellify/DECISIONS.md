@@ -270,3 +270,20 @@ Each entry records what was decided, why, and the alternatives considered.
     The Privacy, About, Settings and landing texts say this. Tested end to end against the Firebase emulators (guest,
     sign-in and save, second device, conflict, rules refusing another user, sign-out); the real Google pop-up could not
     be tested here (its script host is unreachable from this machine) and needs one check on the live site.
+49. **Animated lessons: format, voice and scene format (owner brief "animated lessons", Phase 1).**
+    (A) Animation: native browser tech only: SVG, CSS and the app's existing framer-motion (MIT, already in the bundle,
+    so no new library) plus KaTeX (MIT, bundled with fonts). GSAP was suggested by the owner but its repository is
+    blocked here and the brief rules out heavy animation libraries, so it is not used.
+    (B) Voice: option 1 works here. Kokoro-82M v1.0, Apache-2.0 per its model card (checked on huggingface.co
+    2026-11-26), voice am_michael (owner's choice). Engine wrapper kokoro-onnx; onnxruntime MIT. phonemizer/espeak-ng
+    (GPL-3.0) run only at build time to turn text into phonemes; they are not shipped, and generated speech is output,
+    not a copy of the program. The player says the narration is computer-generated. Human recordings dropped into a
+    lesson's recordings/ folder replace the generated line with no other change.
+    (C) Scenes: the existing declarative scene list (JSON-compatible) plus new actions: morph (equation steps whose
+    matching terms glide via shared layout ids), pause (silent, skippable "try it first" overlay), and per-lesson
+    narration cues. A lesson = problem.json (verified math) + scene.json (narration and directives) + manifest.json.
+    Audio: one MP3 per lesson, mono 48 kbps, loudness -16 LUFS integrated (the common target for spoken word on phones
+    and podcasts; loud enough on a phone speaker without clipping at -1.5 dBTP). Cue offsets come from per-sentence
+    synthesis, so no forced alignment is needed.
+    Rendered MP4s stay (not deleted) as a fallback/download, but the in-browser lesson is now the primary format, as
+    the brief decides: sharper on phones, about 1 MB per lesson instead of 1.6 MB, captions and reduced motion built in.

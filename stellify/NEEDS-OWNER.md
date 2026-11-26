@@ -1,3 +1,16 @@
+# Owner checklist: animated lessons and AP Calculus (2026-11-26) — newest first
+
+1. **URGENT: is GitHub Pages turned on for `maxzhing/satstudy`?** (github.com/maxzhing/satstudy → Settings → Pages.)
+   satstudy holds your personal copy with College Board questions. If Pages serves it at maxzhing.github.io/satstudy/,
+   that copy is public on the web even while the repo is private. GitHub's free plan only allows Pages on public repos,
+   which would also explain why satstudy keeps turning public. Turn Pages off there (the public site is aboutme's
+   `sat/` folder or Firebase). Until you confirm, nothing new with College Board content is pushed to satstudy.
+2. **Listen** to the three pilot lessons and two of the re-voiced lessons on a phone (voice, pace, pronunciation).
+3. **A math teacher** spot-checks every pilot solution; **an English teacher** confirms the Reading & Writing key.
+4. **3–5 students** try a lesson on their own phones; note anything confusing.
+5. **Check GitHub Pages / Firebase limits** for site size and bandwidth (could not be checked from here).
+6. **Click through every skill page and play one lesson on a phone** after you merge.
+
 # Needs the owner
 
 Each item below has a placeholder, or a flag that is OFF by default. Nothing here blocks the build.
