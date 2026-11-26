@@ -63,7 +63,11 @@ const message = (e: unknown) => {
   const code = (e as { code?: string })?.code ?? '';
   if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return 'Sign-in was cancelled.';
   if (code === 'auth/network-request-failed' || code === 'unavailable') return 'No connection to the account service. Your progress is still saved on this device.';
-  if (code === 'auth/unauthorized-domain') return 'Google sign-in is not set up for this web address yet.';
+  const here = typeof location !== 'undefined' ? location.hostname : 'this address';
+  if (code === 'auth/unauthorized-domain') return `Google sign-in isn't allowed on ${here}. Open Stellify at its main web address to sign in, or continue as a guest.`;
+  if (code === 'auth/operation-not-allowed') return 'Google sign-in is switched off for Stellify right now. You can continue as a guest; your progress stays on this device.';
+  if (code === 'auth/popup-blocked') return 'Your browser blocked the sign-in window. Allow pop-ups for this site and try again.';
+  if (code === 'auth/web-storage-unsupported' || code === 'auth/operation-not-supported-in-this-environment') return "This browser is blocking what Google sign-in needs (cookies or storage). Try a normal (not private) window, or continue as a guest.";
   return (e as Error)?.message || 'Something went wrong with the account.';
 };
 
@@ -105,7 +109,7 @@ export async function signInWithGoogle() {
     setAccountMode('google');
     await initCloud();
     return true;
-  } catch (e) { useCloud.setState({ error: message(e) }); return false; }
+  } catch (e) { console.warn('Google sign-in failed:', (e as { code?: string })?.code ?? e); useCloud.setState({ error: message(e) }); return false; }
 }
 
 /** Signs out after a last save. Progress stays on this device (Settings → Delete all data removes it). */

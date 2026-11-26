@@ -6,7 +6,7 @@
  */
 import { build } from 'esbuild';
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, statSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, statSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -115,7 +115,7 @@ writeFileSync(join(out, 'index.html'), `${head('Stellify — free SAT and AP stu
 <p class="l-chips" aria-label="At a glance"><span class="l-chip" data-layer="chip">Free, for good</span><span class="l-chip" data-layer="chip">No ads</span><span class="l-chip" data-layer="chip">Works offline</span><span class="l-chip" data-layer="chip">All 30 SAT skills</span></p>
 <h1>Free SAT practice that tells you what to do next.</h1>
 <p>Original questions with an explanation for every choice, a path through all 30 skills, narrated lessons, and score estimates shown as honest ranges. No ads, no paywall, no account needed: stay a guest and your progress stays on your device, or sign in with Google to keep it on any device.</p>
-<p class="l-cta"><a class="btn-primary" href="app.html" data-layer="button">Open Stellify</a><a class="btn-ghost" href="stellify.html" download>Download the offline file</a><span class="l-tiles" aria-hidden="true"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"></span></p>
+<p class="l-cta"><a class="btn-primary" href="app.html" data-layer="button">Open Stellify</a><span class="l-tiles" aria-hidden="true"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"></span></p>
 </div>
 <figure class="l-phone" data-layer="phone"><img src="assets/screenshot-path.webp" width="366" height="645" alt="Screenshot of the Stellify path: skills grouped by topic, with the next step marked"></figure>
 </section>
@@ -167,9 +167,6 @@ self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==location.origin||u.pathname.includes('/videos/'))return;e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(hit=>hit||fetch(e.request).then(res=>{if(res.ok){const copy=res.clone();caches.open(V).then(c=>c.put(e.request,copy));}return res;}).catch(()=>caches.match('app.html'))));});
 `);
-// the offline single file, served next to the site (so Firebase, whose root is this folder, has it too);
-// copied after the service worker's list so it isn't precached. Built by `npm run build`.
-if (existsSync(at('dist/stellify.html'))) copyFileSync(at('dist/stellify.html'), join(out, 'stellify.html'));
 const size = (f) => statSync(join(out, f)).size;
 const js = files.filter((f) => f.endsWith('.js') && f.startsWith('assets/'));
 console.log(`Built ../sat: landing ${(size('index.html') / 1024).toFixed(1)} KB, app entry ${(size(`assets/${entry}`) / 1024).toFixed(0)} KB, ${js.length} JS files (${(js.reduce((t, f) => t + size(f), 0) / 1024 / 1024).toFixed(2)} MB total), CSS ${(size(`assets/${cssName}`) / 1024).toFixed(0)} KB.`);

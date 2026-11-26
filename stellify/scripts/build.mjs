@@ -5,7 +5,7 @@
  */
 import { build } from 'esbuild';
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -79,6 +79,5 @@ if (packFile) {
   console.log(`Built a personal copy with ${nItems} pack questions${nTests ? ` and ${nTests} full practice test${nTests === 1 ? '' : 's'}` : ''}: ${out} (${(html.length / 1024 / 1024).toFixed(2)} MB). Keep it private.`);
 } else {
   writeFileSync(at('dist/stellify.html'), html);
-  copyFileSync(at('dist/stellify.html'), join(root, '..', 'stellify.html'));
-  console.log(`Built dist/stellify.html (${(html.length / 1024 / 1024).toFixed(2)} MB) and copied it to the repository root.`);
+  console.log(`Built dist/stellify.html (${(html.length / 1024 / 1024).toFixed(2)} MB), for tests and personal copies only: it is not published.`);
 }

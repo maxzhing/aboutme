@@ -1,9 +1,9 @@
 # Stellify — free Digital SAT prep in one HTML file
 
-Two ways to use it:
+Stellify is used **in the browser only**: there is no file to download (owner decision, 2026-11-26).
 
-- **Offline file:** open `stellify.html` (in the repository root, also built to `stellify/dist/stellify.html`) in any
-  modern browser. No install, no server, no account, no internet connection.
+- **Developers:** `npm run build` still makes the single file `dist/stellify.html` for the tests and for personal
+  copies. It is git-ignored and never published.
 - **Hosted:** `sat/` (built by `npm run build:web`) is the GitHub Pages version. It has a static landing page with a
   real question, the app split into per-page chunks, and a service worker so it opens offline after one visit.
 
@@ -291,7 +291,7 @@ python3 scripts/pack-tests.py private/pack-qb-only.json export.json -o private/p
 The build embeds the pack as a JSON block, which phones parse much faster than a large script.
 This writes `private/stellify-personal.html`. Official questions are the College Board's copyrighted
 work, so `private/` is git-ignored: the pack and the personal copy are for your own study and are
-never committed or published. The public `stellify.html` contains none of them.
+never committed or published. The public site contains none of them.
 
 ## Reading & Writing questions written to the College Board specifications
 

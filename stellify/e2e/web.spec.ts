@@ -38,6 +38,9 @@ test('web build: the landing page has a real question you can answer, with no ap
   await page.getByRole('button', { name: 'Check' }).click();
   await expect(page.locator('#try-out .verdict')).toBeVisible();
   await expect(page.locator('footer')).toContainText('SAT® and AP® are trademarks');
+  // browser only: nothing to download (owner decision)
+  await expect(page.locator('a[download]')).toHaveCount(0);
+  expect((await page.request.get(`${base}stellify.html`)).status()).toBe(404);
   expect(errors).toEqual([]);
 });
 

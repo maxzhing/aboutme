@@ -310,3 +310,10 @@ Each entry records what was decided, why, and the alternatives considered.
     records the guest choice and opens the app, so it isn't asked twice. With reduced motion, or if the video can't
     play, the card shows at once over the film's last frame. The rest of the landing page (hero, try-one question,
     features, footer) stays below, for people who want to look around first. circ-w1 was approved by the owner.
+
+52. **No downloadable offline file (owner request, 2026-11-26).** People use Stellify in the browser only. The landing
+    page no longer offers "Download the offline file", the web build no longer ships stellify.html, and the single
+    file is no longer committed (root stellify.html and stellify/dist/stellify.html are git-ignored; earlier commits
+    still hold old copies). It is still built locally for the tests and for the owner's personal copy. The website
+    still opens offline after one visit through its service worker. Sign-in errors now say what went wrong (address
+    not allowed, Google switched off, pop-up blocked, storage blocked) instead of a raw Firebase message.

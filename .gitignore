@@ -5,3 +5,7 @@
 # Python bytecode
 __pycache__/
 *.pyc
+
+# The single offline file is never published (owner decision): it is built locally for tests and personal copies only
+/stellify.html
+stellify/dist/stellify.html
