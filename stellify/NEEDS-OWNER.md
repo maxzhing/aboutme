@@ -5,7 +5,13 @@
    that copy is public on the web even while the repo is private. GitHub's free plan only allows Pages on public repos,
    which would also explain why satstudy keeps turning public. Turn Pages off there (the public site is aboutme's
    `sat/` folder or Firebase). Until you confirm, nothing new with College Board content is pushed to satstudy.
-2. **Listen** to the three pilot lessons and two of the re-voiced lessons on a phone (voice, pace, pronunciation).
+2. **circ-w1 is not approved.** The Critic's third and last review found Blocker B4 (a completed-square line
+   clipped at 320 px in the earlier-steps list and the transcript). It is fixed, and the check the Critic asked for
+   (every piece of math inside its box at 320 and 360 px, lesson and transcript) now passes, but the brief allows
+   only three review loops, so approving it is your call: open `#/videos/w/circ-w1?preview=1` on a narrow phone, and
+   if it reads correctly set `"circ-w1": { "criticApproved": true }` in content/lessons/approvals.json (or run
+   another review).
+2b. **Listen** to the three pilot lessons and two of the re-voiced lessons on a phone (voice, pace, pronunciation).
 3. **A math teacher** spot-checks every pilot solution; **an English teacher** confirms the Reading & Writing key
    (inf-w1, answer B and its three trap tags). The Critic gave inf-w1 SHIP pending exactly this; after the teacher
    agrees, set `"inf-w1": { "criticApproved": true }` in content/lessons/approvals.json.

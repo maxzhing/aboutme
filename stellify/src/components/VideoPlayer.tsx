@@ -313,7 +313,7 @@ export function SceneView({ scene: s, b, picked, onPick, onContinue, phase }: { 
             </div>
           </LayoutGroup>
           {step.note && <motion.p key={b} {...pop} className="mt-3 text-center text-sm text-muted sm:text-base"><RichText text={step.note} /></motion.p>}
-          {b > 0 && <ol className="mx-auto mt-4 max-w-xl space-y-1 text-sm text-muted" aria-label="Earlier steps">{s.steps.slice(0, Math.min(b, s.steps.length - 1)).map((st, n) => <li key={n} className="text-center"><RichText text={`$${st.tokens.map((x) => x[1]).join(' ')}$`} /></li>)}</ol>}
+          {b > 0 && <ol className="mx-auto mt-4 max-w-xl space-y-1 text-sm text-muted" aria-label="Earlier steps">{s.steps.slice(0, Math.min(b, s.steps.length - 1)).map((st, n) => <li key={n} className="flex flex-wrap justify-center gap-x-1">{st.tokens.map(([k, tex]) => <span key={k} className="whitespace-nowrap"><RichText text={`$${tex}$`} /></span>)}</li>)}</ol>}
         </div>
       );
     }

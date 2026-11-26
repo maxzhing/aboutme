@@ -229,7 +229,7 @@ function OnScreen({ scene: s }: { scene: Scene }) {
     case 'passage': return box(<p className="whitespace-pre-line"><RichText text={strip(s.text)} /></p>);
     case 'pause': return box(<>{s.passage && <p className="whitespace-pre-line"><RichText text={s.passage} /></p>}{s.stem && <p className="whitespace-pre-line"><RichText text={s.stem} /></p>}{s.choices?.map((c, n) => <p key={n}>{'ABCD'[n]}) <RichText text={c} /></p>)}</>);
     case 'choices': return box(<>{s.passage && <p><RichText text={s.passage} /></p>}<p><RichText text={s.stem} /></p>{s.choices.map((c, n) => <p key={n}>{'ABCD'[n]}) <RichText text={c} />{n === s.answer ? ' (the answer)' : s.notes[n] ? `: ${''}` : ''}{s.notes[n] && <span className="text-muted"> {plainLabel(s.notes[n])}</span>}</p>)}</>);
-    case 'morph': return box(<>{s.steps.map((st, n) => <p key={n}><RichText text={`$${st.tokens.map((x) => x[1]).join(' ')}$`} />{st.note && <span className="text-muted"> ({plainLabel(st.note)})</span>}</p>)}</>);
+    case 'morph': return box(<>{s.steps.map((st, n) => <p key={n} className="flex flex-wrap gap-x-1">{st.tokens.map(([k, tex]) => <span key={k} className="whitespace-nowrap"><RichText text={`$${tex}$`} /></span>)}{st.note && <span className="text-muted"> ({plainLabel(st.note)})</span>}</p>)}</>);
     case 'lines': return box(<>{s.rows.map(([m, note], n) => <p key={n}><RichText text={m} />{note && <span className="text-muted"> ({plainLabel(note)})</span>}</p>)}</>);
     case 'tiles': return box(<>{s.items.map(([h, b], n) => <p key={n}><b><RichText text={h} /></b>: <RichText text={b} /></p>)}</>);
     case 'versus': return box(<><p><b>{s.badLabel ?? 'The trap'}:</b> <RichText text={s.bad} /></p><p><b>{s.goodLabel ?? 'The fix'}:</b> <RichText text={s.good} /></p></>);

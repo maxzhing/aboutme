@@ -263,3 +263,99 @@ Only `sys-w1` and `inf-w1` may get `criticApproved: true`. I did not edit `appro
 3. A listening pass on a phone (all three lessons), as in loop 1. Note the level is about 1.5 LU below target.
 4. Set `criticApproved: true` for **sys-w1** and **inf-w1** only, after item 2 for inf.
 5. Plan the M10 leftovers before any batch of new lessons. For these three lessons I checked by hand all the on-screen math the verifier does not check.
+
+---
+
+# Gate 1 — loop 3 (final, 2026-11-26)
+
+Re-review of commit `eaef06b` ("fix circ step on phones (B3), player follows seeks"). I checked the built site in `/home/user/aboutme/sat`. Its CSS contains `font-size:clamp(15px,4.4vw,24px)` and `.katex{white-space:nowrap}` under the lesson root. Evidence is in `/tmp/claude-0/-home-user/8a9046fd-6e66-5327-8568-be364c8db889/scratchpad/critic3/` (written `SS3/` below; it is a scratchpad folder and may be cleared).
+
+## Verdict (loop 3, final)
+
+| Lesson | Verdict | Why |
+|---|---|---|
+| sys-w1 | **SHIP (confirmed)** | No regression from the player changes at 320, 360, 375, 390 or 430 px. Every morph step fits. The "check the constants" rows now wrap only between whole equations. No console errors. |
+| circ-w1 | **NO-SHIP** | B3 is fixed in the step box at every width. The same equation now clips in two other places at 320 px, the WCAG reflow width (**B4**). In the "Earlier steps" list it reads "(x² − 6x + 9) + (y² + 10y + 25) = −c", which is the trap equation. |
+| inf-w1 | **SHIP (Critic)**, approval still waits on the English teacher | No regression. inf has no math and no morph steps. As in loop 2, set `criticApproved` only after an English teacher confirms key B and the trap tags. |
+
+## What I ran
+- `verify.py`: 3 lessons, 0 problems. `test_verify.py`: 19/19 broken lessons and 12/12 broken scenes caught. `vitest tests/videos.test.ts`: 41/41 pass. `tsc --noEmit`: clean.
+- `playwright test e2e/web.spec.ts`: 5/5 pass, including the new 360 px step-box test.
+- My own Playwright sweeps on the built site (served at `/aboutme/sat/` with byte ranges):
+  - every shot of all three lessons at 320, 360, 375, 390 and 430 px;
+  - each shot reached by seeking while paused;
+  - for each shot, I measured the morph box, every token and every `.katex` element against its parent block and the stage card;
+  - I also checked the transcript at 320 and 360.
+
+## Prior items
+
+| # | Status | Evidence |
+|---|---|---|
+| **B3** step clipped in the box | **Fixed** | At 320, 360, 390 and 430 the box is 260, 300, 330 and 370 px wide, with `scrollWidth == clientWidth` for every step of both math lessons. The widest token is 135, 143, 155 and 171 px, so a token never exceeds the inner width. Step 2 wraps only between whole terms. Each wrap still reads correctly, because "−c + 34" is one token: "(x² − 6x + 9)" / "+ (y² + 10y + 25) = −c + 34" at 320; "(…) + (…)" / "= −c + 34" at 360; "(…) + (…) =" / "−c + 34" at 390 (`SS3/mont-320.png`, `mont-360.png`, `mont-390.png`). |
+| e2e test is real | **Yes, but narrow** | I replayed its logic with the loop-2 layout injected (`nowrap`, 18 px). It fails with `circ-w1@62.991: 349>300`. With the shipped CSS it passes, after checking 11 boxes (the threshold is more than 10). It checks only `morph-step`, only at 360 px, and only sys and circ, so it misses B4. |
+| M8.1 mid-expression wraps | **Fixed at 360 and above** | The circ problem and pause keep "x² + y² − 6x + 10y + c = 0" whole. sys "k = 4: 2x + 4y = 6 and" / "4x + 8y = 12" now wraps between equations (`SS3/m-sys360.png`, `m-circ360.png`). The global nowrap causes B4 below. |
+| M8.2 sys hook choices on one line | Open, **Minor** | Not changed (sys is approved). The pause and choices scenes list A–D correctly. |
+| M8.3 diagram text size | Open, **Minor** | The circ plot is about 170 px wide at 320 px, so its labels are about 9–10 px (`SS3/m-320b.png`). |
+| Player follows seeks while paused | **Fixed** | Paused seeks to circ shots 11 → 4 → 19 → 12 each updated the caption and the step within 0.8 s, and the audio stayed paused. |
+| m12 end card | **Fixed** | `#/practice/session?mode=skill&skill=circ&n=8`. Clicking it opens the Circles practice session. |
+| m11 / m-new-3 failed load | **Fixed** | With the inf scene chunk blocked, the page shows "The narration could not be loaded… open the Inferences course" and does not hang. (Nit: it is the lesson that failed, not the narration.) |
+
+## New Blocker
+
+**B4 — circ-w1: at 320 px the completed-square step is clipped again, now in "Earlier steps" and in the transcript. In the stage it reads as the trap equation.**
+- **Cause.** `NarratedLesson.tsx:127` adds `[&_.katex]:whitespace-nowrap` to the whole lesson. The "Earlier steps" list (`VideoPlayer.tsx:316`) and the transcript (`NarratedLesson.tsx:232`) render a step as one joined `$…$`. Step 2 at 14 px is 312 px wide and can no longer wrap.
+- **At 320 px, in the stage (circ shot 12, the "standard form" step):**
+  - the `li` is 262 px wide, and the math runs from 29 to 341 px;
+  - the stage card is `overflow-hidden` and ends at 308 px;
+  - the screen shows "(x² − 6x + 9) + (y² + 10y + 25) = −c", while the voice explains the result (`SS3/circ-w1-320-shot12.png`).
+  - That is the trap the lesson warns about, shown as a completed step.
+- **In the transcript (the text alternative):** at rest the same line ends at "= −c +", with the "34" past the scroll edge of the card (`SS3/circ-transcript-320-step.png`).
+- **At 360 px** it overflows its `li` by 10 px and only stays visible because of the card padding. Any zoom or text scaling at or above about 113 % (Android display size, iOS Display Zoom on a mini or SE) brings back the clipping.
+- **Standard.** This fails WCAG 2.2 SC 1.4.10 Reflow (no loss of content at 320 CSS px) and STYLE.md's "nothing may cause sideways scrolling". It is the same failure as B3.
+- **Fix (small):**
+  - In the "Earlier steps" `li`, render each token as its own `inline-block whitespace-nowrap` span inside a `flex flex-wrap justify-center gap-x-1` row, as the box already does. Do the same in the transcript's morph case.
+  - Extend the e2e test to 320 px (and keep 360). For every shot, assert that every `.katex` in `[data-testid=narrated-lesson]` lies inside its nearest block parent, and assert the same in the opened transcript. My sweep (`SS3/pw4.js`) does exactly this and flags only these two places.
+  - Re-check: this single assertion at 320 and 360. Nothing else in circ-w1 is blocking.
+
+## Still open (no other Blocker or Major)
+- **Majors:** none. The M8 leftovers below are Minor; the M10 leftovers were already Minor.
+- **Minors:**
+  - M8.2: sys hook choices on one line.
+  - M8.3: circle-diagram labels are about 9–11 px on phones.
+  - M10 leftovers: lines rows, notes, versus cards and plot labels are not checked against the stem; tangency is typed by hand; `hold` is not asserted; the "20 broken lessons" doc line is stale.
+  - m1: loudness is about −17.5 LUFS.
+  - m-new-1: a 15 s math pause, and Play re-holds on the inf pause.
+  - m-new-2: the inf choices passage is 14 px.
+  - m9: "easy to miss".
+  - m3: the 2/k = k/8 step.
+  - m4: the strike-through and answer marking.
+  - m5: the sys lines are unlabelled.
+  - m7: no inf check step.
+  - m8: the inf paraphrase is not labelled "In short".
+  - m13: tone colours.
+  - m14: near-duplicate items.
+  - m15: transitive pins and model hashes.
+  - m17: reduced-motion step-through.
+  - The e2e covers only `morph-step` at 360.
+- **Nits:**
+  - n1–n3.
+  - `+y²` has no space before it (a token that starts with "+").
+  - "x-" / "axis" breaks across lines inside the gold highlight in the circ "Read it" scene.
+  - The failed-load text says "narration".
+  - STYLE.md "Phones" quotes stale sizes.
+
+## What I could not verify
+The same as loop 2:
+- how the voice sounds;
+- originality against the web;
+- real iOS and Android devices and their text scaling;
+- screen readers;
+- dark mode.
+
+I did not run the film render and did not touch it.
+
+## Owner must check
+1. Fix B4 (above). Then run the extended e2e at 320 and 360. Only then set `criticApproved` for circ-w1. This was the last Critic loop, so the re-check is the one assertion above. Nothing else in circ-w1 blocks.
+2. sys-w1 stays approved.
+3. inf-w1: an English teacher confirms key B and the A/C/D tags, then set `criticApproved: true`.
+4. The listening pass and the real-phone student test from loops 1 and 2 are still owed.

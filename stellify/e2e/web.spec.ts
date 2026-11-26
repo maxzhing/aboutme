@@ -124,28 +124,41 @@ test('web build: animated lessons play their narration from the site, stay behin
   expect(errors).toEqual([]);
 });
 
-test('web build: on a 360 px phone every worked step fits its box (nothing hidden off the edge)', async ({ browser }) => {
+test('web build: on 320 and 360 px phones every worked step and every piece of math fits (nothing hidden off the edge)', async ({ browser }) => {
   test.skip(!existsSync(join(ROOT, 'sat/videos/lessons/circ-w1.mp3')), 'the lessons are not built');
-  const page = await browser.newPage({ viewport: { width: 360, height: 740 } });
-  await page.goto(`${base}app.html#/onboarding`);
-  await page.getByTestId('continue-guest').click();
-  await page.getByRole('button', { name: 'Skip setup' }).click();
   const M = JSON.parse(readFileSync(join(ROOT, 'stellify/src/data/narrated/manifests.json'), 'utf8'));
+  // math pieces whose box sticks out of their nearest block parent (inline parents are skipped)
+  const overflowing = (root: Element) => [...root.querySelectorAll('.katex')].filter((k) => {
+    let q = k.parentElement as HTMLElement;
+    while (q && getComputedStyle(q).display.startsWith('inline')) q = q.parentElement as HTMLElement;
+    const a = k.getBoundingClientRect(), b = q.getBoundingClientRect();
+    return a.width > 0 && (a.right > b.right + 1 || a.left < b.left - 1);
+  }).map((k) => k.textContent);
   let checked = 0;
-  for (const id of ['sys-w1', 'circ-w1']) {
-    await page.goto(`${base}app.html#/videos/w/${id}?preview=1`);
-    await page.getByTestId('lesson-start').click();
-    const audio = page.getByTestId('lesson-audio');
-    for (const t of M[id].starts) {
-      await audio.evaluate((a: HTMLAudioElement, x: number) => { a.muted = true; a.pause(); a.currentTime = x + 0.05; }, t);
-      await page.waitForTimeout(700);
-      for (const box of await page.getByTestId('morph-step').all()) {
-        const [sw, cw] = await box.evaluate((el) => [el.scrollWidth, el.clientWidth]);
-        expect(sw, `${id} at ${t}s`).toBeLessThanOrEqual(cw + 1);
-        checked++;
+  for (const width of [320, 360]) {
+    const page = await browser.newPage({ viewport: { width, height: 740 } });
+    await page.goto(`${base}app.html#/onboarding`);
+    await page.getByTestId('continue-guest').click();
+    await page.getByRole('button', { name: 'Skip setup' }).click();
+    for (const id of ['sys-w1', 'circ-w1']) {
+      await page.goto(`${base}app.html#/videos/w/${id}?preview=1`);
+      await page.getByTestId('lesson-start').click();
+      const audio = page.getByTestId('lesson-audio');
+      for (const t of M[id].starts) {
+        await audio.evaluate((a: HTMLAudioElement, x: number) => { a.muted = true; a.pause(); a.currentTime = x + 0.05; }, t);
+        await page.waitForTimeout(700);
+        for (const box of await page.getByTestId('morph-step').all()) {
+          const [sw, cw] = await box.evaluate((el) => [el.scrollWidth, el.clientWidth]);
+          expect(sw, `${id} at ${t}s, ${width}px`).toBeLessThanOrEqual(cw + 1);
+          checked++;
+        }
+        expect(await page.getByTestId('narrated-lesson').evaluate(overflowing), `${id} at ${t}s, ${width}px`).toEqual([]);
       }
+      // the transcript, opened
+      await page.getByTestId('lesson-transcript-toggle').click();
+      expect(await page.getByTestId('lesson-transcript').evaluate(overflowing), `${id} transcript, ${width}px`).toEqual([]);
     }
+    await page.close();
   }
-  expect(checked, 'step boxes actually checked').toBeGreaterThan(10);
-  await page.close();
+  expect(checked, 'step boxes actually checked').toBeGreaterThan(20);
 });
