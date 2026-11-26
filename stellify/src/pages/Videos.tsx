@@ -66,7 +66,7 @@ export function VideoPage({ skill }: { skill: string }) {
       <PageHeader eyebrow={`Video lesson · ${SECTION_NAME[info.section]}`} title={info.name} subtitle={v.hook}
         actions={<Link href="/videos" className="btn-ghost"><ArrowLeft size={16} />All videos</Link>} />
       {useNarrated
-        ? <NarratedLesson key={v.skill} id={`v-${v.skill}`} watchSkill video={v} timing={narrated!} src={audioSrc(narrated!.audio)} practiceHref={`/learn/${v.skill}`} onFail={() => setNarratedFailed(true)} onDone={setScore} />
+        ? <NarratedLesson key={v.skill} id={`v-${v.skill}`} watchSkill video={v} timing={narrated!} src={audioSrc(narrated!.audio)} practiceHref={`/practice/session?mode=skill&skill=${v.skill}&n=8`} onFail={() => setNarratedFailed(true)} onDone={setScore} />
         : timing && !animated
         ? <LessonVideo key={v.skill} video={v} timing={timing} onFail={() => setAnimated('offline')} onDone={setScore} />
         : <VideoPlayer key={v.skill} video={v} onDone={setScore} />}
@@ -122,13 +122,13 @@ export function WalkthroughPage({ id }: { id: string }) {
   const preview = useSearchParams().get('preview') === '1';
   const [video, setVideo] = useState<Video | null>(null);
   const [failed, setFailed] = useState(false);
-  useEffect(() => { if (w) void w.load().then(setVideo); }, [w]);
+  useEffect(() => { if (w) void w.load().then(setVideo).catch(() => setFailed(true)); }, [w]);
   if (!w || !m || !(approved(w.id) || preview)) return <Empty page title="Walkthrough not available yet" body="This lesson is still being reviewed." action={{ label: 'All video lessons', href: '/videos' }} />;
   return (
     <div>
       <PageHeader eyebrow={`Hard-problem walkthrough · ${SECTION_NAME[SKILL[w.skill].section]}`} title={w.title} subtitle="Built to be challenging. Try it first, then follow every step." actions={<Link href="/videos" className="btn-ghost"><ArrowLeft size={16} />All videos</Link>} />
       {failed ? <p className="card p-5 text-sm">The narration could not be loaded. Check your connection and try again, or <Link href={`/learn/${w.skill}`} className="font-semibold text-accent hover:underline">open the {SKILL[w.skill].name} course</Link>.</p>
-        : video ? <NarratedLesson id={w.id} video={video} timing={m} src={audioSrc(m.audio)} practiceHref={`/learn/${w.skill}`} onFail={() => setFailed(true)} />
+        : video ? <NarratedLesson id={w.id} video={video} timing={m} src={audioSrc(m.audio)} practiceHref={`/practice/session?mode=skill&skill=${w.skill}&n=8`} onFail={() => setFailed(true)} />
         : <p className="card p-8 text-center text-sm text-muted">Loading the lesson…</p>}
       <p className="mt-4 text-xs text-muted">SAT® is a trademark registered by the College Board, which is not affiliated with Stellify and does not endorse this lesson. The problem is original.</p>
     </div>

@@ -152,3 +152,114 @@ Screenshot evidence is in `/tmp/claude-0/-home-user/8a9046fd-6e66-5327-8568-be36
 5. **Search the web for originality**: the three stems and the seed-bank passage.
 6. **A screen-reader pass** with VoiceOver or TalkBack, after M1–M5 are fixed.
 7. **Re-submit to the Critic** after B1 and B2 (and ideally M1–M11) are fixed and the audio is rebuilt. Only then set `criticApproved`.
+
+---
+
+# Gate 1 — loop 2 (2026-11-26)
+
+Re-review of commit `44ee148` ("Gate 1 fixes") on `claude/stellify-animated-lessons`. I checked the artifacts themselves, not the commit message. Evidence is in `/tmp/claude-0/-home-user/8a9046fd-6e66-5327-8568-be364c8db889/scratchpad/critic2/` (written `SS2/` below; it is a scratchpad folder and may be cleared).
+
+## Verdict (loop 2)
+
+| Lesson | Verdict | Why |
+|---|---|---|
+| sys-w1 | **SHIP** | B1 and B2 are fixed. No Blocker remains. The open Majors and Minors below should be fixed in the next pass. |
+| circ-w1 | **NO-SHIP** | **New B3**: on every phone width, the key "add to BOTH sides" step is cut off. At 360 px it reads "… = −c", which is the trap equation. |
+| inf-w1 | **SHIP** | B1 is fixed (the reading pause holds until Continue) and M9 is fixed. This still needs the owner's English-teacher check of key B. |
+
+Only `sys-w1` and `inf-w1` may get `criticApproved: true`. I did not edit `approvals.json`. `circ-w1` needs B3 fixed and then a quick re-check (B3 only).
+
+## What I ran
+- `verify.py content/lessons`: 3 lessons, 0 problems. `test_verify.py`: 19/19 broken lessons and 12/12 broken scenes caught. `lint.ts`: 0 errors and 0 warnings. `vitest tests/videos.test.ts`: 41/41 pass. `tsc --noEmit`: clean.
+- **My own 18 verifier mutations** (`SS2/mut2.py`): 1 caught, 17 missed. Most of the misses are outside the scope the verifier now declares; see M10.
+- **Audio.** I measured ebur128 (integrated loudness and true peak) and silencedetect on the encoded MP3s. I checked the manifest bytes, sha256 and duration against the files, and re-ran `dump.ts` to compare script hashes: **0 stale**, so the audio matches the current narration.
+- **Playwright** on the built site, served at `/aboutme/sat/` with byte ranges, with no console errors:
+  - every shot of all three lessons at 360 px;
+  - the morph box measured at 320, 360, 375, 390, 412, 430 and 1280 px;
+  - keyboard and focus, the accessibility tree at 360 px, and keys pressed outside the player;
+  - the inf pause reached in real time;
+  - the full transcript, resume and watched storage, the end card, and reduced motion.
+
+## Prior Blockers and Majors
+
+| # | Status | Evidence |
+|---|---|---|
+| **B1** problem hidden during try-it-first | **Fixed** | `pause` now carries `stem`/`choices`/`passage` (`VideoPlayer.tsx:320-334`). At 360 px the sys system and A–D are stacked and visible for the whole countdown (`SS2/sys-w1-light-shot02.png`), and circ shows its stem (`SS2/circ-w1-light-shot02.png`). inf shows the full passage and `hold: true`. I let playback reach the pause in real time: the audio paused at 17.96 s and was still paused at 17.96 s 6 s later. The button reads "Continue", and pressing it moved on to the next scene (39.7 s, "Mark what the text says…"). `verify.py` enforces that the pause shows the stem, choices and passage. |
+| **B2** "three units apart" | **Fixed** | `sys-w1/scene.json` now says "their y-intercepts three units apart". The alt text says "three units apart up and down". Both are true (the intercepts are −3/2 and 3/2). The audio was rebuilt (hash matches). |
+| M1 transcript not a text alternative | **Fixed** | The transcript writes out each scene's problem, choices (with "(the answer)" and the notes), steps, rows, graph descriptions and recap (`NarratedLesson.tsx:224-240`). The blank is `aria-label="blank"`. Small leftover: the "On screen" box is 13 px with an 11 px label (STYLE minimum is 14 px). |
+| M2 unnamed buttons at 360 px | **Fixed** | Accessibility tree: `button "Captions" [pressed]`, `button "Transcript"`, `button "Step-through: …"`, `combobox "Speed"`. |
+| M3 invisible focus on Play overlay | **Fixed** | 4 px inset brand ring (`SS2/inf-focus-360.png`). |
+| M4 global single-key shortcuts | **Fixed** | Keys work only when focus is inside the player (`NarratedLesson.tsx:109`). Pressing `k` with focus outside did nothing. |
+| M5 live regions talking over the voice | **Fixed** | No `aria-live` on the caption bar or the morph box. (The old browser-voice `VideoPlayer` caption still has `aria-live`, line 149. That is outside these lessons.) |
+| M6 state shared with skill videos | **Fixed** | The position key is `stellify-lesson-pos-<lesson id>`. A seeded `pos-sys` / `pos-v-sys` = 60 did not appear on sys-w1 ("2:49 · narrated, with captions"). After finishing sys-w1, `stellify-videos-watched` stayed null. |
+| M7 graphing advice | **Fixed** | "On the test you have Desmos built in. Type both equations with a slider for k…" This is correct. |
+| M8 math layout at 360 px | **Partially fixed. The morph change caused B3.** | (1) Mid-expression wraps **remain** in the same places I cited before: circ problem and pause "x² + y² −" / "6x + 10y + c = 0" (`SS2/circ-w1-light-shot00.png`, `shot02`); sys "Now check the constants" "4x +" / "8y = 12" and the note "−4x + 8y =" / "−12" (`SS2/sys-w1-light-shot16.png`); circ "Earlier steps" "…= −c +" / "34" (`shot12`). The morph box was made `nowrap`, and that now clips it (B3). (2) The system is stacked and the pause lists the choices, but the sys hook still shows "A) −4 B) 0 C) 4 D) 16" on one line. (3) The circle diagram is wider and its labels are now 15 and 12 units (about 11 and 9 px on a phone). That is better but still under 14 px. (4) Notes and mark labels are now 14 px. |
+| M9 inf choices without the passage | **Fixed** | `SS2/inf-w1-light-shot14.png`. |
+| M10 verifier weaker than claimed | **Partially fixed** (the rest is now a Minor) | **Now checked:** tags against the live lists (a vitest keeps `misconceptions.json` equal to `TRAP`/`TRAPS`); the stem parsed with `parse_latex` and the key derived from it; morph steps shown on screen; graph lines checked against both their `check` and the stem at the key; the drawn circle and marked points; the hook, pause and choices scenes checked against problem.json. **Still passes when broken (my mutations):** a wrong equation in a `lines` row ("= −10"); a wrong hook choice ("D) 8"); equations changed in the "Read it like the test-writer" scenes; wrong math in choice notes, morph notes and versus cards ("c = 25"); plot point and segment labels ("center (3, 5)", "r = 4") and the radius segment drawn to (3, 2); the circ stem changed to "tangent to the y-axis" (the `derive.type` is typed by hand, so the key stays 9); inf `hold` removed. The docstring is now honest about narration and wording. `docs/LESSON-PIPELINE.md:24` still says "20 broken lessons". |
+| M11 recording numbers off by one | **Fixed** | `voice.py:28-34` counts spoken lines only, and the transcript shows `000 · 0:00 …` with the same count. For sys, "Read it the way…" is 002 in both. There is no test for this yet, and the `voice.py:16` comment still says "shot number". |
+
+## New Blocker
+
+**B3 — circ-w1: the "add to BOTH sides" step is cut off on every phone, and at 360 px it shows the trap.** The morph box (`VideoPlayer.tsx:305`) is now `flex-nowrap … justify-center overflow-x-auto`. Step 2, `(x² − 6x + 9) + (y² + 10y + 25) = −c + 34`, is 365 px wide in a 300 px box at 360 px. It also overflows at 375 (372 > 315), 390 (380 > 330), 412 (391 > 352) and 430 (400 > 370). At 320 px step 3 also overflows. At 1280 px it fits.
+- Because the content is `justify-center`ed, the left overflow is negative. The opening "(x² −" cannot be scrolled into view at all. At rest, the right end "+ 34" is cut off.
+- At 360 px the box reads "6x + 9) + (y² + 10y + 25) = −c" (`SS2/circ-360-morph-clipped.png`). At 390 px it reads "… = −c +" (`SS2/circ-390-morph-default.png`).
+- That is the trap equation, shown while the note says "Add 9 and 25 to BOTH sides" and the voice says "add both to each side". The scroll region is also not keyboard-focusable.
+- This breaks the lesson's main step on the main device, and it breaks STYLE.md's "nothing may cause sideways scrolling".
+- **Fix:**
+  - Make the morph equation fit instead of scroll. Either use a smaller step size below `sm` (`text-base`, or `font-size: clamp(14px, 4.2vw, 24px)`), or measure the row and scale it down to the box width.
+  - Use `justify-content: safe center`, so any overflow can never be unreachable.
+  - Or split circ step 2 into two rows: x-part and y-part, then `= −c + 34`.
+  - Add an e2e assertion: for every shot of every walkthrough at 360 px, `morph-step.scrollWidth <= clientWidth`.
+
+## Other open items (Minors and Nits)
+
+- **m1 (audio): peak fixed, loudness drifted.** True peak is now −2.3, −2.0 and −2.0 dBTP, under −1.5. Integrated loudness is **−17.4, −17.4 and −17.8 LUFS** (loop 1 measured −16.9), against the documented −16. The skill videos match (v-circ is −17.5), so the library is consistent, just quiet. The cause is probably the `alimiter=limit=0.66` stage (about −3.6 dBFS). Fix: raise the limit, then re-normalise, and have the build also fail outside −16 ± 1 LU.
+- **M8 leftovers** (wraps, sys hook choices inline, diagram text about 11 / 9 px). Wrap each inline math span as nowrap (`.katex { white-space: nowrap }` inside lesson scenes). Put the hook choices on separate lines.
+- **M10 leftovers.** Check `lines` rows and all `$…$` in passage, notes and versus scenes against the stem at the key (substitute and evaluate the equations). Derive tangency (x- or y-axis) from the stem text, or assert it. Check plot labels and segment endpoints. Have vitest assert `hold` on R&W pauses. Update the "20 broken lessons" doc line.
+- **m-new-1 — 15 s for a hard math try.** The math pauses run 15 s, with no hint that Pause keeps the problem up. Use `hold: true` for math as well, or say "Pause if you need longer". Also, pressing Play while the inf pause is holding just re-holds; make Play act as Continue there.
+- **m-new-2 — inf choices scene passage is 14 px on phones** (`text-sm`). STYLE says passages are 16 px.
+- **m-new-3 — offline load still hangs.** The `Videos.tsx:130` failure text was improved, but `w.load()` still has no `catch` (m11 is open), so offline the page stays on "Loading the lesson…".
+- **m12 — end card is still mislabelled, now more so.** The button reads "Open this skill's practice set" but goes to `#/learn/sys`, the course page. Use `/practice/session?mode=skill&skill=<skill>&n=8`, which the skill page already uses.
+- **m9 — claims mostly fixed.** circ's "Students complete…" and the sys hook claim are gone. sys line 1 still says "that's what makes it easy to miss". `problem.json` `trap.why` says "Students make the slopes match…", but it is not rendered. Suggest "It looks routine. That's the danger."
+- **m6 — fixed.** B now reads "a useful backup that cannot, on its own, keep pace with the adapting that happens in the field". The passage supports both halves.
+- **Still open, not claimed fixed:**
+  - m3: the 2/k = k/8 step.
+  - m4: the strike-through misses the KaTeX numbers, and the answer is marked by colour and border only.
+  - m5: the sys lines are unlabelled.
+  - m7: no inf check step.
+  - m8: the inf paraphrase is not labelled "In short".
+  - m13: tone colours.
+  - m14: near-duplicates m-sys-08 and the (3, −5) r = 5 circle.
+  - m15: phonemizer, espeakng-loader and numpy unpinned; no model hashes.
+  - m16: fixed through `alt`.
+  - m17: reduced motion still stops after every line.
+  - n1: the "34" commonWrong.
+  - n2: the `types.ts:9` comment.
+  - n3: no "computer voice" on the overlay.
+- **Nits.**
+  - STYLE.md "Phones" still quotes 13 and 10 unit labels and 20 px steps; the code uses 15 / 12 units and 18 px.
+  - `+(y²` has no space before the parenthesis (the morph token begins with "+").
+  - The "center (3, −5)" label and the "−8" axis number are crossed by the circle stroke.
+  - A `__pycache__/verify.cpython-313.pyc` was committed; add it to .gitignore.
+
+## Scorecard (loop 2)
+
+| | A Math | B SAT fidelity | C Pedagogy | D Visual | E Audio | F Access | G Tech | H Legal/privacy | I Claims |
+|---|---|---|---|---|---|---|---|---|---|
+| sys-w1 | P | C (hook choices inline, m14) | P (m3, m-new-1) | C (M8 wraps, m4, m5) | P (m1 loudness) | P (minor leftovers) | P (m11, m12) | P | C (m9 one line) |
+| circ-w1 | P | P (m14) | **F** (B3) | **F** (B3) | P (m1) | C (B3: scroll region not focusable) | P | P | P |
+| inf-w1 | P (teacher to confirm) | P | P (m7, m8) | C (14 px passage) | P (m1) | P | P | P | P |
+
+## What I could not verify
+- How the voice sounds (prosody, pronunciation, pace), as in loop 1.
+- Originality against the web.
+- Real iOS and Android devices, and real screen readers.
+- Dark mode this loop: emulating `prefers-color-scheme: dark` rendered the light theme, because the app's theme appears to be its own toggle.
+- The Playwright e2e suite (`e2e/web.spec.ts`). I did not run it. I reproduced its steps by hand instead.
+
+## Owner must check
+1. Fix B3 and re-submit circ-w1. I will re-check only B3 and the 360 px morph assertion.
+2. An English teacher confirms inf-w1 key B and the A/C/D tags before setting `criticApproved` for inf-w1.
+3. A listening pass on a phone (all three lessons), as in loop 1. Note the level is about 1.5 LU below target.
+4. Set `criticApproved: true` for **sys-w1** and **inf-w1** only, after item 2 for inf.
+5. Plan the M10 leftovers before any batch of new lessons. For these three lessons I checked by hand all the on-screen math the verifier does not check.

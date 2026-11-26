@@ -117,3 +117,29 @@ test('web build: animated lessons play their narration from the site, stay behin
   expect(external).toEqual([]);
   expect(errors).toEqual([]);
 });
+
+test('web build: on a 360 px phone every worked step fits its box (nothing hidden off the edge)', async ({ browser }) => {
+  test.skip(!existsSync(join(ROOT, 'sat/videos/lessons/circ-w1.mp3')), 'the lessons are not built');
+  const page = await browser.newPage({ viewport: { width: 360, height: 740 } });
+  await page.goto(`${base}app.html#/onboarding`);
+  await page.getByTestId('continue-guest').click();
+  await page.getByRole('button', { name: 'Skip setup' }).click();
+  const M = JSON.parse(readFileSync(join(ROOT, 'stellify/src/data/narrated/manifests.json'), 'utf8'));
+  let checked = 0;
+  for (const id of ['sys-w1', 'circ-w1']) {
+    await page.goto(`${base}app.html#/videos/w/${id}?preview=1`);
+    await page.getByTestId('lesson-start').click();
+    const audio = page.getByTestId('lesson-audio');
+    for (const t of M[id].starts) {
+      await audio.evaluate((a: HTMLAudioElement, x: number) => { a.muted = true; a.pause(); a.currentTime = x + 0.05; }, t);
+      await page.waitForTimeout(700);
+      for (const box of await page.getByTestId('morph-step').all()) {
+        const [sw, cw] = await box.evaluate((el) => [el.scrollWidth, el.clientWidth]);
+        expect(sw, `${id} at ${t}s`).toBeLessThanOrEqual(cw + 1);
+        checked++;
+      }
+    }
+  }
+  expect(checked, 'step boxes actually checked').toBeGreaterThan(10);
+  await page.close();
+});

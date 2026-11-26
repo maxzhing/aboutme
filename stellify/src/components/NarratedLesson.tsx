@@ -124,8 +124,8 @@ export function NarratedLesson({ id, video, timing, src, practiceHref, watchSkil
 
   return (
     <MotionConfig reducedMotion={stepMode ? 'always' : 'user'}>
-      <div ref={box} className="space-y-3" data-testid="narrated-lesson">
-        <audio ref={audio} src={src} preload={dataSaver ? 'none' : 'metadata'} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => onFail?.()}
+      <div ref={box} className="space-y-3 [&_.katex]:whitespace-nowrap" data-testid="narrated-lesson">
+        <audio ref={audio} src={src} preload={dataSaver ? 'none' : 'metadata'} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onSeeked={(e) => setT(e.currentTarget.currentTime)} onTimeUpdate={(e) => { if (e.currentTarget.paused) setT(e.currentTarget.currentTime); }} onError={() => onFail?.()}
           onEnded={() => { setPlaying(false); setEnded(true); if (watchSkill) markWatched(video.skill); ls.set(posKey, '0'); onDone?.({ right, total: quizzes.length }); }} data-testid="lesson-audio" />
         <div className="relative overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
           <div className="relative flex min-h-[380px] flex-col sm:min-h-[440px]">

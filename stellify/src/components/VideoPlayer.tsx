@@ -302,7 +302,7 @@ export function SceneView({ scene: s, b, picked, onPick, onContinue, phase }: { 
       return (
         <div><Head t={s.head} />
           <LayoutGroup>
-            <div className="mx-auto flex min-h-[3.5rem] max-w-2xl flex-nowrap items-center justify-center gap-x-1.5 overflow-x-auto rounded-xl border border-brand/40 bg-brand/5 px-4 py-4 text-lg sm:text-2xl" data-testid="morph-step">
+            <div className="mx-auto flex min-h-[3.5rem] max-w-2xl flex-wrap items-center justify-center gap-x-1.5 gap-y-1 rounded-xl border border-brand/40 bg-brand/5 px-3 py-4 text-[clamp(15px,4.4vw,24px)] [&_.katex]:whitespace-nowrap" data-testid="morph-step">
               <AnimatePresence mode="popLayout">
                 {step.tokens.map(([key, tex]) => (
                   <motion.span key={key} layoutId={`m-${key}`} layout="position" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }} className="inline-block whitespace-nowrap">

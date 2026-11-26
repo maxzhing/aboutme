@@ -1,3 +1,9 @@
 {
-  "_readme": "Set criticApproved to true ONLY after a Critic SHIP verdict for that lesson (see CRITIQUE-REPORT.md). Until then the old version stays live; the new one is viewable with ?preview=1."
+  "_readme": "Set criticApproved to true ONLY after a Critic SHIP verdict for that lesson (see CRITIQUE-REPORT.md). Until then the old version stays live; the new one is viewable with ?preview=1.",
+  "sys-w1": {
+    "criticApproved": true,
+    "gate": "Gate 1, loop 2",
+    "date": "2026-11-26",
+    "report": "CRITIQUE-REPORT.md"
+  }
 }
