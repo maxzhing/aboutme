@@ -1,16 +1,7 @@
 # Owner checklist: animated lessons and AP Calculus (2026-11-26) — newest first
 
-1. **URGENT: is GitHub Pages turned on for `maxzhing/satstudy`?** (github.com/maxzhing/satstudy → Settings → Pages.)
-   satstudy holds your personal copy with College Board questions. If Pages serves it at maxzhing.github.io/satstudy/,
-   that copy is public on the web even while the repo is private. GitHub's free plan only allows Pages on public repos,
-   which would also explain why satstudy keeps turning public. Turn Pages off there (the public site is aboutme's
-   `sat/` folder or Firebase). Until you confirm, nothing new with College Board content is pushed to satstudy.
-2. **circ-w1 is not approved.** The Critic's third and last review found Blocker B4 (a completed-square line
-   clipped at 320 px in the earlier-steps list and the transcript). It is fixed, and the check the Critic asked for
-   (every piece of math inside its box at 320 and 360 px, lesson and transcript) now passes, but the brief allows
-   only three review loops, so approving it is your call: open `#/videos/w/circ-w1?preview=1` on a narrow phone, and
-   if it reads correctly set `"circ-w1": { "criticApproved": true }` in content/lessons/approvals.json (or run
-   another review).
+1. ~~Is GitHub Pages on for `maxzhing/satstudy`?~~ **Done:** you turned Pages off there (2026-11-26).
+2. ~~circ-w1 approval~~ **Done:** you approved it (2026-11-26); it is live in Narrated lessons.
 2b. **Listen** to the three pilot lessons and two of the re-voiced lessons on a phone (voice, pace, pronunciation).
 3. **A math teacher** spot-checks every pilot solution; **an English teacher** confirms the Reading & Writing key
    (inf-w1, answer B and its three trap tags). The Critic gave inf-w1 SHIP pending exactly this; after the teacher
@@ -18,6 +9,8 @@
 4. **3–5 students** try a lesson on their own phones; note anything confusing.
 5. **Check GitHub Pages / Firebase limits** for site size and bandwidth (could not be checked from here).
 6. **Click through every skill page and play one lesson on a phone** after you merge.
+7. **Watch the site's opening film on a real phone** (it plays muted, then asks: Google or guest). If it feels too long
+   for repeat visitors, say so: it could play only on the first visit.
 7. **AP Calculus sample questions (College Board):** they are in your private copy only, built on this machine and not
    pushed. Confirm item 1 (Pages off for satstudy), then ask for the push.
 9. **Film soundtrack**: add your 15-second track (hit at 9.97 s, whooshes at 8.66 s and 9.80 s) with

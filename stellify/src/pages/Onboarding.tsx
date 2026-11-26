@@ -47,7 +47,7 @@ export function OnboardingPage() {
   const STEPS = 2;
 
   // on the website, the first choice: a Google account (progress saved there) or guest (this device only)
-  const [chooseAccount, setChooseAccount] = useState(() => step === 0 && cloudAvailable() && accountMode() === null);
+  const [chooseAccount, setChooseAccount] = useState(() => step === 0 && cloudAvailable() && (accountMode() === null || sp.get('choose') === 'google'));
   if (chooseAccount) return (
     <div className="mx-auto max-w-2xl py-6">
       <div className="mb-6 flex items-center gap-3"><Logo size={36} /><div><div className="font-display text-xl font-bold">Stellify</div><div className="text-xs text-muted">Free Digital SAT prep, planned around you</div></div></div>

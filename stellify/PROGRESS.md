@@ -10,7 +10,8 @@
 | Build pipeline (verify, lint, voice changed only, MP3 48 kbps two-pass -16 LUFS target, manifests) | done |
 | Pilots sys-w1, circ-w1, inf-w1 built (2:45, 2:25, 2:00) | done |
 | 30 skill lessons re-voiced and built as narrated lessons (v-<skill>) | done, not reviewed (Gate 2) |
-| Critic Gate 1 (pilots), 3 loops | done: sys-w1 approved; inf-w1 SHIP pending an English teacher; circ-w1 B4 fixed after the last loop, approval left to the owner |
+| Critic Gate 1 (pilots), 3 loops | done: sys-w1 approved; circ-w1 approved by the owner after B4 was fixed; inf-w1 SHIP pending an English teacher |
+| Site opens with the fly-over film, then the choice: Google sign-in or guest | done |
 | Batch scale-out (one walkthrough per remaining 27 skills) | todo: resume here, Algebra and Advanced Math first |
 | AP Calculus: 30 hard AP-style MC (3 per unit) with checks and walk-throughs | done |
 | AP Calculus: College Board sample booklet in the private pack + /calc/official page | done locally; NOT pushed (satstudy Pages question) |

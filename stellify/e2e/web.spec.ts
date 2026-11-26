@@ -41,6 +41,34 @@ test('web build: the landing page has a real question you can answer, with no ap
   expect(errors).toEqual([]);
 });
 
+test('web build: the site opens with the fly-over film, then asks: sign in with Google or continue as guest', async ({ browser }) => {
+  const page = await browser.newPage();
+  const errors: string[] = []; page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto(base);
+  const film = page.locator('#intro-film');
+  await expect(film).toBeVisible();
+  await expect.poll(() => film.evaluate((v: HTMLVideoElement) => v.currentTime), { timeout: 10_000 }).toBeGreaterThan(0.5); // it really plays
+  await expect(page.getByTestId('landing-guest')).toBeHidden();
+  await page.getByRole('button', { name: 'Skip intro' }).click();
+  await expect(page.getByTestId('landing-google')).toBeVisible();
+  await expect(page.getByTestId('landing-google')).toHaveAttribute('href', 'app.html#/onboarding?choose=google');
+  await page.getByTestId('landing-guest').click();
+  await page.waitForURL(/app\.html/);
+  expect(await page.evaluate(() => localStorage.getItem('stellify-account'))).toBe('guest');
+  await expect(page.getByTestId('continue-guest')).toHaveCount(0); // a guest isn't asked again
+  // "Sign in with Google" opens the account choice, even for a returning guest
+  await page.goto(`${base}app.html#/onboarding?choose=google`);
+  await expect(page.getByTestId('continue-guest')).toBeVisible();
+  expect(errors).toEqual([]);
+  await page.close();
+  // with reduced motion the film doesn't play: the choice is there straight away
+  const still = await browser.newPage({ reducedMotion: 'reduce' });
+  await still.goto(base);
+  await expect(still.getByTestId('landing-google')).toBeVisible();
+  expect(await still.locator('#intro-film').evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+  await still.close();
+});
+
 test('web build: the app loads over http, and after one visit it opens offline (service worker)', async ({ page, context }) => {
   const errors: string[] = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(`${base}app.html#/onboarding`);

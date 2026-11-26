@@ -302,3 +302,11 @@ Each entry records what was decided, why, and the alternatives considered.
     field taps instead of 16 and 40; the page is shorter than the brief assumed, so the cruise speed is solved to reach
     the footer at 8.0 s. The closing line is "Walk into the SAT ready, free, for good.": it promises preparation, not
     a score increase or college admission, which Stellify cannot support with evidence.
+
+51. **The website opens with the fly-over film, then asks: Google or guest (owner request, 2026-11-26).**
+    The landing page (sat/index.html) starts with the 14.5 s film (muted, plays inline, a "Skip intro" button). When it
+    ends or is skipped, a card asks "How would you like to start?": "Sign in with Google" opens
+    app.html#/onboarding?choose=google, which shows the account choice even to a returning guest; "Continue as guest"
+    records the guest choice and opens the app, so it isn't asked twice. With reduced motion, or if the video can't
+    play, the card shows at once over the film's last frame. The rest of the landing page (hero, try-one question,
+    features, footer) stays below, for people who want to look around first. circ-w1 was approved by the owner.

@@ -5,5 +5,11 @@
     "gate": "Gate 1, loop 2",
     "date": "2026-11-26",
     "report": "CRITIQUE-REPORT.md"
+  },
+  "circ-w1": {
+    "criticApproved": true,
+    "gate": "Gate 1, loop 3 (B4 fixed afterwards; approved by the owner)",
+    "date": "2026-11-26",
+    "report": "CRITIQUE-REPORT.md"
   }
 }
