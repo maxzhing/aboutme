@@ -7,6 +7,7 @@ const GrammarPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m
 const LessonPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m.LessonPage })));
 const DesmosPage = lazy(() => import('./pages/Desmos').then((m) => ({ default: () => <m.DesmosHubPage tab="lessons" /> })));
 const OfficialPage = lazy(() => import('./pages/Official').then((m) => ({ default: m.OfficialPage })));
+const CalcOfficialPage = lazy(() => import('./pages/CalcOfficial').then((m) => ({ default: m.CalcOfficialPage })));
 const CourseHomePage = lazy(() => import('./pages/Calc').then((m) => ({ default: m.CourseHomePage })));
 const CourseLessonPage = lazy(() => import('./pages/Calc').then((m) => ({ default: m.CourseLessonPage })));
 const CourseReviewPage = lazy(() => import('./pages/Calc').then((m) => ({ default: m.CourseReviewPage })));
@@ -102,6 +103,7 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/remix$/, component: RemixPage },
   { pattern: /^\/official$/, component: OfficialPage },
   { pattern: /^\/music\/studio$/, component: StudioPage },
+  { pattern: /^\/calc\/official$/, component: CalcOfficialPage },
   // AP self-study courses: /calc, /csa, /micro, /macro, /stats, /music, their lessons and unit reviews
   { pattern: /^\/(?<course>calc|csa|micro|macro|stats|chem|music)$/, component: CourseHome },
   { pattern: /^\/(?<course>calc|csa|micro|macro|stats|chem|music)\/review\/(?<unit>\d+)$/, component: CourseReview },

@@ -1,0 +1,1 @@
+function t(){try{let r=typeof document<"u"?document.getElementById("stellify-pack"):null;return r?.textContent?JSON.parse(r.textContent):null}catch{return null}}var e=t()||[],n=Array.isArray(e)?e:e.items,a=Array.isArray(e)?[]:e.tests??[],i=Array.isArray(e)?[]:e.calcFrqs??[],s=(Array.isArray(e)?void 0:e.calcSample)??{mc:[],frq:[]};export{n as a,a as b,i as c,s as d};

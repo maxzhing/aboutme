@@ -3,3 +3,4 @@ export async function loadSdk(): Promise<never> {
   throw new Error('Google sign-in is available on the website, not in the offline file.');
 }
 export type Sdk = never;
+export const preloadModules = () => undefined;

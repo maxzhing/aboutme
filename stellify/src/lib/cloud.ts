@@ -1,6 +1,6 @@
 'use client';
 import { create } from 'zustand';
-import { loadSdk, type Sdk } from './firebaseSdk';
+import { loadSdk, preloadModules, type Sdk } from './firebaseSdk';
 import { snapshot, useStore } from './store';
 import { safetyBackup } from './backup';
 import type { AppState } from './types';
@@ -75,7 +75,7 @@ export async function initCloud() {
   try {
     const s = await sdkOnce();
     // finish a sign-in that had to use a full-page redirect (pop-up blocked); otherwise skip this network round trip
-    if (ls.get(REDIRECT_KEY)) { ls.set(REDIRECT_KEY, null); await s.A.getRedirectResult(s.auth).catch(() => null); }
+    if (ls.get(REDIRECT_KEY)) { ls.set(REDIRECT_KEY, null); await s.A.getRedirectResult(s.auth, s.popup).catch(() => null); }
     s.A.onAuthStateChanged(s.auth, (u) => {
       const user = u ? { uid: u.uid, name: u.displayName, email: u.email, photo: u.photoURL } : null;
       useCloud.setState({ user, status: 'ready' });
@@ -85,7 +85,7 @@ export async function initCloud() {
 }
 
 /** Loads Firebase ahead of time (when a sign-in button appears), so the click can open Google's pop-up at once. */
-export const preloadCloud = () => { if (cloudAvailable()) void sdkOnce().catch(() => undefined); };
+export const preloadCloud = () => { if (cloudAvailable()) preloadModules(); };
 
 export async function signInWithGoogle() {
   useCloud.setState({ error: null });
@@ -96,11 +96,11 @@ export async function signInWithGoogle() {
     // tests only: the local emulators accept a made-up Google identity, so no pop-up is needed
     const fake = (globalThis as { __STELLIFY_EMULATORS__?: { googleUser?: { sub: string; email: string; name: string } } }).__STELLIFY_EMULATORS__?.googleUser;
     // the pop-up must open straight from the click, before anything else waits on the network
-    try { if (fake) await s.A.signInWithCredential(s.auth, s.A.GoogleAuthProvider.credential(JSON.stringify({ ...fake, email_verified: true }))); else await s.A.signInWithPopup(s.auth, provider); }
+    try { if (fake) await s.A.signInWithCredential(s.auth, s.A.GoogleAuthProvider.credential(JSON.stringify({ ...fake, email_verified: true }))); else await s.A.signInWithPopup(s.auth, provider, s.popup); }
     catch (e) {
       if ((e as { code?: string }).code !== 'auth/popup-blocked') throw e;
       setAccountMode('google'); ls.set(REDIRECT_KEY, '1');
-      await s.A.signInWithRedirect(s.auth, provider);
+      await s.A.signInWithRedirect(s.auth, provider, s.popup);
     }
     setAccountMode('google');
     await initCloud();

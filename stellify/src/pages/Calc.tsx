@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { PACK_CALC_SAMPLE } from '@/data/pack';
 import { motion } from 'framer-motion';
 import { Piano, ArrowLeft, ArrowRight, BookOpen, CalendarDays, Check, ChevronDown, Eye, GraduationCap, Image as ImageIcon, Languages, Lightbulb, Lock, MessageCircleQuestion, NotebookPen, Play, Presentation, RotateCcw, Sparkles, Sprout, Target, TriangleAlert, Wrench, X, Star } from 'lucide-react';
 import { createContext, useContext, useMemo, useState } from 'react';
@@ -67,6 +68,7 @@ function CourseHome() {
               <a href="#plan" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20"><CalendarDays size={16} />Study plan</a>
               {isKit(course.id) && <a href="#tests" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20" data-testid="calc-tests-link"><Target size={16} />Fast track and tests</a>}
               {isKit(course.id) && <a href="#frq" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20"><NotebookPen size={16} />Work it out</a>}
+              {course.id === 'calc' && PACK_CALC_SAMPLE.mc.length > 0 && <Link href="/calc/official" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20" data-testid="calc-official-link">College Board sample questions</Link>}
               {course.id === 'music' && <Link href="/music/studio" className="btn border border-white/30 bg-white/10 text-white hover:bg-white/20" data-testid="open-studio"><Piano size={16} />Music Studio</Link>}
             </div>
           </div>

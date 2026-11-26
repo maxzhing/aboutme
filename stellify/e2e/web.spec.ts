@@ -86,3 +86,34 @@ test('web build: a video lesson plays the real video with a voice, captions and 
   await expect(page.getByTestId('video-pause-quiz')).toBeHidden();
   expect(errors).toEqual([]);
 });
+
+test('web build: animated lessons play their narration from the site, stay behind review, and contact no other domain', async ({ page }) => {
+  test.skip(!existsSync(join(ROOT, 'sat/videos/lessons/sys-w1.mp3')), 'the lessons are not built');
+  const external: string[] = [], errors: string[] = [];
+  page.on('request', (r) => { const u = r.url(); if (!u.startsWith(base.split('/sat/')[0]) && !/^(data|blob):/.test(u)) external.push(u); });
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto(`${base}app.html#/onboarding`);
+  await page.getByTestId('continue-guest').click();
+  await page.getByRole('button', { name: 'Skip setup' }).click();
+  // not yet approved by the review: the lesson is not offered, and the skill video page keeps the previous version
+  await page.goto(`${base}app.html#/videos/w/sys-w1`);
+  await expect(page.getByText('Walkthrough not available yet')).toBeVisible();
+  await page.goto(`${base}app.html#/videos/lin1`);
+  await expect(page.getByTestId('narrated-lesson')).toHaveCount(0);
+  // the preview: the narrated lesson
+  await page.goto(`${base}app.html#/videos/w/sys-w1?preview=1`);
+  await page.getByTestId('lesson-start').click();
+  const audio = page.getByTestId('lesson-audio');
+  await expect.poll(() => audio.evaluate((a: HTMLAudioElement) => a.readyState)).toBeGreaterThanOrEqual(1);
+  expect(await audio.evaluate((a: HTMLAudioElement) => a.currentSrc)).toContain('/sat/videos/lessons/sys-w1.mp3');
+  await expect(page.getByTestId('lesson-caption')).toBeVisible();
+  // jump into the silent try-it-first pause: it can be skipped
+  await audio.evaluate((a: HTMLAudioElement) => { a.muted = true; a.currentTime = 15; });
+  await expect(page.getByTestId('skip-pause')).toBeVisible();
+  await page.getByTestId('skip-pause').click();
+  await expect(page.getByTestId('try-first')).toBeHidden();
+  await page.getByTestId('lesson-transcript-toggle').click();
+  await expect(page.getByTestId('lesson-transcript')).toContainText('Proportional coefficients');
+  expect(external).toEqual([]);
+  expect(errors).toEqual([]);
+});

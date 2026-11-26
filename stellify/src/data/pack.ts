@@ -29,7 +29,10 @@ export interface PackTest {
   table?: { rw: [number, number][]; math: [number, number][] };
   imported?: number;
 }
-type Pack = PackItem[] | { items: PackItem[]; tests?: PackTest[]; calcFrqs?: unknown[] };
+/** College Board AP Calculus sample questions, kept exactly as printed (images), with the College Board's key and rubrics. */
+export interface CalcSampleMc { id: string; exam: 'AB' | 'BC'; n: number; calculator: boolean; image: string; answer: number; source: string }
+export interface CalcSampleFrq { id: string; exam: 'AB' | 'BC'; n: number; calculator: boolean; image: string; rubric: string[]; source: string }
+type Pack = PackItem[] | { items: PackItem[]; tests?: PackTest[]; calcFrqs?: unknown[]; calcSample?: { mc: CalcSampleMc[]; frq: CalcSampleFrq[] } };
 declare const __PACK__: Pack | null | undefined;
 /** A personal build embeds the pack as a JSON block in the page (fast to parse); see scripts/build.mjs. */
 function packFromPage(): Pack | null {
@@ -43,3 +46,5 @@ export const PACK_RAW: PackItem[] = Array.isArray(PACK) ? PACK : PACK.items;
 export const PACK_TESTS: PackTest[] = Array.isArray(PACK) ? [] : PACK.tests ?? [];
 /** official AP Calculus BC free-response questions, worked step by step (personal builds only); typed in data/calc/frq.ts */
 export const PACK_CALC_FRQS: unknown[] = Array.isArray(PACK) ? [] : PACK.calcFrqs ?? [];
+/** the College Board's AP Calculus sample questions (personal builds only; empty in the public build) */
+export const PACK_CALC_SAMPLE: { mc: CalcSampleMc[]; frq: CalcSampleFrq[] } = (Array.isArray(PACK) ? undefined : PACK.calcSample) ?? { mc: [], frq: [] };

@@ -29,7 +29,7 @@ console.log('3. voice'); run('npx', ['tsx', 'scripts/lessons/dump.ts', join(cach
 const lessons = JSON.parse(readFileSync(join(cache, 'shots.json'), 'utf8'));
 const manifestFile = join(app, 'src/data/narrated/manifests.json');
 const manifests = existsSync(manifestFile) ? JSON.parse(readFileSync(manifestFile, 'utf8')) : {};
-const stale = Object.keys(lessons).filter((id) => manifests[id]?.scriptHash !== lessons[id].hash || !existsSync(join(out, `${id}.mp3`)));
+const stale = Object.keys(lessons).filter((id) => process.env.FORCE_ENCODE || manifests[id]?.scriptHash !== lessons[id].hash || !existsSync(join(out, `${id}.mp3`)));
 const needVoice = stale.filter((id) => !(existsSync(join(cache, 'wav', `${id}.wav`)) && JSON.parse(readFileSync(join(cache, 'wav', 'timing.json'), 'utf8'))[id]?.hash === lessons[id].hash));
 if (needVoice.length) {
   if (!KOKORO) throw new Error(`KOKORO_DIR is needed to voice: ${needVoice.join(', ')}`);
@@ -41,7 +41,12 @@ if (needVoice.length) {
 console.log(`4. encode (${stale.length} changed)`);
 const timing = JSON.parse(readFileSync(join(cache, 'wav', 'timing.json'), 'utf8'));
 for (const id of stale) {
-  run('ffmpeg', ['-loglevel', 'error', '-y', '-i', join(cache, 'wav', `${id}.wav`), '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-ar', '24000', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '48k', join(out, `${id}.mp3`)]);
+  // two-pass loudness normalization: measure, then apply exactly (one pass undershoots on speech with long pauses
+  // and can overshoot the peak once encoded); -2 dBTP leaves room for MP3 encoding
+  const wav = join(cache, 'wav', `${id}.wav`);
+  const measured = JSON.parse(/\{[\s\S]*\}/.exec(execFileSync('sh', ['-c', `ffmpeg -hide_banner -i "${wav}" -af loudnorm=I=-16:TP=-2:LRA=11:print_format=json -f null - 2>&1`], { encoding: 'utf8' }))[0]);
+  const af = `loudnorm=I=-16:TP=-2:LRA=11:measured_I=${measured.input_i}:measured_TP=${measured.input_tp}:measured_LRA=${measured.input_lra}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true`;
+  run('ffmpeg', ['-loglevel', 'error', '-y', '-i', wav, '-af', af, '-ar', '24000', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '48k', join(out, `${id}.mp3`)]);
   const mp3 = readFileSync(join(out, `${id}.mp3`));
   manifests[id] = { id, skill: lessons[id].skill, kind: lessons[id].kind, voice: `Kokoro-82M v1.0 · ${VOICE} (computer-generated)`, duration: timing[id].duration, starts: timing[id].starts,
     audio: `videos/lessons/${id}.mp3`, bytes: mp3.length, sha256: createHash('sha256').update(mp3).digest('hex'), scriptHash: lessons[id].hash, captions: 'from the script (same cue offsets)', transcript: 'from the script', built: new Date().toISOString().slice(0, 10) };
