@@ -10,6 +10,10 @@
 4. **3–5 students** try a lesson on their own phones; note anything confusing.
 5. **Check GitHub Pages / Firebase limits** for site size and bandwidth (could not be checked from here).
 6. **Click through every skill page and play one lesson on a phone** after you merge.
+7. **AP Calculus sample questions (College Board):** they are in your private copy only, built on this machine and not
+   pushed. Confirm item 1 (Pages off for satstudy), then ask for the push.
+8. **A calculus teacher** looks over the 30 new hard AP-style questions (src/data/calc/exam-style.ts): every key is
+   checked numerically, but the trap explanations are teaching judgments.
 
 # Needs the owner
 

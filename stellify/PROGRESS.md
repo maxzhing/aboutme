@@ -1,3 +1,22 @@
+# Animated lessons and AP Calculus (branch claude/stellify-animated-lessons) — status 2026-11-26
+
+| Item | Status |
+|---|---|
+| Phase 0 audit, ENVIRONMENT.md, docs/LESSONS-AUDIT.md | done |
+| Phase 1 decisions (DECISIONS 49), licenses verified | done |
+| Narrated player (audio-driven, captions, transcript, chapters, step-through, resume, end card) | done |
+| Scene types morph / pause / formula graph lines | done |
+| SymPy verifier (key, steps, facts, trap, shown steps, graph lines) + self-tests (20/20 caught) | done |
+| Build pipeline (verify, lint, voice changed only, MP3 48 kbps two-pass -16 LUFS target, manifests) | done |
+| Pilots sys-w1, circ-w1, inf-w1 built (2:45, 2:25, 2:00) | done |
+| 30 skill lessons re-voiced and built as narrated lessons (v-<skill>) | done, not reviewed (Gate 2) |
+| Critic Gate 1 (pilots) | in progress |
+| Batch scale-out (one walkthrough per remaining 27 skills) | todo: resume here, Algebra and Advanced Math first |
+| AP Calculus: 30 hard AP-style MC (3 per unit) with checks and walk-throughs | done |
+| AP Calculus: College Board sample booklet in the private pack + /calc/official page | done locally; NOT pushed (satstudy Pages question) |
+| Landing page redesign | done |
+| Landing fly-over film | todo |
+
 # Progress
 
 Status: todo / in progress / done / blocked. Updated after every commit.
