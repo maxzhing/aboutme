@@ -328,6 +328,6 @@ a.card, button.card { transition: border-color 160ms ease-out; }
 .l-promise { padding: 32px 0 8px; }
 .l-promise blockquote { margin: 0; padding: 26px 28px; }
 .l-promise blockquote p { margin: 0; font-family: "Source Serif 4 Variable", Georgia, serif; font-size: clamp(1.2rem, 2.6vw, 1.6rem); line-height: 1.4; }
-.l-promise footer { margin-top: 12px; font-size: 14px; font-weight: 600; color: rgb(var(--muted)); }
+.l-promise cite { display: block; font-style: normal; margin-top: 12px; font-size: 14px; font-weight: 600; color: rgb(var(--muted)); }
 .l-closing { font-family: "Source Serif 4 Variable", Georgia, serif; font-size: clamp(1.5rem, 3.6vw, 2.2rem); line-height: 1.2; margin: 8px 0 14px; color: rgb(var(--ink)); }
 .l-closing em { color: rgb(var(--muted)); }

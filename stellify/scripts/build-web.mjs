@@ -126,7 +126,7 @@ ${q.choices.map((c, i) => `<label class="l-choice"><input type="radio" name="a" 
 <div id="try-out" role="status" aria-live="polite"></div>
 </section>
 <section class="l-promise" aria-labelledby="promise-h" data-section="promise">
-<blockquote class="card" data-layer="testimonial"><p id="promise-h">“Every question here is original. Every explanation shows its reasoning. There is no paywall, no trial and no premium version, and there never will be.”</p><footer>The Stellify promise</footer></blockquote>
+<blockquote class="card" data-layer="testimonial"><p id="promise-h">“Every question here is original. Every explanation shows its reasoning. There is no paywall, no trial and no premium version, and there never will be.”</p><cite>The Stellify promise</cite></blockquote>
 </section>
 </main>
 <footer class="l-wrap l-foot" data-section="footer">
