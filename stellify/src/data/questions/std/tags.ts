@@ -7,9 +7,10 @@ import { INF_STD } from './inf';
 import { TSP_STD } from './tsp';
 import { CTC_STD } from './ctc';
 import { COEQ_STD } from './coeq';
+import { WIC_STD } from './wic';
 
 export const STD_TAGS: Record<string, (TrapCode | null)[]> = Object.fromEntries([
-  ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD, ...COEQ_STD].map((q) => [q.id, q.tags] as const),
+  ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD, ...COEQ_STD, ...WIC_STD].map((q) => [q.id, q.tags] as const),
   ...[...TSP_STD, ...CTC_STD].filter((p) => p.tags).map((p) => [p.id, p.tags!] as const),
 ]);
 
@@ -42,7 +43,9 @@ export const STD_GENRES: Record<string, 'literature' | 'history-social' | 'human
   'r-cid-03': 'history-social', 'r-cid-06': 'history-social', 'r-cid-08': 'history-social', 'r-s-cid-01': 'history-social',
   'r-cid-n5': 'history-social', 'r-cid-n9': 'history-social', 'r-cid-n20': 'history-social', 'r-cid-n24': 'history-social',
   'r-cid-n13': 'humanities',
-  // Cross-Text Connections (subject areas the passages no longer signal on their own)
+  // Words in Context and Cross-Text Connections (subject areas the passages no longer signal on their own)
+  'r-wic-03': 'humanities', 'r-wic-05': 'literature', 'r-wic-17': 'literature', 'r-wic-n35': 'history-social',
+  'r-wic-n44': 'literature', 'r-wic-n45': 'history-social', 'r-wic-n48': 'history-social',
   'r-ctc-n19': 'literature',
   // Inferences
   'r-inf-01': 'science', 'r-inf-07': 'science', 'r-inf-11': 'science', 'r-cb-inf-01': 'science',

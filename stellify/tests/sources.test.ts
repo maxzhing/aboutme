@@ -57,6 +57,8 @@ describe('literary excerpts match their sources', () => {
       for (const t of [...(q.why ?? []), ...(q.steps ?? [])]) {
         for (const m of t.matchAll(/“([^”]+)”/g)) {
           const phrase = flat(m[1]).replace(/[.,;:!?']+$/, '');
+          // a quoted answer choice (as in word-meaning questions) is not a quotation from the excerpt
+          if ((q.choices ?? []).some((c) => flat(c).replace(/[.,;:!?']+$/, '') === phrase)) continue;
           if (!body.includes(phrase)) bad.push(`${q.id}: “${m[1]}”`);
         }
       }
