@@ -1,0 +1,8 @@
+{
+  "_readme": "Donation settings. Put the payment page in url, e.g. a PayPal donate link, a Stripe Payment Link or a Ko-fi page. If it can take an amount, write {amount} where it goes (e.g. https://www.paypal.com/donate?business=YOU&currency_code=USD&amount={amount}). While url is empty, the Donate button says donations open soon.",
+  "url": "",
+  "currency": "USD",
+  "amounts": [3, 5, 10, 25],
+  "min": 1,
+  "max": 1000
+}

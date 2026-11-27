@@ -2,6 +2,7 @@ import { lazy, type ComponentType } from 'react';
 import Link from 'next/link';
 import { DashboardPage } from './pages/Dashboard';
 import { DiagnosticPage, OnboardingPage, PlanReadyPage } from './pages/Onboarding';
+const DonatePage = lazy(() => import('./components/Donate').then((m) => ({ default: m.DonatePage })));
 const HelpPage = lazy(() => import('./components/Feedback').then((m) => ({ default: m.HelpPage })));
 const CurriculumPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m.CurriculumPage })));
 const GrammarPage = lazy(() => import('./pages/Learn').then((m) => ({ default: m.GrammarPage })));
@@ -134,6 +135,7 @@ export const ROUTES: { pattern: RegExp; component: ComponentType<any> }[] = [
   { pattern: /^\/qc$/, component: QcPage },
   { pattern: /^\/settings$/, component: SettingsPage },
   { pattern: /^\/help$/, component: HelpPage },
+  { pattern: /^\/donate$/, component: DonatePage },
   { pattern: /^\/maintainer$/, component: MaintainerPage },
   { pattern: /^\/test-day$/, component: TestDayPage },
   { pattern: /^\/worked$/, component: WorkedIndexPage },

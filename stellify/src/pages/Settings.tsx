@@ -5,6 +5,7 @@ import { BANK_STATS, getQuestion } from '@/data/questions';
 import { itemExport } from '@/lib/psych/export';
 import { AccountCard } from '@/components/Account';
 import { HelpCard } from '@/components/Feedback';
+import { DonateCard } from '@/components/Donate';
 import manifest from '@/data/questions/validated.json';
 import { listBackups, readBackup, type BackupInfo } from '@/lib/backup';
 import { snapshot, useStore } from '@/lib/store';
@@ -58,6 +59,7 @@ export function SettingsPage() {
       <PageHeader eyebrow="Settings" title="Settings & account" subtitle="No sign-up needed. As a guest your progress lives in this browser; on the website you can also sign in with Google to keep it in your account." />
       <AccountCard />
       <HelpCard />
+      <DonateCard />
 
       <Card>
         <h2 className="text-lg font-bold">Profile and goals</h2>

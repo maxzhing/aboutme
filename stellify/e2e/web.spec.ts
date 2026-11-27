@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
+import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, resolve } from 'node:path';
 
@@ -108,6 +109,66 @@ test('web build: before the report service is set up, a report opens the email a
   await form.getByLabel('What happened?').fill('A lesson would not play.');
   await form.getByTestId('report-send').click();
   await expect(page.getByTestId('report-mail')).toBeVisible();
+});
+
+test('web build: the landing question is a hard bank question, with the same full explanation the app shows', async ({ page }) => {
+  const Q = JSON.parse(execFileSync('npx', ['tsx', 'scripts/landing-question.ts', 'r-inf-06'], { cwd: join(ROOT, 'stellify'), encoding: 'utf8' }));
+  await page.goto(base);
+  await expect(page.locator('.l-try .eyebrow')).toContainText('Hard');
+  await expect(page.locator('#try-explain')).toBeHidden();
+  const wrong = Q.answer === 0 ? 1 : 0;
+  await page.locator('.l-choice').nth(wrong).click();
+  await page.getByRole('button', { name: 'Check' }).click();
+  await expect(page.locator('#try-out .verdict')).toContainText(`Incorrect · Your answer: ${'ABCD'[wrong]} · Correct answer: ${'ABCD'[Q.answer]}`);
+  const ex = page.locator('#try-explain');
+  await expect(ex).toBeVisible();
+  for (const h of ['Step-by-step solution', `Why ${'ABCD'[Q.answer]} is correct`, 'Why each other choice fails', 'The underlying concept', 'Fastest reliable method', 'Common trap', 'What to remember']) await expect(ex).toContainText(h);
+  for (const t of [...Q.steps, Q.why[Q.answer], Q.concept, Q.strategy, Q.trap, Q.remember, ...Q.why.filter((_: string, i: number) => i !== Q.answer)]) await expect(ex).toContainText(t);
+  await expect(ex.locator(`li[data-i="${wrong}"]`)).toHaveClass(/picked/);
+  await page.locator('.l-choice').nth(Q.answer).click();
+  await page.getByRole('button', { name: 'Check' }).click();
+  await expect(page.locator('#try-out .verdict')).toContainText('Correct ·');
+});
+
+test('web build: the landing page lists the AP courses, and its donation form works with set and custom amounts', async ({ page }) => {
+  await page.goto(base);
+  await expect(page.locator('.l-ap li')).toHaveCount(7);
+  for (const n of ['AP Calculus BC', 'AP Computer Science A', 'AP Microeconomics', 'AP Macroeconomics', 'AP Statistics', 'AP Chemistry', 'AP Music Theory']) await expect(page.locator('.l-ap')).toContainText(n);
+  const go = page.locator('#donate-go');
+  await expect(go).toHaveText('Donate $5');
+  await page.locator('.l-amount', { hasText: '$25' }).click();
+  await expect(go).toHaveText('Donate $25');
+  await page.locator('.l-amount', { hasText: 'Other' }).click();
+  await expect(go).toBeDisabled();
+  await page.locator('#donate-other').fill('abc');
+  await expect(page.locator('#donate-out')).toContainText('Enter an amount from $1 to $1000');
+  await expect(go).toBeDisabled();
+  await page.locator('#donate-other').fill('$12.50');
+  await expect(go).toHaveText('Donate $12.5');
+  await go.click();
+  await expect(page.locator('#donate-out')).toContainText('Online donations open soon'); // no payment page set yet
+});
+
+test('web build: in the app, Support Stellify takes set and custom amounts and opens the payment page with the amount', async ({ page }) => {
+  await page.goto(`${base}app.html#/onboarding`);
+  await page.getByTestId('continue-guest').click();
+  await page.getByRole('button', { name: 'Skip setup' }).click();
+  await page.goto(`${base}app.html#/settings`);
+  await expect(page.getByTestId('donate-card')).toBeVisible();
+  await page.goto(`${base}app.html#/donate`);
+  await page.getByTestId('donate-10').click();
+  await expect(page.getByTestId('donate-go')).toHaveText('Donate $10');
+  await page.getByTestId('donate-go').click();
+  await expect(page.getByTestId('donate-soon')).toBeVisible(); // not set up yet
+  // once a payment page is set, the chosen amount goes into its address
+  await page.evaluate(() => { const w = window as unknown as { __STELLIFY_DONATE_URL__: string; opened: string[]; open: (u: string) => null }; w.__STELLIFY_DONATE_URL__ = 'https://pay.example/donate?amount={amount}'; w.opened = []; w.open = (u: string) => { w.opened.push(u); return null; }; });
+  await page.getByTestId('donate-other').click();
+  await page.getByTestId('donate-amount').fill('0');
+  await expect(page.getByTestId('donate-go')).toBeDisabled();
+  await page.getByTestId('donate-amount').fill('40');
+  await page.getByTestId('donate-go').click();
+  expect(await page.evaluate(() => (window as unknown as { opened: string[] }).opened)).toEqual(['https://pay.example/donate?amount=40']);
+  await expect(page.getByTestId('donate-opened')).toBeVisible();
 });
 
 test('web build: the app loads over http, and after one visit it opens offline (service worker)', async ({ page, context }) => {

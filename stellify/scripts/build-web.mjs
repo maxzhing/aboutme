@@ -92,9 +92,23 @@ writeFileSync(join(out, 'app.html'), `${head('Stellify — free SAT and AP study
 `);
 
 // the landing page: plain HTML and one tiny script; a real practice question you can answer
-const q = JSON.parse(execFileSync('npx', ['tsx', 'scripts/landing-question.ts', 'r-bnd-06'], { cwd: root, encoding: 'utf8' }));
+const q = JSON.parse(execFileSync('npx', ['tsx', 'scripts/landing-question.ts', 'r-inf-06'], { cwd: root, encoding: 'utf8' }));
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-writeFileSync(join(A, 'landing.js'), `(function(){var v=document.getElementById('intro-film'),c=document.getElementById('intro-choice'),sk=document.getElementById('intro-skip');if(v){var tall=innerHeight>innerWidth;v.poster=tall?'videos/flyover-tall-end.jpg':'videos/flyover-end.jpg';v.src=tall?v.getAttribute('data-tall'):v.getAttribute('data-wide');}function choose(){c.hidden=false;sk.hidden=true;try{v.pause();if(v.duration)v.currentTime=v.duration;}catch(e){}}var still=location.hash==='#choose';try{still=still||matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}if(v){if(still){choose();}else{v.addEventListener('ended',choose);v.addEventListener('error',choose);var pr=v.play();if(pr&&pr.catch)pr.catch(choose);}sk.addEventListener('click',choose);}var g=document.getElementById('choose-guest');if(g)g.addEventListener('click',function(){try{localStorage.setItem('stellify-account','guest');}catch(e){}});})();\n(function(){var q=${JSON.stringify({ answer: q.answer, why: q.why })};var f=document.getElementById('try');var out=document.getElementById('try-out');f.addEventListener('submit',function(e){e.preventDefault();var v=f.querySelector('input:checked');if(!v){out.textContent='Pick an answer first.';return;}var i=+v.value,ok=i===q.answer;out.innerHTML='';var p=document.createElement('p');p.className='verdict '+(ok?'ok':'bad');p.textContent=(ok?'Correct. ':'Not quite. The answer is '+'ABCD'[q.answer]+'. ')+q.why[q.answer];out.appendChild(p);if(!ok){var w=document.createElement('p');w.textContent='Why '+'ABCD'[i]+' is wrong: '+q.why[i];out.appendChild(w);}});})();`);
+const donate = JSON.parse(readFileSync(at('src/data/donate.json'), 'utf8'));
+const AP = [['/calc', 'AP Calculus BC'], ['/csa', 'AP Computer Science A'], ['/micro', 'AP Microeconomics'], ['/macro', 'AP Macroeconomics'], ['/stats', 'AP Statistics'], ['/chem', 'AP Chemistry'], ['/music', 'AP Music Theory']];
+// the same full explanation the app shows after an answer (shown here once the visitor checks theirs)
+const L = 'ABCD';
+const explain = `<div id="try-explain" class="l-explain" hidden>
+<section class="l-x"><h3>Step-by-step solution</h3><ol>${q.steps.map((x) => `<li>${esc(x)}</li>`).join('')}</ol></section>
+<section class="l-x ok"><h3>Why ${L[q.answer]} is correct</h3><p>${esc(q.why[q.answer])}</p></section>
+<section class="l-x"><h3>Why each other choice fails</h3><ul class="l-others">${q.choices.map((c, i) => i === q.answer ? '' : `<li data-i="${i}"><b>${L[i]}</b><span>${q.traps[i] ? `<em>Trap: ${esc(q.traps[i])}</em>` : ''}${esc(q.why[i])}</span></li>`).join('')}</ul></section>
+<div class="l-x-grid"><section class="l-x"><h3>The underlying concept</h3><p>${esc(q.concept)}</p></section>
+<section class="l-x brand"><h3>Fastest reliable method</h3><p>${esc(q.strategy)}</p></section>
+<section class="l-x bad"><h3>Common trap</h3><p>${esc(q.trap)}</p></section>
+<section class="l-x"><h3>What to remember</h3><p>${esc(q.remember)}</p></section></div>
+<p class="l-x-more"><a href="app.html#/practice/session?mode=skill&skill=inf&n=6">Try 6 more inference questions →</a></p>
+</div>`;
+writeFileSync(join(A, 'landing.js'), `(function(){var v=document.getElementById('intro-film'),c=document.getElementById('intro-choice'),sk=document.getElementById('intro-skip');if(v){var tall=innerHeight>innerWidth;v.poster=tall?'videos/flyover-tall-end.jpg':'videos/flyover-end.jpg';v.src=tall?v.getAttribute('data-tall'):v.getAttribute('data-wide');}function choose(){c.hidden=false;sk.hidden=true;try{v.pause();if(v.duration)v.currentTime=v.duration;}catch(e){}}var still=location.hash==='#choose';try{still=still||matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}if(v){if(still){choose();}else{v.addEventListener('ended',choose);v.addEventListener('error',choose);var pr=v.play();if(pr&&pr.catch)pr.catch(choose);}sk.addEventListener('click',choose);}var g=document.getElementById('choose-guest');if(g)g.addEventListener('click',function(){try{localStorage.setItem('stellify-account','guest');}catch(e){}});})();\n(function(){var A=${q.answer},L='ABCD',f=document.getElementById('try'),out=document.getElementById('try-out'),ex=document.getElementById('try-explain');f.addEventListener('submit',function(e){e.preventDefault();var v=f.querySelector('input:checked');if(!v){out.textContent='Pick an answer first.';ex.hidden=true;return;}var i=+v.value,ok=i===A;out.innerHTML='';var p=document.createElement('p');p.className='verdict '+(ok?'ok':'bad');p.textContent=(ok?'Correct':'Incorrect')+' · Your answer: '+L[i]+' · Correct answer: '+L[A];out.appendChild(p);[].forEach.call(ex.querySelectorAll('[data-i]'),function(li){li.classList.toggle('picked',+li.getAttribute('data-i')===i);});ex.hidden=false;});})();\n(function(){var D=${JSON.stringify({ url: donate.url, min: donate.min, max: donate.max })},f=document.getElementById('donate');if(!f)return;var other=f.querySelector('.l-other'),inp=document.getElementById('donate-other'),go=document.getElementById('donate-go'),out=document.getElementById('donate-out');function amt(){var r=f.querySelector('input[name=amt]:checked');if(!r)return null;if(r.value!=='other')return +r.value;var n=Number(String(inp.value).replace(/[$,]/g,'').trim());return inp.value.trim()!==''&&isFinite(n)&&n>=D.min&&n<=D.max?Math.round(n*100)/100:null;}function upd(){var r=f.querySelector('input[name=amt]:checked');other.hidden=!(r&&r.value==='other');var a=amt();go.disabled=a===null;go.textContent=a===null?'Donate':'Donate $'+a;out.textContent=(r&&r.value==='other'&&inp.value&&a===null)?'Enter an amount from $'+D.min+' to $'+D.max+'.':'';}f.addEventListener('change',upd);inp.addEventListener('input',upd);upd();f.addEventListener('submit',function(e){e.preventDefault();var a=amt();if(a===null)return;if(!D.url){out.innerHTML='Thank you! Online donations open soon: we’re still setting up payments. Check back, or email <a href="mailto:stellifyprep@gmail.com">stellifyprep@gmail.com</a> if you’d like to help now.';return;}window.open(D.url.indexOf('{amount}')>=0?D.url.replace('{amount}',String(a)):D.url,'_blank','noopener');out.textContent='Thank you! The payment page opened in a new tab.';});})();`);
 writeFileSync(join(out, 'index.html'), `${head('Stellify — free SAT and AP study', 'Free, independent Digital SAT prep. Original questions, a guided path, honest score estimates. No account needed; sign in with Google to save progress, or stay a guest.')}
 <body class="landing">
 <noscript><style>.l-film{display:none}</style></noscript>
@@ -128,17 +142,33 @@ writeFileSync(join(out, 'index.html'), `${head('Stellify — free SAT and AP stu
 <article class="card l-feature" data-layer="card"><img src="assets/landing/path.webp" loading="lazy" alt="The study path with today's plan" data-layer="photo"><h3>A plan for today</h3><p>A short placement check builds a daily plan around your test date, your weak spots and what is due for review.</p></article>
 </div>
 </section>
+<section class="l-ap" aria-labelledby="ap-h">
+<h2 id="ap-h">AP courses too</h2>
+<p>The same free practice, lessons and explanations for ${AP.length} AP exams:</p>
+<ul>${AP.map(([h, n]) => `<li><a href="app.html#${h}">${n}</a></li>`).join('')}</ul>
+</section>
 <section class="card l-try" aria-labelledby="try-h">
-<p class="eyebrow">Try one</p>
+<p class="eyebrow">Try one · ${esc(q.skill)} · ${esc(q.difficulty)}</p>
 <h2 id="try-h">A real question from the bank</h2>
 <p class="passage">${esc(q.passage)}</p>
 <form id="try"><fieldset><legend>${esc(q.stem)}</legend>
 ${q.choices.map((c, i) => `<label class="l-choice"><input type="radio" name="a" value="${i}"> <b>${'ABCD'[i]}</b> ${esc(c)}</label>`).join('\n')}
 </fieldset><button class="btn-primary" type="submit">Check</button></form>
 <div id="try-out" role="status" aria-live="polite"></div>
+${explain}
 </section>
 <section class="l-promise" aria-labelledby="promise-h" data-section="promise">
 <blockquote class="card" data-layer="testimonial"><p id="promise-h">“Every question here is original. Every explanation shows its reasoning. There is no paywall, no trial and no premium version, and there never will be.”</p><cite>The Stellify promise</cite></blockquote>
+</section>
+<section class="l-donate" aria-labelledby="donate-h">
+<h2 id="donate-h">Keep Stellify free</h2>
+<p>Stellify is free for everyone, with no ads and no paywall, and it always will be. If it helped you, you can chip in to keep it running. It’s completely optional: everything stays free whether or not you give.</p>
+<form id="donate" class="l-donate-form">
+<div class="l-amounts" role="radiogroup" aria-label="Donation amount">${donate.amounts.map((a, i) => `<label class="l-amount"><input type="radio" name="amt" value="${a}"${i === 1 ? ' checked' : ''}> $${a}</label>`).join('')}<label class="l-amount"><input type="radio" name="amt" value="other"> Other</label></div>
+<p class="l-other" hidden><label for="donate-other">Amount (${donate.currency}, $${donate.min} to $${donate.max})</label> <input id="donate-other" inputmode="decimal" placeholder="$15"></p>
+<button class="btn-primary" type="submit" id="donate-go">Donate</button>
+<p id="donate-out" role="status" aria-live="polite"></p>
+</form>
 </section>
 <section class="l-help" aria-labelledby="help-h">
 <h2 id="help-h">Have a problem?</h2>
