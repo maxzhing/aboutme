@@ -97,4 +97,11 @@ export const STD_GENRES: Record<string, 'literature' | 'history-social' | 'human
   'r-tra-n42': 'science', 'r-tra-n43': 'science', 'r-tra-n44': 'science', 'r-tra-n45': 'history-social',
   'r-tra-n46': 'history-social', 'r-tra-n47': 'science', 'r-tra-n48': 'science', 'r-tra-n49': 'science',
   'r-tra-n50': 'science', 'r-tra-n51': 'history-social',
+  // Rhetorical Synthesis (note sets rebuilt around real subjects)
+  'r-syn-02': 'science', 'r-syn-03': 'literature', 'r-syn-07': 'history-social', 'r-syn-08': 'history-social',
+  'r-syn-09': 'science', 'r-syn-12': 'science', 'r-syn-n2': 'humanities', 'r-syn-n4': 'science',
+  'r-syn-n8': 'science', 'r-syn-n16': 'science', 'r-syn-n18': 'history-social', 'r-syn-n22': 'history-social',
+  'r-syn-n26': 'science', 'r-syn-n29': 'history-social', 'r-syn-n32': 'science', 'r-syn-n39': 'science',
+  'r-syn-n40': 'history-social', 'r-syn-n42': 'history-social', 'r-syn-n43': 'science', 'r-syn-n44': 'science',
+  'r-syn-n45': 'science', 'r-syn-n46': 'history-social',
 };
