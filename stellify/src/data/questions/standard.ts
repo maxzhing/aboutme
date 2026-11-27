@@ -78,7 +78,8 @@ export function standardIssues(q: RawQuestion): Issue[] {
       if (!URL.test(src.url)) e.push({ rule: 2, msg: 'the source has no checkable https link' });
       if (!DATE.test(src.checked)) e.push({ rule: 2, msg: 'the source has no date it was checked' });
     }
-    if (keyText && ABSOLUTE.test(plain(keyText)) && !GRAMMAR.has(q.skill) && q.skill !== 'wic') e.push({ rule: 2, msg: `the keyed answer uses an absolute word ("${plain(keyText).match(ABSOLUTE)![0]}")` });
+    // (a quoted line is evidence from the source, not a claim, so its wording is exempt)
+    if (keyText && !/^[“"]/.test(keyText.trim()) && ABSOLUTE.test(plain(keyText)) && !GRAMMAR.has(q.skill) && q.skill !== 'wic') e.push({ rule: 2, msg: `the keyed answer uses an absolute word ("${plain(keyText).match(ABSOLUTE)![0]}")` });
   }
   // 3. one defensible answer, no trick wording
   if (TRICK.test(q.stem)) e.push({ rule: 3, msg: 'the question uses NOT/EXCEPT/LEAST or a double negative' });
@@ -117,7 +118,7 @@ export function standardIssues(q: RawQuestion): Issue[] {
         if (c.longWordPct < l) e.push({ rule: 9, msg: `${c.longWordPct.toFixed(1)}% long words (College Board hard: ${l}%+)` });
       }
       // 10. claim + evidence + a precise step
-      if (REASONING.has(q.skill) && q.passage && !/\b(hypothes|argue|claim|propos|suggest|contend|conclud|predict|theor|maintain)/i.test(q.passage) && !q.figure) e.push({ rule: 10, msg: 'no hypothesis or claim for the evidence to bear on' });
+      if (REASONING.has(q.skill) && q.passage && !/\b(hypothes|argu|claim|propos|suggest|contend|conclu|predict|theor|maintain|assum|insist|interpret|endors)/i.test(q.passage) && !q.figure) e.push({ rule: 10, msg: 'no hypothesis or claim for the evidence to bear on' });
       if (q.skill === 'coeq' && !q.figure && !/\|/.test(q.passage ?? '')) e.push({ rule: 10, msg: 'a data question without a table or graph' });
       // 11. hidden grammar errors
       if (GRAMMAR.has(q.skill)) {

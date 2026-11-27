@@ -36,6 +36,8 @@ export const TRAPS: Record<TrapCode, { label: string; tip: string }> = {
 };
 
 /* generated from the reviewed distractor analysis; one tag per answer choice, null for the key */
+import { STD_TAGS } from './std/tags';
+
 export const DISTRACTORS: Record<string, (TrapCode | null)[]> = {
   // breadth set
   'r-br-tra-01': [null, 'logic', 'logic', 'logic'],
@@ -798,3 +800,6 @@ export const DISTRACTORS: Record<string, (TrapCode | null)[]> = {
   'r-fss-n69': [null, 'possessive', 'pronoun', 'possessive'],
   'r-fss-n70': ['modifier', 'modifier', 'modifier', null],
 };
+
+// questions rewritten to the question standard carry their own tags (src/data/questions/std/tags.ts)
+Object.assign(DISTRACTORS, STD_TAGS);

@@ -9,7 +9,6 @@ export const QC_REVIEWED: Record<string, { on: string; note: string }> = {
   'duplicate|m-trig-03|m-c-trig-01': { on: '2026-11-18', note: 'Related but different: height from a side vs perimeter from an altitude.' },
   'duplicate|m-circ-04|m-c-circ-03': { on: '2026-11-18', note: 'Sector angle in radians vs in degrees, with different numbers.' },
   'duplicate|m-circ-04|m-c-circ-04': { on: '2026-11-18', note: 'Sector area vs arc length.' },
-  'similar-choices|r-cb-coet-02|': { on: '2026-11-18', note: 'Intentional: A and B differ only in which comparison they make (language vs shuffled text), which is exactly the skill tested.' },
   'duplicate|m-area-n3|m-area-n22': { on: '2026-11-21', note: 'Same box shape, but n22 must first solve a cubic from the volume to get the side; n3 gives the dimensions.' },
   'duplicate|m-equiv-n23|m-equiv-n30': { on: '2026-11-21', note: 'Both match coefficients, but one is a cubic with two unknowns and the other a quadratic; different work and answers.' },
   'duplicate|m-ineq-n4|m-ineq-n17': { on: '2026-11-21', note: 'Same College Board template (one point in, one out), different inequalities, directions and bounds on k.' },

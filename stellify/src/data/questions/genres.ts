@@ -1,4 +1,5 @@
 import type { Question, RawQuestion } from '@/lib/types';
+import { STD_GENRES } from './std/tags';
 
 /** The College Board's four Reading & Writing passage subject areas. */
 export type Genre = 'literature' | 'history-social' | 'humanities' | 'science';
@@ -100,6 +101,9 @@ export const GENRE_TAGS: Record<string, Genre> = {
   'r-br-syn-01': 'literature', 'r-br-syn-02': 'humanities', 'r-br-bnd-01': 'literature', 'r-br-bnd-02': 'literature',
   'r-br-fss-01': 'literature', 'r-br-fss-02': 'history-social', 'r-br-coeq-01': 'humanities', 'r-br-coet-01': 'literature', 'r-br-ctc-01': 'literature',
 };
+
+// passages rewritten to the question standard carry their own subject area
+Object.assign(GENRE_TAGS, STD_GENRES);
 
 const RULES: [Genre, RegExp][] = [
   ['literature', /\b(poem|poet|poetry|novel|novelist|short story|stanza|narrator|playwright|character|fiction|memoir|verse)\b/i],
