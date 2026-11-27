@@ -5,7 +5,8 @@ import { ALL_RAW } from '@/data/questions/all';
 
 /** Every quotation in a question that cites a saved public-domain source must appear in that source word for word. */
 const DIR = join(__dirname, '../content/sources');
-const norm = (s: string) => s.replace(/[‘’`]/g, "'").replace(/[“”]/g, '"').replace(/--/g, '—').replace(/\s+/g, ' ').trim();
+// "__" marks an underlined portion in a question, not part of the quoted text
+const norm = (s: string) => s.replace(/__/g, '').replace(/[‘’`]/g, "'").replace(/[“”]/g, '"').replace(/--/g, '—').replace(/\s+/g, ' ').trim();
 const texts = new Map(readdirSync(DIR).filter((f) => f.endsWith('.txt')).map((f) => {
   const t = readFileSync(join(DIR, f), 'utf8');
   return [t.split('\n')[0].trim(), norm(t)] as const;

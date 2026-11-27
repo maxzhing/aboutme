@@ -8,11 +8,12 @@ import { COET_RESEARCH } from './coet-research';
 import { COET_LIT } from './coet-lit';
 import { CID_STD } from './cid';
 import { INF_STD } from './inf';
+import { TSP_STD } from './tsp';
 
 const strip = ({ tags: _t, ...q }: RawQuestion & { tags?: unknown }): RawQuestion => q;
 
 const FULL: RawQuestion[] = [...SYS_STD, ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD].map(strip)];
-const PATCHES: (Partial<RawQuestion> & { id: string })[] = [...SYS_PATCHES];
+const PATCHES: (Partial<RawQuestion> & { id: string })[] = [...SYS_PATCHES, ...TSP_STD.map(({ tags: _t, ...p }) => p)];
 
 const fullById = new Map(FULL.map((q) => [q.id, q]));
 const patchById = new Map(PATCHES.map((p) => [p.id, p]));

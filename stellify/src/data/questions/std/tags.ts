@@ -4,8 +4,12 @@ import { COET_LIT } from './coet-lit';
 import { COET_RESEARCH } from './coet-research';
 import { CID_STD } from './cid';
 import { INF_STD } from './inf';
+import { TSP_STD } from './tsp';
 
-export const STD_TAGS: Record<string, (TrapCode | null)[]> = Object.fromEntries([...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD].map((q) => [q.id, q.tags]));
+export const STD_TAGS: Record<string, (TrapCode | null)[]> = Object.fromEntries([
+  ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD].map((q) => [q.id, q.tags] as const),
+  ...TSP_STD.filter((p) => p.tags).map((p) => [p.id, p.tags!] as const),
+]);
 
 /** Subject areas (the College Board's four) for rewritten passages; these replace any earlier hand tag. */
 export const STD_GENRES: Record<string, 'literature' | 'history-social' | 'humanities' | 'science'> = {
