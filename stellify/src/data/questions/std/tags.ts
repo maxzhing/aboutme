@@ -3,8 +3,9 @@ import type { TrapCode } from '../distractors';
 import { COET_LIT } from './coet-lit';
 import { COET_RESEARCH } from './coet-research';
 import { CID_STD } from './cid';
+import { INF_STD } from './inf';
 
-export const STD_TAGS: Record<string, (TrapCode | null)[]> = Object.fromEntries([...COET_RESEARCH, ...COET_LIT, ...CID_STD].map((q) => [q.id, q.tags]));
+export const STD_TAGS: Record<string, (TrapCode | null)[]> = Object.fromEntries([...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD].map((q) => [q.id, q.tags]));
 
 /** Subject areas (the College Board's four) for rewritten passages; these replace any earlier hand tag. */
 export const STD_GENRES: Record<string, 'literature' | 'history-social' | 'humanities' | 'science'> = {
@@ -35,4 +36,21 @@ export const STD_GENRES: Record<string, 'literature' | 'history-social' | 'human
   'r-cid-03': 'history-social', 'r-cid-06': 'history-social', 'r-cid-08': 'history-social', 'r-s-cid-01': 'history-social',
   'r-cid-n5': 'history-social', 'r-cid-n9': 'history-social', 'r-cid-n20': 'history-social', 'r-cid-n24': 'history-social',
   'r-cid-n13': 'humanities',
+  // Inferences
+  'r-inf-01': 'science', 'r-inf-07': 'science', 'r-inf-11': 'science', 'r-cb-inf-01': 'science',
+  'r-cb-inf-02': 'science', 'r-inf-n3': 'science', 'r-inf-n4': 'science', 'r-inf-n5': 'science',
+  'r-inf-n6': 'science', 'r-inf-n7': 'science', 'r-inf-n12': 'science', 'r-inf-n14': 'science',
+  'r-inf-n16': 'science', 'r-inf-n18': 'science', 'r-inf-n20': 'science', 'r-inf-n22': 'science',
+  'r-inf-n24': 'science', 'r-inf-n26': 'science', 'r-inf-n29': 'science', 'r-inf-n31': 'science',
+  'r-inf-n32': 'science', 'r-inf-n33': 'science', 'r-inf-n35': 'science', 'r-inf-n37': 'science',
+  'r-inf-n39': 'science', 'r-inf-n41': 'science', 'r-inf-n42': 'science', 'r-inf-n43': 'science',
+  'r-inf-n44': 'science', 'r-inf-n47': 'science', 'r-inf-02': 'history-social', 'r-inf-03': 'history-social',
+  'r-inf-05': 'history-social', 'r-inf-06': 'history-social', 'r-inf-09': 'history-social', 'r-x-inf-01': 'history-social',
+  'r-cb-inf-04': 'history-social', 'r-inf-n1': 'history-social', 'r-inf-n2': 'history-social', 'r-inf-n9': 'history-social',
+  'r-inf-n11': 'history-social', 'r-inf-n15': 'history-social', 'r-inf-n17': 'history-social', 'r-inf-n21': 'history-social',
+  'r-inf-n23': 'history-social', 'r-inf-n25': 'history-social', 'r-inf-n28': 'history-social', 'r-inf-n30': 'history-social',
+  'r-inf-n34': 'history-social', 'r-inf-n36': 'history-social', 'r-inf-n38': 'history-social', 'r-inf-n40': 'history-social',
+  'r-inf-n45': 'history-social', 'r-inf-n46': 'history-social', 'r-inf-08': 'humanities', 'r-inf-10': 'humanities',
+  'r-x-inf-02': 'humanities', 'r-cb-inf-03': 'humanities', 'r-inf-n8': 'humanities', 'r-inf-n10': 'humanities',
+  'r-inf-n13': 'humanities', 'r-inf-n19': 'humanities', 'r-inf-n27': 'humanities',
 };

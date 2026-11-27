@@ -2,22 +2,22 @@
 
 Generated 2026-11-27 by `scripts/standard-audit.ts`. The rules are in `src/data/questions/standard.ts`.
 
-**134 of 1549** original questions meet the standard.
+**197 of 1549** original questions meet the standard.
 
 ## Questions failing each rule
 
 | Rule | What it requires | Failing |
 |---|---|---|
-| 1 | Hard tiers match College Board hard questions (all hard-question rules below pass) | 841 |
-| 2 | Reading and Writing passages come from a real, checked source; keyed answers avoid absolute words | 666 |
+| 1 | Hard tiers match College Board hard questions (all hard-question rules below pass) | 832 |
+| 2 | Reading and Writing passages come from a real, checked source; keyed answers avoid absolute words | 603 |
 | 3 | All needed information is given; one defensible answer; no trick wording or double negatives | 2 |
-| 4 | Each wrong choice is a realistic student mistake | 447 |
-| 5 | Real-world settings give enough context; no outside specialist knowledge | 1415 |
-| 6 | Choices match in grammar, length and format | 151 |
-| 7 | A teacher check of the math, grammar or reading logic | 1415 |
-| 8 | A bias and clarity check | 1415 |
+| 4 | Each wrong choice is a realistic student mistake | 444 |
+| 5 | Real-world settings give enough context; no outside specialist knowledge | 1352 |
+| 6 | Choices match in grammar, length and format | 147 |
+| 7 | A teacher check of the math, grammar or reading logic | 1352 |
+| 8 | A bias and clarity check | 1352 |
 | 9 | Hard passages: long, complex sentences and demanding vocabulary | 0 |
-| 10 | Hard reasoning: a claim or hypothesis plus evidence, and a precise logical step | 9 |
+| 10 | Hard reasoning: a claim or hypothesis plus evidence, and a precise logical step | 0 |
 | 11 | Hard grammar: the error is hidden behind an interruption | 186 |
 | 12 | Hard math: two or more topics combined | 646 |
 | 13 | Hard math: abstract constants instead of only numbers | 402 |
@@ -50,7 +50,7 @@ Generated 2026-11-27 by `scripts/standard-audit.ts`. The rules are in `src/data/
 | Central Ideas and Details (`cid`) | 45 | 45 |
 | Command of Evidence: Textual (`coet`) | 45 | 45 |
 | Command of Evidence: Quantitative (`coeq`) | 43 | 0 |
-| Inferences (`inf`) | 63 | 0 |
+| Inferences (`inf`) | 63 | 63 |
 | Words in Context (`wic`) | 76 | 0 |
 | Text Structure and Purpose (`tsp`) | 62 | 0 |
 | Cross-Text Connections (`ctc`) | 57 | 0 |
