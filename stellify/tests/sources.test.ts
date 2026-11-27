@@ -38,3 +38,28 @@ describe('quotations match their sources', () => {
     expect(bad).toEqual([]);
   });
 });
+
+describe('literary excerpts match their sources', () => {
+  const excerpts = ALL_RAW.filter((q) => q.meta?.source && texts.has(q.meta.source.url) && /^The following text is from/.test(q.passage ?? ''));
+  it('each excerpt after its context line is copied from the source exactly', () => {
+    expect(excerpts.length).toBeGreaterThan(10);
+    // compared without letter case: an opening word printed in capitals (“BUCK did not read”) is set in normal type
+    const bad = excerpts.filter((q) => !texts.get(q.meta!.source!.url)!.toLowerCase().includes(norm(q.passage!.split('\n\n').slice(1).join(' ')).toLowerCase())).map((q) => q.id);
+    expect(bad).toEqual([]);
+  });
+  it('every phrase quoted in the steps and explanations appears in the excerpt', () => {
+    const bad: string[] = [];
+    for (const q of excerpts) {
+      // a quotation inside an explanation uses single marks for the text's double ones
+      const flat = (x: string) => norm(x).replace(/"/g, "'").toLowerCase();
+      const body = flat(q.passage!.split('\n\n').slice(1).join(' '));
+      for (const t of [...(q.why ?? []), ...(q.steps ?? [])]) {
+        for (const m of t.matchAll(/“([^”]+)”/g)) {
+          const phrase = flat(m[1]).replace(/[.,;:!?']+$/, '');
+          if (!body.includes(phrase)) bad.push(`${q.id}: “${m[1]}”`);
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+});

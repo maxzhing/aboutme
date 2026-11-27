@@ -6,10 +6,11 @@ import type { RawQuestion } from '@/lib/types';
 import { SYS_PATCHES, SYS_STD } from './sys';
 import { COET_RESEARCH } from './coet-research';
 import { COET_LIT } from './coet-lit';
+import { CID_STD } from './cid';
 
 const strip = ({ tags: _t, ...q }: RawQuestion & { tags?: unknown }): RawQuestion => q;
 
-const FULL: RawQuestion[] = [...SYS_STD, ...[...COET_RESEARCH, ...COET_LIT].map(strip)];
+const FULL: RawQuestion[] = [...SYS_STD, ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD].map(strip)];
 const PATCHES: (Partial<RawQuestion> & { id: string })[] = [...SYS_PATCHES];
 
 const fullById = new Map(FULL.map((q) => [q.id, q]));
