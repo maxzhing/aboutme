@@ -2,20 +2,20 @@
 
 Generated 2026-11-27 by `scripts/standard-audit.ts`. The rules are in `src/data/questions/standard.ts`.
 
-**435 of 1549** original questions meet the standard.
+**513 of 1549** original questions meet the standard.
 
 ## Questions failing each rule
 
 | Rule | What it requires | Failing |
 |---|---|---|
 | 1 | Hard tiers match College Board hard questions (all hard-question rules below pass) | 832 |
-| 2 | Reading and Writing passages come from a real, checked source; keyed answers avoid absolute words | 365 |
+| 2 | Reading and Writing passages come from a real, checked source; keyed answers avoid absolute words | 287 |
 | 3 | All needed information is given; one defensible answer; no trick wording or double negatives | 2 |
-| 4 | Each wrong choice is a realistic student mistake | 422 |
-| 5 | Real-world settings give enough context; no outside specialist knowledge | 1114 |
+| 4 | Each wrong choice is a realistic student mistake | 420 |
+| 5 | Real-world settings give enough context; no outside specialist knowledge | 1036 |
 | 6 | Choices match in grammar, length and format | 133 |
-| 7 | A teacher check of the math, grammar or reading logic | 1114 |
-| 8 | A bias and clarity check | 1114 |
+| 7 | A teacher check of the math, grammar or reading logic | 1036 |
+| 8 | A bias and clarity check | 1036 |
 | 9 | Hard passages: long, complex sentences and demanding vocabulary | 0 |
 | 10 | Hard reasoning: a claim or hypothesis plus evidence, and a precise logical step | 0 |
 | 11 | Hard grammar: the error is hidden behind an interruption | 186 |
@@ -54,7 +54,7 @@ Generated 2026-11-27 by `scripts/standard-audit.ts`. The rules are in `src/data/
 | Words in Context (`wic`) | 76 | 76 |
 | Text Structure and Purpose (`tsp`) | 62 | 62 |
 | Cross-Text Connections (`ctc`) | 57 | 57 |
-| Transitions (`tra`) | 78 | 0 |
+| Transitions (`tra`) | 78 | 78 |
 | Rhetorical Synthesis (`syn`) | 73 | 0 |
 | Boundaries (`bnd`) | 111 | 0 |
 | Form, Structure, and Sense (`fss`) | 103 | 0 |
