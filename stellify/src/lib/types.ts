@@ -64,6 +64,24 @@ export interface RawQuestion {
   time?: number;
   /** Independent machine verification of the keyed answer (math). Must return true. */
   check?: () => boolean;
+  /** Evidence for the question standard (src/data/questions/standard.ts): sources, design and reviews. */
+  meta?: QuestionMeta;
+}
+
+/** What a question records to show it meets the Stellify question standard (the owner's 15 rules). */
+export interface QuestionMeta {
+  /** Reading and Writing: the real, checked source the passage is adapted from (rule 2). */
+  source?: { cite: string; url: string; checked: string };
+  /** Math, hard tiers: the two or more topics the question combines (rule 12). */
+  concepts?: string[];
+  /** Math, hard tiers: the extra final step after the main solve (rule 14). */
+  twist?: string;
+  /** Hard grammar: the phrase or interruption that hides the error (rule 11). */
+  hides?: string;
+  /** Math: for each choice, the exact mistake that produces it; null for the answer (rules 4 and 15). */
+  mistakes?: (string | null)[];
+  /** The teacher check (rule 7) and the bias and clarity check (rule 8), with what was checked. */
+  review?: { teacher: string; bias: string; date: string };
 }
 
 export interface Question extends Omit<RawQuestion, 'd' | 'time'> {
