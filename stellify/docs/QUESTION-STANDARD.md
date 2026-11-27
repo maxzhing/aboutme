@@ -2,20 +2,20 @@
 
 Generated 2026-11-27 by `scripts/standard-audit.ts`. The rules are in `src/data/questions/standard.ts`.
 
-**259 of 1549** original questions meet the standard.
+**316 of 1549** original questions meet the standard.
 
 ## Questions failing each rule
 
 | Rule | What it requires | Failing |
 |---|---|---|
 | 1 | Hard tiers match College Board hard questions (all hard-question rules below pass) | 832 |
-| 2 | Reading and Writing passages come from a real, checked source; keyed answers avoid absolute words | 541 |
+| 2 | Reading and Writing passages come from a real, checked source; keyed answers avoid absolute words | 484 |
 | 3 | All needed information is given; one defensible answer; no trick wording or double negatives | 2 |
-| 4 | Each wrong choice is a realistic student mistake | 439 |
-| 5 | Real-world settings give enough context; no outside specialist knowledge | 1290 |
-| 6 | Choices match in grammar, length and format | 141 |
-| 7 | A teacher check of the math, grammar or reading logic | 1290 |
-| 8 | A bias and clarity check | 1290 |
+| 4 | Each wrong choice is a realistic student mistake | 434 |
+| 5 | Real-world settings give enough context; no outside specialist knowledge | 1233 |
+| 6 | Choices match in grammar, length and format | 140 |
+| 7 | A teacher check of the math, grammar or reading logic | 1233 |
+| 8 | A bias and clarity check | 1233 |
 | 9 | Hard passages: long, complex sentences and demanding vocabulary | 0 |
 | 10 | Hard reasoning: a claim or hypothesis plus evidence, and a precise logical step | 0 |
 | 11 | Hard grammar: the error is hidden behind an interruption | 186 |
@@ -53,7 +53,7 @@ Generated 2026-11-27 by `scripts/standard-audit.ts`. The rules are in `src/data/
 | Inferences (`inf`) | 63 | 63 |
 | Words in Context (`wic`) | 76 | 0 |
 | Text Structure and Purpose (`tsp`) | 62 | 62 |
-| Cross-Text Connections (`ctc`) | 57 | 0 |
+| Cross-Text Connections (`ctc`) | 57 | 57 |
 | Transitions (`tra`) | 78 | 0 |
 | Rhetorical Synthesis (`syn`) | 73 | 0 |
 | Boundaries (`bnd`) | 111 | 0 |

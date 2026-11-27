@@ -5,10 +5,11 @@ import { COET_RESEARCH } from './coet-research';
 import { CID_STD } from './cid';
 import { INF_STD } from './inf';
 import { TSP_STD } from './tsp';
+import { CTC_STD } from './ctc';
 
 export const STD_TAGS: Record<string, (TrapCode | null)[]> = Object.fromEntries([
   ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD].map((q) => [q.id, q.tags] as const),
-  ...TSP_STD.filter((p) => p.tags).map((p) => [p.id, p.tags!] as const),
+  ...[...TSP_STD, ...CTC_STD].filter((p) => p.tags).map((p) => [p.id, p.tags!] as const),
 ]);
 
 /** Subject areas (the College Board's four) for rewritten passages; these replace any earlier hand tag. */
@@ -40,6 +41,8 @@ export const STD_GENRES: Record<string, 'literature' | 'history-social' | 'human
   'r-cid-03': 'history-social', 'r-cid-06': 'history-social', 'r-cid-08': 'history-social', 'r-s-cid-01': 'history-social',
   'r-cid-n5': 'history-social', 'r-cid-n9': 'history-social', 'r-cid-n20': 'history-social', 'r-cid-n24': 'history-social',
   'r-cid-n13': 'humanities',
+  // Cross-Text Connections (subject areas the passages no longer signal on their own)
+  'r-ctc-n19': 'literature',
   // Inferences
   'r-inf-01': 'science', 'r-inf-07': 'science', 'r-inf-11': 'science', 'r-cb-inf-01': 'science',
   'r-cb-inf-02': 'science', 'r-inf-n3': 'science', 'r-inf-n4': 'science', 'r-inf-n5': 'science',
