@@ -10,10 +10,11 @@ import { CID_STD } from './cid';
 import { INF_STD } from './inf';
 import { TSP_STD } from './tsp';
 import { CTC_STD } from './ctc';
+import { COEQ_STD } from './coeq';
 
 const strip = ({ tags: _t, ...q }: RawQuestion & { tags?: unknown }): RawQuestion => q;
 
-const FULL: RawQuestion[] = [...SYS_STD, ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD].map(strip)];
+const FULL: RawQuestion[] = [...SYS_STD, ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD, ...COEQ_STD].map(strip)];
 const PATCHES: (Partial<RawQuestion> & { id: string })[] = [...SYS_PATCHES, ...[...TSP_STD, ...CTC_STD].map(({ tags: _t, ...p }) => p)];
 
 const fullById = new Map(FULL.map((q) => [q.id, q]));

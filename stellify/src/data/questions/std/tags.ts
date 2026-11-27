@@ -6,9 +6,10 @@ import { CID_STD } from './cid';
 import { INF_STD } from './inf';
 import { TSP_STD } from './tsp';
 import { CTC_STD } from './ctc';
+import { COEQ_STD } from './coeq';
 
 export const STD_TAGS: Record<string, (TrapCode | null)[]> = Object.fromEntries([
-  ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD].map((q) => [q.id, q.tags] as const),
+  ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD, ...COEQ_STD].map((q) => [q.id, q.tags] as const),
   ...[...TSP_STD, ...CTC_STD].filter((p) => p.tags).map((p) => [p.id, p.tags!] as const),
 ]);
 
@@ -60,4 +61,16 @@ export const STD_GENRES: Record<string, 'literature' | 'history-social' | 'human
   'r-inf-n45': 'history-social', 'r-inf-n46': 'history-social', 'r-inf-08': 'humanities', 'r-inf-10': 'humanities',
   'r-x-inf-02': 'humanities', 'r-cb-inf-03': 'humanities', 'r-inf-n8': 'humanities', 'r-inf-n10': 'humanities',
   'r-inf-n13': 'humanities', 'r-inf-n19': 'humanities', 'r-inf-n27': 'humanities',
+  // Command of Evidence: Quantitative
+  'r-coeq-01': 'science', 'r-coeq-05': 'science', 'r-cb-coeq-01': 'science', 'r-cb-coeq-02': 'science',
+  'r-c-coeq-02': 'science', 'r-coeq-n1': 'science', 'r-coeq-n2': 'science', 'r-coeq-n3': 'science',
+  'r-coeq-n7': 'science', 'r-coeq-n9': 'science', 'r-coeq-n15': 'science', 'r-coeq-n17': 'science',
+  'r-coeq-n20': 'science', 'r-coeq-n23': 'science', 'r-x-coeq-01': 'science', 'r-coeq-n21': 'science',
+  'r-coeq-n28': 'science', 'r-coeq-02': 'history-social', 'r-coeq-03': 'history-social', 'r-coeq-04': 'history-social',
+  'r-coeq-06': 'history-social', 'r-coeq-07': 'history-social', 'r-coeq-08': 'history-social', 'r-br-coeq-01': 'history-social',
+  'r-cb-coeq-03': 'history-social', 'r-c-coeq-01': 'history-social', 'r-coeq-n5': 'history-social', 'r-coeq-n6': 'history-social',
+  'r-coeq-n8': 'history-social', 'r-coeq-n10': 'history-social', 'r-coeq-n11': 'history-social', 'r-coeq-n12': 'history-social',
+  'r-coeq-n13': 'history-social', 'r-coeq-n14': 'history-social', 'r-coeq-n16': 'history-social', 'r-coeq-n18': 'history-social',
+  'r-coeq-n19': 'history-social', 'r-coeq-n22': 'history-social', 'r-coeq-n24': 'history-social', 'r-coeq-n25': 'history-social',
+  'r-coeq-n26': 'history-social', 'r-coeq-n27': 'history-social', 'r-coeq-n4': 'humanities',
 };
