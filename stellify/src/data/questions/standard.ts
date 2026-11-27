@@ -129,11 +129,12 @@ export function standardIssues(q: RawQuestion): Issue[] {
       if (!m.concepts || m.concepts.length < 2) e.push({ rule: 12, msg: 'does not record two or more combined topics' });
       // 13. abstract constants
       const tex = (q.stem.match(/\$[^$]+\$/g) ?? []).join(' ').replace(/\\[a-zA-Z]+/g, ' ');
-      if (!/(^|[^a-zA-Z\\])[abckmnpqrstw]([^a-zA-Z]|$)/.test(tex)) e.push({ rule: 13, msg: 'uses only numbers (no constant such as a, b, c or k)' });
+      // any single letter other than the usual variables (x, y, z), function names (f, g) and e, i counts as a constant
+      if (!/(^|[^a-zA-Z\\])[a-dh-wA-Z]([^a-zA-Z]|$)/.test(tex.replace(/\b[a-z]{2,}\b/g, ' '))) e.push({ rule: 13, msg: 'uses only numbers (no constant such as a, b, c or k)' });
       // 14. the twist
       if (!m.twist || m.twist.length < 12) e.push({ rule: 14, msg: 'no extra final step recorded' });
       // 15. engineered distractors: covered by the recorded mistakes (rule 4) plus their exactness
-      if (m.mistakes && q.choices) q.choices.forEach((_, i) => { if (i !== q.answer && m.mistakes![i] && !/\b(forget|forgot|drop|flip|sign|wrong|instead|stop|square|swap|revers|miss|add|subtract|multipl|divid|confus|treat|use|solve|answer|only|both|half|double)/i.test(m.mistakes![i]!)) e.push({ rule: 15, msg: `the mistake for choice ${'ABCD'[i]} does not name a specific error` }); });
+      if (m.mistakes && q.choices) q.choices.forEach((_, i) => { if (i !== q.answer && m.mistakes![i] && !/\b(forget|forgot|drop|flip|sign|wrong|instead|stop|square|swap|revers|miss|add|subtract|multipl|divid|confus|treat|use|solve|answer|only|both|half|double|split|assum|pick|match|keep|copy|misread|read|count|ignor|round|scale|factor|check|skip|cancel|invert|mix)/i.test(m.mistakes![i]!)) e.push({ rule: 15, msg: `the mistake for choice ${'ABCD'[i]} does not name a specific error` }); });
     }
     // 1. hard means all of the hard-question rules pass
     if (e.some((x) => x.rule >= 9)) e.push({ rule: 1, msg: 'below College Board hard level (see the rules above)' });

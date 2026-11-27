@@ -2,26 +2,26 @@
 
 Generated 2026-11-27 by `scripts/standard-audit.ts`. The rules are in `src/data/questions/standard.ts`.
 
-**0 of 1549** original questions meet the standard.
+**44 of 1549** original questions meet the standard.
 
 ## Questions failing each rule
 
 | Rule | What it requires | Failing |
 |---|---|---|
-| 1 | Hard tiers match College Board hard questions (all hard-question rules below pass) | 882 |
+| 1 | Hard tiers match College Board hard questions (all hard-question rules below pass) | 846 |
 | 2 | Reading and Writing passages come from a real, checked source; keyed answers avoid absolute words | 756 |
 | 3 | All needed information is given; one defensible answer; no trick wording or double negatives | 2 |
-| 4 | Each wrong choice is a realistic student mistake | 469 |
-| 5 | Real-world settings give enough context; no outside specialist knowledge | 1549 |
-| 6 | Choices match in grammar, length and format | 158 |
-| 7 | A teacher check of the math, grammar or reading logic | 1549 |
-| 8 | A bias and clarity check | 1549 |
+| 4 | Each wrong choice is a realistic student mistake | 450 |
+| 5 | Real-world settings give enough context; no outside specialist knowledge | 1505 |
+| 6 | Choices match in grammar, length and format | 157 |
+| 7 | A teacher check of the math, grammar or reading logic | 1505 |
+| 8 | A bias and clarity check | 1505 |
 | 9 | Hard passages: long, complex sentences and demanding vocabulary | 0 |
 | 10 | Hard reasoning: a claim or hypothesis plus evidence, and a precise logical step | 14 |
 | 11 | Hard grammar: the error is hidden behind an interruption | 186 |
-| 12 | Hard math: two or more topics combined | 682 |
-| 13 | Hard math: abstract constants instead of only numbers | 474 |
-| 14 | Hard math: an extra final step (the twist) | 682 |
+| 12 | Hard math: two or more topics combined | 646 |
+| 13 | Hard math: abstract constants instead of only numbers | 402 |
+| 14 | Hard math: an extra final step (the twist) | 646 |
 | 15 | Hard math: every wrong choice is the result of a specific, predictable mistake | 0 |
 
 ## By skill
@@ -31,7 +31,7 @@ Generated 2026-11-27 by `scripts/standard-audit.ts`. The rules are in `src/data/
 | Linear equations in one variable (`lin1`) | 40 | 0 |
 | Linear functions (`linf`) | 40 | 0 |
 | Linear equations in two variables (`lin2`) | 39 | 0 |
-| Systems of two linear equations in two variables (`sys`) | 44 | 0 |
+| Systems of two linear equations in two variables (`sys`) | 44 | 44 |
 | Linear inequalities in one or two variables (`ineq`) | 40 | 0 |
 | Equivalent expressions (`equiv`) | 65 | 0 |
 | Nonlinear equations in one variable and systems of equations in two variables (`nleq`) | 80 | 0 |

@@ -1,4 +1,5 @@
 import type { RawQuestion } from '@/lib/types';
+import { toStandard } from './std';
 import { MATH_ALG_1 } from './math-alg-1';
 import { MATH_ALG_2 } from './math-alg-2';
 import { MATH_ADV_1 } from './math-adv-1';
@@ -103,7 +104,7 @@ export const ALL_RAW: RawQuestion[] = [
   ...RW_SPEC,
   // added from 2026-11-20 on, at the end so existing order (and everything seeded from it) is unchanged
   ...NEW_BATCHES.flat(),
-];
+].map(toStandard); // questions rewritten to the question standard replace their earlier versions in place
 
 /** Questions added after Practice Tests A and B were fixed: those forms leave them out, so retakes stay identical. */
 export const ADDED_AFTER_FIXED_FORMS = new Set(NEW_BATCHES.flat().map((q) => q.id));
