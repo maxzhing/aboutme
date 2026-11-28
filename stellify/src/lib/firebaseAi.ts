@@ -6,8 +6,8 @@
  */
 import { FIREBASE_CONFIG } from './firebaseConfig';
 
-/** A current free-tier Gemini model; Firebase AI Logic lists the available ones in the console. */
-export const SITE_MODEL = 'gemini-2.5-flash';
+/** Google's alias for its current free-tier Flash model, so a retired model never breaks the tutor. */
+export const SITE_MODEL = 'gemini-flash-latest';
 export const siteAiAvailable = () => true;
 
 export type Turn = { role: 'user' | 'model'; parts: { text: string }[] };
