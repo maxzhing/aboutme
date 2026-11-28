@@ -17,7 +17,7 @@ const md = (text: string) => text.split('\n').map((line, i) => {
 });
 
 /** Chat with the tutor. Works fully offline; uses the optional AI enhancement only with consent. */
-export function TutorChat({ qid, answer, threadId: initialThread, compact, suggestions }: { qid?: string; answer?: string | null; threadId?: string | null; compact?: boolean; suggestions?: string[] }) {
+export function TutorChat({ qid, answer, threadId: initialThread, compact, dock, suggestions }: { qid?: string; answer?: string | null; threadId?: string | null; compact?: boolean; dock?: boolean; suggestions?: string[] }) {
   const [threadId, setThreadId] = useState<string | null>(initialThread ?? null);
   const thread = useStore((s) => s.tutor.find((t) => t.id === threadId));
   const append = useStore((s) => s.tutorAppend);
@@ -56,7 +56,7 @@ export function TutorChat({ qid, answer, threadId: initialThread, compact, sugge
 
   const aiOn = !!status?.enabled && enabled && consent;
   return (
-    <div className={cn('flex flex-col', compact ? 'h-[70vh]' : 'h-[calc(100vh-15rem)] min-h-[420px]')}>
+    <div className={cn('flex flex-col', dock ? 'h-full min-h-0' : compact ? 'h-[70vh]' : 'h-[calc(100vh-15rem)] min-h-[420px]')}>
       <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
         {aiOn ? <Badge tone="brand"><Sparkles size={12} />AI enhanced{status?.model ? ` · ${status.model}` : ''}</Badge> : <Badge><WifiOff size={12} />Offline tutor</Badge>}
         <span className="inline-flex items-center gap-1 text-faint"><ShieldCheck size={12} />Answers about questions come from validated explanations.</span>

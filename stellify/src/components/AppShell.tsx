@@ -1,4 +1,5 @@
 'use client';
+import { TutorDock, useDockPadding } from './TutorDock';
 import { hasOfficial } from '@/data/questions';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -47,6 +48,7 @@ const courseOf = (path: string) => path.match(/^\/(calc|csa|micro|macro|stats|mu
 const LESSON_FOCUS = /^\/learn\/[a-z0-9]+\/[a-z0-9]+-\d+$/;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const dockPad = useDockPadding();
   const path = usePathname() ?? '/';
   const hydrated = useStore((s) => s.hydrated);
   const theme = useStore((s) => s.settings.theme);
@@ -129,7 +131,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SoftFeel />
       <ShortcutSheet />
       <HighlightToolbar />
-      <div className="min-h-screen lg:flex" data-section={section} data-course={course}>
+      <TutorDock />
+      <div className={cn('min-h-screen lg:flex', dockPad)} data-section={section} data-course={course}>
         {!focus && (
           <aside className="sidebar no-print sticky top-0 hidden h-screen w-[264px] shrink-0 flex-col border-r border-line lg:flex">
             <Link href="/" className="group flex items-center gap-3 px-5 pb-4 pt-5">

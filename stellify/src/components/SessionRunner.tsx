@@ -1,4 +1,5 @@
 'use client';
+import { useTutorDock } from '@/lib/tutorDock';
 import Link from 'next/link';
 import { SUPPORT_EMAIL, sendReport } from '@/lib/feedback';
 import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Bot, Clock, Flag, Lightbulb, NotebookPen, SkipForward, TriangleAlert, Wand2 } from 'lucide-react';
@@ -164,6 +165,16 @@ export function SessionRunner(cfg: SessionConfig) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   });
+
+  // the side tutor follows the open question; it sees the answer only once it is submitted, and pauses in timed tests
+  const setDock = useTutorDock((s) => s.setContext);
+  const clearDock = useTutorDock((s) => s.clearContext);
+  const dockAnswer = q && submitted[q.id] ? answers[q.id] ?? null : null;
+  useEffect(() => {
+    if (!q) return;
+    setDock({ qid: q.id, answer: dockAnswer, paused: feedback === 'end' && !done });
+  }, [q?.id, dockAnswer, feedback, done, setDock]);
+  useEffect(() => () => clearDock(), [clearDock]);
 
   if (!questions.length) return <Card><p className="text-sm text-muted">No questions match this selection yet. Try a different filter.</p><Link href={cfg.backHref ?? '/practice'} className="btn-primary mt-3">Back</Link></Card>;
 

@@ -56,13 +56,10 @@ function questionBrief(q: Question, answered: boolean, answer: string | null | u
   lines.push(`QUESTION: ${q.stem}`);
   if (q.choices) lines.push(`CHOICES: ${q.choices.map((c, i) => `${LETTERS[i]}) ${c}`).join('  ')}`);
   lines.push(`CONCEPT: ${q.concept}`, `STRATEGY: ${q.strategy}`, `COMMON TRAP: ${q.trap}`);
-  if (answered) {
-    lines.push(`VALIDATED CORRECT ANSWER: ${correctAnswerLabel(q)}`, `VALIDATED SOLUTION STEPS: ${q.steps.join(' ')}`,
-      `VALIDATED RATIONALES: ${q.why.map((w, i) => (q.choices ? `${LETTERS[i]}: ${w}` : w)).join(' || ')}`,
-      `STUDENT ANSWER: ${q.type === 'mcq' ? LETTERS[Number(answer)] ?? 'none' : answer}`);
-  } else {
-    lines.push(`FIRST STEPS (safe to share): ${q.steps.slice(0, -1).join(' ')}`, 'The student has NOT answered yet. Do not state or confirm which choice or value is correct, and do not rule out specific choices.');
-  }
+  lines.push(`VALIDATED CORRECT ANSWER: ${correctAnswerLabel(q)}`, `VALIDATED SOLUTION STEPS: ${q.steps.join(' ')}`,
+    `VALIDATED RATIONALES: ${q.why.map((w, i) => (q.choices ? `${LETTERS[i]}: ${w}` : w)).join(' || ')}`);
+  if (answered) lines.push(`STUDENT ANSWER: ${q.type === 'mcq' ? LETTERS[Number(answer)] ?? 'none' : answer}`);
+  else lines.push('The student has not answered yet. Answer whatever they ask. If they ask for help without asking for the answer, guide them toward it first; if they ask for the answer or the full solution, give it, with the complete reasoning from the validated data.');
   return lines.join('\n');
 }
 
