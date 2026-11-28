@@ -47,7 +47,7 @@ export function DonateCard() {
   return (
     <section className="card space-y-3 p-5" aria-labelledby="donate-h" data-testid="donate-card">
       <h2 id="donate-h" className="flex items-center gap-2 text-lg font-bold"><Heart size={18} className="text-bad" />Keep Stellify free</h2>
-      <p className="text-sm text-muted">Stellify is free for everyone, with no ads and no paywall, and it always will be. If it helped you, you can chip in to keep it running. It’s completely optional: everything stays free whether or not you give.</p>
+      <p className="text-sm text-muted">Stellify is free for everyone, with no ads and no paywall, and it always will be. If it helped you, you can chip in: donations pay for the website, the AI tutor and new questions. It’s completely optional, and everything stays free whether or not you give.</p>
       <DonateForm />
     </section>
   );

@@ -86,7 +86,7 @@ export function DashboardPage() {
   const nextTask = coachDay?.tasks.find((t) => !t.done);
   const levels = [0, 1, 2, 3, 4].map((l) => SKILLS.filter((k) => stats[k.id].level === l).length);
   const diffData = DIFFICULTIES.map((d) => ({ name: DIFFICULTY_NAME[d], accuracy: ov.byDifficulty[d].pct, n: ov.byDifficulty[d].n }));
-  const greeting = `${away >= 3 ? 'Good to see you again' : 'Welcome back'}${s.profile.name ? `, ${s.profile.name}` : ''}.`;
+  const greeting = `${!s.attempts.length ? 'Welcome to Stellify' : away >= 3 ? 'Good to see you again' : 'Welcome back'}${s.profile.name ? `, ${s.profile.name}` : ''}.`;
 
   const questsLeft = quests.filter((q) => !q.done).length;
   const say = away >= 3 ? 'I missed you! Let’s warm up with one quick lesson.'

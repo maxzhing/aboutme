@@ -132,6 +132,7 @@ test('multiple-choice question: every distractor is explained; XP, coins, shop a
   // the diagnosis shows its evidence and the student can relabel it
   await expect(page.getByTestId('diagnosis')).toContainText('Likely cause: Conceptual gap');
   await expect(page.getByTestId('diagnosis')).toContainText(/You answered in \d+ s \(typical: \d+ s\)/);
+  await page.getByText('Not the real reason? Pick what happened').click(); // the picker is folded under the diagnosis
   await expect(page.getByRole('button', { name: 'Conceptual misunderstanding' })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'Grammar confusion' }).click();
   await expect(page.getByRole('button', { name: 'Grammar confusion' })).toHaveAttribute('aria-pressed', 'true');

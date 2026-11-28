@@ -38,7 +38,7 @@ export function CoachToday({ plan, className, compact }: { plan: CoachPlan; clas
     <section className={cn('card p-0', className)} aria-labelledby="today-h" data-testid="today">
       <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line px-5 py-4">
         <h2 id="today-h" className="text-[22px]">Today</h2>
-        <p className="text-[14px] text-muted" data-num>{day?.rest ? 'Rest day' : left ? `about ${left} min left of your ${plan.dailyMinutes}` : 'All done for today'}</p>
+        <p className="text-[14px] text-muted" data-num>{day?.rest ? 'Rest day' : left ? `${left} of today’s ${plan.dailyMinutes} minutes left` : 'All done for today'}</p>
       </div>
       {day?.rest ? (
         <div className="px-5 py-4 text-[15px]"><p>Rest is part of the plan. Nothing is lost by taking today off.</p><Link href="/practice/session?mode=review&n=5" className="btn-ghost mt-3">Optional: five review questions</Link></div>
@@ -64,7 +64,7 @@ export function CoachToday({ plan, className, compact }: { plan: CoachPlan; clas
           })}
         </ol>
       )}
-      <p className="border-t border-line px-5 py-3 text-[13px] text-muted">Built from {plan.basis.length ? plan.basis.join(', ') : 'nothing yet: answer the start-up questions for a plan made for you'}. Tasks tick themselves when you do them. <Link href="/calendar" className="text-accent underline">Why this plan</Link></p>
+      <p className="border-t border-line px-5 py-3 text-[13px] text-muted">{plan.basis.length ? `Built from ${plan.basis.join(', ')}` : 'A starting plan. Take the placement check and it adapts to you'}. Tasks tick themselves when you do them. <Link href="/calendar" className="text-accent underline">Why this plan</Link></p>
     </section>
   );
 }

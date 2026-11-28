@@ -134,7 +134,7 @@ writeFileSync(join(out, 'index.html'), `${head('Stellify — free SAT and AP stu
 <p class="l-chips" aria-label="At a glance"><span class="l-chip" data-layer="chip">Free, for good</span><span class="l-chip" data-layer="chip">No ads</span><span class="l-chip" data-layer="chip">Works offline</span><span class="l-chip" data-layer="chip">All 30 SAT skills</span></p>
 <h1>Free SAT practice that tells you what to do next.</h1>
 <p>Original questions with an explanation for every choice, a path through all 30 skills, narrated lessons, and score estimates shown as honest ranges. No ads, no paywall, no account needed: stay a guest and your progress stays on your device, or sign in with Google to keep it on any device.</p>
-<p class="l-cta"><a class="btn-primary" href="app.html" data-layer="button">Open Stellify</a><span class="l-tiles" aria-hidden="true"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"><img src="assets/landing/logo-star.svg" alt="" data-layer="tile"></span></p>
+<p class="l-cta"><a class="btn-primary" href="app.html" data-layer="button">Open Stellify</a></p>
 </div>
 <figure class="l-phone" data-layer="phone"><img src="assets/screenshot-path.webp" width="366" height="645" alt="Screenshot of the Stellify path: skills grouped by topic, with the next step marked"></figure>
 </section>
@@ -162,7 +162,11 @@ ${q.choices.map((c, i) => `<label class="l-choice"><input type="radio" name="a" 
 ${explain}
 </section>
 <section class="l-promise" aria-labelledby="promise-h" data-section="promise">
-<blockquote class="card" data-layer="testimonial"><p id="promise-h">“Every question here is original. Every explanation shows its reasoning. There is no paywall, no trial and no premium version, and there never will be.”</p><cite>The Stellify promise</cite></blockquote>
+<div class="card l-plain"><h2 id="promise-h">What’s free, and how it’s made</h2><ul>
+<li><b>Free.</b> No ads, no trial, no paid tier. Donations are optional and change nothing you can use.</li>
+<li><b>Original questions.</b> Written for Stellify in the style of the Digital SAT, not copied from College Board tests.</li>
+<li><b>Checked.</b> Every answer choice has an explanation. Reading passages describe real studies and books; the source is named under each explanation.</li>
+</ul></div>
 </section>
 <section class="l-donate" aria-labelledby="donate-h">
 <h2 id="donate-h">Keep Stellify free</h2>

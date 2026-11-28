@@ -160,9 +160,9 @@ function SkillPanel({ skill, input, recommended, bare }: { skill: SkillId; input
       <p className="mt-1 flex items-center gap-2 text-[14px] text-muted"><Stars n={st.count} size={16} />{MASTERY_LEVELS[input.levels[skill]]}{recommended ? ' · recommended next' : ''}</p>
       {!open && <p className="mt-2 text-[14px] text-muted">Builds on {s.prereqs.map((p) => PATH[p].title).join(' and ')}. You can start here anyway, or take the skip check.</p>}
       <ol className="mt-3 divide-y divide-line border-y border-line">
-        {row(st.learned, '★1 Learned', `${passed} of ${ch.length} chapters${fams.length ? `, or the ${fams.length} worked-example ladder${fams.length === 1 ? '' : 's'}` : ''}, or the 5-minute quick lesson with 2+ stars, or the skip check.`)}
-        {row(st.practiced, '★2 Practiced', 'The practice set on your first try, or reaching Proficient.')}
-        {row(st.count >= 3, '★3 Retained', 'The hard set (or Mastered), then a right answer in a Gauntlet at least 7 days after ★2.')}
+        {row(st.learned, '★1 Learned', `Finish the chapters (${passed} of ${ch.length} done)${fams.length ? ', the worked examples' : ''}, the 5-minute quick lesson, or the skip check.`)}
+        {row(st.practiced, '★2 Practiced', 'Pass the practice set on your first try.')}
+        {row(st.count >= 3, '★3 Retained', 'Pass the hard set, then get this skill right again a week later.')}
       </ol>
       <p className="mt-2 text-[14px]"><b className="font-medium">Next:</b> {st.next}</p>
       <div className="mt-4 space-y-2">

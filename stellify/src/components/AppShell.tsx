@@ -131,7 +131,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SoftFeel />
       <ShortcutSheet />
       <HighlightToolbar />
-      <TutorDock />
+      {hydrated && !clean.startsWith('/onboarding') && <TutorDock />}
       <div className={cn('min-h-screen lg:flex', dockPad)} data-section={section} data-course={course}>
         {!focus && (
           <aside className="sidebar no-print sticky top-0 hidden h-screen w-[264px] shrink-0 flex-col border-r border-line lg:flex">
@@ -182,8 +182,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {[['/about', 'About'], ['/methodology', 'Methodology'], ['/how-we-write', 'How we write and check questions'], ['/privacy', 'Privacy'], ['/changelog', 'Changelog'], ['/help', 'Help and report a problem'], ['/donate', 'Support Stellify']].map(([h, l]) => <Link key={h} href={h} className="underline-offset-4 hover:text-ink hover:underline">{l}</Link>)}
               </nav>
               <p className="mb-2 text-muted" data-testid="footer-help">Have a problem or want to report one? Email <a className="underline underline-offset-4 hover:text-ink" href="mailto:stellifyprep@gmail.com">stellifyprep@gmail.com</a> or use <Link href="/help" className="underline underline-offset-4 hover:text-ink">Report a problem</Link>.</p>
-              {BRAND.disclaimer} {hasOfficial() && 'Exception: questions labelled Official are real College Board questions that you added yourself, kept on this device for your own study. '}Passages are written for practice; the researchers, studies and data they describe are illustrative.
-            </footer>
+              {BRAND.disclaimer} {hasOfficial() && 'Exception: questions labelled Official are real College Board questions that you added yourself, kept on this device for your own study. '}Reading passages describe real studies and books, named under each explanation; passages in a few skills are still being checked.</footer>
           )}
         </div>
       </div>

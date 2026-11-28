@@ -124,7 +124,7 @@ export function SettingsPage() {
         <ul className="mt-2 space-y-1.5 text-sm text-muted">
           <li>• <b className="text-ink">Question bank:</b> {BANK_STATS.total} original questions ({BANK_STATS.math} Math, {BANK_STATS.rw} Reading &amp; Writing), validated {(manifest as { generatedAt: string }).generatedAt}. Math answers were confirmed by an independent computation for each question (three study-design questions are conceptual and were reviewed by hand). Reading &amp; Writing questions passed structural checks and author review; they have not been reviewed by an outside SAT expert. Use the report button on any question that seems wrong.</li>
           <li>• <b className="text-ink">Score estimates:</b> a three-parameter item-response model with fixed difficulty values for medium, hard and very hard questions, mapped to the 200–800 scale. It uses only first tries without hints, needs 20 per section, and reports an 80% range that includes an extra allowance for the model itself. It is not calibrated on real test-takers, is not the College Board’s method, and is never an SAT score.</li>
-          <li>• <b className="text-ink">Passages:</b> written for practice. Researchers, studies and figures in them are illustrative.</li>
+          <li>• <b className="text-ink">Passages:</b> reading passages describe real studies and books, and the source is named under each explanation. Passages in a few skills are still being checked.</li>
           <li>• {BRAND.disclaimer}</li>
         </ul>
         <p className="mt-3 text-sm"><Link href="/qc" className="font-semibold text-accent hover:underline" data-testid="qc-link">For reviewers: question quality control →</Link></p>

@@ -183,13 +183,15 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
             <div className="mb-3 rounded-lg bg-warn/10 p-2.5 text-sm" data-testid="diagnosis">
               <div className="font-semibold">Likely cause: {CAUSE[mistake.category]} <span className="font-normal text-muted">({ERROR_CATEGORIES.find((c) => c.id === mistake.category)?.label.toLowerCase()})</span></div>
               <ul className="mt-1 space-y-0.5 text-muted">{mistake.why.map((w) => <li key={w}>• {w}</li>)}</ul>
-              <p className="mt-1 text-[11px] text-faint">A rule-based read of your timing, confidence, record on this skill and the trap you chose. If it is wrong, pick the real reason below.</p>
+              <p className="mt-1 text-[11px] text-faint">Based on your timing, confidence and record on this skill.</p>
             </div>
           )}
-          <div className="mb-2 text-xs font-bold uppercase tracking-wide text-faint">What went wrong? (saved with this mistake)</div>
-          <div className="flex flex-wrap gap-1.5">
-            {ERROR_CATEGORIES.map((c) => <button key={c.id} onClick={() => onCategory(c.id)} aria-pressed={category === c.id} className={cn('chip', category === c.id && 'border-brand bg-brand/15 text-ink')}>{c.label}</button>)}
-          </div>
+          <details open={!(mistake?.why && mistake.categoryBy === 'auto') || undefined}>
+            <summary className="cursor-pointer text-xs font-semibold text-muted hover:text-ink">{mistake?.why && mistake.categoryBy === 'auto' ? 'Not the real reason? Pick what happened' : 'What went wrong? Pick one to save with this mistake'}</summary>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {ERROR_CATEGORIES.map((c) => <button key={c.id} onClick={() => onCategory(c.id)} aria-pressed={category === c.id} className={cn('chip', category === c.id && 'border-brand bg-brand/15 text-ink')}>{c.label}</button>)}
+            </div>
+          </details>
           {category && <p className="mt-2 text-xs text-muted">{ERROR_CATEGORIES.find((c) => c.id === category)?.tip}</p>}
         </div>
       )}
@@ -211,7 +213,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
 
       {q.type === 'mcq' ? (
         <>
-          <Block title={`Why ${LETTERS[q.answer as number]} is correct${q.official ? ' · College Board explanation' : ''}`} tone="ok"><RichText text={q.why[q.answer as number]} /></Block>
+          <Block title={`Why ${LETTERS[q.answer as number]} is correct${q.official ? ' · College Board explanation' : ''}`} tone="ok"><RichText text={q.why[q.answer as number].replace(/^Correct[.!]\s*/, '')} /></Block>
           <Block title={`Why each other choice fails${q.official ? ' · College Board explanation' : ''}`}>
             <ul className="space-y-2">
               {q.choices!.map((c, i) => i === q.answer ? null : (
@@ -253,6 +255,7 @@ export function Explanation({ q, answer, category, onCategory, extra }: {
         </div>
       </Block>
       {extra}
+      {q.meta?.source && <p className="text-xs text-muted" data-testid="passage-source"><b className="font-semibold text-ink">Source:</b> {q.meta.source.url ? <a href={q.meta.source.url} target="_blank" rel="noopener noreferrer" className="underline decoration-line underline-offset-2 hover:text-ink">{q.meta.source.cite}</a> : q.meta.source.cite}</p>}
       <p className="text-[11px] text-faint">{q.id} · {q.source} · Target time {q.time}s</p>
     </div>
   );

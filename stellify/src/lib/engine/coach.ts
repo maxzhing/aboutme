@@ -107,9 +107,11 @@ function orderFocus(f: FocusSkill[]): FocusSkill[] {
 function chancePct(theta: number) { return Math.round(testAccuracy(theta) * 100); }
 function focusWhy(ab: Abilities, x: FocusSkill): string {
   const a = ab.skills[x.skill];
-  const often = PER_TEST[x.skill] >= 1.5 ? 'one of the most tested skills' : PER_TEST[x.skill] >= 1 ? 'tested about once per module' : 'tested less often, but quick to fix';
-  const src = a.notTaught ? 'you have not learned it in class yet, so it starts from the beginning' : a.n ? `you got ${a.correct} of ${a.n} right so far` : a.saidHard ? 'you said it feels hard' : 'not measured yet';
-  return `About ${chancePct(a.theta)}% expected on ${SKILL[x.skill].short} questions now (${src}); ${often}.`;
+  const often = PER_TEST[x.skill] >= 1.5 ? 'One of the most tested skills.' : PER_TEST[x.skill] >= 1 ? 'Tested about once per module.' : 'Tested less often, but quick to fix.';
+  if (a.notTaught) return `${often} You haven't learned it in class yet, so this starts from the beginning.`;
+  if (a.n) return `${often} You've got ${a.correct} of ${a.n} right so far (about ${chancePct(a.theta)}% expected on the test).`;
+  if (a.saidHard) return `${often} You said it feels hard.`;
+  return `${often} Not measured yet.`;
 }
 
 export interface CoachOpts { now: number; getQ: (id: string) => Question | undefined; days?: number; /** the question bank, to size practice to what is within reach */ bank?: Question[] }
