@@ -14,11 +14,12 @@ import { COEQ_STD } from './coeq';
 import { WIC_STD } from './wic';
 import { TRA_STD } from './tra';
 import { SYN_STD, SYN_STD_FACTS } from './syn';
+import { LIN1_STD } from './lin1';
 
 const strip = ({ tags: _t, ...q }: RawQuestion & { tags?: unknown }): RawQuestion => q;
 
 const FULL: RawQuestion[] = [...SYS_STD, ...[...COET_RESEARCH, ...COET_LIT, ...CID_STD, ...INF_STD, ...COEQ_STD, ...WIC_STD].map(strip)];
-const PATCHES: (Partial<RawQuestion> & { id: string })[] = [...SYS_PATCHES, ...[...TSP_STD, ...CTC_STD].map(({ tags: _t, ...p }) => p), ...TRA_STD, ...SYN_STD, ...SYN_STD_FACTS];
+const PATCHES: (Partial<RawQuestion> & { id: string })[] = [...SYS_PATCHES, ...[...TSP_STD, ...CTC_STD].map(({ tags: _t, ...p }) => p), ...TRA_STD, ...SYN_STD, ...SYN_STD_FACTS, ...LIN1_STD];
 
 const fullById = new Map(FULL.map((q) => [q.id, q]));
 const patchById = new Map(PATCHES.map((p) => [p.id, p]));
