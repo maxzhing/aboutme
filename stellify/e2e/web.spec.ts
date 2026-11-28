@@ -292,3 +292,20 @@ test('web build: on 320 and 360 px phones every worked step and every piece of m
   }
   expect(checked, 'step boxes actually checked').toBeGreaterThan(20);
 });
+
+test('web build: typing in the side tutor and pressing Enter sends the message and never checks the question', async ({ page }) => {
+  const errors: string[] = []; page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto(`${base}app.html#/onboarding`);
+  await page.getByTestId('continue-guest').click();
+  await page.getByRole('button', { name: 'Skip setup' }).click();
+  await page.goto(`${base}app.html#/practice/session?mode=skill&skill=inf&n=3`);
+  await page.getByTestId('tutor-dock-open').click();
+  const dock = page.getByTestId('tutor-dock');
+  await expect(dock.getByTestId('tutor-dock-context')).toContainText('Inferences');
+  const box = dock.getByRole('textbox');
+  await box.fill('yo'); await box.press('Enter');
+  await expect(dock.getByRole('log')).toContainText('yo');
+  await expect(dock.getByRole('log')).not.toContainText('thinking', { timeout: 30_000 });
+  await expect(page.getByTestId('explanation')).toHaveCount(0); // the question was not checked
+  expect(errors).toEqual([]);
+});

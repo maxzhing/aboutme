@@ -147,6 +147,7 @@ export function SessionRunner(cfg: SessionConfig) {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (panel || done || !q || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (t.closest?.('[data-no-shortcuts]')) return; // typing in the tutor panel never triggers question shortcuts
       const typing = t.tagName === 'INPUT' || t.tagName === 'TEXTAREA';
       if (e.key === 'Enter' && !(t.tagName === 'BUTTON' || t.tagName === 'A' || t.tagName === 'TEXTAREA')) {
         e.preventDefault();

@@ -21,7 +21,7 @@ export function TutorDock() {
         </button>
       )}
       {open && (
-        <aside aria-label="AI tutor" data-testid="tutor-dock"
+        <aside aria-label="AI tutor" data-testid="tutor-dock" data-no-shortcuts
           className="no-print fixed inset-x-0 bottom-0 z-40 flex h-[75vh] flex-col border-t border-line bg-surface shadow-2xl lg:inset-y-0 lg:left-auto lg:right-0 lg:h-screen lg:w-[400px] lg:border-l lg:border-t-0">
           <div className="flex items-center gap-2 border-b border-line px-4 py-3">
             <Bot size={18} className="text-brand" aria-hidden />
