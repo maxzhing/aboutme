@@ -124,7 +124,7 @@ export function PrivacyPage() {
         <h2>What can leave the device, and only if you choose it</h2>
         <ul>
           <li><b>Google account:</b> only if you sign in, as described above. Signing in is handled by Google; Stellify never sees your Google password.</li>
-          <li><b>AI tutor:</b> if you add your own Gemini key, your question to the tutor is sent to Google. The key is never included in exports, backups or your account copy.</li>
+          <li><b>AI tutor:</b> it is off until you choose “Turn on AI replies.” After that, on the website, the question you are working on, your answer choice and your message are sent to Google’s Gemini service through Firebase to write a reply; your name, notes and account are never sent. On this free service, Google may use what is sent to improve its products. If you add your own Gemini key instead, your message goes to Google with that key, which is never included in exports, backups or your account copy.</li>
           <li><b>Desmos calculator:</b> when you open it online, it loads from desmos.com, which sees a normal web request. Stellify does not see what you type into it.</li>
           <li><b>Reports:</b> only if you send one. Your report, the page you were on, your browser type and (if you give it) your email for a reply are emailed to the Stellify team through Google (Gmail). Nothing else is attached.</li>
           <li><b>Video lessons:</b> the videos load from the Stellify website like any other page file.</li>

@@ -7,6 +7,7 @@ import { plain } from './richtext';
 import { DIFFICULTY_NAME, SKILL } from './taxonomy';
 import { dateKey } from './util';
 import type { Question, TutorMessage } from './types';
+import { SITE_MODEL, SiteAiError, siteAiAvailable, siteGenerate } from './firebaseAi';
 
 /**
  * OPTIONAL AI ENHANCEMENT (Google Gemini Developer API, free tier).
@@ -27,6 +28,7 @@ let cooldownUntil = 0;
 export interface AiStatus { enabled: boolean; model?: string; reason?: string }
 export function aiStatus(): Promise<AiStatus> {
   const s = useStore.getState().settings;
+  if (!s.geminiKey && siteAiAvailable()) return Promise.resolve({ enabled: true, model: `Stellify AI · ${SITE_MODEL}` });
   if (!s.geminiKey) return Promise.resolve({ enabled: false, reason: 'No AI key added. The built-in tutor is active.' });
   return Promise.resolve({ enabled: true, model: s.geminiModel || DEFAULT_MODEL });
 }
@@ -66,6 +68,7 @@ function questionBrief(q: Question, answered: boolean, answer: string | null | u
 
 export interface AskArgs { mode: TutorMode; message?: string; qid?: string; answer?: string | null; hintsGiven?: number; socraticStep?: number; history?: TutorMessage[] }
 export interface AskResult extends TutorReply { source: 'offline' | 'gemini'; notice?: string }
+let siteOffUntil = 0;
 
 /**
  * Asks the tutor. Hints, Socratic steps and challenges always come from validated data so they
@@ -76,7 +79,8 @@ export async function askTutor(a: AskArgs): Promise<AskResult> {
   const q = a.qid ? getQuestion(a.qid) : undefined;
   const offline = (notice?: string): AskResult => ({ ...offlineTutor({ mode: a.mode, message: a.message, question: q, answer: a.answer, hintsGiven: a.hintsGiven, socraticStep: a.socraticStep, state, bank: QUESTIONS, getQ: getQuestion }), source: 'offline', notice });
   const { aiEnabled, aiConsent, geminiKey, geminiModel } = useStore.getState().settings;
-  if (!aiEnabled || !aiConsent || !geminiKey || a.mode === 'hint' || a.mode === 'socratic' || a.mode === 'challenge') return offline();
+  const useSite = !geminiKey && siteAiAvailable();
+  if (!aiEnabled || !aiConsent || (!geminiKey && !useSite) || a.mode === 'hint' || a.mode === 'socratic' || a.mode === 'challenge') return offline();
   const now = Date.now();
   if (now < cooldownUntil) return offline('The free AI quota is resting for a minute, so this answer comes from Stellify\'s built-in explanations.');
   if (usedToday() >= DAILY_CAP) return offline(`Stellify limits AI replies to ${DAILY_CAP} a day to protect your free quota. Built-in explanations are unlimited.`);
@@ -99,9 +103,23 @@ export async function askTutor(a: AskArgs): Promise<AskResult> {
     ...(a.history ?? []).slice(-6).map((m) => ({ role: m.role === 'student' ? 'user' : 'model', parts: [{ text: m.text.slice(0, 800) }] })),
     { role: 'user', parts: [{ text: (a.message ?? modeLabel).slice(0, 1200) }] },
   ];
+  if (useSite) {
+    if (Date.now() < siteOffUntil) return offline('Stellify’s AI tutor is not available right now, so this answer comes from the built-in explanations.');
+    try {
+      const text = await siteGenerate(system, contents as { role: 'user' | 'model'; parts: { text: string }[] }[]);
+      if (!text) return offline('The AI returned an empty reply, so this answer comes from Stellify\'s built-in explanations.');
+      bump();
+      return { text, links: offline().links, source: 'gemini' };
+    } catch (e) {
+      const kind = e instanceof SiteAiError ? e.kind : 'other';
+      if (kind === 'quota') { cooldownUntil = Date.now() + 60_000; return offline('Stellify’s free AI is busy right now, so this answer comes from the built-in explanations. Try again in a minute.'); }
+      if (kind === 'off') { siteOffUntil = Date.now() + 10 * 60_000; return offline('Stellify’s AI tutor is not switched on yet, so this answer comes from the built-in explanations.'); }
+      return offline('The AI service could not be reached, so this answer comes from Stellify\'s built-in explanations.');
+    }
+  }
   try {
     const res = await fetch(`${API}/models/${encodeURIComponent(geminiModel || DEFAULT_MODEL)}:generateContent`, {
-      method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': geminiKey },
+      method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': geminiKey ?? '' },
       body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { temperature: 0.3, maxOutputTokens: 800 } }),
       signal: AbortSignal.timeout(25000),
     });

@@ -40,7 +40,7 @@ await build({
   entryPoints: [at('src/main.tsx')], bundle: true, minify: true, format: 'iife', target: ['es2020'], outfile: at('.build/app.js'),
   jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"', __PACK__: 'null' }, legalComments: 'none', logLevel: 'warning', tsconfig: at('tsconfig.json'),
   // the offline file has no Google sign-in (it needs a real web address), so no Firebase code goes in it
-  plugins: [{ name: 'no-cloud', setup(b) { b.onResolve({ filter: /firebaseSdk$/ }, () => ({ path: at('src/lib/firebaseSdk.stub.ts') })); } }],
+  plugins: [{ name: 'no-cloud', setup(b) { b.onResolve({ filter: /firebaseSdk$/ }, () => ({ path: at('src/lib/firebaseSdk.stub.ts') })); b.onResolve({ filter: /firebaseAi$/ }, () => ({ path: at('src/lib/firebaseAi.stub.ts') })); } }],
 });
 const js = readFileSync(at('.build/app.js'), 'utf8').replace(/<\/script/gi, '<\\/script').replace(/<!--/g, '<\\!--');
 
